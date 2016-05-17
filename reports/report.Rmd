@@ -1,0 +1,76 @@
+```{r, echo=FALSE, results="hide"}
+study_name <- data_study$key
+```
+
+# Report for study: `r study_name`
+
+## Contact Information
+
+**Data contributor:** `r data_study$contacts$name`
+
+**Email:** `r paste0(data_study$contacts$email[data_study$contacts$email!=""], collapse = ", ")`
+
+**Address:**
+
+`r paste0("- ", data_study$contacts$address, collapse = "\n")`
+
+## Data source
+
+**Citation:** `r data_study$references$citation`
+
+**DOI:** `r md_link_doi(bib_element(data_study$bibtex, "doi"))`
+
+**Abstract:** `r  bib_element(data_study$bibtex, "abstract")`
+
+## Overview of data provided
+
+The dataset includes records for `r nrow(data_study$data)` individuals from `r length(unique(data_study$data$species))` species belonging to `r length(unique(data_study$data$family))` family(ies), presenting `r length(unique(data_study$data$pft))` functional type(s), growing in `r length(unique(data_study$data$growingCondition))` condition(s) within `r length(unique(data_study$data$vegetation))` major type(s) of habitat, with data included for the following variables:
+
+```{r summary_table, results='asis', echo=FALSE}
+# From the ms functions:
+tab <- summary_table(data_study$data, baad_dictionary)
+kable(tab[names(tab) != "Studies"], "markdown", align="l", padding=10)
+```
+
+```{r world_map, echo=FALSE, fig.width=12, fig.height=10}
+drawWorldPlot(data_study$data)
+```
+
+And locally within the country:
+
+```{r country_map, echo=FALSE, fig.width=12, fig.height=10}
+map_sites_all_countries(data_study$data)
+```
+
+The sites sampled are:
+
+```{r location_level_info, echo=FALSE, comment='', results='asis'}
+kable(location_level_info(data_study$data), "markdown", align="l", padding=2)
+```
+
+The growing conditions of sampled plants was:
+
+```{r stand_level_info, echo=FALSE, comment='', results="asis"}
+kable(stand_level_info(data_study$data), "markdown", align="l", padding=2)
+```
+
+## Species sampled
+
+```{r species_level_info, echo=FALSE, comment='', results="asis"}
+kable(species_level_info(data_study$data), "markdown", align="l", padding=2)
+```
+
+## Methods used
+
+```{r metadata, echo=FALSE, comment='', results="asis"}
+metadata <- data_study$metadata
+writeLines(sprintf("**%s**: %s\n", metadata$Topic, metadata$Description))
+```
+
+## Plots of data
+
+This is how the study `r study_name` fits in the entire dataset (grey). each colour represents a species. A legend of species names with colours is included at the end for reports with 1 < n < 20 species.
+
+```{r variable_plots, fig.height=12, fig.width=12, echo=FALSE}
+report_variable_plots(data_study, baad_data, baad_dictionary)
+```

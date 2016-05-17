@@ -1,0 +1,22 @@
+targets:
+{{#study_names}}
+  reports/{{study_name}}.md:
+    knitr:
+      input: reports/report.Rmd
+      chdir: true
+      auto_figure_prefix: true
+    depends:
+      - data_study: {{study_name}}
+      - baad_dictionary
+      - baad_data
+      - R/reports.R
+    cleanup_level: purge
+  reports/{{study_name}}.html:
+    command: render_html("reports/{{study_name}}.md")
+    cleanup_level: purge
+{{/study_names}}
+  reports:
+    depends:
+{{#study_names}}
+      - reports/{{study_name}}.html
+{{/study_names}}
