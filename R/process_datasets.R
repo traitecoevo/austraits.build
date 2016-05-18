@@ -85,7 +85,7 @@ processData <- function(DATASET_ID, data, cfgDataset, cfgVarNames, cfgChar, cfgL
     df$site_name <- sapply(df$site_name, function(x) {
       # get position of, e.g., "_2" in site name
       # NOTE: this throws a warning for some reason, saying the pattern has length > 1. Not sure why, doesn't seem to matter.
-      pos <- unlist(regexpr(regex, x))
+      pos <- suppressWarnings(unlist(regexpr(regex, x)))
       # if "_2" (or whatever) doesn't appear in site name then just return the site name
       # otherwise return the corrected site name with "_2" (or whatever) removed
       if (is.na(pos) | pos == -1) {
