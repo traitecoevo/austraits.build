@@ -1,7 +1,3 @@
-##
-# functions to process raw datasets for austraits project
-##
-
 # trims whitespace from begining and end of string
 # str: string to trim
 trim <- function (str) {
@@ -15,92 +11,16 @@ getConfig <- function(cfg, key) {
   cfg$value[cfg$key == key]
 }
 
-# a wrapper for processData()
-# processes a single dataset by checking the configuration for the dataset and calling processData() one or more
-# times to optionally process plant traits, site traits and site data
-# dirData: dir of the dataset to be processed
-# dirOutput: dir of the output folder
-# verbose: display status/progress messages or not?
-processDataset <- function(dirData, dirOutput, verbose = FALSE) {
-  
-  # get datasetId (used for the dir name) for this dataset
-  datasetId <- basename(dirData)
-  
-  # delete existing output dir and files for this dataset
-  unlink(paste0(dirOutput, "/", datasetId), recursive = TRUE)
-  
-  # create new output dir for this dataset
-  dir.create(paste0(dirOutput, "/", datasetId))  
-  
-  # read configuration file for dataset
-  cfgDataset <- read.csv(paste0(dirData, "/config/configDataset.csv"), stringsAsFactors = FALSE)  
-  
-  # the configuration file specifies how to process the dataset:
-  # process_plant_char == TRUE: process plant traits (in practice this will always be done, all datasets contain plant trait data)
-  # process_site_char == TRUE: process site traits (not all datasets contain site traits)
-  # process_site_data == TRUE: process site data (i.e. just a list of sites, maybe including lonlat data)
-  
-  # plant trait data are written to plantMeasurements.csv
-  # site trait data are written to siteMeasurements.csv
-  # site data are written to sites.csv
-  
-  if (getConfig(cfgDataset, "process_plant_char")) {
-    write.csv(processData(type = "plant", dirData, dirOutput, verbose), paste0(dirOutput, "/", datasetId, "/plantMeasurements.csv"), row.names = FALSE)      
-  }
-  
-  if (getConfig(cfgDataset, "process_site_char")) {
-    write.csv(processData(type = "site", dirData, dirOutput, verbose), paste0(dirOutput, "/", datasetId, "/siteMeasurements.csv"), row.names = FALSE)
-  }
-  
-  if (getConfig(cfgDataset, "process_site_data")) {  
-    siteData <- processData(type = "sitedata", dirData, dirOutput, verbose)
-    #write.csv(unique(siteData[siteData$site_name != "", ]), paste0(datasetPath, "/output/sites.csv"), row.names = FALSE)  
-    write.csv(siteData, paste0(dirOutput, "/", datasetId, "/sites.csv"), row.names = FALSE, na = "")  
-  }
-  
-}
-
 # processes a single dataset 
-# type: which type of data are we processing, one of "plant", "site" or "sitedata"
-# dirData: dir of the dataset to be processed
-# dirOutput: dir of the output folder
-# verbose: display status/progress messages or not?
-processData <- function(type = "plant", dirData, dirOutput, verbose = FALSE) {
-  
-  if (verbose) {
-    message(paste0(basename(dirData), ": ", type))
-  }    
-  
-  # read configuration file for dataset
-  cfgDataset <- read.csv(paste0(dirData, "/config/configDataset.csv"), stringsAsFactors = FALSE)  
-  
+processData <- function(DATASET_ID, data, cfgDataset, cfgVarNames, cfgChar, cfgLookup, meta) {
+
+  # type: which type of data are we processing, one of "plant", "site" or "sitedata"
+  type <- "plant"
   # get config data for dataset
-  DATASET_ID <- basename(dirData) #getConfig(cfgDataset, "dataset_id")
-  DATASET_NAME <- getConfig(cfgDataset, paste0(switch(type, plant = "plant", site = "site", sitedata = "site"), "_data_filename"))
   DATASET_HEADER <- getConfig(cfgDataset, "header")
   DATASET_SKIP <- as.numeric(getConfig(cfgDataset, "skip"))
-  DATASET_VERT <- switch(type, plant = cfgDataset$value[cfgDataset$key == "plant_char_vertical"],
-                               site = cfgDataset$value[cfgDataset$key == "site_char_vertical"],
-                               sitedata = FALSE)
-  
-  # get config data for variable names -
-  # there is a different config file depending on the type of dataset (plant/site/site_data)
-  cfgVarNames <- read.csv(paste0(dirData, "/config/config", switch(type, plant = "Plant", site = "Site", sitedata = "SiteData"), "VarNames.csv"), stringsAsFactors = FALSE)
-  
-  # get config data for plant or site characters -
-  # there is a different config file depending on the type of dataset (plant/site)
-  cfgChar <- switch(type, plant = read.csv(paste0(dirData, "/config/configPlantCharacters.csv"), stringsAsFactors = FALSE),
-                           site = read.csv(paste0(dirData, "/config/configSiteCharacters.csv"), stringsAsFactors = FALSE))
-  
-  # get config data for lookups
-  cfgLookup <- read.csv(paste0(dirData, "/config/configLookups.csv"), stringsAsFactors = FALSE)
-  
-  # read dataset
-  data <- read.csv(paste0(dirData, "/", DATASET_NAME), check.names = FALSE, stringsAsFactors = FALSE)
-  
-  # read metadata
-  meta <- read.csv(paste0(dirData, "/../metadata.csv"), stringsAsFactors = FALSE)
-  
+  DATASET_VERT <- cfgDataset$value[cfgDataset$key == "plant_char_vertical"]
+
   # get old dataset number - need this to trim the number from the end of site names in some cases (was added previously by RVG)
   datasetNum <- meta$dataset_num[meta$dataset_id == DATASET_ID]
   
@@ -220,5 +140,5 @@ processData <- function(type = "plant", dirData, dirOutput, verbose = FALSE) {
     }, out$character, out$value, SIMPLIFY = TRUE)
   }
   
-  return(out)
+  out
 }

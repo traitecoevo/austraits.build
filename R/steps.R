@@ -1,60 +1,80 @@
 load_study <- function(filename_data_raw,
-                       filename_data_opts,
-                       filename_manipulate,
-                       filename_columns,
-                       filename_new_data,
-                       filename_bib,
-                       filename_contact,
-                       filename_metadata,
-                       variable_definitions,
-                       conversions) {
+                       filename_data_config,
+                       filename_configVarnames,
+                       filename_configPlantCharacters,
+                       filename_configLookups,
+                       variable_definitions
+                       # conversions
+                       ) {
+
   data <- read_data_study(filename_data_raw,
-                          filename_data_opts,
-                          filename_manipulate,
-                          filename_columns,
-                          filename_new_data,
-                          variable_definitions,
-                          conversions)
+                          filename_data_config,
+                          filename_configVarnames,
+                          filename_configPlantCharacters,
+                          filename_configLookups,
+                          variable_definitions
+                          # conversions
+                          )
 
   key <- basename(dirname(filename_data_raw))
-  bibentry <- set_bib_key(bibtex::read.bib(filename_bib), key)
+  # bibentry <- set_bib_key(bibtex::read.bib(filename_bib), key)
 
-  methods  <- read_methods(filename_columns, variable_definitions)
-  contacts <- read_csv(filename_contact)
-  metadata <- read_csv(filename_metadata)
+  # methods  <- read_methods(filename_columns, variable_definitions)
+  # contacts <- read_csv(filename_contact)
+  # metadata <- read_csv(filename_metadata)
 
   list(key        = key,
-       data       = data,
-       methods    = methods,
-       bibtex     = bibentry,
-       contacts   = contacts,
-       metadata   = metadata,
-       references = get_citation(bibentry))
+       data       = data)
+       # methods    = methods,
+       # bibtex     = bibentry,
+       # contacts   = contacts,
+       # metadata   = metadata,
+       # references = get_citation(bibentry))
 }
 
 ## These are the cleaning steps:
 read_data_study <- function(filename_data_raw,
-                            filename_data_opts,
-                            filename_manipulate,
-                            filename_columns,
-                            filename_new_data,
-                            variable_definitions,
-                            conversions) {
-  data <- read_data_raw(filename_data_raw, filename_data_opts)
-  data <- manipulate_data(data, filename_manipulate)
-  data <- convert_data(data, filename_columns, variable_definitions, conversions)
-  data <- add_all_columns(data, variable_definitions)
-  data <- add_new_data(data, filename_new_data)
-  data <- fix_types(data, variable_definitions)
-  data <- post_process(data)
+                            filename_data_config,
+                            filename_configVarnames,
+                            filename_configPlantCharacters,
+                            filename_configLookups,
+                            # filename_manipulate,
+                            # filename_columns,
+                            # filename_new_data,
+                            variable_definitions
+                            # conversions
+                            ) {
+
+  DATASET_ID <- basename(dirname(filename_data_raw)) #getConfig(cfgDataset, "dataset_id")
+
+  # config data for datasets names
+  cfgDataset <- read_csv(filename_data_config)
+
+  # config data for variable names
+  cfgVarNames <- read_csv(filename_configVarnames)
+
+  # config data for plant characters -
+  cfgChar <- read_csv(filename_configPlantCharacters)
+
+  # config data for lookups
+  cfgLookup <- read_csv(filename_configLookups)
+
+  # read metadata
+  meta <- read_csv("code/metadata.csv")
+
+  data <- read_csv(filename_data_raw)
+
+  data <- processData(DATASET_ID, data, cfgDataset, cfgVarNames, cfgChar, cfgLookup, meta)
+
+  i <- nrow(variable_definitions)
+  # data <- convert_data(data, filename_columns, variable_definitions, conversions)
+  # data <- add_all_columns(data, variable_definitions)
+  # data <- add_new_data(data, filename_new_data)
+  # data <- fix_types(data, variable_definitions)
+  # data <- post_process(data)
   data
 }
 
-read_data_raw <- function(filename, filename_opts) {
-  opts <- read_data_raw_import_options(filename_opts)
-  read_csv(filename,
-           header=opts$header, skip=opts$skip, na.strings=opts$na.strings)
-}
 
 ## If the `dataManipulate.R` file is present within a study's data
 ## directory, it must contain the function `manipulate`.  Otherwise we
