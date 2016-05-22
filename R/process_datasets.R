@@ -30,7 +30,7 @@ processData <- function(DATASET_ID, data, cfgDataset, cfgVarNames, cfgChar, cfgL
   # add metadata_id and project_source_id to dataset if not there already -
   # for some datasets RVG added these data manually, especially in cases where there were multiple metadata for a single dataset
   # but if that's not the case we need to get the id values from the metadata table and add them to the dataset
-  if (!"metadata_id" %in% colnames(data)) {
+  if (type == "plant" & !"metadata_id" %in% colnames(data)) {
     # get metadata_id and primary_source_id from metadata table
     metadataId <- meta$metadata_id[meta$dataset_id == DATASET_ID]
     primarySourceId <- meta$primary_source_id[meta$dataset_id == DATASET_ID]
