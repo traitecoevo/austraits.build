@@ -8,12 +8,15 @@ load_study <- function(filename_data_raw,
                        # conversions
                        ) {
 
+  # read metadata
+  metadata <- read_csv(filename_metadata)
+
   data <- read_data_study(filename_data_raw,
                           filename_data_config,
                           filename_configVarnames,
                           filename_configPlantCharacters,
                           filename_configLookups,
-                          filename_metadata,
+                          metadata,
                           variable_definitions
                           # conversions
                           )
@@ -26,11 +29,11 @@ load_study <- function(filename_data_raw,
   # metadata <- read_csv(filename_metadata)
 
   list(key        = key,
-       data       = data)
+       data       = data,
+       metadata   = metadata)
        # methods    = methods,
        # bibtex     = bibentry,
        # contacts   = contacts,
-       # metadata   = metadata,
        # references = get_citation(bibentry))
 }
 
@@ -40,7 +43,7 @@ read_data_study <- function(filename_data_raw,
                             filename_configVarnames,
                             filename_configPlantCharacters,
                             filename_configLookups,
-                            filename_metadata,
+                            metadata,
                             # filename_manipulate,
                             # filename_columns,
                             # filename_new_data,
@@ -62,12 +65,9 @@ read_data_study <- function(filename_data_raw,
   # config data for lookups
   cfgLookup <- read_csv(filename_configLookups)
 
-  # read metadata
-  meta <- read_csv(filename_metadata)
-
   data <- read_csv(filename_data_raw)
 
-  data <- processData(DATASET_ID, data, cfgDataset, cfgVarNames, cfgChar, cfgLookup, meta)
+  data <- processData(DATASET_ID, data, cfgDataset, cfgVarNames, cfgChar, cfgLookup, metadata)
 
   i <- nrow(variable_definitions)
   # data <- convert_data(data, filename_columns, variable_definitions, conversions)
