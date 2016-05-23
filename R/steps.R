@@ -3,6 +3,7 @@ load_study <- function(filename_data_raw,
                        filename_configVarnames,
                        filename_configPlantCharacters,
                        filename_configLookups,
+                       filename_metadata,
                        variable_definitions
                        # conversions
                        ) {
@@ -12,6 +13,7 @@ load_study <- function(filename_data_raw,
                           filename_configVarnames,
                           filename_configPlantCharacters,
                           filename_configLookups,
+                          filename_metadata,
                           variable_definitions
                           # conversions
                           )
@@ -38,6 +40,7 @@ read_data_study <- function(filename_data_raw,
                             filename_configVarnames,
                             filename_configPlantCharacters,
                             filename_configLookups,
+                            filename_metadata,
                             # filename_manipulate,
                             # filename_columns,
                             # filename_new_data,
@@ -60,7 +63,7 @@ read_data_study <- function(filename_data_raw,
   cfgLookup <- read_csv(filename_configLookups)
 
   # read metadata
-  meta <- read_csv("code/metadata.csv")
+  meta <- read_csv(filename_metadata)
 
   data <- read_csv(filename_data_raw)
 
