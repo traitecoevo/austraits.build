@@ -99,13 +99,23 @@ processData <- function(DATASET_ID, data, cfgDataset, cfgVarNames, cfgChar, cfgL
   
   # check that the trait names as specified in config actually exist in data
   # if not then we need to stop and fix this problem
-  if (length(setdiff(cfgChar[, "var_name"], colnames(data)) != 0)) {
+  # NOTE - only need to do this step for wide (non-vertical) data  
+  if (DATASET_VERT == FALSE & length(setdiff(cfgChar[, "var_name"], colnames(data)) != 0)) {
     stop(paste(DATASET_ID, ": missing traits: ", setdiff(cfgChar[, "var_name"], colnames(data))))
   }  
   
   if (DATASET_VERT == TRUE | type == "sitedata") {
     # if the dataset is already "vertical" (i.e. long rather than wide) then no further processing is needed
     out <- df
+
+    # process any changes to trait name as per configPlantCharacters
+    if (type == "plant") {
+      if (nrow(cfgChar) > 0) {
+        for (i in 1:nrow(cfgChar)) {
+          out$character[out$character == cfgChar[i, "var_name"]] <- cfgChar[i, "character"]
+        }
+      }
+    }
     
   } else {
     # if the dataset is "wide" then process each variable in turn, to create the "long" dataset -
