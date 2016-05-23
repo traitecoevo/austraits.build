@@ -15,10 +15,6 @@ rename_columns <- function(obj, from, to) {
   obj
 }
 
-read_csv <- function(...) {
-  read.csv(..., stringsAsFactors=FALSE, check.names=FALSE,
-           strip.white=TRUE)
-}
 
 ## Hack work around to change key in bib entry (bibtex entry
 ## redefines '[' and/or '[[' in ways that cause nothing but grief)
@@ -53,10 +49,6 @@ capitalize <- function (string) {
   capped <- grep("^[^A-Z]*$", string, perl = TRUE)
   substr(string[capped], 1, 1) <- toupper(substr(string[capped], 1, 1))
   string
-}
-
-write_csv <- function(data, filename) {
-  write.csv(data, filename, row.names=FALSE)
 }
 
 # Paste together list of var_names and their values, used for
