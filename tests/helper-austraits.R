@@ -80,3 +80,23 @@ is_at_least <- function(value) {
   }
 }
 
+
+#' Test for UTF-8 characters
+#' This test will check every column in a data.frame for possible unicode characters.
+#' Inspired by https://github.com/ropensci/testdat/blob/master/R/test_utf8.R
+is_ascii <- function() {
+  function(dat) {
+    if(length(dat) > 0 ) {
+      utf8 <- simplify2array(lapply(dat,non_ascii))
+    } else {
+      utf8 <- FALSE
+    }
+#    if(any(utf8)) browser()
+    testthat::expectation(any(utf8) == FALSE,  sprintf("UTF-8 characters detected: %s", paste0(dat[which(utf8)], collapse = " ")))
+  }
+}
+
+non_ascii <- function(x) {
+  any(charToRaw(x) > 0x7F)
+}
+
