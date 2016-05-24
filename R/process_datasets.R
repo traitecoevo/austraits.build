@@ -111,7 +111,7 @@ processData <- function(DATASET_ID, data, cfgDataset, cfgVarNames, cfgChar, cfgL
     # process any changes to trait name as per configPlantCharacters
     if (type == "plant") {
       if (nrow(cfgChar) > 0) {
-        for (i in 1:nrow(cfgChar)) {
+        for (i in seq_len(nrow(cfgChar))) {
           out$character[out$character == cfgChar[i, "var_name"]] <- cfgChar[i, "character"]
         }
       }
@@ -120,7 +120,7 @@ processData <- function(DATASET_ID, data, cfgDataset, cfgVarNames, cfgChar, cfgL
   } else {
     # if the dataset is "wide" then process each variable in turn, to create the "long" dataset -
     # say the original dataset has 20 rows of data and 5 traits, then we will end up with 100 rows
-    for (i in 1:nrow(cfgChar)) {
+    for (i in seq_len(nrow(cfgChar))) {
       
       # create a temporary dataframe which is a copy of df
       # df is our data frame containing all the columns we want EXCEPT for the trait data itself
