@@ -63,7 +63,7 @@ processData <- function(DATASET_ID, data, cfgDataset, cfgVarNames, cfgChar, cfgL
   
   # all varNamesIn must exist in dataset, if not then we need to stop and fix the problem
   if (length(setdiff(varNamesIn, colnames(data)) != 0)) {
-    stop(setdiff(varNamesIn, colnames(data)))
+    stop(paste0("\nVariable '", setdiff(varNamesIn, colnames(data)), "' from data.csv not found in configVarnames"))
   }
   
   # create temporary dataframe with data for vars that we want to keep (and that exist in the dataset) and set to correct varnames
