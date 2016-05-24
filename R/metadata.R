@@ -1,7 +1,7 @@
 read_data_raw_import_options <- function(filename) {
   tmp <- read_csv(filename, header=FALSE, row.names=1)
   opts <- structure(as.list(tmp[[1]]), names=rownames(tmp))
-  
+
   import <- modifyList(list(na.strings="NA"), opts)
 
   ## Then some processing:
@@ -9,7 +9,7 @@ read_data_raw_import_options <- function(filename) {
   import$skip <- as.integer(import$skip)
   import$na.strings <- union("NA", import$na.strings)
 
-  import  
+  import
 }
 
 read_methods <- function(filename_columns, variable_definitions) {
