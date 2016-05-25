@@ -81,22 +81,26 @@ is_at_least <- function(value) {
 }
 
 
-#' Test for UTF-8 characters
+#' Test for non ascii characters
 #' This test will check every column in a data.frame for possible unicode characters.
 #' Inspired by https://github.com/ropensci/testdat/blob/master/R/test_utf8.R
-is_ascii <- function() {
+is_allowed_text <- function() {
   function(dat) {
+    bad <- FALSE
     if(length(dat) > 0 ) {
-      utf8 <- simplify2array(lapply(dat,non_ascii))
-    } else {
-      utf8 <- FALSE
+      bad <- simplify2array(lapply(dat,disallowed_chars))
     }
-#    if(any(utf8)) browser()
-    testthat::expectation(any(utf8) == FALSE,  sprintf("UTF-8 characters detected: %s", paste0(dat[which(utf8)], collapse = " ")))
+    testthat::expectation(any(bad) == FALSE,  sprintf("Disallowed characters detected: %s", paste0(dat[which(bad)], collapse = " ")))
   }
 }
 
-non_ascii <- function(x) {
-  any(charToRaw(x) > 0x7F)
+disallowed_chars <- function(x) {
+  i <- charToRaw(x)
+  # allow all ascii text
+  is_ascii <- i < 0x7F
+  # allow some utf8 characters, those with accents over letters for foreign names
+  # list of codes is here: http://www.utf8-chartable.de/
+  # note c3 is needed because this is prefix for allowed UTF8 chars
+  is_allowed <- (0x80 < i & i < 0xbf | i == 0xc3)
+  any(!(is_ascii | is_allowed))
 }
-
