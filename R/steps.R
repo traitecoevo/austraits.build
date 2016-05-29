@@ -4,12 +4,15 @@ load_study <- function(filename_data_raw,
                        filename_configPlantCharacters,
                        filename_configLookups,
                        filename_metadata,
-                       variable_definitions
+                       definitions_data,
+                       definitions_traits
                        # conversions
                        ) {
 
   # read metadata
   metadata <- read_csv(filename_metadata)
+  for(v  in names(metadata))
+    metadata[[v]] <- as.character(metadata[[v]])
 
   data <- read_data_study(filename_data_raw,
                           filename_data_config,
@@ -17,14 +20,15 @@ load_study <- function(filename_data_raw,
                           filename_configPlantCharacters,
                           filename_configLookups,
                           metadata,
-                          variable_definitions
+                          definitions_data,
+                          definitions_traits
                           # conversions
                           )
 
   key <- basename(dirname(filename_data_raw))
   # bibentry <- set_bib_key(bibtex::read.bib(filename_bib), key)
 
-  # methods  <- read_methods(filename_columns, variable_definitions)
+  # methods  <- read_methods(filename_columns, definitions_data)
   # contacts <- read_csv(filename_contact)
   # metadata <- read_csv(filename_metadata)
 
@@ -44,52 +48,34 @@ read_data_study <- function(filename_data_raw,
                             filename_configPlantCharacters,
                             filename_configLookups,
                             metadata,
-                            # filename_manipulate,
-                            # filename_columns,
-                            # filename_new_data,
-                            variable_definitions
-                            # conversions
+                            definitions_data,
+                            definitions_traits
                             ) {
 
-  DATASET_ID <- basename(dirname(filename_data_raw)) #getConfig(cfgDataset, "dataset_id")
+  dataset_id <- basename(dirname(filename_data_raw))
 
-  # config data for datasets names
+  # Load configuration files
   cfgDataset <- read_csv(filename_data_config)
-
-  # config data for variable names
   cfgVarNames <- read_csv(filename_configVarnames)
-
-  # config data for plant characters -
   cfgChar <- read_csv(filename_configPlantCharacters)
-
-  # config data for lookups
   cfgLookup <- read_csv(filename_configLookups)
 
+  # data processing
   data <- read_csv(filename_data_raw)
+  data <- parse_data(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLookup, metadata$dataset_num[1])
+  data <- add_all_columns(data, definitions_data)
+  data <- fix_types(data, definitions_data)
+  #data <- convert_data(data, filename_columns, definitions_data, conversions)
 
-  data <- processData(DATASET_ID, data, cfgDataset, cfgVarNames, cfgChar, cfgLookup, metadata)
+  # # get character lookup values where necessary
+  # out$lookup <- mapply(function(x, y) {
+  #   # for each value of each character: get lookup corresponding to the value
+  #   as.character(cfgLookup$value[cfgLookup$character == x & cfgLookup$lookup == y][1])
+  # }, out$character, out$value, SIMPLIFY = TRUE)
 
-  i <- nrow(variable_definitions)
-  # data <- convert_data(data, filename_columns, variable_definitions, conversions)
-  # data <- add_all_columns(data, variable_definitions)
   # data <- add_new_data(data, filename_new_data)
-  # data <- fix_types(data, variable_definitions)
   # data <- post_process(data)
   data
-}
-
-
-## If the `dataManipulate.R` file is present within a study's data
-## directory, it must contain the function `manipulate`.  Otherwise we
-## return the identity function to indicate no manipulations will be
-## done.  The function must take a data.frame as an argument and
-## return one as the return value, but this is not checked at present.
-##
-## TODO: This needs modifying to deal with scoping issues more
-## carefully.
-manipulate_data <- function(data, filename_manipulate) {
-  manipulate <- get_function_from_source("manipulate", filename_manipulate)
-  manipulate(data)
 }
 
 ## Convert data to desired format, changing units, variable names
@@ -123,16 +109,16 @@ convert_data <- function(data, filename_columns, variable_definitions, conversio
 ##
 ## May add or remove columns of data as needed so that all sets have
 ## the same columns.
-add_all_columns <- function(data, variable_definitions) {
+add_all_columns <- function(data, info) {
   na_vector <- function(type, n) {
     rep(list(character=NA_character_, numeric=NA_real_)[[type]], n)
   }
 
-  info <- column_info(variable_definitions)
   missing <- setdiff(info$variable, names(data))
   if (length(missing) != 0) {
-    extra <- as.data.frame(lapply(info$type[missing], na_vector, nrow(data)),
+    extra <- as.data.frame(lapply(info$type[info$variable==missing], na_vector, nrow(data)),
                            stringsAsFactors = FALSE)
+    names(extra) <- missing
     data <- cbind(data[names(data) %in% info$variable], extra)
   } else {
     data <- data[names(data) %in% info$variable]
@@ -179,4 +165,122 @@ fix_types <- function(data, variable_definitions) {
     data[[v]] <- match.fun(paste0("as.", var_def$type[i]))(data[[v]])
   }
   data
+}
+
+# gets config value for given key value, use this for configDataset only (use for configDataset.csv only)
+# cfg: dataframe containing config data
+# key: the key for which we want the value to be returned
+get_config <- function(cfg, key) {
+  cfg$value[cfg$key == key]
+}
+
+# processes a single dataset
+parse_data <- function(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLookup, dataset_num) {
+
+  # get config data for dataset
+  dataset_header <- get_config(cfgDataset, "header")
+  dataset_skip <- as.numeric(get_config(cfgDataset, "skip"))
+  dataset_vert <- get_config(cfgDataset, "plant_char_vertical")
+
+  # remove metadata_id and project_source_id, if they exist
+  for(v in  intersect(c("metadata_id", "primary_source_id"), colnames(data))) {
+    data[[v]] <- NULL
+  }
+  # skip (remove) rows from top of dataset as specified in dataset config
+  if (dataset_skip > 0)
+    data <- data[-dataset_skip, ]
+
+  # all cfgVarNames$var_in must exist in dataset, if not then we need to stop and fix the problem
+  if (any(!cfgVarNames$var_in %in% colnames(data))) {
+    stop(paste0("\nVariable '", setdiff(cfgVarNames$var_in, colnames(data)), "' from data.csv not found in configVarnames"))
+  }
+
+  # create dataframe with data for vars that we want to keep, and set to correct varnames
+  df <- rename_columns(data[, cfgVarNames$var_in, drop=FALSE], cfgVarNames$var_in, cfgVarNames$var_out)
+
+  # correct site names if necessary, remove dataset_id appended to end (e.g. "Agnes Banks_2")
+  # in some cases these numbers were added manually by RVG to site names in the raw data
+  if ("site_name" %in% colnames(df)) {
+
+    # get old dataset number - need this to trim the number from the end of site names in some cases (was added previously by RVG)
+    regex <- paste0("_", dataset_num, "$")
+
+    df$site_name <- sapply(df$site_name, function(x) {
+      # get position of, e.g., "_2" in site name
+      # NOTE: this throws a warning for some reason, saying the pattern has length > 1. Not sure why, doesn't seem to matter.
+      pos <- suppressWarnings(unlist(regexpr(regex, x)))
+      # if "_2" (or whatever) doesn't appear in site name then just return the site name
+      # otherwise return the corrected site name with "_2" (or whatever) removed
+      if (is.na(pos) | pos == -1) {
+        return(x)
+      } else {
+        return(substr(x, 1, pos - 1))
+      }
+    })
+  }
+
+  # check that the trait names as specified in config actually exist in data
+  # if not then we need to stop and fix this problem
+  # NOTE - only need to do this step for wide (non-vertical) data
+  if (dataset_vert == FALSE & any(! cfgChar[["var_name"]] %in% colnames(data))) {
+    stop(paste(dataset_id, ": missing traits: ", setdiff(cfgChar[["var_name"]], colnames(data))))
+  }
+
+  ## if needed, change from wide to long style
+  if (dataset_vert == FALSE) {
+    # if the dataset is "wide" then process each variable in turn, to create the "long" dataset -
+    # say the original dataset has 20 rows of data and 5 traits, then we will end up with 100 rows
+    out <- list()
+    for (i in seq_len(nrow(cfgChar))) {
+      # create a temporary dataframe which is a copy of df
+      # df is our data frame containing all the columns we want EXCEPT for the trait data itself
+      out[[i]] <- df
+      # to x we append columns of data for character name, unit and value (the latter is retrieved from the data)
+      out[[i]][["character"]] <- cfgChar[["var_name"]][i]
+      out[[i]][["value"]] <- as.character(data[[cfgChar[["var_name"]][i]]])
+    }
+    out <- dplyr::bind_rows(out)
+  } else {
+    out <- df
+    out[["value"]] <- as.character(out[["value"]])
+  }
+
+  # Now process any name changes as per configPlantCharacters
+  out[["unit"]] <- NA_character_
+  i <- match(out[["character"]], cfgChar[["var_name"]])
+  if(length(i) >0 ) {
+    j <- !is.na(i)
+    out[["unit"]][j] <- cfgChar[["unit"]][i[j]]
+    out[["character"]][j] <- cfgChar[["character"]][i[j]]
+  }
+
+  out[["study"]] = dataset_id
+  out
+}
+
+
+combine_austraits <- function(..., d=list(...), variable_definitions, compiler_contacts) {
+  combine <- function(name, d) {
+    dplyr::bind_rows(lapply(d, "[[", name))
+  }
+
+  names(d) <- sapply(d, "[[", "key")
+
+  ret <- list(data=combine("data", d),
+              # methods=combine("methods", d),
+              # contacts=rbind.fill(combine("contacts", d),
+              #   data.frame(studyName="austraits_construction", compiler_contacts)),
+              # references=combine("references", d),
+              metadata=combine("metadata", d)
+  )
+
+#  ret$bibtex <- do.call("c", unname(lapply(d, "[[", "bibtex")))
+#  ret$dictionary <- variable_definitions
+  ret
+}
+
+## Functions for extracting bits from austraits.  Works around some of the
+## limitations in how I wrote remake.
+extract_austraits_data <- function(austraits) {
+  austraits$data
 }

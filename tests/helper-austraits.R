@@ -6,7 +6,7 @@ study_names <- file.path("..", "data", keys)
 
 tmp <- lapply(list.files("../R", full.names=TRUE), source)
 
-variable_definitions <- read_csv("../config/variableDefinitions.csv")
+variable_definitions <- read_csv("../config/definitions_traits.csv")
 
 
 ## New expect_that helper functions; test that a number is in a range,

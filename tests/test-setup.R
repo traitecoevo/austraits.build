@@ -65,7 +65,7 @@ for (s in study_names) {
     x[!x%in% c("-", "metadata_id","primary_source_id")]
   }
   ## Check headers in data
-  if(getConfig(configDataset, "plant_char_vertical")) {
+  if(get_config(configDataset, "plant_char_vertical")) {
     expect_that(f(configPlantVarNames[["var_in"]]), isin(names(data)), info=s)
   } else {
     expect_that(f(configPlantCharacters[["var_name"]]), isin(names(data)), info=s)

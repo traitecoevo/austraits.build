@@ -61,9 +61,3 @@ format_citation <- function(bibentry) {
   }
   citation
 }
-
-column_info <- function(variable_definitions) {
-  ret <- as.list(variable_definitions[c("variable", "type", "units")])
-  names(ret$type) <- names(ret$units) <- ret$variable
-  ret
-}
