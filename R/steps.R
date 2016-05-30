@@ -5,8 +5,8 @@ load_study <- function(filename_data_raw,
                        filename_configLookups,
                        filename_metadata,
                        definitions_data,
-                       definitions_traits
-                       # conversions
+                       definitions_traits,
+                       unit_conversion_functions
                        ) {
 
   # read metadata
@@ -21,8 +21,8 @@ load_study <- function(filename_data_raw,
                           filename_configLookups,
                           metadata,
                           definitions_data,
-                          definitions_traits
-                          # conversions
+                          definitions_traits,
+                          unit_conversion_functions
                           )
 
   key <- basename(dirname(filename_data_raw))
@@ -49,7 +49,8 @@ read_data_study <- function(filename_data_raw,
                             filename_configLookups,
                             metadata,
                             definitions_data,
-                            definitions_traits
+                            definitions_traits,
+                            unit_conversion_functions
                             ) {
 
   dataset_id <- basename(dirname(filename_data_raw))
@@ -64,8 +65,8 @@ read_data_study <- function(filename_data_raw,
   data <- read_csv(filename_data_raw)
   data <- parse_data(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLookup, metadata$dataset_num[1])
   data <- add_all_columns(data, definitions_data)
-  data <- fix_types(data, definitions_data)
-  #data <- convert_data(data, filename_columns, definitions_data, conversions)
+  data <- drop_unsupported(data, definitions_traits)
+  data <- convert_units(data, definitions_traits, unit_conversion_functions)
 
   # # get character lookup values where necessary
   # out$lookup <- mapply(function(x, y) {
@@ -78,31 +79,71 @@ read_data_study <- function(filename_data_raw,
   data
 }
 
-## Convert data to desired format, changing units, variable names
-convert_data <- function(data, filename_columns, variable_definitions, conversions) {
-  var_match <- read_match_columns(filename_columns)
 
-  data <- rename_columns(data, var_match$var_in, var_match$var_out)
+## Remove any traits that are not correctly defined and provide a warning
+drop_unsupported <- function(data, definitions_traits) {
+  i <- data$character %in% definitions_traits$variable
 
-  info <- column_info(variable_definitions)
+  if(any(!i)) {
+    message(sprintf("unsupported variable dropped: %s", paste(unique(data$character[!i]), collapse=", ")))
+  }
+  data[i,]
+}
 
-  ## Change units
-  to_check <- intersect(names(data), var_match$var_out)
-  to_check <- to_check[info$type[to_check] == "numeric"]
+make_unit_conversion_functions <- function(filename) {
+  x <- read_csv(filename)
 
-  for (col in to_check) {
-    unit_from <- var_match$unit_in[match(col, var_match$var_out)[[1]]]
-    unit_to <- info$units[[col]]
-    if (unit_from != unit_to) {
-      ## TODO: This is absolutely horrible and should change.
-      x <- data[[col]]
-      i <- (conversions$unit_in == unit_from &
-            conversions$unit_out == unit_to)
-      data[[col]] <- eval(parse(text=conversions$conversion[i]))
-    }
+  # make functions from text
+  fs <- lapply(x[["function"]], function(x) {
+                                  my_f <- function(x) {}
+                                  body(my_f) <- parse(text = x)
+                                  my_f})
+  names(fs) <- unit_conversion_name(x[["unit_from"]], x[["unit_to"]])
+  fs
+}
+
+unit_conversion_name <- function(from, to) {sprintf("%s-%s", from, to)}
+
+## Convert units to desired type
+convert_units <- function(data, info, unit_conversion_functions) {
+
+  # List of original variable names
+  vars <- names(data)
+
+  # Look up ideal units, determine whether to convert
+  data <- mutate(data,
+      i = match(character, info[["variable"]]),
+      to = info[["units"]][i],
+      ucn = unit_conversion_name(unit, to),
+      type = info[["type"]][i],
+      to_convert =  type == "numeric" & unit != to)
+
+  # Mark anything problematic as not for conversion, wipe values and set as NA
+  # TODO: should these rows just be dropped? Could do that but also not that much of
+  # a problem, as will get culled during review.
+  j <- is.na(data[["to_convert"]]) |
+        data[["to_convert"]] & !data[["ucn"]] %in% names(unit_conversion_functions)
+
+  if(any(j)) {
+    message(sprintf("records set to NA because of missing unit conversions: %s", paste(
+      unique(data[["ucn"]][j]), collapse=", ")))
+    data[["to_convert"]][j] <- FALSE
+    data[["value"]][j] <- NA
+    data[["unit"]][j] <- NA
   }
 
-  data
+  f <- function(value, name) {
+    as.character(unit_conversion_functions[[name]](as.numeric(value)))
+  }
+
+  # Split by unique unit conversions, to allow for as few calls as possible
+  data %>%
+    group_by(ucn) %>%
+    mutate(
+      value = ifelse(to_convert, f(value, ucn[1]), value),
+      unit = ifelse(to_convert, to, unit)) %>%
+    ungroup() %>%
+    select(one_of(vars))
 }
 
 ## Standardise data columns to match standard template.
