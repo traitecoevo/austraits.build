@@ -40,7 +40,7 @@ for (s in study_names) {
   expect_that(unlist(data), is_allowed_text(), info = f)
   expect_that(data, is_a("data.frame"), info = f)
   expect_that(names(data), equals(c("var_name","character","unit")), info=f)
-#  expect_that(data[["character"]], isin(variable_definitions[["variable"]]), info=f)
+  expect_that(data[["character"]], isin(variable_definitions[["variable"]]), info=f)
   configPlantCharacters <- data
 
   # configPlantVarNames.csv

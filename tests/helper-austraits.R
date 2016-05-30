@@ -12,8 +12,10 @@ variable_definitions <- read_csv("../config/definitions_traits.csv")
 ## New expect_that helper functions; test that a number is in a range,
 ## or that a range contains a number.
 
-isin <- function(my_list) {
+isin <- function(my_list, na.rm=TRUE) {
   function(values) {
+    if(na.rm)
+      values <- values[!is.na(values)]
     i <- values %in% my_list
    testthat::expectation(all(i),
                           paste("should not contain:", paste(values[!i], collapse= ", ")))
