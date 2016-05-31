@@ -71,8 +71,8 @@ read_data_study <- function(filename_data_raw,
   # # get character lookup values where necessary
   # out$lookup <- mapply(function(x, y) {
   #   # for each value of each character: get lookup corresponding to the value
-  #   as.character(cfgLookup$value[cfgLookup$character == x & cfgLookup$lookup == y][1])
-  # }, out$character, out$value, SIMPLIFY = TRUE)
+  #   as.character(cfgLookup$value[cfgLookup[["trait_name"]] == x & cfgLookup$lookup == y][1])
+  # }, out[["trait_name"]], out$value, SIMPLIFY = TRUE)
 
   # data <- add_new_data(data, filename_new_data)
   # data <- post_process(data)
@@ -82,10 +82,10 @@ read_data_study <- function(filename_data_raw,
 
 ## Remove any traits that are not correctly defined and provide a warning
 drop_unsupported <- function(data, definitions_traits) {
-  i <- data$character %in% definitions_traits$variable
+  i <- data[["trait_name"]] %in% definitions_traits[["trait_name"]]
 
   if(any(!i)) {
-    message(sprintf("unsupported variable dropped: %s", paste(unique(data$character[!i]), collapse=", ")))
+    message(sprintf("unsupported variable dropped: %s", paste(unique(data[["trait_name"]][!i]), collapse=", ")))
   }
   data[i,]
 }
@@ -112,7 +112,7 @@ convert_units <- function(data, info, unit_conversion_functions) {
 
   # Look up ideal units, determine whether to convert
   data <- mutate(data,
-      i = match(character, info[["variable"]]),
+      i = match(trait_name, info[["trait_name"]]),
       to = info[["units"]][i],
       ucn = unit_conversion_name(unit, to),
       type = info[["type"]][i],
@@ -155,16 +155,16 @@ add_all_columns <- function(data, info) {
     rep(list(character=NA_character_, numeric=NA_real_)[[type]], n)
   }
 
-  missing <- setdiff(info$variable, names(data))
+  missing <- setdiff(info[["variable"]], names(data))
   if (length(missing) != 0) {
-    extra <- as.data.frame(lapply(info$type[info$variable==missing], na_vector, nrow(data)),
+    extra <- as.data.frame(lapply(info$type[info[["variable"]]==missing], na_vector, nrow(data)),
                            stringsAsFactors = FALSE)
     names(extra) <- missing
-    data <- cbind(data[names(data) %in% info$variable], extra)
+    data <- cbind(data[names(data) %in% info[["variable"]]], extra)
   } else {
-    data <- data[names(data) %in% info$variable]
+    data <- data[names(data) %in% info[["variable"]]]
   }
-  data[info$variable]
+  data[info[["variable"]]]
 }
 
 ## Modifies data by adding new values from table studyName/dataNew.csv
@@ -276,8 +276,8 @@ parse_data <- function(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLo
       # create a temporary dataframe which is a copy of df
       # df is our data frame containing all the columns we want EXCEPT for the trait data itself
       out[[i]] <- df
-      # to x we append columns of data for character name, unit and value (the latter is retrieved from the data)
-      out[[i]][["character"]] <- cfgChar[["var_name"]][i]
+      # to x we append columns of data for trait_name, unit and value (the latter is retrieved from the data)
+      out[[i]][["trait_name"]] <- cfgChar[["var_name"]][i]
       out[[i]][["value"]] <- as.character(data[[cfgChar[["var_name"]][i]]])
     }
     out <- dplyr::bind_rows(out)
@@ -288,11 +288,11 @@ parse_data <- function(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLo
 
   # Now process any name changes as per configPlantCharacters
   out[["unit"]] <- NA_character_
-  i <- match(out[["character"]], cfgChar[["var_name"]])
+  i <- match(out[["trait_name"]], cfgChar[["var_name"]])
   if(length(i) >0 ) {
     j <- !is.na(i)
     out[["unit"]][j] <- cfgChar[["unit"]][i[j]]
-    out[["character"]][j] <- cfgChar[["character"]][i[j]]
+    out[["trait_name"]][j] <- cfgChar[["trait_name"]][i[j]]
   }
 
   out[["study"]] = dataset_id
