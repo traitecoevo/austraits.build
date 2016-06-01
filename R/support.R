@@ -15,6 +15,11 @@ rename_columns <- function(obj, from, to) {
   obj
 }
 
+ensure_as_character <- function(data) {
+  for(v  in names(data))
+    data[[v]] <- as.character(data[[v]])
+  data
+}
 
 ## Hack work around to change key in bib entry (bibtex entry
 ## redefines '[' and/or '[[' in ways that cause nothing but grief)

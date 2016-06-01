@@ -4,15 +4,15 @@ load_study <- function(filename_data_raw,
                        filename_configPlantCharacters,
                        filename_configLookups,
                        filename_metadata,
+                       filename_context,
                        definitions_data,
                        definitions_traits,
+                       definitions_context,
                        unit_conversion_functions
                        ) {
 
   # read metadata
-  metadata <- read_csv(filename_metadata)
-  for(v  in names(metadata))
-    metadata[[v]] <- as.character(metadata[[v]])
+  metadata <- ensure_as_character(read_csv(filename_metadata))
 
   data <- read_data_study(filename_data_raw,
                           filename_data_config,
@@ -25,7 +25,18 @@ load_study <- function(filename_data_raw,
                           unit_conversion_functions
                           )
 
+
   key <- basename(dirname(filename_data_raw))
+
+  # read context data
+  context <- read_csv(filename_context)
+
+  if(nrow(context) >0)
+    context <- data.frame(dataset_id = key, context)
+
+  context <- add_all_columns(context, definitions_context)
+  context <- fix_types(context, definitions_context)
+
   # bibentry <- set_bib_key(bibtex::read.bib(filename_bib), key)
 
   # methods  <- read_methods(filename_columns, definitions_data)
@@ -34,7 +45,8 @@ load_study <- function(filename_data_raw,
 
   list(key        = key,
        data       = data,
-       metadata   = metadata)
+       metadata   = metadata,
+       context    = context)
        # methods    = methods,
        # bibtex     = bibentry,
        # contacts   = contacts,
@@ -291,8 +303,9 @@ combine_austraits <- function(..., d=list(...), variable_definitions, compiler_c
               # contacts=rbind.fill(combine("contacts", d),
               #   data.frame(studyName="austraits_construction", compiler_contacts)),
               # references=combine("references", d),
-              metadata=combine("metadata", d)
-  )
+              metadata=combine("metadata", d),
+              context=combine("context", d)
+              )
 
 #  ret$bibtex <- do.call("c", unname(lapply(d, "[[", "bibtex")))
 #  ret$dictionary <- variable_definitions

@@ -1,7 +1,5 @@
 
-config_files <- c("configDataset.csv","configLookups.csv","configPlantCharacters.csv","configPlantVarNames.csv","data.csv","metadata.csv")
-
-      #"configSiteCharacters.csv","configSiteDataVarNames.csv","configSiteVarNames.csv", "site_data.csv
+config_files <- c("configDataset.csv","configLookups.csv","configPlantCharacters.csv","configPlantVarNames.csv","data.csv","metadata.csv", "context.csv")
 
 for (s in study_names) {
 
@@ -21,7 +19,7 @@ for (s in study_names) {
   expect_allowed_text(unlist(data), info = f)
   expect_is(data, "data.frame", info = f)
   expect_named(data, c("key","value"), info=f)
-  vals <- c("plant_data_filename","site_data_filename","header","skip","plant_char_vertical","site_char_vertical","process_plant_char","process_site_char","process_site_data")
+  vals <- c("plant_data_filename","header","skip","plant_char_vertical","process_plant_char")
   expect_contains(data[["key"]], vals, info=f)
   configDataset <- data
 
@@ -79,5 +77,15 @@ for (s in study_names) {
   expect_is(data, "data.frame", info = f)
   vals <- c("dataset_id","dataset_num","metadata_id","primary_source_id","source_access","compiled_for","data_contributor","contributor_institution_2016","year_collected","primary_data_collector","data_collector_institution_2016","primary_lab_leader_when_collected","primary_lab_leader_institution","data_description","collection_type","sample_age_class","original_file","need_further_checking","notes")
   expect_contains(names(data), vals, info=f)
+
+  # metadata.csv
+  f <- files[7]
+  data <- read_csv(f)
+  expect_allowed_text(colnames(data), info = f)
+  expect_allowed_text(unlist(data), info = f)
+  expect_is(data, "data.frame", info = f)
+  vals <- c("site_name","trait_name","unit","value","notes")
+  expect_contains(names(data), vals, info=f)
+
   })
 }
