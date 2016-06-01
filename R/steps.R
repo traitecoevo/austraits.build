@@ -239,27 +239,6 @@ parse_data <- function(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLo
   # create dataframe with data for vars that we want to keep, and set to correct varnames
   df <- rename_columns(data[, cfgVarNames$var_in, drop=FALSE], cfgVarNames$var_in, cfgVarNames$var_out)
 
-  # correct site names if necessary, remove dataset_id appended to end (e.g. "Agnes Banks_2")
-  # in some cases these numbers were added manually by RVG to site names in the raw data
-  if ("site_name" %in% colnames(df)) {
-
-    # get old dataset number - need this to trim the number from the end of site names in some cases (was added previously by RVG)
-    regex <- paste0("_", dataset_num, "$")
-
-    df$site_name <- sapply(df$site_name, function(x) {
-      # get position of, e.g., "_2" in site name
-      # NOTE: this throws a warning for some reason, saying the pattern has length > 1. Not sure why, doesn't seem to matter.
-      pos <- suppressWarnings(unlist(regexpr(regex, x)))
-      # if "_2" (or whatever) doesn't appear in site name then just return the site name
-      # otherwise return the corrected site name with "_2" (or whatever) removed
-      if (is.na(pos) | pos == -1) {
-        return(x)
-      } else {
-        return(substr(x, 1, pos - 1))
-      }
-    })
-  }
-
   # check that the trait names as specified in config actually exist in data
   # if not then we need to stop and fix this problem
   # NOTE - only need to do this step for wide (non-vertical) data
