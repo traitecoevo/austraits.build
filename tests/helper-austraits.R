@@ -8,92 +8,56 @@ tmp <- lapply(list.files("../R", full.names=TRUE), source)
 
 variable_definitions <- read_csv("../config/definitions_traits.csv")
 
+make_label <- testthat:::make_label
 
 ## New expect_that helper functions; test that a number is in a range,
 ## or that a range contains a number.
 
-isin <- function(my_list, na.rm=TRUE) {
-  function(values) {
-    if(na.rm)
-      values <- values[!is.na(values)]
-    i <- values %in% my_list
-   testthat::expectation(all(i),
-                          paste("should not contain:", paste(values[!i], collapse= ", ")))
-  }
-}
+expect_isin <- function(object, expected, ..., info = NULL, label = NULL,
+                         expected.label = NULL, na.rm=TRUE) {
 
-contains <- function(my_list) {
-  function(values) {
-    i <- my_list %in% values
-   # if(!all(i)) browser()
-   testthat::expectation(all(i),
-                          paste("does not contain: ", paste(my_list[!i], collapse= ",")))
-  }
-}
+  if(na.rm)
+    object <- object[!is.na(object)]
+  i <- object %in% expected
 
-is_within_interval <- function(lower, upper) {
-  if ( missing(upper) && length(lower) == 2 ) {
-    upper <- lower[[2]]
-    lower <- lower[[1]]
-  }
-  if (lower >= upper) {
-    stop("lower must be smaller than upper")
-  }
-  err <- paste0("is not within range [", lower, ", ", upper, "]")
-  function(actual) {
-    testthat::expectation(actual > lower && actual < upper, err)
-  }
-}
+  comp <- compare(all(i), TRUE, ...)
+  expect(
+    comp$equal,
+    sprintf("%s - should not contain: %s", info, paste(object[!i], collapse= ", "))
+  )
 
-inrange <- function(value) {
-  function(range) {
-    if (length(range) != 2L) {
-      stop("Expected a vector of length 2")
-    }
-    if (range[[1]] >= range[[2]]) {
-      stop("Expected that range[1] is smaller than range[2]")
-    }
-    testthat::expectation(value > range[[1]] && value < range[[2]],
-                          paste("does not contain", value))
-  }
-}
-
-is_greater_than <- function(value) {
-  function(actual) {
-    testthat::expectation(actual > value, paste("is not greater than", value))
-  }
-}
-
-is_less_than <- function(value) {
-  function(actual) {
-    testthat::expectation(actual < value, paste("is not less than", value))
-  }
-}
-
-is_at_most <- function(value) {
-  function(actual) {
-    testthat::expectation(actual <= value, paste("is greater than", value))
-  }
-}
-
-is_at_least <- function(value) {
-  function(actual) {
-    testthat::expectation(actual >= value, paste("is less than", value))
-  }
+  invisible(object)
 }
 
 
-#' Test for non ascii characters
-#' This test will check every column in a data.frame for possible unicode characters.
-#' Inspired by https://github.com/ropensci/testdat/blob/master/R/test_utf8.R
-is_allowed_text <- function() {
-  function(dat) {
-    bad <- FALSE
-    if(length(dat) > 0 ) {
-      bad <- simplify2array(lapply(dat,disallowed_chars))
-    }
-    testthat::expectation(any(bad) == FALSE,  sprintf("Disallowed characters detected: %s", paste0(dat[which(bad)], collapse = " ")))
+
+expect_contains <- function(object, expected, ..., info = NULL, label = NULL,
+                         expected.label = NULL) {
+
+ i <- expected %in% object
+
+  comp <- compare(all(i), TRUE, ...)
+  expect(
+    comp$equal,
+    sprintf("%s - does not contain: %s", info, paste(expected[!i], collapse= ", "))
+  )
+
+  invisible(object)
+}
+
+expect_allowed_text <- function(object, info = NULL, label = NULL) {
+
+  allowed <- TRUE
+  if(length(object) > 0 ) {
+    allowed <- !simplify2array(lapply(object,disallowed_chars))
   }
+
+  expect(
+    identical(as.vector(all(allowed)), TRUE),
+    sprintf("%s -- disallowed characters detected: %s", info, paste0(object[which(!allowed)], collapse = " ")),
+    info = info
+  )
+  invisible(object)
 }
 
 disallowed_chars <- function(x) {
