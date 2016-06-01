@@ -31,7 +31,7 @@ for (s in study_names) {
   expect_that(colnames(data), is_allowed_text(), info = f)
   expect_that(unlist(data), is_allowed_text(), info = f)
   expect_that(data, is_a("data.frame"), info = f)
-  expect_that(names(data), equals(c("character","lookup","value")), info=f)
+  expect_that(names(data), equals(c("trait_name","lookup","value")), info=f)
 
   # configPlantCharacters.csv
   f <- files[3]
@@ -39,8 +39,8 @@ for (s in study_names) {
   expect_that(colnames(data), is_allowed_text(), info = f)
   expect_that(unlist(data), is_allowed_text(), info = f)
   expect_that(data, is_a("data.frame"), info = f)
-  expect_that(names(data), equals(c("var_name","character","unit")), info=f)
-  expect_that(data[["character"]], isin(variable_definitions[["variable"]]), info=f)
+  expect_that(names(data), equals(c("var_name","trait_name","unit")), info=f)
+  expect_that(data[["trait_name"]], isin(variable_definitions[["trait_name"]]), info=f)
   configPlantCharacters <- data
 
   # configPlantVarNames.csv
@@ -50,7 +50,7 @@ for (s in study_names) {
   expect_that(unlist(data), is_allowed_text(), info = f)
   expect_that(data, is_a("data.frame"), info = f)
   expect_that(names(data), equals(c("var_in","var_out")), info=f)
-  vals <- c("species_name", "site_name", "metadata_id","primary_source_id", "character", "unit", "value", "lookup")
+  vals <- c("species_name", "site_name", "metadata_id","primary_source_id", "trait_name", "unit", "value", "lookup")
   expect_that(data[["var_out"]], isin(vals), info=f)
   configPlantVarNames <- data
 
