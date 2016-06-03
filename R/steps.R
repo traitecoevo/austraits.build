@@ -286,6 +286,9 @@ parse_data <- function(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLo
     out[["trait_name"]][j] <- cfgChar[["trait_name"]][i[j]]
   }
 
+  # Drop any NA traits
+  out <- dplyr::filter(out, !is.na(trait_name))
+
   out[["study"]] = dataset_id
   out
 }
