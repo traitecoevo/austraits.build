@@ -7,4 +7,4 @@ keys <- dir("data")
 # To test single file
 #keys <- "dataset_004"
 
-testthat::test_dir("tests/")
+testthat::test_dir("tests/", reporter = RstudioReporter)

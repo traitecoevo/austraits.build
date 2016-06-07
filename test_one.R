@@ -3,4 +3,4 @@ library(testthat)
 
 keys <- commandArgs(TRUE)[1]
 
-testthat::test_dir("tests/")
+testthat::test_dir("tests/", reporter = RstudioReporter)
