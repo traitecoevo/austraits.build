@@ -43,13 +43,21 @@ expect_contains <- function(object, expected, ..., info = NULL, label = NULL,
   invisible(object)
 }
 
-expect_not_NA <- function (object, info = NULL, label = NULL)
-{
+expect_not_NA <- function (object, info = NULL, label = NULL) {
     lab <- make_label(object, label)
     i <- !is.na(object)
     comp <- compare(all(i), TRUE)
     expect(comp$equal,
             sprintf("%s - contains NAs: %s", info, lab))
+    invisible(object)
+}
+
+expect_unique <- function (object, info = NULL, label = NULL) {
+    x <- table(unlist(object))
+    i <- x==1
+    comp <- compare(all(i), TRUE)
+    expect(comp$equal,
+            sprintf("%s - not unique: %s", info, paste(names(x)[!i], collapse= ", ")))
     invisible(object)
 }
 
