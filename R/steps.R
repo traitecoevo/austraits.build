@@ -235,10 +235,6 @@ parse_data <- function(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLo
   dataset_skip <- as.numeric(get_config(cfgDataset, "skip"))
   dataset_vert <- get_config(cfgDataset, "plant_char_vertical")
 
-  # remove metadata_id and project_source_id, if they exist
-  for(v in  intersect(c("metadata_id", "primary_source_id"), colnames(data))) {
-    data[[v]] <- NULL
-  }
   # skip (remove) rows from top of dataset as specified in dataset config
   if (dataset_skip > 0)
     data <- data[-dataset_skip, ]
@@ -249,7 +245,9 @@ parse_data <- function(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLo
   }
 
   # create dataframe with data for vars that we want to keep, and set to correct varnames
-  df <- rename_columns(data[, cfgVarNames$var_in, drop=FALSE], cfgVarNames$var_in, cfgVarNames$var_out)
+  cfgVarNames <- filter(cfgVarNames, !is.na(var_out))
+  df <- data %>% select(one_of(cfgVarNames$var_in)) %>%
+      rename_columns(cfgVarNames$var_in, cfgVarNames$var_out)
 
   # check that the trait names as specified in config actually exist in data
   # if not then we need to stop and fix this problem

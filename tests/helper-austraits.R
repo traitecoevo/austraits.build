@@ -43,6 +43,16 @@ expect_contains <- function(object, expected, ..., info = NULL, label = NULL,
   invisible(object)
 }
 
+expect_not_NA <- function (object, info = NULL, label = NULL)
+{
+    lab <- make_label(object, label)
+    i <- !is.na(object)
+    comp <- compare(all(i), TRUE)
+    expect(comp$equal,
+            sprintf("%s - contains NAs: %s", info, lab))
+    invisible(object)
+}
+
 expect_allowed_text <- function(object, info = NULL, label = NULL) {
 
   allowed <- TRUE

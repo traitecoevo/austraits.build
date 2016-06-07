@@ -55,6 +55,7 @@ for (s in study_names) {
   # data.csv
   f <- files[5]
   data <- read_csv(f)
+  expect_not_NA(colnames(data), info = f)
   expect_allowed_text(colnames(data), info = f)
   expect_allowed_text(unlist(data), info = f)
   expect_is(data, "data.frame", info = f)
