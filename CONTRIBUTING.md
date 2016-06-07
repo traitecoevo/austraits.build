@@ -29,7 +29,7 @@ To contribute, please follow the steps below. It is important that all steps are
 	* `metadata.csv`: description of the metadata.
   * `context.csv`: description of site (contextual) variables.
 
-It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits/tree/master/data) and use it as a template for your own files and a guide on required content. You should also look at the files in the [config folder](https://github.com/traitecoevo/austraits/tree/master/config), in particular the `definitions` files.
+It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits/tree/master/data) and use it as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits/tree/master/config), in particular the `definitions` files for the list of traits we cover.
 
 ### Adding data to Austraits
 

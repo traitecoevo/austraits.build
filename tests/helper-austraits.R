@@ -29,8 +29,6 @@ expect_isin <- function(object, expected, ..., info = NULL, label = NULL,
   invisible(object)
 }
 
-
-
 expect_contains <- function(object, expected, ..., info = NULL, label = NULL,
                          expected.label = NULL) {
 

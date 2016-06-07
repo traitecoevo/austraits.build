@@ -61,8 +61,6 @@ The database contains the following elements
 
 These elements are available at both of the above links as a series of CSV and text files.
 
-
-
 ## Contributing data to Austraits
 
 We welcome further contributions to Austraits. If you would like to contribute data, the minimal requirements are
@@ -73,7 +71,7 @@ We welcome further contributions to Austraits. If you would like to contribute d
 
 See [these instructions](CONTRIBUTING.md) on how to prepare data.
 
-Once sufficient additional data has been contributed, we plan to submit an update to the first data paper, inviting as co authors anyone who has contributed since the first data paper.
+Once sufficient additional data has been contributed, we plan to submit an update to the first data paper, inviting as co-authors anyone who has contributed data.
 
 ## Acknowledgements
 

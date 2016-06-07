@@ -59,14 +59,24 @@ for (s in study_names) {
   expect_allowed_text(unlist(data), info = f)
   expect_is(data, "data.frame", info = f)
 
-  f <- function(x) {
-    x[!x%in% c("-", "metadata_id","primary_source_id")]
-  }
-  ## Check headers in data
+  ## Check config files contain all relevant columns
   if(get_config(configDataset, "plant_char_vertical")) {
-    expect_isin(f(configPlantVarNames[["var_in"]]), names(data), info=s)
+    # For vertical datasets, expect all columns present in configPlantVarNames
+    expect_equal(configPlantVarNames[["var_in"]], names(data), info=files[4])
+
+    # Expect all values of "trait column" found in configPlantCharacters
+    i <- match("trait_name", configPlantVarNames[["var_out"]])
+    values <- unique(data[[configPlantVarNames[["var_in"]][i]]])
+    expect_contains(configPlantCharacters[["var_name"]], values, info=files[3])
   } else {
-    expect_isin(f(configPlantCharacters[["var_name"]]), names(data), info=s)
+    # For wide datasets, expect all columns are either in configPlantVarNames or configPlantCharacters
+    # First check those in configPlantVarNames
+    values <- names(data)
+    expect_isin(configPlantCharacters[["var_name"]],values, info=files[3])
+    # Now remove values in configPlantVarNames and check remainder are in configPlantCharacters
+    values <- values[!is.na(values) & !values%in% configPlantVarNames[["var_in"]]]
+    expect_contains(configPlantCharacters[["var_name"]], values, info=files[3])
+    expect_equal(configPlantCharacters[["var_name"]], values, info=files[3])
   }
 
   # metadata.csv
@@ -78,7 +88,7 @@ for (s in study_names) {
   vals <- c("dataset_id","dataset_num","metadata_id","primary_source_id","source_access","compiled_for","data_contributor","contributor_institution_2016","year_collected","primary_data_collector","data_collector_institution_2016","primary_lab_leader_when_collected","primary_lab_leader_institution","data_description","collection_type","sample_age_class","original_file","need_further_checking","notes")
   expect_contains(names(data), vals, info=f)
 
-  # metadata.csv
+  # context.csv
   f <- files[7]
   data <- read_csv(f)
   expect_allowed_text(colnames(data), info = f)
