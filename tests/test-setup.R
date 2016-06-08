@@ -38,7 +38,6 @@ for (s in study_names) {
   configPlantCharacters <- read_csv(f)
   test_dataframe(configPlantCharacters,  c("var_name","trait_name","unit"), info=f)
   expect_isin(configPlantCharacters[["trait_name"]], variable_definitions[["trait_name"]], info=f)
-  expect_unique(configPlantCharacters[["trait_name"]], info=f)
 
   # configPlantVarNames.csv
   f <- files[4]
@@ -83,11 +82,6 @@ for (s in study_names) {
   f <- files[7]
   context <- read_csv(f)
   test_dataframe(context, c("site_name","trait_name","unit","value","notes"), info=f)
-
-  # configLookups.csv
-  f <- files[8]
-  configLookups <- read_csv(f)
-  test_dataframe(configLookups, c("trait_name","lookup","value"), info=f)
 
   })
 }
