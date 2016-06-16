@@ -32,6 +32,7 @@ for (s in study_names) {
   f <- files[2]
   configLookups <- read_csv(f)
   test_dataframe(configLookups, c("trait_name","lookup","value"), info=f)
+  expect_isin(unique(configLookups[["trait_name"]]), variable_definitions[["trait_name"]], info=f)
 
   # configPlantCharacters.csv
   f <- files[3]

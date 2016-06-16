@@ -8,6 +8,7 @@ load_study <- function(filename_data_raw,
                        definitions_data,
                        definitions_traits,
                        definitions_context,
+                       categorical_trait_constraints,
                        unit_conversion_functions
                        ) {
 
@@ -22,6 +23,7 @@ load_study <- function(filename_data_raw,
                           metadata,
                           definitions_data,
                           definitions_traits,
+                          categorical_trait_constraints,
                           unit_conversion_functions
                           )
 
@@ -62,6 +64,7 @@ read_data_study <- function(filename_data_raw,
                             metadata,
                             definitions_data,
                             definitions_traits,
+                            categorical_trait_constraints,
                             unit_conversion_functions
                             ) {
 
@@ -77,14 +80,8 @@ read_data_study <- function(filename_data_raw,
   data <- read_csv(filename_data_raw)
   data <- parse_data(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLookup, metadata$dataset_num[1])
   data <- add_all_columns(data, definitions_data)
-  data <- drop_unsupported(data, definitions_traits)
+  data <- drop_unsupported(data, definitions_traits, categorical_trait_constraints)
   data <- convert_units(data, definitions_traits, unit_conversion_functions)
-
-  # # get character lookup values where necessary
-  # out$lookup <- mapply(function(x, y) {
-  #   # for each value of each character: get lookup corresponding to the value
-  #   as.character(cfgLookup$value[cfgLookup[["trait_name"]] == x & cfgLookup$lookup == y][1])
-  # }, out[["trait_name"]], out$value, SIMPLIFY = TRUE)
 
   # data <- add_new_data(data, filename_new_data)
   # data <- post_process(data)
@@ -92,14 +89,32 @@ read_data_study <- function(filename_data_raw,
 }
 
 
-## Remove any traits that are not correctly defined and provide a warning
-drop_unsupported <- function(data, definitions_traits) {
+## Remove any disallowed traits or values and provide a warning
+drop_unsupported <- function(data, definitions_traits, categorical_trait_constraints) {
+
+  # Remove any traits not listed in config
   i <- data[["trait_name"]] %in% definitions_traits[["trait_name"]]
 
   if(any(!i)) {
-    message(sprintf("unsupported variable dropped: %s", paste(unique(data[["trait_name"]][!i]), collapse=", ")))
+    message(sprintf("unsupported trait dropped: %s", paste(unique(data[["trait_name"]][!i]), collapse=", ")))
   }
-  data[i,]
+  data <- data[i,]
+
+  # Remove any values of categorical traits not listed in definitions
+  i <- data[["trait_name"]] %in% names(categorical_trait_constraints)
+
+  if(any(i)) {
+    for(v in unique(data[["trait_name"]][i])) {
+      ii <-  !(data[["trait_name"]] == v & !data[["value"]] %in%  categorical_trait_constraints[[v]])
+
+      if(any(!ii)) {
+        message(sprintf("unsupported value of %s dropped: %s", v, paste(unique(data[["value"]][!ii]), collapse=", ")))
+      }
+      data <- data[ii,]
+    }
+  }
+
+  data
 }
 
 make_unit_conversion_functions <- function(filename) {
@@ -284,8 +299,15 @@ parse_data <- function(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLo
     out[["trait_name"]][j] <- cfgChar[["trait_name"]][i[j]]
   }
 
-  # Drop any NA traits
-  out <- dplyr::filter(out, !is.na(trait_name))
+  # Now process any name changes as per categorical_trait_constraints
+  for(i in seq_len(nrow(cfgLookup))) {
+    j <- which(out[["trait_name"]] == cfgLookup[["trait_name"]][i] &
+                out[["value"]] == cfgLookup[["lookup"]][i])
+    out[["value"]][j] <- cfgLookup[["value"]][i]
+  }
+
+  # Drop any NA trait or values
+  out <- dplyr::filter(out, !is.na(trait_name) & !is.na(value))
 
   out[["study"]] = dataset_id
   out
