@@ -30,15 +30,14 @@ format_data <- function(id) {
   study_traits_alldata <- data_all[data_all$trait_name %in% study_traits,] # and pull out all austraits data for those traits
   study_traits_alldata <- study_traits_alldata[!is.na(study_traits_alldata$value),]
   
-  #study_traits_alldata$seq <- with(study_traits_alldata, ave(value, species_name, trait_name, study, FUN = seq_along)) # adds a sequence number for multiple values within datasets so I can cast long to wide without aggregating
-  #study_traits_alldata_wide <- dcast(study_traits_alldata, seq + study + species_name ~ trait_name, value.var = 'value', fun.aggregate=function(x) as.character(x)[1])
-  
   # aggregate to mean vals per species/trait across all data
-  study_traits_alldata <- study_traits_alldata[!study_traits_alldata$study == id,]  # remove target dataset
+  #study_traits_alldata <- study_traits_alldata[!study_traits_alldata$study == id,]  # remove target dataset
   study_traits_alldata$value <- as.numeric(study_traits_alldata$value)
   
   study_traits_alldata <- ddply(study_traits_alldata, .(species_name, trait_name, unit), summarise, 
                                 trait_mean = mean(value), trait_CV = CV(value))
+  # study_traits_alldata <- study_traits_alldata[study_traits_alldata$trait_CV < 0.5,] # remove records with unrealistic intraspecific variation
+  study_traits_alldata <- study_traits_alldata[!is.na(study_traits_alldata$trait_mean),]
   study_traits_alldata_wide <- dcast(study_traits_alldata, species_name ~ trait_name, value.var = 'trait_mean', fun.aggregate=function(x) paste(x, collapse = ", "))
   study_traits_alldata_wide$target <- 'all data'
   
@@ -53,14 +52,14 @@ format_data <- function(id) {
   
   # put it all together
   all <- rbind(study_data_numeric_wide,study_traits_alldata_wide)
-  #all[,2:(ncol(all)-1)] <- lapply(all[,2:(ncol(all)-1)], as.numeric)
 
   if(ncol(all) > 3) { # lapply breaks if there's only one column to apply a function to
     all[,2:(ncol(all)-1)] <- lapply(all[,2:(ncol(all)-1)], as.numeric)
   } else {
-  #  all[,2:(ncol(all)-1)] <- as.numeric(all[,2:(ncol(all)-1)])
     all[,2] <- as.numeric(all[,2])
   }
+  
+  all$target <- as.factor(all$target)
 
   return(all)
    
@@ -68,7 +67,9 @@ format_data <- function(id) {
 
 
 pairwise_panel <- function(id) {
-
+  
+  if(ncol(all) > 3) {
+    
     id <- deparse(substitute(id))
     
     panel.hist <- function(x, ...)
@@ -83,53 +84,36 @@ pairwise_panel <- function(id) {
     
     col.rainbow <- rainbow(2:3)
     palette(col.rainbow)
-  
+    
     pairs(log10(all[,2:(ncol(all)-1)]), panel = panel.smooth,
           cex = 1, pch = 24, bg = all$target,
           diag.panel = panel.hist, cex.labels = 1, font.labels = 1,
           main = paste('Pairwise plots for', id, sep = " "))
-  
-}  
-
-
-pairwise_panel <- function(id) {
-  
-  id <- deparse(substitute(id))
-  
-  panel.hist <- function(x, ...)
-  {
-    usr <- par("usr"); on.exit(par(usr))
-    par(usr = c(usr[1:2], 0, 1.5) )
-    h <- hist(x, plot = FALSE)
-    breaks <- h$breaks; nB <- length(breaks)
-    y <- h$counts; y <- y/max(y)
-    rect(breaks[-nB], 0, breaks[-1], y, col = "cyan", ...)
+  } else {
+    
+    print('Dataset contains only 1 trait. Unable to plot pairwise diagnostic')
   }
   
-  col.rainbow <- rainbow(2:3)
-  palette(col.rainbow)
-  
-  pairs(log10(all[,2:(ncol(all)-1)]), panel = panel.smooth,
-        cex = 1, pch = 24, bg = all$target,
-        diag.panel = panel.hist, cex.labels = 1, font.labels = 1,
-        main = paste('Pairwise plots for', id, sep = " "))
-  
 }  
-
  
 dotcharts <- function(id) {
   
   id <- deparse(substitute(id))
  
-  panel_dims <- round(sqrt(length(all[,2:(ncol(all)-1)])), digits = 0)
+  if(ncol(all) > 3){
+    panel_dims <- ceiling(sqrt(length(all[,2:(ncol(all)-1)])))
+  } else {
+    panel_dims <- 1
+  }
   
-  col.rainbow <- rainbow(2:3)
-  palette(col.rainbow)
+ # col.rainbow <- rainbow(2:3)
+ #  palette(col.rainbow)
   
   par(mfrow=c(panel_dims,panel_dims),
       oma = c(2,1,0,1) + 0.1,
-      mar = c(2,1,2,1) + 0.1,
-      bg = 'white')
+      mar = c(2,1,2,1) + 0.1
+      ,bg = 'white'
+      )
   
   for(i in 2:(ncol(all)-1)) {
     dotchart(log10(all[,i]), groups = all$target, color = all$target, main = colnames(all)[i], lcolor = 'white')
@@ -138,13 +122,7 @@ dotcharts <- function(id) {
 }
 
 
-all <- format_data(dataset_013)
-pairwise_panel(dataset_013)
-dotcharts(dataset_013
-
-
-
-
-
-
-
+all <- format_data(dataset_066)
+pairwise_panel(dataset_066)
+dotcharts(dataset_066)
+  
