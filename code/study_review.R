@@ -11,9 +11,57 @@ CV <- function(x){
   sqrt(var(x))/mean(x)
 }
 
+######### 
+
+## TRAIT-WISE DIAGNOSTICS
+
+numeric_data <- data_all[data_all$trait_name %in% definitions_traits_numeric$trait_name,]
+numeric_data$value <- as.numeric(numeric_data$value)
+
+for(i in 1:length(unique(numeric_data$trait_name))) {
+
+target_trait <- numeric_data[numeric_data$trait_name == unique(numeric_data$trait_name)[i],]
+
+dotchart(log10(target_trait$value), 
+         groups = as.factor(target_trait$study), 
+         color = as.factor(target_trait$study), 
+         main = unique(target_trait$trait_name), 
+         lcolor = 'white',
+         cex = 0.8,
+         cex.axis = 0.2)
+
+}
+
+
+x <- 1
+
+for(i in x) {
+  
+  target_trait <- numeric_data[numeric_data$trait_name == unique(numeric_data$trait_name)[i],]
+  
+  dotchart(log10(target_trait$value), 
+           groups = as.factor(target_trait$study), 
+           color = as.factor(target_trait$study), 
+           main = unique(target_trait$trait_name), 
+           lcolor = 'white',
+           cex = 0.8,
+           cex.axis = 0.2)
+  x <- x + 1
+}
+
+
+target_trait <- numeric_data[numeric_data$trait_name == "specific_leaf_area",]
+
+dotchart(log10(target_trait$value), 
+         groups = as.factor(target_trait$study), 
+         color = as.factor(target_trait$study), 
+         main = unique(target_trait$trait_name), 
+         lcolor = 'white',
+         cex = 0.8,
+         cex.axis = 0.2)
 #########
 
-## DIAGNOSTIC PLOTS
+## STUDY-WISE DIAGNOSTIC PLOT FUNCTIONS ##
 
 format_data <- function(id) { 
 
