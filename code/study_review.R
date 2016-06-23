@@ -11,27 +11,34 @@ CV <- function(x){
   sqrt(var(x))/mean(x)
 }
 
+definitions_traits_numeric <- subset(read_csv('config/definitions_traits.csv'), type == "numeric")
+
+########
+
+## SUMMARY TABLE FUNCTIONS
+
+summary_table <- function() {
+  
+  ddply(study_data, .(trait_name), summarise, 
+        units = paste0(unique(unit)), 
+        N.records = length(value), 
+        N.species = length(unique(species_name))
+        )
+
+}
+
+blah <- study_data %>%
+         group_by(trait_name) %>%
+         summarise(N.records = length(value), N.species = length(unique(species_name)), unit = paste0(unique(unit)))
+
+blah <- summarise(group_by(study_data, trait_name), N.records = length(value), N.species = length(unique(species_name)))
+
 ######### 
 
 ## TRAIT-WISE DIAGNOSTICS
 
 numeric_data <- data_all[data_all$trait_name %in% definitions_traits_numeric$trait_name,]
 numeric_data$value <- as.numeric(numeric_data$value)
-
-for(i in 1:length(unique(numeric_data$trait_name))) {
-
-target_trait <- numeric_data[numeric_data$trait_name == unique(numeric_data$trait_name)[i],]
-
-dotchart(log10(target_trait$value), 
-         groups = as.factor(target_trait$study), 
-         color = as.factor(target_trait$study), 
-         main = unique(target_trait$trait_name), 
-         lcolor = 'white',
-         cex = 0.8,
-         cex.axis = 0.2)
-
-}
-
 
 x <- 1
 
@@ -46,19 +53,10 @@ for(i in x) {
            lcolor = 'white',
            cex = 0.8,
            cex.axis = 0.2)
+  
   x <- x + 1
 }
 
-
-target_trait <- numeric_data[numeric_data$trait_name == "specific_leaf_area",]
-
-dotchart(log10(target_trait$value), 
-         groups = as.factor(target_trait$study), 
-         color = as.factor(target_trait$study), 
-         main = unique(target_trait$trait_name), 
-         lcolor = 'white',
-         cex = 0.8,
-         cex.axis = 0.2)
 #########
 
 ## STUDY-WISE DIAGNOSTIC PLOT FUNCTIONS ##
