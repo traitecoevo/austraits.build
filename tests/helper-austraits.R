@@ -1,5 +1,6 @@
 
 library(readr)
+library(dplyr, warn.conflicts=FALSE)
 
 ## assumes variable `keys` is defined, being the names of datasets to test
 study_names <- file.path("..", "data", keys)

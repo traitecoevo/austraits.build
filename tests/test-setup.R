@@ -1,5 +1,5 @@
 
-config_files <- c("configDataset.csv","configLookups.csv","configPlantCharacters.csv","configPlantVarNames.csv","data.csv","metadata.csv", "context.csv", "configLookups.csv")
+config_files <- c("data.csv", "context.csv", "metadata.yml")
 
 test_dataframe <- function(data, expected_colnames, info) {
   expect_not_NA(colnames(data), info = info)
@@ -8,6 +8,24 @@ test_dataframe <- function(data, expected_colnames, info) {
   expect_allowed_text(unlist(data), info = info)
   expect_is(data, "data.frame", info = info)
   expect_named(data, expected_colnames, info= info)
+}
+
+test_list <- function(data, info) {
+  expect_allowed_text(unlist(data), info = info)
+  expect_is(data, "list", info = info)
+}
+
+test_list_named <- function(data, expected_names, info) {
+  test_list(data, info)
+  expect_not_NA(names(data), info = info)
+  expect_allowed_text(names(data), info = info)
+  expect_unique(names(data), info = info)
+  expect_named(data, expected_names, info= info)
+}
+
+expect_list_elements_contain <- function(object, expected, ...) {
+  tmp <- lapply(object, function(x) expect_contains(names(x), expected, ...))
+  invisible(object)
 }
 
 for (s in study_names) {
@@ -21,68 +39,82 @@ for (s in study_names) {
       expect_that(file.exists(f), is_true(), info = f)
     }
 
-  # configDataset.csv
-  f <- files[1]
-  configDataset <- read_csv(f)
-  test_dataframe(configDataset, c("key","value"), info=f)
-  vals <- c("plant_data_filename","header","skip","plant_char_vertical","process_plant_char")
-  expect_contains(configDataset[["key"]], vals, info=f)
-
-  # configLookups.csv
+  # Context
   f <- files[2]
-  configLookups <- read_csv(f)
-  test_dataframe(configLookups, c("trait_name","lookup","value"), info=f)
-  expect_isin(unique(configLookups[["trait_name"]]), variable_definitions[["trait_name"]], info=f)
+  context <- read_csv(f)
+  test_dataframe(context, c("site_name","trait_name","unit","value","notes"), info=f)
 
-  # configPlantCharacters.csv
+  # Metadata
   f <- files[3]
-  configPlantCharacters <- read_csv(f)
-  test_dataframe(configPlantCharacters,  c("var_name","trait_name","unit"), info=f)
-  expect_isin(configPlantCharacters[["trait_name"]], variable_definitions[["trait_name"]], info=f)
+  expect_allowed_text(readLines(f), info = f)
+  metadata <- read_yaml(f)
+  vals <- c("source","people","dataset","config","traits","substitutions")
+  test_list_named(metadata, vals, info=f)
 
-  # configPlantVarNames.csv
-  f <- files[4]
-  configPlantVarNames <- read_csv(f)
-  test_dataframe(configPlantVarNames, c("var_in","var_out"), info=f)
-  vals <- c("species_name", "site_name", "metadata_id","primary_source_id", "trait_name", "unit", "value", "lookup")
-  expect_isin(configPlantVarNames[["var_out"]], vals, info=f)
-  expect_unique(configPlantVarNames[["var_in"]], info=f)
+  vals <- c("is_vertical", "variable_match","custom_R_code")
+  test_list_named(metadata[["config"]], vals, info=f)
+
+  # source
+  test_list(metadata[["source"]], info=f)
+  vals <- c("primary", "type", "handle", "secondary")
+  test_list_named(metadata[["source"]], vals, info=f)
+
+  # people
+  test_list(metadata[["people"]], info=f)
+  vals <- c("name", "institution", "role")
+  expect_list_elements_contain(metadata[["people"]], vals, info=f)
+
+  # dataset
+  vals <- c("year_collected_start", "year_collected_end", "description", "collection_type", "sample_age_class", "sampling_strategy", "original_file", "notes")
+  test_list_named(metadata[["dataset"]], vals, info=f)
+
+  # config
+  vals <- c("is_vertical", "variable_match", "custom_R_code")
+  test_list_named(metadata[["config"]], vals, info=f)
+  expect_is(metadata[["config"]][["is_vertical"]], "logical")
+
+  # config - Variable_match
+  expect_is(metadata[["config"]][["variable_match"]], "list")
+  var_in <- unlist(metadata[["config"]][["variable_match"]])
+  var_out <- names(metadata[["config"]][["variable_match"]])
+  vals <- c("species_name", "site_name", "trait_name", "unit", "value")
+  expect_isin(var_out, vals, info=f)
+
+
+  # Traits
+  vals <- c("var_in", "unit_in", "trait_name", "value_type", "replicates", "precision", "methodology_ids")
+  expect_list_elements_contain(metadata[["traits"]], vals)
+  trait_names <- sapply(metadata[["traits"]], "[[", "trait_name")
+  expect_isin(trait_names, variable_definitions[["trait_name"]], info=f)
+  cfgChar <- list_to_df(metadata[["traits"]])
+  expect_is(cfgChar, "tbl_df")
+
+  # Substitutions
+  if(!is.na(metadata[["substitutions"]][1])) {
+    vals <- c("trait_name", "find", "replace")
+    expect_list_elements_contain(metadata[["substitutions"]], vals)
+    trait_names <- sapply(metadata[["substitutions"]], "[[", "trait_name")
+    expect_isin(unique(trait_names), variable_definitions[["trait_name"]], info=f)
+  }
 
   # data.csv
-  f <- files[5]
+  f <- files[1]
   data <- read_csv(f)
   test_dataframe(data, names(data), info=f)
 
   ## Check config files contain all relevant columns
-  if(get_config(configDataset, "plant_char_vertical")) {
-    # For vertical datasets, expect all columns present in configPlantVarNames
-    expect_equal(configPlantVarNames[["var_in"]], names(data), info=files[4])
+  if(metadata[["config"]][["is_vertical"]]) {
 
-    # Expect all values of "trait column" found in configPlantCharacters
-    i <- match("trait_name", configPlantVarNames[["var_out"]])
-    values <- unique(data[[configPlantVarNames[["var_in"]][i]]])
-    expect_contains(configPlantCharacters[["var_name"]], values, info=files[3])
+    # For vertical datasets, expect all values of "trait column" found in traits
+    i <- match("trait_name", var_out)
+    values <- unique(data[[var_in[i]]])
+    expect_contains(cfgChar[["var_in"]], values, info=files[3])
   } else {
-    # For wide datasets, expect all columns are either in configPlantVarNames or configPlantCharacters
-    # First check those in configPlantVarNames
+    # For wide datasets, expect variables in cfgChar are header in the data
     values <- names(data)
-    expect_isin(configPlantCharacters[["var_name"]],values, info=files[3])
-    # Now remove values in configPlantVarNames and check remainder are in configPlantCharacters
-    values <- values[!is.na(values) & !values%in% configPlantVarNames[["var_in"]]]
-    expect_contains(configPlantCharacters[["var_name"]], values, info=files[3])
-    expect_equal(configPlantCharacters[["var_name"]], values, info=files[3])
+    expect_isin(cfgChar[["var_in"]],values, info=files[3])
   }
 
-  # metadata.csv
-  f <- files[6]
-  metadata <- read_csv(f)
-  vals <- c("dataset_id","dataset_num","metadata_id","primary_source_id","source_access","compiled_for","data_contributor","contributor_institution_2016","year_collected","primary_data_collector","data_collector_institution_2016","primary_lab_leader_when_collected","primary_lab_leader_institution","data_description","collection_type","sample_age_class","original_file","need_further_checking","notes","primary_source")
-  test_dataframe(metadata, vals, info=f)
-
-  # context.csv
-  f <- files[7]
-  context <- read_csv(f)
-  test_dataframe(context, c("site_name","trait_name","unit","value","notes"), info=f)
 
   })
 }
