@@ -64,3 +64,28 @@ makeGroups <- function(data, var_names) {
         ## jsonlite::toJSON(as.list(x), auto_unbox=TRUE)
         paste(var_names, "=", x, collapse = "; "))
 }
+
+# Convert a dataframe to a named list
+# Useful when converting to yaml
+df_to_list <- function(df) {
+  attr(df, "out.attrs") <- NULL
+  unname(lapply(split(df, seq_len(nrow(df))), as.list))
+}
+
+# Convert a list of lists to dataframe
+# requires that every list have same named elements
+list_to_df <- function(my_list) {
+  bind_rows(lapply(my_list, data.frame, stringsAsFactors = FALSE))
+}
+
+# Provide an easier entry point for
+# parsing a YAML file
+read_yaml <- yaml::yaml.load_file
+
+# Write yaml to filename with preferred defaults
+# Designed so that read_yaml(write_yaml(y)) == y
+write_yaml <- function(y, filename) {
+  txt <- yaml::as.yaml(y, column.major = FALSE, indent=2)
+  txt <- gsub(": ~",":", txt, fixed=TRUE)
+  writeLines(txt, filename)
+}
