@@ -1,10 +1,6 @@
 load_study <- function(filename_data_raw,
-                       filename_data_config,
-                       filename_configVarnames,
-                       filename_configPlantCharacters,
-                       filename_configLookups,
-                       filename_metadata,
                        filename_context,
+                       filename_metadata,
                        definitions_data,
                        definitions_traits,
                        definitions_context,
@@ -13,13 +9,9 @@ load_study <- function(filename_data_raw,
                        ) {
 
   # read metadata
-  metadata <- ensure_as_character(read_csv(filename_metadata))
+  metadata <- read_yaml(filename_metadata)
 
   data <- read_data_study(filename_data_raw,
-                          filename_data_config,
-                          filename_configVarnames,
-                          filename_configPlantCharacters,
-                          filename_configLookups,
                           metadata,
                           definitions_data,
                           definitions_traits,
@@ -27,40 +19,32 @@ load_study <- function(filename_data_raw,
                           unit_conversion_functions
                           )
 
+  # Now that we're done with them, drop config parts of metadata
+  for(v in c("config", "traits", "substitutions")) {
+    metadata[[v]] <- NULL
+  }
 
   key <- basename(dirname(filename_data_raw))
 
   # read context data
   context <- read_csv(filename_context)
-
-  if(nrow(context) >0)
+  if(nrow(context) > 0) {
     context <- data.frame(dataset_id = key, context)
-
+  }
   context <- add_all_columns(context, definitions_context)
   context <- fix_types(context, definitions_context)
 
   # bibentry <- set_bib_key(bibtex::read.bib(filename_bib), key)
 
-  # methods  <- read_methods(filename_columns, definitions_data)
-  # contacts <- read_csv(filename_contact)
-  # metadata <- read_csv(filename_metadata)
-
   list(key        = key,
        data       = data,
-       metadata   = metadata,
-       context    = context)
-       # methods    = methods,
-       # bibtex     = bibentry,
-       # contacts   = contacts,
-       # references = get_citation(bibentry))
+       context    = context,
+       metadata   = metadata
+       )
 }
 
 ## These are the cleaning steps:
 read_data_study <- function(filename_data_raw,
-                            filename_data_config,
-                            filename_configVarnames,
-                            filename_configPlantCharacters,
-                            filename_configLookups,
                             metadata,
                             definitions_data,
                             definitions_traits,
@@ -70,20 +54,12 @@ read_data_study <- function(filename_data_raw,
 
   dataset_id <- basename(dirname(filename_data_raw))
 
-  # Load configuration files
-  cfgDataset <- read_csv(filename_data_config)
-  cfgVarNames <- read_csv(filename_configVarnames)
-  cfgChar <- read_csv(filename_configPlantCharacters)
-  cfgLookup <- read_csv(filename_configLookups)
-
   # data processing
   data <- read_csv(filename_data_raw)
-  data <- parse_data(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLookup, metadata$dataset_num[1])
+  data <- parse_data(dataset_id, data, metadata)
   data <- add_all_columns(data, definitions_data)
   data <- drop_unsupported(data, definitions_traits, categorical_trait_constraints)
   data <- convert_units(data, definitions_traits, unit_conversion_functions)
-
-  # data <- add_new_data(data, filename_new_data)
   # data <- post_process(data)
   data
 }
@@ -102,7 +78,6 @@ drop_unsupported <- function(data, definitions_traits, categorical_trait_constra
 
   # Remove any values of categorical traits not listed in definitions
   i <- data[["trait_name"]] %in% names(categorical_trait_constraints)
-
   if(any(i)) {
     for(v in unique(data[["trait_name"]][i])) {
       ii <-  !(data[["trait_name"]] == v & !data[["value"]] %in%  categorical_trait_constraints[[v]])
@@ -235,40 +210,30 @@ fix_types <- function(data, variable_definitions) {
   data
 }
 
-# gets config value for given key value, use this for configDataset only (use for configDataset.csv only)
-# cfg: dataframe containing config data
-# key: the key for which we want the value to be returned
-get_config <- function(cfg, key) {
-  cfg$value[cfg$key == key]
-}
-
 # processes a single dataset
-parse_data <- function(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLookup, dataset_num) {
+parse_data <- function(dataset_id, data, metadata) {
 
   # get config data for dataset
-  dataset_header <- get_config(cfgDataset, "header")
-  dataset_skip <- as.numeric(get_config(cfgDataset, "skip"))
-  dataset_vert <- get_config(cfgDataset, "plant_char_vertical")
+  dataset_vert <- metadata[["config"]][["is_vertical"]]
 
-  # skip (remove) rows from top of dataset as specified in dataset config
-  if (dataset_skip > 0)
-    data <- data[-dataset_skip, ]
-
-  # all cfgVarNames$var_in must exist in dataset, if not then we need to stop and fix the problem
-  if (any(!cfgVarNames$var_in %in% colnames(data))) {
-    stop(paste0("\nVariable '", setdiff(cfgVarNames$var_in, colnames(data)), "' from data.csv not found in configVarnames"))
+  # Step 1. create dataframe with data for vars that we want to keep, and set to correct names
+  # all names in "variable_match" must exist in dataset, if not then we need to stop and fix the problem
+  var_in <- unlist(metadata[["config"]][["variable_match"]])
+  var_out <- names(metadata[["config"]][["variable_match"]])
+  if (any(!var_in %in% colnames(data))) {
+    stop(paste0("\nVariable '", setdiff(var_in, colnames(data)), "' from data.csv not found in configVarnames"))
   }
+  df <- data %>% select(one_of(var_in)) %>%
+      rename_columns(var_in, var_out)
 
-  # create dataframe with data for vars that we want to keep, and set to correct varnames
-  cfgVarNames <- filter(cfgVarNames, !is.na(var_out))
-  df <- data %>% select(one_of(cfgVarNames$var_in)) %>%
-      rename_columns(cfgVarNames$var_in, cfgVarNames$var_out)
+  # Step 2. Add trait information, with correct names
 
   # check that the trait names as specified in config actually exist in data
   # if not then we need to stop and fix this problem
   # NOTE - only need to do this step for wide (non-vertical) data
-  if (dataset_vert == FALSE & any(! cfgChar[["var_name"]] %in% colnames(data))) {
-    stop(paste(dataset_id, ": missing traits: ", setdiff(cfgChar[["var_name"]], colnames(data))))
+  cfgChar <- list_to_df(metadata[["traits"]])
+  if (dataset_vert == FALSE & any(! cfgChar[["var_in"]] %in% colnames(data))) {
+    stop(paste(dataset_id, ": missing traits: ", setdiff(cfgChar[["var_in"]], colnames(data))))
   }
 
   ## if needed, change from wide to long style
@@ -281,8 +246,8 @@ parse_data <- function(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLo
       # df is our data frame containing all the columns we want EXCEPT for the trait data itself
       out[[i]] <- df
       # to x we append columns of data for trait_name, unit and value (the latter is retrieved from the data)
-      out[[i]][["trait_name"]] <- cfgChar[["var_name"]][i]
-      out[[i]][["value"]] <- as.character(data[[cfgChar[["var_name"]][i]]])
+      out[[i]][["trait_name"]] <- cfgChar[["var_in"]][i]
+      out[[i]][["value"]] <- as.character(data[[cfgChar[["var_in"]][i]]])
     }
     out <- dplyr::bind_rows(out)
   } else {
@@ -290,23 +255,28 @@ parse_data <- function(dataset_id, data, cfgDataset, cfgVarNames, cfgChar, cfgLo
     out[["value"]] <- as.character(out[["value"]])
   }
 
-  # Now process any name changes as per configPlantCharacters
+  # Now process any name changes as per metadata[["traits"]]
   out[["unit"]] <- NA_character_
-  i <- match(out[["trait_name"]], cfgChar[["var_name"]])
+  i <- match(out[["trait_name"]], cfgChar[["var_in"]])
   if(length(i) >0 ) {
     j <- !is.na(i)
-    out[["unit"]][j] <- cfgChar[["unit"]][i[j]]
+    out[["unit"]][j] <- cfgChar[["unit_in"]][i[j]]
     out[["trait_name"]][j] <- cfgChar[["trait_name"]][i[j]]
   }
 
-  # Now process any name changes as per categorical_trait_constraints
-  for(i in seq_len(nrow(cfgLookup))) {
-    j <- which(out[["trait_name"]] == cfgLookup[["trait_name"]][i] &
-                out[["value"]] == cfgLookup[["lookup"]][i])
-    out[["value"]][j] <- cfgLookup[["value"]][i]
+  # Step 3. implement any value changes as per substitutions
+  if(!is.na(metadata[["substitutions"]][1])) {
+    cfgLookup <-  list_to_df(metadata[["substitutions"]])
+    for(i in seq_len(nrow(cfgLookup))) {
+      j <- which(out[["trait_name"]] == cfgLookup[["trait_name"]][i] &
+                  out[["value"]] == cfgLookup[["find"]][i])
+      if( length(j) > 0 ) {
+        out[["value"]][j] <- cfgLookup[["replace"]][i]
+      }
+    }
   }
 
-  # Drop any NA trait or values
+  # Step 4. Drop any NA trait or values
   out <- dplyr::filter(out, !is.na(trait_name) & !is.na(value))
 
   out[["study"]] = dataset_id
@@ -319,15 +289,13 @@ combine_austraits <- function(..., d=list(...), variable_definitions, compiler_c
     dplyr::bind_rows(lapply(d, "[[", name))
   }
 
-  names(d) <- sapply(d, "[[", "key")
+  # drop null datasets
+  d[sapply(d, is.null)] <- NULL
 
+  names(d) <- sapply(d, "[[", "key")
   ret <- list(data=combine("data", d),
-              # methods=combine("methods", d),
-              # contacts=rbind.fill(combine("contacts", d),
-              #   data.frame(studyName="austraits_construction", compiler_contacts)),
-              # references=combine("references", d),
-              metadata=combine("metadata", d),
-              context=combine("context", d)
+              context=combine("context", d),
+              metadata=lapply(d, "[[", "metadata")
               )
 
 #  ret$bibtex <- do.call("c", unname(lapply(d, "[[", "bibtex")))
