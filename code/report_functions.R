@@ -2,82 +2,62 @@ require(plyr)
 require(readr)
 require(remake)
 require(reshape2)
+require(knitr)
+require(scales)
 
 #setwd('../')
-#austraits <- remake::make('austraits')
 
-definitions_traits_numeric <- subset(read_csv('config/definitions_traits.csv'), type == "numeric")
-
-########
+# make 'austraits' if it isn't already loaded
+if(!exists('austraits')) {
+  austraits <- remake::make('austraits')
+    } else {
+        print('austraits loaded')
+}
 
 # calculates coefficient of variation
 CV <- function(x){
   sqrt(var(x))/mean(x)
 }
 
+definitions_traits_numeric <- subset(read_csv('config/definitions_traits.csv'), type == "numeric")
+
+########
+
+CV <- function(x){
+  sqrt(var(x))/mean(x)
+}
+
 # does dataset contain numeric data?
 
-has_numeric <- function() {
-  return(has.numeric) <- any(data_study$data$trait_name %in% definitions_traits_numeric$trait_name)
+has_numeric <- function(df) {
+  any(unique(df$trait_name) %in% definitions_traits_numeric$trait_name)
 }
+
 
 ## SUMMARY TABLE FUNCTIONS
 
-summary_table <- function(df) {
+summ <- function(df) {
   
   ddply(df, .(trait_name), summarise, 
         units = paste0(unique(unit)), 
         N.records = length(value), 
         N.species = length(unique(species_name))
-        )
-
+  )
+  
 }
 
-#summary <- study_data %>%
-#         group_by(trait_name) %>%
-#         summarise(N.records = length(value), N.species = length(unique(species_name)), unit = paste0(unique(unit)))
-
-#summary <- summarise(group_by(study_data, trait_name), N.records = length(value), N.species = length(unique(species_name)))
-
-######### 
-
-## TRAIT-WISE DIAGNOSTICS
-
-numeric_data <- data_all[data_all$trait_name %in% definitions_traits_numeric$trait_name,]
-numeric_data$value <- as.numeric(numeric_data$value)
-
-x <- 1
-
-for(i in x) {
-  
-  target_trait <- numeric_data[numeric_data$trait_name == unique(numeric_data$trait_name)[i],]
-  
-  dotchart(log10(target_trait$value), 
-           groups = as.factor(target_trait$study), 
-           color = as.factor(target_trait$study), 
-           main = unique(target_trait$trait_name), 
-           lcolor = 'white',
-           cex = 0.8,
-           cex.axis = 0.2)
-  
-  x <- x + 1
-}
-
-#########
-
-## STUDY-WISE DIAGNOSTIC PLOT FUNCTIONS ##
+# format data for dotchart and pair plots
 
 format_data <- function(id) { 
-
-  id <- deparse(substitute(id))
+  
+#  id <- deparse(substitute(id))
   study_data <- subset(austraits$data, study == id)
-  study_metadata <- subset(austraits$metadata, dataset_id == id)
+#  study_metadata <- subset(austraits$metadata, dataset_id == id)
   study_data <- study_data[!is.na(study_data$value),]
   
   definitions_traits_numeric <- subset(read_csv('config/definitions_traits.csv'), type == "numeric")
-  
   data_all <- austraits$data
-  
+
   study_traits <- unique(study_data[study_data$trait_name %in% unique(definitions_traits_numeric$trait_name),]$trait_name) # numeric traits from our target study please
   study_traits_alldata <- data_all[data_all$trait_name %in% study_traits,] # and pull out all austraits data for those traits
   study_traits_alldata <- study_traits_alldata[!is.na(study_traits_alldata$value),]
@@ -93,7 +73,6 @@ format_data <- function(id) {
   study_traits_alldata_wide <- dcast(study_traits_alldata, species_name ~ trait_name, value.var = 'trait_mean', fun.aggregate=function(x) paste(x, collapse = ", "))
   study_traits_alldata_wide$target <- 'all data'
   
-  
   # add in non-aggregated data from target study
   study_data_numeric <- study_data[study_data$trait_name %in% unique(definitions_traits_numeric$trait_name),]
   study_data_numeric$seq <- with(study_data_numeric, ave(value, species_name, trait_name, study, FUN = seq_along)) #adds a sequence number for multiple values within datasets so I can cast long to wide without aggregating
@@ -102,32 +81,31 @@ format_data <- function(id) {
   study_data_numeric_wide$study <- NULL
   study_data_numeric_wide$target <- paste(id)
   
-  
-  
   # put it all together
-  all <- rbind(study_data_numeric_wide,study_traits_alldata_wide)
-
-  if(ncol(all) > 3) { # lapply breaks if there's only one column to apply a function to
-    all[,2:(ncol(all)-1)] <- lapply(all[,2:(ncol(all)-1)], as.numeric)
+  formatted <- rbind(study_data_numeric_wide,study_traits_alldata_wide)
+  
+  if(ncol(formatted) > 3) { # lapply breaks if there's only one column to apply a function to
+    formatted[,2:(ncol(formatted)-1)] <- lapply(formatted[,2:(ncol(formatted)-1)], as.numeric)
   } else {
-    all[,2] <- as.numeric(all[,2])
+    formatted[,2] <- as.numeric(formatted[,2])
   }
   
-  all$target <- as.factor(all$target)
-
-  return(all)
-   
+  formatted$target <- as.factor(formatted$target)
+  
+  return(formatted)
+  
 }
 
 
-pairwise_panel <- function(id) {
+
+
+
+pairwise_panel <- function(id, df) {
   
-  if(ncol(all) > 3) {
+  if(ncol(df) > 2) { # catch studies with only one numeric trait (can't be plotted) 
+    # this used be > 3 for no good reason. changed to 2 but might cause a bug somewhere one day?
     
-    id <- deparse(substitute(id))
-    
-    panel.hist <- function(x, ...)
-    {
+    panel.hist <- function(x, ...) {
       usr <- par("usr"); on.exit(par(usr))
       par(usr = c(usr[1:2], 0, 1.5) )
       h <- hist(x, plot = FALSE)
@@ -139,44 +117,62 @@ pairwise_panel <- function(id) {
     col.rainbow <- rainbow(2:3)
     palette(col.rainbow)
     
-    pairs(log10(all[,2:(ncol(all)-1)]), panel = panel.smooth,
-          cex = 1, pch = 24, bg = all$target,
-          diag.panel = panel.hist, cex.labels = 1, font.labels = 1,
-          main = paste('Pairwise plots for', id, sep = " "))
+    if(ncol(df) %in% c(3:7)) { # break df into two if there are too many traits to plot pairwise
+      
+      pairs(log10(df[,2:(ncol(df)-1)]), panel = panel.smooth,
+            cex = 2, pch = 24, bg = df$target,
+            diag.panel = panel.hist, cex.labels = 2, font.labels = 2,
+            main = paste('Pairwise plots for', id, sep = " "))
+      
+     } else { 
+       
+       if(ncol(df) %in% c(8:ncol(df))) {
+        
+      df1 <- df[,1:7]
+      df2 <- df[,c(1,8:ncol(df))]
+      
+      pairs(log10(df1[,2:ncol(df1)]), panel = panel.smooth,
+            cex = 2, pch = 24, bg = df$target,
+            diag.panel = panel.hist, cex.labels = 2, font.labels = 2,
+            main = paste('(1) Pairwise plots for', id, sep = " "))
+      
+      pairs(log10(df2[,2:(ncol(df2)-1)]), panel = panel.smooth,
+            cex = 2, pch = 24, bg = df$target,
+            diag.panel = panel.hist, cex.labels = 2, font.labels = 2,
+            main = paste('(2) Log10 pairwise plots for', id, sep = " "))
+      }
+      
+    }
+      
   } else {
     
     print('Dataset contains only 1 trait. Unable to plot pairwise diagnostic')
   }
   
 }  
- 
-dotcharts <- function(id) {
+
+function(id, df) {
   
- # id <- deparse(substitute(id))
- 
+  # id <- deparse(substitute(id))
+  
   if(ncol(df) > 3){
-    panel_dims <- ceiling(sqrt(length(df[,2:(ncol(all)-1)])))
+    panel_dims <- ceiling(sqrt(length(df[,2:(ncol(df)-1)])))
   } else {
     panel_dims <- 1
   }
   
- # col.rainbow <- rainbow(2:3)
- #  palette(col.rainbow)
+  # col.rainbow <- rainbow(2:3)
+  #  palette(col.rainbow)
   
   par(mfrow=c(panel_dims,panel_dims),
       oma = c(2,1,0,1) + 0.1,
       mar = c(2,1,2,1) + 0.1
       ,bg = 'white'
-      )
+  )
   
-  for(i in 2:(ncol(all)-1)) {
-    dotchart(log10(all[,i]), groups = df$target, color = df$target, main = colnames(df)[i], lcolor = 'white')
+  for(i in 2:(ncol(df)-1)) {
+    dotchart(log10(df[,i]), gcolor = par(df$target), groups = df$target, color = df$target, main = colnames(df)[i], lcolor = 'white', pch=20)
   }
-
+  
 }
 
-
-all <- format_data(dataset_066)
-pairwise_panel(dataset_066)
-dotcharts(dataset_066)
-  
