@@ -3,7 +3,6 @@ setwd('../')
 source('code/report_functions.R')
 key <- data_study$key
 definitions_traits_numeric <- subset(read_csv('config/definitions_traits.csv'), type == "numeric")
-#formatted <- format_data(data_study$key) # format data for plotting
 show_plot <- has_numeric(data_study$data)
 ```
 
@@ -20,7 +19,7 @@ formatted <- format_data(data_study$key) # format data for plotting
 
 ## Overview of data provided
 
-The dataset includes `r nrow(data_study$data)` individual datapoints from `r length(unique(data_study$data$species_name))` species belonging to ... with data included for the following variables `r length(unique(data_study$data$trait_name))`: `r paste(unique(data_study$data$trait_name), collapse = ", ")`.
+The dataset includes `r nrow(data_study$data)` individual datapoints from `r length(unique(data_study$data$species_name))` species, with data included for the following `r length(unique(data_study$data$trait_name))` traits: `r paste(unique(data_study$data$trait_name), collapse = ", ")`.
 
 ```{r summary_table, results='asis', echo=FALSE}
 tab <- summ(data_study$data)
@@ -28,14 +27,16 @@ kable(tab, "markdown", align="l", padding=10)
 ```
 
 ## Diagnostic plots of numeric data
+####Pairwise plots for `r key`, log10 axes####
 
 ```{r pairwise_plots, fig.width=12, fig.height=9, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
 #ifelse(has_numeric(data_study$data), pairwise_panel(key, formatted), print('No numeric data'))
 pairwise_panel2(key, formatted)
 ```
 
+####Cleveland dotcharts for `r key`, log10 axes####
+
 ```{r dotchart, fig.width=12, fig.height=9, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
 #ifelse(has_numeric(data_study$data), dotcharts(key, formatted), print('No numeric data'))
 dotcharts(key, formatted)
-
 ```
