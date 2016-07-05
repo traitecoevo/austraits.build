@@ -65,64 +65,6 @@ format_data <- function(id, study_data, austraits, definitions_traits_numeric) {
   
 }
 
-pairwise_panel <- function(id, df) {
-  
-  palette(c(rgb(0.19,0.19,0.19, alpha = 0.5),'blue'))
-  
-  if(ncol(df) > 2) {
-    
-    panel.hist <- function(x, ...)
-    {
-      usr <- par("usr"); on.exit(par(usr))
-      par(usr = c(usr[1:2], 0, 1.5) )
-      h <- hist(x, plot = FALSE)
-      breaks <- h$breaks; nB <- length(breaks)
-      y <- h$counts; y <- y/max(y)
-      rect(breaks[-nB], 0, breaks[-1], y, col = "cyan", ...)
-    }
-    
-    col.rainbow <- rainbow(2:3)
-    palette(col.rainbow)
-    
-    if(ncol(df) %in% c(3:7)) {
-      
-      pairs(log10(df[,2:(ncol(df)-1)]), panel = panel.smooth,
-            cex = 2, pch = 21, bg = df$target,
-            diag.panel = panel.hist, cex.labels = 2, font.labels = 2)
-      
-    } else { 
-      
-      if(ncol(df) %in% c(8:ncol(df))) {
-        
-#        df1 <- df[,1:6]
-#        df2 <- df[,c(1,2,7:ncol(df))]
-        
-        size <- (ncol(df)-2)/2
-        df1 <- df[,2:(size+1)]
-        df2 <- df[,(size+2):(ncol(df)-1)]           
-        
-        pairs(log10(df1), panel = panel.smooth,
-              cex = 2, pch = 21, bg = df$target,
-              diag.panel = panel.hist, cex.labels = 2, font.labels = 2,
-              main = '(1)')
-        
-        pairs(log10(df2), panel = panel.smooth,
-              cex = 2, pch = 21, bg = df$target,
-              diag.panel = panel.hist, cex.labels = 2, font.labels = 2,
-              main = '(2)')
-        
-      }
-      
-    }
-    
-  } else {
-    
-    print('Dataset contains only 1 trait. Unable to plot pairwise diagnostic')
-  }
-  
-}
-
-
 
 dotcharts <- function(id, df) {
   
@@ -150,10 +92,7 @@ dotcharts <- function(id, df) {
 }
 
 
-
-
-
-pairwise_panel2 <- function(id, df) {
+pairwise_panel <- function(id, df) {
   
   
   if(ncol(df) > 3) {
@@ -183,9 +122,6 @@ pairwise_panel2 <- function(id, df) {
       
       if(ncol(df) %in% c(8:ncol(df))) {
         
-        #        df1 <- df[,1:6]
-        #        df2 <- df[,c(1,2,7:ncol(df))]
-        
         size <- (ncol(df)-2)/2
         df1 <- df[,2:(size+1)]
         df2 <- df[,(size+2):(ncol(df)-1)]           
@@ -200,7 +136,7 @@ pairwise_panel2 <- function(id, df) {
         pairs(log10(df2), 
               cex = 2, pch = 20, bg = df$target,
               diag.panel = panel.hist, cex.labels = 2, font.labels = 2, col = df$target,
-              main = ('1'))
+              main = '(2)')
         
       }
       
