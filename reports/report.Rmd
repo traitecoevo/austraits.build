@@ -16,7 +16,7 @@ formatted <- format_data(data_study$key, data_study, austraits, definitions_trai
 
 ```{r, results='asis', echo=FALSE}
 tab <- list_to_df(data_study$metadata$people)
-kable(tab, "markdown", align="l", padding=10)
+kable(na.omit(tab), "markdown", align="l", padding=10)
 ```
 
 ## Overview of data provided
@@ -34,20 +34,18 @@ writeLines(sprintf("## Diagnostic plots of numeric data
 ```
 
 ```{r pairwise_plots, fig.width=12, fig.height=9, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
-#ifelse(has_numeric(data_study$data), pairwise_panel(key, formatted), print('No numeric data'))
 pairwise_panel2(key, formatted)
 ```
 
 ### Cleveland dotcharts for `r key`, log10 axes
 
 ```{r dotchart, fig.width=12, fig.height=9, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
-#ifelse(has_numeric(data_study$data), dotcharts(key, formatted), print('No numeric data'))
 dotcharts(key, formatted)
 ```
 
 ### Metadata.yml
 
-```{r, echo=FALSE}
-writeLines(paste(readLines(sprintf("../data/%s/metadata.yml", key)), collapse = "\n"))
+```{r, echo=FALSE, results='asis'}
+paste0(readLines(sprintf("../data/%s/metadata.yml", key)))
 ```
 
