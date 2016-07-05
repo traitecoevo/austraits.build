@@ -8,16 +8,15 @@ knitr::opts_chunk$set(echo=FALSE, fig.cap='', cache=FALSE)
 
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE, eval=show_plot}
 formatted <- format_data(data_study$key, data_study, austraits, definitions_traits_numeric) # format data for plotting
-
-print_person <- function(x) {sprintf("**Name**: %s\n\n**Institution**: %s\n**Role**: %s\n", x$name, x$institution, x$role)}
 ```
 
 # Report for study: `r key`
 
-## People:
+## People
 
 ```{r, results='asis', echo=FALSE}
-writeLines(sapply(data_study$metadata$people, print_person))
+tab <- list_to_df(data_study$metadata$people)
+kable(tab, "markdown", align="l", padding=10)
 ```
 
 ## Overview of data provided
