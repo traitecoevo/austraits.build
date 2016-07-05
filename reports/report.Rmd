@@ -1,21 +1,25 @@
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
-setwd('../')
-source('code/report_functions.R')
 key <- data_study$key
-definitions_traits_numeric <- subset(read_csv('config/definitions_traits.csv'), type == "numeric")
-show_plot <- has_numeric(data_study$data)
+definitions_traits_numeric <- subset(definitions_traits, type == "numeric")
+# does dataset contain numeric data?
+show_plot <- any(unique(data_study$data$trait_name) %in% definitions_traits_numeric$trait_name)
+source("../R/report.R")
+knitr::opts_chunk$set(echo=FALSE, fig.cap='', cache=FALSE)
 ```
 
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE, eval=show_plot}
-setwd('../')
-formatted <- format_data(data_study$key) # format data for plotting
+formatted <- format_data(data_study$key, data_study, austraits, definitions_traits_numeric) # format data for plotting
+
+print_person <- function(x) {sprintf("**Name**: %s\n\n**Institution**: %s\n**Role**: %s\n", x$name, x$institution, x$role)}
 ```
 
 # Report for study: `r key`
 
-## Contact Information
+## People:
 
-**Data contributor:** `r data_study$metadata$data_contributor`
+```{r, results='asis', echo=FALSE}
+writeLines(sapply(data_study$metadata$people, print_person))
+```
 
 ## Overview of data provided
 
@@ -26,17 +30,26 @@ tab <- summ(data_study$data)
 kable(tab, "markdown", align="l", padding=10)
 ```
 
-## Diagnostic plots of numeric data
-####Pairwise plots for `r key`, log10 axes####
+```{r, results='asis', echo=FALSE, eval = show_plot}
+writeLines(sprintf("## Diagnostic plots of numeric data
+### Pairwise plots for %s, log10 axes",key))
+```
 
 ```{r pairwise_plots, fig.width=12, fig.height=9, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
 #ifelse(has_numeric(data_study$data), pairwise_panel(key, formatted), print('No numeric data'))
 pairwise_panel2(key, formatted)
 ```
 
-####Cleveland dotcharts for `r key`, log10 axes####
+### Cleveland dotcharts for `r key`, log10 axes
 
 ```{r dotchart, fig.width=12, fig.height=9, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
 #ifelse(has_numeric(data_study$data), dotcharts(key, formatted), print('No numeric data'))
 dotcharts(key, formatted)
 ```
+
+### Metadata.yml
+
+```{r, echo=FALSE}
+writeLines(paste(readLines(sprintf("../data/%s/metadata.yml", key)), collapse = "\n"))
+```
+

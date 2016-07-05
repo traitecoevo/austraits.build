@@ -1,38 +1,8 @@
-require(plyr)
-require(readr)
-require(remake)
-require(reshape2)
-require(knitr)
-require(scales)
-
-#setwd('../')
-
-# make 'austraits' if it isn't already loaded
-if(!exists('austraits')) {
-  austraits <- remake::make('austraits')
-    } else {
-        print('austraits loaded')
-}
 
 # calculates coefficient of variation
 CV <- function(x){
   sqrt(var(x))/mean(x)
 }
-
-definitions_traits_numeric <- subset(read_csv('config/definitions_traits.csv'), type == "numeric")
-
-########
-
-CV <- function(x){
-  sqrt(var(x))/mean(x)
-}
-
-# does dataset contain numeric data?
-
-has_numeric <- function(df) {
-  any(unique(df$trait_name) %in% definitions_traits_numeric$trait_name)
-}
-
 
 ## SUMMARY TABLE FUNCTIONS
 
@@ -48,14 +18,13 @@ summ <- function(df) {
 
 # format data for dotchart and pair plots
 
-format_data <- function(id) { 
+format_data <- function(id, study_data, austraits, definitions_traits_numeric) {
   
 #  id <- deparse(substitute(id))
   study_data <- subset(austraits$data, study == id)
 #  study_metadata <- subset(austraits$metadata, dataset_id == id)
   study_data <- study_data[!is.na(study_data$value),]
   
-  definitions_traits_numeric <- subset(read_csv('config/definitions_traits.csv'), type == "numeric")
   data_all <- austraits$data
 
   study_traits <- unique(study_data[study_data$trait_name %in% unique(definitions_traits_numeric$trait_name),]$trait_name) # numeric traits from our target study please
