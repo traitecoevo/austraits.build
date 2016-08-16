@@ -80,12 +80,12 @@ for (s in study_names) {
   vals <- c("species_name", "site_name", "trait_name", "unit", "value")
   expect_isin(var_out, vals, info=f)
 
-
   # Traits
   vals <- c("var_in", "unit_in", "trait_name", "value_type", "replicates", "precision", "methodology_ids")
   expect_list_elements_contain(metadata[["traits"]], vals)
   trait_names <- sapply(metadata[["traits"]], "[[", "trait_name")
   expect_isin(trait_names, variable_definitions[["trait_name"]], info=f)
+  expect_unique(trait_names, info = sprintf("%s: Traits", f))
   cfgChar <- list_to_df(metadata[["traits"]])
   expect_is(cfgChar, "tbl_df")
 
@@ -115,6 +115,9 @@ for (s in study_names) {
     expect_isin(cfgChar[["var_in"]],values, info=files[3])
   }
 
-
+  # custom R code
+  txt <- metadata[["config"]][["custom_R_code"]]
+  expect_false(grepl("#", txt), label=paste0(files[3], "-custom_R_code cannot contain comments"))
+  expect_no_error(custom_manipulation(txt)(data), label=paste0(files[3], "-custom_R_code"))
   })
 }

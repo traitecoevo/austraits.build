@@ -29,7 +29,14 @@ config:
     trait_name: trait
     unit: units
     value: value
-  custom_R_code: .na
+  custom_R_code: '
+    a <- list(mm=1000, cm=100);
+    for(v in names(a)) {
+      i <- which(data[["trait"]]=="plant height maximum" & data[["units"]] == v);
+      data[["value"]][i] <- as.character(as.numeric(data[["value"]][i]) * a[[v]]);
+      data[["units"]][i] <- "m";
+      };
+    data'
 traits:
 - var_in: dispersal
   unit_in: .na

@@ -87,3 +87,17 @@ disallowed_chars <- function(x) {
   is_allowed <- (0x80 < i & i < 0xbf | i == 0xc3)
   any(!(is_ascii | is_allowed))
 }
+
+# Better than expect_silent as contains `info` and allows for complete failures
+expect_no_error <- function (object, regexp = NULL, ..., info = NULL, label = NULL)
+{
+    lab <- make_label(object, label)
+    error <- tryCatch({
+        object
+        NULL
+    }, error = function(e) {
+        e
+    })
+    expect(is.null(error), sprintf("%s threw an error: %s", lab, paste(error$message, collapse=",")), info = info)
+   invisible(NULL)
+}

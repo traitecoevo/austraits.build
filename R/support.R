@@ -1,15 +1,3 @@
-get_function_from_source <- function(name, filename, default=identity) {
-  e <- new.env()
-  if (file.exists(filename)) {
-    source(filename, local=e)
-  }
-  if (exists(name, envir=e)) {
-    get(name, mode="function", envir=e)
-  } else {
-    default
-  }
-}
-
 rename_columns <- function(obj, from, to) {
   names(obj)[match(from, names(obj))] <- to
   obj

@@ -56,6 +56,7 @@ read_data_study <- function(filename_data_raw,
 
   # data processing
   data <- read_csv(filename_data_raw)
+  data <- custom_manipulation(metadata[["config"]][["custom_R_code"]])(data)
   data <- parse_data(dataset_id, data, metadata)
   data <- add_all_columns(data, definitions_data)
   data <- drop_unsupported(data, definitions_traits, categorical_trait_constraints)
@@ -64,6 +65,20 @@ read_data_study <- function(filename_data_raw,
   data
 }
 
+
+## Creates a function that applies custom data manipulations as needed
+## If the metadata field custom_R_code is not empty, apply code
+## specified there. Otherwise we apply the identity function to
+## indicate no manipulations will be  done.
+## The code custom_R_code assumes a single input -- a  data.frame
+## called `data` and returns a data.frame
+custom_manipulation <- function(txt) {
+  if (!is.null(txt) && !is.na(txt)  && nchar(txt) > 0) {
+    function(data) {eval(parse(text=txt), env=new.env())}
+  } else {
+    identity
+  }
+}
 
 ## Remove any disallowed traits or values and provide a warning
 drop_unsupported <- function(data, definitions_traits, categorical_trait_constraints) {
