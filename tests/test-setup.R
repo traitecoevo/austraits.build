@@ -95,6 +95,7 @@ for (s in study_names) {
     expect_list_elements_contain(metadata[["substitutions"]], vals)
     trait_names <- sapply(metadata[["substitutions"]], "[[", "trait_name")
     expect_isin(unique(trait_names), variable_definitions[["trait_name"]], info=f)
+    expect_isin(unique(trait_names), unique(sapply(metadata[["traits"]], "[[", "trait_name")), info=paste0(f, " - substitutions"))
   }
 
   # data.csv
