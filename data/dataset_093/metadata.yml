@@ -30,11 +30,16 @@ config:
     unit: units
     value: value
   custom_R_code: '
-    a <- list(mm=1000, cm=100);
-    for(v in names(a)) {
-      i <- which(data[["trait"]]=="plant height maximum" & data[["units"]] == v);
-      data[["value"]][i] <- as.character(as.numeric(data[["value"]][i]) * a[[v]]);
-      data[["units"]][i] <- "m";
+    traits <- c("leaf length maximum", "leaf length minimum", "leaf width maximum", "leaf width minimum",
+            "plant height maximum", "plant height minimum", "seed breadth maximum", "seed breadth minimum",
+            "seed length maximum", "seed length minimum", "seed width maximum", "seed width minimum");
+    a <- list(cm=0.1, m=0.001);
+    for(t in traits){
+      for(v in names(a)) {
+        i <- which(data[["trait"]]==t & data[["units"]] == v);
+        data[["value"]][i] <- as.character(as.numeric(data[["value"]][i]) * a[[v]]);
+        data[["units"]][i] <- "mm";
+        };
       };
     data'
 traits:
@@ -88,29 +93,8 @@ traits:
   precision: unknown
   methodology_ids: unknown
 - var_in: leaf length minimum
-  unit_in: cm
-  trait_name: leaf_length_min
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: leaf length minimum
   unit_in: mm
   trait_name: leaf_length_min
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: leaf length minimum
-  unit_in: m
-  trait_name: leaf_length_min
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: leaf length maximum
-  unit_in: cm
-  trait_name: leaf_length_max
   value_type: unknown
   replicates: unknown
   precision: unknown
@@ -118,20 +102,6 @@ traits:
 - var_in: leaf length maximum
   unit_in: mm
   trait_name: leaf_length_max
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: leaf length maximum
-  unit_in: m
-  trait_name: leaf_length_max
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: leaf width minimum
-  unit_in: cm
-  trait_name: leaf_width_min
   value_type: unknown
   replicates: unknown
   precision: unknown
@@ -144,13 +114,6 @@ traits:
   precision: unknown
   methodology_ids: unknown
 - var_in: leaf width maximum
-  unit_in: cm
-  trait_name: leaf_width_max
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: leaf width maximum
   unit_in: mm
   trait_name: leaf_width_max
   value_type: unknown
@@ -158,29 +121,8 @@ traits:
   precision: unknown
   methodology_ids: unknown
 - var_in: plant height minimum
-  unit_in: m
+  unit_in: mm
   trait_name: plant_height_min
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: plant height minimum
-  unit_in: cm
-  trait_name: plant_height_min
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: plant height maximum
-  unit_in: m
-  trait_name: plant_height_max
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: plant height maximum
-  unit_in: cm
-  trait_name: plant_height_max
   value_type: unknown
   replicates: unknown
   precision: unknown
@@ -199,22 +141,8 @@ traits:
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-- var_in: seed length minimum
-  unit_in: cm
-  trait_name: seed_length_min
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
 - var_in: seed length maximum
   unit_in: mm
-  trait_name: seed_length_max
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: seed length maximum
-  unit_in: cm
   trait_name: seed_length_max
   value_type: unknown
   replicates: unknown
@@ -227,22 +155,8 @@ traits:
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-- var_in: seed width minimum
-  unit_in: cm
-  trait_name: seed_width_min
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
 - var_in: seed width maximum
   unit_in: mm
-  trait_name: seed_width_max
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: seed width maximum
-  unit_in: cm
   trait_name: seed_width_max
   value_type: unknown
   replicates: unknown
@@ -255,22 +169,8 @@ traits:
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-- var_in: seed breadth minimum
-  unit_in: cm
-  trait_name: seed_breadth_min
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
 - var_in: seed breadth maximum
   unit_in: mm
-  trait_name: seed_breadth_max
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: seed breadth maximum
-  unit_in: cm
   trait_name: seed_breadth_max
   value_type: unknown
   replicates: unknown
