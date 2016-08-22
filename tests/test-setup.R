@@ -87,7 +87,7 @@ for (s in study_names) {
   expect_isin(trait_names, variable_definitions[["trait_name"]], info=f)
   expect_unique(trait_names, info = sprintf("%s: Traits", f))
   cfgChar <- list_to_df(metadata[["traits"]])
-  expect_is(cfgChar, "tbl_df")
+  expect_is(cfgChar, "data.frame")
 
   # Substitutions
   if(!is.na(metadata[["substitutions"]][1])) {
