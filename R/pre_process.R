@@ -9,9 +9,10 @@ removeNA <- function(df, column) {
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
 
-
-
-monthsToBinary <- function(x, trait) {
+# converts vectors of month range type values (i.e. 'Jan-Apr') to vectors of 12 element character strings of binary data
+# e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
+# wrapper function for getBinaryMonths
+convert_month_range_to_binary <- function(x, trait) {
   flowering_bin <- lapply(x[[trait]], getBinaryMonths)
   x[[trait]] <- sapply(flowering_bin, paste0, collapse="")
   return(x)
