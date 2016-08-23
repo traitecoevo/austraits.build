@@ -11,9 +11,9 @@ trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
 # converts vectors of month range type values (i.e. 'Jan-Apr') to vectors of 12 element character strings of binary data
 # e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
-# wrapper function for getBinaryMonths
-convert_month_range_to_binary <- function(x, trait) {
-  flowering_bin <- lapply(x[[trait]], getBinaryMonths)
+# wrapper function for convert_month_range_string_to_binary
+convert_month_range_vec_to_binary <- function(x, trait) {
+  flowering_bin <- lapply(x[[trait]], convert_month_range_string_to_binary)
   x[[trait]] <- sapply(flowering_bin, paste0, collapse="")
   return(x)
 }
@@ -21,7 +21,7 @@ convert_month_range_to_binary <- function(x, trait) {
 
 # converts flowering and fruiting month ranges to 12 element character strings of binary data
 # e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
-getBinaryMonths <- function(str) {
+convert_month_range_string_to_binary <- function(str) {
   str <- trim(str) %>%
     tolower()
   
