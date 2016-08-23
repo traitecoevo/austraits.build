@@ -85,7 +85,9 @@ for (s in study_names) {
   expect_list_elements_contain(metadata[["traits"]], vals)
   trait_names <- sapply(metadata[["traits"]], "[[", "trait_name")
   expect_isin(trait_names, variable_definitions[["trait_name"]], info=f)
-  expect_unique(trait_names, info = sprintf("%s: Traits", f))
+  value_types <- sapply(metadata[["traits"]], "[[", "value_type")
+  allowed <- c("unknown", "raw", "mean", "max", "min", "lower_quantile", "upper_quantile", "expert_opinion")
+  expect_isin(value_types, allowed, info=f)
   cfgChar <- list_to_df(metadata[["traits"]])
   expect_is(cfgChar, "data.frame")
 

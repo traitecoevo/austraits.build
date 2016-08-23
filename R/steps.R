@@ -174,7 +174,7 @@ add_all_columns <- function(data, info) {
 
   missing <- setdiff(info[["variable"]], names(data))
   if (length(missing) != 0) {
-    extra <- as.data.frame(lapply(info$type[info[["variable"]]==missing], na_vector, nrow(data)),
+    extra <- as.data.frame(lapply(info$type[info[["variable"]] %in% missing], na_vector, nrow(data)),
                            stringsAsFactors = FALSE)
     names(extra) <- missing
     data <- cbind(data[names(data) %in% info[["variable"]]], extra)
@@ -270,6 +270,17 @@ parse_data <- function(dataset_id, data, metadata) {
     out[["value"]] <- as.character(out[["value"]])
   }
 
+  # Add information on trait type, precision, metholdogy_ids, if not already present
+  vars <- c("value_type", "replicates", "precision", "methodology_ids")
+  i <- match(out[["trait_name"]], cfgChar[["var_in"]])
+  if(length(i) >0 ) {
+    j <- !is.na(i)
+    for(v in vars) {
+      out[[v]] <- NA
+      out[[v]][j] <- cfgChar[[v]][i[j]]
+    }
+  }
+
   # Now process any name changes as per metadata[["traits"]]
   out[["unit"]] <- NA_character_
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
@@ -279,7 +290,7 @@ parse_data <- function(dataset_id, data, metadata) {
     out[["trait_name"]][j] <- cfgChar[["trait_name"]][i[j]]
   }
 
-  # Step 3. implement any value changes as per substitutions
+  # Implement any value changes as per substitutions
   if(!is.na(metadata[["substitutions"]][1])) {
     cfgLookup <-  list_to_df(metadata[["substitutions"]])
     for(i in seq_len(nrow(cfgLookup))) {
@@ -291,7 +302,7 @@ parse_data <- function(dataset_id, data, metadata) {
     }
   }
 
-  # Step 4. Drop any NA trait or values
+  # Drop any NA trait or values
   out <- dplyr::filter(out, !is.na(trait_name) & !is.na(value))
 
   out[["study"]] = dataset_id
