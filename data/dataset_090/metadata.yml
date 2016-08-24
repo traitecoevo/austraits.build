@@ -30,7 +30,16 @@ config:
   is_vertical: no
   variable_match:
     species_name: binomial
-  custom_R_code: .na
+  custom_R_code: 'data$flowering_time <- NA;
+    data$`flowering month begin` <- as.numeric(data$`flowering month begin`);
+    data$`flowering month end` <- as.numeric(data$`flowering month end`);
+    data[!is.na(data$`flowering month begin`),]$flowering_time <- paste(month.abb[data[!is.na(data$`flowering month begin`),]$`flowering month begin`], 
+                                                                        month.abb[data[!is.na(data$`flowering month begin`),]$`flowering month end`], 
+                                                                        sep = "-");
+    data <- convert_month_range_vec_to_binary(data, "flowering_time");
+    data$`flowering month begin` <- NULL;
+    data$`flowering month end` <- NULL;
+    data'
 traits:
 - var_in: genus
   unit_in: .na
@@ -130,16 +139,8 @@ traits:
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-- var_in: flowering month begin
-  unit_in: .na
-  trait_name: flowering_month_start
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: flowering month end
-  unit_in: .na
-  trait_name: flowering_month_end
+- var_in: flowering_time
+  trait_name: flowering_time
   value_type: unknown
   replicates: unknown
   precision: unknown
