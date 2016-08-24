@@ -39,6 +39,12 @@ config:
         data[["units"]][i] <- "mm";
         };
       };
+    data[data$trait == "flowering time start",]$value <- paste(data[data$trait == "flowering time start",]$value, 
+                                                           data[data$trait == "flowering time end",]$value,
+                                                           sep = "-");
+    data[data$trait == "flowering time start",]$trait <- "flowering_time";
+    data <- data[!data$trait == "flowering time end",];
+    data[data$trait == "flowering_time",] <-  convert_month_range_vec_to_binary(subset(data, trait == "flowering_time"), "value");
     data'
 traits:
 - var_in: dispersal
@@ -76,16 +82,8 @@ traits:
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-- var_in: flowering time start
-  unit_in: .na
-  trait_name: flowering_month_start
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: flowering time end
-  unit_in: .na
-  trait_name: flowering_month_end
+- var_in: flowering_time
+  trait_name: flowering_time
   value_type: unknown
   replicates: unknown
   precision: unknown

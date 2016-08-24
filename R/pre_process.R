@@ -30,7 +30,7 @@ convert_month_range_string_to_binary <- function(str) {
   regexSeasons <- paste0("(", paste(tolower(unique(seasons)), collapse="|"), ")")
   
   # all year only
-  if (grepl("^(all *year|ay)$", str)) {
+  if (grepl("^(all *year|ay)", str)) {
     return(rep(1, 12))
   }
   
