@@ -39,9 +39,9 @@ config:
         data[["units"]][i] <- "mm";
         };
       };
-    data[data$trait == "flowering time start",]$value <- paste(data[data$trait == "flowering time start",]$value, 
-                                                           data[data$trait == "flowering time end",]$value,
-                                                           sep = "-");
+    data[data$trait == "flowering time start" & !is.na(data$value),]$value <- paste(data[data$trait == "flowering time start" & !is.na(data$value),]$value, 
+                                                               data[data$trait == "flowering time end" & !is.na(data$value),]$value,
+                                                               sep = "-");
     data[data$trait == "flowering time start",]$trait <- "flowering_time";
     data <- data[!data$trait == "flowering time end",];
     data[data$trait == "flowering_time",] <-  convert_month_range_vec_to_binary(subset(data, trait == "flowering_time"), "value");
@@ -215,78 +215,6 @@ traits:
   precision: unknown
   methodology_ids: unknown
 substitutions:
-- trait_name: flowering_month_end
-  find: September
-  replace: sep
-- trait_name: flowering_month_end
-  find: August
-  replace: aug
-- trait_name: flowering_month_end
-  find: July
-  replace: jul
-- trait_name: flowering_month_end
-  find: November
-  replace: nov
-- trait_name: flowering_month_end
-  find: October
-  replace: oct
-- trait_name: flowering_month_end
-  find: February
-  replace: feb
-- trait_name: flowering_month_end
-  find: June
-  replace: jun
-- trait_name: flowering_month_end
-  find: December
-  replace: dec
-- trait_name: flowering_month_end
-  find: January
-  replace: jan
-- trait_name: flowering_month_end
-  find: March
-  replace: mar
-- trait_name: flowering_month_end
-  find: May
-  replace: may
-- trait_name: flowering_month_end
-  find: April
-  replace: apr
-- trait_name: flowering_month_start
-  find: May
-  replace: may
-- trait_name: flowering_month_start
-  find: July
-  replace: jul
-- trait_name: flowering_month_start
-  find: March
-  replace: mar
-- trait_name: flowering_month_start
-  find: September
-  replace: sep
-- trait_name: flowering_month_start
-  find: November
-  replace: nov
-- trait_name: flowering_month_start
-  find: December
-  replace: dec
-- trait_name: flowering_month_start
-  find: June
-  replace: jun
-- trait_name: flowering_month_start
-  find: August
-  replace: aug
-- trait_name: flowering_month_start
-  find: April
-  replace: apr
-- trait_name: flowering_month_start
-  find: January
-  replace: jan
-- trait_name: flowering_month_start
-  find: February
-  replace: feb
-- trait_name: flowering_month_start
-  find: October
-  replace: oct
 - trait_name: leaf_phenology
   find: EDP
   replace: E
