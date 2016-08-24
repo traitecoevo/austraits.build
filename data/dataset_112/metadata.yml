@@ -26,7 +26,14 @@ config:
   is_vertical: no
   variable_match:
     species_name: SPECIES
-  custom_R_code: .na
+  custom_R_code: 'data$flowering_time <- NA;
+    data[!is.na(data[["flowering start (month)"]]),]$flowering_time <- paste(data[!is.na(data[["flowering start (month)"]]),]$`flowering start (month)`, 
+                                                                          data[!is.na(data[["flowering start (month)"]]),]$`flowering finish (month)`, 
+                                                                          sep = "-");
+    data <- convert_month_range_vec_to_binary(data, "flowering_time");
+    data[["flowering start (month)"]] <- NULL;
+    data[["flowering finish (month)"]] <- NULL;
+    data'
 traits:
 - var_in: growth form
   unit_in: .na
@@ -70,16 +77,8 @@ traits:
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-- var_in: flowering start (month)
-  unit_in: .na
-  trait_name: flowering_month_start
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: flowering finish (month)
-  unit_in: .na
-  trait_name: flowering_month_end
+- var_in: flowering_time
+  trait_name: flowering_time
   value_type: unknown
   replicates: unknown
   precision: unknown

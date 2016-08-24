@@ -114,3 +114,65 @@ convert_month_range_string_to_binary <- function(str) {
   
   return(NA)
 }
+
+collapse_multirow_phenology_data_to_binary_vec <- function(data, trait="flowering month", renamed_trait="flowering time") {
+
+# this function takes multirow phenology data and collapses it to a 12 digit binary string 
+# e.g.  Acacia dealbata, 3
+#       Acacia dealbata, 4
+#       Acacia dealbata, 5
+#       Acacia dealbata, 6
+#   >>  Acacia dealbata, 001111000000
+#
+# args allow for any input trait to be used and for the desired output trait name to be specified. See defaults for example  
+      
+  if ("plyr" %in% row.names(installed.packages())  == FALSE) 
+    install.packages("plyr") 
+  require(plyr)
+
+  # create comma separated character string containing month numbers for each species
+  data_summary <- ddply(data[data$trait == trait,], .(species), summarise, months_string = paste(lookup_id, collapse = ", "))
+  
+  # collapse this info into a 12 digit binary string
+  x <- data.frame()
+  my.list <- vector("list", nrow(data_summary))
+  
+  for(i in 1:nrow(data_summary)) {
+    
+    data_months <- trim(strsplit(data_summary$months_string[i], ",")[[1]])
+    outvec <- c(0,0,0,0,0,0,0,0,0,0,0,0)
+    
+    for(j in 1:12) {
+      if(any(data_months %in% j)) {
+        outvec[j] <- 1
+      }
+    }
+    
+    sp <- data_summary$species[i]
+    out <- data.frame(cbind(sp, paste(outvec, collapse= "")))
+    my.list[[i]] <- out
+    
+  }
+  
+  # append reworked values to dataset and remove multirow data
+  
+  x <- rbind(x, do.call(rbind, my.list))
+  y <- x
+  y$sp <- NULL
+  y$V2 <- NULL
+  
+  y$species <- x$sp
+  y$col_id <- NA
+  y$lookup_id <- NA
+  y$lookup_data <- x$V2
+  y$trait <- renamed_trait
+  y$units <- NA
+  names(x)[1:2]
+  
+  data <- rbind(data, y)
+  data <- data[!data$trait == trait,]
+  
+  return(data)
+
+}
+
