@@ -26,7 +26,19 @@ config:
   is_vertical: no
   variable_match:
     species_name: species
-  custom_R_code: .na
+  custom_R_code: 'if ("stringr" %in% row.names(installed.packages())  == FALSE)
+    install.packages("stringr");
+    require(stringr);
+    temp <- str_split(data[["Flowering time"]], pattern = "-");
+    temp <- do.call(rbind, temp);
+    temp[,1] <- month.abb[as.numeric(temp[,1])];
+    temp[,2] <- month.abb[as.numeric(temp[,2])];
+    data$flowering_time <- NA;
+    data$flowering_time <- paste(temp[,1], temp[,2], sep = "-");
+    data[data$flowering_time == "NA-NA",]$flowering_time <- "NA";
+    data <- convert_month_range_vec_to_binary(data, "flowering_time");
+    rm(temp);
+    data'
 traits:
 - var_in: Fruit.Type.Botany
   unit_in: .na
@@ -84,7 +96,7 @@ traits:
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-- var_in: Flowering time
+- var_in: flowering_time
   unit_in: .na
   trait_name: flowering_time
   value_type: unknown
