@@ -27,7 +27,21 @@ config:
   variable_match:
     species_name: Genus_species
     site_name: location
-  custom_R_code: .na
+  custom_R_code: 'data_ <- data;
+    data_[,c(3:ncol(data))] <- NA;
+    data <- rbind(data, data_);
+    data$wood_density <- NA;
+    data$wood_density[1:128] <- data[["wood density (Sean)"]][1:128];
+    data$wood_density[129:256] <- data[["wood density (Kasia)"]][1:128];
+    data[["wood density (Sean)"]] <- NULL;
+    data[["wood density (Kasia)"]] <- NULL;
+    data$LMA <- NA;
+    data$LMA[1:128] <- data[["LMA (g m-2)"]][1:128];
+    data$LMA[129:256] <- data[["LMA2 (g m-2)"]][1:128];
+    data[["LMA (g m-2)"]] <- NULL;
+    data[["LMA2 (g m-2)"]];
+    rm(data_);
+    data'
 traits:
 - var_in: d13C
   unit_in: per mille
@@ -43,28 +57,14 @@ traits:
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-- var_in: wood density (Kasia)
+- var_in: wood_density
   unit_in: mg/mm3
   trait_name: wood_density
   value_type: unknown
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-- var_in: wood density (Sean)
-  unit_in: mg/mm3
-  trait_name: wood_density
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: LMA (g m-2)
-  unit_in: g/m2
-  trait_name: specific_leaf_area
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: LMA2 (g m-2)
+- var_in: LMA
   unit_in: g/m2
   trait_name: specific_leaf_area
   value_type: unknown
