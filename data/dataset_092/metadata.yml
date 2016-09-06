@@ -53,8 +53,11 @@ config:
     leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EDP", "EDPB", "P", "ED"),]$value <- NA;
     leaf_phenology <- leaf_phenology[!is.na(leaf_phenology$value),];
     life_history[life_history$trait == "longevity",]$trait <- "life_history";
-    life_history[life_history$trait == "life_history" & life_history$value %in% c("EP", "P", "DP"),]$value <- "perennial";
-    life_history[life_history$trait %in% "life_history" & life_history$value %in% c("EDP","E","EAP","EPB","ED","EDPB","EAPB"),]$value <- NA;
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("EP", "EDP", "P", "DP"),]$value <- "perennial";
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("EAP"),]$value <- "annual perennial";
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("EPB", "EDPB"),]$value <- "biennial perennial";
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("EAPB"),]$value <- "annual biennial perennial";
+    life_history[life_history$trait %in% "life_history" & life_history$value %in% c("E","ED"),]$value <- NA;
     life_history <- life_history[!is.na(life_history$value),];
     data <- rbind(data[!data$trait %in% "longevity",], leaf_phenology, life_history);
     data[data$value %in% "articles",]$value <- c("article");
