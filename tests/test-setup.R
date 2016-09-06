@@ -105,6 +105,14 @@ for (s in study_names) {
   data <- read_csv(f)
   test_dataframe(data, names(data), info=f)
 
+  # custom R code
+  txt <- metadata[["config"]][["custom_R_code"]]
+  expect_false(grepl("#", txt), label=paste0(files[3], "-custom_R_code cannot contain comments"))
+  expect_no_error(custom_manipulation(txt)(data), label=paste0(files[3], "-custom_R_code"))
+
+  # Apply custom manipulations
+  data <- custom_manipulation(txt)(data)  
+
   ## Check config files contain all relevant columns
   if(metadata[["config"]][["is_vertical"]]) {
 
@@ -118,9 +126,5 @@ for (s in study_names) {
     expect_isin(cfgChar[["var_in"]],values, info=files[3])
   }
 
-  # custom R code
-  txt <- metadata[["config"]][["custom_R_code"]]
-  expect_false(grepl("#", txt), label=paste0(files[3], "-custom_R_code cannot contain comments"))
-  expect_no_error(custom_manipulation(txt)(data), label=paste0(files[3], "-custom_R_code"))
   })
 }
