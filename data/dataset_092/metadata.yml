@@ -45,6 +45,20 @@ config:
     data[data$trait == "flowering time start",]$trait <- "flowering_time";
     data <- data[!data$trait == "flowering time end",];
     data[data$trait == "flowering_time",] <-  convert_month_range_vec_to_binary(subset(data, trait == "flowering_time"), "value");
+    leaf_phenology <- data[data$trait == "longevity",];
+    life_history <- data[data$trait == "longevity",];
+    leaf_phenology[leaf_phenology$trait == "longevity",]$trait <- "leaf_phenology";
+    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EP", "E", "EAP", "EPB", "EAPB"),]$value <- "evergreen";
+    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("DP"),]$value <- "deciduous";
+    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EDP", "EDPB", "P", "ED"),]$value <- NA;
+    leaf_phenology <- leaf_phenology[!is.na(leaf_phenology$value),];
+    life_history[life_history$trait == "longevity",]$trait <- "life_history";
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("EP", "P", "DP"),]$value <- "perennial";
+    life_history[life_history$trait %in% "life_history" & life_history$value %in% c("EDP","E","EAP","EPB","ED","EDPB","EAPB"),]$value <- NA;
+    life_history <- life_history[!is.na(life_history$value),];
+    data <- rbind(data[!data$trait %in% "longevity",], leaf_phenology, life_history);
+    data[data$value %in% "articles",]$value <- c("article");
+    data[data$value %in% "article",]$trait <- c("leaf_type");
     data'
 traits:
 - var_in: dispersal
@@ -173,21 +187,6 @@ traits:
   precision: unknown
   methodology_ids: unknown
 substitutions:
-- trait_name: leaf_phenology
-  find: EDP
-  replace: E
-- trait_name: leaf_phenology
-  find: EAP
-  replace: E
-- trait_name: leaf_phenology
-  find: EPB
-  replace: E
-- trait_name: leaf_phenology
-  find: EDPB
-  replace: .na
-- trait_name: leaf_phenology
-  find: EAPB
-  replace: E
 - trait_name: plant_growth_form
   find: S
   replace: shrub

@@ -47,6 +47,23 @@ config:
     data[data$trait == "flowering time start",]$trait <- "flowering_time";
     data <- data[!data$trait == "flowering time end",];
     data[data$trait == "flowering_time",] <-  convert_month_range_vec_to_binary(subset(data, trait == "flowering_time"), "value");
+    leaf_phenology <- data[data$trait == "longevity",];
+    life_history <- data[data$trait == "longevity",];
+    leaf_phenology[leaf_phenology$trait == "longevity",]$trait <- "leaf_phenology";
+    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EP", "E", "EAP", "EPB", "EB", "EAB", "EA"),]$value <- "evergreen";
+    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("DP", "D", "DPB"),]$value <- "deciduous";
+    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("P", "A", "ED", "EDP", "AP", "AB", "PB", "B"),]$value <- NA;
+    leaf_phenology <- leaf_phenology[!is.na(leaf_phenology$value),];
+    life_history[life_history$trait == "longevity",]$trait <- "life_history";
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("EP", "P", "DP", "EDP"),]$value <- "perennial";
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("A", "EA"),]$value <- "annual";
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("EB", "B"),]$value <- "biennial";
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("AB", "EAB"),]$value <- "annual biennial";
+    life_history[life_history$trait %in% "life_history" & life_history$value %in% c("D", "E", "EPB", "ED", "EAP", "AP", "PB", "DPB"),]$value <- NA;
+    life_history <- life_history[!is.na(life_history$value),];
+    data <- rbind(data[!data$trait %in% "longevity",], leaf_phenology, life_history);
+    data[data$value %in% "articles",]$value <- c("article");
+    data[data$value %in% "article",]$trait <- c("leaf_type");
     data'
 traits:
 - var_in: dispersal
@@ -175,39 +192,6 @@ traits:
   precision: unknown
   methodology_ids: unknown
 substitutions:
-- trait_name: leaf_phenology
-  find: EPB
-  replace: evergreen
-- trait_name: leaf_phenology
-  find: ED
-  replace: .na
-- trait_name: leaf_phenology
-  find: EDP
-  replace: perennial
-- trait_name: leaf_phenology
-  find: EAP
-  replace: evergreen
-- trait_name: leaf_phenology
-  find: AP
-  replace: .na
-- trait_name: leaf_phenology
-  find: AB
-  replace: .na
-- trait_name: leaf_phenology
-  find: PB
-  replace: .na
-- trait_name: leaf_phenology
-  find: EAB
-  replace: evergreen
-- trait_name: leaf_phenology
-  find: DPB
-  replace: deciduous
-- trait_name: leaf_phenology
-  find: E
-  replace: evergreen
-- trait_name: leaf_phenology
-  find: D
-  replace: deciduous
 - trait_name: plant_growth_form
   find: V
   replace: climber
