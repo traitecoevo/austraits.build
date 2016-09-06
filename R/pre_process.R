@@ -142,15 +142,14 @@ collapse_multirow_phenology_data_to_binary_vec <- function(data, trait="flowerin
 #
 # args allow for any input trait to be used and for the desired output trait name to be specified. See defaults for example  
       
-  if ("plyr" %in% row.names(installed.packages())  == FALSE) 
-    install.packages("plyr") 
-  require(plyr)
-
   # create comma separated character string containing month numbers for each species
-  data_summary <- ddply(data[data$trait == trait,], .(species), summarise, months_string = paste(lookup_id, collapse = ", "))
-  
+
+  data_summary <- data[data$trait == trait,] %>%
+                    group_by(species) %>%
+                    summarise(
+                      months_string = paste(lookup_id, collapse = ", "))
+
   # collapse this info into a 12 digit binary string
-  x <- data.frame()
   my.list <- vector("list", nrow(data_summary))
   
   for(i in 1:nrow(data_summary)) {
@@ -165,14 +164,13 @@ collapse_multirow_phenology_data_to_binary_vec <- function(data, trait="flowerin
     }
     
     sp <- data_summary$species[i]
-    out <- data.frame(cbind(sp, paste(outvec, collapse= "")))
+    out <- data.frame(cbind(sp, paste(outvec, collapse= "")), stringsAsFactors=FALSE)
     my.list[[i]] <- out
     
   }
   
   # append reworked values to dataset and remove multirow data
-  
-  x <- rbind(x, do.call(rbind, my.list))
+  x <- bind_rows(my.list)
   y <- x
   y$sp <- NULL
   y$V2 <- NULL
@@ -183,12 +181,9 @@ collapse_multirow_phenology_data_to_binary_vec <- function(data, trait="flowerin
   y$lookup_data <- x$V2
   y$trait <- renamed_trait
   y$units <- NA
-  names(x)[1:2]
   
-  data <- rbind(data, y)
+  data <- bind_rows(data, y)
   data <- data[!data$trait == trait,]
-  
   return(data)
-
 }
 
