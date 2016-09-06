@@ -82,7 +82,7 @@ for (s in study_names) {
 
   # Traits
   vals <- c("var_in", "unit_in", "trait_name", "value_type", "replicates", "precision", "methodology_ids")
-  expect_list_elements_contain(metadata[["traits"]], vals)
+  expect_list_elements_contain(metadata[["traits"]], vals, info=f)
   trait_names <- sapply(metadata[["traits"]], "[[", "trait_name")
   expect_isin(trait_names, variable_definitions[["trait_name"]], info=f)
   value_types <- sapply(metadata[["traits"]], "[[", "value_type")

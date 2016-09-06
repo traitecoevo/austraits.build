@@ -54,6 +54,7 @@ read_data_study <- function(filename_data_raw,
 
   dataset_id <- basename(dirname(filename_data_raw))
 
+  x <-1
   # data processing
   data <- read_csv(filename_data_raw)
   data <- custom_manipulation(metadata[["config"]][["custom_R_code"]])(data)
@@ -155,10 +156,10 @@ convert_units <- function(data, info, unit_conversion_functions) {
 
   # Split by unique unit conversions, to allow for as few calls as possible
   data %>%
-    group_by(ucn) %>%
+    group_by(ucn, to_convert) %>%
     mutate(
-      value = ifelse(to_convert, f(value, ucn[1]), value),
-      unit = ifelse(to_convert, to, unit)) %>%
+      value = ifelse(to_convert[1], f(value, ucn[1]), value),
+      unit = ifelse(to_convert[1], to, unit)) %>%
     ungroup() %>%
     select(one_of(vars))
 }

@@ -8,7 +8,6 @@ removeNA <- function(df, column) {
 
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
-
 # converts vectors of month range type values (i.e. 'Jan-Apr') to vectors of 12 element character strings of binary data
 # e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
 # wrapper function for convert_month_range_string_to_binary
