@@ -26,7 +26,12 @@ config:
   is_vertical: no
   variable_match:
     species_name: binomial
-  custom_R_code: 'convert_month_range_vec_to_binary(data, "flowering time")'
+  custom_R_code: 'convert_month_range_vec_to_binary(data, "flowering time");
+    data$leaf_type <- NA;
+    data[data[["leaf type"]] %in% "articles",]$leaf_type <- c("article");
+    data[data[["leaf type"]] %in% "articles",][["leaf type"]] <- NA;
+    data[data[["leaf type"]] %in% "palmate",][["leaf type"]] <- NA;
+    data'
 traits:
 - var_in: genus
   unit_in: .na
@@ -73,6 +78,13 @@ traits:
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
+  value_type: unknown
+  replicates: unknown
+  precision: unknown
+  methodology_ids: unknown
+- var_in: leaf_type
+  unit_in: .na
+  trait_name: leaf_type
   value_type: unknown
   replicates: unknown
   precision: unknown

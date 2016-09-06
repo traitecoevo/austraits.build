@@ -31,11 +31,13 @@ config:
     trait_name: trait
     unit: units
   custom_R_code: 'data <- collapse_multirow_phenology_data_to_binary_vec(data, "flowering month", "flowering_time");
-    collapse_multirow_phenology_data_to_binary_vec(data, "fruiting", "fruiting_time")'
+    data <- collapse_multirow_phenology_data_to_binary_vec(data, "fruiting", "fruiting_time");
+    data[data$trait=="special life form",]$trait <- "growth form";
+    data'
 traits:
-- var_in: flowering month
+- var_in: flowering_time
   unit_in: .na
-  trait_name: flowering_month
+  trait_name: flowering_time
   value_type: unknown
   replicates: unknown
   precision: unknown
@@ -68,30 +70,9 @@ traits:
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-- var_in: special life form
-  unit_in: .na
-  trait_name: special_life_form
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: special growth form
-  unit_in: .na
-  trait_name: special_growth_form
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
 - var_in: flower colour
   unit_in: .na
   trait_name: flower_colour
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: height class
-  unit_in: .na
-  trait_name: height_class
   value_type: unknown
   replicates: unknown
   precision: unknown
@@ -117,16 +98,9 @@ traits:
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-- var_in: fruiting
+- var_in: fruiting_time
   unit_in: .na
-  trait_name: fruiting
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: propogation
-  unit_in: .na
-  trait_name: propagation
+  trait_name: fruiting_time
   value_type: unknown
   replicates: unknown
   precision: unknown
@@ -134,13 +108,6 @@ traits:
 - var_in: local spread
   unit_in: .na
   trait_name: regen_strategy
-  value_type: unknown
-  replicates: unknown
-  precision: unknown
-  methodology_ids: unknown
-- var_in: introduced
-  unit_in: .na
-  trait_name: introduced
   value_type: unknown
   replicates: unknown
   precision: unknown
@@ -187,5 +154,14 @@ traits:
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-substitutions: .na
+substitutions:
+- trait_name: plant_growth_form
+  find: epiphytic
+  replace: epiphyte
+- trait_name: plant_growth_form
+  find: climbing
+  replace: climber
+- trait_name: plant_growth_form
+  find: parasitic
+  replace: parasite
 
