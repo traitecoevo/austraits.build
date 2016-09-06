@@ -1,4 +1,5 @@
 
+library(stringr)
 library(readr)
 library(dplyr, warn.conflicts=FALSE)
 

@@ -27,13 +27,7 @@ config:
   variable_match:
     species_name: binomial
   custom_R_code: '
-    data[["flowering_time"]] <- NA;
-    i <- !is.na(data[["flowering month begin"]]);
-    get_month <- function(txt) month.abb[suppressWarnings(as.integer(txt))];
-    data[["flowering_time"]][i] <- paste(get_month(data[["flowering month begin"]][i]),
-                                         get_month(data[["flowering month end"]][i]),
-                                         sep = "-");
-    data <- convert_month_range_vec_to_binary(data, "flowering_time");
+    data[["flowering_time"]] <- format_flowering_months(data[["flowering month begin"]], data[["flowering month end"]]);
     data[["flowering month begin"]] <- NULL;
     data[["flowering month end"]] <- NULL;
     data'

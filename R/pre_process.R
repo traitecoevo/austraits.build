@@ -8,15 +8,32 @@ removeNA <- function(df, column) {
 
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
-# converts vectors of month range type values (i.e. 'Jan-Apr') to vectors of 12 element character strings of binary data
-# e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
-# wrapper function for convert_month_range_string_to_binary
-convert_month_range_vec_to_binary <- function(x, trait) {
-  flowering_bin <- lapply(x[[trait]], convert_month_range_string_to_binary)
-  x[[trait]] <- sapply(flowering_bin, paste0, collapse="")
-  return(x)
+
+# Returns month for given indices
+# if needed, i is coerced to integer
+# warnings suppressed because as.integer gives a warning for NAs
+get_month <- function(i) {
+  month.abb[suppressWarnings(as.integer(i))]
 }
 
+# A common processing pattern when creating flowing times
+# We have an integer for start and end month
+# Converts these into binary vector
+format_flowering_months <- function(start, end){
+  x <- rep(NA_character_, length(start))
+  i <- !is.na(start) & !is.na(end)
+  x[i] <- paste(get_month(start[i]), get_month(end[i]), sep = "-")
+  x[i] <- convert_month_range_vec_to_binary(x[i])
+  x
+}
+
+# converts vectors of month range type values (i.e. 'Jan-Apr') to vectors of 12 element character strings of binary data
+# e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)
+# wrapper function for convert_month_range_string_to_binary
+convert_month_range_vec_to_binary <- function(vec) {
+  sapply(vec, function(x)
+        paste0(convert_month_range_string_to_binary(x), collapse=""))
+}
 
 # converts flowering and fruiting month ranges to 12 element character strings of binary data
 # e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  

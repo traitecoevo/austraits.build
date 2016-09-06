@@ -54,7 +54,6 @@ read_data_study <- function(filename_data_raw,
 
   dataset_id <- basename(dirname(filename_data_raw))
 
-  x <-1
   # data processing
   data <- read_csv(filename_data_raw)
   data <- custom_manipulation(metadata[["config"]][["custom_R_code"]])(data)

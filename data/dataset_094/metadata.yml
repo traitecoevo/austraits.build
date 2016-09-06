@@ -26,18 +26,10 @@ config:
   is_vertical: no
   variable_match:
     species_name: species
-  custom_R_code: 'if ("stringr" %in% row.names(installed.packages())  == FALSE)
-    install.packages("stringr");
-    require(stringr);
-    temp <- str_split(data[["Flowering time"]], pattern = "-");
+  custom_R_code: '
+    temp <- stringr::str_split(data[["Flowering time"]], pattern = "-");
     temp <- do.call(rbind, temp);
-    temp[,1] <- month.abb[as.numeric(temp[,1])];
-    temp[,2] <- month.abb[as.numeric(temp[,2])];
-    data$flowering_time <- NA;
-    data$flowering_time <- paste(temp[,1], temp[,2], sep = "-");
-    data[data$flowering_time == "NA-NA",]$flowering_time <- "NA";
-    data <- convert_month_range_vec_to_binary(data, "flowering_time");
-    rm(temp);
+    data[["flowering_time"]] <- format_flowering_months(temp[,1], temp[,2]);
     data'
 traits:
 - var_in: Fruit.Type.Botany
