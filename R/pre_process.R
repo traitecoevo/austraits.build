@@ -1,13 +1,4 @@
-removeNA <- function(df, column) {
-  
-  column <- deparse(substitute(column))
-  df <- df[!is.na(df[column]),]
-  df <- df[df[column] != "",]
-  
-}
-
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
-
 
 # Returns month for given indices
 # if needed, i is coerced to integer

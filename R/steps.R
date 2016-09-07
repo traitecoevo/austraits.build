@@ -184,37 +184,6 @@ add_all_columns <- function(data, info) {
   data[info[["variable"]]]
 }
 
-## Modifies data by adding new values from table studyName/dataNew.csv
-##
-## Within the column given by `newVariable`, replace values that match
-## `lookupValue` within column `lookupVariable` with the value
-## `newValue`.  If `lookupVariable` is `NA`, then replace all elements
-## of `newVariable` with the value `newValue`. Note that
-## lookupVariable can be the same as newVariable.
-add_new_data <- function(data, filename) {
-  import <- read_csv(filename, col_types = cols())
-  if (nrow(import) > 0) {
-    import$lookupVariable[import$lookupVariable == ""] <- NA
-  }
-
-  if (!is.null(import)) {
-    for (i in seq_len(nrow(import))) {
-      col_to <- import$newVariable[i]
-      col_from <- import$lookupVariable[i]
-      if (is.na(col_from)) {
-        # apply to whole column
-        data[col_to] <- import$newValue[i]
-      } else {
-        ## apply to subset
-        rows <- data[[col_from]] == import$lookupValue[i]
-        data[rows, col_to] <- import$newValue[i]
-      }
-    }
-  }
-
-  data
-}
-
 ## Ensures variables have correct type
 fix_types <- function(data, variable_definitions) {
   var_def <- variable_definitions

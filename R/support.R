@@ -44,15 +44,6 @@ capitalize <- function (string) {
   string
 }
 
-# Paste together list of var_names and their values, used for
-# aggregating varnames into 'grouping' variable NOTE: Used in
-# dataManipulate.R
-makeGroups <- function(data, var_names) {
-  apply(cbind(data[, var_names]), 1, function(x)
-        ## jsonlite::toJSON(as.list(x), auto_unbox=TRUE)
-        paste(var_names, "=", x, collapse = "; "))
-}
-
 # Convert a dataframe to a named list
 # Useful when converting to yaml
 df_to_list <- function(df) {
@@ -76,4 +67,43 @@ write_yaml <- function(y, filename) {
   txt <- yaml::as.yaml(y, column.major = FALSE, indent=2)
   txt <- gsub(": ~",":", txt, fixed=TRUE)
   writeLines(txt, filename)
+}
+
+get_citation <- function(bibentry) {
+  if (is.null(bibentry$doi)) {
+    doi <- ""
+    url <- if (is.null(bibentry$url[[1]])) "" else bibentry$url[[1]]
+  } else {
+    doi <- bibentry$doi[[1]]
+    url <- paste0("http://doi.org/", doi)
+  }
+
+  data.frame(doi=doi, url=url, citation=format_citation(bibentry),
+             stringsAsFactors=FALSE)
+}
+
+## This is a hack that would be better done with a style.  See
+## ?bibentry for directions to that rabbithole.
+format_citation <- function(bibentry) {
+  citation <- format(bibentry, "text")
+  find <- c("<URL.+>", "<.+?>", " , .", ", .", "\n", "*", "_", "“", "”", "..",
+            ",.", ". .", "'''.'", "''.")
+  replace <- c("", "", ".", ".", " ", "", "", "'", "'", ".", ".", ".", "", "")
+  fixed <- rep(TRUE, length(find))
+  fixed[c(1, 2)] <- FALSE
+  for (i in seq_along(find)) {
+    citation <- gsub(find[i], replace[i], citation, fixed = fixed[i])
+  }
+  citation
+}
+
+
+## This is a temporary helper until first class rendering is done:
+render_html <- function(filename_md) {
+  rmarkdown::render(filename_md, "html_document", quiet=TRUE)
+}
+
+## This is a temporary helper until first class rendering is done:
+render_doc <- function(filename_md) {
+  rmarkdown::render(filename_md, "word_document", quiet=TRUE)
 }
