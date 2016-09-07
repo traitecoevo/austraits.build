@@ -54,7 +54,7 @@ df_to_list <- function(df) {
 # Convert a list of lists to dataframe
 # requires that every list have same named elements
 list_to_df <- function(my_list) {
-  bind_rows(lapply(my_list, data.frame, stringsAsFactors = FALSE))
+  dplyr::bind_rows(lapply(my_list, data.frame, stringsAsFactors = FALSE))
 }
 
 # Provide an easier entry point for
