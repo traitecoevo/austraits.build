@@ -8,7 +8,7 @@ study_names <- file.path("..", "data", keys)
 
 tmp <- lapply(list.files("../R", full.names=TRUE), source)
 
-variable_definitions <- read_csv("../config/definitions_traits.csv")
+variable_definitions <- read_csv("../config/definitions_traits.csv", col_types = cols())
 
 make_label <- testthat:::make_label
 

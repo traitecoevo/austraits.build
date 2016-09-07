@@ -27,7 +27,7 @@ load_study <- function(filename_data_raw,
   key <- basename(dirname(filename_data_raw))
 
   # read context data
-  context <- read_csv(filename_context)
+  context <- read_csv(filename_context, col_types = cols())
   if(nrow(context) > 0) {
     context <- data.frame(dataset_id = key, context)
   }
@@ -55,7 +55,7 @@ read_data_study <- function(filename_data_raw,
   dataset_id <- basename(dirname(filename_data_raw))
 
   # data processing
-  data <- read_csv(filename_data_raw)
+  data <- read_csv(filename_data_raw, col_types = cols())
   data <- custom_manipulation(metadata[["config"]][["custom_R_code"]])(data)
   data <- parse_data(dataset_id, data, metadata)
   data <- add_all_columns(data, definitions_data)
@@ -108,7 +108,7 @@ drop_unsupported <- function(data, definitions_traits, categorical_trait_constra
 }
 
 make_unit_conversion_functions <- function(filename) {
-  x <- read_csv(filename)
+  x <- read_csv(filename, col_types = cols())
 
   # make functions from text
   fs <- lapply(x[["function"]], function(x) {
@@ -192,7 +192,7 @@ add_all_columns <- function(data, info) {
 ## of `newVariable` with the value `newValue`. Note that
 ## lookupVariable can be the same as newVariable.
 add_new_data <- function(data, filename) {
-  import <- read_csv(filename)
+  import <- read_csv(filename, col_types = cols())
   if (nrow(import) > 0) {
     import$lookupVariable[import$lookupVariable == ""] <- NA
   }

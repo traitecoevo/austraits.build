@@ -41,7 +41,7 @@ for (s in study_names) {
 
   # Context
   f <- files[2]
-  context <- read_csv(f)
+  context <- read_csv(f, col_types = cols())
   test_dataframe(context, c("site_name","trait_name","unit","value","notes"), info=f)
 
   # Metadata
@@ -102,7 +102,7 @@ for (s in study_names) {
 
   # data.csv
   f <- files[1]
-  data <- read_csv(f)
+  data <- read_csv(f, col_types = cols())
   test_dataframe(data, names(data), info=f)
 
   # custom R code
