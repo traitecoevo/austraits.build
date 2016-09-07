@@ -7,13 +7,12 @@ CV <- function(x){
 ## SUMMARY TABLE FUNCTIONS
 
 summ <- function(df) {
-  
-  ddply(df, .(trait_name), summarise, 
+  df %>% group_by(trait_name) %>%
+    summarise(
         units = paste0(unique(unit)), 
         N.records = length(value), 
         N.species = length(unique(species_name))
-  )
-  
+        )
 }
 
 # format data for dotchart and pair plots
@@ -35,8 +34,12 @@ format_data <- function(id, study_data, austraits, definitions_traits_numeric) {
  # study_traits_alldata <- study_traits_alldata[!study_traits_alldata$study == id,]  # remove target dataset
   study_traits_alldata$value <- as.numeric(study_traits_alldata$value)
   
-  study_traits_alldata <- ddply(study_traits_alldata, .(species_name, trait_name, unit), summarise, 
-                                trait_mean = mean(value), trait_CV = CV(value))
+  study_traits_alldata <- study_traits_alldata %>%
+                            group_by(species_name, trait_name, unit) %>%
+                            summarise(
+                                trait_mean = mean(value),
+                                trait_CV = CV(value)
+                                )
   # study_traits_alldata <- study_traits_alldata[study_traits_alldata$trait_CV < 0.5,] # remove records with unrealistic intraspecific variation
   study_traits_alldata <- study_traits_alldata[!is.na(study_traits_alldata$trait_mean),]
   study_traits_alldata_wide <- dcast(study_traits_alldata, species_name ~ trait_name, value.var = 'trait_mean', fun.aggregate=function(x) paste(x, collapse = ", "))
