@@ -157,8 +157,8 @@ convert_units <- function(data, info, unit_conversion_functions) {
   data %>%
     group_by(ucn, to_convert) %>%
     mutate(
-      value = ifelse(to_convert[1], f(value, ucn[1]), value),
-      unit = ifelse(to_convert[1], to, unit)) %>%
+      value = ifelse(to_convert, f(value, ucn[1]), value),
+      unit = ifelse(to_convert, to, unit)) %>%
     ungroup() %>%
     select(one_of(vars))
 }
