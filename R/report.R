@@ -19,27 +19,25 @@ summ <- function(df) {
 
 format_data <- function(id, study_data, austraits, definitions_traits_numeric) {
   
-#  id <- deparse(substitute(id))
   study_data <- subset(austraits$data, study == id)
-#  study_metadata <- subset(austraits$metadata, dataset_id == id)
   study_data <- study_data[!is.na(study_data$value),]
   
   data_all <- austraits$data
-
+  
   study_traits <- unique(study_data[study_data$trait_name %in% unique(definitions_traits_numeric$trait_name),]$trait_name) # numeric traits from our target study please
   study_traits_alldata <- data_all[data_all$trait_name %in% study_traits,] # and pull out all austraits data for those traits
   study_traits_alldata <- study_traits_alldata[!is.na(study_traits_alldata$value),]
   
   # aggregate to mean vals per species/trait across all data
- # study_traits_alldata <- study_traits_alldata[!study_traits_alldata$study == id,]  # remove target dataset
+  # study_traits_alldata <- study_traits_alldata[!study_traits_alldata$study %in% id,]  # remove target dataset
   study_traits_alldata$value <- as.numeric(study_traits_alldata$value)
   
   study_traits_alldata <- study_traits_alldata %>%
-                            group_by(species_name, trait_name, unit) %>%
-                            summarise(
-                                trait_mean = mean(value),
-                                trait_CV = CV(value)
-                                )
+    group_by(species_name, trait_name, unit) %>%
+    summarise(
+      trait_mean = mean(value),
+      trait_CV = CV(value)
+    )
   # study_traits_alldata <- study_traits_alldata[study_traits_alldata$trait_CV < 0.5,] # remove records with unrealistic intraspecific variation
   study_traits_alldata <- study_traits_alldata[!is.na(study_traits_alldata$trait_mean),]
   study_traits_alldata_wide <- dcast(study_traits_alldata, species_name ~ trait_name, value.var = 'trait_mean', fun.aggregate=function(x) paste(x, collapse = ", "))
@@ -64,11 +62,36 @@ format_data <- function(id, study_data, austraits, definitions_traits_numeric) {
   
   formatted$target <- as.factor(formatted$target)
   formatted <- formatted[order(formatted$target),]
-
+  
   return(formatted)
   
 }
 
+
+dotcharts_old <- function(id, df) {
+  
+  palette(c(rgb(0.19,0.19,0.19, alpha = 0.3),rgb(1,0,0,alpha = 0.4)))
+  
+  if(ncol(df) > 3){
+    panel_dims <- ceiling(sqrt(length(df[,2:(ncol(df)-1)])))
+  } else {
+    panel_dims <- 1
+  }
+  
+  # col.rainbow <- rainbow(2:3)
+  #  palette(col.rainbow)
+  
+  par(mfrow=c(panel_dims,panel_dims),
+      oma = c(2,1,0,1) + 0.1,
+      mar = c(2,1,2,1) + 0.1
+      ,bg = 'white'
+  )
+  
+  for(i in 2:(ncol(df)-1)) {
+    dotchart(log10(df[,i]), gcolor = par(df$target), groups = df$target, color = df$target, main = colnames(df)[i], lcolor = 'white', pch=20)
+  }
+  
+}
 
 dotcharts <- function(id, df) {
   
@@ -90,7 +113,25 @@ dotcharts <- function(id, df) {
   )
   
   for(i in 2:(ncol(df)-1)) {
-    dotchart(log10(df[,i]), gcolor = par(df$target), groups = df$target, color = df$target, main = colnames(df)[i], lcolor = 'white', pch=20)
+    
+    unit <- unique(austraits$data[austraits$data$trait_name %in% colnames(df)[i],]$unit)
+    
+    x <- ggplot(df, aes(x = df[,i], fill = factor(target,levels=unique(target)), colour = factor(target,levels=unique(target)))) 
+    x <- x + geom_density(alpha = 0.3)
+    x <- x + scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x), labels = trans_format("log10", math_format(10^.x))) 
+    x <- x + ggtitle(paste(colnames(df)[i], " data distributions", sep = "")) + xlab(paste(colnames(df)[i], " (", unit, ") ", sep = ""))
+    x <- x + theme_bw()
+    x <- x + theme(legend.position = "bottom",
+                   legend.title = element_blank(),
+                   panel.border = element_blank(),
+                   panel.grid.minor = element_blank(),
+                   panel.grid.major = element_blank(),
+                   axis.line.y = element_blank(), 
+                   axis.text.y = element_blank(),
+                   axis.ticks.y = element_blank(),
+                   axis.title.y = element_blank())
+    print(x)
+    
   }
   
 }
@@ -152,6 +193,44 @@ pairwise_panel <- function(id, df) {
   }
   
 }
+
+
+flags <- function(id = key) {
+
+  all <- austraits$data
+  
+  numeric_data <- unique(all[all$trait_name %in% unique(definitions_traits_numeric$trait_name),]$trait_name)
+  numeric_data <- all[all$trait_name %in% numeric_data,] # and pull out all austraits data
+  numeric_data <- numeric_data[!numeric_data$value_type %in% c('min', 'lower_quantile'),] # remove min and lower quantile records for range traits (e.g. plant_height, leaf_width)
+  numeric_data <- numeric_data[!numeric_data$value == 0,]
+  numeric_data_ <- numeric_data[!duplicated(numeric_data[,c('species_name', 'value')]),]
+  
+  numeric_data.CV <- numeric_data %>% 
+    dplyr::group_by(species_name, trait_name, value_type) %>%
+    dplyr::summarise(CV = CV(as.numeric(value)),
+                     mean = mean(as.numeric(value)),
+                     fractional_range = max(as.numeric(value)) / min(as.numeric(value)),
+                     count = length(value)) 
+  
+  numeric_data.CV <- na.omit(numeric_data.CV)
+  
+  divergent_records.CV <- merge(subset(numeric_data.CV, CV > 0.6), numeric_data, by = c("species_name", "trait_name", "value_type"))
+  divergent_records.range <- merge(subset(numeric_data.CV, fractional_range > 10), numeric_data, by = c("species_name", "trait_name", "value_type"))
+  
+  flagged <- divergent_records.range[divergent_records.range$species_name %in% subset(all, study == id)$species_name &
+                                    divergent_records.range$trait_name %in% subset(all, study == id)$trait_name,]
+  flagged$CV <- NULL
+  flagged$mean <- NULL
+  flagged$count <- NULL
+  flagged$replicates <- NULL
+  flagged$precision <- NULL
+  flagged$methodology_ids <- NULL
+  flagged$fractional_range <- round(flagged$fractional_range, 2)
+ 
+  return(flagged)
+   
+}
+
 
 
 md_link <- function(text, link) {

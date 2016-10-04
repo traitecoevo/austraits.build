@@ -38,16 +38,18 @@ pairwise_panel(key, formatted)
 ```
 
 ```{r, results='asis', echo=FALSE, eval = show_plot}
-writeLines(sprintf("### Cleveland dotcharts for %s, log10 axes",key))
+writeLines(sprintf("### Density distributions for %s, log10 axes",key))
 ```
 
-```{r dotchart, fig.width=12, fig.height=9, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
+```{r dotchart, fig.width=8, fig.height=6, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
 dotcharts(key, formatted)
 ```
 
-### Metadata.yml
+### Trait values with high associated intraspecific variation
+This table shows trait records for species within the current dataset where the intraspecific variation across all records for this species-trait combination exceeds an order of magnitude. Note that the expected degree of intraspecific variation varies between traits.
 
-```{r, echo=FALSE, results='asis'}
-paste0(readLines(sprintf("../data/%s/metadata.yml", key)))
+```{r flags_table, results='asis', echo=FALSE, warning=FALSE, message=FALSE}
+flagged <- flags()
+kable(flagged, "markdown", align="l", padding=10)
 ```
 
