@@ -56,8 +56,8 @@ for (s in study_names) {
 
   # source
   test_list(metadata[["source"]], info=f)
-  vals <- c("primary", "type", "handle", "secondary")
-  test_list_named(metadata[["source"]], vals, info=f)
+  vals <- c("primary", "secondary", "type", "handle")
+  expect_isin(names(metadata[["source"]]), vals, info=f)
 
   # people
   test_list(metadata[["people"]], info=f)

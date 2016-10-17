@@ -82,10 +82,13 @@ disallowed_chars <- function(x) {
   i <- charToRaw(x)
   # allow all ascii text
   is_ascii <- i < 0x7F
+
   # allow some utf8 characters, those with accents over letters for foreign names
   # list of codes is here: http://www.utf8-chartable.de/
   # note c3 is needed because this is prefix for allowed UTF8 chars
-  is_allowed <- (0x80 < i & i < 0xbf | i == 0xc3)
+  exceptions <- c("íáÜáíčóéłńl-")
+
+  is_allowed <- i %in% charToRaw(exceptions)
   any(!(is_ascii | is_allowed))
 }
 
