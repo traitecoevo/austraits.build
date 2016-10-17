@@ -92,12 +92,14 @@ dotchart_single <- function(trait, id, austraits, Xlab= "SLA (mm2/mg)") {
       mutate(y = y_av + runif(length(y_av), -0.5, 0.5)*spread)
 
 
-  x <- ggplot(data_all2, aes(x = value, y = y, colour = col))
-  x <- x + geom_point(alpha = 0.3) +
-                  scale_x_log10(
+  x <- ggplot(data_all2, aes(x = value, y = y, colour = col)) + geom_point(alpha = 0.3)
+  x <- x + scale_x_log10(
                           breaks = trans_breaks("log10", function(x) 10^x),
-                          labels = trans_format("log10", math_format(10^.x)))
-  x <- x + ggtitle("Distributions by study") + xlab(Xlab) + ylab("Source dataset")
+                          labels = trans_format("log10", math_format(10^.x))) +
+           scale_y_continuous(breaks=dat_sum$y_av,
+                              labels=dat_sum$study)
+
+  x <- x + ggtitle("Distributions by study") + xlab(Xlab)
   x <- x + theme_bw()
   x <- x + theme(legend.position = "none",
                 axis.title.y = element_text(hjust=0.35),
