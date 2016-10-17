@@ -42,14 +42,20 @@ writeLines(sprintf("### Density distributions for %s, log10 axes",key))
 ```
 
 ```{r dotchart, fig.width=8, fig.height=6, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
-dotcharts(key, formatted)
+
+traits <- unique(data_study$data$trait_name[data_study$data$trait_name %in% definitions_traits_numeric$trait_name])
+
+for(trait in traits) {
+  dotchart_single(trait, key, austraits, trait)
+}
+
 ```
 
 ### Trait values with high associated intraspecific variation
 This table shows trait records for species within the current dataset where the intraspecific variation across all records for this species-trait combination exceeds an order of magnitude. Note that the expected degree of intraspecific variation varies between traits.
 
 ```{r flags_table, results='asis', echo=FALSE, warning=FALSE, message=FALSE}
-flagged <- flags()
+flagged <- flags(key, austraits, definitions_traits_numeric)
 kable(flagged, "markdown", align="l", padding=10)
 ```
 

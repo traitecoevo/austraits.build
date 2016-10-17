@@ -62,79 +62,51 @@ format_data <- function(id, study_data, austraits, definitions_traits_numeric) {
   
   formatted$target <- as.factor(formatted$target)
   formatted <- formatted[order(formatted$target),]
-  
+
   return(formatted)
-  
+
 }
 
+dotchart_single <- function(trait, id, austraits, Xlab= "SLA (mm2/mg)") {
 
-dotcharts_old <- function(id, df) {
-  
-  palette(c(rgb(0.19,0.19,0.19, alpha = 0.3),rgb(1,0,0,alpha = 0.4)))
-  
-  if(ncol(df) > 3){
-    panel_dims <- ceiling(sqrt(length(df[,2:(ncol(df)-1)])))
-  } else {
-    panel_dims <- 1
-  }
-  
-  # col.rainbow <- rainbow(2:3)
-  #  palette(col.rainbow)
-  
-  par(mfrow=c(panel_dims,panel_dims),
-      oma = c(2,1,0,1) + 0.1,
-      mar = c(2,1,2,1) + 0.1
-      ,bg = 'white'
-  )
-  
-  for(i in 2:(ncol(df)-1)) {
-    dotchart(log10(df[,i]), gcolor = par(df$target), groups = df$target, color = df$target, main = colnames(df)[i], lcolor = 'white', pch=20)
-  }
-  
+  data_all <- austraits$data %>%
+                filter(trait_name == trait) %>%
+                mutate(value=as.numeric(value)) %>%
+                filter(!is.na(value)) %>%
+                arrange(study)
+
+  dat_sum <- data_all %>%
+        group_by(study) %>%
+        summarize(
+          np = length(trait_name)) %>%
+        ungroup() %>%
+        mutate(
+          spread = sqrt(np)/sum(sqrt(np)),
+          y_av = cumsum(spread)-0.5*spread,
+          col=rep(c("#75954F", "#D455E9"), length.out=length(study))
+          )
+  dat_sum$col[dat_sum$study == id] <- "black"
+
+  data_all2 <-
+      full_join(filter(data_all, trait_name == trait_name), dat_sum, by="study") %>%
+      mutate(y = y_av + runif(length(y_av), -0.5, 0.5)*spread)
+
+
+  x <- ggplot(data_all2, aes(x = value, y = y, colour = col))
+  x <- x + geom_point(alpha = 0.3) +
+                  scale_x_log10(
+                          breaks = trans_breaks("log10", function(x) 10^x),
+                          labels = trans_format("log10", math_format(10^.x)))
+  x <- x + ggtitle("Distributions by study") + xlab(Xlab) + ylab("Source dataset")
+  x <- x + theme_bw()
+  x <- x + theme(legend.position = "none",
+                axis.title.y = element_text(hjust=0.35),
+                # panel.border = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.grid.major = element_blank())
+  print(x)
 }
 
-dotcharts <- function(id, df) {
-  
-  palette(c(rgb(0.19,0.19,0.19, alpha = 0.3),rgb(1,0,0,alpha = 0.4)))
-  
-  if(ncol(df) > 3){
-    panel_dims <- ceiling(sqrt(length(df[,2:(ncol(df)-1)])))
-  } else {
-    panel_dims <- 1
-  }
-  
-  # col.rainbow <- rainbow(2:3)
-  #  palette(col.rainbow)
-  
-  par(mfrow=c(panel_dims,panel_dims),
-      oma = c(2,1,0,1) + 0.1,
-      mar = c(2,1,2,1) + 0.1
-      ,bg = 'white'
-  )
-  
-  for(i in 2:(ncol(df)-1)) {
-    
-    unit <- unique(austraits$data[austraits$data$trait_name %in% colnames(df)[i],]$unit)
-    
-    x <- ggplot(df, aes(x = df[,i], fill = factor(target,levels=unique(target)), colour = factor(target,levels=unique(target)))) 
-    x <- x + geom_density(alpha = 0.3)
-    x <- x + scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x), labels = trans_format("log10", math_format(10^.x))) 
-    x <- x + ggtitle(paste(colnames(df)[i], " data distributions", sep = "")) + xlab(paste(colnames(df)[i], " (", unit, ") ", sep = ""))
-    x <- x + theme_bw()
-    x <- x + theme(legend.position = "bottom",
-                   legend.title = element_blank(),
-                   panel.border = element_blank(),
-                   panel.grid.minor = element_blank(),
-                   panel.grid.major = element_blank(),
-                   axis.line.y = element_blank(), 
-                   axis.text.y = element_blank(),
-                   axis.ticks.y = element_blank(),
-                   axis.title.y = element_blank())
-    print(x)
-    
-  }
-  
-}
 
 
 pairwise_panel <- function(id, df) {
@@ -195,7 +167,7 @@ pairwise_panel <- function(id, df) {
 }
 
 
-flags <- function(id = key) {
+flags <- function(id, austraits, definitions_traits_numeric) {
 
   all <- austraits$data
   
