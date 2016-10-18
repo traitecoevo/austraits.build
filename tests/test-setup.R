@@ -60,7 +60,7 @@ for (s in study_names) {
   expect_isin(names(metadata[["source"]]), vals, info=f)
   vals <- c("key", "bibtype", "author", "title", "year")
   expect_isin(vals, names(metadata[["source"]][["primary"]]), info=f)
-  if(!is.na(metadata[["source"]][["secondary"]][1])){
+  if(!is.null(metadata[["source"]][["secondary"]])){
     expect_isin(vals, names(metadata[["source"]][["secondary"]]), info=f)
   }
 
