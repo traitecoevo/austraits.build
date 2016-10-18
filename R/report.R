@@ -76,36 +76,38 @@ dotchart_single <- function(trait, id, austraits, Xlab= "SLA (mm2/mg)") {
                 arrange(study)
 
   dat_sum <- data_all %>%
-        group_by(study) %>%
-        summarize(
-          np = length(trait_name)) %>%
-        ungroup() %>%
-        mutate(
-          spread = sqrt(np)/sum(sqrt(np)),
-          y_av = cumsum(spread)-0.5*spread,
-          col=rep(c("#75954F", "#D455E9"), length.out=length(study))
-          )
-  dat_sum$col[dat_sum$study == id] <- "black"
+    group_by(study) %>%
+    summarize(
+      np = length(trait_name)) %>%
+    ungroup() %>%
+    mutate(
+      spread = sqrt(np)/sum(sqrt(np)),
+      y_av = cumsum(spread)-0.5*spread,
+      col=rep(c("b", "c", "d"), length.out=length(study))
+    )
+  dat_sum$col[dat_sum$study == id] <- "a"
 
   data_all2 <-
       full_join(filter(data_all, trait_name == trait_name), dat_sum, by="study") %>%
       mutate(y = y_av + runif(length(y_av), -0.5, 0.5)*spread)
 
+Xlab <- paste0(unique(data_all2$trait_name), " (", unique(data_all2$unit), ")")
 
   x <- ggplot(data_all2, aes(x = value, y = y, colour = col)) + geom_point(alpha = 0.3)
   x <- x + scale_x_log10(
                           breaks = trans_breaks("log10", function(x) 10^x),
                           labels = trans_format("log10", math_format(10^.x))) +
-           scale_y_continuous(breaks=dat_sum$y_av,
-                              labels=dat_sum$study)
-
-  x <- x + ggtitle("Distributions by study") + xlab(Xlab)
+      scale_y_continuous(breaks=dat_sum$y_av,
+                         labels=dat_sum$study) 
+  x <- x + scale_colour_manual(values=c('red', 'seagreen3', 'steelblue3', 'yellow2'))  
+  x <- x + ggtitle(paste0("Data distributions for ", trait)) + xlab(Xlab)
   x <- x + theme_bw()
   x <- x + theme(legend.position = "none",
-                axis.title.y = element_text(hjust=0.35),
-                # panel.border = element_blank(),
-                panel.grid.minor = element_blank(),
-                panel.grid.major = element_blank())
+                 axis.title.y = element_blank(),
+                  panel.border = element_blank(),
+                 panel.grid.minor = element_blank(),
+                 panel.grid.major = element_blank())
+  #browser()
   print(x)
 }
 
