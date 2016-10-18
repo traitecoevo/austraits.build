@@ -56,8 +56,13 @@ for (s in study_names) {
 
   # source
   test_list(metadata[["source"]], info=f)
-  vals <- c("primary", "secondary", "type", "handle")
+  vals <- c("primary", "secondary")
   expect_isin(names(metadata[["source"]]), vals, info=f)
+  vals <- c("key", "bibtype", "author", "title", "year")
+  expect_isin(vals, names(metadata[["source"]][["primary"]]), info=f)
+  if(!is.na(metadata[["source"]][["secondary"]][1])){
+    expect_isin(vals, names(metadata[["source"]][["secondary"]]), info=f)
+  }
 
   # people
   test_list(metadata[["people"]], info=f)
