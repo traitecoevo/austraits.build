@@ -1,4 +1,8 @@
 
+pallette1 <- function(){
+  c('red', 'seagreen3', 'steelblue3', 'yellow2')
+}
+
 # calculates coefficient of variation
 CV <- function(x){
   sqrt(var(x))/mean(x)
@@ -67,51 +71,70 @@ format_data <- function(id, study_data, austraits, definitions_traits_numeric) {
 
 }
 
-dotchart_single <- function(trait, id, austraits, Xlab= "SLA (mm2/mg)") {
+dotchart_single <- function(trait, id, data_all, heights=c(1,4)) {
 
-  data_all <- austraits$data %>%
+  data_trait <- data_all %>%
                 filter(trait_name == trait) %>%
                 mutate(value=as.numeric(value)) %>%
                 filter(!is.na(value)) %>%
                 arrange(study)
 
-  dat_sum <- data_all %>%
-    group_by(study) %>%
-    summarize(
-      np = length(trait_name)) %>%
-    ungroup() %>%
-    mutate(
-      spread = sqrt(np)/sum(sqrt(np)),
-      y_av = cumsum(spread)-0.5*spread,
-      col=rep(c("b", "c", "d"), length.out=length(study))
-    )
-  dat_sum$col[dat_sum$study == id] <- "a"
+  data_summary <- data_trait %>%
+        group_by(study) %>%
+        summarize(
+          np = length(trait_name)) %>%
+        ungroup() %>%
+        mutate(
+          spread = sqrt(np)/sum(sqrt(np)),
+          y_av = cumsum(spread)-0.5*spread,
+          col=rep(c("b", "c", "d"), length.out=length(study))
+          )
+  data_summary$col[data_summary$study == id] <- "a"
 
-  data_all2 <-
-      full_join(filter(data_all, trait_name == trait_name), dat_sum, by="study") %>%
-      mutate(y = y_av + runif(length(y_av), -0.5, 0.5)*spread)
+  data_join <-
+      full_join(filter(data_trait, trait_name == trait_name), data_summary, by="study") %>%
+      mutate(y = y_av + runif(length(y_av), -0.45, 0.45)*spread)
 
-Xlab <- paste0(unique(data_all2$trait_name), " (", unique(data_all2$unit), ")")
+  Xlab <- paste0(gsub("_", " ", data_join$trait_name), " (", data_join$unit, ")")[1]
 
-  x <- ggplot(data_all2, aes(x = value, y = y, colour = col)) + geom_point(alpha = 0.3)
-  x <- x + scale_x_log10(
+  # Histogram at top
+  p1 <- ggplot(data_join, aes(x=value)) +
+          geom_histogram(aes(y = ..density..), color="darkgrey", fill="darkgrey") +
+          geom_density(color="black") +
+          xlab("") + ylab("All data") +
+          scale_x_log10(
                           breaks = trans_breaks("log10", function(x) 10^x),
                           labels = trans_format("log10", math_format(10^.x))) +
-      scale_y_continuous(breaks=dat_sum$y_av,
-                         labels=dat_sum$study) 
-  x <- x + scale_colour_manual(values=c('red', 'seagreen3', 'steelblue3', 'yellow2'))  
-  x <- x + ggtitle(paste0("Data distributions for ", trait)) + xlab(Xlab)
-  x <- x + theme_bw()
-  x <- x + theme(legend.position = "none",
-                 axis.title.y = element_blank(),
-                  panel.border = element_blank(),
-                 panel.grid.minor = element_blank(),
-                 panel.grid.major = element_blank())
-  #browser()
-  print(x)
+
+          theme(legend.position = "none",
+              panel.grid.minor = element_blank(),
+              panel.grid.major = element_blank(),
+              axis.ticks.y=element_blank(),
+              axis.text=element_blank(),
+              panel.background = element_blank(),
+              plot.margin= unit(c(1, 1, -1, 1), "lines"))
+
+  # Dotchart with plot by study
+  p2 <- ggplot(data_join, aes(x = value, y = y, colour = col)) +
+          geom_point(alpha = 0.6) +
+          scale_colour_manual(values=pallette1())  +
+          scale_x_log10(
+                          breaks = trans_breaks("log10", function(x) 10^x),
+                          labels = trans_format("log10", math_format(10^.x))) +
+          scale_y_continuous(breaks=data_summary$y_av, labels=data_summary$study) +
+          xlab(Xlab) + ylab("By study") +
+          theme(legend.position = "none",
+                axis.title.x = element_text(),
+                panel.grid.minor = element_blank(),
+                panel.grid.major.x = element_blank(),
+                plot.margin= unit(c(0, 1, 1, 1), "lines"))
+
+  # Fix width of second plot to be same as bottom using ggplot_table
+  p1b <- ggplot_gtable(ggplot_build(p1))
+  p2b <- ggplot_gtable(ggplot_build(p2))
+  p1b$widths[2:3] <- p2b$widths[2:3]
+  grid.arrange(p1b, p2b, nrow=2, widths=c(1), heights=heights)
 }
-
-
 
 pairwise_panel <- function(id, df) {
   

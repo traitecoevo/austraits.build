@@ -38,24 +38,51 @@ pairwise_panel(key, formatted)
 ```
 
 ```{r, results='asis', echo=FALSE, eval = show_plot}
-writeLines(sprintf("### Density distributions for %s, log10 axes",key))
+writeLines("### Distributions of traits")
 ```
 
-```{r dotchart, fig.width=8, fig.height=6, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
+### Distributions of traits
 
+```{r, include=FALSE, warning=FALSE, eval = show_plot}
+# Make a list of traits
 traits <- unique(data_study$data$trait_name[data_study$data$trait_name %in% definitions_traits_numeric$trait_name])
+data_all <- austraits$data
+src <- NULL
 
-for(trait in traits) {
-  dotchart_single(trait, key, austraits, trait)
+for(i in seq_along(traits)) {
+  trait <- traits[i]
+
+  # We're doing some tricks to rescale the plot height
+  # We'll try to maintain constant density of points along yaxis and rescale plot height accordingly
+  panel_ht_top <- 4
+  target_density <- 5
+  panel_ht_bottom <- max(2*panel_ht_top,
+                        sqrt(nrow(data_all[data_all$trait_name==trait,]))/target_density)
+  figure_height <- sum(panel_ht_top, panel_ht_top)
+
+  ## This bit uses knitr's option to provide a template piece of code
+  ## substitutes in values for anything inside {{}}
+  src <- c(src, knit_expand(text=c(
+        '#### {{trait}}\n',
+        '```{r fig-{{trait}}, warning=FALSE, message=FALSE, fig.width=12, fig.height ={{figure_height}}}',
+        'dotchart_single("{{trait}}", key, data_all, c({{panel_ht_top}}, {{panel_ht_bottom}}))',
+        '```\n\n')))
 }
 
+# knit the source
+res = knit_child(text = src)
+```
+
+```{r results='asis', eval = show_plot}
+writeLines(res)
 ```
 
 ### Trait values with high associated intraspecific variation
-This table shows trait records for species within the current dataset where the intraspecific variation across all records for this species-trait combination exceeds an order of magnitude. Note that the expected degree of intraspecific variation varies between traits.
+If present, the table shows any trait records for species within the current dataset where the intraspecific variation across all records for this species-trait combination exceeds an order of magnitude. Note that the expected degree of intraspecific variation varies between traits.
 
 ```{r flags_table, results='asis', echo=FALSE, warning=FALSE, message=FALSE}
 flagged <- flags(key, austraits, definitions_traits_numeric)
-kable(flagged, "markdown", align="l", padding=10)
+if(nrow(flagged)>0)
+  kable(flagged, "markdown", align="l", padding=10)
 ```
 
