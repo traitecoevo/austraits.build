@@ -32,23 +32,16 @@ format_data <- function(id, study_data, austraits, definitions_traits_numeric) {
   study_traits_alldata <- data_all[data_all$trait_name %in% study_traits,] # and pull out all austraits data for those traits
   study_traits_alldata <- study_traits_alldata[!is.na(study_traits_alldata$value),]
   
-  # aggregate to mean vals per species/trait across all data
+  # create df with non-aggregated data from all datasets
   study_traits_alldata$value <- as.numeric(study_traits_alldata$value)
+  study_traits_alldata$seq <- with(study_traits_alldata, ave(value, species_name, trait_name, study, FUN = seq_along)) #adds a sequence number for multiple values within datasets so I can spread long to wide without aggregating
+    
+  study_traits_alldata_wide <- study_traits_alldata %>%
+    select(species_name, trait_name, value, seq, study) %>%
+    spread(key = trait_name, value = value) %>%    
+    select(- seq, - study) %>%
+    mutate(target = 'all_data')  
   
-  study_traits_alldata <- study_traits_alldata %>%
-    group_by(species_name, trait_name, unit) %>%
-    summarise(
-      trait_mean = mean(value),
-      trait_CV = CV(value)) %>%
-    ungroup()
-  
-  # study_traits_alldata <- study_traits_alldata[study_traits_alldata$trait_CV < 0.5,] # remove records with unrealistic intraspecific variation
-  study_traits_alldata <- study_traits_alldata[!is.na(study_traits_alldata$trait_mean),]
-  study_traits_alldata_wide <- study_traits_alldata %>% 
-    select(- trait_CV, - unit) %>%
-    spread(key = trait_name, value = trait_mean) %>%
-    mutate(target = 'all_data')
-
   # add in non-aggregated data from target study
   study_data_numeric <- study_data[study_data$trait_name %in% unique(definitions_traits_numeric$trait_name),]
   study_data_numeric$seq <- with(study_data_numeric, ave(value, species_name, trait_name, study, FUN = seq_along)) #adds a sequence number for multiple values within datasets so I can spread long to wide without aggregating
