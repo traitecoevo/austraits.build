@@ -32,44 +32,42 @@ format_data <- function(id, study_data, austraits, definitions_traits_numeric) {
   study_traits_alldata <- data_all[data_all$trait_name %in% study_traits,] # and pull out all austraits data for those traits
   study_traits_alldata <- study_traits_alldata[!is.na(study_traits_alldata$value),]
   
-  # aggregate to mean vals per species/trait across all data
-  # study_traits_alldata <- study_traits_alldata[!study_traits_alldata$study %in% id,]  # remove target dataset
+  # create df with non-aggregated data from all datasets
   study_traits_alldata$value <- as.numeric(study_traits_alldata$value)
-  
-  study_traits_alldata <- study_traits_alldata %>%
-    group_by(species_name, trait_name, unit) %>%
-    summarise(
-      trait_mean = mean(value),
-      trait_CV = CV(value)
-    )
-  # study_traits_alldata <- study_traits_alldata[study_traits_alldata$trait_CV < 0.5,] # remove records with unrealistic intraspecific variation
-  study_traits_alldata <- study_traits_alldata[!is.na(study_traits_alldata$trait_mean),]
-  study_traits_alldata_wide <- dcast(study_traits_alldata, species_name ~ trait_name, value.var = 'trait_mean', fun.aggregate=function(x) paste(x, collapse = ", "))
-  study_traits_alldata_wide$target <- 'all_data'
+  study_traits_alldata$seq <- with(study_traits_alldata, ave(value, species_name, trait_name, study, FUN = seq_along)) #adds a sequence number for multiple values within datasets so I can spread long to wide without aggregating
+    
+  study_traits_alldata_wide <- study_traits_alldata %>%
+    select(species_name, trait_name, value, seq, study) %>%
+    spread(key = trait_name, value = value) %>%    
+    select(- seq, - study) %>%
+    mutate(target = 'all_data')  
   
   # add in non-aggregated data from target study
   study_data_numeric <- study_data[study_data$trait_name %in% unique(definitions_traits_numeric$trait_name),]
-  study_data_numeric$seq <- with(study_data_numeric, ave(value, species_name, trait_name, study, FUN = seq_along)) #adds a sequence number for multiple values within datasets so I can cast long to wide without aggregating
-  study_data_numeric_wide <- dcast(study_data_numeric, study + seq + species_name ~ trait_name, value.var = 'value', fun.aggregate=function(x) as.character(x)[1])
-  study_data_numeric_wide$seq <- NULL
-  study_data_numeric_wide$study <- NULL
-  study_data_numeric_wide$target <- paste(id)
-  
+  study_data_numeric$seq <- with(study_data_numeric, ave(value, species_name, trait_name, study, FUN = seq_along)) #adds a sequence number for multiple values within datasets so I can spread long to wide without aggregating
+  study_data_numeric_wide <- study_data_numeric %>%
+    select(species_name, trait_name, value, seq) %>%
+    spread(key = trait_name, value = value) %>%    
+    select(- seq) %>%
+    mutate(target = paste(id))
+
   # put it all together
   formatted <- rbind(study_data_numeric_wide,study_traits_alldata_wide)
   
+  # make the trait data numeric class
   if(ncol(formatted) > 3) { # lapply breaks if there's only one column to apply a function to
     formatted[,2:(ncol(formatted)-1)] <- lapply(formatted[,2:(ncol(formatted)-1)], as.numeric)
   } else {
-    formatted[,2] <- as.numeric(formatted[,2])
+    formatted[[2]] <- as.numeric(formatted[[2]])
   }
   
+  formatted <- arrange(formatted, target)
   formatted$target <- as.factor(formatted$target)
-  formatted <- formatted[order(formatted$target),]
-
+  
   return(formatted)
-
+  
 }
+
 
 dotchart_single <- function(trait, id, data_all, heights=c(1,4)) {
 
