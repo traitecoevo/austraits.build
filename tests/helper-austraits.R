@@ -10,8 +10,6 @@ tmp <- lapply(list.files("../R", full.names=TRUE), source)
 
 variable_definitions <- read_csv("../config/definitions_traits.csv", col_types = cols())
 
-make_label <- testthat:::make_label
-
 ## New expect_that helper functions; test that a number is in a range,
 ## or that a range contains a number.
 
@@ -31,28 +29,29 @@ expect_isin <- function(object, expected, ..., info = NULL, label = NULL,
   invisible(object)
 }
 
-expect_contains <- function(object, expected, ..., info = NULL, label = NULL,
-                         expected.label = NULL) {
 
- i <- expected %in% object
+#' Expectation: one set contains the other
+expect_contains <- function(object, expected, ..., info = NULL) {
+
+  i <- expected %in% object
 
   comp <- compare(all(i), TRUE, ...)
   expect(
     comp$equal,
     sprintf("%s - does not contain: %s", info, paste(expected[!i], collapse= ", "))
-  )
+    )
 
   invisible(object)
 }
 
 expect_not_NA <- function (object, info = NULL, label = NULL) {
-    lab <- make_label(object, label)
     i <- !is.na(object)
     comp <- compare(all(i), TRUE)
     expect(comp$equal,
-            sprintf("%s - contains NAs: %s", info, lab))
+            sprintf("%s - contains NAs: %s", info, label))
     invisible(object)
 }
+
 
 expect_unique <- function (object, info = NULL, label = NULL) {
     x <- table(unlist(object))
@@ -95,13 +94,12 @@ disallowed_chars <- function(x) {
 # Better than expect_silent as contains `info` and allows for complete failures
 expect_no_error <- function (object, regexp = NULL, ..., info = NULL, label = NULL)
 {
-    lab <- make_label(object, label)
     error <- tryCatch({
         object
         NULL
     }, error = function(e) {
         e
     })
-    expect(is.null(error), sprintf("%s threw an error: %s", lab, paste(error$message, collapse=",")), info = info)
+    expect(is.null(error), sprintf("%s threw an error: %s", label, paste(error$message, collapse=",")), info = info)
    invisible(NULL)
 }

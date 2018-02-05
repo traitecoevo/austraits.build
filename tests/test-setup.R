@@ -41,13 +41,13 @@ for (s in study_names) {
 
   # Context
   f <- files[2]
-  context <- read_csv(f, col_types = cols())
+  expect_silent(context <- read_csv(f, col_types = cols()))
   test_dataframe(context, c("site_name","trait_name","unit","value","notes"), info=f)
 
   # Metadata
   f <- files[3]
   expect_allowed_text(readLines(f), info = f)
-  metadata <- read_yaml(f)
+  expect_silent(metadata <- read_yaml(f))
   vals <- c("source","people","dataset","config","traits","substitutions")
   test_list_named(metadata, vals, info=f)
 
@@ -107,7 +107,7 @@ for (s in study_names) {
 
   # data.csv
   f <- files[1]
-  data <- read_csv(f, col_types = cols())
+  expect_silent(data <- read_csv(f, col_types = cols()))
   test_dataframe(data, names(data), info=f)
 
   # custom R code
