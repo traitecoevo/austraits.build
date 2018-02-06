@@ -57,6 +57,12 @@ list_to_df <- function(my_list) {
   dplyr::bind_rows(lapply(my_list, data.frame, stringsAsFactors = FALSE))
 }
 
+## Add an item to the end of a list
+append_to_list <- function(my_list, to_append) {
+  my_list[[length(my_list)+1]] <-  to_append
+  my_list
+}
+
 # Provide an easier entry point for
 # parsing a YAML file
 read_yaml <- yaml::yaml.load_file
