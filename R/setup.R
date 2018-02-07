@@ -7,9 +7,9 @@ add_substitution <- function(study, trait_name, find, replace) {
   metadata <- read_yaml(filename_metadata)
 
   to_add <- list(trait_name = trait_name, find = find, replace = replace) 
-    
+
   # add `substitutions` category if it doesn't yet exist
-  if(is.null(metadata[["substitutions"]])) {
+  if(is.null(metadata[["substitutions"]]) || is.na(metadata[["substitutions"]])) {
     metadata[["substitutions"]] <- list()
   }
 
