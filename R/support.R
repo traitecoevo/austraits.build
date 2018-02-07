@@ -53,8 +53,14 @@ df_to_list <- function(df) {
 
 # Convert a list of lists to dataframe
 # requires that every list have same named elements
-list_to_df <- function(my_list) {
-  dplyr::bind_rows(lapply(my_list, data.frame, stringsAsFactors = FALSE))
+list_to_df <- function(my_list, as_character= TRUE) {
+  out <- dplyr::bind_rows(lapply(my_list, as.data.frame, stringsAsFactors = FALSE))
+  
+  if(as_character) {
+    for(v in names(out)[unlist(lapply(out, class)) !="character"])
+      out[[v]] <- as.character(out[[v]])
+  }
+  out
 }
 
 ## Add an item to the end of a list
