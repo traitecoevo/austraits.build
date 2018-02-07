@@ -280,22 +280,31 @@ parse_data <- function(dataset_id, data, metadata) {
 
 update_taxonomy  <- function(study_data, metadata){
 
+  out <- study_data
+
+  # copy original species name to a new column
+  out[["original_name"]] = out[["species_name"]]
+
+  # now make any replacements specified in metadata yaml
+
+  ## Read metadata table, quit if empty
   cfgLookup <-  list_to_df(metadata[["taxonomic_updates"]])  
   if(nrow(cfgLookup) == 0) {
-    return(study_data)
+    return(out)
   }
 
-  out <- study_data
+  ## Makes replacements, row by row
   for(i in seq_len(nrow(cfgLookup))) {
     j <- which(out[["species_name"]] == cfgLookup[["find"]][i])
     if( length(j) > 0 )
       out[["species_name"]][j] <- cfgLookup[["replace"]][i]
   }
 
+  ## Return updated table
   out
 }
 
-combine_austraits <- function(..., d=list(...), variable_definitions, compiler_contacts) {
+combine_austraits <- function(..., d=list(...), species_list) {
   combine <- function(name, d) {
     dplyr::bind_rows(lapply(d, "[[", name))
   }
@@ -308,6 +317,13 @@ combine_austraits <- function(..., d=list(...), variable_definitions, compiler_c
               context=combine("context", d),
               metadata=lapply(d, "[[", "metadata")
               )
+
+  species_name <- unique(ret$data$species_name) %>% sort()
+  ret[["species_list"]] <- 
+          left_join(
+                tibble(species_name =  species_name), species_list, 
+                by = "species_name")
+
 
 #  ret$bibtex <- do.call("c", unname(lapply(d, "[[", "bibtex")))
 #  ret$dictionary <- variable_definitions
