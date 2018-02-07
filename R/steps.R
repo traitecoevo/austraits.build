@@ -61,7 +61,7 @@ read_data_study <- function(filename_data_raw,
   data <- add_all_columns(data, definitions_data)
   data <- drop_unsupported(data, definitions_traits, categorical_trait_constraints)
   data <- convert_units(data, definitions_traits, unit_conversion_functions)
-  # data <- post_process(data)
+  data <- update_taxonomy(data, metadata)
   data
 }
 
@@ -278,6 +278,22 @@ parse_data <- function(dataset_id, data, metadata) {
   out
 }
 
+update_taxonomy  <- function(study_data, metadata){
+
+  cfgLookup <-  list_to_df(metadata[["taxonomic_updates"]])  
+  if(nrow(cfgLookup) == 0) {
+    return(study_data)
+  }
+
+  out <- study_data
+  for(i in seq_len(nrow(cfgLookup))) {
+    j <- which(out[["species_name"]] == cfgLookup[["find"]][i])
+    if( length(j) > 0 )
+      out[["species_name"]][j] <- cfgLookup[["replace"]][i]
+  }
+
+  out
+}
 
 combine_austraits <- function(..., d=list(...), variable_definitions, compiler_contacts) {
   combine <- function(name, d) {
@@ -303,3 +319,4 @@ combine_austraits <- function(..., d=list(...), variable_definitions, compiler_c
 extract_austraits_data <- function(austraits) {
   austraits$data
 }
+
