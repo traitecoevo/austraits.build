@@ -19,7 +19,7 @@ dataset:
   year_collected_start: .na
   year_collected_end: .na
   description: Taxonomic treatment - Flora of South Australia
-  collection_type: herbarium_specimens_assumed 
+  collection_type: herbarium_specimens_assumed
   sample_age_class: adult
   sampling_strategy: unknown
   original_file: .na
@@ -28,22 +28,13 @@ config:
   is_vertical: no
   variable_match:
     species_name: species
-  custom_R_code: '
-    traits <- c("leaf_length_max", "leaf_length_min", "leaf_width_max", "leaf_width_min",
-      "plant_height_max", "plant_height_min");
-    units <- c("leaf_length_unit", "leaf_length_unit", "leaf_width_unit", "leaf_width_unit", 
-               "plant_height_unit", "plant_height_unit");
-    a <- list(cm=10, m=1000);
-    for(i in 1:length(traits)) {
-     trait <- traits[i]   ;
-     unit <- units[i];
-     for(v in names(a)) {
-       x <- which(data[[unit]] == v);
-       data[[trait]][x] <- as.character(as.numeric(data[[trait]][x]) * a[[v]]);
-       data[[unit]][x] <- "mm";
-     };
-    };
-    data'
+  custom_R_code: ' traits <- c("leaf_length_max", "leaf_length_min", "leaf_width_max",
+    "leaf_width_min", "plant_height_max", "plant_height_min"); units <- c("leaf_length_unit",
+    "leaf_length_unit", "leaf_width_unit", "leaf_width_unit", "plant_height_unit",
+    "plant_height_unit"); a <- list(cm=10, m=1000); for(i in 1:length(traits)) { trait
+    <- traits[i]   ; unit <- units[i]; for(v in names(a)) { x <- which(data[[unit]]
+    == v); data[[trait]][x] <- as.character(as.numeric(data[[trait]][x]) * a[[v]]);
+    data[[unit]][x] <- "mm"; }; }; data'
 traits:
 - var_in: plant_height_min
   unit_in: mm
@@ -88,3 +79,4 @@ traits:
   precision: unknown
   methodology_ids: unknown
 substitutions: .na
+

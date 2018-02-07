@@ -30,46 +30,12 @@ config:
     trait_name: trait
     unit: units
     value: value
-  custom_R_code: '
-    traits <- c("leaf length maximum", "leaf length minimum", "leaf width maximum", "leaf width minimum",
-            "plant height maximum", "plant height minimum", "seed breadth maximum", "seed breadth minimum",
-            "seed length maximum", "seed length minimum", "seed width maximum", "seed width minimum");
-   a <- list(cm=10, m=1000);
-    for(t in traits){
-      for(v in names(a)) {
-        i <- which(data[["trait"]]==t & data[["units"]] == v);
-        data[["value"]][i] <- as.character(as.numeric(data[["value"]][i]) * a[[v]]);
-        data[["units"]][i] <- "mm";
-        };
-      };
-
-    i <- data$trait == "flowering time start";
-    data[i, "value"] <- format_flowering_months(data[i,]$value, data[data$trait == "flowering time end",]$value);
-    data[i, "trait"] <- "flowering_time";
-    data <- data[!data$trait == "flowering time end",];
-
-    leaf_phenology <- data[data$trait == "longevity",];
-    life_history <- data[data$trait == "longevity",];
-    leaf_phenology[leaf_phenology$trait == "longevity",]$trait <- "leaf_phenology";
-    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EP", "E", "EAP", "EPB", "EB", "EAB", "EA"),]$value <- "evergreen";
-    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("DP", "D", "DPB"),]$value <- "deciduous";
-    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("P", "A", "ED", "EDP", "AP", "AB", "PB", "B"),]$value <- NA;
-    leaf_phenology <- leaf_phenology[!is.na(leaf_phenology$value),];
-
-    life_history[life_history$trait == "longevity",]$trait <- "life_history";
-    life_history[life_history$trait == "life_history" & life_history$value %in% c("EP", "P", "DP", "EDP"),]$value <- "perennial";
-    life_history[life_history$trait == "life_history" & life_history$value %in% c("A", "EA"),]$value <- "annual";
-    life_history[life_history$trait == "life_history" & life_history$value %in% c("EB", "B"),]$value <- "biennial";
-    life_history[life_history$trait == "life_history" & life_history$value %in% c("AB", "EAB"),]$value <- "annual biennial";
-    life_history[life_history$trait == "life_history" & life_history$value %in% c("AP", "EAP"),]$value <- "annual perennial";
-    life_history[life_history$trait == "life_history" & life_history$value %in% c("EPB", "DPB", "PB"),]$value <- "biennial perennial";
-    life_history[life_history$trait %in% "life_history" & life_history$value %in% c("D", "E", "ED"),]$value <- NA;
-    life_history <- life_history[!is.na(life_history$value),];
-
-    data <- rbind(data[!data$trait %in% "longevity",], leaf_phenology, life_history);
-    data[data$value %in% "articles",]$value <- c("article");
-    data[data$value %in% "article",]$trait <- c("leaf_type");
-    data'
+  custom_R_code: |2-
+     traits <- c("leaf length maximum", "leaf length minimum", "leaf width maximum", "leaf width minimum", "plant height maximum", "plant height minimum", "seed breadth maximum", "seed breadth minimum", "seed length maximum", "seed length minimum", "seed width maximum", "seed width minimum"); a <- list(cm=10, m=1000); for(t in traits){ for(v in names(a)) { i <- which(data[["trait"]]==t & data[["units"]] == v); data[["value"]][i] <- as.character(as.numeric(data[["value"]][i]) * a[[v]]); data[["units"]][i] <- "mm"; }; };
+    i <- data$trait == "flowering time start"; data[i, "value"] <- format_flowering_months(data[i,]$value, data[data$trait == "flowering time end",]$value); data[i, "trait"] <- "flowering_time"; data <- data[!data$trait == "flowering time end",];
+    leaf_phenology <- data[data$trait == "longevity",]; life_history <- data[data$trait == "longevity",]; leaf_phenology[leaf_phenology$trait == "longevity",]$trait <- "leaf_phenology"; leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EP", "E", "EAP", "EPB", "EB", "EAB", "EA"),]$value <- "evergreen"; leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("DP", "D", "DPB"),]$value <- "deciduous"; leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("P", "A", "ED", "EDP", "AP", "AB", "PB", "B"),]$value <- NA; leaf_phenology <- leaf_phenology[!is.na(leaf_phenology$value),];
+    life_history[life_history$trait == "longevity",]$trait <- "life_history"; life_history[life_history$trait == "life_history" & life_history$value %in% c("EP", "P", "DP", "EDP"),]$value <- "perennial"; life_history[life_history$trait == "life_history" & life_history$value %in% c("A", "EA"),]$value <- "annual"; life_history[life_history$trait == "life_history" & life_history$value %in% c("EB", "B"),]$value <- "biennial"; life_history[life_history$trait == "life_history" & life_history$value %in% c("AB", "EAB"),]$value <- "annual biennial"; life_history[life_history$trait == "life_history" & life_history$value %in% c("AP", "EAP"),]$value <- "annual perennial"; life_history[life_history$trait == "life_history" & life_history$value %in% c("EPB", "DPB", "PB"),]$value <- "biennial perennial"; life_history[life_history$trait %in% "life_history" & life_history$value %in% c("D", "E", "ED"),]$value <- NA; life_history <- life_history[!is.na(life_history$value),];
+    data <- rbind(data[!data$trait %in% "longevity",], leaf_phenology, life_history); data[data$value %in% "articles",]$value <- c("article"); data[data$value %in% "article",]$trait <- c("leaf_type"); data
 traits:
 - var_in: dispersal
   unit_in: .na
@@ -197,7 +163,6 @@ traits:
   replicates: unknown
   precision: unknown
   methodology_ids: unknown
-# Note variables below are created via custom_R_code
 - var_in: leaf_type
   unit_in: .na
   trait_name: leaf_type
