@@ -1,3 +1,7 @@
+read_csv_char <- function(...){
+  read_csv(..., col_types = cols(.default = "c"))
+}
+
 rename_columns <- function(obj, from, to) {
   names(obj)[match(from, names(obj))] <- to
   obj
