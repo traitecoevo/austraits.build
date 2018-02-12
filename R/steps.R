@@ -5,7 +5,8 @@ load_study <- function(filename_data_raw,
                        definitions_traits,
                        definitions_context,
                        categorical_trait_constraints,
-                       unit_conversion_functions
+                       unit_conversion_functions,
+                       species_list_known
                        ) {
 
   # read metadata
@@ -34,11 +35,17 @@ load_study <- function(filename_data_raw,
   context <- add_all_columns(context, definitions_context)
   context <- fix_types(context, definitions_context)
 
+  species_name <- unique(data$species_name) %>% sort()
+  species_list <- left_join(
+                tibble(species_name =  species_name), species_list_known, 
+                by = "species_name")
+
   # bibentry <- set_bib_key(bibtex::read.bib(filename_bib), key)
 
   list(key        = key,
        data       = data,
        context    = context,
+       species_list = species_list,
        metadata   = metadata
        )
 }
@@ -285,8 +292,7 @@ update_taxonomy  <- function(study_data, metadata){
   # copy original species name to a new column
   out[["original_name"]] = out[["species_name"]]
 
-  # now make any replacements specified in metadata yaml
-
+  # Now make any replacements specified in metadata yaml
   ## Read metadata table, quit if empty
   cfgLookup <-  list_to_df(metadata[["taxonomic_updates"]])  
   if(nrow(cfgLookup) == 0) {
@@ -300,11 +306,34 @@ update_taxonomy  <- function(study_data, metadata){
       out[["species_name"]][j] <- cfgLookup[["replace"]][i]
   }
 
+  ## Enforce some standards
+  ## Capitalise first letter
+  out[["species_name"]] <- gsub("^([a-z])", "\\U\\1", out[["species_name"]], perl=TRUE)
+
+  ## sp. not sp or spp
+  out[["species_name"]] <- gsub("\\ssp(\\s|$)", " sp.\\1", out[["species_name"]], perl=TRUE)
+  out[["species_name"]] <- gsub("\\sspp(\\s|$)", " sp.\\1", out[["species_name"]], perl=TRUE)
+
+  ## subsp. not ssp, ssp., subsp
+  out[["species_name"]] <- gsub("\\sssp(\\s|$)", " subsp.\\1", out[["species_name"]], perl=TRUE)
+  out[["species_name"]] <- gsub("\\sssp.(\\s|$)", " subsp.\\1", out[["species_name"]], perl=TRUE)
+  out[["species_name"]] <- gsub("\\subsp(\\s|$)", " subsp.\\1", out[["species_name"]], perl=TRUE)
+
+  ## var. not var
+  out[["species_name"]] <- gsub("\\svar(\\s|$)", " var.\\1", out[["species_name"]], perl=TRUE)
+
+  ## aff. not affin
+  out[["species_name"]] <- gsub("\\saffin(\\s|$)", " aff.\\1", out[["species_name"]], perl=TRUE)
+
+  ## remove double space
+  out[["species_name"]] <- gsub("[\\s]+", " ", out[["species_name"]], perl=TRUE)
+
+
   ## Return updated table
   out
 }
 
-combine_austraits <- function(..., d=list(...), species_list) {
+combine_austraits <- function(..., d=list(...)) {
   combine <- function(name, d) {
     dplyr::bind_rows(lapply(d, "[[", name))
   }
@@ -315,15 +344,11 @@ combine_austraits <- function(..., d=list(...), species_list) {
   names(d) <- sapply(d, "[[", "key")
   ret <- list(data=combine("data", d),
               context=combine("context", d),
+              species_list=combine("species_list", d) %>% 
+                              arrange(species_name) %>% 
+                              filter(!duplicated(.)),
               metadata=lapply(d, "[[", "metadata")
               )
-
-  species_name <- unique(ret$data$species_name) %>% sort()
-  ret[["species_list"]] <- 
-          left_join(
-                tibble(species_name =  species_name), species_list, 
-                by = "species_name")
-
 
 #  ret$bibtex <- do.call("c", unname(lapply(d, "[[", "bibtex")))
 #  ret$dictionary <- variable_definitions
