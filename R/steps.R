@@ -285,6 +285,40 @@ parse_data <- function(dataset_id, data, metadata) {
   out
 }
 
+
+## Enforce some standards on species names
+standardise_names <- function(x) {
+
+  ## Capitalise first letter
+  x <- gsub("^([a-z])", "\\U\\1", x, perl=TRUE)
+
+  ## sp. not sp or spp
+  x <- gsub("\\ssp(\\s|$)", " sp.\\1", x, perl=TRUE)
+  x <- gsub("\\sspp(\\s|$)", " sp.\\1", x, perl=TRUE)
+
+  ## subsp. not ssp, ssp., subsp or sub sp.
+  x <- gsub("\\sssp(\\s|$)", " subsp.\\1", x, perl=TRUE)
+  x <- gsub("\\sssp.(\\s|$)", " subsp.\\1", x, perl=TRUE)
+  x <- gsub("\\ssubsp(\\s|$)", " subsp.\\1", x, perl=TRUE)
+  x <- gsub("\\ssub sp.(\\s|$)", " subsp.\\1", x, perl=TRUE)
+
+  ## lower case after subsp.
+  x <- gsub("\\ssubsp.\\s([A-Z])", " subsp. \\L\\1", x, perl=TRUE)
+
+  ## var. not var
+  x <- gsub("\\svar(\\s|$)", " var.\\1", x, perl=TRUE)
+
+  ## aff. not affin, aff, affn
+  x <- gsub("\\saffin(\\s|$)", " aff.\\1", x, perl=TRUE)
+  x <- gsub("\\saff(\\s|$)", " aff.\\1", x, perl=TRUE)
+  x <- gsub("\\saffn(\\s|$)", " aff.\\1", x, perl=TRUE)
+
+  ## remove double space
+  x <- gsub("[\\s]+", " ", x, perl=TRUE)
+
+  x
+}
+
 update_taxonomy  <- function(study_data, metadata){
 
   out <- study_data
@@ -306,28 +340,7 @@ update_taxonomy  <- function(study_data, metadata){
       out[["species_name"]][j] <- cfgLookup[["replace"]][i]
   }
 
-  ## Enforce some standards
-  ## Capitalise first letter
-  out[["species_name"]] <- gsub("^([a-z])", "\\U\\1", out[["species_name"]], perl=TRUE)
-
-  ## sp. not sp or spp
-  out[["species_name"]] <- gsub("\\ssp(\\s|$)", " sp.\\1", out[["species_name"]], perl=TRUE)
-  out[["species_name"]] <- gsub("\\sspp(\\s|$)", " sp.\\1", out[["species_name"]], perl=TRUE)
-
-  ## subsp. not ssp, ssp., subsp
-  out[["species_name"]] <- gsub("\\sssp(\\s|$)", " subsp.\\1", out[["species_name"]], perl=TRUE)
-  out[["species_name"]] <- gsub("\\sssp.(\\s|$)", " subsp.\\1", out[["species_name"]], perl=TRUE)
-  out[["species_name"]] <- gsub("\\subsp(\\s|$)", " subsp.\\1", out[["species_name"]], perl=TRUE)
-
-  ## var. not var
-  out[["species_name"]] <- gsub("\\svar(\\s|$)", " var.\\1", out[["species_name"]], perl=TRUE)
-
-  ## aff. not affin
-  out[["species_name"]] <- gsub("\\saffin(\\s|$)", " aff.\\1", out[["species_name"]], perl=TRUE)
-
-  ## remove double space
-  out[["species_name"]] <- gsub("[\\s]+", " ", out[["species_name"]], perl=TRUE)
-
+  out[["species_name"]] <- standardise_names(out[["species_name"]])
 
   ## Return updated table
   out

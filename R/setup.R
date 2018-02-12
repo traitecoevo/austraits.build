@@ -1,3 +1,4 @@
+require(tidyverse)
 
 
 # function to add a substitution into a yaml file for a study
@@ -27,7 +28,12 @@ add_substitution <- function(study, trait_name, find, replace) {
   write_yaml(metadata, filename_metadata)
 }
 
-
+# function to add a taxonomic change into a yaml file for any study where species occurs
+add_taxnomic_change_all_studies <- function(find, replace, reason) {
+  studies <- find_species(find)
+  for(s in studies)
+    add_taxnomic_change(s, find, replace, reason)
+}
 
 # function to add a taxonomic change into a yaml file for a study
 add_taxnomic_change <- function(study, find, replace, reason) {
@@ -51,11 +57,82 @@ add_taxnomic_change <- function(study, find, replace, reason) {
 
   metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
 
-  message(sprintf("Adding taxonomic change in %s: %s -> %s (%s)", study, blue(find), green(replace), reason))
+  message(sprintf("Adding taxonomic change in %s: %s -> %s (%s)", study, crayon::blue(find), crayon::green(replace), reason))
   write_yaml(metadata, filename_metadata)
 }
 
 
+
+# function to remove a taxonomic change from a yaml file for a study
+remove_taxnomic_change <- function(study, find, replace=NULL) {
+
+  set_name <- "taxonomic_updates"
+  filename_metadata <- file.path("data", study,  "metadata.yml")
+  metadata <- read_yaml(filename_metadata)
+
+  # if it doesn't yet exist - > done
+  if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]])) {
+    message(sprintf("Taxonomic change in %s: %s -> %s %s", study, find, replace, crayon::green("does not exist")))
+    return()
+  }
+
+  # Check if find record already exists for that trait
+  data <-  list_to_df(metadata[[set_name]])  
+  if(nrow(data) == 0) {
+    message(sprintf("Taxonomic change in %s: %s -> %s %s", study, find, replace, crayon::green("does not exist")))
+    return()
+  }
+
+  if(is.null(replace))
+    i <-data$find == find
+  else
+    i <- data$find == find & data$replace == replace
+
+
+  if(any(i)) {
+    metadata[[set_name]][which(i)] <- NULL
+    message(sprintf("Taxonomic change in %s: %s -> %s %s", study, find, replace, crayon::red("removed")))
+  }
+
+  write_yaml(metadata, filename_metadata)
+}
+
+list_studies <- function(){
+  dir("data")
+}
+
+get_metadata_files <- function(studies = NULL){
+  if(is.null(studies))
+    studies <- list_studies()
+  file.path("data", studies, "metadata.yml")
+}
+
+find_species <- function(species_name){
+  data <- remake::make("austraits")$data %>% select(species_name, study) %>% distinct()
+  f <- function(sp)  filter(data, species_name == sp) %>%  pull(study) %>% unique()
+  if(length(species_name) == 1) 
+    f(species_name)
+  else
+    lapply(species_name, f) 
+}
+
+find_taxnomic_change <- function(find, replace=NULL, studies = NULL){
+
+  if(is.null(studies))
+    studies <- list_studies()
+
+  f <- get_metadata_files(studies)
+
+  contents <- lapply(f, function(x) paste0(readLines(x), collapse="\n"))
+
+  if(!is.null(replace))
+      txt <- sprintf("- find: %s\nreplace: %s", find, replace)
+  else
+    txt <- sprintf("- find: %s\n", find)
+  i <- sapply(contents, function(s) any(grepl(txt,s, fixed=TRUE)))
+  
+  studies[i]
+}
 
 # checks all taxa within against our list of known species
 # If not found, and update=TRUE, checks the unknown species against
@@ -164,3 +241,19 @@ add_to_accepted <- function(accepted, to_add) {
   accepted
 }
 
+
+find_names_distance_to_neighbours <- function(species_name, dist=5) {
+
+  # index of species to check
+  n <- seq_len(length(species_name))
+  
+  # for each value in n, build an index of i-dist, i+dist, but not <=0, or > length(n)
+  ii <- lapply(n, function(i) i + c(-dist:-1, 1:dist))
+  for(i  in 1:dist)
+    ii[[i]] <- ii[[i]][ii[[i]] > 0 & ii[[i]] !=i ] 
+  for(i in (length(n) - 0:dist))
+    ii[[i]] <- ii[[i]][ii[[i]] <= length(n) & ii[[i]] !=i ] 
+
+  # now check every species against nearby species, get distance in chars
+  unlist(lapply(n, function(i) min(adist(species_name[i], species_name[ii[[i]]]))))
+}
