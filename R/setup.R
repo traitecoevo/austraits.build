@@ -28,6 +28,8 @@ add_substitution <- function(study, trait_name, find, replace) {
   write_yaml(metadata, filename_metadata)
 }
 
+
+
 # function to add a taxonomic change into a yaml file for any study where species occurs
 add_taxnomic_change_all_studies <- function(find, replace, reason) {
   studies <- find_species(find)
@@ -62,6 +64,39 @@ add_taxnomic_change <- function(study, find, replace, reason) {
 }
 
 
+# function to update a taxonomic change into a yaml file for any study where species occurs
+update_taxnomic_change_all_studies <- function(find, replace, reason) {
+  studies <- find_taxnomic_change(find)
+  for(s in studies)
+    update_taxnomic_change(s, find, replace, reason)
+}
+
+
+# function to update a substitution into a yaml file for a study
+update_taxnomic_change <- function(study, find, replace, reason) {
+
+  set_name <- "taxonomic_updates"
+
+  filename_metadata <- file.path("data", study,  "metadata.yml")
+  metadata <- read_yaml(filename_metadata)
+
+  to_add <- list(find = find, replace = replace, reason = reason) 
+
+  data <-  list_to_df(metadata[[set_name]]) 
+  i <- match(find, data$find)
+  # add `set_name` category if it doesn't yet exist
+  if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]]) || nrow(data) == 0 || length(i) == 0) {
+    stop(sprintf("Substitution for %s in %s  does not exist", find, filename_metadata))
+  }
+
+  metadata[[set_name]][[i]][["replace"]] <- replace
+  metadata[[set_name]][[i]][["reason"]] <- reason
+  message(sprintf("Updating taxonomic change in %s: %s -> %s (%s)", study, crayon::blue(find), crayon::green(replace), reason))
+
+  write_yaml(metadata, filename_metadata)
+}
+
+#update_taxnomic_change("Angevin_2010", "Elymus scaber", "newname", "newreason")
 
 # function to remove a taxonomic change from a yaml file for a study
 remove_taxnomic_change <- function(study, find, replace=NULL) {
@@ -97,6 +132,7 @@ remove_taxnomic_change <- function(study, find, replace=NULL) {
   write_yaml(metadata, filename_metadata)
 }
 
+# List all studies in the data directory
 list_studies <- function(){
   dir("data")
 }
@@ -107,9 +143,17 @@ get_metadata_files <- function(studies = NULL){
   file.path("data", studies, "metadata.yml")
 }
 
-find_species <- function(species_name){
-  data <- remake::make("austraits")$data %>% select(species_name, study) %>% distinct()
-  f <- function(sp)  filter(data, species_name == sp) %>%  pull(study) %>% unique()
+find_species <- function(species_name, original_name = FALSE){
+
+  data <- remake::make("austraits")$data 
+
+  if(!original_name)
+    data <- data %>% select(name =  species_name, study) %>% distinct()
+  else
+    data <- data %>% select(name =  original_name, study) %>% distinct()
+
+  f <- function(sp)  filter(data, name == sp) %>%  pull(study) %>% unique()
+
   if(length(species_name) == 1) 
     f(species_name)
   else
@@ -217,16 +261,18 @@ check_taxonstand <- function(species, corr = FALSE, ...){
 format_tpl_to_accepted_df <- function(tpl, use.new = FALSE){
 
   if(use.new) {
-    tpl$Taxon <- paste(tpl$New.Genus, tpl$New.Species)
+    tpl$Taxon <- paste(tpl$New.Genus, tpl$New.Species, 
+                       tpl$New.Infraspecific.rank,  tpl$New.Infraspecific)
+    i <- tpl$New.Infraspecific.rank == ""
+    tpl$Taxon[i] <- paste(tpl$New.Genus, tpl$New.Species)[i]
     tpl$Taxonomic.status <- tpl$New.Taxonomic.status
   }
 
   tpl %>% 
-     select(species_name = Taxon, TPL_ID = ID, family = Family, 
-     authority = New.Authority, status = Taxonomic.status)# %>%
-    #   mutate(APC_name = NA_character_, APNI_ID = NA_character_) 
+     select(species_name = Taxon, family = Family, 
+     authority = New.Authority, TPL_ID = ID, status = Taxonomic.status) %>%
+     mutate(APC_name = "unknown", APC_taxon_ID = "unknown", APC_name_ID = "unknown") 
 }
-
 
 add_to_accepted <- function(accepted, to_add) {
 
