@@ -22,8 +22,10 @@ format_flowering_months <- function(start, end){
 # e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)
 # wrapper function for convert_month_range_string_to_binary
 convert_month_range_vec_to_binary <- function(vec) {
-  sapply(vec, function(x)
-        paste0(convert_month_range_string_to_binary(x), collapse=""))
+  out <- unlist(lapply(vec, function(x)
+        paste0(convert_month_range_string_to_binary(x), collapse="")))
+  out[out=="NA"] <- NA_character_
+  out
 }
 
 # converts flowering and fruiting month ranges to 12 element character strings of binary data
@@ -42,24 +44,24 @@ convert_month_range_string_to_binary <- function(str) {
   }
   
   # ephemeral only
-  
-  # TODO - maybe ignore ephemeral?? what does it mean? what to return?
   if (grepl("ephemeral", str)) {
-    return(paste("ephemeral"))
+    return(NA)
   }
   
   # after fire 
-  
   if (grepl("after fire", str)) {
-    return(paste("after fire"))
+    return(NA)
   }
   
   # periodic
-  
   if (grepl("periodic", str)) {
-    return(paste("periodic"))
+    return(NA)
   }
   
+   # periodic
+  if (grepl("irregular", str)) {
+    return(NA)
+  }
   
   ### months
   
