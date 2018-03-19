@@ -12,16 +12,69 @@ formatted <- format_data(data_study$key, data_study, austraits, definitions_trai
 
 # Report for study: `r key`
 
-## People
+##People
 
 ```{r, results='asis', echo=FALSE}
 tab <- list_to_df(data_study$metadata$people)
 kable(na.omit(tab), "markdown", align="l", padding=10)
 ```
 
-## Overview of data provided
+##Data Source
+Citation:data_study$metadata$source$primary$author, data_study$metadata$source$primary$year. data_study$metadata$source$primary$title data_study$metadata$source$primary$journal data_study$metadata$source$primary$volume: data_study$metadata$source$primary$pages
 
-The dataset includes `r nrow(data_study$data)` individual datapoints from `r length(unique(data_study$data$species_name))` species, with data included for the following `r length(unique(data_study$data$trait_name))` traits: `r paste(unique(data_study$data$trait_name), collapse = ", ")`.
+DOI: data_study$metadata$source$primary$doi
+
+```{r, results='asis', echo=FALSE}
+
+```
+
+##Overview of data provided
+The dataset provides data on data_study$metadata$dataset$description. It includes `r nrow(data_study$data)` individual datapoints from `r length(unique(data_study$data$species_name))` species, with data included for the following `r length(unique(data_study$data$trait_name))` traits: `r paste(unique(data_study$data$trait_name), collapse = ", ")`. Data collection began in the year data_study$metadata$dataset$year_collected_start and was completed in the year data_study$metadata$dataset$year_collected_end.
+
+##Locations of data sites
+
+The sites sampled are: 
+
+xxx data table showing site names, lat, long, elev, including units, looping across sites in unique(data_study$context$site_name) and extracting data_study$context$trait_name=="longitude", data_study$context$trait_name=="latitude", data_study$context$trait_name=="elevation"  for each site
+ 
+xxx if data_study$context$longitude does not exist, "location data is not available"
+
+xxx question: are all sites in lat/long and meters elevation. If not, do we want to convert to this format?
+
+xxx include map showing locations of the sites
+
+#Data Available
+
+##Physical site data
+The following physical site data are available
+
+temp <- subset(data_study$context$trait_name != c("longitude","latitude","elevation"))
+table by site, using temp. The units used should be shown in a second header row. 
+
+xxx we should do an automated check, to ensure that within each study's context file, units are consistent
+
+xxx if the dataframe temp is empty, print "No additional physical site data is available for this study."
+
+##Species sampled
+
+The species sampled were:
+
+xxx create a table of species, unique(data_study$data$taxon), with columns for each site
+xxx place an x in columns for sites where a specific taxon was sampled
+
+##Traits Sampled
+
+xxx data table listing: trait names, trait units, number of species sampled, min, median, max values
+
+xxx first create dataframe with unique entries from data_study$metadata$traits$var_in and data_study$metadata$traits$units_in
+
+xxx then for the trait variables, summarise data from data_study$data to fill in number of species samples, min, median, max trait values
+
+xxx question: in the data file, the traits and units are amalgamated. What is the easiest way to match with trait names generated from metadata yml file
+
+xxx question: in the BAAD dataset, there are separate abbreviated trait names and longer labels. Do we have a lookup table with this information for austraits as well?
+
+#Data summaries
 
 ```{r summary_table, results='asis', echo=FALSE}
 tab <- summ(data_study$data)
@@ -37,12 +90,9 @@ writeLines(sprintf("## Diagnostic plots of numeric data
 pairwise_panel(key, formatted)
 ```
 
-```{r, results='asis', echo=FALSE, eval = show_plot}
-writeLines("### Distributions of traits")
-```
-
 ### Distributions of traits
 
+xxx question: for these plots, should we have relevant data either as the top study or right in the middle?
 ```{r, include=FALSE, warning=FALSE, eval = show_plot}
 # Make a list of traits
 traits <- unique(data_study$data$trait_name[data_study$data$trait_name %in% definitions_traits_numeric$trait_name])
