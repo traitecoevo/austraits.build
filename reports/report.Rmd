@@ -1,37 +1,65 @@
+```{r setup, echo=FALSE}
+# knitr defaults
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+knitr::opts_chunk$set(echo=FALSE, fig.cap='', cache=FALSE)
+
+# default for table format
+options(knitr.table.format = "html")
+
+# Guidelines for writing report code
+# - use tidyverse style and format: http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html
+# - use kableExtra for styling: https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+# - use knitr chunck options: https://rmarkdown.rstudio.com/lesson-3.html 
+```
+
+```{r, eval=TRUE, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
+# This stuff enables report to run outside of remake framework. For development purposes only.
+# Set eval=FALSE for use in remake environment  
+library(knitr)
+library(dplyr)
+library(kableExtra)
+source("R/support.R")
+source("R/report.R")
+austraits <- remake::make("austraits")
+definitions_traits <- remake::make("definitions_traits")
+data_study <- remake::make("Wright_2001")
+```
+```{r,  echo=FALSE, results="hide", message=FALSE, warning=FALSE}
+## default kable styling
+
+table_styling <- function(...) {
+  kable_styling(..., bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = NULL, position = "center")
+} 
+```
+
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 key <- data_study$key
-definitions_traits_numeric <- subset(definitions_traits, type == "numeric")
+definitions_traits_numeric <- definitions_traits %>% filter(type == "numeric")
 # does dataset contain numeric data?
-show_plot <- any(unique(data_study$data$trait_name) %in% definitions_traits_numeric$trait_name)
-knitr::opts_chunk$set(echo=FALSE, fig.cap='', cache=FALSE)
+show_plot <- FALSE #any(unique(data_study$data$trait_name) %in% definitions_traits_numeric$trait_name)
 ```
 
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE, eval=show_plot}
 formatted <- format_data(data_study$key, data_study, austraits, definitions_traits_numeric) # format data for plotting
 ```
-
 # Report for study: `r key`
 
-##People
+## People
 
 ```{r, results='asis', echo=FALSE}
 tab <- list_to_df(data_study$metadata$people)
-kable(na.omit(tab), "markdown", align="l", padding=10)
+kable(na.omit(tab)) %>% table_styling()
 ```
 
-##Data Source
+## Data Source
 Citation:data_study$metadata$source$primary$author, data_study$metadata$source$primary$year. data_study$metadata$source$primary$title data_study$metadata$source$primary$journal data_study$metadata$source$primary$volume: data_study$metadata$source$primary$pages
 
 DOI: data_study$metadata$source$primary$doi
 
-```{r, results='asis', echo=FALSE}
-
-```
-
-##Overview of data provided
+## Overview of data provided
 The dataset provides data on data_study$metadata$dataset$description. It includes `r nrow(data_study$data)` individual datapoints from `r length(unique(data_study$data$species_name))` species, with data included for the following `r length(unique(data_study$data$trait_name))` traits: `r paste(unique(data_study$data$trait_name), collapse = ", ")`. Data collection began in the year data_study$metadata$dataset$year_collected_start and was completed in the year data_study$metadata$dataset$year_collected_end.
 
-##Locations of data sites
+## Locations of data sites
 
 The sites sampled are: 
 
@@ -43,9 +71,9 @@ xxx question: are all sites in lat/long and meters elevation. If not, do we want
 
 xxx include map showing locations of the sites
 
-#Data Available
+# Data Available
 
-##Physical site data
+## Physical site data
 The following physical site data are available
 
 temp <- subset(data_study$context$trait_name != c("longitude","latitude","elevation"))
@@ -55,14 +83,14 @@ xxx we should do an automated check, to ensure that within each study's context 
 
 xxx if the dataframe temp is empty, print "No additional physical site data is available for this study."
 
-##Species sampled
+## Species sampled
 
 The species sampled were:
 
 xxx create a table of species, unique(data_study$data$taxon), with columns for each site
 xxx place an x in columns for sites where a specific taxon was sampled
 
-##Traits Sampled
+## Traits Sampled
 
 xxx data table listing: trait names, trait units, number of species sampled, min, median, max values
 
@@ -74,11 +102,12 @@ xxx question: in the data file, the traits and units are amalgamated. What is th
 
 xxx question: in the BAAD dataset, there are separate abbreviated trait names and longer labels. Do we have a lookup table with this information for austraits as well?
 
-#Data summaries
+# Data summaries
+The dataset includes `r nrow(data_study$data)` individual datapoints from `r length(unique(data_study$data$species_name))` species, with data included for the following `r length(unique(data_study$data$trait_name))` traits: 
 
 ```{r summary_table, results='asis', echo=FALSE}
 tab <- summ(data_study$data)
-kable(tab, "markdown", align="l", padding=10)
+kable(tab) %>% table_styling()
 ```
 
 ```{r, results='asis', echo=FALSE, eval = show_plot}
@@ -86,7 +115,7 @@ writeLines(sprintf("## Diagnostic plots of numeric data
 ### Pairwise plots for %s, log10 axes",key))
 ```
 
-```{r pairwise_plots, fig.width=12, fig.height=9, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
+```{r pairwise_plots, eval= FALSE, fig.width=12, fig.height=9, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
 pairwise_panel(key, formatted)
 ```
 
@@ -130,9 +159,9 @@ writeLines(res)
 ### Trait values with high associated intraspecific variation
 If present, the table shows any trait records for species within the current dataset where the intraspecific variation across all records for this species-trait combination exceeds an order of magnitude. Note that the expected degree of intraspecific variation varies between traits.
 
-```{r flags_table, results='asis', echo=FALSE, warning=FALSE, message=FALSE}
+```{r flags_table, results='asis', echo=FALSE, warning=FALSE, message=FALSE, eval = FALSE}
 flagged <- flags(key, austraits, definitions_traits_numeric)
 if(nrow(flagged)>0)
-  kable(flagged, "markdown", align="l", padding=10)
+  kable(flagged) %>% table_styling()
 ```
 
