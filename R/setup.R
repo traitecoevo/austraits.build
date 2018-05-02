@@ -18,7 +18,8 @@ add_substitution <- function(study, trait_name, find, replace) {
 
   # Check if find record already exists for that trait
   data <-  list_to_df(metadata[[set_name]])  
-  if(length(which(trait_name %in% data$trait_name && find %in% data$find)) > 0) {
+  if(length(metadata[[set_name]]) > 0 & 
+     length(which(trait_name %in% data$trait_name & find %in% data$find)) > 0) {
     stop(sprintf("Substitution exists for %s - %s, please update manually in %s", trait_name, find, filename_metadata))
   }
 
@@ -53,7 +54,7 @@ add_taxnomic_change <- function(study, find, replace, reason) {
 
   # Check if find record already exists for that trait
   data <-  list_to_df(metadata[[set_name]])  
-  if(nrow(data) >0 && length(which(find %in% data$find)) > 0) {
+  if(nrow(data) > 0 && length(which(find %in% data$find)) > 0) {
     stop(sprintf("Substitution exists for %s, please update manually in %s", find, filename_metadata))
   }
 
@@ -257,6 +258,23 @@ check_taxonstand <- function(species, corr = FALSE, ...){
   Taxonstand::TPL(species, corr = corr, ...) 
 }
 
+align_tpl <- function(species) {
+  tpl <- check_taxonstand(species, FALSE)
+  species_name <- species
+  i <- tpl$New.ID != ""
+  species_name[i] <- tpl %>% filter(i) %>% format_tpl_species_name()
+
+  data.frame(original_name = species, species_name = species_name, TPL_ID = tpl$New.ID, stringsAsFactors = FALSE) %>% tbl_df()
+}
+
+format_tpl_species_name <- function(tpl) {
+
+  species <- paste(tpl$New.Genus, tpl$New.Species, 
+                       tpl$New.Infraspecific.rank,  tpl$New.Infraspecific)
+  i <- tpl$New.Infraspecific.rank == ""
+  species[i] <- paste(tpl$New.Genus, tpl$New.Species)[i]
+  species
+}
 
 format_tpl_to_accepted_df <- function(tpl, use.new = FALSE){
 
