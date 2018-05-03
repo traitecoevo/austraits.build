@@ -15,6 +15,7 @@ options(knitr.table.format = "html")
 ```{r, eval=TRUE, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 # This stuff enables report to run outside of remake framework. For development purposes only.
 # Set eval=FALSE for use in remake environment  
+options(remake.verbose.noop=FALSE)
 library(knitr)
 library(dplyr)
 library(kableExtra)
@@ -22,13 +23,13 @@ source("R/support.R")
 source("R/report.R")
 austraits <- remake::make("austraits")
 definitions_traits <- remake::make("definitions_traits")
-data_study <- remake::make("Blackman_2014")
+data_study <- remake::make("Bragg_2002")
 ```
 ```{r,  echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 ## default kable styling
 
 table_styling <- function(...) {
-  kable_styling(..., bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = NULL, position = "center")
+  kable_styling(..., bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left")
 } 
 ```
 
@@ -44,72 +45,155 @@ formatted <- format_data(data_study$key, data_study, austraits, definitions_trai
 ```
 # Report for study: `r key`
 
+To imporve:
+
+- slightly indent tables
+
+
 ## People
 
+We have the follwoing contacts listed for this study:
+
 ```{r, results='asis', echo=FALSE}
-tab <- list_to_df(data_study$metadata$people)
-kable(na.omit(tab)) %>% table_styling()
+data_study$metadata$people %>% list_to_df() %>% kable() %>% table_styling()
 ```
 
-## Data Source
-```{r, results='asis', echo=FALSE}
-paste(data_study$metadata$source$primary$author,", ",data_study$metadata$source$primary$year,". ", data_study$metadata$source$primary$title," ",data_study$metadata$source$primary$journal," ", data_study$metadata$source$primary$volume,": ",data_study$metadata$source$primary$pages,sep="")
+## Citation
 
-# if (data_study$metadata$source$primary$doi!=NULL) {
-#   paste("DOI: ",data_study$metadata$source$primary$doi,sep="")
-# }
+Data are from the folliwing sources:
+
+Primary citation:
+
+```{r, results='asis', echo=FALSE}
+data_study$metadata$source$primary %>% list1_to_df() %>% kable() %>% table_styling()
 ```
 
-##Overview of data provided
-The dataset provides data on `r data_study$metadata$dataset$description`. It includes `r nrow(data_study$data)` individual datapoints from `r length(unique(data_study$data$species_name))` species, with data included for the following `r length(unique(data_study$data$trait_name))` traits: `r paste(unique(data_study$data$trait_name), collapse = ", ")`. Data collection began in the year `r data_study$metadata$dataset$year_collected_start` and was completed in the year `r data_study$metadata$dataset$year_collected_end`.
+```{r, results='asis', echo=FALSE}
+if(!is.null(data_study$metadata$source$secondary)) {
+  writeLines("Secondary citation:")
+  data_study$metadata$source$primary %>% list_to_df() %>% kable() %>% table_styling()
+  }
+```
+
+## Description
+
+The decsription we have of the data is as follows:
+
+```{r, results='asis', echo=FALSE}
+data_study$metadata$dataset %>% list1_to_df() %>% kable() %>% table_styling()
+```
+
+The dataset  includes `r nrow(data_study$data)` individual datapoints from `r data_study$data$species_name %>% unique() %>% length()` species, with data included for the following `r data_study$data$trait_name %>% unique() %>% length()` traits (see below for deials). 
 
 ## Locations of data sites
 
-The sites and locations sampled are: `r paste(unique(data_study$context$site_name), collapse = ",")`
+Data were collected at the following `r data_study$context$site_name %>% unique() %>% length()`  sites and locations:
 
 ```{r, results='asis', echo=FALSE}
   data_study$context %>% 
-  filter(trait_name %in% c("longitude","latitude","elevation")) -> temp
-  
-  temp$trait_with_units <- paste(temp$trait_name," (",temp$unit,")",sep="")
-  
-  temp %>% 
+  filter(trait_name %in% c("longitude","latitude","elevation")) %>%
+  mutate(trait_with_units = sprintf("%s (%s)",trait_name, unit)) %>% 
   select(-unit, -dataset_id, -trait_name) %>%
-  spread(trait_with_units, value) %>%
-  kable(temp) %>% 
+  spread(trait_with_units, value) %>% 
+  mutate(`latitude (deg)` =as.numeric(`latitude (deg)`),
+         `longitude (deg)` =as.numeric(`longitude (deg)`)) %>% 
+  select(site_name, `latitude (deg)`, `longitude (deg)`, notes) -> sites
+
+sites %>%
+  kable() %>% 
   table_styling()
 ```
 
-**include map showing locations of the sites
+```{r maps, echo=FALSE,results='hide',fig.keep='all', warning=FALSE, message=FALSE}
+library(ggmap)
+library(ggrepel)
+
+
+# set cache for ggmap - https://rdrr.io/cran/ggmap/man/file_drawer.html
+# Define using "here" package
+cache <- file.path(rprojroot::find_root("remake.yml"), "downloads/ggmap")
+if(!file.exists(cache))
+  dir.create(cache, recursive = TRUE)
+options(ggmap.file_drawer = cache)
+
+# Expand a box to give padding around it
+pad_box <- function(bbox, p=0.1, min_deg = 0.5) {
+  new_box <- bbox
+  
+  new_box[1] <- bbox[1] - max(p*(bbox[3]-bbox[1]), min_deg) 
+  new_box[3] <- bbox[3] + max(p*(bbox[3]-bbox[1]), min_deg) 
+  new_box[2] <- bbox[2] - max(p*(bbox[4]-bbox[2]), min_deg) 
+  new_box[4] <- bbox[4] + max(p*(bbox[4]-bbox[2]), min_deg) 
+  new_box
+}
+
+# Calculate area of bounding box
+area_box <- function(bbox) {
+  as.numeric((bbox[3]-bbox[1])*(bbox[4]-bbox[2]))
+}
+
+# calculate suitable zoom value, based on area of bounding box
+# Adds some padding to box to ensure has some area
+# for Australia, box are ranges from 1 (minimum with padding, to 1350)
+# Zoom values at this scale go from 5 to 10
+get_zoom<- function(bbox, zoom_max=10) {
+  box_area <- bbox %>% pad_box() %>% area_box()
+  cuts <- 10^seq(0, 3.5, length.out = 6)
+  zoom_max + 1 - (box_area >= cuts) %>% which() %>% max() 
+}
+
+# Downlaod data and make a mapr for specified sites
+make_map <- function(bbox, sites) {
+  sitesMap <- get_stamenmap(bbox = bbox %>% pad_box(), zoom = get_zoom(bbox), maptype="terrain")
+
+  ggmap(sitesMap) + 
+    labs(x = "Longitude", y = "Latitude") +
+    geom_point(data = sites, aes(x=`longitude (deg)`, y = `latitude (deg)`), colour = "red") +
+    geom_text_repel(data = sites, aes(x=`longitude (deg)`, y = `latitude (deg)`, label = site_name))
+  
+}
+
+
+australia_box <- c(left=113.338953078, bottom=-43.6345972634, right=153.569469029, top=-10.6681857235)
+make_map(australia_box, sites)
+
+sites_box <-  c(left = min(sites$`longitude (deg)`), bottom = min(sites$`latitude (deg)`), right = max(sites$`longitude (deg)`), top = max(sites$`latitude (deg)`))
+make_map(sites_box, sites)
+```
 
 # Data Available
 
-##Physical site data
-The following physical site variables have been collected:
+## Physical site data
 
-The values for each site are:
+The following physical sites have been collected:
 
+```{r, results='asis', echo=FALSE}
   data_study$context %>% 
-  filter(!(trait_name %in% c("longitude","latitude","elevation"))) -> temp
-  
-  temp$trait_with_units <- paste(temp$trait_name," (",temp$unit,")",sep="")
-  
-  temp %>% 
-  select(-unit, -dataset_id, -trait_name) %>%
+  filter(!(trait_name %in% c("longitude","latitude","elevation"))) %>%
+  mutate(trait_with_units = sprintf("%s (%s)", trait_name, unit)) %>% 
+  select(-unit, -dataset_id, -notes, -trait_name) %>%
   spread(trait_with_units, value) %>%
-  kable(temp) %>% 
+  kable() %>% 
   table_styling()
+```
 
-xxx we should do an automated check, to ensure that within each study's context file, units are consistent
+TODO:
 
-xxx if the dataframe temp is empty, print "No additional physical site data is available for this study."
+- change NA in units to blank???
+- we should do an automated check, to ensure that within each study's context file, units are consistent
+- if the dataframe temp is empty, print "No additional physical site data is available for this study."
 
 ## Species sampled
 
 The species sampled were:
 
+data_study$data %>% select(species_name, original_name)
+
 xxx create a table of species, unique(data_study$data$taxon), with columns for each site
 xxx place an x in columns for sites where a specific taxon was sampled
+
+We applied the following taxonomic corrections
+
 
 ## Traits Sampled
 

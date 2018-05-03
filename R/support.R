@@ -65,6 +65,13 @@ list_to_df <- function(my_list, as_character= TRUE) {
   dplyr::bind_rows(lapply(my_list, as.data.frame, stringsAsFactors = FALSE))
 }
 
+# Convert a list with single entries to dataframe
+list1_to_df <- function(my_list) {
+
+  tibble(key = names(my_list), value = unlist(my_list))
+}
+
+
 ## Add an item to the end of a list
 append_to_list <- function(my_list, to_append) {
   my_list[[length(my_list)+1]] <-  to_append
