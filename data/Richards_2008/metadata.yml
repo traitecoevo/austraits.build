@@ -32,9 +32,7 @@ config:
   variable_match:
     species_name: name_original
     site_name: site
-  custom_R_code: replacement <- 1 / data[is.na(data[["SLA (cm2/g)"]]),][["LMA (g/m2)"]]
-    * 10000; data[is.na(data[["SLA (cm2/g)"]]),][["SLA (cm2/g)"]] <- replacement;
-    data[["LMA (g/m2)"]] <- NULL; rm(replacement); data
+  custom_R_code: data %>% mutate(`SLA (cm2/g)` = ifelse(is.na(`SLA (cm2/g)`), (1/`LMA (g/m2)`)* 10000, `SLA (cm2/g)`), `Rd (umol m-2 s-1)` = - `Rd (umol m-2 s-1)`)
 traits:
 - var_in: photosynthetic pathway
   unit_in: .na

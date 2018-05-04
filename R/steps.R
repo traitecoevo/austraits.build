@@ -1,75 +1,48 @@
 load_study <- function(filename_data_raw,
                        filename_context,
                        filename_metadata,
-                       definitions_data,
-                       definitions_traits,
-                       definitions_context,
-                       categorical_trait_constraints,
+                       definitions,
                        unit_conversion_functions,
                        species_list_known
                        ) {
 
+  dataset_id <- basename(dirname(filename_data_raw))
+
   # read metadata
   metadata <- read_yaml(filename_metadata)
 
-  data <- read_data_study(filename_data_raw,
-                          metadata,
-                          definitions_data,
-                          definitions_traits,
-                          categorical_trait_constraints,
-                          unit_conversion_functions
-                          )
+  # load and clean trait data
+  data <- read_csv(filename_data_raw, col_types = cols()) %>%
+    custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
+    parse_data(dataset_id, metadata) %>%
+    add_all_columns(definitions, "data") %>%
+    drop_unsupported_traits(definitions) %>%
+    convert_units(definitions, unit_conversion_functions) %>%
+    drop_unsupported_values(definitions) %>%
+    update_taxonomy(metadata)
 
   # Now that we're done with them, drop config parts of metadata
   for(v in c("config", "traits", "substitutions")) {
     metadata[[v]] <- NULL
   }
 
-  key <- basename(dirname(filename_data_raw))
-
   # read context data
-  context <- read_csv(filename_context, col_types = cols())
+  context <- read_csv(filename_context, col_types = cols(.default = "c"))
   if(nrow(context) > 0) {
-    context <- data.frame(dataset_id = key, context)
+    context <- mutate(context, dataset_id = dataset_id)
   }
-  context <- add_all_columns(context, definitions_context)
-  context <- fix_types(context, definitions_context)
+  context <- add_all_columns(context, definitions, "context")
 
-  species_name <- unique(data$species_name) %>% sort()
-  species_list <- left_join(
-                tibble(species_name =  species_name), species_list_known, 
-                by = "species_name")
+  species_list <- tibble(species_name =  unique(data$species_name)) %>%
+                  left_join(species_list_known, by = "species_name") %>%
+                  arrange(species_name)
 
-  # bibentry <- set_bib_key(bibtex::read.bib(filename_bib), key)
-
-  list(key        = key,
+  list(dataset_id = dataset_id,
        data       = data,
        context    = context,
        species_list = species_list,
        metadata   = metadata
        )
-}
-
-## These are the cleaning steps:
-read_data_study <- function(filename_data_raw,
-                            metadata,
-                            definitions_data,
-                            definitions_traits,
-                            categorical_trait_constraints,
-                            unit_conversion_functions
-                            ) {
-
-  dataset_id <- basename(dirname(filename_data_raw))
-
-  # data processing
-  data <- read_csv(filename_data_raw, col_types = cols())
-  data <- custom_manipulation(metadata[["config"]][["custom_R_code"]])(data)
-  data <- parse_data(dataset_id, data, metadata)
-  data <- add_all_columns(data, definitions_data)
-  data <- drop_unsupported(data, definitions_traits, categorical_trait_constraints)
-  data <- convert_units(data, definitions_traits, unit_conversion_functions)
-  data <- update_taxonomy(data, metadata)
-  data
 }
 
 
@@ -87,27 +60,51 @@ custom_manipulation <- function(txt) {
   }
 }
 
-## Remove any disallowed traits or values and provide a warning
-drop_unsupported <- function(data, definitions_traits, categorical_trait_constraints) {
+## Remove any disallowed traits
+drop_unsupported_traits <- function(data, definitions) {
 
   # Remove any traits not listed in config
-  i <- data[["trait_name"]] %in% definitions_traits[["trait_name"]]
+  i <- data$trait_name %in% names(definitions$traits$values)
 
   if(any(!i)) {
     message(sprintf("unsupported trait dropped: %s", paste(unique(data[["trait_name"]][!i]), collapse=", ")))
   }
-  data <- data[i,]
+
+ filter(data, i)
+}
+
+
+## Remove any disallowed traits
+drop_unsupported_values <- function(data, definitions) {
 
   # Remove any values of categorical traits not listed in definitions
-  i <- data[["trait_name"]] %in% names(categorical_trait_constraints)
+  i <- trait_is_categorical(data[["trait_name"]], definitions)
+
+  if(any(i)) {
+
+    for(v in unique(data[["trait_name"]][i])) {
+      ii <-  data[["trait_name"]] == v & !is.null(definitions$traits$values[[v]]$values) & data[["value"]] %notin% names(definitions$traits$values[[v]]$values)
+
+      if(any(ii)) {
+        message(sprintf("unsupported value of %s dropped: %s", v, paste(data[["value"]][ii] %>% unique() %>% sort(), collapse=", ")))
+        data <- filter(data, !ii)
+      }
+    }
+  }
+
+  # # Remove any values of numerical traits out of range
+  i <- trait_is_numeric(data[["trait_name"]], definitions)
+
   if(any(i)) {
     for(v in unique(data[["trait_name"]][i])) {
-      ii <-  !(data[["trait_name"]] == v & !data[["value"]] %in%  categorical_trait_constraints[[v]])
+      x <- suppressWarnings(as.numeric(data[["value"]]))
+      ii <-  data[["trait_name"]] == v & !is.na(x) &
+        (x < definitions$traits$values[[v]]$values$minimum | x > definitions$traits$values[[v]]$values$maximum)
 
-      if(any(!ii)) {
-        message(sprintf("unsupported value of %s dropped: %s", v, paste(unique(data[["value"]][!ii]), collapse=", ")))
+      if(any(ii)) {
+        message(sprintf("unsupported value of %s dropped: %s", v, paste(x[ii] %>% unique() %>% sort(), collapse=", ")))
+        data <- filter(data, !ii)
       }
-      data <- data[ii,]
     }
   }
 
@@ -129,31 +126,28 @@ make_unit_conversion_functions <- function(filename) {
 unit_conversion_name <- function(from, to) {sprintf("%s-%s", from, to)}
 
 ## Convert units to desired type
-convert_units <- function(data, info, unit_conversion_functions) {
+convert_units <- function(data, definitions, unit_conversion_functions) {
 
   # List of original variable names
   vars <- names(data)
 
   # Look up ideal units, determine whether to convert
-  data <- mutate(data,
-      i = match(trait_name, info[["trait_name"]]),
-      to = info[["units"]][i],
+  data <- data %>%
+    mutate(
+      i = match(trait_name, names(definitions$traits$values)),
+      to = extract_list_element(i, definitions$traits$values, "units"),
       ucn = unit_conversion_name(unit, to),
-      type = info[["type"]][i],
+      type = extract_list_element(i, definitions$traits$values, "type"),
       to_convert =  type == "numeric" & unit != to)
 
-  # Mark anything problematic as not for conversion, wipe values and set as NA
-  # TODO: should these rows just be dropped? Could do that but also not that much of
-  # a problem, as will get culled during review.
+  # Identify anything problematic in conversions and drop
   j <- is.na(data[["to_convert"]]) |
         data[["to_convert"]] & !data[["ucn"]] %in% names(unit_conversion_functions)
 
   if(any(j)) {
-    message(sprintf("records set to NA because of missing unit conversions: %s", paste(
+    message(sprintf("records dropped because of missing unit conversions: %s", paste(
       unique(data[["ucn"]][j]), collapse=", ")))
-    data[["to_convert"]][j] <- FALSE
-    data[["value"]][j] <- NA
-    data[["unit"]][j] <- NA
+    data <- filter(data, !j)
   }
 
   f <- function(value, name) {
@@ -170,39 +164,21 @@ convert_units <- function(data, info, unit_conversion_functions) {
     select(one_of(vars))
 }
 
-## Standardise data columns to match standard template.
-##
-## May add or remove columns of data as needed so that all sets have
-## the same columns.
-add_all_columns <- function(data, info) {
-  na_vector <- function(type, n) {
-    rep(list(character=NA_character_, numeric=NA_real_)[[type]], n)
-  }
+# Add or remove columns of data as needed so that all sets have
+# the same columns.
+add_all_columns <- function(data, definitions, group) {
 
-  missing <- setdiff(info[["variable"]], names(data))
-  if (length(missing) != 0) {
-    extra <- as.data.frame(lapply(info$type[info[["variable"]] %in% missing], na_vector, nrow(data)),
-                           stringsAsFactors = FALSE)
-    names(extra) <- missing
-    data <- cbind(data[names(data) %in% info[["variable"]]], extra)
-  } else {
-    data <- data[names(data) %in% info[["variable"]]]
-  }
-  data[info[["variable"]]]
-}
+  vars <- names(definitions[[group]][["columns"]])
+  missing <- setdiff(vars, names(data))
 
-## Ensures variables have correct type
-fix_types <- function(data, variable_definitions) {
-  var_def <- variable_definitions
-  for (i in seq_along(var_def$variable)) {
-    v <- var_def$variable[i]
-    data[[v]] <- match.fun(paste0("as.", var_def$type[i]))(data[[v]])
-  }
-  data
+  for(v in missing)
+    data <- mutate(data, !!v := NA)
+
+  select(data, one_of(vars))
 }
 
 # processes a single dataset
-parse_data <- function(dataset_id, data, metadata) {
+parse_data <- function(data, dataset_id, metadata) {
 
   # get config data for dataset
   dataset_vert <- metadata[["config"]][["is_vertical"]]
@@ -214,8 +190,9 @@ parse_data <- function(dataset_id, data, metadata) {
   if (any(!var_in %in% colnames(data))) {
     stop(paste0("\nVariable '", setdiff(var_in, colnames(data)), "' from data.csv not found in configVarnames"))
   }
-  df <- data %>% select(one_of(var_in)) %>%
-      rename_columns(var_in, var_out)
+  df <- data %>%
+        select(one_of(var_in)) %>%
+        rename_columns(var_in, var_out)
 
   # Step 2. Add trait information, with correct names
 
@@ -281,7 +258,7 @@ parse_data <- function(dataset_id, data, metadata) {
   # Drop any NA trait or values
   out <- dplyr::filter(out, !is.na(trait_name) & !is.na(value))
 
-  out[["study"]] = dataset_id
+  out[["dataset_id"]] = dataset_id
   out
 }
 
@@ -289,34 +266,37 @@ parse_data <- function(dataset_id, data, metadata) {
 ## Enforce some standards on species names
 standardise_names <- function(x) {
 
-  ## Capitalise first letter
-  x <- gsub("^([a-z])", "\\U\\1", x, perl=TRUE)
+  f <- function(x, find, replace) {
+    gsub(find, replace, x, perl=TRUE)
+  }
 
-  ## sp. not sp or spp
-  x <- gsub("\\ssp(\\s|$)", " sp.\\1", x, perl=TRUE)
-  x <- gsub("\\sspp(\\s|$)", " sp.\\1", x, perl=TRUE)
+  x %>%
+    ## Capitalise first letter
+    f("^([a-z])", "\\U\\1") %>%
 
-  ## subsp. not ssp, ssp., subsp or sub sp.
-  x <- gsub("\\sssp(\\s|$)", " subsp.\\1", x, perl=TRUE)
-  x <- gsub("\\sssp.(\\s|$)", " subsp.\\1", x, perl=TRUE)
-  x <- gsub("\\ssubsp(\\s|$)", " subsp.\\1", x, perl=TRUE)
-  x <- gsub("\\ssub sp.(\\s|$)", " subsp.\\1", x, perl=TRUE)
+    ## sp. not sp or spp
+    f("\\ssp(\\s|$)", " sp.\\1") %>%
+    f("\\sspp(\\s|$)", " sp.\\1") %>%
 
-  ## lower case after subsp.
-  x <- gsub("\\ssubsp.\\s([A-Z])", " subsp. \\L\\1", x, perl=TRUE)
+    ## subsp. not ssp, ssp., subsp or sub sp.
+    f("\\sssp(\\s|$)", " subsp.\\1") %>%
+    f("\\sssp.(\\s|$)", " subsp.\\1") %>%
+    f("\\ssubsp(\\s|$)", " subsp.\\1") %>%
+    f("\\ssub sp.(\\s|$)", " subsp.\\1") %>%
 
-  ## var. not var
-  x <- gsub("\\svar(\\s|$)", " var.\\1", x, perl=TRUE)
+    ## lower case after subsp.
+    f("\\ssubsp.\\s([A-Z])", " subsp. \\L\\1") %>%
 
-  ## aff. not affin, aff, affn
-  x <- gsub("\\saffin(\\s|$)", " aff.\\1", x, perl=TRUE)
-  x <- gsub("\\saff(\\s|$)", " aff.\\1", x, perl=TRUE)
-  x <- gsub("\\saffn(\\s|$)", " aff.\\1", x, perl=TRUE)
+    ## var. not var
+    f("\\svar(\\s|$)", " var.\\1") %>%
 
-  ## remove double space
-  x <- gsub("[\\s]+", " ", x, perl=TRUE)
+    ## aff. not affin, aff, affn
+    f("\\saffin(\\s|$)", " aff.\\1") %>%
+    f("\\saff(\\s|$)", " aff.\\1") %>%
+    f("\\saffn(\\s|$)", " aff.\\1") %>%
 
-  x
+    ## remove double space
+    f("[\\s]+", " ")
 }
 
 update_taxonomy  <- function(study_data, metadata){
@@ -328,7 +308,7 @@ update_taxonomy  <- function(study_data, metadata){
 
   # Now make any replacements specified in metadata yaml
   ## Read metadata table, quit if empty
-  cfgLookup <-  list_to_df(metadata[["taxonomic_updates"]])  
+  cfgLookup <-  list_to_df(metadata[["taxonomic_updates"]])
   if(nrow(cfgLookup) == 0) {
     return(out)
   }
@@ -354,7 +334,7 @@ combine_austraits <- function(..., d=list(...)) {
   # drop null datasets
   d[sapply(d, is.null)] <- NULL
 
-  names(d) <- sapply(d, "[[", "key")
+  names(d) <- sapply(d, "[[", "dataset_id")
   ret <- list(data=combine("data", d),
               context=combine("context", d),
               species_list=combine("species_list", d) %>% 
@@ -366,11 +346,5 @@ combine_austraits <- function(..., d=list(...)) {
 #  ret$bibtex <- do.call("c", unname(lapply(d, "[[", "bibtex")))
 #  ret$dictionary <- variable_definitions
   ret
-}
-
-## Functions for extracting bits from austraits.  Works around some of the
-## limitations in how I wrote remake.
-extract_austraits_data <- function(austraits) {
-  austraits$data
 }
 

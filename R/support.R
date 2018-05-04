@@ -1,5 +1,25 @@
+`%notin%` <- function(lhs, rhs) !(lhs %in% rhs)
+
+# Swap a null vale to something else
+null_as <- function(x, val=NA){
+  if(is.null(x)) return(val)
+  x
+}
+
+extract_list_element <- function(i, my_list, var) {
+  i %>% lapply(function(x) my_list[[x]][[var]]) %>% lapply(null_as) %>% unlist()
+}
+
 read_csv_char <- function(...){
   read_csv(..., col_types = cols(.default = "c"))
+}
+
+na_type <- function(type){
+  list(character=NA_character_, numeric=NA_real_)[[type]]
+}
+
+na_vector <- function(type, n) {
+  rep(list(character=NA_character_, numeric=NA_real_)[[type]], n)
 }
 
 rename_columns <- function(obj, from, to) {
