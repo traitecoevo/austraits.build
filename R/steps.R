@@ -16,9 +16,9 @@ load_study <- function(filename_data_raw,
     custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
     parse_data(dataset_id, metadata) %>%
     add_all_columns(definitions, "data") %>%
-    drop_unsupported_traits(definitions) %>%
+    flag_unsupported_traits(definitions) %>%
     convert_units(definitions, unit_conversion_functions) %>%
-    drop_unsupported_values(definitions) %>%
+    flag_unsupported_values(definitions) %>%
     update_taxonomy(metadata)
 
   # Now that we're done with them, drop config parts of metadata
@@ -38,10 +38,11 @@ load_study <- function(filename_data_raw,
                   arrange(species_name)
 
   list(dataset_id = dataset_id,
-       data       = data,
+       data       = data %>% filter(is.na(error)) %>% select(-error),
        context    = context,
        species_list = species_list,
-       metadata   = metadata
+       metadata   = metadata,
+       excluded     = data %>% filter(!is.na(error)) %>% select(error, everything())
        )
 }
 
@@ -60,35 +61,24 @@ custom_manipulation <- function(txt) {
   }
 }
 
-## Remove any disallowed traits
-drop_unsupported_traits <- function(data, definitions) {
 
-  # Remove any traits not listed in config
+## Remove any disallowed traits, as defined in definitions
+flag_unsupported_traits <- function(data, definitions) {
   i <- data$trait_name %in% names(definitions$traits$values)
-
-  if(any(!i)) {
-    message(sprintf("unsupported trait dropped: %s", paste(unique(data[["trait_name"]][!i]), collapse=", ")))
-  }
-
- filter(data, i)
+  data %>% mutate(error = ifelse(!i, "Unsupported trait", error))
 }
 
 
 ## Remove any disallowed traits
-drop_unsupported_values <- function(data, definitions) {
+flag_unsupported_values <- function(data, definitions) {
 
   # Remove any values of categorical traits not listed in definitions
   i <- trait_is_categorical(data[["trait_name"]], definitions)
 
   if(any(i)) {
-
     for(v in unique(data[["trait_name"]][i])) {
       ii <-  data[["trait_name"]] == v & !is.null(definitions$traits$values[[v]]$values) & data[["value"]] %notin% names(definitions$traits$values[[v]]$values)
-
-      if(any(ii)) {
-        message(sprintf("unsupported value of %s dropped: %s", v, paste(data[["value"]][ii] %>% unique() %>% sort(), collapse=", ")))
-        data <- filter(data, !ii)
-      }
+      data <- mutate(data, error = ifelse(ii, "Unsupported trait value", error))
     }
   }
 
@@ -100,11 +90,7 @@ drop_unsupported_values <- function(data, definitions) {
       x <- suppressWarnings(as.numeric(data[["value"]]))
       ii <-  data[["trait_name"]] == v & !is.na(x) &
         (x < definitions$traits$values[[v]]$values$minimum | x > definitions$traits$values[[v]]$values$maximum)
-
-      if(any(ii)) {
-        message(sprintf("unsupported value of %s dropped: %s", v, paste(x[ii] %>% unique() %>% sort(), collapse=", ")))
-        data <- filter(data, !ii)
-      }
+      data <- mutate(data, error = ifelse(ii, "Unsupported trait value", error))
     }
   }
 
@@ -144,11 +130,9 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
   j <- is.na(data[["to_convert"]]) |
         data[["to_convert"]] & !data[["ucn"]] %in% names(unit_conversion_functions)
 
-  if(any(j)) {
-    message(sprintf("records dropped because of missing unit conversions: %s", paste(
-      unique(data[["ucn"]][j]), collapse=", ")))
-    data <- filter(data, !j)
-  }
+  data <- mutate(data, 
+            error = ifelse(j, "Missing unit conversion", error),
+            to_convert = ifelse(j, FALSE, to_convert))
 
   f <- function(value, name) {
     as.character(unit_conversion_functions[[name]](as.numeric(value)))
@@ -174,7 +158,9 @@ add_all_columns <- function(data, definitions, group) {
   for(v in missing)
     data <- mutate(data, !!v := NA)
 
-  select(data, one_of(vars))
+  data %>%
+    select(one_of(vars)) %>%
+    mutate(error = NA_character_)
 }
 
 # processes a single dataset
@@ -340,7 +326,8 @@ combine_austraits <- function(..., d=list(...)) {
               species_list=combine("species_list", d) %>% 
                               arrange(species_name) %>% 
                               filter(!duplicated(.)),
-              metadata=lapply(d, "[[", "metadata")
+              metadata=lapply(d, "[[", "metadata"),
+              excluded=combine("excluded", d)
               )
 
 #  ret$bibtex <- do.call("c", unname(lapply(d, "[[", "bibtex")))
