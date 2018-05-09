@@ -6,10 +6,21 @@ extract_dataset <- function(austraits, dataset_id) {
   ret <- list()
   for(v in c("data", "context"))
     ret[[v]] <- austraits[[v]][austraits[[v]][["dataset_id"]] == dataset_id,]
-  # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as acolumn name
-
+  # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
   ret[["species_list"]] <- austraits[["species_list"]] %>% filter(species_name %in% ret[["data"]][["species_name"]])
-  ret[["metadata"]] <- austraits[["metadata"]][[dataset_id]]
+  ret[["metadata"]] <- austraits[["metadata"]][dataset_id]
+  ret
+}
+
+extract_trait <- function(austraits, trait_name) {
+
+  ret <- list()
+  # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
+  ret[["data"]] <- austraits[["data"]][austraits[["data"]][["trait_name"]] == trait_name,]
+  ids <- ret[["data"]][["dataset_id"]] %>% unique() %>% sort()
+  ret[["context"]] <- austraits[["context"]][austraits[["context"]][["dataset_id"]] %in% ids,]
+  ret[["species_list"]] <- austraits[["species_list"]] %>% filter(species_name %in% ret[["data"]][["species_name"]])
+  ret[["metadata"]] <- austraits[["metadata"]][ids]
   ret
 }
 
@@ -33,7 +44,7 @@ export_to_plain_text <- function(austraits, path) {
 }
 
 
-compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL) {
+compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trait_name = NULL) {
   unlink(path, TRUE, TRUE)
   dir.create(path, FALSE, TRUE)
 
@@ -43,6 +54,11 @@ compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL) {
   if(!is.null(dataset_id)){
     v1 <- v1 %>% extract_dataset(dataset_id)
     v2 <- v2 %>% extract_dataset(dataset_id)
+  }
+
+  if(!is.null(trait_name)){
+    v1 <- v1 %>% extract_trait(trait_name)
+    v2 <- v2 %>% extract_trait(trait_name)
   }
 
   v1 %>% export_to_plain_text(path)
