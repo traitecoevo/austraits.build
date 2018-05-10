@@ -1,5 +1,25 @@
+`%notin%` <- function(lhs, rhs) !(lhs %in% rhs)
+
+# Swap a null vale to something else
+null_as <- function(x, val=NA){
+  if(is.null(x)) return(val)
+  x
+}
+
+extract_list_element <- function(i, my_list, var) {
+  i %>% lapply(function(x) my_list[[x]][[var]]) %>% lapply(null_as) %>% unlist()
+}
+
 read_csv_char <- function(...){
   read_csv(..., col_types = cols(.default = "c"))
+}
+
+na_type <- function(type){
+  list(character=NA_character_, numeric=NA_real_)[[type]]
+}
+
+na_vector <- function(type, n) {
+  rep(list(character=NA_character_, numeric=NA_real_)[[type]], n)
 }
 
 rename_columns <- function(obj, from, to) {
@@ -64,6 +84,13 @@ list_to_df <- function(my_list, as_character= TRUE) {
 
   dplyr::bind_rows(lapply(my_list, as.data.frame, stringsAsFactors = FALSE))
 }
+
+# Convert a list with single entries to dataframe
+list1_to_df <- function(my_list) {
+
+  tibble(key = names(my_list), value = unlist(my_list))
+}
+
 
 ## Add an item to the end of a list
 append_to_list <- function(my_list, to_append) {

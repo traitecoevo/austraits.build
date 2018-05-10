@@ -1,31 +1,218 @@
+```{r setup, echo=FALSE}
+# knitr defaults
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+knitr::opts_chunk$set(echo=FALSE, fig.cap='', cache=FALSE)
+
+# default for table format
+options(knitr.table.format = "html")
+
+# Guidelines for writing report code
+# - use tidyverse style and format: http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html
+# - use kableExtra for styling: https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+# - use knitr chunck options: https://rmarkdown.rstudio.com/lesson-3.html 
+```
+
+```{r, eval=TRUE, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
+# This stuff enables report to run outside of remake framework. For development purposes only.
+# Set eval=FALSE for use in remake environment  
+options(remake.verbose.noop=FALSE)
+library(knitr)
+library(dplyr)
+library(kableExtra)
+source("R/support.R")
+source("R/report.R")
+austraits <- remake::make("austraits")
+definitions_traits <- remake::make("definitions_traits")
+data_study <- remake::make("Bragg_2002")
+```
+```{r,  echo=FALSE, results="hide", message=FALSE, warning=FALSE}
+## default kable styling
+
+table_styling <- function(...) {
+  kable_styling(..., bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left")
+} 
+```
+
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 key <- data_study$key
-definitions_traits_numeric <- subset(definitions_traits, type == "numeric")
+definitions_traits_numeric <- definitions_traits %>% filter(type == "numeric")
 # does dataset contain numeric data?
-show_plot <- any(unique(data_study$data$trait_name) %in% definitions_traits_numeric$trait_name)
-knitr::opts_chunk$set(echo=FALSE, fig.cap='', cache=FALSE)
+show_plot <- FALSE #any(unique(data_study$data$trait_name) %in% definitions_traits_numeric$trait_name)
 ```
 
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE, eval=show_plot}
 formatted <- format_data(data_study$key, data_study, austraits, definitions_traits_numeric) # format data for plotting
 ```
-
 # Report for study: `r key`
+
+To imporve:
+
+- slightly indent tables
+
 
 ## People
 
+We have the follwoing contacts listed for this study:
+
 ```{r, results='asis', echo=FALSE}
-tab <- list_to_df(data_study$metadata$people)
-kable(na.omit(tab), "markdown", align="l", padding=10)
+data_study$metadata$people %>% list_to_df() %>% kable() %>% table_styling()
 ```
 
-## Overview of data provided
+## Citation
 
-The dataset includes `r nrow(data_study$data)` individual datapoints from `r length(unique(data_study$data$species_name))` species, with data included for the following `r length(unique(data_study$data$trait_name))` traits: `r paste(unique(data_study$data$trait_name), collapse = ", ")`.
+Data are from the folliwing sources:
+
+Primary citation:
+
+```{r, results='asis', echo=FALSE}
+data_study$metadata$source$primary %>% list1_to_df() %>% kable() %>% table_styling()
+```
+
+```{r, results='asis', echo=FALSE}
+if(!is.null(data_study$metadata$source$secondary)) {
+  writeLines("Secondary citation:")
+  data_study$metadata$source$primary %>% list_to_df() %>% kable() %>% table_styling()
+  }
+```
+
+## Description
+
+The decsription we have of the data is as follows:
+
+```{r, results='asis', echo=FALSE}
+data_study$metadata$dataset %>% list1_to_df() %>% kable() %>% table_styling()
+```
+
+The dataset  includes `r nrow(data_study$data)` individual datapoints from `r data_study$data$species_name %>% unique() %>% length()` species, with data included for the following `r data_study$data$trait_name %>% unique() %>% length()` traits (see below for deials). 
+
+## Locations of data sites
+
+Data were collected at the following `r data_study$context$site_name %>% unique() %>% length()`  sites and locations:
+
+```{r, results='asis', echo=FALSE}
+  data_study$context %>% 
+  filter(trait_name %in% c("longitude","latitude","elevation")) %>%
+  mutate(trait_with_units = sprintf("%s (%s)",trait_name, unit)) %>% 
+  select(-unit, -dataset_id, -trait_name) %>%
+  spread(trait_with_units, value) %>% 
+  mutate(`latitude (deg)` =as.numeric(`latitude (deg)`),
+         `longitude (deg)` =as.numeric(`longitude (deg)`)) %>% 
+  select(site_name, `latitude (deg)`, `longitude (deg)`, notes) -> sites
+
+sites %>%
+  kable() %>% 
+  table_styling()
+```
+
+```{r maps, echo=FALSE,results='hide',fig.keep='all', warning=FALSE, message=FALSE}
+library(ggmap)
+library(ggrepel)
+
+
+# set cache for ggmap - https://rdrr.io/cran/ggmap/man/file_drawer.html
+# Define using "here" package
+cache <- file.path(rprojroot::find_root("remake.yml"), "downloads/ggmap")
+if(!file.exists(cache))
+  dir.create(cache, recursive = TRUE)
+options(ggmap.file_drawer = cache)
+
+# Expand a box to give padding around it
+pad_box <- function(bbox, p=0.1, min_deg = 0.5) {
+  new_box <- bbox
+  
+  new_box[1] <- bbox[1] - max(p*(bbox[3]-bbox[1]), min_deg) 
+  new_box[3] <- bbox[3] + max(p*(bbox[3]-bbox[1]), min_deg) 
+  new_box[2] <- bbox[2] - max(p*(bbox[4]-bbox[2]), min_deg) 
+  new_box[4] <- bbox[4] + max(p*(bbox[4]-bbox[2]), min_deg) 
+  new_box
+}
+
+# Calculate area of bounding box
+area_box <- function(bbox) {
+  as.numeric((bbox[3]-bbox[1])*(bbox[4]-bbox[2]))
+}
+
+# calculate suitable zoom value, based on area of bounding box
+# Adds some padding to box to ensure has some area
+# for Australia, box are ranges from 1 (minimum with padding, to 1350)
+# Zoom values at this scale go from 5 to 10
+get_zoom<- function(bbox, zoom_max=10) {
+  box_area <- bbox %>% pad_box() %>% area_box()
+  cuts <- 10^seq(0, 3.5, length.out = 6)
+  zoom_max + 1 - (box_area >= cuts) %>% which() %>% max() 
+}
+
+# Downlaod data and make a mapr for specified sites
+make_map <- function(bbox, sites) {
+  sitesMap <- get_stamenmap(bbox = bbox %>% pad_box(), zoom = get_zoom(bbox), maptype="terrain")
+
+  ggmap(sitesMap) + 
+    labs(x = "Longitude", y = "Latitude") +
+    geom_point(data = sites, aes(x=`longitude (deg)`, y = `latitude (deg)`), colour = "red") +
+    geom_text_repel(data = sites, aes(x=`longitude (deg)`, y = `latitude (deg)`, label = site_name))
+  
+}
+
+
+australia_box <- c(left=113.338953078, bottom=-43.6345972634, right=153.569469029, top=-10.6681857235)
+make_map(australia_box, sites)
+
+sites_box <-  c(left = min(sites$`longitude (deg)`), bottom = min(sites$`latitude (deg)`), right = max(sites$`longitude (deg)`), top = max(sites$`latitude (deg)`))
+make_map(sites_box, sites)
+```
+
+# Data Available
+
+## Physical site data
+
+The following physical sites have been collected:
+
+```{r, results='asis', echo=FALSE}
+  data_study$context %>% 
+  filter(!(trait_name %in% c("longitude","latitude","elevation"))) %>%
+  mutate(trait_with_units = sprintf("%s (%s)", trait_name, unit)) %>% 
+  select(-unit, -dataset_id, -notes, -trait_name) %>%
+  spread(trait_with_units, value) %>%
+  kable() %>% 
+  table_styling()
+```
+
+TODO:
+
+- change NA in units to blank???
+- we should do an automated check, to ensure that within each study's context file, units are consistent
+- if the dataframe temp is empty, print "No additional physical site data is available for this study."
+
+## Species sampled
+
+The species sampled were:
+
+data_study$data %>% select(species_name, original_name)
+
+xxx create a table of species, unique(data_study$data$taxon), with columns for each site
+xxx place an x in columns for sites where a specific taxon was sampled
+
+We applied the following taxonomic corrections
+
+
+## Traits Sampled
+
+xxx data table listing: trait names, trait units, number of species sampled, min, median, max values
+
+xxx first create dataframe with unique entries from data_study$metadata$traits$var_in and data_study$metadata$traits$units_in
+
+xxx then for the trait variables, summarise data from data_study$data to fill in number of species samples, min, median, max trait values
+
+xxx question: in the data file, the traits and units are amalgamated. What is the easiest way to match with trait names generated from metadata yml file
+
+xxx question: in the BAAD dataset, there are separate abbreviated trait names and longer labels. Do we have a lookup table with this information for austraits as well?
+
+# Data summaries
+The dataset includes `r nrow(data_study$data)` individual datapoints from `r length(unique(data_study$data$species_name))` species, with data included for the following `r length(unique(data_study$data$trait_name))` traits: 
 
 ```{r summary_table, results='asis', echo=FALSE}
 tab <- summ(data_study$data)
-kable(tab, "markdown", align="l", padding=10)
+kable(tab) %>% table_styling()
 ```
 
 ```{r, results='asis', echo=FALSE, eval = show_plot}
@@ -33,16 +220,13 @@ writeLines(sprintf("## Diagnostic plots of numeric data
 ### Pairwise plots for %s, log10 axes",key))
 ```
 
-```{r pairwise_plots, fig.width=12, fig.height=9, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
+```{r pairwise_plots, eval= FALSE, fig.width=12, fig.height=9, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
 pairwise_panel(key, formatted)
-```
-
-```{r, results='asis', echo=FALSE, eval = show_plot}
-writeLines("### Distributions of traits")
 ```
 
 ### Distributions of traits
 
+xxx question: for these plots, should we have relevant data either as the top study or right in the middle?
 ```{r, include=FALSE, warning=FALSE, eval = show_plot}
 # Make a list of traits
 traits <- unique(data_study$data$trait_name[data_study$data$trait_name %in% definitions_traits_numeric$trait_name])
@@ -80,9 +264,9 @@ writeLines(res)
 ### Trait values with high associated intraspecific variation
 If present, the table shows any trait records for species within the current dataset where the intraspecific variation across all records for this species-trait combination exceeds an order of magnitude. Note that the expected degree of intraspecific variation varies between traits.
 
-```{r flags_table, results='asis', echo=FALSE, warning=FALSE, message=FALSE}
+```{r flags_table, results='asis', echo=FALSE, warning=FALSE, message=FALSE, eval = FALSE}
 flagged <- flags(key, austraits, definitions_traits_numeric)
 if(nrow(flagged)>0)
-  kable(flagged, "markdown", align="l", padding=10)
+  kable(flagged) %>% table_styling()
 ```
 

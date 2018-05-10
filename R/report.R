@@ -14,8 +14,8 @@ summ <- function(df) {
   df %>% group_by(trait_name) %>%
     summarise(
         units = paste0(unique(unit)), 
-        N.records = length(value), 
-        N.species = length(unique(species_name))
+        N_records = length(value), 
+        N_species = length(unique(species_name))
         )
 }
 

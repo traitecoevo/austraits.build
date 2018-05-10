@@ -2,17 +2,11 @@
 # edit the file there (or the files that it includes).
 targets:
 
-  definitions_data:
-    command: read_csv("config/definitions_data.csv")
-  definitions_traits:
-    command: read_csv("config/definitions_traits.csv")
-  definitions_context:
-    command: read_csv("config/definitions_context.csv")
-  unit_conversion_functions:
-    command: make_unit_conversion_functions("config/unitConversions.csv")
-  categorical_trait_constraints:
-    command: yaml.load_file("config/categorical_trait_constraints.yml")
-  species_list_known:
+  definitions:
+    command: read_yaml("config/definitions.yml")
+  unit_conversions:
+    command: make_unit_conversion_functions("config/unit_conversions.csv")
+  species_list:
     command: read_csv_char("config/species_list.csv")
 
 {{#study_names}}
@@ -21,12 +15,9 @@ targets:
       load_study("data/{{study_name}}/data.csv",
                  "data/{{study_name}}/context.csv",
                  "data/{{study_name}}/metadata.yml",
-                 definitions_data,
-                 definitions_traits,
-                 definitions_context,
-                 categorical_trait_constraints,
-                 unit_conversion_functions,
-                 species_list_known
+                 definitions,
+                 unit_conversions,
+                 species_list
                  )
 {{/study_names}}
 
