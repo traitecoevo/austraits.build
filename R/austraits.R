@@ -5,7 +5,7 @@ extract_dataset <- function(austraits, dataset_id) {
 
   ret <- list()
   for(v in c("data", "context", "excluded"))
-    ret[[v]] <- austraits[[v]][austraits[[v]][["dataset_id"]] == dataset_id,]
+    ret[[v]] <- austraits[[v]][austraits[[v]][["dataset_id"]] %in% dataset_id,]
   # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
   ret[["species_list"]] <- austraits[["species_list"]] %>% filter(species_name %in% ret[["data"]][["species_name"]])
   ret[["metadata"]] <- austraits[["metadata"]][dataset_id]
@@ -16,12 +16,12 @@ extract_trait <- function(austraits, trait_name) {
 
   ret <- list()
   # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
-  ret[["data"]] <- austraits[["data"]][austraits[["data"]][["trait_name"]] == trait_name,]
+  ret[["data"]] <- austraits[["data"]][austraits[["data"]][["trait_name"]] %in% trait_name,]
   ids <- ret[["data"]][["dataset_id"]] %>% unique() %>% sort()
   ret[["context"]] <- austraits[["context"]][austraits[["context"]][["dataset_id"]] %in% ids,]
   ret[["species_list"]] <- austraits[["species_list"]] %>% filter(species_name %in% ret[["data"]][["species_name"]])
   ret[["metadata"]] <- austraits[["metadata"]][ids]
-  ret[["excluded"]] <- austraits[["excluded"]][austraits[["excluded"]][["trait_name"]] == trait_name,]
+  ret[["excluded"]] <- austraits[["excluded"]][austraits[["excluded"]][["trait_name"]] %in% trait_name,]
   ret
 }
 
@@ -41,7 +41,7 @@ export_to_plain_text <- function(austraits, path) {
   dir.create(path, FALSE, TRUE)
   for(v in c("data","context","species_list", "excluded"))
     write_csv(austraits[[v]], sprintf("%s/%s.csv", path, v))
-  write_yaml(austraits[["metadata"]],  sprintf("%s/%s.yml", path, v))
+  write_yaml(austraits[["metadata"]],  sprintf("%s/metadata.yml", path))
 }
 
 
