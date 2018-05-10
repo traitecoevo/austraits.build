@@ -69,26 +69,26 @@ flag_unsupported_traits <- function(data, definitions) {
 }
 
 
-## Remove any disallowed traits
+## Flag any values oustide allowabl range
 flag_unsupported_values <- function(data, definitions) {
 
-  # Remove any values of categorical traits not listed in definitions
+  # Categorical traits not listed in definitions
   i <- trait_is_categorical(data[["trait_name"]], definitions)
 
   if(any(i)) {
-    for(v in unique(data[["trait_name"]][i])) {
-      ii <-  data[["trait_name"]] == v & !is.null(definitions$traits$values[[v]]$values) & data[["value"]] %notin% names(definitions$traits$values[[v]]$values)
+    for(v in na.omit(unique(data[["trait_name"]][i]))) {
+      ii <-  is.na(data[["error"]]) & data[["trait_name"]] == v & !is.null(definitions$traits$values[[v]]$values) & data[["value"]] %notin% names(definitions$traits$values[[v]]$values)
       data <- mutate(data, error = ifelse(ii, "Unsupported trait value", error))
     }
   }
 
-  # # Remove any values of numerical traits out of range
+  # Numerical traits out of range
   i <- trait_is_numeric(data[["trait_name"]], definitions)
 
   if(any(i)) {
-    for(v in unique(data[["trait_name"]][i])) {
+    for(v in na.omit(unique(data[["trait_name"]][i]))) {
       x <- suppressWarnings(as.numeric(data[["value"]]))
-      ii <-  data[["trait_name"]] == v & !is.na(x) &
+      ii <-  is.na(data[["error"]]) & data[["trait_name"]] == v & !is.na(x) &
         (x < definitions$traits$values[[v]]$values$minimum | x > definitions$traits$values[[v]]$values$maximum)
       data <- mutate(data, error = ifelse(ii, "Unsupported trait value", error))
     }
@@ -124,7 +124,7 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
       to = extract_list_element(i, definitions$traits$values, "units"),
       ucn = unit_conversion_name(unit, to),
       type = extract_list_element(i, definitions$traits$values, "type"),
-      to_convert =  type == "numeric" & unit != to)
+      to_convert =  ifelse(is.na(error), (type == "numeric" & unit != to ), FALSE))
 
   # Identify anything problematic in conversions and drop
   j <- is.na(data[["to_convert"]]) |
