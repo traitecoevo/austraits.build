@@ -176,9 +176,12 @@ parse_data <- function(data, dataset_id, metadata) {
   if (any(!var_in %in% colnames(data))) {
     stop(paste0("\nVariable '", setdiff(var_in, colnames(data)), "' from data.csv not found in configVarnames"))
   }
+
   df <- data %>%
         select(one_of(var_in)) %>%
-        rename_columns(var_in, var_out)
+        rename_columns(var_in, var_out) %>%
+        # Add unique observation id
+        mutate(observation_id = paste(dataset_id, seq_len(nrow(data)), sep = "_"))
 
   # Step 2. Add trait information, with correct names
 
