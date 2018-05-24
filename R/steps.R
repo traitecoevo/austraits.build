@@ -312,7 +312,7 @@ update_taxonomy  <- function(study_data, metadata){
   out
 }
 
-combine_austraits <- function(..., d=list(...)) {
+combine_austraits <- function(..., d=list(...), definitions) {
   combine <- function(name, d) {
     dplyr::bind_rows(lapply(d, "[[", name))
   }
@@ -327,11 +327,10 @@ combine_austraits <- function(..., d=list(...)) {
                               arrange(species_name) %>% 
                               filter(!duplicated(.)),
               metadata=lapply(d, "[[", "metadata"),
-              excluded=combine("excluded", d)
+              definitions = definitions,
+              excluded = combine("excluded", d),
+              session_info = sessionInfo()
               )
-
-#  ret$bibtex <- do.call("c", unname(lapply(d, "[[", "bibtex")))
-#  ret$dictionary <- variable_definitions
   ret
 }
 
