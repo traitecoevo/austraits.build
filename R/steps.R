@@ -72,10 +72,14 @@ flag_unsupported_traits <- function(data, definitions) {
 ## Flag any values oustide allowabl range
 flag_unsupported_values <- function(data, definitions) {
 
+  # NA vaues
+  ii <-  is.na(data[["value"]])
+  data <- mutate(data, error = ifelse(ii, "Missing value", error))
+
   # Categorical traits not listed in definitions
   i <- trait_is_categorical(data[["trait_name"]], definitions)
 
-  if(any(i)) {
+  if(any(i, na.rm=TRUE)) {
     for(v in na.omit(unique(data[["trait_name"]][i]))) {
       ii <-  is.na(data[["error"]]) & data[["trait_name"]] == v & !is.null(definitions$traits$values[[v]]$values) & data[["value"]] %notin% names(definitions$traits$values[[v]]$values)
       data <- mutate(data, error = ifelse(ii, "Unsupported trait value", error))
@@ -85,7 +89,7 @@ flag_unsupported_values <- function(data, definitions) {
   # Numerical traits out of range
   i <- trait_is_numeric(data[["trait_name"]], definitions)
 
-  if(any(i)) {
+  if(any(i, na.rm=TRUE)) {
     for(v in na.omit(unique(data[["trait_name"]][i]))) {
       x <- suppressWarnings(as.numeric(data[["value"]]))
       ii <-  is.na(data[["error"]]) & data[["trait_name"]] == v & !is.na(x) &
@@ -181,14 +185,19 @@ parse_data <- function(data, dataset_id, metadata) {
         select(one_of(var_in)) %>%
         rename_columns(var_in, var_out) %>%
         # Add unique observation id
-        mutate(observation_id = paste(dataset_id, seq_len(nrow(data)), sep = "_"))
-
+        mutate(
+          dataset_id = dataset_id,
+          observation_id = paste(dataset_id, seq_len(nrow(data)), sep = "_"))
   # Step 2. Add trait information, with correct names
 
+  cfgChar <-
+    metadata[["traits"]] %>%
+    list_to_df() %>%
+    filter(!is.na(trait_name))  # remove any rows without a matching trait record
+   
   # check that the trait names as specified in config actually exist in data
   # if not then we need to stop and fix this problem
   # NOTE - only need to do this step for wide (non-vertical) data
-  cfgChar <- list_to_df(metadata[["traits"]])
   if (dataset_vert == FALSE & any(! cfgChar[["var_in"]] %in% colnames(data))) {
     stop(paste(dataset_id, ": missing traits: ", setdiff(cfgChar[["var_in"]], colnames(data))))
   }
@@ -204,12 +213,12 @@ parse_data <- function(data, dataset_id, metadata) {
       out[[i]] <- df
       # to x we append columns of data for trait_name, unit and value (the latter is retrieved from the data)
       out[[i]][["trait_name"]] <- cfgChar[["var_in"]][i]
-      out[[i]][["value"]] <- as.character(data[[cfgChar[["var_in"]][i]]])
+      out[[i]][["value"]] <- data[[cfgChar[["var_in"]][i]]] %>% as.character()
     }
     out <- dplyr::bind_rows(out)
   } else {
     out <- df
-    out[["value"]] <- as.character(out[["value"]])
+    out[["value"]] <- out[["value"]] %>%  as.character()
   }
 
   # Add information on trait type, precision, metholdogy_ids, if not already present
@@ -244,10 +253,6 @@ parse_data <- function(data, dataset_id, metadata) {
     }
   }
 
-  # Drop any NA trait or values
-  out <- dplyr::filter(out, !is.na(trait_name) & !is.na(value))
-
-  out[["dataset_id"]] = dataset_id
   out
 }
 
