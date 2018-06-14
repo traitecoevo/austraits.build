@@ -88,6 +88,11 @@ list_to_df <- function(my_list, as_character= TRUE) {
 # Convert a list with single entries to dataframe
 list1_to_df <- function(my_list) {
 
+  for(f in names(my_list)) {
+    if(is.null(my_list[[f]])) 
+      my_list[[f]] <- NA
+  }
+  
   tibble(key = names(my_list), value = unlist(my_list))
 }
 
@@ -148,3 +153,4 @@ render_html <- function(filename_md) {
 render_doc <- function(filename_md) {
   rmarkdown::render(filename_md, "word_document", quiet=TRUE)
 }
+

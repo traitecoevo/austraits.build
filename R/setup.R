@@ -289,7 +289,7 @@ format_tpl_to_accepted_df <- function(tpl, use.new = FALSE){
   tpl %>% 
      select(species_name = Taxon, family = Family, 
      authority = New.Authority, TPL_ID = ID, status = Taxonomic.status) %>%
-     mutate(APC_name = "unknown", APC_taxon_ID = "unknown", APC_name_ID = "unknown") 
+     mutate(APC_name = "unknown", APC_ID = "unknown", APNI_ID = "unknown") 
 }
 
 add_to_accepted <- function(accepted, to_add) {

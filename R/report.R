@@ -10,15 +10,6 @@ CV <- function(x){
 
 ## SUMMARY TABLE FUNCTIONS
 
-summ <- function(df) {
-  df %>% group_by(trait_name) %>%
-    summarise(
-        units = paste0(unique(unit)), 
-        N_records = length(value), 
-        N_species = length(unique(species_name))
-        )
-}
-
 # format data for dotchart and pair plots
 
 format_data <- function(id, study_data, austraits, definitions_traits_numeric) {

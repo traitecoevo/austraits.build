@@ -1,7 +1,8 @@
-```{r setup, echo=FALSE}
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 # knitr defaults
 knitr::opts_knit$set(root.dir = normalizePath(".."))
-knitr::opts_chunk$set(echo=FALSE, fig.cap='', cache=FALSE)
+knitr::opts_chunk$set(echo=FALSE, fig.cap='', cache=FALSE, output.dir = ".")
+#knitr::opts_knit$set(output.dir = ".")
 
 # default for table format
 options(knitr.table.format = "html")
@@ -9,106 +10,169 @@ options(knitr.table.format = "html")
 # Guidelines for writing report code
 # - use tidyverse style and format: http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html
 # - use kableExtra for styling: https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
-# - use knitr chunck options: https://rmarkdown.rstudio.com/lesson-3.html 
-```
+# - use knitr chunck options: https://rmarkdown.rstudio.com/lesson-3.html
 
-```{r, eval=TRUE, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
-# This stuff enables report to run outside of remake framework. For development purposes only.
-# Set eval=FALSE for use in remake environment  
-options(remake.verbose.noop=FALSE)
 library(knitr)
 library(dplyr)
 library(kableExtra)
+library(ggplot2)
+library(scales)
+library(ggbeeswarm)
+library(forcats)
+suppressPackageStartupMessages(library(ggmap))
+library(ggrepel)
+
+## Help function to detect if the current operation has been called within remake framework
+## this helps to detect if knitr is being run via remake or interactively
+is_remake <- function() {
+  x <-sapply(sys.calls(), function(f) as.character(f)) 
+  grepl("remake:::", x, fixed = TRUE)  %>% any()
+}
+
+## default kable styling
+table_styling <- function(...) {
+  kable_styling(..., bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+  # hack to add margin to plot
+  gsub('style="width: auto ', 'style="margin-left:30px; width: auto ', .)
+}
+
+show_map <- TRUE
+run_setup <- !is_remake()
+```
+
+```{r, eval=run_setup, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
+# This stuff enables the report to run outside of the remake framework. For development purposes only.
+# Set eval=FALSE for use in remake environment
+# Set eval=TRUE to knit in Rstudio environment
+# The `run_setup` variable attempts to set this automagically.
+
+options(remake.verbose.noop=FALSE)
 source("R/support.R")
 source("R/report.R")
+source("R/austraits.R")
 austraits <- remake::make("austraits")
-definitions_traits <- remake::make("definitions_traits")
-data_study <- remake::make("Bragg_2002")
+data_study <- remake::make("Rice_1991")
 ```
+
+
 ```{r,  echo=FALSE, results="hide", message=FALSE, warning=FALSE}
-## default kable styling
-
-table_styling <- function(...) {
-  kable_styling(..., bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left")
-} 
+definitions <- austraits$definitions
+dataset_id <- data_study$dataset_id
+data_yaml <- read_yaml(sprintf("data/%s/metadata.yml", dataset_id))
 ```
 
-```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
-key <- data_study$key
-definitions_traits_numeric <- definitions_traits %>% filter(type == "numeric")
-# does dataset contain numeric data?
-show_plot <- FALSE #any(unique(data_study$data$trait_name) %in% definitions_traits_numeric$trait_name)
+```{r header, echo=FALSE, results="asis"}
+# generate the heder matter for the markdown file
+writeLines(sprintf(
+"---
+title: Report on the dataset **`%s`** for the `Austraits` data compilation
+output:
+  html_document:
+    df_print: kable
+    highlight: tango
+    keep_md: yes
+    smart: no
+    theme: yeti
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+editor_options:
+  chunk_output_type: console
+---
+", dataset_id))
 ```
 
-```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE, eval=show_plot}
-formatted <- format_data(data_study$key, data_study, austraits, definitions_traits_numeric) # format data for plotting
-```
-# Report for study: `r key`
+# About Austraits
 
-To imporve:
+Austraits is a XXX
 
-- slightly indent tables
 
+# This study
+
+The austraits compilation includes a dataset under the key **"`r dataset_id`"**. This report deseibes the infromation we have on that dataset.
+
+What we want from you ........
+
+Please pay attention to......
+
+Send feedback to ....
 
 ## People
 
-We have the follwoing contacts listed for this study:
+We have the following contacts listed for this study:
 
 ```{r, results='asis', echo=FALSE}
-data_study$metadata$people %>% list_to_df() %>% kable() %>% table_styling()
+data_study$metadata$people %>%
+  list_to_df() %>%
+  kable() %>%
+  table_styling()
 ```
 
 ## Citation
 
-Data are from the folliwing sources:
+This dataset is recorded as coming from the following sources:
 
 Primary citation:
 
 ```{r, results='asis', echo=FALSE}
-data_study$metadata$source$primary %>% list1_to_df() %>% kable() %>% table_styling()
+data_study$metadata$source$primary %>%
+  list1_to_df() %>%
+  kable() %>%
+  table_styling()
 ```
 
 ```{r, results='asis', echo=FALSE}
 if(!is.null(data_study$metadata$source$secondary)) {
   writeLines("Secondary citation:")
-  data_study$metadata$source$primary %>% list_to_df() %>% kable() %>% table_styling()
+  data_study$metadata$source$primary %>%
+    list_to_df() %>%
+    kable() %>%
+    table_styling()
   }
 ```
 
 ## Description
 
-The decsription we have of the data is as follows:
+The description we have of the data is as follows:
 
 ```{r, results='asis', echo=FALSE}
-data_study$metadata$dataset %>% list1_to_df() %>% kable() %>% table_styling()
-```
-
-The dataset  includes `r nrow(data_study$data)` individual datapoints from `r data_study$data$species_name %>% unique() %>% length()` species, with data included for the following `r data_study$data$trait_name %>% unique() %>% length()` traits (see below for deials). 
-
-## Locations of data sites
-
-Data were collected at the following `r data_study$context$site_name %>% unique() %>% length()`  sites and locations:
-
-```{r, results='asis', echo=FALSE}
-  data_study$context %>% 
-  filter(trait_name %in% c("longitude","latitude","elevation")) %>%
-  mutate(trait_with_units = sprintf("%s (%s)",trait_name, unit)) %>% 
-  select(-unit, -dataset_id, -trait_name) %>%
-  spread(trait_with_units, value) %>% 
-  mutate(`latitude (deg)` =as.numeric(`latitude (deg)`),
-         `longitude (deg)` =as.numeric(`longitude (deg)`)) %>% 
-  select(site_name, `latitude (deg)`, `longitude (deg)`, notes) -> sites
-
-sites %>%
-  kable() %>% 
+data_study$metadata$dataset %>%
+  list1_to_df() %>%
+  kable() %>%
   table_styling()
 ```
 
-```{r maps, echo=FALSE,results='hide',fig.keep='all', warning=FALSE, message=FALSE}
-library(ggmap)
-library(ggrepel)
+The dataset  includes `r nrow(data_study$data)` individual records from `r data_study$data$species_name %>% unique() %>% length()` species, with data included for the following `r data_study$data$trait_name %>% unique() %>% length()` traits (see below for details).
 
+## Locations of data sites
 
+Data were collected at the following sites and locations:
+
+```{r, results='asis', echo=FALSE, warning=FALSE}
+  data_study$context %>%
+  filter(trait_name %in% c("longitude","latitude","elevation")) %>%
+  mutate(trait_with_units = sprintf("%s (%s)",trait_name, unit)) %>%
+  select(-unit, -dataset_id, -trait_name) %>%
+  spread(trait_with_units, value) -> sites
+
+if(nrow(sites) > 0 ) {
+  sites <- sites %>%
+  mutate(`latitude (deg)` =as.numeric(`latitude (deg)`),
+         `longitude (deg)` =as.numeric(`longitude (deg)`)) %>%
+  select(site_name, `latitude (deg)`, `longitude (deg)`, notes)
+
+  sites %>%
+    kable() %>%
+    table_styling()
+} else{
+  writeLines("**NO SITE DATA AVAILABLE -- can you supply any?**")
+}
+
+```
+
+```{r maps, eval= show_map, echo=FALSE, results='hide', warning=FALSE, message=FALSE, fig.keep="all"}
 # set cache for ggmap - https://rdrr.io/cran/ggmap/man/file_drawer.html
 # Define using "here" package
 cache <- file.path(rprojroot::find_root("remake.yml"), "downloads/ggmap")
@@ -119,11 +183,10 @@ options(ggmap.file_drawer = cache)
 # Expand a box to give padding around it
 pad_box <- function(bbox, p=0.1, min_deg = 0.5) {
   new_box <- bbox
-  
-  new_box[1] <- bbox[1] - max(p*(bbox[3]-bbox[1]), min_deg) 
-  new_box[3] <- bbox[3] + max(p*(bbox[3]-bbox[1]), min_deg) 
-  new_box[2] <- bbox[2] - max(p*(bbox[4]-bbox[2]), min_deg) 
-  new_box[4] <- bbox[4] + max(p*(bbox[4]-bbox[2]), min_deg) 
+  new_box[1] <- bbox[1] - max(p*(bbox[3]-bbox[1]), min_deg)
+  new_box[3] <- bbox[3] + max(p*(bbox[3]-bbox[1]), min_deg)
+  new_box[2] <- bbox[2] - max(p*(bbox[4]-bbox[2]), min_deg)
+  new_box[4] <- bbox[4] + max(p*(bbox[4]-bbox[2]), min_deg)
   new_box
 }
 
@@ -139,134 +202,252 @@ area_box <- function(bbox) {
 get_zoom<- function(bbox, zoom_max=10) {
   box_area <- bbox %>% pad_box() %>% area_box()
   cuts <- 10^seq(0, 3.5, length.out = 6)
-  zoom_max + 1 - (box_area >= cuts) %>% which() %>% max() 
+  zoom_max + 1 - (box_area >= cuts) %>% which() %>% max()
 }
+
+sites <- sites %>% filter(!is.na(`latitude (deg)`) & !is.na(`longitude (deg)`))
 
 # Downlaod data and make a mapr for specified sites
 make_map <- function(bbox, sites) {
   sitesMap <- get_stamenmap(bbox = bbox %>% pad_box(), zoom = get_zoom(bbox), maptype="terrain")
 
-  ggmap(sitesMap) + 
+  ggmap(sitesMap) +
     labs(x = "Longitude", y = "Latitude") +
     geom_point(data = sites, aes(x=`longitude (deg)`, y = `latitude (deg)`), colour = "red") +
     geom_text_repel(data = sites, aes(x=`longitude (deg)`, y = `latitude (deg)`, label = site_name))
-  
+
 }
 
+if(nrow(sites) > 0 ){
+  australia_box <- c(left=113.338953078, bottom=-43.6345972634, right=153.569469029, top=-10.6681857235)
+  print(make_map(australia_box, sites))
 
-australia_box <- c(left=113.338953078, bottom=-43.6345972634, right=153.569469029, top=-10.6681857235)
-make_map(australia_box, sites)
-
-sites_box <-  c(left = min(sites$`longitude (deg)`), bottom = min(sites$`latitude (deg)`), right = max(sites$`longitude (deg)`), top = max(sites$`latitude (deg)`))
-make_map(sites_box, sites)
+  sites_box <-  c(left = min(sites$`longitude (deg)`), bottom = min(sites$`latitude (deg)`), right = max(sites$`longitude (deg)`), top = max(sites$`latitude (deg)`))
+  print(make_map(sites_box, sites))
+}
 ```
 
-# Data Available
+## Contextual (site) data
 
-## Physical site data
-
-The following physical sites have been collected:
+The following variables have been recorded for the sites included in the study:
 
 ```{r, results='asis', echo=FALSE}
-  data_study$context %>% 
+
+data_study$context %>%
   filter(!(trait_name %in% c("longitude","latitude","elevation"))) %>%
-  mutate(trait_with_units = sprintf("%s (%s)", trait_name, unit)) %>% 
+  mutate(trait_with_units = sprintf("%s (%s)", trait_name, unit)) %>%
   select(-unit, -dataset_id, -notes, -trait_name) %>%
-  spread(trait_with_units, value) %>%
-  kable() %>% 
-  table_styling()
+  spread(trait_with_units, value) -> context
+
+if(nrow(context) > 0 ) {
+  context %>%
+    kable() %>%
+    table_styling()
+} else{
+  writeLines("**NO SITE DATA AVAILABLE -- can you supply any?**")
+}
+
 ```
-
-TODO:
-
-- change NA in units to blank???
-- we should do an automated check, to ensure that within each study's context file, units are consistent
-- if the dataframe temp is empty, print "No additional physical site data is available for this study."
 
 ## Species sampled
 
-The species sampled were:
+(**Todo** -- move after traits)
 
-data_study$data %>% select(species_name, original_name)
+We have records on the following species from your study. We have attempted to align species names with known taxnoomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. Shown in the table is 
 
-xxx create a table of species, unique(data_study$data$taxon), with columns for each site
-xxx place an x in columns for sites where a specific taxon was sampled
+- the original name supplied to us 
+- alignment of your species with the [`The Plant List` (TPL)](http://www.theplantlist.org/)
+- alignment of your species with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc)
+- alignment of your species with the [`Australian Plant Names Index` (APC_name_ID)](https://biodiversity.org.au/nsl/services/APNI)
 
-We applied the following taxonomic corrections
+Updated names are shown where different to the orignal name supplied, as well as links to the species records in those systems. Clicking on the links will take you to the relevant taxnomic record in each system for that species.
 
+```{r species_list, results='asis', echo=FALSE}
+species <- data_study$data %>%
+  select(original_name, species_name) %>%
+  distinct() %>%
+  arrange(original_name) %>%
+  left_join(austraits$species_list, by ="species_name") %>% 
+  rename(TPL_name = species_name) %>% 
+  mutate(TPL_name = ifelse(TPL_name == original_name, "", TPL_name),
+         APC_name = ifelse(APC_name == original_name, "", APC_name)
+         )
 
-## Traits Sampled
-
-xxx data table listing: trait names, trait units, number of species sampled, min, median, max values
-
-xxx first create dataframe with unique entries from data_study$metadata$traits$var_in and data_study$metadata$traits$units_in
-
-xxx then for the trait variables, summarise data from data_study$data to fill in number of species samples, min, median, max trait values
-
-xxx question: in the data file, the traits and units are amalgamated. What is the easiest way to match with trait names generated from metadata yml file
-
-xxx question: in the BAAD dataset, there are separate abbreviated trait names and longer labels. Do we have a lookup table with this information for austraits as well?
-
-# Data summaries
-The dataset includes `r nrow(data_study$data)` individual datapoints from `r length(unique(data_study$data$species_name))` species, with data included for the following `r length(unique(data_study$data$trait_name))` traits: 
-
-```{r summary_table, results='asis', echo=FALSE}
-tab <- summ(data_study$data)
-kable(tab) %>% table_styling()
-```
-
-```{r, results='asis', echo=FALSE, eval = show_plot}
-writeLines(sprintf("## Diagnostic plots of numeric data
-### Pairwise plots for %s, log10 axes",key))
-```
-
-```{r pairwise_plots, eval= FALSE, fig.width=12, fig.height=9, echo=FALSE, message=FALSE, warning=FALSE, eval = show_plot}
-pairwise_panel(key, formatted)
-```
-
-### Distributions of traits
-
-xxx question: for these plots, should we have relevant data either as the top study or right in the middle?
-```{r, include=FALSE, warning=FALSE, eval = show_plot}
-# Make a list of traits
-traits <- unique(data_study$data$trait_name[data_study$data$trait_name %in% definitions_traits_numeric$trait_name])
-data_all <- austraits$data
-src <- NULL
-
-for(i in seq_along(traits)) {
-  trait <- traits[i]
-
-  # We're doing some tricks to rescale the plot height
-  # We'll try to maintain constant density of points along yaxis and rescale plot height accordingly
-  panel_ht_top <- 4
-  target_density <- 5
-  panel_ht_bottom <- max(2*panel_ht_top,
-                        sqrt(nrow(data_all[data_all$trait_name==trait,]))/target_density)
-  figure_height <- sum(panel_ht_top, panel_ht_top)
-
-  ## This bit uses knitr's option to provide a template piece of code
-  ## substitutes in values for anything inside {{}}
-  src <- c(src, knit_expand(text=c(
-        '#### {{trait}}\n',
-        '```{r fig-{{trait}}, warning=FALSE, message=FALSE, fig.width=12, fig.height ={{figure_height}}}',
-        'dotchart_single("{{trait}}", key, data_all, c({{panel_ht_top}}, {{panel_ht_bottom}}))',
-        '```\n\n')))
+as_link <- function(link, text, type="md") {
+  if(type=="md")
+    sprintf('[%s](%s)', text, link)
+  else
+    sprintf("<a href='%s'> %s </a>", link, text)
 }
 
-# knit the source
-res = knit_child(text = src)
+as_link_tpl <- function(ID) {
+  sprintf("http://www.theplantlist.org/tpl1.1/record/%s", ID) %>%
+  as_link(ID)
+}
+
+as_link_apc <- function(ID) {
+  sprintf("https://biodiversity.org.au/nsl/services/node/apc/%s", ID) %>%
+  as_link(ID)
+}
+
+
+as_link_apni <- function(ID) {
+  sprintf("http://id.biodiversity.org.au/node/apni/%s", ID) %>%
+  as_link(ID)
+}
+
+
+species %>%
+  mutate(
+    TPL_ID = as_link_tpl(TPL_ID),
+    APC_ID = as_link_apc(APC_ID),
+    APNI_ID = as_link_apni(APNI_ID)
+  ) %>%
+  kable() %>%
+  table_styling() %>%
+  column_spec(1, border_right = TRUE) %>%
+  column_spec(6, border_right = TRUE) %>%
+  column_spec(8, border_right = TRUE)
+
 ```
 
-```{r results='asis', eval = show_plot}
-writeLines(res)
+In processing your data, we made the following substitution of names, with reasons as stated.
+
+```{r species_subs, results='asis', echo=FALSE}
+data_yaml$taxonomic_updates %>%
+  list_to_df() %>%
+  kable() %>%
+  table_styling()
 ```
 
-### Trait values with high associated intraspecific variation
-If present, the table shows any trait records for species within the current dataset where the intraspecific variation across all records for this species-trait combination exceeds an order of magnitude. Note that the expected degree of intraspecific variation varies between traits.
 
-```{r flags_table, results='asis', echo=FALSE, warning=FALSE, message=FALSE, eval = FALSE}
-flagged <- flags(key, austraits, definitions_traits_numeric)
-if(nrow(flagged)>0)
-  kable(flagged) %>% table_styling()
+## Traits sampled
+
+The dataset includes `r data_study$data %>% nrow()` individual datapoints from `r data_study$data$species_name %>% unique() %>% length()` species, with data included for the following `r data_study$data$trait_name %>% unique() %>% length()` traits:
+
+```{r summary_table, results='asis', echo=FALSE}
+data_study$data %>%
+  group_by(trait_name) %>%
+    summarise(
+        records = length(value),
+        species = length(unique(species_name))
+        ) %>%
+  kable() %>%
+  table_styling()
 ```
+
+# Traits: Numerical
+
+
+
+```{r numerical, results='asis', echo=FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=10}
+traits <- data_study$data$trait_name %>% unique() %>% sort()
+traits_numeric <- traits[trait_is_numeric(traits, definitions)]
+
+writeLines(ifelse(length(traits_numeric) == 0,
+        "No numerical traits data are currently available in this dataset",
+        "We have recorded the following traits with conitnuous numerical values in this dataset. Plots are shown comparing the distribution of values in your study to others in the dataset"))
+
+for(trait in traits_numeric) {
+
+  meta <- data_yaml$traits %>% list_to_df() %>% filter(trait_name == trait)
+
+  data_trait_study <- data_study$data %>%
+    filter(trait_name == trait) %>%
+    mutate(value = as.numeric(value))
+
+  data_trait_all <- austraits$data %>%
+    filter(trait_name == trait) %>%
+    mutate(value = as.numeric(value))
+
+  # Adjust height of plot according number of rows?
+  # n_study <- data_trait_all %>% pull(dataset_id) %>% unique() %>% length()
+  # figure_height <- 4 + max(12, (n_study/5))
+
+  x <- c("", "",
+    sprintf("## %s", definitions$traits$values[[trait]]$label),
+    "",
+    sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the austraits database. The original variable was supplied with units `%s`; these were converted to our standard (below). The contributed data has the following properties:", meta$var_in, trait, meta$unit_in),
+    "",
+    sprintf("- **Standadrised name**: %s", trait ),
+    sprintf("- **Standadrised description**: %s", definitions$traits$values[[trait]]$description ),
+    sprintf("- **Standadrised units**: %s", definitions$traits$values[[trait]]$units ),
+    sprintf("- **Records in austraits**: %s", data_trait_all %>% nrow() ),
+    sprintf("- **Records in this study**: %s", data_trait_study %>% nrow() ),
+    sprintf("- **Allowable range**: %s - %s", definitions$traits$values[[trait]]$values$minimum,
+            definitions$traits$values[[trait]]$values$maximum ),
+    sprintf("- **Observed range in this study**: %s - %s", data_trait_study %>% pull(value) %>% min(),
+            data_trait_study %>% pull(value) %>% max() ),
+    "",
+    "The followig plot shows distribution of recorded values for each dataset, with your study name highlighted along the y axis.",
+    "")
+
+  writeLines(x)
+
+  trait_distribution_plot_numerical(austraits, trait, "dataset_id", highlight=dataset_id) %>% print()
+}
+```
+
+# Traits: Categorical
+
+```{r categorical, results='asis', echo=FALSE, eval=TRUE}
+traits <- data_study$data$trait_name %>% unique() %>% sort()
+traits_categorical <- traits[!trait_is_numeric(traits, definitions)]
+
+writeLines(
+  ifelse(length(traits_categorical) == 0,
+    "No categorical traits data are currently available in this dataset.",
+    "We have recorded the following traits with categorical values in this dataset. Plots are shown comparing the distribution of values in your study to others in the dataset"))
+
+for(trait in traits_categorical) {
+
+  meta <- data_yaml$traits %>% list_to_df() %>% filter(trait_name == trait)
+
+  data_trait_study <- data_study$data %>%
+    filter(trait_name == trait) %>%
+    mutate(value = as.factor(value))
+
+  data_trait_all <- austraits$data %>%
+    filter(trait_name == trait) %>%
+    mutate(value = as.factor(value))
+
+
+  allowed <- names(definitions$traits$values[[trait]]$values)
+  actual <- data_trait_study %>% pull(value) %>% unique() %>% sort()
+
+  x <- c("", "",
+    sprintf("### %s", definitions$traits$values[[trait]]$label),
+    "",
+    sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the austraits database. The contributed data has the following properties:", meta$var_in, trait),
+    "",
+    sprintf("- **Standadrised name**: %s", trait ),
+    sprintf("- **Standadrised description**: %s", definitions$traits$values[[trait]]$description ),
+    sprintf("- **Records in austraits**: %s", data_trait_all %>% nrow() ),
+    sprintf("- **Records in this study**: %s", data_trait_study %>% nrow() ),
+    sprintf("- **Observed values**: %s of %s allowed values recorded -- %s", length(actual),length(allowed), actual %>% paste0(collapse=", ") %>% sort() ),
+    "",
+    "The followig plot shows distribution of recorded values for each dataset.",
+    "")
+
+  writeLines(x)
+
+  trait_distribution_plot_categorical(austraits, trait, "dataset_id", highlight=dataset_id) %>% print()
+}
+```
+
+
+# The datastet
+
+The full dataset provided by your study is as follows:
+
+```{r all_data, eval=FALSE, results='asis', echo=FALSE}
+data_study$data %>%
+  select(-original_name) %>%
+  kable() %>%
+  table_styling()
+```
+
+# Review & questions
+
+xxx question: in the BAAD dataset, there are separate abbreviated trait names and longer labels. Do we have a lookup table with this information for austraits as well?
 
