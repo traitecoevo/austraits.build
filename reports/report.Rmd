@@ -84,18 +84,23 @@ editor_options:
 ", dataset_id))
 ```
 
-# About Austraits
-
-Austraits is a XXX
+Austraits is an open-source compilation of trait data for Australian plant species.
 
 
 # This study
 
-The austraits compilation includes a dataset under the key **"`r dataset_id`"**. This report deseibes the infromation we have on that dataset.
+The austraits compilation includes a dataset under the key **"`r dataset_id`"**. This report describes the information we have on that dataset.
 
-What we want from you ........
+For almost all studies, some of the information in the metadata.yml file is missing and we'd like your assistance in making this as complete as possible for future users.
 
-Please pay attention to......
+Please double check the information under the headings People, Citation, Description to ensure it is correct. Edit the appropriate sections in the metadata.yml file you have been sent if any corrections are required. In particular have we correctly identified your data as having been collected in the field, from a lab experiment, or from herbarium samples.
+
+In addition, if, in the report below, we are missing data of sample sites, sampling strategy, or methods could you please add them to the yml file or send them to us in an alternative format. In particular,
+ Site data would hopefully include latitude and longitude coordinates and, where available, variables such as site soil data or climatic data. This information is not required for herbarium studies.
+ Sampling strategy is a field to indicate how sites were chosen and how individuals sampled were chosen. If your data is collected from herbarium specimens, you could simply indicate which herbaria were sampled.
+ For each trait, we hope to know the value type (is the data point you submitted an individual observation, mean, min, max, etc), number of replicates that contributed to the data point submitted and the methodology used to collect the data. Currently, methods have been extracted from referenced manuscripts, but quite often the submitted dataset includes traits whose collection methods aren't described in the manuscript. For herbarium studies, please specify which variables were measured on dried herbarium samples and which are derived from field observations. For all studies if the value for certain traits (such as plant height) was extracted from the literature, please fill in "published literature" as the method. If a trait value was determined by expert opinion, such as the data collector made the decision that a plant was a shrub, the method would be "expert opinion".
+
+Additionally, as information was added to the metadata.yml file, the following questions specific to your data set arose: **"`r data_study$metadata$dataset$questions_for_author`"**
 
 Send feedback to ....
 
@@ -244,7 +249,7 @@ if(nrow(context) > 0 ) {
     kable() %>%
     table_styling()
 } else{
-  writeLines("**NO SITE DATA AVAILABLE -- can you supply any?**")
+  writeLines("**NO CONTEXTUAL SITE DATA AVAILABLE -- can you supply any?**")
 }
 
 ```
@@ -369,9 +374,9 @@ for(trait in traits_numeric) {
     "",
     sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the austraits database. The original variable was supplied with units `%s`; these were converted to our standard (below). The contributed data has the following properties:", meta$var_in, trait, meta$unit_in),
     "",
-    sprintf("- **Standadrised name**: %s", trait ),
-    sprintf("- **Standadrised description**: %s", definitions$traits$values[[trait]]$description ),
-    sprintf("- **Standadrised units**: %s", definitions$traits$values[[trait]]$units ),
+    sprintf("- **Standardised name**: %s", trait ),
+    sprintf("- **Standardised description**: %s", definitions$traits$values[[trait]]$description ),
+    sprintf("- **Standardised units**: %s", definitions$traits$values[[trait]]$units ),
     sprintf("- **Records in austraits**: %s", data_trait_all %>% nrow() ),
     sprintf("- **Records in this study**: %s", data_trait_study %>% nrow() ),
     sprintf("- **Allowable range**: %s - %s", definitions$traits$values[[trait]]$values$minimum,
@@ -379,7 +384,10 @@ for(trait in traits_numeric) {
     sprintf("- **Observed range in this study**: %s - %s", data_trait_study %>% pull(value) %>% min(),
             data_trait_study %>% pull(value) %>% max() ),
     "",
-    "The followig plot shows distribution of recorded values for each dataset, with your study name highlighted along the y axis.",
+    "Your data for this trait have been collected using the following methods:",
+    ##TODO - add in data for methods, value type, and replicates from the specific metadata file##
+    ##data_study$metadata$traits[[trait]] ##
+    "The following plot shows distribution of recorded values for each dataset, with your study name highlighted along the y axis.",
     "")
 
   writeLines(x)
@@ -391,6 +399,7 @@ for(trait in traits_numeric) {
 # Traits: Categorical
 
 ```{r categorical, results='asis', echo=FALSE, eval=TRUE}
+## TODO for categorical variables, have a second plot with just the authors data that is rescaled, so they have a higher resolution along the y-axis
 traits <- data_study$data$trait_name %>% unique() %>% sort()
 traits_categorical <- traits[!trait_is_numeric(traits, definitions)]
 
@@ -420,13 +429,14 @@ for(trait in traits_categorical) {
     "",
     sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the austraits database. The contributed data has the following properties:", meta$var_in, trait),
     "",
-    sprintf("- **Standadrised name**: %s", trait ),
-    sprintf("- **Standadrised description**: %s", definitions$traits$values[[trait]]$description ),
+    sprintf("- **Standardised name**: %s", trait ),
+    sprintf("- **Standardised description**: %s", definitions$traits$values[[trait]]$description ),
     sprintf("- **Records in austraits**: %s", data_trait_all %>% nrow() ),
     sprintf("- **Records in this study**: %s", data_trait_study %>% nrow() ),
     sprintf("- **Observed values**: %s of %s allowed values recorded -- %s", length(actual),length(allowed), actual %>% paste0(collapse=", ") %>% sort() ),
+    sprintf("See the attached Appendix for definitions of the observed values to ensure we have assigned your data points that meaning you intended."),
     "",
-    "The followig plot shows distribution of recorded values for each dataset.",
+    "The following plot shows distribution of recorded values for each dataset.",
     "")
 
   writeLines(x)
@@ -450,4 +460,3 @@ data_study$data %>%
 # Review & questions
 
 xxx question: in the BAAD dataset, there are separate abbreviated trait names and longer labels. Do we have a lookup table with this information for austraits as well?
-
