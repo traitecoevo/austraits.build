@@ -1,11 +1,6 @@
-require(tidyverse)
-require(ggplot2)
-require(forcats)
-require(scales)
-require(ggbeeswarm)
-require(forcats)
+library(tidyverse)
 
-## Functions for extracting bits from austraits
+## Functions for extracting bits from Austraits
 
 extract_dataset <- function(austraits, dataset_id) {
 
@@ -35,7 +30,7 @@ spread_traits_data <- function(data) {
 extract_trait <- function(austraits, trait_name) {
 
   ret <- austraits
-  
+
   # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
   ret[["data"]] <- austraits[["data"]][austraits[["data"]][["trait_name"]] %in% trait_name,]
   ids <- ret[["data"]][["dataset_id"]] %>% unique() %>% sort()
@@ -44,7 +39,7 @@ extract_trait <- function(austraits, trait_name) {
   ret[["metadata"]] <- austraits[["metadata"]][ids]
   ret[["excluded"]] <- austraits[["excluded"]][austraits[["excluded"]][["trait_name"]] %in% trait_name,]
 
-  # if nuemric, convert to numeric  
+  # if numeric, convert to numeric
   if(!is.na(ret[["data"]][["unit"]][1])){
     ret[["data"]][["value"]] <- as.numeric(ret[["data"]][["value"]])
   }
@@ -111,91 +106,143 @@ trait_distribution_by_family <- function(...){
 }
 
 
-trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axis_category, highlight=NA, subset = TRUE){
-  
-  if(subset)
-    austraits <- extract_trait(austraits, plant_trait_name)
-  
-  data <- extract_trait(austraits, plant_trait_name)$data %>% 
+trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axis_category, highlight=NA) {
+
+  # #
+  # plant_trait_name <- "leaf_area"
+  # y_axis_category <- "dataset_id"
+  # highlight= "Blackman_2014"
+  # subset = TRUE
+
+  # Subset data to this trait
+  austraits <- extract_trait(austraits, plant_trait_name)
+
+  data <- austraits$data %>%
     mutate(log_value = log10(value)) %>%
-    left_join(., select(austraits$species, 'species_name', 'family'), by = "species_name")
-   
+    left_join(., select(austraits$species, 'species_name', 'family'),
+              by = "species_name")
+
+  # Define grouping variables and derivatives
   if(!y_axis_category %in% names(data)){
    stop("incorrect grouping variable")
   }
-  
-  data$Group =  fct_reorder(data[[y_axis_category]], data$log_value, fun = mean, na.rm=TRUE)
 
-  n <- length(levels(data$Group))
-  y.text <- ifelse(n > 20, 0.5, 1)
-  p <- 
-      ggplot(data, aes(x = value, y = Group, colour = value_type)) +
-      geom_quasirandom(groupOnX=FALSE) + 
-      theme_bw() +
-      labs(title = paste0(plant_trait_name,' - distribution by ', y_axis_category)) +
-      theme(panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(),
-            axis.text.x=element_text(size=rel(1.5)),
-            axis.text.y=element_text(size=rel(y.text))
-            )
-  vals <- austraits$definitions$traits$values[[plant_trait_name]]$values 
-  
-  range <- (vals$maximum/vals$minimum)
-  
-  if(range > 20) {
-    p <- p + 
-      scale_x_log10( name=paste('Value (', data$unit[1], ')'),#log transformation function
-                     breaks = trans_breaks("log10", function(x) 10^x),
-                     labels = trans_format("log10", math_format(10^.x)))
-  }
-  
-  
+  # define grouping variable, ordered by group-level by mean values
+  data$Group = fct_reorder(data[[y_axis_category]], data$log_value,
+                           fun = mean, na.rm=TRUE)
+
+  n_group <- levels(data$Group) %>% length()
+
+  # set colour to be alternating
+  data$colour = ifelse(data$Group %in% levels(data$Group)[seq(1, n_group, by=2)],
+                       "a", "b")
+
+
+  # set colour of group to highlight
   if(!is.na(highlight) & highlight %in% data$Group) {
-    
-    a <- ifelse(levels(data$Group) == highlight, "blue", "black")
-    p <- p + 
-      theme(axis.text.y = element_text(colour = a))
+    data <- mutate(data, colour = ifelse(Group %in% highlight, "c", colour))
   }
-  
-  p
+
+  # Check range on x-axis
+  vals <- austraits$definitions$traits$values[[plant_trait_name]]$values
+  range <- (vals$maximum/vals$minimum)
+
+  # Check range on y-axis
+  y.text <- ifelse(n_group > 20, 0.75, 1)
+  heights = c(1, max(1, n_group/7))
+
+  # Top plot - plain histogram of data
+  p1 <-
+    ggplot(data, aes(x=value)) +
+    geom_histogram(aes(y = ..density..), color="darkgrey", fill="darkgrey", bins=50) +
+    geom_density(color="black") +
+    xlab("") + ylab("All data") +
+    theme_bw()  +
+    theme(legend.position = "none",
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text=element_blank(),
+        panel.background = element_blank()
+        )
+  # Second plot -- dots by groups, using ggbeeswarm package
+  p2 <-
+      ggplot(data, aes(x = value, y = Group, colour = colour, symbol = value_type)) +
+      ggbeeswarm::geom_quasirandom(groupOnX=FALSE) +
+      ylab(paste("By ", y_axis_category)) +
+      theme_bw() +
+      theme(legend.position = "bottom",
+            panel.grid.major.x = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            axis.text.x=element_text(size=rel(1.25)),
+            axis.text.y=element_text(size=rel(y.text))
+            ) +
+      guides(colour=FALSE)
+
+  # Define scale on x-axis and transform to log if required
+  if(range > 20) {
+    #log transformation
+    p1 <- p1 +
+      scale_x_log10( name="",
+                     breaks = scales::trans_breaks("log10", function(x) 10^x),
+                     labels = scales::trans_format("log10", math_format(10^.x)),
+                     limits=c(vals$minimum, vals$maximum))
+    p2 <- p2 +
+      scale_x_log10(name=paste(plant_trait_name, ' (', data$unit[1], ')'),
+                     breaks = scales::trans_breaks("log10", function(x) 10^x),
+                     labels = scales::trans_format("log10", math_format(10^.x)),
+                     limits=c(vals$minimum, vals$maximum))
+  } else {
+    p1 <- p1 + scale_x_continuous(limits=c(vals$minimum, vals$maximum))
+    p2 <- p2 + scale_x_continuous(limits=c(vals$minimum, vals$maximum)) +
+          xlab(paste(plant_trait_name, ' (', data$unit[1], ')'))
+
+  }
+
+  # combine plots
+  f <- function(x) {suppressWarnings(ggplot_gtable(ggplot_build(x)))}
+  p1 <- f(p1)
+  p2 <- f(p2)
+  # Fix width of second plot to be same as bottom using ggplot_table
+  p1$widths[2:3] <- p2$widths[2:3]
+  gridExtra::grid.arrange(p1, p2, nrow=2, widths=c(1), heights=heights)
 }
 
-
-
 trait_distribution_plot_categorical <- function(austraits, plant_trait_name, y_axis_category, highlight=NA, subset = TRUE) {
-  
+
   if(subset)
     austraits <- extract_trait(austraits, plant_trait_name)
-  
-  data <- extract_trait(austraits, plant_trait_name)$data %>% 
+
+  data <- extract_trait(austraits, plant_trait_name)$data %>%
     left_join(., select(austraits$species, 'species_name', 'family'), by = "species_name")
-  
+
   if(!y_axis_category %in% names(data)){
     stop("incorrect grouping variable")
   }
-  
+
   data$Group = data[[y_axis_category]] %>% as.factor()
-  
+
   df <- data %>% group_by(Group, value) %>% summarise(n=n())
-  
+
   n <- length(levels(data$Group))
   y.text <- ifelse(n > 20, 0.5, 1)
-  p <- 
+  p <-
     ggplot(df, aes(x=Group, y=n, fill = value)) +
     geom_bar(position = "stack", stat="identity") +
-    coord_flip() + 
+    coord_flip() +
     theme_bw() +
     labs(title = paste0(plant_trait_name,' - distribution by ', y_axis_category)) +
     theme(panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(),
           axis.text.x=element_text(size=rel(1.5)),
           axis.text.y=element_text(size=rel(y.text))
     )
-  
+
   if(!is.na(highlight) & highlight %in% data$Group) {
-    
+
     a <- ifelse(levels(data$Group) == highlight, "blue", "black")
-    p <- p + 
+    p <- p +
       theme(axis.text.y = element_text(colour = a))
   }
-  
+
   p
 }
