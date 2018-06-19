@@ -185,12 +185,12 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
     p1 <- p1 +
       scale_x_log10( name="",
                      breaks = scales::trans_breaks("log10", function(x) 10^x),
-                     labels = scales::trans_format("log10", math_format(10^.x)),
+                     labels = scales::trans_format("log10", scales::math_format(10^.x)),
                      limits=c(vals$minimum, vals$maximum))
     p2 <- p2 +
       scale_x_log10(name=paste(plant_trait_name, ' (', data$unit[1], ')'),
                      breaks = scales::trans_breaks("log10", function(x) 10^x),
-                     labels = scales::trans_format("log10", math_format(10^.x)),
+                     labels = scales::trans_format("log10", scales::math_format(10^.x)),
                      limits=c(vals$minimum, vals$maximum))
   } else {
     p1 <- p1 + scale_x_continuous(limits=c(vals$minimum, vals$maximum))
