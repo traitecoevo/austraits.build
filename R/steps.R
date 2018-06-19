@@ -222,7 +222,7 @@ parse_data <- function(data, dataset_id, metadata) {
   }
 
   # Add information on trait type, precision, metholdogy_ids, if not already present
-  vars <- c("value_type", "replicates", "precision", "methodology_ids")
+  vars <- c("value_type", "replicates", "methods")
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
   if(length(i) >0 ) {
     j <- !is.na(i)

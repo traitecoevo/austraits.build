@@ -15,7 +15,7 @@ extract_dataset <- function(austraits, dataset_id) {
 
 spread_traits_data <- function(data) {
 
-  vars <- c("value", "unit", "value_type", "replicates", "precision", "methodology_ids")
+  vars <- c("value", "unit", "value_type", "replicates")
   ret <- list()
   for(v in vars) {
     ret[[v]] <-
