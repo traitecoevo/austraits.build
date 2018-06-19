@@ -82,7 +82,7 @@ list_to_df <- function(my_list, as_character= TRUE) {
   if(as_character)
     my_list <- lapply(my_list, lapply, as.character)
 
-  dplyr::bind_rows(lapply(my_list, as.data.frame, stringsAsFactors = FALSE))
+  dplyr::bind_rows(lapply(my_list, as.tibble))
 }
 
 # Convert a list with single entries to dataframe

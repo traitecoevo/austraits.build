@@ -22,9 +22,15 @@ load_study <- function(filename_data_raw,
     update_taxonomy(metadata)
 
   # Now that we're done with them, drop config parts of metadata
-  for(v in c("config", "traits", "substitutions")) {
+  for(v in c("config", "substitutions")) {
     metadata[[v]] <- NULL
   }
+
+
+  metadata[["traits"]] <- metadata[["traits"]] %>%
+    list_to_df() %>%
+    filter(!is.na(trait_name)) %>% 
+    select(trait_name, value_type, replicates, methods) 
 
   # read context data
   context <- read_csv(filename_context, col_types = cols(.default = "c"))
@@ -33,6 +39,28 @@ load_study <- function(filename_data_raw,
   }
   context <- add_all_columns(context, definitions, "context")
 
+
+  if(nrow(context) > 0 ){
+  v1 <- context %>% select(-unit, -notes, -error) %>% spread(trait_name, value)
+  
+  # read context data
+  v2 <- 
+    metadata$dataset$sites %>% list_to_df() %>% as_tibble() %>% 
+    mutate(dataset_id = dataset_id, site_name = names(metadata$dataset$sites)) %>%
+    select(dataset_id, site_name, latitude, longitude, description, everything())
+
+  # if(!(dataset_id %in% c("Fonseca_2000"))) {
+  #   if(!all.equal(v2[,names(v1)], v1))
+  #   {
+  #     message("metadata not equal")
+  #     browser()
+  #   }
+  # }
+  #
+  } else {
+    v2 <- tibble(dataset_id = character())
+  }
+
   species_list <- tibble(species_name =  unique(data$species_name)) %>%
                   left_join(species_list_known, by = "species_name") %>%
                   arrange(species_name)
@@ -40,6 +68,7 @@ load_study <- function(filename_data_raw,
   list(dataset_id = dataset_id,
        data       = data %>% filter(is.na(error)) %>% select(-error),
        context    = context,
+       context2 = v2,
        species_list = species_list,
        metadata   = metadata,
        excluded     = data %>% filter(!is.na(error)) %>% select(error, everything())
@@ -69,7 +98,7 @@ flag_unsupported_traits <- function(data, definitions) {
 }
 
 
-## Flag any values oustide allowabl range
+## Flag any values outside allowable range
 flag_unsupported_values <- function(data, definitions) {
 
   # NA vaues
@@ -221,8 +250,8 @@ parse_data <- function(data, dataset_id, metadata) {
     out[["value"]] <- out[["value"]] %>%  as.character()
   }
 
-  # Add information on trait type, precision, metholdogy_ids, if not already present
-  vars <- c("value_type", "replicates", "methods")
+  # Add information on trait type, precision, if not already present
+  vars <- c("value_type", "replicates")
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
   if(length(i) >0 ) {
     j <- !is.na(i)
@@ -331,6 +360,7 @@ combine_austraits <- function(..., d=list(...), definitions) {
   names(d) <- sapply(d, "[[", "dataset_id")
   ret <- list(data=combine("data", d),
               context=combine("context", d),
+              context2=combine("context2", d),
               species_list=combine("species_list", d) %>% 
                               arrange(species_name) %>% 
                               filter(!duplicated(.)),
