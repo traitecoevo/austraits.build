@@ -1,21 +1,21 @@
 targets:
 {{#study_names}}
-  reports/{{study_name}}.md:
+  export/reports/{{study_name}}.md:
     knitr:
       input: reports/report.Rmd
-      chdir: true
+      chdir: false
       auto_figure_prefix: true
     depends:
       - data_study: {{study_name}}
       - austraits
 
     cleanup_level: purge
-  reports/{{study_name}}.html:
-    command: render_html("reports/{{study_name}}.md")
+  export/reports/{{study_name}}.html:
+    command: render_html("export/reports/{{study_name}}.md")
     cleanup_level: purge
 {{/study_names}}
   reports:
     depends:
 {{#study_names}}
-      - reports/{{study_name}}.html
+      - export/reports/{{study_name}}.html
 {{/study_names}}

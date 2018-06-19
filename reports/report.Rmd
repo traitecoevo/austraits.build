@@ -1,7 +1,8 @@
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 # knitr defaults
-knitr::opts_knit$set(root.dir = normalizePath(".."))
-knitr::opts_chunk$set(echo=FALSE, fig.cap='', cache=FALSE, output.dir = ".")
+root.dir = rprojroot::find_root("remake.yml")
+knitr::opts_knit$set(root.dir = root.dir)
+knitr::opts_chunk$set(echo=FALSE, cache=FALSE)
 options(knitr.table.format = "html") # default for table format
 
 # Guidelines for writing report code
@@ -45,6 +46,7 @@ definitions <- austraits$definitions
 dataset_id <- data_study$dataset_id
 data_yaml <- read_yaml(sprintf("data/%s/metadata.yml", dataset_id))
 
+knitr::opts_chunk$set(fig.cap='', fig.path = file.path(root.dir,"export/reports/figures", paste0(dataset_id,"_")))
 # start notetaker device
 questions <- start_notetaker()
 new_question <- function(txt) {
@@ -82,12 +84,12 @@ editor_options:
 
 `Austraits` is an open-source compilation of trait data for Australian plant species. The traits we are considering are any structural or physiological variable that tends to vary widely among species; and has been collected across a moderate number of species. Many people collect trait data, and as such, data is spread across many sources, under a variety of formats and terms. The goal of the Austraits project is to combine all of these data fragments into a harmonised compilation, to be made publicly available.
 
-Austraits is built from many different sources, below called "studies" (so called because the sources are most-often individual scientific papers). Our data processing pipeline seeks to combine all of the different studies in a transparent and reproducible way.
+Austraits is built from many different sources, here referred to as `studies` (so called because the sources are most-often individual scientific papers). Our data processing pipeline seeks to combine all of the different studies in a transparent and reproducible way.
 
 Data from each study in Austraits is organised as follows:
 
-- each study is defined by a key comprising the first author and year of publication, e.g. `Falster_2003`, called the `dataset_id`
-- data for each `dataset_id` is organised into two files, within the folder `data\dataset_id`:
+- each study is defined by a key  called the `dataset_id`, comprising the first author and year of publication, e.g. `Falster_2003`.
+- data for each `dataset_id` is organised into two files, within the folder `data\dataset_id\`:
   - `data.csv` contains the primary trait measurements, in either long or wide format
   - `metadata.yml` contains all the contextual data (or metadata) about the trait measurements.
 
@@ -100,7 +102,6 @@ Full details on the data structure are given in the attached file `XXXX`.
 ## Purpose of this report
 
 The Austraits compilation includes data from a study with dataset_id **"`r dataset_id`"**. This document describes the information we have on that study. 
-
 This report gives both data contributors and Austraits compilers the opportunity to:
 
 1. Verify that our understanding and handling of your data is correct

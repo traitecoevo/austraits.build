@@ -1,4 +1,3 @@
-
 get_SHA_link <- function(...) {
   sha <- get_SHA(...)
   sprintf("[%s](https://github.com/traitecoevo/austraits/tree/%s)",   sha, sha)
