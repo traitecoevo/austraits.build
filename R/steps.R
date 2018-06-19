@@ -39,24 +39,35 @@ load_study <- function(filename_data_raw,
   }
   context <- add_all_columns(context, definitions, "context")
 
+  if(length(unlist(metadata$dataset$sites)) > 1){
+    v1 <- context %>% select(-unit, -notes, -error)
 
-  if(nrow(context) > 0 ){
-  v1 <- context %>% select(-unit, -notes, -error) %>% spread(trait_name, value)
+    # read context data
+    f <- function(v, my_list) {
+      my_list[[v]] %>%
+      list1_to_df() %>%
+      rename(trait_name="key") %>%
+      mutate(dataset_id=dataset_id, site_name = v)
+    }
+
+    v2 <- lapply(metadata$dataset$sites, lapply, as.character) %>%
+      lapply(names(.), f, .) %>%
+      dplyr::bind_rows() %>%
+      add_all_columns(definitions, "context") %>%
+      filter(trait_name %in% unique(v1$trait_name))  %>% select(-unit, -notes, -error)
+
+    if(!(dataset_id %in% c("Knox_2011", "Fonseca_2000", "Niinemets_2009", "Venn_2011"))) {
+      if(nrow(v1) > 0){
+      if(!all.equal(v2, v1)) {
+        message("metadata not equal")
+        browser()
+        }
+      }
+      else{
+        message(paste0("length different: ", dataset_id))
+      }
+      }
   
-  # read context data
-  v2 <- 
-    metadata$dataset$sites %>% list_to_df() %>% as_tibble() %>% 
-    mutate(dataset_id = dataset_id, site_name = names(metadata$dataset$sites)) %>%
-    select(dataset_id, site_name, latitude, longitude, description, everything())
-
-  # if(!(dataset_id %in% c("Fonseca_2000"))) {
-  #   if(!all.equal(v2[,names(v1)], v1))
-  #   {
-  #     message("metadata not equal")
-  #     browser()
-  #   }
-  # }
-  #
   } else {
     v2 <- tibble(dataset_id = character())
   }
