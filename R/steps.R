@@ -1,5 +1,4 @@
 load_study <- function(filename_data_raw,
-                       filename_context,
                        filename_metadata,
                        definitions,
                        unit_conversion_functions,
@@ -32,45 +31,23 @@ load_study <- function(filename_data_raw,
     filter(!is.na(trait_name)) %>% 
     select(trait_name, value_type, replicates, methods) 
 
-  # read context data
-  context <- read_csv(filename_context, col_types = cols(.default = "c"))
-  if(nrow(context) > 0) {
-    context <- mutate(context, dataset_id = dataset_id)
-  }
-  context <- add_all_columns(context, definitions, "context")
-
+  # read site data
   if(length(unlist(metadata$dataset$sites)) > 1){
-    v1 <- context %>% select(-unit, -notes, -error)
-
-    # read context data
-    f <- function(v, my_list) {
+    # extract contextual data from metadata
+    format_sites <- function(v, my_list) {
       my_list[[v]] %>%
       list1_to_df() %>%
       rename(trait_name="key") %>%
       mutate(dataset_id=dataset_id, site_name = v)
     }
 
-    v2 <- lapply(metadata$dataset$sites, lapply, as.character) %>%
-      lapply(names(.), f, .) %>%
-      dplyr::bind_rows() %>%
-      add_all_columns(definitions, "context") %>%
-      filter(trait_name %in% unique(v1$trait_name))  %>% select(-unit, -notes, -error)
-
-    if(!(dataset_id %in% c("Knox_2011", "Fonseca_2000", "Niinemets_2009", "Venn_2011"))) {
-      if(nrow(v1) > 0){
-      if(!all.equal(v2, v1)) {
-        message("metadata not equal")
-        browser()
-        }
-      }
-      else{
-        message(paste0("length different: ", dataset_id))
-      }
-      }
-  
+    context <- lapply(metadata$dataset$sites, lapply, as.character) %>%
+      lapply(names(.), format_sites, .) %>%
+      dplyr::bind_rows()
   } else {
-    v2 <- tibble(dataset_id = character())
+    context <- tibble(dataset_id = character(), site_name = character())
   }
+  context <- add_all_columns(context, definitions, "context")
 
   species_list <- tibble(species_name =  unique(data$species_name)) %>%
                   left_join(species_list_known, by = "species_name") %>%
@@ -79,7 +56,6 @@ load_study <- function(filename_data_raw,
   list(dataset_id = dataset_id,
        data       = data %>% filter(is.na(error)) %>% select(-error),
        context    = context,
-       context2 = v2,
        species_list = species_list,
        metadata   = metadata,
        excluded     = data %>% filter(!is.na(error)) %>% select(error, everything())
