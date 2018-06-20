@@ -32,7 +32,7 @@ load_study <- function(filename_data_raw,
     select(trait_name, value_type, replicates, methods) 
 
   # read site data
-  if(length(unlist(metadata$dataset$sites)) > 1){
+  if(length(unlist(metadata$sites)) > 1){
     # extract contextual data from metadata
     format_sites <- function(v, my_list) {
       my_list[[v]] %>%
@@ -41,7 +41,7 @@ load_study <- function(filename_data_raw,
       mutate(dataset_id=dataset_id, site_name = v)
     }
 
-    context <- lapply(metadata$dataset$sites, lapply, as.character) %>%
+    context <- lapply(metadata$sites, lapply, as.character) %>%
       lapply(names(.), format_sites, .) %>%
       dplyr::bind_rows()
   } else {
