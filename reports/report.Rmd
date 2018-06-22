@@ -181,17 +181,17 @@ data_study$metadata$dataset %>%
 Data were collected at the following sites and locations:
 
 ```{r, results='asis', echo=FALSE, warning=FALSE}
+site_main <- c("longitude (deg)","latitude (deg)", "description")
   data_study$context %>%
-  filter(trait_name %in% c("longitude","latitude","elevation")) %>%
-  mutate(trait_with_units = sprintf("%s (%s)",trait_name, unit)) %>%
-  select(-unit, -dataset_id, -trait_name) %>%
-  spread(trait_with_units, value) -> sites
+  filter(trait_name %in% site_main) %>%
+  select(-dataset_id) %>%
+  spread(trait_name, value) -> sites
 
 if(nrow(sites) > 0 ) {
   sites <- sites %>%
   mutate(`latitude (deg)` =as.numeric(`latitude (deg)`),
          `longitude (deg)` =as.numeric(`longitude (deg)`)) %>%
-  select(site_name, `latitude (deg)`, `longitude (deg)`, notes)
+  select(site_name, `latitude (deg)`, `longitude (deg)`)
 
   sites %>%
     my_kable_styling()
@@ -223,10 +223,9 @@ The following variables have been recorded for the sites included in the study:
 ```{r, results='asis', echo=FALSE}
 
 data_study$context %>%
-  filter(!(trait_name %in% c("longitude","latitude","elevation"))) %>%
-  mutate(trait_with_units = sprintf("%s (%s)", trait_name, unit)) %>%
-  select(-unit, -dataset_id, -notes, -trait_name) %>%
-  spread(trait_with_units, value) -> context
+  filter(!(trait_name %in% site_main)) %>%
+  select(-dataset_id, -error) %>%
+  spread(trait_name, value) -> context
 
 if(nrow(context) > 0 ) {
   context %>%

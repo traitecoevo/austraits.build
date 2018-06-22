@@ -1,5 +1,4 @@
 load_study <- function(filename_data_raw,
-                       filename_context,
                        filename_metadata,
                        definitions,
                        unit_conversion_functions,
@@ -22,14 +21,31 @@ load_study <- function(filename_data_raw,
     update_taxonomy(metadata)
 
   # Now that we're done with them, drop config parts of metadata
-  for(v in c("config", "traits", "substitutions")) {
+  for(v in c("config", "substitutions")) {
     metadata[[v]] <- NULL
   }
 
-  # read context data
-  context <- read_csv(filename_context, col_types = cols(.default = "c"))
-  if(nrow(context) > 0) {
-    context <- mutate(context, dataset_id = dataset_id)
+
+  metadata[["traits"]] <- metadata[["traits"]] %>%
+    list_to_df() %>%
+    filter(!is.na(trait_name)) %>% 
+    select(trait_name, value_type, replicates, methods) 
+
+  # read site data
+  if(length(unlist(metadata$sites)) > 1){
+    # extract contextual data from metadata
+    format_sites <- function(v, my_list) {
+      my_list[[v]] %>%
+      list1_to_df() %>%
+      rename(trait_name="key") %>%
+      mutate(dataset_id=dataset_id, site_name = v)
+    }
+
+    context <- lapply(metadata$sites, lapply, as.character) %>%
+      lapply(names(.), format_sites, .) %>%
+      dplyr::bind_rows()
+  } else {
+    context <- tibble(dataset_id = character(), site_name = character())
   }
   context <- add_all_columns(context, definitions, "context")
 
@@ -69,7 +85,7 @@ flag_unsupported_traits <- function(data, definitions) {
 }
 
 
-## Flag any values oustide allowabl range
+## Flag any values outside allowable range
 flag_unsupported_values <- function(data, definitions) {
 
   # NA vaues
@@ -221,8 +237,8 @@ parse_data <- function(data, dataset_id, metadata) {
     out[["value"]] <- out[["value"]] %>%  as.character()
   }
 
-  # Add information on trait type, precision, metholdogy_ids, if not already present
-  vars <- c("value_type", "replicates", "precision", "methodology_ids")
+  # Add information on trait type, precision, if not already present
+  vars <- c("value_type", "replicates")
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
   if(length(i) >0 ) {
     j <- !is.na(i)
@@ -331,6 +347,7 @@ combine_austraits <- function(..., d=list(...), definitions) {
   names(d) <- sapply(d, "[[", "dataset_id")
   ret <- list(data=combine("data", d),
               context=combine("context", d),
+              context2=combine("context2", d),
               species_list=combine("species_list", d) %>% 
                               arrange(species_name) %>% 
                               filter(!duplicated(.)),
