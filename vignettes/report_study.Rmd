@@ -10,41 +10,30 @@ options(knitr.table.format = "html") # default for table format
 # - use kableExtra for styling: https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
 # - use knitr chunck options: https://rmarkdown.rstudio.com/lesson-3.html
 
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 library(knitr)
 library(dplyr)
 
-## Function to detect if the current operation has been called within remake framework
-## this helps to detect if knitr is being run via remake or interactively
-is_remake <- function() {
-  x <-sapply(sys.calls(), function(f) as.character(f))
-  grepl("remake:::", x, fixed = TRUE)  %>% any()
-}
-
-show_map <- FALSE
-run_setup <- !is_remake()
-```
-
-```{r, eval=run_setup, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
-# This stuff enables the report to run outside of the remake framework. For development purposes only.
-# Set eval=FALSE for use in remake environment
-# Set eval=TRUE to knit in Rstudio environment
-# The `run_setup` variable attempts to set this automagically.
-
-options(remake.verbose.noop=FALSE)
 source("R/austraits.R")
 source("R/support.R")
 source("R/report_utils.R")
 source("R/report_notetaker.R")
 source("R/report_maps.R")
-austraits <- remake::make("austraits")
-data_study <- remake::make("Blackman_2014")
-```
 
+austraits <- readRDS("export/data/austraits.rds")
+show_map <- TRUE
 
-```{r,  echo=FALSE, results="hide", message=FALSE, warning=FALSE}
+# This enables the report to run inside Rstudio interactively
+# Otherwsie assum variable is already set in global environment
+if(!exists("dataset_id"))
+  dataset_id <- "Blackman_2014"
+
 definitions <- austraits$definitions
-dataset_id <- data_study$dataset_id
+data_study <- extract_dataset(austraits, dataset_id)
 data_yaml <- read_yaml(sprintf("data/%s/metadata.yml", dataset_id))
+metadata_study <- austraits$metadata[[dataset_id]]
 
 knitr::opts_chunk$set(fig.cap='', fig.path = file.path(root.dir,"export/reports/figures", paste0(dataset_id,"_")))
 # start notetaker device
@@ -127,7 +116,7 @@ For each trait, we hope to know the `value type` (is the data point you submitte
 - If a trait value was determined by `expert opinion`, such as the data collector made the decision that a plant was a shrub, the method would be `expert opinion` and the replicate field would be `.na`.
 
 
-Additionally, as information was added to the `metadata.yml` file, the following questions specific to your data set arose: **"`r data_study$metadata$dataset$questions_for_author`"**
+Additionally, as information was added to the `metadata.yml` file, the following questions specific to your data set arose: **"`r metadata_study$dataset$questions_for_author`"**
 
 Send feedback to ....
 
@@ -138,8 +127,9 @@ Send feedback to ....
 The following people are listed as contacts for this study:
 
 ```{r, results='asis', echo=FALSE}
-data_study$metadata$people %>%
+metadata_study$people %>%
   list_to_df() %>%
+  rename_all("str_to_title") %>%
   my_kable_styling()
 ```
 
@@ -150,15 +140,15 @@ Data from this study is recorded as coming from the following sources:
 Primary citation:
 
 ```{r, results='asis', echo=FALSE}
-data_study$metadata$source$primary %>%
+metadata_study$source$primary %>%
   list1_to_df() %>%
   my_kable_styling()
 ```
 
 ```{r, results='asis', echo=FALSE}
-if(!is.null(data_study$metadata$source$secondary)) {
+if(!is.null(metadata_study$source$secondary)) {
   writeLines("Secondary citation:")
-  data_study$metadata$source$primary %>%
+  metadata_study$source$primary %>%
     list_to_df() %>%
     my_kable_styling()
   }
@@ -171,7 +161,7 @@ The dataset includes `r nrow(data_study$data)` individual records from `r data_s
 The description we have of the study is as follows:
 
 ```{r, results='asis', echo=FALSE}
-data_study$metadata$dataset %>%
+metadata_study$dataset %>%
   list1_to_df() %>%
   my_kable_styling()
 ```

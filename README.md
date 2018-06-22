@@ -66,10 +66,10 @@ These elements are available at both of the above links as a series of CSV and t
 We welcome further contributions to Austraits. If you would like to contribute data, the minimal requirements are
 
 1. Data were collected for Australian plant species growing in Australia
-2. You collected data on one of the traits list in the [trait definitions table](config/definitions_traits.csv).
+2. You collected data on one of the traits list in the [trait definitions table](config/definitions.yml).
 3. You are willing to release the data under an open license for reuse by the scientific community.
 
-See [these instructions](CONTRIBUTING.md) on how to prepare data.
+See [these instructions](vignettes/CONTRIBUTING.md) on how to prepare data.
 
 Once sufficient additional data has been contributed, we plan to submit an update to the first data paper, inviting as co-authors anyone who has contributed data.
 
