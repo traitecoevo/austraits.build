@@ -15,12 +15,13 @@ options(knitr.table.format = "html") # default for table format
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 library(knitr)
 library(dplyr)
+library(leaflet)
+
 
 source("R/austraits.R")
 source("R/support.R")
 source("R/report_utils.R")
 source("R/report_notetaker.R")
-source("R/report_maps.R")
 
 austraits <- readRDS("export/data/austraits.rds")
 show_map <- TRUE
@@ -166,47 +167,55 @@ metadata_study$dataset %>%
   my_kable_styling()
 ```
 
+```{r, results='asis', echo=FALSE}
+new_question("(section `dataset`) Can you provide more detailed information on the study origin and timing?")
+```
+
 ## Locations sampled
 
-Data were collected at the following sites and locations:
+Data were collected at the following sites and locations. As a minimum, we are aiming to collect, the variables
 
 ```{r, results='asis', echo=FALSE, warning=FALSE}
 site_main <- c("longitude (deg)","latitude (deg)", "description")
-  data_study$context %>%
+sites <- data_study$context %>%
   filter(trait_name %in% site_main) %>%
   select(-dataset_id) %>%
-  spread(trait_name, value) -> sites
+  spread(trait_name, value) %>% 
+  mutate(description = if (exists('description', where=.)) description else NA)
+  
 
 if(nrow(sites) > 0 ) {
   sites <- sites %>%
-  mutate(`latitude (deg)` =as.numeric(`latitude (deg)`),
-         `longitude (deg)` =as.numeric(`longitude (deg)`)) %>%
-  select(site_name, `latitude (deg)`, `longitude (deg)`)
+  mutate(`latitude (deg)` = as.numeric(`latitude (deg)`),
+         `longitude (deg)` = as.numeric(`longitude (deg)`)) %>%
+  select(site_name, `latitude (deg)`, `longitude (deg)`, description)
 
   sites %>%
     my_kable_styling()
 } else{
-  writeLines("**NO SITE DATA AVAILABLE -- can you supply any?**")
+    new_question("(section `sites`) **No location data available!!** Can you provide location details where your data were sampled?")
 }
+
 ```
 
-
-```{r maps, eval= show_map, echo=FALSE, results='hide', warning=FALSE, message=FALSE, fig.keep="all"}
-# Make a map of study sites using ggmap
-set_ggmap_cache()
-
-sites <- sites %>% filter(!is.na(`latitude (deg)`) & !is.na(`longitude (deg)`))
-
+```{r maps, eval= show_map, echo=FALSE, warning=FALSE, message=FALSE, fig.keep="all"}
+# Make a map of study sites using leaflet
+sites <- sites %>% filter(!is.na(`latitude (deg)`) & !is.na(`longitude (deg)`)) 
 if(nrow(sites) > 0 ) {
-  australia_box <- c(left=113.338953078, bottom=-43.6345972634, right=153.569469029, top=-10.6681857235)
-  print(make_map(australia_box, sites))
-
-  sites_box <-  c(left = min(sites$`longitude (deg)`), bottom = min(sites$`latitude (deg)`), right = max(sites$`longitude (deg)`), top = max(sites$`latitude (deg)`))
-  print(make_map(sites_box, sites))
+  leaflet() %>% 
+  addTiles() %>%
+  addScaleBar() %>% 
+  addMiniMap() %>% 
+  addMarkers(lng = sites$`longitude (deg)`, lat = sites$`latitude (deg)`,
+             label = sites$site_name)	
 }
 ```
 
-## Additional site data
+```{r, results='asis', echo=FALSE}
+new_question("(section `sites`) Do site details look complete? As a minimum we would like `latitude`, `longitude`, `description`.")
+```
+
+## Additional site data (optional)
 
 The following variables have been recorded for the sites included in the study:
 
