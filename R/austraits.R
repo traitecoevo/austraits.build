@@ -106,20 +106,18 @@ trait_distribution_by_family <- function(...){
 }
 
 
-trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axis_category, highlight=NA) {
+trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axis_category, highlight=NA, hide_ids = FALSE) {
 
-  # #
-  # plant_trait_name <- "leaf_area"
+  # plant_trait_name <- "plant_height"
   # y_axis_category <- "dataset_id"
   # highlight= "Blackman_2014"
-  # subset = TRUE
-
+  
   # Subset data to this trait
-  austraits <- extract_trait(austraits, plant_trait_name)
+  austraits_trait <- extract_trait(austraits, plant_trait_name)
 
-  data <- austraits$data %>%
+  data <- austraits_trait$data %>%
     mutate(log_value = log10(value)) %>%
-    left_join(., select(austraits$species, 'species_name', 'family'),
+    left_join(., select(austraits_trait$species, 'species_name', 'family'),
               by = "species_name")
 
   # Define grouping variables and derivatives
@@ -128,7 +126,7 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
   }
 
   # define grouping variable, ordered by group-level by mean values
-  data$Group = fct_reorder(data[[y_axis_category]], data$log_value,
+  data$Group = forcats::fct_reorder(data[[y_axis_category]], data$log_value,
                            fun = mean, na.rm=TRUE)
 
   n_group <- levels(data$Group) %>% length()
@@ -144,7 +142,7 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
   }
 
   # Check range on x-axis
-  vals <- austraits$definitions$traits$values[[plant_trait_name]]$values
+  vals <- austraits_trait$definitions$traits$values[[plant_trait_name]]$values
   range <- (vals$maximum/vals$minimum)
 
   # Check range on y-axis
@@ -167,7 +165,7 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
         )
   # Second plot -- dots by groups, using ggbeeswarm package
   p2 <-
-      ggplot(data, aes(x = value, y = Group, colour = colour, symbol = value_type)) +
+      ggplot(data, aes(x = value, y = Group, colour = colour)) +
       ggbeeswarm::geom_quasirandom(groupOnX=FALSE) +
       ylab(paste("By ", y_axis_category)) +
       theme_bw() +
@@ -178,9 +176,13 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
             axis.text.y=element_text(size=rel(y.text))
             ) +
       guides(colour=FALSE)
+  
+  if(hide_ids) {
+    p2 <- p2 + theme(axis.text.y = element_blank())
+  }
 
   # Define scale on x-axis and transform to log if required
-  if(range > 20) {
+  if(range > 100) {
     #log transformation
     p1 <- p1 +
       scale_x_log10( name="",
@@ -206,43 +208,4 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
   # Fix width of second plot to be same as bottom using ggplot_table
   p1$widths[2:3] <- p2$widths[2:3]
   gridExtra::grid.arrange(p1, p2, nrow=2, widths=c(1), heights=heights)
-}
-
-trait_distribution_plot_categorical <- function(austraits, plant_trait_name, y_axis_category, highlight=NA, subset = TRUE) {
-
-  if(subset)
-    austraits <- extract_trait(austraits, plant_trait_name)
-
-  data <- extract_trait(austraits, plant_trait_name)$data %>%
-    left_join(., select(austraits$species, 'species_name', 'family'), by = "species_name")
-
-  if(!y_axis_category %in% names(data)){
-    stop("incorrect grouping variable")
-  }
-
-  data$Group = data[[y_axis_category]] %>% as.factor()
-
-  df <- data %>% group_by(Group, value) %>% summarise(n=n())
-
-  n <- length(levels(data$Group))
-  y.text <- ifelse(n > 20, 0.5, 1)
-  p <-
-    ggplot(df, aes(x=Group, y=n, fill = value)) +
-    geom_bar(position = "stack", stat="identity") +
-    coord_flip() +
-    theme_bw() +
-    labs(title = paste0(plant_trait_name,' - distribution by ', y_axis_category)) +
-    theme(panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(),
-          axis.text.x=element_text(size=rel(1.5)),
-          axis.text.y=element_text(size=rel(y.text))
-    )
-
-  if(!is.na(highlight) & highlight %in% data$Group) {
-
-    a <- ifelse(levels(data$Group) == highlight, "blue", "black")
-    p <- p +
-      theme(axis.text.y = element_text(colour = a))
-  }
-
-  p
 }

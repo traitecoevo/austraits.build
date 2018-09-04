@@ -88,7 +88,15 @@ print_notes <- function(notes, i=nrow(notes), ...) {
     print_note(...)
 }
 
+print_all_notes <- function(notes, ..., numbered=TRUE) {
+  i <- seq_len(nrow(notes))
+  x <- print_notes(notes, i =i)
+  sprintf("%d. %s", i, x)
+}
+
 # returns as secific note, as indicated by row number i
 get_note <- function(notes, i=nrow(notes)) {
   notes[i,]
 }
+
+

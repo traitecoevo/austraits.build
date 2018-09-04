@@ -1,21 +1,24 @@
 #!/usr/bin/env Rscript
-dataset_ids <- commandArgs(TRUE)[1]
+
+# Script to build reports.
+# Example usage:
+# ./scripts/compile_reports.R TRUE
+# ./scripts/compile_reports.R TRUE Angevin_2010
+# ./scripts/compile_reports.R TRUE Angevin_2010 Bragg_2002
+
+args <- commandArgs(TRUE)
+
+dataset_ids <- args[-c(1)]  # Can be NA -- will be set later
+
+if(is.na(args[1])) {
+  overwrite <- FALSE
+} else {
+  overwrite <- as.logical(args[1])
+}
 
 library(tidyverse)
-e <- new.env()
+source("R/report_utils.R")
 
-# is not defined, do for all studies
-if(is.na(dataset_ids))
-  dataset_ids <- dir("data")
-
-for(dataset_id in dataset_ids) {
-  cat(sprintf("Building report for %s: ", dataset_id))
-
-  # assigns variable tinto an environment that can be accessed by knitr
-  assign("dataset_id", dataset_id, e)
-  output_md <- sprintf("export/reports/%s.md", dataset_id)
-  knitr::knit("vignettes/report_study.Rmd", output_md, quiet=TRUE, envir=e)
-  cat(" -> knitted")
-  rmarkdown::render(output_md, "html_document", quiet=TRUE)
-  cat(" -> done\n")
-}
+# define if does not already exist
+austraits <- readRDS("export/data/austraits.rds")
+build_study_reports(dataset_ids, overwrite)

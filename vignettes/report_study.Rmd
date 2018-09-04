@@ -1,9 +1,28 @@
+---
+title: Report on study from the `Austraits` data compilation
+output:
+  html_document:
+    df_print: kable
+    highlight: tango
+    keep_md: no
+    smart: no
+    theme: yeti
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+editor_options:
+  chunk_output_type: console
+---
+
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 # knitr defaults
 root.dir = rprojroot::find_root("remake.yml")
 knitr::opts_knit$set(root.dir = root.dir)
 knitr::opts_chunk$set(echo=FALSE, cache=FALSE)
-options(knitr.table.format = "html") # default for table format
+# default for table format
+options(knitr.table.format = "html")
 
 # Guidelines for writing report code
 # - use tidyverse style and format: http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html
@@ -16,112 +35,88 @@ options(knitr.table.format = "html") # default for table format
 library(knitr)
 library(dplyr)
 library(leaflet)
-
+library(ggbeeswarm)
+library(ggbeeswarm)
+library(kableExtra)
 
 source("R/austraits.R")
 source("R/support.R")
 source("R/report_utils.R")
 source("R/report_notetaker.R")
 
-austraits <- readRDS("export/data/austraits.rds")
-show_map <- TRUE
-
-# This enables the report to run inside Rstudio interactively
-# Otherwsie assum variable is already set in global environment
-if(!exists("dataset_id"))
-  dataset_id <- "Blackman_2014"
+## Assumes to items exist in global name space
+if(!exists("austraits")) {
+  austraits <- readRDS("export/data/austraits.rds")
+  # stop("austraits must exist in global name space to knit a report")
+}
+if(!exists("dataset_id")) {
+  dataset_id <- "Angevin_2010"
+  #  stop("dataset_id must exist in global name space to knit a report")
+}
 
 definitions <- austraits$definitions
 data_study <- extract_dataset(austraits, dataset_id)
 data_yaml <- read_yaml(sprintf("data/%s/metadata.yml", dataset_id))
 metadata_study <- austraits$metadata[[dataset_id]]
 
-knitr::opts_chunk$set(fig.cap='', fig.path = file.path(root.dir,"export/reports/figures", paste0(dataset_id,"_")))
+knitr::opts_chunk$set(fig.cap='', fig.path = file.path(root.dir,"export/figures", paste0(dataset_id,"_")))
+
 # start notetaker device
 questions <- start_notetaker()
+
 new_question <- function(txt) {
   x <- questions(add_note, as_note(txt)) %>% print_notes(as_anchor=TRUE)
-  writeLines(sprintf("<font size = '3' color='orange'>**Question:** %s</font>", paste0(x, collape="")))
+  writeLines(sprintf("<font color='orange'>**Question:** %s</font>\n\n", paste0(x, collape="")))
 }
 ```
 
-```{r header, echo=FALSE, results="asis"}
-# generate the heder matter for the markdown file
-writeLines(sprintf(
-"---
-title: Report on the study **`%s`** within the `Austraits` data compilation
-output:
-  html_document:
-    df_print: kable
-    highlight: tango
-    keep_md: yes
-    smart: no
-    theme: yeti
-    toc: yes
-    toc_depth: 3
-    toc_float:
-      collapsed: false
-      smooth_scroll: true
-editor_options:
-  chunk_output_type: console
----
-", dataset_id))
-```
-
-# Introduction 
+# Introduction
 
 ## About Austraits
 
-`Austraits` is an open-source compilation of trait data for Australian plant species. The traits we are considering are any structural or physiological variable that tends to vary widely among species; and has been collected across a moderate number of species. Many people collect trait data, and as such, data is spread across many sources, under a variety of formats and terms. The goal of the Austraits project is to combine all of these data fragments into a harmonised compilation, to be made publicly available.
+`Austraits` is an open-source compilation of trait data for Australian plant species. The traits we are considering are any structural or physiological variable that: 1. Tends to vary widely among species; and 2. Have been collected across a moderate number of species. Many people collect trait data, and as such, data is spread across many sources, under a variety of formats and terms. 
 
-Austraits is built from many different sources, here referred to as `studies` (so called because the sources are most-often individual scientific papers). Our data processing pipeline seeks to combine all of the different studies in a transparent and reproducible way.
+The goal of the Austraits project is to combine all of these data fragments into a harmonised compilation, to be made publicly available.
 
-Data from each study in Austraits is organised as follows:
-
-- each study is defined by a key  called the `dataset_id`, comprising the first author and year of publication, e.g. `Falster_2003`.
-- data for each `dataset_id` is organised into two files, within the folder `data\dataset_id\`:
-  - `data.csv` contains the primary trait measurements, in either long or wide format
-  - `metadata.yml` contains all the contextual data (or metadata) about the trait measurements.
-
-(The `yml` file extension (pronounced "YAML") [is a type structured data file](https://en.wikipedia.org/wiki/YAML), that is both human and machine readable. The information in it appears under various labels, which are imported into Austraits. You can edit it any text editor, or also in Rstudio. Generally, yml is used in situations where a table does not suit because of variable lengths and or nested structures.)
-
-In addition, the Austraits repository consists of configuration files defining the list of known species, the definitions for each trait and table, appropriate unit conversions. 
-
-Full details on the data structure are given in the attached file `XXXX`.
+Austraits is built from many different sources, here referred to as `studies` (so called because the sources are most-often individual scientific papers), with each study denoted by a distinct `dataset_id`. Our data processing pipeline seeks to combine all of the different studies in a transparent and reproducible way. In addition, the Austraits repository consists of configuration files defining the list of known species, the definitions for each trait and table, appropriate unit conversions.
 
 ## Purpose of this report
 
-The Austraits compilation includes data from a study with dataset_id **"`r dataset_id`"**. This document describes the information we have on that study. 
-This report gives both data contributors and Austraits compilers the opportunity to:
+The Austraits compilation includes data from a study with dataset_id **` `r dataset_id` `**. This document describes the information we have on that study.
+This report gives both you, as a data contributor, and us, as Austraits compilers, the opportunity to:
 
 1. Verify that our understanding and handling of your data is correct
 2. Provide any missing information about the data
 
-For almost all studies, some of the information in the `metadata.yml` file is missing and we'd like your assistance in making this as complete as possible for future users.
+Data from each study in Austraits is organised is organised into two files, within its own folder:
 
+- ` data/`r dataset_id`/data.csv`: contains the primary trait measurements, in either long or wide format
+- ` data/`r dataset_id`/metadata.yml`: contains all the contextual data (or metadata) about the trait measurements.
 
-Please double check the information under the headings `People`, `Citation`, and `Description` to ensure it is correct. Edit the appropriate sections in the `metadata.yml` file you have been sent if any corrections are required. In particular have we correctly identified your data as having been collected in the field, from a lab experiment, or from herbarium samples.
+Data from those files has been used to generate the reports below.
 
-In addition, if, in the report below, we are missing data of sample sites, sampling strategy, or methods could you please add them to the `metadata.yml` file or send them to us in an alternative format. In particular,
+Please review the report and the original files, check they are correct, and send updates where appropriate. Please also answer the queries in the report below, appearing in orange. These appear again as a list at the end of the document.
 
-Site data would hopefully include coordinates for `latitude` and `longitude`, and, where available, any additional variables, such as site soil data or climatic data, that have been collected. This information is not required but worth inclusion when available. For large compilations such as data from herbarium collections such data may not be available.
+We would welcome any of the following:
 
-Sampling strategy is a field to indicate how sites were chosen and how individuals samples were chosen. If your data is collected from herbarium specimens, you could simply indicate which herbaria were sampled.
+- Answers to the list of questions
+- Expanding or correcting the information in the `metadata.yml`
+- Updates to the data
 
-For each trait, we hope to know the `value type` (is the data point you submitted an `individual observation`, `mean`, `min`, `max`, etc), number of `replicates` that contributed to the data point submitted and the `methodology` used to collect the data. Currently, methods have been extracted from referenced manuscripts, but quite often the submitted dataset includes traits whose collection methods aren't described in the manuscript. 
+To aid your review, we have attached the following files:
 
-- For `herbarium studies`, please specify which variables were measured on dried herbarium samples and which are derived from field observations. If you know the number of herbarium samples measured please enter it under replicates. Otherwise leave the words `unknown`.
+- `Austraits.html`: A document describing the Austraits compilation
+- `Workflow`: A document describing the data structures and workflow used to build `Austraits`
+- ` `r dataset_id`/data.csv` and ` `r dataset_id`/metadata.yml`: raw inputs for your study.
 
-- For all studies if the value for certain traits (such as plant height) was extracted from the literature, please fill in `published literature` as the method and the replicate field would be `.na`. 
+Send feedback by replying to the email XXXXX, attaching:
 
-- If a trait value was determined by `expert opinion`, such as the data collector made the decision that a plant was a shrub, the method would be `expert opinion` and the replicate field would be `.na`.
-
-
-Additionally, as information was added to the `metadata.yml` file, the following questions specific to your data set arose: **"`r metadata_study$dataset$questions_for_author`"**
-
-Send feedback to ....
+1. Answers to the questions we ask throughout the document, and summarised at the end of the document.
+2. Edited versions of the input files for you study: ` `r dataset_id`/data.csv` and ` `r dataset_id`/metadata.yml` (if appropriate).
 
 # Study context
+
+We collect information about the context of any traits measurements. This includes details on the people involved, the sources, and details about type of collection, including location and time of collections. 
 
 ## People
 
@@ -130,11 +125,22 @@ The following people are listed as contacts for this study:
 ```{r, results='asis', echo=FALSE}
 metadata_study$people %>%
   list_to_df() %>%
-  rename_all("str_to_title") %>%
+  select(role, name, institution) %>%
   my_kable_styling()
 ```
 
-## Citation
+Institutions are optional. Roles are as follows:
+
+- **collectors**: The person(people) leading data collection (up to 2 permitted)
+- **lab_leader**: The person leading data collection
+- **contributor**: The person responsible for entering data into Austraits 
+- **assistant**: Anyone else who assisted in collection of the data
+
+```{r, results='asis', echo=FALSE}
+new_question("(section `people`) Are all appropriate people listed, with appropriate details?")
+```
+
+## Sources
 
 Data from this study is recorded as coming from the following sources:
 
@@ -149,15 +155,18 @@ metadata_study$source$primary %>%
 ```{r, results='asis', echo=FALSE}
 if(!is.null(metadata_study$source$secondary)) {
   writeLines("Secondary citation:")
-  metadata_study$source$primary %>%
-    list_to_df() %>%
+  metadata_study$source$secondary %>%
+    list1_to_df() %>%
     my_kable_styling()
   }
 ```
 
-## Description
 
-The dataset includes `r nrow(data_study$data)` individual records from `r data_study$data$species_name %>% unique() %>% length()` species, with data included for the following `r data_study$data$trait_name %>% unique() %>% length()` traits (see below for details).
+```{r, results='asis', echo=FALSE}
+new_question("(section `source`) Are the citation details for this study correct?")
+```
+
+## General description
 
 The description we have of the study is as follows:
 
@@ -198,14 +207,14 @@ if(nrow(sites) > 0 ) {
 
 ```
 
-```{r maps, eval= show_map, echo=FALSE, warning=FALSE, message=FALSE, fig.keep="all"}
+```{r maps, eval= TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.keep="all"}
 # Make a map of study sites using leaflet
 sites <- sites %>% filter(!is.na(`latitude (deg)`) & !is.na(`longitude (deg)`)) 
 if(nrow(sites) > 0 ) {
   leaflet() %>% 
   addTiles() %>%
   addScaleBar() %>% 
-  addMiniMap() %>% 
+  addMiniMap(zoomLevelFixed=-5) %>% 
   addMarkers(lng = sites$`longitude (deg)`, lat = sites$`latitude (deg)`,
              label = sites$site_name)	
 }
@@ -229,11 +238,10 @@ data_study$context %>%
 if(nrow(context) > 0 ) {
   context %>%
     my_kable_styling()
-} else{
-  writeLines(
-  c("No contextual site data available",
-  new_question("Do you have any contextual data you can send us?"))
-  )
+
+  new_question("(section `sites`) Do the additional contextual site details look complete?")
+  } else{
+  writeLines("No contextual site data available.")
 }
 
 ```
@@ -243,23 +251,31 @@ if(nrow(context) > 0 ) {
 The dataset includes `r data_study$data %>% nrow()` individual data points from `r data_study$data$species_name %>% unique() %>% length()` species, with data included for the following `r data_study$data$trait_name %>% unique() %>% length()` traits:
 
 ```{r summary_table, results='asis', echo=FALSE}
-data_study$data %>%
+n_records <- data_study$data %>%
   group_by(trait_name) %>%
     summarise(
-        records = length(value),
-        species = length(unique(species_name))
-        ) %>%
+        species = length(unique(species_name)),
+        records = length(value)) %>%
+   mutate(records_per_species = round(records / species, digits=2) ) 
+
+n_records %>%
   my_kable_styling()
 ```
 
-**TO DO** -- what to look out for below.
 
 ```{r, results='asis', echo=FALSE}
-new_question("Does this look correct?")
+new_question("(section `traits`) Does this study include other trait data we may have missed?")
+
+if(median(n_records$records_per_species) < 2) {
+  new_question("(section `traits`) It appears as though we mostly have means for each species. Can you provide individual-level measurements?")
+}
+
+new_question("(section `traits`) Were any of your data sourced from other studies? If so, can you tell us which records and the source (so that we can avoid duplicates, where possible)?")
+
 ```
 
-# Traits - Numerical
 
+# Traits - Numerical
 
 ```{r numerical, results='asis', echo=FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=10}
 traits <- data_study$data$trait_name %>% unique() %>% sort()
@@ -267,11 +283,10 @@ traits_numeric <- traits[trait_is_numeric(traits, definitions)]
 
 writeLines(ifelse(length(traits_numeric) == 0,
         "No numerical traits data are currently available in this dataset",
-        "We have recorded the following traits with continuous numerical values in this dataset. Plots are shown comparing the distribution of values in your study to others in the dataset"))
+        "We have recorded the following traits with continuous numerical values in this dataset. Plots are shown comparing the distribution of values in your study (blue) to those in other datasets within austraits (red, green). For each trait, please eyeball the information provided and let us know of any issues or updates where appropriate."))
 
 for(trait in traits_numeric) {
 
-  meta <- data_yaml$traits %>% list_to_df() %>% filter(trait_name == trait)
 
   data_trait_study <- data_study$data %>%
     filter(trait_name == trait) %>%
@@ -281,14 +296,18 @@ for(trait in traits_numeric) {
     filter(trait_name == trait) %>%
     mutate(value = as.numeric(value))
 
+  transforms <- data_yaml$traits %>% list_to_df() %>% filter(trait_name == trait)
+
+  methods <- metadata_study$traits %>% filter(trait_name == trait)
+  
   # Adjust height of plot according number of rows?
   # n_study <- data_trait_all %>% dplyr::pull(dataset_id) %>% unique() %>% length()
   # figure_height <- 4 + max(12, (n_study/5))
 
-  x <- c("", "",
+  c("", "",
     sprintf("## %s", definitions$traits$values[[trait]]$label),
     "",
-    sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the Austraits database.\n\nThe original variable was supplied with units `%s`; these were converted to our standard `%s`.\n\nThe contributed data has the following properties:", meta$var_in, trait, meta$unit_in, definitions$traits$values[[trait]]$units),
+    sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the Austraits database.\n\nThe original variable was supplied with units `%s`; these were converted to our standard `%s`.\n\nThe contributed data has the following properties:", transforms$var_in, trait, transforms$unit_in, definitions$traits$values[[trait]]$units),
     "",
     sprintf("- **Standardised name**: %s", trait ),
     sprintf("- **Standardised description**: %s", definitions$traits$values[[trait]]$description ),
@@ -299,25 +318,32 @@ for(trait in traits_numeric) {
             data_trait_study %>% dplyr::pull(value) %>% max() ),
     "", "",
     "Data for this trait in this study were collected using the following methods:", "",
-    sprintf("- **Value type**: %s", "**TODO XXXX**"),
-    sprintf("- **Replicates**: %s", "**TODO XXXX**"),
-    sprintf("- **Methods (from paper)**: %s", "**TODO XXXX**"), 
-    "",
-    "The following plot shows the distribution of recorded values for this trait in Austraits and separated by dataset, with your study highlighted in blue.",
-    "")
+    sprintf("- **Value type**: %s", methods$value_type),
+    sprintf("- **Replicates**: %s", methods$replicates),
+    sprintf("- **Methods (from paper)**: %s", methods$replicates), 
+    "","") %>%
+  writeLines()
+  
+  trait_distribution_plot_numerical(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
 
-  ## TODO: need a callout for when information is missing, collect as questions to past at end
+  writeLines(c(""))
+  
+  methods_missing <- methods %in% c("unknown", NA)
 
-  writeLines(x)
-
-  trait_distribution_plot_numerical(austraits, trait, "dataset_id", highlight=dataset_id)
-}
+  new_question(
+    sprintf("(section `traits`) Do the methods data data for the trait appear %s correct? %s", trait, 
+            ifelse(any(methods_missing), 
+                   sprintf("Can you provide missing details for **%s**?",names(methods)[methods_missing] %>% paste0( collapse= ", ")), 
+                   "")
+            )
+    )
+  }
 ```
 
 # Traits - Categorical
 
 ```{r categorical, results='asis', echo=FALSE, eval=TRUE}
-## TODO for categorical variables, have a second plot with just the authors data that is rescaled, so they have a higher resolution along the y-axis
+
 traits <- data_study$data$trait_name %>% unique() %>% sort()
 traits_categorical <- traits[!trait_is_numeric(traits, definitions)]
 
@@ -328,55 +354,71 @@ writeLines(
 
 for(trait in traits_categorical) {
 
-  meta <- data_yaml$traits %>% list_to_df() %>% filter(trait_name == trait)
+  transforms <- data_yaml$traits %>% list_to_df() %>% filter(trait_name == trait)
 
   data_trait_study <- data_study$data %>%
-    filter(trait_name == trait) %>%
-    mutate(value = as.factor(value))
+    filter(trait_name == trait)
 
   data_trait_all <- austraits$data %>%
-    filter(trait_name == trait) %>%
-    mutate(value = as.factor(value))
-
-
-  allowed <- names(definitions$traits$values[[trait]]$values)
-  actual <- data_trait_study %>% dplyr::pull(value) %>% unique() %>% sort()
+    filter(trait_name == trait)
 
   x <- c("", "",
     sprintf("### %s", definitions$traits$values[[trait]]$label),
     "",
-    sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the Austraits database.\n\nThe contributed data has the following properties:", meta$var_in, trait),
+    sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the Austraits database.\n\nThe contributed data has the following properties:", transforms$var_in, trait),
     "",
     sprintf("- **Standardised name**: %s", trait ),
     sprintf("- **Standardised description**: %s", definitions$traits$values[[trait]]$description ),
-    sprintf("- **Records**: %s in this study (of %s in Austraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
-    sprintf("- **Observed values**: %s of %s allowed values recorded -- %s", length(actual),length(allowed), actual %>% paste0(collapse=", ") %>% sort() ),
-    sprintf("See the attached Appendix for definitions of the observed values to ensure we have assigned your data points that meaning you intended."),
+#    sprintf("- **Records**: %s in this study (of %s in Austraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
+#    sprintf("- **Observed values**: %s of %s allowed values recorded -- %s", length(actual),length(allowed), actual %>% paste0(collapse=", ") %>% sort() ),
     "",
-    "The following plot shows distribution of recorded values for each dataset.",
+    "The following table shows distribution of recorded values in your study and Austraits as a whole:",
     "")
 
   writeLines(x)
 
-  trait_distribution_plot_categorical(austraits, trait, "dataset_id", highlight=dataset_id) %>% print()
+  right_join(
+    data_trait_study %>% group_by(value) %>% summarise(study = n()),
+    data_trait_all %>% group_by(value) %>% summarise(total = n()),
+    by= "value"
+    ) %>% 
+  mutate(
+    study = ifelse(is.na(study), 0, study),
+    `% study` = round(study/sum(study)*100),
+    `% total` = round(total/sum(total)*100)
+  ) %>%
+  my_kable_styling() %>% 
+  add_header_above(c(" ", "Counts" = 2, "Percent" = 2)) %>%
+  column_spec(1, border_right = TRUE) %>%
+  column_spec(3, border_right = TRUE) %>%
+  column_spec(5, border_right = TRUE) %>%
+  writeLines()
 }
 ```
 
 
-# Species sample
+# Species taxonomy
 
-We have records on the following species from your study. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. Shown in the table is 
+We have records on the following species from your study. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. The table below shows the aligned taxnomy, including
 
 - the original name supplied to us 
 - alignment of your species with the [`The Plant List` (TPL)](http://www.theplantlist.org/)
 - alignment of your species with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc)
 - alignment of your species with the [`Australian Plant Names Index` (APC_name_ID)](https://biodiversity.org.au/nsl/services/APNI)
+- the reason a name change was implemented (where relevant) 
 
-Updated names are shown where different to the original name supplied, as well as links to the species records in those systems. Clicking on the links will take you to the relevant taxonomic record in each system for that species.
-
-## Aligned taxonomy
+Updated names are shown only where different to the original name supplied. We also include links to the species records in the above  systems. Clicking on the links will take you to the relevant taxonomic record in each system for that species.
 
 ```{r species_list, results='asis', echo=FALSE}
+
+corrections <- tibble(original_name= character(), notes = character())
+
+if(!is.null(data_yaml$taxonomic_updates)) {
+  corrections <- data_yaml$taxonomic_updates %>%
+    list_to_df() %>% 
+    select(original_name = find, notes = reason) 
+}
+
 species <- data_study$data %>%
   select(original_name, species_name) %>%
   distinct() %>%
@@ -385,7 +427,10 @@ species <- data_study$data %>%
   rename(TPL_name = species_name) %>% 
   mutate(TPL_name = ifelse(TPL_name == original_name, "", TPL_name),
          APC_name = ifelse(APC_name == original_name, "", APC_name)
-         )
+         ) %>%
+ left_join(corrections, by = "original_name")  %>%
+ mutate(notes = ifelse(is.na(notes), "", notes))
+ 
 
 species %>%
   mutate(
@@ -393,53 +438,38 @@ species %>%
     APC_ID = as_link_apc(APC_ID),
     APNI_ID = as_link_apni(APNI_ID)
   ) %>%
-  my_kable_styling() %>%
-  kableExtra::column_spec(1, border_right = TRUE) %>%
-  kableExtra::column_spec(6, border_right = TRUE) %>%
-  kableExtra::column_spec(8, border_right = TRUE)
+  my_kable_styling() 
+ # borders -- seems to be too slow on large datasets
+ # %>%
+ #  kableExtra::column_spec(1, border_right = TRUE) %>%
+ # kableExtra::column_spec(6, border_right = TRUE) %>%
+ #  kableExtra::column_spec(8, border_right = TRUE) %>%
+ # kableExtra::column_spec(9, border_right = TRUE)
 
 ```
 
-## Taxonomic corrections
-
-In processing your data, we made the following substitution of names, with reasons as stated.
-
-```{r species_subs, results='asis', echo=FALSE}
-data_yaml$taxonomic_updates %>%
-  list_to_df() %>%
-  my_kable_styling()
+```{r, results='asis', echo=FALSE}
+new_question("(section `taxonomic_updates`) Do these taxonomic alignments and corrections look reasonable?")
 ```
-
-**TO DO: Add TPL link to the above**
-
-# The dataset
-
-The full dataset provided by your study is as follows:
-
-```{r all_data, eval=FALSE, results='asis', echo=FALSE}
-data_study$data %>%
-  select(-original_name) %>%
-  my_kable_styling()
-```
-
-# 
 
 # Questions
 
-**Todo** Add list of general questions:
-
-- were any of these data sourced from other studies?
+Here is a summary of the questions we would like answers to. Clicking on the links will take you back to the appropriate spot in the document. Please copy and past these into an email when you respond. 
 
 <font size = '3' color='orange'>
+
+
 ```{r, results='asis', echo=FALSE}
-questions() %>% print_notes() %>% writeLines()
+questions() %>% print_all_notes() %>% writeLines()
 ```
+
+
 </font>
 
 
 # Session information
 
-The technical information below may useful for us for the sake of reproduciblity, but you don't need to worry about it!
+The technical information below may useful for us for the sake of reproducibility, but you don't need to worry about it!
 
 <font color='grey'>
 This report was generated using the data from the commit `r get_SHA_link()`
