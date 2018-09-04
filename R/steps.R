@@ -18,7 +18,8 @@ load_study <- function(filename_data_raw,
     flag_unsupported_traits(definitions) %>%
     convert_units(definitions, unit_conversion_functions) %>%
     flag_unsupported_values(definitions) %>%
-    update_taxonomy(metadata)
+    update_taxonomy(metadata) %>%
+    mutate(value=tolower(value))
 
   # Now that we're done with them, drop config parts of metadata
   for(v in c("config", "substitutions")) {
