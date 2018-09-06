@@ -50,7 +50,7 @@ if(!exists("austraits")) {
   # stop("austraits must exist in global name space to knit a report")
 }
 if(!exists("dataset_id")) {
-  dataset_id <- "Blackman_2014"
+  dataset_id <- "AusGrass_2014"
   #  stop("dataset_id must exist in global name space to knit a report")
 }
 
@@ -327,15 +327,15 @@ for(trait in traits_numeric) {
     sprintf("- **Standardised name**: %s", trait ),
     sprintf("- **Standardised description**: %s", definitions$traits$values[[trait]]$description ),
     sprintf("- **Records**: %s in this study (of %s in Austraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
-    sprintf("- **Allowable range**: %s - %s", definitions$traits$values[[trait]]$values$minimum,
-            definitions$traits$values[[trait]]$values$maximum ),
-    sprintf("- **Observed range in this study**: %s - %s", data_trait_study %>% dplyr::pull(value) %>% min(),
-            data_trait_study %>% dplyr::pull(value) %>% max() ),
+    sprintf("- **Allowable range**: %s - %s %s", definitions$traits$values[[trait]]$values$minimum,
+            definitions$traits$values[[trait]]$values$maximum, definitions$traits$values[[trait]]$units),
+    sprintf("- **Observed range in this study**: %s - %s %s", data_trait_study %>% dplyr::pull(value) %>% min(),
+            data_trait_study %>% dplyr::pull(value) %>% max(), definitions$traits$values[[trait]]$units),
     "", "",
     "Data for this trait in this study were collected using the following methods:", "",
     sprintf("- **Value type**: %s", transforms$value_type),
     sprintf("- **Replicates**: %s", transforms$replicates),
-    sprintf("- **Methods (from paper)**: %s", transforms$methods), 
+    sprintf("- **Methods**: %s", transforms$methods), 
     "","") %>%
   writeLines()
   
@@ -343,6 +343,22 @@ for(trait in traits_numeric) {
 
   writeLines(c(""))
   
+  outliers <- data_trait_all %>% 
+    arrange(value) %>% 
+    mutate(per = seq_len(n())/n()*100) %>%
+    filter(dataset_id %in% unique(data_trait_study$dataset_id), 
+           per < 2.5 | per > 97.5)
+
+  # check for outliers
+  if(nrow(outliers) > 0 ) {  
+    writeLines(sprintf("OUTLIERS: %s of points in your dataset lie in either the bottom or top 2.5 percent of data", nrow(outliers)))
+    percent_outliers <- nrow(outliers)/nrow(data_trait_study)*100
+    if(percent_outliers > 5) {  
+      new_question("(section `traits`) More than 5% of your data points for this trait are outliers, does this seem reasonable, given what you know about the biology of these species and overall distribution of values in Austraits?")
+    }
+  }
+  
+  # Check if methods data are complete
   methods_missing <- transforms[1,] %in% c("unknown", NA)
 
   new_question(
@@ -414,15 +430,16 @@ for(trait in traits_categorical) {
 
 # Species taxonomy
 
-We have records on the following species from your study. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APC_name_ID)](https://biodiversity.org.au/nsl/services/APNI).
+We have records on the following species from your study. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI).
 
-The table below shows the aligned taxonomy, including
+The table below shows the aligned taxonomy, with columns
 
-- the original name supplied to us 
-- alignment of your species with the [`The Plant List` (TPL)](http://www.theplantlist.org/)
-- alignment of your species with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc)
-- alignment of your species with the [`Australian Plant Names Index` (APC_name_ID)](https://biodiversity.org.au/nsl/services/APNI)
-- the reason a name change was implemented (where relevant) 
+```{r, results='asis', echo=FALSE}
+definitions$austraits$elements$species_list$elements %>%
+  list1_to_df() %>%
+  bind_rows(tibble(key="notes", value="The reason a name change was implemented (where relevant)")) %>%
+  my_kable_styling()
+```
 
 Updated names are shown only where different to the original name supplied. We also include links to the species records in the above  systems. Clicking on the links will take you to the relevant taxonomic record in each system for that species.
 

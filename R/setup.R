@@ -135,7 +135,7 @@ remove_taxnomic_change <- function(study, find, replace=NULL) {
 
 # List all studies in the data directory
 list_studies <- function(){
-  dir("data")
+  dirname(dir("data", pattern="metadata.yml", recursive = TRUE))
 }
 
 get_metadata_files <- function(studies = NULL){

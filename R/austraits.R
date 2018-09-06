@@ -182,7 +182,7 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
   }
 
   # Define scale on x-axis and transform to log if required
-  if(range > 100) {
+  if(range > 20) {
     #log transformation
     p1 <- p1 +
       scale_x_log10( name="",
