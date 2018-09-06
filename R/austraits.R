@@ -5,8 +5,8 @@ library(tidyverse)
 extract_dataset <- function(austraits, dataset_id) {
 
   ret <- list()
-  for(v in c("data", "context", "excluded"))
-    ret[[v]] <- austraits[[v]][austraits[[v]][["dataset_id"]] %in% dataset_id,]
+  for(v in c("data", "context", "details", "excluded_data"))
+    ret[[v]] <- austraits[[v]][ austraits[[v]][["dataset_id"]] %in% dataset_id,]
   # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
   ret[["species_list"]] <- austraits[["species_list"]] %>% filter(species_name %in% ret[["data"]][["species_name"]])
   ret[["metadata"]] <- austraits[["metadata"]][dataset_id]
@@ -48,7 +48,7 @@ extract_trait <- function(austraits, trait_name) {
 }
 
 trait_type  <- function(trait_name, definitions) {
-  extract_list_element(trait_name, definitions$traits$values, "type")
+  extract_list_element(trait_name, definitions$traits$elements, "type")
 }
 
 trait_is_numeric <- function(trait_name, definitions) {
@@ -142,7 +142,7 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
   }
 
   # Check range on x-axis
-  vals <- austraits_trait$definitions$traits$values[[plant_trait_name]]$values
+  vals <- austraits_trait$definitions$traits$elements[[plant_trait_name]]$values
   range <- (vals$maximum/vals$minimum)
 
   # Check range on y-axis

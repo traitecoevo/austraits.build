@@ -46,11 +46,11 @@ source("R/report_notetaker.R")
 
 ## Assumes to items exist in global name space
 if(!exists("austraits")) {
-  austraits <- readRDS("export/data/austraits.rds")
+  austraits <- remake::make("austraits")
   # stop("austraits must exist in global name space to knit a report")
 }
 if(!exists("dataset_id")) {
-  dataset_id <- "Angevin_2010"
+  dataset_id <- "Blackman_2014"
   #  stop("dataset_id must exist in global name space to knit a report")
 }
 
@@ -131,9 +131,9 @@ metadata_study$people %>%
 
 Institutions are optional. Roles are as follows:
 
-- **collectors**: The person (people) leading data collection (up to 2 permitted)
-- **lab_leader**: The person leading data collection
-- **contributor**: The person responsible for entering data into Austraits 
+- **collector**: The person (people) leading data collection (up to 2 permitted)
+- **contributor**: Person responsible for entering data into Austraits
+- **lab_leader**: Leader of lab group at time of collection
 - **assistant**: Anyone else who assisted in collection of the data
 
 ```{r, results='asis', echo=FALSE}
@@ -214,7 +214,7 @@ if(nrow(sites) > 0 ) {
   leaflet() %>% 
   addTiles() %>%
   addScaleBar() %>% 
-  addMiniMap(zoomLevelFixed=-5) %>% 
+  addMiniMap(zoomLevelFixed=2) %>% 
   addMarkers(lng = sites$`longitude (deg)`, lat = sites$`latitude (deg)`,
              label = sites$site_name)	
 }
@@ -232,7 +232,7 @@ The following variables have been recorded for the sites included in the study:
 
 data_study$context %>%
   filter(!(trait_name %in% site_main)) %>%
-  select(-dataset_id, -error) %>%
+  select(-dataset_id) %>%
   spread(trait_name, value) -> context
 
 if(nrow(context) > 0 ) {
@@ -274,8 +274,25 @@ new_question("(section `traits`) Were any of your data sourced from other studie
 
 ```
 
+```{r excluded,  results='asis', echo=FALSE}
 
-# Traits - Numerical
+writeLines(ifelse(nrow(data_study$excluded_data) == 0,
+        "All data passed quality control so nothing was excluded in this study. (Yay!)",
+        "We excluded some records in your dataset as they did not pass the quality control. The number of points and reasons for exclusion are as follows:"))
+
+if(nrow(data_study$excluded_data) > 0 ) {
+  data_study$excluded_data %>% 
+    group_by(trait_name, error) %>%
+    summarise(`points excluded` = n())  %>%
+    my_kable_styling() %>% 
+    writeLines()
+
+  new_question("(section `traits`) Can you provide any additional information so that above exclusions no longer apply?")
+}
+```
+
+
+## Numerical traits 
 
 ```{r numerical, results='asis', echo=FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=10}
 traits <- data_study$data$trait_name %>% unique() %>% sort()
@@ -298,8 +315,6 @@ for(trait in traits_numeric) {
 
   transforms <- data_yaml$traits %>% list_to_df() %>% filter(trait_name == trait)
 
-  methods <- metadata_study$traits %>% filter(trait_name == trait)
-  
   # Adjust height of plot according number of rows?
   # n_study <- data_trait_all %>% dplyr::pull(dataset_id) %>% unique() %>% length()
   # figure_height <- 4 + max(12, (n_study/5))
@@ -318,9 +333,9 @@ for(trait in traits_numeric) {
             data_trait_study %>% dplyr::pull(value) %>% max() ),
     "", "",
     "Data for this trait in this study were collected using the following methods:", "",
-    sprintf("- **Value type**: %s", methods$value_type),
-    sprintf("- **Replicates**: %s", methods$replicates),
-    sprintf("- **Methods (from paper)**: %s", methods$replicates), 
+    sprintf("- **Value type**: %s", transforms$value_type),
+    sprintf("- **Replicates**: %s", transforms$replicates),
+    sprintf("- **Methods (from paper)**: %s", transforms$methods), 
     "","") %>%
   writeLines()
   
@@ -328,19 +343,19 @@ for(trait in traits_numeric) {
 
   writeLines(c(""))
   
-  methods_missing <- methods %in% c("unknown", NA)
+  methods_missing <- transforms[1,] %in% c("unknown", NA)
 
   new_question(
     sprintf("(section `traits`) Do the methods data data for the trait appear %s correct? %s", trait, 
             ifelse(any(methods_missing), 
-                   sprintf("Can you provide missing details for **%s**?",names(methods)[methods_missing] %>% paste0( collapse= ", ")), 
+                   sprintf("Can you provide missing details for trait `%s`: %s",trait, paste0(names(transforms)[methods_missing], collapse= ", ")), 
                    "")
             )
     )
   }
 ```
 
-# Traits - Categorical
+## Categorical traits
 
 ```{r categorical, results='asis', echo=FALSE, eval=TRUE}
 
@@ -399,7 +414,9 @@ for(trait in traits_categorical) {
 
 # Species taxonomy
 
-We have records on the following species from your study. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. The table below shows the aligned taxnomy, including
+We have records on the following species from your study. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APC_name_ID)](https://biodiversity.org.au/nsl/services/APNI).
+
+The table below shows the aligned taxonomy, including
 
 - the original name supplied to us 
 - alignment of your species with the [`The Plant List` (TPL)](http://www.theplantlist.org/)

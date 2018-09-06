@@ -21,18 +21,7 @@ load_study <- function(filename_data_raw,
     update_taxonomy(metadata) %>%
     mutate(value=tolower(value))
 
-  # Now that we're done with them, drop config parts of metadata
-  for(v in c("config", "substitutions")) {
-    metadata[[v]] <- NULL
-  }
-
-
-  metadata[["traits"]] <- metadata[["traits"]] %>%
-    list_to_df() %>%
-    filter(!is.na(trait_name)) %>% 
-    select(trait_name, value_type, replicates, methods) 
-
-  # read site data
+  # read contextual (site) data
   if(length(unlist(metadata$sites)) > 1){
     # extract contextual data from metadata
     format_sites <- function(v, my_list) {
@@ -50,16 +39,49 @@ load_study <- function(filename_data_raw,
   }
   context <- add_all_columns(context, definitions, "context")
 
-  species_list <- tibble(species_name =  unique(data$species_name)) %>%
-                  left_join(species_list_known, by = "species_name") %>%
-                  arrange(species_name)
+  # record details on study from metadata
+  details <-   
+    full_join( by = "dataset_id",
+      # methods used to collect each trait  
+      metadata[["traits"]] %>%
+        list_to_df() %>%
+        filter(!is.na(trait_name)) %>% 
+        mutate(dataset_id = dataset_id) %>%
+        select(dataset_id, trait_name, methods) 
+      ,
+      # study details
+      metadata$dataset %>% 
+        list1_to_df() %>% 
+        spread(key, value) %>%
+        select(one_of(names(metadata$dataset))) %>% 
+          mutate(dataset_id = dataset_id) %>%
+          select(-original_file, -notes)
+      )  %>%
+    full_join( by = "dataset_id",
+      #references
+      tibble(
+        dataset_id = dataset_id,
+        source_primary = metadata[["source"]][["primary"]][["key"]],
+        source_secondary = ifelse(!is.null(metadata[["source"]][["secondary"]][["key"]]), metadata[["source"]][["secondary"]][["key"]], NA_character_)
+        )
+    )
+
+  # Retrieve taxonomic details
+  species_list <- 
+      left_join(by = "species_name",
+                tibble(species_name =  unique(data$species_name)),
+                species_list_known
+                ) %>%
+      arrange(species_name)
+  
 
   list(dataset_id = dataset_id,
        data       = data %>% filter(is.na(error)) %>% select(-error),
-       context    = context,
+       context    = context %>% select(-error),
+       details    = details,
+       excluded_data = data %>% filter(!is.na(error)) %>% select(error, everything()),
        species_list = species_list,
-       metadata   = metadata,
-       excluded     = data %>% filter(!is.na(error)) %>% select(error, everything())
+       metadata   = metadata
        )
 }
 
@@ -81,7 +103,7 @@ custom_manipulation <- function(txt) {
 
 ## Remove any disallowed traits, as defined in definitions
 flag_unsupported_traits <- function(data, definitions) {
-  i <- data$trait_name %in% names(definitions$traits$values)
+  i <- data$trait_name %in% names(definitions$traits$elements)
   data %>% mutate(error = ifelse(!i, "Unsupported trait", error))
 }
 
@@ -89,7 +111,7 @@ flag_unsupported_traits <- function(data, definitions) {
 ## Flag any values outside allowable range
 flag_unsupported_values <- function(data, definitions) {
 
-  # NA vaues
+  # NA values
   ii <-  is.na(data[["value"]])
   data <- mutate(data, error = ifelse(ii, "Missing value", error))
 
@@ -98,7 +120,7 @@ flag_unsupported_values <- function(data, definitions) {
 
   if(any(i, na.rm=TRUE)) {
     for(v in na.omit(unique(data[["trait_name"]][i]))) {
-      ii <-  is.na(data[["error"]]) & data[["trait_name"]] == v & !is.null(definitions$traits$values[[v]]$values) & data[["value"]] %notin% names(definitions$traits$values[[v]]$values)
+      ii <-  is.na(data[["error"]]) & data[["trait_name"]] == v & !is.null(definitions$traits$elements[[v]]$values) & data[["value"]] %notin% names(definitions$traits$elements[[v]]$values)
       data <- mutate(data, error = ifelse(ii, "Unsupported trait value", error))
     }
   }
@@ -110,7 +132,7 @@ flag_unsupported_values <- function(data, definitions) {
     for(v in na.omit(unique(data[["trait_name"]][i]))) {
       x <- suppressWarnings(as.numeric(data[["value"]]))
       ii <-  is.na(data[["error"]]) & data[["trait_name"]] == v & !is.na(x) &
-        (x < definitions$traits$values[[v]]$values$minimum | x > definitions$traits$values[[v]]$values$maximum)
+        (x < definitions$traits$elements[[v]]$values$minimum | x > definitions$traits$elements[[v]]$values$maximum)
       data <- mutate(data, error = ifelse(ii, "Unsupported trait value", error))
     }
   }
@@ -141,10 +163,10 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
   # Look up ideal units, determine whether to convert
   data <- data %>%
     mutate(
-      i = match(trait_name, names(definitions$traits$values)),
-      to = extract_list_element(i, definitions$traits$values, "units"),
+      i = match(trait_name, names(definitions$traits$elements)),
+      to = extract_list_element(i, definitions$traits$elements, "units"),
       ucn = unit_conversion_name(unit, to),
-      type = extract_list_element(i, definitions$traits$values, "type"),
+      type = extract_list_element(i, definitions$traits$elements, "type"),
       to_convert =  ifelse(is.na(error), (type == "numeric" & unit != to ), FALSE))
 
   # Identify anything problematic in conversions and drop
@@ -173,7 +195,7 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
 # the same columns.
 add_all_columns <- function(data, definitions, group) {
 
-  vars <- names(definitions[[group]][["columns"]])
+  vars <- names(definitions[["austraits"]][["elements"]][[group]][["elements"]])
   missing <- setdiff(vars, names(data))
 
   for(v in missing)
@@ -348,15 +370,14 @@ combine_austraits <- function(..., d=list(...), definitions) {
   names(d) <- sapply(d, "[[", "dataset_id")
   ret <- list(data=combine("data", d),
               context=combine("context", d),
-              context2=combine("context2", d),
+              details=combine("details", d),
+              excluded_data = combine("excluded_data", d),
               species_list=combine("species_list", d) %>% 
                               arrange(species_name) %>% 
                               filter(!duplicated(.)),
               metadata=lapply(d, "[[", "metadata"),
               definitions = definitions,
-              excluded = combine("excluded", d),
               session_info = sessionInfo()
               )
   ret
 }
-

@@ -1,86 +1,9 @@
-data:
-  description: Contains observations of plant characteristics.
-  columns:
-    dataset_id:
-      description: ''
-      type: character
-      label: Primary source
-      values: ''
-    species_name:
-      description: ''
-      type: character
-      label: Name of species
-      values: ''
-    site_name:
-      description: Name of site where species was samples. Cross-references against similar column in context.
-      type: character
-      label: Name of site
-      values: Any character string is permitted.
-    observation_id:
-      description: A unique idenitifier for the observation event. Data with the same observation_id can be joined via this key.
-      type: character
-      label: Observation identifier
-      values: Observation ids are assigned automatically, based on `dataset_id` and row number in the file `data.cv`
-    trait_name:
-      description: Name of trait sampled.
-      type: character
-      label: Name of trait
-      values: ''
-    value:
-      description: Value of trait sampled. In the master dataset these are all stored as characters, then converted to numeric later where approrpiate.
-      type: character
-      label: Value of trait
-      values: ''
-    unit:
-      description: Units of sampled trait value, in the orginal study.
-      type: character
-      label: Unit of measurement
-      values: ''
-    value_type:
-      description: The type of value recorded.
-      type: character
-      label: Type of measurement
-      values:
-        raw: ''
-        mean: ''
-        max: ''
-        min: ''
-        lower_quantile: ''
-        upper_quantile: ''
-        expert_opinion: ''
-        unknown: ''
-    replicates:
-      description: Number of measurements taken to inform the reported value. For example, the value reported is the varegae of 2 samples write 2.
-      type: numeric
-      label: Number of individuals sampled
-      values:
-        minimum: 1
-        maximum: 1000
-context:
-  description: Contains observations of site characteristics associated with information in `data`. Cross refernecing between the two dataframes is possible using combinations of `dataset_id`, `site_name`.
-  columns:
-    dataset_id:
-      description: ''
-      type: character
-      label: Primary source
-      values: ''
-    site_name:
-      description: ''
-      type: character
-      label: Name of site
-      values: ''
-    trait_name:
-      description: The site characteristic being recorded.
-      type: character
-      label: Site characteristic.
-    value:
-      description: ''
-      type: character
-      label: Value of trait
-      values: ''
+#-------------------------------------------------------------
+
 traits:
-  description: Names and details of plant traits included in the compilation.
-  values:
+  description: Names and details of plant traits included in the Austraits compilation.
+  type: list
+  elements:
     bark_mass_area:
       description: Bark mass per surface stem area
       type: numeric
@@ -115,7 +38,7 @@ traits:
         maximum: 10000.0
     dispersal_appendage:
       description: Type of dispersal appendage present
-      type: character
+      type: categorical
       label: Appendage of propagule which facilitates dispersal
       values:
         aril: Fleshy outgrowth of a seed, that often attracts animals like birds or ants
@@ -126,10 +49,10 @@ traits:
         wings: Referring to wing-like seed extensions that aid in wind dispersal
     dispersal_syndrome:
       description: Type of dispersal syndrome displayed by species
-      type: character
+      type: categorical
       label: Dispersal syndrome
       values:
-        adhesion: Dispesal syndome where fruit is transported by attaching itself to something, usually an animal; true dispersal syndrome
+        adhesion: Dispersal syndrome where fruit is transported by attaching itself to something, usually an animal; true dispersal syndrome
         anemochory: Dispersal by wind; true dispersal syndrome
         animal vector: Seeds are dispersed by an animal; true dispersal syndrome
         aril: Fleshy outgrowth of a seed, that often attracts animals like birds or ants; dispersal appendage
@@ -151,29 +74,29 @@ traits:
         myrmecochory: Dispersules with elaiosomes (specialised nutritious appendages) that make them attractive for capture, transport and use by ants or related insects; true dispersal syndrome
         receptacle: UNKNOWN
         samara: A winged achene, a type of fruit in which a flattened wing of fibrous, papery tissue develops from the ovary wall; fruit type
-        sarcotesta: Fleshy seedcoat; term especially used for cycads; dispersal appendage?
+        sarcotesta: Fleshy seed coat; term especially used for cycads; dispersal appendage?
         seed containing a sac of air: Seed containing a sac of air; dispersal appendage?
         seed unilaterally winged: A seed wing that arises from one side; dispersal appendage
         seed wing obsolete: Seed wing absent??;dispersal appendage
         strophiole on seed: Outgrowth of the hilum region which restricts water movement into and out of some seeds, especially legumes; dispersal appendage?
         thick and succulent pericarp; aril: Fleshy outgrowth of a seed, that often attracts animals like birds or ants; dispersal appendage
-        unassisted: Seeds are dispersed without assistence; true dispersal syndrome
+        unassisted: Seeds are dispersed without assistance; true dispersal syndrome
         undefined: UNKNOWN
         vertebrate: Seeds are dispersed by a vertebrate species; true dispersal syndrome
         wind: Seeds are dispersed by wind; true dispersal syndrome
         winged fruit: A fruit where some tissue layers have become flattened and papery to function as wings; fruit type
-        winged nut: Nut enclosed in a winglike bract; dispersal appendage?
+        winged nut: Nut enclosed in a wing-like bract; dispersal appendage?
         woody bract scales: UNSURE; assume it refers to conifers, where woody bracts protect the seeds
     fire_response:
-      description: Disntiguishes between plants that are killed by fire and resprout following fire
-      type: character
+      description: Distinguishes between plants that are killed by fire and resprout following fire
+      type: categorical
       label: Resprouts or is killed by fire
       values:
         fire-killed: Plants killed by hot fires
         resprouts: Plants resprout from underground storage organ following fire
     flower_colour:
       description: Flower colour, with six possible outcomes
-      type: character
+      type: categorical
       label: Flower colour
       values:
         blue or purple: blue or purple
@@ -204,7 +127,7 @@ traits:
         maximum: 1000.0
     fruit_type:
       description: Fruit types
-      type: character
+      type: categorical
       label: Fruit type - TYPOS!! CONDENSE?
       values:
         achene: A small, dry, indehiscent one-seeded fruit with a thin wall
@@ -235,17 +158,17 @@ traits:
         utricle/spiny: Small, bladderlike, thin-walled indehiscent fruit, that is spiny
     fruit_type_botany:
       description: Binary variable, dividing fruits into 'dry' versus 'fleshy' based on their appearance
-      type: character
+      type: categorical
       label: Fruit type (fleshy / dry)
       values:
         dry: fruit whose appearance is dry
-        fleshy: fruit whose appearance is felshy
+        fleshy: fruit whose appearance is fleshy
     fruit_type_function:
       description: Binary variable, dividing fruits into 'dry' versus 'fleshy' based on their function
-      type: character
+      type: categorical
       label: Fruit type (fleshy / dry)
       values:
-        dry: fruit that are functionall dry
+        dry: fruit that are functionally dry
         fleshy: fruit that are functionally fleshy
     fruiting_time:
       description: Months during which species is fruiting; keyed as a sequences of 12 0s (not flowering) and 1s (flowering) starting with January
@@ -261,14 +184,14 @@ traits:
         maximum: 10.0
     glaucous:
       description: Variable indicating if a plant's leaves are glaucous or not
-      type: character
+      type: categorical
       label: Glaucous
       values:
         '0': not glaucous
         '1': glaucous
     growth_habit:
       description: Variable that defines a combination of growth habit and plant vegetative reproductive potential
-      type: character
+      type: categorical
       label: Growth habit (data actually describes plant vegetative reproduction capacity)
       values:
         rhizatomous/tufted: Plants with both rhizomes and a tufted growth form; see the individual definitions
@@ -284,7 +207,7 @@ traits:
         minimum: 0.1
         maximum: 1.0e+07
     leaf_area_per_sapwood_area:
-      description: ratio of leaf area to sapwood area
+      description: Ratio of leaf area to sapwood area
       type: numeric
       units: m2/m2
       label: Leaf area per sapwood area
@@ -301,7 +224,7 @@ traits:
         maximum: 100.0
     leaf_arrangement:
       description: Describes leaf arrangement on the stem
-      type: character
+      type: categorical
       label: Arrangement of leaves
       values:
         alternate: Leaves attach to the stem in pairs
@@ -358,7 +281,7 @@ traits:
         maximum: 1000.0
     leaf_compoundness:
       description: Indicates whether or not a leaf is compound; different 'simple' terminology used by different studies
-      type: character
+      type: categorical
       label: Leaf compoundness
       values:
         compound: A leaf that is divided into multiple leaflets
@@ -463,8 +386,8 @@ traits:
         minimum: 1.0
         maximum: 1000.0
     leaf_margin:
-      description: Descritpion of leaf margin
-      type: character
+      description: Description of leaf margin
+      type: categorical
       label: Leaf margin
       values:
         entire: Leaf margin without lobes or toothed
@@ -483,7 +406,7 @@ traits:
       units: g/m2
       label: Leaf nitrogen (N) content per leaf area
       values:
-        minimum: 0.1
+        minimum: 0.2
         maximum: 10.0
     leaf_N_per_dry_mass:
       description: Leaf nitrogen (N) content per leaf dry mass
@@ -499,7 +422,7 @@ traits:
       units: g/m2
       label: Leaf phosphorus (P) content per leaf area
       values:
-        minimum: 0.05
+        minimum: 0.005
         maximum: 1.0
     leaf_P_per_dry_mass:
       description: Leaf phosphorus (P) content per leaf dry mass
@@ -511,7 +434,7 @@ traits:
         maximum: 8
     leaf_phenology:
       description: Variable indicating whether a plant has deciduous versus evergreen leaves; different types of deciduousness described
-      type: character
+      type: categorical
       label: Leaf phenology type (evergreen, deciduous, semideciduous)
       values:
         deciduous: Plant where all leaves are shed yearly, either due to drought or cold
@@ -530,7 +453,7 @@ traits:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf transpiration (water loss)
       type: numeric
       units: umolCO2/umolH2O
-      label: Leaf photosynthesis rate per leaf transpiration (water use effinciency, WUE)
+      label: Leaf photosynthesis rate per leaf transpiration (water use efficiency, WUE)
       values:
         minimum: 0.01
         maximum: 1.0
@@ -544,7 +467,7 @@ traits:
         maximum: 10.0
     leaf_shape:
       description: Leaf shape
-      type: character
+      type: categorical
       label: Leaf shape
       values:
         article: Leaf comprised of jointed segments, as in family Casuarinaceae
@@ -569,7 +492,7 @@ traits:
         oblate: An elongate leaf that is wider in the middle than at the two ends
         oblong: Having an elongated form with slightly parallel sides, roughly rectangular
         obovate: Teardrop-shaped, stem attaches to the tapering end; reversed ovate
-        obovoid: A 3-dimensional shape; Teardrop-shaped, stem attaches to the tapering end
+        obovoid: A 3-dimensional shape; teardrop-shaped, stem attaches to the tapering end
         orbicular: Circular
         ovate: Oval, egg-shaped, with a tapering point and the widest portion near the petiole
         palm: UNCERTAIN if this refers to a leaf from a palm (Araceeae) or a palmately lobed leaf
@@ -605,8 +528,8 @@ traits:
         minimum: 100.0
         maximum: 10000.0
     leaf_type:
-      description: Broad definitions of leaf type - broadleaf vs needle vs article
-      type: character
+      description: Broad definitions of leaf type
+      type: categorical
       label: Leaf type
       values:
         article: Leaf comprised of jointed segments
@@ -637,8 +560,8 @@ traits:
         minimum: 0.01
         maximum: 100000.0
     life_history:
-      description: Categorical desciption of plant's life history
-      type: character
+      description: Categorical description of plant's life history
+      type: categorical
       label: Life history
       values:
         annual: Plant that lives for only a single year
@@ -655,7 +578,7 @@ traits:
         short-lived: Unclear term that only suggests a plant is not long-lived - could be ephemeral, annual or biennial
     lifespan:
       description: Broad categories of plant life span, in years
-      type: character
+      type: categorical
       label: Life span (years)
       values:
         '<1': Plant that lives less than 1 year
@@ -668,18 +591,18 @@ traits:
         '?': Plant with unknown lifespan
     nitrogen_fixing:
       description: Binary variable describing whether or not a plant hosts a nitrogen-fixing bacteria
-      type: character
+      type: categorical
       label: Plant nitrogen fixation capacity
       values:
-        '0': plant does not exhibit nitogen-fixation
-        '1': plant does exhibit nitogen-fixation
+        '0': plant does not exhibit nitrogen-fixation
+        '1': plant does exhibit nitrogen-fixation
     photosynthetic_pathway:
       description: Type of photosynthetic pathway displayed by plants
-      type: character
+      type: categorical
       label: Photosynthetic pathway
       values:
         c3: Plant using the 'standard' photosynthetic pathway, where a 3-carbon compound is produced after the first stage in the photosynthetic pathway
-        c4: Plants in which the photosynthetic light-dependent reactions and the Calvin cycle are physically separated to reduce photorespiration
+        c4: Plants in which the photosynthetic light-dependent reactions and the Calvin cycle are physically separated to reduce photo respiration
     photosynthetic_rate_per_area:
       description: Maximum rate at which a plant consumes carbon dioxide through photosynthesis, normalised to plant leaf area
       type: numeric
@@ -697,8 +620,8 @@ traits:
         minimum: 0.01
         maximum: 1.0
     plant_growth_form:
-      description: Different growth forms displayed by plants, including both standard plant growth form descriptors (tree, shrub, etc.) and specific plant characteristics (i.e. paristitic)
-      type: character
+      description: Different growth forms displayed by plants, including both standard plant growth form descriptors (tree, shrub, etc.) and specific plant characteristics (i.e. patristic)
+      type: categorical
       label: Plant Growth Form
       values:
         aquatic: Grows primarily in water
@@ -728,7 +651,7 @@ traits:
         maximum: 130
     regen_strategy:
       description: Different regeneration strategies displayed by plants. Trait values include both generic terms (i.e. vegetative) and quite specific ones (i.e. wood rootstock)
-      type: character
+      type: categorical
       label: Regeneration strategy
       values:
         fleshy organ: Plants that use fleshy, generally underground organs to regenerate; examples include corms, tubers, bulbs, and rhizomes
@@ -738,7 +661,7 @@ traits:
         woody rootstock: Plant that regenerate by resprouting from wood rootstock following a disturbance
     root_structure:
       description: Specific specialized types of root structures and root symbioses
-      type: character
+      type: categorical
       label: Root structure
       values:
         arbuscular mycorrhizal: Symbiosis in which the mycorrhizal fungi does penetrate the cortex cells of the plant roots and its hyphae form arbuscules and vesicles inside the plant root
@@ -746,7 +669,7 @@ traits:
         ericoid mycorrhizal: A form of arbuscular mycorrhizal relationship only found on plants in the order Ericales. The fungi's hyphase penetrate the plant root but do not form arbuscules
         orchid mycorrhizal: A mycorrhizal relationship specific to orchid species, and for most orchids, essential for seedlings to establish
         other non-mycorrhizal: Plants lacking a mycorrhizal symbiont
-        proteoid root: Also known as cluster roots, are plant roots that form clusters of closely spaced short lateral rootlets and aid in nutrient upake in nutrient-poor soils; Common in members of the family Proteceae, but present in other families as well
+        proteoid root: Also known as cluster roots, are plant roots that form clusters of closely spaced short lateral rootlets and aid in nutrient upake in nutrient-poor soils; Common in members of the family Proteaceae, but present in other families as well
     root_wood_density:
       description: For root wood, the ratio of mass to volume, yielding density
       type: numeric
@@ -805,7 +728,7 @@ traits:
         maximum: 100.0
     seed_shape:
       description: Possible seed shapes. Not that some terms specifically refer to 2-dimensional shapes. See 'http://www.virtualherbarium.org/glossary/SolidShapes.html'
-      type: character
+      type: categorical
       label: Seed shape
       values:
         angular: Doesn't refer to a specific shape, but simply that instead of being smoothly rounded, it is angular
@@ -849,7 +772,7 @@ traits:
         subcylindrical: Nearly or almost cylindrical in shape
         subglobular: Nearly or almost globular in shape
         suborbicular: Nearly or almost orbicular in shape
-        subtriangular: Nearly or almost triangluar in shape
+        subtriangular: Nearly or almost triangular in shape
         triangular: A 3-dimensional shape; With three sides and broadest below the middle
         turbinate: A 3-dimensional shape; Top shaped; inversely conic
         wedge-shaped: A 2 or 3-dimensional shape; Tapers to a point at one end
@@ -871,7 +794,7 @@ traits:
         maximum: 100.0
     serotiny:
       description: When a fruit or cone only releases its seeds following an environmental trigger, often fire
-      type: character
+      type: categorical
       label: Serotiny
       values:
         '0': Plant does NOT display serotiny
@@ -919,7 +842,7 @@ traits:
     storage_organ:
       description: Variable, defining whether a storage organ is present and types of
         storage organs
-      type: character
+      type: categorical
       label: Storage organ types
       values:
         lignotuber: Plant contains an underground lignotuber
@@ -944,9 +867,161 @@ traits:
         maximum: 1.3
     woodiness:
       description: Plant's woodiness
-      type: character
+      type: categorical
       label: Woodiness
       values:
         herbaceous: Plant with non-lignified stems
         semi-woody: Plant with partially lignified stems
         woody: Plant that produces secondary xylem, have lignin
+
+#-------------------------------------------------------------
+
+value_types:
+  description: &value_type A categorical variable describing the type of trait value recorded.
+  type: categorical
+  values:
+    raw_value: Value is a direct measurement.
+    site_mean: Value is the mean of measurements on multiple individuals of the species at a single site.
+    multisite_mean: Value is the mean of measurements on multiple individuals of the species across multiple sites.
+    global_mean: Value is the mean of measurements on multiple individuals of the species across its entire global range.
+    median: Value is the median of measurements on multiple individuals of the species. As with mean, possible inputs are site_median, multisite_median, global_median.
+    max: Value is the maximum trait measurement made across individuals of the species (commonly the upper limit of a range for a trait value given for herbarium measurements). As with mean, possible inputs are site_max, multisite_max, global_max.
+    min: Value is the minimum trait measurement made across individuals of the species (commonly the lower limit of a range for a trait value given for herbarium measurements). As with mean, possible inputs are site_min, multisite_min, global_min.
+    expert_opinion: The value has not been measured directly, but an expert feels confident of the value, often for a trait like `growth form` (*species is a shrub*) or a `life history` (*species is perennial*). This is used if it is one  of the authors of the study that has made the decision about the trait value.
+    literature: When the value for the trait has been extracted from a previously published source by authors not involved in the current study. For instance, this is the appropriate value type is a species' `maximum height` or `N-fixation status` is extracted from a flora. 
+
+#-------------------------------------------------------------
+# A key describing the structure of the compiled `Austraits` dataset.
+
+austraits:
+  description: The compiled `Austraits` dataset.
+  type: list
+  elements:
+    data:
+      description: A table containing measurements of plant traits.
+      type: table
+      elements:
+        dataset_id: &dataset_id Primary identifier for each study contributed into Austraits; most often these are scientific papers, books, or online resources. By default should be name of first author and year of publication, e.g. `Falster_2005`.
+        species_name: &species_name Name of species after aligning taxonomy with standard sources.
+        site_name: &site_name Name of site where species was sampled. Cross-references against similar column in context.
+        observation_id: A unique identifier for the observation, useful for joining traits coming from the same observation_id. Observation ids are assigned automatically, based on `dataset_id` and row number in the file `data.cv`.
+        trait_name: &trait_name Name of trait sampled. Allowable values specified in the table `traits`.
+        value: &value Value of trait sampled. In the master dataset these are all stored as characters, then converted to numeric later where appropriate.
+        unit: &units Units of the sampled trait value after aligning with Austraits standards.
+        value_type: *value_type
+        replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each species. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be `1`. If the value type is `expert_opinion` or `literature` the replicate value should be `.na`.
+        original_name: &orginal_name Taxonomic name given to species in the original data supplied by the authors
+    context:
+      description: A table containing observations of site characteristics associated with information in `data`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
+      type: table
+      elements:
+        dataset_id: *dataset_id
+        site_name: *site_name
+        trait_name: The site characteristic being recorded. Name should include units of measurement, e.g. `longitude (deg)`. Ideally we have at least these variables for each site - `longitude (deg)`, `latitude (deg)`, `description`.
+        value: *value
+    details:
+      description: A table containing details on methods with which data were collected, including time frame and source.
+      type: table
+      elements:
+        dataset_id: *dataset_id
+        trait_name: *trait_name
+        methods: &methods The methods used to collect the trait data. Whenever available, methods are taken near-verbatim from referenced manuscripts. If the trait value is extracted from a literature source the method is simply `from published sources`.
+        year_collected_start: &year_collected_start The year data collection commenced.
+        year_collected_end: &year_collected_end The year data collection was completed.
+        description: &description One sentence describing the purpose of the study.
+        collection_type: &collection_type A field to indicate where the plants on which traits were sampled were collected -  in the `field`, `lab`, `glasshouse`, or `herbarium specimens`.
+        sample_age_class: &sample_age_class A field to indicate if study completed on `adult` or `juvenile` plants.
+        sampling_strategy: &sampling_strategy A written description of how study sites were selected and how study individuals were selected. When available, this information is lifted verbatim from a published manuscript. For herbarium studies, this field ideally indicates which herbaria were 'sampled' to measure a specific trait.
+        source_primary: &source_primary The original study in which data were collected.
+        source_secondary: &source_secondary A subsequent study where data were compiled or re-analysed and then made available.
+    excluded_data: A table of data that did not pass quality test and so were excluded from the master dataset. Structures is identical to that presented in the `data` table, only with an extra column called `error` indicating why the record was excluded.
+    species_list:
+      description: A table containing details on species taxonomy associated with information in `data`. Cross referencing between the two dataframes is possible using combinations of the variables `species_name`. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APC_name_ID)](https://biodiversity.org.au/nsl/services/APNI).
+      type: table
+      elements:
+        species_name: *species_name
+        family: Family of aligned species_name
+        authority: Authority for aligned species_name
+        TPL_ID: ID of species in the TPL
+        status: Status of species in TPL
+        APC_name: Name of species in APC
+        APC_ID: ID of species in the APC
+        APNI_ID: ID of species in the APNI
+    metadata: &metadata Structured recording of metadata for each individual study, as entered into Austraits. Information included in `context` and `details` are derived from this file. Also includes information on mapping of trait data into standard terms and units, plus any taxonomic changes implemented.
+    definitions: A copy of the definitions for all tables and terms.
+
+#-------------------------------------------------------------
+
+metadata:
+  description: *metadata
+  type: list
+  elements:
+    source:
+      description: Citation details for the original source for the data, whether it is a published journal article, book, website, or thesis.
+      type: categorical
+      values:
+        primary: *source_primary
+        secondary: *source_secondary
+    people:
+      description: A list of the key contributors to the study, their respective institutions and roles in the study.
+      type: array
+      elements:
+        name: Name of person
+        institution: Institution of person
+        role:
+          description: Person's role in the study
+          type: categorical
+          values:
+            collector: The person (people) leading data collection (up to 2 permitted)
+            contributor: Person responsible for entering data into Austraits
+            lab_leader: Leader of lab group at time of collection
+            assistant: Anyone else who assisted in collection of the data
+    dataset:
+      description: Details about the study where the data were collected.
+      type: categorical
+      values:
+        year_collected_start: *year_collected_start
+        year_collected_end: *year_collected_end
+        description: *description
+        collection_type: *collection_type
+        sample_age_class: *sample_age_class
+        sampling_strategy: *sampling_strategy
+        original_file: The name of the file initially submitted to Austraits.
+        notes: Generic notes about the study.
+        questions for author: Questions for the author that have arisen during the review of the available metadata.yml file and the merging of information from cited manuscripts to the metadata.yml file. This field will be amended as questions are resolved.
+        questions for Austraits: Questions for Austraits compilers to consider, generally related to which traits are included and excluded in Austraits from a given study.
+    sites:
+      description: A list of study sites and information about each of the study sites where data were collected. A list of sites. Each should include at least three variables - `latitude`, `longitude` and `description`. Additional variables can be included where available. Set to `.na` for herbarium studies and field studies where data values are a mean across many locations.
+    config:
+      description: Information on the format of the submitted data file.
+      type: character
+      values:
+        - is_vertical: Indicates if the data spreadsheet has a vertical (long) or  horizontal (wide) configuration with `yes` or `no` terminology.
+        - variable_match:
+          - species_name: name of variable where species names are recorded
+          - site_name: name of variable where sites names are recorded
+        - custom_R_code: A field where additional R code can be included. This allows for custom manipulation of the data in the submitted spreadsheet into a different format for easy integration with Austraits. `.na` indicates no custom R code was used.
+    traits:
+      description: A translation table mapping traits and units in the original study onto corresponding variables in Austraits. Also specified here are methods used to collect the data.
+      type: array
+      elements:
+        var_in: Names of trait in the original data submitted.
+        unit_in: Units of trait in the original data submitted.
+        trait_name: *trait_name
+        value_type: *value_type
+        replicates: *replicates
+        methods: *methods
+    substitutions:
+      description: A list of any "find and replace" substitutions needed to get the data to get it into the right format
+      type: array
+      values:
+        trait_name: plant_growth_form
+        find: tussock
+        replace: graminoid
+    taxonomic_updates:
+      description: A list of taxonomic name changes needed to align with current taxonomy.
+      type: array
+      values:
+        find: *orginal_name
+        replace: *species_name
+        reason: Records why the change was implemented, e.g. `typos`, `taxonomic synonyms`, and `standardising spellings`
