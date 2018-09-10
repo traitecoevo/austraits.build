@@ -16,6 +16,20 @@ editor_options:
   chunk_output_type: console
 ---
 
+<!-- hack to get indentation on 3rd level of floating TOC; see
+https://stackoverflow.com/questions/46201753/rmarkdown-indentation-of-toc-items-in-html-output
+ -->
+<script>
+$(document).ready(function() {
+  $items = $('div#TOC li');
+  $items.each(function(idx) {
+    num_ul = $(this).parentsUntil('#TOC').length;
+    $(this).css({'text-indent': num_ul * 10, 'padding-left': 0});
+  });
+
+});
+</script>
+
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 # knitr defaults
 root.dir = rprojroot::find_root("remake.yml")
@@ -74,7 +88,7 @@ new_question <- function(txt) {
 
 ## About Austraits
 
-`Austraits` is an open-source compilation of trait data for Australian plant species. The traits we are considering are any structural or physiological variable that: 1. Tends to vary widely among species; and 2. Have been collected across a moderate number of species. Many people collect trait data, and as such, data is spread across many sources, under a variety of formats and terms. 
+`Austraits` is an open-source compilation of trait data for Australian plant species. The traits we are considering are any structural or physiological variable that: 1. Tends to vary widely among species; and 2. Have been collected across a moderate number of species. Many people collect trait data, and as such, data is spread across many sources, under a variety of formats and terms.
 
 The goal of the Austraits project is to combine all of these data fragments into a harmonised compilation, to be made publicly available.
 
@@ -116,7 +130,7 @@ Send feedback by replying to the email XXXXX, attaching:
 
 # Study context
 
-We collect information about the context of the trait measurements. This includes details on the people involved, the sources, and details about type of collection, including location and time of collections. 
+We collect information about the context of the trait measurements. This includes details on the people involved, the sources, and details about type of collection, including location and time of collections.
 
 ## People
 
@@ -183,11 +197,11 @@ new_question("(section `dataset`) Can you provide more detailed information for 
 ```{r, results='asis', echo=FALSE}
 missing <- metadata_study$dataset %>%
   list1_to_df() %>%
-  filter(is.na(value)) %>% 
+  filter(is.na(value)) %>%
   pull(key)
 
 for(v in missing) {
-  sprintf("(section `dataset`) Can you provide missing details for the variable `%s`?\n", v) %>% 
+  sprintf("(section `dataset`) Can you provide missing details for the variable `%s`?\n", v) %>%
     new_question()
   sprintf("The variable `%s` captures *'%s'*\n", v, definitions$metadata$elements$dataset$values[[v]]) %>%
     writeLines()
@@ -208,32 +222,32 @@ create_if_missing <- function(df, var, type=rep(NA_character_, nrow(df))) {
 }
 
 site_main <- c("longitude (deg)","latitude (deg)", "description")
-sites <- 
+sites <-
   full_join(by="site_name",
             # count of records by site
             data_study$data %>%
               mutate(site_name = ifelse(is.na(site_name), "unknown", site_name)) %>%
-              group_by(site_name) %>% 
+              group_by(site_name) %>%
               summarise(records = n()),
             # details on sites from metadata
             data_study$context %>%
               filter(trait_name %in% site_main) %>%
               select(-dataset_id) %>%
-              spread(trait_name, value) %>% 
-              create_if_missing("site_name") %>% 
-              create_if_missing("latitude (deg)") %>% 
-              create_if_missing("longitude (deg)") %>% 
+              spread(trait_name, value) %>%
+              create_if_missing("site_name") %>%
+              create_if_missing("latitude (deg)") %>%
+              create_if_missing("longitude (deg)") %>%
               create_if_missing("description")  %>%
               mutate(
                 `latitude (deg)` = as.numeric(`latitude (deg)`),
                 `longitude (deg)` = as.numeric(`longitude (deg)`)
-                ) 
+                )
   ) %>%
  select(site_name, records, `latitude (deg)`, `longitude (deg)`, description)
 
  sites %>%
    my_kable_styling()
-            
+         
 
 if( any(tolower(sites$site_name) %in% c(NA, "unknown") ) ) {
   new_question("(section `sites`) **Location data incomplete or unknown!** Can you provide location details where your data were sampled?")
@@ -243,12 +257,12 @@ if( any(tolower(sites$site_name) %in% c(NA, "unknown") ) ) {
 
 ```{r maps, eval= TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.keep="all"}
 # Make a map of study sites using leaflet
-sites <- sites %>% filter(!is.na(`latitude (deg)`) & !is.na(`longitude (deg)`)) 
+sites <- sites %>% filter(!is.na(`latitude (deg)`) & !is.na(`longitude (deg)`))
 if(nrow(sites) > 0 ) {
-  leaflet() %>% 
+  leaflet() %>%
   addTiles() %>%
-  addScaleBar() %>% 
-  addMiniMap(zoomLevelFixed=2) %>% 
+  addScaleBar() %>%
+  addMiniMap(zoomLevelFixed=2) %>%
   addMarkers(lng = sites$`longitude (deg)`, lat = sites$`latitude (deg)`,
              label = sites$site_name)	
 }
@@ -282,6 +296,8 @@ if(nrow(context) > 0 ) {
 
 # Trait measurements
 
+## Overview
+
 The dataset includes `r data_study$data %>% nrow()` individual data points from `r data_study$data$species_name %>% unique() %>% length()` species, with data included for the following `r data_study$data$trait_name %>% unique() %>% length()` traits:
 
 ```{r summary_table, results='asis', echo=FALSE}
@@ -290,7 +306,7 @@ n_records <- data_study$data %>%
     summarise(
         species = length(unique(species_name)),
         records = length(value)) %>%
-   mutate(records_per_species = round(records / species, digits=2) ) 
+   mutate(records_per_species = round(records / species, digits=2) )
 
 n_records %>%
   my_kable_styling()
@@ -315,10 +331,10 @@ writeLines(ifelse(nrow(data_study$excluded_data) == 0,
         "We excluded some records in your dataset as they did not pass the quality control. The number of points and reasons for exclusion are as follows:"))
 
 if(nrow(data_study$excluded_data) > 0 ) {
-  data_study$excluded_data %>% 
+  data_study$excluded_data %>%
     group_by(trait_name, error) %>%
     summarise(`points excluded` = n())  %>%
-    my_kable_styling() %>% 
+    my_kable_styling() %>%
     writeLines()
 
   new_question("(section `traits`) Can you provide any additional information so that above exclusions no longer apply?")
@@ -326,7 +342,7 @@ if(nrow(data_study$excluded_data) > 0 ) {
 ```
 
 
-## Numerical traits 
+## Numerical traits
 
 ```{r numerical, results='asis', echo=FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=10}
 traits <- data_study$data$trait_name %>% unique() %>% sort()
@@ -349,59 +365,61 @@ for(trait in traits_numeric) {
 
   transforms <- data_yaml$traits %>% list_to_df() %>% filter(trait_name == trait)
 
-  # Adjust height of plot according number of rows?
-  # n_study <- data_trait_all %>% dplyr::pull(dataset_id) %>% unique() %>% length()
-  # figure_height <- 4 + max(12, (n_study/5))
+  elements <- austraits$definitions$traits$elements[[trait]]
+
+  units <- elements$units
 
   c("", "",
-    sprintf("## %s", definitions$traits$values[[trait]]$label),
+    sprintf("### %s", trait),
     "",
-    sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the Austraits database.\n\nThe original variable was supplied with units `%s`; these were converted to our standard `%s`.\n\nThe contributed data has the following properties:", transforms$var_in, trait, transforms$unit_in, definitions$traits$values[[trait]]$units),
+    sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the Austraits database.\n\nThe original variable was supplied with units `%s`; these were converted to our standard `%s`.\n\nThe contributed data has the following properties:", transforms$var_in, trait, transforms$unit_in, elements$units),
     "",
-    sprintf("- **Standardised name**: %s", trait ),
-    sprintf("- **Standardised description**: %s", definitions$traits$values[[trait]]$description ),
-    sprintf("- **Records**: %s in this study (of %s in Austraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
-    sprintf("- **Allowable range**: %s - %s %s", definitions$traits$values[[trait]]$values$minimum,
-            definitions$traits$values[[trait]]$values$maximum, definitions$traits$values[[trait]]$units),
-    sprintf("- **Observed range in this study**: %s - %s %s", data_trait_study %>% dplyr::pull(value) %>% min(),
-            data_trait_study %>% dplyr::pull(value) %>% max(), definitions$traits$values[[trait]]$units),
+    sprintf("- **standardised name**: %s", trait ),
+    sprintf("- **standardised description**: %s", elements$description ),
+    sprintf("- **label**: %s", elements$label ),
+    sprintf("- **units**: %s", units ),
+    sprintf("- **records**: %s in this study (of %s in Austraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
+    sprintf("- **allowable range**: %s - %s %s", elements$values$minimum,
+            elements$values$maximum, units),
+    sprintf("- **observed range in this study**: %s - %s %s", data_trait_study %>% dplyr::pull(value) %>% min(),
+            data_trait_study %>% dplyr::pull(value) %>% max(), units),
     "", "",
     "Data for this trait in this study were collected using the following methods:", "",
-    sprintf("- **Value type**: %s", transforms$value_type),
-    sprintf("- **Replicates**: %s", transforms$replicates),
-    sprintf("- **Methods**: %s", transforms$methods), 
+    sprintf("- **value_type**: %s", transforms$value_type),
+    sprintf("- **replicates**: %s", transforms$replicates),
+    sprintf("- **methods**: %s", transforms$methods),
     "","") %>%
   writeLines()
-  
+
   trait_distribution_plot_numerical(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
 
   writeLines(c(""))
-  
-  outliers <- data_trait_all %>% 
-    arrange(value) %>% 
+
+  outliers <- data_trait_all %>%
+    arrange(value) %>%
     mutate(per = seq_len(n())/n()*100) %>%
-    filter(dataset_id %in% unique(data_trait_study$dataset_id), 
+    filter(dataset_id %in% unique(data_trait_study$dataset_id),
            per < 2.5 | per > 97.5)
 
   # check for outliers
-  if(nrow(outliers) > 0 ) {  
+  if(nrow(outliers) > 0 ) {
     writeLines(sprintf("OUTLIERS: %s of points in your dataset lie in either the bottom or top 2.5 percent of data\n", nrow(outliers)))
     percent_outliers <- nrow(outliers)/nrow(data_trait_study)*100
-    if(percent_outliers > 5) {  
+    if(percent_outliers > 5) {
       new_question("(section `traits`) More than 5% of your data points for this trait are outliers, does this seem reasonable, given what you know about the biology of these species and overall distribution of values in Austraits?")
     }
   } else {
       new_question(
     sprintf("(section `traits`) Do the data for the trait appear %s correct?", trait)
-    ) 
+    )
   }
-  
+
   # Check if methods data are complete
   methods_missing <- transforms[1,] %in% c("unknown", NA)
   names_missing <-  names(transforms)[methods_missing]
-  
+
   question_x <- function(x, y = trait) {
-    sprintf("(section `traits`) Can you provide missing details `%s` for trait `%s`?\n", x, y) %>% 
+    sprintf("(section `traits`) Can you provide missing details `%s` for trait `%s`?\n", x, y) %>%
     new_question()
   }
 
@@ -409,15 +427,15 @@ for(trait in traits_numeric) {
 
     question_x("value_type")
 
-    sprintf("The variable `value_type` is *'%s'*  Possible values are as follows:", definitions$value_types$description) %>% 
-    writeLines() 
-    
-    definitions$value_types$values %>% 
-      list1_to_df()  %>% 
-      my_kable_styling() %>% 
+    sprintf("The variable `value_type` is *'%s'*  Possible values are:", definitions$value_types$description) %>%
+    writeLines()
+  
+    definitions$value_types$values %>%
+      list1_to_df()  %>%
+      my_kable_styling() %>%
       writeLines()
   }
-  
+
    if("replicates" %in% names_missing) {
 
     question_x("replicates")
@@ -431,7 +449,7 @@ for(trait in traits_numeric) {
 
     writeLines( sprintf("The variable `methods` describes *'%s'*\n", definitions$austraits$elements$details$elements$methods) )
   }
-  
+
   }
 ```
 
@@ -457,37 +475,85 @@ for(trait in traits_categorical) {
   data_trait_all <- austraits$data %>%
     filter(trait_name == trait)
 
+  elements <- austraits$definitions$traits$elements[[trait]]
+
   x <- c("", "",
-    sprintf("### %s", definitions$traits$values[[trait]]$label),
+    sprintf("### %s", trait),
     "",
     sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the Austraits database.\n\nThe contributed data has the following properties:", transforms$var_in, trait),
     "",
-    sprintf("- **Standardised name**: %s", trait ),
-    sprintf("- **Standardised description**: %s", definitions$traits$values[[trait]]$description ),
-#    sprintf("- **Records**: %s in this study (of %s in Austraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
-#    sprintf("- **Observed values**: %s of %s allowed values recorded -- %s", length(actual),length(allowed), actual %>% paste0(collapse=", ") %>% sort() ),
+    sprintf("- **standardised name**: %s", trait ),
+    sprintf("- **standardised description**: %s", definitions$traits$elements[[trait]]$description ),
+    sprintf("- **label**: %s", elements$label ),
+    sprintf("- **records**: %s in this study (of %s in Austraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
+    "",
+    "Data for this trait in this study were collected using the following methods:", "",
+    sprintf("- **value_type**: %s", transforms$value_type),
+    sprintf("- **replicates**: %s", transforms$replicates),
+    sprintf("- **methods**: %s", transforms$methods),
     "",
     "The following table shows distribution of recorded values in your study and Austraits as a whole:",
-    "")
-
-  writeLines(x)
+    "") %>%
+  writeLines()
 
   right_join(
     data_trait_study %>% group_by(value) %>% summarise(study = n()),
     data_trait_all %>% group_by(value) %>% summarise(total = n()),
     by= "value"
-    ) %>% 
+    ) %>%
   mutate(
     study = ifelse(is.na(study), 0, study),
     `% study` = round(study/sum(study)*100),
     `% total` = round(total/sum(total)*100)
   ) %>%
-  my_kable_styling() %>% 
+  my_kable_styling() %>%
   add_header_above(c(" ", "Counts" = 2, "Percent" = 2)) %>%
   column_spec(1, border_right = TRUE) %>%
   column_spec(3, border_right = TRUE) %>%
   column_spec(5, border_right = TRUE) %>%
   writeLines()
+
+  writeLines("\n")
+  new_question(
+    sprintf("(section `traits`) Do the data for the trait appear %s correct?", trait)
+  )
+
+  # Check if methods data are complete
+  methods_missing <- transforms[1,] %in% c("unknown", NA)
+  names_missing <-  names(transforms)[methods_missing]
+
+  question_x <- function(x, y = trait) {
+    sprintf("(section `traits`) Can you provide missing details `%s` for trait `%s`?\n", x, y) %>%
+    new_question()
+  }
+
+  if("value_type" %in% names_missing) {
+
+    question_x("value_type")
+
+    sprintf("The variable `value_type` is *'%s'*  Possible values are:", definitions$value_types$description) %>%
+    writeLines()
+  
+    definitions$value_types$values %>%
+      list1_to_df()  %>%
+      my_kable_styling() %>%
+      writeLines()
+  }
+
+   if("replicates" %in% names_missing) {
+
+    question_x("replicates")
+
+    writeLines( sprintf("The variable `replicates` is *'%s'*\n", definitions$austraits$elements$data$elements$replicates) )
+  }
+
+  if("methods" %in% names_missing) {
+
+    question_x("methods")
+
+    writeLines( sprintf("The variable `methods` describes *'%s'*\n", definitions$austraits$elements$details$elements$methods) )
+  }
+
 }
 ```
 
@@ -513,22 +579,22 @@ corrections <- tibble(original_name= character(), notes = character())
 
 if(!is.null(data_yaml$taxonomic_updates)) {
   corrections <- data_yaml$taxonomic_updates %>%
-    list_to_df() %>% 
-    select(original_name = find, notes = reason) 
+    list_to_df() %>%
+    select(original_name = find, notes = reason)
 }
 
 species <- data_study$data %>%
   select(original_name, species_name) %>%
   distinct() %>%
   arrange(original_name) %>%
-  left_join(austraits$species_list, by ="species_name") %>% 
-  rename(TPL_name = species_name) %>% 
+  left_join(austraits$species_list, by ="species_name") %>%
+  rename(TPL_name = species_name) %>%
   mutate(TPL_name = ifelse(TPL_name == original_name, "", TPL_name),
          APC_name = ifelse(APC_name == original_name, "", APC_name)
          ) %>%
  left_join(corrections, by = "original_name")  %>%
  mutate(notes = ifelse(is.na(notes), "", notes))
- 
+
 
 species %>%
   mutate(
@@ -536,7 +602,7 @@ species %>%
     APC_ID = as_link_apc(APC_ID),
     APNI_ID = as_link_apni(APNI_ID)
   ) %>%
-  my_kable_styling() 
+  my_kable_styling()
  # borders -- seems to be too slow on large datasets
  # %>%
  #  kableExtra::column_spec(1, border_right = TRUE) %>%
@@ -552,7 +618,7 @@ new_question("(section `taxonomic_updates`) Do these taxonomic alignments and co
 
 ```{r, results='asis', echo=FALSE}
 # Any additional questions from metadata
-if(!is.na(metadata_study$questions)) {  
+if(!is.na(metadata_study$questions)) {
   writeLines("# Additional questions\n\n")
 
   x <- metadata_study$questions
@@ -563,7 +629,7 @@ if(!is.na(metadata_study$questions)) {
 
 # Review of questions
 
-Here is a summary of the questions we would like answers to. Clicking on the links will take you back to the appropriate spot in the document. Please copy and past these into an email when you respond. 
+Here is a summary of the questions we would like answers to. Clicking on the links will take you back to the appropriate spot in the document. Please copy and past these into an email when you respond.
 
 <font size = '3' color='orange'>
 
