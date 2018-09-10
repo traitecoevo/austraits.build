@@ -1,0 +1,657 @@
+---
+title: "Descriptor of the `Austraits` data compilation - a curated plant trait database for the Australian flora"
+author: "Daniel Falster, Rachael Gallagher, Sam Andrew, Dony Indiarto, James Lawson, Lizzy Wenk"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    keep_md: yes
+    smart: no
+    theme: yeti
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+editor_options:
+  chunk_output_type: console
+---
+
+<!-- hack to get indentation on 3rd level of floating TOC; see
+https://stackoverflow.com/questions/46201753/rmarkdown-indentation-of-toc-items-in-html-output
+ -->
+<script>
+$(document).ready(function() {
+  $items = $('div#TOC li');
+  $items.each(function(idx) {
+    num_ul = $(this).parentsUntil('#TOC').length;
+    $(this).css({'text-indent': num_ul * 10, 'padding-left': 0});
+  });
+
+});
+</script>
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
+# knitr defaults
+root.dir = rprojroot::find_root("remake.yml")
+knitr::opts_knit$set(root.dir = root.dir)
+knitr::opts_chunk$set(echo=FALSE, cache=FALSE, results='asis', message=FALSE, warning=FALSE)
+
+# default for table format
+options(knitr.table.format = "html")
+
+# Guidelines for writing report code
+# - use tidyverse style and format: http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html
+# - use kableExtra for styling: https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+# - use knitr chunck options: https://rmarkdown.rstudio.com/lesson-3.html
+
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
+library(knitr)
+library(dplyr)
+library(kableExtra)
+
+source("R/austraits.R")
+source("R/steps.R")
+source("R/pre_process.R")
+source("R/support.R")
+source("R/report_utils.R")
+
+## Assumes to items exist in global name space
+if(!exists("austraits")) {
+  austraits <- remake::make("austraits")
+  # stop("austraits must exist in global name space to knit a report")
+}
+
+definitions <- austraits$definitions
+
+knitr::opts_chunk$set(fig.cap='', fig.path = file.path(root.dir,"vignettes/figures", paste0("documentation","_")))
+```
+
+# Overview
+
+This document describes the AusTraits compilation - a database of plant traits for the Australian Flora. AusTraits synthesises data on `r austraits$data$trait_name %>% unique() %>% length()` traits from `r austraits$metadata %>% length()` different sources, including field campaigns, published literature, taxonomic monographs, and individual species descriptions. Traits vary in scope from physiological measures of performance (e.g. photosynthetic gas exchange, water-use efficiency) to morphological parameters (e.g. leaf size, seed size, maximum height) which link to ecological strategy variation. AusTraits contains curated and harmonised species- and genus-level observations coupled to, where available, contextual information on site properties. 
+
+This document provides information on the structure of AusTraits and corresponds to Version `r austraits$definitions$austraits$elements$version$value` of the dataset. An overview of the actual data is provided in another document: see XXXX.
+
+# Ethos and Usage
+
+We envision AusTraits as an on-going collaborative community resource for easily archiving and sharing trait data to increase our collective understanding the Australian flora.
+
+Prior to the development of AusTraits, data on Australian plant traits existed as a series of largely disconnected datasets collected by individual laboratories or initiatives. Our goal is to harmonise these different sources.
+
+## License
+
+## Access
+
+
+## Citation
+
+Force 11 data citation: https://www.force11.org/datacitationprinciples
+
+Wilkinson et al 2015 The FAIR Guiding Principles for scientific data management and stewardship http://doi.org/10.1038/sdata.2016.18
+
+## Transparency 
+
+To facilitate the sharing of trait data under the FAIR principles (Free, , AusTraits uses a fully-reproducible workflow which exposes the decisions made in the processing of data into a harmonised and curated dataset (Figure 1). For instance, AusTraits makes no alterations to the primary datasets provided by co-authors on this Data Descriptor, instead making use of R packages such a make and remake to configure and harmonise (standardise) data into a single curated resource. Several additional quality-assurance steps are undertaken, including detailed error-checking by dataset custodians facilitated by the generation of bespoke reports of their data relative to all observation in AusTraits and the implementation of a series of tests in the remake pipeline (e.g. constraining trait values to plausible minima and maxima) (see Methods for full details). Whilst all care is taken to curate datasets in AusTraits this is not intended to absolve individual researchers from ensuring the appropriate use of the data provided. 
+
+# Data structures
+
+## General approach
+
+The Extensible Observation Ontology (OBOE) is a formal ontology for capturing the semantics of scientific observation and measurement. The ontology supports researchers to add detailed semantic annotations to scientific data, thereby clarifying the inherent meaning of scientific observations. 
+
+> Mark Schildhauer, Matthew B. Jones, Shawn Bowers, Joshua Madin, Sergeui Krivov, Deana Pennington, Ferdinando Villa, Benjamin Leinfelder, Christopher Jones, and Margaret O'Brien. 2016. OBOE: the Extensible Observation Ontology, version 1.1. KNB Data Repository. [doi:10.5063/F11C1TTM](http://doi.org/10.5063/F11C1TTM)
+
+The original publication describing the OBOE concept is:
+
+> Madin, J., S. Bowers, M. Schildhauer, S. Krivov, D. Pennington, and F. Villa. 2007. An ontology for describing and synthesizing ecological observation data. Ecological Informatics 2:279–296. [doi:10.1016/j.ecoinf.2007.05.004](http://doi.org/10.1016/j.ecoinf.2007.05.004)
+
+Source code on Github: [NCEAS/oboe](https://github.com/NCEAS/oboe)
+
+## Elements of Austraits
+
+The AusTraits database is with the follow main components:
+
+```{r, results="show", comment = ''}
+names(austraits) %>% 
+  create_tree_branch("austraits") %>%
+  writeLines()
+```
+
+Each component is defined as follows
+
+
+```{r}
+print_defintions_element <- function(elements) {
+  if(elements$type == "character") {
+    sprintf("content: %s\n", elements$value) %>% 
+      writeLines()
+  }
+  
+  if(elements$type == "table") {
+    
+    sprintf("content: \n") %>% 
+      writeLines()
+
+    elements$elements %>% 
+      list1_to_df() %>%
+      my_kable_styling() %>% 
+      writeLines()
+  }
+}
+
+for(v in names(austraits)) {
+  elements <- austraits$definitions$austraits$elements[[v]]
+  
+  sprintf("### %s\n\ndescription: %s\n", v, elements$description) %>% 
+    writeLines()
+  
+  elements %>%
+    print_defintions_element()
+
+  writeLines(c(""))
+}
+```
+
+# Trait definitions
+
+Below is the standard defintion for each trait in AusTraits (drawn from the the file `config/definitions.yml`). Traits are labelled as either `numeric` or `categorical`. Numeric traits also include 
+
+```{r traits}
+for(trait in names(austraits$definitions$traits$elements)) {
+  elements <- austraits$definitions$traits$elements[[trait]]
+  
+  data_trait <- austraits$data %>%
+    filter(trait_name == trait)
+  
+  c(
+    sprintf("**%s**\n\n", trait),
+    sprintf("- label: %s", elements$label ),
+    sprintf("- description: %s", elements$description ),
+    sprintf("- number of records: %s", data_trait %>% nrow() ),
+    sprintf("- number of studies: %s", data_trait %>% pull(dataset_id) %>% unique() %>% length() ),
+    sprintf("- type: %s%s", elements$type,
+      ifelse(elements$type == "numeric",  
+         sprintf("\n- units: %s", elements$units), "")),
+    ifelse(elements$type == "numeric",  
+         sprintf("- allowable range: %s - %s %s", elements$values$minimum,
+            elements$values$maximum, elements$units),
+         sprintf("- allowable values:\n%s\n",  
+                 paste0("    - *",elements$values %>% names(), "*: ", elements$values %>% unlist(), collapse="\n"))),
+    ""
+  ) %>%
+    writeLines()
+}
+```
+
+# Value types
+
+Each trait measurement has an associated `value_type`, which gives ``r austraits$definitions$value_types$description``. Possible values are:
+
+```{r value_types}
+austraits$definitions$value_types$values %>% 
+  list1_to_df()  %>% 
+  my_kable_styling() %>% 
+  writeLines()
+```
+
+# Building austraits
+
+## Approach
+
+## File structure
+
+
+
+```
+rdflib-review
+├── README.md
+├── index.Rmd
+├── pkgreview.md
+└── rdflib-review.Rproj
+```
+
+## Rebuilding from scratch
+
+```{r, eval=FALSE}
+data <- read_csv(filename_data_raw, col_types = cols()) %>%
+    custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
+    parse_data(dataset_id, metadata) %>%
+    add_all_columns(definitions, "data") %>%
+    flag_unsupported_traits(definitions) %>%
+    convert_units(definitions, unit_conversion_functions) %>%
+    flag_unsupported_values(definitions) %>%
+    update_taxonomy(metadata) %>%
+    mutate(value=tolower(value))
+```
+
+# Format of data for each study
+
+## Data.csv
+
+## Metadata.yml  
+
+Format for Contributed Studies
+
+The metadata is compiled in a `.yml` file, a structured data file where information is presented in a hierarchical format (see Appendix for details).  There are 7 values at the top hierarchical level: `source`, `people`, `dataset`, `config`, `traits`, `substitutions`, and `taxonomic_updates` and these are described below.
+
+### Source
+
+
+In general we aim to reference the primary source. References are written in structured yml format, under the category `source` and then under titles `primary` and `secondary`. Here are some examples for different types of source:
+
+A book:
+
+```
+source:
+  primary:
+    key: Cooper_2004
+    bibtype: Book
+    author: Wendy Cooper, William T. Cooper
+    year: 2004
+    title: Fruits of the Australian tropical rainforest
+    publisher: Nokomis Editions
+    isbn: '9780958174213'
+  secondary: .na
+```
+
+A journal article:
+
+```
+source:
+  primary:
+    key: Falster_2005
+    bibtype: Article
+    author: Daniel S. Falster, Mark Westoby
+    year: 2005
+    title: Alternative height strategies among 45 dicot rain forest species from tropical
+      Queensland, Australia
+    journal: Journal of Ecology
+    volume: 93
+    pages: 521--535
+    publisher: Wiley-Blackwell
+    doi: 10.1111/j.0022-0477.2005.00992.x
+    url: http://dx.doi.org/10.1111/j.0022-0477.2005.00992.x
+  secondary: .na
+```
+
+An online resource:
+
+```
+source:
+  primary:
+    key: WAH_1998
+    bibtype: Misc
+    author: Western Australian Herbarium
+    year: 1998
+    title: FloraBase--the Western Australian Flora
+    publisher: Department of Parks and Wildlife
+    url: https://florabase.dpaw.wa.gov.au/
+  secondary: .na
+```
+
+An unpublished resource:
+
+```
+source:
+  primary:
+    key: Duncan_1998
+    bibtype: Unpublished
+    author: David H. Duncan
+    year: 1998
+    title: Leaf anatomy of Australian plant species
+    note: Collected while at Macquarie University
+  secondary: .na
+```
+
+Note that in these first examples `secondary` is set as `.na`. If a secondary source is included it may look like:
+
+```
+  primary:
+    key: Chave_2009
+    bibtype: Article
+    author: Jerome Chave, David Coomes, Steven Jansen, Simon L. Lewis, Nathan G. Swenson,
+      Amy E. Zanne
+    year: 2009
+    title: Towards a worldwide wood economics spectrum
+    journal: Ecology Letters
+    volume: 12
+    pages: 351--366
+    publisher: Wiley-Blackwell
+    doi: 10.1111/j.1461-0248.2009.01285.x
+    url: http://dx.doi.org/10.1111/j.1461-0248.2009.01285.x
+  secondary:
+    key: Zanne_2009
+    bibtype: Misc
+    author: Amy E. Zanne, G. Lopez-Gonzalez, David A. Coomes, Jugo Ilic, Steven Jansen,
+      Simon L. Lewis, Regis B. Miller, Nathan G. Swenson, Michael C. Wiemann, Jerome
+      Chave
+    year: 2009
+    title: 'Data from: Towards a worldwide wood economics spectrum'
+    volume: .na
+    pages: .na
+    publisher: Dryad Digital Repository
+    doi: 10.5061/dryad.234
+    url: https://doi.org/10.5061/dryad.234
+ ```
+
+General guidelines for describing a source
+
+- elements are names as in [bibtex format](https://en.wikipedia.org/wiki/BibTeX)
+- maximum of one primary and secondary source allowed
+- a secondary source may be needed if the main collector is not an author on the paper where data was released, or data were otherwise released via a subsequent study.
+- keys should be named in the format `Surname_year`.
+
+### People
+
+This includes a list of the different contributors to the study, their respective institutions and roles in the study.
+
+### Dataset
+
+
+### Config
+
+The data under `config` indicates the basic format of the submitted data file. For instance:
+
+### Traits
+
+The level `traits` provides to distinct functions. The first is to map the contributed traits into the Austraits trait names and units. The second is to document information on the collection and meaning for the submitted trait values. In particular for each trait submitted to Austraits, there is the following information:
+
+Units: These are converted to standardized units through the file “unit_conversions.csv” in the folder config. If no units are given an educated guess is made based on the values submitted.
+
+Value type
+
+- for expert opinion should indicate who
+
+### Substitutions
+
+
+### Taxonomic updates
+
+A list of taxonomic name changes that have been made, documented in the following format:
+
+
+Species lists align 
+
+- APC_name/ ID as unknown when hasn't been checked
+NA means has been checked and is indetermined
+
+
+```{r, eval=FALSE}
+# # Add APC and APNI names / handles
+# # Add Native / introduced / naturalised
+
+# # metadata
+# taxon = Accepted name of species in The Plant List 
+# TPL_ID = Record ID of the taxon in The Plant List 
+# family = Family of taxon (extracted from The Plant List) 
+# authority = author of taxon (extracted from The Plant List)
+# status = Taxonomic status of taxon in The Plant List
+# APC_name = Accepted name of species in the Australian Plant Census
+# APC_ID = Record ID of the taxon in the Australian Plant Census -- https://biodiversity.org.au/nsl/services/node/apc/2908862
+# APNI_ID = Record ID of the taxon in the Australian Plant Name Index -- http://id.biodiversity.org.au/node/apni/2899106
+
+# # Usage
+# TPL_ID -> http://www.theplantlist.org/tpl1.1/record/kew-450649
+
+# # Taxonstand docs: https://www.rdocumentation.org/packages/Taxonstand/versions/2.1/topics/TPL
+https://cran.r-project.org/web/packages/Taxonstand/index.html
+# ALA: use the https://bie.ala.org.au/species/http://id.biodiversity.org.au/node/apni/2899106
+```
+
+# Contributing
+
+There 
+
+1. Reporting Errors
+2. Refining documentation
+3. Value adding / expanding existing data
+4. Contributing new data
+
+
+## Reporting errors
+
+If you notice a possible error in Austraits, please [post an issue here](https://github.com/traitecoevo/austraits/issues), describing the error and possible fix in detail. If you can, please provide code illustrating the problem.
+
+## Refining documentation
+
+##  Value adding / expanding existing data
+
+If you would like to value-add to Austraits in some other way, please get in contact by [posting an issue](https://github.com/traitecoevo/austraits/issues) with an idea or offer of time.
+
+
+## Contributing new data
+
+We gladly accept new data contributions to Austraits. In the future we hope to publish a data paper, including contributors as co-authors on the article.
+
+If you would like to contribute data, the requirements are:
+
+1. Data were collected for Australian plant species growing in Australia
+2. You collected data on one of the traits list in the [trait definitions table](config/definitions_traits.csv).
+3. You are willing to release the data under an open license for reuse by the scientific community.
+4. That you make it is as easy as possible for us to incorporate your data by carefully following the instructions below.
+
+By far our preferred way of contributing is for you to fork the database in github, add your dataset then send us a [pull request](https://help.github.com/articles/using-pull-requests/). If this is not possible, you could email the relevant files (see above) to Rachael Gallagher.
+
+To contribute, please follow the steps below. It is important that all steps are followed so that our automated workflow proceeds without problems.
+
+1. Create a new folder with name corresponding to the paper or study of the dataset, e.g. `Gallagher_2014` (do not include *et al* or similar).
+2. Prepare the following files:
+	* `data.csv`: a table of data in comma-separated values format, with data for each individual plant on a single row
+	* `metadata.yml`: description of the metadata.
+
+It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits/tree/master/data) and use it as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits/tree/master/config), in particular the `definitions` files for the list of traits we cover.
+
+
+The elements `traits` and `substitutions` are designed to covert into tables. You can see how they look as tables with code like the following:
+
+```{r, echo=TRUE, results="show"}
+source("R/support.R")
+
+metadata <- read_yaml("data/Blackman_2014/metadata.yml")
+
+my_df <- list_to_df(metadata[["traits"]])
+my_df
+```
+
+Similarly we can convert a table to yaml as follows:
+
+```{r, echo=TRUE, results="show"}
+my_list <- df_to_list(my_df)
+write_yaml(my_list, "tmp.yml")
+```
+
+```{r}
+# Delete file we just created
+unlink("tmp.yml")
+```
+
+
+### Adding data to Austraits
+
+Once you have prepared your data files, add the relevant folder into the `data` directory. You can then rebuild the dataset, including your dataset.
+
+To do so you will need to rerun the `bootstrap.R` script, which will update the `remake.yml`files with appropriate rules for the new dataset (similarly if you remove datasets, do the same). (At this stage, [remake](https://github.com/richfitz/remake) offers no looping constructs (on purpose) so for now at least we generate the remake file using [whisker](https://github.com/edwindj/whisker).)
+
+See doc on adding Custom R code
+
+### Tests
+
+You can also run some automated tests to ensure the dataset meets required setup.
+
+### Reports  / quality checks
+
+
+Reports are written in [Rmarkdown](https://rstudio.github.io/rmarkdown/) and generated via the [knitr](https://cran.r-project.org/web/packages/knitr/) package. Several types of report are available. Templates are stored in the folder `reports`. 
+
+```{r, eval=FALSE, echo=TRUE}
+austraits <- remake::make("austraits")
+source("R/report_utils.R")
+build_study_report("Wright_2002")
+```
+
+Guidelines for writing report code
+
+- use knitr chunk options: https://rmarkdown.rstudio.com/lesson-3.html
+- use tidyverse style and format: http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html
+- use kableExtra for styling: https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+
+**Maps:** We use the package [leaflet](https://cran.r-project.org/web/packages/leaflet/index.html) to generate interactive maps via the JavaScript 'Leaflet' framework and based on the [Open street map](https://www.openstreetmap.org/).
+
+
+
+
+# Appendices
+
+## Acknowledgements
+
+
+## File types
+
+### CSV 
+
+### YAML files
+
+
+yml: The `yml` file extension (pronounced "YAML") [is a type structured data file](https://en.wikipedia.org/wiki/YAML), that is both human and machine readable. The information in it appears under various labels, which are imported into Austraits. You can edit it any text editor, or also in Rstudio. Generally, yml is used in situations where a table does not suit because of variable lengths and or nested structures.
+This document outlines how to describe metadata for any given study
+
+The metadata is compiled in a `.yml` file, a structured data file where information is presented in a hierarchical format. It has the advantage over a spreadsheet in that the nested “headers” can have variable numbers of categories. The data under each of the hierarchical headings are easily extracted by R.
+
+Assumed character unless specified otherwise
+
+possible types:
+
+- `character`: 
+- `numeric`: must have fields `description`, `type`, `units`, `values` with filed `minimum` and `maximum`.
+- `categorical`: Unlike character, only specific values are allowed. must have fields `description`, `type`,and `values`, with the latter including a list of possible values.
+- `table`:
+- `list`:
+- `array`:
+
+## Adding custom R code into metadata.yml
+
+Occasionally all the changes we want to make to dataset may not fit into the prescribed workflow used in Austraits. For example, we assume each trait has a single unit. But there are a few datasets where data on different rows have different units. So we want to make to make some custom modifications to this particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`read_data_study`](https://github.com/traitecoevo/austraits/blob/master/R/steps.R#L59)) looks like:
+
+```{r, eval=FALSE, echo=TRUE}
+  # load and clean trait data
+  data <- read_csv(filename_data_raw, col_types = cols()) %>%
+    custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
+    parse_data(dataset_id, metadata) %>%
+    add_all_columns(definitions, "data") %>%
+    flag_unsupported_traits(definitions) %>%
+    convert_units(definitions, unit_conversion_functions) %>%
+    flag_unsupported_values(definitions) %>%
+    update_taxonomy(metadata) %>%
+    mutate(value=tolower(value))
+```
+
+Note the second line. 
+
+### Example problem 
+
+As an example, `Barlow_1981` has multiple units per traits. Check it out:
+
+```{r}
+library(readr)
+library(yaml)
+```
+
+Load the data
+```{r}
+key <- "Barlow_1981"
+data <- read_csv(file.path("data", key, "data.csv"), col_types = cols(.default = "c"))
+metadata <- read_yaml(file.path("data", key, "metadata.yml"))
+```
+
+Here's the problem - note tat several traits have multiple units used:
+
+```{r}
+table(data$trait, data$units)
+```
+
+So you want to write some R code that fixes this and gets the dataset into the processing pipeline, satisfying all the assumptions.
+
+### Developing solutions
+
+We want to write some custom R code that will appear in the `metadata.yml` file for that study, under a title `config` -> `custom_R_code`. E.g. see this example for [data/Barlow_1981/metadata.yml](https://github.com/traitecoevo/austraits/blob/master/data/Barlow_1981/metadata.yml).
+
+Your code should assume a single object called `data`. And apply whatever fixes are needed. Also it should be
+
+- fully self contained (we're not going to use any of the other remake machinery here)
+- have semi colons `;` at the end of each line. This will be needed because we're adding the code to the `metadata.yml` file and newlines get lost when reading in the file.
+
+The workflow is to first develop some code that applies a suitable fix. E.g. for Barlow_1981 here is the code we eventually applied to the object `data` loaded above:
+
+```{r, eval=FALSE}
+metadata[["config"]][["custom_R_code"]] %>% gsub(";", ";\n", .) %>% writeLines()
+```
+
+Running this removes the problem with multiple units:
+```{r, echo=TRUE, results="show"}
+table(data$trait, data$units)
+```
+(we can ignore the NULLs here, these are when data and units are both NA. Those get pruged furtehr down the pipeline).
+
+Once you have some working code, you then want to add it into your yml file under a group `config` -> `custom_R_code`. 
+
+And then check it works.
+
+Let's assume you added it in, so we'll load the metadata (and also reload the data)
+
+In the build process we use the function `custom_manipulation` to create a function that accepts a data frame and modifies it according to the code in `txt`
+
+```{r, echo=TRUE, comment=""}
+custom_manipulation
+```
+
+So now lets use it to create a function
+```{r, echo=TRUE, results="show"}
+f <- custom_manipulation(metadata[["config"]][["custom_R_code"]])
+f
+```
+
+And finally we can apply the function to our data:
+```{r, echo=TRUE, results="show"}
+data2 <- f(data)
+```
+(If it fails at this point it won't work in the build). 
+
+Now let's compare it to our original data (the columns units and values should now differ)
+
+```{r, echo=TRUE, results="show"}
+all.equal(data, data2)
+```
+
+And also see the units and traits:
+
+```{r, results="show"}
+table(data2$trait, data2$units)
+```
+
+Finally, check it works in the context of loading the metadata:
+
+```{r, results="show"}
+data2 <- custom_manipulation(metadata[["config"]][["custom_R_code"]])(data)
+all.equal(data, data2)
+```
+
+Now you're ready to go. 
+
+### Usage examples
+
+Filter to 
+
+list of categorical traits:
+
+```{r, echo=TRUE, results="show"}
+austraits$data$trait_name %>% unique() %>% .[trait_is_categorical(., austraits$definitions)] %>% sort()
+```
+
+list of numerical traits:
+
+```{r, echo=TRUE, results="show"}
+austraits$data$trait_name %>% unique() %>% .[trait_is_numeric(., austraits$definitions)] %>% sort()
+```
+

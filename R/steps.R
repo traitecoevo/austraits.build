@@ -368,7 +368,8 @@ combine_austraits <- function(..., d=list(...), definitions) {
   d[sapply(d, is.null)] <- NULL
 
   names(d) <- sapply(d, "[[", "dataset_id")
-  ret <- list(data=combine("data", d),
+  ret <- list(version=definitions$austraits$elements$version$value,
+              data=combine("data", d),
               context=combine("context", d),
               details=combine("details", d),
               excluded_data = combine("excluded_data", d),

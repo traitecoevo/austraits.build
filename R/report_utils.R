@@ -96,3 +96,17 @@ md_link <- function(text, link) {
 md_link_doi <- function(doi) {
   md_link(doi, paste0("http://doi.org/", doi))
 }
+
+## Function to format a tree structure from a vector
+## X is a vector of terms
+## title is name of master branch
+## prefix sepcifies amount of indentation
+create_tree_branch <- function(x, title, prefix="") {
+  c(
+    sprintf("%s%s", prefix,title), 
+    sprintf("%s%s %s", prefix,
+            c(rep("├──", length(x) -1), "└──"),
+            x)
+  )
+}
+
