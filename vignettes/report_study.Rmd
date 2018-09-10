@@ -131,10 +131,10 @@ metadata_study$people %>%
 
 Institutions are optional. Roles are as follows:
 
-- **collector**: The person (people) leading data collection (up to 2 permitted)
-- **contributor**: Person responsible for entering data into Austraits
-- **lab_leader**: Leader of lab group at time of collection
-- **assistant**: Anyone else who assisted in collection of the data
+```{r, results='asis', echo=FALSE}
+definitions$metadata$elements$people$elements$role$values %>% list1_to_df() %>%
+  my_kable_styling()
+```
 
 ```{r, results='asis', echo=FALSE}
 new_question("(section `people`) Are all appropriate people listed, with appropriate details?")
@@ -177,32 +177,66 @@ metadata_study$dataset %>%
 ```
 
 ```{r, results='asis', echo=FALSE}
-new_question("(section `dataset`) Can you provide more detailed information on the study origin and timing?")
+new_question("(section `dataset`) Can you provide more detailed information for any of these variables?")
 ```
+
+```{r, results='asis', echo=FALSE}
+missing <- metadata_study$dataset %>%
+  list1_to_df() %>%
+  filter(is.na(value)) %>% 
+  pull(key)
+
+for(v in missing) {
+  sprintf("(section `dataset`) Can you provide missing details for the variable `%s`?\n", v) %>% 
+    new_question()
+  sprintf("The variable `%s` captures *'%s'*\n", v, definitions$metadata$elements$dataset$values[[v]]) %>%
+    writeLines()
+}
+```
+
 
 ## Locations sampled
 
 Data were collected at the following sites and locations. As a minimum, we are aiming to collect, the variables
 
 ```{r, results='asis', echo=FALSE, warning=FALSE}
+
+create_if_missing <- function(df, var, type=rep(NA_character_, nrow(df))) {
+  if(is.null(df[[var]]))
+    df[[var]] <- type
+  df
+}
+
 site_main <- c("longitude (deg)","latitude (deg)", "description")
-sites <- data_study$context %>%
-  filter(trait_name %in% site_main) %>%
-  select(-dataset_id) %>%
-  spread(trait_name, value) %>% 
-  mutate(description = if (exists('description', where=.)) description else NA)
-  
+sites <- 
+  full_join(by="site_name",
+            # count of records by site
+            data_study$data %>%
+              mutate(site_name = ifelse(is.na(site_name), "unknown", site_name)) %>%
+              group_by(site_name) %>% 
+              summarise(records = n()),
+            # details on sites from metadata
+            data_study$context %>%
+              filter(trait_name %in% site_main) %>%
+              select(-dataset_id) %>%
+              spread(trait_name, value) %>% 
+              create_if_missing("site_name") %>% 
+              create_if_missing("latitude (deg)") %>% 
+              create_if_missing("longitude (deg)") %>% 
+              create_if_missing("description")  %>%
+              mutate(
+                `latitude (deg)` = as.numeric(`latitude (deg)`),
+                `longitude (deg)` = as.numeric(`longitude (deg)`)
+                ) 
+  ) %>%
+ select(site_name, records, `latitude (deg)`, `longitude (deg)`, description)
 
-if(nrow(sites) > 0 ) {
-  sites <- sites %>%
-  mutate(`latitude (deg)` = as.numeric(`latitude (deg)`),
-         `longitude (deg)` = as.numeric(`longitude (deg)`)) %>%
-  select(site_name, `latitude (deg)`, `longitude (deg)`, description)
+ sites %>%
+   my_kable_styling()
+            
 
-  sites %>%
-    my_kable_styling()
-} else{
-    new_question("(section `sites`) **No location data available!!** Can you provide location details where your data were sampled?")
+if( any(tolower(sites$site_name) %in% c(NA, "unknown") ) ) {
+  new_question("(section `sites`) **Location data incomplete or unknown!** Can you provide location details where your data were sampled?")
 }
 
 ```
@@ -351,23 +385,53 @@ for(trait in traits_numeric) {
 
   # check for outliers
   if(nrow(outliers) > 0 ) {  
-    writeLines(sprintf("OUTLIERS: %s of points in your dataset lie in either the bottom or top 2.5 percent of data", nrow(outliers)))
+    writeLines(sprintf("OUTLIERS: %s of points in your dataset lie in either the bottom or top 2.5 percent of data\n", nrow(outliers)))
     percent_outliers <- nrow(outliers)/nrow(data_trait_study)*100
     if(percent_outliers > 5) {  
       new_question("(section `traits`) More than 5% of your data points for this trait are outliers, does this seem reasonable, given what you know about the biology of these species and overall distribution of values in Austraits?")
     }
+  } else {
+      new_question(
+    sprintf("(section `traits`) Do the data for the trait appear %s correct?", trait)
+    ) 
   }
   
   # Check if methods data are complete
   methods_missing <- transforms[1,] %in% c("unknown", NA)
+  names_missing <-  names(transforms)[methods_missing]
+  
+  question_x <- function(x, y = trait) {
+    sprintf("(section `traits`) Can you provide missing details `%s` for trait `%s`?\n", x, y) %>% 
+    new_question()
+  }
 
-  new_question(
-    sprintf("(section `traits`) Do the methods data data for the trait appear %s correct? %s", trait, 
-            ifelse(any(methods_missing), 
-                   sprintf("Can you provide missing details for trait `%s`: %s",trait, paste0(names(transforms)[methods_missing], collapse= ", ")), 
-                   "")
-            )
-    )
+  if("value_type" %in% names_missing) {
+
+    question_x("value_type")
+
+    sprintf("The variable `value_type` is *'%s'*  Possible values are as follows:", definitions$value_types$description) %>% 
+    writeLines() 
+    
+    definitions$value_types$values %>% 
+      list1_to_df()  %>% 
+      my_kable_styling() %>% 
+      writeLines()
+  }
+  
+   if("replicates" %in% names_missing) {
+
+    question_x("replicates")
+
+    writeLines( sprintf("The variable `replicates` is *'%s'*\n", definitions$austraits$elements$data$elements$replicates) )
+  }
+
+  if("methods" %in% names_missing) {
+
+    question_x("methods")
+
+    writeLines( sprintf("The variable `methods` describes *'%s'*\n", definitions$austraits$elements$details$elements$methods) )
+  }
+  
   }
 ```
 
