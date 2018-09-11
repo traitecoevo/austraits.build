@@ -83,8 +83,217 @@ names(austraits)
 ````
 
 
-# Coverage
 
-# Traits 1
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+library(tidyverse)
+```
 
-# Traits 2
+
+There are __`r nrow(austraits$data)`__ number of trait records contained within Austraits database which belong to __`r austraits$data$species_name  %>% length()`__ species and __`r austraits$species_list$family) %>% unique() %>% length()`__ plant families.
+
+The Austraits database is compiled from __`r austraits$data$dataset_id %>% unique() %>% length()`__ studies.
+
+
+## Sources
+
+```{r echo=F}
+#get year of studies
+numextract <- function(string){str_extract(string, "\\_*\\d+\\.*\\d*")}
+  
+list_of_years <- strsplit(austraits$data$dataset_id,'_') %>% 
+  unique() %>%  numextract() %>% as.numeric()
+
+```
+
+### Traits Overview
+
+There are __`r austraits$data$trait_name %>% unique() %>% length()`__ number of traits listed on the database.
+
+```{r echo=F}
+
+n_species <- function(df){ n_distinct(df$species_name)} # function for counting number of species
+n_studies <- function(df){ n_distinct(df$dataset_id)} #function for counting number of studies
+n_family <- function(df){n_distinct(df$family)} #function for counting number of families
+
+species_join <- function(df){ left_join(df, austraits$species_list, by = "species_name")} # function for joining data with species_list
+
+n_traits <- austraits$data %>% 
+            group_by(trait_name) %>% nest() %>%  #make a list of records for each traits
+            mutate(data2=map(data,species_join)) %>% #join data & species_list
+            mutate(Records = flatten_int(map(data2, nrow))) %>%  #count number of records
+            mutate(Species=flatten_int(map(data2, n_species))) %>%  #count number of species
+            mutate(Family=flatten_int(map(data2, n_family))) %>%  # count number of family
+            mutate(Studies=flatten_int(map(data2, n_studies))) %>%  #count number of studies
+            arrange( desc(Records)) %>%  #arrange by number of records
+            select(-(data)) #drop 'data' column
+
+
+#summary table for the whole dataset
+austraits_summary <- n_traits[,c("trait_name","Records", "Species", "Family", "Studies")]
+print(austraits_summary[])
+
+
+```
+
+
+
+
+
+```{r message=F, warning=FALSE, include=FALSE, paged.print=FALSE, results='hide'}
+library(yaml)
+definitions <- read_yaml("./config/definitions.yml") # read definition for traits
+
+#====commands for Converting yaml into data.frames====
+indx <- sapply(definitions$traits$elements, length)
+trait_def <- as.data.frame(do.call(rbind,lapply(definitions$traits$elements, `length <- `,max(indx))))
+colnames(trait_def) <- names(definitions$traits$values[[which.max(trait_def)]])
+# is there any better way to convert yaml back to tibble/data.frame? the function need to handle uneven row length
+# we need to add plant_parts categories to definitions file., therefore we can get rid of using the definitions_traits.csv file.
+#====
+
+#load definitions_traits.csv and select plant_parts column
+trait_category <- read_csv("./config/definitions_traits.csv") %>% select("trait_name", "plant_parts")
+#colorpal <-  testdata$plant_parts %>% unique %>% length %>% brewer.pal(name="Set1", n = .)
+
+
+#join table;
+library(plyr)
+n_traits_parts <- n_traits %>% 
+  left_join( trait_category, by = "trait_name") %>% 
+  select(-(data2)) %>% dlply(., "plant_parts") # trait summary data with plant parts column
+
+
+trait_barplot <- function(x,class_type) { #x~ the dataframe, class_type~ Records, Species, Family, or studies
+  
+  p <- ggplot(x, aes_string(x=paste0("reorder(trait_name,",class_type,')'),y=class_type, label = class_type)) +
+        geom_bar(stat='identity', fill = 'grey')+
+        geom_text(size = 3, position = position_stack(vjust = 0.5))+
+        scale_y_log10() +
+        coord_flip()  + 
+        xlab("")+
+        #facet_grid(~ plant_parts)+
+        theme_classic() +
+        ggtitle(paste(unique(x$plant_parts), "traits by", class_type))
+  p
+  
+}
+
+```
+
+
+
+
+#### 1. A closer look on traits by number of records
+
+```{r echo=FALSE}
+library(stringr)
+library(bsselectR)
+library(tools)
+
+plots_records <- lapply(n_traits_parts, trait_barplot, class_type='Records') # trait summary data table, barplot function, and the basis of the summary (by Records, Species, Family, Studies, etc.)
+
+
+#create a folder and save the plots
+plot_dir <- paste0(getwd(),'/reports/plots_Records/')
+dir.create(plot_dir, showWarnings=F)
+paths <- as.list(paste0(names(n_traits_parts), "_traits.png"))
+pwalk(list(paths, plots_records), ggsave, path = plot_dir, dpi = 150)
+
+# create a list of namefiles for the dropdown menu
+state_plots <- paste0(list.files(plot_dir, full.names = TRUE))
+names(state_plots) <- basename(state_plots) %>% file_path_sans_ext
+
+#dropdown menu command
+bsselect(state_plots, type = "img", 
+         live_search = TRUE, show_tick = TRUE, selected='seed_traits')
+```
+#### 2. A closer look on traits by species
+
+
+```{r echo=FALSE}
+plots_Species <- lapply(n_traits_parts, trait_barplot, class_type='Species') # trait summary data table, barplot function, and the basis of the summary (by Records, Species, Family, Studies, etc.)
+
+
+#create a folder and save the plots
+plot_dir <- paste0(getwd(),'/reports/plots_Species/')
+dir.create(plot_dir, showWarnings=F)
+
+paths <- as.list(paste0(names(n_traits_parts), "_traits.png"))
+pwalk(list(paths, plots_Species), ggsave, path = plot_dir, dpi = 150)
+
+
+# create a list of namefiles for the dropdown menu
+state_plots <- paste0(list.files(plot_dir, full.names = TRUE))
+names(state_plots) <- basename(state_plots) %>% file_path_sans_ext
+
+#dropdown menu command
+bsselect(state_plots, type = "img", 
+         live_search = TRUE, show_tick = TRUE, selected='seed_traits')
+```
+
+#### 3. A closer look on traits by number of studies
+```{r echo=FALSE}
+plots_Species <- lapply(n_traits_parts, trait_barplot, class_type='Studies') # trait summary data table, barplot function, and the basis of the summary (by Records, Species, Family, Studies, etc.)
+
+
+#create a folder and save the plots
+plot_dir <- paste0(getwd(),'/reports/plots_Studies/')
+dir.create(plot_dir, showWarnings=F)
+
+paths <- as.list(paste0(names(n_traits_parts), "_traits.png"))
+pwalk(list(paths, plots_Species), ggsave, path = plot_dir, dpi = 150)
+
+
+# create a list of namefiles for the dropdown menu
+state_plots <- paste0(list.files(plot_dir, full.names = TRUE))
+names(state_plots) <- basename(state_plots) %>% file_path_sans_ext
+
+#dropdown menu command
+bsselect(state_plots, type = "img", 
+         live_search = TRUE, show_tick = TRUE, selected='seed_traits')
+```
+
+```{r echo=F,fig.height = 12, fig.width=6, eval=F}
+#library(scales)
+library(ggridges)
+source('./R/austraits.R') # read predefined functions in Austraits
+
+# A Function for plotting  trait distribution
+trait_distribution_plot <- function(plant_trait_name, y_axis_category){
+  #plant_trait_name <- 'seed_length'
+  #y_axis_category <-  'study'
+  tr_table <- extract_trait(austraits,plant_trait_name)$data %>% 
+    mutate(value = as.double(value)) %>% 
+    filter(!value==0)
+  
+  tr_table <- extract_trait(austraits,plant_trait_name)$species %>% 
+    select('species_name', 'family') %>% 
+    left_join(tr_table,.)
+  
+  p <- ggplot(tr_table, aes_string(x = 'value', y = y_axis_category)) + 
+    scale_x_log10( name=paste('Value (', unique(tr_table$unit)[1], ')'),#log transformation function
+                   breaks = trans_breaks("log10", function(x) 10^x),
+                   labels = trans_format("log10", math_format(10^.x))) 
+  
+  p <-  p+geom_density_ridges() +theme_bw() # ggridge and theme
+  
+  p <-  p+ labs(title = paste(plant_trait_name, 'trait'),
+         subtitle = paste0(plant_trait_name,' distribution based on ', y_axis_category))+
+     theme(axis.text.x=element_text(size=rel(1.5))) # larger x axis text
+  
+  return(p)
+  }
+
+
+```
+
+```{r echo=T, fig.height=12, fig.width=6, message=FALSE, warning=FALSE}
+trait_distribution_plot('specific_leaf_area', 'study') 
+```
+
+# Seed mass
+```{r echo=T, fig.height=12, fig.width=6, message=FALSE, warning=FALSE}
+trait_distribution_plot('seed_mass', 'family')
+```
+
+
