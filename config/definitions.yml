@@ -883,14 +883,14 @@ value_types:
     raw_value: Value is a direct measurement.
     site_mean: Value is the mean or median of measurements on multiple individuals of the species at a single site.
     site_min: Value is the minimum of measurements on multiple individuals of the species at a single site.
-    site_max: Value is the maxiumum of measurements on multiple individuals of the species at a single site.
+    site_max: Value is the maximum of measurements on multiple individuals of the species at a single site.
     multisite_mean: Value is the mean or median of measurements on multiple individuals of the species across multiple sites.
     multisite_min: Value is the minimum of measurements on multiple individuals of the species across multiple sites.
-    multisite_max: Value is the maxiumum of measurements on multiple individuals of the species across multiple sites.
+    multisite_max: Value is the maximum of measurements on multiple individuals of the species across multiple sites.
     expert_mean: Value is the average observed for a species across its entire global range, as estimated by an expert based on their knowledge of the species.
-    expert_min: Value is the minimum observed for a species across its entire global range, as estimated by an expert based on their knowledge of the species.  
+    expert_min: Value is the minimum observed for a species across its entire global range, as estimated by an expert based on their knowledge of the species.
       The value has not been measured directly.
-    expert_max: Value is the maxiumum observed for a species across its entire global range, as estimated by an expert based on their knowledge of the species.
+    expert_max: Value is the maximum observed for a species across its entire global range, as estimated by an expert based on their knowledge of the species.
 
 #-------------------------------------------------------------
 # A key describing the structure of the compiled `Austraits` dataset.
@@ -915,7 +915,7 @@ austraits:
         value: &value Value of trait sampled. In the master dataset these are all stored as characters, then converted to numeric later where appropriate.
         unit: &units Units of the sampled trait value after aligning with Austraits standards.
         value_type: *value_type
-        replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each species. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be `1`. If the value type is `expert_opinion` or `literature` the replicate value should be `.na`.
+        replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each species. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be `1`. If the value type is `expert_mean`, `expert_min`, or `expert_max` the replicate value should be `.na`.
         original_name: &orginal_name Taxonomic name given to species in the original data supplied by the authors
     context:
       description: A table containing observations of site characteristics associated with information in `data`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
@@ -931,11 +931,11 @@ austraits:
       elements:
         dataset_id: *dataset_id
         trait_name: *trait_name
-        methods: &methods A textual description of the methods used to collect the trait data. Whenever available, methods are taken near-verbatim from referenced souce.
+        methods: &methods A textual description of the methods used to collect the trait data. Whenever available, methods are taken near-verbatim from referenced souce. Methods can include descriptions such as 'measured on herbarium specimens','data from the literature', or a detailed description of the field or lab methods used to collect the data.
         year_collected_start: &year_collected_start The year data collection commenced.
         year_collected_end: &year_collected_end The year data collection was completed.
         description: &description One sentence describing the purpose of the study.
-        collection_type: &collection_type A field to indicate where the plants on which traits were sampled were collected -  in the `field`, `lab`, `glasshouse`, or `herbarium specimens`, or `literature`. The latter should only be used when the data were soruced from the literature and the collection type is unkown. 
+        collection_type: &collection_type A field to indicate where the plants on which traits were sampled were collected -  in the `field`, `lab`, `glasshouse`, or `herbarium specimens`, or `literature`. The latter should only be used when the data were soruced from the literature and the collection type is unknown. 
         sample_age_class: &sample_age_class A field to indicate if study completed on `adult` or `juvenile` plants.
         sampling_strategy: &sampling_strategy A written description of how study sites were selected and how study individuals were selected. When available, this information is lifted verbatim from a published manuscript. For herbarium studies, this field ideally indicates which herbaria were 'sampled' to measure a specific trait.
         source_primary: &source_primary The original study in which data were collected.
@@ -1006,7 +1006,7 @@ metadata:
         sample_age_class: *sample_age_class
         sampling_strategy: *sampling_strategy
         original_file: The name of the file initially submitted to Austraits.
-        notes: Generic notes about the study and porcessing of data.
+        notes: Generic notes about the study and processing of data.
     sites:
       description: A list of study sites and information about each of the study sites where data were collected. A list of sites. Each should include at least three variables - `latitude`, `longitude` and `description`. Additional variables can be included where available. Set to `.na` for herbarium studies and field studies where data values are a mean across many locations.
     config:

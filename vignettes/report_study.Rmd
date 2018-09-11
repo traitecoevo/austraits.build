@@ -88,7 +88,7 @@ new_question <- function(txt) {
 
 ## About Austraits
 
-`Austraits` is an open-source compilation of trait data for Australian plant species. The traits we are considering are any structural or physiological variable that: 1. Tends to vary widely among species; and 2. Have been collected across a moderate number of species. Many people collect trait data, and as such, data is spread across many sources, under a variety of formats and terms.
+`Austraits` is an open-source compilation of trait data for Australian plant species. The traits we are considering are any structural or physiological variable that: 1. Tend to vary widely among species; and 2. Have been collected across a moderate number of species. Many people collect trait data, and as such, data is spread across many sources, under a variety of formats and terms.
 
 The goal of the Austraits project is to combine all of these data fragments into a harmonised compilation, to be made publicly available.
 
@@ -196,9 +196,9 @@ new_question("(section `dataset`) Can you provide more detailed information for 
 
 ```{r, results='asis', echo=FALSE}
 missing <- metadata_study$dataset %>%
-  list1_to_df() %>%
-  filter(is.na(value)) %>%
-  pull(key)
+ list1_to_df() %>%
+ filter(value == "unknown") %>%
+ pull(key)
 
 for(v in missing) {
   sprintf("(section `dataset`) Can you provide missing details for the variable `%s`?\n", v) %>%
@@ -285,7 +285,8 @@ data_study$context %>%
 
 if(nrow(context) > 0 ) {
   context %>%
-    my_kable_styling()
+    my_kable_styling() %>%
+    writeLines()
 
   new_question("(section `sites`) Do the additional contextual site details look complete?")
   } else{
@@ -405,8 +406,8 @@ for(trait in traits_numeric) {
   if(nrow(outliers) > 0 ) {
     writeLines(sprintf("OUTLIERS: %s of points in your dataset lie in either the bottom or top 2.5 percent of data\n", nrow(outliers)))
     percent_outliers <- nrow(outliers)/nrow(data_trait_study)*100
-    if(percent_outliers > 5) {
-      new_question("(section `traits`) More than 5% of your data points for this trait are outliers, does this seem reasonable, given what you know about the biology of these species and overall distribution of values in Austraits?")
+    if(percent_outliers > 10) {
+      new_question("(section `traits`) More than 10% of your data points for this trait are outliers, does this seem reasonable, given what you know about the biology of these species and overall distribution of values in Austraits?")
     }
   } else {
       new_question(
@@ -415,7 +416,7 @@ for(trait in traits_numeric) {
   }
 
   # Check if methods data are complete
-  methods_missing <- transforms[1,] %in% c("unknown", NA)
+  methods_missing <- transforms[1,] %in% c("unknown")
   names_missing <-  names(transforms)[methods_missing]
 
   question_x <- function(x, y = trait) {
@@ -463,7 +464,7 @@ traits_categorical <- traits[!trait_is_numeric(traits, definitions)]
 writeLines(
   ifelse(length(traits_categorical) == 0,
     "No categorical traits data are currently available in this dataset.",
-    "We have recorded the following traits with categorical values in this dataset. Plots are shown comparing the distribution of values in your study to others in the dataset"))
+    "We have recorded the following traits with categorical values in this dataset. Tables are shown comparing the distribution of values in your study to others in the dataset"))
 
 for(trait in traits_categorical) {
 
@@ -519,7 +520,7 @@ for(trait in traits_categorical) {
   )
 
   # Check if methods data are complete
-  methods_missing <- transforms[1,] %in% c("unknown", NA)
+  methods_missing <- transforms[1,] %in% c("unknown")
   names_missing <-  names(transforms)[methods_missing]
 
   question_x <- function(x, y = trait) {

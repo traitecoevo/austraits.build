@@ -91,7 +91,7 @@ for (s in study_names) {
   trait_names <- sapply(metadata[["traits"]], "[[", "trait_name")
   expect_isin(trait_names, variable_definitions[["trait_name"]], info=f)
   value_types <- sapply(metadata[["traits"]], "[[", "value_type")
-  allowed <- c("unknown", "raw", "mean", "max", "min", "lower_quantile", "upper_quantile", "expert_opinion")
+  allowed <- c("unknown", "raw", "mean", "max", "min", "lower_quantile", "upper_quantile", "expert_mean")
   expect_isin(value_types, allowed, info=f)
   cfgChar <- list_to_df(metadata[["traits"]])
   expect_is(cfgChar, "data.frame")
