@@ -187,10 +187,10 @@ for(trait in names(austraits$definitions$traits$elements)) {
 
 # Value types
 
-Each trait measurement has an associated `value_type`, which gives ``r austraits$definitions$value_types$description``. Possible values are:
+Each trait measurement has an associated `value_type`, which gives ``r austraits$definitions$value_type$description``. Possible values are:
 
-```{r value_types}
-austraits$definitions$value_types$values %>% 
+```{r value_type}
+austraits$definitions$value_type$values %>% 
   list1_to_df()  %>% 
   my_kable_styling() %>% 
   writeLines()
@@ -506,6 +506,44 @@ Guidelines for writing report code
 
 ## Acknowledgements
 
+## Usage examples
+
+### Merging with location data
+
+```{r}
+sites <- austraits$context %>% 
+  filter(trait_name %in%  c("longitude (deg)","latitude (deg)")) %>% 
+  spread(trait_name, value)
+
+left_join(austraits$data, sites, by=c("dataset_id", "site_name")) 
+```
+
+### Merging with taxonomic data
+
+```{r}
+left_join(austraits$data, 
+          select(austraits$species_list, species_name, family),  
+          by="species_name") 
+```
+
+
+### Filter to trait or study
+
+Filter to 
+
+list of categorical traits:
+
+```{r, echo=TRUE, results="show"}
+austraits$data$trait_name %>% unique() %>% .[trait_is_categorical(., austraits$definitions)] %>% sort()
+```
+
+list of numerical traits:
+
+```{r, echo=TRUE, results="show"}
+austraits$data$trait_name %>% unique() %>% .[trait_is_numeric(., austraits$definitions)] %>% sort()
+```
+
+
 
 ## File types
 
@@ -638,20 +676,4 @@ all.equal(data, data2)
 ```
 
 Now you're ready to go. 
-
-### Usage examples
-
-Filter to 
-
-list of categorical traits:
-
-```{r, echo=TRUE, results="show"}
-austraits$data$trait_name %>% unique() %>% .[trait_is_categorical(., austraits$definitions)] %>% sort()
-```
-
-list of numerical traits:
-
-```{r, echo=TRUE, results="show"}
-austraits$data$trait_name %>% unique() %>% .[trait_is_numeric(., austraits$definitions)] %>% sort()
-```
 

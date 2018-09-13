@@ -82,6 +82,11 @@ new_question <- function(txt) {
   x <- questions(add_note, as_note(txt)) %>% print_notes(as_anchor=TRUE)
   writeLines(sprintf("<font color='orange'>**Question:** %s</font>\n\n", paste0(x, collape="")))
 }
+
+# Variable to record when definitions have been specified
+
+structures_already_defined <- c("names")
+
 ```
 
 # Introduction
@@ -349,6 +354,37 @@ if(nrow(data_study$excluded_data) > 0 ) {
 traits <- data_study$data$trait_name %>% unique() %>% sort()
 traits_numeric <- traits[trait_is_numeric(traits, definitions)]
 
+
+
+question_x <- function(x, y = trait) {
+  sprintf("(section `traits`) Can you provide missing details `%s` for trait `%s`?\n", x, y) %>%
+  new_question()
+}
+
+define_variable <- function(var, definitions) {
+
+  description <- switch(var,
+                        value_type = definitions$value_type$description,
+                        replicates = definitions$austraits$elements$data$elements$replicates,
+                        methods = definitions$austraits$elements$details$elements$methods
+                        )
+
+  sprintf("The variable `%s` is *'%s'*.", v, description) %>%
+     writeLines()
+  
+  if(var == "value_type") {
+    writeLines("Possible values are:")
+
+    definitions$value_type$values %>%
+      list1_to_df()  %>%
+      my_kable_styling() %>%
+      writeLines()
+    }
+
+}
+
+
+
 writeLines(ifelse(length(traits_numeric) == 0,
         "No numerical traits data are currently available in this dataset",
         "We have recorded the following traits with continuous numerical values in this dataset. Plots are shown comparing the distribution of values in your study (blue) to those in other datasets within austraits (red, green). For each trait, please eyeball the information provided and let us know of any issues or updates where appropriate."))
@@ -419,39 +455,18 @@ for(trait in traits_numeric) {
   methods_missing <- transforms[1,] %in% c("unknown")
   names_missing <-  names(transforms)[methods_missing]
 
-  question_x <- function(x, y = trait) {
-    sprintf("(section `traits`) Can you provide missing details `%s` for trait `%s`?\n", x, y) %>%
-    new_question()
+  for(v in c("value_type", "replicates", "methods")) {
+
+    if(v %in% names_missing ) {
+      question_x(v, trait)
+
+      if(!(v %in% structures_already_defined))
+        structures_already_defined <- define_variable(v, definitions)
+    }
   }
 
-  if("value_type" %in% names_missing) {
 
-    question_x("value_type")
-
-    sprintf("The variable `value_type` is *'%s'*  Possible values are:", definitions$value_types$description) %>%
-    writeLines()
-  
-    definitions$value_types$values %>%
-      list1_to_df()  %>%
-      my_kable_styling() %>%
-      writeLines()
-  }
-
-   if("replicates" %in% names_missing) {
-
-    question_x("replicates")
-
-    writeLines( sprintf("The variable `replicates` is *'%s'*\n", definitions$austraits$elements$data$elements$replicates) )
-  }
-
-  if("methods" %in% names_missing) {
-
-    question_x("methods")
-
-    writeLines( sprintf("The variable `methods` describes *'%s'*\n", definitions$austraits$elements$details$elements$methods) )
-  }
-
-  }
+}
 ```
 
 ## Categorical traits
@@ -523,36 +538,14 @@ for(trait in traits_categorical) {
   methods_missing <- transforms[1,] %in% c("unknown")
   names_missing <-  names(transforms)[methods_missing]
 
-  question_x <- function(x, y = trait) {
-    sprintf("(section `traits`) Can you provide missing details `%s` for trait `%s`?\n", x, y) %>%
-    new_question()
-  }
+  for(v in c("value_type", "replicates", "methods")) {
 
-  if("value_type" %in% names_missing) {
+    if(v %in% names_missing ) {
+      question_x(v, trait)
 
-    question_x("value_type")
-
-    sprintf("The variable `value_type` is *'%s'*  Possible values are:", definitions$value_types$description) %>%
-    writeLines()
-  
-    definitions$value_types$values %>%
-      list1_to_df()  %>%
-      my_kable_styling() %>%
-      writeLines()
-  }
-
-   if("replicates" %in% names_missing) {
-
-    question_x("replicates")
-
-    writeLines( sprintf("The variable `replicates` is *'%s'*\n", definitions$austraits$elements$data$elements$replicates) )
-  }
-
-  if("methods" %in% names_missing) {
-
-    question_x("methods")
-
-    writeLines( sprintf("The variable `methods` describes *'%s'*\n", definitions$austraits$elements$details$elements$methods) )
+      if(!(v %in% structures_already_defined))
+        structures_already_defined <- define_variable(v, definitions)
+    }
   }
 
 }

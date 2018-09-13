@@ -56,6 +56,7 @@ options(knitr.table.format = "html")
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 library(knitr)
 library(dplyr)
+library(ggplot2)
 library(leaflet)
 library(ggbeeswarm)
 library(kableExtra)
@@ -82,9 +83,166 @@ The `Austraits` dataset has `r length(austraits)` components:
 names(austraits)
 ````
 
+There are __`r nrow(austraits$data)`__ number of trait records contained within Austraits database which belong to __`r austraits$data$species_name  %>% length()`__ species and __`r austraits$species_list$family %>% unique() %>% length()`__ plant families.
 
-# Coverage
+The Austraits database is compiled from __`r austraits$data$dataset_id %>% unique() %>% length()`__ studies.
 
-# Traits 1
 
-# Traits 2
+## Sources
+
+```{r echo=F}
+#get year of studies
+numextract <- function(string){str_extract(string, "\\_*\\d+\\.*\\d*")}
+  
+list_of_years <- strsplit(austraits$data$dataset_id,'_') %>% 
+  unique() %>%  numextract() %>% as.numeric()
+
+```
+
+# Traits 
+
+## Overview
+
+There are __`r austraits$data$trait_name %>% unique() %>% length()`__ number of traits listed on the database.
+
+```{r echo=F}
+sites <- austraits$context %>% 
+  filter(trait_name %in%  c("longitude (deg)","latitude (deg)")) %>% 
+  spread(trait_name, value)
+
+data_geo <- 
+  left_join(by=c("dataset_id", "site_name"),
+      select(austraits$data, -original_name), sites) %>%
+  left_join(by="species_name",
+      select(austraits$species_list, species_name, family)) 
+
+n_records <- 
+  data_geo %>% 
+  group_by(trait_name) %>%
+  summarise(
+            studies = n_distinct(dataset_id),
+            species = n_distinct(species_name),
+            families = n_distinct(family),
+            records_geo = sum(!is.na(`longitude (deg)`) & !is.na(`latitude (deg)`)),
+            records_all = n()
+            )
+n_records %>%
+  my_kable_styling()
+```
+
+
+## Numerical traits
+
+```{r numerical, results='asis', echo=FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=10}
+
+traits <- data_geo$trait_name %>% unique() %>% sort()
+traits_numeric <- traits[trait_is_numeric(traits, definitions)]
+
+for(trait in traits_numeric[33:35]) {
+
+  data_trait <- data_geo %>%
+    filter(trait_name == trait) %>%
+    mutate(value = as.numeric(value))
+
+  data_trait_geo <- data_trait %>%
+    filter(!is.na(`longitude (deg)`) & !is.na(`latitude (deg)`)) %>%
+    mutate(
+          `latitude (deg)` = as.numeric(`latitude (deg)`),
+          `longitude (deg)` = as.numeric(`longitude (deg)`)
+          )
+
+  elements <- austraits$definitions$traits$elements[[trait]]
+
+  units <- elements$units
+
+  c("", "",
+    sprintf("### %s", trait),
+    "",
+    sprintf("- **standardised name**: %s", trait ),
+    sprintf("- **standardised description**: %s", elements$description ),
+    sprintf("- **label**: %s", elements$label ),
+    sprintf("- **units**: %s", units ),
+    sprintf("- **records - all**: %s", data_trait %>% nrow() ),
+    sprintf("- **records - geo-referenced**: %s", data_trait_geo %>% nrow() ),
+    sprintf("- **records - number studies**: %s",   n_distinct(data_trait$dataset_id)),
+    sprintf("- **records - number spp**: %s",   n_distinct(data_trait$species_name)),
+    sprintf("- **records - number families**: %s",   n_distinct(data_trait$family)),
+    sprintf("- **allowable range**: %s - %s %s", elements$values$minimum,
+            elements$values$maximum, units),
+    sprintf("- **observed range**: %s - %s %s", data_trait %>% dplyr::pull(value) %>% min(),
+            data_trait %>% dplyr::pull(value) %>% max(), units),
+    "",
+    "The following figure shows distribution of recorded values by family and study:",
+    "") %>%
+  writeLines()
+
+  trait_distribution_plot_numerical(austraits, trait, "family", hide_ids = FALSE)
+  
+  writeLines("")
+  
+  trait_distribution_plot_numerical(austraits, trait, "dataset_id", hide_ids = TRUE)
+  
+  writeLines("")
+
+  # print map -- unofrtunately not displaying properly. perhaps because results="asis"?
+  if(FALSE & nrow(data_trait_geo) > 0 ) {
+    sites <- data_trait_geo %>% 
+      group_by(`latitude (deg)`,`longitude (deg)`) %>%
+      summarise(records = n(), 
+                species = n_distinct(species_name),
+                ids = paste(dataset_id, collapse="; "),
+                label = sprintf("%s records from %s species",records, species)
+                ) 
+
+  leaflet() %>%
+  addTiles() %>%
+  addScaleBar() %>%
+  addMiniMap(zoomLevelFixed=2) %>%
+  addMarkers(lng = sites$`longitude (deg)`, lat = sites$`latitude (deg)`,
+             label = sites$label) %>% print()
+  }
+  
+}
+```
+
+## Categorical traits
+
+```{r categorical, results='asis', echo=FALSE, eval=F}
+traits_categorical <- traits[!trait_is_numeric(traits, definitions)]
+
+for(trait in traits_categorical) {
+
+  data_trait <- data_geo %>%
+    filter(trait_name == trait) 
+
+  data_trait_geo <- data_trait %>%
+    filter(!is.na(`longitude (deg)`) & !is.na(`latitude (deg)`)) 
+
+  elements <- austraits$definitions$traits$elements[[trait]]
+
+  c("", "",
+    sprintf("### %s", trait),
+    "",
+    sprintf("- **standardised name**: %s", trait ),
+    sprintf("- **standardised description**: %s", elements$description ),
+    sprintf("- **label**: %s", elements$label ),
+    sprintf("- **records - all**: %s", data_trait %>% nrow() ),
+    sprintf("- **records - geo-referenced**: %s", data_trait_geo %>% nrow() ),
+    sprintf("- **records - number studies**: %s",   n_distinct(data_trait$dataset_id)),
+    sprintf("- **records - number spp**: %s",   n_distinct(data_trait$species_name)),
+    sprintf("- **records - number families**: %s",   n_distinct(data_trait$family)),
+    "",
+    "The following table shows distribution of recorded values in Austraits as a whole:",
+    "") %>%
+  writeLines()
+
+  data_trait %>% group_by(value) %>% summarise(total = n()) %>%
+  mutate(
+    `% total` = round(total/sum(total)*100)
+  ) %>%
+  my_kable_styling() %>%
+  writeLines()
+
+  writeLines("\n")
+}
+```
