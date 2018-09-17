@@ -274,7 +274,7 @@ if(nrow(sites) > 0 ) {
 ```
 
 ```{r, results='asis', echo=FALSE}
-new_question("(section `sites`) Do site details look complete? As a minimum we would like `latitude`, `longitude`, `description`.")
+new_question("(section `sites`) Do site details look complete and accurate? As a minimum we would like `latitude`, `longitude`, `description`.")
 ```
 
 ## Additional site data (optional)
@@ -380,14 +380,13 @@ define_variable <- function(var, definitions) {
       my_kable_styling() %>%
       writeLines()
     }
-
 }
 
 
 
 writeLines(ifelse(length(traits_numeric) == 0,
         "No numerical traits data are currently available in this dataset",
-        "We have recorded the following traits with continuous numerical values in this dataset. Plots are shown comparing the distribution of values in your study (blue) to those in other datasets within austraits (red, green). For each trait, please eyeball the information provided and let us know of any issues or updates where appropriate."))
+        "We have recorded the following traits with continuous numerical values in this dataset. Plots are shown comparing the distribution of values in your study (blue) to those in other datasets within Austraits (red, green). For each trait, please eyeball the information provided and let us know of any issues or updates where appropriate."))
 
 for(trait in traits_numeric) {
 
@@ -460,8 +459,10 @@ for(trait in traits_numeric) {
     if(v %in% names_missing ) {
       question_x(v, trait)
 
-      if(!(v %in% structures_already_defined))
-        structures_already_defined <- define_variable(v, definitions)
+      if(!(v %in% structures_already_defined)) {
+        define_variable(v, definitions)
+        structures_already_defined <- c(v, structures_already_defined)
+      }
     }
   }
 
@@ -543,8 +544,10 @@ for(trait in traits_categorical) {
     if(v %in% names_missing ) {
       question_x(v, trait)
 
-      if(!(v %in% structures_already_defined))
-        structures_already_defined <- define_variable(v, definitions)
+      if(!(v %in% structures_already_defined)) {
+        define_variable(v, definitions)
+        structures_already_defined <- c(v, structures_already_defined)
+      }
     }
   }
 
