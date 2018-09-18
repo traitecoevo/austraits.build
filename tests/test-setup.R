@@ -1,17 +1,15 @@
 
-config_files <- c("data.csv", "context.csv", "metadata.yml")
+config_files <- c("data.csv", "metadata.yml")
 
 test_dataframe <- function(data, expected_colnames, info) {
   expect_not_NA(colnames(data), info = info)
   expect_allowed_text(colnames(data), info = info)
   expect_unique(colnames(data), info = info)
-  expect_allowed_text(unlist(data), info = info)
   expect_is(data, "data.frame", info = info)
   expect_named(data, expected_colnames, info= info)
 }
 
 test_list <- function(data, info) {
-  expect_allowed_text(unlist(data), info = info)
   expect_is(data, "list", info = info)
 }
 
@@ -23,15 +21,23 @@ test_list_named <- function(data, expected_names, info) {
   expect_named(data, expected_names, info= info)
 }
 
-expect_list_elements_contain <- function(object, expected, ...) {
-  tmp <- lapply(object, function(x) expect_contains(names(x), expected, ...))
-  invisible(object)
+test_list_named_contains <- function(data, expected_names, info) {
+  test_list(data, info)
+  expect_not_NA(names(data), info = info)
+  expect_allowed_text(names(data), info = info)
+  expect_unique(names(data), info = info)
+  expect_named(data, info= info)
+  expect_isin(names(data), expected_names)
 }
 
-for (s in study_names) {
 
-  context(sprintf("%s", basename(s)))
-  test_that("Setup", {
+for (dataset_id in dataset_ids) {
+
+
+  s <- file.path(root.dir, "data", dataset_id)
+
+  context(sprintf("%s", dataset_id))
+  test_that(dataset_id, {
 
   # Exists
     files <- file.path(s, config_files)
@@ -39,25 +45,15 @@ for (s in study_names) {
       expect_that(file.exists(f), is_true(), info = f)
     }
 
-  # Context
-  f <- files[2]
-  expect_silent(context <- read_csv(f, col_types = cols()))
-  test_dataframe(context, c("site_name","trait_name","unit","value","notes"), info=f)
-
   # Metadata
-  f <- files[3]
+  f <- files[2]
   expect_allowed_text(readLines(f), info = f)
   expect_silent(metadata <- read_yaml(f))
-  vals <- c("source","people","dataset","config","traits","substitutions")
-  test_list_named(metadata, vals, info=f)
-
-  vals <- c("is_vertical", "variable_match","custom_R_code")
-  test_list_named(metadata[["config"]], vals, info=f)
+  test_list_named(metadata, definitions$metadata$elements %>% names(), info=f)
 
   # source
   test_list(metadata[["source"]], info=f)
-  vals <- c("primary", "secondary")
-  expect_isin(names(metadata[["source"]]), vals, info=f)
+  expect_isin(names(metadata[["source"]]), definitions$metadata$elements$source$values %>% names(), info=f)
   vals <- c("key", "bibtype", "author", "title", "year")
   expect_isin(vals, names(metadata[["source"]][["primary"]]), info=f)
   if(!is.null(metadata[["source"]][["secondary"]])){
@@ -66,42 +62,34 @@ for (s in study_names) {
 
   # people
   test_list(metadata[["people"]], info=f)
-  vals <- c("name", "institution", "role")
-  expect_list_elements_contain(metadata[["people"]], vals, info=f)
+  expect_list_elements_contain(metadata[["people"]], definitions$metadata$elements$people$elements %>%names(), info=f)
 
   # dataset
-  vals <- c("year_collected_start", "year_collected_end", "description", "collection_type", "sample_age_class", "sampling_strategy", "original_file", "notes")
-  test_list_named(metadata[["dataset"]], vals, info=f)
+  test_list_named(metadata[["dataset"]], definitions$metadata$elements$dataset$values %>% names(), info=f)
 
   # config
-  vals <- c("is_vertical", "variable_match", "custom_R_code")
-  test_list_named(metadata[["config"]], vals, info=f)
+  test_list_named(metadata[["config"]], definitions$metadata$elements$config$elements %>% names(), info=f)
   expect_is(metadata[["config"]][["is_vertical"]], "logical")
 
   # config - Variable_match
   expect_is(metadata[["config"]][["variable_match"]], "list")
-  var_in <- unlist(metadata[["config"]][["variable_match"]])
-  var_out <- names(metadata[["config"]][["variable_match"]])
-  vals <- c("species_name", "site_name", "trait_name", "unit", "value")
-  expect_isin(var_out, vals, info=f)
+  test_list_named_contains(metadata[["config"]][["variable_match"]], definitions$austraits$elements$data$elements %>% names(), info=f)
 
-  # Traits
-  vals <- c("var_in", "unit_in", "trait_name", "value_type", "replicates", "methods")
-  expect_list_elements_contain(metadata[["traits"]], vals, info=f)
+  # Traits 
+  expect_list_elements_contain(metadata[["traits"]], definitions$metadata$elements$traits$elements %>% names(), info=f)
   trait_names <- sapply(metadata[["traits"]], "[[", "trait_name")
-  expect_isin(trait_names, variable_definitions[["trait_name"]], info=f)
+  expect_isin(trait_names, definitions$traits$elements %>% names(), info=f)
   value_types <- sapply(metadata[["traits"]], "[[", "value_type")
-  allowed <- c("unknown", "raw", "mean", "max", "min", "lower_quantile", "upper_quantile", "expert_mean")
-  expect_isin(value_types, allowed, info=f)
+  allowed <- definitions$value_type$values %>% names
+  expect_isin(value_types, allowed, info=paste0(f, " - value types"))
   cfgChar <- list_to_df(metadata[["traits"]])
   expect_is(cfgChar, "data.frame")
 
   # Substitutions
   if(!is.na(metadata[["substitutions"]][1])) {
-    vals <- c("trait_name", "find", "replace")
-    expect_list_elements_contain(metadata[["substitutions"]], vals)
+    expect_list_elements_contain(metadata[["substitutions"]], definitions$metadata$elements$substitutions$values %>% names())
     trait_names <- sapply(metadata[["substitutions"]], "[[", "trait_name")
-    expect_isin(unique(trait_names), variable_definitions[["trait_name"]], info=f)
+    expect_isin(unique(trait_names), definitions$traits$elements %>% names(), info=f)
     expect_isin(unique(trait_names), unique(sapply(metadata[["traits"]], "[[", "trait_name")), info=paste0(f, " - substitutions"))
   }
 
@@ -122,6 +110,8 @@ for (s in study_names) {
   if(metadata[["config"]][["is_vertical"]]) {
 
     # For vertical datasets, expect all values of "trait column" found in traits
+    var_out <- names(metadata[["config"]][["variable_match"]])
+    var_in <- unlist(metadata[["config"]][["variable_match"]])
     i <- match("trait_name", var_out)
     values <- unique(data[[var_in[i]]])
     expect_contains(cfgChar[["var_in"]], values, info=files[3])

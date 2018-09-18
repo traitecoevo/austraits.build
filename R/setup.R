@@ -321,3 +321,35 @@ find_names_distance_to_neighbours <- function(species_name, dist=5) {
   # now check every species against nearby species, get distance in chars
   unlist(lapply(n, function(i) min(adist(species_name[i], species_name[ii[[i]]]))))
 }
+
+
+run_tests <- function() {
+
+  root.dir <- rprojroot::find_root("remake.yml")
+
+  pwd <- setwd(root.dir)
+  on.exit(setwd(pwd))
+
+  if(!exists("dataset_ids") || is.null(dataset_ids)) {
+    stop("The variable `dataset_ids` must be defined in the global namespace for the test suite to work")
+  }
+  
+  testthat::test_dir("tests", reporter = default_reporter())
+}
+
+rebuild_remake_setup <- function( ) {
+
+  library(whisker)
+
+  root.dir <- rprojroot::find_root("austraits.Rproj")
+
+  pwd <- setwd(root.dir)
+  on.exit(setwd(pwd))
+  study_names <- dir("data")
+  vals <- list(study_names=iteratelist(study_names, value="study_name"))
+
+  str <- whisker.render(readLines("scripts/remake.yml.whisker"), vals)
+  writeLines(str, "remake.yml")
+}
+
+

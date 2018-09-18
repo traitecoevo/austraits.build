@@ -807,14 +807,6 @@ traits:
       values:
         minimum: 0.5
         maximum: 500
-    specific_leaf_area_SE:
-      description: Specific leaf area standard error
-      type: numeric
-      units: mm2/mg
-      label: Specific leaf area standard error
-      values:
-        minimum: 10.0
-        maximum: .inf
     stem_cross_section_area:
       description: Cross-sectional area of the stem
       type: numeric
@@ -891,6 +883,7 @@ value_type:
     expert_min: Value is the minimum observed for a species across its entire global range, as estimated by an expert based on their knowledge of the species.
       The value has not been measured directly.
     expert_max: Value is the maximum observed for a species across its entire global range, as estimated by an expert based on their knowledge of the species.
+    unknown: Value type is not currently known.
 
 #-------------------------------------------------------------
 # A key describing the structure of the compiled `Austraits` dataset.
@@ -1012,12 +1005,10 @@ metadata:
     config:
       description: Information on the format of the submitted data file.
       type: character
-      values:
-        - is_vertical: Indicates if the data spreadsheet has a vertical (long) or  horizontal (wide) configuration with `yes` or `no` terminology.
-        - variable_match:
-          - species_name: name of variable where species names are recorded
-          - site_name: name of variable where sites names are recorded
-        - custom_R_code: A field where additional R code can be included. This allows for custom manipulation of the data in the submitted spreadsheet into a different format for easy integration with Austraits. `.na` indicates no custom R code was used.
+      elements:
+        is_vertical: Indicates if the data spreadsheet has a vertical (long) or  horizontal (wide) configuration with `yes` or `no` terminology.
+        variable_match: A list of variables (excluding traits) to be mapped into final spreadshett, inlcuding `species_name` and `site_name`, if present.
+        custom_R_code: A field where additional R code can be included. This allows for custom manipulation of the data in the submitted spreadsheet into a different format for easy integration with Austraits. `.na` indicates no custom R code was used.
     traits:
       description: A translation table mapping traits and units in the original study onto corresponding variables in Austraits. Also specified here are methods used to collect the data.
       type: array
