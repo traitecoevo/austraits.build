@@ -369,7 +369,7 @@ update_taxonomy  <- function(study_data, metadata){
   # Now make any replacements specified in metadata yaml
   ## Read metadata table, quit if empty
   cfgLookup <-  list_to_df(metadata[["taxonomic_updates"]])
-  if(nrow(cfgLookup) == 0) {
+  if(is.na(cfgLookup) || nrow(cfgLookup) == 0) {
     return(out)
   }
 
