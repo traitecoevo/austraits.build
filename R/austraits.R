@@ -89,8 +89,8 @@ compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trai
   repo <- git2r::init(path)
   git2r::add(repo, "*")
   v2 %>% export_to_plain_text(path)
-  # Call git -C export/tmp diff --word-diff-regex="[^[:space:],]+"
-#  system2(sprintf("git -C %s diff --word-diff-regex='[^[:space:],]+')", path))
+
+  message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
 }
 
 #compare_versions("export/austraits-0.rds", "export/austraits.rds", "export/blackman", dataset_id="Leishman_1992")
