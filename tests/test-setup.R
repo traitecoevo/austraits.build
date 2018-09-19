@@ -121,5 +121,9 @@ for (dataset_id in dataset_ids) {
     expect_isin(cfgChar[["var_in"]],values, info=files[3])
   }
 
+  ## For numeric trait data, check it looks reasonable
+
+
+
   })
 }

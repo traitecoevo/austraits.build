@@ -61,9 +61,10 @@ trait_is_categorical <- function(trait_name, definitions) {
 
 export_to_plain_text <- function(austraits, path) {
   dir.create(path, FALSE, TRUE)
-  for(v in c("data","context","species_list", "excluded"))
+  for(v in c("data","context", "details", "excluded_data", "species_list"))
     write_csv(austraits[[v]], sprintf("%s/%s.csv", path, v))
   write_yaml(austraits[["metadata"]],  sprintf("%s/metadata.yml", path))
+  write_yaml(austraits[["definitions"]],  sprintf("%s/definitions.yml", path))
 }
 
 

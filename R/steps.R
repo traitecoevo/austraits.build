@@ -103,8 +103,14 @@ custom_manipulation <- function(txt) {
 
 ## Remove any disallowed traits, as defined in definitions
 flag_unsupported_traits <- function(data, definitions) {
+  
+  # create error column if not already present
+  if(is.null(data[["error"]]))
+    data[["error"]] <- NA_character_
+
+  # exclude traits not in definitions
   i <- data$trait_name %in% names(definitions$traits$elements)
-  data %>% mutate(error = ifelse(!i, "Unsupported trait", error))
+  mutate(data, error = ifelse(!i, "Unsupported trait", error))
 }
 
 
@@ -112,28 +118,49 @@ flag_unsupported_traits <- function(data, definitions) {
 flag_unsupported_values <- function(data, definitions) {
 
   # NA values
-  ii <-  is.na(data[["value"]])
-  data <- mutate(data, error = ifelse(ii, "Missing value", error))
+  i <-   is.na(data[["value"]])
+  data <- mutate(data, error = ifelse(i, "Missing value", error))
+  
+  # only check traits not already flagged as errors
+  traits <- (filter(data, is.na(error)) %>% pull(trait_name) %>% unique())
 
-  # Categorical traits not listed in definitions
-  i <- trait_is_categorical(data[["trait_name"]], definitions)
+  for(trait in traits ) {
+   
+    # General categorical traits not listed in definitions
+    if(trait_is_categorical(trait, definitions)) {
 
-  if(any(i, na.rm=TRUE)) {
-    for(v in na.omit(unique(data[["trait_name"]][i]))) {
-      ii <-  is.na(data[["error"]]) & data[["trait_name"]] == v & !is.null(definitions$traits$elements[[v]]$values) & data[["value"]] %notin% names(definitions$traits$elements[[v]]$values)
-      data <- mutate(data, error = ifelse(ii, "Unsupported trait value", error))
+      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & !is.null(definitions$traits$elements[[trait]]$values) & data[["value"]] %notin% names(definitions$traits$elements[[trait]]$values)
+      data <- mutate(data, error = ifelse(i, "Unsupported trait value", error))
     }
-  }
 
-  # Numerical traits out of range
-  i <- trait_is_numeric(data[["trait_name"]], definitions)
+    # specific tests for flowering, fruiting time
+    if(trait %in% c("flowering_time", "fruiting_time") ) {
 
-  if(any(i, na.rm=TRUE)) {
-    for(v in na.omit(unique(data[["trait_name"]][i]))) {
+      ii <- data[["trait_name"]] == trait
+
+      # Contains non-number
+      i <-  ii & is.na(data[["error"]]) & grepl("\\D", data[["value"]])
+      data <- mutate(data, error = ifelse(i, "Time contains non-number", error))
+
+      # Only 0-1
+      i <-  ii & is.na(data[["error"]]) & grepl("[2-9]+", data[["value"]])
+      data <- mutate(data, error = ifelse(i, "Time can only contain 0 & 1s", error))
+
+      # Must be length 12
+      i <-  ii & is.na(data[["error"]]) & str_length(data[["value"]]) != 12
+      data <- mutate(data, error = ifelse(i, "Time must be length 12", error))
+    }
+
+    # Numerical traits out of range
+    if(trait_is_numeric(trait, definitions) ) {
+
       x <- suppressWarnings(as.numeric(data[["value"]]))
-      ii <-  is.na(data[["error"]]) & data[["trait_name"]] == v & !is.na(x) &
-        (x < definitions$traits$elements[[v]]$values$minimum | x > definitions$traits$elements[[v]]$values$maximum)
-      data <- mutate(data, error = ifelse(ii, "Unsupported trait value", error))
+      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & is.na(x)
+      data <- mutate(data, error = ifelse(i, "Value does not convert to numeric", error))
+ 
+      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait &
+        (x < definitions$traits$elements[[trait]]$values$minimum | x > definitions$traits$elements[[trait]]$values$maximum)
+      data <- mutate(data, error = ifelse(i, "Value out of allowable range", error))
     }
   }
 
