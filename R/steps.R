@@ -249,11 +249,38 @@ parse_data <- function(data, dataset_id, metadata) {
 
   df <- data %>%
         select(one_of(var_in)) %>%
-        rename_columns(var_in, var_out) %>%
-        # Add unique observation id
-        mutate(
-          dataset_id = dataset_id,
-          observation_id = paste(dataset_id, seq_len(nrow(data)), sep = "_"))
+        rename_columns(var_in, var_out) %>% 
+        mutate(dataset_id = dataset_id)
+
+  # Add unique observation ids 
+  # function builds id -- determine number of 00s needed based on number of records
+  make_id <- function(n, dataset_id) 
+              sprintf(paste0("%s_%0", ceiling(log10(n)), "d"), 
+                              dataset_id, seq_len(n))
+
+  if(!dataset_vert) {
+    # For wide datasets rows are assumed to be natural grouping
+    df <- df %>% 
+            mutate(observation_id = make_id(nrow(.), dataset_id))
+  } else {
+    # For long datasets, use specified variable to create observation_id
+
+    # use species_name as unique identifier unless otherwise specified
+    if(is.null(df[["observation_id"]])) {
+      df[["observation_id"]] <- df[["species_name"]]
+    } 
+
+    id <- df[["observation_id"]] %>% unique() %>% sort()
+
+    df <- df %>% 
+              left_join(by = "observation_id",
+                        tibble(observation_id = id, 
+                               observation_id2 = make_id(length(id), dataset_id))
+                        ) %>%
+              select(-observation_id) %>% 
+              rename(observation_id = observation_id2)
+  }
+
   # Step 2. Add trait information, with correct names
 
   cfgChar <-
