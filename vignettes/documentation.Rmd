@@ -196,6 +196,21 @@ austraits$definitions$value_type$values %>%
   writeLines()
 ```
 
+# Species taxonomy
+
+Within Austraits there are records for `r austraits$data$species_name %>% unique() %>% length()` different species. A full list of all known species is available in the table `species_list` (see details above).
+
+We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI). The `APNI_ID` can also be used to access relevant records for the species in the [`Atlas of Living Australia`](https://bie.ala.org.au/) (ALA).
+
+Links to species records in these systems can be accessed via the relevant IDs as in these examples. 
+
+- The Plant List: [http://www.theplantlist.org/tpl1.1/record/kew-450649](http://www.theplantlist.org/tpl1.1/record/kew-450649) where `kew-450649` is the `TPL_ID`
+- Australian Plant Census: [https://biodiversity.org.au/nsl/services/node/apc/2908862](https://biodiversity.org.au/nsl/services/node/apc/2908862) where `2908862` is the `APC_ID`
+- Australian Plant Names Index: [http://id.biodiversity.org.au/node/apni/2899106](http://id.biodiversity.org.au/node/apni/2899106
+) where `2899106` is the `APNI_ID`
+- Atlas of Living Australia: [https://bie.ala.org.au/species/http://id.biodiversity.org.au/node/apni/2899106](https://bie.ala.org.au/species/http://id.biodiversity.org.au/node/apni/2899106) where `2899106` is the `APNI_ID`.
+
+
 # Building austraits
 
 ## Approach
@@ -366,38 +381,49 @@ Value type
 
 ### Substitutions
 
+The `metadata.yml` file for each study also contains a list of substitutionsthat are applied to specific variables in the dataset. These changes are documented in the following format:
+
+
+```
+substitutions:
+- trait_name: life_history
+  find: p
+  replace: perennial
+- trait_name: plant_growth_form
+  find: s
+  replace: shrub
+- ...
+```
+
 
 ### Taxonomic updates
 
-A list of taxonomic name changes that have been made, documented in the following format:
+The `metadata.yml` file for each study also contains a list of taxonomic name changes that are applied to the dataset. These changes are documented in the following format:
 
+```
+taxonomic_updates:
+- find: Carissa lanceolata
+  replace: Carissa spinarum
+  reason: Synonym reported by TaxonStand (2018-09-19)
+- find: Melaleuca pallida
+  replace: Callistemon pallidus
+  reason: Synonym reported by TaxonStand (2018-09-19)
+- ...
+```
 
-Species lists align 
+We've implemented code to semi-automate the checking of names using the R package [Taxonstand](https://cran.r-project.org/web/packages/Taxonstand/index.html) (for more documentation see [here](https://www.rdocumentation.org/packages/Taxonstand/versions/2.1/topics/TPL)). To generate suggested name change for a specific study, run: 
 
-- APC_name/ ID as unknown when hasn't been checked
-NA means has been checked and is indetermined
+```{r, eval=FALSE, echo=TRUE}
+source("R/setup.R")
+check_study_taxa("Blackman_2014")
+```
 
+TaxonStand has been configured in the above function to only permit relatively certain changes (e.g. with a minor change to spelling or known synonym). 
 
-```{r, eval=FALSE}
-# # Add APC and APNI names / handles
-# # Add Native / introduced / naturalised
+If TaxonStand fails to find a suitable alignment, and you have identified one yourself, you can add it to the metadata by running
 
-# # metadata
-# taxon = Accepted name of species in The Plant List 
-# TPL_ID = Record ID of the taxon in The Plant List 
-# family = Family of taxon (extracted from The Plant List) 
-# authority = author of taxon (extracted from The Plant List)
-# status = Taxonomic status of taxon in The Plant List
-# APC_name = Accepted name of species in the Australian Plant Census
-# APC_ID = Record ID of the taxon in the Australian Plant Census -- https://biodiversity.org.au/nsl/services/node/apc/2908862
-# APNI_ID = Record ID of the taxon in the Australian Plant Name Index -- http://id.biodiversity.org.au/node/apni/2899106
-
-# # Usage
-# TPL_ID -> http://www.theplantlist.org/tpl1.1/record/kew-450649
-
-# # Taxonstand docs: https://www.rdocumentation.org/packages/Taxonstand/versions/2.1/topics/TPL
-https://cran.r-project.org/web/packages/Taxonstand/index.html
-# ALA: use the https://bie.ala.org.au/species/http://id.biodiversity.org.au/node/apni/2899106
+```{r, eval=FALSE, echo=TRUE}
+add_taxnomic_change(study, find, replace, reason)
 ```
 
 # Contributing

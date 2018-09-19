@@ -25,7 +25,7 @@ add_substitution <- function(study, trait_name, find, replace) {
 
   metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
 
-  message(sprintf("Adding substitution in %s for trait %s : %s -> %s", study, trait_name, find, replace))
+  message(sprintf("%s %s for trait %s : %s -> %s", crayon::red("Adding substitution in"), crayon::red(study), trait_name, find, replace))
   write_yaml(metadata, filename_metadata)
 }
 
@@ -55,12 +55,12 @@ add_taxnomic_change <- function(study, find, replace, reason) {
   # Check if find record already exists for that trait
   data <-  list_to_df(metadata[[set_name]])  
   if(nrow(data) > 0 && length(which(find %in% data$find)) > 0) {
-    stop(sprintf("Substitution exists for %s, please update manually in %s", find, filename_metadata))
+    stop(crayon::red(sprintf("Substitution exists for %s, please update manually in %s", find, filename_metadata)))
   }
 
   metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
 
-  message(sprintf("Adding taxonomic change in %s: %s -> %s (%s)", study, crayon::blue(find), crayon::green(replace), reason))
+  message(sprintf("%s %s: %s -> %s (%s)", crayon::red("Adding taxonomic change in"), crayon::red(study), crayon::blue(find), crayon::green(replace), reason))
   write_yaml(metadata, filename_metadata)
 }
 
@@ -92,7 +92,7 @@ update_taxnomic_change <- function(study, find, replace, reason) {
 
   metadata[[set_name]][[i]][["replace"]] <- replace
   metadata[[set_name]][[i]][["reason"]] <- reason
-  message(sprintf("Updating taxonomic change in %s: %s -> %s (%s)", study, crayon::blue(find), crayon::green(replace), reason))
+  message(sprintf("%s %s: %s -> %s (%s)", crayon::red("Updating taxonomic change in"),crayon::red(study), crayon::blue(find), crayon::green(replace), reason))
 
   write_yaml(metadata, filename_metadata)
 }
@@ -190,16 +190,16 @@ check_study_taxa <- function(study, update=TRUE, typos=FALSE, diffchar = 2) {
   i <- species %in% accepted$species_name
 
   if(all(i)){
-    message("All species are known")
+    message(crayon::red("All species are known"))
     return();   
   }
   
   # check unknown species in TaxonStand
-  message("Following species are not yet in our list: ", paste0(species[!i], collapse = ", "))
+  message(crayon::red("Following species are not yet in our list: "), paste0(species[!i], collapse = ", "))
   
   if(!update) return();   
 
-  message("Checking for unknown species")
+  message(crayon::red("Checking for unknown species"))
 
   if(typos)
     tpl <- check_taxonstand(species[!i], corr = TRUE, diffchar=diffchar)
@@ -297,7 +297,7 @@ add_to_accepted <- function(accepted, to_add) {
   i <- !(to_add$species_name %in% accepted$species_name)
 
   if(any(i)){ 
-    message("Adding species to list of known species: ", 
+    message(crayon::red("Adding species to list of known species: "), 
           paste0(to_add$species_name[i], collapse = ", "))
 
     accepted <- bind_rows(accepted, to_add[i,]) %>% arrange(species_name)
