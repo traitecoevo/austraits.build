@@ -81,8 +81,7 @@ expect_allowed_text <- function(object, info = NULL, label = NULL) {
 
   expect(
     identical(as.vector(all(!check)), TRUE),
-    sprintf("%s -- disallowed characters detected: %s", info, txt),
-    info = info
+    sprintf("%s -- disallowed characters detected: %s", info, txt)
   )
   }
   invisible(object)
