@@ -324,6 +324,7 @@ find_names_distance_to_neighbours <- function(species_name, dist=5) {
 
 
 run_tests <- function() {
+  library(testthat)
 
   root.dir <- rprojroot::find_root("remake.yml")
 
