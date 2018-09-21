@@ -70,10 +70,11 @@ for (dataset_id in dataset_ids) {
   # config
   test_list_named(metadata[["config"]], definitions$metadata$elements$config$elements %>% names(), info=f)
   expect_is(metadata[["config"]][["is_vertical"]], "logical")
-
-  # config - Variable_match
+  
   expect_is(metadata[["config"]][["variable_match"]], "list")
-  test_list_named_contains(metadata[["config"]][["variable_match"]], definitions$austraits$elements$data$elements %>% names(), info=f)
+  expect_isin(names(metadata[["config"]][["variable_match"]]), 
+        c("species_name", "value","trait_name","site_name", "observation_id"), 
+        info=f)
 
   # Traits 
   expect_list_elements_contain(metadata[["traits"]], definitions$metadata$elements$traits$elements %>% names(), info=f)
@@ -109,6 +110,9 @@ for (dataset_id in dataset_ids) {
   ## Check config files contain all relevant columns
   if(metadata[["config"]][["is_vertical"]]) {
 
+    # Variable match
+    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name",  "trait_name", "value","site_name"), info=paste0(f, " - variable_match"))  
+
     # For vertical datasets, expect all values of "trait column" found in traits
     var_out <- names(metadata[["config"]][["variable_match"]])
     var_in <- unlist(metadata[["config"]][["variable_match"]])
@@ -116,10 +120,18 @@ for (dataset_id in dataset_ids) {
     values <- unique(data[[var_in[i]]])
     expect_contains(cfgChar[["var_in"]], values, info=files[3])
   } else {
+
+    # Variable match
+    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name", "site_name"), info=paste0(f, " - variable_match"))
+
     # For wide datasets, expect variables in cfgChar are header in the data
     values <- names(data)
     expect_isin(cfgChar[["var_in"]],values, info=files[3])
   }
+
+  ## For numeric trait data, check it looks reasonable
+
+
 
   })
 }

@@ -103,8 +103,14 @@ custom_manipulation <- function(txt) {
 
 ## Remove any disallowed traits, as defined in definitions
 flag_unsupported_traits <- function(data, definitions) {
+  
+  # create error column if not already present
+  if(is.null(data[["error"]]))
+    data[["error"]] <- NA_character_
+
+  # exclude traits not in definitions
   i <- data$trait_name %in% names(definitions$traits$elements)
-  data %>% mutate(error = ifelse(!i, "Unsupported trait", error))
+  mutate(data, error = ifelse(!i, "Unsupported trait", error))
 }
 
 
@@ -112,28 +118,49 @@ flag_unsupported_traits <- function(data, definitions) {
 flag_unsupported_values <- function(data, definitions) {
 
   # NA values
-  ii <-  is.na(data[["value"]])
-  data <- mutate(data, error = ifelse(ii, "Missing value", error))
+  i <-   is.na(data[["value"]])
+  data <- mutate(data, error = ifelse(i, "Missing value", error))
+  
+  # only check traits not already flagged as errors
+  traits <- (filter(data, is.na(error)) %>% pull(trait_name) %>% unique())
 
-  # Categorical traits not listed in definitions
-  i <- trait_is_categorical(data[["trait_name"]], definitions)
+  for(trait in traits ) {
+   
+    # General categorical traits not listed in definitions
+    if(trait_is_categorical(trait, definitions)) {
 
-  if(any(i, na.rm=TRUE)) {
-    for(v in na.omit(unique(data[["trait_name"]][i]))) {
-      ii <-  is.na(data[["error"]]) & data[["trait_name"]] == v & !is.null(definitions$traits$elements[[v]]$values) & data[["value"]] %notin% names(definitions$traits$elements[[v]]$values)
-      data <- mutate(data, error = ifelse(ii, "Unsupported trait value", error))
+      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & !is.null(definitions$traits$elements[[trait]]$values) & data[["value"]] %notin% names(definitions$traits$elements[[trait]]$values)
+      data <- mutate(data, error = ifelse(i, "Unsupported trait value", error))
     }
-  }
 
-  # Numerical traits out of range
-  i <- trait_is_numeric(data[["trait_name"]], definitions)
+    # specific tests for flowering, fruiting time
+    if(trait %in% c("flowering_time", "fruiting_time") ) {
 
-  if(any(i, na.rm=TRUE)) {
-    for(v in na.omit(unique(data[["trait_name"]][i]))) {
+      ii <- data[["trait_name"]] == trait
+
+      # Contains non-number
+      i <-  ii & is.na(data[["error"]]) & grepl("\\D", data[["value"]])
+      data <- mutate(data, error = ifelse(i, "Time contains non-number", error))
+
+      # Only 0-1
+      i <-  ii & is.na(data[["error"]]) & grepl("[2-9]+", data[["value"]])
+      data <- mutate(data, error = ifelse(i, "Time can only contain 0 & 1s", error))
+
+      # Must be length 12
+      i <-  ii & is.na(data[["error"]]) & str_length(data[["value"]]) != 12
+      data <- mutate(data, error = ifelse(i, "Time must be length 12", error))
+    }
+
+    # Numerical traits out of range
+    if(trait_is_numeric(trait, definitions) ) {
+
       x <- suppressWarnings(as.numeric(data[["value"]]))
-      ii <-  is.na(data[["error"]]) & data[["trait_name"]] == v & !is.na(x) &
-        (x < definitions$traits$elements[[v]]$values$minimum | x > definitions$traits$elements[[v]]$values$maximum)
-      data <- mutate(data, error = ifelse(ii, "Unsupported trait value", error))
+      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & is.na(x)
+      data <- mutate(data, error = ifelse(i, "Value does not convert to numeric", error))
+ 
+      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait &
+        (x < definitions$traits$elements[[trait]]$values$minimum | x > definitions$traits$elements[[trait]]$values$maximum)
+      data <- mutate(data, error = ifelse(i, "Value out of allowable range", error))
     }
   }
 
@@ -222,11 +249,38 @@ parse_data <- function(data, dataset_id, metadata) {
 
   df <- data %>%
         select(one_of(var_in)) %>%
-        rename_columns(var_in, var_out) %>%
-        # Add unique observation id
-        mutate(
-          dataset_id = dataset_id,
-          observation_id = paste(dataset_id, seq_len(nrow(data)), sep = "_"))
+        rename_columns(var_in, var_out) %>% 
+        mutate(dataset_id = dataset_id)
+
+  # Add unique observation ids 
+  # function builds id -- determine number of 00s needed based on number of records
+  make_id <- function(n, dataset_id) 
+              sprintf(paste0("%s_%0", ceiling(log10(n)), "d"), 
+                              dataset_id, seq_len(n))
+
+  if(!dataset_vert) {
+    # For wide datasets rows are assumed to be natural grouping
+    df <- df %>% 
+            mutate(observation_id = make_id(nrow(.), dataset_id))
+  } else {
+    # For long datasets, use specified variable to create observation_id
+
+    # use species_name as unique identifier unless otherwise specified
+    if(is.null(df[["observation_id"]])) {
+      df[["observation_id"]] <- df[["species_name"]]
+    } 
+
+    id <- df[["observation_id"]] %>% unique() %>% sort()
+
+    df <- df %>% 
+              left_join(by = "observation_id",
+                        tibble(observation_id = id, 
+                               observation_id2 = make_id(length(id), dataset_id))
+                        ) %>%
+              select(-observation_id) %>% 
+              rename(observation_id = observation_id2)
+  }
+
   # Step 2. Add trait information, with correct names
 
   cfgChar <-
@@ -342,7 +396,7 @@ update_taxonomy  <- function(study_data, metadata){
   # Now make any replacements specified in metadata yaml
   ## Read metadata table, quit if empty
   cfgLookup <-  list_to_df(metadata[["taxonomic_updates"]])
-  if(nrow(cfgLookup) == 0) {
+  if(is.na(cfgLookup) || nrow(cfgLookup) == 0) {
     return(out)
   }
 

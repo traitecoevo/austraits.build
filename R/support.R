@@ -79,6 +79,9 @@ df_to_list <- function(df) {
 # requires that every list have same named elements
 list_to_df <- function(my_list, as_character= TRUE) {
   
+  if(is.null(my_list) || is.na(my_list))
+    return(NA)
+
   if(as_character)
     my_list <- lapply(my_list, lapply, as.character)
 

@@ -61,9 +61,10 @@ trait_is_categorical <- function(trait_name, definitions) {
 
 export_to_plain_text <- function(austraits, path) {
   dir.create(path, FALSE, TRUE)
-  for(v in c("data","context","species_list", "excluded"))
+  for(v in c("data","context", "details", "excluded_data", "species_list"))
     write_csv(austraits[[v]], sprintf("%s/%s.csv", path, v))
   write_yaml(austraits[["metadata"]],  sprintf("%s/metadata.yml", path))
+  write_yaml(austraits[["definitions"]],  sprintf("%s/definitions.yml", path))
 }
 
 
@@ -88,8 +89,8 @@ compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trai
   repo <- git2r::init(path)
   git2r::add(repo, "*")
   v2 %>% export_to_plain_text(path)
-  # Call git -C export/tmp diff --word-diff-regex="[^[:space:],]+"
-#  system2(sprintf("git -C %s diff --word-diff-regex='[^[:space:],]+')", path))
+
+  message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
 }
 
 #compare_versions("export/austraits-0.rds", "export/austraits.rds", "export/blackman", dataset_id="Leishman_1992")
