@@ -265,9 +265,12 @@ parse_data <- function(data, dataset_id, metadata) {
   } else {
     # For long datasets, use specified variable to create observation_id
 
-    # use species_name as unique identifier unless otherwise specified
+    # use species_name-trait_name as unique identifier unless otherwise specified
     if(is.null(df[["observation_id"]])) {
       df[["observation_id"]] <- df[["species_name"]]
+      
+      if(!is.null(df[["site_name"]]))
+        df[["observation_id"]] <- paste0(df[["species_name"]],"-", df[["site_name"]])
     } 
 
     id <- df[["observation_id"]] %>% unique() %>% sort()
