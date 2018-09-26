@@ -10,22 +10,122 @@ extract_dataset <- function(austraits, dataset_id) {
   # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
   ret[["species_list"]] <- austraits[["species_list"]] %>% filter(species_name %in% ret[["data"]][["species_name"]])
   ret[["metadata"]] <- austraits[["metadata"]][dataset_id]
+  ret[["definitions"]] <- austraits[["definitions"]]
+
   ret
 }
 
-spread_traits_data <- function(data) {
+spread_trait_data <- function(data) {
 
   vars <- c("value", "unit", "value_type", "replicates")
   ret <- list()
   for(v in vars) {
-    ret[[v]] <-
-      data %>% rename(to_spread = !!v) %>%
+    ret[[v]] <- data %>% 
+        rename(to_spread = !!v) %>%
         select(dataset_id, species_name, site_name, observation_id, trait_name, to_spread, original_name) %>%
         spread(trait_name, to_spread)
   }
+
   ret
 }
 
+gather_trait_data <- function(data) {
+
+  id_variables <- c("dataset_id", "species_name", "site_name", "observation_id", "trait_name", "value", "unit", "value_type", "replicates", "original_name")
+  
+  traits <- names(data$value)[!(names(data$value) %in% id_variables)]
+  
+  vars <- names(data)
+
+  gather_f <- function(df, v) {
+    df[[v]] %>% gather(one_of(traits), key = "trait_name", value = !!v)
+  }
+
+  ret <- gather_f(data, vars[1])
+
+  for(v in vars[-c(1)])
+    ret <- ret %>% 
+              left_join(
+                        gather_f(data, v), 
+                        by = setdiff(id_variables, vars)
+                        )
+
+  ret %>% 
+    mutate( value = clean_NA(value)) %>%
+    filter(!is.na(value)) %>%
+    arrange(observation_id, trait_name) %>%
+    select(id_variables)
+}
+
+# ensure NA appears as a real NA and not character
+clean_NA <- function(x) ifelse(x == "NA", NA_character_, x)
+  
+bind_trait_values <- function(data) {
+
+  bind_x <- function(x) paste0(x, collapse = "--")
+
+  bind_values_worker <- function(.data) {
+    # If more than one value per group need to combine
+    if(nrow(.data) > 1) {
+      return(
+            .data %>% 
+              mutate(
+                 value = bind_x(value),
+                 value_type = bind_x(value_type),
+                 replicates = bind_x(replicates)
+                 ) %>%
+              filter(row_number()==1) 
+            )
+    }
+    .data
+  }
+
+  data  %>% 
+    group_by(observation_id, trait_name) %>% 
+    bind_values_worker() %>% 
+    ungroup() %>% 
+    arrange(observation_id, trait_name, value_type)
+}
+
+separate_trait_values <- function(data, definitions) {
+
+  separate_x <- function(x) strsplit(x, "--")[[1]]
+
+  separate_values_worker <- function(df) {
+
+    df[rep(1, df$n_vals[1]),] %>%
+      mutate(
+           value = separate_x(value[1]),
+           value_type = separate_x(value_type[1]),
+           replicates = separate_x(replicates[1])
+           )
+  }
+
+
+  # record the number of values in each row of data
+  data$n_vals <- 1 + str_count(data$value_type, "--")
+
+  # separate out those rows requiring no modification
+  out_1 <- data %>% 
+    filter(n_vals == 1)
+
+  # separate out those rows requiring modification & modify
+  out_2 <- data %>% 
+    filter(n_vals > 1) %>% 
+    split(paste(.$observation_id, .$trait_name)) %>%    
+    lapply(separate_values_worker) %>% 
+    bind_rows()
+
+  # join it all back together, clean up and sort as in original
+  bind_rows(out_1, out_2) %>% 
+    select(-n_vals) %>% 
+    mutate(replicates = clean_NA(replicates),
+           value_type = factor(
+                          clean_NA(value_type), 
+                          levels = names(definitions$value_type$values))
+           ) %>% 
+    arrange(observation_id, trait_name, value_type)
+}
 
 extract_trait <- function(austraits, trait_name) {
 

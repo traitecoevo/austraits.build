@@ -19,7 +19,11 @@ load_study <- function(filename_data_raw,
     convert_units(definitions, unit_conversion_functions) %>%
     flag_unsupported_values(definitions) %>%
     update_taxonomy(metadata) %>%
-    mutate(value=tolower(value))
+    mutate(
+      value = tolower(value),
+      value_type = factor(value_type, levels = names(definitions$value_type$values))
+      ) %>% 
+    arrange(observation_id, trait_name, value_type) 
 
   # read contextual (site) data
   if(length(unlist(metadata$sites)) > 1){
@@ -76,12 +80,14 @@ load_study <- function(filename_data_raw,
   
 
   list(dataset_id = dataset_id,
+       version = definitions$austraits$elements$version$value,
        data       = data %>% filter(is.na(error)) %>% select(-error),
        context    = context %>% select(-error),
        details    = details,
        excluded_data = data %>% filter(!is.na(error)) %>% select(error, everything()),
        species_list = species_list,
-       metadata   = metadata
+       metadata   = metadata,
+       definitions = definitions
        )
 }
 
