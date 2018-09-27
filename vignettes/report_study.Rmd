@@ -408,7 +408,7 @@ for(trait in traits_numeric) {
   c("", "",
     sprintf("### %s", trait),
     "",
-    sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the Austraits database.\n\nThe original variable was supplied with units `%s`; these were converted to our standard `%s`.\n\nThe contributed data has the following properties:", transforms$var_in, trait, transforms$unit_in, elements$units),
+    sprintf("We aligned the contributed variable called `%s` in the data you supplied with the trait `%s` in the Austraits database, with value_types `%s`.\n\nThe original variable was supplied with units `%s`; these were converted to our standard `%s`.\n\nThe data has the following properties:", transforms$var_in %>% paste0(collapse=", "), trait, transforms$value_type %>% paste0(collapse=", "), transforms$unit_in[1], elements$units),
     "",
     sprintf("- **standardised name**: %s", trait ),
     sprintf("- **standardised description**: %s", elements$description ),
@@ -421,9 +421,9 @@ for(trait in traits_numeric) {
             data_trait_study %>% dplyr::pull(value) %>% max(), units),
     "", "",
     "Data for this trait in this study were collected using the following methods:", "",
-    sprintf("- **value_type**: %s", transforms$value_type),
-    sprintf("- **replicates**: %s", transforms$replicates),
-    sprintf("- **methods**: %s", transforms$methods),
+    sprintf("- **value_type**: %s", transforms$value_type %>% paste0(collapse=", ")),
+    sprintf("- **replicates**: %s", transforms$replicates %>% paste0(collapse=", ")),
+    sprintf("- **methods**: %s", transforms$methods[1]),
     "","") %>%
   writeLines()
 

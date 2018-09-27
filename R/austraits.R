@@ -216,8 +216,20 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
   # Subset data to this trait
   austraits_trait <- extract_trait(austraits, plant_trait_name)
 
+  my_shapes = c("_min" = 60, "_mean" = 16, "_max" =62, "unknown" = 18)
+  
+  as_shape <- function(value_type) {
+    p <- rep("unknown", length(value_type))
+    
+    p[grepl("mean", value_type)] <- "_mean" #16
+    p[grepl("min", value_type)] <- "_min" #60
+    p[grepl("max", value_type)] <- "_max" #62
+    factor(p, levels=names(my_shapes))
+  }
+  
   data <- austraits_trait$data %>%
-    mutate(log_value = log10(value)) %>%
+    mutate(log_value = log10(value),
+           shapes = as_shape(value_type)) %>%
     left_join(., select(austraits_trait$species, 'species_name', 'family'),
               by = "species_name")
 
@@ -266,9 +278,12 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
         )
   # Second plot -- dots by groups, using ggbeeswarm package
   p2 <-
-      ggplot(data, aes(x = value, y = Group, colour = colour)) +
+      ggplot(data, aes(x = value, y = Group, colour = colour, shape = shapes)) +
       ggbeeswarm::geom_quasirandom(groupOnX=FALSE) +
       ylab(paste("By ", y_axis_category)) +
+      # inclusion of custom shapes: for min, mean, unknown
+      # NB: this single line of code makes function about 4-5 slower for some reason
+      scale_shape_manual(values = my_shapes) +
       theme_bw() +
       theme(legend.position = "bottom",
             panel.grid.major.x = element_blank(),
