@@ -29,7 +29,7 @@ spread_trait_data <- function(data) {
   ret
 }
 
-gather_trait_data <- function(data) {
+gather_trait_data <- function(data, definitions) {
 
   id_variables <- c("dataset_id", "species_name", "site_name", "observation_id", "trait_name", "value", "unit", "value_type", "replicates", "original_name")
   
@@ -50,8 +50,8 @@ gather_trait_data <- function(data) {
                         by = setdiff(id_variables, vars)
                         )
 
-  ret %>% 
-    mutate( value = clean_NA(value)) %>%
+  ret <- ret %>% 
+    mutate(value = clean_NA(value)) %>%
     filter(!is.na(value)) %>%
     arrange(observation_id, trait_name) %>%
     select(id_variables)

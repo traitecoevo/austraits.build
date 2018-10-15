@@ -551,49 +551,343 @@ Guidelines for writing report code
 **Maps:** We use the package [leaflet](https://cran.r-project.org/web/packages/leaflet/index.html) to generate interactive maps via the JavaScript 'Leaflet' framework and based on the [Open street map](https://www.openstreetmap.org/).
 
 
+# Usage examples
+
+```{r setup_usage, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
+# knitr defaults
+knitr::opts_chunk$set(echo=TRUE, cache=FALSE, results='show', message=TRUE, warning=TRUE)
+```
 
 
-# Appendices
+The following section provides examples for users of `R` on manipulating the AusTraits dataset. Users of other platforms can follow similar steps using commands specific to their platform. 
 
-## Acknowledgements
+We like using functions from packages like [dplyr](https://dplyr.tidyverse.org/), [readr](https://readr.tidyverse.org/), [tidyr](https://tidyr.tidyverse.org/) and [`magrittr`](https://magrittr.tidyverse.org/) in the [tidyverse](https://www.tidyverse.org/) to manipulate data. These packages can be loaded individually, or together by running:
 
-## Usage examples
+```{r, eval=FALSE}
+# install.packages("tidyverse")
+library(tidyverse)
+```
 
-### Merging with location data
+The examples below assume you have the tidyverse installed and loaded. This is not essential, but without these packages the examples below won't work.
+
+For anyone needing to learn about the tidyverse, you will in particualr want to read up on [dplyr](https://dplyr.tidyverse.org/) and [the pipe operator `%>%` from `magrittr`](https://magrittr.tidyverse.org/), which pipes output from one command into the next command.
+
+In addtion, we have included some helper functions for common manipulations of the data. These are available in the file `austraits.R` (TODO: where will users access this). To make these unctions availble, source the file prior to use:
+
+```{r}
+source("R/austraits.R")
+```
+
+
+## Loading data
+
+There are several ways to access the Austrats data, including 
+
+- downloading plain text files and loading these into R manually
+- using the `austraits` R package to fetch and laod particular versions of the data (not yet available)
+- rebuilding the Austraits data from scratch (see instructions above)
+- downlaoding the compressed `austraits.rds` binary and loading this directly into R.
+
+These istructions are written assuming you have followed the latter approach. 
+
+Let's assume you have a variable `path` with the directory of your data. You can then load the Austraits data package using the `readRDS` package  
+
+```{r, eval=FALSE}
+austraits <- file.path(path, "austraits.rds") %>% readRDS()
+```
+
+You should now have a object called `austraits` with the following elements: 
+```{r}
+names(austraits)
+```
+
+These names correpsond to the sections described in full above under ["elements of austraits"](#elements_of_austraits). 
+
+The trait data are in the element called data
+
+```{r}
+austraits$data
+```
+(Note that data appears as a `tibble` rather than a `data.frame`. Tibbles are an enhanced type dataframe, with some desriable features, such as not printing the whole dataframe to screen. (If you prefer, you can easily use a traditional R `data.frame` by converting it using `df <- data.frame(austraits$data)`. But from here on we'll assume you're stikcing with a tibble.)
+
+## Taking subsets / extracting a particular trait or study
+
+Using the `dplyr`, it's easy to subset by rows using `filter`. this approach can be used to filter the data to particualr trait or study:
+
+```{r}
+austraits$data %>% 
+  filter(trait_name == "leaf_area")
+```
+
+```{r}
+austraits$data %>% 
+  filter(dataset_id == "Blackman_2014")
+```
+
+We can select particualr columns from the whole or filtered dataset using `select`:
+
+```{r}
+austraits$data %>% 
+  select(species_name, observation_id, trait_name, value)
+```
+
+The file `austraits.R` also include prebuilt functions for extracting a particular trait or study. The difference with the examples above, is that these functions also subset the other tables and elements of the data, not just the main data table. So we need to provide the entire `austraits` object and a `dataset_id`:
+
+```{r B14}
+data_B14 <- extract_dataset(austraits, "Blackman_2014")
+```
+
+As wiith the the main `austraits` object, this new dataset has multiple elements:
+```{r}
+names(data_B14)
+```
+but the length of the datasets is smaller:
+```{r countrows}
+count_rows <- function(obj) {c(nrow(obj$data), nrow(obj$context), nrow(obj$species_list))}
+# main data
+austraits %>% count_rows()
+# subset
+data_B14 %>% count_rows()
+```
+
+A similar function enables subsetting to a particualr trait, including the various other tables:
+
+```{r}
+data_LS <- extract_trait(austraits, "leaf_width")
+```
+
+As wiith the the main `austraits` object, this new dataset has multiple elements:
+```{r}
+names(data_LS)
+```
+but the length of the datasets is smaller:
+```{r}
+# main data
+austraits %>% count_rows()
+# subset
+data_LS %>% count_rows()
+```
+
+## Merging with taxonomic data
+
+Limited taxonomic infomration is provided in the main table `data`, only `original_name` (the original name provided by the authors) and `species_name` (the aligned taxonomix name; see [species taxonomy](#species_taxonomy) for details). But further infomration is available in the table `species_list`:
+
+```{r}
+austraits$species_list
+```
+
+You can merge this information in with the main dataset using the `species_name` as a an indentifier linking both tables:
+
+```{r taxonomic, results='show'}
+data2 <- austraits$data %>% 
+          left_join(by="species_name", austraits$species_list)
+
+names(data2)
+```
+
+Similarly we could merge in only family information by using `select` to reduce the second table before merging:
+
+```{r taxonomic2, results='show'}
+data2 <- austraits$data %>% 
+          left_join(by="species_name", select(austraits$species_list, species_name, family))
+
+names(data2)
+```
+
+## Merging with location data
+
+As with taxonomic infomration, limited infomration about location is provided in the main table `data`.  But further infomration is available in the table `context`:
+
+```{r}
+austraits$context
+```
+
+As with the main table of trait data, this information is in long format. Depending on the study, a variety of contextual information may have been provided, including
+
+```{r}
+austraits$context$trait_name %>% table() %>% sort(decreasing=TRUE) %>% .[1:10]
+```
+
+In this example we'll just focus on location details. Before merging in with the main data table let's convert this data from long to wide format:
 
 ```{r}
 sites <- austraits$context %>% 
   filter(trait_name %in%  c("longitude (deg)","latitude (deg)")) %>% 
   spread(trait_name, value)
-
-left_join(austraits$data, sites, by=c("dataset_id", "site_name")) 
+sites
 ```
 
-### Merging with taxonomic data
+We can now merge in with the main data table using combinations of `dataset_id` and `site_name` as indetifiers from both tables:
 
 ```{r}
-left_join(austraits$data, 
-          select(austraits$species_list, species_name, family),  
-          by="species_name") 
+data_sites <- left_join(by=c("dataset_id", "site_name"), austraits$data, sites)
+
+names(data_sites)
 ```
 
+## Converting from long to wide format
 
-### Filter to trait or study
+As discussed above, the main data table in `austraits` is distributed in long format. A long format has each measurment on a different row, and just a single column for all the value. By contrast, a dataset in wide format has data for each different trait in it's own column. The reason we use long format is mainly for efficiency. We have data from `r austraits$data$trait_name %>% unique() %>% length()` different traits, so in wide format we'd need at least this many columns. With many species, the file size gets very large very quickly. Other benefits of long format are that we can include columns for `units`, `value_type`, and `replicates`, which we could not in wide format (without created 3 more columns for each traits). 
 
-Filter to 
+For many analyses, however, you'll want to use wide format. We hve therevor provided the ability to convert between the two formats. In wie fromat, each trait appears in it's own column and measurments from the same obseravtion (ideally indivdual, but in floras may be a species) appear on the same row.  
 
-list of categorical traits:
+As the entire austraits dataset is quite large, we recomend frst subsetting the data before spreading from long to wide fromat. You may also need to reduce the number of measurements in any one obseravtion (see next section). For this first example we'll sue the dataset `Blackman_2014`. 
+
+First extract the trait data from the `Blackman_2014` study:
+
+```{r}
+data <- austraits$data %>% 
+  filter(dataset_id == "Blackman_2014")
+data
+```
+Now use the inbuilt function `spread_trait_data` to convert from long to wide:
+
+```{r}
+data_spread <- spread_trait_data(data)
+```
+This function spreads not only the data in the column `value`, but also other columns. The retruned object is a list with a number of wide tables:
+
+```{r}
+names(data_spread)
+```
+Looking at each of these we see a table in wide format (i.e. with each trait being a column), as well as indietifying columns at the start:
+```{r}
+data_spread$value
+```
+The other tables have an indentical fromat
+
+```{r}
+data_spread$unit
+```
+...etc
+
+The new dataset can then be used to plot traits against each other, e.g.
+```{r, warning=FALSE}
+data_spread$value %>%
+  mutate(specific_leaf_area = as.numeric(specific_leaf_area), 
+         photosynthetic_rate_per_area = as.numeric(photosynthetic_rate_per_area)) %>%
+  ggplot(aes(x=specific_leaf_area, y = photosynthetic_rate_per_area, colour =site_name)) +
+  geom_point()
+```
+
+There is also a function to convert back from wide to long format:
+
+```{r}
+data2 <- gather_trait_data(data_spread, austraits$definitions)
+```
+
+This manipulation should recover the orginal dataset.
+
+Original:
+```{r}
+data2
+```
+After conversion
+```{r}
+data
+```
+Just to be sure we can run a check:
+```{r}
+all.equal(data, data2)
+```
+
+Note that the function `gather_trait_data` also needs the element `austraits$defintions` to run successuflly. 
+
+### Datasets with mutiple measurments per observation
+
+The above example works easily because there is only a single measurement of each trait per `observation_id`. But this is not always the case. Many datasets include multiple records per `observation_id`, for example studies reporting multiple `value_types` per `observation_id`. An example is the `AusGrass_2014` datasets:
+
+```{r}
+data <- austraits$data %>% 
+  filter(dataset_id == "AusGrass_2014")
+data
+```
+Note the dataset includes multiple value_types: `expert_min` and `expert_max`. If you try running `spread_trait_data` on this data it will fail: 
+
+```{r, eval=FALSE}
+data_spread <- spread_trait_data(data)
+```
+```
+## Error: Duplicate identifiers for rows (2929, 2930), (2936, 2937), (3015, 3016), (2975, 2976), ....
+```
+
+So before converting from long to wide we use an additonal function called `bind_trait_values` to collapse all the different measurements for a given `trait_name` and `observation_id` into a single cell:
+
+```{r}
+data_bind <- bind_trait_values(data)
+```
+This function binds data from multiple rows together, seraprting with the string ``--`. This coccurs for columns `value`, `value_type`, and `replicates`. Looking at the table we can see the bound values:
+
+```{r}
+data_bind %>% 
+  filter(grepl("--", value_type)) %>% 
+  select(-dataset_id, -site_name, -original_name)
+```
+
+Using this new dataset we can now go from long to wide:
+
+```{r}
+data_spread <- spread_trait_data(data_bind)
+```
+
+The bound data values are carried over to the new dataset:
+```{r}
+data_spread$value
+```
+
+As previously, we can also convert back again:
+
+```{r}
+data_bind2 <- gather_trait_data(data_spread, austraits$definitions)
+```
+
+Thsi gets us back to the intermediate dataset
+```{r}
+all.equal(data_bind, data_bind2)
+```
+
+And then finally we can separate out the values that have been bound together:
+
+```{r}
+data2 <- separate_trait_values(data_bind2, austraits$definitions)
+```
+
+We should now have a dataset identical to our original. Just to be sure we can run a check:
+```{r}
+all.equal(data, data2)
+```
+
+Using pipes we can put all these steps together to short the full range of steps:
+ 
+```{r}
+data %>% 
+ bind_trait_values() %>% 
+ spread_trait_data() %>% 
+ gather_trait_data() %>% 
+ separate_trait_values(austraits$definitions) -> data2
+
+all.equal(data, data2)
+```
+
+## Categorical vs numerical traits 
+
+List of categorical traits:
 
 ```{r, echo=TRUE, results="show"}
-austraits$data$trait_name %>% unique() %>% .[trait_is_categorical(., austraits$definitions)] %>% sort()
+traits_all <- austraits$data$trait_name %>% unique()  %>% sort()
+
+traits_all[trait_is_categorical(traits_all, austraits$definitions)]
 ```
 
 list of numerical traits:
 
 ```{r, echo=TRUE, results="show"}
-austraits$data$trait_name %>% unique() %>% .[trait_is_numeric(., austraits$definitions)] %>% sort()
+traits_all[trait_is_numeric(traits_all, austraits$definitions)]
 ```
 
+# Appendices
+
+## Acknowledgements
 
 
 ## File types
