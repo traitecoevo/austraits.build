@@ -10,7 +10,7 @@ output:
     toc: yes
     toc_depth: 4
     toc_float:
-      collapsed: false
+      collapsed: true
       smooth_scroll: true
 editor_options:
   chunk_output_type: console
@@ -82,10 +82,15 @@ Prior to the development of AusTraits, data on Australian plant traits existed a
 
 ## License
 
+XXXX
+
 ## Access
 
+XXXXX
 
 ## Citation
+
+XXXXX
 
 Force 11 data citation: https://www.force11.org/datacitationprinciples
 
@@ -94,6 +99,26 @@ Wilkinson et al 2015 The FAIR Guiding Principles for scientific data management 
 ## Transparency 
 
 To facilitate the sharing of trait data under the FAIR principles (Free, , AusTraits uses a fully-reproducible workflow which exposes the decisions made in the processing of data into a harmonised and curated dataset (Figure 1). For instance, AusTraits makes no alterations to the primary datasets provided by co-authors on this Data Descriptor, instead making use of R packages such a make and remake to configure and harmonise (standardise) data into a single curated resource. Several additional quality-assurance steps are undertaken, including detailed error-checking by dataset custodians facilitated by the generation of bespoke reports of their data relative to all observation in AusTraits and the implementation of a series of tests in the remake pipeline (e.g. constraining trait values to plausible minima and maxima) (see Methods for full details). Whilst all care is taken to curate datasets in AusTraits this is not intended to absolve individual researchers from ensuring the appropriate use of the data provided. 
+
+
+## Contributing
+
+Austraits is a community resource and we are very keen for people to contribute. Here are some of the ways you can contribute: 
+
+**Reporting Errors**: If you notice a possible error in Austraits, please [post an issue here](https://github.com/traitecoevo/austraits/issues), describing the error and possible fix in detail. If you can, please provide code illustrating the problem.
+
+**Refining documentation:** 
+
+**Value adding / expanding existing data**: If you would like to value-add to Austraits in some other way, please get in contact by [posting an issue](https://github.com/traitecoevo/austraits/issues) with an idea or offer of time.
+
+**Contributing new data**: We gladly accept new data contributions to Austraits. In the future we hope to publish a data paper, including contributors as co-authors on the article. If you would like to contribute data, the requirements are:
+
+- Data were collected for Australian plant species growing in Australia
+- You collected data on one of the traits list in the [trait definitions table](config/definitions_traits.csv).
+- You are willing to release the data under an open license for reuse by the scientific community.
+- That you make it is as easy as possible for us to incorporate your data by carefully following the instructions below.
+
+For full instructions on preparing data for inclusion in Austraits see the sections below on [formatting of raw data files for Austraits](#format).
 
 # Data structures
 
@@ -154,9 +179,9 @@ for(v in names(austraits)) {
 }
 ```
 
-# Trait definitions
+## Trait definitions
 
-Below is the standard defintion for each trait in AusTraits (drawn from the the file `config/definitions.yml`). Traits are labelled as either `numeric` or `categorical`. Numeric traits also include 
+Below is the standard definition for each trait in AusTraits (drawn from the the file `config/definitions.yml`). Traits are labelled as either `numeric` or `categorical`. Numeric traits also include 
 
 ```{r traits}
 for(trait in names(austraits$definitions$traits$elements)) {
@@ -185,7 +210,7 @@ for(trait in names(austraits$definitions$traits$elements)) {
 }
 ```
 
-# Observation IDs
+## Observation IDs
 
 Each trait measurement has an associated `observation_id`. Observation IDS bind together related measurements within a dataset. For example, if multiple traits were collected on the same individual, the `observation_id` allows us to gather these together. For floras, which report a species averages, the `observation_id` is determined via the species name. Importantly, the `observation_id` allows translation between long  (e.g. with variables `trait_name` and `value`) and wide (e.g. with traits as columns) formats.
 
@@ -195,7 +220,7 @@ For datasets that arrive in wide format we assume each row has a unique `observa
 
 For datasets that arrive in long format, the `observation_id` is assigned based on a specified grouping variable. This variable can be specified in the `metadata.yml` file under the section `variable_match`. If missing, `observation_id` is assigned based on `species_name`. 
 
-# Value types
+## Value types
 
 Each trait measurement has an associated `value_type`, which gives ``r austraits$definitions$value_type$description``. Possible values are:
 
@@ -206,7 +231,7 @@ austraits$definitions$value_type$values %>%
   writeLines()
 ```
 
-# Species taxonomy
+## Species taxonomy
 
 Within Austraits there are records for `r austraits$data$species_name %>% unique() %>% length()` different species. A full list of all known species is available in the table `species_list` (see details above).
 
@@ -223,11 +248,17 @@ Links to species records in these systems can be accessed via the relevant IDs a
 
 # Building austraits
 
+XXXX
+
 ## Approach
+
+XXXXX
 
 ## File structure
 
+XXXXX
 
+(needs updating)
 
 ```
 rdflib-review
@@ -251,15 +282,88 @@ data <- read_csv(filename_data_raw, col_types = cols()) %>%
     mutate(value=tolower(value))
 ```
 
-# Format of data for each study
+# Format of raw data files for Austraits {#format}
+
+This section describes how to prepare / modify the raw data from individual studies for inclusion in the Austraits compilation.
+
+Data from each study is organised into a separate folder, with two files:
+  - `data.csv`: a table containing the actual trait data a table of data in comma-separated values format, ideally with traits as columns and each observation on a single row.
+  - `metadata.yml`: contains further information about the study, mapping of trait names and units onto standard types, and any substitutions applied to the data in processing (see below). 
+
+The contents of the folder data then have structure like follows:
+
+
+```
+data
+  ├── Angevin_2010
+      ├── data.csv
+      └── metadata.yml
+  ├── Barlow_1981
+      ├── data.csv
+      └── metadata.yml
+  ├── Bean_1997
+      ├── data.csv
+      └── metadata.yml
+  ├── Blackman_2014
+      ├── data.csv
+      └── metadata.yml
+  ├── ....
+```
+
+where `Angevin_2010`, `Barlow_1981`, `Bean_1997`, `Blackman_2014` are all a unique `dataset_id` in the final dataset.
+
+Below are the Instructions on the formatting files for each study and contributing into Austraits. It is important that all steps are followed so that our automated workflow proceeds without problems.
+
+1. Create a new folder with name corresponding to the paper or study of the dataset, e.g. `Gallagher_2014` (do not include *et al* or similar).
+2. Prepare the files `data.csv` an `metadata.yml` and place within the folder, as per instructions below. 
+3. Add the new study into build framework and rebuild Austraits
+4. Run tests on the contributed data and generate a report on the data, to make sure everything is formatted optimally. Return to step 3 if changes are made
+5. Push to GitHub. 
+
+It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits/tree/master/data) and use it as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits/tree/master/config), in particular the `definitions` files for the list of traits we cover.
+
+
 
 ## Data.csv
+
+About data.csv... Can be long or wide. Required columns .....
+
+
+May require custom R code to get into right format
+
+Keep data and file in rawest form possible (i.e. as few changes as possible)   but must be a single csv file. Other files used to create this (e.g. Excel ...) should be supplied so they can be archived. (XXXX Where to put these)
 
 ## Metadata.yml  
 
 Format for Contributed Studies
 
-The metadata is compiled in a `.yml` file, a structured data file where information is presented in a hierarchical format (see Appendix for details).  There are 7 values at the top hierarchical level: `source`, `people`, `dataset`, `config`, `traits`, `substitutions`, and `taxonomic_updates` and these are described below.
+The metadata is compiled in a `.yml` file, a structured data file where information is presented in a hierarchical format (see [Appendix for details](#yaml)).  There are 7 values at the top hierarchical level: `source`, `people`, `dataset`, `config`, `traits`, `substitutions`, `taxonomic_updates` and `questions`. These are described below.
+
+As a start, checkout some examples from [existing studies in Austraits](https://github.com/traitecoevo/austraits/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits/blob/master/data/Angevin_2010/metadata.yml) or [Wright_2004](https://github.com/traitecoevo/austraits/blob/master/data/Wright_2004/metadata.yml).
+
+The elements `traits` and `substitutions` are designed to covert into tables. You can see how they look as tables with code like the following:
+
+```{r, echo=TRUE, results="show"}
+source("R/support.R")
+
+metadata <- read_yaml("data/Blackman_2014/metadata.yml")
+
+my_df <- list_to_df(metadata[["traits"]])
+my_df
+```
+
+Similarly we can convert a table to yaml as follows:
+
+```{r, echo=TRUE, results="show"}
+my_list <- df_to_list(my_df)
+write_yaml(my_list, "tmp.yml")
+# Delete file we just created
+unlink("tmp.yml")
+```
+
+We have developed a number of helper functions to create the file `metadata.yml`. As a start,
+
+xxxx
 
 ### Source
 
@@ -372,12 +476,21 @@ General guidelines for describing a source
 
 This includes a list of the different contributors to the study, their respective institutions and roles in the study.
 
+XXXX 
+
+
 ### Dataset
 
+XXXX 
 
 ### Config
 
 The data under `config` indicates the basic format of the submitted data file. For instance:
+
+XXXX 
+
+
+See [example in the appendix on adding Custom R code](#custom_R_code)
 
 ### Traits
 
@@ -391,7 +504,7 @@ Value type
 
 ### Substitutions
 
-The `metadata.yml` file for each study also contains a list of substitutionsthat are applied to specific variables in the dataset. These changes are documented in the following format:
+The `metadata.yml` file for each study also contains a list of substitutions that are applied to specific variables in the dataset. These changes are documented in the following format:
 
 
 ```
@@ -436,83 +549,19 @@ If TaxonStand fails to find a suitable alignment, and you have identified one yo
 add_taxnomic_change(study, find, replace, reason)
 ```
 
-# Contributing
+## Adding data to Austraits
 
-There 
+Once you have prepared your data files within a folder in the `data` directory, you can incorporate the new data into Austraits by running:
 
-1. Reporting Errors
-2. Refining documentation
-3. Value adding / expanding existing data
-4. Contributing new data
-
-
-## Reporting errors
-
-If you notice a possible error in Austraits, please [post an issue here](https://github.com/traitecoevo/austraits/issues), describing the error and possible fix in detail. If you can, please provide code illustrating the problem.
-
-## Refining documentation
-
-##  Value adding / expanding existing data
-
-If you would like to value-add to Austraits in some other way, please get in contact by [posting an issue](https://github.com/traitecoevo/austraits/issues) with an idea or offer of time.
-
-
-## Contributing new data
-
-We gladly accept new data contributions to Austraits. In the future we hope to publish a data paper, including contributors as co-authors on the article.
-
-If you would like to contribute data, the requirements are:
-
-1. Data were collected for Australian plant species growing in Australia
-2. You collected data on one of the traits list in the [trait definitions table](config/definitions_traits.csv).
-3. You are willing to release the data under an open license for reuse by the scientific community.
-4. That you make it is as easy as possible for us to incorporate your data by carefully following the instructions below.
-
-By far our preferred way of contributing is for you to fork the database in github, add your dataset then send us a [pull request](https://help.github.com/articles/using-pull-requests/). If this is not possible, you could email the relevant files (see above) to Rachael Gallagher.
-
-To contribute, please follow the steps below. It is important that all steps are followed so that our automated workflow proceeds without problems.
-
-1. Create a new folder with name corresponding to the paper or study of the dataset, e.g. `Gallagher_2014` (do not include *et al* or similar).
-2. Prepare the following files:
-	* `data.csv`: a table of data in comma-separated values format, with data for each individual plant on a single row
-	* `metadata.yml`: description of the metadata.
-
-It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits/tree/master/data) and use it as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits/tree/master/config), in particular the `definitions` files for the list of traits we cover.
-
-
-The elements `traits` and `substitutions` are designed to covert into tables. You can see how they look as tables with code like the following:
-
-```{r, echo=TRUE, results="show"}
-source("R/support.R")
-
-metadata <- read_yaml("data/Blackman_2014/metadata.yml")
-
-my_df <- list_to_df(metadata[["traits"]])
-my_df
+```{r, eval=FALSE}
+rebuild_remake_setup()
 ```
+(This step updates the file `remake.yml` with appropriate rules for the new dataset; similarly if you remove datasets, do the same. At this stage, [remake](https://github.com/richfitz/remake) offers no looping constructs (on purpose) so for now we generate the remake file using [whisker](https://github.com/edwindj/whisker).)
 
-Similarly we can convert a table to yaml as follows:
-
-```{r, echo=TRUE, results="show"}
-my_list <- df_to_list(my_df)
-write_yaml(my_list, "tmp.yml")
-```
-
-```{r}
-# Delete file we just created
-unlink("tmp.yml")
-```
+You can then rebuild Austraits, including your dataset.
 
 
-### Adding data to Austraits
-
-Once you have prepared your data files, add the relevant folder into the `data` directory. You can then rebuild the dataset, including your dataset.
-
-To do so you will need to rerun the `bootstrap.R` script, which will update the `remake.yml`files with appropriate rules for the new dataset (similarly if you remove datasets, do the same). (At this stage, [remake](https://github.com/richfitz/remake) offers no looping constructs (on purpose) so for now at least we generate the remake file using [whisker](https://github.com/edwindj/whisker).)
-
-See doc on adding Custom R code
-
-### Tests
+## Tests
 
 You can also run some automated tests to ensure the dataset meets required setup. The tests run through a collection of pre-specified checks on the files for each study. The output alerts you to possible issues needing to be fixed, by comparing the data in the files with expected structure and allowed values, as specified in the definitions. 
 
@@ -531,7 +580,7 @@ dataset_ids <- dir("data")
 run_tests()
 ```
 
-### Reports  / quality checks
+## Reports  / quality checks
 
 
 Reports are written in [Rmarkdown](https://rstudio.github.io/rmarkdown/) and generated via the [knitr](https://cran.r-project.org/web/packages/knitr/) package. Several types of report are available. Templates are stored in the folder `reports`. 
@@ -549,6 +598,11 @@ Guidelines for writing report code
 - use kableExtra for styling: https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
 
 **Maps:** We use the package [leaflet](https://cran.r-project.org/web/packages/leaflet/index.html) to generate interactive maps via the JavaScript 'Leaflet' framework and based on the [Open street map](https://www.openstreetmap.org/).
+
+
+## Pushing to GitHub
+
+By far our preferred way of contributing is for you to fork the database in github, add your dataset then send us a [pull request](https://help.github.com/articles/using-pull-requests/). If this is not possible, you could email the relevant files (see above) to Rachael Gallagher.
 
 
 # Usage examples
@@ -570,9 +624,9 @@ library(tidyverse)
 
 The examples below assume you have the tidyverse installed and loaded. This is not essential, but without these packages the examples below won't work.
 
-For anyone needing to learn about the tidyverse, you will in particualr want to read up on [dplyr](https://dplyr.tidyverse.org/) and [the pipe operator `%>%` from `magrittr`](https://magrittr.tidyverse.org/), which pipes output from one command into the next command.
+For anyone needing to learn about the tidyverse, you will in particular want to read up on [dplyr](https://dplyr.tidyverse.org/) and [the pipe operator `%>%` from `magrittr`](https://magrittr.tidyverse.org/), which pipes output from one command into the next command.
 
-In addtion, we have included some helper functions for common manipulations of the data. These are available in the file `austraits.R` (TODO: where will users access this). To make these unctions availble, source the file prior to use:
+In addition, we have included some helper functions for common manipulations of the data. These are available in the file `austraits.R` (TODO: where will users access this). To make these functions available, source the file prior to use:
 
 ```{r}
 source("R/austraits.R")
@@ -581,14 +635,14 @@ source("R/austraits.R")
 
 ## Loading data
 
-There are several ways to access the Austrats data, including 
+There are several ways to access the Austraits data, including 
 
 - downloading plain text files and loading these into R manually
-- using the `austraits` R package to fetch and laod particular versions of the data (not yet available)
+- using the `austraits` R package to fetch and load particular versions of the data (not yet available)
 - rebuilding the Austraits data from scratch (see instructions above)
-- downlaoding the compressed `austraits.rds` binary and loading this directly into R.
+- downloading the compressed `austraits.rds` binary and loading this directly into R.
 
-These istructions are written assuming you have followed the latter approach. 
+These instructions are written assuming you have followed the latter approach. 
 
 Let's assume you have a variable `path` with the directory of your data. You can then load the Austraits data package using the `readRDS` package  
 
@@ -601,18 +655,18 @@ You should now have a object called `austraits` with the following elements:
 names(austraits)
 ```
 
-These names correpsond to the sections described in full above under ["elements of austraits"](#elements_of_austraits). 
+These names correspond to the sections described in full above under ["elements of austraits"](#elements_of_austraits). 
 
 The trait data are in the element called data
 
 ```{r}
 austraits$data
 ```
-(Note that data appears as a `tibble` rather than a `data.frame`. Tibbles are an enhanced type dataframe, with some desriable features, such as not printing the whole dataframe to screen. (If you prefer, you can easily use a traditional R `data.frame` by converting it using `df <- data.frame(austraits$data)`. But from here on we'll assume you're stikcing with a tibble.)
+(Note that data appears as a `tibble` rather than a `data.frame`. Tibbles are an enhanced type dataframe, with some desirable features, such as not printing the whole dataframe to screen. (If you prefer, you can easily use a traditional R `data.frame` by converting it using `df <- data.frame(austraits$data)`. But from here on we'll assume you're sticking with a tibble.)
 
-## Taking subsets / extracting a particular trait or study
+## Taking subsets
 
-Using the `dplyr`, it's easy to subset by rows using `filter`. this approach can be used to filter the data to particualr trait or study:
+Using the `dplyr`, it's easy to subset by rows using `filter`. This approach can be used to filter the data to particular trait or study:
 
 ```{r}
 austraits$data %>% 
@@ -624,14 +678,16 @@ austraits$data %>%
   filter(dataset_id == "Blackman_2014")
 ```
 
-We can select particualr columns from the whole or filtered dataset using `select`:
+We can select particular columns from the whole or filtered dataset using `select`:
 
 ```{r}
 austraits$data %>% 
   select(species_name, observation_id, trait_name, value)
 ```
 
-The file `austraits.R` also include prebuilt functions for extracting a particular trait or study. The difference with the examples above, is that these functions also subset the other tables and elements of the data, not just the main data table. So we need to provide the entire `austraits` object and a `dataset_id`:
+## Extracting a particular trait or study
+
+The file `austraits.R` also include pre-built functions for extracting a particular trait or study. The difference with the examples above, is that these functions also subset the other tables and elements of the data, not just the main data table. So we need to provide the entire `austraits` object and a `dataset_id`:
 
 ```{r B14}
 data_B14 <- extract_dataset(austraits, "Blackman_2014")
@@ -650,13 +706,13 @@ austraits %>% count_rows()
 data_B14 %>% count_rows()
 ```
 
-A similar function enables subsetting to a particualr trait, including the various other tables:
+A similar function enables sub-setting to a particular trait, including the various other tables:
 
 ```{r}
 data_LS <- extract_trait(austraits, "leaf_width")
 ```
 
-As wiith the the main `austraits` object, this new dataset has multiple elements:
+As with the the main `austraits` object, this new dataset has multiple elements:
 ```{r}
 names(data_LS)
 ```
@@ -670,13 +726,13 @@ data_LS %>% count_rows()
 
 ## Merging with taxonomic data
 
-Limited taxonomic infomration is provided in the main table `data`, only `original_name` (the original name provided by the authors) and `species_name` (the aligned taxonomix name; see [species taxonomy](#species_taxonomy) for details). But further infomration is available in the table `species_list`:
+Limited taxonomic information is provided in the main table `data`, only `original_name` (the original name provided by the authors) and `species_name` (the aligned taxonomic name; see [species taxonomy](#species_taxonomy) for details). But further information is available in the table `species_list`:
 
 ```{r}
 austraits$species_list
 ```
 
-You can merge this information in with the main dataset using the `species_name` as a an indentifier linking both tables:
+You can merge this information in with the main dataset using the `species_name` as a an identifier linking both tables:
 
 ```{r taxonomic, results='show'}
 data2 <- austraits$data %>% 
@@ -696,7 +752,7 @@ names(data2)
 
 ## Merging with location data
 
-As with taxonomic infomration, limited infomration about location is provided in the main table `data`.  But further infomration is available in the table `context`:
+As with taxonomic information, limited information about location is provided in the main table `data`.  But further information is available in the table `context`:
 
 ```{r}
 austraits$context
@@ -717,7 +773,7 @@ sites <- austraits$context %>%
 sites
 ```
 
-We can now merge in with the main data table using combinations of `dataset_id` and `site_name` as indetifiers from both tables:
+We can now merge in with the main data table using combinations of `dataset_id` and `site_name` as identifiers from both tables:
 
 ```{r}
 data_sites <- left_join(by=c("dataset_id", "site_name"), austraits$data, sites)
@@ -727,11 +783,11 @@ names(data_sites)
 
 ## Converting from long to wide format
 
-As discussed above, the main data table in `austraits` is distributed in long format. A long format has each measurment on a different row, and just a single column for all the value. By contrast, a dataset in wide format has data for each different trait in it's own column. The reason we use long format is mainly for efficiency. We have data from `r austraits$data$trait_name %>% unique() %>% length()` different traits, so in wide format we'd need at least this many columns. With many species, the file size gets very large very quickly. Other benefits of long format are that we can include columns for `units`, `value_type`, and `replicates`, which we could not in wide format (without created 3 more columns for each traits). 
+As discussed above, the main data table in `austraits` is distributed in long format. A long format has each measurement on a different row, and just a single column for all the value. By contrast, a dataset in wide format has data for each different trait in it's own column. The reason we use long format is mainly for efficiency. We have data from `r austraits$data$trait_name %>% unique() %>% length()` different traits, so in wide format we'd need at least this many columns. With many species, the file size gets very large very quickly. Other benefits of long format are that we can include columns for `units`, `value_type`, and `replicates`, which we could not in wide format (without created 3 more columns for each traits). 
 
-For many analyses, however, you'll want to use wide format. We hve therevor provided the ability to convert between the two formats. In wie fromat, each trait appears in it's own column and measurments from the same obseravtion (ideally indivdual, but in floras may be a species) appear on the same row.  
+For many analyses, however, you'll want to use wide format. We have therefore provided the ability to convert between the two formats. In wide format, each trait appears in it's own column and measurements from the same observation (ideally individual, but in floras may be a species) appear on the same row.  
 
-As the entire austraits dataset is quite large, we recomend frst subsetting the data before spreading from long to wide fromat. You may also need to reduce the number of measurements in any one obseravtion (see next section). For this first example we'll sue the dataset `Blackman_2014`. 
+As the entire austraits dataset is quite large, we recommend first sub-setting the data before spreading from long to wide format. You may also need to reduce the number of measurements in any one observation (see next section). For this first example we'll sue the dataset `Blackman_2014`. 
 
 First extract the trait data from the `Blackman_2014` study:
 
@@ -745,16 +801,16 @@ Now use the inbuilt function `spread_trait_data` to convert from long to wide:
 ```{r}
 data_spread <- spread_trait_data(data)
 ```
-This function spreads not only the data in the column `value`, but also other columns. The retruned object is a list with a number of wide tables:
+This function spreads not only the data in the column `value`, but also other columns. The returned object is a list with a number of wide tables:
 
 ```{r}
 names(data_spread)
 ```
-Looking at each of these we see a table in wide format (i.e. with each trait being a column), as well as indietifying columns at the start:
+Looking at each of these we see a table in wide format (i.e. with each trait being a column), as well as identifying columns at the start:
 ```{r}
 data_spread$value
 ```
-The other tables have an indentical fromat
+The other tables have an identical format
 
 ```{r}
 data_spread$unit
@@ -776,7 +832,7 @@ There is also a function to convert back from wide to long format:
 data2 <- gather_trait_data(data_spread, austraits$definitions)
 ```
 
-This manipulation should recover the orginal dataset.
+This manipulation should recover the original dataset.
 
 Original:
 ```{r}
@@ -791,9 +847,9 @@ Just to be sure we can run a check:
 all.equal(data, data2)
 ```
 
-Note that the function `gather_trait_data` also needs the element `austraits$defintions` to run successuflly. 
+Note that the function `gather_trait_data` also needs the element `austraits$definitions` to run successfully. 
 
-### Datasets with mutiple measurments per observation
+### Datasets with multiple measurements per observation
 
 The above example works easily because there is only a single measurement of each trait per `observation_id`. But this is not always the case. Many datasets include multiple records per `observation_id`, for example studies reporting multiple `value_types` per `observation_id`. An example is the `AusGrass_2014` datasets:
 
@@ -811,12 +867,12 @@ data_spread <- spread_trait_data(data)
 ## Error: Duplicate identifiers for rows (2929, 2930), (2936, 2937), (3015, 3016), (2975, 2976), ....
 ```
 
-So before converting from long to wide we use an additonal function called `bind_trait_values` to collapse all the different measurements for a given `trait_name` and `observation_id` into a single cell:
+So before converting from long to wide we use an additional function called `bind_trait_values` to collapse all the different measurements for a given `trait_name` and `observation_id` into a single cell:
 
 ```{r}
 data_bind <- bind_trait_values(data)
 ```
-This function binds data from multiple rows together, seraprting with the string ``--`. This coccurs for columns `value`, `value_type`, and `replicates`. Looking at the table we can see the bound values:
+This function binds data from multiple rows together, separating with the string ``--`. This occurs for columns `value`, `value_type`, and `replicates`. Looking at the table we can see the bound values:
 
 ```{r}
 data_bind %>% 
@@ -894,7 +950,7 @@ traits_all[trait_is_numeric(traits_all, austraits$definitions)]
 
 ### CSV 
 
-### YAML files
+### YAML files {#yaml}
 
 
 yml: The `yml` file extension (pronounced "YAML") [is a type structured data file](https://en.wikipedia.org/wiki/YAML), that is both human and machine readable. The information in it appears under various labels, which are imported into Austraits. You can edit it any text editor, or also in Rstudio. Generally, yml is used in situations where a table does not suit because of variable lengths and or nested structures.
@@ -913,7 +969,7 @@ possible types:
 - `list`:
 - `array`:
 
-## Adding custom R code into metadata.yml
+## Adding custom R code into metadata.yml {#custom_R_code}
 
 Occasionally all the changes we want to make to dataset may not fit into the prescribed workflow used in Austraits. For example, we assume each trait has a single unit. But there are a few datasets where data on different rows have different units. So we want to make to make some custom modifications to this particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`read_data_study`](https://github.com/traitecoevo/austraits/blob/master/R/steps.R#L59)) looks like:
 
