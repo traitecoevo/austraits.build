@@ -98,7 +98,7 @@ Wilkinson et al 2015 The FAIR Guiding Principles for scientific data management 
 
 ## Transparency 
 
-To facilitate the sharing of trait data under the FAIR principles (Free, , AusTraits uses a fully-reproducible workflow which exposes the decisions made in the processing of data into a harmonised and curated dataset (Figure 1). For instance, AusTraits makes no alterations to the primary datasets provided by co-authors on this Data Descriptor, instead making use of R packages such a make and remake to configure and harmonise (standardise) data into a single curated resource. Several additional quality-assurance steps are undertaken, including detailed error-checking by dataset custodians facilitated by the generation of bespoke reports of their data relative to all observation in AusTraits and the implementation of a series of tests in the remake pipeline (e.g. constraining trait values to plausible minima and maxima) (see Methods for full details). Whilst all care is taken to curate datasets in AusTraits this is not intended to absolve individual researchers from ensuring the appropriate use of the data provided. 
+To facilitate the sharing of trait data under the FAIR principles (Findability, Accessibility, Interoperability, and Reusability), AusTraits uses a fully-reproducible workflow which exposes the decisions made in the processing of data into a harmonised and curated dataset (Figure 1). For instance, AusTraits makes no alterations to the primary datasets provided by co-authors, instead making use of R packages such as `make` and `remake` to configure and harmonise (standardise) data into a single curated resource. Several additional quality-assurance steps are undertaken, including detailed error-checking by dataset custodians. This is facilitated by the generation of bespoke reports for each dataset that can be compared to all observation in AusTraits and by the implementation of a series of tests in the `remake` pipeline that flag trait values that cannot be incorporated into AusTraits (e.g. constraining trait values to plausible minima and maxima; see Methods for full details). Whilst all care is taken to curate datasets in AusTraits this is not intended to absolve individual researchers from ensuring the appropriate use of the data provided. 
 
 
 ## Contributing
@@ -107,7 +107,7 @@ Austraits is a community resource and we are very keen for people to contribute.
 
 **Reporting Errors**: If you notice a possible error in Austraits, please [post an issue here](https://github.com/traitecoevo/austraits/issues), describing the error and possible fix in detail. If you can, please provide code illustrating the problem.
 
-**Refining documentation:** 
+**Refining documentation:** Data contributors and data users who are less familiar with the AusTraits format and code than the custodians may determine that important descriptions or steps are omitted from this documentation file. We welcome additions and edits that make using the existing data or adding new data easier for the community.
 
 **Value adding / expanding existing data**: If you would like to value-add to Austraits in some other way, please get in contact by [posting an issue](https://github.com/traitecoevo/austraits/issues) with an idea or offer of time.
 
@@ -116,7 +116,7 @@ Austraits is a community resource and we are very keen for people to contribute.
 - Data were collected for Australian plant species growing in Australia
 - You collected data on one of the traits list in the [trait definitions table](config/definitions_traits.csv).
 - You are willing to release the data under an open license for reuse by the scientific community.
-- That you make it is as easy as possible for us to incorporate your data by carefully following the instructions below.
+- You make it is as easy as possible for us to incorporate your data by carefully following the instructions below.
 
 For full instructions on preparing data for inclusion in Austraits see the sections below on [formatting of raw data files for Austraits](#format).
 
@@ -134,7 +134,7 @@ The original publication describing the OBOE concept is:
 
 Source code on Github: [NCEAS/oboe](https://github.com/NCEAS/oboe)
 
-## Elements of Austraits
+## Elements of Austraits {#elements}
 
 The AusTraits database is with the follow main components:
 
@@ -222,7 +222,7 @@ For datasets that arrive in long format, the `observation_id` is assigned based 
 
 ## Value types
 
-Each trait measurement has an associated `value_type`, which gives ``r austraits$definitions$value_type$description``. Possible values are:
+Each trait measurement has an associated `value_type`, which gives ``r austraits$definitions$value_type$description`` Possible values are:
 
 ```{r value_type}
 austraits$definitions$value_type$values %>% 
@@ -248,11 +248,11 @@ Links to species records in these systems can be accessed via the relevant IDs a
 
 # Building austraits
 
-XXXX
+Anyone wishing to use the AusTraits data will need to begin by building AusTraits to create a current combined dataset. Under [Approach](#approach) we describe conceptually how individual datasets are merged into the complete AusTraits compilation and under [Rebuilding from scratch](#building) is the code needed to actually build Austraits.
 
-## Approach
+## Approach {#approach}
 
-XXXXX
+Data in Austraits is stored by 
 
 ## File structure
 
@@ -268,29 +268,35 @@ rdflib-review
 └── rdflib-review.Rproj
 ```
 
-## Rebuilding from scratch
+## Rebuilding from scratch {#building}
+XXXXX clone austraits from github (Daniel include details)
 
-```{r, eval=FALSE}
-data <- read_csv(filename_data_raw, col_types = cols()) %>%
-    custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
-    parse_data(dataset_id, metadata) %>%
-    add_all_columns(definitions, "data") %>%
-    flag_unsupported_traits(definitions) %>%
-    convert_units(definitions, unit_conversion_functions) %>%
-    flag_unsupported_values(definitions) %>%
-    update_taxonomy(metadata) %>%
-    mutate(value=tolower(value))
+XXXXX
+Once you have cloned AusTraits onto your computer, run the following code to ensure you have a compiled version of AusTraits and have sourced any relevant functions
+
+```{r, echo=TRUE, results="show"}
+austraits <- remake::make("austraits")
+source("R/support.R")
+source("R/setup.R")
+source("R/steps.R")
+source("R/austraits.R")
+source("R/support.R")
+source("R/report_utils.R")
+source("R/report_notetaker.R")
 ```
+
+Within the matrix `austraits` are the elements listed in [Elements of Austraits](#elements). The actual trait data is located in the dataframe `austraits$data`.
+
 
 # Format of raw data files for Austraits {#format}
 
 This section describes how to prepare / modify the raw data from individual studies for inclusion in the Austraits compilation.
 
-Data from each study is organised into a separate folder, with two files:
-  - `data.csv`: a table containing the actual trait data a table of data in comma-separated values format, ideally with traits as columns and each observation on a single row.
+Data from each study is organised into a separate folder, with two files:<br/>
+  - `data.csv`: a table containing the actual trait data a table of data in comma-separated values format, ideally with each trait in a single column and each observation on a single row (i.e. wide format).<br/>
   - `metadata.yml`: contains further information about the study, mapping of trait names and units onto standard types, and any substitutions applied to the data in processing (see below). 
 
-The contents of the folder data then have structure like follows:
+The contents of the folder `data` then have a structure as follows:
 
 
 ```
@@ -310,28 +316,29 @@ data
   ├── ....
 ```
 
-where `Angevin_2010`, `Barlow_1981`, `Bean_1997`, `Blackman_2014` are all a unique `dataset_id` in the final dataset.
+where `Angevin_2010`, `Barlow_1981`, `Bean_1997`, `Blackman_2014` are each a unique `dataset_id` in the final dataset.
 
 Below are the Instructions on the formatting files for each study and contributing into Austraits. It is important that all steps are followed so that our automated workflow proceeds without problems.
 
-1. Create a new folder with name corresponding to the paper or study of the dataset, e.g. `Gallagher_2014` (do not include *et al* or similar).
-2. Prepare the files `data.csv` an `metadata.yml` and place within the folder, as per instructions below. 
-3. Add the new study into build framework and rebuild Austraits
-4. Run tests on the contributed data and generate a report on the data, to make sure everything is formatted optimally. Return to step 3 if changes are made
-5. Push to GitHub. 
+1. XXXXX create a github branch?
+2. Create a new folder within the folder `data` with a name corresponding to the paper or study, e.g. `Gallagher_2014` (do not include *et al* or similar).
+3. Prepare the files `data.csv` and `metadata.yml` and place them within the folder, as per instructions below. 
+4. Add the new study into the build framework and rebuild Austraits (see [Adding data to Austraits] (#adding) below)
+5. Run tests on the contributed data and generate and proof a report on the data. This ensures everything is formatted optimally. In particular, check that numeric trait values fall within a logical range relative to other studies and that individual trait observations are not unnecessarily excluded because their trait values are unsupported. 
+6. Return to step 3 if changes are made to the `data.csv` or `metadata.yml` files.
+7. Push to GitHub. 
 
-It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits/tree/master/data) and use it as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits/tree/master/config), in particular the `definitions` files for the list of traits we cover.
-
-
+It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits/tree/master/data) and use it as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits/tree/master/config), in particular the `definitions` files for the list of traits we cover and the supported trait values for each trait.
 
 ## Data.csv
 
-About data.csv... Can be long or wide. Required columns .....
+The data.csv file can be in either long or wide format.
 
+Required columns include the species name, the trait name (column in long format, header in wide format), units (column in long format, part of header in wide format), site (if applicable), and trait values.
 
-May require custom R code to get into right format
+If multiple trait measurements were made on the same individual or are the mean of a species' measurements from the same site, they should be kept linked. If the  data is in wide format, each row should represent measurements made on a single individual or a single species site mean, with different trait values as consecutive columns. If the data is in long format, an observation ID (or other identifier) must be assigned to identify certain measurements as linked to a given individual or site.
 
-Keep data and file in rawest form possible (i.e. as few changes as possible)   but must be a single csv file. Other files used to create this (e.g. Excel ...) should be supplied so they can be archived. (XXXX Where to put these)
+Keep the data file in rawest form possible (i.e. as few changes as possible) but it must be a single csv file. Additional custom R code may be required to make the file exactly compatible with the AusTraits format, but these should be executed as AusTraits is compiled and are incorporated into the `metadata.yml` file. Any files used to create the submitted `data.csv` file (e.g. Excel ...) should be supplied so they can be archived. (XXXX Where to put these)
 
 ## Metadata.yml  
 
@@ -341,6 +348,7 @@ The metadata is compiled in a `.yml` file, a structured data file where informat
 
 As a start, checkout some examples from [existing studies in Austraits](https://github.com/traitecoevo/austraits/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits/blob/master/data/Angevin_2010/metadata.yml) or [Wright_2004](https://github.com/traitecoevo/austraits/blob/master/data/Wright_2004/metadata.yml).
 
+XXXXnext section doesn't make sense hereXXXXX
 The elements `traits` and `substitutions` are designed to covert into tables. You can see how they look as tables with code like the following:
 
 ```{r, echo=TRUE, results="show"}
@@ -360,8 +368,11 @@ write_yaml(my_list, "tmp.yml")
 # Delete file we just created
 unlink("tmp.yml")
 ```
+XXXXXend section to move
 
-We have developed a number of helper functions to create the file `metadata.yml`. As a start,
+A blank `metadata.yml` file is stored in XXXX and can be duplicated as a starting point.
+
+We have developed a number of helper functions to fill in the data for the different sections of this file. These are indicated in each of the sections below.
 
 xxxx
 
@@ -463,40 +474,79 @@ Note that in these first examples `secondary` is set as `.na`. If a secondary so
     publisher: Dryad Digital Repository
     doi: 10.5061/dryad.234
     url: https://doi.org/10.5061/dryad.234
- ```
+```
 
 General guidelines for describing a source
 
+- keys should be named in the format `Surname_year` and should be identical to the name given to the dataset folder.
 - elements are names as in [bibtex format](https://en.wikipedia.org/wiki/BibTeX)
 - maximum of one primary and secondary source allowed
 - a secondary source may be needed if the main collector is not an author on the paper where data was released, or data were otherwise released via a subsequent study.
-- keys should be named in the format `Surname_year`.
+
+XXXXXfunction?
 
 ### People
 
 This includes a list of the different contributors to the study, their respective institutions and roles in the study.
 
-XXXX 
+Data can be entered manually or using the function XXXXX `add_people()` with the required arguments `add_people("name","institution","role")`
 
+Roles are defined as follows:
+
+```{r, echo=FALSE, results="show"}
+austraits$definitions$metadata$elements$people$elements$role$values %>% list1_to_df() %>%
+  my_kable_styling()
+```
+
+If a person has multiple roles, such as being both the `lab leader` and the person to `contact` with questions about the data set, using the following syntax when entering the data: 
+
+XXXX`add_people("name","institution",c("role1","role2"))`
+
+Note that only the AusTraits custodians have the contributors e-mails on file. This information will not be directly available to AusTraits users or new contributors via Github.
 
 ### Dataset
 
-XXXX 
+The following data are included under the element `Dataset`:
+
+  **year_collected_start:** `r sprintf(austraits$definitions$austraits$elements$details$elements$year_collected_start)`
+  
+  **year_collected_end:** `r austraits$definitions$austraits$elements$details$elements$year_collected_end`
+  
+  **description:** `r austraits$definitions$austraits$elements$details$elements$description`
+  
+  **collection_type:** `r austraits$definitions$austraits$elements$details$elements$collection_type`
+  
+  **sample_age_class:** `r austraits$definitions$austraits$elements$details$elements$sample_age_class`
+  
+  **sampling_strategy:** `r austraits$definitions$austraits$elements$details$elements$sampling_strategy`
+  
+  **"original_file:"** The name of the file initially submitted to Austraits.
+  
+  **"notes:"** Generic notes about the study and processing of data.
+  
+XXXXfunction - not sure a function makes as much sense here - or maybe a function to input year start, year end, collection type, age class
 
 ### Config
 
-The data under `config` indicates the basic format of the submitted data file. For instance:
+The data under `config` indicates the basic format of the submitted data file. It includes three components, `is_vertical`, `variable_match`, and `custom_R_code`.
 
-XXXX 
+**is_vertical** is the field to identify your data as being in a long versus wide format. For a long format `is_vertical` should be `yes` and for a wide format `is_vertical` should be `no`.
 
+**variable_match** `r austraits$definitions$metadata$elements$config$elements$variable_match` Ignore other columns for now.
+
+**custom_R_code** is where you enter any R code that is required to convert the `data.csv` file into a format that can be compiled by AusTraits. A common use is to automate the conversion of a verbal description of flowering or fruiting periods into the supported trait values. It might also be used if values for a single trait are expressed across multiple columns and need to be merged. 
 
 See [example in the appendix on adding Custom R code](#custom_R_code)
 
+XXXXnot sure functions useful here
+
 ### Traits
 
-The level `traits` provides to distinct functions. The first is to map the contributed traits into the Austraits trait names and units. The second is to document information on the collection and meaning for the submitted trait values. In particular for each trait submitted to Austraits, there is the following information:
+The level `traits` provides two distinct functions. The first is to map the contributed traits into the Austraits trait names and units. The second is to document information on the collection and meaning for the submitted trait values. In particular for each trait submitted to Austraits, there is the following information:
 
-Units: These are converted to standardized units through the file “unit_conversions.csv” in the folder config. If no units are given an educated guess is made based on the values submitted.
+**var_in**
+**unit_in** These are the units used in the submitted `data.csv` file. These are converted to standardized units for that trait through the file “unit_conversions.csv” in the folder config. If no units are given an educated guess is made based on the values submitted.
+**trait_name** The corresponding trait name used in `austraits`. See 
 
 Value type
 
@@ -549,7 +599,7 @@ If TaxonStand fails to find a suitable alignment, and you have identified one yo
 add_taxnomic_change(study, find, replace, reason)
 ```
 
-## Adding data to Austraits
+## Adding data to Austraits {#adding}
 
 Once you have prepared your data files within a folder in the `data` directory, you can incorporate the new data into Austraits by running:
 
@@ -559,6 +609,19 @@ rebuild_remake_setup()
 (This step updates the file `remake.yml` with appropriate rules for the new dataset; similarly if you remove datasets, do the same. At this stage, [remake](https://github.com/richfitz/remake) offers no looping constructs (on purpose) so for now we generate the remake file using [whisker](https://github.com/edwindj/whisker).)
 
 You can then rebuild Austraits, including your dataset.
+
+XXXXnot yet in perfect spot, but following code was in an odd location
+```{r, eval=FALSE}
+data <- read_csv(filename_data_raw, col_types = cols()) %>%
+    custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
+    parse_data(dataset_id, metadata) %>%
+    add_all_columns(definitions, "data") %>%
+    flag_unsupported_traits(definitions) %>%
+    convert_units(definitions, unit_conversion_functions) %>%
+    flag_unsupported_values(definitions) %>%
+    update_taxonomy(metadata) %>%
+    mutate(value=tolower(value))
+```
 
 
 ## Tests
