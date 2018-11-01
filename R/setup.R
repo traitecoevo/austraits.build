@@ -51,10 +51,10 @@ add_taxnomic_change <- function(study, find, replace, reason) {
   if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]])) {
     metadata[[set_name]] <- list()
   }
-
+  
   # Check if find record already exists for that trait
   data <-  list_to_df(metadata[[set_name]])  
-  if(nrow(data) > 0 && length(which(find %in% data$find)) > 0) {
+  if(!is.na(data) && nrow(data) > 0 && length(which(find %in% data$find)) > 0) {
     stop(crayon::red(sprintf("Substitution exists for %s, please update manually in %s", find, filename_metadata)))
   }
 
