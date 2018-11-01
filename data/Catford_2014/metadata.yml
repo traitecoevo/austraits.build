@@ -27,7 +27,7 @@ dataset:
   Of 157 taxa recorded, 127 were identified to species-level, 139 to genera and 148 to family (authority, Botanic Gardens Trust 2007, Catford et al. 2011). One hundred species were classified as terrestrial (i.e. species that inhabit dry areas of wetlands where the water table is below the soil surface or the soil saturated; Brock and Casanova 1997) and used in analyses. At the most, cover of all unidentified plant taxa (mostly daisies, grasses and seedlings) made up <6% of wetland vegetation cover (mean = 1.8%). A few of the unidentified taxa may have been exotic, but their low cover makes it unlikely that their exclusion affected our findings. 
   Depending on plant habit and conditions at time of collection, plants were either growing in dry, damp, saturated or flooded soil.
   Species were classified based on their germination requirements (i.e. whether species germinate on saturated or dry soil; Brock and Casanova 1997), longevity (annual and biennial versus perennial; Botanic Gardens Trust 2007), geographic origin (exotic or native to Australia), weed status (i.e. weed of agriculture and disturbed areas), whether they are cultivated and used as ornamentals (Randall 2007) and whether they can reproduce vegetatively (clonality)."
-  original_file: Catford_River Murray wetland plants_260215_contributed to AusTraits.xls
+  original_file: Data extracted from two worksheets in the file 'Catford_River Murray wetland plants_260215_contributed to AusTraits.xls'. The two sheets were combined using some custom R code saved in the Austraits project.
   notes: .na
 sites: 
   Yarrawonga:
@@ -67,10 +67,7 @@ config:
         growth_habit = stringr::str_squish(growth_habit) %>% na_if(""),
         aquatic_terrestrial = stringr::str_squish(aquatic_terrestrial) %>% na_if(""),
         dispersal_syndrome = stringr::str_squish(dispersal_syndrome) %>% na_if("")
-        ) %>% 
-    select(-Authority,-Family,-Latitude,-Longitude,-Altitude,-"Sampling date", 
-      -Maturity,-`Plant condition`,-`Growing conditions`, 
-      -`Specific leaf mass (mg/mm2)`, - Submerged)'
+        )'
 traits:
 - var_in: Leaf size (cm^2)
   unit_in: cm2
@@ -78,7 +75,7 @@ traits:
   value_type: mean
   replicates: 2-17
   methods: A LI-3000C Portable Leaf Area Meter (LI-COR Biosciences, Lincoln, NE, USA) was used to scan larger leaves. Small leaves were scanned and their areas calculated using the software program, ImageJ (http://rsb.info.nih.gov/ij/). Measured from samples collected in January 2012; 13 leaves on average from at least 2 plants; 6 leaves minimum; grass blades used (not sheath); one side of rushes and sedges
-- var_in: Seed mass (g)
+- var_in: Mass per leaf (g)
   unit_in: g
   trait_name: leaf_dry_mass
   value_type: mean
@@ -96,7 +93,7 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: Information about species’ seed mass was sourced from available databases (Liu et al. 2008, Kew Seed Database (http://data.kew.org/sid/) or from field collections (9 species). For the field collected species, 2-30 seeds were collected.
-- var_in: Plant height min (m)
+- var_in: plant height min (m)
   unit_in: m
   trait_name: plant_height
   value_type: expert_max
@@ -168,6 +165,12 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: expert opinion
+- var_in: clonality
+  unit_in: .na
+  trait_name: regen_strategy
+  value_type: expert_mean
+  replicates: .na
+  methods: expert opinion  
 substitutions:
 - trait_name: dispersal_syndrome
   find: animal
