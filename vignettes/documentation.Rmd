@@ -107,7 +107,7 @@ Error checking is facilitated by the generation of bespoke reports for each data
 
 Austraits is a community resource and we are very keen for people to contribute. Here are some of the ways you can contribute: 
 
-**Reporting Errors**: If you notice a possible error in Austraits, please [post an issue here](https://github.com/traitecoevo/austraits/issues), describing the error and possible fix in detail. If you can, please provide code illustrating the problem.
+**Reporting Errors**: If you notice a possible error in Austraits, please [post an issue on GitHub](https://github.com/traitecoevo/austraits/issues) (not available until dataset is made public) or send us an email, describing the error and possible fix in detail. If you can, please provide code illustrating the problem.
 
 **Refining documentation:** Data contributors and data users who are less familiar with the AusTraits format and code than the custodians may determine that important descriptions or steps are omitted from this documentation file. We welcome additions and edits that make using the existing data or adding new data easier for the community.
 
@@ -116,7 +116,7 @@ Austraits is a community resource and we are very keen for people to contribute.
 **Contributing new data**: We gladly accept new data contributions to Austraits. In the future we hope to publish a data paper, including contributors as co-authors on the article. If you would like to contribute data, the requirements are:
 
 - Data were collected for Australian plant species growing in Australia
-- You collected data on one of the traits list in the [trait definitions table](config/definitions_traits.csv).
+- You collected data on one of the traits list in the [trait definitions table](#trait_defs).
 - You are willing to release the data under an open license for reuse by the scientific community.
 - You make it is as easy as possible for us to incorporate your data by carefully following the instructions below.
 
@@ -143,11 +143,25 @@ Source code on Github: [NCEAS/oboe](https://github.com/NCEAS/oboe)
 
 The compiled AusTraits database has the following main components:
 
-```{r, results="show", comment = ''}
+```{r, results="hide", comment = '', eval=F}
 names(austraits) %>% 
   create_tree_branch("austraits") %>%
   writeLines()
 ```
+
+```
+austraits
+├── version
+├── data
+├── context
+├── details
+├── excluded_data
+├── species_list
+├── metadata
+├── definitions
+└── session_info
+```
+
 These elements include all the data and contextual information submitted with each contributed dataset, but are not in the same format as data contributions. See [Format of raw data files for AusTraits](#format) for how to format data to contribute.
 
 Each component is the above table is defined as follows:
@@ -187,7 +201,7 @@ for(v in names(austraits)) {
 
 ## Trait definitions {#trait_defs}
 
-Below is the standard definition for each trait in AusTraits (drawn from the the file `config/definitions.yml`). Traits are labelled as either `numeric` or `categorical`. Numeric traits also include 
+Below is the standard definition for each trait in AusTraits (drawn from the the file `config/definitions.yml`). Traits are labelled as either `numeric` or `categorical`.
 
 ```{r traits}
 for(trait in names(austraits$definitions$traits$elements)) {
@@ -268,15 +282,47 @@ XXXXX
 
 (needs updating)
 
-```
-rdflib-review
-├── README.md
-├── index.Rmd
-├── pkgreview.md
-└── rdflib-review.Rproj
+```{r, eval=FALSE}
+dir() %>% create_tree_branch(title = "austraits") %>% writeLines()
 ```
 
+```
+austraits
+├── austraits.Rproj
+├── config
+├── data
+├── R
+├── README.md
+├── remake.yml
+├── tests
+└── vignettes
+```
+
+The folder `data` conatins a long list of folders, one for each study and each conatining two files:
+
+
+```
+data
+  ├── Angevin_2010
+      ├── data.csv
+      └── metadata.yml
+  ├── Barlow_1981
+      ├── data.csv
+      └── metadata.yml
+  ├── Bean_1997
+      ├── data.csv
+      └── metadata.yml
+  ├── Blackman_2014
+      ├── data.csv
+      └── metadata.yml
+  ├── ....
+```
+
+where `Angevin_2010`, `Barlow_1981`, `Bean_1997`, `Blackman_2014` are each a unique `dataset_id` in the final dataset.
+
+
 ## Rebuilding from scratch {#building}
+
 XXXXX clone austraits from github (Daniel include details)
 
 XXXXX
@@ -303,28 +349,6 @@ This section describes how to prepare / modify the raw data from individual stud
 Data from each study is organised into a separate folder, with two files:<br/>
   - `data.csv`: a table containing the actual trait data in comma-separated values format, ideally with each trait in a single column and each observation on a single row (i.e. wide format).<br/>
   - `metadata.yml`: contains further information about the study, maps trait names and units onto standard types, and lists any substitutions applied to the data in processing (see below). 
-
-The contents of the folder `data` then have a structure as follows:
-
-
-```
-data
-  ├── Angevin_2010
-      ├── data.csv
-      └── metadata.yml
-  ├── Barlow_1981
-      ├── data.csv
-      └── metadata.yml
-  ├── Bean_1997
-      ├── data.csv
-      └── metadata.yml
-  ├── Blackman_2014
-      ├── data.csv
-      └── metadata.yml
-  ├── ....
-```
-
-where `Angevin_2010`, `Barlow_1981`, `Bean_1997`, `Blackman_2014` are each a unique `dataset_id` in the final dataset.
 
 Below are the Instructions on how to format files to contribute a new study to AusTraits. It is important that all steps are followed so that our automated workflow proceeds without problems.
 
@@ -675,10 +699,13 @@ dataset_ids <- dir("data")
 run_tests()
 ```
 
-## Reports  / quality checks
+## Reports / quality checks
 
+To enable better quality checks we have code to generate a report on the data in each study. 
 
-Reports are written in [Rmarkdown](https://rstudio.github.io/rmarkdown/) and generated via the [knitr](https://cran.r-project.org/web/packages/knitr/) package. Several types of report are available. Templates are stored in the folder `reports`. 
+(Reports are written in [Rmarkdown](https://rstudio.github.io/rmarkdown/) and generated via the [knitr](https://cran.r-project.org/web/packages/knitr/) package. The template is stored in the folder `vignettes` called `report_study.html`). 
+
+To generate a report for a particular study:
 
 ```{r, eval=FALSE, echo=TRUE}
 austraits <- remake::make("austraits")
@@ -686,11 +713,11 @@ source("R/report_utils.R")
 build_study_report("Wright_2002")
 ```
 
-Guidelines for writing report code
+**Guidelines for writing report code**
 
-- use knitr chunk options: https://rmarkdown.rstudio.com/lesson-3.html
-- use tidyverse style and format: http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html
-- use kableExtra for styling: https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+- use [knitr chunk options](https://rmarkdown.rstudio.com/lesson-3.html) to customise when code is shown and how output is displayed.
+- use [tidyverse style and format](http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html)
+- use [kableExtra for styling tables](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html)
 
 **Maps:** We use the package [leaflet](https://cran.r-project.org/web/packages/leaflet/index.html) to generate interactive maps via the JavaScript 'Leaflet' framework and based on the [Open street map](https://www.openstreetmap.org/).
 
