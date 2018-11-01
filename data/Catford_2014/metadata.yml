@@ -21,13 +21,13 @@ dataset:
   description: Study of River Murray wetland plants
   collection_type: field
   sample_age_class: adult
-  sampling_strategy: "Surveys were conducted in 24 floodplain wetlands a contiguous 395 km long stretch of the regulated River Murray between Albury and Barmah, south-eastern Australia (see Fig. S1 in Supporting Information). In the late 19th century, small weirs were constructed along the river to facilitate water extraction, but it was not until the 1920s that major works began (Jacobs 1990). As described previously (Catford et al. 2011), the most upstream wetlands were just downstream of a major dam (Hume Dam). The effects of flow regulation generally decreased with distance downstream, largely because of additional water entering the river from unregulated tributaries. Reflecting that 90-98% of the diverted water is used for irrigation (MDBMC 1995), winter and spring flows have generally diminished in the study region, while summer and autumn flows have increased (Maheshwari et al. 1995). Large infrequent floods (>40 to 50 years average return interval, ARI) have not been altered by regulation, but floods that previously had a 2 year and a 20 year ARI now have a 5 year and 32 year ARI respectively (Catford et al. 2011).\n
+  sampling_strategy: "Surveys were conducted in 24 floodplain wetlands a contiguous 395 km long stretch of the regulated River Murray between Albury and Barmah, south-eastern Australia (see Fig. S1 in Supporting Information). In the late 19th century, small weirs were constructed along the river to facilitate water extraction, but it was not until the 1920s that major works began (Jacobs 1990). As described previously (Catford et al. 2011), the most upstream wetlands were just downstream of a major dam (Hume Dam). The effects of flow regulation generally decreased with distance downstream, largely because of additional water entering the river from unregulated tributaries. Reflecting that 90-98% of the diverted water is used for irrigation (MDBMC 1995), winter and spring flows have generally diminished in the study region, while summer and autumn flows have increased (Maheshwari et al. 1995). Large infrequent floods (>40 to 50 years average return interval, ARI) have not been altered by regulation, but floods that previously had a 2 year and a 20 year ARI now have a 5 year and 32 year ARI respectively (Catford et al. 2011).
   The 24 study wetlands varied in degree of hydrological modification because of variation in downstream location and elevation on the floodplain. Described previously (Catford and Downes 2010, Catford et al. 2011), wetlands were surveyed in the austral summer using a stratified random approach (13 Dec. 2005 – 4 Feb. 2006). Vegetation was surveyed in a 1 m² quadrat at 24 random points in each wetland (8 points across three depth strata). Foliar cover of all taxa in the quadrat was estimated using the Braun-Blanquet scale (converted to mid-point averages for statistical analysis; Catford and Downes 2010). Data from the three depth-strata were given equal weight despite differences in their areal extent.
   Described previously (Catford and Downes 2010, Catford et al. 2011), wetlands were surveyed in the austral summer using a stratified random approach (13 Dec. 2005 – 4 Feb. 2006). Vegetation was surveyed in a 1 m² quadrat at 24 random points in each wetland (8 points across three depth strata). Foliar cover of all taxa in the quadrat was estimated using the Braun-Blanquet scale (converted to mid-point averages for statistical analysis; Catford and Downes 2010). Data from the three depth-strata were given equal weight despite differences in their areal extent.
   Of 157 taxa recorded, 127 were identified to species-level, 139 to genera and 148 to family (authority, Botanic Gardens Trust 2007, Catford et al. 2011). One hundred species were classified as terrestrial (i.e. species that inhabit dry areas of wetlands where the water table is below the soil surface or the soil saturated; Brock and Casanova 1997) and used in analyses. At the most, cover of all unidentified plant taxa (mostly daisies, grasses and seedlings) made up <6% of wetland vegetation cover (mean = 1.8%). A few of the unidentified taxa may have been exotic, but their low cover makes it unlikely that their exclusion affected our findings. 
   Depending on plant habit and conditions at time of collection, plants were either growing in dry, damp, saturated or flooded soil.
   Species were classified based on their germination requirements (i.e. whether species germinate on saturated or dry soil; Brock and Casanova 1997), longevity (annual and biennial versus perennial; Botanic Gardens Trust 2007), geographic origin (exotic or native to Australia), weed status (i.e. weed of agriculture and disturbed areas), whether they are cultivated and used as ornamentals (Randall 2007) and whether they can reproduce vegetatively (clonality)."
-  original_file: Catford_River Murray wetland plants_260215_contributed to AusTraits.xls
+  original_file: Data extracted from two worksheets in the file 'Catford_River Murray wetland plants_260215_contributed to AusTraits.xls'. The two sheets were combined using some custom R code saved in the Austraits project.
   notes: .na
 sites: 
   Yarrawonga:
@@ -39,7 +39,35 @@ config:
   is_vertical: no
   variable_match:
     species_name: Taxa
-  custom_R_code: .na
+  custom_R_code: 'data %>%
+    replace_na(list(Tree = 0, Gram = 0, Forb=0, Annual=0, Biennial=0, Perennial=0, rhizomes=0,stolons=0,`prostrate/decumbent`=0, Terrestrial=0, Tda=0, Tdr=0, Amphibious=0, Dispersal="", `dispersal 2`="", `dispersal 3`="")) %>%
+    mutate(
+        Tree = ifelse(Tree, "tree", ""),
+        Gram = ifelse(Gram, "graminoid", ""),
+        Forb = ifelse(Forb, "herb", ""),
+        Annual = ifelse(Annual, "annual", ""),
+        Biennial = ifelse(Biennial, "biennial", ""),
+        Perennial = ifelse(Perennial, "perennial", ""),
+        rhizomes = ifelse(rhizomes, "rhizomatous", ""),
+        stolons = ifelse(stolons, "stoloniferous", ""),
+        `prostrate/decumbent` = ifelse(`prostrate/decumbent`, "prostrate", ""),
+        Terrestrial = ifelse(Terrestrial, "terrestrial",""),
+        Tda = ifelse(Tda, "tda",""),
+        Tdr = ifelse(Tdr, "tdr",""),
+        Amphibious = ifelse(Amphibious, "amphibious","")
+        ) %>%
+    unite(col = "plant_growth_form", Tree, Gram, Forb, sep = " ") %>%
+    unite(col = "life_history", Annual, Biennial, Perennial, sep = " ") %>%
+    unite(col = "growth_habit", rhizomes, stolons, `prostrate/decumbent`, sep = " ") %>%
+    unite(col = "aquatic_terrestrial", Terrestrial, Tda, Tdr, Amphibious, sep = " ")  %>%
+    unite(col = "dispersal_syndrome", Dispersal, `dispersal 2`, `dispersal 3`, sep = " ") %>% 
+    mutate(
+        plant_growth_form = stringr::str_squish(plant_growth_form) %>% na_if(""),
+        life_history = stringr::str_squish(life_history) %>% na_if(""),
+        growth_habit = stringr::str_squish(growth_habit) %>% na_if(""),
+        aquatic_terrestrial = stringr::str_squish(aquatic_terrestrial) %>% na_if(""),
+        dispersal_syndrome = stringr::str_squish(dispersal_syndrome) %>% na_if("")
+        )'
 traits:
 - var_in: Leaf size (cm^2)
   unit_in: cm2
@@ -47,7 +75,7 @@ traits:
   value_type: mean
   replicates: 2-17
   methods: A LI-3000C Portable Leaf Area Meter (LI-COR Biosciences, Lincoln, NE, USA) was used to scan larger leaves. Small leaves were scanned and their areas calculated using the software program, ImageJ (http://rsb.info.nih.gov/ij/). Measured from samples collected in January 2012; 13 leaves on average from at least 2 plants; 6 leaves minimum; grass blades used (not sheath); one side of rushes and sedges
-- var_in: Seed mass (g)
+- var_in: Mass per leaf (g)
   unit_in: g
   trait_name: leaf_dry_mass
   value_type: mean
@@ -65,7 +93,7 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: Information about species’ seed mass was sourced from available databases (Liu et al. 2008, Kew Seed Database (http://data.kew.org/sid/) or from field collections (9 species). For the field collected species, 2-30 seeds were collected.
-- var_in: Plant height min (m)
+- var_in: plant height min (m)
   unit_in: m
   trait_name: plant_height
   value_type: expert_max
@@ -77,19 +105,7 @@ traits:
   value_type: expert_min
   replicates: .na
   methods:  Minimum plant height was based on floras (Botanic Gardens Trust 2007), verified by field observations.
-- var_in: Dispersal
-  unit_in: .na
-  trait_name: dispersal_syndrome
-  value_type: expert_mean
-  replicates: .na
-  methods: expert opinion
-- var_in: dispersal 2
-  unit_in: .na
-  trait_name: dispersal_syndrome
-  value_type: expert_mean
-  replicates: .na
-  methods: expert opinion
-- var_in: dispersal 3
+- var_in: dispersal_syndrome
   unit_in: .na
   trait_name: dispersal_syndrome
   value_type: expert_mean
@@ -98,6 +114,12 @@ traits:
 - var_in: life_history
   unit_in: .na
   trait_name: life_history
+  value_type: expert_mean
+  replicates: .na
+  methods: expert opinion
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: growth_habit
   value_type: expert_mean
   replicates: .na
   methods: expert opinion
@@ -113,7 +135,7 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: expert opinion
-- var_in: Native.nonweed
+- var_in: Native nonweed
   unit_in: .na
   trait_name: .na
   value_type: .na
@@ -125,7 +147,7 @@ traits:
   value_type: .na
   replicates: .na
   methods: .na
-- var_in: Native.weed
+- var_in: Native weed
   unit_in: .na
   trait_name: .na
   value_type: .na
@@ -143,6 +165,12 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: expert opinion
+- var_in: clonality
+  unit_in: .na
+  trait_name: regen_strategy
+  value_type: expert_mean
+  replicates: .na
+  methods: expert opinion  
 substitutions:
 - trait_name: dispersal_syndrome
   find: animal
