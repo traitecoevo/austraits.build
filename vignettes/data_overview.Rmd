@@ -83,9 +83,9 @@ The `Austraits` dataset has `r length(austraits)` components:
 names(austraits)
 ````
 
-There are __`r nrow(austraits$data)`__ trait records contained within Austraits database which belong to __`r austraits$data$species_name %>% unique() %>% length()`__ species and __`r austraits$species_list$family %>% unique() %>% length()`__ plant families.
+There are __`r nrow(austraits$traits)`__ trait records contained within Austraits database which belong to __`r austraits$traits$species_name %>% unique() %>% length()`__ species and __`r austraits$taxonomy$family %>% unique() %>% length()`__ plant families.
 
-The Austraits database is compiled from __`r austraits$data$dataset_id %>% unique() %>% length()`__ studies.
+The Austraits database is compiled from __`r austraits$traits$dataset_id %>% unique() %>% length()`__ studies.
 
 
 ## Sources
@@ -94,7 +94,7 @@ The Austraits database is compiled from __`r austraits$data$dataset_id %>% uniqu
 #get year of studies
 numextract <- function(string){str_extract(string, "\\_*\\d+\\.*\\d*")}
   
-list_of_years <- strsplit(austraits$data$dataset_id,'_') %>% 
+list_of_years <- strsplit(austraits$traits$dataset_id,'_') %>% 
   unique() %>%  numextract() %>% as.numeric()
 
 ```
@@ -103,18 +103,18 @@ list_of_years <- strsplit(austraits$data$dataset_id,'_') %>%
 
 ## Overview
 
-There are __`r austraits$data$trait_name %>% unique() %>% length()`__ traits listed on the database.
+There are __`r austraits$traits$trait_name %>% unique() %>% length()`__ traits listed on the database.
 
 ```{r echo=F}
-sites <- austraits$context %>% 
+sites <- austraits$sites %>% 
   filter(trait_name %in%  c("longitude (deg)","latitude (deg)")) %>% 
   spread(trait_name, value)
 
 data_geo <- 
   left_join(by=c("dataset_id", "site_name"),
-      select(austraits$data, -original_name), sites) %>%
+      select(austraits$traits, -original_name), sites) %>%
   left_join(by="species_name",
-      select(austraits$species_list, species_name, family)) 
+      select(austraits$taxonomy, species_name, family)) 
 
 n_records <- 
   data_geo %>% 

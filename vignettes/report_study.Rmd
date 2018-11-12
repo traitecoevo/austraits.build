@@ -70,8 +70,7 @@ if(!exists("dataset_id")) {
 
 definitions <- austraits$definitions
 data_study <- extract_dataset(austraits, dataset_id)
-data_yaml <- read_yaml(sprintf("data/%s/metadata.yml", dataset_id))
-metadata_study <- austraits$metadata[[dataset_id]]
+metadata_study <- read_yaml(sprintf("data/%s/metadata.yml", dataset_id))
 
 knitr::opts_chunk$set(fig.cap='', fig.path = file.path(root.dir,"export/figures", paste0(dataset_id,"_")))
 
@@ -230,15 +229,15 @@ site_main <- c("longitude (deg)","latitude (deg)", "description")
 sites <-
   full_join(by="site_name",
             # count of records by site
-            data_study$data %>%
+            data_study$traits %>%
               mutate(site_name = ifelse(is.na(site_name), "unknown", site_name)) %>%
               group_by(site_name) %>%
               summarise(records = n()),
             # details on sites from metadata
-            data_study$context %>%
-              filter(trait_name %in% site_main) %>%
+            data_study$sites %>%
+              filter(site_property %in% site_main) %>%
               select(-dataset_id) %>%
-              spread(trait_name, value) %>%
+              spread(site_property, value) %>%
               create_if_missing("site_name") %>%
               create_if_missing("latitude (deg)") %>%
               create_if_missing("longitude (deg)") %>%
@@ -283,10 +282,10 @@ The following variables have been recorded for the sites included in the study:
 
 ```{r, results='asis', echo=FALSE}
 
-data_study$context %>%
-  filter(!(trait_name %in% site_main)) %>%
+data_study$sites %>%
+  filter(!(site_property %in% site_main)) %>%
   select(-dataset_id) %>%
-  spread(trait_name, value) -> context
+  spread(site_property, value) -> context
 
 if(nrow(context) > 0 ) {
   context %>%
@@ -304,10 +303,10 @@ if(nrow(context) > 0 ) {
 
 ## Overview
 
-The dataset includes `r data_study$data %>% nrow()` individual data points from `r data_study$data$species_name %>% unique() %>% length()` species, with data included for the following `r data_study$data$trait_name %>% unique() %>% length()` traits:
+The dataset includes `r data_study$traits %>% nrow()` individual data points from `r data_study$traits$species_name %>% unique() %>% length()` species, with data included for the following `r data_study$traits$trait_name %>% unique() %>% length()` traits:
 
 ```{r summary_table, results='asis', echo=FALSE}
-n_records <- data_study$data %>%
+n_records <- data_study$traits %>%
   group_by(trait_name) %>%
     summarise(
         species = length(unique(species_name)),
@@ -351,7 +350,7 @@ if(nrow(data_study$excluded_data) > 0 ) {
 ## Numerical traits
 
 ```{r numerical, results='asis', echo=FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=10}
-traits <- data_study$data$trait_name %>% unique() %>% sort()
+traits <- data_study$traits$trait_name %>% unique() %>% sort()
 traits_numeric <- traits[trait_is_numeric(traits, definitions)]
 
 
@@ -365,8 +364,8 @@ define_variable <- function(var, definitions) {
 
   description <- switch(var,
                         value_type = definitions$value_type$description,
-                        replicates = definitions$austraits$elements$data$elements$replicates,
-                        methods = definitions$austraits$elements$details$elements$methods
+                        replicates = definitions$austraits$elements$traits$elements$replicates,
+                        methods = definitions$austraits$elements$methods$elements$methods
                         )
 
   sprintf("The variable `%s` is *'%s'*.", v, description) %>%
@@ -391,15 +390,15 @@ writeLines(ifelse(length(traits_numeric) == 0,
 for(trait in traits_numeric) {
 
 
-  data_trait_study <- data_study$data %>%
+  data_trait_study <- data_study$traits %>%
     filter(trait_name == trait) %>%
     mutate(value = as.numeric(value))
 
-  data_trait_all <- austraits$data %>%
+  data_trait_all <- austraits$traits %>%
     filter(trait_name == trait) %>%
     mutate(value = as.numeric(value))
 
-  transforms <- data_yaml$traits %>% list_to_df() %>% filter(trait_name == trait)
+  transforms <- metadata_study$traits %>% list_to_df() %>% filter(trait_name == trait)
 
   elements <- austraits$definitions$traits$elements[[trait]]
 
@@ -474,7 +473,7 @@ for(trait in traits_numeric) {
 
 ```{r categorical, results='asis', echo=FALSE, eval=TRUE}
 
-traits <- data_study$data$trait_name %>% unique() %>% sort()
+traits <- data_study$traits$trait_name %>% unique() %>% sort()
 traits_categorical <- traits[!trait_is_numeric(traits, definitions)]
 
 writeLines(
@@ -484,12 +483,12 @@ writeLines(
 
 for(trait in traits_categorical) {
 
-  transforms <- data_yaml$traits %>% list_to_df() %>% filter(trait_name == trait)
+  transforms <- metadata_study$traits %>% list_to_df() %>% filter(trait_name == trait)
 
-  data_trait_study <- data_study$data %>%
+  data_trait_study <- data_study$traits %>%
     filter(trait_name == trait)
 
-  data_trait_all <- austraits$data %>%
+  data_trait_all <- austraits$traits %>%
     filter(trait_name == trait)
 
   elements <- austraits$definitions$traits$elements[[trait]]
@@ -562,7 +561,7 @@ We have records on the following species from your study. We have attempted to a
 The table below shows the aligned taxonomy, with columns
 
 ```{r, results='asis', echo=FALSE}
-definitions$austraits$elements$species_list$elements %>%
+definitions$austraits$elements$taxonomy$elements %>%
   list1_to_df() %>%
   bind_rows(tibble(key="notes", value="The reason a name change was implemented (where relevant)")) %>%
   my_kable_styling()
@@ -574,17 +573,17 @@ Updated names are shown only where different to the original name supplied. We a
 
 corrections <- tibble(original_name= character(), notes = character())
 
-if(!is.null(data_yaml$taxonomic_updates) & !is.na(data_yaml$taxonomic_updates)) {
-  corrections <- data_yaml$taxonomic_updates %>%
+if(!is.null(metadata_study$taxonomic_updates) & !is.na(metadata_study$taxonomic_updates)) {
+  corrections <- metadata_study$taxonomic_updates %>%
     list_to_df() %>%
     select(original_name = find, notes = reason)
 }
 
-species <- data_study$data %>%
+species <- data_study$traits %>%
   select(original_name, species_name) %>%
   distinct() %>%
   arrange(original_name) %>%
-  left_join(austraits$species_list, by ="species_name") %>%
+  left_join(austraits$taxonomy, by ="species_name") %>%
   rename(TPL_name = species_name) %>%
   mutate(TPL_name = ifelse(TPL_name == original_name, "", TPL_name),
          APC_name = ifelse(APC_name == original_name, "", APC_name)

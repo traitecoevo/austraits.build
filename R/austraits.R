@@ -5,11 +5,10 @@ library(tidyverse)
 extract_dataset <- function(austraits, dataset_id) {
 
   ret <- list()
-  for(v in c("data", "context", "details", "excluded_data"))
+  for(v in c("traits", "sites", "methods", "excluded_data"))
     ret[[v]] <- austraits[[v]][ austraits[[v]][["dataset_id"]] %in% dataset_id,]
   # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
-  ret[["species_list"]] <- austraits[["species_list"]] %>% filter(species_name %in% ret[["data"]][["species_name"]])
-  ret[["metadata"]] <- austraits[["metadata"]][dataset_id]
+  ret[["taxonomy"]] <- austraits[["taxonomy"]] %>% filter(species_name %in% ret[["traits"]][["species_name"]])
   ret[["definitions"]] <- austraits[["definitions"]]
 
   ret
@@ -132,16 +131,15 @@ extract_trait <- function(austraits, trait_name) {
   ret <- austraits
 
   # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
-  ret[["data"]] <- austraits[["data"]][austraits[["data"]][["trait_name"]] %in% trait_name,]
-  ids <- ret[["data"]][["dataset_id"]] %>% unique() %>% sort()
-  ret[["context"]] <- austraits[["context"]][austraits[["context"]][["dataset_id"]] %in% ids,]
-  ret[["species_list"]] <- austraits[["species_list"]] %>% filter(species_name %in% ret[["data"]][["species_name"]])
-  ret[["metadata"]] <- austraits[["metadata"]][ids]
-  ret[["excluded"]] <- austraits[["excluded"]][austraits[["excluded"]][["trait_name"]] %in% trait_name,]
+  ret[["traits"]] <- austraits[["traits"]][ austraits[["traits"]][["trait_name"]] %in% trait_name,]
+  ids <- ret[["traits"]][["dataset_id"]] %>% unique() %>% sort()
+  ret[["sites"]] <- austraits[["sites"]][austraits[["sites"]][["dataset_id"]] %in% ids,]
+  ret[["taxonomy"]] <- austraits[["taxonomy"]] %>% filter(species_name %in% ret[["traits"]][["species_name"]])
+  ret[["excluded_data"]] <- austraits[["excluded_data"]][austraits[["excluded_data"]][["trait_name"]] %in% trait_name,]
 
   # if numeric, convert to numeric
-  if(!is.na(ret[["data"]][["unit"]][1])){
-    ret[["data"]][["value"]] <- as.numeric(ret[["data"]][["value"]])
+  if(!is.na(ret[["traits"]][["unit"]][1])){
+    ret[["traits"]][["value"]] <- as.numeric(ret[["traits"]][["value"]])
   }
 
   ret
@@ -161,9 +159,8 @@ trait_is_categorical <- function(trait_name, definitions) {
 
 export_to_plain_text <- function(austraits, path) {
   dir.create(path, FALSE, TRUE)
-  for(v in c("data","context", "details", "excluded_data", "species_list"))
+  for(v in c("traits","sites", "methods", "excluded_data", "taxonomy"))
     write_csv(austraits[[v]], sprintf("%s/%s.csv", path, v))
-  write_yaml(austraits[["metadata"]],  sprintf("%s/metadata.yml", path))
   write_yaml(austraits[["definitions"]],  sprintf("%s/definitions.yml", path))
 }
 
@@ -184,6 +181,7 @@ compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trai
     v1 <- v1 %>% extract_trait(trait_name)
     v2 <- v2 %>% extract_trait(trait_name)
   }
+
 
   v1 %>% export_to_plain_text(path)
   repo <- git2r::init(path)
@@ -227,10 +225,10 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
     factor(p, levels=names(my_shapes))
   }
   
-  data <- austraits_trait$data %>%
+  data <- austraits_trait$traits %>%
     mutate(log_value = log10(value),
            shapes = as_shape(value_type)) %>%
-    left_join(., select(austraits_trait$species, 'species_name', 'family'),
+    left_join(., select(austraits_trait$taxonomy, 'species_name', 'family'),
               by = "species_name")
 
   # Define grouping variables and derivatives

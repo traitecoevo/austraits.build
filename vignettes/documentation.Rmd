@@ -70,7 +70,7 @@ knitr::opts_chunk$set(fig.cap='', fig.path = file.path(root.dir,"vignettes/figur
 
 # Overview
 
-This document describes the AusTraits compilation - a database of plant traits for the Australian Flora. AusTraits synthesises data on `r austraits$data$trait_name %>% unique() %>% length()` traits from `r austraits$metadata %>% length()` different sources, including field campaigns, published literature, taxonomic monographs, and individual species descriptions. Traits vary in scope from physiological measures of performance (e.g. photosynthetic gas exchange, water-use efficiency) to morphological parameters (e.g. leaf size, seed size, maximum height) which link to ecological strategy variation. AusTraits contains curated and harmonised species- and genus-level observations coupled to, where available, contextual information on site properties. 
+This document describes the AusTraits compilation - a database of plant traits for the Australian Flora. AusTraits synthesises data on `r austraits$traits$trait_name %>% unique() %>% length()` traits from `r austraits$metadata %>% length()` different sources, including field campaigns, published literature, taxonomic monographs, and individual species descriptions. Traits vary in scope from physiological measures of performance (e.g. photosynthetic gas exchange, water-use efficiency) to morphological parameters (e.g. leaf size, seed size, maximum height) which link to ecological strategy variation. AusTraits contains curated and harmonised species- and genus-level observations coupled to, where available, contextual information on site properties. 
 
 This document provides information on the structure of AusTraits and corresponds to Version `r austraits$definitions$austraits$elements$version$value` of the dataset. An overview of the actual data is provided in another document: see XXXX.
 
@@ -151,15 +151,13 @@ names(austraits) %>%
 
 ```
 austraits
-├── version
-├── data
-├── context
-├── details
+├── traits
+├── sites
+├── methods
 ├── excluded_data
-├── species_list
-├── metadata
+├── taxonomy
 ├── definitions
-└── session_info
+└── build_info
 ```
 
 These elements include all the data and contextual information submitted with each contributed dataset, but are not in the same format as data contributions. See [Format of raw data files for AusTraits](#format) for how to format data to contribute.
@@ -170,13 +168,13 @@ Each component is the above table is defined as follows:
 ```{r}
 print_defintions_element <- function(elements) {
   if(elements$type == "character") {
-    sprintf("content: %s\n", elements$value) %>% 
+    sprintf("**Content:** %s\n", elements$value) %>% 
       writeLines()
   }
   
   if(elements$type == "table") {
     
-    sprintf("content: \n") %>% 
+    sprintf("**Content:** \n") %>% 
       writeLines()
 
     elements$elements %>% 
@@ -189,7 +187,7 @@ print_defintions_element <- function(elements) {
 for(v in names(austraits)) {
   elements <- austraits$definitions$austraits$elements[[v]]
   
-  sprintf("### %s\n\ndescription: %s\n", v, elements$description) %>% 
+  sprintf("### %s\n\n**Description:** %s\n", v, elements$description) %>% 
     writeLines()
   
   elements %>%
@@ -207,7 +205,7 @@ Below is the standard definition for each trait in AusTraits (drawn from the the
 for(trait in names(austraits$definitions$traits$elements)) {
   elements <- austraits$definitions$traits$elements[[trait]]
   
-  data_trait <- austraits$data %>%
+  data_trait <- austraits$traits %>%
     filter(trait_name == trait)
   
   c(
@@ -253,7 +251,7 @@ austraits$definitions$value_type$values %>%
 
 ## Species taxonomy
 
-Within Austraits there are records for `r austraits$data$species_name %>% unique() %>% length()` different species. A full list of all known species is available in the table `species_list` (see details above).
+Within Austraits there are records for `r austraits$traits$species_name %>% unique() %>% length()` different species. A full list of all known species is available in the table `taxonomy` (see details above).
 
 We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI). The `APNI_ID` can also be used to access relevant records for the species in the [`Atlas of Living Australia`](https://bie.ala.org.au/) (ALA).
 
@@ -298,7 +296,7 @@ austraits
 └── vignettes
 ```
 
-The folder `data` conatins a long list of folders, one for each study and each conatining two files:
+The folder `data` contains a long list of folders, one for each study and each containing two files:
 
 
 ```
@@ -339,7 +337,7 @@ source("R/report_utils.R")
 source("R/report_notetaker.R")
 ```
 
-Within the compiled matrix `austraits` are the elements listed in [Elements of Austraits](#elements). The actual trait data can be found in the dataframe `austraits$data`.
+Within the compiled matrix `austraits` are the elements listed in [Elements of Austraits](#elements). The actual trait data can be found in the dataframe `austraits$traits`.
 
 
 # Format of raw data files for Austraits {#format}
@@ -365,13 +363,13 @@ It may help to download one of the [existing datasets](https://github.com/traite
 
 ## Data.csv {#create_data}
 
-The data.csv file can be in either long or wide format.
+The file `data.csv` file can be in either long or wide format.
 
 Required columns include the species name, the trait name (column in long format, header in wide format), units (column in long format, part of header in wide format), site (if applicable), and trait values.
 
-If multiple trait measurements were made on the same individual or are the mean of a species' measurements from the same site, they should be kept linked. If the  data is in wide format, each row should represent measurements made on a single individual or a single species-by-site mean, with different trait values as consecutive columns. If the data is in long format, an observation ID (or other identifier) must be assigned to identify which measurements are linked to a unique individual or site.
+If multiple trait measurements were made on the same individual or are the mean of a species' measurements from the same site, they should be kept linked. If the data is in wide format, each row should represent measurements made on a single individual or a single species-by-site mean, with different trait values as consecutive columns. If the data is in long format, an observation ID (or other identifier) must be assigned to identify which measurements are linked to a unique individual or site.
 
-Keep the data file in rawest form possible (i.e. as few changes as possible) but it must be a single csv file. Additional custom R code may be required to make the file exactly compatible with the AusTraits format, but these changes should be executed as AusTraits is compiled and should be in the `metadata.yml` file under `config > custom_R_code`. Any files used to create the submitted `data.csv` file (e.g. Excel ...) should be supplied so they can be archived in a subfolder within the study folder named `raw`.
+Keep the data file in rawest form possible (i.e. as few changes as possible) but it must be a single csv file. Additional custom R code may be required to make the file exactly compatible with the AusTraits format, but these changes should be executed as AusTraits is compiled and should be in the `metadata.yml` file under `config/custom_R_code`. Any files used to create the submitted `data.csv` file (e.g. Excel ...) should be supplied so they can be archived in a subfolder within the study folder named `raw`.
 
 ## Metadata.yml  
 
@@ -560,19 +558,19 @@ Note that only the AusTraits custodians have the contributors e-mails on file. T
 
 ### Dataset
 
-The following data are included under the element `Dataset`:
+The following data are included under the element `dataset`:
 
-**year_collected_start:** `r sprintf(austraits$definitions$austraits$elements$details$elements$year_collected_start)`
+**year_collected_start:** `r sprintf(austraits$definitions$austraits$elements$methods$elements$year_collected_start)`
 
-**year_collected_end:** `r austraits$definitions$austraits$elements$details$elements$year_collected_end`
+**year_collected_end:** `r austraits$definitions$austraits$elements$methods$elements$year_collected_end`
 
-**description:** `r austraits$definitions$austraits$elements$details$elements$description`
+**description:** `r austraits$definitions$austraits$elements$methods$elements$description`
 
-**collection_type:** `r austraits$definitions$austraits$elements$details$elements$collection_type`
+**collection_type:** `r austraits$definitions$austraits$elements$methods$elements$collection_type`
 
-**sample_age_class:** `r austraits$definitions$austraits$elements$details$elements$sample_age_class`
+**sample_age_class:** `r austraits$definitions$austraits$elements$methods$elements$sample_age_class`
 
-**sampling_strategy:** `r austraits$definitions$austraits$elements$details$elements$sampling_strategy`
+**sampling_strategy:** `r austraits$definitions$austraits$elements$methods$elements$sampling_strategy`
 
 **original_file:** The name of the file initially submitted to Austraits.
 
@@ -702,7 +700,7 @@ XXXXX when I added datasets I realized it was easier to run lines 1 at a time to
 data <- read_csv(filename_data_raw, col_types = cols()) %>%
     custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
     parse_data(dataset_id, metadata) %>%
-    add_all_columns(definitions, "data") %>%
+    add_all_columns(definitions, "traits") %>%
     flag_unsupported_traits(definitions) %>%
     convert_units(definitions, unit_conversion_functions) %>%
     flag_unsupported_values(definitions) %>%
@@ -818,28 +816,28 @@ These names correspond to the sections described in full above under ["elements 
 The trait data are in the element called data
 
 ```{r}
-austraits$data
+austraits$traits
 ```
-(Note that data appears as a `tibble` rather than a `data.frame`. Tibbles are an enhanced type dataframe, with some desirable features, such as not printing the whole dataframe to screen. (If you prefer, you can easily use a traditional R `data.frame` by converting it using `df <- data.frame(austraits$data)`. But from here on we'll assume you're sticking with a tibble.)
+(Note that data appears as a `tibble` rather than a `data.frame`. Tibbles are an enhanced type dataframe, with some desirable features, such as not printing the whole dataframe to screen. (If you prefer, you can easily use a traditional R `data.frame` by converting it using `df <- data.frame(austraits$traits)`. But from here on we'll assume you're sticking with a tibble.)
 
 ## Taking subsets
 
 Using the `dplyr`, it's easy to subset by rows using `filter`. This approach can be used to filter the data to particular trait or study:
 
 ```{r}
-austraits$data %>% 
+austraits$traits %>% 
   filter(trait_name == "leaf_area")
 ```
 
 ```{r}
-austraits$data %>% 
+austraits$traits %>% 
   filter(dataset_id == "Blackman_2014")
 ```
 
 We can select particular columns from the whole or filtered dataset using `select`:
 
 ```{r}
-austraits$data %>% 
+austraits$traits %>% 
   select(species_name, observation_id, trait_name, value)
 ```
 
@@ -848,64 +846,64 @@ austraits$data %>%
 The file `austraits.R` also include pre-built functions for extracting a particular trait or study. The difference with the examples above, is that these functions also subset the other tables and elements of the data, not just the main data table. So we need to provide the entire `austraits` object and a `dataset_id`:
 
 ```{r B14}
-data_B14 <- extract_dataset(austraits, "Blackman_2014")
+traits_B14 <- extract_dataset(austraits, "Blackman_2014")
 ```
 
 As wiith the the main `austraits` object, this new dataset has multiple elements:
 ```{r}
-names(data_B14)
+names(traits_B14)
 ```
 but the length of the datasets is smaller:
 ```{r countrows}
-count_rows <- function(obj) {c(nrow(obj$data), nrow(obj$context), nrow(obj$species_list))}
+count_rows <- function(obj) {c(nrow(obj$traits), nrow(obj$sites), nrow(obj$taxonomy))}
 # main data
 austraits %>% count_rows()
 # subset
-data_B14 %>% count_rows()
+traits_B14 %>% count_rows()
 ```
 
 A similar function enables sub-setting to a particular trait, including the various other tables:
 
 ```{r}
-data_LS <- extract_trait(austraits, "leaf_width")
+traits_LS <- extract_trait(austraits, "leaf_width")
 ```
 
 As with the the main `austraits` object, this new dataset has multiple elements:
 ```{r}
-names(data_LS)
+names(traits_LS)
 ```
 but the length of the datasets is smaller:
 ```{r}
 # main data
 austraits %>% count_rows()
 # subset
-data_LS %>% count_rows()
+traits_LS %>% count_rows()
 ```
 
 ## Merging with taxonomic data
 
-Limited taxonomic information is provided in the main table `data`, only `original_name` (the original name provided by the authors) and `species_name` (the aligned taxonomic name; see [species taxonomy](#species_taxonomy) for details). But further information is available in the table `species_list`:
+Limited taxonomic information is provided in the main table `data`, only `original_name` (the original name provided by the authors) and `species_name` (the aligned taxonomic name; see [species taxonomy](#species_taxonomy) for details). But further information is available in the table `taxonomy`:
 
 ```{r}
-austraits$species_list
+austraits$taxonomy
 ```
 
 You can merge this information in with the main dataset using the `species_name` as a an identifier linking both tables:
 
 ```{r taxonomic, results='show'}
-data2 <- austraits$data %>% 
-          left_join(by="species_name", austraits$species_list)
+traits2 <- austraits$traits %>% 
+          left_join(by="species_name", austraits$taxonomy)
 
-names(data2)
+names(traits2)
 ```
 
 Similarly we could merge in only family information by using `select` to reduce the second table before merging:
 
 ```{r taxonomic2, results='show'}
-data2 <- austraits$data %>% 
-          left_join(by="species_name", select(austraits$species_list, species_name, family))
+traits2 <- austraits$traits %>% 
+          left_join(by="species_name", select(austraits$taxonomy, species_name, family))
 
-names(data2)
+names(traits2)
 ```
 
 ## Merging with location data
@@ -913,35 +911,35 @@ names(data2)
 As with taxonomic information, limited information about location is provided in the main table `data`.  But further information is available in the table `context`:
 
 ```{r}
-austraits$context
+austraits$sites
 ```
 
 As with the main table of trait data, this information is in long format. Depending on the study, a variety of contextual information may have been provided, including
 
 ```{r}
-austraits$context$trait_name %>% table() %>% sort(decreasing=TRUE) %>% .[1:10]
+austraits$sites$site_property %>% table() %>% sort(decreasing=TRUE) %>% .[1:10]
 ```
 
 In this example we'll just focus on location details. Before merging in with the main data table let's convert this data from long to wide format:
 
 ```{r}
-sites <- austraits$context %>% 
-  filter(trait_name %in%  c("longitude (deg)","latitude (deg)")) %>% 
-  spread(trait_name, value)
+sites <- austraits$sites %>% 
+  filter(site_property %in%  c("longitude (deg)","latitude (deg)")) %>% 
+  spread(site_property, value)
 sites
 ```
 
 We can now merge in with the main data table using combinations of `dataset_id` and `site_name` as identifiers from both tables:
 
 ```{r}
-data_sites <- left_join(by=c("dataset_id", "site_name"), austraits$data, sites)
+traits_sites <- left_join(by=c("dataset_id", "site_name"), austraits$traits, sites)
 
-names(data_sites)
+names(traits_sites)
 ```
 
 ## Converting from long to wide format
 
-As discussed above, the main data table in `austraits` is distributed in long format. A long format has each measurement on a different row, and just a single column for all the value. By contrast, a dataset in wide format has data for each different trait in it's own column. The reason we use long format is mainly for efficiency. We have data from `r austraits$data$trait_name %>% unique() %>% length()` different traits, so in wide format we'd need at least this many columns. With many species, the file size gets very large very quickly. Other benefits of long format are that we can include columns for `units`, `value_type`, and `replicates`, which we could not in wide format (without created 3 more columns for each traits). 
+As discussed above, the main data table in `austraits` is distributed in long format. A long format has each measurement on a different row, and just a single column for all the value. By contrast, a dataset in wide format has data for each different trait in it's own column. The reason we use long format is mainly for efficiency. We have data from `r austraits$traits$trait_name %>% unique() %>% length()` different traits, so in wide format we'd need at least this many columns. With many species, the file size gets very large very quickly. Other benefits of long format are that we can include columns for `units`, `value_type`, and `replicates`, which we could not in wide format (without created 3 more columns for each traits). 
 
 For many analyses, however, you'll want to use wide format. We have therefore provided the ability to convert between the two formats. In wide format, each trait appears in it's own column and measurements from the same observation (ideally individual, but in floras may be a species) appear on the same row.  
 
@@ -950,34 +948,34 @@ As the entire austraits dataset is quite large, we recommend first sub-setting t
 First extract the trait data from the `Blackman_2014` study:
 
 ```{r}
-data <- austraits$data %>% 
+data <- austraits$traits %>% 
   filter(dataset_id == "Blackman_2014")
 data
 ```
 Now use the inbuilt function `spread_trait_data` to convert from long to wide:
 
 ```{r}
-data_spread <- spread_trait_data(data)
+traits_spread <- spread_trait_data(data)
 ```
 This function spreads not only the data in the column `value`, but also other columns. The returned object is a list with a number of wide tables:
 
 ```{r}
-names(data_spread)
+names(traits_spread)
 ```
 Looking at each of these we see a table in wide format (i.e. with each trait being a column), as well as identifying columns at the start:
 ```{r}
-data_spread$value
+traits_spread$value
 ```
 The other tables have an identical format
 
 ```{r}
-data_spread$unit
+traits_spread$unit
 ```
 ...etc
 
 The new dataset can then be used to plot traits against each other, e.g.
 ```{r, warning=FALSE}
-data_spread$value %>%
+traits_spread$value %>%
   mutate(specific_leaf_area = as.numeric(specific_leaf_area), 
          photosynthetic_rate_per_area = as.numeric(photosynthetic_rate_per_area)) %>%
   ggplot(aes(x=specific_leaf_area, y = photosynthetic_rate_per_area, colour =site_name)) +
@@ -987,14 +985,14 @@ data_spread$value %>%
 There is also a function to convert back from wide to long format:
 
 ```{r}
-data2 <- gather_trait_data(data_spread, austraits$definitions)
+traits2 <- gather_trait_data(traits_spread, austraits$definitions)
 ```
 
 This manipulation should recover the original dataset.
 
 Original:
 ```{r}
-data2
+traits2
 ```
 After conversion
 ```{r}
@@ -1002,7 +1000,7 @@ data
 ```
 Just to be sure we can run a check:
 ```{r}
-all.equal(data, data2)
+all.equal(data, traits2)
 ```
 
 Note that the function `gather_trait_data` also needs the element `austraits$definitions` to run successfully. 
@@ -1012,14 +1010,14 @@ Note that the function `gather_trait_data` also needs the element `austraits$def
 The above example works easily because there is only a single measurement of each trait per `observation_id`. But this is not always the case. Many datasets include multiple records per `observation_id`, for example studies reporting multiple `value_types` per `observation_id`. An example is the `AusGrass_2014` datasets:
 
 ```{r}
-data <- austraits$data %>% 
+traits <- austraits$traits %>% 
   filter(dataset_id == "AusGrass_2014")
-data
+traits
 ```
 Note the dataset includes multiple value_types: `expert_min` and `expert_max`. If you try running `spread_trait_data` on this data it will fail: 
 
 ```{r, eval=FALSE}
-data_spread <- spread_trait_data(data)
+traits_spread <- spread_trait_data(traits)
 ```
 ```
 ## Error: Duplicate identifiers for rows (2929, 2930), (2936, 2937), (3015, 3016), (2975, 2976), ....
@@ -1028,12 +1026,12 @@ data_spread <- spread_trait_data(data)
 So before converting from long to wide we use an additional function called `bind_trait_values` to collapse all the different measurements for a given `trait_name` and `observation_id` into a single cell:
 
 ```{r}
-data_bind <- bind_trait_values(data)
+traits_bind <- bind_trait_values(traits)
 ```
 This function binds data from multiple rows together, separating with the string ``--`. This occurs for columns `value`, `value_type`, and `replicates`. Looking at the table we can see the bound values:
 
 ```{r}
-data_bind %>% 
+traits_bind %>% 
   filter(grepl("--", value_type)) %>% 
   select(-dataset_id, -site_name, -original_name)
 ```
@@ -1041,46 +1039,46 @@ data_bind %>%
 Using this new dataset we can now go from long to wide:
 
 ```{r}
-data_spread <- spread_trait_data(data_bind)
+traits_spread <- spread_trait_data(traits_bind)
 ```
 
 The bound data values are carried over to the new dataset:
 ```{r}
-data_spread$value
+traits_spread$value
 ```
 
 As previously, we can also convert back again:
 
 ```{r}
-data_bind2 <- gather_trait_data(data_spread, austraits$definitions)
+traits_bind2 <- gather_trait_data(traits_spread, austraits$definitions)
 ```
 
 Thsi gets us back to the intermediate dataset
 ```{r}
-all.equal(data_bind, data_bind2)
+all.equal(traits_bind, traits_bind2)
 ```
 
 And then finally we can separate out the values that have been bound together:
 
 ```{r}
-data2 <- separate_trait_values(data_bind2, austraits$definitions)
+traits2 <- separate_trait_values(traits_bind2, austraits$definitions)
 ```
 
 We should now have a dataset identical to our original. Just to be sure we can run a check:
 ```{r}
-all.equal(data, data2)
+all.equal(traits, traits2)
 ```
 
 Using pipes we can put all these steps together to short the full range of steps:
  
 ```{r}
-data %>% 
+traits %>% 
  bind_trait_values() %>% 
  spread_trait_data() %>% 
  gather_trait_data() %>% 
- separate_trait_values(austraits$definitions) -> data2
+ separate_trait_values(austraits$definitions) -> traits2
 
-all.equal(data, data2)
+all.equal(traits, traits2)
 ```
 
 ## Categorical vs numerical traits 
@@ -1088,7 +1086,7 @@ all.equal(data, data2)
 List of categorical traits:
 
 ```{r, echo=TRUE, results="show"}
-traits_all <- austraits$data$trait_name %>% unique()  %>% sort()
+traits_all <- austraits$traits$trait_name %>% unique()  %>% sort()
 
 traits_all[trait_is_categorical(traits_all, austraits$definitions)]
 ```
@@ -1136,7 +1134,7 @@ Occasionally all the changes we want to make to dataset may not fit into the pre
   data <- read_csv(filename_data_raw, col_types = cols()) %>%
     custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
     parse_data(dataset_id, metadata) %>%
-    add_all_columns(definitions, "data") %>%
+    add_all_columns(definitions, "traits") %>%
     flag_unsupported_traits(definitions) %>%
     convert_units(definitions, unit_conversion_functions) %>%
     flag_unsupported_values(definitions) %>%

@@ -5,7 +5,7 @@ build_study_reports <- function(dataset_ids=NULL, ...) {
   # define if does not already exist, 
   # for all studies with suitable metadata file
   if(length(dataset_ids) ==0 | is.null(dataset_ids) | any(is.na(dataset_ids)))
-    dataset_ids <- austraits$data$dataset_id %>% unique()
+    dataset_ids <- austraits$trait$dataset_id %>% unique()
   
   for(dataset_id in dataset_ids)
     build_study_report(dataset_id, ...)
