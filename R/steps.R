@@ -2,7 +2,7 @@ load_study <- function(filename_data_raw,
                        filename_metadata,
                        definitions,
                        unit_conversion_functions,
-                       species_list_known
+                       taxonomy_known
                        ) {
 
   dataset_id <- basename(dirname(filename_data_raw))
@@ -11,10 +11,10 @@ load_study <- function(filename_data_raw,
   metadata <- read_yaml(filename_metadata)
 
   # load and clean trait data
-  data <- read_csv(filename_data_raw, col_types = cols()) %>%
+  traits <- read_csv(filename_data_raw, col_types = cols()) %>%
     custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
     parse_data(dataset_id, metadata) %>%
-    add_all_columns(definitions, "data") %>%
+    add_all_columns(definitions, "traits") %>%
     flag_unsupported_traits(definitions) %>%
     convert_units(definitions, unit_conversion_functions) %>%
     flag_unsupported_values(definitions) %>%
@@ -31,20 +31,21 @@ load_study <- function(filename_data_raw,
     format_sites <- function(v, my_list) {
       my_list[[v]] %>%
       list1_to_df() %>%
-      rename(trait_name="key") %>%
+      rename(site_property="key") %>%
       mutate(dataset_id=dataset_id, site_name = v)
     }
 
-    context <- lapply(metadata$sites, lapply, as.character) %>%
+    sites <- lapply(metadata$sites, lapply, as.character) %>%
       lapply(names(.), format_sites, .) %>%
       dplyr::bind_rows()
-  } else {
-    context <- tibble(dataset_id = character(), site_name = character())
-  }
-  context <- add_all_columns(context, definitions, "context")
 
-  # record details on study from metadata
-  details <-   
+  } else {
+    sites <- tibble(dataset_id = character(), site_name = character())
+  }
+  sites <- add_all_columns(sites, definitions, "sites")
+
+  # record methods on study from metadata
+  methods <-   
     full_join( by = "dataset_id",
       # methods used to collect each trait  
       metadata[["traits"]] %>%
@@ -53,7 +54,7 @@ load_study <- function(filename_data_raw,
         mutate(dataset_id = dataset_id) %>%
         select(dataset_id, trait_name, methods) 
       ,
-      # study details
+      # study methods
       metadata$dataset %>% 
         list1_to_df() %>% 
         spread(key, value) %>%
@@ -71,22 +72,20 @@ load_study <- function(filename_data_raw,
     )
 
   # Retrieve taxonomic details
-  species_list <- 
+  taxonomy <- 
       left_join(by = "species_name",
-                tibble(species_name =  unique(data$species_name)),
-                species_list_known
+                tibble(species_name =  unique(traits$species_name)),
+                taxonomy_known
                 ) %>%
       arrange(species_name)
   
 
   list(dataset_id = dataset_id,
-       version = definitions$austraits$elements$version$value,
-       data       = data %>% filter(is.na(error)) %>% select(-error),
-       context    = context %>% select(-error),
-       details    = details,
-       excluded_data = data %>% filter(!is.na(error)) %>% select(error, everything()),
-       species_list = species_list,
-       metadata   = metadata,
+       traits       = traits %>% filter(is.na(error)) %>% select(-error),
+       sites    = sites %>% select(-error),
+       methods    = methods,
+       excluded_data = traits %>% filter(!is.na(error)) %>% select(error, everything()),
+       taxonomy = taxonomy,
        definitions = definitions
        )
 }
@@ -431,17 +430,19 @@ combine_austraits <- function(..., d=list(...), definitions) {
   d[sapply(d, is.null)] <- NULL
 
   names(d) <- sapply(d, "[[", "dataset_id")
-  ret <- list(version=definitions$austraits$elements$version$value,
-              data=combine("data", d),
-              context=combine("context", d),
-              details=combine("details", d),
+  ret <- list(traits=combine("traits", d),
+              sites=combine("sites", d),
+              methods=combine("methods", d),
               excluded_data = combine("excluded_data", d),
-              species_list=combine("species_list", d) %>% 
+              taxonomy=combine("taxonomy", d) %>% 
                               arrange(species_name) %>% 
                               filter(!duplicated(.)),
-              metadata=lapply(d, "[[", "metadata"),
               definitions = definitions,
-              session_info = sessionInfo()
+              build_info = list(
+                      version=definitions$austraits$elements$version$value,
+                      git_SHA=get_SHA_link(),
+                      session_info = sessionInfo()
+                      )
               )
   ret
 }

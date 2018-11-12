@@ -919,11 +919,7 @@ austraits:
   description: The compiled `Austraits` dataset.
   type: list
   elements:
-    version:
-      description: Version number of the dataset
-      type: character
-      value: "0.9.0"
-    data:
+    traits:
       description: A table containing measurements of plant traits.
       type: table
       elements:
@@ -937,15 +933,15 @@ austraits:
         value_type: *value_type
         replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each species. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be `1`. If the value type is `expert_mean`, `expert_min`, or `expert_max` the replicate value should be `.na`.
         original_name: &orginal_name Taxonomic name given to species in the original data supplied by the authors
-    context:
+    sites:
       description: A table containing observations of site characteristics associated with information in `data`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
       type: table
       elements:
         dataset_id: *dataset_id
         site_name: *site_name
-        trait_name: The site characteristic being recorded. Name should include units of measurement, e.g. `longitude (deg)`. Ideally we have at least these variables for each site - `longitude (deg)`, `latitude (deg)`, `description`.
+        site_property: The site characteristic being recorded. Name should include units of measurement, e.g. `longitude (deg)`. Ideally we have at least these variables for each site - `longitude (deg)`, `latitude (deg)`, `description`.
         value: *value
-    details:
+    methods:
       description: A table containing details on methods with which data were collected, including time frame and source.
       type: table
       elements:
@@ -964,7 +960,7 @@ austraits:
       description: A table of data that did not pass quality test and so were excluded from the master dataset.
       type: character
       value: Structure is identical to that presented in the `data` table, only with an extra column called `error` indicating why the record was excluded.
-    species_list:
+    taxonomy:
       description: A table containing details on species taxonomy associated with information in `data`. Cross referencing between the two dataframes is possible using the variable `species_name`. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI).
       type: table
       elements:
@@ -976,23 +972,28 @@ austraits:
         APC_name: Name of species in APC
         APC_ID: ID of species in the APC
         APNI_ID: ID of species in the APNI
-    metadata: 
-      description: &metadata Structured recording of metadata for each individual study, as entered into Austraits. Information included in `context` and `details` are derived from this file. Also includes information on mapping of trait data into standard terms and units, plus any taxonomic changes implemented.
-      type: character
-      value: A structured yaml object, represented as a list in R. See section metadata for more details.
     definitions:
       description: A copy of the definitions for all tables and terms. Information included here was used to process data and generate any documentation for the study.
       type: character
       value: A structured yaml file, represented as a list in R. See file `config/definitions.yaml` for more details.
-    session_info:
-      description: The versions of R, packages, and data used to generate the dataset.
-      type: character
-      value: A structured yaml file, represented as a list in R.
+    build_info:
+      description: Description of the computing environment used to create this version of the dataset, including version number, git commit and R session_info.
+      type: list
+      elements:
+        version:
+          description: Version number of the dataset
+          type: character
+          value: "0.9.0"
+        git_SHA: Commit in git repository
+        session_info:
+          description: The versions of R, packages, and data used to generate the dataset.
+          type: character
+          value: A structured yaml file, represented as a list in R.
 
 #-------------------------------------------------------------
 
 metadata:
-  description: *metadata
+  description: &metadata Structured recording of metadata for each individual study, as entered into Austraits. Information included in `sites` and `methods` are derived from this file. Also includes information on mapping of trait data into standard terms and units, plus any taxonomic changes implemented.
   type: list
   elements:
     source:
