@@ -187,7 +187,7 @@ print_defintions_element <- function(elements) {
 for(v in names(austraits)) {
   elements <- austraits$definitions$austraits$elements[[v]]
   
-  sprintf("### %s\n\n**Description:** %s\n", v, elements$description) %>% 
+  sprintf("### %s {#%s}\n\n**Description:** %s\n", v, v, elements$description) %>% 
     writeLines()
   
   elements %>%
@@ -197,9 +197,56 @@ for(v in names(austraits)) {
 }
 ```
 
+## Observation IDs
+
+Each trait measurement has an associated `observation_id`. Observation IDs bind together related measurements within a dataset. For example, if multiple traits were collected on the same individual, the `observation_id` allows us to gather these together. For floras, which report a species averages, the `observation_id` is determined via the species name. Importantly, the `observation_id` allows translation between long  (e.g. with variables `trait_name` and `value`) and wide (e.g. with traits as columns) formats.
+
+Generally, `observation_id` has the format `dataset_id_XX` where `XX` is a unique number within each dataset.
+
+For datasets that arrive in wide format we assume each row has a unique `observation_id`. 
+
+For datasets that arrive in long format, the `observation_id` is assigned based on a specified grouping variable. This variable can be specified in the `metadata.yml` file under the section `variable_match`. If missing, `observation_id` is assigned based on `species_name`. 
+
+## Values and Value types {#value_types}
+
+Each record in the table of [trait data](#traits) has an associated `value` and `value_type`. Traits are either `numeric` or `categorical`.
+
+For traits with numerical values, the recorded value has been converted into standardised units and we have check that the value can be converted into a number and lies within the allowable range. 
+
+For categorical variables, we only include records that are defined in the definitions (see [trait definitions below](#traits)). Moreover, we use a format whereby
+
+
+- we use `_` for multi-word terms, e.g. `semi_deciduous`
+- use a space for situations where there are two possible values for that trait, e.g. `annual biennial` for something which is either annual or biennial 
+
+Each trait measurement also an associated `value_type`, which gives ``r austraits$definitions$value_type$description``. Possible value_types are:
+
+```{r value_type}
+austraits$definitions$value_type$values %>% 
+  list1_to_df()  %>% 
+  my_kable_styling() %>% 
+  writeLines()
+```
+
+## Species taxonomy
+
+Within Austraits there are records for `r austraits$traits$species_name %>% unique() %>% length()` different species. A full list of all known species is available in the table `taxonomy` (see details above).
+
+We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI). The `APNI_ID` can also be used to access relevant records for the species in the [`Atlas of Living Australia`](https://bie.ala.org.au/) (ALA).
+
+Links to species records in these systems can be accessed via the relevant IDs as in these examples. 
+
+- The Plant List: [http://www.theplantlist.org/tpl1.1/record/kew-450649](http://www.theplantlist.org/tpl1.1/record/kew-450649) where `kew-450649` is the `TPL_ID`
+- Australian Plant Census: [https://biodiversity.org.au/nsl/services/node/apc/2908862](https://biodiversity.org.au/nsl/services/node/apc/2908862) where `2908862` is the `APC_ID`
+- Australian Plant Names Index: [http://id.biodiversity.org.au/node/apni/2899106](http://id.biodiversity.org.au/node/apni/2899106
+) where `2899106` is the `APNI_ID`
+- Atlas of Living Australia: [https://bie.ala.org.au/species/http://id.biodiversity.org.au/node/apni/2899106](https://bie.ala.org.au/species/http://id.biodiversity.org.au/node/apni/2899106) where `2899106` is the `APNI_ID`.
+
+
 ## Trait definitions {#trait_defs}
 
-Below is the standard definition for each trait in AusTraits (drawn from the the file `config/definitions.yml`). Traits are labelled as either `numeric` or `categorical`.
+Below is the standard definition for each trait in AusTraits (drawn from the the file `config/definitions.yml`). As described above in the section on [Value types](#value_types), traits are labelled as either `numeric` or `categorical`.
+
 
 ```{r traits}
 for(trait in names(austraits$definitions$traits$elements)) {
@@ -227,41 +274,6 @@ for(trait in names(austraits$definitions$traits$elements)) {
     writeLines()
 }
 ```
-
-## Observation IDs
-
-Each trait measurement has an associated `observation_id`. Observation IDs bind together related measurements within a dataset. For example, if multiple traits were collected on the same individual, the `observation_id` allows us to gather these together. For floras, which report a species averages, the `observation_id` is determined via the species name. Importantly, the `observation_id` allows translation between long  (e.g. with variables `trait_name` and `value`) and wide (e.g. with traits as columns) formats.
-
-Generally, `observation_id` has the format `dataset_id_XX` where `XX` is a unique number within each dataset.
-
-For datasets that arrive in wide format we assume each row has a unique `observation_id`. 
-
-For datasets that arrive in long format, the `observation_id` is assigned based on a specified grouping variable. This variable can be specified in the `metadata.yml` file under the section `variable_match`. If missing, `observation_id` is assigned based on `species_name`. 
-
-## Value types {#value_types}
-
-Each trait measurement has an associated `value_type`, which gives ``r austraits$definitions$value_type$description`` Possible values are:
-
-```{r value_type}
-austraits$definitions$value_type$values %>% 
-  list1_to_df()  %>% 
-  my_kable_styling() %>% 
-  writeLines()
-```
-
-## Species taxonomy
-
-Within Austraits there are records for `r austraits$traits$species_name %>% unique() %>% length()` different species. A full list of all known species is available in the table `taxonomy` (see details above).
-
-We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI). The `APNI_ID` can also be used to access relevant records for the species in the [`Atlas of Living Australia`](https://bie.ala.org.au/) (ALA).
-
-Links to species records in these systems can be accessed via the relevant IDs as in these examples. 
-
-- The Plant List: [http://www.theplantlist.org/tpl1.1/record/kew-450649](http://www.theplantlist.org/tpl1.1/record/kew-450649) where `kew-450649` is the `TPL_ID`
-- Australian Plant Census: [https://biodiversity.org.au/nsl/services/node/apc/2908862](https://biodiversity.org.au/nsl/services/node/apc/2908862) where `2908862` is the `APC_ID`
-- Australian Plant Names Index: [http://id.biodiversity.org.au/node/apni/2899106](http://id.biodiversity.org.au/node/apni/2899106
-) where `2899106` is the `APNI_ID`
-- Atlas of Living Australia: [https://bie.ala.org.au/species/http://id.biodiversity.org.au/node/apni/2899106](https://bie.ala.org.au/species/http://id.biodiversity.org.au/node/apni/2899106) where `2899106` is the `APNI_ID`.
 
 
 # Building austraits
