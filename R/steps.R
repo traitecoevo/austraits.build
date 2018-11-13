@@ -118,6 +118,13 @@ flag_unsupported_traits <- function(data, definitions) {
   mutate(data, error = ifelse(!i, "Unsupported trait", error))
 }
 
+# checks if values in vector x are in y
+# values in x may contain multiple values separated by `sep`
+# so first split these
+check_all_values_in <- function(x, y, sep=" "){
+  x %>% str_split(sep) %>% sapply(function(xi) all(xi %in% y))
+}
+
 
 ## Flag any values outside allowable range
 flag_unsupported_values <- function(data, definitions) {
@@ -131,10 +138,13 @@ flag_unsupported_values <- function(data, definitions) {
 
   for(trait in traits ) {
    
-    # General categorical traits not listed in definitions
+    # General categorical traits
     if(trait_is_categorical(trait, definitions)) {
 
-      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & !is.null(definitions$traits$elements[[trait]]$values) & data[["value"]] %notin% names(definitions$traits$elements[[trait]]$values)
+      i <-  is.na(data[["error"]]) &
+            data[["trait_name"]] == trait &
+            !is.null(definitions$traits$elements[[trait]]$values) &
+            !check_all_values_in(data$value, names(definitions$traits$elements[[trait]]$values))
       data <- mutate(data, error = ifelse(i, "Unsupported trait value", error))
     }
 
