@@ -157,6 +157,56 @@ trait_is_categorical <- function(trait_name, definitions) {
   !trait_is_numeric(trait_name, definitions)
 }
 
+
+## move suspected duplicates from the `traits` frame of austraits
+## to excluded_data. 
+
+remove_suspected_duplicates <- function(austraits) {
+  
+  # copy traits and create a new variable with year of dataset_id
+  # we will preference studies with a lower value
+  tmp <- 
+    austraits$traits %>% 
+    # Extract year from dataset_id, so that we can keep the older record
+    mutate(year =  str_split(dataset_id, "_") %>% 
+                    lapply(function(i) i[2]) %>% unlist() %>% 
+                    gsub("0000", "9999", .)
+                    ) %>%
+  # sort to align suspected duplicates
+  arrange(trait_name, species_name, value, year) %>%
+  # detect duplicates based on combination of variables
+  mutate(
+         to_check = paste(trait_name, species_name, value), 
+         is_duplicate = duplicated(to_check)
+         )
+
+  # update `traits` with unique values only
+  austraits$traits <- tmp %>% 
+    filter(!is_duplicate) %>% 
+    # remove temporary variables
+    select(-year, -to_check, -is_duplicate) %>%
+    # original sorting
+    arrange(observation_id, trait_name, value_type)
+
+  # add suspected duplicates to bottom of excluded_data, noting 
+  # observartion_id of the matching data in the error column
+  austraits$excluded_data <- austraits$excluded_data %>% 
+    bind_rows(
+      tmp %>% 
+        filter(is_duplicate) %>% 
+        mutate(error = paste("suspected duplicate with ", 
+                             # find observatio_id for matching variable
+                             tmp$observation_id[match(to_check, tmp$to_check)])
+              ) %>% 
+        # remove temporary variables
+        select(-year, -to_check, -is_duplicate)
+      ) %>%
+    # original sorting
+    arrange(observation_id, trait_name, value_type)
+
+  austraits
+}
+
 export_to_plain_text <- function(austraits, path) {
   dir.create(path, FALSE, TRUE)
   for(v in c("traits","sites", "methods", "excluded_data", "taxonomy"))

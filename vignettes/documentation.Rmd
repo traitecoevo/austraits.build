@@ -124,7 +124,7 @@ For full instructions on preparing data for inclusion in Austraits see the secti
 
 # Data structures
 
-It is essential that future users of AusTraits data are confident the data have the meaning they expect it to and were collected using methods they trust. As such, each dataset within Austraits must incclude descriptions of the study, sites, and methods used as well as the data itself.
+It is essential that future users of AusTraits data are confident the data have the meaning they expect it to and were collected using methods they trust. As such, each dataset within Austraits must include descriptions of the study, sites, and methods used as well as the data itself.
 
 
 ## General approach
@@ -947,6 +947,29 @@ We can now merge in with the main data table using combinations of `dataset_id` 
 traits_sites <- left_join(by=c("dataset_id", "site_name"), austraits$traits, sites)
 
 names(traits_sites)
+```
+
+## Removing suspected duplicates
+
+Austraits compiles data from many different sources and not all of these will be unique. Data from one study may be repeated in another. We have provided a workflow for removing suspected duplicate data via the function `remove_suspected_duplicates`. The function takes as an argument the entire `austraits` object and returns a modified object in which suspected duplicates have been moved from the main `traits` table to the `excluded_data` table, noting  the `observartion_id` of the matching data in the error column. To use this function you mast pass in the entire `austraits` object:
+
+
+```{r}
+austraits_deduped <- remove_suspected_duplicates(austraits)
+```
+
+Suspected duplicates are identified based on identical matches between the variables `species_name`, `trait_name`, and `value`.  Priority is given to older sources, as indicated by the year in the `dataset_id`.
+
+Checking the number of rows in original dataset and modified dataset we can see that `r nrow(austraits_deduped$excluded_data) - nrow(austraits$excluded_data)` records have been removed from `traits`:
+
+```{r}
+c(traits = nrow(austraits$traits), 
+  excluded = nrow(austraits$excluded_data), 
+  total = nrow(austraits$traits)+ nrow(austraits$excluded_data))
+
+c(traits = nrow(austraits_deduped$traits), 
+    excluded = nrow(austraits_deduped$excluded_data), 
+  total = nrow(austraits_deduped$traits)+ nrow(austraits_deduped$excluded_data))
 ```
 
 ## Converting from long to wide format
