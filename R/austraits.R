@@ -212,6 +212,7 @@ export_to_plain_text <- function(austraits, path) {
   for(v in c("traits","sites", "methods", "excluded_data", "taxonomy"))
     write_csv(austraits[[v]], sprintf("%s/%s.csv", path, v))
   write_yaml(austraits[["definitions"]],  sprintf("%s/definitions.yml", path))
+  RefManageR::WriteBib(austraits$sources, sprintf("%s/sources", path))
 }
 
 
