@@ -33,6 +33,20 @@ ensure_as_character <- function(data) {
   data
 }
 
+# For a vector x in which individual cell may have multiple values (separated by `sep`), sort records within each cell  alphabetically
+split_then_sort <- function(x, sep=" ") {
+
+  # find cells with multiple values, indicated by presence of sep
+  i <- grep(sep, x)
+  # for those cells, split, sort then combine
+  x[i] <- x[i] %>% 
+      str_split(" ") %>% 
+      lapply(function(xi) xi %>% sort() %>% paste(collapse=" ")) %>%
+      unlist()
+  x
+}
+
+
 ## Hack work around to change key in bib entry (bibtex entry
 ## redefines '[' and/or '[[' in ways that cause nothing but grief)
 set_bib_key <- function(bib, key) {
