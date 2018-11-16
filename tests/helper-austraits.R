@@ -53,6 +53,12 @@ expect_not_NA <- function (object, info = NULL, label = NULL) {
     invisible(object)
 }
 
+expect_length_zero <- function (object, info = NULL, label = NULL) {
+    comp <- compare(length(object), 0)
+    expect(comp$equal,
+            sprintf("%s: %s", info, label))
+    invisible(object)
+}
 
 expect_unique <- function (object, info = NULL, label = NULL) {
     x <- table(unlist(object))
