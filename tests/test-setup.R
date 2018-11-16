@@ -92,6 +92,23 @@ for (dataset_id in dataset_ids) {
     trait_names <- sapply(metadata[["substitutions"]], "[[", "trait_name")
     expect_isin(unique(trait_names), definitions$traits$elements %>% names(), info=f)
     expect_isin(unique(trait_names), unique(sapply(metadata[["traits"]], "[[", "trait_name")), info=paste0(f, " - substitutions"))
+  
+    # check for allowable values of categorical variables
+    expect_no_error(x <- metadata[["substitutions"]] %>% list_to_df() %>% split(.$trait_name))
+    
+    for(trait in names(x)) {
+      if(!is.null(definitions$traits$elements[[ trait ]]) && definitions$traits$elements[[ trait ]]$type == "categorical") {
+        to_check <- x[[trait]]$replace %>% unique() 
+        allowable <- c(definitions$traits$elements[[ trait ]]$values %>% names(), NA)
+        failing <- to_check[!(is.na(to_check) | 
+                              to_check %in% allowable | 
+                              to_check %>% sapply(check_all_values_in, allowable)
+                              )]
+        expect_length_zero(failing,
+                    info = sprintf("%s - substitutions for `%s` have invalid replacement values", f, trait),
+                    label=failing %>% paste(collapse = ", "))
+      }
+    }
   }
 
   # data.csv
