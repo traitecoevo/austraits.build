@@ -21,6 +21,8 @@ load_study <- function(filename_data_raw,
     update_taxonomy(metadata) %>%
     mutate(
       value = tolower(value),
+      # For cells with multiple values (separated by a space), sort these alphabetically
+      value =  ifelse(is.na(error), split_then_sort(value),value),
       value_type = factor(value_type, levels = names(definitions$value_type$values))
       ) %>% 
     arrange(observation_id, trait_name, value_type) 
