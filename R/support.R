@@ -91,10 +91,10 @@ df_to_list <- function(df) {
 
 # Convert a list of lists to dataframe
 # requires that every list have same named elements
-list_to_df <- function(my_list, as_character= TRUE) {
+list_to_df <- function(my_list, as_character= TRUE, on_empty=NA) {
   
   if(is.null(my_list) || is.na(my_list) || length(my_list) ==0)
-    return(NA)
+    return(on_empty)
 
   if(as_character)
     my_list <- lapply(my_list, lapply, as.character)

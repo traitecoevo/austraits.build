@@ -20,7 +20,6 @@ load_study <- function(filename_data_raw,
     flag_unsupported_values(definitions) %>%
     update_taxonomy(metadata) %>%
     mutate(
-      value = tolower(value),
       # For cells with multiple values (separated by a space), sort these alphabetically
       value =  ifelse(is.na(error), split_then_sort(value),value),
       value_type = factor(value_type, levels = names(definitions$value_type$values))
@@ -366,6 +365,9 @@ parse_data <- function(data, dataset_id, metadata) {
     out[["value"]] <- out[["value"]] %>%  as.character()
   }
 
+  # Ensure all lower case
+  out[["value"]] <- tolower(out[["value"]])
+
   # Add information on trait type, precision, if not already present
   vars <- c("value_type", "replicates")
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
@@ -388,7 +390,12 @@ parse_data <- function(data, dataset_id, metadata) {
 
   # Implement any value changes as per substitutions
   if(!is.na(metadata[["substitutions"]][1])) {
-    cfgLookup <-  list_to_df(metadata[["substitutions"]])
+    cfgLookup <-  list_to_df(metadata[["substitutions"]]) %>%
+      mutate(
+             find=tolower(find),
+             replace=tolower(replace)
+             )
+
     for(i in seq_len(nrow(cfgLookup))) {
       j <- which(out[["trait_name"]] == cfgLookup[["trait_name"]][i] &
                   out[["value"]] == cfgLookup[["find"]][i])
