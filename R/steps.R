@@ -11,7 +11,7 @@ load_study <- function(filename_data_raw,
   metadata <- read_yaml(filename_metadata)
 
   # load and clean trait data
-  traits <- read_csv(filename_data_raw, col_types = cols()) %>%
+  traits <- read_csv(filename_data_raw, col_types = cols(), guess_max = 100000) %>%
     custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
     parse_data(dataset_id, metadata) %>%
     add_all_columns(definitions, "traits") %>%
