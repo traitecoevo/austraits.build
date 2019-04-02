@@ -399,6 +399,40 @@ The metadata is compiled in a `.yml` file, a structured data file where informat
 
 As a start, checkout some examples from [existing studies in Austraits](https://github.com/traitecoevo/austraits/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits/blob/master/data/Angevin_2010/metadata.yml) or [Wright_2004](https://github.com/traitecoevo/austraits/blob/master/data/Wright_2004/metadata.yml).
 
+We have developed a number of functions to help fill in the different sections of the `metadata.yml` file. These are indicated in their respective sections below.
+
+
+### Starting template
+
+```{r, eval=FALSE}
+create_metadata_template(dataset_id)
+```
+Asks a series of questions
+
+Add custom R code and check it works
+```{r, eval=FALSE}
+metadata_check_custom_R_code(dataset_id)
+```
+
+Add traits
+
+```{r, eval=FALSE}
+metadata_add_traits(dataset_id)
+```
+
+Add sites details
+
+```{r, eval=FALSE}
+metadata_add_sites(dataset_id, site_data)
+```
+
+```{r, eval=FALSE}
+dataset_id <- "Falster_2005_1"
+
+austraits$sites %>% filter(dataset_id == dataset_id) %>% select(-dataset_id) %>% spread(site_property, value) %>% type_convert() -> site_data
+metadata_add_sites(dataset_id, site_data)
+```
+
 XXXXnext section doesn't make sense here - seems like these are examples, not part of compiling the metadata fileXXXXX
 
 The elements `traits` and `substitutions` are designed to covert into tables. You can see how they look as tables with code like the following:
@@ -423,9 +457,6 @@ unlink("tmp.yml")
 XXXXXend section to moveXXXXX
 
 
-A blank `metadata.yml` file is stored in XXXX and can be duplicated as a starting point.
-
-We have developed a number of functions to help fill in the different sections of the metadata.yml file. These are indicated in their respective sections below.
 
 ### Source
 
@@ -540,14 +571,14 @@ Two functions are available to facilitate entering source data.
 If you have a `doi` for your study, use the function:
 
 ```{r, eval=FALSE, echo=TRUE}
-`add_doi("key","doi")`
+metadata_add_source_doi(dataset_id, type, doi, key=dataset_id)
 ```
  and the different elements within source will automatically be generated.
 
 If your data is unpublished (or otherwise without a `doi`) use the function `add_source` with the following syntax: 
 
 ```{r, eval=FALSE, echo=TRUE}
-`add_source("key", "bibtype","author","year","title")`
+metadata_add_source(dataset_id, type, source = list(key= dataset_id, bibtype ="Misc", author = "Falster, DS", year = "2010",title = "Traits of Ku-ringai plant species"))
 ```
 
 If you wish to include additional elements, you can afterwards add them manually to the `metadata.yml` file.
@@ -655,7 +686,7 @@ Substitutions can be added by running:
 XXXXX need to create function
 
 ```{r, eval=FALSE, echo=TRUE}
-`add_substitution("dataset_id","trait_name", "find", "replace")`
+`metadata_add_substitution("dataset_id","trait_name", "find", "replace")`
 ```
 Where `find` is the trait value used in the data.csv file and `replace` is the trait value supported by Austraits.
 
@@ -678,28 +709,28 @@ We've implemented code to semi-automate the checking of names using the R packag
 
 ```{r, eval=FALSE, echo=TRUE}
 source("R/setup.R")
-check_study_taxa("Blackman_2014")
+metadata_check_taxa("Blackman_2014")
 ```
 
 If TaxonStand finds taxonomic changes to make it will add the relevant lines of code directly to the metadata.yml file.
 
 TaxonStand has been configured in the above function to only permit relatively certain changes (e.g. with a minor change to spelling or known synonym). 
 
-There are additional arguments you can add for the function `check_study_taxa` including:
+There are additional arguments you can add for the function `metadata_check_taxa` including:
 - `update` where the default is TRUE, meaning changes found will be added to the `metadata.yml` file
 - `typos` where the default is FALSE, meaning typos will not be corrected
 - `diffchar` which indicates the number of characters that can be different for a typo-match. Here the default is two.
 
-Therefore, if you want the function  `check_study_taxa` to correct 1 and 2 character typos, run the function as follows:
+Therefore, if you want the function  `metadata_check_taxa` to correct 1 and 2 character typos, run the function as follows:
 
 ```{r, eval=FALSE, echo=TRUE}
-check_study_taxa("Blackman_2014",typos=TRUE)
+metadata_check_taxa("Blackman_2014",typos=TRUE)
 ```
 
 If TaxonStand fails to find a suitable alignment, and you have identified one yourself, you can add it to the metadata by running
 
 ```{r, eval=FALSE, echo=TRUE}
-add_taxnomic_change(study, find, replace, reason)
+metadata_add_taxnomic_change(study, find, replace, reason)
 ```
 
 ## Adding data to Austraits {#adding}
@@ -707,7 +738,7 @@ add_taxnomic_change(study, find, replace, reason)
 Once you have prepared your `data.csv` and `metadata.yml` files within a folder in the `data` directory, you can incorporate the new data into Austraits by running:
 
 ```{r, eval=FALSE, echo=TRUE}
-rebuild_remake_setup()
+austraits_rebuild_remake_setup()
 ```
 (This step updates the file `remake.yml` with appropriate rules for the new dataset; similarly if you remove datasets, do the same. At this stage, [remake](https://github.com/richfitz/remake) offers no looping constructs (on purpose) so for now we generate the remake file using [whisker](https://github.com/edwindj/whisker).)
 
@@ -746,11 +777,11 @@ source("R/setup.R")
 
 # Tests run test on one study
 dataset_ids <- "Bragg_2002"
-run_tests()
+austraits_run_tests()
 
 # Tests run test on all studies
 dataset_ids <- dir("data")
-run_tests()
+austraits_run_tests()
 ```
 
 ## Reports / quality checks

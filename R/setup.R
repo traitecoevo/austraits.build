@@ -1,13 +1,246 @@
 require(tidyverse)
 
+#' Path to the `metadata.yml` file for specified `dataset_id`
+#'
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#'
+#' @export 
+#' @return A string
+metadata_path_dataset_id <- function(dataset_id) {
+  file.path("data", dataset_id, "metadata.yml")
+}
 
-# function to add a substitution into a yaml file for a study
-add_substitution <- function(study, trait_name, find, replace) {
+
+#' Read the `metadata.yml` file for specified `dataset_id`
+#'
+#' @inheritParams metadata_path_dataset_id
+#'
+#' @export 
+#' @return A list with contents of metadata for specified `dataset_id`
+metadata_read_dataset_id <- function(dataset_id) {
+  dataset_id %>% metadata_path_dataset_id() %>% yaml::read_yaml()
+}
+
+#' Write the YAML representation of metadata.yml for specified `dataset_id` to
+#' file \code{data/dataset_id/metadata.yml}
+#'
+#' @inheritParams metadata_path_dataset_id
+#' @param metadata <what param does>
+#'
+#' @export 
+metadata_write_dataset_id <- function(metadata, dataset_id) {
+  yaml::write_yaml(metadata, dataset_id %>% metadata_path_dataset_id())
+}
+
+#' Create a template of file `metadata.yml` for specified `dataset_id`
+#'
+#' Includes place-holders for major sections of the metadata
+#' 
+#' @inheritParams metadata_path_dataset_id
+#' @param path location of file where output is saved
+#' 
+#' @export
+metadata_create_template <- function(dataset_id, 
+                                     path = file.path("data", dataset_id, "metadata.yml")
+                                     ) {
+
+  out <- list(
+       source = list(primary=NA, secondary=NA),
+       people = NA,
+       dataset = list(year_collected_start= "unknown",
+                      year_collected_end= "unknown",
+                      description= "unknown",
+                      collection_type= "unknown",
+                      sample_age_class= "unknown",
+                      sampling_strategy= "unknown",
+                      original_file= "unknown",
+                      notes= "unknown"),
+       sites = NA,
+       config = NA,
+       traits = NA,
+       substitutions = NA,
+       taxonomic_updates = NA,
+       questions = NA
+       )
+
+  # Check format of data
+  tmp <- menu(c("Long", "Wide"), title="Is the data long or wide format?")
+  data_is_long_format <- ifelse(tmp == 1, TRUE, FALSE)
+
+  data <- read_csv(file.path("data", dataset_id, "data.csv"), col_types = cols())
+
+  # Setup config and select columns as appropriate
+  config <- list(data_is_long_format = data_is_long_format, 
+                 variable_match = list(),
+                 custom_R_code = NA)
+
+  if(data_is_long_format) {
+    v1 <- c("species_name", "trait_name", "value")
+    v2 <- c("site_name", "observation_id")
+  } else {
+    v1 <- c("species_name")
+    v2 <- c("site_name")
+  }
+  for(v in v1) {      
+    config[["variable_match"]][[v]] <- user_select_column(v, names(data))
+  }
+
+  for(v in v2) {
+    tmp <- user_select_column(v, c(names(data), NA))
+    if(!is.na(tmp)) 
+      config[["variable_match"]][[v]] <- tmp
+  }
+
+  out[["config"]] <- config
+
+  yaml::write_yaml(out, path)
+}
+
+user_select_column <- function(column, choices) {
+  tmp <- menu(choices, title= sprintf("Select column for `%s`", column))
+  choices[tmp]
+}
+
+
+user_select_names <- function(title, vars){
+
+  txt <- sprintf("%s (by number separated by space; e.g. '1 2 4'):\n%s\n", title, paste(sprintf("%d: %s", seq_len(length(vars)), vars), collapse="\n"))
+
+  success <- FALSE
+  while(!success) {
+    cat(txt)
+    i <- readline("\nSelection: ")
+    i <- strsplit(i, " ")[[1]] %>% as.integer()
+
+    if(all(i %in% seq_len(length(vars)))) {
+      success <- TRUE
+    } else {
+      cat("Invalid selection, please try again\n\n")
+    }
+  }
+  vars[i]
+}
+
+#' Check the output of running `custom_R_code` specified in 
+#' the metadata for specified `dataset_id`
+#'
+#' Function to check the output of running `custom_R_code` specified in 
+#' the `metadata.yml` file for specified `dataset_id`. 
+#' For the specified `dataset_id`, reads in the file `data.csv` and 
+#' applies manipulations as described in the file `metadata.yml`
+#'
+#' @inheritParams metadata_path_dataset_id
+#'
+#' @export
+#' @return A tibble (dataframe)
+metadata_check_custom_R_code <- function(dataset_id) {
+
+  # read metadata
+  metadata <- metadata_read_dataset_id(dataset_id)
+
+  # load and clean trait data
+  read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols()) %>%
+    custom_manipulation(metadata[["config"]][["custom_R_code"]])()
+}
+
+#' For specified `dataset_id`, populate columns for traits into metadata
+#'
+#' This functions asks users which traits they would like to keep, and adds a template 
+#' for those traits in the metadata. This template must then be finished manually.
+#' 
+#' Can also be used to add a trait to an existing metadata file
+#'
+#' @inheritParams metadata_path_dataset_id
+#'
+#' @export
+#' @return A tibble (dataframe)
+metadata_add_traits <- function(dataset_id) {
+
+  # read metadata
+  metadata <- metadata_read_dataset_id(dataset_id)
+
+  # load and clean trait data
+  data <- read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols()) %>%
+    custom_manipulation(metadata[["config"]][["custom_R_code"]])()
+
+  # Get list of potential traits
+  if(!metadata$config$data_is_long_format) {
+    v <- names(data)
+  } else {
+    v <- unique(data[[metadata$config$variable_match$trait_name]])
+  }
+
+  var_in <- user_select_names(paste("Indicate all columns you wish to keep as distinct traits in ", dataset_id), v)
+
+  cat(sprintf("Following traits added to metadata for %s: %s.\n \tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(var_in, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
+  
+  traits <- tibble(var_in = var_in,
+                            unit_in = "unknown",
+                            trait_name = "unknown",
+                            value_type = "unknown",
+                            replicates = "unknown",
+                            methods = "unknown") 
+
+  # check if existing content, if so append
+  if(!all(is.null(metadata$traits)) && !is.na(metadata$traits)) {
+    traits <- bind_rows(metadata$traits %>% list_to_df(), traits) %>%
+      filter(!duplicated(var_in))
+  }
+
+  metadata$traits <- traits %>% df_to_list()
+
+  metadata_write_dataset_id(metadata, dataset_id)
+}
+
+
+#' For specified `dataset_id` import site data from a dataframe
+#'
+#' This functions asks users which columns in the dataframe they would like to keep
+#' and records this appropriately in the metadata. The input data is assumed to be 
+#' in wide format.
+#' The output may require additional manual editing.
+#'
+#' @inheritParams metadata_path_dataset_id
+#' @param site_data A dataframe of site variables
+#'
+#' @export
+#' @return A tibble (dataframe)
+#' @examples
+#' austraits$sites %>% filter(dataset_id == "Falster_2005_1") %>% select(-dataset_id) %>% spread(site_property, value) %>% type_convert()-> site_data
+#' metadata_add_sites("Falster_2005_1", site_data)
+#' 
+metadata_add_sites <- function(dataset_id, site_data) {
+
+  # read metadata
+  metadata <- metadata_read_dataset_id(dataset_id)
+
+  # Choose column for site_name
+  site_name <- user_select_column("site_name", names(site_data))
+
+  # From remaining variables, choose those to keep
+  site_sub <- select(site_data, -!!site_name)
+  keep <- user_select_names(paste("Indicate all columns you wish to keep as distinct site_properties in ", dataset_id), names(site_sub))
+
+  # Save and notify
+  metadata$sites <- select(site_data, one_of(keep)) %>%
+            split(site_data$site_name) %>% lapply(as.list)
+
+  cat(sprintf("Following sites added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$sites), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
+  
+  metadata_write_dataset_id(metadata, dataset_id)
+}
+
+metadata_add_source_doi <- function(dataset_id, type, doi, key=dataset_id) {
+
+}
+
+
+# function to add a substitution into a yaml file for a dataset_id
+metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
 
   set_name <- "substitutions"
 
-  filename_metadata <- file.path("data", study,  "metadata.yml")
-  metadata <- read_yaml(filename_metadata)
+  metadata <- metadata_read_dataset_id(dataset_id)
 
   to_add <- list(trait_name = trait_name, find = find, replace = replace) 
 
@@ -25,25 +258,23 @@ add_substitution <- function(study, trait_name, find, replace) {
 
   metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
 
-  message(sprintf("%s %s for trait %s : %s -> %s", crayon::red("Adding substitution in"), crayon::red(study), trait_name, find, replace))
-  write_yaml(metadata, filename_metadata)
+  message(sprintf("%s %s for trait %s : %s -> %s", crayon::red("Adding substitution in"), crayon::red(dataset_id), trait_name, find, replace))
+  metadata_write_dataset_id(metadata, dataset_id)
 }
 
 
-
-# function to add a taxonomic change into a yaml file for any study where species occurs
-add_taxnomic_change_all_studies <- function(find, replace, reason) {
-  studies <- find_species(find)
+# function to add a taxonomic change into a yaml file for any dataset_id where species occurs
+metadata_add_taxnomic_change_all_studies <- function(find, replace, reason) {
+  studies <- austraits_find_species(find)
   for(s in studies)
-    add_taxnomic_change(s, find, replace, reason)
+    metadata_add_taxnomic_change(s, find, replace, reason)
 }
 
-# function to add a taxonomic change into a yaml file for a study
-add_taxnomic_change <- function(study, find, replace, reason) {
+# function to add a taxonomic change into a yaml file for a dataset_id
+metadata_add_taxnomic_change <- function(dataset_id, find, replace, reason) {
 
   set_name <- "taxonomic_updates"
-  filename_metadata <- file.path("data", study,  "metadata.yml")
-  metadata <- read_yaml(filename_metadata)
+  metadata <- metadata_read_dataset_id(dataset_id)
 
   to_add <- list(find = find, replace = replace, reason = reason) 
     
@@ -60,26 +291,25 @@ add_taxnomic_change <- function(study, find, replace, reason) {
 
   metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
 
-  message(sprintf("%s %s: %s -> %s (%s)", crayon::red("Adding taxonomic change in"), crayon::red(study), crayon::blue(find), crayon::green(replace), reason))
-  write_yaml(metadata, filename_metadata)
+  message(sprintf("%s %s: %s -> %s (%s)", crayon::red("Adding taxonomic change in"), crayon::red(dataset_id), crayon::blue(find), crayon::green(replace), reason))
+  metadata_write_dataset_id(metadata, dataset_id)
 }
 
 
-# function to update a taxonomic change into a yaml file for any study where species occurs
-update_taxnomic_change_all_studies <- function(find, replace, reason) {
-  studies <- find_taxnomic_change(find)
+# function to update a taxonomic change into a yaml file for any dataset_id where species occurs
+metadata_update_taxnomic_change_all_studies <- function(find, replace, reason) {
+  studies <- metadata_find_taxnomic_change(find)
   for(s in studies)
-    update_taxnomic_change(s, find, replace, reason)
+    metadata_update_taxnomic_change(s, find, replace, reason)
 }
 
 
-# function to update a substitution into a yaml file for a study
-update_taxnomic_change <- function(study, find, replace, reason) {
+# function to update a substitution into a yaml file for a dataset_id
+metadata_update_taxnomic_change <- function(dataset_id, find, replace, reason) {
 
   set_name <- "taxonomic_updates"
 
-  filename_metadata <- file.path("data", study,  "metadata.yml")
-  metadata <- read_yaml(filename_metadata)
+  metadata <- metadata_read_dataset_id(dataset_id)
 
   to_add <- list(find = find, replace = replace, reason = reason) 
 
@@ -92,30 +322,29 @@ update_taxnomic_change <- function(study, find, replace, reason) {
 
   metadata[[set_name]][[i]][["replace"]] <- replace
   metadata[[set_name]][[i]][["reason"]] <- reason
-  message(sprintf("%s %s: %s -> %s (%s)", crayon::red("Updating taxonomic change in"),crayon::red(study), crayon::blue(find), crayon::green(replace), reason))
+  message(sprintf("%s %s: %s -> %s (%s)", crayon::red("Updating taxonomic change in"),crayon::red(dataset_id), crayon::blue(find), crayon::green(replace), reason))
 
-  write_yaml(metadata, filename_metadata)
+  metadata_write_dataset_id(metadata, dataset_id)
 }
 
-#update_taxnomic_change("Angevin_2010", "Elymus scaber", "newname", "newreason")
+#metadata_update_taxnomic_change("Angevin_2010", "Elymus scaber", "newname", "newreason")
 
-# function to remove a taxonomic change from a yaml file for a study
-remove_taxnomic_change <- function(study, find, replace=NULL) {
+# function to remove a taxonomic change from a yaml file for a dataset_id
+metadata_remove_taxnomic_change <- function(dataset_id, find, replace=NULL) {
 
   set_name <- "taxonomic_updates"
-  filename_metadata <- file.path("data", study,  "metadata.yml")
-  metadata <- read_yaml(filename_metadata)
+  metadata <- metadata_read_dataset_id(dataset_id)
 
   # if it doesn't yet exist - > done
   if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]])) {
-    message(sprintf("Taxonomic change in %s: %s -> %s %s", study, find, replace, crayon::green("does not exist")))
+    message(sprintf("Taxonomic change in %s: %s -> %s %s", dataset_id, find, replace, crayon::green("does not exist")))
     return()
   }
 
   # Check if find record already exists for that trait
   data <-  list_to_df(metadata[[set_name]])  
   if(nrow(data) == 0) {
-    message(sprintf("Taxonomic change in %s: %s -> %s %s", study, find, replace, crayon::green("does not exist")))
+    message(sprintf("Taxonomic change in %s: %s -> %s %s", dataset_id, find, replace, crayon::green("does not exist")))
     return()
   }
 
@@ -127,33 +356,22 @@ remove_taxnomic_change <- function(study, find, replace=NULL) {
 
   if(any(i)) {
     metadata[[set_name]][which(i)] <- NULL
-    message(sprintf("Taxonomic change in %s: %s -> %s %s", study, find, replace, crayon::red("removed")))
+    message(sprintf("Taxonomic change in %s: %s -> %s %s", dataset_id, find, replace, crayon::red("removed")))
   }
 
-  write_yaml(metadata, filename_metadata)
+  metadata_write_dataset_id(metadata, dataset_id)
 }
 
-# List all studies in the data directory
-list_studies <- function(){
-  dirname(dir("data", pattern="metadata.yml", recursive = TRUE))
-}
+austraits_find_species <- function(austraits, species_name, original_name = FALSE){
 
-get_metadata_files <- function(studies = NULL){
-  if(is.null(studies))
-    studies <- list_studies()
-  file.path("data", studies, "metadata.yml")
-}
-
-find_species <- function(species_name, original_name = FALSE){
-
-  data <- remake::make("austraits")$data 
+  data <- austraits$data 
 
   if(!original_name)
-    data <- data %>% select(name =  species_name, study) %>% distinct()
+    data <- data %>% select(name =  species_name, dataset_id) %>% distinct()
   else
-    data <- data %>% select(name =  original_name, study) %>% distinct()
+    data <- data %>% select(name =  original_name, dataset_id) %>% distinct()
 
-  f <- function(sp)  filter(data, name == sp) %>%  pull(study) %>% unique()
+  f <- function(sp)  filter(data, name == sp) %>%  pull(dataset_id) %>% unique()
 
   if(length(species_name) == 1) 
     f(species_name)
@@ -161,12 +379,12 @@ find_species <- function(species_name, original_name = FALSE){
     lapply(species_name, f) 
 }
 
-find_taxnomic_change <- function(find, replace=NULL, studies = NULL){
+metadata_find_taxnomic_change <- function(find, replace=NULL, studies = NULL){
 
   if(is.null(studies))
-    studies <- list_studies()
+    studies <- dirname(dir("data", pattern="metadata.yml", recursive = TRUE))
 
-  f <- get_metadata_files(studies)
+  f <- file.path("data", studies, "metadata.yml")
 
   contents <- lapply(f, function(x) paste0(readLines(x), collapse="\n"))
 
@@ -182,9 +400,9 @@ find_taxnomic_change <- function(find, replace=NULL, studies = NULL){
 # checks all taxa within against our list of known species
 # If not found, and update=TRUE, checks the unknown species against
 
-check_study_taxa <- function(study, update=TRUE, typos=FALSE, diffchar = 2) {
+metadata_check_taxa <- function(dataset_id, update=TRUE, typos=FALSE, diffchar = 2) {
   
-  x <- remake::make(study)
+  x <- remake::make(dataset_id)
   accepted <- read_csv("config/species_list.csv", col_types = cols(.default = "c"))
   species <- unique(x$data$species_name)
   i <- species %in% accepted$species_name
@@ -212,12 +430,12 @@ check_study_taxa <- function(study, update=TRUE, typos=FALSE, diffchar = 2) {
   typo2 <- tpl$Taxonomic.status %in% c("Synonym") & tpl$Typo==TRUE
   unknown <- tpl$Taxonomic.status %in% c("")
 
-  message(sprintf("For %s species: %d known, %d synonyms, %d typos, %d unknown", study, sum(keep), sum(synonym), sum(typo1) + sum(typo2), sum(unknown))) 
+  message(sprintf("For %s species: %d known, %d synonyms, %d typos, %d unknown", dataset_id, sum(keep), sum(synonym), sum(typo1) + sum(typo2), sum(unknown))) 
 
   # Add any known species
   if(any(keep)) { 
     to_add <- format_tpl_to_accepted_df(tpl[keep,])
-    accepted <- add_to_accepted(accepted, to_add)
+    accepted <- austraits_add_to_accepted_species(accepted, to_add)
   }
 
   # For known synonyms, add to a replacement and check synonym is in list of known species
@@ -227,10 +445,10 @@ check_study_taxa <- function(study, update=TRUE, typos=FALSE, diffchar = 2) {
     to_add <- format_tpl_to_accepted_df(data, use.new= TRUE)
   
     for(i in seq_len(nrow(data))) {
-      add_taxnomic_change(study, data$Taxon[i], to_add$species_name[i], sprintf("Synonym reported by TaxonStand (%s)", Sys.Date())) 
+      metadata_add_taxnomic_change(dataset_id, data$Taxon[i], to_add$species_name[i], sprintf("Synonym reported by TaxonStand (%s)", Sys.Date())) 
     }
   
-    accepted <- add_to_accepted(accepted, to_add)
+    accepted <- austraits_add_to_accepted_species(accepted, to_add)
   }
 
   # For Typos, review if flagged 
@@ -240,10 +458,10 @@ check_study_taxa <- function(study, update=TRUE, typos=FALSE, diffchar = 2) {
     to_add <- format_tpl_to_accepted_df(data, use.new= TRUE)
 
     for(i in seq_len(nrow(data))) {
-      add_taxnomic_change(study, data$Taxon[i], to_add$species_name[i], sprintf("Spelling mistake identified by TaxonStand (%s)", Sys.Date())) 
+      metadata_add_taxnomic_change(dataset_id, data$Taxon[i], to_add$species_name[i], sprintf("Spelling mistake identified by TaxonStand (%s)", Sys.Date())) 
     }
 
-    accepted <- add_to_accepted(accepted, to_add)
+    accepted <- austraits_add_to_accepted_species(accepted, to_add)
   } 
 
   if(typos & any(typo2)) {
@@ -292,7 +510,7 @@ format_tpl_to_accepted_df <- function(tpl, use.new = FALSE){
      mutate(APC_name = "unknown", APC_ID = "unknown", APNI_ID = "unknown") 
 }
 
-add_to_accepted <- function(accepted, to_add) {
+austraits_add_to_accepted_species <- function(accepted, to_add) {
 
   i <- !(to_add$species_name %in% accepted$species_name)
 
@@ -323,7 +541,7 @@ find_names_distance_to_neighbours <- function(species_name, dist=5) {
 }
 
 
-run_tests <- function() {
+austraits_run_tests <- function() {
   library(testthat)
 
   root.dir <- rprojroot::find_root("remake.yml")
@@ -338,7 +556,7 @@ run_tests <- function() {
   testthat::test_dir("tests", reporter = default_reporter())
 }
 
-rebuild_remake_setup <- function( ) {
+austraits_rebuild_remake_setup <- function( ) {
 
   library(whisker)
 
@@ -346,11 +564,12 @@ rebuild_remake_setup <- function( ) {
 
   pwd <- setwd(root.dir)
   on.exit(setwd(pwd))
-  study_names <- dir("data")
-  vals <- list(study_names=iteratelist(study_names, value="study_name"))
+  dataset_ids <- dir("data")
+  vals <- list(dataset_ids=iteratelist(dataset_ids, value="dataset_id"))
 
   str <- whisker.render(readLines("scripts/remake.yml.whisker"), vals)
   writeLines(str, "remake.yml")
 }
+
 
 
