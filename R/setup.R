@@ -29,7 +29,7 @@ metadata_read_dataset_id <- function(dataset_id) {
 #'
 #' @export 
 metadata_write_dataset_id <- function(metadata, dataset_id) {
-  yaml::write_yaml(metadata, dataset_id %>% metadata_path_dataset_id())
+  write_yaml(metadata, dataset_id %>% metadata_path_dataset_id())
 }
 
 #' Create a template of file `metadata.yml` for specified `dataset_id`
@@ -93,7 +93,7 @@ metadata_create_template <- function(dataset_id,
 
   out[["config"]] <- config
 
-  yaml::write_yaml(out, path)
+  write_yaml(out, path)
 }
 
 user_select_column <- function(column, choices) {
