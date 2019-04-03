@@ -46,16 +46,6 @@ split_then_sort <- function(x, sep=" ") {
   x
 }
 
-
-## Hack work around to change key in bib entry (bibtex entry
-## redefines '[' and/or '[[' in ways that cause nothing but grief)
-set_bib_key <- function(bib, key) {
-  bib_plain <- unclass(bib)
-  attr(bib_plain[[1]], "key") <- key
-  class(bib_plain) <- "bibentry"
-  bib_plain
-}
-
 last <- function(x) {
   x[[length(x)]]
 }
@@ -130,32 +120,4 @@ write_yaml <- function(y, filename) {
   txt <- yaml::as.yaml(y, column.major = FALSE, indent=2)
   txt <- gsub(": ~",":", txt, fixed=TRUE)
   writeLines(txt, filename)
-}
-
-get_citation <- function(bibentry) {
-  if (is.null(bibentry$doi)) {
-    doi <- ""
-    url <- if (is.null(bibentry$url[[1]])) "" else bibentry$url[[1]]
-  } else {
-    doi <- bibentry$doi[[1]]
-    url <- paste0("http://doi.org/", doi)
-  }
-
-  data.frame(doi=doi, url=url, citation=format_citation(bibentry),
-             stringsAsFactors=FALSE)
-}
-
-## This is a hack that would be better done with a style.  See
-## ?bibentry for directions to that rabbithole.
-format_citation <- function(bibentry) {
-  citation <- format(bibentry, "text")
-  find <- c("<URL.+>", "<.+?>", " , .", ", .", "\n", "*", "_", "“", "”", "..",
-            ",.", ". .", "'''.'", "''.")
-  replace <- c("", "", ".", ".", " ", "", "", "'", "'", ".", ".", ".", "", "")
-  fixed <- rep(TRUE, length(find))
-  fixed[c(1, 2)] <- FALSE
-  for (i in seq_along(find)) {
-    citation <- gsub(find[i], replace[i], citation, fixed = fixed[i])
-  }
-  citation
 }
