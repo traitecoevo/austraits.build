@@ -18,9 +18,8 @@ metadata_path_dataset_id <- function(dataset_id) {
 #' @export 
 #' @return A list with contents of metadata for specified `dataset_id`
 metadata_read_dataset_id <- function(dataset_id) {
-  dataset_id %>% metadata_path_dataset_id() %>% yaml::read_yaml()
+  dataset_id %>% metadata_path_dataset_id() %>% read_yaml()
 }
-
 #' Write the YAML representation of metadata.yml for specified `dataset_id` to
 #' file \code{data/dataset_id/metadata.yml}
 #'
@@ -45,7 +44,7 @@ metadata_create_template <- function(dataset_id,
                                      ) {
 
   out <- list(
-       source = list(primary=NA, secondary=NA),
+       source = list(primary=NA),
        people = NA,
        dataset = list(year_collected_start= "unknown",
                       year_collected_end= "unknown",
@@ -364,7 +363,7 @@ metadata_remove_taxnomic_change <- function(dataset_id, find, replace=NULL) {
 
 austraits_find_species <- function(austraits, species_name, original_name = FALSE){
 
-  data <- austraits$data 
+  data <- austraits$traits
 
   if(!original_name)
     data <- data %>% select(name =  species_name, dataset_id) %>% distinct()
@@ -404,7 +403,7 @@ metadata_check_taxa <- function(dataset_id, update=TRUE, typos=FALSE, diffchar =
   
   x <- remake::make(dataset_id)
   accepted <- read_csv("config/species_list.csv", col_types = cols(.default = "c"))
-  species <- unique(x$data$species_name)
+  species <- unique(x$traits$species_name)
   i <- species %in% accepted$species_name
 
   if(all(i)){
