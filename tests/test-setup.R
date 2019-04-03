@@ -69,7 +69,7 @@ for (dataset_id in dataset_ids) {
 
   # config
   test_list_named(metadata[["config"]], definitions$metadata$elements$config$elements %>% names(), info=f)
-  expect_is(metadata[["config"]][["is_vertical"]], "logical")
+  expect_is(metadata[["config"]][["data_is_long_format"]], "logical")
   
   expect_is(metadata[["config"]][["variable_match"]], "list")
   expect_isin(names(metadata[["config"]][["variable_match"]]), 
@@ -125,7 +125,7 @@ for (dataset_id in dataset_ids) {
   data <- custom_manipulation(txt)(data)  
 
   ## Check config files contain all relevant columns
-  if(metadata[["config"]][["is_vertical"]]) {
+  if(metadata[["config"]][["data_is_long_format"]]) {
 
     # Variable match
     expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name",  "trait_name", "value","site_name"), info=paste0(f, " - variable_match"))  

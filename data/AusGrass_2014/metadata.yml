@@ -27,13 +27,12 @@ dataset:
   notes: none
 sites: herbarium specimens
 config:
-  is_vertical: yes
+  data_is_long_format: yes
   variable_match:
     species_name: Taxon
     value: trait value
     trait_name: trait
-  custom_R_code: i <- data$trait == "flowering time"; data[i,"trait value"] <- convert_month_range_vec_to_binary(data[i,][["trait
-    value"]]); data
+  custom_R_code: mutate(data, `trait value` = ifelse(trait == 'flowering time', convert_month_range_vec_to_binary(`trait value`), `trait value`))
 traits:
 - var_in: flowering time
   unit_in: .na

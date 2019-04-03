@@ -47,8 +47,8 @@ load_study <- function(filename_data_raw,
 
   # record methods on study from metadata
 
-  source_primary <- convert_to_bib(metadata$source$primary)
-  source_secondary <- convert_to_bib(metadata$source$secondary)
+  source_primary <- convert_list_to_bib(metadata$source$primary)
+  source_secondary <- convert_list_to_bib(metadata$source$secondary)
  
   methods <-   
     full_join( by = "dataset_id",
@@ -151,12 +151,25 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
 }
 
 # convert a list of elements into a valid bibEntry
-convert_to_bib <- function(ref) {
+convert_list_to_bib <- function(ref) {
   if(is.null(ref)) return(NULL)
 
   # Replace , with and to get correct handling of authors
   ref$author <- gsub(",", " and ", ref$author)
   RefManageR::as.BibEntry(ref)
+}
+
+convert_bib_to_list <- function(bib) {
+
+  # Read in file, convert to list, set key
+    bib <- bib %>% unlist()
+  
+    if(!is.null(bib$author))
+      bib$author <- paste(bib$author, collapse=" and ")
+    if(!is.null(bib$editor))
+      bib$editor <- paste(bib$editor, collapse=" and ")
+
+    bib
 }
 
 ## Flag any values outside allowable range
@@ -285,7 +298,7 @@ add_all_columns <- function(data, definitions, group) {
 parse_data <- function(data, dataset_id, metadata) {
 
   # get config data for dataset
-  dataset_vert <- metadata[["config"]][["is_vertical"]]
+  data_is_long_format <- metadata[["config"]][["data_is_long_format"]]
 
   # Step 1. create dataframe with data for vars that we want to keep, and set to correct names
   # all names in "variable_match" must exist in dataset, if not then we need to stop and fix the problem
@@ -306,7 +319,7 @@ parse_data <- function(data, dataset_id, metadata) {
               sprintf(paste0("%s_%0", ceiling(log10(n)), "d"), 
                               dataset_id, seq_len(n))
 
-  if(!dataset_vert) {
+  if(!data_is_long_format) {
     # For wide datasets rows are assumed to be natural grouping
     df <- df %>% 
             mutate(observation_id = make_id(nrow(.), dataset_id))
@@ -342,12 +355,12 @@ parse_data <- function(data, dataset_id, metadata) {
   # check that the trait names as specified in config actually exist in data
   # if not then we need to stop and fix this problem
   # NOTE - only need to do this step for wide (non-vertical) data
-  if (dataset_vert == FALSE & any(! cfgChar[["var_in"]] %in% colnames(data))) {
+  if (data_is_long_format == FALSE & any(! cfgChar[["var_in"]] %in% colnames(data))) {
     stop(paste(dataset_id, ": missing traits: ", setdiff(cfgChar[["var_in"]], colnames(data))))
   }
 
   ## if needed, change from wide to long style
-  if (dataset_vert == FALSE) {
+  if (data_is_long_format == FALSE) {
     # if the dataset is "wide" then process each variable in turn, to create the "long" dataset -
     # say the original dataset has 20 rows of data and 5 traits, then we will end up with 100 rows
     out <- list()
