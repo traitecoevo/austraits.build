@@ -47,8 +47,8 @@ load_study <- function(filename_data_raw,
 
   # record methods on study from metadata
 
-  source_primary <- convert_to_bib(metadata$source$primary)
-  source_secondary <- convert_to_bib(metadata$source$secondary)
+  source_primary <- convert_list_to_bib(metadata$source$primary)
+  source_secondary <- convert_list_to_bib(metadata$source$secondary)
  
   methods <-   
     full_join( by = "dataset_id",
@@ -151,12 +151,25 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
 }
 
 # convert a list of elements into a valid bibEntry
-convert_to_bib <- function(ref) {
+convert_list_to_bib <- function(ref) {
   if(is.null(ref)) return(NULL)
 
   # Replace , with and to get correct handling of authors
   ref$author <- gsub(",", " and ", ref$author)
   RefManageR::as.BibEntry(ref)
+}
+
+convert_bib_to_list <- function(bib) {
+
+  # Read in file, convert to list, set key
+    bib <- bib %>% unlist()
+  
+    if(!is.null(bib$author))
+      bib$author <- paste(bib$author, collapse=" and ")
+    if(!is.null(bib$editor))
+      bib$editor <- paste(bib$editor, collapse=" and ")
+
+    bib
 }
 
 ## Flag any values outside allowable range

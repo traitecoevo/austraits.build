@@ -43,9 +43,23 @@ metadata_create_template <- function(dataset_id,
                                      path = file.path("data", dataset_id, "metadata.yml")
                                      ) {
 
+  people <- tibble(name = "unknown", instituion = "unknown", role = "unknown") 
+
   out <- list(
-       source = list(primary=NA),
-       people = NA,
+       source = list(primary=list(key=dataset_id, 
+                                  bibtype = "Article",
+                                  year = "unknown", 
+                                  author = "unknown",
+                                  title = "unknown",
+                                  journal = "unknown",
+                                  volume = "unknown",
+                                  number = "unknown",
+                                  pages = "unknown",
+                                  doi = "unknown"
+                                  ),
+                     secondary=NA
+                     ),
+       people = people %>% df_to_list(),
        dataset = list(year_collected_start= "unknown",
                       year_collected_end= "unknown",
                       description= "unknown",
@@ -131,7 +145,6 @@ user_select_names <- function(title, vars){
 #' @inheritParams metadata_path_dataset_id
 #'
 #' @export
-#' @return A tibble (dataframe)
 metadata_check_custom_R_code <- function(dataset_id) {
 
   # read metadata
@@ -152,7 +165,6 @@ metadata_check_custom_R_code <- function(dataset_id) {
 #' @inheritParams metadata_path_dataset_id
 #'
 #' @export
-#' @return A tibble (dataframe)
 metadata_add_traits <- function(dataset_id) {
 
   # read metadata
@@ -191,7 +203,6 @@ metadata_add_traits <- function(dataset_id) {
   metadata_write_dataset_id(metadata, dataset_id)
 }
 
-
 #' For specified `dataset_id` import site data from a dataframe
 #'
 #' This functions asks users which columns in the dataframe they would like to keep
@@ -203,7 +214,6 @@ metadata_add_traits <- function(dataset_id) {
 #' @param site_data A dataframe of site variables
 #'
 #' @export
-#' @return A tibble (dataframe)
 #' @examples
 #' austraits$sites %>% filter(dataset_id == "Falster_2005_1") %>% select(-dataset_id) %>% spread(site_property, value) %>% type_convert()-> site_data
 #' metadata_add_sites("Falster_2005_1", site_data)
@@ -229,12 +239,77 @@ metadata_add_sites <- function(dataset_id, site_data) {
   metadata_write_dataset_id(metadata, dataset_id)
 }
 
-metadata_add_source_doi <- function(dataset_id, type, doi, key=dataset_id) {
 
+
+#' Adds citation details to a metadata file for given study
+#'
+#' @inheritParams metadata_path_dataset_id
+#' @param file Name of file where reference is saved
+#' @param type Type of references: `primary` or `secondary`
+#' @param key The bibtex key to be used. By default set to `dataset_id`
+#' @param drop Variables to ignore
+#'
+#' @export
+#'
+metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dataset_id, drop = c("dateobj", "month")) {
+
+    # Read in file, convert to list, set key
+    bib <- RefManageR::ReadBib(file) %>% 
+      convert_bib_to_list()
+
+    bib$key <- key
+
+    for(v in drop)
+      bib[[v]] <- NULL
+
+    if(!is.null(bib$url) & !is.null(bib$doi))
+      bib[["url"]] <- NULL
+
+    if(tolower(bib$bibtype) == "article") 
+      bib[["publisher"]] <- NULL
+
+    # Somewhat sensible ordering of elements
+    order <- c("key", "bibtype", "year", "author", "journal", "title", "volume", "number","pages", "doi", "publisher", "place")
+    v <-  c(order, names(bib)) %>% unique()
+    v <- v[v %in% names(bib)]
+
+    # save to metadata
+    metadata <- metadata_read_dataset_id(dataset_id)
+    metadata$source[[type]] <- bib[v]
+    metadata_write_dataset_id(metadata, dataset_id)
 }
 
 
-# function to add a substitution into a yaml file for a dataset_id
+#' Adds citation details from a doi to a metadata file for a dataset_id. 
+#'
+#' Uses rcrossref package to access publication details from the crossref 
+#' database
+#'
+#' @inheritParams metadata_path_dataset_id metadata_add_source_bibtex
+#' @param doi doi of reference to add
+#'
+#' @export
+#'
+metadata_add_source_doi <- function(doi, ...) {
+
+  bib <- rcrossref::cr_cn(doi)
+  file <- tempfile()
+  writeLines(bib, file)
+
+  metadata_add_source_bibtex(file=file, ...)
+}
+
+
+#' function to add a substitution into a metadata file for a dataset_id
+#'
+#' @param dataset_id 
+#' @param trait_name 
+#' @param find 
+#' @param replace 
+#'
+#' @export
+#'
+#' @examples
 metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
 
   set_name <- "substitutions"
