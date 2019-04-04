@@ -639,6 +639,13 @@ austraits_rebuild_remake_setup <- function( ) {
   pwd <- setwd(root.dir)
   on.exit(setwd(pwd))
   dataset_ids <- dir("data")
+
+  # check directories have both files
+
+  has_both_files <- sapply(dataset_ids, function(id) sprintf("data/%s/%s", id, c("data.csv", "metadata.yml") ) %>% file.exists() %>% all())
+
+  dataset_ids <- dataset_ids[has_both_files]
+
   vals <- list(dataset_ids=iteratelist(dataset_ids, value="dataset_id"))
 
   str <- whisker.render(readLines("scripts/remake.yml.whisker"), vals)
