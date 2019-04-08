@@ -1,5 +1,3 @@
-require(tidyverse)
-
 #' Path to the `metadata.yml` file for specified `dataset_id`
 #'
 #' @param dataset_id identifier for a particular study in the AusTraits compilation

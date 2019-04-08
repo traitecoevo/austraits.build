@@ -47,10 +47,6 @@ options(knitr.table.format = "html")
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 library(knitr)
-library(dplyr)
-library(leaflet)
-library(ggbeeswarm)
-library(ggbeeswarm)
 library(kableExtra)
 
 source("R/austraits.R")
@@ -260,14 +256,15 @@ if( any(tolower(sites$site_name) %in% c(NA, "unknown") ) ) {
 ```
 
 ```{r maps, eval= TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.keep="all"}
+
 # Make a map of study sites using leaflet
 sites <- sites %>% filter(!is.na(`latitude (deg)`) & !is.na(`longitude (deg)`))
 if(nrow(sites) > 0 ) {
-  leaflet() %>%
-  addTiles() %>%
-  addScaleBar() %>%
-  addMiniMap(zoomLevelFixed=2) %>%
-  addMarkers(lng = sites$`longitude (deg)`, lat = sites$`latitude (deg)`,
+  leaflet::leaflet() %>%
+  leaflet::addTiles() %>%
+  leaflet::addScaleBar() %>%
+  leaflet::addMiniMap(zoomLevelFixed=2) %>%
+  leaflet::addMarkers(lng = sites$`longitude (deg)`, lat = sites$`latitude (deg)`,
              label = sites$site_name)	
 }
 ```

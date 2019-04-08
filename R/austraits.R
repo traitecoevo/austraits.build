@@ -1,5 +1,3 @@
-library(tidyverse)
-
 ## Functions for extracting bits from Austraits
 
 extract_dataset <- function(austraits, dataset_id) {
