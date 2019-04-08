@@ -67,8 +67,12 @@ as_link <- function(link, text, type="md") {
     sprintf("<a href='%s'> %s </a>", link, text)
 }
 
+as_url_tpl <- function(ID) {
+  sprintf("http://www.theplantlist.org/tpl1.1/record/%s", ID)
+}
+
 as_link_tpl <- function(ID) {
-  sprintf("http://www.theplantlist.org/tpl1.1/record/%s", ID) %>%
+  as_url_tpl(ID) %>%
   as_link(ID)
 }
 
