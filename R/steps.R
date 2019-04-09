@@ -459,7 +459,11 @@ standardise_names <- function(x) {
     f("\\saffn(\\s|$)", " aff.\\1") %>%
 
     ## remove double space
-    f("[\\s]+", " ")
+    f("[\\s]+", " ") %>%
+
+    ## remove " ms" if present
+    f(" ms", "")
+
 }
 
 update_taxonomy  <- function(study_data, metadata){
