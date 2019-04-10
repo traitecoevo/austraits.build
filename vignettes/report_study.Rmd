@@ -47,14 +47,10 @@ options(knitr.table.format = "html")
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 library(knitr)
-library(dplyr)
-library(leaflet)
-library(ggbeeswarm)
-library(ggbeeswarm)
 library(kableExtra)
 
-source("R/austraits.R")
 source("R/support.R")
+source("R/austraits.R")
 source("R/report_utils.R")
 source("R/report_notetaker.R")
 
@@ -64,7 +60,7 @@ if(!exists("austraits")) {
   # stop("austraits must exist in global name space to knit a report")
 }
 if(!exists("dataset_id")) {
-  dataset_id <- "AusGrass_2014"
+  dataset_id <- "Bean_1997"
   #  stop("dataset_id must exist in global name space to knit a report")
 }
 
@@ -131,6 +127,19 @@ Send feedback by replying to the email XXXXX, attaching:
 
 1. Answers to the questions we ask throughout the document, and summarised at the end of the document.
 2. Edited versions of the input files for your study: ` `r dataset_id`/data.csv` and ` `r dataset_id`/metadata.yml` (if appropriate).
+
+
+```{r, results='asis', echo=FALSE}
+# Any additional questions from metadata
+if(!is.na(metadata_study$questions)) {
+  writeLines("# Major questions\n\n")
+
+  x <- metadata_study$questions
+  for(i in seq_along(metadata_study$questions))
+    new_question(sprintf("(section `general`) %s", x[[i]]))
+}
+```
+
 
 # Study context
 
@@ -260,14 +269,15 @@ if( any(tolower(sites$site_name) %in% c(NA, "unknown") ) ) {
 ```
 
 ```{r maps, eval= TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.keep="all"}
+
 # Make a map of study sites using leaflet
 sites <- sites %>% filter(!is.na(`latitude (deg)`) & !is.na(`longitude (deg)`))
 if(nrow(sites) > 0 ) {
-  leaflet() %>%
-  addTiles() %>%
-  addScaleBar() %>%
-  addMiniMap(zoomLevelFixed=2) %>%
-  addMarkers(lng = sites$`longitude (deg)`, lat = sites$`latitude (deg)`,
+  leaflet::leaflet() %>%
+  leaflet::addTiles() %>%
+  leaflet::addScaleBar() %>%
+  leaflet::addMiniMap(zoomLevelFixed=2) %>%
+  leaflet::addMarkers(lng = sites$`longitude (deg)`, lat = sites$`latitude (deg)`,
              label = sites$site_name)	
 }
 ```
@@ -298,6 +308,30 @@ if(nrow(context) > 0 ) {
 }
 
 ```
+
+
+## Species sampled
+
+```{r species_list, results='asis', echo=FALSE}
+
+
+species <- data_study$traits %>%
+  select(original_name, species_name) %>%
+  left_join(select(austraits$taxonomy, species_name, TPL_ID), by ="species_name")  %>%
+  mutate(link = ifelse(!is.na(TPL_ID),
+           sprintf("[%s](%s)%s", species_name,  as_url_tpl(TPL_ID), 
+                        ifelse(original_name!=species_name, sprintf(" (originally %s)", original_name), "")),
+           species_name)
+  ) %>%
+  distinct() %>%
+  arrange(original_name)
+```
+
+
+We have records on the following species from your study. We have attempted to align species names with [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. Species recorded in your study are listed below, with a link given for those appearing in TPL:
+
+
+`r species$link %>% paste(collapse=", ")`.
 
 # Trait measurements
 
@@ -554,74 +588,6 @@ for(trait in traits_categorical) {
 ```
 
 
-# Species taxonomy
-
-We have records on the following species from your study. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI).
-
-The table below shows the aligned taxonomy, with columns
-
-```{r, results='asis', echo=FALSE}
-definitions$austraits$elements$taxonomy$elements %>%
-  list1_to_df() %>%
-  bind_rows(tibble(key="notes", value="The reason a name change was implemented (where relevant)")) %>%
-  my_kable_styling()
-```
-
-Updated names are shown only where different to the original name supplied. We also include links to the species records in the above  systems. Clicking on the links will take you to the relevant taxonomic record in each system for that species.
-
-```{r species_list, results='asis', echo=FALSE}
-
-corrections <- tibble(original_name= character(), notes = character())
-
-if(!is.null(metadata_study$taxonomic_updates) & !is.na(metadata_study$taxonomic_updates)) {
-  corrections <- metadata_study$taxonomic_updates %>%
-    list_to_df() %>%
-    select(original_name = find, notes = reason)
-}
-
-species <- data_study$traits %>%
-  select(original_name, species_name) %>%
-  distinct() %>%
-  arrange(original_name) %>%
-  left_join(austraits$taxonomy, by ="species_name") %>%
-  rename(TPL_name = species_name) %>%
-  mutate(TPL_name = ifelse(TPL_name == original_name, "", TPL_name),
-         APC_name = ifelse(APC_name == original_name, "", APC_name)
-         ) %>%
- left_join(corrections, by = "original_name")  %>%
- mutate(notes = ifelse(is.na(notes), "", notes))
-
-
-species %>%
-  mutate(
-    TPL_ID = as_link_tpl(TPL_ID),
-    APC_ID = as_link_apc(APC_ID),
-    APNI_ID = as_link_apni(APNI_ID)
-  ) %>%
-  my_kable_styling()
- # borders -- seems to be too slow on large datasets
- # %>%
- #  kableExtra::column_spec(1, border_right = TRUE) %>%
- # kableExtra::column_spec(6, border_right = TRUE) %>%
- #  kableExtra::column_spec(8, border_right = TRUE) %>%
- # kableExtra::column_spec(9, border_right = TRUE)
-
-```
-
-```{r, results='asis', echo=FALSE}
-new_question("(section `taxonomic_updates`) Do these taxonomic alignments and corrections look reasonable?")
-```
-
-```{r, results='asis', echo=FALSE}
-# Any additional questions from metadata
-if(!is.na(metadata_study$questions)) {
-  writeLines("# Additional questions\n\n")
-
-  x <- metadata_study$questions
-  for(i in seq_along(metadata_study$questions))
-    new_question(sprintf("(section `general`) %s", x[[i]]))
-}
-```
 
 # Review of questions
 

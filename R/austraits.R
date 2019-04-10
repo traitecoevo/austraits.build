@@ -1,5 +1,3 @@
-library(tidyverse)
-
 ## Functions for extracting bits from Austraits
 
 extract_dataset <- function(austraits, dataset_id) {
@@ -288,8 +286,7 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
   }
 
   # define grouping variable, ordered by group-level by mean values
-  data$Group = forcats::fct_reorder(data[[y_axis_category]], data$log_value,
-                           fun = mean, na.rm=TRUE)
+  data$Group = forcats::fct_reorder(data[[y_axis_category]], data$log_value, na.rm=TRUE)
 
   n_group <- levels(data$Group) %>% length()
 

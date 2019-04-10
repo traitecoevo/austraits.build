@@ -84,7 +84,11 @@ load_study <- function(filename_data_raw,
                 tibble(species_name =  unique(traits$species_name)),
                 taxonomy_known
                 ) %>%
-      arrange(species_name)
+      arrange(species_name) %>%
+      mutate(genus = 
+         stringr::str_split(species_name, " " ) %>% map_chr(1)
+         ) %>%
+      select(species_name, genus, family, everything())
 
   list(dataset_id = dataset_id,
        traits       = traits %>% filter(is.na(error)) %>% select(-error),
@@ -455,7 +459,11 @@ standardise_names <- function(x) {
     f("\\saffn(\\s|$)", " aff.\\1") %>%
 
     ## remove double space
-    f("[\\s]+", " ")
+    f("[\\s]+", " ") %>%
+
+    ## remove " ms" if present
+    f(" ms", "")
+
 }
 
 update_taxonomy  <- function(study_data, metadata){
@@ -500,13 +508,33 @@ combine_austraits <- function(..., d=list(...), definitions) {
   d[sapply(d, is.null)] <- NULL
 
   names(d) <- sapply(d, "[[", "dataset_id")
+
+  # taxonomy 
+  taxonomy <- combine("taxonomy", d) %>% 
+                arrange(species_name) %>% 
+                filter(!duplicated(.))
+
+  # list of known genera
+  accepted_genera <- taxonomy %>% 
+      filter(!is.na(family) & status == "Accepted") %>%
+      select(genus, family) %>% 
+      distinct()
+
+  accepted_genera <- 
+      rlang::set_names(accepted_genera$family, accepted_genera$genus)
+
+  # fill families where unknown
+  taxonomy <- taxonomy %>% 
+      mutate(
+          family = ifelse(
+              is.na(family), accepted_genera[genus], family)
+          )
+
   ret <- list(traits=combine("traits", d),
               sites=combine("sites", d),
               methods=combine("methods", d),
               excluded_data = combine("excluded_data", d),
-              taxonomy=combine("taxonomy", d) %>% 
-                              arrange(species_name) %>% 
-                              filter(!duplicated(.)),
+              taxonomy=taxonomy,
               definitions = definitions,
               sources = sources,
               build_info = list(
