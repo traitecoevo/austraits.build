@@ -160,6 +160,11 @@ convert_list_to_bib <- function(ref) {
 
   # Replace , with and to get correct handling of authors
   ref$author <- gsub(",", " and ", ref$author)
+
+  # Ensures capitalisation of title retained as is
+  if(!is.null(ref$title))
+    ref$title = sprintf("{%s}", ref$title)
+
   RefManageR::as.BibEntry(ref)
 }
 
