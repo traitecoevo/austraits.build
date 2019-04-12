@@ -35,7 +35,14 @@ config:
   data_is_long_format: no
   variable_match:
     species_name: binomial
-  custom_R_code: data %>% mutate(flowering_time = sprintf("%s-%s", month.abb[`flowering month begin`], month.abb[`flowering month end`]) %>% convert_month_range_vec_to_binary())
+  custom_R_code: data %>% 
+    mutate(
+      flowering_time = sprintf("%s-%s", month.abb[`flowering month begin`], month.abb[`flowering month end`]) %>% convert_month_range_vec_to_binary(), 
+      leaf_compoundness  = ifelse(`leaf length min (mm)` =="leafless", "leafless", NA),
+      `leaf length min (mm)` = na_if(`leaf length min (mm)`, "leafless"),
+      `leaf length max (mm)` = na_if(`leaf length max (mm)`, "leafless"),
+      `leaf width min (mm)` = na_if(`leaf width min (mm)`, "leafless"),
+      `leaf width max (mm)` = na_if(`leaf width max (mm)`, "leafless"))
 traits:
 - var_in: genus
   unit_in: .na
