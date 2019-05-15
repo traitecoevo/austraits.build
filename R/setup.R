@@ -434,7 +434,7 @@ metadata_remove_taxnomic_change <- function(dataset_id, find, replace=NULL) {
   metadata_write_dataset_id(metadata, dataset_id)
 }
 
-austraits_find_species <- function(austraits, species_name, original_name = FALSE){
+austraits_find_species <- function(species_name, original_name = FALSE){
 
   data <- austraits$traits
 
