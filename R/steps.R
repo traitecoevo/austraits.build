@@ -160,6 +160,11 @@ convert_list_to_bib <- function(ref) {
 
   # Replace , with and to get correct handling of authors
   ref$author <- gsub(",", " and ", ref$author)
+
+  # Ensures capitalisation of title retained as is
+  if(!is.null(ref$title))
+    ref$title = sprintf("{%s}", ref$title)
+
   RefManageR::as.BibEntry(ref)
 }
 
@@ -514,20 +519,28 @@ combine_austraits <- function(..., d=list(...), definitions) {
                 arrange(species_name) %>% 
                 filter(!duplicated(.))
 
-  # list of known genera
-  accepted_genera <- taxonomy %>% 
+  # retrieve families from list of known genera - prioritise genera with accepted names
+  genera_accepted <- taxonomy %>% 
       filter(!is.na(family) & status == "Accepted") %>%
       select(genus, family) %>% 
       distinct()
 
-  accepted_genera <- 
-      rlang::set_names(accepted_genera$family, accepted_genera$genus)
+  genera_unresolved <- taxonomy %>% 
+      filter(!is.na(family) & status == "Unresolved" & !genus %in% genera_accepted$genus) %>%
+      select(genus, family) %>% 
+      distinct()
+
+  genera_known <- bind_rows(genera_accepted, genera_unresolved)
+
+
+  genera_known <- 
+      rlang::set_names(genera_known$family, genera_known$genus)
 
   # fill families where unknown
   taxonomy <- taxonomy %>% 
       mutate(
           family = ifelse(
-              is.na(family), accepted_genera[genus], family)
+              is.na(family), genera_known[genus], family)
           )
 
   ret <- list(traits=combine("traits", d),
