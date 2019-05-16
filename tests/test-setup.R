@@ -113,7 +113,7 @@ for (dataset_id in dataset_ids) {
 
   # data.csv
   f <- files[1]
-  expect_silent(data <- read_csv(f, col_types = cols()))
+  expect_silent(data <- read_csv(f, col_types = cols(), guess_max = 100000))
   test_dataframe(data, names(data), info=f)
 
   # custom R code
