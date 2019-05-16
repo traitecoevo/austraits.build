@@ -48,19 +48,16 @@ config:
           value = ifelse(trait == "flowering time start", suppressWarnings(format_flowering_months(value,  data$value[which(data$species_name==species_name & data$trait == "flowering time end")])), value),
           trait = ifelse(trait == "flowering time start", "flowering_time", trait)
           ) %>% 
-        filter(trait !="flowering time end")
-      ) %>% arrange(i)  %>% 
-      bind_rows(
-        filter(data, !is.na(value) & trait == "longevity") %>% 
-        mutate(
+        filter(trait !="flowering time end"),
+      filter(data, !is.na(value) & trait == "longevity") %>% 
+      mutate(
           trait = "leaf_phenology",
           value = ifelse(value %in% c("EP", "E", "EAP", "EPB", "EB", "EAB", "EA"), "evergreen", value),
           value = ifelse(value %in% c("DP", "D", "DPB"), "deciduous", value)
           ) %>%
         filter(value %in% c("evergreen", "deciduous")),
-        filter(data, !is.na(value) & trait == "longevity" & value %in% c("EP", "P", "DP", "EDP", "A", "EA", "EB", "B","AB", "EAB", "AP", "EAP", 
-                            "EPB", "DPB", "PB")) %>%
-        mutate(
+      filter(data, !is.na(value) & trait == "longevity" & value %in% c("EP", "P", "DP", "EDP", "A", "EA", "EB", "B","AB", "EAB", "AP", "EAP", "EPB", "DPB", "PB")) %>%
+       mutate(
           trait = "life_history",
           value = ifelse(value %in% c("EP", "P", "DP", "EDP"), "perennial", value),
           value = ifelse(value %in% c("A", "EA"), "annual", value),
@@ -69,7 +66,7 @@ config:
           value = ifelse(value %in% c("AP", "EAP"), "annual perennial", value),
           value = ifelse(value %in% c("EPB", "DPB", "PB"), "biennial perennial", value)
           )
-      ) %>% select(-i)
+      ) %>% arrange(i) %>% select(-i)
       # approach in the above is to ....'
 traits:
 - var_in: dispersal
