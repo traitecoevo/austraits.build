@@ -41,14 +41,16 @@ config:
         units = ifelse(units %in% c("m", "cm"), "mm", units),
         value = as.character(value)
        ),
-      filter(data, is.na(units) & trait !="longevity") %>%
+      filter(data, is.na(units) & !(trait %in% c("longevity", "flowering time start", "flowering time end"))) %>%
       mutate(
           trait = ifelse(value %in% "articles", "leaf_type", trait), 
-          value = ifelse(value %in% "articles", "article", value),
-          value = ifelse(trait == "flowering time start", suppressWarnings(format_flowering_months(value,  data$value[which(data$species_name==species_name & data$trait == "flowering time end")])), value),
-          trait = ifelse(trait == "flowering time start", "flowering_time", trait)
-          ) %>% 
-        filter(trait !="flowering time end"),
+          value = ifelse(value %in% "articles", "article", value)
+      ), 
+      filter(data, trait %in% c("flowering time start", "flowering time end")) %>% 
+        select(-i, -units) %>%
+        spread(trait, value) %>%
+        transmute(species_name, trait = "flowering_time", value = format_flowering_months(`flowering time start`, `flowering time end`)) %>% 
+        left_join(filter(data, trait == "flowering time start") %>% select(species_name, i), by = "species_name"), 
       filter(data, !is.na(value) & trait == "longevity") %>% 
       mutate(
           trait = "leaf_phenology",
@@ -67,7 +69,7 @@ config:
           value = ifelse(value %in% c("EPB", "DPB", "PB"), "biennial perennial", value)
           )
       ) %>% arrange(i) %>% select(-i)
-      # approach in the above is to ....'
+      # approach taken in the above is to use data to calculate a series of trait tables, which are bound together with bind_rows. The index i is used to sort data according to original order in the file'
 traits:
 - var_in: dispersal
   unit_in: .na
