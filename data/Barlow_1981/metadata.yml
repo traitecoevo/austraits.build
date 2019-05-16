@@ -49,7 +49,7 @@ config:
       filter(data, trait %in% c("flowering time start", "flowering time end")) %>% 
         select(-i, -units) %>%
         spread(trait, value) %>%
-        transmute(species_name, trait = "flowering_time", value = format_flowering_months(`flowering time start`, `flowering time end`)) %>% 
+        transmute(species_name, trait = "flowering_time", value = convert_month_range_vec_to_binary( sprintf("%s-%s", `flowering time start`,`flowering time end`)))%>% 
         left_join(filter(data, trait == "flowering time start") %>% select(species_name, i), by = "species_name"), 
       filter(data, !is.na(value) & trait == "longevity") %>% 
       mutate(
