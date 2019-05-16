@@ -245,6 +245,22 @@ compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trai
 #compare_versions("export/austraits-0.rds", "export/austraits.rds")
 
 
+
+compare_versions_df <- function (df1, df2, path = "export/tmp") {
+  unlink(path, TRUE, TRUE)
+  dir.create(path, FALSE, TRUE)
+
+
+  df1 %>% write_csv(sprintf("%s/df.csv", path))
+ 
+  repo <- git2r::init(path)
+  git2r::add(repo, "*")
+
+  df2 %>% write_csv(sprintf("%s/df.csv", path))
+
+  message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
+}
+
 trait_distribution_by_datasetid <- function(...){
   trait_distribution_plot(y_axis_category = "dataset_id", ...)
 }
