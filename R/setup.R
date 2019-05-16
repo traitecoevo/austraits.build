@@ -149,7 +149,7 @@ metadata_check_custom_R_code <- function(dataset_id) {
   metadata <- metadata_read_dataset_id(dataset_id)
 
   # load and clean trait data
-  read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols()) %>%
+  read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols(), guess_max = 100000) %>%
     custom_manipulation(metadata[["config"]][["custom_R_code"]])()
 }
 
