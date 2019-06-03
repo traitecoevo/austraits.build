@@ -230,7 +230,7 @@ metadata_add_sites <- function(dataset_id, site_data) {
 
   # Save and notify
   metadata$sites <- select(site_data, one_of(keep)) %>%
-            split(site_data$site_name) %>% lapply(as.list)
+            split(site_data[[site_name]]) %>% lapply(as.list)
 
   cat(sprintf("Following sites added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$sites), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
   
@@ -290,7 +290,12 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 #'
 metadata_add_source_doi <- function(doi, ...) {
 
-  bib <- rcrossref::cr_cn(doi)
+  bib <- suppressWarnings(rcrossref::cr_cn(doi))
+
+  if(is.null(bib)) {
+    message("DOI not available in Crossref database, please fill record manually") 
+    return(invisible(FALSE))
+  }
   file <- tempfile()
   writeLines(bib, file)
 
