@@ -290,7 +290,12 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 #'
 metadata_add_source_doi <- function(doi, ...) {
 
-  bib <- rcrossref::cr_cn(doi)
+  bib <- suppressWarnings(rcrossref::cr_cn(doi))
+
+  if(is.null(bib)) {
+    message("DOI not available in Crossref database, please fill record manually") 
+    return(invisible(FALSE))
+  }
   file <- tempfile()
   writeLines(bib, file)
 
