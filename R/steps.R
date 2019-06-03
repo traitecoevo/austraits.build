@@ -333,27 +333,26 @@ parse_data <- function(data, dataset_id, metadata) {
     df <- df %>% 
             mutate(observation_id = make_id(nrow(.), dataset_id))
   } else {
-    # For long datasets, use specified variable to create observation_id
-
-    # use species_name-trait_name as unique identifier unless otherwise specified
-    if(is.null(df[["observation_id"]])) {
-      df[["observation_id"]] <- df[["species_name"]]
+    
+    # For long datasets, create unique identifier from species_name, site, and observation_id (if specified)
+    df[["observation_id_tmp"]] <- gsub(" ", "-", df[["species_name"]])
       
-      if(!is.null(df[["site_name"]]))
-        df[["observation_id"]] <- paste0(df[["species_name"]],"-", df[["site_name"]])
-    } 
+    if(!is.null(df[["site_name"]][1]))
+      df[["observation_id_tmp"]] <- paste0(df[["observation_id_tmp"]],"_", df[["site_name"]])
 
-    id <- df[["observation_id"]] %>% unique() %>% sort()
+    if(!is.null(df[["observation_id"]])) {
+      df[["observation_id_tmp"]] <- paste0(df[["observation_id_tmp"]],"_", df[["observation_id"]])
+      df[["observation_id"]] <- NULL
+    }
 
-    df <- df %>% 
-              left_join(by = "observation_id",
-                        tibble(observation_id = id, 
-                               observation_id2 = make_id(length(id), dataset_id))
+    df <- df %>%
+              left_join(by = "observation_id_tmp",
+                        tibble(observation_id_tmp = df[["observation_id_tmp"]] %>% unique() %>% sort(), 
+                               observation_id = make_id(length(observation_id_tmp), dataset_id))
                         ) %>%
-              select(-observation_id) %>% 
-              rename(observation_id = observation_id2)
+              select(-observation_id_tmp)
   }
-
+  
   # Step 2. Add trait information, with correct names
 
   cfgChar <-
