@@ -118,7 +118,7 @@ for (dataset_id in dataset_ids) {
 
   # custom R code
   txt <- metadata[["config"]][["custom_R_code"]]
-  expect_false(grepl("#", txt), label=paste0(files[3], "-custom_R_code cannot contain comments"))
+  #expect_false(grepl("#", txt), label=paste0(files[3], "-custom_R_code cannot contain comments, except on last line"))
   expect_no_error(custom_manipulation(txt)(data), label=paste0(files[3], "-custom_R_code"))
 
   # Apply custom manipulations
@@ -128,14 +128,14 @@ for (dataset_id in dataset_ids) {
   if(metadata[["config"]][["data_is_long_format"]]) {
 
     # Variable match
-    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name",  "trait_name", "value","site_name"), info=paste0(f, " - variable_match"))  
+    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name",  "trait_name", "value","site_name", "observation_id"), info=paste0(f, " - variable_match"))  
 
     # For vertical datasets, expect all values of "trait column" found in traits
     var_out <- names(metadata[["config"]][["variable_match"]])
     var_in <- unlist(metadata[["config"]][["variable_match"]])
     i <- match("trait_name", var_out)
     values <- unique(data[[var_in[i]]])
-    expect_contains(cfgChar[["var_in"]], values, info=files[3])
+    expect_contains(cfgChar[["var_in"]], values, info=files[2])
   } else {
 
     # Variable match
