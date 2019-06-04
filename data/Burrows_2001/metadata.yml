@@ -39,7 +39,19 @@ sites:
     latitude (deg): -35.2666667
     longitude (deg): 147.0666667
     rainfall (mm): 585
-    description: The Rock Nature Reserve (lat. 357169S, long. 1477049E), South Western Slopes, New South Wales, is a small (341 ha) island of remnant vegetation surrounded by an extensively modified agricultural landscape. A north-south ridge, the highest point of which is over 350 m above the surrounding plains, dominates the reserve. Approximately 215 vascular plant species, in an open woodland with an overstory dominated by species of Eucalyptus, Acacia, and Callitris, have been recorded at this site (Burrows 1999). Of these species, 18 (8%) are trees, 36 (17%) are shrubs, 85 (40%) are perennial herbs, and 74 (35%) are annuals or biennials (Burrows 1999). The majority of the perennial herbs die back by the start of summer to an underground tuber, bulb, or similar structure, and only a few species, such as Dianella revoluta and Lomandra filiformis, stay in leaf during summer. Thus, only ca. 25% of the recorded species remain in leaf, or equivalent, for the whole year.
+    description: The Rock Nature Reserve (lat. 357169S, long. 1477049E), South Western
+      Slopes, New South Wales, is a small (341 ha) island of remnant vegetation surrounded
+      by an extensively modified agricultural landscape. A north-south ridge, the
+      highest point of which is over 350 m above the surrounding plains, dominates
+      the reserve. Approximately 215 vascular plant species, in an open woodland with
+      an overstory dominated by species of Eucalyptus, Acacia, and Callitris, have
+      been recorded at this site (Burrows 1999). Of these species, 18 (8%) are trees,
+      36 (17%) are shrubs, 85 (40%) are perennial herbs, and 74 (35%) are annuals
+      or biennials (Burrows 1999). The majority of the perennial herbs die back by
+      the start of summer to an underground tuber, bulb, or similar structure, and
+      only a few species, such as Dianella revoluta and Lomandra filiformis, stay
+      in leaf during summer. Thus, only ca. 25% of the recorded species remain in
+      leaf, or equivalent, for the whole year.
 config:
   data_is_long_format: no
   variable_match:
@@ -47,31 +59,67 @@ config:
     site_name: SITE_text
   custom_R_code: .na
 traits:
-- var_in: latitude
-  unit_in: .na
-  trait_name: .na
-  value_type: .na
-  replicates: .na
-  methods: .na
-- var_in: longitude
-  unit_in: .na
-  trait_name: .na
-  value_type: .na
-  replicates: .na
-  methods: .na
-- var_in: 'TRAIT: leaf size UNITS: cm2'
+- var_in: Leaf_area_cm2
   unit_in: cm2
   trait_name: leaf_area
+  value_type: raw_value
+  replicates: 1
+  methods: Three to six leaves or the equivalent were collected from at least two
+    plants of most species. Measured with a Licor leaf area meter.
+- var_in: Leaf_weight_g
+  unit_in: g
+  trait_name: leaf_dry_mass
+  value_type: raw_value
+  replicates: 1
+  methods: Three to six leaves or the equivalent were collected from at least two
+    plants of most species. Oven dried and weighed.
+- var_in: LMA_g_m2
+  unit_in: g/m2
+  trait_name: specific_leaf_area
+  value_type: raw_value
+  replicates: 1
+  methods: Three to six leaves or the equivalent were collected from at least two
+    plants of most species. Leaf area measured with a Licor leaf area meter. Leaves
+    then oven dried and weighed.
+- var_in: lamina_depth_um
+  unit_in: um
+  trait_name: leaf_thickness
   value_type: site_mean
   replicates: 3-6
   methods: Three to six leaves or the equivalent were collected from at least two
-    plants of most species - although this is probably referring to sampling to examine
-    photosynthetic organs, not total leaf area.
-substitutions: .na
+    plants of most species. Material was fixed in 50% formalin
+- var_in: leaf_type
+  unit_in: .na
+  trait_name: leaf_type
+  value_type: expert_mean
+  replicates: .na
+  methods: expert identification
+- var_in: leaf_shape
+  unit_in: .na
+  trait_name: leaf_shape
+  value_type: expert_mean
+  replicates: .na
+  methods: expert identification
+substitutions:
+- trait_name: leaf_type
+  find: decurrent leaf base
+  replace: scale_leaf
+- trait_name: leaf_type
+  find: trifoliolate leaves
+  replace: broadleaf
 taxonomic_updates:
 - find: Callitris glaucophylla
   replace: Callitris columellaris
   reason: Synonym reported by TaxonStand (2018-02-08)
+- find: Ameyma miquelii
+  replace: Amyema miquelii
+  reason: typo found (E. Wenk, June 4, 2019)
+- find: Dodonea viscosa subsp. cuneata
+  replace: Dodonaea viscosa subsp. cuneata
+  reason: typo found (E. Wenk, June 4, 2019)
+- find: Zieria cystisoides
+  replace: Zieria cytisoides
+  reason: Spelling mistake identified by TaxonStand (2019-06-04)
 questions:
   additional_traits: Manuscript also includes detailed anatomy of photosynthetic organs.
 
