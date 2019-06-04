@@ -328,9 +328,14 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
 
   # Check if find record already exists for that trait
   data <-  list_to_df(metadata[[set_name]])  
-  if(length(metadata[[set_name]]) > 0 & 
-     length(which(trait_name %in% data$trait_name & find %in% data$find)) > 0) {
-    stop(sprintf("Substitution exists for %s - %s, please update manually in %s", trait_name, find, filename_metadata))
+  if(length(metadata[[set_name]]) > 0)
+    if(length(which(trait_name %in% data$trait_name & find %in% data$find)) > 0) {
+    message(paste(
+        crayon::red(sprintf("Substitution exists for %s, %s", trait_name, find))
+        , 
+        sprintf("-> please review manually in %s",  metadata_path_dataset_id(dataset_id))
+        ))
+    return(invisible())
   }
 
   metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
