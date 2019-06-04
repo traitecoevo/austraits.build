@@ -54,8 +54,7 @@ metadata_create_template <- function(dataset_id,
                                   number = "unknown",
                                   pages = "unknown",
                                   doi = "unknown"
-                                  ),
-                     secondary=NA
+                                  )
                      ),
        people = people %>% df_to_list(),
        dataset = list(year_collected_start= "unknown",
