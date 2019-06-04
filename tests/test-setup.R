@@ -55,9 +55,11 @@ for (dataset_id in dataset_ids) {
   test_list(metadata[["source"]], info=f)
   expect_isin(names(metadata[["source"]]), definitions$metadata$elements$source$values %>% names(), info=f)
   vals <- c("key", "bibtype", "author", "title", "year")
-  expect_isin(vals, names(metadata[["source"]][["primary"]]), info=f)
-  if(!is.null(metadata[["source"]][["secondary"]])){
-    expect_isin(vals, names(metadata[["source"]][["secondary"]]), info=f)
+  expect_contains(names(metadata[["source"]][["primary"]]), vals, info=f)
+
+  if(!is.null(metadata[["source"]][["secondary"]]))
+    if(!is.na(metadata[["source"]][["secondary"]][1])) {
+    expect_contains(names(metadata[["source"]][["secondary"]]), vals, info=paste(f, "-> source -> secondary"))
   }
 
   # people
