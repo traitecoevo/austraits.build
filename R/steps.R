@@ -158,6 +158,9 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
 convert_list_to_bib <- function(ref) {
   if(is.null(ref)) return(NULL)
 
+  if(is.na(ref[1])) return(NULL)
+
+
   # Replace , with and to get correct handling of authors
   ref$author <- gsub(",", " and ", ref$author)
 
