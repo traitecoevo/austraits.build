@@ -42,7 +42,7 @@ dataset:
     judged to prefer richer soils. For rainfall contrasts, we selected a different
     set of 10 species pairs consisting of one species from the low rainfall western
     plains of NSW, and one species from the higher rainfall coastal region of eastern
-    NSW. This east–west contrast provides a gradient in total rainfall, while keeping
+    NSW. This east-west contrast provides a gradient in total rainfall, while keeping
     the seasonal pattern similar. We did not use species with distributions that encompassed
     both the coastal plain and the western plain, although some eastern species also
     occurred on the western slopes of the dividing range. Among the eastern species,
@@ -55,7 +55,15 @@ dataset:
     levels, in case evolutionary divergences were apparent only in contrasts with
     a longer time since divergence.
   original_file: Cunnningham_1999.pdf
-  notes: Many other traits have been measured that are not currently part of Austraits, including Slcerification (percent), leaf width, depth of different leaf tissues (total lamina, upper cuticle, upper epidermis, upper hypodermis, upper palisade, spongy mesophyll, lower palisade, lower hypodermis, lower epidermis, lower cuticle), cell cross-sectional area of different leaf tissues (upper epidermis, upper hypodermis, upper palisade, spongy mesophyll, lower palisade, lower hypodermis, lower epidermis, and weighted mean cell size), and leaf chemistry including essential soils, a phenolics index, a tannis index, whether alkaloids are present, and neutral detergent fiber (a measure of amount of cell wall material)
+  notes: Many other traits have been measured that are not currently part of Austraits,
+    including Slcerification (percent), leaf width, depth of different leaf tissues
+    (total lamina, upper cuticle, upper epidermis, upper hypodermis, upper palisade,
+    spongy mesophyll, lower palisade, lower hypodermis, lower epidermis, lower cuticle),
+    cell cross-sectional area of different leaf tissues (upper epidermis, upper hypodermis,
+    upper palisade, spongy mesophyll, lower palisade, lower hypodermis, lower epidermis,
+    and weighted mean cell size), and leaf chemistry including essential soils, a
+    phenolics index, a tannis index, whether alkaloids are present, and neutral detergent
+    fiber (a measure of amount of cell wall material)
 sites:
   Cunningham_Agnes Banks_15m:
     latitude (deg): -33.617
@@ -216,7 +224,9 @@ config:
   variable_match:
     species_name: taxon
     site_name: site
-  custom_R_code: .na
+  custom_R_code:
+    data %>%
+      mutate(leaf_saturated_water_content_per_mass = (1/(1-`Potential hydration (proportion)`)))
 traits:
 - var_in: leaf longevity
   unit_in: .na
@@ -240,14 +250,41 @@ traits:
   unit_in: cm2/g
   trait_name: specific_leaf_area
   value_type: site_mean
-  replicates: 5
-  methods: For determining leaf area and saturated and dry mass, we collected two fully mature leaves from the outside of the canopy of each of five plants (except for Myoporum acuminatum, for which only one plant was found at the site). These leaves were stored in plastic bags on ice. We treated the primary photosynthetic organs as leaves; thus, for some Acacia sp., the 'leaves' were, in fact, phyllodes. Leaves were dried at 80°C for 48 h before dry mass (dm) was determined.
+  replicates: '5'
+  methods: For determining leaf area and saturated and dry mass, we collected two
+    fully mature leaves from the outside of the canopy of each of five plants (except
+    for Myoporum acuminatum, for which only one plant was found at the site). These
+    leaves were stored in plastic bags on ice. We treated the primary photosynthetic
+    organs as leaves; thus, for some Acacia sp., the 'leaves' were, in fact, phyllodes.
+    Leaves were dried at 80C for 48 h before dry mass (dm) was determined.
 - var_in: Nmass
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
   value_type: site_mean
-  replicates: 5
-  methods: This sample was frozen in liquid nitrogen within 1 h of field collection and was vacuum-dried before chemical analyses (in the laboratory of I. D. Hume, University of Sydney, for all but alkaloids).Total nitrogen concentration of leaves was determined by semimicro Kjeldahl digestion, with selenium as a catalyst (Ivan et al. 1974).
+  replicates: '5'
+  methods: This sample was frozen in liquid nitrogen within 1 h of field collection
+    and was vacuum-dried before chemical analyses (in the laboratory of I. D. Hume,
+    University of Sydney, for all but alkaloids).Total nitrogen concentration of leaves
+    was determined by semimicro Kjeldahl digestion, with selenium as a catalyst (Ivan
+    et al. 1974).
+- var_in: leaf_saturated_water_content_per_mass
+  unit_in: g/g
+  trait_name: leaf_saturated_water_content_per_mass
+  value_type: site_mean
+  replicates: '5'
+  methods: Before measuring the saturated mass of leaves (abbreviated in results as fm, for fresh mass), we allowed them to become turgid by resting them between wet paper towels for 10 min (Hendry and Grime 1993). Saturated mass is the hydrated mass of cell walls and cytoplasm. Leaves were dried at 80C for 48 h before dry mass (dm) was determined. Previous workers have variously chosen to express the dm:fm ratio as a degree of hydration, 1 - (dm/fm) (e.g., Shipley 1995), or as a tissue density, dm/fm (e.g., Witkowski and Lamont 1991, Ryser 1996). Because it is uncertain how fm relates to true leaf volume, there is some debate about this means of estimating density. We chose instead to express these data as a measure of potential leaf hydration. (The trait was recomputed as dm/fm for compilation in AusTraits.)
+- var_in: leaf width (mm)
+  unit_in: mm
+  trait_name: leaf_width
+  value_type: site_mean
+  replicates: '5'
+  methods: Leaf width was measured as the diameter of the largest circle that could be placed within the boundary of the leaf blade (the longest path across a continuous leaf surface). Thus, lobed or dissected leaves have relatively low leaf widths, given their area. Leaves with greater widths, by this measure, have greater effective leaf size (sensu Givnish 1979).
+- var_in: total lamina thickness (um)
+  unit_in: um
+  trait_name: leaf_thickness
+  value_type: site_mean
+  replicates: '5'
+  methods: For each species, we measured total lamina depth and the depth of each tissue layer by taking linear measurements at five different places, spread approximately evenly from near the midrib to the leaf edge; the average was calculated from these data.
 substitutions:
 - trait_name: nitrogen_fixing
   find: 'no'
@@ -269,4 +306,6 @@ taxonomic_updates:
   replace: Myoporum tenuifolium
   reason: Synonym reported by TaxonStand (2018-02-08)
 questions:
-  additional_traits: phenols, NDF, tannin, mean cross sectional area of cells, hydration, lamina depth, epidermis, proportion lamina sclerified, leaf width, leaf thickness
+  additional_traits: 'The following traits are also in the data.csv file but not yet mapped into AusTraits: Sclerification (proportion);upper cuticle thickness (um);	upper epidermis thickness (um);	upper hypodermis thickness (um);	upper palisade thickness (um);	spongy mesophyll thickness (um);	lower palisade thickness (um);	lower hypodermis thickness (um);	lower epidermis thickness (um);	lower cuticle thickness (um);	upper epidermis cell cross-sectional area (um2);	upper hypodermis cell cross-sectional area (um2);	upper palisade cell cross-sectional area (um2);	spongy mesophyll cell cross-sectional area (um2);	lower palisade cell cross-sectional area (um2);	lower hypodermis cell cross-sectional area; (um2);	lower epidermis cell cross-sectional area (um2);	weighted mean cell cross-sectional area (um2);	essential oil (mL/dry kg);	Phenolics (relative index);	Tannins (relative index);	neutral detergent fiber (% of dry mass);	Alkaloids present (Y/N)'
+
+
