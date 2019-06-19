@@ -24,12 +24,32 @@ dataset:
   description: various traits for savannah and forest species
   collection_type: field
   sample_age_class: adult
-  sampling_strategy: The bark thickness of 43 tree species from 1020 individuals in
-    tropical savanna, and 20 species from 281 individuals in monsoon forest, was sampled
-    at Litchfield National Park (LNP; 1464 km2) in June 2009 and at East Point Reserve
-    (135 ha) in August 2009, respectively.
-  original_file: lawes paper 2013 J ecol.xls
-  notes: The wrong data file is currently assigned the name "Lawes_2012" - it is currently the Tomlinson_2013 data set without non-Australian species removed. This metadata file will be substantially rewritten once we re-locate the correct data set.
+  sampling_strategy: 'The bark thickness of 43 tree species from 1020 individuals
+    in tropical savanna, and 20 species from 281 individuals in monsoon forest, was
+    sampled at Litchfield National Park (LNP; 1464 km2) in June 2009 and at East Point
+    Reserve (135 ha) in August 2009, respectively. The vegetation in LNP is dominated
+    by eucalypt open forests and woodlands, with a grassy understorey, referred to
+    hereafter as tropical savanna. The seasonal climate is particularly conducive
+    to high fire frequencies: the wet season is highly productive with abundant grass
+    growth, while the 7-month dry season (c. May-November) strongly promotes grass
+    curing and flammability. Fires are typically ground fires and are fuelled by native
+    Sorghum spp. grasses. On average 66% of LNP is burnt per annum (Russell-Smith
+    et al. 2009). Data from tropical savannas were collected from vegetation monitoring
+    plots (20 m 9 40 m) that were established between March 1994 and August 1996 in
+    LNP. These monitoring plot data indicate that 86% of fires in LNP are of low (2
+    m scorch height) or moderate (sub-canopy scorch) severity. We sampled only those
+    plots that had been burnt at least in the previous dry season or more recently
+    and had been burnt in at least five of the previous 12 years, that is an average
+    fire return interval of c. 1.5 years (Northern Territory Bushfires Council, unpublished
+    data). Fire severity in the plots we surveyed was of low to moderate intensity.
+    East Point Reserve (12deg24min30sec S, 130deg50min E) is a regionally significant
+    remnant of coastal monsoon forest (Panton 1993). The forest belongs to Group 9
+    of Russell-Smith (1991) and is described as semideciduous rainforest and vine
+    thicket. Monsoon forest on the East Point peninsula was extensively cleared and
+    burnt from 1932 to 1963 (Franklin, Matthews & Lawes 2010), and we sampled nly
+    forest remnants that had not been previously cleared or burnt.'
+  original_file: file in "raw" folder
+  notes: none
 sites:
   Litchfield:
     longitude (deg): 130.8464
@@ -38,134 +58,61 @@ sites:
       with a grassy understorey, referred to hereafter as tropical savanna. The seasonal
       climate is particularly conducive to high fire frequencies, the wet season is
       highly productive with abundant grass growth, while the 7-month dry season (c.
-      May–November) strongly promotes grass curing and flammability. Fires are typically
-      ground fires and are fuelled by native Sorghum spp. grasses. On average 66%
-      of LNP is burnt per annum (Russell-Smith et al. 2009). Data from tropical savannas
-      were collected from vegetation monitoring plots (20 m 9 40 m) that were established
-      between March 1994 and August 1996 in LNP. These monitoring plot data indicate
-      that 86% of fires in LNP are of low (2 m scorch height) or moderate (sub-canopy
-      scorch) severity. We sampled only those plots that had been burnt at least in
-      the previous dry season or more recently and had been burnt in at least five
-      of the previous 12 years, that is an average fire return interval of c. 1.5
-      years (Northern Territory Bushfires Council, unpublished data). Fire severity
-      in the plots we surveyed was of low to moderate intensity.
+      May<U+FFFD>November) strongly promotes grass curing and flammability. Fires
+      are typically ground fires and are fuelled by native Sorghum spp. grasses. On
+      average 66% of LNP is burnt per annum (Russell-Smith et al. 2009). Data from
+      tropical savannas were collected from vegetation monitoring plots (20 m x 40
+      m) that were established between March 1994 and August 1996 in LNP. These monitoring
+      plot data indicate that 86% of fires in LNP are of low (2 m scorch height) or
+      moderate (sub-canopy scorch) severity. We sampled only those plots that had
+      been burnt at least in the previous dry season or more recently and had been
+      burnt in at least five of the previous 12 years, that is an average fire return
+      interval of c. 1.5 years (Northern Territory Bushfires Council, unpublished
+      data). Fire severity in the plots we surveyed was of low to moderate intensity.
   East Point Reserve:
     longitude (deg): 130.8333
     latitude (deg): -12.4083
-    description: East Point Reserve is a regionally significant
-      remnant of coastal monsoon forest (Panton 1993). The forest belongs to Group
-      9 of Russell-Smith (1991) and is described as semideciduous rainforest and vine
-      thicket. Monsoon forest on the East Point peninsula was extensively cleared
-      and burnt from 1932 to 1963 (Franklin, Matthews & Lawes 2010), and we sampled
-      only forest remnants that had not been previously cleared or burnt.
+    description: East Point Reserve is a regionally significant remnant of coastal
+      monsoon forest (Panton 1993). The forest belongs to Group 9 of Russell-Smith
+      (1991) and is described as semideciduous rainforest and vine thicket. Monsoon
+      forest on the East Point peninsula was extensively cleared and burnt from 1932
+      to 1963 (Franklin, Matthews & Lawes 2010), and we sampled only forest remnants
+      that had not been previously cleared or burnt.
 config:
   data_is_long_format: no
   variable_match:
     species_name: Species
-  custom_R_code: .na
+  custom_R_code: data %>% mutate( `Dbh @ 0.5 m (mm)` = (`Dbh @ 0.5 m (mm)`/10)) %>%
+    unite(col = `diameter`, `Dbh @ 0.5 m (mm)`, `DBH @ 1.3 m (cm)`, sep = "")
 traits:
-- var_in: LMF (g g-1)
-  unit_in: g/g
-  trait_name: leaf_mass_fraction
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: leaf size (cm2)
-  unit_in: cm2
-  trait_name: leaf_area
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: SLA (mm2 mg-1)
-  unit_in: mm2/mg
-  trait_name: specific_leaf_area
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: LAR (mm2 mg-1)
-  unit_in: mm2/mg
-  trait_name: leaf_area_ratio
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: LDMC (mg g-1)
-  unit_in: mg/g
-  trait_name: leaf_dry_matter_content
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: LWCarea (g H2O cm-2)
-  unit_in: g/cm2
-  trait_name: leaf_water_content_per_area
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: leaf N mass (mg N g-1)
-  unit_in: mg/g
-  trait_name: leaf_N_per_dry_mass
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: leaf p mass (mg P g-1)
-  unit_in: mg/g
-  trait_name: leaf_P_per_dry_mass
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: leaf K mass (mg K g-1)
-  unit_in: mg/g
-  trait_name: leaf_K_per_dry_mass
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: leaf N area (mg N cm-2)
-  unit_in: g/m2
-  trait_name: leaf_N_per_area
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: leaf P area (mg P cm-2)
-  unit_in: g/m2
-  trait_name: leaf_P_per_area
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: leaf K area (mg K cm-2)
-  unit_in: g/m2
-  trait_name: leaf_K_per_area
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: Amax area (?molCO2
-  unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: Amax mass (nmolCO2)
-  unit_in: nmolCO2/g/s
-  trait_name: photosynthetic_rate_per_dry_mass
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: gs (?molH2O)
-  unit_in: mmolH2O/m2/s
-  trait_name: stomatal_conductance_per_area
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: PWUE (?molCO2 )
-  unit_in: umolCO2/umolH2O
-  trait_name: leaf_photosynthetic_water_use_efficiency
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: PNUE (?molCO2)
-  unit_in: umolCO2/s/gN
-  trait_name: leaf_photosynthetic_nitrogen_use_efficiency
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
+- var_in: Prefire ht
+  unit_in: m
+  trait_name: plant_height
+  value_type: raw_value
+  replicates: 1
+  methods: The tree's pre-fire height.
+- var_in: diameter
+  unit_in: cm
+  trait_name: stem_diameter
+  value_type: raw_value
+  replicates: 1
+  methods: The diameter at breast height of each tree was also measured. For trees
+    less than ~3 meters tall, the diameter at 50 cm was measured. The data.csv file
+    indicates which individuals were measured at which diameter.
+- var_in: BTMean
+  unit_in: mm
+  trait_name: bark_thickness
+  value_type: raw_value
+  replicates: 1
+  methods: Bark thickness was measured using a standard thickness gauge (Hagl<U+FFFD>of,
+    Barktax, Sweden) or where bark was not penetrable using the gauge, we used a needle
+    punch (diam. = 3 mm). In both cases, the gauge was inserted to the point of resistance
+    by the sapwood. Bark thickness measured by this method includes the cambium in
+    most instances, but as the cambium is thin (< 0.5 mm), this did not substantially
+    affect measures of bark thickness. Where bark was fissured, we measured thickness
+    from the highest point. We took three evenly spaced measures of bark thickness
+    around the circumference of the stem at breast height (1.3 m) per individual.
+    The diameter at breast height of each tree was also measured.
 substitutions: .na
 taxonomic_updates:
 - find: Eucalyptus erythrophloia
@@ -186,10 +133,26 @@ taxonomic_updates:
 - find: Mimosa clausenii
   replace: Mimosa claussenii
   reason: Spelling mistake identified by TaxonStand (2018-02-08)
-questions:
-  contributor: The referenced manuscript does not contain  methods for the
-    trait data submitted. Do you have brief descriptions of the methods used, including
-    number of replicates measured? Also, you have two sites listed, but the site names are not linked to the trait values. Can you specify which data are collected at which sites?
-  austraits: The referenced manuscript is about bark thickness, but
-    data for this trait are not included in the data file. Indeed, the wrong data file is currently assigned the name "Lawes_2012" - it is currently the Tomlinson_2013 data set without non-Australian species removed. This metadata file will be substantially rewritten once we re-locate the correct data set.
+- find: Pouteria sericea
+  replace: Sersalisia sericea
+  reason: Synonym reported by TaxonStand (2019-06-19)
+- find: Tarenna australis
+  replace: Triflorensia australis
+  reason: Synonym reported by TaxonStand (2019-06-19)
+- find: Cupaniopsis anacordioides
+  replace: Cupaniopsis anacardioides
+  reason: Spelling mistake identified by TaxonStand (2019-06-19)
+- find: Drypetes deplonchei
+  replace: Drypetes deplanchei
+  reason: Spelling mistake identified by TaxonStand (2019-06-19)
+- find: Pongamia pinncta
+  replace: Pongamia pinnata
+  reason: Spelling mistake identified by TaxonStand (2019-06-19)
+- find: Exocorpus latifolius
+  replace: Exocarpos latifolius
+  reason: typo found E. Wenk, 19 June 2019
+- find: Mallotus phillipensis
+  replace: Mallotus philippensis
+  reason: typo found E. Wenk, 19 June 2019
+questions: .na
 
