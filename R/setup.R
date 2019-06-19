@@ -505,18 +505,36 @@ metadata_check_taxa <- function(dataset_id, update=TRUE, typos=FALSE, diffchar =
   else
     tpl <- check_taxonstand(species[!i], corr = FALSE)
 
+
+  # Species already known, name needs substituting
+  tpl2 <- tpl %>% 
+          format_tpl_to_accepted_df() %>% 
+          mutate(accepted_i = match(TPL_ID, accepted$TPL_ID)) %>%
+          filter(!is.na(accepted_i))
+
+  existed <- nrow(tpl2)
+
+  for(i in seq_len(existed)) {
+    metadata_add_taxnomic_change(dataset_id, tpl2$species_name[i], accepted$species_name[tpl2$accepted_i[i]], 
+            sprintf("Alignment with existing species identified by TaxonStand (%s)", Sys.Date()))
+  }
+
+  # Process remaining species
+  tpl <- tpl %>% filter(!(ID %in% tpl2$TPL_ID))
+
   keep <- tpl$Taxonomic.status %in% c("Accepted", "Unresolved") & tpl$Typo == FALSE
   synonym <- tpl$Taxonomic.status %in% c("Synonym") & tpl$Typo==FALSE
   typo1 <- tpl$Taxonomic.status %in% c("Accepted", "Unresolved") & tpl$Typo==TRUE
   typo2 <- tpl$Taxonomic.status %in% c("Synonym") & tpl$Typo==TRUE
   unknown <- tpl$Taxonomic.status %in% c("")
 
-  message(sprintf("For %s species: %d known, %d synonyms, %d typos, %d unknown", dataset_id, sum(keep), sum(synonym), sum(typo1) + sum(typo2), sum(unknown))) 
+  message(sprintf("For %s species: %d existed, %d known, %d synonyms, %d typos, %d unknown", dataset_id, existed, sum(keep), sum(synonym), sum(typo1) + sum(typo2), sum(unknown))) 
 
   # Add any known species
   if(any(keep)) { 
+
     to_add <- format_tpl_to_accepted_df(tpl[keep,])
-    accepted <- austraits_add_to_accepted_species(accepted, to_add)
+    accepted <- austraits_add_to_accepted_species(accepted, to_add[!already_exists,])
   }
 
   # For known synonyms, add to a replacement and check synonym is in list of known species
