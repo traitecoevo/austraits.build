@@ -42,7 +42,7 @@ for (dataset_id in dataset_ids) {
   # Exists
     files <- file.path(s, config_files)
     for(f in files) {
-      expect_that(file.exists(f), is_true(), info = f)
+      expect_true(file.exists(f), info = f)
     }
 
   # Metadata
