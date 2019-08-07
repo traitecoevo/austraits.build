@@ -15,7 +15,7 @@ for(v in
                 "testthat", "whisker") 
     ){
   if(!pacman::p_isinstalled(v))
-    pacman::p_install(v)
+    pacman::p_install(v, character.only = TRUE)
 }
 
 # Swap a null vale to something else
