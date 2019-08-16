@@ -41,7 +41,7 @@ metadata_create_template <- function(dataset_id,
                                      path = file.path("data", dataset_id, "metadata.yml")
                                      ) {
 
-  people <- tibble(name = "unknown", instituion = "unknown", role = "unknown") 
+  people <- tibble(name = "unknown", institution = "unknown", role = "unknown") 
 
   out <- list(
        source = list(primary=list(key=dataset_id, 
