@@ -1,11 +1,16 @@
 ---
 name: New data submission
 about: Default workflow for new data submissions
-title: dataset_id
+title: "dataset_id: Processing submission"
 labels: data submissions
 assignees: ''
 
 ---
+
+**Source**: Smith et al (20XX) Title *Journal* http://doi.org/....
+**Custodian**: ?Dataset custodian?
+**Handled by**: ?Austraits team member?
+
 
 - [ ] Contact made with contributor (label as `waiting on response` if waiting for files)
 - [ ] Files received from contributor saved in google drive folder `austraits/data submissions/new`  ( label as `ready` )
