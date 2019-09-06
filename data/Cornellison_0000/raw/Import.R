@@ -10,6 +10,8 @@ data_sites <-
   select(Locality, Latitude, Longitude, `Altitude (m)`) %>%
   distinct()
 
+data_sites
+
 data.Herb <-
   data_raw.Herb %>% 
   select(species_name =`Plant species`,  individual = `Tree number`, leaf_area = `Total leaf area (cm2)- Image J`) %>%
@@ -20,15 +22,17 @@ data.Herb <-
   summarise(leaf_area = mean(leaf_area), replicates = n()) %>% 
   ungroup()
 
-data_raw.height %>% distinct() 
+
 
 data_raw.height <- read_csv("data/Cornellison_0000/raw/Other_data.csv", col_types = cols()) %>% select(species_name = `species`, individual, height)  
-  
 data.Herb %>% 
   full_join(by = c("species_name", "individual"),
-            data_raw.height 
+            data_raw.height
   ) %>% 
   write_csv("data/Cornellison_0000/data.csv", na = "")
+
+
+
 
 
 
