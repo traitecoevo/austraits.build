@@ -50,6 +50,7 @@ traits:
         caruncle: A type of eliasome, term especially used in the family Euphorbiaceae; an outgrowth or appendage at or near the hilum of certain seeds that aids in dispersal. Includes "strophiole"
         drupe: Fruit with membranous exocarp, fleshy mesocarp and hard endocarp
         elaiosome: Fleshy (often fatty) appendage on seeds that attracts ants
+        exarillate: A seed that lacks an aril
         fleshy_dehiscent_capsule: A fleshy fruit that splits open and releases seeds at maturity; fruit type
         fleshy_fruit: A fruit where part or all of the pericarp (fruit wall) is fleshy at maturity; fruit type
         fleshy_wings_capsule: A fruit whose capsule or wings are fleshy
@@ -58,7 +59,7 @@ traits:
         hairs: When modified hairs aid in seed dispersal
         indehiscent: Fruit that does not open at maturity in a pre-defined way, but instead relies on predation or decomposition to release the seeds;fruit type
         inflated_parts: When some part of the seed, fruit, or associated tissues is inflated, aiding in seed or fruit dispersal
-        none: When a fruit and associated tissues lack any dispersal appendages
+        none: When a fruit and associated tissues lack any dispersal appendages; see also exarillate
         paddles: unknown meaning; currently used only for "Brachyscome dentata"
         pappus: The pappus is the modified calyx, the part of an individual floret, that surrounds the base of the corolla tube in flower heads of the plant family Asteraceae
         placental_endocarp: Exact dispersal mechanism unclear; currently used only for "Crowea saligna"
@@ -87,14 +88,12 @@ traits:
         ballistic: Seeds are launched away from the plant by explosion as soon as the seed capsule opens; true dispersal syndrome
         elaiosome: Fleshy (often fatty) appendage on seeds that attracts ants; dispersal appendage
         endozoochory: Diaspores that dispersed through ingestion by animals and are transported before dropping off; includes the term ingestion; true dispersal syndrome
-        exarillate: A seed that lacks an aril; fruit type or dispersal appendage but not a dispersal syndrome
         exozoochory: When seeds are dispersed on the surface of an animal; will overlap significantly with the terms adhesion and animal_vector
         fleshy_fruit: A fruit where part or all of the pericarp (fruit wall) is fleshy at maturity; fruit type
         fleshy_wings_capsule: A fruit whose capsule or wings are fleshy
         hydrochory: Dispersal on the surface of water; see also the term water; true dispersal syndrome
         mobile: UNKNOWN 
         myrmecochory: Dispersules with elaiosomes (specialised nutritious appendages) that make them attractive for capture, transport and use by ants or related insects; true dispersal syndrome
-        samara: A winged achene, a type of fruit in which a flattened wing of fibrous, papery tissue develops from the ovary wall; fruit type; only used in TMAG_2009 for Allocasuarina species - maybe change to wind
         unassisted: Seeds are dispersed without assistance; true dispersal syndrome
         undefined: UNKNOWN
         vertebrate: Seeds are dispersed by a vertebrate species; true dispersal syndrome
@@ -312,6 +311,7 @@ traits:
         lobed: A leaf that is lobed but not compound
         palmate: A leaf that is palmately compound
         simple: A leaf with a single undivided blade
+        trifoliate: A leaf that is divided into three leaflets; a special category of compound
     leaf_dark_respiration_per_area:
       description: Leaf respiration rate per unit leaf area
       type: numeric
@@ -377,6 +377,22 @@ traits:
       values:
         minimum: 0.01
         maximum: 10.0
+    leaf_hydraulic_conductance:
+      description: Measure of how efficiently water is transported through the leaf, determined as the ratio of water flow rate through the leaf to the difference in water potential across the leaf, standardised to leaf area.
+      type: numeric
+      units: mmol/m2/s/MPa
+      label: Leaf hydraulic conductance
+      values:
+        minimum: 0.1
+        maximum: 100.0
+    leaf_hydraulic_vulnerability:
+      description: The leaf water potential value at which leaf hydraulic conductance have declined by 50% from the mean maximum rate
+      type: numeric
+      units: neg_MPa
+      label: Leaf hydraulic vulnerability
+      values:
+        minimum: 40
+        maximum: .001
     leaf_K_per_area:
       description: Leaf potassium (K) content per unit leaf area
       type: numeric
@@ -494,6 +510,7 @@ traits:
       type: categorical
       label: Leaf shape
       values:
+        acicular: Needle-shaped
         article: Leaf comprised of jointed segments, as in family Casuarinaceae
         branchlets_articles: Branches with article leaves, as in family Casuarinaceae
         broadly_lanceolate: Like lanceolate, but broader
@@ -503,8 +520,10 @@ traits:
         deltoid: Triangular, stem attaches to side
         dimidate: A leaf in which only one side is developed
         elliptical: Oval shaped, without a distinct point
+        elliptical-oblong: Oval shaped, without a distinct point, but more elongated
         falcate: Sickle-shaped
         filiform: Thread-like or filament-shaped
+        half_terete: Semi-circular in cross-section
         hastate: Spear-shaped - pointed, with barbs, shaped like a spear point, with flaring pointed lobes at the base
         lanceolate: Long, wider in the middle, shaped like a lance tip
         linear: Long and very narrow like a blade of grass
@@ -513,13 +532,17 @@ traits:
         lorate: Having the form of a strap
         narrowly_cuneate: like cuneate, but narrower
         narrowly_elliptical: like elliptical, but narrower
+        narrowly_oblong: like oblong, but narrower
         narrowly_obovate: like obovate, but narrower
+        narrowly_obtrullate: like obtrullate, but narrower
         narrowly_ovate: like ovate, but narrower
+        narrowly_rhomboidal: like rhomboidal, but narrower
         needle: Needle-shaped
         obcordate: Heart-shaped, stem attaches at the tapering end
         oblanceolate: Much longer than wide and with the widest portion near the tip, reversed lanceolate
         oblate: An elongate leaf that is wider in the middle than at the two ends
         oblong: Having an elongated form with slightly parallel sides, roughly rectangular
+        obtrullate: In the form of a reversed trowel (with longer sides meeting at the base)
         obovate: Teardrop-shaped, stem attaches to the tapering end; reversed ovate
         obovoid: A 3-dimensional shape; teardrop-shaped, stem attaches to the tapering end
         orbicular: Circular
@@ -532,6 +555,8 @@ traits:
         spathulate: Spoon-shaped; having a broad flat end which tapers to the base
         terete: Circular in cross-section; more or less cylindrical without grooves or ridges
         triangular: Triangular leaf where stem attaches to a side; similar to deltoid
+        widely_obovate: like obovate, but wider
+        widely_obtrullate: In the form of a reversed trowel (with longer sides meeting at the base), but wider
     leaf_specific_conductivity:
       description: The ratio of hydraulic conductance of a segment to leaf area
       type: numeric
@@ -564,6 +589,14 @@ traits:
       values:
         minimum: .0001
         maximum: 10000.0
+    leaf_turgor_loss_point:
+      description: Water potential at which a leaf loses turgor
+      type: numeric
+      units: neg_MPa
+      label: Leaf turgor loss point
+      values:
+        minimum: .01
+        maximum: 100
     leaf_type:
       description: Broad definitions of leaf type
       type: categorical
@@ -588,8 +621,8 @@ traits:
       units: g/g
       label: Leaf water content per unit mass
       values:
-        minimum: 0.001
-        maximum: 100.0
+        minimum: 0.01
+        maximum: 10.0
     leaf_width:
       description: The longest width axis of a leaf; orthogonal to its length
       type: numeric
