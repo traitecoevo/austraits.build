@@ -77,28 +77,35 @@ traits:
         wings: Referring to wing-like seed extensions that aid in wind dispersal
         woody_bract_scales: UNSURE; assume it refers to conifers, where woody bracts protect the seeds
     dispersal_syndrome:
-      description: Type of dispersal syndrome displayed by species, although the list includes many dispersal appendages and fruit types
+      description: Type of dispersal syndrome displayed by species, although the list includes many dispersal appendages and fruit types. Many definitions come from Kew Botanic Gardens website.
       type: categorical
       label: Dispersal syndrome
       values:
-        adhesion: Dispersal syndrome where fruit is transported by attaching itself to something, usually an animal; true dispersal syndrome; will overlap with exozoochory
+        adhesion: Dispersal syndrome where fruit is transported by attaching itself to something, usually an animal; true dispersal syndrome; will overlap with exozoochory; also called epizoochory
         anemochory: Dispersal by wind; true dispersal syndrome
-        animal_vector: Seeds are dispersed by an animal; true dispersal syndrome
+        animal_vector: Seeds are dispersed by an animal; true dispersal syndrome; should be replaced with zoochory
         aril: Fleshy outgrowth of a seed, that often attracts animals like birds or ants; dispersal appendage
+        atelochory: Dispersal is prevented; also called antitelochory
         ballistic: Seeds are launched away from the plant by explosion as soon as the seed capsule opens; true dispersal syndrome
+        chamaechory: diaspore is rolled along ground surface by wind
+        dyszoochory: diaspore is eaten intentionally by an animal
         elaiosome: Fleshy (often fatty) appendage on seeds that attracts ants; dispersal appendage
-        endozoochory: Diaspores that dispersed through ingestion by animals and are transported before dropping off; includes the term ingestion; true dispersal syndrome
+        endozoochory: Diaspores that dispersed through ingestion by animals, either intentionally or unintentionally and are transported before dropping off; includes the term ingestion; true dispersal syndrome
         exozoochory: When seeds are dispersed on the surface of an animal; will overlap significantly with the terms adhesion and animal_vector
         fleshy_fruit: A fruit where part or all of the pericarp (fruit wall) is fleshy at maturity; fruit type
         fleshy_wings_capsule: A fruit whose capsule or wings are fleshy
         hydrochory: Dispersal on the surface of water; see also the term water; true dispersal syndrome
         mobile: UNKNOWN 
         myrmecochory: Dispersules with elaiosomes (specialised nutritious appendages) that make them attractive for capture, transport and use by ants or related insects; true dispersal syndrome
-        unassisted: Seeds are dispersed without assistance; true dispersal syndrome
+        nautohydrochory: water; e.g. floating/submerged in fresh/saltwater currents
+        ombrohydrochory: water; diaspore is propelled by action of rain on plant structure/wetting by rain or dew
+        synzoochory: animal; diaspore is carried intentionally
+        unassisted: Seeds are dispersed without assistance; true dispersal syndrome; same as barochory; seeds drop to the ground close to or beneath the parent plant
         undefined: UNKNOWN
         vertebrate: Seeds are dispersed by a vertebrate species; true dispersal syndrome
-        water: Seeds dispersal depends in some way on water
-        wind: Seeds are dispersed by wind; true dispersal syndrome
+        water: Seeds dispersal depends in some way on water; should use hydrochory instead
+        wind: Seeds are dispersed by wind; true dispersal syndrome; should use anemochory instead
+        xerochasywater: wetting by rain or dew; also called hygrochasy
     fire_response:
       description: Distinguishes between plants that are killed by fire and resprout following fire
       type: categorical
@@ -196,6 +203,14 @@ traits:
       description: Months during which species is fruiting; keyed as a sequences of 12 0s (not flowering) and 1s (flowering) starting with January
       type: character
       label: Plant reproductive phenology timing (fruiting)
+    germination:
+      description: Proportion of seeds that germinate
+      type: numeric
+      units: dimensionless
+      labels: Germination (proportion)
+      values:
+        minimum: 0
+        maximum: 1
     genome_size:
       description: Mass of the plant's genome
       type: numeric
@@ -853,11 +868,27 @@ traits:
       values:
         minimum: 0.0001
         maximum: 1000.0
+    seed_oil_content:
+      description: Seed oil content as a fraction of total seed weight, usually on a dry weight basis
+      type: numeric
+      units: dimensionless
+      label: Seed oil content
+      values:
+        minimum: 1.0
+        maximum: 100.0
     seed_P_concentration:
       description: Seed phosphorus concentration on a weight basis
       type: numeric
       units: mg/g
       label: Seed phosphorus concentration
+      values:
+        minimum: 1.0
+        maximum: 100.0
+    seed_protein_content:
+      description: Seed protein content as a fraction of total seed weight
+      type: numeric
+      units: dimensionless
+      label: Seed protein content
       values:
         minimum: 1.0
         maximum: 100.0
@@ -946,6 +977,14 @@ traits:
         serotinous: Plant does display serotiny
         serotiny_low: Plant displays a low level of serotiny
         serotiny_moderate: Plant displays a moderate level of serotiny
+    soil_salinity_tolerance:
+      description: Maximum salinity tolerated by a species, reported as the conductivitiy of the soil
+      type: numeric
+      units: dS/m
+      label: Salt tolerance
+      values:
+        minimum: 0.1
+        maximum: 100.0
     specific_leaf_area:
       description: Leaf area per unit leaf dry mass; SLA
       type: numeric
@@ -1013,6 +1052,19 @@ traits:
       values:
         minimum: -30
         maximum: 0
+    water_tolerance:
+      description: Water-tolerance categories
+      type: categorical
+      label: Water (and salt) tolerance strategies
+      values:
+        glycophyte: Plants that cannot survive even one tenth the salt concentration found in seawater
+        halophyte: Plants that complete their life cycle in a salty environment; many survive in seawater or even higher concentrations of salt
+        hydrohalophyte: Tidal swamp or ‘mangrove’ and coastal lagoon elements and temperate-zone salt-marsh species are classed together. 
+        phreatophyte: Deep-rooted plants—usually trees—obtaining water from a deep underground source that may or may not be saline. 
+        psammophile: Sand-loving plants commonly found in littoral strand or inland sandfields
+        weedy: This inexact term is meant to indicate a high degree of adaptability to sites, and proven tendency toward aggressive colonization of either dry or wet sites, or rarely, both. In general, weeds invade and colonize highly disturbed sites or areas. 
+        xerohalophyte: Plants adapted to inland salt desert and saline habitats
+        xerophyte: Drought-tolerant and drought-adapted plants
     water_use_efficiency:
       description: Rate of carbon dioxide uptake relative to water loss, per unit leaf area
       type: numeric
