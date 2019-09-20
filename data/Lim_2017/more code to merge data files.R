@@ -1,3 +1,6 @@
+library("rqdatatable")
+install.packages("rqdatatable")
+
 read_csv("data/Lim_2017/raw/Lim_Bogong_leafTraits_LeafArea_Dryweight.csv") %>%
   mutate(Site = Site %>% str_replace("FBPN","BPN")) %>%
   group_by(Date, Site, Position, Spp, Branchno, `Date dryweight`) %>%
@@ -5,19 +8,16 @@ read_csv("data/Lim_2017/raw/Lim_Bogong_leafTraits_LeafArea_Dryweight.csv") %>%
 
 read_csv("data/Lim_2017/raw/Lim_Bogong_leafTraits_LeafArea_Dryweight.csv") %>%
   filter(!is.na(DryweightGroup)) %>%
+  mutate(Site = Site %>% str_replace("FBPN","BPN")) %>%
   select(Site,Position,Spp,Branchno,DryweightGroup) %>%
   left_join(leaf_area_sum,by = (c("Site", "Position", "Spp", "Branchno"))) %>%
   mutate(Dry_weight = DryweightGroup/leaf_count) %>%
-  mutate(Area_mean = Area_sum/leaf_count) -> leaf_area_sum2
+  mutate(Area_mean = Area_sum/leaf_count)-> leaf_area_sum2
 
-write_csv(leaf_area_sum2,"data/Lim_2017/raw/test.csv")
-library("rqdatatable")
-install.packages("rqdatatable")
-Lim_check <- 
 read_csv("data/Lim_2017/data.csv") %>%
   mutate(Spp = ifelse(Spp == "Kunzea muelleri","KuMue",Spp),
          Site = ifelse(Site == "F04North","F04N",Site),
-         Site = ifelse(Site == "BPN","BPN",Site)) %>%
+         Site = ifelse(Site == "FBPN","BPN",Site)) %>%
   natural_join(leaf_area_sum2, by = (c("Site", "Position", "Spp", "Branchno")), jointype = "FULL") %>%
   mutate(Species = ifelse(Spp == "KuMue","Kunzea muelleri",Species),
          Species = ifelse(Spp == "BaGun","Baeckea gunniana",Species),
