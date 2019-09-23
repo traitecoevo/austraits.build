@@ -7,3 +7,4 @@ names(Kew_2010_unique) <- c("taxa","thousandseedweight")
 read_csv("data/Kew_2019_1/raw/Liu_Kew_seed_mass.csv") %>%
   bind_rows(Kew_2010_unique) %>% 
   write.csv("data/Kew_2019_1/data.csv")
+ # (in future use write_csv here to avoid adding row numbers to the dataset)
