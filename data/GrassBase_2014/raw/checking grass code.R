@@ -112,7 +112,6 @@ read_csv("data/AusGrass_2014/data.csv") %>%
   write_csv("test_AusGrass.csv")
 
 #now combining all long versions
-#first a version with just leaf width, leaf length, height, seed mass data
 read_csv("data/GrassBase_2014/data.csv") %>%
   mutate(i = seq_len(nrow(.))) %>%
   mutate(Taxon = ifelse(i %in% c(137, 955), "Aristida sp. 2", Taxon)) %>%
@@ -121,19 +120,20 @@ read_csv("data/GrassBase_2014/data.csv") %>%
   bind_rows(read_csv("data/RBGSYD_2014/data.csv")) %>%
   bind_rows(read_csv("data/AusGrass_2014/data.csv")) %>%
   select(species_name = Taxon,value = `trait value`, trait=trait) %>%
-  spread(trait,value) %>%
-  select(-`photosynthetic pathway`,-`flowering time`,-`growth habit`,-`longevity`) %>%
-  write_csv("data/GrassBase_2014/all_numeric_grass_data.csv")
+  spread(trait,value) -> combined_long
 
-#then a copy with just the categorical data
-read_csv("data/GrassBase_2014/data.csv") %>%
-  mutate(i = seq_len(nrow(.))) %>%
-  mutate(Taxon = ifelse(i %in% c(137, 955), "Aristida sp. 2", Taxon)) %>%
-  select(-i) %>% 
-  bind_rows(read_csv("data/Osbourne_2014/data.csv")) %>%
-  bind_rows(read_csv("data/RBGSYD_2014/data.csv")) %>%
-  bind_rows(read_csv("data/AusGrass_2014/data.csv")) %>%
-  select(species_name = Taxon,value = `trait value`, trait=trait) %>%
-  spread(trait,value) %>%
-  select(species_name,`photosynthetic pathway`,`flowering time`,`growth habit`,`longevity`) %>%
-  write_csv("data/GrassBase_2014/all_categorical_grass_data.csv")
+#first a version with the traits from GrassBase: leaf width, leaf length, height, seed mass data
+combined_long %>%  
+  select(-`photosynthetic pathway`,-`flowering time`,-`growth habit`,-`longevity`) %>%
+  write_csv("data/raw/GrassBase_2014/GrassBase_2014_data.csv")
+
+#then a copy with the categorical data from  RBGSYD: flowering time, growth habit, longevity
+combined_long %>% 
+  select(species_name,`flowering time`,`growth habit`,`longevity`) %>%
+  write_csv("data/raw/GrassBase_2014/RGBSYD_2014_data.csv")
+
+#finally a  copy with categorical data from Osbourne: photosynthetic pathway
+#Osbourne_2014 probably needs more values added from his paper
+combined_long %>% 
+  select(species_name,`photosynthetic pathway`) %>%
+  write_csv("data/raw/GrassBase_2014/Osbourne_2014_data.csv")
