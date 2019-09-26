@@ -659,7 +659,7 @@ austraits_rebuild_remake_setup <- function( ) {
 
   library(whisker)
 
-  root.dir <- rprojroot::find_root("austraits.Rproj")
+  root.dir <- rprojroot::find_root("austraits.build.Rproj")
 
   pwd <- setwd(root.dir)
   on.exit(setwd(pwd))
