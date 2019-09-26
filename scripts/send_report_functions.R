@@ -2,7 +2,7 @@
 # Use google drive to upload files for distribution via email and share with link
 # this script assumes you running it from within your local copy of Austraits
 
-upload_report <- function(dataset_id, overwrite = FALSE,                      	austraits_path_zip = "export/zip_reviews") {
+upload_report <- function(dataset_id, overwrite = FALSE, austraits_path_zip = "export/zip_reviews") {
 
 	# check relevant path exists locally
 	dir.create(austraits_path_zip, FALSE, TRUE)
@@ -97,4 +97,43 @@ paste0('<html><style type="text/css">html{font-family:sans-serif; font-size:12}b
 </body></html>'
 ) %>% paste(collapse = "\n")
 
+}
+
+review_email_text2 <- function(out, name="XXX") {
+  
+  paste0('<html><style type="text/css">html{font-family:sans-serif; font-size:12}body{margin:10}</style><body>
+
+<p>Dear ', name,',</p>
+<p><strong>Thank you for contributing your dataset to AusTraits, an open source, harmonized compilation of trait data for Australian plants.
+As we discussed, by contributing your data, you are being invited to be a co-author on a paper about AusTraits.
+We have merged your dataset into the AusTraits framework under the name "', out$dataset_id,'".
+We have generated a report summarising the information contained in your dataset and accompanying metadata file.
+We have you listed as the lead contact for that dataset. The information included in this email provides you opportunity to</p>
+<ul>
+<li>confirm your willingness to include the data in AusTraits,</li>
+<li>review the data you have contributed,</li>
+<li>provide corrections where needed,</li>
+<li>confirm your desire to be a co-author on the paper.</li>
+</ul>
+<p>In your report there are many auto-generated questions scattered through the text. 
+Do not feel the need to address all of them - they are prompts to ensure you look carefully at the data summaries and confirm
+that you have provided us with all relevant data for the study. 
+Most important to the future usefulness of AusTraits is that you provide location data (if available and relevant) 
+and that you confirm numeric data values fall where you expect them to.
+<p>At the following links, you will find</p>
+<ol type="1">
+<li>A draft of the paper for submission to Scientific Data <a href="https://drive.google.com/open?id=1Sn5q0jJuz1qkYQ4nAdO8D2xK8XofNVJ1">link</a></li>
+<li>A copy of the raw data we have from "', out$dataset_id,'" and a report of the data, outlining the contents of the data, including source, metadata, and plots comparing your data to the rest of AusTraits: <a href="', out$link, '">link</a>. (<strong> NB: Clicking on this link will download material to your machine. </strong>)</li>
+</ol>
+<p><strong>What we ask now is that you download and review these materials. Please enter your responses into the response form <a href="https://forms.gle/vhZgxDd734dDddG88">here</a> by October 25th.</strong> (If you can reply sooner that would be awesome, as we can start processing your response).</p>
+<p>We plan to release AusTraits and submit the data paper by the end of 2019.
+
+</ul>
+<p>We\'re delighted to have you involved and look forward to hearing from you!</p>
+<p>With best wishes, </p>
+<p> Current AusTraits team (Rachael Gallagher & Daniel Falster - strategic & technical leads, Elizabeth Wenk & Caitlan Baxter - data processing leads)</p>
+
+</body></html>'
+  ) %>% paste(collapse = "\n")
+  
 }
