@@ -128,7 +128,7 @@ and that you confirm numeric data values fall where you expect them to.
 <p><strong>What we ask now is that you download and review these materials. Please enter your responses into the response form <a href="https://forms.gle/vhZgxDd734dDddG88">here</a> by October 25th.</strong> (If you can reply sooner that would be awesome, as we can start processing your response).</p>
 <p>We plan to release AusTraits and submit the data paper by the end of 2019.
 <p>Once we have finished importing and reviewing your contribution, we will of course add the  linked manuscript citations to the references for the data paper.</p>
-</ul>
+ </ul>
 <p>We\'re delighted to have you involved and look forward to hearing from you!</p>
 <p>With best wishes, </p>
 <p> Current AusTraits team (Rachael Gallagher & Daniel Falster - strategic & technical leads, Elizabeth Wenk & Caitlan Baxter - data processing leads)</p>
