@@ -5,12 +5,6 @@ library(readr)
 
 data_raw.Herb <- read_csv("data/Cornellison_0000/raw/Herbivory.csv", col_types = cols()) 
   
-data_sites <- 
-  data_raw.Herb %>%
-  select(Locality, Latitude, Longitude, `Altitude (m)`) %>%
-  distinct()
-
-data_sites
 
 data.Herb <-
   data_raw.Herb %>% 
@@ -28,8 +22,8 @@ data_raw.height <- read_csv("data/Cornellison_0000/raw/Other_data.csv", col_type
 data.Herb %>% 
   full_join(by = c("species_name", "individual"),
             data_raw.height
-  ) %>% 
-  write_csv("data/Cornellison_0000/data.csv", na = "")
+  ) %>% mutate(site_name = "Royal National Park", `latitude (deg)` = -34.114, `longitude (deg)` = 151.066417) %>%
+  write_csv("data/Cornellison_0000/data.csv", na = "") 
 
 
 
