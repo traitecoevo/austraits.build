@@ -1,6 +1,9 @@
-read_csv("data/McCarthy_2017/raw/data_JKMupdate_update_with_sites.csv") %>%
+read_csv("data/McCarthy_2017/raw/data_JKMupdate_20191016.csv") %>%
   select(Site,Latitude,Longitude,`Coordinate uncertainty (m)`) %>%
-  distinct(Latitude, Longitude, .keep_all = TRUE) %>%
-  rename(`latitude (deg)` = Latitude,`longitude (deg)`= Longitude) %>%
-  mutate(site_name = paste(Site,`latitude (deg)`,"deg_S",`longitude (deg)`,"deg_E",sep="_")) -> sites
+  rename(`trip identifier`=Site,`latitude (deg)` = Latitude,`longitude (deg)`= Longitude) %>%
+  mutate(site_name = ifelse(is.na(`latitude (deg)),`trip identifier`,
+                            paste("site_at",`latitude (deg)`,"degS",`longitude (deg)`,"degE",sep="_"))) %>%
+  distinct(site_name, .keep_all = TRUE) %>%
+  write_csv("data/McCarthy_2017/data.csv") -> sites
 
+View(sites)
