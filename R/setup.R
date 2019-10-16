@@ -534,7 +534,7 @@ metadata_check_taxa <- function(dataset_id, update=TRUE, typos=FALSE, diffchar =
   if(any(keep)) { 
 
     to_add <- format_tpl_to_accepted_df(tpl[keep,])
-    accepted <- austraits_add_to_accepted_species(accepted, to_add[!already_exists,])
+    accepted <- austraits_add_to_accepted_species(accepted, to_add[!existed,])
   }
 
   # For known synonyms, add to a replacement and check synonym is in list of known species
