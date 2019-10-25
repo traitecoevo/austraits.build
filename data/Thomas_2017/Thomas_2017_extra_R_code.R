@@ -1,0 +1,15 @@
+read_csv("data/Thomas_2017/raw/species_names.csv") -> species_names
+
+read_csv("data/Thomas_2017/raw/FT_species_traits.csv") %>%
+  select(SPP, SLA, SD, SD_MASS, N) %>%
+  distinct(SPP, .keep_all = TRUE) -> species_mean
+
+read_csv("data/Thomas_2017/raw/FT_species_traits.csv") %>%
+  select(-X1, - SLA, -SD, -SD_MASS, -N) %>%
+  bind_rows(species_mean) %>%
+  rename(Abbreviation = SPP) %>%
+  left_join(species_names,by = "Abbreviation") %>%
+  mutate(species_binomial = paste(Genus,species,sep=" ")) %>%
+  mutate(site = "MurraySunset") %>%
+  write_csv("data/Thomas_2017/data.csv")
+
