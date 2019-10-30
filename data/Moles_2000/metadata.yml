@@ -16,7 +16,7 @@ people:
   institution: University of New South Wales
   role: collector, contact
 - name: Mark Westoby
-  institution: Macquarie Univeristy
+  institution: Macquarie University
   role: lab_leader
 dataset:
   year_collected_start: 1998
@@ -34,10 +34,10 @@ dataset:
     (diatreme) was located on volcanic soils (33°33'53'S; 151°17'35'E), the second
     (heath) was on a sandstone ridge top (33°39'40'S; 151°13'59'E), and the third
     (terrace) was near a stream in a sandstone gully (33°39'50'S; 151°14'45'E). The
-    diatreme site had the highest levels of phosphorus and nitrogen (646 mg g-1 total
+    diatreme site had the highest levels of phosphorus and nitrogen (646 ug g-1 total
     phosphorus; 0.41% nitrogen), and the terrace and heath sites had low levels of
-    both nutrients (terrace; 144 mg g-1 total phosphorus; 0.08% nitrogen; heath 79
-    mg g-1 total phosphorus; 0.05% nitrogen). All woody dicotyledonous species at
+    both nutrients (terrace; 144 ug g-1 total phosphorus; 0.08% nitrogen; heath 79
+    ug g-1 total phosphorus; 0.05% nitrogen). All woody dicotyledonous species at
     each site that had at least 25 leaves beginning to expand in late August or early
     September 1998, and were represented by more than four individuals were included
     in this study (Appendix 1). A total of 51 species from 17 families were sampled.
@@ -48,22 +48,22 @@ sites:
     longitude (deg): 151.233056
     latitude (deg): -33.661111
     soil_total_N (%): 0.05
-    description: The site heath was on a sandstone ridge top. Terrace and heath sites
-      had low levels of both nutrients (terrace; 144 mg g-1 total phosphorus; 0.08%
-      nitrogen; heath; 79 mgg-1 total phosphorus; 0.05% nitrogen).
+    description: The site 'heath' was on a sandstone ridge top. Terrace and heath
+      sites had low levels of both nutrients (terrace; 144 ug g-1 total phosphorus;
+      0.08% nitrogen; heath; 79 ug g-1 total phosphorus; 0.05% nitrogen).
   terrace:
     longitude (deg): 151.245833
     latitude (deg): -33.66388
     soil_total_N (%): 0.08
-    description: The site Terrace was near a stream in a sandstone gully. Terrace
-      and heath sites had low levels of both nutrients (terrace; 144 mg g-1 total
-      phosphorus; 0.08% nitrogen; heath; 79 mgg-1 total phosphorus; 0.05% nitrogen).
+    description: The site 'terrace' was near a stream in a sandstone gully. Terrace
+      and heath sites had low levels of both nutrients (terrace; 144 ug g-1 total
+      phosphorus; 0.08% nitrogen; heath; 79 ug g-1 total phosphorus; 0.05% nitrogen).
   diatreme:
     longitude (deg): 151.2917
     latitude (deg): -33.57775
     soil_total_N (%): 0.41
     description: The first site (diatreme) was located on volcanic soils The diatreme
-      site had the highest levels of phosphorus and nitrogen (646 mg g-1 total phosphorus;
+      site had the highest levels of phosphorus and nitrogen (646 ug g-1 total phosphorus;
       0.41% nitrogen)
 config:
   data_is_long_format: no
@@ -71,7 +71,7 @@ config:
     species_name: Species
     site_name: site_name
   custom_R_code: data %>% mutate(site_name = case_when(longitude == 151.233056 ~ "heath",
-   longitude == 151.245833 ~ "terrace", longitude == 151.2917 ~ "diatreme"))
+    longitude == 151.245833 ~ "terrace", longitude == 151.2917 ~ "diatreme"))
 traits:
 - var_in: SLA
   unit_in: mm2/mg
@@ -90,11 +90,18 @@ traits:
     species, and analysing the images using Delta-T scan (Delta-T, Cambridge, UK).
 - var_in: presence_of_hair_ on_mature_leaves
   unit_in: .na
-  trait_name: .na
+  trait_name: leaf_hairs_adult
   value_type: .na
   replicates: .na
-  methods: Leaves were considered hairy if any trichomes were visible to the naked eye. Categorised as present or absent.
-substitutions: .na
+  methods: Leaves were considered hairy if any trichomes were visible to the naked
+    eye. Categorised as present or absent.
+substitutions:
+- trait_name: leaf_hairs_adult
+  find: 'no'
+  replace: '0'
+- trait_name: leaf_hairs_adult
+  find: 'yes'
+  replace: '1'
 taxonomic_updates:
 - find: Leucopogon esquamatus
   replace: Phanerandra esquamata
@@ -129,8 +136,5 @@ taxonomic_updates:
 - find: Pultenaea flexillis
   replace: Pultenaea flexilis
   reason: Alignment with existing species identified by TaxonStand (2019-09-23)
-questions: Incorrect Lat long for site diatreme-corrected. Confirm units for sla are mm2/mg.  Confirm that the values are species
-  site means for 4 inididuals. In the manuscript it says you only chose speices with at
-  least 4 individuals, but in the actual methods you only mentioned that it was the
-  mean of 25 leaves. 
-
+questions: Incorrect Lat long for site diatreme-corrected. Confirm units for sla are
+  mm2/mg-confirmed. 
