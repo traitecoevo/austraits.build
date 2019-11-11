@@ -317,7 +317,7 @@ traits:
       units: x/x
       labels: Fv/Fm
       values:
-        minimum: 0
+        minimum: 0.2
         maximum: 1
     germination:
       description: Proportion of seeds that germinate
@@ -994,6 +994,16 @@ traits:
       values:
         minimum: 0.1
         maximum: 1000.0
+    life_form:
+      description: Categorical classification of plants according to shoot-apex or bud protection
+      type: categorical
+      label: Life form
+      values:
+        phanerophyte: Plants with dominant buds on branches which project freely into the air
+        chamaephyte: Plants with buds on persistent shoots near the soil surface
+        hemicryptophyte: Plants with buds at or near the soil surface
+        geophyte: Plants with bulbs that rest in dry soil as a rhizome, bulb or corm
+        therophyte: Annual plants that complete their lives rapidly in favourable conditions and survive the unfavourable cold or dry season in the form of seeds
     life_history:
       description: Categorical description of plant's life history
       type: categorical
@@ -1075,6 +1085,22 @@ traits:
       values:
         minimum: 1
         maximum: 10
+    photosynthetic_nitrogen_use_efficiency:
+      description: Ratio of photosynthetic rate to leaf nitrogen concentration
+      type: numeric
+      units: umolCO2/molN/s
+      label: Photosynthetic nitrogen use efficiency
+      values:
+        minimum: 10
+        maximum: 500
+    photosynthetic_phosphorus_use_efficiency:
+      description: Ratio of photosynthetic rate to leaf phosphorus concentration
+      type: numeric
+      units: umolCO2/molP/s
+      label: Photosynthetic phosphorus use efficiency
+      values:
+        minimum: 0.5
+        maximum: 20
     photosynthetic_pathway:
       description: Type of photosynthetic pathway displayed by plants
       type: categorical
@@ -1082,6 +1108,7 @@ traits:
       values:
         c3: Plant using the 'standard' photosynthetic pathway, where a 3-carbon compound is produced after the first stage in the photosynthetic pathway
         c4: Plants in which the photosynthetic light-dependent reactions and the Calvin cycle are physically separated to reduce photo respiration
+        c3-c4: Species that shift between c3 and c4 photosynthesis
         cam: Plants which display crassulacean acid metabolism
     photosynthetic_rate_per_area:
       description: Rate at which a plant consumes carbon dioxide through photosynthesis, normalised to leaf area
@@ -1115,6 +1142,14 @@ traits:
       values:
         minimum: 0.01
         maximum: 1.0
+    photosynthetic_rate_per_dry_mass_maximum:
+      description: Maximum rate at which a plant consumes carbon dioxide through photosynthesis at saturating light conditions but ambient CO2 conditions, normalised to leaf dry mass
+      type: numeric
+      units: umolCO2/g/s
+      label: Leaf photosynthesis rate per unit leaf dry mass
+      values:
+        minimum: 0.01
+        maximum: 1.0
     plant_growth_form:
       description: Different growth forms displayed by plants, including both standard plant growth form descriptors (tree, shrub, etc.) and specific plant characteristics (i.e. patristic)
       type: categorical
@@ -1129,6 +1164,7 @@ traits:
         fern: A group of vascular plants that reproduce via spores
         geophyte: A perennial plant with an underground food storage organ, such as a bulb, tuber, corm, or rhizome
         graminoid: Herbaceous plants with a grass-like morphology
+        grass-tree: Term specific refers to members of the family Xanthorrhoaceae, monocots with a tree-like growth-form
         hemi-epiphyte: Plant that partially grows on top of another plant
         herb: A seed-bearing plant which does not have a woody stem and dies down to the ground after flowering
         palm: Flowering plants in the family Arecaceae, most with large, compound evergreen leaves referred to as fronds
@@ -1152,6 +1188,14 @@ traits:
       type: numeric
       units: m
       label: Plant width
+      values:
+        minimum: 0.001
+        maximum: 20
+    plant_breadth:
+      description: The breadth of the plant canopy (smaller of two dimensions)
+      type: numeric
+      units: m
+      label: Plant breadth
       values:
         minimum: 0.001
         maximum: 20
@@ -1212,6 +1256,7 @@ traits:
         dauciform_root: A type of cluster root found in the family Cyperaceae
         ectomycorrhizal: Symbiosis in which the mycorrhizal fungi does not penetrate the cortex cells of the plant roots
         ericoid_mycorrhizal: A form of arbuscular mycorrhizal relationship only found on plants in the order Ericales. The fungi's hyphae penetrate the plant root but do not form arbuscules
+        long_root_hairs: Specialised long root hairs
         orchid_mycorrhizal: A mycorrhizal relationship specific to orchid species, and for most orchids, essential for seedlings to establish
         non_mycorrhizal: Plants lacking a mycorrhizal symbiont
         parasitic_root: Parasitic root
@@ -1317,13 +1362,10 @@ traits:
         compressed_sectoroid: Like sectoroid, but a flatter 3-dimensional shape
         conical: Shaped like a cone; the opposite of turbinate
         cordiform: Heart-shaped
-        cuneate: Triangular, wedge-shaped; see also 'wedge-shaped'; REPLACE WITH SECTOROID
         cylindrical: A 3-dimensional shape; shaped like a cylinder; see also 'terete' which refers to particular thin cylindrical shape; should maybe be cylinder?
-        discoidal: REPLACE WITH 'discoid'
         discoid: Resembling a disc, with two convex faces; similar to plano-convex and lenticular, flatter
         discoid_two_lobed: Resembling a disc, but with two lobes
         ellipsoid: A 3-dimensional shape; elliptic in outline and with a length:breadth ratio between 3:2 and 2:1
-        elliptical: REPLACE WITH 'ellipsoid'
         elongated_lachrimiform: Like lachrimiform, but extended along the longest axis
         elongated_ovoid: Like ovoid, but extended along the longest axis
         elongated_pyramidal: Like pyramidal, but extended along the longest axis
@@ -1332,9 +1374,7 @@ traits:
         falcate: Sickle-shaped; see also 'comma-shaped'
         flat: Suggests a quite flattened seed, but no information about shape
         fusiform: Spindle-shaped, cigar-shaped, circular in cross-section and tapering at both ends
-        globose: REPLACE WITH 'globoid'
-        globoid: Globe-shaped
-        globular: REPLACE WITH 'globoid'
+        globoid: Globe-shaped; includes 'globular' and 'globose'
         inflated_pyramidal: Like pyramidal, but inflated
         inflated_trigonal_pyramidal: Like trigonal_pyramidal, but inflated
         irregular: Irregular shape
@@ -1345,15 +1385,10 @@ traits:
         lenticular: A 3-dimensional shape; shaped like a biconvex lens. Similar to plano-convex??
         muricate: has numerous short hard outgrowths
         obclavate: A 2 or 3-dimensional shape; slender, broadening towards the base; club-shaped, with the thickened part at the base
-        oblong: REPLACE WITH 'obloid'
         obloid: A 3-dimensional shape, where the length is a few times greater than the width, with sides almost parallel and ends rounded.
-        obovate: REPLACE WITH 'obovoid'
         obovoid: A 3-dimensional shape; similar to ovoid, but attached at the narrower end and with a length:breadth ratio between 3:2 and 2:1
         orbicular: Fairly flat, but round in 2-dimensional outline; see also compressed_globoid
-        ovate: REPLACE WITH 'ovoid'
         ovoid: Egg-shaped (i.e., widest below the middle)
-        pea_shape: Assume same as spherical
-        plano_convex: Fairly flat, but with slightly raised, convex faces; REPLACE WITH 'lenticular'
         pointed_ovoid: Like ovoid, but with one pointier end
         pointed_samara: A type of fruit in which a flattened wing of fibrous, papery tissue develops from the ovary wall; variant that is more pointed; not truly a shape
         pyramidal: Pyramid; cross-section unknown
@@ -1361,30 +1396,23 @@ traits:
         rectangular: REPLACE WITH 'rectangular_prism'
         rectangular_prism: Prism that is rectangular in cross=section
         reniform: Having a circular or roughly circular shape with a notch, like a kidney
-        rhombic: REPLACE WITH 'rhomboid'
         rhomboid: Diamond shaped in outline with the broadest axis in the middle and with a length:breadth ratio between 3:2 and 2:1
-        round: Assume same as spherical; REPLACE WITH 'spherical'
+        round: Seed with round outline; seems to be a subcategory of samara
         samara: A type of fruit in which a flattened wing of fibrous, papery tissue develops from the ovary wall; not truly a shape
         sectoroid: Shaped like an orange segment
-        segment_shaped: REPLACE WITH 'sectoroid'
-        semicircular: Semi-circular in cross-section; REPLACE WITH 'semigloboid'
         semigloboid: Semi-circular in cross-section
         sinusoidal: S-shaped; includes 'sigmoidal'
         spathulate: Spoon-shaped
         spherical: A 3-dimensional shape; round with all dimensions approximately equal
         spheroid: A 3-dimensional shape; nearly, but imperfectly spherical
-        spheroidal: REPLACE WITH 'spheroid'
-        square: REPLACE WITH 'square_prism'
         square_prism: Prism that is square in cross=section
         square_pyramidal: Pyramid that is square in cross-section
-        subcircular: REPLACE WITH 'subgloboid'
         subcylindrical: Nearly or almost cylindrical in shape
-        subglobular: REPLACE WITH 'subgloboid'
         subgloboid: Nearly or almost globoid or spheroid in shape
         suborbicular: Nearly or almost orbicular in shape
         subtriangular: Nearly or almost 'trigonal_prism' in shape
         terete: Circular in cross-section; more or less cylindrical without grooves or ridges
-        triangular: REPLACE WITH 'trigonal_prism'
+        triangular: subset of samara possibly; 3-d structure should be trigonal_prism or trigonal_pyramidal
         trigonal_prism: Prism that is triangular in cross-section
         trigonal_pyramidal: Pyramid that is triangular in cross-section
         turbinate: A 3-dimensional shape; top shaped; inversely conical
@@ -1631,6 +1659,21 @@ traits:
         no_storage_organ: No storage organ present
         storage_organ: Storage organ present, but type  is unknown
         unknown: Assume this trait value means it is unknown if a storage organ is present, not that the type is unknown
+    tap_root:
+      description: Binary variable describing whether or not a plant has a tap root present
+      type: categorical
+      label: Tap root 
+      values:  
+        '0': tap root not present
+        '1': tap root present
+    thickest_root_diameter:
+      description: Diameter of the thickest root
+      type: numeric
+      units: mm
+      label: Thickest root diameter
+      values:
+        minimum: 0.01
+        maximum: 1000
     vapor_pressure_deficit:
       description: Vapor pressure deficit across the leaf surface
       type: numeric
