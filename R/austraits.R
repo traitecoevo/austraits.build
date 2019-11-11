@@ -261,15 +261,6 @@ compare_versions_df <- function (df1, df2, path = "export/tmp") {
   message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
 }
 
-trait_distribution_by_datasetid <- function(...){
-  trait_distribution_plot(y_axis_category = "dataset_id", ...)
-}
-
-trait_distribution_by_family <- function(...){
-  trait_distribution_plot(y_axis_category = "family", ...)
-}
-
-
 trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axis_category, highlight=NA, hide_ids = FALSE) {
 
   # plant_trait_name <- "plant_height"
@@ -360,7 +351,7 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
   }
 
   # Define scale on x-axis and transform to log if required
-  if(range > 20) {
+  if(vals$minimum !=0 & range > 20) {
     #log transformation
     p1 <- p1 +
       scale_x_log10( name="",
