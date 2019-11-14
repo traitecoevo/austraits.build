@@ -20,8 +20,10 @@ people:
   institution: School of Veterinary and Life Sciences, Murdoch University
   role: collector, lab_leader, contact
 dataset:
-  year_collected_start: unknown
-  year_collected_end: unknown
+  year_collected_start: banksia woodland Spring 2011, coastal banksia woodland Spring
+    2012
+  year_collected_end: banksia woodland Spring 2011, coastal banksia woodland Spring
+    2012
   description: Australian subset of a worldwide comparison of functional traits in
     invasive versus native species in mediterranean-climate ecosystems
   collection_type: field
@@ -39,8 +41,8 @@ dataset:
   notes: none
 sites:
   Banksia woodland:
-    latitude (deg): -30.0
-    longitude (deg): 115.0
+    latitude (deg): -32.04667
+    longitude (deg): 115.83639
     description: Banksia woodland
     Fire frequency (year): '>20'
     Grazing: Low
@@ -50,8 +52,8 @@ sites:
     Soil pH: 5.38
     Soil total P (mg P/kg soil): 47.7
   Coastal banksia woodland:
-    latitude (deg): -30.0
-    longitude (deg): 115.0
+    latitude (deg): -31.70778
+    longitude (deg): 115.72194
     description: Coastal banksia woodland
     Fire frequency (year): '>30'
     Grazing: None
@@ -65,7 +67,13 @@ config:
   variable_match:
     species_name: Species
     site_name: Site
-  custom_R_code: data %>%  mutate(`Nut acq strat` = gsub("Nfixer/","",`Nut acq strat`)) %>%  mutate(`Nut acq strat` = gsub("MD",NA,`Nut acq strat`)) %>%  mutate(`Rt tp cat` = gsub("MD",NA,`Rt tp cat`)) %>%  mutate(`Root depth (cm)` = gsub("MD",NA,`Root depth (cm)`)) %>%  mutate(`Height (cm)` = gsub("MD",NA,`Height (cm)`)) %>%  mutate(`T corr A` = gsub("MD",NA,`T corr A`)) %>%  mutate(`A mass (nmol g-1 s-1)` = gsub("MD",NA,`A mass (nmol g-1 s-1)`)) %>%  mutate(`PNUE (umol CO2 mol-1 N s-1)` = gsub("MD",NA,`PNUE (umol CO2 mol-1 N s-1)`)) %>%  mutate(`PPUE (mmol CO2 mol-1 P s-1)` = gsub("MD",NA,`PPUE (mmol CO2 mol-1 P s-1)`)) %>%  mutate(`WUE` = gsub("MD",NA,`WUE`))
+  custom_R_code: data %>%  mutate(`Nut acq strat` = gsub("Nfixer/","",`Nut acq strat`))
+    %>%  mutate(`Nut acq strat` = gsub("MD",NA,`Nut acq strat`)) %>%  mutate(`Rt tp
+    cat` = gsub("MD",NA,`Rt tp cat`)) %>%  mutate(`Root depth (cm)` = gsub("MD",NA,`Root
+    depth (cm)`)) %>%  mutate(`Height (mm)` = gsub("MD",NA,`Height (mm)`)) %>%  mutate(`Aarea`
+    = gsub("MD",NA,`Aarea`)) %>%  mutate(`Amass` = gsub("MD",NA,`Amass`)) %>%  mutate(`PNUE`
+    = gsub("MD",NA,`PNUE`)) %>%  mutate(`PPUE` = gsub("MD",NA,`PPUE`)) %>%  mutate(`WUE`
+    = gsub("MD",NA,`WUE`))  %>%  mutate(`Root type` = gsub("MD",NA,`Root type`))
 traits:
 - var_in: Life form
   unit_in: .na
@@ -79,7 +87,7 @@ traits:
     manuscript, although these are not the values in the spreadsheet)
 - var_in: Raunkiaer life form
   unit_in: .na
-  trait_name: .na
+  trait_name: life_form
   value_type: expert_mean
   replicates: .na
   methods: expert observation or reference book
@@ -98,23 +106,23 @@ traits:
 - var_in: LMA (g/m2)
   unit_in: g/m2
   trait_name: specific_leaf_area
-  value_type: site_mean
-  replicates: 5
+  value_type: raw_value
+  replicates: 1
   methods: After photosynthetic measures, leaves were collected, scanned to determine
     leaf area, dried at 65 deg C for 3 d, and weighed to determine LMA.
 - var_in: SRL (cm/mg)
   unit_in: cm/mg
   trait_name: specific_root_length
-  value_type: site_mean
-  replicates: 5
+  value_type: raw_value
+  replicates: 1
   methods: Specific root length (SRL) was sampled for species with rooting depth less
     than 100 cm. Roots were either subsampled from excavated root systems or taken
     from soil cores made at 10 cm depth immediately adjacent (2-5 cm) to the stem.
     Root length was measured and roots were dried at 65 deg C for 3 d and weighed
     to determine SRL (cm 2 g-1).
-- var_in: Rt tp cat
+- var_in: Root type
   unit_in: .na
-  trait_name: .na
+  trait_name: root_morphology
   value_type: expert_mean
   replicates: .na
   methods: expert observation or reference book
@@ -146,35 +154,36 @@ traits:
   methods: for various published sources, in particular the Kew botanic garden seed
     database; not mapped into AusTraits, since we have the Kew seed database as its
     own study
-- var_in: Height (cm)
-  unit_in: cm
+- var_in: Height (mm)
+  unit_in: mm
   trait_name: plant_height
-  value_type: site_mean
-  replicates: 5
+  value_type: raw_value
+  replicates: 1
   methods: Plant height was measured between the base of the stem and the apical shoot
     or tallest leaf (i.e., grasses). Flowering stalks were excluded from height measurements.
-- var_in: Leaf N (%)
+    Should recategorize as a "contextual" variable not a "trait"
+- var_in: Nmass
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
-  replicates: 5
+  value_type: raw_value
+  replicates: 1
   methods: After photosynthetic measures, leaves were collected and dried at 65 deg
     C for 3 d. Ground leaves were analyzed for total plant N with an elemental analyzer
     (Costech 4010 elemental combustion system; Costech, Valencia, California, USA).
-- var_in: Leaf P (%)
+- var_in: Pmass
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: site_mean
-  replicates: 5
+  value_type: raw_value
+  replicates: 1
   methods: After photosynthetic measures, leaves were collected and dried at 65 deg
     C for 3 d. Phosphorus content was determined colorimetrically using a discrete
     analyzer (SmartChem 200; Unity Scientifi c, Brookfi eld, Connecticut, USA) following
     Kjeldahl digest.
-- var_in: T corr A
+- var_in: Aarea
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_maximum
-  value_type: site_mean
-  replicates: 5
+  value_type: raw_value
+  replicates: 1
   methods: Photosynthetic and transpiration rates were measured with a LI- 6400 portable
     photosynthesis system (LICOR, Lincoln, Nebraska, USA). All measurements were conducted
     at saturating light levels (1600 umol photons m-2 s-1 ), 400 uL L-1 CO 2 , leaf
@@ -183,36 +192,36 @@ traits:
 - var_in: WUE
   unit_in: mmolCO2/molH2O/m2/s
   trait_name: water_use_efficiency
-  value_type: site_mean
-  replicates: 5
+  value_type: raw_value
+  replicates: 1
   methods: Photosynthetic and transpiration rates were measured with a LI- 6400 portable
     photosynthesis system (LICOR, Lincoln, Nebraska, USA). All measurements were conducted
     at saturating light levels (1600 umol photons m-2 s-1 ), 400 uL L-1 CO 2 , leaf
     temperature of 25 deg C, and at relative humidity of 40-60%. When necessary, photosynthetic
     rates were temperature- corrected using standard equations (von Caemmerer 2000).
     Water- use effi ciency was calculated as the ratio of photosynthesis to transpiration.
-- var_in: A mass (nmol g-1 s-1)
+- var_in: Amass
   unit_in: nmolCO2/g/s
   trait_name: photosynthetic_rate_per_dry_mass_maximum
-  value_type: site_mean
-  replicates: 5
+  value_type: raw_value
+  replicates: 1
   methods: Photosynthetic and transpiration rates were measured with a LI- 6400 portable
     photosynthesis system (LICOR, Lincoln, Nebraska, USA). All measurements were conducted
     at saturating light levels (1600 umol photons m-2 s-1 ), 400 uL L-1 CO 2 , leaf
     temperature of 25 deg C, and at relative humidity of 40-60%. When necessary, photosynthetic
     rates were temperature- corrected using standard equations (von Caemmerer 2000).
-- var_in: PNUE (umol CO2 mol-1 N s-1)
+- var_in: PNUE
   unit_in: umolCO2/molN/s
-  trait_name: photosynthetic_nitrogen_use_efficiency
-  value_type: site_mean
-  replicates: 5
+  trait_name: leaf_photosynthetic_nitrogen_use_efficiency
+  value_type: raw_value
+  replicates: 1
   methods: Photosynthetic nitrogen-use efficiency (PNUE) was calculated as the ratio
     of photosynthesis to leaf N.
-- var_in: PPUE (mmol CO2 mol-1 P s-1)
+- var_in: PPUE
   unit_in: umolCO2/molP/s
-  trait_name: photosynthetic_phosphorus_use_efficiency
-  value_type: site_mean
-  replicates: 5
+  trait_name: leaf_photosynthetic_phosphorus_use_efficiency
+  value_type: raw_value
+  replicates: 1
   methods: Photosynthetic phosphorus-use efficiency (PPUE) was calculated as the ratio
     of photosynthesis to leaf P.
 substitutions:
@@ -258,12 +267,55 @@ substitutions:
 - trait_name: plant_growth_form
   find: tree-like monocot
   replace: grass-tree
-taxonomic_updates: .na
+- trait_name: root_morphology
+  find: I
+  replace: type_i
+- trait_name: root_morphology
+  find: II
+  replace: type_ii
+- trait_name: root_morphology
+  find: III
+  replace: type_iii
+- trait_name: root_morphology
+  find: IV
+  replace: type_iv
+- trait_name: root_morphology
+  find: IV?
+  replace: type_iv
+- trait_name: root_morphology
+  find: VII
+  replace: type_vii
+- trait_name: root_morphology
+  find: VIII
+  replace: type_viii
+- trait_name: root_morphology
+  find: IX
+  replace: type_ix
+- trait_name: life_form
+  find: Phanerophyte
+  replace: phanerophyte
+- trait_name: life_form
+  find: Hemicryptophyte
+  replace: hemicryptophyte
+- trait_name: life_form
+  find: Therophyte
+  replace: therophyte
+taxonomic_updates:
+- find: Austrostipa flavescens
+  replace: Stipa flavescens
+  reason: Synonym reported by TaxonStand (2019-11-14)
+- find: Corymbia callophylla
+  replace: Corymbia calophylla
+  reason: Alignment with existing species identified by TaxonStand (2019-11-14)
+- find: Banksia attenuta
+  replace: Banksia attenuata
+  reason: Alignment with existing species identified by TaxonStand (2019-11-14)
+- find: Xanthorrhoea preissi
+  replace: Xanthorrhoea preissii
+  reason: Alignment with existing species identified by TaxonStand (2019-11-14)
+- find: Angiozanthos manglesii
+  replace: Anigozanthos manglesii
+  reason: Alignment with existing species identified by Elizabeth Wenk (2019-11-14)
 questions:
-  contributor: Do you have latitude and longitude values for the two sites?
-  question_1: Over what year(s) were the data collected?
-  question_2: What are the categories for 'root type category' - there seem to be
-    two columns, one with roman numerals and one with numbers, but I can't find what
-    the numbers refer to.
-  additional_traits: Raunkiaer life form, root depth, root type category
+  additional_traits: root depth
 
