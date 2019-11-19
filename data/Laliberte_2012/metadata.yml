@@ -903,7 +903,7 @@ config:
   custom_R_code: data %>% mutate(
     n_fixer = grepl("Nitrogen fixer", strategy),
     roots = gsub(", Nitrogen fixer", "", strategy)
-    )
+    ) %>% mutate_at(c("Mo_mature"), ~na_if(.,0))
 traits:
 - var_in: area
   unit_in: mm2
@@ -1372,6 +1372,12 @@ substitutions:
   find: sedge
   replace: graminoid
 - trait_name: plant_growth_form
+  find: rush
+  replace: graminoid
+- trait_name: plant_growth_form
+  find: grass
+  replace: graminoid
+- trait_name: plant_growth_form
   find: perennial herb
   replace: herb
 - trait_name: root_structure
@@ -1384,11 +1390,23 @@ substitutions:
   find: Cluster roots
   replace: proteoid_root
 - trait_name: root_structure
+  find: non-mycorrhizal
+  replace: non_mycorrhizal
+- trait_name: root_structure
   find: Ectomycorrhizal
   replace: ectomycorrhizal
 - trait_name: root_structure
   find: Sand-binding
   replace: sand-binding
+- trait_name: root_structure
+  find: ericoid
+  replace: ericoid_mycorrhizal
+- trait_name: root_structure
+  find: am, hemiparasite
+  replace: arbuscular_mycorrhizal hemiparasitic_root
+- trait_name: root_structure
+  find: am, sand-binding, dauciform
+  replace: arbuscular_mycorrhizal sand-binding dauciform_root
 - trait_name: root_structure
   find: Dauciform
   replace: dauciform_root
