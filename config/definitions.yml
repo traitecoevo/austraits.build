@@ -28,7 +28,7 @@ traits:
       values:
         minimum: 0.01
         maximum: 1.0
-    bud_depth:
+    sprout_depth:
       description: Depth of resprouting shoots
       type: numeric
       units: mm
@@ -173,6 +173,15 @@ traits:
         water: Seeds dispersal depends in some way on water; should use hydrochory instead
         wind: Seeds are dispersed by wind; true dispersal syndrome; should use anemochory instead
         xerochasywater: wetting by rain or dew; also called hygrochasy
+    dormancy_type:
+      description: Classification for seed dormancy
+      type: categorical
+      label: Dormancy type
+      values:
+        non_dormant: Seeds are non-dormant
+        physical_dormancy: Seeds exhibit physical dormancy
+        physiological_dormancy: Seeds exhibit physiological dormancy
+        morphophysiological_dormancy: Seeds exhibit morphophysiological dormancy 
     epithelial_cell_density:
       description: Epithelial cell density on the leaf surface
       type: numeric
@@ -226,6 +235,14 @@ traits:
         red_brown: red or brown flower
         white_cream: white or cream flower
         yellow_orange: yellow orange flower
+    flower_count_maximum:
+      description: Maximum flower number produced
+      type: numeric
+      units: count
+      labels: Asymptotice flower number
+      values:
+        minimum: 0
+        maximum: 1000000
     flowering_time:
       description: Months during which species is flowering; keyed as a sequences of 12 0s (not flowering) and 1s (flowering) starting with January
       type: character
@@ -317,7 +334,7 @@ traits:
       units: x/x
       labels: Fv/Fm
       values:
-        minimum: 0
+        minimum: 0.2
         maximum: 1
     germination:
       description: Proportion of seeds that germinate
@@ -789,11 +806,19 @@ traits:
     leaf_photosynthetic_nitrogen_use_efficiency:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf nitrogen content
       type: numeric
-      units: umolCO2/s/gN
+      units: umolCO2/molN/s
       label: Leaf photosynthesis rate per unit leaf nitrogen (N) content (photosynthetic nitrogen use efficiency, PNUE)
       values:
         minimum: 1.0
-        maximum: 10.0
+        maximum: 800.0
+    leaf_photosynthetic_phosphorus_use_efficiency:
+      description: Ratio of photosynthetic rate to leaf phosphorus concentration
+      type: numeric
+      units: umolCO2/molP/s
+      label: Photosynthetic phosphorus use efficiency
+      values:
+        minimum: 0.5
+        maximum: 30
     leaf_photosynthetic_water_use_efficiency:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf transpiration (water loss)
       type: numeric
@@ -994,6 +1019,21 @@ traits:
       values:
         minimum: 0.1
         maximum: 1000.0
+    life_form:
+      description: Raunkiaer classification; Categorical classification of plants according to shoot-apex or bud protection
+      type: categorical
+      label: Life form
+      values:
+        aerophytes: Plants that obtain moisture and nutrients from the air and rain
+        chamaephyte: Plants with buds on persistent shoots near the soil surface
+        cryptophytes: plants have subterranean or under water resting buds
+        epiphyte: Plant that grows on the surface of another plant
+        geophyte: Plants with bulbs that rest in dry soil as a rhizome, bulb or corm
+        helophytes: Plants with bulbs that rest in marshy or wet soil
+        hemicryptophyte: Plants with buds at or near the soil surface
+        hydrophytes: Plants with bulbs that rest submerged under water
+        phanerophyte: Plants with dominant buds on branches which project freely into the air; normally woody perennials
+        therophyte: Annual plants that complete their lives rapidly in favourable conditions and survive the unfavourable cold or dry season in the form of seeds
     life_history:
       description: Categorical description of plant's life history
       type: categorical
@@ -1082,6 +1122,7 @@ traits:
       values:
         c3: Plant using the 'standard' photosynthetic pathway, where a 3-carbon compound is produced after the first stage in the photosynthetic pathway
         c4: Plants in which the photosynthetic light-dependent reactions and the Calvin cycle are physically separated to reduce photo respiration
+        c3-c4: Species that shift between c3 and c4 photosynthesis
         cam: Plants which display crassulacean acid metabolism
     photosynthetic_rate_per_area:
       description: Rate at which a plant consumes carbon dioxide through photosynthesis, normalised to leaf area
@@ -1115,6 +1156,14 @@ traits:
       values:
         minimum: 0.01
         maximum: 1.0
+    photosynthetic_rate_per_dry_mass_maximum:
+      description: Maximum rate at which a plant consumes carbon dioxide through photosynthesis at saturating light conditions but ambient CO2 conditions, normalised to leaf dry mass
+      type: numeric
+      units: umolCO2/g/s
+      label: Leaf photosynthesis rate per unit leaf dry mass
+      values:
+        minimum: 0.01
+        maximum: 1.0
     plant_growth_form:
       description: Different growth forms displayed by plants, including both standard plant growth form descriptors (tree, shrub, etc.) and specific plant characteristics (i.e. patristic)
       type: categorical
@@ -1129,6 +1178,7 @@ traits:
         fern: A group of vascular plants that reproduce via spores
         geophyte: A perennial plant with an underground food storage organ, such as a bulb, tuber, corm, or rhizome
         graminoid: Herbaceous plants with a grass-like morphology
+        grass-tree: Term specific refers to members of the family Xanthorrhoaceae, monocots with a tree-like growth-form
         hemi-epiphyte: Plant that partially grows on top of another plant
         herb: A seed-bearing plant which does not have a woody stem and dies down to the ground after flowering
         palm: Flowering plants in the family Arecaceae, most with large, compound evergreen leaves referred to as fronds
@@ -1152,6 +1202,14 @@ traits:
       type: numeric
       units: m
       label: Plant width
+      values:
+        minimum: 0.001
+        maximum: 20
+    plant_breadth:
+      description: The breadth of the plant canopy (smaller of two dimensions)
+      type: numeric
+      units: m
+      label: Plant breadth
       values:
         minimum: 0.001
         maximum: 20
@@ -1194,6 +1252,20 @@ traits:
       values:
         minimum: 0.01
         maximum: 1.0
+    root_morphology:
+      description: Categorical root descriptions sensu Cannon 1949, A Tentative Classification of Root Systems, Ecology, doi.org/10.2307/1932458
+      type: categorical
+      label: Categorical root descriptions, sense Cannon 1949
+      values:
+        type_i: The primary root is fibrous or fleshy and is relatively long; mesophytic
+        type_ii: The primary root is relatively short and is fibrous. Roots are well branched in a dry habitat but branch little in one that is wet.
+        type_iii: The primary root is usually long and fibrous. The first order lateral roots are well branched and are usually short; they are rather evenly distributed along the primary root; xerophytic
+        type_iv: The primary root is usually long and slender like that of Type II. The first order lateral roots are well branched. Those closest to the surface of the ground, or not far below, are relatively long; xerophytic and mesophytic
+        type_v: The primary root is divided-forked or branched-and fibrous, and with few first order lateral roots, or, in age, apparently with none; xerophytic
+        type_vi: The primary root is usually as in Type V. The first order lateral roots are mostly on the upper portion of the primary root and are thus relatively superficial; xerophytic or in well aerated sandy soil where the rainfall is not light.
+        type_vii: Adventitious roots that are in one group and arise on a short horizontal, or verti- cal, axis of the shoot. They are fibrous or fleshly; mesophytic and hydrophytic
+        type_viii: Adventitious roots that are in one group and are fibrous and fleshy, or fibrous and thick. The fibrous adventitious roots are absorbing-anchoring roots and are usually with laterals to the second order; meophytic
+        type_ix: Adventitious roots that arise on the aerial stem and branches of some herbaceous species, shrubs, and trees; on creepers, vines, and runners; and on subterranean rhizomes and stolons
     root_shoot_ratio:
       description: Ratio of root mass to shoot mass
       type: numeric
@@ -1209,14 +1281,20 @@ traits:
       values:
         arbuscular_mycorrhizal: Symbiosis in which the mycorrhizal fungi does penetrate the cortex cells of the plant roots and its hyphae form arbuscules and vesicles inside the plant root; endomycorrhizal
         carnivorous: non-mycorrhizal carnivorous root
+        cluster_roots: cluster roots in non-proteoid species
         dauciform_root: A type of cluster root found in the family Cyperaceae
         ectomycorrhizal: Symbiosis in which the mycorrhizal fungi does not penetrate the cortex cells of the plant roots
         ericoid_mycorrhizal: A form of arbuscular mycorrhizal relationship only found on plants in the order Ericales. The fungi's hyphae penetrate the plant root but do not form arbuscules
+        fine_roots: Particularly fine roots for nutrient uptake
+        hemiparasitic_root: Partially parasitic root
+        long_root_hairs: Specialised long root hairs
         orchid_mycorrhizal: A mycorrhizal relationship specific to orchid species, and for most orchids, essential for seedlings to establish
         non_mycorrhizal: Plants lacking a mycorrhizal symbiont
         parasitic_root: Parasitic root
         proteoid_root: Also known as cluster roots, are plant roots that form clusters of closely spaced short lateral rootlets and aid in nutrient upake in nutrient-poor soils; common in members of the family Proteaceae, but present in other families as well
+        root_hairs: Specialised root hairs
         sand-binding: Persistent sheaths of sand that form around the roots of species in the families Restionaceae, Cyperaceae, Haemodoraceae, and Lomandraceae in western Australia. Assumed to function in nutrient uptake.
+        subepidermal_mycorrhizal: Mycorrhizae where hyphae grow in a cavity under epidermal cells. Only in the genus Thysanotus ( family Laxmaniaceae).
     root_wood_density:
       description: For root wood, the ratio of mass to volume, yielding density
       type: numeric
@@ -1317,13 +1395,10 @@ traits:
         compressed_sectoroid: Like sectoroid, but a flatter 3-dimensional shape
         conical: Shaped like a cone; the opposite of turbinate
         cordiform: Heart-shaped
-        cuneate: Triangular, wedge-shaped; see also 'wedge-shaped'; REPLACE WITH SECTOROID
         cylindrical: A 3-dimensional shape; shaped like a cylinder; see also 'terete' which refers to particular thin cylindrical shape; should maybe be cylinder?
-        discoidal: REPLACE WITH 'discoid'
         discoid: Resembling a disc, with two convex faces; similar to plano-convex and lenticular, flatter
         discoid_two_lobed: Resembling a disc, but with two lobes
         ellipsoid: A 3-dimensional shape; elliptic in outline and with a length:breadth ratio between 3:2 and 2:1
-        elliptical: REPLACE WITH 'ellipsoid'
         elongated_lachrimiform: Like lachrimiform, but extended along the longest axis
         elongated_ovoid: Like ovoid, but extended along the longest axis
         elongated_pyramidal: Like pyramidal, but extended along the longest axis
@@ -1332,9 +1407,7 @@ traits:
         falcate: Sickle-shaped; see also 'comma-shaped'
         flat: Suggests a quite flattened seed, but no information about shape
         fusiform: Spindle-shaped, cigar-shaped, circular in cross-section and tapering at both ends
-        globose: REPLACE WITH 'globoid'
-        globoid: Globe-shaped
-        globular: REPLACE WITH 'globoid'
+        globoid: Globe-shaped; includes 'globular' and 'globose'
         inflated_pyramidal: Like pyramidal, but inflated
         inflated_trigonal_pyramidal: Like trigonal_pyramidal, but inflated
         irregular: Irregular shape
@@ -1345,15 +1418,10 @@ traits:
         lenticular: A 3-dimensional shape; shaped like a biconvex lens. Similar to plano-convex??
         muricate: has numerous short hard outgrowths
         obclavate: A 2 or 3-dimensional shape; slender, broadening towards the base; club-shaped, with the thickened part at the base
-        oblong: REPLACE WITH 'obloid'
         obloid: A 3-dimensional shape, where the length is a few times greater than the width, with sides almost parallel and ends rounded.
-        obovate: REPLACE WITH 'obovoid'
         obovoid: A 3-dimensional shape; similar to ovoid, but attached at the narrower end and with a length:breadth ratio between 3:2 and 2:1
         orbicular: Fairly flat, but round in 2-dimensional outline; see also compressed_globoid
-        ovate: REPLACE WITH 'ovoid'
         ovoid: Egg-shaped (i.e., widest below the middle)
-        pea_shape: Assume same as spherical
-        plano_convex: Fairly flat, but with slightly raised, convex faces; REPLACE WITH 'lenticular'
         pointed_ovoid: Like ovoid, but with one pointier end
         pointed_samara: A type of fruit in which a flattened wing of fibrous, papery tissue develops from the ovary wall; variant that is more pointed; not truly a shape
         pyramidal: Pyramid; cross-section unknown
@@ -1361,34 +1429,34 @@ traits:
         rectangular: REPLACE WITH 'rectangular_prism'
         rectangular_prism: Prism that is rectangular in cross=section
         reniform: Having a circular or roughly circular shape with a notch, like a kidney
-        rhombic: REPLACE WITH 'rhomboid'
         rhomboid: Diamond shaped in outline with the broadest axis in the middle and with a length:breadth ratio between 3:2 and 2:1
-        round: Assume same as spherical; REPLACE WITH 'spherical'
+        round: Seed with round outline; seems to be a subcategory of samara
         samara: A type of fruit in which a flattened wing of fibrous, papery tissue develops from the ovary wall; not truly a shape
         sectoroid: Shaped like an orange segment
-        segment_shaped: REPLACE WITH 'sectoroid'
-        semicircular: Semi-circular in cross-section; REPLACE WITH 'semigloboid'
         semigloboid: Semi-circular in cross-section
         sinusoidal: S-shaped; includes 'sigmoidal'
         spathulate: Spoon-shaped
         spherical: A 3-dimensional shape; round with all dimensions approximately equal
         spheroid: A 3-dimensional shape; nearly, but imperfectly spherical
-        spheroidal: REPLACE WITH 'spheroid'
-        square: REPLACE WITH 'square_prism'
         square_prism: Prism that is square in cross=section
         square_pyramidal: Pyramid that is square in cross-section
-        subcircular: REPLACE WITH 'subgloboid'
         subcylindrical: Nearly or almost cylindrical in shape
-        subglobular: REPLACE WITH 'subgloboid'
         subgloboid: Nearly or almost globoid or spheroid in shape
         suborbicular: Nearly or almost orbicular in shape
         subtriangular: Nearly or almost 'trigonal_prism' in shape
         terete: Circular in cross-section; more or less cylindrical without grooves or ridges
-        triangular: REPLACE WITH 'trigonal_prism'
+        triangular: subset of samara possibly; 3-d structure should be trigonal_prism or trigonal_pyramidal
         trigonal_prism: Prism that is triangular in cross-section
         trigonal_pyramidal: Pyramid that is triangular in cross-section
         turbinate: A 3-dimensional shape; top shaped; inversely conical
         wedge_shaped: A 2 or 3-dimensional shape; tapers to a point at one end; includes the 2-D classificatiion "cuneate" and possibly plants that are more conical in outline
+    seed_storage_location:
+      description: Location where seeds are stored at maturity
+      type: categorical
+      label: Location where seeds are stored at maturity
+      values:
+        canopy: Seeds stored in the canopy, usually still within a woody cone
+        soil: Seeds stored in the soil
     seed_texture:
       description: The texture of a seed
       type: categorical
@@ -1543,7 +1611,7 @@ traits:
     stem_count_categorical:
       description: Number of stems present, expressed in groups, where categories were 1=1; 2-3=2; 4-10=3; 11-30=4; and >30=5. Used by Peter Vesk.
       type: numeric
-      units: 'n'
+      units: count
       label: Stem Count, categorical
       values:
         minimum: 0
@@ -1631,6 +1699,21 @@ traits:
         no_storage_organ: No storage organ present
         storage_organ: Storage organ present, but type  is unknown
         unknown: Assume this trait value means it is unknown if a storage organ is present, not that the type is unknown
+    tap_root:
+      description: Binary variable describing whether or not a plant has a tap root present
+      type: categorical
+      label: Tap root 
+      values:  
+        '0': tap root not present
+        '1': tap root present
+    thickest_root_diameter:
+      description: Diameter of the thickest root
+      type: numeric
+      units: mm
+      label: Thickest root diameter
+      values:
+        minimum: 0.01
+        maximum: 1000
     vapor_pressure_deficit:
       description: Vapor pressure deficit across the leaf surface
       type: numeric
