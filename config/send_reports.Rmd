@@ -1,0 +1,39 @@
+
+This script shows how to use googledrive to upload and store a copy of a report, then generate text for an email to send.
+
+We assume your running this from the root of the austraits directory and that you've already built austraits and the report you want to send.
+
+First load google drive:
+
+```{r}
+library(tidyverse)
+library(googledrive)
+```
+
+To check drive is running, try the following. You'll need to authenticate using the austraits email:
+
+```{r}
+drive_find(n_max = 5)
+```
+
+Now source functions
+```{r}
+source("scripts/send_report_functions.R")
+```
+
+To upload a report simply run
+
+```{r}
+out <- upload_report("Moore_2019")
+```
+
+Now generate text for an email, using the details returned from the previous function. As this is html, we need to write it to file:
+
+```{r}
+out %>% 
+  review_email_text2() %>%
+  writeLines("export/email.html")
+```
+
+Open the file "export/email.html" and copy/paste into gmail.
+
