@@ -74,6 +74,10 @@ read_csv("data/ANBG_2019/raw/ANBG_ABCD_seedbank_treatment.csv") %>%
   mutate(value = ifelse((is.na(value_numeric)|value_numeric==""),value_categorical,value_numeric)) %>%
   left_join(name_id_match,by="item_ID") %>%
   #select(-value_categorical,-value_numeric) %>%
+  filter(!(value %in% c(
+                      "Calculated length of seed (average, standard deviation)",
+                      "Calculated width of seed (average, standard deviation)"
+                      ))) %>%
   write_csv("data/ANBG_2019/data.csv") %>%
   distinct(site_name_shorter, .keep_all = TRUE) -> site_data
 
