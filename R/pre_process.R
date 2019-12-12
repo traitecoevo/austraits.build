@@ -180,3 +180,20 @@ collapse_multirow_phenology_data_to_binary_vec <- function(data, trait="flowerin
   return(data)
 }
 
+
+
+#' Separate values cells with a range into columns with minimum and maximum
+#'
+#' @param data data frame
+#' @param x name of variable containing range
+#' @param y1 name of variable to hold minimum
+#' @param y2 name of variable to hold maximum
+#' @param sep seperator, by default "-"
+#'
+#' @return modified data frame
+#'
+separate_min_max <- function(data, x, y1, y2, sep="-") {
+  data <- separate(data, !!x, sep = "-", into = c(y1, y2), remove=FALSE, fill="right")
+  data[[y2]] <- ifelse(is.na(data[[y2]]), data[[y1]], data[[y2]])
+  data
+}
