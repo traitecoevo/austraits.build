@@ -1861,8 +1861,7 @@ config:
   variable_match:
     species_name: species
     site_name: plot.id
-  custom_R_code: data %>% mutate(nitrogen_fixing = str_detect(specific.uptake.strategy,
-    "N fixing", negate = FALSE)) %>% mutate(specific.uptake.strategy = gsub("N fixing","arbuscular_mycorrhizal ectomycorrhizal",specific.uptake.strategy))%>%
+  custom_R_code: data %>% mutate(nitrogen_fixing = str_detect(specific.uptake.strategy, "/n fixing", negate = FALSE)) %>%
     mutate(senesced_leaf_Zn = ifelse(senesced_leaf_Zn<0,0,senesced_leaf_Zn), senesced_leaf_Mo = ifelse(senesced_leaf_Mo<0,0,senesced_leaf_Mo),Mo_ug.g.DW = ifelse(Mo_ug.g.DW<0,0,Mo_ug.g.DW))
 traits:
 - var_in: uptake.strategy
@@ -2704,10 +2703,13 @@ substitutions:
   find: AM
   replace: arbuscular_mycorrhizal
 - trait_name: root_structure
-  find: AM/non_mycorrhizal
+  find: AM/N fixing
   replace: arbuscular_mycorrhizal
 - trait_name: root_structure
   find: AM/EM
+  replace: arbuscular_mycorrhizal ectomycorrhizal
+- trait_name: root_structure
+  find: AM/EM/N fixing
   replace: arbuscular_mycorrhizal ectomycorrhizal
 - trait_name: root_structure
   find: EM
@@ -2728,12 +2730,5 @@ taxonomic_updates:
 - find: Banksia sessilis var. cygnorum
   replace: Dryandra sessilis var. cygnorum
   reason: Synonym reported by TaxonStand (2019-11-29)
-questions:
-  contributor: There are a number of measurements for Mo in mature leaves and Mo and
-    Zn in senesced leaves that are <0. Right now these values are being excluded as
-    "unsupported trait value". Is this appropriate, or should I reassign them a value
-    of zero and include them?
-  question_2: After you have reviewed the report, I will go through and fill in the
-    missing methods - they will be duplicated from the text I have already included.
-  question_3: There didn't seem to be any data from the plot.id's beginning with S.D... so I've removed them from the list of sites. Let me know if I should have done that. (In the report they were showing up as having no records associated with them and also weren't present in the data file.)
+questions: .na
 

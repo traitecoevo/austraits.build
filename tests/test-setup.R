@@ -40,10 +40,14 @@ for (dataset_id in dataset_ids) {
   test_that(dataset_id, {
 
   # Exists
-    files <- file.path(s, config_files)
-    for(f in files) {
-      expect_true(file.exists(f), info = f)
-    }
+  files <- file.path(s, config_files)
+  for(f in files) {
+    expect_true(file.exists(f), info = f)
+  }
+  
+  # check for other files
+  vals <- c("data.csv", "metadata.yml", "raw")
+  expect_isin(dir(s), vals, info=paste(f, " disallowed files"))
 
   # Metadata
   f <- files[2]
@@ -141,7 +145,7 @@ for (dataset_id in dataset_ids) {
   } else {
 
     # Variable match
-    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name", "site_name"), info=paste0(f, " - variable_match"))
+    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name", "site_name", "observation_id"), info=paste0(f, " - variable_match"))
 
     # For wide datasets, expect variables in cfgChar are header in the data
     values <- names(data)
