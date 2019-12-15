@@ -192,8 +192,8 @@ collapse_multirow_phenology_data_to_binary_vec <- function(data, trait="flowerin
 #'
 #' @return modified data frame
 #'
-separate_min_max <- function(data, x, y1, y2, sep="-") {
-  data <- separate(data, !!x, sep = "-", into = c(y1, y2), remove=FALSE, fill="right")
+separate_range <- function(data, x, y1, y2, sep="-", remove=TRUE) {
+  data <- separate(data, !!x, sep = "-", into = c(y1, y2), remove=remove, fill="right")
   data[[y2]] <- ifelse(is.na(data[[y2]]), data[[y1]], data[[y2]])
   data
 }
