@@ -151,12 +151,14 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
   # set format
   oldopts <- RefManageR::BibOptions(.opts)
   on.exit(RefManageR::BibOptions(oldopts))
+
   bib %>% 
     RefManageR:::format.BibEntry(.sort = F) %>%
     # HACK: remove some of formatting introduced in line above
     # would be nicer if we could apply csl style
     gsub("[] ", "", ., fixed = TRUE) %>% 
-    gsub("\\n", "", .) %>% 
+    gsub("\\n", " ", .) %>% 
+    gsub("  ", " ", .) %>% 
     gsub("DOI:", " doi: ", ., fixed = TRUE) %>% 
     gsub("URL:", " url: ", ., fixed = TRUE) %>% 
     ifelse(tolower(bib$bibtype) == "article",  gsub("In:", " ", .), .)
