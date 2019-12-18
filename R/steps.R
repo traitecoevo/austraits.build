@@ -45,8 +45,15 @@ load_study <- function(filename_data_raw,
   }
   sites <- add_all_columns(sites, definitions, "sites")
 
-  # record methods on study from metadata
+  # record contributors
+  contributors <- 
+    metadata$people %>%
+    list_to_df() %>% 
+    mutate(dataset_id = dataset_id) %>% 
+    select(dataset_id = dataset_id, everything()) %>% 
+    filter(!is.na(name))
 
+  # record methods on study from metadata
   source_primary <- convert_list_to_bib(metadata$source$primary)
   source_secondary <- convert_list_to_bib(metadata$source$secondary)
  
@@ -97,6 +104,7 @@ load_study <- function(filename_data_raw,
        excluded_data = traits %>% filter(!is.na(error)) %>% select(error, everything()),
        taxonomy = taxonomy,
        definitions = definitions,
+       contributors = contributors,
        sources =  c(source_primary, source_secondary)
        )
 }
@@ -551,6 +559,7 @@ combine_austraits <- function(..., d=list(...), definitions) {
               excluded_data = combine("excluded_data", d),
               taxonomy=taxonomy,
               definitions = definitions,
+              contributors=combine("contributors", d),
               sources = sources,
               build_info = list(
                       version=definitions$austraits$elements$version$value,
