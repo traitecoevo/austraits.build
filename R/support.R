@@ -1,23 +1,3 @@
-# core packages used in build
-# pacman loads and if necessary installs
-pacman::p_load(tidyverse, yaml, stringr, RefManageR)
-
-# Additional packages used in build, setup or reports
-# pacman checks installed, and installs if necessary, but does not load
-for(v in 
-      # extra packages used in build
-    c( "git2r",
-      # extra packages used for reports
-      "knitr", "rmarkdown", "crayon", "ggbeeswarm", "scales",
-      "gridExtra", "kableExtra", "leaflet",  "rprojroot", 
-      # extra packages used during setup
-      "devtools", "rcrossref", "Taxonstand", 
-                "testthat", "whisker") 
-    ){
-  if(!pacman::p_isinstalled(v))
-    pacman::p_install(v, character.only = TRUE)
-}
-
 # Swap a null vale to something else
 null_as <- function(x, val=NA){
   if(is.null(x)) return(val)
@@ -49,10 +29,6 @@ split_then_sort <- function(x, sep=" ") {
       lapply(function(xi) xi %>% sort() %>% paste(collapse=" ")) %>%
       unlist()
   x
-}
-
-last <- function(x) {
-  x[[length(x)]]
 }
 
 
