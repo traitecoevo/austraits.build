@@ -22,12 +22,14 @@ make_release_austraits_code_zip <- function(dest, force=FALSE) {
 
 colophon <- function(path) {
   git_sha <- system("git rev-parse HEAD", intern=TRUE)
-  git_url <- paste0("https://github.com/traitecoevo/austraits/commit/", git_sha)
+  git_url <- paste0("https://github.com/traitecoevo/austraits.build/commit/", git_sha)
   file <- "colophon.Rmd"
   str <-
     c("# The austraits database",
       "",
-      sprintf("**Release 0.0.1** git SHA: [%s](%s)", git_sha, git_url),
+      sprintf("SHA:  %s", git_sha),
+      "",
+      sprintf("Github link:  %s", git_url),
       "",
       "Session info used to generate this version:",
       "",

@@ -567,8 +567,8 @@ combine_austraits <- function(..., d=list(...), definitions) {
               contributors=combine("contributors", d),
               sources = sources,
               build_info = list(
-                      version=definitions$austraits$elements$version$value,
-                      git_SHA=get_SHA_link(),
+                      version=desc::desc_get_field("Version"),
+                      git_SHA=get_SHA(),
                       session_info = sessionInfo()
                       )
               )
