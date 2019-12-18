@@ -20,7 +20,7 @@ build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/repor
   if(overwrite | !file.exists(output_html)) {
     
     # Create a new Rmd file with name embedded in title
-    x <- readLines("vignettes/report_study.Rmd")
+    x <- readLines("scripts/report_study.Rmd")
     x <- gsub("title: Report on study from",  sprintf("title: Report on study `%s` from", dataset_id), x)
     writeLines(x, input_Rmd)
     
