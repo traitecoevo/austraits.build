@@ -1,5 +1,20 @@
 
 
+
+Notes on release process
+
+http://r-pkgs.had.co.nz/release.html
+
+## Releasing a version
+
+Increment version number
+
+```{r}
+desc::desc_bump_version("dev")
+```
+
+## Merge pull request
+
 This workflow describes how to merge a pull request from the command line, with
 
 - a single commit

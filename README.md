@@ -44,6 +44,8 @@ or the versioned releases archived on zenodo at doi: [10.5281/zenodo.3568417](ht
 
 That repository contains detailed information on the use of AusTraits. 
 
+license
+
 ## A versioned database 
 
 AusTraits is continually evolving, as new datasets are contributed. As 
@@ -95,4 +97,7 @@ See [these instructions](docs/CONTRIBUTING.md) on how to prepare data.
 
 ## Acknowledgements
 
+ARDC 
+**Funding**: The project is supported by the [Australian Research Data
+Commons (ARDC)](https://ardc.edu.au). .....
 
