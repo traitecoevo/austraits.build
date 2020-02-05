@@ -45,8 +45,15 @@ load_study <- function(filename_data_raw,
   }
   sites <- add_all_columns(sites, definitions, "sites")
 
-  # record methods on study from metadata
+  # record contributors
+  contributors <- 
+    metadata$people %>%
+    list_to_df() %>% 
+    mutate(dataset_id = dataset_id) %>% 
+    select(dataset_id = dataset_id, everything()) %>% 
+    filter(!is.na(name))
 
+  # record methods on study from metadata
   source_primary <- convert_list_to_bib(metadata$source$primary)
   source_secondary <- convert_list_to_bib(metadata$source$secondary)
  
@@ -97,6 +104,7 @@ load_study <- function(filename_data_raw,
        excluded_data = traits %>% filter(!is.na(error)) %>% select(error, everything()),
        taxonomy = taxonomy,
        definitions = definitions,
+       contributors = contributors,
        sources =  c(source_primary, source_secondary)
        )
 }
@@ -143,12 +151,14 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
   # set format
   oldopts <- RefManageR::BibOptions(.opts)
   on.exit(RefManageR::BibOptions(oldopts))
+
   bib %>% 
     RefManageR:::format.BibEntry(.sort = F) %>%
     # HACK: remove some of formatting introduced in line above
     # would be nicer if we could apply csl style
     gsub("[] ", "", ., fixed = TRUE) %>% 
-    gsub("\\n", "", .) %>% 
+    gsub("\\n", " ", .) %>% 
+    gsub("  ", " ", .) %>% 
     gsub("DOI:", " doi: ", ., fixed = TRUE) %>% 
     gsub("URL:", " url: ", ., fixed = TRUE) %>% 
     ifelse(tolower(bib$bibtype) == "article",  gsub("In:", " ", .), .)
@@ -551,6 +561,7 @@ combine_austraits <- function(..., d=list(...), definitions) {
               excluded_data = combine("excluded_data", d),
               taxonomy=taxonomy,
               definitions = definitions,
+              contributors=combine("contributors", d),
               sources = sources,
               build_info = list(
                       version=definitions$austraits$elements$version$value,
