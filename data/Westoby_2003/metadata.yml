@@ -51,12 +51,12 @@ dataset:
   original_file: Wright & Henery seed mass data.xls
   notes: Currently, all the data in this spreadsheet are from the Westoby 1990 manuscript, not from the 2003 Westoby and Wright manuscript.
 sites:
-  Ku-Ring-Gai_Chase_National_Park:
+  Ku-Ring-Gai Chase National Park:
     longitude (deg): 151.143
     latitude (deg): -33.694
     rainfall (mm): 1200
     description: The main dataset concerns perennial dicotyledonous species from low-nutrient
-      Hawkesbury sandstone near Sydney, Australia (66 mg kg_1 total soil P, from five
+      Hawkesbury sandstone near Sydney, Australia (66 mg kg-1 total soil P, from five
       samples to 10 cm depth spaced across the site, amalgamated before analysis).
       The vegetation there is woody, sclerophyll, evergreen, fire-prone and species-rich.
       Data were collected in August 1999 as a practical exercise in Biol368 Ecology
@@ -68,27 +68,53 @@ sites:
       some low woody herbs, to 6 m for some eucalypts. Rainfall at the site averages
       ca. 1,200 mm distributed through all seasons of the year. Growth slows but does
       not stop across the cooler months.
+  Round Hill Nature Reserve woodland:
+    longitude (deg): 146.15
+    latitude (deg): -32.96
+    rainfall (mm): 390
+    description: woodland site on a light clay soil with 250 mg kg-1 total soil P in the top 10 cm
+  Round Hill Nature Reserve mallee:
+    longitude (deg): 146.15
+    latitude (deg): -32.96
+    rainfall (mm): 390
+    description: mallee site on a loamy sand with 132 mg kg-1
 config:
   data_is_long_format: no
   variable_match:
-    species_name: name_original
-    site_name: site_name
-  custom_R_code:  data %>% mutate(site_name = "Ku-Ring-Gai_Chase_National_Park")
+    species_name: species_name
+    site_name: site
+  custom_R_code: .na
 traits:
-- var_in: seed mass (mg)
-  unit_in: mg
-  trait_name: seed_mass
-  value_type: expert_mean
-  replicates: .na
-  methods: not specified, but assume from the literature as with seed_mass_reserve
-- var_in: reserve seed mass (mg)
+- var_in: seed M
   unit_in: mg
   trait_name: seed_mass_reserve
-  value_type: expert_mean
-  replicates: .na
-  methods: Data for seed reserve mass (dry mass of embryo plus endosperm if present)
-    were drawn from previous studies in similar vegetation (Leishman et al. 1995;
-    Westoby et al. 1990) or from unpublished datasets for western NSW.
+  value_type: site_mean
+  replicates: unknown
+  methods: "The manuscript says: Data for seed reserve mass (dry mass of embryo plus endosperm if present) were drawn from previous studies in similar vegetation (Leishman et al. 1995; Westoby et al. 1990) or from unpublished datasets for western NSW. However, while a few of the values in the table for seed_mass_reserve match some of the data in Wright_2001 for seed_mass, most don't and there are no other seed_mass_reserve data in AusTraits for this data has been left in at present."
+- var_in: SLA
+  unit_in: mm2/mg
+  trait_name: specific_leaf_area
+  value_type: site_mean
+  replicates: 3
+  methods: For KNP, A fully expanded leaf along the twig was sampled for area and mass measurements. The sampled leaf was selected from among those that had not lost part of their area to herbivory or other damage, and to be near the median size. Projected area of the leaf was measured, laid flat on squared paper, and the leaf was dried to constant mass and weighed. Total area of leaves along a twig was estimated as number of leaves multiplied by area of the representative leaf sampled, and similarly for total mass of leaves along the twig. For RH, twig diameters and numbers of leaves expanded >50% were measured in June 1999 for 11 species at the woodland site and 14 species at the mallee site, including Philotheca difformis at both. Areas of individual fully expanded leaves (flatbed scanner) and SLA (using mass after drying for 48 h at 70 deg C) had been determined from 1 leaf from each of 5 individuals per species (woodland, December 1997) or from 5 leaves from each of 5 individuals (mallee, June 1998).
+- var_in: ind lf A
+  unit_in: mm2
+  trait_name: leaf_area
+  value_type: site_mean
+  replicates: 3
+  methods: For KNP, A fully expanded leaf along the twig was sampled for area and mass measurements. The sampled leaf was selected from among those that had not lost part of their area to herbivory or other damage, and to be near the median size. Projected area of the leaf was measured, laid flat on squared paper, and the leaf was dried to constant mass and weighed. Total area of leaves along a twig was estimated as number of leaves multiplied by area of the representative leaf sampled, and similarly for total mass of leaves along the twig. For RH, twig diameters and numbers of leaves expanded >50% were measured in June 1999 for 11 species at the woodland site and 14 species at the mallee site, including Philotheca difformis at both. Areas of individual fully expanded leaves (flatbed scanner) and SLA (using mass after drying for 48 h at 70 deg C) had been determined from 1 leaf from each of 5 individuals per species (woodland, December 1997) or from 5 leaves from each of 5 individuals (mallee, June 1998).
+- var_in: twig A
+  unit_in: mm2
+  trait_name: twig_area
+  value_type: site_mean
+  replicates: 3
+  methods: For KNP, A fully expanded leaf along the twig was sampled for area and mass measurements. The sampled leaf was selected from among those that had not lost part of their area to herbivory or other damage, and to be near the median size. Projected area of the leaf was measured, laid flat on squared paper, and the leaf was dried to constant mass and weighed. Total area of leaves along a twig was estimated as number of leaves multiplied by area of the representative leaf sampled, and similarly for total mass of leaves along the twig. For RH, twig diameters and numbers of leaves expanded >50% were measured in June 1999 for 11 species at the woodland site and 14 species at the mallee site, including Philotheca difformis at both. Areas of individual fully expanded leaves (flatbed scanner) and SLA (using mass after drying for 48 h at 70 deg C) had been determined from 1 leaf from each of 5 individuals per species (woodland, December 1997) or from 5 leaves from each of 5 individuals (mallee, June 1998).
+- var_in: twig L
+  unit_in: mm
+  trait_name: twig_length
+  value_type: site_mean
+  replicates: 3
+  methods: For KNP, A fully expanded leaf along the twig was sampled for area and mass measurements. The sampled leaf was selected from among those that had not lost part of their area to herbivory or other damage, and to be near the median size. Projected area of the leaf was measured, laid flat on squared paper, and the leaf was dried to constant mass and weighed. Total area of leaves along a twig was estimated as number of leaves multiplied by area of the representative leaf sampled, and similarly for total mass of leaves along the twig. For RH, twig diameters and numbers of leaves expanded >50% were measured in June 1999 for 11 species at the woodland site and 14 species at the mallee site, including Philotheca difformis at both. Areas of individual fully expanded leaves (flatbed scanner) and SLA (using mass after drying for 48 h at 70 deg C) had been determined from 1 leaf from each of 5 individuals per species (woodland, December 1997) or from 5 leaves from each of 5 individuals (mallee, June 1998).
 substitutions: .na
 taxonomic_updates:
 - find: Olearia pimelioides
@@ -107,4 +133,3 @@ taxonomic_updates:
   replace: Dodonaea viscosa
   reason: Synonym reported by TaxonStand (2018-02-08)
 questions: .na
-
