@@ -4,58 +4,79 @@ source:
     bibtype: Unpublished
     author: Ian J. Wright
     year: 2001
-    title: "Unpublished data: Seed mass reserve data for various species in NSW"
+    title: 'Unpublished data: Seed mass reserve data for various species in NSW'
 people:
 - name: Ian Wright
   institution: Macquarie University Sydney
   role: collector, contact, contributor
+- name: Martin Henery
+  institution: CSIRO
+  role: collector
 - name: Mark Westoby
   institution: Macquarie University Sydney
   role: lab_leader
 dataset:
-  year_collected_start: 2001
-  year_collected_end: 2001
+  year_collected_start: 1998
+  year_collected_end: 1999
   description: seed mass reserve data for various species in NSW
   collection_type: field
   sample_age_class: adult
-  sampling_strategy: unknown
-  original_file: Wright & Henery seed mass data.xls
-  notes: none
-sites: .na
+  sampling_strategy: Seed mass data measured on seeds dissected by Ian Wright & Martin
+    Henery, 1998/1999. Seeds sourced from different locations, including Australian
+    seed company (ASC), MLF (unknown seed company), Kuringgai National Park (KNP)
+    and Round Hill Nature Reserve (RH). Sites are distinguished by the rainfall and
+    phosphorus content.
+  original_file: component of file Wright & Henery seed mass data.xls that is not
+    published in Henery_2001
+  notes: As of Feb 13, 2020 this data set combines data that were separated into Wright_2001
+    and Westoby_2003. The data under Westoby_2003 were not the same values that appeared
+    in the accompanying paper. Lizzy Wenk is making the assumption the data that had
+    been under Westoby_2003 are also unpublished and should be part of this dataset_id.
+    The data that appears in Westoby 2003 are now being used for that dataset_id.
+    In addition, there is a column in the data.csv file with seed provenance.
+sites:
+  loRloP:
+    rainfall: low
+    phosphorus: low
+    seed provenance: Round Hill mallee, and various seedstock
+  loRhiP:
+    rainfall: low
+    phosphorus: high
+    seed provenance: Round Hill woodland, and various seedstock
+  hiRloP:
+    rainfall: high
+    phosphorus: low
+    seed provenance: Murrua Track (KNP), Centre Track (KNP), and various seedstock
+  hiRhiP:
+    rainfall: high
+    phosphorus: high
+    seed provenance: Westhead (KNP), Shoalhaven (MLF), and various seedstock
 config:
   data_is_long_format: no
   variable_match:
-    species_name: name_original
-  custom_R_code: .na
+    species_name: spp
+    site_name: Site
+  custom_R_code: data %>% mutate_at(c("reserve_M (mg)"), ~na_if(.,0))
 traits:
-- var_in: metadata_id
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: primary_source
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: seed mass (mg)
+- var_in: whole_M (mg)
   unit_in: mg
   trait_name: seed_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: site_mean
+  replicates: 6-113
   methods: Seeds were assumed to be ellipsoids and the volumes calculated for 302
     species from measurements of seed length (l), breadth (b) and width (w) (volume
     = pi / 6.1 .b.w). Seed volume ranged from 0.001 mm3 (Drosera bunnaniz) to 93,530
     mm3 (Aleurites molucanna) and was log transformed prior to analyses since the
-    distribution was log normal.
-- var_in: reserve seed mass (mg)
+    distribution was log normal. Replicate count is given as a column in the data.csv
+    file.
+- var_in: reserve_M (mg)
   unit_in: mg
   trait_name: seed_mass_reserve
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
+  value_type: site_mean
+  replicates: 6-113
+  methods: Data for seed reserve mass (dry mass of embryo plus endosperm if present)
+    were drawn from previous studies in similar vegetation (Leishman et al. 1995;
+    Westoby et al. 1990) or from unpublished datasets for western NSW, but none of the values are present in other datasets within AusTraits. Replicate count is given as a column in the data.csv file.
 substitutions: .na
 taxonomic_updates:
 - find: Phyllota phyllicoides
@@ -70,8 +91,17 @@ taxonomic_updates:
 - find: Pittosporum phylliraeoides
   replace: Pittosporum phillyraeoides
   reason: typo, align to known species (S Andrew)
-questions:
-  contributors: Do you have basic information on the sampling strategy for
-    this data? Was it collected at a single site or across many sites? Also, what
-    methods were used to collect the seed reserve mass data?
+- find: Olearia pimelioides
+  replace: Olearia pimeleoides
+  reason: Alignment with existing species identified by TaxonStand (2020-02-14)
+- find: Pimelea microcephela
+  replace: Pimelea microcephala
+  reason: Alignment with existing species identified by TaxonStand (2020-02-14)
+- find: Acacia havilandii
+  replace: Acacia havilandiorum
+  reason: Synonym reported by TaxonStand (2020-02-14)
+- find: Dodonaea viscosa spatulata
+  replace: Dodonaea viscosa
+  reason: Synonym reported by TaxonStand (2020-02-14)
+questions: .na
 
