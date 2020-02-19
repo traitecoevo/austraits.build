@@ -4,6 +4,22 @@ traits:
   description: Names and details of plant traits included in the AusTraits compilation
   type: list
   elements:
+    accessory_cost_mass:
+      description: Mass of seed acessory costs, the proportion of a fruit that does not develop into a seed
+      type: numeric
+      units: mg
+      label: Mass of seed acessory costs
+      values:
+        minimum: 0.01
+        maximum: 10000.0
+    accessory_cost_fraction:
+      description: The fraction of total reproductive investment required to mature a seed that is invested in non-seed tissues
+      type: numeric
+      units: mg/mg
+      label: Fraction of total reproductive investment to non-seed tissues
+      values:
+        minimum: 0.01
+        maximum: 1.0
     bark_mass_area:
       description: Bark mass per unit surface area of stem
       type: numeric
@@ -26,7 +42,7 @@ traits:
       units: mg/mg
       label: Fraction of plant dry mass comprised of branch material
       values:
-        minimum: 0.01
+        minimum: 0.00
         maximum: 1.0
     sprout_depth:
       description: Depth of resprouting shoots
@@ -180,6 +196,36 @@ traits:
       values:
         minimum: 0.0
         maximum: 1.0
+    cotyledon_position:
+      description: Binary variable distinguishing between seedlings where the cotyledon remains within the seed coat versus emerges from the seed coat at germination.
+      type: categorical
+      label: Cotyledon position at germination
+      values:
+        cryptocotylar: A type of seed germination in which the cotyledons remain within the seed coat at germination.
+        phanerocotylar: A type of seed germination in which the cotyledons emerge from the seed coat.
+    cotyledon_type:
+      description: Binary variable distinguishing between glabrous versus hairy cotyledons
+      type: categorical
+      label: Cotyledon type
+      values:
+        glabrous: Cotyledon lacks hairs
+        hairy: Cotyledon has hairs
+    upper_cuticle_thickness:
+      description: Thickness of the upper cuticle
+      type: numeric
+      units: um
+      label: Upper cuticle thickness
+      values:
+        minimum: 0.1
+        maximum: 100.0
+    lower_cuticle_thickness:
+      description: Thickness of the lower cuticle
+      type: numeric
+      units: um
+      label: Lower cuticle thickness
+      values:
+        minimum: 0.1
+        maximum: 100.0
     diaspore_mass:
       description: Mass of seed including dispersal appendages
       type: numeric
@@ -278,11 +324,34 @@ traits:
         physical_dormancy: Seeds exhibit physical dormancy
         physiological_dormancy: Seeds exhibit physiological dormancy
         morphophysiological_dormancy: Seeds exhibit morphophysiological dormancy 
+    embryo_colour:
+      description: Binary variable distinguishing between embryos that are green versus colourless
+      type: categorical
+      label: Embryo colour
+      values:
+        colourless: Colourless embryo
+        green: Green embryo
+    upper_epidermis_thickness:
+      description: Thickness of the upper epidermis
+      type: numeric
+      units: um
+      label: Upper epidermis thickness
+      values:
+        minimum: 1.0
+        maximum: 100.0
+    lower_epidermis_thickness:
+      description: Thickness of the lower epidermis
+      type: numeric
+      units: um
+      label: Lower epidermis thickness
+      values:
+        minimum: 1.0
+        maximum: 100.0
     epithelial_cell_density:
       description: Epithelial cell density on the leaf surface
       type: numeric
       units: count/mm2
-      labels: Epithelial cell density on the leaf surface
+      label: Epithelial cell density on the leaf surface
       values:
         minimum: 100
         maximum: 10000
@@ -290,7 +359,7 @@ traits:
       description: Epithelial cell layer thickness on the leaf surface
       type: numeric
       units: um
-      labels: Epithelial cell layer thickness on the leaf surface
+      label: Epithelial cell layer thickness on the leaf surface
       values:
         minimum: 1
         maximum: 100
@@ -305,7 +374,7 @@ traits:
         strong_resprouting: Plant shows strong resprouting following fire
         resprouts: Plants resprout from underground storage organ following fire. (For studies that don't differentiate between respouting strength)
     fire_response_detailed:
-      description: Distinguishes between plants that are killed by fire and resprout following fire
+      description: Detailed information distinguishing between plants that are killed by fire and resprout following fire
       type: categorical
       label: Resprouts or is killed by fire
       values:
@@ -313,13 +382,13 @@ traits:
         weak_resprouting: Plant shows weak resprouting following fire
         intermediate_resprouting: Plant shows intermediate resprouting following fire
         strong_resprouting: Plant shows strong resprouting following fire
-    fire-cued_seeding:
+    fire_cued_seeding:
       description: Distinguishes between plants that do and do not have fire-cued seeding
       type: categorical
       label: Fire-cued seeding
       values:
-        fire-cued_seeding: Plants that germinate robustly following fire
-        no_fire-cued_seeding: Plants that do not show increased seeding following fire
+        fire_cued_seeding: Plants that germinate robustly following fire
+        no_fire_cued_seeding: Plants that do not show increased seeding following fire
     flower_colour:
       description: Flower colour, with six possible outcomes
       type: categorical
@@ -335,7 +404,7 @@ traits:
       description: Maximum flower number produced
       type: numeric
       units: count
-      labels: Asymptotice flower number
+      label: Asymptotice flower number
       values:
         minimum: 0
         maximum: 1000000
@@ -389,7 +458,7 @@ traits:
         capsule_explosive: Dry fruit from compound pistil, that releases its seeds in an explosive manner
         capsule_aril: Dry fruit from compound pistil, with a fleshy outgrowth (aril) to attract pollinators
         capsule_wing: Dry fruit from compound pistil, with a wing for dispersal by wind
-        cypsela: same as achene
+        cypsela: An achene developed from an inferior bicarpellary ovary fused with the calyx tube (in Asteraceae)
         drupe: Fleshy or pulpy, indehiscent, superficially berry-like fruit in which 1 seed is encased in a stone or more than 1 seed is encased in an equal number of free or variously fused stones
         drupe_fibrous: Fibrous or dry drupe; indehiscent, superficially berry-like fruit in which 1 seed is encased in a stone or more than 1 seed is encased in an equal number of free or variously fused stones
         follicle: Dry fruit from a simple pistil, dehiscent on generally only one side, along a single suture
@@ -428,7 +497,7 @@ traits:
       description: Chlorophyll fluorescence measurement that indicates whether plant stress affects photosystem II in a dark adapted state
       type: numeric
       units: x/x
-      labels: Fv/Fm
+      label: Fv/Fm
       values:
         minimum: 0.2
         maximum: 1
@@ -436,7 +505,7 @@ traits:
       description: Proportion of seeds that germinate
       type: numeric
       units: n/n
-      labels: Germination (proportion)
+      label: Germination (proportion)
       values:
         minimum: 0
         maximum: 1
@@ -512,6 +581,29 @@ traits:
       values:
         minimum: 0.000001
         maximum: 0.1
+    hypocotyl_type:
+      description: Binary variable distinguishing between glabrous versus hairy hypocotyls (the embryonic axis to which the cotyeledons are attached).
+      type: categorical
+      label: Hypocotyl type
+      values:
+        glabrous: Hypocotyl lacks hairs
+        hairy: Hypocotyl has hairs
+    upper_hypodermis_thickness:
+      description: Thickness of the upper hypodermis
+      type: numeric
+      units: um
+      label: Upper hypodermis thickness
+      values:
+        minimum: 1.0
+        maximum: 100.0
+    lower_hypodermis_thickness:
+      description: Thickness of the lower hypodermis
+      type: numeric
+      units: um
+      label: Lower hypodermis thickness
+      values:
+        minimum: 1.0
+        maximum: 100.0
     leaf_Al_per_dry_mass:
       description: Leaf aluminum (Al) content per unit leaf dry mass
       type: numeric
@@ -523,7 +615,7 @@ traits:
     leaf_angle:
       description: Leaf angle, relative to horizontal
       type: numeric
-      units: 'n'
+      units: degrees
       label: Leaf angle, relative to horizontal
       values:
         minimum: -90
@@ -615,7 +707,23 @@ traits:
       units: umol/g
       label: Leaf chlorophyll content per unit leaf dry mass
       values:
-        minimum: 1.0
+        minimum: 0.1
+        maximum: 10.0
+    leaf_chlorophyll_A_per_dry_mass:
+      description: Leaf chlorophyll A content per unit leaf dry mass
+      type: numeric
+      units: umol/g
+      label: Leaf chlorophyll A content per unit leaf dry mass
+      values:
+        minimum: 0.01
+        maximum: 10.0
+    leaf_chlorophyll_B_per_dry_mass:
+      description: Leaf chlorophyll B content per unit leaf dry mass
+      type: numeric
+      units: umol/g
+      label: Leaf chlorophyll B content per unit leaf dry mass
+      values:
+        minimum: 0.01
         maximum: 10.0
     leaf_CN_ratio:
       description: Leaf carbon/nitrogen (C/N) ratio
@@ -701,7 +809,7 @@ traits:
       label: Leaf dry mass
       values:
         minimum: 0.1
-        maximum: 10000.0
+        maximum: 15000.0
     leaf_dry_matter_content:
       description: Leaf dry mass per unit leaf fresh mass. (See also leaf_water_content_per_mass, the ratio of water content to leaf dry mass, recorded by some studies.)
       type: numeric
@@ -709,7 +817,7 @@ traits:
       label: Leaf dry mass per unit leaf fresh mass (Leaf dry matter content, LDMC)
       values:
         minimum: 0.001
-        maximum: 10.0
+        maximum: 20.0
     leaf_elastic_modulus:
       description: The ratio of the change in cell turgor relative to the change in cell volume
       type: numeric
@@ -741,7 +849,7 @@ traits:
       label: Leaf fresh mass
       values:
         minimum: 0.1
-        maximum: 10000.0
+        maximum: 25000.0
     leaf_fresh_mass_per_area:
       description: Leaf fresh mass per leaf area
       type: numeric
@@ -1079,8 +1187,8 @@ traits:
       units: mm
       label: Leaf thickness
       values:
-        minimum: 0.1
-        maximum: 10.0
+        minimum: 0.01
+        maximum: 51.0
     leaf_toughness:
       description: The work (energy) required to fracture a leaf by tearing, shearing or punching
       type: numeric
@@ -1258,8 +1366,24 @@ traits:
       units: um
       label: Length of individual palisade cells
       values:
-        minimum: 1
-        maximum: 100
+        minimum: 10
+        maximum: 1000
+    lower_palisade_cell_thickness:
+      description: Thickness (length) of lower palisade cells
+      type: numeric
+      units: um
+      label: Lower palisade cell thickness
+      values:
+        minimum: 10
+        maximum: 1000
+    upper_palisade_cell_thickness:
+      description: Thickness (length) of upper palisade cells
+      type: numeric
+      units: um
+      label: Upper palisade cell thickness
+      values:
+        minimum: 10
+        maximum: 1000
     palisade_cell_width:
       description: Width of individual palisade cells
       type: numeric
@@ -1346,6 +1470,8 @@ traits:
         climber_tree: Tree that climbs up another plant
         climber_herb: Herbaceous plant that climbs up another plant
         climber_shrub: Shrubby plant that climbs up another plant
+        creeper: Creeper that roots along stems
+        cycad: Cycad
         epiphyte: Plant that grows on top of another plant
         fern: A group of vascular plants that reproduce via spores
         geophyte: A perennial plant with an underground food storage organ, such as a bulb, tuber, corm, or rhizome
@@ -1386,20 +1512,32 @@ traits:
         minimum: 0.001
         maximum: 20
     regen_strategy:
-      description: Different regeneration strategies displayed by plants. Trait values include both generic terms (i.e. vegetative) and quite specific ones (i.e. wood rootstock)
+      description: Different regeneration strategies displayed by plants. Trait values include both generic terms and quite specific ones. See Pausus, Lamont et al. 2018, doi.org/10.1111/nph.14982 for trait values used and detailed desciptions of recolonization ability and level of fire protection provided by each regeneration strategy. This trait includes terminology for storage organs and regeneration strategies following fire. The trait "fire_response" is a binary trait distinguishing between fire-killed and regenerating species.
       type: categorical
       label: Regeneration strategy
       values:
-        apical: Regenerating from apical meristems
-        basal: Regenerating from basal meristems
-        epicormic: Plants that resprout from epicormic buds
-        fleshy_organ: Plants that use fleshy, generally underground organs to regenerate; examples include corms, tubers, bulbs, and rhizomes
-        lignotuber: Plant contains an underground lignotuber
-        not_vegetative: Plant that regenerate only by seed
-        resprouts: Plant reprouts, location not specified
-        seed: Plant that regenerate only by seed
-        vegetative: Generic term including all plants that can regenerate through the growth and division of vegetative material, not just from seed; examples include runners, rhizomes, and bulbs
-        woody_rootstock: Plant that regenerate by resprouting from wood rootstock following a disturbance
+        aboveground_caudex: Plant regenerates from above-ground apical meristems. Also termed a caudex. Term refers to palm-like plants with aerial buds that resprout, including grass trees, palms, tree ferns, and pandanus.
+        basal: Plant regenerates from the base of the stem (versus underground). Generally synonymous with "lignotuber", especially among Australian plants.
+        belowground_caudex: Plant regenerates from above-ground caudex. 
+        bud-bearing_root: Lateral root that produces vertical suckers
+        bulb: Below ground storage organ derived from stem (and sometimes leaf) tissue.
+        corm: Below ground storage organ derived from stem tissue.
+        epicormic: Plants that resprout from epicormic buds; these are buds beneath the bark on stems that survive fire 
+        fleshy_underground_organ: Plants that use fleshy, generally underground organs (swellings) to regenerate; examples include corms, tubers, bulbs, and caudex
+        lignotuber: Swollen woody structures are located at the transition between the stem base and root crown of woody shrubs, mallees and small trees, and are formed from stem tissues. Buds are located over the entire structure. No colonisation ability.
+        fire_killed: Plant that is fire-killed and regenerates only by seed. (An obligate re-seeder.)
+        resprouts: Plant reprouts following fire, but the mechanism is not specified.
+        rhizome: Plant has an underground stem; this stem may be woody or non-woody. Rhizomes are both a mechanism for vegetative spread and a strategy to survive fire. 
+        root_crown: Plant that produces a few vertical shoots from the root crown.
+        root_tuber: Below ground storage organ derived from root tissue.
+        seed: Plant that regenerate only or primarily by seed. These are mostly fire-killed species, but the not always
+        stem_tuber: Below ground storage organ derived from stem tissue.
+        woody_rootstock: Plant that regenerate by resprouting from wood rootstock.
+        woody_rootstock_or_lignotuber: Plant that regenerates by resprouting from either a woody rootstock or lignotuber.
+        no_storage_organ: No storage organ present
+        storage_organ: Storage organ present, but the type is unknown
+        underground: Plants that resprout from an underground organ, but the type of organ isn't specified.
+        unknown: Assume this trait value means it is unknown if a storage organ is present or a plant can regenerate, not that the type is unknown
     resorption_leaf_N:
       description: Nitrogen resorption from leaves
       type: numeric
@@ -1648,7 +1786,7 @@ traits:
     seed_texture:
       description: The texture of a seed
       type: categorical
-      label: Seedtecture
+      label: Seed texture
       values:
         acutely_reticulate: 
         bumpy: 
@@ -1715,6 +1853,20 @@ traits:
       values:
         minimum: 0.01
         maximum: 100.0
+    seedling_first_leaf:
+      description: Binary variable distinguishing between seedlings where the first leaf is scale-like (cataphyll) versus leaf-like.
+      type: categorical
+      label: First leaf style
+      values:
+        scale-like: When the first leaf at germination is scale-like, also referred to as a cataphyll
+        leaf-like: When the first leaf at germination is leaf-like
+    seedling_first_node:
+      description: Binary variable distinguishing between seedlings where the leaves at the first node are single versus paired.
+      type: categorical
+      label: Leaf count at first node
+      values:
+        single: When there is a single leaf at the first node
+        paired: When there is a pair of leaves at the first node
     senesced_leaf_Ca_per_dry_mass:
       description: Senesced leaf calcium (Ca) content per unit leaf dry mass
       type: numeric
@@ -1884,6 +2036,14 @@ traits:
       values:
         minimum: 0.5
         maximum: 500
+    spongy_mesophyll_thickness:
+      description: Thickness of the spongy mesophyll cells
+      type: numeric
+      units: um
+      label: Spongy mesophyll cell thickness
+      values:
+        minimum: 10.0
+        maximum: 1000.0
     starch_per_area:
       description: Mass of atarch per leaf area
       type: numeric
@@ -1976,21 +2136,18 @@ traits:
       description: Stomatal density on the leaf surface
       type: numeric
       units: count/mm2
-      labels: Stomatal density on the leaf surface
+      label: Stomatal density on the leaf surface
       values:
         minimum: 1
         maximum: 1000
-    storage_organ:
-      description: Variable, defining whether a storage organ is present and types of
-        storage organs
-      type: categorical
-      label: Storage organ types
+    support_fraction:
+      description: Proportion of shoot dry mass that is stems (versus leaves)
+      type: numeric
+      units: g/g
+      labels: Proportion of shoot dry mass that is stems (versus leaves)
       values:
-        lignotuber: Plant contains an underground lignotuber
-        rhizome: Plant contains a rhizome
-        no_storage_organ: No storage organ present
-        storage_organ: Storage organ present, but type  is unknown
-        unknown: Assume this trait value means it is unknown if a storage organ is present, not that the type is unknown
+        minimum: 0
+        maximum: 1
     tap_root:
       description: Binary variable describing whether or not a plant has a tap root present
       type: categorical
@@ -2006,6 +2163,22 @@ traits:
       values:
         minimum: 0.01
         maximum: 1000
+    twig_area: 
+      description: The cross-sectional area of the terminal twig
+      type: numeric
+      units: mm2
+      label: Terminal twig cross-sectional area
+      values:
+        minimum: 0.05
+        maximum: 50
+    twig_length: 
+      description: The length of the terminal twig
+      type: numeric
+      units: mm
+      label: Terminal twig length
+      values:
+        minimum: 1
+        maximum: 1000
     vapor_pressure_deficit:
       description: Vapor pressure deficit across the leaf surface
       type: numeric
@@ -2014,11 +2187,18 @@ traits:
       values:
         minimum: 0
         maximum: 5
-    water_balance_index:
-      description: Water balance index
+    vegetative_regeneration:
+      description: Ability to regerenate and spread through the growth and division of vegetative material.
+      type: categorical
+      label: Ability to regerenate and spread through the growth and division of vegetative material.
+      values:
+        not_vegetative: Plant that regenerate and spread only by seed
+        vegetative: Generic term including all plants that can regenerate and spread through the growth and division of vegetative material, not just from seed; examples include runners, rhizomes, and bulbs
+    water_band_index:
+      description: Water band index, the ratio of the  reflectance at 970 nm / 900 nm, recorded from the spectroradiometer.
       type: numeric
       units: dimensionless
-      label: Water balance index
+      label: Water band index
       values:
         minimum: 1
         maximum: 1.1
