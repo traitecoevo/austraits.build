@@ -13,15 +13,18 @@ source:
     doi: 10.1093/jxb/erp045
 people:
 - name: Ian Wright
-  institution: Macquarie University Sydney
+  institution: Macquarie University
   role: collector, contact, contributor
+- name: Ule Niinemets
+  institution: Estonian University of Life Sciences
+  role: collector
 - name: Mark Westoby
-  institution: Macquarie University Sydney
+  institution: Macquarie University
   role: lab_leader
 dataset:
   year_collected_start: 2006
   year_collected_end: 2006
-  description: mesophyll conductance dataset from Ninnemets and Wright for sclerophylls
+  description: mesophyll conductance dataset from Niinemets and Wright for sclerophylls
   collection_type: field
   sample_age_class: adult
   sampling_strategy: A gradient of decreasing rainfall extends inland from the coast
@@ -68,13 +71,15 @@ dataset:
     spiralis); all others are angiosperms. Six species (Acacia falcata, A. longifolia,
     A. myrtifolia, A. suaveolens, Macrozamia communis, and M. spiralis) are nitrogen
     fixers.
-  original_file: WRIGHT & Niinemets(July07) subset for Rach.xls
-  notes: none
+  original_file: WRIGHT & Niinemets(July07) subset for Rach.xls + additional files via Ian Wright
+  notes: There are also data on spectral reflectance for these species that are not currently in AusTraits (file in the GoogleDrive archive, but not in raw data folder). All other data are in the data.csv sheet, although not all variables are mapped into AusTraits
 sites:
   AgnesBanks:
     longitude (deg): 150.7166667
     latitude (deg): -33.6
     description: unknown
+    phosphorus: low
+    rainfall: low
     soil_total_P (ug/g): 5
     soil_total_N (%): <0.01
   Castlereagh1:
@@ -83,46 +88,60 @@ sites:
     description: unknown
     soil_total_P (ug/g): 205
     soil_total_N (%): 0.059
+    phosphorus: high
+    rainfall: low
   Castlereagh2:
     longitude (deg): 150.7
     latitude (deg): -33.65
     description: unknown
     soil_total_P (ug/g): 205
     soil_total_N (%): 0.059
+    phosphorus: high
+    rainfall: low
   KCNP_east:
     longitude (deg): 151.1333333
     latitude (deg): -33.6833333
     description: unknown
     soil_total_P (ug/g): 94
     soil_total_N (%): 0.03
+    phosphorus: low
+    rainfall: high
   KCNP_west:
     longitude (deg): 151.1333333
     latitude (deg): -33.6833333
     description: unknown
     soil_total_P (ug/g): 94
     soil_total_N (%): 0.03
+    phosphorus: low
+    rainfall: high
   MU_forest:
     longitude (deg): 151.1166667
     latitude (deg): -33.7833333
     description: unknown
+    phosphorus: high
+    rainfall: high
   MUcampus:
     longitude (deg): 151.1166667
     latitude (deg): -33.7833333
     description: unknown
+    phosphorus: high
+    rainfall: high
   WestHead:
     longitude (deg): 151.2833333
     latitude (deg): -33.5666667
     description: unknown
     soil_total_P (ug/g): 440
     soil_total_N (%): 0.26
+    phosphorus: high
+    rainfall: high
 config:
   data_is_long_format: no
   variable_match:
-    species_name: name_original
+    species_name: Species
     site_name: site_TEXT
   custom_R_code: .na
 traits:
-- var_in: 'TRAIT: area leaf UNITS: cm2'
+- var_in: leaf_area_cm2
   unit_in: cm2
   trait_name: leaf_area
   value_type: raw_value
@@ -133,7 +152,7 @@ traits:
     area was estimated by UTHSCSA Imagetool 2.00alpha (C Donald Wilcox, S Brent Dove,
     W Doss McDavid and David B Greer, Department of Dental Diagnostic Science, The
     University of Texas Health Science Center, San Antonio, TX, USA; ddsdx.uthscsa.edu).
-- var_in: 'TRAITS: SLA UNITS: cm2'
+- var_in: SLAall
   unit_in: cm2/g
   trait_name: specific_leaf_area
   value_type: raw_value
@@ -147,7 +166,25 @@ traits:
     The fresh mass of each leaf was thereafter determined to the nearest 0.1 mg, the
     leaves were further oven-dried at 65°C for no less than 48 h, and the dry mass
     of each leaf was determined.
-- var_in: 'TRAIT: leaf N content UNITS: %'
+- var_in: dN15
+  unit_in: per mille
+  trait_name: leaf_delta15N
+  value_type: raw_value
+  replicates: 1
+  methods: Leaves were oven-dried at 65°C for no less than 48 h, and the dry mass
+    of each leaf was determined. Foliage total carbon and nitrogen contents were determined
+    in fine-ground samples using a LECO CNS2000 Analyzer (LECO Corporation, St Joseph,
+    MI, USA).
+- var_in: dC13
+  unit_in: per mille
+  trait_name: leaf_delta13C
+  value_type: raw_value
+  replicates: 1
+  methods: Leaves were oven-dried at 65°C for no less than 48 h, and the dry mass
+    of each leaf was determined. Foliage total carbon and nitrogen contents were determined
+    in fine-ground samples using a LECO CNS2000 Analyzer (LECO Corporation, St Joseph,
+    MI, USA).
+- var_in: 'N%'
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
   value_type: raw_value
@@ -156,7 +193,16 @@ traits:
     of each leaf was determined. Foliage total carbon and nitrogen contents were determined
     in fine-ground samples using a LECO CNS2000 Analyzer (LECO Corporation, St Joseph,
     MI, USA).
-- var_in: 'TRAIT: leaf P content UNITS: %'
+- var_in: 'C%'
+  unit_in: '%'
+  trait_name: leaf_C_per_dry_mass
+  value_type: raw_value
+  replicates: 1
+  methods: Leaves were oven-dried at 65°C for no less than 48 h, and the dry mass
+    of each leaf was determined. Foliage total carbon and nitrogen contents were determined
+    in fine-ground samples using a LECO CNS2000 Analyzer (LECO Corporation, St Joseph,
+    MI, USA).
+- var_in: 'P%'
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
   value_type: raw_value
@@ -166,7 +212,7 @@ traits:
     Higgins (1992) after digestion of samples in a mixture of HNO3 and HCl (1:1) by
     inductively coupled plasma emission spectroscopy (ICP-OES) using American Public
     Health Association standard method 3120 (APHA 3120).
-- var_in: 'TRAITS: leaf N content UNITS: area'
+- var_in: 'GE-N/area'
   unit_in: g/m2
   trait_name: leaf_N_per_area
   value_type: raw_value
@@ -179,7 +225,7 @@ traits:
     University of Texas Health Science Center, San Antonio, TX, USA; ddsdx.uthscsa.edu).
     Foliage total carbon and nitrogen contents were determined in fine-ground samples
     using a LECO CNS2000 Analyzer (LECO Corporation, St Joseph, MI, USA).
-- var_in: 'TRAITS: leaf P content UNITS: area'
+- var_in: 'GE-P/area'
   unit_in: g/m2
   trait_name: leaf_P_per_area
   value_type: raw_value
@@ -194,7 +240,124 @@ traits:
     of samples in a mixture of HNO3 and HCl (1:1) by inductively coupled plasma emission
     spectroscopy (ICP-OES) using American Public Health Association standard method
     3120 (APHA 3120).
-substitutions: .na
+- var_in: av Ci/CA
+  unit_in: umolCO2/umolCO2
+  trait_name: ci_over_ca
+  value_type: raw_value
+  replicates: 1
+  methods: "Twig sampling and conditioning for gas-exchange measurements was conducted as detailed in Niinemets et al. (2005a). Exposed twigs of mature individuals were sampled in all cases in the morning hours when ambient air water vapour pressure was low. The selected twigs were cut under water, and again immediately recut under water. The cut end was maintained in water and the twigs were transported to the laboratory within an hour from the collection. In the laboratory, the twigs in water were covered with plastic bags to reduce transpiration, and pre-conditioned at room temperature of 22 _C and at dim light of 50–100 lmol m_2 s_1 for 1–2 d before the gas-exchange measurements to stabilize stomatal conductance and reduce site-to-site and species-to-species differences in stomatal openness (Niinemets et al., 2005a). At each site, 2–4 different plants of a given species were sampled, and on average (6SD) 2.5160.82 individuals per species were investigated (altogether 88 combined gasexchange/ fluorescence measurements). Gas-exchange and chlorophyll fluorescence Measurements: A Li-Cor LI-6400 portable photosynthesis system with a LI-6400-40 Leaf Chamber Fluorometer (Li-Cor, Inc., Lincoln, NE, USA) was employed to measure net assimilation rate (A) versus internal (CO2 concentration in substomatal cavities, Ci) CO2 response curves simultaneously with the effective quantum yields of photosystem II following the protocol of Niinemets et al. (2005a). A saturating quantum flux density of 1000 lmol m_2 s_1 (20% blue LED, 80% red LED) provided by the leaf chamber fluorometer was used. Leaf temperature was maintained at 25 deg C, and a leaf to air water vapour pressure deficit was kept <1.1 kPa. Fully mature current-season leaves were used in all cases. Whenever a single leaf did not fully fill up the window of the gas-exchange cuvette, several leaves arranged side by side were enclosed in the cuvette."
+- var_in: Av-Ci
+  unit_in: umol/mol
+  trait_name: ci_at_Amax
+  value_type: raw_value
+  replicates: 1
+  methods: "Twig sampling and conditioning for gas-exchange measurements was conducted as detailed in Niinemets et al. (2005a). Exposed twigs of mature individuals were sampled in all cases in the morning hours when ambient air water vapour pressure was low. The selected twigs were cut under water, and again immediately recut under water. The cut end was maintained in water and the twigs were transported to the laboratory within an hour from the collection. In the laboratory, the twigs in water were covered with plastic bags to reduce transpiration, and pre-conditioned at room temperature of 22 _C and at dim light of 50–100 lmol m_2 s_1 for 1–2 d before the gas-exchange measurements to stabilize stomatal conductance and reduce site-to-site and species-to-species differences in stomatal openness (Niinemets et al., 2005a). At each site, 2–4 different plants of a given species were sampled, and on average (6SD) 2.5160.82 individuals per species were investigated (altogether 88 combined gasexchange/ fluorescence measurements). Gas-exchange and chlorophyll fluorescence Measurements: A Li-Cor LI-6400 portable photosynthesis system with a LI-6400-40 Leaf Chamber Fluorometer (Li-Cor, Inc., Lincoln, NE, USA) was employed to measure net assimilation rate (A) versus internal (CO2 concentration in substomatal cavities, Ci) CO2 response curves simultaneously with the effective quantum yields of photosystem II following the protocol of Niinemets et al. (2005a). A saturating quantum flux density of 1000 lmol m_2 s_1 (20% blue LED, 80% red LED) provided by the leaf chamber fluorometer was used. Leaf temperature was maintained at 25 deg C, and a leaf to air water vapour pressure deficit was kept <1.1 kPa. Fully mature current-season leaves were used in all cases. Whenever a single leaf did not fully fill up the window of the gas-exchange cuvette, several leaves arranged side by side were enclosed in the cuvette."
+- var_in: av-CA
+  unit_in: umol/mol
+  trait_name: ca
+  value_type: raw_value
+  replicates: 1
+  methods: "Twig sampling and conditioning for gas-exchange measurements was conducted as detailed in Niinemets et al. (2005a). Exposed twigs of mature individuals were sampled in all cases in the morning hours when ambient air water vapour pressure was low. The selected twigs were cut under water, and again immediately recut under water. The cut end was maintained in water and the twigs were transported to the laboratory within an hour from the collection. In the laboratory, the twigs in water were covered with plastic bags to reduce transpiration, and pre-conditioned at room temperature of 22 _C and at dim light of 50–100 lmol m_2 s_1 for 1–2 d before the gas-exchange measurements to stabilize stomatal conductance and reduce site-to-site and species-to-species differences in stomatal openness (Niinemets et al., 2005a). At each site, 2–4 different plants of a given species were sampled, and on average (6SD) 2.5160.82 individuals per species were investigated (altogether 88 combined gasexchange/ fluorescence measurements). Gas-exchange and chlorophyll fluorescence Measurements: A Li-Cor LI-6400 portable photosynthesis system with a LI-6400-40 Leaf Chamber Fluorometer (Li-Cor, Inc., Lincoln, NE, USA) was employed to measure net assimilation rate (A) versus internal (CO2 concentration in substomatal cavities, Ci) CO2 response curves simultaneously with the effective quantum yields of photosystem II following the protocol of Niinemets et al. (2005a). A saturating quantum flux density of 1000 lmol m_2 s_1 (20% blue LED, 80% red LED) provided by the leaf chamber fluorometer was used. Leaf temperature was maintained at 25 deg C, and a leaf to air water vapour pressure deficit was kept <1.1 kPa. Fully mature current-season leaves were used in all cases. Whenever a single leaf did not fully fill up the window of the gas-exchange cuvette, several leaves arranged side by side were enclosed in the cuvette."
+- var_in: ChlAmass(mmol/kg)
+  unit_in: mmol/kg
+  trait_name: chlorophyll_A_per_dry_mass
+  value_type: raw_value
+  replicates: 1
+  methods: unknown 
+- var_in: ChlBmass
+  unit_in: mmol/kg
+  trait_name: chlorophyll_B_per_dry_mass
+  value_type: raw_value
+  replicates: 1
+  methods: unknown 
+- var_in: Chl(tot)mass
+  unit_in: mmol/kg
+  trait_name: chlorophyll_per_dry_mass
+  value_type: raw_value
+  replicates: 1
+  methods: unknown 
+- var_in: Chl(tot)area
+  unit_in: umol/m2
+  trait_name: chlorophyll_per_area
+  value_type: raw_value
+  replicates: 1
+  methods: unknown
+- var_in: ChlAarea(umol m-2)
+  unit_in: umol/m2
+  trait_name: chlorophyll_A_per_area
+  value_type: raw_value
+  replicates: 1
+  methods: unknown 
+- var_in: ChlBarea
+  unit_in: umol/m2
+  trait_name: chlorophyll_B_per_area
+  value_type: raw_value
+  replicates: 1
+  methods: unknown 
+- var_in: Chla/b
+  unit_in: umol/umol
+  trait_name: chlorophyll_A_B_ratio
+  value_type: raw_value
+  replicates: 1
+  methods: unknown 
+- var_in: Amax for Ci=250
+  unit_in: umolCO2/m2/s
+  trait_name: photosynthetic_rate_per_area_maximum
+  value_type: raw_value
+  replicates: 1
+  methods: "Twig sampling and conditioning for gas-exchange measurements was conducted as detailed in Niinemets et al. (2005a). Exposed twigs of mature individuals were sampled in all cases in the morning hours when ambient air water vapour pressure was low. The selected twigs were cut under water, and again immediately recut under water. The cut end was maintained in water and the twigs were transported to the laboratory within an hour from the collection. In the laboratory, the twigs in water were covered with plastic bags to reduce transpiration, and pre-conditioned at room temperature of 22 _C and at dim light of 50–100 lmol m_2 s_1 for 1–2 d before the gas-exchange measurements to stabilize stomatal conductance and reduce site-to-site and species-to-species differences in stomatal openness (Niinemets et al., 2005a). At each site, 2–4 different plants of a given species were sampled, and on average (6SD) 2.5160.82 individuals per species were investigated (altogether 88 combined gasexchange/ fluorescence measurements). Gas-exchange and chlorophyll fluorescence Measurements: A Li-Cor LI-6400 portable photosynthesis system with a LI-6400-40 Leaf Chamber Fluorometer (Li-Cor, Inc., Lincoln, NE, USA) was employed to measure net assimilation rate (A) versus internal (CO2 concentration in substomatal cavities, Ci) CO2 response curves simultaneously with the effective quantum yields of photosystem II following the protocol of Niinemets et al. (2005a). A saturating quantum flux density of 1000 lmol m_2 s_1 (20% blue LED, 80% red LED) provided by the leaf chamber fluorometer was used. Leaf temperature was maintained at 25 deg C, and a leaf to air water vapour pressure deficit was kept <1.1 kPa. Fully mature current-season leaves were used in all cases. Whenever a single leaf did not fully fill up the window of the gas-exchange cuvette, several leaves arranged side by side were enclosed in the cuvette."
+- var_in: Amax/mass
+  unit_in: umolCO2/g/s
+  trait_name: photosynthetic_rate_per_dry_mass_maximum
+  value_type: raw_value
+  replicates: 1
+  methods: "Twig sampling and conditioning for gas-exchange measurements was conducted as detailed in Niinemets et al. (2005a). Exposed twigs of mature individuals were sampled in all cases in the morning hours when ambient air water vapour pressure was low. The selected twigs were cut under water, and again immediately recut under water. The cut end was maintained in water and the twigs were transported to the laboratory within an hour from the collection. In the laboratory, the twigs in water were covered with plastic bags to reduce transpiration, and pre-conditioned at room temperature of 22 _C and at dim light of 50–100 lmol m_2 s_1 for 1–2 d before the gas-exchange measurements to stabilize stomatal conductance and reduce site-to-site and species-to-species differences in stomatal openness (Niinemets et al., 2005a). At each site, 2–4 different plants of a given species were sampled, and on average (6SD) 2.5160.82 individuals per species were investigated (altogether 88 combined gasexchange/ fluorescence measurements). Gas-exchange and chlorophyll fluorescence Measurements: A Li-Cor LI-6400 portable photosynthesis system with a LI-6400-40 Leaf Chamber Fluorometer (Li-Cor, Inc., Lincoln, NE, USA) was employed to measure net assimilation rate (A) versus internal (CO2 concentration in substomatal cavities, Ci) CO2 response curves simultaneously with the effective quantum yields of photosystem II following the protocol of Niinemets et al. (2005a). A saturating quantum flux density of 1000 lmol m_2 s_1 (20% blue LED, 80% red LED) provided by the leaf chamber fluorometer was used. Leaf temperature was maintained at 25 _C, and a leaf to air water vapour pressure deficit was kept <1.1 kPa. Fully mature current-season leaves were used in all cases. Whenever a single leaf did not fully fill up the window of the gas-exchange cuvette, several leaves arranged side by side were enclosed in the cuvette."
+- var_in: Rd/mass
+  unit_in: neg_umolCO2/g/s
+  trait_name: leaf_dark_respiration_per_dry_mass
+  value_type: raw_value
+  replicates: 1
+  methods: "A low CO2 of 50 lmol mol_1 during the leaf stabilization period was used to ensure maximum stomatal openness before the measurement of A/Ci curves (Centritto et al., 2003). At this ambient CO2 concentration, maximum stomatal conductance was achieved 20 min to 2 h after leaf enclosure in the cuvette. After reaching the maximum stomatal conductance, steady-state values of net assimilation rates were measured at eight ambient CO2 concentrations between 50 lmol mol-1 and 2000 lmol mol-1. When the steady-state assimilation rate at a given CO2 concentration, ;5 min after change in CO2 concentration, had been recorded, the steady-state chlorophyll fluorescence yield in the light-adapted state, F, was estimated, and a single saturating pulse of white light of 6800–7000 lmol m-2 s-1 was applied to close all photosystem II centres and obtain the maximum fluorescence yield Fm'. From these measurements, the effective quantum yield of photosystem II, UPSII, was calculated as (Fm'–F)/Fm'. Upon completion of the A/Ci curve, the light was switched off, and as soon as the chamber temperature and ambient CO2 concentrations had stabilized, commonly 1–2 min after leaf darkening, the dark respiration rate was recorded. "
+- var_in: Rd
+  unit_in: neg_umolCO2/m2/s
+  trait_name: leaf_dark_respiration_per_area
+  value_type: raw_value
+  replicates: 1
+  methods: "A low CO2 of 50 lmol mol_1 during the leaf stabilization period was used to ensure maximum stomatal openness before the measurement of A/Ci curves (Centritto et al., 2003). At this ambient CO2 concentration, maximum stomatal conductance was achieved 20 min to 2 h after leaf enclosure in the cuvette. After reaching the maximum stomatal conductance, steady-state values of net assimilation rates were measured at eight ambient CO2 concentrations between 50 lmol mol-1 and 2000 lmol mol-1. When the steady-state assimilation rate at a given CO2 concentration, ;5 min after change in CO2 concentration, had been recorded, the steady-state chlorophyll fluorescence yield in the light-adapted state, F, was estimated, and a single saturating pulse of white light of 6800–7000 lmol m-2 s-1 was applied to close all photosystem II centres and obtain the maximum fluorescence yield Fm'. From these measurements, the effective quantum yield of photosystem II, UPSII, was calculated as (Fm'–F)/Fm'. Upon completion of the A/Ci curve, the light was switched off, and as soon as the chamber temperature and ambient CO2 concentrations had stabilized, commonly 1–2 min after leaf darkening, the dark respiration rate was recorded. "
+- var_in: Jmax/mass
+  unit_in: umol/g/s
+  trait_name: fluorescence_Jmax_per_mass
+  value_type: raw_value
+  replicates: 1
+  methods: A low CO2 of 50 lmol mol_1 during the leaf stabilization period was used to ensure maximum stomatal openness before the measurement of A/Ci curves (Centritto et al., 2003). At this ambient CO2 concentration, maximum stomatal conductance was achieved 20 min to 2 h after leaf enclosure in the cuvette. After reaching the maximum stomatal conductance, steady-state values of net assimilation rates were measured at eight ambient CO2 concentrations between 50 lmol mol-1 and 2000 lmol mol-1. When the steady-state assimilation rate at a given CO2 concentration, ;5 min after change in CO2 concentration, had been recorded, the steady-state chlorophyll fluorescence yield in the light-adapted state, F, was estimated, and a single saturating pulse of white light of 6800–7000 lmol m-2 s-1 was applied to close all photosystem II centres and obtain the maximum fluorescence yield Fm'. From these measurements, the effective quantum yield of photosystem II, UPSII, was calculated as (Fm'–F)/Fm'. Upon completion of the A/Ci curve, the light was switched off, and as soon as the chamber temperature and ambient CO2 concentrations had stabilized, commonly 1–2 min after leaf darkening, the dark respiration rate was recorded. To determine the rates of photosynthetic electron transport from chlorophyll fluorescence measurements (JETR), leaf reflectance and transmittance were estimated with a Li-Cor portable spectroradiometer (Li-Cor 1800, Li-Cor, Inc.) equipped with a Taylor-type integrated sphere. These measurements along with the blue and red LED spectra of the LI-6400-40 Leaf Chamber Fluorometer light source (Li-Cor Inc., 2004) were used to estimate the amount of light absorbed, Qabs. JETR was then determined (Schreiber et al., 1994; equation in cited manuscript). 
+- var_in: Vcmax/mass
+  unit_in: umol/g
+  trait_name: fluorescence_Vcmax_per_mass
+  value_type: raw_value
+  replicates: 1
+  methods: A low CO2 of 50 lmol mol_1 during the leaf stabilization period was used to ensure maximum stomatal openness before the measurement of A/Ci curves (Centritto et al., 2003). At this ambient CO2 concentration, maximum stomatal conductance was achieved 20 min to 2 h after leaf enclosure in the cuvette. After reaching the maximum stomatal conductance, steady-state values of net assimilation rates were measured at eight ambient CO2 concentrations between 50 lmol mol-1 and 2000 lmol mol-1. When the steady-state assimilation rate at a given CO2 concentration, ;5 min after change in CO2 concentration, had been recorded, the steady-state chlorophyll fluorescence yield in the light-adapted state, F, was estimated, and a single saturating pulse of white light of 6800–7000 lmol m-2 s-1 was applied to close all photosystem II centres and obtain the maximum fluorescence yield Fm'. From these measurements, the effective quantum yield of photosystem II, UPSII, was calculated as (Fm'–F)/Fm'. Upon completion of the A/Ci curve, the light was switched off, and as soon as the chamber temperature and ambient CO2 concentrations had stabilized, commonly 1–2 min after leaf darkening, the dark respiration rate was recorded. To determine the rates of photosynthetic electron transport from chlorophyll fluorescence measurements (JETR), leaf reflectance and transmittance were estimated with a Li-Cor portable spectroradiometer (Li-Cor 1800, Li-Cor, Inc.) equipped with a Taylor-type integrated sphere. These measurements along with the blue and red LED spectra of the LI-6400-40 Leaf Chamber Fluorometer light source (Li-Cor Inc., 2004) were used to estimate the amount of light absorbed, Qabs. JETR was then determined (Schreiber et al., 1994; equation in cited manuscript). 
+- var_in: Jmax/Vcmax
+  unit_in: 1/s
+  trait_name: fluorescence_Jmax_over_Vcmax
+  value_type: raw_value
+  replicates: 1
+  methods: A low CO2 of 50 lmol mol_1 during the leaf stabilization period was used to ensure maximum stomatal openness before the measurement of A/Ci curves (Centritto et al., 2003). At this ambient CO2 concentration, maximum stomatal conductance was achieved 20 min to 2 h after leaf enclosure in the cuvette. After reaching the maximum stomatal conductance, steady-state values of net assimilation rates were measured at eight ambient CO2 concentrations between 50 lmol mol-1 and 2000 lmol mol-1. When the steady-state assimilation rate at a given CO2 concentration, ;5 min after change in CO2 concentration, had been recorded, the steady-state chlorophyll fluorescence yield in the light-adapted state, F, was estimated, and a single saturating pulse of white light of 6800–7000 lmol m-2 s-1 was applied to close all photosystem II centres and obtain the maximum fluorescence yield Fm'. From these measurements, the effective quantum yield of photosystem II, UPSII, was calculated as (Fm'–F)/Fm'. Upon completion of the A/Ci curve, the light was switched off, and as soon as the chamber temperature and ambient CO2 concentrations had stabilized, commonly 1–2 min after leaf darkening, the dark respiration rate was recorded. To determine the rates of photosynthetic electron transport from chlorophyll fluorescence measurements (JETR), leaf reflectance and transmittance were estimated with a Li-Cor portable spectroradiometer (Li-Cor 1800, Li-Cor, Inc.) equipped with a Taylor-type integrated sphere. These measurements along with the blue and red LED spectra of the LI-6400-40 Leaf Chamber Fluorometer light source (Li-Cor Inc., 2004) were used to estimate the amount of light absorbed, Qabs. JETR was then determined (Schreiber et al., 1994; equation in cited manuscript). 
+- var_in: N-fixing
+  unit_in: .na
+  trait_name: nitrogen_fixing
+  value_type: expert_mean
+  replicates: .na
+  methods: .na
+substitutions:
+- trait_name: nitrogen_fixing
+  find: 'Y'
+  replace: 1
+- trait_name: nitrogen_fixing
+  find: 'Y??'
+  replace: 1
+- trait_name: nitrogen_fixing
+  find: 'N'
+  replace: 0
 taxonomic_updates:
 - find: Araucaria bidwilii
   replace: Araucaria bidwillii
@@ -212,6 +375,8 @@ taxonomic_updates:
   replace: Eucalyptus haemastoma
   reason: Spelling mistake identified by TaxonStand (2018-02-08)
 questions:
-  additional_traits: The manuscript also indicates that there was data collected on
-    conductance, photosynthetic rates and chlorophyll fluorescence.
+  contributor: I still need to add in leaf thickness (missed it as I merged files), Are there any other variables in the files 'datafile-ian...' that I should particularly include? Maybe PNUE (a trait in AusTraits)
+  question2: I'm not sure what the abbreviation "TPU" stands for.
+  question3: Is the variable fv/fm represented somewhere in the fluorescence data under a different name - it is reported in other studies we've received. (but on branches so they don't show up)
+  additional_traits: Additional traits include more fluorescence variables, rflectance data, and carotenoid content.
 
