@@ -11,6 +11,18 @@ source:
     pages: 403--416
     publisher: Wiley-Blackwell
     doi: 10.1046/j.1469-8137.2002.00479.x
+  secondary:
+    key: wright_2002
+    bibtype: Article
+    year: '2002'
+    author: Ian J. Wright and Mark Westoby and Peter B. Reich
+    journal: Journal of Ecology
+    title: Convergence towards higher leaf mass per area in dry and nutrient-poor
+      habitats has different consequences for leaf life span
+    volume: '90'
+    number: '3'
+    pages: 534--543
+    doi: 10.1046/j.1365-2745.2002.00689.x
   additional:
     key: wright_2002
     bibtype: Article
@@ -35,18 +47,6 @@ source:
     number: '4'
     pages: 423--434
     doi: 10.1046/j.0269-8463.2001.00542.x
-  secondary:
-    key: wright_2002
-    bibtype: Article
-    year: '2002'
-    author: Ian J. Wright and Mark Westoby and Peter B. Reich
-    journal: Journal of Ecology
-    title: Convergence towards higher leaf mass per area in dry and nutrient-poor
-      habitats has different consequences for leaf life span
-    volume: '90'
-    number: '3'
-    pages: 534--543
-    doi: 10.1046/j.1365-2745.2002.00689.x
 people:
 - name: Ian Wright
   institution: Macquarie University Sydney
@@ -107,7 +107,7 @@ sites:
     longitude (deg): 146.1547222
     latitude (deg): -32.9666667
     description: Round Hill Nature Reserve, woodland site
-    vegetation: open woodland
+    vegetation: Open woodland
     nutrient summary: loRhiP
     MAP (mm): 387
     soil_total_P (ppm): 250.4
@@ -132,7 +132,7 @@ config:
   variable_match:
     species_name: species_name
     site_name: site_name
-  custom_R_code: data %>% mutate(Kl = Kl*10000) %>% mutate (ci_ca = 1 / ca_ci)
+  custom_R_code: data %>% mutate(Kl = Kl*10000) %>% mutate (ca = ca_ci + ci, ci_ca = ci / ca)
 traits:
 - var_in: max_height_m
   unit_in: m
@@ -142,9 +142,20 @@ traits:
   methods: unknown
 - var_in: SLA_cm2_g_new
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: .na
   value_type: site_mean
   replicates: '5'
+  methods: LMA was calculated from leaf dry mass (oven-dried for 48 h at 65 deg C)
+    and one-sided leaf area (flat bed scanner; needle leaves assumed to have circular
+    cross-section and leaf area adjusted by pi/2). For LMA, five leaves from each
+    of five individuals were sampled per species for all sites except the drier, nutrient-rich
+    site, for which one leaf from each of five individuals was sampled in December
+    1997 and a further 6-10 leaves collected in November 1998.
+- var_in: SLA_raw
+  unit_in: cm2/g
+  trait_name: specific_leaf_area
+  value_type: raw_value
+  replicates: 1
   methods: LMA was calculated from leaf dry mass (oven-dried for 48 h at 65 deg C)
     and one-sided leaf area (flat bed scanner; needle leaves assumed to have circular
     cross-section and leaf area adjusted by pi/2). For LMA, five leaves from each
@@ -236,37 +247,55 @@ traits:
   unit_in: per mille
   trait_name: leaf_delta13C
   value_type: site_mean
-  replicates: unknown
-  methods: unknown
+  replicates: 1
+  methods: Craine et. al 2009; 13C and 15N were measured by mass spectrometry on bulked leaf samples used for measuring Rd by Wright et al 2001. The 13C isotope data were later used by Prentice et al 2014 Ecol Letts and Cornwell et al 2018 GEB. 
 - var_in: d15N
   unit_in: per mille
   trait_name: leaf_delta15N
   value_type: site_mean
-  replicates: unknown
-  methods: unknown
+  replicates: 1
+  methods: Craine et. al 2009; 13C and 15N were measured by mass spectrometry on bulked leaf samples used for measuring Rd by Wright et al 2001. The 13C isotope data were later used by Prentice et al 2014 Ecol Letts and Cornwell et al 2018 GEB. 
 - var_in: Ks
   unit_in: kg/m/s/MPa
   trait_name: sapwood_specific_conductivity
-  value_type: unknown
+  value_type: site_mean
   replicates: unknown
-  methods: collected by Amy Zanne; methods unknown
+  methods: Zanne unpublished; Stem hydraulic conductivity was measured on branch samples using previously described methods (Zwieniecki & Holbrook, 1998; Sperry & Hacke, 2002). Branches were hydrated overnight to avoid artifacts (Wheeler et al., 2013), and the submerged branches were cut longer than the maximum vessel length (Cavender-Bares & Holbrook, 2001).  Side branches were sealed using water-insoluble acrylic-based glue (Loctite Super Bonder Quick Gel 409 and Accelerator 712, Henkel Australia Pty. Ltd., Kilsyth, VIC, Australia). Stem ends were then wrapped in parafilm and placed into connective tubing. Twenty mM KCl (made with deionized, degassed water) was forced through a 0.22 um filter and into the distal stem end at 0.1 MPa. Outflow from the proximal end was logged in 30 s intervals onto a balance. Stems were flushed until the readings to the balance stabilized and then conductance was measured as k = g MPa-1 s-1.  Measures were corrected by subtracting the background flow rate when no pressure was applied to the stem. Conductivity (Kh; g m MPa-1 s-1) was determined by multiplying k by branch length. Sapwood specific (Ks) or leaf specific (KL) conductivity was calculated by dividing Kh by either total cross sectional area of the stem (minus bark; m2) or total leaf area subtending the distal branch end, (m2) respectively.
 - var_in: Kh
   unit_in: kg/m/s/Mpa
   trait_name: stem_hydraulic_conductivity
-  value_type: unknown
+  value_type: site_mean
   replicates: unknown
-  methods: collected by Amy Zanne; methods unknown 
+  methods: Zanne unpublished; Stem hydraulic conductivity was measured on branch samples using previously described methods (Zwieniecki & Holbrook, 1998; Sperry & Hacke, 2002). Branches were hydrated overnight to avoid artifacts (Wheeler et al., 2013), and the submerged branches were cut longer than the maximum vessel length (Cavender-Bares & Holbrook, 2001).  Side branches were sealed using water-insoluble acrylic-based glue (Loctite Super Bonder Quick Gel 409 and Accelerator 712, Henkel Australia Pty. Ltd., Kilsyth, VIC, Australia). Stem ends were then wrapped in parafilm and placed into connective tubing. Twenty mM KCl (made with deionized, degassed water) was forced through a 0.22 um filter and into the distal stem end at 0.1 MPa. Outflow from the proximal end was logged in 30 s intervals onto a balance. Stems were flushed until the readings to the balance stabilized and then conductance was measured as k = g MPa-1 s-1.  Measures were corrected by subtracting the background flow rate when no pressure was applied to the stem. Conductivity (Kh; g m MPa-1 s-1) was determined by multiplying k by branch length. Sapwood specific (Ks) or leaf specific (KL) conductivity was calculated by dividing Kh by either total cross sectional area of the stem (minus bark; m2) or total leaf area subtending the distal branch end, (m2) respectively.
 - var_in: Kl
   unit_in: 10^4 x kg/m/s/MPa
   trait_name: leaf_specific_conductivity
-  value_type: unknown
+  value_type: site_mean
   replicates: unknown
-  methods: collected by Amy Zanne; methods unknown
+  methods: Zanne unpublished; Stem hydraulic conductivity was measured on branch samples using previously described methods (Zwieniecki & Holbrook, 1998; Sperry & Hacke, 2002). Branches were hydrated overnight to avoid artifacts (Wheeler et al., 2013), and the submerged branches were cut longer than the maximum vessel length (Cavender-Bares & Holbrook, 2001).  Side branches were sealed using water-insoluble acrylic-based glue (Loctite Super Bonder Quick Gel 409 and Accelerator 712, Henkel Australia Pty. Ltd., Kilsyth, VIC, Australia). Stem ends were then wrapped in parafilm and placed into connective tubing. Twenty mM KCl (made with deionized, degassed water) was forced through a 0.22 um filter and into the distal stem end at 0.1 MPa. Outflow from the proximal end was logged in 30 s intervals onto a balance. Stems were flushed until the readings to the balance stabilized and then conductance was measured as k = g MPa-1 s-1.  Measures were corrected by subtracting the background flow rate when no pressure was applied to the stem. Conductivity (Kh; g m MPa-1 s-1) was determined by multiplying k by branch length. Sapwood specific (Ks) or leaf specific (KL) conductivity was calculated by dividing Kh by either total cross sectional area of the stem (minus bark; m2) or total leaf area subtending the distal branch end, (m2) respectively.
 - var_in: ci
   unit_in: umol/mol
-  trait_name: ci_at_Amax
+  trait_name: .na
   value_type: site_mean
   replicates: 6.2
+  methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
+- var_in: ci_raw
+  unit_in: umol/mol
+  trait_name: ci_at_Amax
+  value_type: raw_value
+  replicates: 1
+  methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
+- var_in: ca
+  unit_in: umol/mol
+  trait_name: .na
+  value_type: site_mean
+  replicates: 6.2
+  methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
+- var_in: CO2a_raw
+  unit_in: umol/mol
+  trait_name: ca
+  value_type: raw_value
+  replicates: 1
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
 - var_in: ci_ca
   unit_in: umolCO2/umolCO2
@@ -288,27 +317,51 @@ traits:
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
 - var_in: Aarea
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_maximum
+  trait_name: .na
   value_type: site_mean
   replicates: 6.2
+  methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
+- var_in: PsAreaUse_raw
+  unit_in: umolCO2/m2/s
+  trait_name: photosynthetic_rate_per_area_maximum
+  value_type: raw_value
+  replicates: 1
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
 - var_in: Amass
   unit_in: nmolCO2/g/s
-  trait_name: photosynthetic_rate_per_dry_mass_maximum
+  trait_name: .na
   value_type: site_mean
   replicates: 6.2
+  methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
+- var_in: PsmassUSE_raw
+  unit_in: nmolCO2/g/s
+  trait_name: photosynthetic_rate_per_dry_mass_maximum
+  value_type: raw_value
+  replicates: 1
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
 - var_in: Gs
   unit_in: mmolH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Amax
+  trait_name: .na
   value_type: site_mean
   replicates: 6.2
+  methods: Wright 2001; stomatal_conductance_per_area_at_Amax; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
+- var_in: GsUSE_raw
+  unit_in: mmolH2O/m2/s
+  trait_name: stomatal_conductance_per_area_at_Amax
+  value_type: raw_value
+  replicates: 1
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
 - var_in: wue
   unit_in: mmolCO2/molH2O/m2/s
-  trait_name: water_use_efficiency 
+  trait_name: .na
   value_type: site_mean
   replicates: 6.2
+  methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
+- var_in: wue_raw
+  unit_in: mmolCO2/molH2O/m2/s
+  trait_name: water_use_efficiency 
+  value_type: raw_value
+  replicates: 1
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic capacity ( A mass and A area ), dark respiration rate ( R d ) and stomatal conductance to water ( G s ) were made using two portable photosynthesis systems equipped for automatic temperature, CO 2 and water vapour control (CIRAS-1, PP Systems, Hitchin, UK) and operated in the differential mode. We used standard cuvettes (broadleaf PLC-B and narrowleaf PLC-N). Leaves were collected from mid- to late morning (0800- 1200 h), still attached to branches (Dang et al . 1997; Mitchell, Bolstad & Vose 1999; Reich et al . 1998), and measurements of A and G s were made immediately. For the larger-leaved species, only the portion fitting in the cuvette was used for measurements; for small-leaved species gas exchange was measured on multiple leaves simultaneously. Photosynthesis and G s measurements were made at saturating or near-saturating light conditions (infrequently, artificial light sources were used when clouds obscured the sun), and at semi-controlled temperatures (mean PAR 1429 deg mol m -2 s -1 , SE 11.9, n = 487; mean temperature 25.5 deg C, SE 0.9 deg C), with an average of 6.2 samples taken per species, all from different individuals (except Exocarpos aphyllus ).
 - var_in: RD_MASS
   unit_in: nmolCO2/g/s
@@ -321,37 +374,37 @@ traits:
   trait_name: leaf_turgor_loss_point
   value_type: site_mean
   replicates: 3
-  methods: "Lenz 2005; PV curves were determined for each species between July and October 2004, with some additional sampling in November 2004 (Appendix S1). Rainfall, temperature, relative humidity and soil moisture during sampling periods varied somewhat among vegetation types (Appendix S1). Variation among species in the measured traits may have reflected plastic responses to differing environmental conditions among vegetation types as well as inherent trait differences among species (our primary interest). All PV curve traits reported here were inspected to see whether the species-mean trait varied with sampling date in each vegetation type. Only species-mean WTLP varied with sampling date in two of the vegetation types (Appendix S1). Trait measurements For the PV curves, one shoot was cut from each of at least three individuals of a randomly selected subgroup of species per vegetation type and collection. Whole leaves were used rather than shoots for Eucalyptus haemostoma, whereas part leaves were used for Macrozamia communis, a large-leaved cycad. Shoots or petioles were cut underwater, wherever possible. In tall plants (some individuals of Acacia doratoxylon, Brachychiton populneus, Eucalyptus spp. and Santalum acuminatum), branches were first cut to at least 0.5 m and the shoots were then recut underwater. The shoots or leaves were hydrated in potable tap water (room temperature and kept in the dark for 24 h); then they were either processed or refrigerated at 7_C in the dark until processed (<48 h). After 48 h, any remaining shoots were discarded. Shoots were left to dry on the bench between measurements and were weighed to 0.001 g immediately before and after water potential was measured with a pressure chamber (Model 1000, PMS Instruments, Corvallis, OR). Replicate shoots were sampled in a random interspersed order. We discarded shoots that did not hydrate to >_0.2 MPa, except in Dodonaea triquetra and Hakea teretifolia, which consistently did not hydrate to >0.3 MPa. The mean initial water potential of all shoots used was _0.11 MPa. Water potential was measured using standard procedures (Turner 1981). Three replicate PV curves were measured for all species, with the following exceptions: Synoum glandulosum, Banksia marginata, Grevillea buxifolia, Grevillea speciosa and Persoonia levis (four replicates); Corymbia gummifera and Gompholobium glabratum (two replicates). TLP was determined from the start of the straight line from plots of inverse balance pressure vs shoot fresh mass (Fig. 1B). Calculation of the other traits (Table 1) followed Schulte and Hinckley (1985) and Kubiske and Abrams (1990, correction for overrehydration) with the exception of E. Due to the non-linear relationship between pressure potential at full turgor and TLP, the slope of this section of the curve and thus E is not constant. Customarily, E is calculated from the slope of the maximum hydration part of the pressure potential component of the PV curve (i.e. via a Hofler diagram. We used instead the average slope of the moisture release curve from full turgor down to TLP, defined as Emax-TLP, One reason was that this measure best reflects any influence of elasticity differences on TLP. The second reason was that existing guidelines for selecting this portion of the curve (Koide et al. 1989) were insufficient to provide a consistent determination of E at full hydration for a large number of species. Note that throughout this article, the term 'elasticity' is used in its traditional sense, while E refers to the slope of the change in turgor pressure with changing RWC, which increases with decreasing elasticity."
+  methods: "Lenz 2006; PV curves were determined for each species between July and October 2004, with some additional sampling in November 2004 (Appendix S1). Rainfall, temperature, relative humidity and soil moisture during sampling periods varied somewhat among vegetation types (Appendix S1). Variation among species in the measured traits may have reflected plastic responses to differing environmental conditions among vegetation types as well as inherent trait differences among species (our primary interest). All PV curve traits reported here were inspected to see whether the species-mean trait varied with sampling date in each vegetation type. Only species-mean WTLP varied with sampling date in two of the vegetation types (Appendix S1). Trait measurements For the PV curves, one shoot was cut from each of at least three individuals of a randomly selected subgroup of species per vegetation type and collection. Whole leaves were used rather than shoots for Eucalyptus haemostoma, whereas part leaves were used for Macrozamia communis, a large-leaved cycad. Shoots or petioles were cut underwater, wherever possible. In tall plants (some individuals of Acacia doratoxylon, Brachychiton populneus, Eucalyptus spp. and Santalum acuminatum), branches were first cut to at least 0.5 m and the shoots were then recut underwater. The shoots or leaves were hydrated in potable tap water (room temperature and kept in the dark for 24 h); then they were either processed or refrigerated at 7_C in the dark until processed (<48 h). After 48 h, any remaining shoots were discarded. Shoots were left to dry on the bench between measurements and were weighed to 0.001 g immediately before and after water potential was measured with a pressure chamber (Model 1000, PMS Instruments, Corvallis, OR). Replicate shoots were sampled in a random interspersed order. We discarded shoots that did not hydrate to >_0.2 MPa, except in Dodonaea triquetra and Hakea teretifolia, which consistently did not hydrate to >0.3 MPa. The mean initial water potential of all shoots used was _0.11 MPa. Water potential was measured using standard procedures (Turner 1981). Three replicate PV curves were measured for all species, with the following exceptions: Synoum glandulosum, Banksia marginata, Grevillea buxifolia, Grevillea speciosa and Persoonia levis (four replicates); Corymbia gummifera and Gompholobium glabratum (two replicates). TLP was determined from the start of the straight line from plots of inverse balance pressure vs shoot fresh mass (Fig. 1B). Calculation of the other traits (Table 1) followed Schulte and Hinckley (1985) and Kubiske and Abrams (1990, correction for overrehydration) with the exception of E. Due to the non-linear relationship between pressure potential at full turgor and TLP, the slope of this section of the curve and thus E is not constant. Customarily, E is calculated from the slope of the maximum hydration part of the pressure potential component of the PV curve (i.e. via a Hofler diagram. We used instead the average slope of the moisture release curve from full turgor down to TLP, defined as Emax-TLP, One reason was that this measure best reflects any influence of elasticity differences on TLP. The second reason was that existing guidelines for selecting this portion of the curve (Koide et al. 1989) were insufficient to provide a consistent determination of E at full hydration for a large number of species. Note that throughout this article, the term 'elasticity' is used in its traditional sense, while E refers to the slope of the change in turgor pressure with changing RWC, which increases with decreasing elasticity."
 - var_in: elast_mod
   unit_in: MPa
   trait_name: modulus_of_elasticity
   value_type: site_mean
   replicates: 3
-  methods: "Lenz 2005; P-V curves were determined for each species between July and October 2004, with some additional sampling in November 2004 (Appendix S1). Rainfall, temperature, relative humidity and soil moisture during sampling periods varied somewhat among vegetation types (Appendix S1). Variation among species in the measured traits may have reflected plastic responses to differing environmental conditions among vegetation types as well as inherent trait differences among species (our primary interest). All P-V curve traits reported here were inspected to see whether the species-mean trait varied with sampling date in each vegetation type. Only species-mean WTLP varied with sampling date in two of the vegetation types (Appendix S1). Trait measurements For the P-V curves, one shoot was cut from each of at least three individuals of a randomly selected subgroup of species per vegetation type and collection. Whole leaves were used rather than shoots for Eucalyptus haemostoma, whereas part leaves were used for Macrozamia communis, a large-leaved cycad. Shoots or petioles were cut underwater, wherever possible. In tall plants (some individuals of Acacia doratoxylon, Brachychiton populneus, Eucalyptus spp. and Santalum acuminatum), branches were first cut to at least 0.5 m and the shoots were then recut underwater. The shoots or leaves were hydrated in potable tap water (room temperature and kept in the dark for 24 h); then they were either processed or refrigerated at 7 deg C in the dark until processed (<48 h). After 48 h, any remaining shoots were discarded. Shoots were left to dry on the bench between measurements and were weighed to 0.001 g immediately before and after water potential was measured with a pressure chamber (Model 1000, PMS Instruments, Corvallis, OR). Replicate shoots were sampled in a random interspersed order. We discarded shoots that did not hydrate to >_0.2 MPa, except in Dodonaea triquetra and Hakea teretifolia, which consistently did not hydrate to >0.3 MPa. The mean initial water potential of all shoots used was _0.11 MPa. Water potential was measured using standard procedures (Turner 1981). Three replicate P-V curves were measured for all species, with the following exceptions: Synoum glandulosum, Banksia marginata, Grevillea buxifolia, Grevillea speciosa and Persoonia levis (four replicates); Corymbia gummifera and Gompholobium glabratum (two replicates). TLP was determined from the start of the straight line from plots of inverse balance pressure vs shoot fresh mass (Fig. 1B). Calculation of the other traits (Table 1) followed Schulte and Hinckley (1985) and Kubiske and Abrams (1990, correction for overrehydration) with the exception of E. Due to the non-linear relationship between pressure potential at full turgor and TLP, the slope of this section of the curve and thus E is not constant. Customarily, E is calculated from the slope of the maximum hydration part of the pressure potential component of the P-V curve (i.e. via a Hofler diagram. We used instead the average slope of the moisture release curve from full turgor down to TLP, defined as Emax-TLP, One reason was that this measure best reflects any influence of elasticity differences on TLP. The second reason was that existing guidelines for selecting this portion of the curve (Koide et al. 1989) were insufficient to provide a consistent determination of E at full hydration for a large number of species. Note that throughout this article, the term 'elasticity' is used in its traditional sense, while E refers to the slope of the change in turgor pressure with changing RWC, which increases with decreasing elasticity."
+  methods: "Lenz 2006; P-V curves were determined for each species between July and October 2004, with some additional sampling in November 2004 (Appendix S1). Rainfall, temperature, relative humidity and soil moisture during sampling periods varied somewhat among vegetation types (Appendix S1). Variation among species in the measured traits may have reflected plastic responses to differing environmental conditions among vegetation types as well as inherent trait differences among species (our primary interest). All P-V curve traits reported here were inspected to see whether the species-mean trait varied with sampling date in each vegetation type. Only species-mean WTLP varied with sampling date in two of the vegetation types (Appendix S1). Trait measurements For the P-V curves, one shoot was cut from each of at least three individuals of a randomly selected subgroup of species per vegetation type and collection. Whole leaves were used rather than shoots for Eucalyptus haemostoma, whereas part leaves were used for Macrozamia communis, a large-leaved cycad. Shoots or petioles were cut underwater, wherever possible. In tall plants (some individuals of Acacia doratoxylon, Brachychiton populneus, Eucalyptus spp. and Santalum acuminatum), branches were first cut to at least 0.5 m and the shoots were then recut underwater. The shoots or leaves were hydrated in potable tap water (room temperature and kept in the dark for 24 h); then they were either processed or refrigerated at 7 deg C in the dark until processed (<48 h). After 48 h, any remaining shoots were discarded. Shoots were left to dry on the bench between measurements and were weighed to 0.001 g immediately before and after water potential was measured with a pressure chamber (Model 1000, PMS Instruments, Corvallis, OR). Replicate shoots were sampled in a random interspersed order. We discarded shoots that did not hydrate to >_0.2 MPa, except in Dodonaea triquetra and Hakea teretifolia, which consistently did not hydrate to >0.3 MPa. The mean initial water potential of all shoots used was _0.11 MPa. Water potential was measured using standard procedures (Turner 1981). Three replicate P-V curves were measured for all species, with the following exceptions: Synoum glandulosum, Banksia marginata, Grevillea buxifolia, Grevillea speciosa and Persoonia levis (four replicates); Corymbia gummifera and Gompholobium glabratum (two replicates). TLP was determined from the start of the straight line from plots of inverse balance pressure vs shoot fresh mass (Fig. 1B). Calculation of the other traits (Table 1) followed Schulte and Hinckley (1985) and Kubiske and Abrams (1990, correction for overrehydration) with the exception of E. Due to the non-linear relationship between pressure potential at full turgor and TLP, the slope of this section of the curve and thus E is not constant. Customarily, E is calculated from the slope of the maximum hydration part of the pressure potential component of the P-V curve (i.e. via a Hofler diagram. We used instead the average slope of the moisture release curve from full turgor down to TLP, defined as Emax-TLP, One reason was that this measure best reflects any influence of elasticity differences on TLP. The second reason was that existing guidelines for selecting this portion of the curve (Koide et al. 1989) were insufficient to provide a consistent determination of E at full hydration for a large number of species. Note that throughout this article, the term 'elasticity' is used in its traditional sense, while E refers to the slope of the change in turgor pressure with changing RWC, which increases with decreasing elasticity."
 - var_in: SPo
   unit_in: MPa
   trait_name: .na
   value_type: site_mean
   replicates: 3
-  methods: Lenz 2005
+  methods: Lenz 2006; solute potential at full turgor, calculated from PV curves
 - var_in: H2OTLP
-  unit_in: MPa
+  unit_in: '%'
   trait_name: .na
   value_type: site_mean
   replicates: 3
-  methods: Lenz 2005
+  methods: Lenz 2006; shoot water content at turgor loss point, calculated from PV curves
 - var_in: symH2O
-  unit_in: MPa
+  unit_in: '%'
   trait_name: .na
   value_type: site_mean
   replicates: 3
-  methods: Lenz 2005
+  methods: Lenz 2006; symplastic water fraction, calculated from PV curves
 - var_in: shootH20
   unit_in: '%'
   trait_name: leaf_water_content_per_mass
   value_type: site_mean
   replicates: 3
-  methods: water content at full hydration
+  methods: Lenz 2006; water content at full hydration, calculated from PV curves
 - var_in: SWCsap
   unit_in: '%'
   trait_name: leaf_saturated_water_content_per_mass
@@ -363,13 +416,13 @@ traits:
   trait_name: stem_saturated_water_content_per_mass
   value_type: site_mean
   replicates: 3
-  methods: water content at full hydration
+  methods: stem water content at full hydration
 - var_in: SWCbark
   unit_in: '%'
   trait_name: bark_saturated_water_content_per_mass
   value_type: site_mean
   replicates: 3
-  methods: water content at full hydration
+  methods: back water content at full hydration
 - var_in: BarkThick
   unit_in: mm
   trait_name: bark_thickness
@@ -386,8 +439,14 @@ traits:
   unit_in: J/m2
   trait_name: leaf_toughness
   value_type: site_mean
-  replicates: unknown
-  methods: unknown
+  replicates: 3-5
+  methods: Leaf work to shear (W shear ), thickness and toughness were measured for one leaf from each of three-five individuals per species (generally five), except at the high rainfall, nutrientpoor site, for which two leaves from each of 3 individuals per species were measured (Wright & Cannon, 2001), giving an overall average of 5.2 samples per species. Leaf thickness was measured at two-five points per leaf with a dial gauge micrometer. Major veins and the midrib, where present, were avoided on all but the smallest leaves; otherwise placement of the micrometer was haphazard. The cross-section of needle leaves was assumed to be circular, and average leaf thickness was adjusted accordingly in these cases (multiplied by pi/4). Leaf work to shear (W shear ) was determined using a custombuilt machine, which was not intended to simulate any particular herbivore, but to provide a generalised measure of physical defence (Wright & Cannon, 2001). The machine measures the work required to cut a leaf at a constant cutting angle (20 deg) and speed, and is similar in principle to systems described by Darvell et al . (1996) and Aranwela et al . (1999). W shear and tissue toughness (= average W shear /thickness) measure different aspects of how robust a leaf or leaf tissue is. Both would likely be correlated with other physical properties such as leaf stiffness, tensile strength and resistance to puncture by a penetrometer (Vogel, 1988; Choong et al ., 1992; Wright & Illius, 1995; Edwards et al ., 2000). One cut at right angles to the midrib was made per leaf for measurement of W shear . Leaves were cut at the widest point along the lamina, or half way between the leaf base and tip if the leaf had no obviously widest point. For species with a prominent midrib, this feature could be discerned on the machine output (Wright & Cannon, 2001), and the W shear and toughness of the lamina were calculated separately in addition to that integrated over the whole leaf. This was possible for 33 species (24 at high rainfall, nine at low rainfall); for the remainder it was not because the midrib was not sufficiently prominent relative to other features in the graph, or because no midrib was present (e.g. needle leaves). Wholeleaf and lamina-only measures of W shear and toughness were tightly correlated (across all species, r 2 > 0.95, slopes not different from 1). Consequently we report whole-leaf measures only, because this makes no qualitative difference to the results, and because these measures are more analogous to other whole-leaf properties, such as LMA and density. 
+- var_in: leaf thickness
+  unit_in: mm
+  trait_name: leaf_thickness
+  value_type: site_mean
+  replicates: 3-5
+  methods: Leaf work to shear (W shear ), thickness and toughness were measured for one leaf from each of three-five individuals per species (generally five), except at the high rainfall, nutrientpoor site, for which two leaves from each of 3 individuals per species were measured (Wright & Cannon, 2001), giving an overall average of 5.2 samples per species. Leaf thickness was measured at two-five points per leaf with a dial gauge micrometer. Major veins and the midrib, where present, were avoided on all but the smallest leaves; otherwise placement of the micrometer was haphazard. 
 substitutions: .na
 taxonomic_updates:
 - find: Phyllota phyllicoides
@@ -415,7 +474,5 @@ taxonomic_updates:
   replace: Dodonaea viscosa
   reason: Synonym reported by TaxonStand (2020-02-14)
 questions:
-  contributor: Not for this study, but for many others, I am concerned the units for stomatal conductance (gs) are wrong. I've found inconsistencies in several studies between the paper, SI, and spreadsheets we've been sent. For others the numbers just seem outside what is plausible. What range of values do you think we should accept as 'real'
-  question2: Can you point me to the manuscript that has methods for d13C and d15N?
-  question3: I think I've mis-interpreted your data for the variable "ca_ci". I assumed it was the inverse of "ci_over_ca" but suspect that is incorrect.
+  additional_traits: vessel anatomy (currently in raw file, not in data.csv file) and additional PV curve parameters (solute potential, water content at turgor loss)
 
