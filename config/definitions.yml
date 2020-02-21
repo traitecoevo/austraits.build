@@ -4,6 +4,22 @@ traits:
   description: Names and details of plant traits included in the AusTraits compilation
   type: list
   elements:
+    accessory_cost_mass:
+      description: Mass of seed acessory costs, the proportion of a fruit that does not develop into a seed
+      type: numeric
+      units: mg
+      label: Mass of seed acessory costs
+      values:
+        minimum: 0.01
+        maximum: 10000.0
+    accessory_cost_fraction:
+      description: The fraction of total reproductive investment required to mature a seed that is invested in non-seed tissues
+      type: numeric
+      units: mg/mg
+      label: Fraction of total reproductive investment to non-seed tissues
+      values:
+        minimum: 0.01
+        maximum: 1.0
     bark_mass_area:
       description: Bark mass per unit surface area of stem
       type: numeric
@@ -26,7 +42,7 @@ traits:
       units: mg/mg
       label: Fraction of plant dry mass comprised of branch material
       values:
-        minimum: 0.01
+        minimum: 0.00
         maximum: 1.0
     sprout_depth:
       description: Depth of resprouting shoots
@@ -148,6 +164,14 @@ traits:
       values:
         minimum: 0.05
         maximum: 10
+    ca:
+      description: ambient CO2 concentration (external CO2 concentration)
+      type: numeric
+      units: umol/mol
+      label: ambient CO2 concentration
+      values:
+        minimum: 50.0
+        maximum: 1000.0
     ci:
       description: internal CO2 concentration under ambient conditions
       type: numeric
@@ -180,6 +204,36 @@ traits:
       values:
         minimum: 0.0
         maximum: 1.0
+    cotyledon_position:
+      description: Binary variable distinguishing between seedlings where the cotyledon remains within the seed coat versus emerges from the seed coat at germination.
+      type: categorical
+      label: Cotyledon position at germination
+      values:
+        cryptocotylar: A type of seed germination in which the cotyledons remain within the seed coat at germination.
+        phanerocotylar: A type of seed germination in which the cotyledons emerge from the seed coat.
+    cotyledon_type:
+      description: Binary variable distinguishing between glabrous versus hairy cotyledons
+      type: categorical
+      label: Cotyledon type
+      values:
+        glabrous: Cotyledon lacks hairs
+        hairy: Cotyledon has hairs
+    upper_cuticle_thickness:
+      description: Thickness of the upper cuticle
+      type: numeric
+      units: um
+      label: Upper cuticle thickness
+      values:
+        minimum: 0.1
+        maximum: 100.0
+    lower_cuticle_thickness:
+      description: Thickness of the lower cuticle
+      type: numeric
+      units: um
+      label: Lower cuticle thickness
+      values:
+        minimum: 0.1
+        maximum: 100.0
     diaspore_mass:
       description: Mass of seed including dispersal appendages
       type: numeric
@@ -278,6 +332,29 @@ traits:
         physical_dormancy: Seeds exhibit physical dormancy
         physiological_dormancy: Seeds exhibit physiological dormancy
         morphophysiological_dormancy: Seeds exhibit morphophysiological dormancy 
+    embryo_colour:
+      description: Binary variable distinguishing between embryos that are green versus colourless
+      type: categorical
+      label: Embryo colour
+      values:
+        colourless: Colourless embryo
+        green: Green embryo
+    upper_epidermis_thickness:
+      description: Thickness of the upper epidermis
+      type: numeric
+      units: um
+      label: Upper epidermis thickness
+      values:
+        minimum: 1.0
+        maximum: 100.0
+    lower_epidermis_thickness:
+      description: Thickness of the lower epidermis
+      type: numeric
+      units: um
+      label: Lower epidermis thickness
+      values:
+        minimum: 1.0
+        maximum: 100.0
     epithelial_cell_density:
       description: Epithelial cell density on the leaf surface
       type: numeric
@@ -389,7 +466,7 @@ traits:
         capsule_explosive: Dry fruit from compound pistil, that releases its seeds in an explosive manner
         capsule_aril: Dry fruit from compound pistil, with a fleshy outgrowth (aril) to attract pollinators
         capsule_wing: Dry fruit from compound pistil, with a wing for dispersal by wind
-        cypsela: same as achene
+        cypsela: An achene developed from an inferior bicarpellary ovary fused with the calyx tube (in Asteraceae)
         drupe: Fleshy or pulpy, indehiscent, superficially berry-like fruit in which 1 seed is encased in a stone or more than 1 seed is encased in an equal number of free or variously fused stones
         drupe_fibrous: Fibrous or dry drupe; indehiscent, superficially berry-like fruit in which 1 seed is encased in a stone or more than 1 seed is encased in an equal number of free or variously fused stones
         follicle: Dry fruit from a simple pistil, dehiscent on generally only one side, along a single suture
@@ -507,11 +584,34 @@ traits:
     huber_value:
       description: Sapwood area to leaf area ratio
       type: numeric
-      units: mm2/mm2
+      units: mm2_sapwood/mm2_leaf
       label: Huber value
       values:
         minimum: 0.000001
         maximum: 0.1
+    hypocotyl_type:
+      description: Binary variable distinguishing between glabrous versus hairy hypocotyls (the embryonic axis to which the cotyeledons are attached).
+      type: categorical
+      label: Hypocotyl type
+      values:
+        glabrous: Hypocotyl lacks hairs
+        hairy: Hypocotyl has hairs
+    upper_hypodermis_thickness:
+      description: Thickness of the upper hypodermis
+      type: numeric
+      units: um
+      label: Upper hypodermis thickness
+      values:
+        minimum: 1.0
+        maximum: 100.0
+    lower_hypodermis_thickness:
+      description: Thickness of the lower hypodermis
+      type: numeric
+      units: um
+      label: Lower hypodermis thickness
+      values:
+        minimum: 1.0
+        maximum: 100.0
     leaf_Al_per_dry_mass:
       description: Leaf aluminum (Al) content per unit leaf dry mass
       type: numeric
@@ -536,14 +636,6 @@ traits:
       values:
         minimum: 0.1
         maximum: 1.0e+07
-    leaf_area_per_sapwood_area:
-      description: Ratio of leaf area to sapwood area
-      type: numeric
-      units: m2/m2
-      label: Leaf area per unit sapwood area
-      values:
-        minimum: 100.0
-        maximum: 100000.0
     leaf_area_ratio:
       description: Ratio of leaf area to total plant dry mass
       type: numeric
@@ -780,11 +872,11 @@ traits:
       values:
         '0': leaves on juvenile plants do not have hairs
         '1': leaves on juvenile plants do have hairs
-    leaf_hydraulic_conductance:
+    leaf_hydraulic_conductivity:
       description: Measure of how efficiently water is transported through the leaf, determined as the ratio of water flow rate through the leaf to the difference in water potential across the leaf, standardised to leaf area.
       type: numeric
       units: mmol/m2/s/MPa
-      label: Leaf hydraulic conductance
+      label: Leaf hydraulic conductivity
       values:
         minimum: 0.1
         maximum: 100.0
@@ -981,9 +1073,9 @@ traits:
         minimum: 500
         maximum: 50000
     leaf_photosynthetic_water_use_efficiency:
-      description: Ratio of photosynthesis (CO2 assimilation rate) to leaf transpiration (water loss)
+      description: WUE; Ratio of photosynthesis (CO2 assimilation rate) to leaf transpiration (water loss)
       type: numeric
-      units: umolCO2/umolH2O
+      units: umolCO2/mmolH2O
       label: Leaf photosynthesis rate per unit leaf transpiration (water use efficiency, WUE)
       values:
         minimum: 0.01
@@ -1001,6 +1093,22 @@ traits:
       type: numeric
       units: g/g
       label: Water content per unit mass of saturated leaf
+      values:
+        minimum: 0.1
+        maximum: 10.0
+    stem_saturated_water_content_per_mass:
+      description: Ratio of water in a saturated stem (maximal water holding capacity at full turgidity) to stem dry mass
+      type: numeric
+      units: g/g
+      label: Water content per unit mass of saturated stem
+      values:
+        minimum: 0.1
+        maximum: 10.0
+    bark_saturated_water_content_per_mass:
+      description: Ratio of water in a saturated bark (maximal water holding capacity at full turgidity) to bark dry mass
+      type: numeric
+      units: g/g
+      label: Water content per unit mass of saturated bark
       values:
         minimum: 0.1
         maximum: 10.0
@@ -1075,10 +1183,10 @@ traits:
         widely_obovate: like obovate, but wider
         widely_obtrullate: In the form of a reversed trowel (with longer sides meeting at the base), but wider
     leaf_specific_conductivity:
-      description: The ratio of hydraulic conductance of a segment to leaf area
+      description: Kl; the ratio of leaf hydraulic conductivity to the leaf area distil to the segment
       type: numeric
       units: 10^4 x kg/m/s/MPa
-      label: Leaf area-specific conductivity / leaf specific conductivity
+      label: Leaf specific hydraulic conductivity (Kl)
       values:
         minimum: 0.1
         maximum: 100.0
@@ -1274,8 +1382,24 @@ traits:
       units: um
       label: Length of individual palisade cells
       values:
-        minimum: 1
-        maximum: 100
+        minimum: 10
+        maximum: 1000
+    lower_palisade_cell_thickness:
+      description: Thickness (length) of lower palisade cells
+      type: numeric
+      units: um
+      label: Lower palisade cell thickness
+      values:
+        minimum: 10
+        maximum: 1000
+    upper_palisade_cell_thickness:
+      description: Thickness (length) of upper palisade cells
+      type: numeric
+      units: um
+      label: Upper palisade cell thickness
+      values:
+        minimum: 10
+        maximum: 1000
     palisade_cell_width:
       description: Width of individual palisade cells
       type: numeric
@@ -1362,6 +1486,8 @@ traits:
         climber_tree: Tree that climbs up another plant
         climber_herb: Herbaceous plant that climbs up another plant
         climber_shrub: Shrubby plant that climbs up another plant
+        creeper: Creeper that roots along stems
+        cycad: Cycad
         epiphyte: Plant that grows on top of another plant
         fern: A group of vascular plants that reproduce via spores
         geophyte: A perennial plant with an underground food storage organ, such as a bulb, tuber, corm, or rhizome
@@ -1520,10 +1646,10 @@ traits:
         minimum: 0.1
         maximum: 10.0
     sapwood_specific_conductivity:
-      description: Describes the flow rate of water (kg/s) along a stem for a given drop in pressure (1/MPa), extremenormalised to the length of the segment (1/m)
+      description: Ks; Describes the flow rate of water (kg/s) along a stem for a given drop in pressure (1/MPa), extremenormalised to the length of the segment (1/m). Calculated as leaf hydraulic conductivity divided by the sapwood cross-sectional area where the measurement is taken.
       type: numeric
       units: kg/m/s/MPa
-      label: Sapwood specific conductivity / stem specific conductivity
+      label: Sapwood specific conductivity (Ks)
       values:
         minimum: 0.05
         maximum: 50
@@ -1676,7 +1802,7 @@ traits:
     seed_texture:
       description: The texture of a seed
       type: categorical
-      label: Seedtecture
+      label: Seed texture
       values:
         acutely_reticulate: 
         bumpy: 
@@ -1743,6 +1869,20 @@ traits:
       values:
         minimum: 0.01
         maximum: 100.0
+    seedling_first_leaf:
+      description: Binary variable distinguishing between seedlings where the first leaf is scale-like (cataphyll) versus leaf-like.
+      type: categorical
+      label: First leaf style
+      values:
+        scale-like: When the first leaf at germination is scale-like, also referred to as a cataphyll
+        leaf-like: When the first leaf at germination is leaf-like
+    seedling_first_node:
+      description: Binary variable distinguishing between seedlings where the leaves at the first node are single versus paired.
+      type: categorical
+      label: Leaf count at first node
+      values:
+        single: When there is a single leaf at the first node
+        paired: When there is a pair of leaves at the first node
     senesced_leaf_Ca_per_dry_mass:
       description: Senesced leaf calcium (Ca) content per unit leaf dry mass
       type: numeric
@@ -1912,6 +2052,14 @@ traits:
       values:
         minimum: 0.5
         maximum: 500
+    spongy_mesophyll_thickness:
+      description: Thickness of the spongy mesophyll cells
+      type: numeric
+      units: um
+      label: Spongy mesophyll cell thickness
+      values:
+        minimum: 10.0
+        maximum: 1000.0
     starch_per_area:
       description: Mass of atarch per leaf area
       type: numeric
@@ -1929,14 +2077,13 @@ traits:
         minimum: 100.0
         maximum: 1000.0
     stem_count_categorical:
-      description: Number of stems present, expressed in groups, where categories 
-        were 1=1; 2=2; 3=3; 4-10=4; 11-30=5; >30=6 and; multi=7 (>4). Used by Peter Vesk.
+      description: Number of stems present, expressed in groups, where categories were 1=1; 2-3=2; 4-10=3; 11-30=4; and >30=5. Used by Peter Vesk.
       type: numeric
       units: count
       label: Stem Count, categorical
       values:
         minimum: 0
-        maximum: 7
+        maximum: 5
     stem_cross_section_area:
       description: Cross-sectional area of the stem
       type: numeric
@@ -1961,6 +2108,14 @@ traits:
       values:
         minimum: 10.0
         maximum: 1000.0
+    stem_hydraulic_conductivity:
+      description: Kh; Measure of how efficiently water is transported through the leaf, determined as the ratio of water flow rate through the leaf to the difference in water potential across the leaf, standardised to leaf area.
+      type: numeric
+      units: kg/m/s/Mpa
+      label: Hydraulic conductivity (Kh)
+      values:
+        minimum: 0.00000001
+        maximum: 0.0001
     stem_N_per_dry_mass:
       description: Stem carbon (N) content per unit stem dry mass
       type: numeric
@@ -1980,27 +2135,27 @@ traits:
     stomatal_conductance_per_area:
       description: Rate of water loss through stomata under ambient conditions, per unit leaf area
       type: numeric
-      units: umolH2O/m2/s
+      units: mmolH2O/m2/s
       label: Stomatal conductance per unit leaf area under ambient conditions
       values:
         minimum: -0.1
-        maximum: 2
+        maximum: 2000
     stomatal_conductance_per_area_at_Amax:
       description: Rate of water loss through stomata, per unit leaf area under saturated light conditions
       type: numeric
-      units: umolH2O/m2/s
+      units: mmolH2O/m2/s
       label: Stomatal conductance per unit leaf area under saturated light conditions
       values:
         minimum: -0.1
-        maximum: 2
+        maximum: 2000
     stomatal_conductance_per_area_at_Asat:
       description: Rate of water loss through stomata, per unit leaf area under saturated light and CO2 conditions
       type: numeric
-      units: umolH2O/m2/s
+      units: mmolH2O/m2/s
       label: Stomatal conductance per unit leaf area under saturated light and CO2 conditions
       values:
         minimum: -0.1
-        maximum: 2
+        maximum: 2000
     stomatal_density:
       description: Stomatal density on the leaf surface
       type: numeric
@@ -2032,6 +2187,22 @@ traits:
       values:
         minimum: 0.01
         maximum: 1000
+    twig_area: 
+      description: The cross-sectional area of the terminal twig
+      type: numeric
+      units: mm2
+      label: Terminal twig cross-sectional area
+      values:
+        minimum: 0.05
+        maximum: 50
+    twig_length: 
+      description: The length of the terminal twig
+      type: numeric
+      units: mm
+      label: Terminal twig length
+      values:
+        minimum: 1
+        maximum: 1000
     vapor_pressure_deficit:
       description: Vapor pressure deficit across the leaf surface
       type: numeric
@@ -2061,7 +2232,7 @@ traits:
       units: MPa
       label: Midday water potential
       values:
-        minimum: -20
+        minimum: -10
         maximum: 0
     water_potential_predawn:
       description: A plant's water potential just before sunrise
