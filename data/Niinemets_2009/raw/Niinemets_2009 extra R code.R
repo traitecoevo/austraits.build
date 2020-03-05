@@ -30,12 +30,19 @@ read_csv("data/Niinemets_2009/raw/Averages-final (ulo Nov13) (for Vincent M Jan2
   mutate(site_name = ifelse(is.na(site_name), site, site_name)) %>%
   mutate(site_name = gsub("MUforest","MU_forest", site_name),
          site_name = gsub("MUcampus","MU_campus", site_name),
+         site_name = gsub("MUgarden","MU_campus", site_name),
          site_name = gsub("hiRhiP","WestHead", site_name),
-         site_name = gsub("hiRloP","KCNP", site_name),
+         site_name = gsub("hiRloP","Murrua", site_name),
          site_name = gsub("loRhiP","Castlereagh", site_name),
+         site_name = gsub("Castlereagh1","Castlereagh", site_name),
+         site_name = gsub("Castlereagh2","Castlereagh", site_name),
          site_name = gsub("loRloP","AgnesBanks", site_name),
          site_name = gsub("SydhiP","WestHead", site_name),
          site_name = gsub("SydhiP","WestHead", site_name),
-         site_name = gsub("SydloP","Murrua",site_name)) %>%
+         site_name = gsub("SydloP","Murrua",site_name),
+         site_name = gsub("KCNP_west","Murrua",site_name),
+         site_name = gsub("KCNP_east","KCNP_Basin_Track",site_name),
+         site_name = gsub("Murrua","KCNP_Murrua_Track",site_name)) %>%
+  mutate(site_name = if_else(site_name=="KCNP","KCNP_unknown_track",site_name)) %>%
   write_csv("data/Niinemets_2009/data.csv") %>%
   write_csv("data/Wright_2009/data.csv") -> check
