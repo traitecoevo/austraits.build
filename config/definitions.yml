@@ -20,6 +20,22 @@ traits:
       values:
         minimum: 0.01
         maximum: 1.0
+    bark_delta13C:
+      description: Bark carbon stable isotope signature
+      type: numeric
+      units: per mille
+      label: Bark carbon (C) isotope signature (delta 13C)
+      values:
+        minimum: -50.0
+        maximum: 0.0
+    bark_delta15N:
+      description: Bark nitrogen stable isotope signature
+      type: numeric
+      units: per mille
+      label: Bark nitrogen (N) isotope signature (delta 15N)
+      values:
+        minimum: -25.0
+        maximum: 75.0
     bark_mass_area:
       description: Bark mass per unit surface area of stem
       type: numeric
@@ -28,6 +44,22 @@ traits:
       values:
         minimum: 0.01
         maximum: 1.0
+    bark_C_per_dry_mass:
+      description: Bark carbon (C) content per unit bark dry mass
+      type: numeric
+      units: mg/g
+      label: Bark carbon (C) content per unit bark dry mass
+      values:
+        minimum: 50.0
+        maximum: 750.0
+    bark_N_per_dry_mass:
+      description: Bark nitrogen (N) content per unit bark dry mass
+      type: numeric
+      units: mg/g
+      label: Bark nitrogen (N) content per unit bark dry mass
+      values:
+        minimum: 0.1
+        maximum: 100.0
     bark_thickness:
       description: Thickness of the bark of the stem
       type: numeric
@@ -52,6 +84,22 @@ traits:
       values:
         minimum: -100
         maximum: 100
+    carotenoid_per_area:
+      description: Leaf carotenoid content per unit leaf area
+      type: numeric
+      units: umol/m2
+      label: Leaf carotenoid content per unit leaf area
+      values:
+        minimum: 10.0
+        maximum: 1000.0
+    carotenoid_per_dry_mass:
+      description: Leaf carotenoid content per unit leaf dry mass
+      type: numeric
+      units: mmol/kg
+      label: Leaf carotenoid content per unit leaf dry mass
+      values:
+        minimum: 0.1
+        maximum: 10.0
     cell_epidermis_Ca_per_fresh_mass:
       description: Ca content of epidermal cells
       type: numeric
@@ -212,8 +260,16 @@ traits:
       values:
         minimum: 50.0
         maximum: 1000.0
+    cc:
+      description: CO2 concentration inside chloroplasts
+      type: numeric
+      units: umol/umol
+      label: CO2 concentration inside chloroplasts
+      values:
+        minimum: 50.0
+        maximum: 1000.0
     ci:
-      description: internal CO2 concentration under ambient conditions
+      description: CO2 concentration in interstitial spaces under ambient conditions
       type: numeric
       units: umol/mol
       label: internal CO2 concentration under ambient conditions
@@ -221,7 +277,7 @@ traits:
         minimum: 50.0
         maximum: 1000.0
     ci_at_Amax:
-      description: internal CO2 concentration during Amax measurement
+      description: CO2 concentration in interstitial spaces during Amax measurement
       type: numeric
       units: umol/mol
       label: internal CO2 concentration during Amax measurement
@@ -229,7 +285,7 @@ traits:
         minimum: 50.0
         maximum: 1000.0
     ci_at_Asat:
-      description: internal CO2 concentration during Asat measurement
+      description: CO2 concentration in interstitial spaces during Asat measurement
       type: numeric
       units: umol/mol
       label: internal CO2 concentration during Asat measurement
@@ -239,7 +295,7 @@ traits:
     ci_over_ca:
       description: Ratio of internal to external CO2 concentrations
       type: numeric
-      units: umolCO2/umolCO2
+      units: umol/umol
       label: Ratio of internal to external CO2 concentrations
       values:
         minimum: 0.0
@@ -298,6 +354,7 @@ traits:
         bracts: When the bracts below the inflorescence are the dispersal appendage. For the family Poaceae "bract" refers to the glumes, the modified membranous bracts surrounding the spikelet of a grass.
         caruncle: A type of eliasome, term especially used in the family Euphorbiaceae; an outgrowth or appendage at or near the hilum of certain seeds that aids in dispersal. Includes "strophiole"
         curved_awn: A curved, slender awn
+        dry_dehiscent: Dry fruit that dehisces in some manner
         drupe: Fruit with membranous exocarp, fleshy mesocarp and hard endocarp
         elaiosome: Fleshy (often fatty) appendage on seeds that attracts ants
         enclosing_wing: Wing-line seed extentions that enclose the seed
@@ -363,15 +420,25 @@ traits:
         water: Seeds dispersal depends in some way on water; should use hydrochory instead
         wind: Seeds are dispersed by wind; true dispersal syndrome; should use anemochory instead
         xerochasywater: wetting by rain or dew; also called hygrochasy
+    dispersers:
+      description: Types of animals dispersing fruit
+      type: categorical
+      label: Types of animals dispersing fruit
+      values:
+        aborigines: aborigines
+        ants: amt
+        birds: birds
+        flying_foxes: flying foxes
+        mammals: mammals
     dormancy_type:
       description: Classification for seed dormancy
       type: categorical
       label: Dormancy type
       values:
+        morphophysiological_dormancy: Seeds exhibit morphophysiological dormancy
         non_dormant: Seeds are non-dormant
         physical_dormancy: Seeds exhibit physical dormancy
-        physiological_dormancy: Seeds exhibit physiological dormancy
-        morphophysiological_dormancy: Seeds exhibit morphophysiological dormancy 
+        physiological_dormancy: Seeds exhibit physiological dormancy   
     embryo_colour:
       description: Binary variable distinguishing between embryos that are green versus colourless
       type: categorical
@@ -498,7 +565,7 @@ traits:
       units: mm
       label: Fruit diameter
       values:
-        minimum: 1.0
+        minimum: 0.1
         maximum: 100.0
     fruit_length:
       description: Longest fruit dimension or if clearly recognizable the length from its base to its apex
@@ -506,7 +573,7 @@ traits:
       units: mm
       label: Fruit length
       values:
-        minimum: 1.0
+        minimum: 0.1
         maximum: 1000.0
     fruit_breadth:
       description: The shorter width dimension of a fruit; orthogonal to the length
@@ -514,7 +581,7 @@ traits:
       units: mm
       label: Fruit breadth
       values:
-        minimum: 1.0
+        minimum: 0.1
         maximum: 100.0
     fruit_type:
       description: Fruit types
@@ -530,12 +597,18 @@ traits:
         capsule_explosive: Dry fruit from compound pistil, that releases its seeds in an explosive manner
         capsule_aril: Dry fruit from compound pistil, with a fleshy outgrowth (aril) to attract pollinators
         capsule_wing: Dry fruit from compound pistil, with a wing for dispersal by wind
+        caryopsis: a dry one-seeded fruit in which the ovary wall is united with the seed coat, typical of grasses and cereals
         cypsela: An achene developed from an inferior bicarpellary ovary fused with the calyx tube (in Asteraceae)
+        dehiscent_pod:
         drupe: Fleshy or pulpy, indehiscent, superficially berry-like fruit in which 1 seed is encased in a stone or more than 1 seed is encased in an equal number of free or variously fused stones
         drupe_fibrous: Fibrous or dry drupe; indehiscent, superficially berry-like fruit in which 1 seed is encased in a stone or more than 1 seed is encased in an equal number of free or variously fused stones
+        fig:
         follicle: Dry fruit from a simple pistil, dehiscent on generally only one side, along a single suture
+        indehiscent_pod:
         legume: Fruits from a legume; a dry or somewhat fleshy, 1- to many-seeded fruit from a simple pistil, typically dehiscent longitudinally along two sutures and splitting into halves that remain joined at the base
         legume_indehiscent: Fruits from a legume; a legume (see above) that is indehiscent
+        mericarp:
+        multiple_fruit:
         nut: Mostly dry, sometimes fleshy or pulpy, usually indehiscent fruit in which a single seed is encased in a hard shell
         nut_winged: A nut that is enclosed in a winglike bract
         nutlet: Small, dry nut or nut-like fruit, usually several of which are produced by a single flower; especially an achene
@@ -708,6 +781,38 @@ traits:
       values:
         minimum: 1.0
         maximum: 100.0
+    leaf_absorption:
+      description: Proportion of incoming light between 400-700 nm that is absorbed by the leaf
+      type: numeric
+      units: umol/umol
+      label: Proportion of incoming light that is absorbed by the leaf
+      values:
+        minimum: 0.01
+        maximum: 1.0
+    leaf_reflectance:
+      description: Proportion of incoming light between 400-700 nm that is reflected by the leaf
+      type: numeric
+      units: umol/umol
+      label: Proportion of incoming light that is reflected by the leaf
+      values:
+        minimum: 0.001
+        maximum: 1.0
+    leaf_transmission:
+      description: Proportion of incoming light between 400-700 nm that is transmitted through the leaf
+      type: numeric
+      units: umol/umol
+      label: Proportion of incoming light that is transmitted through the leaf
+      values:
+        minimum: 0.001
+        maximum: 1.0
+    leaf_PRI:
+      description: The photochemical reflectance index measures plant responses to stress, by indicating changes in carotenoid pigments in live foliage.
+      type: numeric
+      units: umol/umol
+      label: Photochemical Reflectance Index
+      values:
+        minimum: -1.0
+        maximum: 1.0
     leaf_arrangement:
       description: Describes leaf arrangement on the stem
       type: categorical
@@ -782,8 +887,10 @@ traits:
         leafless: A stem that lacks leaves
         lobed: A leaf that is lobed but not compound
         palmate: A leaf that is palmately compound
+        phyllode: Stem segment that functions like a leaf
         simple: A leaf with a single undivided blade
         trifoliate: A leaf that is divided into three leaflets; a special category of compound
+        unifoliate: A leaf that consists of a single leaflet; a special category of compound
     leaf_Cu_per_dry_mass:
       description: Leaf copper (Cu) content per unit leaf dry mass
       type: numeric
@@ -983,6 +1090,30 @@ traits:
       values:
         minimum: 0.1
         maximum: 1.0
+    leaf_mass_to_stem_mass:
+      description: Ratio of leaf dry mass to stem dry mass
+      type: numeric
+      units: g/g
+      label: Ratio of leaf dry mass to stem dry mass
+      values:
+        minimum: 0.1
+        maximum: 10.0
+    leaf_mesophyll_conductance_per_area:
+      description: Rate of CO2 movement between chloroplasts and substomatal cavities (intracellular space), per unit leaf area
+      type: numeric
+      units: mmolCO2/g/s
+      label: Mesophyll conductance per unit leaf area
+      values:
+        minimum: 0.01
+        maximum: 1
+    leaf_mesophyll_conductance_per_mass:
+      description: Rate of CO2 movement between chloroplasts and substomatal cavities (intracellular space), per unit leaf mass
+      type: numeric
+      units: molCO2/m2/s
+      label: Mesophyll conductance per unit leaf mass
+      values:
+        minimum: 0.01
+        maximum: 10
     leaf_Mg_per_dry_mass:
       description: Leaf magnesium (Mg) content per unit leaf dry mass
       type: numeric
@@ -1072,7 +1203,7 @@ traits:
       values:
         minimum: 0.1
         maximum: 800.0
-    leaf_photosynthetic_nitrogen_use_efficiency_saturated:
+    leaf_photosynthetic_nitrogen_use_efficiency_maximum:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf nitrogen content at saturating light and CO2 conditions
       type: numeric
       units: umolCO2/molN/s
@@ -1080,7 +1211,7 @@ traits:
       values:
         minimum: 0.1
         maximum: 800.0
-    leaf_photosynthetic_nitrogen_use_efficiency_maximum:
+    leaf_photosynthetic_nitrogen_use_efficiency_saturated:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf nitrogen content at saturating light conditions but ambient CO2 conditions
       type: numeric
       units: umolCO2/molN/s
@@ -1096,7 +1227,7 @@ traits:
       values:
         minimum: 500
         maximum: 50000
-    leaf_photosynthetic_phosphorus_use_efficiency_saturated:
+    leaf_photosynthetic_phosphorus_use_efficiency_maximum:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf phosphorus content at saturating light and CO2 conditions
       type: numeric
       units: umolCO2/molP/s
@@ -1104,7 +1235,7 @@ traits:
       values:
         minimum: 500
         maximum: 50000
-    leaf_photosynthetic_phosphorus_use_efficiency_maximum:
+    leaf_photosynthetic_phosphorus_use_efficiency_saturated:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf phosphorus content at saturating light conditions but ambient CO2 conditions
       type: numeric
       units: umolCO2/molP/s
@@ -1328,7 +1459,7 @@ traits:
       values:
         minimum: 0.1
         maximum: 1000.0
-    life_form:
+    life_form: 
       description: Raunkiaer classification; Categorical classification of plants according to shoot-apex or bud protection
       type: categorical
       label: Life form
@@ -1369,6 +1500,16 @@ traits:
         '<100': Plant that lives less than 100 years
         '>100': Plant that lives more than 100 years
         '?': Plant with unknown lifespan
+    mating_system:
+      description: Plant mating system
+      type: categorical
+      label: Plant mating system
+      values:
+        andromonoecious: Plants with hermaphrodite flowers and staminate flowers (producing just male gametes) on the same plant but no pistillate (female) flowers.
+        dioecious: Plants that produce male and female flowers on separate plants
+        gynomonoecious: Plants with hermaphrodite flowers and pistillate flowers (producing just female gametes) on the same plant but no staminate (male) flowers.
+        hermaphrodite: Flowers can produce both male and female gametes
+        monoecious: Plants that have both male and female flowers on the same plant, but an individual flower produces only male or female gamets.
     modified_NDVI:
       description:  modified normalized difference vegetation index (modified NDVI), based on Landsat data
       type: numeric
@@ -1476,18 +1617,18 @@ traits:
         minimum: 0.25
         maximum: 50
     photosynthetic_rate_per_area_maximum:
-      description: Rate at which a plant consumes carbon dioxide through photosynthesis at saturating light conditions but ambient CO2 conditions, normalised to leaf area
-      type: numeric
-      units: umolCO2/m2/s
-      label: Leaf photosynthesis rate per unit leaf area at saturating light conditions
-      values:
-        minimum: 0.25
-        maximum: 85
-    photosynthetic_rate_per_area_saturated:
       description: Rate at which a plant consumes carbon dioxide through photosynthesis at saturating light and CO2 conditions, normalised to leaf area
       type: numeric
       units: umolCO2/m2/s
       label: Leaf photosynthesis rate per unit leaf area at saturating light and CO2 conditions
+      values:
+        minimum: 0.25
+        maximum: 85
+    photosynthetic_rate_per_area_saturated:
+      description: Rate at which a plant consumes carbon dioxide through photosynthesis at saturating light conditions but ambient CO2 conditions, normalised to leaf area
+      type: numeric
+      units: umolCO2/m2/s
+      label: Leaf photosynthesis rate per unit leaf area at saturating light conditions
       values:
         minimum: 0.25
         maximum: 85
@@ -1500,18 +1641,18 @@ traits:
         minimum: 0.01
         maximum: 1.0
     photosynthetic_rate_per_dry_mass_maximum:
-      description: Maximum rate at which a plant consumes carbon dioxide through photosynthesis at saturating light conditions but ambient CO2 conditions, normalised to leaf dry mass
-      type: numeric
-      units: umolCO2/g/s
-      label: Leaf photosynthesis rate per unit leaf dry mass at saturating light conditions
-      values:
-        minimum: 0.01
-        maximum: 1.0
-    photosynthetic_rate_per_dry_mass_saturated:
       description: Maximum rate at which a plant consumes carbon dioxide through photosynthesis at saturating light and CO2 conditions, normalised to leaf dry mass
       type: numeric
       units: umolCO2/g/s
       label: Leaf photosynthesis rate per unit leaf dry mass at saturating light and CO2 conditions
+      values:
+        minimum: 0.01
+        maximum: 1.0
+    photosynthetic_rate_per_dry_mass_saturated:
+      description: Maximum rate at which a plant consumes carbon dioxide through photosynthesis at saturating light conditions but ambient CO2 conditions, normalised to leaf dry mass
+      type: numeric
+      units: umolCO2/g/s
+      label: Leaf photosynthesis rate per unit leaf dry mass at saturating light conditions
       values:
         minimum: 0.01
         maximum: 1.0
@@ -1567,14 +1708,22 @@ traits:
       values:
         minimum: 0.001
         maximum: 20
+    pollination_syndrome:
+      description: Pollination syndrome
+      type: categorical
+      label: Pollination syndrome
+      values:
+        animal: Generic cath-all for any form of animal pollination
+        wind: wind-pollinated
     regen_strategy:
       description: Different regeneration strategies displayed by plants. Trait values include both generic terms and quite specific ones. See Pausus, Lamont et al. 2018, doi.org/10.1111/nph.14982 for trait values used and detailed desciptions of recolonization ability and level of fire protection provided by each regeneration strategy. This trait includes terminology for storage organs and regeneration strategies following fire. The trait "fire_response" is a binary trait distinguishing between fire-killed and regenerating species.
       type: categorical
       label: Regeneration strategy
       values:
+        aboveground: Plants that resprout from an aboveground organ, but the type of organ isn't specified.
         aboveground_caudex: Plant regenerates from above-ground apical meristems. Also termed a caudex. Term refers to palm-like plants with aerial buds that resprout, including grass trees, palms, tree ferns, and pandanus.
         basal: Plant regenerates from the base of the stem (versus underground). Generally synonymous with "lignotuber", especially among Australian plants.
-        belowground_caudex: Plant regenerates from above-ground caudex. 
+        belowground_caudex: Plant regenerates from belowe-ground caudex. 
         bud-bearing_root: Lateral root that produces vertical suckers
         bulb: Below ground storage organ derived from stem (and sometimes leaf) tissue.
         corm: Below ground storage organ derived from stem tissue.
@@ -1657,13 +1806,14 @@ traits:
         minimum: 0.01
         maximum: 1.0
     root_structure:
-      description: Specific specialized types of root structures and root symbioses
+      description: Specific specialized types of root structures and root symbioses. https://www.mycorrhizas.info/ provides detailed information for types of mycorrhizal associations.
       type: categorical
       label: Root structure
       values:
-        arbuscular_mycorrhizal: Symbiosis in which the mycorrhizal fungi does penetrate the cortex cells of the plant roots and its hyphae form arbuscules and vesicles inside the plant root; endomycorrhizal
+        arbuscular_mycorrhizal: Symbiosis in which the mycorrhizal fungi does penetrate the cortex cells of the plant roots and its hyphae form arbuscules and vesicles inside the plant root; endomycorrhizal, AM, VAM
         carnivorous: non-mycorrhizal carnivorous root
         cluster_roots: cluster roots in non-proteoid species
+        coiling_vam: Associations that spread predominantly by intracellular hyphal coils within roots; a sub-category of arbuscular mycorrhizal association
         dauciform_root: A type of cluster root found in the family Cyperaceae
         ectomycorrhizal: Symbiosis in which the mycorrhizal fungi does not penetrate the cortex cells of the plant roots
         ericoid_mycorrhizal: A form of arbuscular mycorrhizal relationship only found on plants in the order Ericales. The fungi's hyphae penetrate the plant root but do not form arbuscules
@@ -1686,7 +1836,7 @@ traits:
         minimum: 0.1
         maximum: 10.0
     sapwood_specific_conductivity:
-      description: Ks; Describes the flow rate of water (kg/s) along a stem for a given drop in pressure (1/MPa), extremenormalised to the length of the segment (1/m). Calculated as leaf hydraulic conductivity divided by the sapwood cross-sectional area where the measurement is taken.
+      description: Ks; Describes the flow rate of water (kg/s) along a stem for a given drop in pressure (1/MPa), normalised to the length of the segment (1/m). Calculated as leaf hydraulic conductivity divided by the sapwood cross-sectional area where the measurement is taken.
       type: numeric
       units: kg/m/s/MPa
       label: Sapwood specific conductivity (Ks)
@@ -2151,7 +2301,7 @@ traits:
     stem_hydraulic_conductivity:
       description: Kh; Measure of how efficiently water is transported through the leaf, determined as the ratio of water flow rate through the leaf to the difference in water potential across the leaf, standardised to leaf area.
       type: numeric
-      units: kg/m/s/Mpa
+      units: kg*m/s/MPa
       label: Hydraulic conductivity (Kh)
       values:
         minimum: 0.00000001
@@ -2181,18 +2331,18 @@ traits:
         minimum: -0.1
         maximum: 2000
     stomatal_conductance_per_area_at_Amax:
-      description: Rate of water loss through stomata, per unit leaf area under saturated light conditions
-      type: numeric
-      units: mmolH2O/m2/s
-      label: Stomatal conductance per unit leaf area under saturated light conditions
-      values:
-        minimum: -0.1
-        maximum: 2000
-    stomatal_conductance_per_area_at_Asat:
       description: Rate of water loss through stomata, per unit leaf area under saturated light and CO2 conditions
       type: numeric
       units: mmolH2O/m2/s
       label: Stomatal conductance per unit leaf area under saturated light and CO2 conditions
+      values:
+        minimum: -0.1
+        maximum: 2000
+    stomatal_conductance_per_area_at_Asat:
+      description: Rate of water loss through stomata, per unit leaf area under saturated light conditions
+      type: numeric
+      units: mmolH2O/m2/s
+      label: Stomatal conductance per unit leaf area under saturated light conditions
       values:
         minimum: -0.1
         maximum: 2000
@@ -2303,6 +2453,22 @@ traits:
       values:
         minimum: 1.0
         maximum: 10.0
+    wood_delta13C:
+      description: Wood carbon stable isotope signature
+      type: numeric
+      units: per mille
+      label: Wood carbon (C) isotope signature (delta 13C)
+      values:
+        minimum: -50.0
+        maximum: 0.0
+    wood_delta15N:
+      description: Wood nitrogen stable isotope signature
+      type: numeric
+      units: per mille
+      label: Wood nitrogen (N) isotope signature (delta 15N)
+      values:
+        minimum: -25.0
+        maximum: 75.0  
     wood_density:
       description: Stem dry mass per unit stem fresh volume (stem specific density or SSD or wood density)
       type: numeric
@@ -2311,6 +2477,22 @@ traits:
       values:
         minimum: 0.1
         maximum: 1.3
+    wood_C_per_dry_mass:
+      description: Wood carbon (C) content per unit wood dry mass
+      type: numeric
+      units: mg/g
+      label: Wood carbon (C) content per unit wood dry mass
+      values:
+        minimum: 50.0
+        maximum: 750.0
+    wood_N_per_dry_mass:
+      description: Wood nitrogen (N) content per unit wood dry mass
+      type: numeric
+      units: mg/g
+      label: Wood nitrogen (N) content per unit wood dry mass
+      values:
+        minimum: 0.1
+        maximum: 100.0
     woodiness:
       description: A plant's degree of lignification in stems
       type: categorical
