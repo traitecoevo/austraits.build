@@ -16,3 +16,14 @@ read_csv("data/Schmidt_2003_v2/data_raw.csv") %>%
   write_csv("data/Schmidt_2003_v2/data.csv") -> data_test
 
 read_csv("data/Schmidt_2003_v2/site_data.csv") -> site_data
+
+
+###additional data added March 2020
+
+read_csv("data/Schmidt_2003/raw/KAKADU1_reformatted.csv") %>%
+  rename(species_name = species, leaf_C_per_dry_mass = '% C', leaf_delta13C = 'delta C') %>%
+  select(-X4) -> Kakadu1
+
+read_csv("data/Schmidt_2003/raw/data_pre_March_2020.csv") %>%
+  bind_rows(Kakadu1) %>%
+  write_csv("data/Schmidt_2003/data.csv")

@@ -73,12 +73,12 @@ dataset:
     1998). An annually burnt subsection (segment L) of the CSIRO Kapalga fire research
     site was compared with savanna that had not been burnt for 4 years at Kapalga
     (segment M) and one that had been burnt 2 years prior to sampling near Jabiru.
-  original_file: schmidt data for RhysWhitleyJuly2012.xls (there are also other files
-    in the e-mail chain)
-  notes: This data set now combines the previous Kakadu data in Schmidt_2003 (old version; in archive folder) and data found in Suzanne Schmidt's original data submission. For the expanded data set, we only have species name abbreviations for some species. E. Wenk manually matched abbreviations with the Northern Territory species list if these was no ambiguity, but left others as abbreviations. In both the old and new files, some of the d15N values are way off - they seems like %C values. It is clear they are wrong, because for many species there are replicate measurements and only one of them falls far outside the expected range.
+  original_file: schmidt data for RhysWhitleyJuly2012.xls, SuzanneIsoope.xls (two worksheets of data), TOTAL4 Kakadu data, wue_Schmidt data.xls, KAKADU1.xls (the data in it was cut and paste into the file now called KAKADU1_reformatted.csv),  are all incorporated into this file
+  notes: This data set now combines the previous Kakadu data in Schmidt_2003 (old version; in archive folder) and data found in Suzanne Schmidt's original data submission. For the expanded data set, we only have species name abbreviations for some species. E. Wenk manually matched abbreviations with the Northern Territory species list if these was no ambiguity, but left others as abbreviations. Some of the d15N values (in both files) were clearly %C values - Lizzy Wenk has manually moved them to the %C column. For many species there were replicate measurements and the replicate that is assumed to be %C was much different than the other two values. 
 sites:
   Kakadu1:
     description: waste rock dump
+    date collected: Data collected in dry (July 1994) and wet (Feb 1995) 
     latitude (deg): -12.65
     longitude (deg): 132.9166667
     MAP (mm): 1475.0
@@ -146,6 +146,7 @@ sites:
       site was affected by wallowing and grazing of feral pigs and water buffaloes.
   Kakadu2:
     description: burnt site
+    date collected: Data collected in dry (July 1994) and wet (Feb 1995) 
     latitude (deg): -12.65
     longitude (deg): 132.9166667
     MAP (mm): 1475.0
@@ -175,6 +176,7 @@ sites:
       personal communication).
   Kakadu3:
     description: waste rock dump
+    date collected: Data collected in dry (July 1994) and wet (Feb 1995) 
     latitude (deg): -12.65
     longitude (deg): 132.9166667
     MAP (mm): 1475.0
@@ -188,6 +190,7 @@ sites:
       weathered schist (WRD I) and a clayey highly weathered schist (WRD II).
   Kakadu4:
     description: irrigated woodland
+    date collected: Data collected in dry (July 1994) and wet (Feb 1995) 
     latitude (deg): -12.65
     longitude (deg): 132.9166667
     MAP (mm): 1475.0
@@ -217,6 +220,7 @@ sites:
       (N. Ashwath, personal communication).
   Kakadu5:
     description: escarpment woodland
+    date collected: Data collected in dry (July 1994) and wet (Feb 1995) 
     latitude (deg): -12.65
     longitude (deg): 132.9166667
     MAP (mm): 1475.0
@@ -246,6 +250,7 @@ sites:
       (N. Ashwath, personal communication).
   Kakadu6:
     description: deciduous monsoon forest
+    date collected: Data collected in dry (July 1994) and wet (Feb 1995) 
     latitude (deg): -12.65
     longitude (deg): 132.9166667
     MAP (mm): 1475.0
@@ -302,12 +307,32 @@ sites:
       including Myrtaceae, Proteaceae and Mimosaceae with evergreen scleromorphous
       and often highly reduced foliage. The vegetation is characterised by a sparse
       canopy and ground cover (Brock 1988). Samples were taken from Koongarra Saddle.
+  Bukbukluk spring:
+    description: evergreen "jungle" (spring), Kakadu
+    date collected: 1992
+    latitude (deg): -13.485
+    longitude (deg): 132.249
+  near Ubirr:
+    description: gallery forest, Kakadu
+    date collected: 1992
+    latitude (deg): -12.408
+    longitude (deg): 132.956
+  Kunwardeh lookout at Nurlangi rock:
+    description: sandstone woodland, Kakadu
+    date collected: 1992
+    latitude (deg): -12.860
+    longitude (deg): 132.793
+  path to Jim Jim falls:
+    description: Allosyncarpia woodland, Kakadu
+    date collected: 1992
+    latitude (deg): -13.272
+    longitude (deg): 132.829
 config:
   data_is_long_format: no
   variable_match:
     species_name: species_name
     site_name: site_name
-  custom_R_code: data %>% mutate(leaf_water_content = (100 - leaf_water_content)) %>% mutate(regen_strategy = ifelse(life_history=="r","resprouts","")) %>% mutate(life_history = ifelse(life_history=="r","p",life_history)) %>% mutate(regen_strategy = ifelse(life_history=="o","seed","")) %>% mutate(life_history = ifelse(life_history=="o","p",life_history)) %>% mutate(regen_strategy= ifelse(plant_growth_form=="f","fern","")) %>% mutate(life_history = ifelse(life_history=="f","",life_history)) %>% mutate_at(c("life_history","regen_strategy"), ~na_if(.,""))
+  custom_R_code: data %>% mutate(leaf_water_content = (100 - leaf_water_content)) %>% mutate(regen_strategy = ifelse(life_history=="r","resprouts","")) %>% mutate(life_history = ifelse(life_history=="r","p",life_history)) %>% mutate(regen_strategy = ifelse(life_history=="o","seed","")) %>% mutate(life_history = ifelse(life_history=="o","p",life_history)) %>% mutate(regen_strategy= ifelse(plant_growth_form=="f","fern","")) %>% mutate(life_history = ifelse(life_history=="f","",life_history)) %>% mutate_at(c("life_history","regen_strategy"), ~na_if(.,"")) %>% mutate_at(c("leaf_water_content"), ~na_if(.,0))
 traits:
 - var_in: leaf_water_content
   unit_in: '%'
@@ -540,7 +565,6 @@ taxonomic_updates:
   replace: Petrophile shirleyae
   reason: Align spelling with known species (E Wenk, 2020-02-11)
 questions:
-  contributors: This data set now combines the previous Kakadu data in Schmidt_2003 (old version; in archive folder) and data found in Suzanne Schmidt's original data submission. For the expanded data set, we only have species name abbreviations for some species. E. Wenk manually matched abbreviations with the Northern Territory species list if these was no ambiguity, but left others as abbreviations. In both the old and new files, some of the d15N values are way off - they seems like %C values. It is clear they are wrong, because for many species there are replicate measurements and only one of them falls far outside the expected range.
-  contextual: If possible, AusTraits will eventually add contextual data to indicate which measurements were made in the wet vs dry season
+  contextual: Context for AusTraits to add, wet vs dry season (trip 1 vs 2)
   additional_traits: For the future, data.csv file also includes NRA data
   
