@@ -13,20 +13,21 @@ test_list <- function(data, info) {
   expect_is(data, "list", info = info)
 }
 
-test_list_named <- function(data, expected_names, info) {
+test_list_names_valid <- function(data, info) {
   test_list(data, info)
   expect_not_NA(names(data), info = info)
   expect_allowed_text(names(data), info = info)
   expect_unique(names(data), info = info)
+}
+
+
+test_list_named <- function(data, expected_names, info) {
+  test_list_names_valid(data, info)
   expect_named(data, expected_names, info= info)
 }
 
 test_list_named_contains <- function(data, expected_names, info) {
-  test_list(data, info)
-  expect_not_NA(names(data), info = info)
-  expect_allowed_text(names(data), info = info)
-  expect_unique(names(data), info = info)
-  expect_named(data, info= info)
+  test_list_names_valid(data, info)
   expect_isin(names(data), expected_names)
 }
 
@@ -57,14 +58,26 @@ for (dataset_id in dataset_ids) {
 
   # source
   test_list(metadata[["source"]], info=f)
-  expect_isin(names(metadata[["source"]]), definitions$metadata$elements$source$values %>% names(), info=f)
-  vals <- c("key", "bibtype", "author", "title", "year")
-  expect_contains(names(metadata[["source"]][["primary"]]), vals, info=f)
+  test_list_names_valid(metadata[["source"]], info=f)
+  
+  v <- names(metadata[["source"]])
+  i <- grepl("primary", v) | grepl("secondary", v)
 
-  if(!is.null(metadata[["source"]][["secondary"]]))
-    if(!is.na(metadata[["source"]][["secondary"]][1])) {
-    expect_contains(names(metadata[["source"]][["secondary"]]), vals, info=paste(f, "-> source -> secondary"))
+  expect_contains(v, "primary", info=f)
+
+  expect_true(sum(grepl("primary", v)) <=1,  info=paste(f, "sources can have max 1 type labelled 'primary': ", paste(v, collapse = ", ") ))
+
+  expect_true(all(i),  info=paste(f, "sources must be either primary or secondary:", paste(v[!i], collapse = ", ") ))
+
+  vals <- c("key", "bibtype", "author", "title", "year")
+
+  for(bib in names(metadata[["source"]])) {
+    expect_contains(names(metadata[["source"]][[bib]]), vals, info=f)
   }
+
+  keys <- unlist(lapply(metadata[["source"]], "[[", "key"))
+
+  expect_unique(keys, info = paste(f, "sources must have unique keys:", paste(keys, collapse = ", ") ))
 
   # people
   test_list(metadata[["people"]], info=f)
