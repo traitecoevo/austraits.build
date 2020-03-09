@@ -59,7 +59,15 @@ for (dataset_id in dataset_ids) {
   test_list(metadata[["source"]], info=f)
   expect_isin(names(metadata[["source"]]), definitions$metadata$elements$source$values %>% names(), info=f)
   vals <- c("key", "bibtype", "author", "title", "year")
-  expect_contains(names(metadata[["source"]][["primary"]]), vals, info=f)
+
+  for(bib in names(metadata[["source"]])) {
+    expect_contains(names(metadata[["source"]][[bib]]), vals, info=f)
+  }
+
+  keys <- unlist(lapply(metadata[["source"]], "[[", "key"))
+
+  expect_unique(keys, info = paste(f, "sources must have unique keys:", paste(keys, collapse = ", ") ))
+
 
   if(!is.null(metadata[["source"]][["secondary"]]))
     if(!is.na(metadata[["source"]][["secondary"]][1])) {
