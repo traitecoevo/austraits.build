@@ -1,6 +1,6 @@
 read_csv("data/Metcalfe_2020_3/raw/Cooper & Cooper_Australian Rainforest Plants.csv") %>%
   select(genus, species, form, height, `stem diameter`, `start of flower`, `end of flower`, fruits, 
-         `start of fruit season`, `end of fruit season`, dispersers, `min fruit length`, `max fruit length`,
+         `start of fruit season`, `end of fruit season`, dispersers, dispersers_simple, `min fruit length`, `max fruit length`,
          `min fruit width`, `max fruti width`, `min seed length`, `max seed length`) %>%
   mutate(species_name = paste(genus,species,sep=" ")) %>%
   mutate(`start of flower` = gsub("\\(","", `start of flower`),
