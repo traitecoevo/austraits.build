@@ -4,7 +4,7 @@ source:
     bibtype: Unpublished
     author: Peter Vesk
     year: 2007
-    title: "Unpublished data: Leaf traits for flora of Falls Creek Victoria"
+    title: 'Unpublished data: Leaf traits for flora of Falls Creek Victoria'
 people:
 - name: Peter Vesk
   institution: University of Melbourne
@@ -14,40 +14,177 @@ dataset:
   year_collected_end: 2007
   description: Leaf Mass Area Measurements for Falls Creek Flora
   collection_type: field
-  sample_age_class: adult assumed
-  sampling_strategy: unknown
+  sample_age_class: adult
+  sampling_strategy: 'Plants were sampled over a 3 day period In late January 2007.
+    Plants were opportunistically sampled as populations were encountered while traversing
+    the landscape. The majority of habitats in the area were sampled: snowpatches,
+    grasslands, bogs and fens, open and closed heaths and woodlands, crags. Individuals
+    were sampled as healthy mature individuals  separated by at least 1m, but often
+    close by. The aim was to sample 5 individuals. And at least two leaves per individual.
+    Leaves were young, fully expanded and in sun.'
   original_file: Vesk_2007
-  notes: .na
-sites: .na
+  notes: Leaf area and leaf mass were in the original spreadsheet we were given by
+    Peter Vesk. They've been intentionally removed from the current version, because
+    Peter Vesk is uncertain how many leaves were scanned for the recorded leaf areas.
+    (The data were collected to calculate SLA, not explicitly for leaf area.)
+sites:
+  Basalt Hill:
+    latitude (deg): -36.89
+    longitude (deg): 147.31
+    description: Bogong High Plains in the Alpine National Park (36.87S, 147.32E;
+      about 1600-1860 m altitude), northeastern Victoria, Australia.McDougall K. L. & Walsh N. G. (2007) Treeless vegetation of the Australian Alps. Cunninghamia
+      10, 1-57.  Williams RJ, Ashton DH (1987) The composition, structure and distribution
+      of heathland and grassland communities in the subalpine tract of the Bogong
+      High Plains, Victoria. Australian Journal of Ecology 12, 57-71.
+  Basalt Hill bog:
+    latitude (deg): -36.89
+    longitude (deg): 147.31
+    description: See Basalt Hill
+  Langford Gap Carpark:
+    latitude (deg): -36.88
+    longitude (deg): 147.31
+    description: See Basalt Hill
+  Mt Nelse:
+    latitude (deg): -36.845
+    longitude (deg): 147.34
+    description: See Basalt Hill
+  Mt Nelse snowpatch:
+    latitude (deg): -36.845
+    longitude (deg): 147.34
+    description: See Basalt Hill
+  Mt Nelse crags:
+    latitude (deg): -36.845
+    longitude (deg): 147.34
+    description: See Basalt Hill
 config:
   data_is_long_format: no
   variable_match:
     species_name: Spp_Name
-  custom_R_code: .na
+    site_name: Site
+  custom_R_code: data %>% mutate(Site = gsub("Basalt Hill bogs","Basalt Hill bog",Site))
 traits:
-- var_in: L.A (CM^2)
-  unit_in: cm2
-  trait_name: leaf_area
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: Leaf Mass (g)
-  unit_in: g
-  trait_name: leaf_dry_mass
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: LMA (g/m^2)
-  unit_in: g/m2
+- var_in: SLA(mm2/mg)
+  unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-substitutions: .na
+  value_type: site_mean
+  replicates: most often 2; but 1 to several
+  methods: Method broadly followed Perez-Hardindeguy et al 2013 Aust J Bot handbook.
+    Leaves were sampled in field kept cool in plastic bags, allowed to moisten overnight
+    in fridge, before being blotted dry and scanned using LiCoR leaf Area meter. Leaves
+    were dried for 3 days at 65 degrees C before weighing. For resitonaceae and Juncaceae,
+    the sampled organs included culm/photosynthetic stems
+- var_in: plant_growth_form
+  unit_in: .na
+  trait_name: plant_growth_form
+  value_type: expert_mean
+  replicates: .na
+  methods: Based on expert assignments/floras
+substitutions:
+- trait_name: plant_growth_form
+  find: grass
+  replace: graminoid
 taxonomic_updates:
 - find: Australopyrum Velutinum
   replace: Agropyron velutinum
   reason: Align with known species (D Falster, 2019-04-16)
-questions:
-  austraits: .na
+- find: Acetosella vulgaris
+  replace: Rumex acetosella
+  reason: align to known species (E Wenk, 2019-09-20)
+- find: Brachysome nivalis (mt Nelse)
+  replace: Brachyscome nivalis
+  reason: align to known species (E Wenk, 2019-09-20)
+- find: Brachyscome spathulata (mt Nelse)
+  replace: Brachyscome spathulata
+  reason: align to known species (E Wenk, 2019-09-20)
+- find: Caltha intraloba
+  replace: Psychrophila introloba
+  reason: align to known species (E Wenk, 2019-09-20)
+- find: Geranium potentilliodes
+  replace: Geranium potentilloides
+  reason: align to known species (E Wenk, 2019-09-20)
+- find: Tasmannia xerophylla
+  replace: Tasmannia xerophila
+  reason: align to known species (E Wenk, 2019-09-20)
+- find: Richea continentalis
+  replace: Richea continentis
+  reason: align to known species (E Wenk, 2019-09-20)
+- find: Danthonia alpicola (nelse. rock lover) Not flattened
+  replace: Danthonia alpicola
+  reason: align to known species (E Wenk, 2019-09-20)
+- find: Acaena novae-zealandiae
+  replace: Acaena novae-zelandiae
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Asterolasia trymaliodes
+  replace: Asterolasia trymalioides
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Celmisia pugioniformis b.h.
+  replace: Celmisia pugioniformis
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Deyeuxia carinata
+  replace: Calamagrostis carinata
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Empodisma minus (green parts)
+  replace: Empodisma minus
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Juncus articulatus (leaf and sheath)
+  replace: Juncus articulatus
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Juncus articulatus (leaf, sheath and stem)
+  replace: Juncus articulatus
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Olearia brevipediunculata
+  replace: Olearia brevipedunculata
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Oreomyrrhis eriopoda
+  replace: Chaerophyllum eriopodum
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Orites lancifolia
+  replace: Orites lancifolius
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Ozothamnus hookeri (whole twigg reduced scale like leaves)
+  replace: Ozothamnus hookeri
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Plantago europhylla
+  replace: Plantago euryphylla
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Poa nothamensis (Nelse)
+  replace: Poa hothamensis
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Poa phillipsiana (curled. Basalt hill. Shute.)?
+  replace: Poa phillipsiana
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Senecio linearifolius (subalp basalt)
+  replace: Senecio linearifolius
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Stackhousia pulvinaris (yellow in bogs)
+  replace: Stackhousia pulvinaris
+  reason: Alignment with existing species identified by TaxonStand (2019-09-20)
+- find: Brachyscome nivalis
+  replace: Brachyscome radicans
+  reason: Synonym reported by TaxonStand (2019-09-20)
+- find: Danthonia alpicola (nelse. rock lover) Not flattened
+  replace: Rytidosperma alpicola
+  reason: Synonym reported by TaxonStand (2019-09-20)
+- find: Derwentia derwentiana
+  replace: Veronica derwentiana
+  reason: Synonym reported by TaxonStand (2019-09-20)
+- find: Derwentia nivea
+  replace: Veronica nivea
+  reason: Synonym reported by TaxonStand (2019-09-20)
+- find: Euchiton fordianus
+  replace: Argyrotegium fordianum
+  reason: Synonym reported by TaxonStand (2019-09-20)
+- find: Leucopogon hookeri
+  replace: Acrothamnus hookeri
+  reason: Synonym reported by TaxonStand (2019-09-20)
+- find: Australopyrum velutinum
+  replace: Agropyron velutinum
+  reason: Alignment with existing species identified by TaxonStand (2019-09-27)
+- find: Brachysome nivalis
+  replace: Brachyscome nivalis
+  reason: align to known species (E Wenk, 2019-09-27)
+- find: Juncus articulatus subsp. articulatus 
+  replace: Juncus articulatus
+  reason: align to known species (E Wenk, 2019-09-27)
+questions: .na
 

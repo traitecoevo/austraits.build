@@ -288,6 +288,7 @@ austraits$definitions$value_type$values %>%
   my_kable_styling() %>% 
   writeLines()
 ```
+AusTraits does not include intra-individual observations. WHen multiple measurements per individual are submitted to AusTraits, we take the mean of the values and record the value_type as `individual_mean`.
 
 ## Species taxonomy {#taxonomy}
 
@@ -305,7 +306,7 @@ Links to species records in these systems can be accessed via the relevant IDs a
 
 ## Sources
 
-For each dataset in the compilation there is the option to list a primary and secondary citation. The primary citation `r austraits$definitions$metadata$elements$source$values$primary` while the secondary citation is `r austraits$definitions$metadata$elements$source$values$secondary`. these references are included in two places:
+For each dataset in the compilation there is the option to list a primary and secondary citation. The primary citation `r austraits$definitions$metadata$elements$source$values$primary` while the secondary citation is `r austraits$definitions$metadata$elements$source$values$secondary`. These references are included in two places:
 
 1. Within the table [methods](#methods), where we provide a formatted version of each.
 2. In the element [sources](#sources), where we provided bibtex versions of all sources which can be imported into your reference library. The keys for these references are listed within the [methods]{#methods}. 
@@ -385,7 +386,7 @@ data
 
 ```
 
-where `Angevin_2010`, `Barlow_1981`, `Bean_1997`, `Blackman_2014` are each a unique `dataset_id` in the final dataset.
+where `Angevin_2010`, `Barlow_1981`, `Bean_1997`, `Westoby_2014` are each a unique `dataset_id` in the final dataset.
 
 ## Rebuilding from scratch {#building}
 
@@ -884,7 +885,7 @@ where `find` is the trait value used in the data.csv file and `replace` is the t
 We've implemented code to semi-automate the checking of names using the R package [Taxonstand](https://cran.r-project.org/web/packages/Taxonstand/index.html) (for more documentation see [here](https://www.rdocumentation.org/packages/Taxonstand/versions/2.1/topics/TPL)). To generate a suggested name change for a specific study run:
 
 ```{r, eval=FALSE, echo=TRUE}
-metadata_check_taxa("Blackman_2014")
+metadata_check_taxa("Westoby_2014")
 ```
 
 If TaxonStand finds taxonomic changes to make it will add the relevant lines of code directly to the metadata.yml file.
@@ -899,7 +900,7 @@ There are additional arguments you can add for the function `metadata_check_taxa
 Therefore, if you want the function  `metadata_check_taxa` to correct 1 and 2 character typos, run the function as follows:
 
 ```{r, eval=FALSE, echo=TRUE}
-metadata_check_taxa("Blackman_2014", typos=TRUE)
+metadata_check_taxa("Westoby_2014", typos=TRUE)
 ```
 
 If TaxonStand fails to find a suitable alignment, and you have identified one yourself, you can add it to the metadata by running
@@ -993,7 +994,7 @@ austraits$traits %>%
 
 ```{r}
 austraits$traits %>% 
-  filter(dataset_id == "Blackman_2014")
+  filter(dataset_id == "Westoby_2014")
 ```
 
 `filter` can also be used to select observations for a specific string of text, such as a single genus:
@@ -1015,7 +1016,7 @@ austraits$traits %>%
 The file `austraits.R` also include pre-built functions for extracting a particular trait or study. The difference with the examples above, is that these functions also subset the other tables and elements of the data, not just the main data table. So we need to provide the entire `austraits` object and a `dataset_id`:
 
 ```{r B14}
-traits_B14 <- extract_dataset(austraits, "Blackman_2014")
+traits_B14 <- extract_dataset(austraits, "Westoby_2014")
 ```
 
 As wiith the the main `austraits` object, this new dataset has multiple elements:
@@ -1135,13 +1136,13 @@ As discussed above, the main data table in `austraits` is distributed in long fo
 
 For many analyses, however, you'll want to use wide format. We have therefore provided the ability to convert between the two formats. In wide format, each trait appears in it's own column and measurements from the same observation (ideally individual, but in floras may be a species) appear on the same row.  
 
-As the entire austraits dataset is quite large, we recommend first sub-setting the data before spreading from long to wide format. You may also need to reduce the number of measurements in any one observation (see next section). For this first example we'll sue the dataset `Blackman_2014`. 
+As the entire austraits dataset is quite large, we recommend first sub-setting the data before spreading from long to wide format. You may also need to reduce the number of measurements in any one observation (see next section). For this first example we'll use the dataset `Westoby_2014`. 
 
-First extract the trait data from the `Blackman_2014` study:
+First extract the trait data from the `Westoby_2014` study:
 
 ```{r}
 data <- austraits$traits %>% 
-  filter(dataset_id == "Blackman_2014")
+  filter(dataset_id == "Westoby_2014")
 data
 ```
 Now use the inbuilt function `spread_trait_data` to convert from long to wide:

@@ -28,9 +28,9 @@ dataset:
   sampling_strategy: Tree species were chosen with the aim of representing the range
     of light requirements present in old-growth assemblages on lowland rainforest
     sites in tropical Queensland and temperate Tasmania. Our focal sites for choosing
-    species were the Daintree Rainforest Observatory in Queensland (16°17'S, 145°29'E,
-    40 m a.s.l.) and the Arve Road area near the Tahune Airwalk in Tasmania (43°06'S,
-    146°44'E, 70 m a.s.l.). In Tasmania, choice of species was straightforward, as
+    species were the Daintree Rainforest Observatory in Queensland (16deg17'S, 145deg29'E,
+    40 m a.s.l.) and the Arve Road area near the Tahune Airwalk in Tasmania (43deg06'S,
+    146deg44'E, 70 m a.s.l.). In Tasmania, choice of species was straightforward, as
     only four angiosperm rainforest trees were common at the site (Table 1), a figure
     typical of Tasmanian lowland rainforest in general (Kirkpatrick, 1977; Read, 1995).
     We excluded species thought to be largely dependent on fire for establishment,
@@ -43,10 +43,10 @@ dataset:
     in the intermediate light environments found beneath a nearby second-growth stand
     (Palaquium galactoxylon). Our sixth tropical species (Melicope jonesii) was abundantly
     represented by juveniles on forest margins at another Queensland forest site,
-    Danbulla National Park (17°7'S, 145°38'E, 700 m a.s.l.). Experimental growth conditions
+    Danbulla National Park (17deg7'S, 145deg38'E, 700 m a.s.l.). Experimental growth conditions
     Plants were grown in glasshouses in two temperate regimes, intended to approximate
     growing season temperatures in tropical and temperate rainforest environments.
-    These were set at 29/21°C and 24/16°C, respectively. Two glasshouses were randomly
+    These were set at 29/21C and 24/16C, respectively. Two glasshouses were randomly
     assigned to each temperature treatment, giving us some power to test for unintended
     effects resulting from environment differences between glasshouses. Seedlings
     were transplanted to 8-L plastic pots, filled with a clay loam soil developed
@@ -54,7 +54,7 @@ dataset:
     This soil was found to be well supplied with most macronutrients (Supplementary
     Data Table S1) but deficient in nitrogen. Accordingly, urea was added twice during
     the experiment, at 20 g m22 (i.e. about 1 g per plot), to produce the total N
-    levels shown in Table S1. Seedlings were allowed 2–3 weeks to recover from transplanting
+    levels shown in Table S1. Seedlings were allowed 2-3 weeks to recover from transplanting
     before beginning growth measurements. Four to five seedlings of each species were
     then randomly allocated to each glasshouse, and seedling positions on benches
     were re-randomized fortnightly to neutralize effects of environmental variation
@@ -65,7 +65,7 @@ dataset:
     of the vagaries of the watering system, heterogeneity in direct solar radiation
     reaching the benches, or high demand resulting from large foliage areas.
   original_file: lusk_2013.pdf
-  notes: The manuscript indicates species were collected at three different sites, but a "site" column does not exist in the data file, because they were glasshouse grown plants. The location data is being kept, as most seedlings were gathered at those sites, and provenance variation can influence trait values.
+  notes: This study includes measurements made both in the field (at 3 sites) and in a glasshouse experiment on seedlings collected at those three sites. The seedlings origin is recorded in the data.csv file, as most seedlings were gathered at those sites, and provenance variation can influence trait values. However this information is not mapped into AusTraits for the glasshouse collected data - because the site field indicates 'glasshouse'. RGR and vessel diameter data are kept in the data file and included as traits in the metadata, but not yet mapped into AusTraits.
 sites:
   Daintree Rainforest Observatory:
     description: tropical Queensland
@@ -78,6 +78,12 @@ sites:
     latitude (deg): -43.1
     elevation (m): 70
   Danbulla National Park:
+    description: tropical Queensland
+    longitude (deg): 145.633
+    latitude (deg): -17.1167
+    elevation (m): 700
+  glasshouse:
+    description: tropical Queensland
     longitude (deg): 145.633
     latitude (deg): -17.1167
     elevation (m): 700
@@ -88,14 +94,50 @@ config:
     site_name: site
   custom_R_code: .na
 traits:
-- var_in: SLA (cm2 g)
+- var_in: SLA (cm2 g-1)
   unit_in: cm2/g
   trait_name: specific_leaf_area
-  value_type: experiment_mean
+  value_type: site_mean
   replicates: 6-10
-  methods: Leaf area was determined using a LI-3100 leaf area meter (LI-COR, Lincoln,
+  methods: Leaf area was determined using a LI-3100 leaf area meter (LI-COR, Lincoln, 
     NE, USA), enabling estimation of initial SLA and LAR. Plant material was dried
-    at 65°C for 48 h before determining dry weights.c
+    at 65C for 48 h before determining dry weights.
+- var_in: LAR (cm2 g-1)
+  unit_in: cm2/g
+  trait_name: leaf_area_ratio
+  value_type: site_mean
+  replicates: 6-10
+  methods: Leaf area was determined using a LI-3100 leaf area meter (LI-COR, Lincoln, NE, USA), enabling estimation of initial SLA and LAR. Plant material was dried at 65C for 48 h before determining dry weights. At the close of the growth period, all remaining live seedlings were harvested and processed in the same way for determination of weights, biomass distribution and leaf areas.
+- var_in: RGR vol (d-1)
+  unit_in: 1/d
+  trait_name: .na
+  value_type: experiment_mean
+  replicates: 4-5
+  methods: At the close of the growth period, all remaining live seedlings were harvested and processed in the same way for determination of weights, biomass distribution and leaf areas. Relative growth rates (RGR) of stem volume (d-1) during the 90-d period were calculated
+- var_in: Asat (mol m-2 s-1)
+  unit_in: umolCO2/m2/s
+  trait_name: photosynthetic_rate_per_area_saturated
+  value_type: experiment_mean
+  replicates: 4-5
+  methods: Net photosynthesis at saturating light (Asat) and leaf conductance (gs) were measured at ambient daytime temperatures in the two treatments. Measurements were made between 0900 and 1500 h over 5 d in late April and early May 2011, on one attached, fully expanded leaf on five plants of each species in each treatment. We used an LI-6400 steady-state photosynthesis system (LI-COR Inc.) equipped with an artificial light source (red/blue LED light; LI-COR Inc.). CO2 concentration in the leaf chamber was set at 380 ppm, photosynthetically active radiation at 1000 mmol m22 s21, and leaf temperature at 24 and 29 8C in the cool and warm treatments, respectively.
+- var_in: Gs (moles m-2 d-1)
+  unit_in: molH2O/m2/s
+  trait_name: stomatal_conductance_per_area_at_Asat
+  value_type: experiment_mean
+  replicates: 4-5
+  methods: Net photosynthesis at saturating light (Asat) and leaf conductance (gs) were measured at ambient daytime temperatures in the two treatments. Measurements were made between 0900 and 1500 h over 5 d in late April and early May 2011, on one attached, fully expanded leaf on five plants of each species in each treatment. We used an LI-6400 steady-state photosynthesis system (LI-COR Inc.) equipped with an artificial light source (red/blue LED light; LI-COR Inc.). CO2 concentration in the leaf chamber was set at 380 ppm, photosynthetically active radiation at 1000 mmol m22 s21, and leaf temperature at 24 and 29 8C in the cool and warm treatments, respectively.
+- var_in: Dh (m)
+  unit_in: um
+  trait_name: .na
+  value_type: experiment_mean
+  replicates: 4-5
+  methods: hydraulic mean diameters of vessels (Dh). The sum of diameters for the entire cross-section was estimated by scaling up the sum of diameters for the pie slice portion that was analysed with the image software.
+- var_in: Kp (kg m-1 s-1 MPa-1)
+  unit_in: kg/m/s/MPa
+  trait_name: sapwood_specific_conductivity
+  value_type: experiment_mean
+  replicates: 4-5
+  methods: Thin sections were cut from the base of each stem using a sledge microtome (Reichert, Vienna, Austria). These sections were then photographed (approximately one-quarter of each thin-section in pie slice sectors) using an epi-fluorescence microscope (Olympus BH-2, Tokyo, Japan) equipped with a mercury lamp. This technique facilitated identification of vessels because the high concentrations of lignin in vessel walls fluoresce when exposed to ultraviolet light (Albinsson et al., 1999). An image analysis program (Mix; Monash University, Melbourne, Australia) was used to measure the cross-sectional area of each conduit and the total number of conduits in each image. Potential sapwood-specific conductivity (Kp) was calculated for each stem cross-section according to Tyree and Ewers (1991). Potential sapwood-specific conductivity represents the maximum conductivity that could occur through sapwood (normalized by length, cross-sectional area and pressure), assuming no resistance from end-walls, which generally contribute 50–60% to the total hydraulic resistance (Sperry et al., 2006). Thus, predictions of conductivity based solely on vessel diameters overestimate actual conductivity. Nevertheless, Kp values generally correlate well with actual conductivity across species (Choat et al., 2007). 
 substitutions: .na
 taxonomic_updates:
 - find: Palaquium galactoxlyon
@@ -105,5 +147,5 @@ taxonomic_updates:
   replace: Palaquium galactoxylum
   reason: Synonym reported by TaxonStand (2018-02-08)
 questions:
-  austraits: .na
-
+  additional traits: RGR and hydraulic mean diameters of vessels (Dh) also in data file and methods given above, but not currently mapped onto trait names for AusTraits.
+  treatments:  'temperature:cool treatment (24/16 C): approximate growing season temperatures in temperate rainforest environments warm treatment (29/21 C): approximate growing season temperatures in tropical rainforest environments'

@@ -5,17 +5,11 @@ source:
     author: J. R. Wheeler, N. G. Marchant, Margaret Lewington
     year: 2002
     title: 'Flora of the south west: Bunbury, Augusta, Denmark'
-    publisher: '{Australian Biological Resources Study ; University of Western Australia
-      Press}'
+    publisher: '{Australian Biological Resources Study ; University of 
+      Western Australia Press}'
     address: 'Canberra, A.C.T. : Crawley, W.A'
     isbn: '9780642568168'
 people:
-- name: Judith Wheeler, Neville Marchant, Margaret Lewington
-  institution: unknown
-  role: collector
-- name: .na
-  institution: .na
-  role: lab_leader
 - name: Rachael Gallagher
   institution: Macquarie University Sydney
   role: contributor, contact
@@ -33,10 +27,9 @@ config:
   data_is_long_format: no
   variable_match:
     species_name: binomial
-  custom_R_code: data %>% mutate( leaf_margin = ifelse(`leaf type` == "lobed" | `leaf
-    shape` == "lobed", "lobed", "entire"), `leaf type` = ifelse(`leaf type` == "lobed",
-    "simple", `leaf type`), `leaf shape` = ifelse(`leaf shape` == "lobed", NA, `leaf
-    shape`)) %>% mutate(leaf_type = ifelse(`leaf shape`=="articles","article",""))
+  custom_R_code: data %>% mutate(leaf_margin = ifelse(`leaf type` == "lobed" | `leaf
+    shape` == "lobed", "lobed", "entire"), `leaf shape` = ifelse(`leaf shape` == "lobed", NA, `leaf
+    shape`)) %>% mutate_at(c("min leaf length (mm)","max leaf length (mm)","min leaf width (mm)","max leaf width (mm)"), ~na_if(.,0)) %>% mutate_at(c("min leaf width (mm)"), ~na_if(.,"`")) 
 traits:
 - var_in: genus
   unit_in: .na
@@ -50,9 +43,9 @@ traits:
   value_type: unknown
   replicates: unknown
   methods: unknown
-- var_in: leaf_type
+- var_in: leaf type
   unit_in: .na
-  trait_name: leaf_type
+  trait_name: leaf_compoundness
   value_type: expert_mean
   replicates: .na
   methods: unknown
@@ -141,6 +134,9 @@ substitutions:
 - trait_name: leaf_shape
   find: elliptic
   replace: elliptical
+- trait_name: leaf_shape
+  find: needle
+  replace: acicular
 - trait_name: leaf_margin
   find: '1'
   replace: lobed
@@ -610,8 +606,4 @@ taxonomic_updates:
 - find: Pittosporum phylliraeoides
   replace: Pittosporum phillyraeoides
   reason: typo, align to known species (S Andrew)
-questions:
-  contributor: Was the trait data collected from herbarium specimens or in
-    the field? For each of the traits included, can you briefly describe the methods
-    used to collect the data.
-
+questions: .na

@@ -41,7 +41,7 @@ metadata_create_template <- function(dataset_id,
                                      path = file.path("data", dataset_id, "metadata.yml")
                                      ) {
 
-  people <- tibble(name = "unknown", instituion = "unknown", role = "unknown") 
+  people <- tibble(name = "unknown", institution = "unknown", role = "unknown") 
 
   out <- list(
        source = list(primary=list(key=dataset_id, 
@@ -534,7 +534,7 @@ metadata_check_taxa <- function(dataset_id, update=TRUE, typos=FALSE, diffchar =
   if(any(keep)) { 
 
     to_add <- format_tpl_to_accepted_df(tpl[keep,])
-    accepted <- austraits_add_to_accepted_species(accepted, to_add[!already_exists,])
+    accepted <- austraits_add_to_accepted_species(accepted, to_add[!existed,])
   }
 
   # For known synonyms, add to a replacement and check synonym is in list of known species
@@ -659,7 +659,7 @@ austraits_rebuild_remake_setup <- function( ) {
 
   library(whisker)
 
-  root.dir <- rprojroot::find_root("austraits.Rproj")
+  root.dir <- rprojroot::find_root("austraits.build.Rproj")
 
   pwd <- setwd(root.dir)
   on.exit(setwd(pwd))

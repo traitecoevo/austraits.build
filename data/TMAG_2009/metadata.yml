@@ -9,7 +9,7 @@ source:
     url: www.tmag.tas.gov.au/floratasmania
 people:
 - name: Marco Duretto
-  institution: former Tasmanian Herbarium
+  institution: National Herbarium of NSW
   role: curator
 - name: Miguel de Salas
   institution: Tasmanian Herbarium
@@ -26,24 +26,24 @@ dataset:
   sample_age_class: adult_assumed
   sampling_strategy: herbarium_specimens_assumed
   original_file: TAS_flora.xls
-  notes: none
+  notes: The seed size values that are an order of magnitude smaller than any other species in AusTraits are for Lythrum salicaria; this is an accurate value. E. Wenk 11 Sep 2019
 sites: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: taxon
-  custom_R_code: ' data[["flowering"]] <- convert_month_range_vec_to_binary(data[["flowering"]]);
-    data[["fruiting"]] <- convert_month_range_vec_to_binary(data[["fruiting"]]); data$leaf_lobed
-    <- NA; data[data[["leaf type"]] %in% "lobed",]$leaf_lobed <- 1; data[data[["leaf
-    type"]] %in% "lobed",][["leaf type"]] <- NA; temp <- str_split(data[["leaf length
-    (mm)"]], pattern = "-"); temp <- do.call(rbind, temp); data$leaf_length_min <-
-    temp[,1]; data$leaf_length_max <- temp[,2]; temp <- str_split(data[["leaf width
-    (mm)"]], pattern = "-"); temp <- do.call(rbind, temp); data$leaf_width_min <-
-    temp[,1]; data$leaf_width_max <- temp[,2]; temp <- str_split(data[["seed length
-    (mm)"]], pattern = "-"); temp <- do.call(rbind, temp); data$seed_length_min <-
-    temp[,1]; data$seed_length_max <- temp[,2]; temp <- str_split(data[["seed width
-    (mm)"]], pattern = "-"); temp <- do.call(rbind, temp); data$seed_width_min <-
-    temp[,1]; data$seed_width_max <- temp[,2]; data'
+  custom_R_code: 'data %>% 
+  mutate(
+    flowering = convert_month_range_vec_to_binary(flowering),
+    fruiting = convert_month_range_vec_to_binary(fruiting),
+    leaf_lobed = ifelse(`leaf type` == "lobed", 1 , NA),
+    `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf type`)) %>% 
+  separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>%
+  separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
+  separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>%
+  separate_range("seed width (mm)", "seed_width_min", "seed_width_max") %>% 
+  mutate(dispersal_appendage = ifelse(`dispersal mode` == "samara","samara", NA))
+'
 traits:
 - var_in: longevity
   unit_in: .na
@@ -159,6 +159,12 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: unknown
+- var_in: dispersal_appendage
+  unit_in: .na
+  trait_name: dispersal_appendage
+  value_type: expert_mean
+  replicates: .na
+  methods: Extracted from records of dispersal syndrome.
 substitutions:
 - trait_name: leaf_shape
   find: articles
@@ -171,7 +177,10 @@ substitutions:
   replace: climber
 - trait_name: dispersal_syndrome
   find: winged seed
-  replace: wind
+  replace: anemochory
+- trait_name: dispersal_syndrome
+  find: samara
+  replace: anemochory 
 - trait_name: leaf_width
   find: '''10'
   replace: '10'
@@ -179,8 +188,20 @@ substitutions:
   find: elliptic
   replace: elliptical
 - trait_name: seed_shape
+  find: globose
+  replace: globoid
+- trait_name: seed_shape
+  find: obovate
+  replace: obovoid
+- trait_name: seed_shape
+  find: oblong
+  replace: 	obloid
+- trait_name: seed_shape
+  find: ovate
+  replace: 	ovoid
+- trait_name: seed_shape
   find: plano-convex
-  replace: plano_convex
+  replace: lenticular
 taxonomic_updates:
 - find: Exocarpus nanus
   replace: Exocarpos nanus
@@ -236,6 +257,5 @@ taxonomic_updates:
 - find: Exocarpus strictus
   replace: Exocarpos strictus
   reason: Typo, align to known species (D Falster)
-questions: 
-  question_1: You have the term "samara" as a dispersal syndrome for the genus Allocasuarina. Isn't the approrpiate dispersal syndrome wind?
+questions: .na
 
