@@ -7,9 +7,6 @@ source:
     url: http://www.lrm.nt.gov.au/plants-and-animals/herbarium/darwin_flora_online
     title: Flora of the Darwin Region Online
 people:
-- name: Northern Territory Herbarium
-  institution: Northern Territory Herbarium
-  role: collector
 - name: Ian Cowie
   institution: Northern Territory Herbarium
   role: curator, contact
@@ -25,28 +22,25 @@ dataset:
   sample_age_class: adult_assumed
   sampling_strategy: unknown
   original_file: NT_flora.xls
-  notes: none
+  notes: Request ackowledgment of "Northern Territory Herbarium"
 sites: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: species_name
-  custom_R_code: ' data[["flowering time"]] <- convert_month_range_vec_to_binary(data[["flowering
-    time"]]); data[["fruiting"]] <- convert_month_range_vec_to_binary(data[["fruiting"]]);
-    data$leaf_type <- NA; data[data[["leaf type"]] %in% "articles",]$leaf_type <-
-    c("article"); data[data[["leaf type"]] %in% "articles",][["leaf type"]] <- NA;
-    data$leaf_lobed <- NA; data[data[["leaf type"]] %in% "l",]$leaf_lobed <- 1; data[data[["leaf
-    type"]] %in% "l",][["leaf type"]] <- NA; temp <- str_split(data[["leaf length
-    (mm)"]], pattern = "-"); temp <- do.call(rbind, temp); data$leaf_length_min <-
-    temp[,1]; data$leaf_length_max <- temp[,2]; temp <- str_split(data[["leaf width
-    (mm)"]], pattern = "-"); temp <- do.call(rbind, temp); data$leaf_width_min <-
-    temp[,1]; data$leaf_width_max <- temp[,2]; temp <- str_split(data[["seed length
-    (mm)"]], pattern = "-"); temp <- do.call(rbind, temp); data$seed_length_min <-
-    temp[,1]; data$seed_length_max <- temp[,2]; temp <- str_split(data[["seed diameter
-    (mm)"]], pattern = "-"); temp <- do.call(rbind, temp); data$seed_width_min <-
-    temp[,1]; data$seed_width_max <- temp[,2]; temp <- str_split(data[["seed depth
-    (mm)"]], pattern = "-"); temp <- do.call(rbind, temp); data$seed_depth_min <-
-    temp[,1]; data$seed_depth_max <- temp[,2]; data'
+  custom_R_code: 'data %>% 
+    mutate(`flowering time` = convert_month_range_vec_to_binary(`flowering time`),
+           `fruiting` = convert_month_range_vec_to_binary(`fruiting`),
+           leaf_type   = ifelse(`leaf type` == "articles", "article", NA),
+           `leaf type` = ifelse(`leaf type` == "articles", NA, `leaf type`),
+           leaf_lobed   = ifelse(`leaf type` == "l", 1, NA),
+           `leaf type` = ifelse(`leaf type` == "l", NA, `leaf type`)) %>%
+    separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>%
+    separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
+    separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>%
+    separate_range("seed diameter (mm)", "seed_width_min", "seed_width_max") %>%
+    separate_range("seed depth (mm)", "seed_depth_min", "seed_depth_max") %>%
+    mutate(GF = ifelse(aquatic %in% c("yes","y"),"aquatic_herb", GF))'
 traits:
 - var_in: genus
   unit_in: .na
