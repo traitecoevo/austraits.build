@@ -47,26 +47,49 @@ dataset:
     completely burnt plots.
   original_file: species summary_for Austraits.xlsx
   notes: unknown
-sites: {}
+sites: 
+  Clarke Island:
+    latitude (deg): -40.54
+    longitude (deg): 148.18
+    notes: Lat/lon for the middle of Clarke Island, not specifically for the sites
 config:
   data_is_long_format: no
   variable_match:
-    species_name: species
-  custom_R_code:  data %>% mutate(site_name = "Clark Island")
+    species_name: Species
+    site_name: site_name
+  custom_R_code: data %>% mutate(site_name = "Clarke Island") %>% mutate(dead = if_else(is.na(dead),0,dead)) %>% mutate(resprouting = if_else(is.na(resprouting),0,resprouting)) %>% mutate(fire_response = if_else(dead==Total,"fire_killed","resprouts")) %>%  mutate(resprouting_proportion = resprouting/(resprouting+dead)) 
 traits:
-- var_in: trait_value
+- var_in: fire_response
   unit_in: .na
   trait_name: fire_response
-  value_type: raw_value
-  replicates: 1
-  methods: unknown
-substitutions:
-- trait_name: fire_response
-  find: dead
-  replace: fire_killed
-- trait_name: fire_response
-  find: resprouting
-  replace: resprouts
-taxonomic_updates: .na
-questions: .na
+  value_type: multisite_mean
+  replicates: 1-418
+  methods: "The 10 trees in each plot were identified to species level where possible, and categorised as (i) burnt or unburnt, and (ii) 'alive', MAP'top-killed but resprouting' or 'top-killed and completely dead'. The extent of damage to the crown, branches and stem of each woody individual was classified as: 1, trees retained their foliage; 2, foliage was removed but fine twigs persisted (0.5-cm diameter); 3, trees were burnt down to thin branches (0.5–3-cm diameter); 4, trees were burnt down to thick branches (3–5-cm diameter); and 5, only stumps were left (all branches were removed) (Fig. 1). The median score of these measurements was used to characterise the fire severity of each plot. Seedling regeneration was not analysed because identifying the very small seedlings present was difficult, as sometimes was determining the species present before the fire. In AusTraits, a species is determined to be a resprouter if at least one burnt stem resprouted. Species where no burnt stems resprouted are designated as fire-killed." 
+- var_in: resprouting_proportion
+  unit_in: dimensionless
+  trait_name: resprouting_proportion
+  value_type: multisite_mean
+  replicates: 1-418
+  methods: "The 10 trees in each plot were identified to species level where possible, and categorised as (i) burnt or unburnt, and (ii) 'alive', 'top-killed but resprouting' or 'top-killed and completely dead'. The extent of damage to the crown, branches and stem of each woody individual was classified as: 1, trees retained their foliage; 2, foliage was removed but fine twigs persisted (0.5-cm diameter); 3, trees were burnt down to thin branches (0.5–3-cm diameter); 4, trees were burnt down to thick branches (3–5-cm diameter); and 5, only stumps were left (all branches were removed) (Fig. 1). The median score of these measurements was used to characterise the fire severity of each plot. Seedling regeneration was not analysed because identifying the very small seedlings present was difficult, as sometimes was determining the species present before the fire. The trait input into AusTraits under this variable is the number of resprouting stems divided by the sum of all burnt (resprouting + dead) stems." 
+substitutions: .na
+taxonomic_updates:
+- find: Eucalyptus nitida
+  replace: Eucalyptus ambigua
+  reason: Alignment with existing species identified by TaxonStand (2020-03-12)
+- find: Leptospermum squarrosa
+  replace: Leptospermum squarrosum
+  reason: Alignment with existing species identified by TaxonStand (2020-03-12)
+- find: Acacia sophorae
+  replace: Acacia longifolia subsp. sophorae
+  reason: Synonym reported by TaxonStand (2020-03-12)
+- find: Hakea terrifolia
+  replace: Hakea teretifolia
+  reason: Spelling correction made by E. Wenk (2020-03-12)
+- find: Leptospermum- unidentified 
+  replace: Leptospermum - unidentified 
+  reason: Spelling correction made by E. Wenk to match genus and family correctly (2020-03-12)
+questions: 
+  contributor: Do you have the data on an individual basis? For the resprouting_proportion trait, it would be wonderful if the percent resprouting could be made at the individual level.
+  question2: The referenced manuscript indicates that sites were scored based on fire severity. If you can provide individual-level data, if you included your fire severity score, that would be input as a contextual variable.
+  question3: Currently I've input a single lat/lon coordinate for the middle of Clarke Island. Do you have specific coordinates/sites for where data collection occurred?
 
