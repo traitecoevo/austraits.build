@@ -83,9 +83,10 @@ load_study <- function(filename_data_raw,
           source_primary_key = source_primary_key,
           source_primary_citation = bib_print(sources[[source_primary_key]]),
           source_secondary_key = source_secondary_keys %>% paste(collapse = "; "),
-          source_secondary_citation = 
+          source_secondary_citation = ifelse(length(source_secondary_keys) == 0, NA_character_,
             map_chr(sources[source_secondary_keys], bib_print) %>% paste(collapse = "; ") %>% str_replace_all(".;", ";")
           )
+        )
       )
 
   # Retrieve taxonomic details
