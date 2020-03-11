@@ -22,27 +22,15 @@ dataset:
   collection_type: field_assumed
   sample_age_class: adult_assumed
   sampling_strategy: unknown
-  original_file: 2014  updated plant functional trait database.xls
-  notes: In the data file the following traits are listed as headers, but have NA for all entries -- seed dispersal, growth form, LDMC (by weight and %) and leaf area. 
+  original_file: relevent data from the file "2014  updated plant functional trait database.xls" extracted. Original copy of the excel file located in Google Drive in the folder "Morgan_2011_1 Morgan_2011_2 Morgan_2014 Angevin_2010 Briggs_2010 Cross_2011 Lunt_2012 Roberts_2006 Scott_2010"
+  notes: none
 sites: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: Scientific Name
-  custom_R_code: .na
+  custom_R_code: data %>% mutate_at(c("Seed mass (mg)"), ~na_if(.,0))
 traits:
-- var_in: metadata_id
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: primary_source_id
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
 - var_in: SLA (mg/mm2)
   unit_in: mm2/mg
   trait_name: specific_leaf_area
@@ -61,58 +49,13 @@ traits:
   value_type: unknown
   replicates: unknown
   methods: unknown
-- var_in: Seed Dispersal
-  unit_in: .na
-  trait_name: dispersal_syndrome
-  value_type: expert_mean
-  replicates: .na
-  methods: unknown
 - var_in: Seed mass (mg)
   unit_in: mg
   trait_name: seed_mass
   value_type: unknown
   replicates: unknown
   methods: unknown
-- var_in: Growth form
-  unit_in: .na
-  trait_name: plant_growth_form
-  value_type: expert_mean
-  replicates: .na
-  methods: unknown
-- var_in: Leaf area (mm2)
-  unit_in: mm2
-  trait_name: leaf_area
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-substitutions:
-- trait_name: plant_growth_form
-  find: tussock
-  replace: graminoid
-- trait_name: plant_growth_form
-  find: cushion
-  replace: herb
-- trait_name: plant_growth_form
-  find: erect leafy
-  replace: herb
-- trait_name: plant_growth_form
-  find: erect rosette
-  replace: herb
-- trait_name: plant_growth_form
-  find: flat rosette
-  replace: herb
-- trait_name: plant_growth_form
-  find: semi basal
-  replace: herb
-- trait_name: plant_growth_form
-  find: semi-basal
-  replace: herb
-- trait_name: plant_growth_form
-  find: short basal
-  replace: herb
-- trait_name: plant_growth_form
-  find: dwarf shrub
-  replace: subshrub
+substitutions: .na
 taxonomic_updates:
 - find: Dichelachne crinata
   replace: Dichelachne crinita
@@ -141,5 +84,7 @@ taxonomic_updates:
 questions:
   contributors: Could you please provide both a site description (lat/long,
     any other physical data available or a brief description), sampling strategy,
-    and basic methods used to measure your traits. For six species, the seed weight is listed as 0 - does this indicate that seed weight it missing or is this a problem with significant figures having been rounded to zero at some point? In the data file the following traits are listed as headers, but have NA for all entries -- seed dispersal, growth form, LDMC (by weight and %) and leaf area. Do data exist for these traits?
-
+    and basic methods used to measure your traits.
+  question2: For six species, the seed weight is listed as 0 - does this indicate that seed weight it missing or is this a problem with significant figures having been rounded to zero at some point? I've currently made the assumption they are missing weights.
+  question3: Is plant height the maximum species height at the site or simply the height of the individual measured? We are only considered "maximum height" to be a trait. "Plant height" is considered an allometric property and excluded.
+  question4: Should John Morgan be included as a contributor, lab_leader, etc. on this study?

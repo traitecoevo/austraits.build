@@ -13,10 +13,10 @@ source:
     doi: 10.1034/j.1600-0706.2001.920309.x
 people:
 - name: Martin Henery
-  institution: unknown
+  institution: CSIRO
   role: collector, contact
 - name: Mark Westoby
-  institution: Macquarie University
+  institution: Macquarie University Sydney
   role: lab_leader
 - name: Ian Wright
   institution: Macquarie University Sydney
@@ -25,79 +25,31 @@ dataset:
   year_collected_start: 1998
   year_collected_end: 1998
   description: seed mass components dataset compiled by Wright And Henery
-  collection_type: laboratory
-  sample_age_class: .na
+  collection_type: field
+  sample_age_class: adult
   sampling_strategy: Annual fruit production data for six randomly selected reproductively
     mature individuals per species at each site were collected over a period of 12
     months as the fruit matured. Data from 47 species in 14 families were included
     in the analyses.
-  original_file: Wright & Henery seed mass data.xls
+  original_file: Henery's data from 'Wright & Henery seed mass data.xls' combined with Henery's accessory cost data from the referenced journal article. The data.csv file also includes seed count and RE data.
   notes: none
 sites:
-  Chase_Trail:
-    longitude (deg): 151.1308333
-    latitude (deg): -33.6852778
-    description: Sites were widely separated level surfaces with similar (9–11 yr)
-      elapsed time since the last fire and with a common soil type derived from a
-      geology of underlying Hawkesbury sandstone. These soils are depauperate in nutrients,
-      notably phosphorus (Beadle 1962). The vegetation was a fire prone mixture of
-      low heath and dry sclerophyll woodland with a species-rich (Rice and Westoby
-      1983) understorey of woody shrubs primarily from the families Proteaceae, Fabaceae
-      and Myrtaceae. Only three species (genus Persoonia) had fleshy fruits, the remainder
-      comprising relatively dry dehiscent woody follicles, legumes, capsules and schizocarps.
-      Sites were chosen with a high proportion of species in common, since the aim
-      was to replicate each species across two or three sites, as well as to replicate
-      individuals within each site.
-  Murrua_Track:
-    longitude (deg): 151.1472222
-    latitude (deg): -33.6813889
-    description: Sites were widely separated level surfaces with similar (9–11 yr)
-      elapsed time since the last fire and with a common soil type derived from a
-      geology of underlying Hawkesbury sandstone. These soils are depauperate in nutrients,
-      notably phosphorus (Beadle 1962). The vegetation was a fire prone mixture of
-      low heath and dry sclerophyll woodland with a species-rich (Rice and Westoby
-      1983) understorey of woody shrubs primarily from the families Proteaceae, Fabaceae
-      and Myrtaceae. Only three species (genus Persoonia) had fleshy fruits, the remainder
-      comprising relatively dry dehiscent woody follicles, legumes, capsules and schizocarps.
-      Sites were chosen with a high proportion of species in common, since the aim
-      was to replicate each species across two or three sites, as well as to replicate
-      individuals within each site.
-  Perimeter_Long_Track:
-    longitude (deg): 151.1905556
-    latitude (deg): -33.6611111
-    description: Sites were widely separated level surfaces with similar (9–11 yr)
-      elapsed time since the last fire and with a common soil type derived from a
-      geology of underlying Hawkesbury sandstone. These soils are depauperate in nutrients,
-      notably phosphorus (Beadle 1962). The vegetation was a fire prone mixture of
-      low heath and dry sclerophyll woodland with a species-rich (Rice and Westoby
-      1983) understorey of woody shrubs primarily from the families Proteaceae, Fabaceae
-      and Myrtaceae. Only three species (genus Persoonia) had fleshy fruits, the remainder
-      comprising relatively dry dehiscent woody follicles, legumes, capsules and schizocarps.
-      Sites were chosen with a high proportion of species in common, since the aim
-      was to replicate each species across two or three sites, as well as to replicate
-      individuals within each site.
+  Kuringgai_NP:
+    longitude (deg): 151.13
+    latitude (deg): -33.69
+    coordinate details: "Data were collected from six sites in Kuringgai National Park: Perimeter Track, 33deg 39min 40secS, 151deg 11min 26sec S; Murrua Track (Woodland), 33deg 40min 53sec S, 151deg 8min 50secS; Chase Trail (Woodland), 33deg 41min 7sec S, 151deg 7 min 51sec S; Long Track, 33deg 38min 25secS, 151deg 10min 58secS; Chase Trail (Heath), 33 deg 41min45secS, 151 deg 6min 38secS; Murrua Track (Heath), 33 deg 40min58secS, 151 deg 8min 38sec S. The coordinates for the Chase Trail are given as an approximate location. All values reported are multi-site means across sites. Which species were sampled at which sites is recorded in the file location_data.csv within the raw folder"
+    description: Sites were widely separated level surfaces with similar (9–11 yr) elapsed time since the last fire and with a common soil type derived from a geology of underlying Hawkesbury sandstone. These soils are depauperate in nutrients, notably phosphorus (Beadle 1962). The vegetation was a fire prone mixture of low heath and dry sclerophyll woodland with a species-rich (Rice and Westoby 1983) understorey of woody shrubs primarily from the families Proteaceae, Fabaceae and Myrtaceae. Only three species (genus Persoonia) had fleshy fruits, the remainder comprising relatively dry dehiscent woody follicles, legumes, capsules and schizocarps.Sites were chosen with a high proportion of species in common, since the aim was to replicate each species across two or three sites, as well as to replicate individuals within each site.
 config:
   data_is_long_format: no
   variable_match:
     species_name: name_original
-  custom_R_code: .na
+    site_name: site_name
+  custom_R_code: data %>% mutate(site_name = "Kuringgai_NP")
 traits:
-- var_in: metadata_id
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: primary_source
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: seed mass (mg)
+- var_in: seed_mass_mg
   unit_in: mg
   trait_name: seed_mass
-  value_type: site_mean
+  value_type: multisite_mean
   replicates: 6
   methods: In this study seed mass was defined as diaspore minus any dispersal structures.
     Dispersal structures were included with aborted seeds, fruit pulp and seed pods
@@ -106,13 +58,43 @@ traits:
     after pollination and was calculated from the sum of total mass of seed produced
     plus mass of total accessory costs. Accessory costs as quantified here did not
     include flower structures, nectar or pollen production.
-- var_in: reserve seed mass (mg)
+- var_in: Accessory cost(mg) per seed
   unit_in: mg
-  trait_name: seed_mass_reserve
-  value_type: site_mean
+  trait_name: accessory_cost_mass
+  value_type: multisite_mean
   replicates: 6
-  methods: unknown
-substitutions: .na
+  methods: In this study seed mass was defined as diaspore minus any dispersal structures.
+    Dispersal structures were included with aborted seeds, fruit pulp and seed pods
+    and collectively termed accessory costs (measured in grams). Reproductive production
+    over one year for each species included all dry mass produced by the female parent
+    after pollination and was calculated from the sum of total mass of seed produced
+    plus mass of total accessory costs. Accessory costs as quantified here did not
+    include flower structures, nectar or pollen production.
+- var_in: Accessory cost proportion
+  unit_in: mg/mg
+  trait_name: accessory_cost_fraction
+  value_type: multisite_mean
+  replicates: 6
+  methods: In this study seed mass was defined as diaspore minus any dispersal structures.
+    Dispersal structures were included with aborted seeds, fruit pulp and seed pods
+    and collectively termed accessory costs (measured in grams). Reproductive production
+    over one year for each species included all dry mass produced by the female parent
+    after pollination and was calculated from the sum of total mass of seed produced
+    plus mass of total accessory costs. Accessory costs as quantified here did not
+    include flower structures, nectar or pollen production.
+substitutions:
+- find: Acacia suavolens
+  replace: Acacia suaveolens
+  reason: Alignment with existing species identified by TaxonStand (2020-02-13)
+- find: Persoonia pinnifolia
+  replace: Persoonia pinifolia
+  reason: Alignment with existing species identified by TaxonStand (2020-02-13)
+- find: Eriostemon australasium
+  replace: Eriostemon australasius
+  reason: Alignment with existing species identified by TaxonStand (2020-02-13)
+- find: Phyllotta phyllicoides
+  replace: Phyllota phylicoides
+  reason: Alignment with existing species identified by E. Wenk (2020-02-13)
 taxonomic_updates:
 - find: Hovea linearifolia
   replace: Hovea longifolia
@@ -120,6 +102,5 @@ taxonomic_updates:
 - find: Pultenaea eilliptica
   replace: Pultenaea tuberculata
   reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
-questions: 
-  contributors: Latitude and longitude coordinates are given for the three study sites, but we don't know which measurements were made at which site and therefore can't link location to the actual trait measurements. Can you specify which measurements were made where? Also, in the manuscript you indicate that the published values are the mean of multiple measurements. Do you have the individual values?
+questions: .na
 
