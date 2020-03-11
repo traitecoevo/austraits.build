@@ -14,8 +14,8 @@ build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/repor
   cat(sprintf("Building report for %s: ", dataset_id))
   
   # filenames
-  input_Rmd <- sprintf("export/reports/%s.Rmd", dataset_id)
-  output_html <- sprintf("export/reports/%s.html", dataset_id)
+  input_Rmd <- sprintf("%s/%s.Rmd", path, dataset_id)
+  output_html <- sprintf("%s/%s.html", path, dataset_id)
   
   if(overwrite | !file.exists(output_html)) {
     
@@ -49,15 +49,25 @@ pallette1 <- function(){
 }
 
 ## format a table with kable and default styling
-my_kable_styling <- function(...) {
-  kableExtra::kable(...) %>%
-  kableExtra::kable_styling(..., 
-                bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
-                full_width = FALSE, 
-                position = "left"
-                ) %>%
-  # hack to add margin to plot
-  gsub('style="width: auto ', 'style="margin-left:30px; width: auto ', .)
+my_kable_styling_html <- function(...) {
+    kableExtra::kable(...) %>%
+    kableExtra::kable_styling(..., 
+                  bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = FALSE, 
+                  position = "left"
+                  ) %>%
+    # hack to add margin to plot
+    gsub('style="width: auto ', 'style="margin-left:30px; width: auto ', .)
+}
+
+## format a table with kable and default styling
+my_kable_styling_pdf <- function(...) {
+    kableExtra::kable(...)
+}
+
+## format a table with kable and default styling
+my_kable_styling_markdown <- function(...) {
+  kableExtra::kable(...)
 }
 
 as_link <- function(link, text, type="md") {

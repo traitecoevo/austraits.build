@@ -1,0 +1,137 @@
+---
+title: Definitions for traits in `AusTraits`
+author: Daniel Falster, Rachael Gallagher, Sam Andrew, Dony Indiarto, James Lawson, Lizzy Wenk
+date: "`r Sys.Date()`"
+header-includes:
+   - \usepackage{pmboxdraw}
+output:
+  github_document:
+    toc: yes
+    toc_depth: 4
+  html_document:
+    keep_md: yes
+    smart: no
+    theme: yeti
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+editor_options:
+  chunk_output_type: console
+---
+
+<!-- Traits_definitions.md is generated from Traits_definitions.Rmd. Please edit that file -->
+
+<!-- hack to get indentation on 3rd level of floating TOC in html; see
+https://stackoverflow.com/questions/46201753/rmarkdown-indentation-of-toc-items-in-html-output
+ -->
+<script>
+$(document).ready(function() {
+  $items = $('div#TOC li');
+  $items.each(function(idx) {
+    num_ul = $(this).parentsUntil('#TOC').length;
+    $(this).css({'text-indent': num_ul * 10, 'padding-left': 0});
+  });
+
+});
+</script>
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
+# knitr defaults
+root.dir = rprojroot::find_root("remake.yml")
+knitr::opts_knit$set(root.dir = root.dir)
+
+knitr::opts_chunk$set(
+  echo=FALSE, cache=FALSE, message=FALSE, warning=FALSE,
+  results='asis',
+  fig.cap='', 
+  fig.path = file.path(root.dir,"docs/figures", paste0("trait_definitions","_")),
+  out.width = "100%"
+)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
+library(knitr)
+library(kableExtra)
+library(dplyr)
+library(tidyr)
+library(readr)
+
+source("R/report_utils.R")
+
+print_defintions_element <- function(elements) {
+  if(elements$type == "character") {
+    sprintf("**Content:** %s\n", elements$value) %>% 
+      writeLines()
+  }
+  
+  if(elements$type == "table") {
+    
+    sprintf("**Content:** \n") %>% 
+      writeLines()
+
+    elements$elements %>% 
+      list1_to_df() %>%
+      my_kable_styling() %>% 
+      writeLines()
+  }
+}
+
+# default for table format
+if(knitr::is_html_output()) {
+  options(knitr.table.format = "html")
+  my_kable_styling <- my_kable_styling_html  
+} else {
+  options(knitr.table.format = "latex")
+  my_kable_styling <- my_kable_styling_pdf  
+}
+  
+
+## Assumes to items exist in global name space
+if(!exists("austraits")) {
+  definitions <- remake::make("definitions")
+  # stop("austraits must exist in global name space to knit a report")
+}
+
+```
+
+
+Below is the full list of trait defitions used in AusTraits version `r desc::desc_get_field("Version")`, as defined in the file configuration files [`config/definitions.yml`](https://github.com/traitecoevo/austraits.build/blob/master/config/definitions.yml)).
+
+Separate documents provide information on: 
+
+- Overview of Austraits: [Falster et al 2020](XXXX)
+- Accessing and using AusTraits: XXXX
+- Building Austraits: [Building](Building.md)
+- Contributing to AusTraits: [Contributing](Contributing.md)
+- Working with GitHub repository: [Working_with_github](Working_with_github.md)
+- Tips & Tricks for AusTraits developes: [TipsTricks](TipTricks.md)
+- Full list of trait definitions: [Trait_definitions](Trait_definitions.md)
+
+
+```{r, results="asis"}
+for(trait in names(definitions$traits$elements)) {
+  elements <- definitions$traits$elements[[trait]]
+  
+#  data_trait <- austraits$traits %>% filter(trait_name == trait)
+  
+  c( sprintf("**%s**\n\n", trait), 
+     sprintf("- label: %s", elements$label ), 
+     sprintf("- description: %s", elements$description ), 
+     #sprintf("- number of records: %s", data_trait %>% nrow() ), 
+     #sprintf("- number of studies: %s", data_trait %>% pull(dataset_id) %>% unique() %>% length() ), 
+     sprintf("- type: %s%s", elements$type,   
+             ifelse(elements$type == "numeric", sprintf("\n- units: %s", elements$units), "")), 
+     ifelse(elements$type == "numeric", 
+             sprintf("- allowable range: %s - %s %s", elements$values$minimum,elements$values$maximum, elements$units), 
+             sprintf("- allowable values:\n%s\n", paste0("    - *",elements$values %>% names(), "*: ", elements$values %>% unlist(), collapse="\n"))
+                     ), 
+     "") %>% 
+    writeLines()
+}
+```
+
