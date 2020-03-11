@@ -1,48 +1,82 @@
-# Contributing to austraits
+Contributing to `AusTraits`
+================
+Daniel Falster
+2020-03-11
 
-This outlines how to propose a change to austraits. For more detailed
-info about contributing to this, and other tidyverse packages, please see the
-[**development contributing guide**](https://rstd.io/tidy-contrib).
 
-### Fixing typos
 
-Small typos or grammatical errors in documentation may be edited directly using
-the GitHub web interface, so long as the changes are made in the _source_ file.
+<!-- Contributing.md is generated from Contributing.Rmd Please edit that file -->
 
-*  YES: you edit a roxygen comment in a `.R` file below `R/`.
-*  NO: you edit an `.Rd` file below `man/`.
+<!-- hack to get indentation on 3rd level of floating TOC in html; see
+https://stackoverflow.com/questions/46201753/rmarkdown-indentation-of-toc-items-in-html-output
+ -->
 
-### Prerequisites
+<script>
+$(document).ready(function() {
+  $items = $('div#TOC li');
+  $items.each(function(idx) {
+    num_ul = $(this).parentsUntil('#TOC').length;
+    $(this).css({'text-indent': num_ul * 10, 'padding-left': 0});
+  });
 
-Before you make a substantial pull request, you should always file an issue and
-make sure someone from the team agrees that it’s a problem. If you’ve found a
-bug, create an associated issue and illustrate the bug with a minimal 
-[reprex](https://www.tidyverse.org/help/#reprex).
+});
+</script>
 
-### Pull request process
+Separate documents provide information on:
 
-*  We recommend that you create a Git branch for each pull request (PR).  
-*  Look at the Travis and AppVeyor build status before and after making changes.
-The `README` should contain badges for any continuous integration services used
-by the package.  
-*  New code should follow the tidyverse [style guide](http://style.tidyverse.org).
-You can use the [styler](https://CRAN.R-project.org/package=styler) package to
-apply these styles, but please don't restyle code that has nothing to do with 
-your PR.  
-*  We use [roxygen2](https://cran.r-project.org/package=roxygen2), with
-[Markdown syntax](https://cran.r-project.org/web/packages/roxygen2/vignettes/markdown.html), 
-for documentation.  
-*  We use [testthat](https://cran.r-project.org/package=testthat). Contributions
-with test cases included are easier to accept.  
-*  For user-facing changes, add a bullet to the top of `NEWS.md` below the
-current development version header describing the changes made followed by your
-GitHub username, and links to relevant issue(s)/PR(s).
+  - Overview of Austraits: [Falster et al 2020](XXXX)
+  - Accessing and using AusTraits: XXXX
+  - Building Austraits: [Building](Building.md)
+  - Contributing to AusTraits: [Contributing](Contributing.md)
+  - Working with GitHub repository:
+    [Working\_with\_github](Working_with_github.md)
+  - Tips & Tricks for AusTraits developes: [TipsTricks](TipTricks.md)
+  - Full list of trait definitions:
+    [Trait\_definitions](Trait_definitions.md)
 
-### Code of Conduct
+## Ways to contribute
 
-Please note that the austraits project is released with a
-[Contributor Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this
+AusTraits is a community resource and we are very keen for people to
+contribute. This docuemnet describes some of the ways you can
+contribute.
+
+Here are some of the ways you can contribute:
+
+**Reporting Errors**: If you notice a possible error in AusTraits,
+please [post an issue on
+GitHub](https://github.com/traitecoevo/austraits.build/issues) . If you
+can, please provide code illustrating the problem.
+
+**Refining documentation:** Data contributors and data users who are
+less familiar with the AusTraits format and code than the custodians may
+determine that important descriptions or steps are omitted from this
+documentation file. We welcome additions and edits that make using the
+existing data or adding new data easier for the community.
+
+**Value adding / expanding existing data**: If you would like to
+value-add to AusTraits in some other way, please get in contact by
+[posting an issue](https://github.com/traitecoevo/austraits/issues) with
+an idea or offer of time.
+
+**Contributing new data**: We gladly accept new data contributions to
+AusTraits. If you would like to contribute data, the requirements are:
+
+  - Data were collected for Australian plant species growing in
+    Australia
+  - You collected data on one of the traits list in the [trait
+    definitions table](Trait_definitions.md).
+  - You are willing to release the data under an open license for reuse
+    by the scientific community.
+  - You make it is as easy as possible for us to incorporate your data
+    by carefully following the instructions below.
+
+For full instructions on preparing data for inclusion in AusTraits see
+the sections on formatting of raw data files for AusTraits in the
+document [Building Austraits](Building.md).
+
+For instructions on working with github, see the document [Working with
+github](Working_with_github.md).
+
+Please note that the austraits project is released with a [Contributor
+Code of Conduct](../.github/CODE_OF_CONDUCT.md). By contributing to this
 project you agree to abide by its terms.
-
-### See tidyverse [development contributing guide](https://rstd.io/tidy-contrib)
-for further details.
