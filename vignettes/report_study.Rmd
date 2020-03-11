@@ -61,7 +61,7 @@ if(!exists("austraits")) {
   # stop("austraits must exist in global name space to knit a report")
 }
 if(!exists("dataset_id")) {
-  dataset_id <- "Bean_1997"
+  dataset_id <- "Westoby_2014"
   #  stop("dataset_id must exist in global name space to knit a report")
 }
 
@@ -187,12 +187,18 @@ metadata_study$source$primary %>%
 ```
 
 ```{r, results='asis', echo=FALSE}
-if(!is.null(metadata_study$source$secondary)) {
-  writeLines("Secondary citation:")
-  metadata_study$source$secondary %>%
+n <- length(metadata_study$source)
+if(n > 1) {
+  writeLines("Secondary citations:")
+
+  for(i in 2:n) {
+    metadata_study$source[[i]] %>%
     list1_to_df() %>%
-    my_kable_styling()
+    my_kable_styling() %>% 
+    cat()
+    writeLines("\n\n")
   }
+}
 ```
 
 
