@@ -140,6 +140,14 @@ extract_trait <- function(austraits, trait_name) {
     ret[["traits"]][["value"]] <- as.numeric(ret[["traits"]][["value"]])
   }
 
+  ret[["methods"]] <- austraits[["methods"]] %>% filter(dataset_id %in%  ret[["traits"]][["dataset_id"]] )
+
+  keys <- union(ret$methods$source_primary_key, 
+                ret$methods$source_secondary_key) %>% 
+          unique() %>% na.omit() %>% as.character()
+                
+  ret[["sources"]] <- austraits$sources[keys]
+
   ret
 }
 
