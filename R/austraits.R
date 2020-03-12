@@ -174,7 +174,7 @@ label_suspected_duplicates <- function(austraits_traits, priority_sources = NULL
       c(
         "Kew_2019_1", "Kew_2019_2", "Kew_2019_3", "Kew_2019_4", "Kew_2019_5", "Kew_2019_6",
         "ANBG_2019", "GrassBase_2014", "CPBR_2002", "NTH_2014","RBGK_2014", 
-        "NHNSW_2016", "RBGSYD_0000", "RBGSYD_2014", "TMAG_2009", "WAH_1998", "WAH_2016",
+        "NHNSW_2016", "RBGSYD__2014_2", "RBGSYD_2014", "TMAG_2009", "WAH_1998", "WAH_2016",
         "Brock_1993", "Barlow_1981", "Hyland_2003"    
       )
   
