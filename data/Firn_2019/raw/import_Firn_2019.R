@@ -16,9 +16,12 @@ firn <- read_csv("data/Firn_2019/raw/Firn_australian_sites_NutNet_foliar_data.cs
 data_sites <- 
   raw.firn %>%
   select(site_name, MAT, TEMP_VAR, MAP, MAP_VAR, pct_N,	ppm_P, ppm_K) %>%
-  distinct()
+  group_by(site_name) %>%
+  summarise_all(.funs = mean)
 
 
-
+read_csv("data/Firn_2019/raw/Firn_australian_sites_NutNet_foliar_data.csv") %>%
+  mutate(Taxon = str_to_sentence(Taxon)) %>%
+  write_csv("data/Firn_2019/data.csv", na = "")
 
 
