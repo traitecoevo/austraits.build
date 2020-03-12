@@ -14,12 +14,15 @@ source:
 people:
 - name: Aine Nicholson
   institution: unknown
-  role: collector
+  role: University of Tasmania
 - name: Lynda Prior
   institution: University of Tasmania
   role: contributor, contact
+- name: David Bowman
+  institution: University of Tasmania
+  role: lab_leader
 - name: George Perry
-  institution: unknown
+  institution: University of Auckland
   role: lab_leader
 - name: Mary Maconochie
   institution: unknown
@@ -45,19 +48,20 @@ dataset:
     type (Fig. 1). Excluding the grassland plots (because they contained few woody
     plants), there were 19 completely unburnt plots, 8 partially burnt plots and 148
     completely burnt plots.
-  original_file: species summary_for Austraits.xlsx
+  original_file: species summary_for Austraits.xlsx (species averages), 'Species by severity_Nicholson et al 2017.xls' (means by species x severity), and 'individual tree data.xls' with individual tree data 
   notes: unknown
 sites: 
   Clarke Island:
     latitude (deg): -40.54
     longitude (deg): 148.18
     notes: Lat/lon for the middle of Clarke Island, not specifically for the sites
+    description: Mediterranean-type vegetation, including heathland, Casuarina forest, scrub and coastal scrub
 config:
   data_is_long_format: no
   variable_match:
     species_name: Species
     site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "Clarke Island") %>% mutate(dead = if_else(is.na(dead),0,dead)) %>% mutate(resprouting = if_else(is.na(resprouting),0,resprouting)) %>% mutate(fire_response = if_else(dead==Total,"fire_killed","resprouts")) %>%  mutate(resprouting_proportion = resprouting/(resprouting+dead)) 
+  custom_R_code: .na
 traits:
 - var_in: fire_response
   unit_in: .na
@@ -66,7 +70,7 @@ traits:
   replicates: 1-418
   methods: "The 10 trees in each plot were identified to species level where possible, and categorised as (i) burnt or unburnt, and (ii) 'alive', MAP'top-killed but resprouting' or 'top-killed and completely dead'. The extent of damage to the crown, branches and stem of each woody individual was classified as: 1, trees retained their foliage; 2, foliage was removed but fine twigs persisted (0.5-cm diameter); 3, trees were burnt down to thin branches (0.5–3-cm diameter); 4, trees were burnt down to thick branches (3–5-cm diameter); and 5, only stumps were left (all branches were removed) (Fig. 1). The median score of these measurements was used to characterise the fire severity of each plot. Seedling regeneration was not analysed because identifying the very small seedlings present was difficult, as sometimes was determining the species present before the fire. In AusTraits, a species is determined to be a resprouter if at least one burnt stem resprouted. Species where no burnt stems resprouted are designated as fire-killed." 
 - var_in: resprouting_proportion
-  unit_in: dimensionless
+  unit_in: '%'
   trait_name: resprouting_proportion
   value_type: multisite_mean
   replicates: 1-418
@@ -88,8 +92,4 @@ taxonomic_updates:
 - find: Leptospermum- unidentified 
   replace: Leptospermum - unidentified 
   reason: Spelling correction made by E. Wenk to match genus and family correctly (2020-03-12)
-questions: 
-  contributor: Do you have the data on an individual basis? For the resprouting_proportion trait, it would be wonderful if the percent resprouting could be made at the individual level.
-  question2: The referenced manuscript indicates that sites were scored based on fire severity. If you can provide individual-level data, if you included your fire severity score, that would be input as a contextual variable.
-  question3: Currently I've input a single lat/lon coordinate for the middle of Clarke Island. Do you have specific coordinates/sites for where data collection occurred?
-
+questions: .na
