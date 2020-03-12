@@ -19,6 +19,6 @@ read_csv("data/Metcalfe_2020_3/raw/Cooper & Cooper_Australian Rainforest Plants.
          fruit_end = substr(`end of fruit season`,1,3)) %>% 
   mutate(fruiting = paste(fruit_start, fruit_end, sep="-")) %>% 
   mutate(fruiting_span = convert_month_range_vec_to_binary(fruiting))  %>% 
-  select(-`start of fruit season`, -`end of fruit season`, -`start of flower`, -`end of flower`, - flowering, -fruiting,
-         -flower_start, -fruit_start, -flower_end, -fruit_end) %>% 
+  select(-`start of fruit season`, -`end of fruit season`, -`start of flower`, -`end of flower`, - flowering, 
+         -fruiting, -flower_start, -fruit_start, -flower_end, -fruit_end) %>% 
   write_csv("data/Metcalfe_2020_3/data.csv") 
