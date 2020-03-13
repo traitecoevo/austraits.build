@@ -9,7 +9,7 @@ source:
     url: www.tmag.tas.gov.au/floratasmania
 people:
 - name: Marco Duretto
-  institution: former Tasmanian Herbarium
+  institution: National Herbarium of NSW
   role: curator
 - name: Miguel de Salas
   institution: Tasmanian Herbarium
@@ -38,10 +38,10 @@ config:
     fruiting = convert_month_range_vec_to_binary(fruiting),
     leaf_lobed = ifelse(`leaf type` == "lobed", 1 , NA),
     `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf type`)) %>% 
-  separate(`leaf length (mm)`, c("leaf_length_min", "leaf_length_max"), sep="-", fill="left") %>%
-  separate(`leaf width (mm)`, c("leaf_width_min", "leaf_width_max"), sep="-", fill="left") %>%
-  separate(`seed length (mm)`, c("seed_length_min", "seed_length_max"), sep="-", fill="left") %>%
-  separate(`seed width (mm)`, c("seed_width_min", "seed_width_max"), sep="-", fill="left") %>% 
+  separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>%
+  separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
+  separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>%
+  separate_range("seed width (mm)", "seed_width_min", "seed_width_max") %>% 
   mutate(dispersal_appendage = ifelse(`dispersal mode` == "samara","samara", NA))
 '
 traits:
