@@ -20,7 +20,7 @@ data_sites <-
   summarise_all(.funs = mean)
 
 
-read_csv("data/Firn_2019/raw/Firn_australian_sites_NutNet_foliar_data.csv") %>%
+read_csv("data/Firn_2019/raw/Firn_australian_sites_NutNet_foliar_data_updated_SLA.csv") %>%
   mutate(Taxon = str_to_sentence(Taxon)) %>%
   write_csv("data/Firn_2019/data.csv", na = "")
 
