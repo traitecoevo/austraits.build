@@ -8,6 +8,16 @@ The Austraits database (Austraits)  is an open-source platform for ongoing compi
 
 We are yet to determine a suitable license for the data in Austraits so data cannot as yet be used without further permissions. Our aim is to release an open database, once we have cleared this with our contributors.
 
+In addition to any general license applying to the dataset, any usage requires acknowledgement of the following institutions permitting inclusion of specific resources in this compilation:  
+
+- Barlow_1981: Australian Biological Resources Study.
+- BRAIN_2007: Brisbane Rainforest Action and Information Network
+- Hyland_2003, CPRR_2002: CSIRO's Centre for Australian National Biodiversity Research
+- NTH_2014: Northern Territory Herbarium
+- RBGK_2014, Kew_2019_1, Kew_2019_2, Kew_2019_3, Kew_2019_4, Kew_2019_5, Kew_2019_6: Kew Botanic Gardens
+- NHNSW_2016, RBGSYD_2014_2, RBGSYD_2014: PLantNet, National Herbarium of NSW
+SAH_2014: State Herbarium of South Australia
+
 ## Building the database from source
 
 Austraits can be rebuilt from source (raw data files) using our scripted workflow in R. The idea of this repository is to provide a fully-transparent process of combining data from multiple sources.
