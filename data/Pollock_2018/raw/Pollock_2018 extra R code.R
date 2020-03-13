@@ -10,7 +10,7 @@ euctraits::traits_mallee %>%
   write_csv("data/Pollock_2018/site_data.csv") -> site_data
   
   
-  
+
   
   
   
