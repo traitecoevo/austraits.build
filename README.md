@@ -15,7 +15,7 @@ In addition to any general license applying to the dataset, any usage requires a
 - Hyland_2003, CPRR_2002: CSIRO's Centre for Australian National Biodiversity Research
 - NTH_2014: Northern Territory Herbarium
 - RBGK_2014, Kew_2019_1, Kew_2019_2, Kew_2019_3, Kew_2019_4, Kew_2019_5, Kew_2019_6: Kew Botanic Gardens
-- NHNSW_2016, RBGSYD_0000, RBGSYD_2014: PLantNet, National Herbarium of NSW
+- NHNSW_2016, RBGSYD_2014_2, RBGSYD_2014: PLantNet, National Herbarium of NSW
 SAH_2014: State Herbarium of South Australia
 
 ## Building the database from source
