@@ -1,6 +1,6 @@
 Contributing to `AusTraits`
 ================
-2020-03-16
+2020-03-17
 
   - [Introduction](#introduction)
   - [Ways to contribute](#ways-to-contribute)
@@ -10,8 +10,8 @@ Contributing to `AusTraits`
 ## Introduction
 
 AusTraits is a community resource and we are very keen for people to
-contribute. This documented describes some of the ways you can
-contribute. Separate documents provide information on:
+contribute. This document describes some of the ways you can contribute.
+Separate documents provide information on:
 
   - [Building Austraits](Building.md)
   - [Contributing](Contributing.md)
@@ -43,7 +43,7 @@ AusTraits. If you would like to contribute data, the requirements are:
 
   - Data were collected for Australian plant species growing in
     Australia
-  - You collected data on one of the traits list in the [trait
+  - You collected data on one of the traits listed in the [trait
     definitions table](Trait_definitions.md).
   - You are willing to release the data under an open license for reuse
     by the scientific community.

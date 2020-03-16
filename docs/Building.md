@@ -1,6 +1,6 @@
 How to build the `AusTraits` data compilation
 ================
-2020-03-16
+2020-03-17
 
   - [Overview & Mission](#overview-mission)
   - [Structure of AusTraits](#austraits_structure)
@@ -43,12 +43,13 @@ How to build the `AusTraits` data compilation
           - [Adding a source](#adding-a-source)
           - [Adding people](#adding-people)
           - [Custom R code](#custom-r-code)
-          - [Definting traits](#definting-traits)
-          - [Site detials](#site-detials)
+          - [Defining traits](#defining-traits)
+          - [Site details](#site-details)
           - [Using substitutions](#using-substitutions)
           - [Update taxonomy](#update-taxonomy)
       - [Running tests](#running_tests)
       - [Reports / quality checks](#reports)
+  - [A tibble: 2,043 x 11](#a-tibble-2043-x-11)
       - [Pushing to GitHub](#pushing-to-github)
   - [Appendices](#appendices)
       - [File types](#file-types)
@@ -56,7 +57,6 @@ How to build the `AusTraits` data compilation
           - [YAML files](#yaml)
       - [Adding custom R code into metadata.yml](#custom_R_code)
           - [Example problem](#example-problem)
-          - [Developing solutions](#developing-solutions)
 
 This document provides information on how AusTraits is assembled from
 its component parts. Separate documents provide information on:
@@ -110,17 +110,17 @@ We therefore set out to build a resource with the following features:
     improvement of the database.
 
 A key goal for us was to make the process for harmonising different
-datasets as transparent posbble. Our workflow is therefore
-fully-reproducible and open, meanign it exposes the decisions made in
+datasets as transparent as possible. Our workflow is therefore
+fully-reproducible and open, meaning it exposes the decisions made in
 the processing of data into a harmonised and curated dataset (Figure 1);
-and can also be reruen by others (see section ON [compiling
+and can also be rerun by others (see section ON [compiling
 AusTraits](#compiling)).
 
 ![](Workflow.png)
 
 # Structure of AusTraits
 
-AusTraits is essentailly a series of linked components, which cross link
+AusTraits is essentially a series of linked components, which cross link
 against each other::
 
     austraits
@@ -187,30 +187,31 @@ were collected, including time frame and source.
 
 **Content:**
 
-| key                         | value                                                                                                                                                                                                                                                                                                                                  |
-| :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| dataset\_id                 | Primary identifier for each study contributed into AusTraits; most often these are scientific papers, books, or online resources. By default should be name of first author and year of publication, e.g. `Falster_2005`.                                                                                                              |
-| trait\_name                 | Name of trait sampled. Allowable values specified in the table `traits`.                                                                                                                                                                                                                                                               |
-| methods                     | A textual description of the methods used to collect the trait data. Whenever available, methods are taken near-verbatim from referenced souce. Methods can include descriptions such as ‘measured on herbarium specimens’,‘data from the literature’, or a detailed description of the field or lab methods used to collect the data. |
-| year\_collected\_start      | The year data collection commenced                                                                                                                                                                                                                                                                                                     |
-| year\_collected\_end        | The year data collection was completed                                                                                                                                                                                                                                                                                                 |
-| description                 | A 1-2 sentence description of the purpose of the study.                                                                                                                                                                                                                                                                                |
-| collection\_type            | A field to indicate where the plants on which traits were measured were collected - in the `field`, `lab`, `glasshouse`, `herbarium specimens`, or `literature`. The latter should only be used when the data were sourced from the literature and the collection type is unknown.                                                     |
-| sample\_age\_class          | A field to indicate if the study was completed on `adult` or `juvenile` plants                                                                                                                                                                                                                                                         |
-| sampling\_strategy          | A written description of how study sites were selected and how study individuals were selected. When available, this information is lifted verbatim from a published manuscript. For herbarium studies, this field ideally indicates which herbaria were ‘sampled’ to measure a specific trait                                         |
-| source\_primary\_citation   | Citation for primary source. This detail is genearted from the primary source in the metadata                                                                                                                                                                                                                                          |
-| source\_primary\_key        | Citation key for primary source in `sources`. The key is typically of format Surname\_year                                                                                                                                                                                                                                             |
-| source\_secondary\_citation | Citation for secondary source. This detail is genearted from the secondary source in the metadata                                                                                                                                                                                                                                      |
-| source\_secondary\_key      | Citation key for secondary source in `sources`. The key is typically of format Surname\_year                                                                                                                                                                                                                                           |
+| key                         | value                                                                                                                                                                                                                                                                                                                                   |
+| :-------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| dataset\_id                 | Primary identifier for each study contributed into AusTraits; most often these are scientific papers, books, or online resources. By default should be name of first author and year of publication, e.g. `Falster_2005`.                                                                                                               |
+| trait\_name                 | Name of trait sampled. Allowable values specified in the table `traits`.                                                                                                                                                                                                                                                                |
+| methods                     | A textual description of the methods used to collect the trait data. Whenever available, methods are taken near-verbatim from referenced source. Methods can include descriptions such as ‘measured on herbarium specimens’,‘data from the literature’, or a detailed description of the field or lab methods used to collect the data. |
+| year\_collected\_start      | The year data collection commenced                                                                                                                                                                                                                                                                                                      |
+| year\_collected\_end        | The year data collection was completed                                                                                                                                                                                                                                                                                                  |
+| description                 | A 1-2 sentence description of the purpose of the study.                                                                                                                                                                                                                                                                                 |
+| collection\_type            | A field to indicate where the majority of plants on which traits were measured were collected - in the `field`, `lab`, `glasshouse`, `herbarium specimens`, or `literature`. The latter should only be used when the data were sourced from the literature and the collection type is unknown.                                          |
+| sample\_age\_class          | A field to indicate if the study was completed on `adult` or `juvenile` plants                                                                                                                                                                                                                                                          |
+| sampling\_strategy          | A written description of how study sites were selected and how study individuals were selected. When available, this information is lifted verbatim from a published manuscript. For herbarium studies, this field ideally indicates which herbaria were ‘sampled’ to measure a specific trait                                          |
+| source\_primary\_citation   | Citation for primary source. This detail is generated from the primary source in the metadata                                                                                                                                                                                                                                           |
+| source\_primary\_key        | Citation key for primary source in `sources`. The key is typically of format Surname\_year                                                                                                                                                                                                                                              |
+| source\_secondary\_citation | Citations for an secondary source. This detail is generated from the secondary source in the metadata                                                                                                                                                                                                                                   |
+| source\_secondary\_key      | Citation key for secondary source in `sources`. The key is typically of format Surname\_year                                                                                                                                                                                                                                            |
 
 ### excluded\_data
 
 **Description:** A table of data that did not pass quality test and so
 were excluded from the master dataset.
 
-**Content:** Structure is identical to that presented in the `data`
+**Content:** Structure is identical to that presented in the `traits`
 table, only with an extra column called `error` indicating why the
-record was excluded
+record was excluded. Common reasons are missing\_unit\_conversions,
+missing\_value, and unsupported\_trait\_value.
 
 ### taxonomy
 
@@ -293,7 +294,7 @@ Generally, `observation_id` has the format `dataset_id_XX` where `XX` is
 a unique number within each dataset. For example, if multiple traits
 were collected on the same individual, the `observation_id` allows us to
 gather these together. For floras, which report a species averages, the
-`observation_id` is determined via the species name. Importantly,
+`observation_id` is assigned at the species level.
 
 For datasets that arrive in wide format we assume each row has a unique
 `observation_id`. For datasets that arrive in long format, the
@@ -330,23 +331,23 @@ Each trait measurement also an associated `value_type`, which gives `A
 categorical variable describing the type of trait value recorded`.
 Possible values are:
 
-| key              | value                                                                                                                                                                                                                                                                                                                                                                                               |
-| :--------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| raw\_value       | Value is a direct measurement                                                                                                                                                                                                                                                                                                                                                                       |
-| site\_min        | Value is the minimum of measurements on multiple individuals of the species at a single site                                                                                                                                                                                                                                                                                                        |
-| site\_mean       | Value is the mean or median of measurements on multiple individuals of the species at a single site                                                                                                                                                                                                                                                                                                 |
-| site\_max        | Value is the maximum of measurements on multiple individuals of the species at a single site                                                                                                                                                                                                                                                                                                        |
-| multisite\_min   | Value is the minimum of measurements on multiple individuals of the species across multiple sites                                                                                                                                                                                                                                                                                                   |
-| multisite\_mean  | Value is the mean or median of measurements on multiple individuals of the species across multiple sites                                                                                                                                                                                                                                                                                            |
-| multisite\_max   | Value is the maximum of measurements on multiple individuals of the species across multiple sites                                                                                                                                                                                                                                                                                                   |
-| expert\_min      | Value is the minimum observed for a species across its entire global range, as estimated by an expert based on their knowledge of the species. The value has not been measured directly. Data from herabarium studies that represent a species’ entire range fit in this category.                                                                                                                  |
-| expert\_mean     | Value is the average observed for a species across its entire global range, as estimated by an expert based on their knowledge of the species. The value has not been measured directly. Data from herabarium studies that represent a species’ entire range fit in this category. Categorical variable values obtained from a reference book or identified by an expert also have this value type. |
-| expert\_max      | Value is the maximum observed for a species across its entire global range, as estimated by an expert based on their knowledge of the species. The value has not been measured directly. Data from herabarium studies that represent a species’ entire range fit in this category.                                                                                                                  |
-| experiment\_min  | Value is the minimum of measurements from an experimental study either in the field or a glasshouse                                                                                                                                                                                                                                                                                                 |
-| experiment\_mean | Value is the mean or median of measurements from an experimental study either in the field or a glasshouse                                                                                                                                                                                                                                                                                          |
-| experiment\_max  | Value is the maximum of measurements from an experimental study either in the field or a glasshouse                                                                                                                                                                                                                                                                                                 |
-| individual\_mean | Value is a mean of replicate measurements on an individual (usually for experimental ecophysiology studies)                                                                                                                                                                                                                                                                                         |
-| unknown          | Value type is not currently known                                                                                                                                                                                                                                                                                                                                                                   |
+| key              | value                                                                                                                                                                                                                                                                                                                                                              |
+| :--------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| raw\_value       | Value is a direct measurement                                                                                                                                                                                                                                                                                                                                      |
+| site\_min        | Value is the minimum of measurements on multiple individuals of the species at a single site                                                                                                                                                                                                                                                                       |
+| site\_mean       | Value is the mean or median of measurements on multiple individuals of the species at a single site                                                                                                                                                                                                                                                                |
+| site\_max        | Value is the maximum of measurements on multiple individuals of the species at a single site                                                                                                                                                                                                                                                                       |
+| multisite\_min   | Value is the minimum of measurements on multiple individuals of the species across multiple sites                                                                                                                                                                                                                                                                  |
+| multisite\_mean  | Value is the mean or median of measurements on multiple individuals of the species across multiple sites                                                                                                                                                                                                                                                           |
+| multisite\_max   | Value is the maximum of measurements on multiple individuals of the species across multiple sites                                                                                                                                                                                                                                                                  |
+| expert\_min      | Value is the minimum observed for a species across its range or in this particular dataset, as estimated by an expert based on their knowledge of the species. Data fitting this category include estimates from herbaria that represent a species’ entire range, and values for categorical variables obtained from a reference book, or identified by an expert. |
+| expert\_mean     | Value is the average observed for a species across its range or in this particular dataset, as estimated by an expert based on their knowledge of the species. Data fitting this category include estimates from herbaria that represent a species’ entire range, and values for categorical variables obtained from a reference book, or identified by an expert. |
+| expert\_max      | Value is the maximum observed for a species across its range or in this particular dataset, as estimated by an expert based on their knowledge of the species. Data fitting this category include estimates from herbaria that represent a species’ entire range, and values for categorical variables obtained from a reference book, or identified by an expert. |
+| experiment\_min  | Value is the minimum of measurements from an experimental study either in the field or a glasshouse                                                                                                                                                                                                                                                                |
+| experiment\_mean | Value is the mean or median of measurements from an experimental study either in the field or a glasshouse                                                                                                                                                                                                                                                         |
+| experiment\_max  | Value is the maximum of measurements from an experimental study either in the field or a glasshouse                                                                                                                                                                                                                                                                |
+| individual\_mean | Value is a mean of replicate measurements on an individual (usually for experimental ecophysiology studies)                                                                                                                                                                                                                                                        |
+| unknown          | Value type is not currently known                                                                                                                                                                                                                                                                                                                                  |
 
 AusTraits does not include intra-individual observations. When multiple
 measurements per individual are submitted to AusTraits, we take the mean
@@ -385,7 +386,7 @@ relevant IDs as in these examples.
 ## Sources
 
 For each dataset in the compilation there is the option to list primary
-and secondary citation.s The primary citation The original study in
+and secondary citations. The primary citation The original study in
 which data were collected while the secondary citation is A subsequent
 study where data were compiled or re-analysed and then made available.
 These references are included in two places:
@@ -400,7 +401,7 @@ These references are included in two places:
 ## Trait definitions
 
 Allowable traits and values are defined in the definitions file. Each
-trait is labelled as either `numeric` or `categorical`. An exa,ple of
+trait is labelled as either `numeric` or `categorical`. An example of
 each type is as follows. For the full list, see Appendix section [Trait
 definition](#trait_defs).
 
@@ -429,12 +430,12 @@ definition](#trait_defs).
 # Compiling AusTraits
 
 In this section we describe how to build the harmonised datatset, before
-descrbing the structure of the raw components in more detail. By
+describing the structure of the raw components in more detail. By
 “compiling” we mean transofmring data from all the different studies
 into a harmonised common format. As described above and depicted in
 Figure 1, AusTraits is built so that you can rebuild the database from
 its parts at any time. This means that decisions made along the way, in
-how data are transfromed of encoded, can be inspected and modified. And
+how data are transformed or encoded, can be inspected and modified. And
 new data is easily incorpoated.
 
 ## Gihtub repoisitory
@@ -446,12 +447,13 @@ Github provides a commercial web platform for sharing, visualizing, and
 managing data or code under version control. It includes ability to
 browse the “history” of the repository, “issue” tracking, and ability to
 host “releases”. It also enables multiple contributors to work
-simulaenously on the same project. While traditonally used for storing
+simultaneously on the same project. While traditonally used for storing
 code, Github is also being used to store data, especially where there
-are multiple contirbuors ([Perkel 2016](http://doi.org/10.1038/538127a),
-[Falster et al 2019](http://doi.org/10.1093/gigascience/giz035)).
+are multiple contributors
+([Perkel 2016](http://doi.org/10.1038/538127a), [Falster et
+al 2019](http://doi.org/10.1093/gigascience/giz035)).
 
-The first step to compile AsTraits is to download a copy of the
+The first step to compile AusTraits is to download a copy of the
 [austriats.build](https://github.com/traitecoevo/austraits.build/)
 repository from Github. Then open up the Rstudio project, or open R into
 the right directory.
@@ -477,7 +479,7 @@ This command checks that the required packages, listed in the file
 One of the packages that will be installed with the above is
 [`remake`](https://github.com/richfitz/remake). This package manages the
 compiling, and also helps steramline the amount of recompiling needed
-whne new sources are added.
+when new sources are added.
 
 Running the following command will rebuild AusTraits and save the
 assmebled dataset into a file `export/data/austraits.rds`.
@@ -489,7 +491,7 @@ Remake can also load the compiled dataset directly into R by calling:
 ## File structure
 
 The main directory for the [`austraits.build`
-reprository](https://github.com/traitecoevo/austraits.build/) repository
+repository](https://github.com/traitecoevo/austraits.build/) repository
 contains the following files and folders, with purpose as indicated.
 
     austraits
@@ -519,7 +521,7 @@ the dataset.
 The file `definitions.yml` defines the structure of the database and all
 terms. The tables and definitions provided in the section above on
 [Structure of AusTraits](#austraits_structure%5D) are defined in this
-file, as are trait defitnions. A `.yml` file is a structured data file
+file, as are trait definitions. A `.yml` file is a structured data file
 where information is presented in a hierarchical format (see [appendix
 for details](#yaml)). You will need to edit this file if you are
 changing or adding trait definitions.
@@ -541,7 +543,7 @@ for details).
 | Abrotanella scapigera     | Compositae  | NA                            | NA          | NA       | NA                    | NA      | NA       |
 | Abrus precatorius         | Leguminosae | L.                            | ild-2477    | Accepted | Abrus precatorius     | 2919311 | 56149    |
 
-The file `unit_conversions.csv` defines the unit converstions that are
+The file `unit_conversions.csv` defines the unit conversions that are
 used when converting traits to common units, e.g.
 
 | unit\_from   | unit\_to | function    |
@@ -583,13 +585,10 @@ study and each containing two files:
     ├── Bean_1997
     │   ├── data.csv
     │   └── metadata.yml
-    ├── Blackman_2014
-    │   ├── data.csv
-    │   └── metadata.yml
     ├── ....
 
-where `Angevin_2010`, `Barlow_1981`, `Bean_1997`, `Westoby_2014` are
-each a unique `dataset_id` in the final dataset.
+where `Angevin_2010`, `Barlow_1981`, & `Bean_1997` are each a unique
+`dataset_id` in the final dataset.
 
 ### Data.csv
 
@@ -616,7 +615,7 @@ AusTraits format, but these changes should be executed as AusTraits is
 compiled and should be in the `metadata.yml` file under
 `config/custom_R_code` (see below). Any files used to create the
 submitted `data.csv` file (e.g. Excel …) should be archived in a
-subfolder within the study folder named `raw`.
+sub-folder within the study folder named `raw`.
 
 ### Metadata.yml
 
@@ -642,16 +641,23 @@ are written in structured yml format, under the category `source` and
 then sub-groupings `primary` and `secondary`. General guidelines for
 describing a source
 
-  - maximum of one primary and secondary source allowed
+  - maximum of one primary source allowed.
   - elements are names as in [bibtex
-    format](https://en.wikipedia.org/wiki/BibTeX)
+    format](https://en.wikipedia.org/wiki/BibTeX).
   - keys should be named in the format `Surname_year` and should be
-    identical to the name given to the dataset folder.
-  - a secondary source may be needed if the main collector is not an
-    author on the paper where data was released, or data were otherwise
-    released via a subsequent study.
+    identical to the name given to the dataset folder. A second instance
+    of the identical Surname\_year should have the key Surname\_year\_2.
+  - one or more secondary source may be if traits from a single dataset
+    were presented in two different manuscripts. Multiple sources are
+    also appropriate if an author has compiled data from a number of
+    sources, that are not individually in AusTraits, for a published or
+    unpublished compilation.
   - if your data is from an unpublished study, only include the elements
-    that are applicable
+    that are applicable.
+  - If someone has transcribed a published source, the primary source
+    will be the published work and the person who has completed the
+    transcription will be acknowledged as the \`contributor of the
+    dataset.
 
 Following are some examples for different types of source.
 
@@ -769,11 +775,11 @@ The following elements are included under the element `dataset`:
   - **year\_collected\_end**: The year data collection was completed
   - **description**: A 1-2 sentence description of the purpose of the
     study.
-  - **collection\_type**: A field to indicate where the plants on which
-    traits were measured were collected - in the `field`, `lab`,
-    `glasshouse`, `herbarium specimens`, or `literature`. The latter
-    should only be used when the data were sourced from the literature
-    and the collection type is unknown.
+  - **collection\_type**: A field to indicate where the majority of
+    plants on which traits were measured were collected - in the
+    `field`, `lab`, `glasshouse`, `herbarium specimens`, or
+    `literature`. The latter should only be used when the data were
+    sourced from the literature and the collection type is unknown.
   - **sample\_age\_class**: A field to indicate if the study was
     completed on `adult` or `juvenile` plants
   - **sampling\_strategy**: A written description of how study sites
@@ -839,9 +845,9 @@ appendix](#custom_R_code).
 
 #### Traits
 
-This section A translation table mapping traits and units in the
-original study onto corresponding variables in AusTraits. Also specified
-here are methods used to collect the data.
+This section provides A translation table mapping traits and units in
+the original study onto corresponding variables in AusTraits. Also
+specified here are methods used to collect the data.
 
 For each trait submitted to Austraits, there is the following
 information:
@@ -862,7 +868,7 @@ information:
     should be `.na`.
   - **methods**: A textual description of the methods used to collect
     the trait data. Whenever available, methods are taken near-verbatim
-    from referenced souce. Methods can include descriptions such as
+    from referenced source. Methods can include descriptions such as
     ‘measured on herbarium specimens’,‘data from the literature’, or a
     detailed description of the field or lab methods used to collect the
     data.
@@ -946,9 +952,9 @@ An example is as follows:
 #### Questions
 
 This section provides a place to record any queries we have about the
-dataset (recorded as a named array), including notes on any additonal
+dataset (recorded as a named array), including notes on any additional
 traits that may have been collected in the study but have not been
-icnoproated into austraits.
+incorporated into austraits.
 
 An example is as follows:
 
@@ -1032,7 +1038,8 @@ or
 
 Note, when editing the `metadata.yml`, edits should be made in a proper
 text editor (Microsoft word tends to stuff up the formatting). For
-example, Rstudio works.
+example, Rstudio, textmate, sublime text, and Visual Studio Code are all
+good editors.
 
 To assist you in constructing the `metadata.yml` file, we have developed
 functions to help fill in the different sections of the file. If you
@@ -1042,11 +1049,19 @@ further.
 To use the functions, make sure you first run the following, to make the
 functions available
 
+``` r
+devtools::load_all()
+```
+
 ### Creating a template
 
 The first function creates a basic template for your the `metadata.yml`
 file for your study. Assuming you have already created a file `data.csv`
 in the folder `data/your_dataset_id`, run
+
+``` r
+metadata_create_template(dataset_id)
+```
 
 The function will ask a series of questions and then create a relatively
 empty file `data/your_dataset_id/metadata.yml`. The key questions are:
@@ -1054,7 +1069,7 @@ empty file `data/your_dataset_id/metadata.yml`. The key questions are:
   - Is the data long vs wide? A wide dataset has each
     variable(i.e. trait ) as a column. A long dataset has each variable
     as a row and column as a species. *Select column for ‘species\_name’
-    *Select column for ‘trait\_name’
+    *Select column for ‘site\_name’
 
 ### Adding a source
 
@@ -1122,16 +1137,24 @@ Custom R code is valid R code, but written inside the `metadata.yml`
 file. While developing this, you’ll want to test your code. This can be
 achieved by running the function
 
+``` r
+metadata_check_custom_R_code(dataset_id)
+```
+
 which returns a data frame, showing how the datasets looks after being
 manipulated.mes
 
-### Definting traits
+### Defining traits
 
 Add traits
 
+``` r
+metadata_add_traits(dataset_id)
+```
+
 <!-- TODO: You will be asked to indicate the columns you wish to keep as distinct traits -->
 
-### Site detials
+### Site details
 
 Add sites details
 
@@ -1171,8 +1194,8 @@ To generate a suggested name change for a specific study run:
 metadata_check_taxa("Westoby_2014")
 ```
 
-If TaxonStand finds taxonomic changes to make it will add the relevant
-lines of code directly to the metadata.yml file.
+If TaxonStand finds taxonomic changes it will add the relevant lines of
+code directly to the metadata.yml file.
 
 TaxonStand has been configured in the above function to only permit
 relatively certain changes (e.g. with a minor change to spelling or
@@ -1199,13 +1222,21 @@ identified one yourself, you can add it to the metadata by running
 metadata_add_taxnomic_change(study, find, replace, reason)
 ```
 
+For any plants that are only identified to genus, make sure the genus
+name is the first part of the name given; this will ensure its genus and
+family is recorded appropriately. I.e. use ‘Acacia sp. long leaf’, not
+‘long leaf Acacia’.
+
 ## Running tests
 
 You can also run some automated tests to ensure the dataset meets
-required setup. The tests run through a collection of pre-specified
+required set up. The tests run through a collection of pre-specified
 checks on the files for each study. The output alerts you to possible
 issues needing to be fixed, by comparing the data in the files with
 expected structure and allowed values, as specified in the definitions.
+NBy far the most common error is that there are unusual text characters,
+for example often special hyphen’s, quote symbols, plus-minus symbols.
+These should be replaced by simple text equivalents.
 
 To run the tests, the variable `dataset_ids` must be defined in the
 global namespace, containing a vector of ids to check. For example
@@ -1231,8 +1262,7 @@ data in each study.
 (Reports are written in
 [Rmarkdown](https://rstudio.github.io/rmarkdown/) and generated via the
 [knitr](https://cran.r-project.org/web/packages/knitr/) package. The
-template is stored in the folder `vignettes` called
-`report_study.html`).
+template is stored in `scripts/report_study.html`).
 
 To generate a report for a particular study:
 
@@ -1242,28 +1272,145 @@ source("R/report_utils.R")
 build_study_report("Wright_2002")
 ```
 
-**Guidelines for writing report code**
+To generate a report for a collection of studies:
 
-  - use [knitr chunk
-    options](https://rmarkdown.rstudio.com/lesson-3.html) to customise
-    when code is shown and how output is displayed.
-  - use [tidyverse style and
-    format](http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html)
-  - use [kableExtra for styling
-    tables](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html)
+``` r
+build_study_reports(c("Falster_2005_1", "Wright_2002"))
+```
 
-**Maps:** We use the package
-[leaflet](https://cran.r-project.org/web/packages/leaflet/index.html) to
-generate interactive maps via the JavaScript ‘Leaflet’ framework and
-based on the [Open street map](https://www.openstreetmap.org/).
+Or for all studies:
+
+``` r
+build_study_reports()
+```
+
+Both functions `build_study_report` & `build_study_reports` can accept
+an additional argument `overwrite=TRUE`, to overwrite existing reports
+if they exist. Eg.
+
+``` r
+build_study_report("Wright_2002", overwrite=TRUE)
+```
+
+One thing to check in particular, is any data have been excluded. These
+are available in the frame `excluded_data`.
+
+Possible reasons for excluding that value include:
+
+  - *Missing value*: Value was missing
+  - *Missing unit conversion*: Value was present but appropriate unit
+    conversion was missing -\> you need to add it to the file
+    `config/unit_conversions.csv`
+  - *Unsupported trait*: `trait_name` not listed in
+    `config/definitions.yml`, under `traits`
+  - *Unsupported trait value*: For categorical traits, `value` for trait
+    not included for that trait in `config/definitions.yml`
+  - *Value does not convert to numeric*: Is there a strange character in
+    the file preventing easy conversion?
+  - *Value out of allowable range*: Converted value falls outside of the
+    allowable range specified for that trait in \`config/definitions.ym
+
+For your dataset, you can investigate why you have excluded data as
+follows.
+
+Look at everything
+
+``` r
+id <- "ANBG_2019"
+
+austraits$excluded_data %>% 
+  filter(dataset_id==id)
+```
+
+# A tibble: 2,043 x 11
+
+error dataset\_id species\_name site\_name observation\_id trait\_name
+value unit value\_type replicates original\_name  
+<chr> <chr> <chr> <chr> <chr> <chr> <chr> <chr> <fct> <chr> <chr>  
+1 Unsupported trait ANBG\_2019 Abelmoschus ficulneus
+site\_at\_-23.0333\_degS\_and\_143.9833\_degE ANBG\_2019\_0001
+LengthSample 7 <NA> <NA> <NA> Abelmoschus ficulneus 2 Unsupported trait
+ANBG\_2019 Abelmoschus ficulneus
+site\_at\_-23.0333\_degS\_and\_143.9833\_degE ANBG\_2019\_0001
+WidthSample 7 <NA> <NA> <NA> Abelmoschus ficulneus 3 Unsupported trait
+ANBG\_2019 Abutilon otocarpum
+site\_at\_-31.5667\_degS\_and\_143.2167\_degE ANBG\_2019\_0010
+LengthSample 20 <NA> <NA> <NA> Abutilon otocarpum  
+4 Unsupported trait ANBG\_2019 Abutilon otocarpum
+site\_at\_-31.5667\_degS\_and\_143.2167\_degE ANBG\_2019\_0010
+WidthSample 20 <NA> <NA> <NA> Abutilon otocarpum  
+5 Unsupported trait ANBG\_2019 Acacia acinacea
+site\_at\_-34.7244\_degS\_and\_149.1886\_degE ANBG\_2019\_0012
+LengthSample 21 <NA> <NA> <NA> Acacia acinacea  
+6 Unsupported trait ANBG\_2019 Acacia acinacea
+site\_at\_-34.7244\_degS\_and\_149.1886\_degE ANBG\_2019\_0012
+WidthSample 22 <NA> <NA> <NA> Acacia acinacea  
+7 Unsupported trait ANBG\_2019 Acacia acuminata
+site\_at\_-35.2833\_degS\_and\_149.1167\_degE ANBG\_2019\_0017
+LengthSample 9 <NA> <NA> <NA> Acacia acuminata  
+8 Unsupported trait ANBG\_2019 Acacia acuminata
+site\_at\_-35.2833\_degS\_and\_149.1167\_degE ANBG\_2019\_0017
+WidthSample 9 <NA> <NA> <NA> Acacia acuminata  
+9 Unsupported trait ANBG\_2019 Acacia adsurgens
+site\_at\_-20.3333\_degS\_and\_130.1\_degE ANBG\_2019\_0019 LengthSample
+11 <NA> <NA> <NA> Acacia adsurgens  
+10 Unsupported trait ANBG\_2019 Acacia adsurgens
+site\_at\_-20.3333\_degS\_and\_130.1\_degE ANBG\_2019\_0019 WidthSample
+11 <NA> <NA> <NA> Acacia adsurgens  
+\# … with 2,033 more rows
+
+If you want to inspect this more closely, just pass it into `View`
+
+``` r
+austraits$excluded_data %>% 
+  filter(dataset_id==id) %>% 
+  View()
+```
+
+How many of each type:
+
+``` r
+austraits$excluded_data %>% 
+  filter(dataset_id==id) %>%
+  pull(error) %>% table()
+```
+
+. Missing value Unsupported trait Unsupported trait value Value does not
+convert to numeric 36 1986 12 9
+
+How many of each type by trait:
+
+``` r
+austraits$excluded_data %>% 
+  filter(dataset_id==id) %>%
+  select(trait_name, error) %>%
+  table()
+```
+
+``` 
+                   error
+```
+
+trait\_name Missing value Unsupported trait Unsupported trait value
+Value does not convert to numeric germination\_treatment 0 0 1 0
+LengthSample 0 957 0 0 seed\_mass 0 0 0 9 seed\_shape 36 0 11 0
+WidthSample 0 1029 0 0
+
+View records that aren’t missing values
+
+``` r
+austraits$excluded_data %>% 
+  filter(dataset_id==id, error !="Missing value") %>%
+  View()
+```
 
 ## Pushing to GitHub
 
 By far our preferred way of contributing is for you to fork the database
 in github, add your dataset then send us a [pull
 request](https://help.github.com/articles/using-pull-requests/). If this
-is not possible, you could email the relevant files (see above) to
-Rachael Gallagher.
+is not possible, you could email the relevant files (see above) to the
+Austraits email: <austraits.database@gmail.com>
 
 # Appendices
 
@@ -1271,35 +1418,23 @@ Rachael Gallagher.
 
 ### CSV
 
+A comma-separated values (CSV) file is a delimited text file that uses a
+comma to separate values. Each line of the file is a data record. Each
+record consists of one or more fields, separated by commas. This is a
+comma format for storing tables of data in a simple text file. You can
+edit it an Excel or in a text editor.For more, see
+[here](https://en.wikipedia.org/wiki/Comma-separated_values).
+
 ### YAML files
 
-yml: The `yml` file extension (pronounced “YAML”) [is a type structured
-data file](https://en.wikipedia.org/wiki/YAML), that is both human and
-machine readable. The information in it appears under various labels,
-which are imported into AusTraits. You can edit it any text editor, or
-also in Rstudio. Generally, yml is used in situations where a table does
-not suit because of variable lengths and or nested structures. This
-document outlines how to describe metadata for any given study
-
-The metadata is compiled in a `.yml` file, a structured data file where
-information is presented in a hierarchical format. It has the advantage
-over a spreadsheet in that the nested “headers” can have variable
-numbers of categories. The data under each of the hierarchical headings
-are easily extracted by R.
-
-Assumed character unless specified otherwise
-
-possible types:
-
-  - `character`:
-  - `numeric`: must have fields `description`, `type`, `units`, `values`
-    with filed `minimum` and `maximum`.
-  - `categorical`: Unlike character, only specific values are allowed.
-    must have fields `description`, `type`,and `values`, with the latter
-    including a list of possible values.
-  - `table`:
-  - `list`:
-  - `array`:
+The `yml` file extension (pronounced “YAML”) [is a type structured data
+file](https://en.wikipedia.org/wiki/YAML), that is both human and
+machine readable. You can edit it any text editor, or also in Rstudio.
+Generally, yml is used in situations where a table does not suit because
+of variable lengths and or nested structures. It has the advantage over
+a spreadsheet in that the nested “headers” can have variable numbers of
+categories. The data under each of the hierarchical headings are easily
+extracted by R.
 
 ## Adding custom R code into metadata.yml
 
@@ -1326,153 +1461,51 @@ Note the second line.
 
 ### Example problem
 
-As an example, `Barlow_1981` has multiple units per traits. Check it
-out:
-
-Load the data
-
-Here’s the problem - note tat several traits have multiple units used:
-
-``` 
-                     cm    m   mm
-```
-
-dispersal 0 0 0 flowering time end 0 0 0 flowering time start 0 0 0 leaf
-length maximum 2570 7 836 leaf length minimum 2489 7 815 leaf type 0 0 0
-leaf width maximum 1050 0 1986 leaf width minimum 1005 0 1974 lifeform 0
-0 0 longevity 0 0 0 plant height maximum 831 2371 6 plant height minimum
-200 862 0 seed breadth maximum 5 0 72 seed breadth minimum 5 0 72 seed
-length maximum 33 0 718 seed length minimum 34 0 733 seed shape 0 0 0
-seed width maximum 22 0 404 seed width minimum 22 0 407
-
-So you want to write some R code that fixes this and gets the dataset
-into the processing pipeline, satisfying all the assumptions.
-
-### Developing solutions
-
-We want to write some custom R code that will appear in the
-`metadata.yml` file for that study, under a title `config` -\>
-`custom_R_code`. E.g. see this example for
-[data/Barlow\_1981/metadata.yml](https://github.com/traitecoevo/austraits/blob/master/data/Barlow_1981/metadata.yml).
-
-Your code should assume a single object called `data`. And apply
-whatever fixes are needed. Also it should be
-
-  - fully self contained (we’re not going to use any of the other remake
-    machinery here)
-  - have semi colons `;` at the end of each line. This will be needed
-    because we’re adding the code to the `metadata.yml` file and
-    newlines get lost when reading in the file.
-
-The workflow is to first develop some code that applies a suitable fix.
-E.g. for Barlow\_1981 here is the code we eventually applied to the
-object `data` loaded above:
-
-Running this removes the problem with multiple units:
+As an example, for `Blackman_2010` we want to combine two columns to
+create an appropriate site variable. Here is the code that was included
+in
+[data/Blackman\_2010/metadata.yml](https://github.com/traitecoevo/austraits/blob/master/data/Blackman_2010/metadata.yml)
+under `custom_R_code`.
 
 ``` r
-table(data$trait, data$units)
+data %>% mutate(
+    site = ifelse(site == "Mt Field" & habitat == "Montane rainforest", "Mt Field_wet", site),
+    site = ifelse(site == "Mt Field" & habitat == "Dry sclerophyll", "Mt Field_dry", site)
+    )
 ```
 
-    ##                       
-    ##                          cm    m   mm
-    ##   dispersal               0    0    0
-    ##   flowering time end      0    0    0
-    ##   flowering time start    0    0    0
-    ##   leaf length maximum  2570    7  836
-    ##   leaf length minimum  2489    7  815
-    ##   leaf type               0    0    0
-    ##   leaf width maximum   1050    0 1986
-    ##   leaf width minimum   1005    0 1974
-    ##   lifeform                0    0    0
-    ##   longevity               0    0    0
-    ##   plant height maximum  831 2371    6
-    ##   plant height minimum  200  862    0
-    ##   seed breadth maximum    5    0   72
-    ##   seed breadth minimum    5    0   72
-    ##   seed length maximum    33    0  718
-    ##   seed length minimum    34    0  733
-    ##   seed shape              0    0    0
-    ##   seed width maximum     22    0  404
-    ##   seed width minimum     22    0  407
+This is the finished solution, but to get there we did as follows.
 
-(we can ignore the NULLs here, these are when data and units are both
-NA. Those get pruged furtehr down the pipeline).
+Generally, this code should
 
-Once you have some working code, you then want to add it into your yml
-file under a group `config` -\> `custom_R_code`.
+  - assume a single object called `data`, and apply whatever fixes are
+    needed
+  - use [dplyr](https://dplyr.tidyverse.org) functions like `mutate`,
+    `rename`, etc
+  - use pipes to weave together a single statement, possible. (Otherwise
+    you’ll need a semi colons `;` at the end of each statement).
+  - be fully self contained (we’re not going to use any of the other
+    remake machinery here)
 
-And then check it works.
-
-Let’s assume you added it in, so we’ll load the metadata (and also
-reload the data)
-
-In the build process we use the function `custom_manipulation` to create
-a function that accepts a data frame and modifies it according to the
-code in `txt`
+First, load an object called `data`:
 
 ``` r
-custom_manipulation
+library(readr)
+library(yaml)
+
+data <- read_csv(file.path("data", "Blackman_2010", "data.csv"), col_types = cols(.default = "c"))
+data
 ```
 
-function(txt) { if (\!is.null(txt) && \!is.na(txt) && nchar(txt) \> 0) {
-function(data) {eval(parse(text=txt), env=new.env())} } else { identity
-} } \<environment: 0x7f8071211710\>
+Second, write your code to manipulate data, like the example above/
 
-So now lets use it to create a function
+Third, once you have some working code, you then want to add it into
+your yml file under a group `config` -\> `custom_R_code`.
+
+Finally, check it works. Let’s assume you added it in. The function
+`metadata_check_custom_R_code` loads the data and applies the custom R
+code:
 
 ``` r
-f <- custom_manipulation(metadata[["config"]][["custom_R_code"]])
-f
+metadata_check_custom_R_code("Blackman_2010")
 ```
-
-    ## function(data) {eval(parse(text=txt), env=new.env())}
-    ## <environment: 0x7f807923bcb0>
-
-And finally we can apply the function to our data:
-
-``` r
-data2 <- f(data)
-```
-
-(If it fails at this point it won’t work in the build).
-
-Now let’s compare it to our original data (the columns units and values
-should now differ)
-
-``` r
-all.equal(data, data2)
-```
-
-    ## [1] "Different number of rows"
-
-And also see the units and traits:
-
-    ##                       
-    ##                          mm
-    ##   dispersal               0
-    ##   flowering_time          0
-    ##   leaf length maximum  3413
-    ##   leaf length minimum  3311
-    ##   leaf type               0
-    ##   leaf width maximum   3036
-    ##   leaf width minimum   2979
-    ##   leaf_phenology          0
-    ##   leaf_type               0
-    ##   life_history            0
-    ##   lifeform                0
-    ##   plant height maximum 3208
-    ##   plant height minimum 1062
-    ##   seed breadth maximum   77
-    ##   seed breadth minimum   77
-    ##   seed length maximum   751
-    ##   seed length minimum   767
-    ##   seed shape              0
-    ##   seed width maximum    426
-    ##   seed width minimum    429
-
-Finally, check it works in the context of loading the metadata:
-
-    ## [1] "Different number of rows"
-
-Now you’re ready to go.

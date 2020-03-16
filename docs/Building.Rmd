@@ -44,11 +44,11 @@ source("R/pre_process.R")
 source("R/support.R")
 source("R/report_utils.R")
 
-
 # default for table format
 if(knitr::is_html_output()) {
   options(knitr.table.format = "html")
   my_kable_styling <- my_kable_styling_html  
+  message("HTML")
 } else if(knitr::is_latex_output()) {
   options(knitr.table.format = "latex")
   my_kable_styling <- my_kable_styling_pdf  
@@ -56,7 +56,6 @@ if(knitr::is_html_output()) {
   options(knitr.table.format = "markdown")
   my_kable_styling <- my_kable_styling_markdown
 }
-  
 
 ## Assumes to items exist in global name space
 if(!exists("austraits")) {
@@ -96,13 +95,13 @@ We therefore set out to build a resource with the following features:
 * Contributions towards AusTraits are recognised via invitations to co-author data papers, i.e. releases of the data resource, and subsequent citation. 
 * Users of AusTraits are encouraged to contribute towards the further improvement of the database.
 
-A key goal for us was to make the process for harmonising different datasets as transparent posbble. Our workflow is therefore fully-reproducible and open, meanign it exposes the decisions made in the processing of data into a harmonised and curated dataset (Figure 1); and can also be reruen by others (see section ON [compiling AusTraits](#compiling)).
+A key goal for us was to make the process for harmonising different datasets as transparent as possible. Our workflow is therefore fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset (Figure 1); and can also be rerun by others (see section ON [compiling AusTraits](#compiling)).
 
 ![](Workflow.png)
 
 # Structure of AusTraits {#austraits_structure}
 
-AusTraits is essentailly a series of linked components, which cross link against each other::
+AusTraits is essentially a series of linked components, which cross link against each other::
 
 ```{r, results="hide", comment = '', eval=F}
 names(austraits) %>% 
@@ -169,7 +168,7 @@ The core organising unit behind AusTraits is the `dataset_id`. Records are organ
 
 As well as a `dataset_id`, each trait measurement has an associated `observation_id`.  Observation IDs bind together related measurements within any dataset, and thereby allow transfromation between long  (e.g. with variables `trait_name` and `value`) and wide (e.g. with traits as columns) formats.
 
-Generally, `observation_id` has the format `dataset_id_XX` where `XX` is a unique number within each dataset. For example, if multiple traits were collected on the same individual, the `observation_id` allows us to gather these together. For floras, which report a species averages, the `observation_id` is determined via the species name. Importantly, 
+Generally, `observation_id` has the format `dataset_id_XX` where `XX` is a unique number within each dataset. For example, if multiple traits were collected on the same individual, the `observation_id` allows us to gather these together. For floras, which report a species averages, the `observation_id` is assigned at the species level.
 
 For datasets that arrive in wide format we assume each row has a unique `observation_id`. For datasets that arrive in long format, the `observation_id` is assigned based on a specified grouping variable. This variable can be specified in the `metadata.yml` file under the section `variable_match`. If missing, `observation_id` is assigned based on `species_name`. 
 
@@ -211,7 +210,7 @@ Links to species records in these systems can be accessed via the relevant IDs a
 
 ## Sources
 
-For each dataset in the compilation there is the option to list primary and secondary citation.s The primary citation `r austraits$definitions$metadata$elements$source$values$primary` while the secondary citation is `r austraits$definitions$metadata$elements$source$values$secondary`. These references are included in two places:
+For each dataset in the compilation there is the option to list primary and secondary citations. The primary citation `r austraits$definitions$metadata$elements$source$values$primary` while the secondary citation is `r austraits$definitions$metadata$elements$source$values$secondary`. These references are included in two places:
 
 1. Within the table [methods](#methods), where we provide a formatted version of each.
 2. In the element [sources](#sources), where we provided bibtex versions of all sources which can be imported into your reference library. The keys for these references are listed within the [methods]{#methods}. 
@@ -219,7 +218,7 @@ For each dataset in the compilation there is the option to list primary and seco
 ## Trait definitions
 
 Allowable traits and values are defined in the definitions file. Each trait is 
-labelled as either `numeric` or `categorical`. An exa,ple of each type is as follows. For the full list, see Appendix section [Trait definition](#trait_defs).
+labelled as either `numeric` or `categorical`. An example of each type is as follows. For the full list, see Appendix section [Trait definition](#trait_defs).
 
 
 ```{r, traits}
@@ -236,13 +235,13 @@ for(trait in c("specific_leaf_area", "woodiness")) {
 
 # Compiling AusTraits {#compiling}
 
-In this section we describe how to build the harmonised datatset, before descrbing the structure of the raw components in more detail. By "compiling" we mean transofmring data from all the different studies into a harmonised common format. As described above and depicted in Figure 1, AusTraits is built so that you can rebuild the database from its parts at any time. This means that decisions made along the way, in how data are transfromed of encoded, can be inspected and modified. And new data is easily incorpoated.
+In this section we describe how to build the harmonised datatset, before describing the structure of the raw components in more detail. By "compiling" we mean transofmring data from all the different studies into a harmonised common format. As described above and depicted in Figure 1, AusTraits is built so that you can rebuild the database from its parts at any time. This means that decisions made along the way, in how data are transformed or encoded, can be inspected and modified. And new data is easily incorpoated.
 
 ## Gihtub repoisitory
 
-All the raw materials and code needed are stored in our github repository  [`austriats.build`](https://github.com/traitecoevo/austraits.build/). Github provides a commercial web platform  for sharing, visualizing, and managing data or code under version control. It includes ability to browse the "history" of the repository, "issue" tracking, and ability to host "releases". It also enables multiple contributors to work simulaenously on the same project. While traditonally used for storing code, Github is also being used to store data, especially where there are multiple contirbuors ([Perkel 2016](http://doi.org/10.1038/538127a), [Falster et al 2019](http://doi.org/10.1093/gigascience/giz035)).
+All the raw materials and code needed are stored in our github repository  [`austriats.build`](https://github.com/traitecoevo/austraits.build/). Github provides a commercial web platform  for sharing, visualizing, and managing data or code under version control. It includes ability to browse the "history" of the repository, "issue" tracking, and ability to host "releases". It also enables multiple contributors to work simultaneously on the same project. While traditonally used for storing code, Github is also being used to store data, especially where there are multiple contributors ([Perkel 2016](http://doi.org/10.1038/538127a), [Falster et al 2019](http://doi.org/10.1093/gigascience/giz035)).
 
-The first step to compile AsTraits is to download a copy of the [austriats.build](https://github.com/traitecoevo/austraits.build/) repository from Github. Then open up the Rstudio project, or open R into the right directory.
+The first step to compile AusTraits is to download a copy of the [austriats.build](https://github.com/traitecoevo/austraits.build/) repository from Github. Then open up the Rstudio project, or open R into the right directory.
 
 Further details on working with our Github reporsiotry are available in the document XXXX 
 
@@ -259,7 +258,7 @@ This command checks that the required packages, listed in the file `DESCRIPTION`
 
 ## Compile via `remake`
 
-One of the packages that will be installed with the above is [`remake`](https://github.com/richfitz/remake). This package manages the compiling, and also helps steramline the amount of recompiling needed whne new sources are added.
+One of the packages that will be installed with the above is [`remake`](https://github.com/richfitz/remake). This package manages the compiling, and also helps steramline the amount of recompiling needed when new sources are added.
 
 
 Running the following command will rebuild AusTraits and save the assmebled dataset into a file `export/data/austraits.rds`. 
@@ -278,7 +277,7 @@ austraits <- remake::make("austraits")
 
 ## File structure
 
-The main directory for the [`austraits.build` reprository](https://github.com/traitecoevo/austraits.build/)  repository contains the following files and folders, with purpose as indicated.
+The main directory for the [`austraits.build` repository](https://github.com/traitecoevo/austraits.build/)  repository contains the following files and folders, with purpose as indicated.
 
 ```{r, eval=FALSE}
 dir() %>% create_tree_branch(title = "austraits") %>% writeLines()
@@ -311,7 +310,7 @@ config
 └── unit_conversions.csv
 ```
 
-The file `definitions.yml` defines the structure of the database and all terms. The tables and definitions provided in the section above on [Structure of AusTraits](#austraits_structure]) are defined in this file, as are trait defitnions. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). You will need to edit this file if you are changing or adding trait definitions.
+The file `definitions.yml` defines the structure of the database and all terms. The tables and definitions provided in the section above on [Structure of AusTraits](#austraits_structure]) are defined in this file, as are trait definitions. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). You will need to edit this file if you are changing or adding trait definitions.
 
 The file `species_list.csv` is our master list of known species. Each species is listed once, with known IDs (see [section above](#taxonomic) for details). 
 
@@ -322,7 +321,7 @@ austraits$taxonomy %>% select(species_name,family,authority,TPL_ID,status,APC_na
 
 ```
 
-The file `unit_conversions.csv` defines the unit converstions that are used when converting traits to common units, e.g.
+The file `unit_conversions.csv` defines the unit conversions that are used when converting traits to common units, e.g.
 
 ```{r, results='asis'}
 read_csv("config/unit_conversions.csv", col_types = "ccc") %>% 
@@ -352,14 +351,11 @@ data
 ├── Bean_1997
 │   ├── data.csv
 │   └── metadata.yml
-├── Blackman_2014
-│   ├── data.csv
-│   └── metadata.yml
 ├── ....
 
 ```
 
-where `Angevin_2010`, `Barlow_1981`, `Bean_1997`, `Westoby_2014` are each a unique `dataset_id` in the final dataset.
+where `Angevin_2010`, `Barlow_1981`, & `Bean_1997` are each a unique `dataset_id` in the final dataset.
 
 ### Data.csv {#create_data}
 
@@ -369,7 +365,7 @@ Required columns include the species name, the trait name (column in long format
 
 If multiple trait measurements were made on the same individual or are the mean of a species' measurements from the same site, they should be kept linked. If the data is in wide format, each row should represent measurements made on a single individual or a single species-by-site mean, with different trait values as consecutive columns. If the data is in long format, an observation ID (or other identifier) must be assigned to identify which measurements are linked to a unique individual or site.
 
-We aim to keep the data file in rawest form possible (i.e. as few changes as possible) but it must be a single csv file. Additional custom R code may be required to make the file exactly compatible with the AusTraits format, but these changes should be executed as AusTraits is compiled and should be in the `metadata.yml` file under `config/custom_R_code` (see below). Any files used to create the submitted `data.csv` file (e.g. Excel ...) should be archived in a subfolder within the study folder named `raw`.
+We aim to keep the data file in rawest form possible (i.e. as few changes as possible) but it must be a single csv file. Additional custom R code may be required to make the file exactly compatible with the AusTraits format, but these changes should be executed as AusTraits is compiled and should be in the `metadata.yml` file under `config/custom_R_code` (see below). Any files used to create the submitted `data.csv` file (e.g. Excel ...) should be archived in a sub-folder within the study folder named `raw`.
 
 ### Metadata.yml
 
@@ -381,11 +377,12 @@ As a start, you may want to checkout some examples from [existing studies in Aus
 
 This section provides `r tolower(definitions$metadata$elements$source$description)`. In general we aim to reference the primary source. References are written in structured yml format, under the category `source` and then sub-groupings `primary` and `secondary`. General guidelines for describing a source
 
-- maximum of one primary and secondary source allowed
-- elements are names as in [bibtex format](https://en.wikipedia.org/wiki/BibTeX)
-- keys should be named in the format `Surname_year` and should be identical to the name given to the dataset folder.
-- a secondary source may be needed if the main collector is not an author on the paper where data was released, or data were otherwise released via a subsequent study.
-- if your data is from an unpublished study, only include the elements that are applicable
+- maximum of one primary source allowed.
+- elements are names as in [bibtex format](https://en.wikipedia.org/wiki/BibTeX).
+- keys should be named in the format `Surname_year` and should be identical to the name given to the dataset folder. A second instance of the identical Surname_year should have  the key Surname_year_2.
+- one or more secondary source may be if traits from a single dataset were presented in two different manuscripts. Multiple sources are also appropriate if an author has compiled data from a number of sources, that are not individually in AusTraits, for a published or unpublished compilation.
+- if your data is from an unpublished study, only include the elements that are applicable.
+- If someone has transcribed a published source, the primary source will be the published work and the person who has completed the transcription will be acknowledged as the `contributor of the dataset.
 
 Following are some examples for different types of source.
 
@@ -550,7 +547,7 @@ A common use of the `custom_R_code` is to automate the conversion of a verbal de
 
 #### Traits
 
-This section `r definitions$metadata$elements$traits$description`
+This section provides `r definitions$metadata$elements$traits$description`
 
 For each trait submitted to Austraits, there is the following information:
 
@@ -701,13 +698,13 @@ You can then rebuild Austraits, including your dataset.
 
 One way to construct the `metadata.yml` file is to use one of the existing files and modify yours to follow the same format. As a start, checkout some examples from [existing studies in Austraits](https://github.com/traitecoevo/austraits/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits/blob/master/data/Angevin_2010/metadata.yml) or [Wright_2004](https://github.com/traitecoevo/austraits/blob/master/data/Wright_2004/metadata.yml).
 
-Note, when editing the `metadata.yml`, edits should be made in a proper text editor (Microsoft word tends to stuff up the formatting). For example, Rstudio works. 
+Note, when editing the `metadata.yml`, edits should be made in a proper text editor (Microsoft word tends to stuff up the formatting). For example, Rstudio, textmate, sublime text, and Visual Studio Code are all good editors.
 
 To assist you in constructing the `metadata.yml` file, we have developed functions to help fill in the different sections of the file. If you wish to include additional elements, you can afterwards edit the file further.
 
 To use the functions, make sure you first run the following, to make the functions available
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 devtools::load_all()
 ```
 
@@ -715,7 +712,7 @@ devtools::load_all()
 
 The first function creates a basic template for your the `metadata.yml` file for your study. Assuming you have already created a file `data.csv` in the folder `data/your_dataset_id`, run
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 metadata_create_template(dataset_id)
 ```
 
@@ -723,7 +720,7 @@ The function will ask a series of questions and then create a relatively empty f
 
 * Is the data long vs wide? A wide dataset has each variable(i.e. trait ) as a column. A long dataset has each variable as a row and column as a species. 
 *Select column for 'species_name'
-*Select column for 'trait_name'
+*Select column for 'site_name'
 
 ### Adding a source
 
@@ -768,22 +765,22 @@ Occasionally all the changes we want to make to dataset may not fit into the pre
 
 Note the second line. After loading the csv file, we can apply some Custom R code small manipulations to the dataframe before processing it. Custom R code is valid R code, but written inside the `metadata.yml` file. While developing this, you'll want to test your code. This can be achieved by running the function
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 metadata_check_custom_R_code(dataset_id)
 ```
 
 which returns a data frame, showing how the datasets looks after being manipulated.mes
 
-### Definting traits
+### Defining traits
 
 Add traits
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 metadata_add_traits(dataset_id)
 ```
 <!-- TODO: You will be asked to indicate the columns you wish to keep as distinct traits -->
 
-### Site detials
+### Site details
 
 Add sites details
 
@@ -824,7 +821,7 @@ We've implemented code to semi-automate the checking of names using the R packag
 metadata_check_taxa("Westoby_2014")
 ```
 
-If TaxonStand finds taxonomic changes to make it will add the relevant lines of code directly to the metadata.yml file.
+If TaxonStand finds taxonomic changes it will add the relevant lines of code directly to the metadata.yml file.
 
 TaxonStand has been configured in the above function to only permit relatively certain changes (e.g. with a minor change to spelling or known synonym).
 
@@ -845,9 +842,11 @@ If TaxonStand fails to find a suitable alignment, and you have identified one yo
 metadata_add_taxnomic_change(study, find, replace, reason)
 ```
 
+For any plants that are only identified to genus, make sure the genus name is the first part of the name given; this will ensure its genus and family is recorded appropriately. I.e. use 'Acacia sp. long leaf', not 'long leaf Acacia'.
+
 ## Running tests {#running_tests}
 
-You can also run some automated tests to ensure the dataset meets required setup. The tests run through a collection of pre-specified checks on the files for each study. The output alerts you to possible issues needing to be fixed, by comparing the data in the files with expected structure and allowed values, as specified in the definitions. 
+You can also run some automated tests to ensure the dataset meets required set up. The tests run through a collection of pre-specified checks on the files for each study. The output alerts you to possible issues needing to be fixed, by comparing the data in the files with expected structure and allowed values, as specified in the definitions. NBy far the most common error is that there are unusual text characters, for example often special hyphen's, quote symbols, plus-minus symbols. These should be replaced by simple text equivalents.
 
 To run the tests, the variable `dataset_ids` must be defined in the global namespace, containing a vector of ids to check. For example
 
@@ -868,7 +867,7 @@ austraits_run_tests()
 
 To enable better quality checks we have code to generate a report on the data in each study. 
 
-(Reports are written in [Rmarkdown](https://rstudio.github.io/rmarkdown/) and generated via the [knitr](https://cran.r-project.org/web/packages/knitr/) package. The template is stored in the folder `vignettes` called `report_study.html`). 
+(Reports are written in [Rmarkdown](https://rstudio.github.io/rmarkdown/) and generated via the [knitr](https://cran.r-project.org/web/packages/knitr/) package. The template is stored in `scripts/report_study.html`).
 
 To generate a report for a particular study:
 
@@ -878,19 +877,85 @@ source("R/report_utils.R")
 build_study_report("Wright_2002")
 ```
 
-**Guidelines for writing report code**
+To generate a report for a collection of studies:
 
-- use [knitr chunk options](https://rmarkdown.rstudio.com/lesson-3.html) to customise when code is shown and how output is displayed.
-- use [tidyverse style and format](http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html)
-- use [kableExtra for styling tables](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html)
+```{r, eval=FALSE, echo=TRUE}
+build_study_reports(c("Falster_2005_1", "Wright_2002"))
+```
 
-**Maps:** We use the package [leaflet](https://cran.r-project.org/web/packages/leaflet/index.html) to generate interactive maps via the JavaScript 'Leaflet' framework and based on the [Open street map](https://www.openstreetmap.org/).
+Or for all studies:
 
+```{r, eval=FALSE, echo=TRUE}
+build_study_reports()
+```
+
+Both functions `build_study_report` & `build_study_reports` can accept an additional argument `overwrite=TRUE`, to overwrite existing reports if they exist. Eg.
+
+
+```{r, eval=FALSE, echo=TRUE}
+build_study_report("Wright_2002", overwrite=TRUE)
+```
+
+One thing to check in particular, is any data have been excluded. These are available in the frame `excluded_data`.
+
+Possible reasons for excluding that value include:
+
+- *Missing value*: Value was missing
+- *Missing unit conversion*: Value was present but appropriate unit conversion was missing -> you need to add it to the file `config/unit_conversions.csv`
+- *Unsupported trait*: `trait_name` not listed in `config/definitions.yml`, under `traits`
+- *Unsupported trait value*: For categorical traits, `value` for trait not included for that trait in `config/definitions.yml` 
+- *Value does not convert to numeric*: Is there a strange character in the file preventing easy conversion?
+- *Value out of allowable range*: Converted value falls outside of the allowable range specified for that trait in `config/definitions.ym
+
+
+For your dataset, you can investigate why you have excluded data as follows. 
+
+Look at everything 
+
+```{r, echo=TRUE}
+id <- "ANBG_2019"
+
+austraits$excluded_data %>% 
+  filter(dataset_id==id)
+```
+
+If you want to inspect this more closely, just pass it into `View`
+
+```{r, echo=TRUE, eval=FALSE}
+austraits$excluded_data %>% 
+  filter(dataset_id==id) %>% 
+  View()
+```
+
+How many of each type:
+
+```{r, echo=TRUE}
+austraits$excluded_data %>% 
+  filter(dataset_id==id) %>%
+  pull(error) %>% table()
+```
+
+
+How many of each type by trait:
+
+```{r, echo=TRUE}
+austraits$excluded_data %>% 
+  filter(dataset_id==id) %>%
+  select(trait_name, error) %>%
+  table()
+```
+
+View records that aren't missing values
+
+```{r, echo=TRUE, eval=FALSE}
+austraits$excluded_data %>% 
+  filter(dataset_id==id, error !="Missing value") %>%
+  View()
+```
 
 ## Pushing to GitHub
 
-By far our preferred way of contributing is for you to fork the database in github, add your dataset then send us a [pull request](https://help.github.com/articles/using-pull-requests/). If this is not possible, you could email the relevant files (see above) to Rachael Gallagher.
-
+By far our preferred way of contributing is for you to fork the database in github, add your dataset then send us a [pull request](https://help.github.com/articles/using-pull-requests/). If this is not possible, you could email the relevant files (see above) to the Austraits email: austraits.database@gmail.com
 
 # Appendices
 
@@ -898,24 +963,12 @@ By far our preferred way of contributing is for you to fork the database in gith
 
 ### CSV 
 
+A comma-separated values (CSV) file is a delimited text file that uses a comma to separate values. Each line of the file is a data record. Each record consists of one or more fields, separated by commas. This is a comma format for storing tables of data in a simple text file. You can edit it an Excel or in a text editor.For more, see [here](https://en.wikipedia.org/wiki/Comma-separated_values).
+
 ### YAML files {#yaml}
 
+The `yml` file extension (pronounced "YAML") [is a type structured data file](https://en.wikipedia.org/wiki/YAML), that is both human and machine readable. You can edit it any text editor, or also in Rstudio. Generally, yml is used in situations where a table does not suit because of variable lengths and or nested structures. It has the advantage over a spreadsheet in that the nested “headers” can have variable numbers of categories. The data under each of the hierarchical headings are easily extracted by R.
 
-yml: The `yml` file extension (pronounced "YAML") [is a type structured data file](https://en.wikipedia.org/wiki/YAML), that is both human and machine readable. The information in it appears under various labels, which are imported into AusTraits. You can edit it any text editor, or also in Rstudio. Generally, yml is used in situations where a table does not suit because of variable lengths and or nested structures.
-This document outlines how to describe metadata for any given study
-
-The metadata is compiled in a `.yml` file, a structured data file where information is presented in a hierarchical format. It has the advantage over a spreadsheet in that the nested “headers” can have variable numbers of categories. The data under each of the hierarchical headings are easily extracted by R.
-
-Assumed character unless specified otherwise
-
-possible types:
-
-- `character`: 
-- `numeric`: must have fields `description`, `type`, `units`, `values` with filed `minimum` and `maximum`.
-- `categorical`: Unlike character, only specific values are allowed. must have fields `description`, `type`,and `values`, with the latter including a list of possible values.
-- `table`:
-- `list`:
-- `array`:
 
 ## Adding custom R code into metadata.yml {#custom_R_code}
 
@@ -933,91 +986,41 @@ Note the second line.
 
 ### Example problem 
 
-As an example, `Barlow_1981` has multiple units per traits. Check it out:
+As an example, for `Blackman_2010` we want to combine two columns to create an appropriate site variable. Here is the code that was included in [data/Blackman_2010/metadata.yml](https://github.com/traitecoevo/austraits/blob/master/data/Blackman_2010/metadata.yml) under `custom_R_code`.
 
-```{r}
+```{r, eval=FALSE, echo=TRUE}
+data %>% mutate(
+    site = ifelse(site == "Mt Field" & habitat == "Montane rainforest", "Mt Field_wet", site),
+    site = ifelse(site == "Mt Field" & habitat == "Dry sclerophyll", "Mt Field_dry", site)
+    )
+```
+
+This is the finished solution, but to get there we did as follows. 
+
+Generally, this code should 
+
+- assume a single object called `data`, and apply whatever fixes are needed
+- use [dplyr](https://dplyr.tidyverse.org) functions like `mutate`, `rename`, etc 
+- use pipes to weave together a single statement, possible. (Otherwise you'll need a semi colons `;` at the end of each statement).
+- be fully self contained (we're not going to use any of the other remake machinery here)
+
+First, load an object called `data`:
+
+```{r, eval=FALSE, echo=TRUE}
 library(readr)
 library(yaml)
+
+data <- read_csv(file.path("data", "Blackman_2010", "data.csv"), col_types = cols(.default = "c"))
+data
 ```
 
-Load the data
-```{r}
-key <- "Barlow_1981"
-data <- read_csv(file.path("data", key, "data.csv"), col_types = cols(.default = "c"))
-metadata <- read_yaml(file.path("data", key, "metadata.yml"))
+Second, write your code to manipulate data, like the example above/
+
+
+Third, once you have some working code, you then want to add it into your yml file under a group `config` -> `custom_R_code`. 
+
+Finally, check it works. Let's assume you added it in. The function `metadata_check_custom_R_code` loads the data and applies the custom R code:
+
+```{r, eval=FALSE, echo=TRUE}
+metadata_check_custom_R_code("Blackman_2010")
 ```
-
-Here's the problem - note tat several traits have multiple units used:
-
-```{r}
-table(data$trait, data$units)
-```
-
-So you want to write some R code that fixes this and gets the dataset into the processing pipeline, satisfying all the assumptions.
-
-### Developing solutions
-
-We want to write some custom R code that will appear in the `metadata.yml` file for that study, under a title `config` -> `custom_R_code`. E.g. see this example for [data/Barlow_1981/metadata.yml](https://github.com/traitecoevo/austraits/blob/master/data/Barlow_1981/metadata.yml).
-
-Your code should assume a single object called `data`. And apply whatever fixes are needed. Also it should be
-
-- fully self contained (we're not going to use any of the other remake machinery here)
-- have semi colons `;` at the end of each line. This will be needed because we're adding the code to the `metadata.yml` file and newlines get lost when reading in the file.
-
-The workflow is to first develop some code that applies a suitable fix. E.g. for Barlow_1981 here is the code we eventually applied to the object `data` loaded above:
-
-```{r, eval=FALSE}
-metadata[["config"]][["custom_R_code"]] %>% gsub(";", ";\n", .) %>% writeLines()
-```
-
-Running this removes the problem with multiple units:
-```{r, echo=TRUE, results="show"}
-table(data$trait, data$units)
-```
-(we can ignore the NULLs here, these are when data and units are both NA. Those get pruged furtehr down the pipeline).
-
-Once you have some working code, you then want to add it into your yml file under a group `config` -> `custom_R_code`. 
-
-And then check it works.
-
-Let's assume you added it in, so we'll load the metadata (and also reload the data)
-
-In the build process we use the function `custom_manipulation` to create a function that accepts a data frame and modifies it according to the code in `txt`
-
-```{r, echo=TRUE, comment=""}
-custom_manipulation
-```
-
-So now lets use it to create a function
-```{r, echo=TRUE, results="show"}
-f <- custom_manipulation(metadata[["config"]][["custom_R_code"]])
-f
-```
-
-And finally we can apply the function to our data:
-```{r, echo=TRUE, results="show"}
-data2 <- f(data)
-```
-(If it fails at this point it won't work in the build). 
-
-Now let's compare it to our original data (the columns units and values should now differ)
-
-```{r, echo=TRUE, results="show"}
-all.equal(data, data2)
-```
-
-And also see the units and traits:
-
-```{r, results="show"}
-table(data2$trait, data2$units)
-```
-
-Finally, check it works in the context of loading the metadata:
-
-```{r, results="show"}
-data2 <- custom_manipulation(metadata[["config"]][["custom_R_code"]])(data)
-all.equal(data, data2)
-```
-
-Now you're ready to go. 
-
