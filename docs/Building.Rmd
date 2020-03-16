@@ -7,37 +7,13 @@ header-includes:
    - \usepackage{pmboxdraw}
 output:
   github_document:
+    html_preview: false
     toc: yes
-    toc_depth: 4
-  html_document:
-    keep_md: yes
-    smart: no
-    theme: yeti
-    toc: yes
-    toc_depth: 4
-    toc_float:
-      collapsed: yes
-      smooth_scroll: yes
-  pdf_document:
-    toc: yes
-    toc_depth: '4'
+    toc_depth: 3
 editor_options:
   chunk_output_type: console
 ---
 
-<!-- hack to get indentation on 3rd level of floating TOC; see
-https://stackoverflow.com/questions/46201753/rmarkdown-indentation-of-toc-items-in-html-output
- -->
-<script>
-$(document).ready(function() {
-  $items = $('div#TOC li');
-  $items.each(function(idx) {
-    num_ul = $(this).parentsUntil('#TOC').length;
-    $(this).css({'text-indent': num_ul * 10, 'padding-left': 0});
-  });
-
-});
-</script>
 
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 # knitr defaults
@@ -89,7 +65,7 @@ if(knitr::is_html_output()) {
 
 ## Assumes to items exist in global name space
 if(!exists("austraits")) {
-  austraits <- remake::make("austraits")
+  austraits <- readRDS("export/data/austraits.Rds")
   # stop("austraits must exist in global name space to knit a report")
 }
 
@@ -99,14 +75,12 @@ definitions <- austraits$definitions
 This document provides information on how AusTraits is assembled from its component parts. 
 Separate documents provide information on: 
 
-- Overview of Austraits: [Falster et al 2020](XXXX)
-- Accessing and using AusTraits: XXXX
-- Building Austraits: [Building](Building.md)
-- Contributing to AusTraits: [Contributing](Contributing.md)
-- Working with GitHub repository: [Working_with_github](Working_with_github.md)
-- Tips & Tricks for AusTraits developes: [TipsTricks](TipTricks.md)
-- Full list of trait definitions: [Trait_definitions](Trait_definitions.md)
-
+- Overview of Austraits from [Falster et al 2020](XXXX)
+- [Building Austraits](docs/Building.md)
+- [Contributing](docs/Contributing.md)
+- [Working with our GitHub repository](docs/Working_with_github.md)
+- [Tips & Tricks for AusTraits developers](docs/TipTricks.md), and
+- [Full list of trait definitions](docs/Trait_definitions.md)
 
 # Overview & Mission
 
