@@ -180,6 +180,22 @@ traits:
       values:
         minimum: 0
         maximum: 30
+    cell_rubisco_concentration:
+      description: Concentration of Rubisco
+      type: numeric
+      units: mg/g
+      label: N content of Rubisco
+      values:
+        minimum: 5
+        maximum: 50
+    cell_rubisco_N_per_total_N:
+      description: Percentage of N accounted for by Rubisco
+      type: numeric
+      units: '%'
+      label: Percentage of N accounted for by Rubisco
+      values:
+        minimum: 5
+        maximum: 50
     cell_sclerenchyma_P_per_fresh_mass:
       description: P content of sclerenchyma cells
       type: numeric
@@ -195,6 +211,14 @@ traits:
       label: P content of spongy mesophyll cells
       values:
         minimum: 0
+        maximum: 30
+    cell_thylakoid_N_per_total_N:
+      description: Percentage of N accounted for by thylakoid proteins
+      type: numeric
+      units: '%'
+      label: Percentage of N accounted for by thylakoid proteins
+      values:
+        minimum: 5
         maximum: 30
     chlorophyll_per_area:
       description: Sum of chlorophyll A and B per leaf area
@@ -486,9 +510,6 @@ traits:
       label: Resprouts or is killed by fire
       values:
         fire_killed: Plants killed by hot fires
-        weak_resprouting: Plant shows weak resprouting following fire
-        intermediate_resprouting: Plant shows intermediate resprouting following fire
-        strong_resprouting: Plant shows strong resprouting following fire
         resprouts: Plants resprout from underground storage organ following fire. (For studies that don't differentiate between respouting strength)
     fire_response_detailed:
       description: Detailed information distinguishing between plants that are killed by fire and resprout following fire
@@ -735,7 +756,7 @@ traits:
       label: Huber value
       values:
         minimum: 0.000001
-        maximum: 0.1
+        maximum: 0.2
     hypocotyl_type:
       description: Binary variable distinguishing between glabrous versus hairy hypocotyls (the embryonic axis to which the cotyeledons are attached).
       type: categorical
@@ -789,7 +810,7 @@ traits:
       units: mm2/mg
       label: Leaf area per unit plant dry mass
       values:
-        minimum: 1.0
+        minimum: 0.1
         maximum: 100.0
     leaf_absorption:
       description: Proportion of incoming light between 400-700 nm that is absorbed by the leaf
@@ -959,6 +980,14 @@ traits:
       values:
         minimum: -25.0
         maximum: 75.0  
+    leaf_delta18O:
+      description: Leaf oxygen stable isotope signature
+      type: numeric
+      units: per mille
+      label: Leaf oxygen (O) isotope signature (delta 18O)
+      values:
+        minimum: 0.0
+        maximum: 50.0
     leaf_density:
       description: Leaf tissue density
       type: numeric
@@ -981,8 +1010,8 @@ traits:
       units: g/g
       label: Leaf dry mass per unit leaf fresh mass (Leaf dry matter content, LDMC)
       values:
-        minimum: 0.001
-        maximum: 20.0
+        minimum: 0.01
+        maximum: 2.0
     leaf_elastic_modulus:
       description: The ratio of the change in cell turgor relative to the change in cell volume
       type: numeric
@@ -1170,7 +1199,7 @@ traits:
       units: mg/g
       label: Leaf nitrogen (N) content per unit leaf dry mass
       values:
-        minimum: 0.1
+        minimum: 0.5
         maximum: 100.0
     leaf_Na_per_dry_mass:
       description: Leaf sodium (Na) content per unit leaf dry mass
@@ -1683,9 +1712,9 @@ traits:
         spines_or_thorns: Plant has spines or thorns
         stinging_or_irritant_hairs:	Stinging or irritant hairs
     plant_growth_form:
-      description: Different growth forms displayed by plants, including both standard plant growth form descriptors (tree, shrub, etc.) and specific plant characteristics (i.e. patristic)
+      description: Different growth forms displayed by plants, including both standard plant growth form descriptors (tree, shrub, etc.) and specific plant characteristics (i.e. parasitic)
       type: categorical
-      label: Plant Growth Form
+      label: Plant growth form
       values:
         aquatic: Grows primarily in water
         aquatic_herb: Herb that grows primarily in water
@@ -1787,6 +1816,7 @@ traits:
         root_tuber: Below ground storage organ derived from root tissue.
         seed: Plant that regenerate only or primarily by seed. These are mostly fire-killed species, but the not always
         stem_tuber: Below ground storage organ derived from stem tissue.
+        stolon:
         woody_rootstock: Plant that regenerate by resprouting from wood rootstock.
         woody_rootstock_or_lignotuber: Plant that regenerates by resprouting from either a woody rootstock or lignotuber.
         no_storage_organ: No storage organ present
@@ -1810,14 +1840,22 @@ traits:
       values:
         minimum: -1.1
         maximum: 1
-    resprouting_proportion:
-      description: Proportion of stems that resprout following a fire (either across a population or at an individual level)
+    resprouting_proportion_individuals:
+      description: Proportion of individuals that resprout following a fire across a population; this trait is generally used in studies looking at survival vs. mortality following a fire
+      type: numeric
+      units: dimensionless
+      label: Proportion of individuals that resprout
+      values:
+        minimum: 0
+        maximum: 1
+    resprouting_proportion_stems:
+      description: Proportion of stems that resprout following a fire at an individual or population level; this trait is appropriate to use for plants that have many stems from the base (shrubs, herbs, graminoids) where the number of stems before and after fire is censused
       type: numeric
       units: dimensionless
       label: Proportion of stems that resprout
       values:
         minimum: 0
-        maximum: 1
+        maximum: 4
     root_C_per_dry_mass:
       description: Root carbon (C) content per unit root dry mass
       type: numeric
@@ -1897,13 +1935,13 @@ traits:
         type_viii: Adventitious roots that are in one group and are fibrous and fleshy, or fibrous and thick. The fibrous adventitious roots are absorbing-anchoring roots and are usually with laterals to the second order; meophytic
         type_ix: Adventitious roots that arise on the aerial stem and branches of some herbaceous species, shrubs, and trees; on creepers, vines, and runners; and on subterranean rhizomes and stolons
     root_shoot_ratio:
-      description: Ratio of root mass to shoot mass
+      description: Ratio of root dry mass to shoot dry mass
       type: numeric
-      units: mg/mg
-      label: Root to shoot ratio
+      units: mg_root/mg_shoot
+      label: Root to shoot ratio (dry mass)
       values:
         minimum: 0.01
-        maximum: 1.0
+        maximum: 15.0
     root_structure:
       description: Specific specialized types of root structures and root symbioses. https://www.mycorrhizas.info/ provides detailed information for types of mycorrhizal associations.
       type: categorical
@@ -2552,7 +2590,7 @@ traits:
       label: Water use efficiency
       values:
         minimum: 1.0
-        maximum: 10.0
+        maximum: 200.0
     wood_delta13C:
       description: Wood carbon stable isotope signature
       type: numeric
