@@ -16,4 +16,4 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 Copyright (c) 2016, Rachael Gallagher.
 All rights reserved.
 
-We are yet to determine a suitable license for the data in Austraits so data cannot as yet be used without further permissions. Our aim is to release an open database, once we have cleared this with our contributors.
+At this stage, only the compiled AusTraits dataset available via [traitecoevo/austraits](https://github.com/traitecoevo/austraits.build/) is available for reuse. The raw data sources provided in this repository are not available for reuse in their current form, without further discussion from data contributors.
