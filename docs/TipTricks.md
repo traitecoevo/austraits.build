@@ -1,6 +1,6 @@
 Tips & Tricks for developers of `AusTraits`
 ================
-2020-03-16
+2020-03-17
 
   - [Introduction](#introduction)
   - [Working with our Github
@@ -79,7 +79,7 @@ You can merge in your own PR after you’ve had someone else review it.
 
 ### Merging someone else’s PR
 
-When merging in someone else’s PR, the buitlin options aren’t ideal. as
+When merging in someone else’s PR, the built-in options aren’t ideal. as
 they either take all of the commits on a branch (ugh, messy), OR make
 the commit under the name of the person merging the request.
 

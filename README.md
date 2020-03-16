@@ -3,7 +3,7 @@
 
 ![](docs/logo.png)
 
-# `AusTraits (builsd)`: source for curated plant trait database for the Australian flora
+# `AusTraits (builds)`: source for curated plant trait database for the Australian flora
 
 <!-- badges: start -->
 
