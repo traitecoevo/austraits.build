@@ -1,5 +1,5 @@
 build_study_reports <- function(dataset_ids=NULL, ...) {
-  
+
   # define if does not already exist, 
   # for all studies with suitable metadata file
   if(length(dataset_ids) ==0 | is.null(dataset_ids) | any(is.na(dataset_ids)))
@@ -10,6 +10,10 @@ build_study_reports <- function(dataset_ids=NULL, ...) {
 }
 
 build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/reports") {
+  
+  if(!file.exists(path)) {
+    dir.create(path, FALSE, TRUE)
+  }
   
   cat(sprintf("Building report for %s: ", dataset_id))
   
@@ -27,7 +31,7 @@ build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/repor
     # knit and render. Note, call render directly
     # in preference to knit, then render, as leaflet widget 
     # requires this to work
-    rmarkdown::render(input_Rmd, quiet=TRUE)
+    try(rmarkdown::render(input_Rmd, quiet=TRUE))
     
     # remove temporary Rmd
     unlink(input_Rmd)
