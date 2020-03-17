@@ -54,9 +54,11 @@ load_study <- function(filename_data_raw,
     filter(!is.na(name))
 
   # record methods on study from metadata
-  source_primary <- convert_list_to_bib(metadata$source$primary)
-  source_secondary <- convert_list_to_bib(metadata$source$secondary)
- 
+  sources <- metadata$source %>% 
+            lapply(convert_list_to_bib) %>% reduce(c)  
+  source_primary_key <- metadata$source$primary$key
+  source_secondary_keys <- setdiff(names(sources), source_primary_key)
+
   methods <-   
     full_join( by = "dataset_id",
       # methods used to collect each trait  
@@ -78,11 +80,13 @@ load_study <- function(filename_data_raw,
         #references
         tibble(
           dataset_id = dataset_id,
-          source_primary_citation = bib_print(source_primary),
-          source_primary_key = source_primary$key,
-          source_secondary_citation = ifelse(!is.null(source_secondary), bib_print(source_secondary), NA_character_),
-          source_secondary_key = ifelse(!is.null(source_secondary), source_secondary$key, NA_character_)
+          source_primary_key = source_primary_key,
+          source_primary_citation = bib_print(sources[[source_primary_key]]),
+          source_secondary_key = source_secondary_keys %>% paste(collapse = "; "),
+          source_secondary_citation = ifelse(length(source_secondary_keys) == 0, NA_character_,
+            map_chr(sources[source_secondary_keys], bib_print) %>% paste(collapse = "; ") %>% str_replace_all(".;", ";")
           )
+        )
       )
 
   # Retrieve taxonomic details
@@ -105,7 +109,7 @@ load_study <- function(filename_data_raw,
        taxonomy = taxonomy,
        definitions = definitions,
        contributors = contributors,
-       sources =  c(source_primary, source_secondary)
+       sources =  sources
        )
 }
 
