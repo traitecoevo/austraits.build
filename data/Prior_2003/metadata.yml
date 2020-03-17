@@ -89,8 +89,8 @@ sites:
       where fire is frequent (Russell-Smith, Ryan & Durieu 1997). March 2002, four
       to six samples of soil were taken from 0.2 m depth from each habitat for qualitative
       texture determination (by feel; Brady & Weil 1999) and nutrient analysis. Approximately
-      600-800 g soil was dried at 60degC, ground, and passed through a 2 mm sieve to
-      determine percentage gravel. Soil was then passed through a 1 mm sieve, and
+      600-800 g soil was dried at 60degC, ground, and passed through a 2 mm sieve
+      to determine percentage gravel. Soil was then passed through a 1 mm sieve, and
       total Kjeldahl N and P were determined using flow-injection analysis (Lachat
       Instruments, Milwaukee, WI, USA).
   open forest:
@@ -113,7 +113,7 @@ config:
     observation_id: Tree
   custom_R_code: data %>% mutate(Species = recode(Species, "Melaleuca DMF" = "Melaleuca
     leucadendra", "Melaleuca W" = "Melaleuca viridiflora", "Melaleuca Sw" = "Melaleuca
-    viridiflora"))
+    viridiflora")) %>% mutate(leaf_dry_matter_content = 1 - `water%`)
 traits:
 - var_in: growth form
   unit_in: .na
@@ -191,17 +191,33 @@ traits:
   trait_name: leaf_water_content_per_mass
   value_type: raw_value
   replicates: 1
-  methods: "Measurements were made on well lit leaves between 0.5 and 2.5 m high.
-    Leaflets of E. chlorostachys, phyllodes of A. auriculiformis and small terminal
-    branchlets of Callitris intratropica (which are completely green and covered with
-    tiny, scale-like leaves), were treated as leaves. Sampled leaves were fully expanded
-    and thickened, and for most species had only recently matured. Three leaves from
-    each of six trees of each species (18 leaves per species) were measured in the
-    wet season.\t Measured leaves were then harvested and sealed in plastic bags containing
-    damp paper towel before being fully rehydrated overnight in an air-conditioned
-    laboratory. Petioles were then removed and the leaves blotted dry and quickly
-    weighed to determine saturated mass. Dry mass was determined after leaves were
-    dried for a minimum of 48 h at 70degC."
+  methods: Measurements were made on well lit leaves between 0.5 and 2.5 m high. Leaflets
+    of E. chlorostachys, phyllodes of A. auriculiformis and small terminal branchlets
+    of Callitris intratropica (which are completely green and covered with tiny, scale-like
+    leaves), were treated as leaves. Sampled leaves were fully expanded and thickened,
+    and for most species had only recently matured. Three leaves from each of six
+    trees of each species (18 leaves per species) were measured in the wet season.
+    Measured leaves were then harvested and sealed in plastic bags containing damp
+    paper towel before being fully rehydrated overnight in an air-conditioned laboratory.
+    Petioles were then removed and the leaves blotted dry and quickly weighed to determine
+    saturated mass. Dry mass was determined after leaves were dried for a minimum
+    of 48 h at 70degC.
+- var_in: leaf_dry_matter_content
+  unit_in: g/g
+  trait_name: leaf_dry_matter_content
+  value_type: raw_value
+  replicates: 1
+  methods: Measurements were made on well lit leaves between 0.5 and 2.5 m high. Leaflets
+    of E. chlorostachys, phyllodes of A. auriculiformis and small terminal branchlets
+    of Callitris intratropica (which are completely green and covered with tiny, scale-like
+    leaves), were treated as leaves. Sampled leaves were fully expanded and thickened,
+    and for most species had only recently matured. Three leaves from each of six
+    trees of each species (18 leaves per species) were measured in the wet season.
+    Measured leaves were then harvested and sealed in plastic bags containing damp
+    paper towel before being fully rehydrated overnight in an air-conditioned laboratory.
+    Petioles were then removed and the leaves blotted dry and quickly weighed to determine
+    saturated mass. Dry mass was determined after leaves were dried for a minimum
+    of 48 h at 70degC.
 - var_in: Nmass
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
@@ -327,6 +343,7 @@ taxonomic_updates:
   replace: Planchonia careya
   reason: Alignment with existing species identified by TaxonStand (2019-08-27)
 questions:
-  contributor: One of the variables in the data file is "water%". Is this the % of total mass that is water in a saturated leaf? In which case, would 1-"water%" be "leaf dry matter content". Lots of studies report leaf dry matter content and I'd like to be able to add your data to this trait, if appropriate.
-  contextual: Note to AusTraits, wet season vs. dry season is a contextual variable that needs to be mapped in
+  contextual: Note to AusTraits, wet season vs. dry season is a contextual variable
+    that needs to be mapped in
   additional_traits: 'additional traits: leaf density, DBH increment'
+
