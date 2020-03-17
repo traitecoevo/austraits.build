@@ -1,65 +1,36 @@
 ---
 title: How to build the `AusTraits` data compilation
 date: "`r Sys.Date()`"
-output:
-  github_document:
-    html_preview: false
-    toc: yes
-    toc_depth: 3
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to build the `AusTraits` data compilation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 editor_options:
   chunk_output_type: console
 ---
 
-```{r setup, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
-# knitr defaults
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  results = "asis"
+)
+
+library(austraits.build)
+library(dplyr)
+library(readr)
+
 root.dir = rprojroot::find_root("remake.yml")
 knitr::opts_knit$set(root.dir = root.dir)
 
-knitr::opts_chunk$set(
-  echo=FALSE, cache=FALSE, message=FALSE, warning=FALSE,
-  results='asis',
-  fig.cap='', 
-  fig.path = file.path(root.dir,"docs/figures", paste0("building","_")),
-  out.width = "100%"
-)
-# Guidelines for writing report code
-# - use tidyverse style and format: http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html
-# - use kableExtra for styling: https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
-# - use knitr chunk options: https://rmarkdown.rstudio.com/lesson-3.html
-
+my_kable_styling <- my_kable_styling_html
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
-library(knitr)
-library(kableExtra)
-library(dplyr)
-library(tidyr)
-library(readr)
-library(ggplot2)
-library(stringr)
-
-source("R/austraits.R")
-source("R/steps.R")
-source("R/pre_process.R")
-source("R/support.R")
-source("R/report_utils.R")
-
-# default for table format
-if(knitr::is_html_output()) {
-  options(knitr.table.format = "html")
-  my_kable_styling <- my_kable_styling_html  
-  message("HTML")
-} else if(knitr::is_latex_output()) {
-  options(knitr.table.format = "latex")
-  my_kable_styling <- my_kable_styling_pdf  
-} else {
-  options(knitr.table.format = "markdown")
-  my_kable_styling <- my_kable_styling_markdown
-}
-
+```{r, echo=FALSE, results='hide', message=FALSE}
 ## Assumes to items exist in global name space
 if(!exists("austraits")) {
-  austraits <- readRDS("export/data/austraits.Rds")
+  austraits <- remake::make("austraits")
   # stop("austraits must exist in global name space to knit a report")
 }
 
@@ -85,7 +56,7 @@ We envision AusTraits as an on-going collaborative community resource that:
 3. Aspires to fully transparent and reproducible research of highest standard, and 
 4. Builds a sense of community among contributors and users.
 
-Prior to the development of AusTraits, data on Australian plant traits existed as a series of largely disconnected datasets collected by individual laboratories or initiatives. Our goal has been to harmonise these different sources. Moreoever, we aimed to do this in an open-source way, so as to accelerate discoveries about Australian plants.
+Prior to the development of AusTraits, data on Australian plant traits existed as a series of largely disconnected datasets collected by individual laboratories or initiatives. Our goal has been to harmonise these different sources. Moreover, we aimed to do this in an open-source way, so as to accelerate discoveries about Australian plants.
 
 We therefore set out to build a resource with the following features:
 
@@ -647,22 +618,6 @@ questions:
 # Adding data to Austraits {#adding}
 
 
-
-```{r}
-devtools::load_all()
-
-source("R/support.R")
-source("R/setup.R")
-source("R/steps.R")
-source("R/austraits.R")
-source("R/support.R")
-source("R/report_utils.R")
-source("R/report_notetaker.R")
-```
-
-Within the compiled matrix `austraits` are the elements listed in [Elements of AusTraits](#elements). The actual trait data can be found in the dataframe `austraits$traits`.
-
-
 ## Overview
 
 This sections explains how to format files to contribute a new study to AusTraits. It is important that all steps are followed so that our automated workflow proceeds without problems.
@@ -705,6 +660,8 @@ To assist you in constructing the `metadata.yml` file, we have developed functio
 To use the functions, make sure you first run the following, to make the functions available
 
 ```{r, eval=FALSE, echo=TRUE}
+library(austraits.build)
+# OR
 devtools::load_all()
 ```
 
@@ -912,35 +869,33 @@ For your dataset, you can investigate why you have excluded data as follows.
 
 Look at everything 
 
-```{r, echo=TRUE}
-id <- "ANBG_2019"
-
+```{r, echo=TRUE, results="show"}
 austraits$excluded_data %>% 
-  filter(dataset_id==id)
+  filter(dataset_id=="ANBG_2019")
 ```
 
 If you want to inspect this more closely, just pass it into `View`
 
 ```{r, echo=TRUE, eval=FALSE}
 austraits$excluded_data %>% 
-  filter(dataset_id==id) %>% 
+  filter(dataset_id=="ANBG_2019") %>% 
   View()
 ```
 
 How many of each type:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, results="show"}
 austraits$excluded_data %>% 
-  filter(dataset_id==id) %>%
+  filter(dataset_id=="ANBG_2019") %>%
   pull(error) %>% table()
 ```
 
 
 How many of each type by trait:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, results="show"}
 austraits$excluded_data %>% 
-  filter(dataset_id==id) %>%
+  filter(dataset_id=="ANBG_2019") %>%
   select(trait_name, error) %>%
   table()
 ```
@@ -949,7 +904,7 @@ View records that aren't missing values
 
 ```{r, echo=TRUE, eval=FALSE}
 austraits$excluded_data %>% 
-  filter(dataset_id==id, error !="Missing value") %>%
+  filter(dataset_id=="ANBG_2019", error !="Missing value") %>%
   View()
 ```
 
