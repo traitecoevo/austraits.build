@@ -1,4 +1,12 @@
-# Swap a null vale to something else
+#' Swap a null vale to something else
+#'
+#' @param x 
+#' @param val 
+#'
+#' @return
+#'
+#' @export
+#' @examples
 null_as <- function(x, val=NA){
   if(is.null(x)) return(val)
   x
@@ -12,6 +20,7 @@ null_as <- function(x, val=NA){
 #'
 #' @return the element/properties of a trait
 #'
+#' @export
 #' @examples extract_list_element(1, definitions$traits$elements, "units")
 extract_list_element <- function(i, my_list, var) {
   i %>% lapply(function(x) my_list[[x]][[var]]) %>% lapply(null_as) %>% unlist()
@@ -22,6 +31,7 @@ extract_list_element <- function(i, my_list, var) {
 #' @param ... a csv table or a list of csv tables
 #'
 #' @return a tibble 
+#' @export
 #' @examples read_csv_char("config/species_list.csv")
 read_csv_char <- function(...){
   read_csv(..., col_types = cols(.default = "c"))
@@ -46,6 +56,7 @@ rename_columns <- function(obj, from, to) {
 #' @param sep a separator, a whitespace is the default
 #'
 #' @return a vector of alphabetically sorted records
+#' @export
 #' @examples split_then_sort("z y x")
 split_then_sort <- function(x, sep=" ") {
 
@@ -65,6 +76,7 @@ split_then_sort <- function(x, sep=" ") {
 #' @param df a dataframe
 #' @return a (yaml) list
 #'
+#' @export
 #' @examples df_to_list(iris)
 df_to_list <- function(df) {
   attr(df, "out.attrs") <- NULL
@@ -79,6 +91,7 @@ df_to_list <- function(df) {
 #' @param as_character logical:  indicating whether the values are read as character
 #' @param on_empty 
 
+#' @export
 #' @examples list_to_df(df_to_list(iris))
 list_to_df <- function(my_list, as_character= TRUE, on_empty=NA) {
   
@@ -94,7 +107,9 @@ list_to_df <- function(my_list, as_character= TRUE, on_empty=NA) {
 #' Convert a list with single entries to dataframe
 #' @param my_list a list with single entries
 #' @return a tibble with two columns
+#' @export
 #' @examples list1_to_df(as.list(iris)[2])
+#' 
 list1_to_df <- function(my_list) {
 
   for(f in names(my_list)) {
@@ -110,6 +125,7 @@ list1_to_df <- function(my_list) {
 #' @param to_append a list
 #'
 #' @return a list merged with an added item at the end
+#' @export
 #' @examples  append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3,4)])
 append_to_list <- function(my_list, to_append) {
   my_list[[length(my_list)+1]] <-  to_append
@@ -124,6 +140,7 @@ read_yaml <- yaml::yaml.load_file
 #' @param y a (yaml) list or a data frame
 #' @param filename  a character string for naming a file
 #'
+#' @export
 #' @examples write_yaml(iris, "iris.yaml")
 write_yaml <- function(y, filename) {
   txt <- yaml::as.yaml(y, column.major = FALSE, indent=2)

@@ -1,3 +1,12 @@
+#' Title
+#'
+#' @param dataset_ids 
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 build_study_reports <- function(dataset_ids=NULL, ...) {
 
   # define if does not already exist, 
@@ -9,6 +18,16 @@ build_study_reports <- function(dataset_ids=NULL, ...) {
     build_study_report(dataset_id, ...)
 }
 
+#' Title
+#'
+#' @param dataset_id 
+#' @param overwrite 
+#' @param path 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/reports") {
   
   if(!file.exists(path)) {
@@ -39,20 +58,39 @@ build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/repor
   cat(" -> done\n")
 }
 
+#' Title
+#'
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 get_SHA_link <- function(...) {
   sha <- get_SHA(...)
   sprintf("[%s](https://github.com/traitecoevo/austraits/tree/%s)",   sha, sha)
 }
 
+#' Title
+#'
+#' @param path 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 get_SHA <- function(path = rprojroot::find_root("remake.yml")) {
   git2r::branch_target(git2r::repository_head(git2r::repository(path)))
 }
 
-pallette1 <- function(){
-  c('red', 'seagreen3', 'steelblue3', 'yellow2')
-}
-
-## format a table with kable and default styling
+#' Title
+#'
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 my_kable_styling_html <- function(...) {
     kableExtra::kable(...) %>%
     kableExtra::kable_styling(..., 
@@ -64,16 +102,41 @@ my_kable_styling_html <- function(...) {
     gsub('style="width: auto ', 'style="margin-left:30px; width: auto ', .)
 }
 
-## format a table with kable and default styling
+#' Title
+#'
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 my_kable_styling_pdf <- function(...) {
     kableExtra::kable(...)
 }
 
 ## format a table with kable and default styling
+#' Title
+#'
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 my_kable_styling_markdown <- function(...) {
   kableExtra::kable(...)
 }
 
+#' Title
+#'
+#' @param link 
+#' @param text 
+#' @param type 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 as_link <- function(link, text, type="md") {
   if(type=="md")
     sprintf('[%s](%s)', text, link)
@@ -81,42 +144,72 @@ as_link <- function(link, text, type="md") {
     sprintf("<a href='%s'> %s </a>", link, text)
 }
 
+#' Title
+#'
+#' @param ID 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 as_url_tpl <- function(ID) {
   sprintf("http://www.theplantlist.org/tpl1.1/record/%s", ID)
 }
 
+#' Title
+#'
+#' @param ID 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 as_link_tpl <- function(ID) {
   as_url_tpl(ID) %>%
   as_link(ID)
 }
 
+#' Title
+#'
+#' @param ID 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 as_link_apc <- function(ID) {
   sprintf("https://biodiversity.org.au/nsl/services/node/apc/%s", ID) %>%
   as_link(ID)
 }
 
+#' Title
+#'
+#' @param ID 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 as_link_apni <- function(ID) {
   sprintf("http://id.biodiversity.org.au/node/apni/%s", ID) %>%
   as_link(ID)
 }
 
-# calculates coefficient of variation
-CV <- function(x){
-  sqrt(var(x))/mean(x)
-}
-
-md_link <- function(text, link) {
-  sprintf("[%s](%s)", text, link)
-}
-
-md_link_doi <- function(doi) {
-  md_link(doi, paste0("http://doi.org/", doi))
-}
 
 ## Function to format a tree structure from a vector
 ## X is a vector of terms
 ## title is name of master branch
 ## prefix sepcifies amount of indentation
+#' Title
+#'
+#' @param x 
+#' @param title 
+#' @param prefix 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 create_tree_branch <- function(x, title, prefix="") {
   c(
     sprintf("%s%s", prefix,title), 
