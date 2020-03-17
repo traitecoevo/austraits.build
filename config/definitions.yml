@@ -454,8 +454,12 @@ traits:
         ants: ants
         bats: bats
         birds: birds
+        flying: flying birds and bats
         flying_foxes: flying foxes
         mammals: mammals
+        non-flying: mammals and non-flying birds (i.e. cassowary)
+        passive: no dispersal agent
+        wind: wind
     dormancy_type:
       description: Classification for seed dormancy
       type: categorical
@@ -620,7 +624,7 @@ traits:
         berry_inf: UNCERTAIN how this differs from general definition for berry
         capsule: Dry fruit from compound pistil, nearly always dehiscent
         capsule_explosive: Dry fruit from compound pistil, that releases its seeds in an explosive manner
-        capsule_aril: Dry fruit from compound pistil, with a fleshy outgrowth (aril) to attract pollinators
+        capsule_aril: Dry fruit from compound pistil, with a fleshy outgrowth (aril) to attract pollinators; maybe use 'capsule_reward'
         capsule_wing: Dry fruit from compound pistil, with a wing for dispersal by wind
         caryopsis: a dry one-seeded fruit in which the ovary wall is united with the seed coat, typical of grasses and cereals
         cocci: One of the carpels or seed-vessels of a dry fruit.
@@ -756,7 +760,7 @@ traits:
       label: Huber value
       values:
         minimum: 0.000001
-        maximum: 0.1
+        maximum: 0.2
     hypocotyl_type:
       description: Binary variable distinguishing between glabrous versus hairy hypocotyls (the embryonic axis to which the cotyeledons are attached).
       type: categorical
@@ -810,7 +814,7 @@ traits:
       units: mm2/mg
       label: Leaf area per unit plant dry mass
       values:
-        minimum: 1.0
+        minimum: 0.1
         maximum: 100.0
     leaf_absorption:
       description: Proportion of incoming light between 400-700 nm that is absorbed by the leaf
@@ -980,6 +984,14 @@ traits:
       values:
         minimum: -25.0
         maximum: 75.0  
+    leaf_delta18O:
+      description: Leaf oxygen stable isotope signature
+      type: numeric
+      units: per mille
+      label: Leaf oxygen (O) isotope signature (delta 18O)
+      values:
+        minimum: 0.0
+        maximum: 50.0
     leaf_density:
       description: Leaf tissue density
       type: numeric
@@ -1704,9 +1716,9 @@ traits:
         spines_or_thorns: Plant has spines or thorns
         stinging_or_irritant_hairs:	Stinging or irritant hairs
     plant_growth_form:
-      description: Different growth forms displayed by plants, including both standard plant growth form descriptors (tree, shrub, etc.) and specific plant characteristics (i.e. patristic)
+      description: Different growth forms displayed by plants, including both standard plant growth form descriptors (tree, shrub, etc.) and specific plant characteristics (i.e. parasitic)
       type: categorical
-      label: Plant Growth Form
+      label: Plant growth form
       values:
         aquatic: Grows primarily in water
         aquatic_herb: Herb that grows primarily in water
@@ -1808,6 +1820,7 @@ traits:
         root_tuber: Below ground storage organ derived from root tissue.
         seed: Plant that regenerate only or primarily by seed. These are mostly fire-killed species, but the not always
         stem_tuber: Below ground storage organ derived from stem tissue.
+        stolon:
         woody_rootstock: Plant that regenerate by resprouting from wood rootstock.
         woody_rootstock_or_lignotuber: Plant that regenerates by resprouting from either a woody rootstock or lignotuber.
         no_storage_organ: No storage organ present
@@ -1831,14 +1844,22 @@ traits:
       values:
         minimum: -1.1
         maximum: 1
-    resprouting_proportion:
-      description: Proportion of stems that resprout following a fire (either across a population or at an individual level)
+    resprouting_proportion_individuals:
+      description: Proportion of individuals that resprout following a fire across a population; this trait is generally used in studies looking at survival vs. mortality following a fire
+      type: numeric
+      units: dimensionless
+      label: Proportion of individuals that resprout
+      values:
+        minimum: 0
+        maximum: 1
+    resprouting_proportion_stems:
+      description: Proportion of stems that resprout following a fire at an individual or population level; this trait is appropriate to use for plants that have many stems from the base (shrubs, herbs, graminoids) where the number of stems before and after fire is censused
       type: numeric
       units: dimensionless
       label: Proportion of stems that resprout
       values:
         minimum: 0
-        maximum: 1
+        maximum: 4
     root_C_per_dry_mass:
       description: Root carbon (C) content per unit root dry mass
       type: numeric
@@ -1918,13 +1939,13 @@ traits:
         type_viii: Adventitious roots that are in one group and are fibrous and fleshy, or fibrous and thick. The fibrous adventitious roots are absorbing-anchoring roots and are usually with laterals to the second order; meophytic
         type_ix: Adventitious roots that arise on the aerial stem and branches of some herbaceous species, shrubs, and trees; on creepers, vines, and runners; and on subterranean rhizomes and stolons
     root_shoot_ratio:
-      description: Ratio of root mass to shoot mass
+      description: Ratio of root dry mass to shoot dry mass
       type: numeric
-      units: mg/mg
-      label: Root to shoot ratio
+      units: mg_root/mg_shoot
+      label: Root to shoot ratio (dry mass)
       values:
         minimum: 0.01
-        maximum: 1.0
+        maximum: 15.0
     root_structure:
       description: Specific specialized types of root structures and root symbioses. https://www.mycorrhizas.info/ provides detailed information for types of mycorrhizal associations.
       type: categorical
@@ -2573,7 +2594,7 @@ traits:
       label: Water use efficiency
       values:
         minimum: 1.0
-        maximum: 10.0
+        maximum: 200.0
     wood_delta13C:
       description: Wood carbon stable isotope signature
       type: numeric
