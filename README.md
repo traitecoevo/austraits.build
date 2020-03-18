@@ -6,7 +6,7 @@
 
 <!-- badges: end -->
 
-<img src="docs/logo.png">
+<img src="docs/figures/logo.png">
 
 AusTraits is a transformative database, containing measurements on the
 traits of Australia’s plant species, standardised from hundreds of

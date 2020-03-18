@@ -1,9 +1,9 @@
 ---
-title: Adding data to `AusTraits`
+title: Adding data to AusTraits
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Adding data to `AusTraits`}
+  %\VignetteIndexEntry{Adding data to AusTraits}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -14,8 +14,11 @@ editor_options:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  results = "asis"
-)
+  results = "asis",
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE
+  )
 
 library(austraits.build)
 library(dplyr)
@@ -44,11 +47,11 @@ It is important that all steps are followed so that our automated workflow proce
 The main steps are:
 
 1. Clone the `austraits.build` repository from github and create a new branch in the repo with the name of your dataset_id. 
-2. Create a new folder within the folder `data` with a name of the `dataset_id`, e.g. `Gallagher_2014`
-3. Prepare the files `data.csv` and `metadata.yml` and place them within the folder, as per instructions [below](#create_data).
-4. Add the new study into the build framework and rebuild Austraits, as described under [adding data to Austraits](#adding) below.
-5. Run tests on the contributed data and correct the `data.csv` and `metadata.yml`files as necessary. See the section [tests](#running_tests) for details.
-6. Generate and proofread a report on the data. In particular, check that numeric trait values fall within a logical range relative to other studies and that individual trait observations are not unnecessarily excluded because their trait values are unsupported. See the section on generating [reports](#reports) for details.
+2. Create a new folder within the folder `data` with a name of the `dataset_id`, e.g. `Gallagher_2014`.
+3. Prepare the files `data.csv` and `metadata.yml` and place them within the folder.
+4. Add the new study into the build framework and rebuild AusTraits.
+5. Run tests on the contributed data and correct the `data.csv` and `metadata.yml`files as necessary.
+6. Generate and proofread a report on the data. In particular, check that numeric trait values fall within a logical range relative to other studies and that individual trait observations are not unnecessarily excluded because their trait values are unsupported.
 7. Return to step 3 if changes are made to the `data.csv` or `metadata.yml` files.
 8. Push to GitHub.
 
@@ -92,7 +95,9 @@ To use the functions, make sure you first run the following, to make the functio
 
 ```{r, eval=FALSE, echo=TRUE}
 library(austraits.build)
-# O3R
+```
+OR
+```{r, eval=FALSE, echo=TRUE}
 devtools::load_all()
 ```
 
@@ -507,20 +512,46 @@ Informative commit messages are ideal. Where possible, these should link to
 
 
 
-## Making a new release & version updating
+## Version updating & Making a new release
 
-Notes on release process
+Releaes of the dataset are snapshots that are archived and available for use. 
 
-http://r-pkgs.had.co.nz/release.html
+We use semantic versioning to label our versions. As discussed in [Falster et al 2019](http://doi.org/: 10.1093/gigascience/giz035), semantic versioning can apply to datasets as well as code.
 
-## Releasing a new version
+The version number will have 3 components for actual relases, and 4 for development versions. The structure is `major.minor.patch.dev`, where `dev` is at least 9000.  The `dev` component provides a visual signal that this is a development version. So, if the current version is 0.9.1.9000, the release be 0.9.2, 0.10.0 or 1.0.0. 
 
-Increment version number
+Our approach to incrmenetaing version numbers is
+
+- `major`: increment when you make changes to the structure that are likely incompatible with any code written to work with previous versions. 
+- `minor`: increment to communicate any changes to the structure that are likely to be compatible with any code written to work with the previous versions (i.e., allows code to run without error). Such changes might involve adding new data within the existing structure, so that the previous dataset version exists as a subset of the new version. For tab- ular data, this includes adding columns or rows. On the other hand, removing data should constitute a major version because records previously relied on may no longer exist. 
+- `patch`: Increment to communicate correction of errors in the actual data, without any changes to the structure. Such changes are unlikely to break or change analyses
+written with the previous version in a substantial way.
+
+<img src="../docs/figures/giz035fig2.png">
+
+**Figure:** Semantic versioning communicates to users the types of changes that have occurred between successive versions of an evolving dataset, using a tri-digit label where increments in a number indicate major, minor, and patch-level changes, respectively. From [Falster et al 2019](http://doi.org/: 10.1093/gigascience/giz035), (CC-BY). 
+
+The process of making a release is as follows. Note that correpsonding releases and versions are needed in both `austraits` and `austraits.build`:
+
+1. Update the version number in the DECRIPTION file, using `
+
+```{r, eval=FALSE}
+desc::desc_bump_version()
+```
+
+2. Compile `austraits.build`.
+
+3. Update the documentation.
+
+4. Commit and push to github.
+
+5. Make a release on github, adding version number 
+
+5. Prepare for the next version by updating version numbers.
 
 ```{r, eval=FALSE}
 desc::desc_bump_version("dev")
 ```
-
 
 # Other
 
