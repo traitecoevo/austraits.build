@@ -65,7 +65,7 @@ that:
 
 As a community resource, we are very keen for people to contribute. 
 
-For anyone working with the [austraits.build](https://github.com/traitecoevo/austraits.build/) repository, detailed documentation is available at  [our website](https://traitecoevo.github.io/austraits.build/), or in the docs folder.
+For anyone working with the [austraits.build](https://github.com/traitecoevo/austraits.build/) repository, detailed documentation is available at  [our website](http://traitecoevo.github.io/austraits.build/), or in the docs folder.
 
 ## Acknowledgements
 
