@@ -21,13 +21,13 @@ people:
   role: collector
 - name: Waltraud Schulze
   institution: unknown
-  role: collector
+  role: assistant
 - name: Inge Schulze
   institution: Max-Planck Institute for Biogeochemistry 
-  role: collector
+  role: assistant
 - name: R.J.Williams
   institution: .na
-  role: collector
+  role: assistant
 dataset:
   year_collected_start: 1993
   year_collected_end: 1993
@@ -201,7 +201,7 @@ config:
   variable_match:
     species_name: Species
     site_name: Site
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(N_area_young_mg_per_m2 = (`N [mg/g]_young`*1000/SLA_young), N_area_expanding_mg_per_m2 = (`N(mg/g)_expanding`*1000/`SLA_exp.`), N_area_old_mg_per_m2 = (`N [mg/g]_0ld`*1000/`SLA_old_m2/kg`))
 traits:
 - var_in: plant_growth_form
   unit_in: .na
@@ -280,7 +280,7 @@ traits:
   trait_name: leaf_N_per_dry_mass
   value_type: raw_value
   replicates: 1
-  methods: Measured on expanding leaves. young leaves. Nitrogen isotope ratios and
+  methods: Measured on expanding leaves. Nitrogen isotope ratios and
     nitrogen contents of samples were measured using a system combining an elemental
     analyzer (Heraeus CHN-O Rapid) for Dumas combustion of the samples, a Finnigan
     MAT Trapping box HT for automatic cryo-purification of the combustion products,
@@ -292,7 +292,43 @@ traits:
   trait_name: leaf_N_per_dry_mass
   value_type: raw_value
   replicates: 1
-  methods: Measured on old leaves. young leaves. Nitrogen isotope ratios and nitrogen
+  methods: Measured on old leaves. Nitrogen isotope ratios and nitrogen
+    contents of samples were measured using a system combining an elemental analyzer
+    (Heraeus CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping
+    box HT for automatic cryo-purification of the combustion products, and a Finnigan
+    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 ‰ (Gebauer
+    and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
+    on a leaf dry weight basis (mgN g–1).
+- var_in: N_area_young_mg_per_m2
+  unit_in: mg/m2
+  trait_name: leaf_N_per_area
+  value_type: raw_value
+  replicates: 1
+  methods: Measured on young leaves. Nitrogen isotope ratios and nitrogen contents
+    of samples were measured using a system combining an elemental analyzer (Heraeus
+    CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping box
+    HT for automatic cryo-purification of the combustion products, and a Finnigan
+    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 ‰ (Gebauer
+    and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
+    on a leaf dry weight basis (mgN g–1).
+- var_in: N_area_expanding_mg_per_m2
+  unit_in: mg/m2
+  trait_name: leaf_N_per_area
+  value_type: raw_value
+  replicates: 1
+  methods: Measured on expanding leaves. Nitrogen isotope ratios and
+    nitrogen contents of samples were measured using a system combining an elemental
+    analyzer (Heraeus CHN-O Rapid) for Dumas combustion of the samples, a Finnigan
+    MAT Trapping box HT for automatic cryo-purification of the combustion products,
+    and a Finnigan MAT mass spectrometer (delta D) with a dual inlet at a precision
+    of 0.1 ‰ (Gebauer and Schulze 1991). Nitrogen contents were expressed as nitrogen
+    concentrations on a leaf dry weight basis (mgN g–1).
+- var_in: N_area_old_mg_per_m2
+  unit_in: mg/m2
+  trait_name: leaf_N_per_area
+  value_type: raw_value
+  replicates: 1
+  methods: Measured on old leaves. Nitrogen isotope ratios and nitrogen
     contents of samples were measured using a system combining an elemental analyzer
     (Heraeus CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping
     box HT for automatic cryo-purification of the combustion products, and a Finnigan
@@ -458,6 +494,9 @@ taxonomic_updates:
 - find: Melaleuca?
   replace: Melaleuca sp.
   reason: Name updated by E. Wenk (2020-03-11)
+- find: Eucalyptus gummiphylla
+  replace: Eucalyptus gummifera
+  reason: Name updated by E. Wenk (2020-03-19)
 questions: 
   note: Tree circumferance and height included in data.csv and metadata.yml but not yet merged into AusTraits. Contextual field needed for leaf age.
   
