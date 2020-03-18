@@ -1,0 +1,549 @@
+---
+title: Adding data to `AusTraits`
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Adding data to `AusTraits`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  results = "asis"
+)
+
+library(austraits.build)
+library(dplyr)
+library(readr)
+
+root.dir = rprojroot::find_root("remake.yml")
+knitr::opts_knit$set(root.dir = root.dir)
+
+my_kable_styling <- my_kable_styling_html
+```
+
+```{r, echo=FALSE, results='hide', message=FALSE}
+## Assumes to items exist in global name space
+if(!exists("austraits")) {
+  austraits <- readRDS("export/data/austraits.rds")
+  # stop("austraits must exist in global name space to knit a report")
+}
+
+definitions <- austraits$definitions
+```
+
+This sections explains how to format files to contribute a new study to AusTraits. Before starting this, you should read more about the [structure of the compiled AusTraits database](austraits_structure.md), the [structure of the raw data files](austraits_raw_data.md), and [how to build AusTraits](building_austraits.md).
+
+It is important that all steps are followed so that our automated workflow proceeds without problems. 
+
+The main steps are:
+
+1. Clone the `austraits.build` repository from github and create a new branch in the repo with the name of your dataset_id. 
+2. Create a new folder within the folder `data` with a name of the `dataset_id`, e.g. `Gallagher_2014`
+3. Prepare the files `data.csv` and `metadata.yml` and place them within the folder, as per instructions [below](#create_data).
+4. Add the new study into the build framework and rebuild Austraits, as described under [adding data to Austraits](#adding) below.
+5. Run tests on the contributed data and correct the `data.csv` and `metadata.yml`files as necessary. See the section [tests](#running_tests) for details.
+6. Generate and proofread a report on the data. In particular, check that numeric trait values fall within a logical range relative to other studies and that individual trait observations are not unnecessarily excluded because their trait values are unsupported. See the section on generating [reports](#reports) for details.
+7. Return to step 3 if changes are made to the `data.csv` or `metadata.yml` files.
+8. Push to GitHub.
+
+It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits/tree/master/data) and use it as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits/tree/master/config), in particular the `definitions` files for the list of traits we cover and the supported trait values for each trait. Or read through information on the supported traits and trait values.
+
+Once you have prepared your `data.csv` and `metadata.yml` files within a folder in the `data` directory, you can incorporate the new data into Austraits by running:
+
+```{r, eval=FALSE, echo=TRUE}
+austraits_rebuild_remake_setup()
+```
+
+This step updates the file `remake.yml` with appropriate rules for the new dataset; similarly if you remove datasets, do the same. (At this stage, [remake](https://github.com/richfitz/remake) offers no looping constructs so for now we generate the remake file using [whisker](https://github.com/edwindj/whisker).)
+
+You can then rebuild Austraits, including your dataset.
+
+# Getting started
+
+The `austraits.build` repository includes a bunch of functions that help build the repository. To use these, you'll need to make them available. 
+
+The easiest way is to load the functions into your workspace is to run the following (from within the repository)
+
+```{r, eval=FALSE}
+devtools::load_all()
+```
+
+# Inputting data
+
+## Constructing the `data.csv` file
+
+<!-- Lizzy - add details -->
+
+## Constructing the `metadata.yml` file
+
+One way to construct the `metadata.yml` file is to use one of the existing files and modify yours to follow the same format. As a start, checkout some examples from [existing studies in Austraits](https://github.com/traitecoevo/austraits/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits/blob/master/data/Angevin_2010/metadata.yml) or [Wright_2004](https://github.com/traitecoevo/austraits/blob/master/data/Wright_2004/metadata.yml).
+
+Note, when editing the `metadata.yml`, edits should be made in a proper text editor (Microsoft word tends to stuff up the formatting). For example, Rstudio, textmate, sublime text, and Visual Studio Code are all good editors.
+
+To assist you in constructing the `metadata.yml` file, we have developed functions to help fill in the different sections of the file. If you wish to include additional elements, you can afterwards edit the file further.
+
+To use the functions, make sure you first run the following, to make the functions available
+
+```{r, eval=FALSE, echo=TRUE}
+library(austraits.build)
+# O3R
+devtools::load_all()
+```
+
+### Creating a template
+
+The first function creates a basic template for your the `metadata.yml` file for your study. Assuming you have already created a file `data.csv` in the folder `data/your_dataset_id`, run
+
+```{r, eval=FALSE, echo=TRUE}
+metadata_create_template(dataset_id)
+```
+
+The function will ask a series of questions and then create a relatively empty file `data/your_dataset_id/metadata.yml`. The key questions are:
+
+* Is the data long vs wide? A wide dataset has each variable(i.e. trait ) as a column. A long dataset has each variable as a row and column as a species. 
+*Select column for 'species_name'
+*Select column for 'site_name'
+
+### Adding a source
+
+Three functions are available to help entering citation details for the source data.
+
+The function `metadata_create_template` creates a template for the primary source with default fields for a journal article, which you can then edit manually.
+
+Alternatively, if you have a `doi` for your study, use the function:
+
+```{r, eval=FALSE, echo=TRUE}
+metadata_add_source_doi(dataset_id, doi)
+```
+and the different elements within source will automatically be generated. By default, details are added as a primary source. To override this, specify the type
+
+```{r, eval=FALSE, echo=TRUE}
+metadata_add_source_doi(dataset_id, doi, type="secondary")
+```
+
+Alternatively, if you have reference details saved in a bibtex file called `myref.bib` you can use the function
+
+```{r, eval=FALSE, echo=TRUE}
+metadata_add_source_doi(dataset_id, file = "myref.bib")
+```
+
+(These options require the package [rcrossref](https://github.com/ropensci/rcrossref) and [RefManageR](https://github.com/ropensci/RefManageR/) to be installed.)
+
+### Adding people
+
+The function `metadata_create_template` creates a template for entering details about people, which you can then edit manually.
+
+### Custom R code
+
+Occasionally all the changes we want to make to dataset may not fit into the prescribed workflow used in Austraits. For example, we assume each trait has a single unit. But there are a few datasets where data on different rows have different units. So we want to make to make some custom modifications to this particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`load_study`](https://github.com/traitecoevo/austraits/blob/master/R/steps.R)) looks like this:
+
+```{r, eval=FALSE, echo=TRUE}
+  data <- 
+    read_csv(filename_data_raw, col_types = cols()) %>%
+    custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
+    parse_data(dataset_id, metadata) %>%
+    ...
+```
+
+Note the second line. After loading the csv file, we can apply some Custom R code small manipulations to the dataframe before processing it. Custom R code is valid R code, but written inside the `metadata.yml` file. While developing this, you'll want to test your code. This can be achieved by running the function
+
+```{r, eval=FALSE, echo=TRUE}
+metadata_check_custom_R_code(dataset_id)
+```
+
+which returns a data frame, showing how the datasets looks after being manipulated.mes
+
+
+## Adding custom R code into metadata.yml {#custom_R_code}
+
+Occasionally all the changes we want to make to dataset may not fit into the prescribed workflow used in AusTraits. As an example, for `Blackman_2010` we want to combine two columns to create an appropriate site variable. So we want to make to make some custom modifications to this particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`load_study`](https://github.com/traitecoevo/austraits/blob/master/R/steps.R)) looks like:
+
+```{r, eval=FALSE, echo=TRUE}
+  data <- 
+    read_csv(filename_data_raw, ol_types = cols(), guess_max = 100000) %>%
+    custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
+    parse_data(dataset_id, metadata) %>%
+    ...
+```
+
+Note the second line. This is where the custom code get's applied, right after the file is loaded.
+
+Here is the code that was included in [data/Blackman_2010/metadata.yml](https://github.com/traitecoevo/austraits/blob/master/data/Blackman_2010/metadata.yml) under `custom_R_code`.
+
+```{r, eval=FALSE, echo=TRUE}
+data %>% mutate(
+    site = ifelse(site == "Mt Field" & habitat == "Montane rainforest", "Mt Field_wet", site),
+    site = ifelse(site == "Mt Field" & habitat == "Dry sclerophyll", "Mt Field_dry", site)
+    )
+```
+
+This is the finished solution. This code gets run everytime we rebuild the Blackman_2010 dataset.
+
+To get there we did as follows. Generally, the custom R ccode should 
+
+- assume a single object called `data`, and apply whatever fixes are needed
+- use functions from the packages [dplyr](https://dplyr.tidyverse.org) or [`tiydr`](https://tidyr.tidyverse.org), like `mutate`, `rename`, etc, and otherwise avoid extrenal packages
+- be fully self contained (we're not going to use any of the other remake machinery here)
+- use pipes to weave together a single statement, where possible. (Otherwise you'll need a semi colons `;` at the end of each statement).
+
+First, load an object called `data` to play with, as if you were building this dataset object:
+
+```{r, eval=FALSE, echo=TRUE}
+library(readr)
+library(yaml)
+
+data <- read_csv(file.path("data", "Blackman_2010", "data.csv"), col_types = cols(.default = "c"))
+data
+```
+
+Second, write your code to manipulate data, like the example above.
+
+Third, once you have some working code, you then want to add it into your yml file under a group `config` -> `custom_R_code`. 
+
+Finally, check it works. Let's assume you added it in. The function `metadata_check_custom_R_code` loads the data and applies the custom R code:
+
+```{r, eval=FALSE, echo=TRUE}
+metadata_check_custom_R_code("Blackman_2010")
+```
+
+### Defining traits
+
+Add traits
+
+```{r, eval=FALSE, echo=TRUE}
+metadata_add_traits(dataset_id)
+```
+<!-- TODO: You will be asked to indicate the columns you wish to keep as distinct traits -->
+
+### Site details
+
+Add sites details
+
+```{r, eval=FALSE}
+metadata_add_sites(dataset_id, site_data)
+```
+
+This function assumes you have site details stored in wide format, in R:
+
+<!-- TODO: need to indicate that the following code needs to be run with the assignment site_data for the previous code to work. --> 
+
+```{r, echo=FALSE, results="markup"}
+austraits$sites %>% 
+  filter(dataset_id == "Falster_2005_1") %>% 
+  select(-dataset_id) %>% 
+  spread(site_property, value) %>% 
+  type_convert()
+```
+
+If your data is in a file, you'll need to read it in first.
+
+### Using substitutions
+
+Substitutions can be added by running:
+
+```{r, eval=FALSE, echo=TRUE}
+metadata_add_substitution(dataset_id, trait_name, find, replace)
+```
+
+where `find` is the trait value used in the data.csv file and `replace` is the trait value supported by Austraits.
+
+
+### Update taxonomy
+
+We've implemented code to semi-automate the checking of names using the R package [Taxonstand](https://cran.r-project.org/web/packages/Taxonstand/index.html) (for more documentation see [here](https://www.rdocumentation.org/packages/Taxonstand/versions/2.1/topics/TPL)). To generate a suggested name change for a specific study run:
+
+```{r, eval=FALSE, echo=TRUE}
+metadata_check_taxa("Westoby_2014")
+```
+
+If TaxonStand finds taxonomic changes it will add the relevant lines of code directly to the metadata.yml file.
+
+TaxonStand has been configured in the above function to only permit relatively certain changes (e.g. with a minor change to spelling or known synonym).
+
+There are additional arguments you can add for the function `metadata_check_taxa` including:
+- `update` where the default is TRUE, meaning changes found will be added to the `metadata.yml` file
+- `typos` where the default is FALSE, meaning typos will not be corrected
+- `diffchar` which indicates the number of characters that can be different for a typo-match. Here the default is two.
+
+Therefore, if you want the function  `metadata_check_taxa` to correct 1 and 2 character typos, run the function as follows:
+
+```{r, eval=FALSE, echo=TRUE}
+metadata_check_taxa("Westoby_2014", typos=TRUE)
+```
+
+If TaxonStand fails to find a suitable alignment, and you have identified one yourself, you can add it to the metadata by running
+
+```{r, eval=FALSE, echo=TRUE}
+metadata_add_taxnomic_change(study, find, replace, reason)
+```
+
+For any plants that are only identified to genus, make sure the genus name is the first part of the name given; this will ensure its genus and family is recorded appropriately. I.e. use 'Acacia sp. long leaf', not 'long leaf Acacia'.
+
+## Running tests {#running_tests}
+
+You can also run some automated tests to ensure the dataset meets required set up. The tests run through a collection of pre-specified checks on the files for each study. The output alerts you to possible issues needing to be fixed, by comparing the data in the files with expected structure and allowed values, as specified in the definitions. NBy far the most common error is that there are unusual text characters, for example often special hyphen's, quote symbols, plus-minus symbols. These should be replaced by simple text equivalents.
+
+To run the tests, the variable `dataset_ids` must be defined in the global namespace, containing a vector of ids to check. For example
+
+```{r, eval=FALSE, echo=TRUE}
+# load relevant functions
+source("R/setup.R")
+
+# Tests run test on one study
+dataset_ids <- "Bragg_2002"
+austraits_run_tests()
+
+# Tests run test on all studies
+dataset_ids <- dir("data")
+austraits_run_tests()
+```
+
+## Reports / quality checks {#reports}
+
+### Study specific reports
+
+To enable better quality checks we have code to generate a report on the data in each study. 
+
+(Reports are written in [Rmarkdown](https://rstudio.github.io/rmarkdown/) and generated via the [knitr](https://cran.r-project.org/web/packages/knitr/) package. The template is stored in `scripts/report_study.html`).
+
+To generate a report for a particular study:
+
+```{r, eval=FALSE, echo=TRUE}
+austraits <- readRDS("export/data/austraits.rds")
+source("R/report_utils.R")
+build_study_report("Wright_2002")
+```
+
+To generate a report for a collection of studies:
+
+```{r, eval=FALSE, echo=TRUE}
+build_study_reports(c("Falster_2005_1", "Wright_2002"))
+```
+
+Or for all studies:
+
+```{r, eval=FALSE, echo=TRUE}
+build_study_reports()
+```
+
+Both functions `build_study_report` & `build_study_reports` can accept an additional argument `overwrite=TRUE`, to overwrite existing reports if they exist. Eg.
+
+
+```{r, eval=FALSE, echo=TRUE}
+build_study_report("Wright_2002", overwrite=TRUE)
+```
+
+### Check excluded data
+
+One thing to check in particular, is any data have been excluded. These are available in the frame `excluded_data`.
+
+Possible reasons for excluding that value include:
+
+- *Missing value*: Value was missing
+- *Missing unit conversion*: Value was present but appropriate unit conversion was missing -> you need to add it to the file `config/unit_conversions.csv`
+- *Unsupported trait*: `trait_name` not listed in `config/definitions.yml`, under `traits`
+- *Unsupported trait value*: For categorical traits, `value` for trait not included for that trait in `config/definitions.yml` 
+- *Value does not convert to numeric*: Is there a strange character in the file preventing easy conversion?
+- *Value out of allowable range*: Converted value falls outside of the allowable range specified for that trait in `config/definitions.ym
+
+
+For your dataset, you can investigate why you have excluded data as follows. 
+
+Look at everything 
+
+```{r, echo=TRUE, results="show"}
+austraits$excluded_data %>% 
+  filter(dataset_id=="ANBG_2019")
+```
+
+If you want to inspect this more closely, just pass it into `View`
+
+```{r, echo=TRUE, eval=FALSE}
+austraits$excluded_data %>% 
+  filter(dataset_id=="ANBG_2019") %>% 
+  View()
+```
+
+How many of each type:
+
+```{r, echo=TRUE, results="show"}
+austraits$excluded_data %>% 
+  filter(dataset_id=="ANBG_2019") %>%
+  pull(error) %>% table()
+```
+
+
+How many of each type by trait:
+
+```{r, echo=TRUE, results="show"}
+austraits$excluded_data %>% 
+  filter(dataset_id=="ANBG_2019") %>%
+  select(trait_name, error) %>%
+  table()
+```
+
+View records that aren't missing values
+
+```{r, echo=TRUE, eval=FALSE}
+austraits$excluded_data %>% 
+  filter(dataset_id=="ANBG_2019", error !="Missing value") %>%
+  View()
+```
+
+### Clean the formatting of metadata.yml
+
+Before finishing your contribution, you should read & write the file `metadata.yml`, as this may change the way the text is formatted. Doing this now, prevents any unnecessary changes in the future.
+
+```{r, eval=FALSE, echo=TRUE}
+f <- file.path("data", dataset_id, "metadata.yml")
+read_yaml(f) %>% write_yaml(f)
+```
+
+
+# Working with our GitHub repository
+
+By far our preferred way of contributing is for you to contribute files directly into the repository and then send a  [pull request](https://help.github.com/articles/using-pull-requests/) with you input. You can do this by
+
+- (for approved maintainers of austraits.build) Creating a branch, or
+- (for others) forking the database in github
+
+In short, 
+
+1. Create a Git branch for your new work, either within the AusTraits repo (if you are an approved contributor) or as a [fork of the repo](https://help.github.com/en/github/getting-started-with-github/fork-a-repo). 
+2. Make commits and push these up onto the branch. 
+2. Make sure everything runs fine before you send a pull request.
+3. When you're ready to merge in the new features, 
+
+Before you make a substantial pull request, you should always [file an issue](https://github.com/traitecoevo/austraits.build/issues) and make sure someone from the team agrees that it’s worth pursuing. a problem. If you’ve found a bug, create an associated issue and illustrate the bug with a minimal [reprex](https://www.tidyverse.org/help/#reprex) illustrating the issue.
+
+If this is not possible, you could email the relevant files (see above) to the Austraits email: austraits.database@gmail.com
+
+## Merging a pull request
+
+There are multiple ways to merge a pull request, including using GitHub's built-in options for merging and squashing. When merging a PR, we ideally want
+
+- a single commit
+- attributing the work to the original author
+- to run various checks along the way 
+
+There's two ways to do this. For both you need to be an approved maintainer. 
+
+### Merging in your own PR
+
+You can merge in your own PR after you've had someone else review it. 
+
+1. Send the PR
+2. Tag someone to review
+3. Once ready, merge into main choosing "Squash & Merge", using an informative commit message.
+
+
+### Merging someone else's PR
+
+When merging in someone else's PR, the built-in  options aren't ideal. as they either take all of the commits on a branch (ugh, messy), OR make the commit under the name of the person merging the request.
+
+The workflow below describes how to merge a pull request from the command line, with a single commit & attributing the work to the original author. Lets assume a branch of name `Smith_1995`.
+
+First from the master branch in the repo, run the following:
+
+```
+git merge --squash origin/Smith_1995
+```
+
+Then in R
+
+```{r, eval=FALSE}
+dataset_ids <- "Smith_1995"
+
+# Update remake file
+austraits_rebuild_remake_setup()
+
+# check data builds
+remake::make(dataset_ids)
+
+# Check taxonomy has been updated
+metadata_check_taxa(dataset_ids)
+
+# run tests on dataset
+austraits_run_tests()
+
+# read and write yaml to prevent future reformatting 
+f <- file.path("data", dataset_ids, "metadata.yml")
+read_yaml(f) %>% write_yaml(f)
+
+# rebuild
+remake::make(dataset_ids)
+```
+
+Now back in the terminal
+
+```
+git add .
+git commit
+```
+
+Add a commit message, referencing relevant pull requests and issues, e.g.
+
+```
+Smith_1995: Import new data
+
+For #224, closes #286
+```
+
+And finally, amend the commit author, to reference the person who did all the work!
+```
+git commit --amend --author "XXX <XXX@gmail.com>"
+```
+
+## Commit messages
+
+XXXXXX
+Informative commit messages are ideal. Where possible, these should link to 
+
+
+
+## Making a new release & version updating
+
+Notes on release process
+
+http://r-pkgs.had.co.nz/release.html
+
+## Releasing a new version
+
+Increment version number
+
+```{r, eval=FALSE}
+desc::desc_bump_version("dev")
+```
+
+
+# Other
+
+## File types
+
+### CSV 
+
+A comma-separated values (CSV) file is a delimited text file that uses a comma to separate values. Each line of the file is a data record. Each record consists of one or more fields, separated by commas. This is a comma format for storing tables of data in a simple text file. You can edit it an Excel or in a text editor.For more, see [here](https://en.wikipedia.org/wiki/Comma-separated_values).
+
+### YAML files {#yaml}
+
+The `yml` file extension (pronounced "YAML") [is a type structured data file](https://en.wikipedia.org/wiki/YAML), that is both human and machine readable. You can edit it any text editor, or also in Rstudio. Generally, yml is used in situations where a table does not suit because of variable lengths and or nested structures. It has the advantage over a spreadsheet in that the nested “headers” can have variable numbers of categories. The data under each of the hierarchical headings are easily extracted by R.
+
+## Extracting data from PDF tables
+
+If you encounter a PDF table of data and need to extract values, this can be achieved with the [`tabula-java` tool](https://github.com/tabulapdf/tabula-java/). There's actually an R wrapper (called [`tabulizer`](https://github.com/ropensci/tabulizer)), but we haven't succeeded in getting this running. However, it's easy enough to run the java tool at the command line on OSX.
+
+1. [Download latest release of `tabula-java`](https://github.com/tabulapdf/tabula-java/releases) and save the file in your path
+
+2. Run
+```
+java -jar tabula-1.0.3-jar-with-dependencies.jar my_table.pdf -o my_data.csv
+```
+This should output the data from the table in `my_table.pdf` into the csv `my_data.csv`
+
+3. Clean up in Excel. check especially for correct locations of white spaces.

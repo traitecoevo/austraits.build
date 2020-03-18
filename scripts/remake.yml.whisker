@@ -2,7 +2,16 @@
 # edit the file there (or the files that it includes).
 
 packages:
-  - pacman
+  - desc
+  - crayon
+  - dplyr
+  - purrr
+  - readr
+  - RefManageR
+  - stringr
+  - tidyr
+  - tibble
+  - rmarkdown
 
 sources:
   - R
@@ -12,7 +21,40 @@ targets:
     depends:
       - austraits
       - export
+      - docs
 
+  ## docs
+  docs:
+    depends:
+      - README.md
+      - docs/Building.md
+      - docs/Contributing.md
+      - docs/TipTricks.md
+      - docs/Trait_definitions.md
+
+  README.md:
+    knitr: TRUE
+    depends: version_number
+
+  docs/Building.md:
+    knitr: TRUE
+    depends:
+      - export/data/austraits.rds
+      - version_number
+      
+  docs/Contributing.md:
+    knitr: TRUE
+    depends: version_number
+
+  docs/TipTricks.md:
+    knitr: TRUE
+    depends: version_number
+
+  docs/Trait_definitions.md:
+    knitr: TRUE
+    depends: version_number
+ 
+ 
   ## exporting targets
   export:
     depends:
@@ -20,6 +62,9 @@ targets:
 
   export/data/austraits.rds:
     command: saveRDS(austraits, target_name)
+
+  version_number:
+    command: desc_get_version()
 
   definitions:
     command: read_yaml("config/definitions.yml")
@@ -48,3 +93,4 @@ targets:
         {{dataset_id}},
 {{/dataset_ids}}
        definitions=definitions)
+    depends: version_number
