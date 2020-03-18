@@ -2,7 +2,16 @@
 # edit the file there (or the files that it includes).
 
 packages:
-  - pacman
+  - desc
+  - crayon
+  - dplyr
+  - purrr
+  - readr
+  - RefManageR
+  - stringr
+  - tidyr
+  - tibble
+  - rmarkdown
 
 sources:
   - R
@@ -13,6 +22,13 @@ targets:
       - austraits
       - export
 
+  website:
+    command: build_website()
+    depends:
+      - version_number
+      - _pkgdown.yml
+      - export/data/austraits.rds
+
   ## exporting targets
   export:
     depends:
@@ -20,6 +36,9 @@ targets:
 
   export/data/austraits.rds:
     command: saveRDS(austraits, target_name)
+
+  version_number:
+    command: desc_get_version()
 
   definitions:
     command: read_yaml("config/definitions.yml")
@@ -366,6 +385,14 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Firn_2019:
+    command: >
+      load_study("data/Firn_2019/data.csv",
+                 "data/Firn_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Flynn_2001:
     command: >
       load_study("data/Flynn_2001/data.csv",
@@ -514,6 +541,14 @@ targets:
     command: >
       load_study("data/Guilherme_Pereira_2019/data.csv",
                  "data/Guilherme_Pereira_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Hall_1981:
+    command: >
+      load_study("data/Hall_1981/data.csv",
+                 "data/Hall_1981/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -1550,6 +1585,7 @@ targets:
                  unit_conversions,
                  species_list
                  )
+
   austraits:
     command: >
       combine_austraits(
@@ -1595,6 +1631,7 @@ targets:
         EsperonRodriguez_2019_2,
         Falster_2005_1,
         Falster_2005_2,
+        Firn_2019,
         Flynn_2001,
         Fonseca_2000,
         Forster_1992,
@@ -1614,6 +1651,7 @@ targets:
         Grubb_2008,
         Guilherme_Pereira_2018,
         Guilherme_Pereira_2019,
+        Hall_1981,
         Harrison_2009,
         Hassiotou_2009,
         Hayes_2014,
@@ -1744,3 +1782,4 @@ targets:
         Wright_2019,
         Zanne_2007,
        definitions=definitions)
+    depends: version_number
