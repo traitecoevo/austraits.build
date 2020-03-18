@@ -1,7 +1,9 @@
 ---
+title: Structure of raw data for building AusTraits
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Structure of raw data in `AusTraits`}
+  %\VignetteIndexEntry{Structure of raw data in AusTraits}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -12,8 +14,11 @@ editor_options:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  results = "asis"
-)
+  results = "asis",
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE
+  )
 
 library(austraits.build)
 library(dplyr)
@@ -70,13 +75,12 @@ config
 └── unit_conversions.csv
 ```
 
-The file `definitions.yml` defines the structure of the database and all terms. The tables and definitions provided in the section above on [Structure of AusTraits](#austraits_structure]) are defined in this file, as are trait definitions. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). You will need to edit this file if you are changing or adding trait definitions.
+The file `definitions.yml` defines the structure of the database and all terms. The tables and definitions provided in the section on Structure of AusTraits are defined in this file, as are trait definitions. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). You will need to edit this file if you are changing or adding trait definitions.
 
 The file `species_list.csv` is our master list of known species. Each species is listed once, with known IDs (see [section above](#taxonomic) for details). 
 
-```{r, results='asis'}
-read_csv("config/species_list.csv") 
-austraits$taxonomy %>% select(species_name,family,authority,TPL_ID,status,APC_name,APC_ID,APNI_ID) %>% 
+```{r, results='show'}
+read_csv("config/species_list.csv") %>% select(species_name,family,authority,TPL_ID,status,APC_name,APC_ID,APNI_ID) %>% 
   slice(1:10) %>%
   my_kable_styling()
 
@@ -84,7 +88,7 @@ austraits$taxonomy %>% select(species_name,family,authority,TPL_ID,status,APC_na
 
 The file `unit_conversions.csv` defines the unit conversions that are used when converting traits to common units, e.g.
 
-```{r, results='asis'}
+```{r, results='show',}
 read_csv("config/unit_conversions.csv", col_types = "ccc") %>% 
   slice(1:10) %>%
   my_kable_styling()
@@ -304,7 +308,7 @@ config:
   custom_R_code: mutate(data, `trait value` = ifelse(trait == 'flowering time', convert_month_range_vec_to_binary(`trait value`), `trait value`))
 ```
 
-A common use of the `custom_R_code` is to automate the conversion of a verbal description of flowering or fruiting periods into the supported trait values, as occurs in  this example. It might also be used if values for a single trait are expressed across multiple columns and need to be merged. See the `Catford_2014` as an example of this. Additional examples on adding `custom_R_code` are provided [in the appendix](#custom_R_code).
+A common use of the `custom_R_code` is to automate the conversion of a verbal description of flowering or fruiting periods into the supported trait values, as occurs in  this example. It might also be used if values for a single trait are expressed across multiple columns and need to be merged. See the `Catford_2014` as an example of this.
 
 #### Traits
 
@@ -319,7 +323,7 @@ for(value in names(values)) {
 }
 ```
 
-Values under `trait_name` must be allowable values, as described under [the section trait definitions](#trait_defs). Similarly, values under `value_type` must be allowable values, as described under [the section  Value types](#value_types).
+Values under `trait_name` must be allowable values, as described under [the section trait definitions. Similarly, values under `value_type` must be allowable values, as described under the section  Value types.
 
 An example is as follows:
 
@@ -344,7 +348,7 @@ traits:
 
 This section provides `r tolower(definitions$metadata$elements$substitutions$description)`
 
-Substitutions are required whenever the exact word(s) used to describe a categorical trait value in AusTraits are different from the vocabulary used by the author in the `data.csv` file. It is preferable that authors make changes using `substitutions` rather than changing the `data.csv` file. See the section [trait definitions](#trait_defs) for a list of supported values for each trait.
+Substitutions are required whenever the exact word(s) used to describe a categorical trait value in AusTraits are different from the vocabulary used by the author in the `data.csv` file. It is preferable that authors make changes using `substitutions` rather than changing the `data.csv` file. See the section trait definitions for a list of supported values for each trait.
 
 Each substitution is documented using the following elements:
 
@@ -370,7 +374,7 @@ substitutions:
 
 #### Taxonomic updates
 
-This section provides `r tolower(definitions$metadata$elements$taxonomic_updates$description)` Taxonomic updates are required to align species names with an accepted species list (for details, see details on [Taxonony](#taxonomy).
+This section provides `r tolower(definitions$metadata$elements$taxonomic_updates$description)` Taxonomic updates are required to align species names with an accepted species list.
 
 Each substitution is documented using the following elements:
 
@@ -414,12 +418,12 @@ This sections explains how to format files to contribute a new study to AusTrait
 
 The main steps are:
 
-1. Clone the `austraits.build` repository from github and create a new branch in the repo with the name of your dataset_id (for more info, see the document [working with github](Working_with_github.Rmd).
+1. Clone the `austraits.build` repository from github and create a new branch in the repo with the name of your dataset_id.
 2. Create a new folder within the folder `data` with a name of the `dataset_id`, e.g. `Gallagher_2014`
-3. Prepare the files `data.csv` and `metadata.yml` and place them within the folder, as per instructions [below](#create_data).
-4. Add the new study into the build framework and rebuild Austraits, as described under [adding data to Austraits](#adding) below.
-5. Run tests on the contributed data and correct the `data.csv` and `metadata.yml`files as necessary. See the section [tests](#running_tests) for details.
-6. Generate and proofread a report on the data. In particular, check that numeric trait values fall within a logical range relative to other studies and that individual trait observations are not unnecessarily excluded because their trait values are unsupported. See the section on generating [reports](#reports) for details.
+3. Prepare the files `data.csv` and `metadata.yml` and place them within the folder.
+4. Add the new study into the build framework and rebuild Austraits.
+5. Run tests on the contributed data and correct the `data.csv` and `metadata.yml`files as necessary.
+6. Generate and proofread a report on the data. In particular, check that numeric trait values fall within a logical range relative to other studies and that individual trait observations are not unnecessarily excluded because their trait values are unsupported.
 7. Return to step 3 if changes are made to the `data.csv` or `metadata.yml` files.
 8. Push to GitHub.
 
