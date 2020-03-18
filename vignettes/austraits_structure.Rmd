@@ -1,9 +1,9 @@
 ---
-title: How to build the `AusTraits` data compilation
+title: Structure of `AusTraits` data compilation
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How to build the `AusTraits` data compilation}
+  %\VignetteIndexEntry{ Structure of `AusTraits` data compilation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -30,47 +30,12 @@ my_kable_styling <- my_kable_styling_html
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Assumes to items exist in global name space
 if(!exists("austraits")) {
-  austraits <- remake::make("austraits")
+  austraits <- readRDS("export/data/austraits.rds")
   # stop("austraits must exist in global name space to knit a report")
 }
 
 definitions <- austraits$definitions
 ```
-
-This document provides information on how AusTraits is assembled from its component parts. 
-Separate documents provide information on: 
-
-- [Building Austraits](Building.md)
-- [Contributing](Contributing.md)
-- [Tips & Tricks for AusTraits developers](TipTricks.md), and
-- [Full list of trait definitions](Trait_definitions.md)
-
-# Overview & Mission
-
-This document describes the compiling of AusTraits - a database of traits for the Australian Flora. It was generated using AusTraits **version `r desc::desc_get_field("Version")`**, which harmonises data on `r austraits$traits$trait_name %>% unique() %>% length()` traits from `r austraits$traits %>% pull(dataset_id) %>% n_distinct()` different sources, including field campaigns, published literature, taxonomic monographs, and individual species descriptions. Traits link to ecological strategy variation and vary in scope from physiological measures of performance (e.g. photosynthetic gas exchange, water-use efficiency) to morphological parameters (e.g. leaf size, seed size, maximum height). AusTraits contains curated and harmonised species- and genus-level observations coupled to, where available, contextual information on site properties. 
-
-We envision AusTraits as an on-going collaborative community resource that:
-
-1. Increases our collective understanding the Australian flora;
-2. Facilitates accumulating and sharing of trait data;
-3. Aspires to fully transparent and reproducible research of highest standard, and 
-4. Builds a sense of community among contributors and users.
-
-Prior to the development of AusTraits, data on Australian plant traits existed as a series of largely disconnected datasets collected by individual laboratories or initiatives. Our goal has been to harmonise these different sources. Moreover, we aimed to do this in an open-source way, so as to accelerate discoveries about Australian plants.
-
-We therefore set out to build a resource with the following features:
-
-* The workflow for harmonising different datasets is made fully open and reproducible;
-* All data are shared under a standard open license permitting reuse;
-* Successive versions of the data remain available to ensure reproducibility of research;
-* Contributions towards AusTraits are recognised via invitations to co-author data papers, i.e. releases of the data resource, and subsequent citation. 
-* Users of AusTraits are encouraged to contribute towards the further improvement of the database.
-
-A key goal for us was to make the process for harmonising different datasets as transparent as possible. Our workflow is therefore fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset (Figure 1); and can also be rerun by others (see section ON [compiling AusTraits](#compiling)).
-
-![](Workflow.png)
-
-# Structure of AusTraits {#austraits_structure}
 
 AusTraits is essentially a series of linked components, which cross link against each other::
 
@@ -204,45 +169,7 @@ for(trait in c("specific_leaf_area", "woodiness")) {
 ```
 
 
-# Compiling AusTraits {#compiling}
 
-In this section we describe how to build the harmonised datatset, before describing the structure of the raw components in more detail. By "compiling" we mean transofmring data from all the different studies into a harmonised common format. As described above and depicted in Figure 1, AusTraits is built so that you can rebuild the database from its parts at any time. This means that decisions made along the way, in how data are transformed or encoded, can be inspected and modified. And new data is easily incorpoated.
-
-## Gihtub repoisitory
-
-All the raw materials and code needed are stored in our github repository  [`austriats.build`](https://github.com/traitecoevo/austraits.build/). Github provides a commercial web platform  for sharing, visualizing, and managing data or code under version control. It includes ability to browse the "history" of the repository, "issue" tracking, and ability to host "releases". It also enables multiple contributors to work simultaneously on the same project. While traditonally used for storing code, Github is also being used to store data, especially where there are multiple contributors ([Perkel 2016](http://doi.org/10.1038/538127a), [Falster et al 2019](http://doi.org/10.1093/gigascience/giz035)).
-
-The first step to compile AusTraits is to download a copy of the [austriats.build](https://github.com/traitecoevo/austraits.build/) repository from Github. Then open up the Rstudio project, or open R into the right directory.
-
-Further details on working with our Github reporsiotry are available in the document XXXX 
-
-## Install dependencies via `devtools`
-
-To check you have the right packages installed, you can use the [`devtools`](https://devtools.r-lib.org) package to run:
-
-```{r, eval=FALSE, echo=TRUE}
-# install.packages("devtools)  # install devtools if needed
-devtools::install_deps()
-```
-
-This command checks that the required packages, listed in the file `DESCRIPTION` are available in your local machine. 
-
-## Compile via `remake`
-
-One of the packages that will be installed with the above is [`remake`](https://github.com/richfitz/remake). This package manages the compiling, and also helps steramline the amount of recompiling needed when new sources are added.
-
-
-Running the following command will rebuild AusTraits and save the assmebled dataset into a file `export/data/austraits.rds`. 
-
-```{r, eval=FALSE}
-remake::make()
-```
-
-Remake can also load the compiled dataset directly into R by calling:
-
-```{r, eval=FALSE}
-austraits <- remake::make("austraits")
-```
 
 # Structure and format of raw data {#format}
 
@@ -661,7 +588,7 @@ To use the functions, make sure you first run the following, to make the functio
 
 ```{r, eval=FALSE, echo=TRUE}
 library(austraits.build)
-# OR
+# O3R
 devtools::load_all()
 ```
 
@@ -829,7 +756,7 @@ To enable better quality checks we have code to generate a report on the data in
 To generate a report for a particular study:
 
 ```{r, eval=FALSE, echo=TRUE}
-austraits <- remake::make("austraits")
+austraits <- readRDS("export/data/austraits.rds")
 source("R/report_utils.R")
 build_study_report("Wright_2002")
 ```

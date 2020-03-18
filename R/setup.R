@@ -571,6 +571,10 @@ metadata_check_taxa <- function(dataset_id, update=TRUE, typos=FALSE, diffchar =
 
   message(crayon::red("Checking for unknown species"))
 
+  check_taxonstand <- function(species, corr = FALSE, ...){
+    Taxonstand::TPL(species, corr = corr, ...) 
+  }
+
   if(typos)
     tpl <- check_taxonstand(species[!i], corr = TRUE, diffchar=diffchar)
   else
@@ -642,20 +646,6 @@ metadata_check_taxa <- function(dataset_id, update=TRUE, typos=FALSE, diffchar =
 }
 
 
-#' Title
-#'
-#' @param species 
-#' @param corr 
-#' @param ... 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-check_taxonstand <- function(species, corr = FALSE, ...){
-  Taxonstand::TPL(species, corr = corr, ...) 
-}
-
 
 #' Title
 #'
@@ -687,7 +677,6 @@ format_tpl_to_accepted_df <- function(tpl, use.new = FALSE){
 #' @param to_add 
 #'
 #' @return
-#' @export
 #'
 #' @examples
 austraits_add_to_accepted_species <- function(accepted, to_add) {
@@ -732,7 +721,6 @@ find_names_distance_to_neighbours <- function(species_name, dist=5) {
 
 #' Title
 #'
-#' @return
 #' @export
 #'
 #' @examples

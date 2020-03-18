@@ -1,13 +1,12 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-![](docs/logo.png)
-
-# `AusTraits (builds)`: source for curated plant trait database for the Australian flora
+# `austraits.build`: source for `AusTraits`
 
 <!-- badges: start -->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3583418.svg)](https://doi.org/10.5281/zenodo.3583418)
 
 <!-- badges: end -->
+
+<img src="docs/logo.png">
 
 AusTraits is a transformative database, containing measurements on the
 traits of Australia’s plant species, standardised from hundreds of
@@ -39,10 +38,7 @@ of AusTraits.
 
 ## We’re always rebuilding
 
-This repository
-([austraits.build](https://github.com/traitecoevo/austraits.build/))
-contains the raw data and code used to compile AusTraits from diverse,
-original sources.
+This repository (`austraits.build`) contains the raw data and code used to compile AusTraits from diverse, original sources.
 
 To handle the harmonising of diverse data sources, we use a reproducible
 workflow to implement the various changes required for each source to
@@ -56,8 +52,6 @@ such, there is no single canonical version. We are continually making
 new versions available. Overtime, we expect that different versions will
 be released and used in different analyses.
 
-![](docs/Workflow.png)
-
 ## Contributing
 
 We envision AusTraits as an on-going collaborative community resource
@@ -69,19 +63,9 @@ that:
 4.  Aspires to fully transparent and reproducible research of highest
     standard.
 
-As a community resource, we are very keen for people to contribute. For
-more information on how you can contribute see
-[here](docs/Contributing.md).
+As a community resource, we are very keen for people to contribute. 
 
-For anyone working with the
-[austraits.build](https://github.com/traitecoevo/austraits.build/)
-repository, detailed documentation is available on:
-
-  - Overview of Austraits from [Falster et al 2020](XXXX)
-  - [Building Austraits](docs/Building.md)
-  - [Contributing](docs/Contributing.md)
-  - [Tips & Tricks for AusTraits developers](docs/TipTricks.md), and
-  - [Full list of trait definitions](docs/Trait_definitions.md)
+For anyone working with the [austraits.build](https://github.com/traitecoevo/austraits.build/) repository, detailed documentation is available at  [our website](https://traitecoevo.github.io/austraits.build/), or in the docs folder.
 
 ## Acknowledgements
 
