@@ -26,17 +26,6 @@ extract_list_element <- function(i, my_list, var) {
   i %>% lapply(function(x) my_list[[x]][[var]]) %>% lapply(null_as) %>% unlist()
 }
 
-#' Read csv in character format
-#'
-#' @param ... a csv table or a list of csv tables
-#'
-#' @return a tibble 
-#' @export
-#' @examples read_csv_char("config/species_list.csv")
-read_csv_char <- function(...){
-  read_csv(..., col_types = cols(.default = "c"))
-}
-
 
 #' Rename columns
 #'
@@ -56,7 +45,6 @@ rename_columns <- function(obj, from, to) {
 #' @param sep a separator, a whitespace is the default
 #'
 #' @return a vector of alphabetically sorted records
-#' @export
 #' @examples split_then_sort("z y x")
 split_then_sort <- function(x, sep=" ") {
 
@@ -125,7 +113,6 @@ list1_to_df <- function(my_list) {
 #' @param to_append a list
 #'
 #' @return a list merged with an added item at the end
-#' @export
 #' @examples  append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3,4)])
 append_to_list <- function(my_list, to_append) {
   my_list[[length(my_list)+1]] <-  to_append
@@ -146,4 +133,10 @@ write_yaml <- function(y, filename) {
   txt <- yaml::as.yaml(y, column.major = FALSE, indent=2)
   txt <- gsub(": ~",":", txt, fixed=TRUE)
   writeLines(txt, filename)
+}
+
+
+build_website <- function() {
+  devtools::document()
+  pkgdown::build_site()
 }

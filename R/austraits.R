@@ -282,6 +282,22 @@ export_to_plain_text <- function(austraits, path) {
 }
 
 
+#' <brief desc>
+#'
+#' <full description>
+#' 
+#' compare_versions("export/austraits-0.rds", "export/austraits.rds", "export/blackman", dataset_id="Leishman_1992")
+
+#' compare_versions("export/austraits-0.rds", "export/austraits.rds")
+#'
+#' @param v1 <what param does>
+#' @param v2 <what param does>
+#' @param path = "export/tmp" <what param does>
+#' @param dataset_id=NULL <what param does>
+#' @param trait_name = NULL <what param does>
+#'
+#' @export
+#' @return
 compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trait_name = NULL) {
   unlink(path, TRUE, TRUE)
   dir.create(path, FALSE, TRUE)
@@ -308,36 +324,6 @@ compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trai
   message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
 }
 
-#compare_versions("export/austraits-0.rds", "export/austraits.rds", "export/blackman", dataset_id="Leishman_1992")
-
-#compare_versions("export/austraits-0.rds", "export/austraits.rds")
-
-
-
-#' Title
-#'
-#' @param df1 
-#' @param df2 
-#' @param path 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-compare_versions_df <- function (df1, df2, path = "export/tmp") {
-  unlink(path, TRUE, TRUE)
-  dir.create(path, FALSE, TRUE)
-
-
-  df1 %>% write_csv(sprintf("%s/df.csv", path))
- 
-  repo <- git2r::init(path)
-  git2r::add(repo, "*")
-
-  df2 %>% write_csv(sprintf("%s/df.csv", path))
-
-  message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
-}
 
 #' Title
 #'
