@@ -10,6 +10,18 @@
 #' @usage lhs \%>\% rhs
 NULL
 
+#' <brief desc>
+#'
+#' <full description>
+#'
+#' @param ... <what param does>
+#'
+#' @export
+#' @return
+read_csv_char <- function(...){
+  readr::read_csv(..., col_types = cols(.default = "c"))
+}
+
 
 #' Swap a null vale to something else
 #'

@@ -21,10 +21,10 @@ targets:
     depends:
       - austraits
       - export
- 
+
   website:
     command: build_website()
-    depends: 
+    depends:
       - version_number
       - _pkgdown.yml
       - export/data/austraits.rds
@@ -47,7 +47,7 @@ targets:
     command: make_unit_conversion_functions("config/unit_conversions.csv")
 
   species_list:
-    command: read_csv("config/species_list.csv", col_types = I(cols(.default = 'c')))
+    command: read_csv_char("config/species_list.csv")
 
   Ahrens_2019:
     command: >
@@ -385,6 +385,14 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Firn_2019:
+    command: >
+      load_study("data/Firn_2019/data.csv",
+                 "data/Firn_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Flynn_2001:
     command: >
       load_study("data/Flynn_2001/data.csv",
@@ -533,6 +541,14 @@ targets:
     command: >
       load_study("data/Guilherme_Pereira_2019/data.csv",
                  "data/Guilherme_Pereira_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Hall_1981:
+    command: >
+      load_study("data/Hall_1981/data.csv",
+                 "data/Hall_1981/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -1615,6 +1631,7 @@ targets:
         EsperonRodriguez_2019_2,
         Falster_2005_1,
         Falster_2005_2,
+        Firn_2019,
         Flynn_2001,
         Fonseca_2000,
         Forster_1992,
@@ -1634,6 +1651,7 @@ targets:
         Grubb_2008,
         Guilherme_Pereira_2018,
         Guilherme_Pereira_2019,
+        Hall_1981,
         Harrison_2009,
         Hassiotou_2009,
         Hayes_2014,
