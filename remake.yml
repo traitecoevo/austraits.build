@@ -21,14 +21,40 @@ targets:
     depends:
       - austraits
       - export
- 
-  website:
-    command: build_website()
-    depends: 
-      - version_number
-      - _pkgdown.yml
-      - export/data/austraits.rds
+      - docs
 
+  ## docs
+  docs:
+    depends:
+      - README.md
+      - docs/Building.md
+      - docs/Contributing.md
+      - docs/TipTricks.md
+      - docs/Trait_definitions.md
+
+  README.md:
+    knitr: TRUE
+    depends: version_number
+
+  docs/Building.md:
+    knitr: TRUE
+    depends:
+      - export/data/austraits.rds
+      - version_number
+      
+  docs/Contributing.md:
+    knitr: TRUE
+    depends: version_number
+
+  docs/TipTricks.md:
+    knitr: TRUE
+    depends: version_number
+
+  docs/Trait_definitions.md:
+    knitr: TRUE
+    depends: version_number
+ 
+ 
   ## exporting targets
   export:
     depends:
@@ -1601,7 +1627,6 @@ targets:
                  unit_conversions,
                  species_list
                  )
-
   austraits:
     command: >
       combine_austraits(
