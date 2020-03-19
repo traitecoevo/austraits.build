@@ -1,0 +1,73 @@
+---
+title: Docker for reproducible compute environment 
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Docker for reproducible compute environment }
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  chunk_output_type: console
+---
+
+<!-- TipsTricks.md is generated from TipsTricks.Rmd Please edit that file -->
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
+# knitr defaults
+root.dir = rprojroot::find_root("remake.yml")
+knitr::opts_knit$set(root.dir = root.dir)
+
+knitr::opts_chunk$set(
+  results='asis',
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE
+  )
+
+```
+
+
+As the R compute environment and packages change over time, we have created a Docker container to ensure all our builds are reproducible into the future. 
+
+If you have [Docker installed](https://hub.docker.com), you can recreate the compute environment as follows. For more instructions on running docker, see the info from the R docker project [rocker](https://hub.docker.com/r/rocker/rstudio). Our docker container is build off the [rocker/verse](https://hub.docker.com/r/rocker/verse) container, version 3.6.1. This includes
+
+- R version 3.6.1
+- rstudio
+- tidyverse & devtools
+- tex & publishing-related packages
+
+On top of that, we install everything needed to build AusTraits and the reports. 
+
+## Running via Docker
+
+First fetch the container:
+
+```
+docker pull traitecoevo/austraits.build:3.6.1
+```
+
+Then launch it via:
+
+```
+docker run --user root -v $(pwd):/home/rstudio/ -p 8787:8787 -e DISABLE_AUTH=true traitecoevo/austraits.build:1.0
+```
+
+Adding a `-d` into the command above will cause the image to run in the background. 
+
+The code above initialises a docker container, which runs an rstudio session, which is accessed by pointing your browser to [localhost:8787](http://localhost:8787). 
+
+Note, this container does not contain the actual github repo, only the software environment. If you run the above command from within your downloaded repo, it will map the working directory as the current working directory inside the docker container.
+
+## Building Docker container
+
+The recipe used to build the docker container is included in the Dockerfile in this repo. Our image builds off [`rocker/verse:3.6.1` container](https://hub.docker.com/r/rocker/verse) via the following command, in a terminal contained within the downloaded repo:
+
+```
+docker build -t traitecoevo/austraits.build:3.6.1 .
+```
+
+Images are pushed to dockerhub ([here](https://cloud.docker.com/u/traitecoevo/repository/docker/traitecoevo/austraits.build)):
+
+```
+docker push traitecoevo/austraits.build:3.6.1
+```
