@@ -2,7 +2,16 @@
 # edit the file there (or the files that it includes).
 
 packages:
-  - pacman
+  - desc
+  - crayon
+  - dplyr
+  - purrr
+  - readr
+  - RefManageR
+  - stringr
+  - tidyr
+  - tibble
+  - rmarkdown
 
 sources:
   - R
@@ -13,6 +22,13 @@ targets:
       - austraits
       - export
 
+  website:
+    command: build_website()
+    depends:
+      - version_number
+      - _pkgdown.yml
+      - export/data/austraits.rds
+
   ## exporting targets
   export:
     depends:
@@ -20,6 +36,9 @@ targets:
 
   export/data/austraits.rds:
     command: saveRDS(austraits, target_name)
+
+  version_number:
+    command: desc_get_version()
 
   definitions:
     command: read_yaml("config/definitions.yml")
@@ -366,6 +385,14 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Firn_2019:
+    command: >
+      load_study("data/Firn_2019/data.csv",
+                 "data/Firn_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Flynn_2001:
     command: >
       load_study("data/Flynn_2001/data.csv",
@@ -526,6 +553,14 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Hall_1981:
+    command: >
+      load_study("data/Hall_1981/data.csv",
+                 "data/Hall_1981/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Harrison_2009:
     command: >
       load_study("data/Harrison_2009/data.csv",
@@ -642,6 +677,14 @@ targets:
     command: >
       load_study("data/Jordan_2007/data.csv",
                  "data/Jordan_2007/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Jurado_1992:
+    command: >
+      load_study("data/Jurado_1992/data.csv",
+                 "data/Jurado_1992/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -1246,6 +1289,14 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Schulze_2005:
+    command: >
+      load_study("data/Schulze_2005/data.csv",
+                 "data/Schulze_2005/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Schulze_2006:
     command: >
       load_study("data/Schulze_2006/data.csv",
@@ -1566,6 +1617,7 @@ targets:
                  unit_conversions,
                  species_list
                  )
+
   austraits:
     command: >
       combine_austraits(
@@ -1611,6 +1663,7 @@ targets:
         EsperonRodriguez_2019_2,
         Falster_2005_1,
         Falster_2005_2,
+        Firn_2019,
         Flynn_2001,
         Fonseca_2000,
         Forster_1992,
@@ -1631,6 +1684,7 @@ targets:
         Grubb_2008,
         Guilherme_Pereira_2018,
         Guilherme_Pereira_2019,
+        Hall_1981,
         Harrison_2009,
         Hassiotou_2009,
         Hayes_2014,
@@ -1646,6 +1700,7 @@ targets:
         Islam_1999_2,
         Jin_2019,
         Jordan_2007,
+        Jurado_1992,
         Jurado_1993,
         Keighery_2004,
         Kew_2019_1,
@@ -1721,6 +1776,7 @@ targets:
         Schmidt_2003,
         Schmidt_2010,
         Schulze_1998,
+        Schulze_2005,
         Schulze_2006,
         Scott_2010,
         Sendall_2016,
@@ -1762,3 +1818,4 @@ targets:
         Wright_2019,
         Zanne_2007,
        definitions=definitions)
+    depends: version_number

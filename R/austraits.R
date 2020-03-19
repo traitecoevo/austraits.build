@@ -1,5 +1,14 @@
 ## Functions for extracting bits from Austraits
 
+#' Title
+#'
+#' @param austraits 
+#' @param dataset_id 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 extract_dataset <- function(austraits, dataset_id) {
 
   ret <- list()
@@ -12,6 +21,14 @@ extract_dataset <- function(austraits, dataset_id) {
   ret
 }
 
+#' Title
+#'
+#' @param data 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 spread_trait_data <- function(data) {
 
   vars <- c("value", "unit", "value_type", "replicates")
@@ -26,6 +43,15 @@ spread_trait_data <- function(data) {
   ret
 }
 
+#' Title
+#'
+#' @param data 
+#' @param definitions 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 gather_trait_data <- function(data, definitions) {
 
   id_variables <- c("dataset_id", "species_name", "site_name", "observation_id", "trait_name", "value", "unit", "value_type", "replicates", "original_name")
@@ -54,9 +80,25 @@ gather_trait_data <- function(data, definitions) {
     select(id_variables)
 }
 
-# ensure NA appears as a real NA and not character
-clean_NA <- function(x) ifelse(x == "NA", NA_character_, x)
+#' Ensure NA appears as a real NA and not character
+#'
+#' @param x 
+#'
+#' @return
+#'
+#' @examples
+clean_NA <- function(x) {
+  ifelse(x == "NA", NA_character_, x)
+}
   
+#' Title
+#'
+#' @param data 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 bind_trait_values <- function(data) {
 
   bind_x <- function(x) paste0(x, collapse = "--")
@@ -84,6 +126,15 @@ bind_trait_values <- function(data) {
     arrange(observation_id, trait_name, value_type)
 }
 
+#' Title
+#'
+#' @param data 
+#' @param definitions 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 separate_trait_values <- function(data, definitions) {
 
   separate_x <- function(x) strsplit(x, "--")[[1]]
@@ -124,6 +175,15 @@ separate_trait_values <- function(data, definitions) {
     arrange(observation_id, trait_name, value_type)
 }
 
+#' Title
+#'
+#' @param austraits 
+#' @param trait_name 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 extract_trait <- function(austraits, trait_name) {
 
   ret <- austraits
@@ -254,6 +314,22 @@ export_to_plain_text <- function(austraits, path) {
 }
 
 
+#' <brief desc>
+#'
+#' <full description>
+#' 
+#' compare_versions("export/austraits-0.rds", "export/austraits.rds", "export/blackman", dataset_id="Leishman_1992")
+
+#' compare_versions("export/austraits-0.rds", "export/austraits.rds")
+#'
+#' @param v1 <what param does>
+#' @param v2 <what param does>
+#' @param path = "export/tmp" <what param does>
+#' @param dataset_id=NULL <what param does>
+#' @param trait_name = NULL <what param does>
+#'
+#' @export
+#' @return
 compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trait_name = NULL) {
   unlink(path, TRUE, TRUE)
   dir.create(path, FALSE, TRUE)
@@ -280,27 +356,19 @@ compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trai
   message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
 }
 
-#compare_versions("export/austraits-0.rds", "export/austraits.rds", "export/blackman", dataset_id="Leishman_1992")
 
-#compare_versions("export/austraits-0.rds", "export/austraits.rds")
-
-
-
-compare_versions_df <- function (df1, df2, path = "export/tmp") {
-  unlink(path, TRUE, TRUE)
-  dir.create(path, FALSE, TRUE)
-
-
-  df1 %>% write_csv(sprintf("%s/df.csv", path))
- 
-  repo <- git2r::init(path)
-  git2r::add(repo, "*")
-
-  df2 %>% write_csv(sprintf("%s/df.csv", path))
-
-  message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
-}
-
+#' Title
+#'
+#' @param austraits 
+#' @param plant_trait_name 
+#' @param y_axis_category 
+#' @param highlight 
+#' @param hide_ids 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axis_category, highlight=NA, hide_ids = FALSE) {
 
   # plant_trait_name <- "plant_height"
