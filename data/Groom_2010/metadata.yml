@@ -2,7 +2,7 @@ source:
   primary:
     key: Groom_2010
     bibtype: Article
-    year: '2009'
+    year: '2010'
     author: Philip K. Groom and Byron B. Lamont
     journal: Plant and Soil
     title: 'Phosphorus accumulation in Proteaceae seeds: a synthesis'
@@ -12,7 +12,7 @@ source:
     doi: 10.1007/s11104-009-0135-6
 people:
 - name: Philip K Groom
-  institution: Curtin University of Technology
+  institution: Curtin University
   role: contributor, collector
 - name: Byron Lamont
   institution: Curtin University
@@ -24,30 +24,20 @@ dataset:
     of values from the literature'
   collection_type: literature
   sample_age_class: adult
-  sampling_strategy: 'Study compares seed P and seed P recycling in Proteceae species
-    in southwest Australia and South Africa at address the following questions: Our
-    review addresses the following questions: 1. How much shoot and reproductive structure
-    P is allocated to seeds and what affects the levels? 2. How much P is stored in
-    individual seeds and how does seed P vary with seed size, fire response, level
-    of serotiny, and region? 3. What is the form of P in seeds? 4. Do the data support
-    the hypothesis that P is a limiting resource in these regions? The study uses
-    values from the literature to address these questions'
+  sampling_strategy: 'Study compares seed P and seed P recycling in Proteaceae species in southwestern Australia and South Africa to address the following questions: 1. How much shoot and reproductive-structure P is allocated to seeds and what affects the levels? 2. How much P is stored in individual seeds and how does seed P vary with seed size, fire response, level of serotiny, and region? 3. What is the form of P in seeds? 4. Do the data support the hypothesis that P is a limiting resource in these regions? The study uses values from the literature to address these questions. Values are used from: Denton et al. (2007), Kuo et al. (1982), Milberg et al. (1998), Stock et al. (1989), Hocking (1986), Hocking (1982), Milberg and Lamont (1997), Groom and Lamont (2004), Lamont and Groom (2002), and Pate et al. (1986)'
   original_file: none - extracted data from manuscript
-  notes: none
+  notes: Three values that were identical to those reported in Denton_2007 were filtered out of AusTraits using custom_R_code; these duplicate values are still present in the data.csv file. Checking for duplicates, there are a number of categorical values with duplicate values in either Groom_1997 or Denton_2007, but there are no longer any overlapping numeric values. 
 sites:
   southwest Australia:
-    description: SWA's (southwest Australia) climate varies from almost uniformly
-      moist to extra-dry mediterranean largely resulting from a long western coastline
-      covering 10.5 deg of latitude (Table 1), and a landscape that lacks significant
-      topographical variation except in a few prominent ranges (Hopkins et al. 1983;
-      Hopper and Gioia 2004). Deep sands and lateritic rock over leached clay have
-      the greatest richness of Proteaceae in SWA,
+    latitude range (deg): -27.5 to -34.5
+    longitude range (deg): 114 - 122 
+    description: Mediterranea climate region 
 config:
   data_is_long_format: no
   variable_match:
     species_name: species
     site_name: site
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(seed_dry_mass_mg = if_else(is.na(seed_dry_mass_mg_sourced),seed_dry_mass_mg,0), `P_content_mg_g-1` = if_else(is.na(`P_content_mg_g-1_sourced`),`P_content_mg_g-1`,0)) %>%  mutate_at(c("seed_dry_mass_mg","P_content_mg_g-1"), ~na_if(.,0))
 traits:
 - var_in: fire_response
   unit_in: .na
@@ -89,6 +79,9 @@ substitutions:
 - trait_name: serotiny
   find: 2
   replace: serotinous
-taxonomic_updates: .na
+taxonomic_updates:
+- find: Hakea crassifolia
+  replace: Hakea pandanicarpa ssp. crassifolia
+  reason: Synonym reported by Byron Lamont (2020-03-20)
 questions: .na
 
