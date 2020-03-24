@@ -35,7 +35,7 @@ config:
   variable_match:
     species_name: Species
     site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "southwestern Australia")
+  custom_R_code: data %>% mutate(site_name = "southwestern Australia") %>% mutate(fire_response = if_else(regeneration_mode=="NS","fire_killed","resprouts"))
 traits:
 - var_in: seed_mass_mg
   unit_in: mg
@@ -46,6 +46,12 @@ traits:
 - var_in: regeneration_mode
   unit_in: .na
   trait_name: regen_strategy
+  value_type: expert_mean
+  replicates: .na
+  methods: unknown
+- var_in: fire_response
+  unit_in: .na
+  trait_name: fire_response
   value_type: expert_mean
   replicates: .na
   methods: unknown
@@ -69,7 +75,19 @@ traits:
   methods: unknown
 - var_in: fruit_mass_mg
   unit_in: mg
-  trait_name: .na
+  trait_name: fruit_mass
+  value_type: expert_mean
+  replicates: .na
+  methods: unknown
+- var_in: pollinator
+  unit_in: .na
+  trait_name: pollination_syndrome
+  value_type: expert_mean
+  replicates: .na
+  methods: unknown
+- var_in: '%_germinated'
+  unit_in: '%'
+  trait_name: germination
   value_type: expert_mean
   replicates: .na
   methods: unknown
@@ -87,20 +105,32 @@ substitutions:
   find: '4'
   replace: not_serotinous
 - trait_name: regen_strategy
-  find: RM
-  replace: seed
-- trait_name: regen_strategy
   find: NS
-  replace: seed
+  replace: fire_killed
 - trait_name: regen_strategy
   find: RTS
-  replace: woody_rootstock
+  replace: bud-bearing_root
 - trait_name: regen_strategy
   find: RS
-  replace: fleshy_organ
+  replace: lignotuber
+- trait_name: regen_strategy
+  find: RS?
+  replace: lignotuber
 - trait_name: regen_strategy
   find: EP
   replace: epicormic
+- trait_name: regen_strategy
+  find: RS/EP
+  replace: lignotuber epicormic
+- trait_name: regen_strategy
+  find: RTS/EP
+  replace: bud-bearing_root epicormic
+- trait_name: pollination_syndrome
+  find: i
+  replace: insect
+- trait_name: pollination_syndrome
+  find: b
+  replace: bird
 taxonomic_updates:
 - find: Hakea pand crass
   replace: Hakea pandanicarpa subsp. crassifolia

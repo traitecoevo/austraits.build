@@ -7,9 +7,17 @@ get_month <- function(i) {
   month.abb[suppressWarnings(as.integer(i))]
 }
 
-# A common processing pattern when creating flowing times
-# We have an integer for start and end month
-# Converts these into binary vector
+#' Create flowertimes from start to end pair
+#' 
+#' A common processing pattern when creating flowing times
+#' We have an integer for start and end month
+#' Converts these into binary vector
+#'
+#' @param start <what param does>
+#' @param end <what param does>
+#'
+#' @export
+#' @return a 12 element character string, e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
 format_flowering_months <- function(start, end){
   x <- rep(NA_character_, length(start))
   i <- !is.na(start) & !is.na(end)
@@ -18,9 +26,16 @@ format_flowering_months <- function(start, end){
   x
 }
 
-# converts vectors of month range type values (i.e. 'Jan-Apr') to vectors of 12 element character strings of binary data
+#' convert vectors of month range to 12 element character strings of binary data
+#'
+#' converts vectors of month range type values (i.e. 'Jan-Apr') to vectors of 12 element character strings of binary data
 # e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)
 # wrapper function for convert_month_range_string_to_binary
+#'
+#' @param vec <what param does>
+#'
+#' @export
+#' @return a 12 element character string, e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
 convert_month_range_vec_to_binary <- function(vec) {
   out <- unlist(lapply(vec, function(x)
         paste0(convert_month_range_string_to_binary(x), collapse="")))
@@ -28,8 +43,14 @@ convert_month_range_vec_to_binary <- function(vec) {
   out
 }
 
-# converts flowering and fruiting month ranges to 12 element character strings of binary data
-# e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
+#' Converts flowering and fruiting month ranges to 12 element character strings of binary data
+#' 
+#' e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
+#'
+#' @param str text string
+#'
+#' @export
+#' @return a 12 element character string, e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
 convert_month_range_string_to_binary <- function(str) {
   str <- trim(str) %>%
     tolower()
@@ -124,18 +145,22 @@ convert_month_range_string_to_binary <- function(str) {
   return(NA)
 }
 
+#' Converts multirow phenology data to a 12 digit binary string 
+#' 
+#' # e.g.  Acacia dealbata, 3
+#'       Acacia dealbata, 4
+#'       Acacia dealbata, 5
+#'       Acacia dealbata, 6
+#'   >>  Acacia dealbata, 001111000000
+#'
+#' 
+#' @param data data frame
+#' @param trait="flowering month" <what param does>
+#' @param renamed_trait="flowering time" <what param does>
+#'
+#' @export
+#' @return 
 collapse_multirow_phenology_data_to_binary_vec <- function(data, trait="flowering month", renamed_trait="flowering time") {
-
-# this function takes multirow phenology data and collapses it to a 12 digit binary string 
-# e.g.  Acacia dealbata, 3
-#       Acacia dealbata, 4
-#       Acacia dealbata, 5
-#       Acacia dealbata, 6
-#   >>  Acacia dealbata, 001111000000
-#
-# args allow for any input trait to be used and for the desired output trait name to be specified. See defaults for example  
-      
-  # create comma separated character string containing month numbers for each species
 
   data_summary <- data[data$trait == trait,] %>%
                     group_by(species) %>%
@@ -180,3 +205,20 @@ collapse_multirow_phenology_data_to_binary_vec <- function(data, trait="flowerin
   return(data)
 }
 
+
+
+#' Separate values cells with a range into columns with minimum and maximum
+#'
+#' @param data data frame
+#' @param x name of variable containing range
+#' @param y1 name of variable to hold minimum
+#' @param y2 name of variable to hold maximum
+#' @param sep seperator, by default "-"
+#'
+#' @return modified data frame
+#'
+separate_range <- function(data, x, y1, y2, sep="-", remove=TRUE) {
+  data <- separate(data, !!x, sep = "-", into = c(y1, y2), remove=remove, fill="right")
+  data[[y2]] <- ifelse(is.na(data[[y2]]), data[[y1]], data[[y2]])
+  data
+}

@@ -1,0 +1,172 @@
+source:
+  primary:
+    key: Schmidt_1993
+    bibtype: unpublished
+    year: 1993
+    author: Suzanne Schmidt
+    title: compilation of mycorrhizal status data
+people:
+- name: Susanne Schmidt
+  institution: University of Queensland
+  role: collector, contact
+- name: Ian Wright
+  institution: Macquarie University
+  role: contributor
+dataset:
+  year_collected_start: 1993
+  year_collected_end: 1993
+  description: compilation of mycorrhizal status data for Australian species
+  collection_type: reference
+  sample_age_class: adult
+  sampling_strategy: compilation from the following sources, 1) Bellgard, S.E. Mycorrhizal associations of plant species in Hawkesbury Sandstone Vegetation, Austr. J. Bot., 1991, 39, 357-64; 2) Brockhoff, J.O., Allaway, W.G., Vesicular-arbuscular mycorrhizal fungi in natural vegetation and sand-mined dunes at Bridge Hill, NSW., Wetlands, 1989, 8, 47-54; 3) McGee, P., Mycorrhizal associations of plant species in a semiarid community, Aust. J. Bot., 1986, 34, 585-93; 4) Peterson, R. L., Ashford, A. E., Allaway, W.G., Vesicular-arbuscular mycorrhizal of vascular plants on Heron Island, a Great Barrier Reef coral cay., Aust. J. Bot, 1985, 33, 669-76; 5) Stewart, G.R., Pate, J. S., Unkovich, M., Characteristics of inorganic nitrogen assimilation of plants in fire-prone Mediterranean-type vegetation; 6) Brundrett, M.C, Abbott, L. K., Roots of Jarrah forest plants. 1. Mycorrhizal associations of shrubs and herbaceous plants, Aust. J. Bot., 1991, 39, 445-57; 7) Warcup, J. H., Ectomycorrhizal associations of Australian indigenous plants, New Phytol., 1980, 85, 531-535
+  original_file: MYCLIST.xls received from Ian Wright and archived in raw data folder
+  notes: none
+sites: .na
+config:
+  data_is_long_format: no
+  variable_match:
+    species_name: species
+  custom_R_code: data %>% mutate(nitrogen_fixing = `mycorrhizal status`) %>% mutate(nitrogen_fixing = str_extract(nitrogen_fixing,"nod")) %>% mutate(`mycorrhizal status` = gsub(", nod","",`mycorrhizal status`)) %>% mutate(`mycorrhizal status` = gsub("  nod","",`mycorrhizal status`))  %>% mutate(life_history = str_extract(`growth form`,"annual")) %>% mutate(`growth form` = gsub("annual",NA,`growth form`)) 
+traits:
+- var_in: growth form
+  unit_in: .na
+  trait_name: plant_growth_form
+  value_type: expert_mean
+  replicates: .na
+  methods: expert knowledge
+- var_in: mycorrhizal status
+  unit_in: .na
+  trait_name: root_structure
+  value_type: expert_mean
+  replicates: .na
+  methods: compilation from the following sources, 1) Bellgard, S.E. Mycorrhizal associations of plant species in Hawkesbury Sandstone Vegetation, Austr. J. Bot., 1991, 39, 357-64; 2) Brockhoff, J.O., Allaway, W.G., Vesicular-arbuscular mycorrhizal fungi in natural vegetation and sand-mined dunes at Bridge Hill, NSW., Wetlands, 1989, 8, 47-54; 3) McGee, P., Mycorrhizal associations of plant species in a semiarid community, Aust. J. Bot., 1986, 34, 585-93; 4) Peterson, R. L., Ashford, A. E., Allaway, W.G., Vesicular-arbuscular mycorrhizal of vascular plants on Heron Island, a Great Barrier Reef coral cay., Aust. J. Bot, 1985, 33, 669-76; 5) Stewart, G.R., Pate, J. S., Unkovich, M., Characteristics of inorganic nitrogen assimilation of plants in fire-prone Mediterranean-type vegetation; 6) Brundrett, M.C, Abbott, L. K., Roots of Jarrah forest plants. 1. Mycorrhizal associations of shrubs and herbaceous plants, Aust. J. Bot., 1991, 39, 445-57; 7) Warcup, J. H., Ectomycorrhizal associations of Australian indigenous plants, New Phytol., 1980, 85, 531-535
+- var_in: nitrogen_fixing
+  unit_in: .na
+  trait_name: nitrogen_fixing
+  value_type: expert_mean
+  replicates: .na
+  methods: compilation from the following sources, 1) Bellgard, S.E. Mycorrhizal associations of plant species in Hawkesbury Sandstone Vegetation, Austr. J. Bot., 1991, 39, 357-64; 2) Brockhoff, J.O., Allaway, W.G., Vesicular-arbuscular mycorrhizal fungi in natural vegetation and sand-mined dunes at Bridge Hill, NSW., Wetlands, 1989, 8, 47-54; 3) McGee, P., Mycorrhizal associations of plant species in a semiarid community, Aust. J. Bot., 1986, 34, 585-93; 4) Peterson, R. L., Ashford, A. E., Allaway, W.G., Vesicular-arbuscular mycorrhizal of vascular plants on Heron Island, a Great Barrier Reef coral cay., Aust. J. Bot, 1985, 33, 669-76; 5) Stewart, G.R., Pate, J. S., Unkovich, M., Characteristics of inorganic nitrogen assimilation of plants in fire-prone Mediterranean-type vegetation; 6) Brundrett, M.C, Abbott, L. K., Roots of Jarrah forest plants. 1. Mycorrhizal associations of shrubs and herbaceous plants, Aust. J. Bot., 1991, 39, 445-57; 7) Warcup, J. H., Ectomycorrhizal associations of Australian indigenous plants, New Phytol., 1980, 85, 531-535
+substitutions:
+- trait_name: nitrogen_fixing
+  find: nod
+  replace: '1'
+- trait_name: nitrogen_fixing
+  find: NA
+  replace: '0'
+- trait_name: root_structure
+  find: vam
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: 'v'
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: 'v '
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: V / nil
+  replace: arbuscular_mycorrhizal non_mycorrhizal
+- trait_name: root_structure
+  find: V/ nil
+  replace: arbuscular_mycorrhizal non_mycorrhizal
+- trait_name: root_structure
+  find: V + nil
+  replace: arbuscular_mycorrhizal non_mycorrhizal
+- trait_name: root_structure
+  find: VAM+nil
+  replace: arbuscular_mycorrhizal non_mycorrhizal
+- trait_name: root_structure
+  find: nil
+  replace: non_mycorrhizal
+- trait_name: root_structure
+  find: subepidermal M
+  replace: subepidermal_mycorrhizal
+- trait_name: root_structure
+  find: subepidermal
+  replace: subepidermal_mycorrhizal
+- trait_name: root_structure
+  find: ecm
+  replace: ectomycorrhizal
+- trait_name: root_structure
+  find: (ECM)/VAM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: ECM/VAM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: ecm/vam 
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: ecm/vam nod
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: ECM/V
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: VAM/ECM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: (ECM)VAM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: VAM, ECM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: vam,ecm
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: vam ecm
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: V nod/ECM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: Ectendo
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: ecm/vam, cr
+  replace: ectomycorrhizal arbuscular_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: Epacrid
+  replace: ericoid_mycorrhizal
+- trait_name: root_structure
+  find: ericoid
+  replace: ericoid_mycorrhizal
+- trait_name: root_structure
+  find: ORCH
+  replace: orchid_mycorrhizal
+- trait_name: root_structure
+  find: nil, cluster roots
+  replace: non_mycorrhizal cluster_roots
+- trait_name: root_structure
+  find: nil  cr
+  replace: non_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: nil, cr
+  replace: non_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: nil, sparse cr
+  replace: non_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: sparse CR
+  replace: proteoid_root
+- trait_name: root_structure
+  find: coil VAM
+  replace: coiling_VAM
+- trait_name: root_structure
+  find: nil, root haustor.
+  replace: non_mycorrhizal haustorium
+- trait_name: plant_growth_form
+  find: climbing
+  replace: climber
+- trait_name: plant_growth_form
+  find: rosette
+  replace: herb
+- trait_name: plant_growth_form
+  find: pigmy
+  replace: herb
+- trait_name: plant_growth_form
+  find: small tree
+  replace: treelet
+taxonomic_updates: .na
+questions: .na
+
