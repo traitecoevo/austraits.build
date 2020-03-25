@@ -44,13 +44,21 @@ sites:
     latitude (deg): -23.7
     longitude (deg): 133.87
     notes: seeds collected within 100 km of the given lat/lon
-contexts: .na
+contexts: 
+  temperature_treatment_12C:
+    description: seeds kept at 12C
+  temperature_treatment_20C:
+    description: seeds kept at 20C
+  temperature_treatment_28C:
+    description: seeds kept at 28C
 config:
   data_is_long_format: no
   variable_match:
     species_name: species
     site_name: site_name
-  custom_R_code: .na
+    context_name: temperature_treatment
+  context_baseline: temperature_treatment_20C
+  custom_R_code: data %>% mutate(temperature_treatment = paste("temperature_treatment_",temperature_treatment,"C",sep=""))
 traits:
 - var_in: germination
   unit_in: '%'
