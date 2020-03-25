@@ -26,24 +26,60 @@ load_study <- function(filename_data_raw,
       ) %>% 
     arrange(observation_id, trait_name, value_type) 
 
-  # read contextual (site) data
-  if(length(unlist(metadata$sites)) > 1){
-    # extract contextual data from metadata
-    format_sites <- function(v, my_list) {
-      my_list[[v]] %>%
-      list1_to_df() %>%
-      rename(site_property="key") %>%
-      mutate(dataset_id=dataset_id, site_name = v)
-    }
+  # read site data
 
-    sites <- lapply(metadata$sites, lapply, as.character) %>%
-      lapply(names(.), format_sites, .) %>%
+  format_sites_contexts <- function(v, my_list, context = FALSE) {
+    tmp <- 
+      my_list[[v]] %>%
+      list1_to_df()
+    if(!context){
+      tmp %>% rename(site_property="key") %>%
+      mutate(dataset_id=dataset_id, site_name = v)
+    } else {
+      tmp %>% rename(context_property="key") %>%
+      mutate(dataset_id=dataset_id, context_name = v)
+    }    
+  }
+
+  format_contexts <- function(...) format_sites_contexts(..., context=TRUE)
+
+  if(length(unlist(metadata$sites)) > 1){
+    # extract site data from metadata
+
+    sites <-
+      lapply(metadata$sites, lapply, as.character) %>%
+      lapply(names(.), format_sites_contexts, .) %>%
       dplyr::bind_rows()
 
   } else {
     sites <- tibble(dataset_id = character(), site_name = character())
   }
-  sites <- add_all_columns(sites, definitions, "sites")
+
+  sites <- add_all_columns(sites, definitions, "sites")  %>% select(-error)
+
+  # read contextual data
+  if(length(unlist(metadata$contexts)) > 1){
+    
+    context_baseline <- metadata$config$context_baseline
+
+    contexts <- 
+      lapply(metadata$contexts, lapply, as.character) %>%
+      lapply(names(.), format_contexts, .) %>%
+      dplyr::bind_rows() %>%
+      # assign baseline
+      mutate(
+        context_name = ifelse(context_name==context_baseline, "baseline", context_name)     
+        )
+    # assign baseline in traits table
+    traits <- traits %>%
+      mutate(
+        context_name = ifelse(context_name==context_baseline, "baseline", context_name)     
+        )
+  } else {
+    contexts <- tibble(dataset_id = character(), context_name = character(), context_property = character(), value = character())
+  }
+
+  contexts <- add_all_columns(contexts, definitions, "contexts") %>% select(-error)
 
   # record contributors
   contributors <- 
@@ -103,7 +139,8 @@ load_study <- function(filename_data_raw,
 
   list(dataset_id = dataset_id,
        traits       = traits %>% filter(is.na(error)) %>% select(-error),
-       sites    = sites %>% select(-error),
+       sites    = sites,
+       contexts    = contexts,
        methods    = methods,
        excluded_data = traits %>% filter(!is.na(error)) %>% select(error, everything()),
        taxonomy = taxonomy,
@@ -561,6 +598,7 @@ combine_austraits <- function(..., d=list(...), definitions) {
 
   ret <- list(traits=combine("traits", d),
               sites=combine("sites", d),
+              contexts=combine("contexts", d),
               methods=combine("methods", d),
               excluded_data = combine("excluded_data", d),
               taxonomy=taxonomy,
