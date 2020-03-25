@@ -91,9 +91,11 @@ for (dataset_id in dataset_ids) {
   expect_is(metadata[["config"]][["data_is_long_format"]], "logical")
   
   expect_is(metadata[["config"]][["variable_match"]], "list")
+
+  # minimal requirements
   expect_isin(names(metadata[["config"]][["variable_match"]]), 
-        c("species_name", "value","trait_name","site_name", "observation_id"), 
-        info=f)
+        c("species_name", "value","trait_name","site_name", "observation_id", "context_name"), 
+        info=f, " - minimal requirements for variable_match")
 
   # Traits 
   expect_list_elements_contain(metadata[["traits"]], definitions$metadata$elements$traits$elements %>% names(), info=f)
@@ -147,7 +149,7 @@ for (dataset_id in dataset_ids) {
   if(metadata[["config"]][["data_is_long_format"]]) {
 
     # Variable match
-    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name",  "trait_name", "value","site_name", "observation_id"), info=paste0(f, " - variable_match"))  
+    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name",  "trait_name", "value","site_name", "observation_id", "context_name", "baseline_context"), info=paste0(f, " - variable_match"))  
 
     # For vertical datasets, expect all values of "trait column" found in traits
     var_out <- names(metadata[["config"]][["variable_match"]])
@@ -158,16 +160,31 @@ for (dataset_id in dataset_ids) {
   } else {
 
     # Variable match
-    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name", "site_name", "observation_id"), info=paste0(f, " - variable_match"))
+    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name", "site_name", "observation_id", "context_name", "baseline_context"), info=paste0(f, " - variable_match"))
 
     # For wide datasets, expect variables in cfgChar are header in the data
     values <- names(data)
-    expect_isin(cfgChar[["var_in"]],values, info=files[3])
+    expect_isin(cfgChar[["var_in"]], values, info=files[2])
   }
 
-  ## For numeric trait data, check it looks reasonable
+  ## Check context baseline exists when context specified
+  if(length(unlist(metadata$contexts)) > 1) {
+    expect_true(!is.null(metadata$config$context_baseline), info=paste0(files[2], "- `context_baseline` is needed when a context column is specified."))
+    expect_true(metadata$config$context_baseline %in% names(metadata$contexts), info=paste0(files[2], "`context_baseline` value not found in named contexts"))
+  }
+
+  ## TODO
+
+  ## Make sure specified columns exist
 
 
+  ## TODO
 
+  ## For numeric trait data, check it looks reasonable & converts properly
+
+  ## check site_names are in sites dataset
+
+  ## check context_names are in context dataset
+  
   })
 }
