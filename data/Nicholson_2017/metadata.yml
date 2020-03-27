@@ -62,23 +62,28 @@ sites:
 contexts:
   global_average:
     description: average survival across all sites
+    type: field
   fire_severity_1:
     description: in areas where foliage is retained
+    type: field
   fire_severity_2:
     description: in areas where foliage removed but fine twigs persisted (<0.5 cm diameter) 
+    type: field
   fire_severity_3:
     description: in areas where trees burnt down to thin branches (0.5 to 3 cm diameter)
+    type: field
   fire_severity_4:
     description: in areas where trees burnt down to thick branches (3 to 5 cm diameter)
+    type: field
   fire_severity_5:
     description: in areas where only stumps remain (all branches removed)
+    type: field
 config:
   data_is_long_format: no
   variable_match:
     species_name: Species
     site_name: site_name
     context_name: severity
-  context_baseline: 'global_average'
   custom_R_code: 'data %>% mutate(resprouting_percentage_by_severity = ifelse(is.na(severity), resprouting_proportion_species_level*100, resprouting_percentage_by_severity), severity = ifelse(is.na(severity), "global_average", paste0("fire_severity_", severity)))'
 traits:
 - var_in: fire_response

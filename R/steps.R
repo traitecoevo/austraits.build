@@ -41,45 +41,19 @@ load_study <- function(filename_data_raw,
     }    
   }
 
-  format_contexts <- function(...) format_sites_contexts(..., context=TRUE)
-
-  if(length(unlist(metadata$sites)) > 1){
-    # extract site data from metadata
-
-    sites <-
-      lapply(metadata$sites, lapply, as.character) %>%
-      lapply(names(.), format_sites_contexts, .) %>%
-      dplyr::bind_rows()
-
-  } else {
-    sites <- tibble(dataset_id = character(), site_name = character())
-  }
-
-  sites <- add_all_columns(sites, definitions, "sites")  %>% select(-error)
+  # extract site data from metadata
+  sites <- 
+    metadata$sites %>%  
+    format_sites(dataset_id) %>% 
+    add_all_columns(definitions, "sites") %>% 
+    select(-error)
 
   # read contextual data
-  if(length(unlist(metadata$contexts)) > 1){
-    
-    context_baseline <- metadata$config$context_baseline
-
-    contexts <- 
-      lapply(metadata$contexts, lapply, as.character) %>%
-      lapply(names(.), format_contexts, .) %>%
-      dplyr::bind_rows() %>%
-      # assign baseline
-      mutate(
-        context_name = ifelse(context_name==context_baseline, "baseline", context_name)     
-        )
-    # assign baseline in traits table
-    traits <- traits %>%
-      mutate(
-        context_name = ifelse(context_name==context_baseline, "baseline", context_name)     
-        )
-  } else {
-    contexts <- tibble(dataset_id = character(), context_name = character(), context_property = character(), value = character())
-  }
-
-  contexts <- add_all_columns(contexts, definitions, "contexts") %>% select(-error)
+  contexts <- 
+    metadata$contexts %>% 
+    format_sites(dataset_id, context = TRUE) %>% 
+    add_all_columns(definitions, "contexts") %>% 
+    select(-error)
 
   # record contributors
   contributors <- 
@@ -164,6 +138,35 @@ custom_manipulation <- function(txt) {
   }
 }
 
+
+format_sites <- function(my_list, dataset_id, context = FALSE) {
+
+  f_helper <- function(v, a_list, context = FALSE) {
+    tmp <- 
+      a_list[[v]] %>%
+      list1_to_df()
+    if(!context){
+      tmp %>% rename(site_property="key") %>%
+      mutate(site_name = v)
+    } else {
+      tmp %>% rename(context_property="key") %>%
+      mutate(context_name = v)
+    }    
+  }
+
+  # if length 1 then it's an "na"
+  if(length(unlist(my_list)) > 1){
+    out <- 
+      my_list %>%   
+      lapply(lapply, as.character) %>%
+      lapply(names(.), f_helper, ., context = context) %>%
+      dplyr::bind_rows() %>% 
+      mutate(dataset_id=dataset_id)
+  } else {
+    out <- tibble(dataset_id = character())
+  }
+  out
+}
 
 ## Remove any disallowed traits, as defined in definitions
 flag_unsupported_traits <- function(data, definitions) {
