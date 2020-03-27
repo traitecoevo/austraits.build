@@ -228,7 +228,35 @@ for (dataset_id in dataset_ids) {
 
   ## check site_names are in sites dataset
 
+  if(length(unlist(metadata[["sites"]])) > 1){
+
+    expect_true(!is.null(metadata[["config"]][["variable_match"]][["site_name"]]), info=paste0(files[2], " - variable_match -> site_name is missing"))  
+
+    expect_contains(names(data), metadata[["config"]][["variable_match"]][["site_name"]], info=paste0(files[2], " - column ", metadata[["config"]][["variable_match"]][["site_name"]], "not found in data"))  
+
+    v <- (data[[metadata[["config"]][["variable_match"]][["site_name"]]]] %>% unique %>% na.omit)
+    i <- v %in% names(metadata$sites)
+    expect_true(all(i), info=paste0( f,  "- site names from data file not present in metadata: ", v[!i]))
+
+    i <- names(metadata$sites) %in% v
+    expect_true(all(i), info=paste0(f , "-site names from metadata not present in data file: ", names(metadata$sites)[!i]))
+  }
+
   ## check context_names are in context dataset
-  
+  if(length(unlist(metadata[["contexts"]])) > 1){
+
+    expect_true(!is.null(metadata[["config"]][["variable_match"]][["context_name"]]), info=paste0(files[2], " - variable_match -> context_name is missing"))  
+
+    expect_contains(names(data), metadata[["config"]][["variable_match"]][["context_name"]], info=paste0(files[2], " - column ", metadata[["config"]][["variable_match"]][["context_name"]], "not found in data"))  
+
+    v <- (data[[metadata[["config"]][["variable_match"]][["context_name"]]]] %>% unique %>% na.omit)
+    i <- v %in% names(metadata$contexts)
+    expect_true(all(i), info=paste0( f,  "- context names from data file not present in metadata: ", v[!i]))
+
+    i <- names(metadata$contexts) %in% v
+    expect_true(all(i), info=paste0(f , "-context names from metadata not present in data file: ", names(metadata$contexts)[!i]))
+  }
+
+
   })
 }
