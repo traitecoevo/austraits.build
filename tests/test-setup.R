@@ -1,12 +1,21 @@
 
 config_files <- c("data.csv", "metadata.yml")
 
-test_dataframe <- function(data, expected_colnames, info) {
+test_dataframe_valid <- function(data, info) {
   expect_not_NA(colnames(data), info = info)
   expect_allowed_text(colnames(data), info = info)
   expect_unique(colnames(data), info = info)
   expect_is(data, "data.frame", info = info)
+}
+
+test_dataframe_named <- function(data, expected_colnames, info) {
+  test_dataframe_valid(data, info)
   expect_named(data, expected_colnames, info= info)
+}
+
+test_dataframe_names_contain <- function(data, expected_colnames, info) {
+  test_dataframe_valid(data, info)
+  expect_contains(names(data), expected_colnames, info= info)
 }
 
 test_list <- function(data, info) {
@@ -97,7 +106,28 @@ for (dataset_id in dataset_ids) {
         c("species_name", "value","trait_name","site_name", "observation_id", "context_name"), 
         info=f, " - minimal requirements for variable_match")
 
-  # Traits 
+
+  # contexts
+  if(length(unlist(metadata[["contexts"]])) > 1){
+
+    test_list(metadata[["contexts"]], info=f)
+
+    expect_silent(
+      contexts <-
+      metadata$contexts %>%
+      format_sites(dataset_id, context = TRUE) %>%
+      add_all_columns(definitions, "contexts")
+    )
+
+    test_dataframe_names_contain(contexts, c("dataset_id", "context_name", "context_property", "value"), info=paste0(f, " - contexts"))
+
+    for(v in names(metadata$contexts)) {
+      test_list(metadata[["contexts"]][[v]], info=f)
+      expect_contains(names(metadata[["contexts"]][[v]]), c("type", "description"), info=paste0(f, " - context: ", v))
+    }
+  }
+
+  # Traits
   expect_list_elements_contain(metadata[["traits"]], definitions$metadata$elements$traits$elements %>% names(), info=f)
   trait_names <- sapply(metadata[["traits"]], "[[", "trait_name")
   expect_isin(trait_names, definitions$traits$elements %>% names(), info=f)
@@ -113,10 +143,10 @@ for (dataset_id in dataset_ids) {
     trait_names <- sapply(metadata[["substitutions"]], "[[", "trait_name")
     expect_isin(unique(trait_names), definitions$traits$elements %>% names(), info=f)
     expect_isin(unique(trait_names), unique(sapply(metadata[["traits"]], "[[", "trait_name")), info=paste0(f, " - substitutions"))
-  
+ 
     # check for allowable values of categorical variables
     expect_no_error(x <- metadata[["substitutions"]] %>% list_to_df() %>% split(.$trait_name))
-    
+   
     for(trait in names(x)) {
       if(!is.null(definitions$traits$elements[[ trait ]]) && definitions$traits$elements[[ trait ]]$type == "categorical") {
         to_check <- x[[trait]]$replace %>% unique() 
@@ -135,7 +165,7 @@ for (dataset_id in dataset_ids) {
   # data.csv
   f <- files[1]
   expect_silent(data <- read_csv(f, col_types = cols(), guess_max = 100000))
-  test_dataframe(data, names(data), info=f)
+  test_dataframe_valid(data, info=f)
 
   # custom R code
   txt <- metadata[["config"]][["custom_R_code"]]
@@ -149,7 +179,7 @@ for (dataset_id in dataset_ids) {
   if(metadata[["config"]][["data_is_long_format"]]) {
 
     # Variable match
-    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name",  "trait_name", "value","site_name", "observation_id", "context_name", "baseline_context"), info=paste0(f, " - variable_match"))  
+    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name",  "trait_name", "value","site_name", "observation_id", "context_name"), info=paste0(f, " - variable_match"))  
 
     # For vertical datasets, expect all values of "trait column" found in traits
     var_out <- names(metadata[["config"]][["variable_match"]])
@@ -160,18 +190,13 @@ for (dataset_id in dataset_ids) {
   } else {
 
     # Variable match
-    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name", "site_name", "observation_id", "context_name", "baseline_context"), info=paste0(f, " - variable_match"))
+    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name", "site_name", "observation_id", "context_name"), info=paste0(f, " - variable_match"))
 
     # For wide datasets, expect variables in cfgChar are header in the data
     values <- names(data)
     expect_isin(cfgChar[["var_in"]], values, info=files[2])
   }
 
-  ## Check context baseline exists when context specified
-  if(length(unlist(metadata$contexts)) > 1) {
-    expect_true(!is.null(metadata$config$context_baseline), info=paste0(files[2], "- `context_baseline` is needed when a context column is specified."))
-    expect_true(metadata$config$context_baseline %in% names(metadata$contexts), info=paste0(files[2], "`context_baseline` value not found in named contexts"))
-  }
 
   ## TODO
 
