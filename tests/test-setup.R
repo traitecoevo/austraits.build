@@ -106,6 +106,25 @@ for (dataset_id in dataset_ids) {
         c("species_name", "value","trait_name","site_name", "observation_id", "context_name"), 
         info=f, " - minimal requirements for variable_match")
 
+  # sites
+  if(length(unlist(metadata[["sites"]])) > 1){
+
+    test_list(metadata[["sites"]], info=f)
+
+    expect_silent(
+      sites <-
+      metadata$sites %>%
+      format_sites(dataset_id) %>%
+      add_all_columns(definitions, "sites")
+    )
+
+    test_dataframe_names_contain(sites, c("dataset_id", "site_name", "site_property", "value"), info=paste0(f, " - sites"))
+
+    for(v in names(metadata$sites)) {
+      test_list(metadata[["sites"]][[v]], info=f)
+      expect_contains(names(metadata[["sites"]][[v]]), c("latitude (deg)", "longitude (deg)"), info=paste0(f, " - site: ", v))
+    }
+  }
 
   # contexts
   if(length(unlist(metadata[["contexts"]])) > 1){
