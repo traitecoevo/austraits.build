@@ -48,9 +48,13 @@ Lewis_gas_exchange %>%
   ungroup() %>%
   bind_rows(Lewis_anatomy) %>%
   mutate(Species = "Wollemia nobilis") %>%
+  mutate(PAR_round = round(PARi,digits = -2)) %>%
+  mutate(PAR_desc = if_else(is.na(PARi),"",paste("measured_at_",PAR_round,"_PAR",sep=""))) %>%
   mutate(context = if_else(is.na(GrowthPeriod),paste(Temp,"_Temp_and",CO2,"_ppm_CO2",sep=""),
                            paste(Temp,"_Temp_and",CO2,"_ppm_CO2_at_growth_period_",GrowthPeriod,sep=""))) %>%
+  mutate(context = if_else(is.na(PARi),context,paste(context,"_and_",PAR_desc,sep=""))) %>% View()
   write_csv("data/Lewis_2015/data.csv")
+
 
 ###In the spreadsheet with isotope data, both leaf and stem samples list pot 306. However, the leaf sample indicates this pot is at CO2 = 280 and the stem sample lists CO2 = 400. I've assumed a pot number refers to the same plant.
 ###Also pot 301 list Elevation temperature for the leaf sample and Ambient temperature for the stem sample.
