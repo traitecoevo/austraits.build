@@ -2,7 +2,16 @@
 # edit the file there (or the files that it includes).
 
 packages:
-  - pacman
+  - desc
+  - crayon
+  - dplyr
+  - purrr
+  - readr
+  - RefManageR
+  - stringr
+  - tidyr
+  - tibble
+  - rmarkdown
 
 sources:
   - R
@@ -13,6 +22,13 @@ targets:
       - austraits
       - export
 
+  website:
+    command: build_website()
+    depends:
+      - version_number
+      - _pkgdown.yml
+      - export/data/austraits.rds
+
   ## exporting targets
   export:
     depends:
@@ -20,6 +36,9 @@ targets:
 
   export/data/austraits.rds:
     command: saveRDS(austraits, target_name)
+
+  version_number:
+    command: desc_get_version()
 
   definitions:
     command: read_yaml("config/definitions.yml")
@@ -30,10 +49,18 @@ targets:
   species_list:
     command: read_csv_char("config/species_list.csv")
 
-  ANBG_2018:
+  Ahrens_2019:
     command: >
-      load_study("data/ANBG_2018/data.csv",
-                 "data/ANBG_2018/metadata.yml",
+      load_study("data/Ahrens_2019/data.csv",
+                 "data/Ahrens_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  ANBG_2019:
+    command: >
+      load_study("data/ANBG_2019/data.csv",
+                 "data/ANBG_2019/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -46,10 +73,10 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  AusGrass_2014:
+  Baker_2019:
     command: >
-      load_study("data/AusGrass_2014/data.csv",
-                 "data/AusGrass_2014/metadata.yml",
+      load_study("data/Baker_2019/data.csv",
+                 "data/Baker_2019/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -70,26 +97,10 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  BFD_1974:
-    command: >
-      load_study("data/BFD_1974/data.csv",
-                 "data/BFD_1974/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
   Blackman_2010:
     command: >
       load_study("data/Blackman_2010/data.csv",
                  "data/Blackman_2010/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
-  Bolza_1975:
-    command: >
-      load_study("data/Bolza_1975/data.csv",
-                 "data/Bolza_1975/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -134,14 +145,6 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  CAB_2009:
-    command: >
-      load_study("data/CAB_2009/data.csv",
-                 "data/CAB_2009/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
   Catford_2014:
     command: >
       load_study("data/Catford_2014/data.csv",
@@ -158,26 +161,10 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Chave_2009:
-    command: >
-      load_study("data/Chave_2009/data.csv",
-                 "data/Chave_2009/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
   Chen_2017:
     command: >
       load_study("data/Chen_2017/data.csv",
                  "data/Chen_2017/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
-  Chinh_1999:
-    command: >
-      load_study("data/Chinh_1999/data.csv",
-                 "data/Chinh_1999/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -190,34 +177,10 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Chudnoff_1984:
-    command: >
-      load_study("data/Chudnoff_1984/data.csv",
-                 "data/Chudnoff_1984/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
-  CIRAD_2009:
-    command: >
-      load_study("data/CIRAD_2009/data.csv",
-                 "data/CIRAD_2009/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
   Clarke_2015:
     command: >
       load_study("data/Clarke_2015/data.csv",
                  "data/Clarke_2015/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
-  Clayton_2006:
-    command: >
-      load_study("data/Clayton_2006/data.csv",
-                 "data/Clayton_2006/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -230,10 +193,18 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  CPRR_2002:
+  Cornellison_2018:
     command: >
-      load_study("data/CPRR_2002/data.csv",
-                 "data/CPRR_2002/metadata.yml",
+      load_study("data/Cornellison_2018/data.csv",
+                 "data/Cornellison_2018/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  CPBR_2002:
+    command: >
+      load_study("data/CPBR_2002/data.csv",
+                 "data/CPBR_2002/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -286,18 +257,10 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Desh_1996:
+  Dong_2017:
     command: >
-      load_study("data/Desh_1996/data.csv",
-                 "data/Desh_1996/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
-  Dimitri_1973:
-    command: >
-      load_study("data/Dimitri_1973/data.csv",
-                 "data/Dimitri_1973/metadata.yml",
+      load_study("data/Dong_2017/data.csv",
+                 "data/Dong_2017/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -314,6 +277,14 @@ targets:
     command: >
       load_study("data/Dwyer_2017/data.csv",
                  "data/Dwyer_2017/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Dwyer_2017_2:
+    command: >
+      load_study("data/Dwyer_2017_2/data.csv",
+                 "data/Dwyer_2017_2/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -342,6 +313,22 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  EsperonRodriguez_2019:
+    command: >
+      load_study("data/EsperonRodriguez_2019/data.csv",
+                 "data/EsperonRodriguez_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  EsperonRodriguez_2019_2:
+    command: >
+      load_study("data/EsperonRodriguez_2019_2/data.csv",
+                 "data/EsperonRodriguez_2019_2/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Falster_2005_1:
     command: >
       load_study("data/Falster_2005_1/data.csv",
@@ -358,10 +345,10 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Flynn_2001:
+  Firn_2019:
     command: >
-      load_study("data/Flynn_2001/data.csv",
-                 "data/Flynn_2001/metadata.yml",
+      load_study("data/Firn_2019/data.csv",
+                 "data/Firn_2019/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -390,18 +377,26 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Gallagher_2011_1:
+  French_2017:
     command: >
-      load_study("data/Gallagher_2011_1/data.csv",
-                 "data/Gallagher_2011_1/metadata.yml",
+      load_study("data/French_2017/data.csv",
+                 "data/French_2017/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
                  )
-  Gallagher_2011_2:
+  Funk_2016:
     command: >
-      load_study("data/Gallagher_2011_2/data.csv",
-                 "data/Gallagher_2011_2/metadata.yml",
+      load_study("data/Funk_2016/data.csv",
+                 "data/Funk_2016/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Gallagher_2011_1:
+    command: >
+      load_study("data/Gallagher_2011_1/data.csv",
+                 "data/Gallagher_2011_1/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -414,6 +409,14 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Gardiner_2019:
+    command: >
+      load_study("data/Gardiner_2019/data.csv",
+                 "data/Gardiner_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Goble_1981:
     command: >
       load_study("data/Goble_1981/data.csv",
@@ -422,10 +425,18 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Goldsmith_1981:
+  GrassBase_2014:
     command: >
-      load_study("data/Goldsmith_1981/data.csv",
-                 "data/Goldsmith_1981/metadata.yml",
+      load_study("data/GrassBase_2014/data.csv",
+                 "data/GrassBase_2014/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Gray_2019:
+    command: >
+      load_study("data/Gray_2019/data.csv",
+                 "data/Gray_2019/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -470,6 +481,30 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Guilherme_Pereira_2018:
+    command: >
+      load_study("data/Guilherme_Pereira_2018/data.csv",
+                 "data/Guilherme_Pereira_2018/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Guilherme_Pereira_2019:
+    command: >
+      load_study("data/Guilherme_Pereira_2019/data.csv",
+                 "data/Guilherme_Pereira_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Hall_1981:
+    command: >
+      load_study("data/Hall_1981/data.csv",
+                 "data/Hall_1981/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Harrison_2009:
     command: >
       load_study("data/Harrison_2009/data.csv",
@@ -486,18 +521,26 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Henery_2001:
+  Hayes_2014:
     command: >
-      load_study("data/Henery_2001/data.csv",
-                 "data/Henery_2001/metadata.yml",
+      load_study("data/Hayes_2014/data.csv",
+                 "data/Hayes_2014/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
                  )
-  Hong_1999:
+  Hayes_2018:
     command: >
-      load_study("data/Hong_1999/data.csv",
-                 "data/Hong_1999/metadata.yml",
+      load_study("data/Hayes_2018/data.csv",
+                 "data/Hayes_2018/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Henery_2001:
+    command: >
+      load_study("data/Henery_2001/data.csv",
+                 "data/Henery_2001/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -526,14 +569,6 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  ICRAF_2009:
-    command: >
-      load_study("data/ICRAF_2009/data.csv",
-                 "data/ICRAF_2009/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
   Ilic_2000:
     command: >
       load_study("data/Ilic_2000/data.csv",
@@ -558,10 +593,26 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Jin_2019:
+    command: >
+      load_study("data/Jin_2019/data.csv",
+                 "data/Jin_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Jordan_2007:
     command: >
       load_study("data/Jordan_2007/data.csv",
                  "data/Jordan_2007/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Jurado_1992:
+    command: >
+      load_study("data/Jurado_1992/data.csv",
+                 "data/Jurado_1992/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -586,6 +637,46 @@ targets:
     command: >
       load_study("data/Kew_2019_1/data.csv",
                  "data/Kew_2019_1/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Kew_2019_2:
+    command: >
+      load_study("data/Kew_2019_2/data.csv",
+                 "data/Kew_2019_2/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Kew_2019_3:
+    command: >
+      load_study("data/Kew_2019_3/data.csv",
+                 "data/Kew_2019_3/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Kew_2019_4:
+    command: >
+      load_study("data/Kew_2019_4/data.csv",
+                 "data/Kew_2019_4/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Kew_2019_5:
+    command: >
+      load_study("data/Kew_2019_5/data.csv",
+                 "data/Kew_2019_5/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Kew_2019_6:
+    command: >
+      load_study("data/Kew_2019_6/data.csv",
+                 "data/Kew_2019_6/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -646,6 +737,14 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Lee_2019:
+    command: >
+      load_study("data/Lee_2019/data.csv",
+                 "data/Lee_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Leishman_1992:
     command: >
       load_study("data/Leishman_1992/data.csv",
@@ -666,6 +765,14 @@ targets:
     command: >
       load_study("data/Leishman_1995/data.csv",
                  "data/Leishman_1995/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Leishman_2007:
+    command: >
+      load_study("data/Leishman_2007/data.csv",
+                 "data/Leishman_2007/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -734,14 +841,6 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Martawijaya_1992:
-    command: >
-      load_study("data/Martawijaya_1992/data.csv",
-                 "data/Martawijaya_1992/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
   Maslin_2012:
     command: >
       load_study("data/Maslin_2012/data.csv",
@@ -758,10 +857,50 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Meier_2007:
+  Mokany_2008:
     command: >
-      load_study("data/Meier_2007/data.csv",
-                 "data/Meier_2007/metadata.yml",
+      load_study("data/Mokany_2008/data.csv",
+                 "data/Mokany_2008/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Moles_2000:
+    command: >
+      load_study("data/Moles_2000/data.csv",
+                 "data/Moles_2000/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Moles_2003:
+    command: >
+      load_study("data/Moles_2003/data.csv",
+                 "data/Moles_2003/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Moles_2011:
+    command: >
+      load_study("data/Moles_2011/data.csv",
+                 "data/Moles_2011/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Moore_2019:
+    command: >
+      load_study("data/Moore_2019/data.csv",
+                 "data/Moore_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Moore_2019_2:
+    command: >
+      load_study("data/Moore_2019_2/data.csv",
+                 "data/Moore_2019_2/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -798,10 +937,34 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Muir_2014:
+    command: >
+      load_study("data/Muir_2014/data.csv",
+                 "data/Muir_2014/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Munroe_2019:
+    command: >
+      load_study("data/Munroe_2019/data.csv",
+                 "data/Munroe_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   NHNSW_2016:
     command: >
       load_study("data/NHNSW_2016/data.csv",
                  "data/NHNSW_2016/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Nicholson_2017:
+    command: >
+      load_study("data/Nicholson_2017/data.csv",
+                 "data/Nicholson_2017/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -822,6 +985,14 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Ooi_2007:
+    command: >
+      load_study("data/Ooi_2007/data.csv",
+                 "data/Ooi_2007/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   OReillyNugent_2018:
     command: >
       load_study("data/OReillyNugent_2018/data.csv",
@@ -830,10 +1001,10 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Osbourne_2014:
+  Osborne_2014:
     command: >
-      load_study("data/Osbourne_2014/data.csv",
-                 "data/Osbourne_2014/metadata.yml",
+      load_study("data/Osborne_2014/data.csv",
+                 "data/Osborne_2014/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -854,6 +1025,22 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Pickup_2002:
+    command: >
+      load_study("data/Pickup_2002/data.csv",
+                 "data/Pickup_2002/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Pickup_2005:
+    command: >
+      load_study("data/Pickup_2005/data.csv",
+                 "data/Pickup_2005/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Prior_2003:
     command: >
       load_study("data/Prior_2003/data.csv",
@@ -862,10 +1049,10 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Prospect_2009:
+  Prior_2016:
     command: >
-      load_study("data/Prospect_2009/data.csv",
-                 "data/Prospect_2009/metadata.yml",
+      load_study("data/Prior_2016/data.csv",
+                 "data/Prior_2016/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -878,18 +1065,26 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  RBGSYD_0000:
-    command: >
-      load_study("data/RBGSYD_0000/data.csv",
-                 "data/RBGSYD_0000/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
   RBGSYD_2014:
     command: >
       load_study("data/RBGSYD_2014/data.csv",
                  "data/RBGSYD_2014/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  RBGSYD_2014_2:
+    command: >
+      load_study("data/RBGSYD_2014_2/data.csv",
+                 "data/RBGSYD_2014_2/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Read_2005:
+    command: >
+      load_study("data/Read_2005/data.csv",
+                 "data/Read_2005/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -906,14 +1101,6 @@ targets:
     command: >
       load_study("data/Richards_2003/data.csv",
                  "data/Richards_2003/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
-  Richards_2008:
-    command: >
-      load_study("data/Richards_2008/data.csv",
-                 "data/Richards_2008/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -990,6 +1177,22 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Schmidt_1993:
+    command: >
+      load_study("data/Schmidt_1993/data.csv",
+                 "data/Schmidt_1993/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Schmidt_1997:
+    command: >
+      load_study("data/Schmidt_1997/data.csv",
+                 "data/Schmidt_1997/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Schmidt_2003:
     command: >
       load_study("data/Schmidt_2003/data.csv",
@@ -998,10 +1201,34 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Schmidt_2010:
+    command: >
+      load_study("data/Schmidt_2010/data.csv",
+                 "data/Schmidt_2010/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Schulze_1998:
     command: >
       load_study("data/Schulze_1998/data.csv",
                  "data/Schulze_1998/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Schulze_2005:
+    command: >
+      load_study("data/Schulze_2005/data.csv",
+                 "data/Schulze_2005/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Schulze_2006:
+    command: >
+      load_study("data/Schulze_2006/data.csv",
+                 "data/Schulze_2006/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -1022,10 +1249,10 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Seng_1951:
+  Smith_1996:
     command: >
-      load_study("data/Seng_1951/data.csv",
-                 "data/Seng_1951/metadata.yml",
+      load_study("data/Smith_1996/data.csv",
+                 "data/Smith_1996/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -1046,10 +1273,42 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Specht_1958:
+  Soper_2014:
     command: >
-      load_study("data/Specht_1958/data.csv",
-                 "data/Specht_1958/metadata.yml",
+      load_study("data/Soper_2014/data.csv",
+                 "data/Soper_2014/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Standish_2019:
+    command: >
+      load_study("data/Standish_2019/data.csv",
+                 "data/Standish_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Staples_2019:
+    command: >
+      load_study("data/Staples_2019/data.csv",
+                 "data/Staples_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Stewart_1995:
+    command: >
+      load_study("data/Stewart_1995/data.csv",
+                 "data/Stewart_1995/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Thomas_2017:
+    command: >
+      load_study("data/Thomas_2017/data.csv",
+                 "data/Thomas_2017/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -1110,10 +1369,10 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Venn_2011:
+  Veneklaas_2003:
     command: >
-      load_study("data/Venn_2011/data.csv",
-                 "data/Venn_2011/metadata.yml",
+      load_study("data/Veneklaas_2003/data.csv",
+                 "data/Veneklaas_2003/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -1134,6 +1393,14 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Vesk_2019:
+    command: >
+      load_study("data/Vesk_2019/data.csv",
+                 "data/Vesk_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   WAH_1998:
     command: >
       load_study("data/WAH_1998/data.csv",
@@ -1146,14 +1413,6 @@ targets:
     command: >
       load_study("data/WAH_2016/data.csv",
                  "data/WAH_2016/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
-  Wells_2009:
-    command: >
-      load_study("data/Wells_2009/data.csv",
-                 "data/Wells_2009/metadata.yml",
                  definitions,
                  unit_conversions,
                  species_list
@@ -1198,6 +1457,14 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Wills_2018:
+    command: >
+      load_study("data/Wills_2018/data.csv",
+                 "data/Wills_2018/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Wilson_2008:
     command: >
       load_study("data/Wilson_2008/data.csv",
@@ -1230,14 +1497,6 @@ targets:
                  unit_conversions,
                  species_list
                  )
-  Wright_2004:
-    command: >
-      load_study("data/Wright_2004/data.csv",
-                 "data/Wright_2004/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
-                 )
   Wright_2006:
     command: >
       load_study("data/Wright_2006/data.csv",
@@ -1254,6 +1513,22 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Wright_2009:
+    command: >
+      load_study("data/Wright_2009/data.csv",
+                 "data/Wright_2009/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+  Wright_2019:
+    command: >
+      load_study("data/Wright_2019/data.csv",
+                 "data/Wright_2019/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
   Zanne_2007:
     command: >
       load_study("data/Zanne_2007/data.csv",
@@ -1262,79 +1537,97 @@ targets:
                  unit_conversions,
                  species_list
                  )
+  Zanne_2009:
+    command: >
+      load_study("data/Zanne_2009/data.csv",
+                 "data/Zanne_2009/metadata.yml",
+                 definitions,
+                 unit_conversions,
+                 species_list
+                 )
+
   austraits:
     command: >
       combine_austraits(
-        ANBG_2018,
+        Ahrens_2019,
+        ANBG_2019,
         Angevin_2010,
-        AusGrass_2014,
+        Baker_2019,
         Barlow_1981,
         Bean_1997,
-        BFD_1974,
         Blackman_2010,
-        Bolza_1975,
         Bragg_2002,
         BRAIN_2007,
         Briggs_2010,
         Brock_1993,
         Burrows_2001,
-        CAB_2009,
         Catford_2014,
         Chandler_2002,
-        Chave_2009,
         Chen_2017,
-        Chinh_1999,
         Chinnock_2007,
-        Chudnoff_1984,
-        CIRAD_2009,
         Clarke_2015,
-        Clayton_2006,
         Cooper_2004,
-        CPRR_2002,
+        Cornellison_2018,
+        CPBR_2002,
         Craven_1987,
         Craven_2010,
         Crisp_2017,
         Cross_2011,
         Cunningham_1999,
         Denton_2007,
-        Desh_1996,
-        Dimitri_1973,
+        Dong_2017,
         Duncan_1998,
         Dwyer_2017,
+        Dwyer_2017_2,
         Eamus_1998,
         Eamus_1999,
         Edwards_2000,
+        EsperonRodriguez_2019,
+        EsperonRodriguez_2019_2,
         Falster_2005_1,
         Falster_2005_2,
-        Flynn_2001,
+        Firn_2019,
         Fonseca_2000,
         Forster_1992,
         Forster_1995,
+        French_2017,
+        Funk_2016,
         Gallagher_2011_1,
-        Gallagher_2011_2,
         Gallagher_2011_3,
+        Gardiner_2019,
         Goble_1981,
-        Goldsmith_1981,
+        GrassBase_2014,
+        Gray_2019,
         Groom_1997,
         Groom_2010,
         Gross_1993,
         Grubb_1996,
         Grubb_2008,
+        Guilherme_Pereira_2018,
+        Guilherme_Pereira_2019,
+        Hall_1981,
         Harrison_2009,
         Hassiotou_2009,
+        Hayes_2014,
+        Hayes_2018,
         Henery_2001,
-        Hong_1999,
         Hughes_1992,
         Hughes_2005,
         Hyland_2003,
-        ICRAF_2009,
         Ilic_2000,
         Islam_1999_1,
         Islam_1999_2,
+        Jin_2019,
         Jordan_2007,
+        Jurado_1992,
         Jurado_1993,
         Keighery_2004,
         Kew_2019_1,
+        Kew_2019_2,
+        Kew_2019_3,
+        Kew_2019_4,
+        Kew_2019_5,
+        Kew_2019_6,
         Knox_2011,
         Kooyman_2011,
         Laliberte_2012,
@@ -1342,9 +1635,11 @@ targets:
         Lawes_2012,
         Lawson_2015,
         Laxton_2005,
+        Lee_2019,
         Leishman_1992,
         Leishman_1993,
         Leishman_1995,
+        Leishman_2007,
         Lemmens_1994,
         Lim_2017,
         Lord_1997,
@@ -1353,29 +1648,39 @@ targets:
         Lusk_2012,
         Lusk_2014,
         Manea_2011,
-        Martawijaya_1992,
         Maslin_2012,
         McCarthy_2017,
-        Meier_2007,
+        Mokany_2008,
+        Moles_2000,
+        Moles_2003,
+        Moles_2011,
+        Moore_2019,
+        Moore_2019_2,
         Morgan_2005,
         Morgan_2011_1,
         Morgan_2011_2,
         Morgan_2014,
+        Muir_2014,
+        Munroe_2019,
         NHNSW_2016,
+        Nicholson_2017,
         Niinemets_2009,
         NTH_2014,
+        Ooi_2007,
         OReillyNugent_2018,
-        Osbourne_2014,
+        Osborne_2014,
         Peeters_2002,
         Pekin_2011,
+        Pickup_2002,
+        Pickup_2005,
         Prior_2003,
-        Prospect_2009,
+        Prior_2016,
         RBGK_2014,
-        RBGSYD_0000,
         RBGSYD_2014,
+        RBGSYD_2014_2,
+        Read_2005,
         Rice_1991,
         Richards_2003,
-        Richards_2008,
         Roberts_2006,
         Rye_2002,
         Rye_2006,
@@ -1385,14 +1690,24 @@ targets:
         Rye_2013_2,
         Rye_2015,
         SAH_2014,
+        Schmidt_1993,
+        Schmidt_1997,
         Schmidt_2003,
+        Schmidt_2010,
         Schulze_1998,
+        Schulze_2005,
+        Schulze_2006,
         Scott_2010,
         Sendall_2016,
         Seng_1951,
+        Smith_1996,
         Smith_2012,
         Soliveres_2012,
-        Specht_1958,
+        Soper_2014,
+        Standish_2019,
+        Staples_2019,
+        Stewart_1995,
+        Thomas_2017,
         Thompson_2001,
         TMAG_2009,
         Tng_2013,
@@ -1400,23 +1715,27 @@ targets:
         Tomlinson_2013,
         Trudgen_2005,
         Trudgen_2014,
-        Venn_2011,
+        Veneklaas_2003,
         Vesk_2004,
         Vesk_2007,
+        Vesk_2019,
         WAH_1998,
         WAH_2016,
-        Wells_2009,
         Westoby_2003,
         Westoby_2004,
         Westoby_2014,
         Westoby_2016,
         Wheeler_2002,
+        Wills_2018,
         Wilson_2008,
         Wright_2000,
         Wright_2001,
         Wright_2002,
-        Wright_2004,
         Wright_2006,
         Wright_2008,
+        Wright_2009,
+        Wright_2019,
         Zanne_2007,
+        Zanne_2009,
        definitions=definitions)
+    depends: version_number

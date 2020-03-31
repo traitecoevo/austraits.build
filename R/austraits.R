@@ -1,5 +1,14 @@
 ## Functions for extracting bits from Austraits
 
+#' Title
+#'
+#' @param austraits 
+#' @param dataset_id 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 extract_dataset <- function(austraits, dataset_id) {
 
   ret <- list()
@@ -12,6 +21,14 @@ extract_dataset <- function(austraits, dataset_id) {
   ret
 }
 
+#' Title
+#'
+#' @param data 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 spread_trait_data <- function(data) {
 
   vars <- c("value", "unit", "value_type", "replicates")
@@ -26,6 +43,15 @@ spread_trait_data <- function(data) {
   ret
 }
 
+#' Title
+#'
+#' @param data 
+#' @param definitions 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 gather_trait_data <- function(data, definitions) {
 
   id_variables <- c("dataset_id", "species_name", "site_name", "observation_id", "trait_name", "value", "unit", "value_type", "replicates", "original_name")
@@ -54,9 +80,25 @@ gather_trait_data <- function(data, definitions) {
     select(id_variables)
 }
 
-# ensure NA appears as a real NA and not character
-clean_NA <- function(x) ifelse(x == "NA", NA_character_, x)
+#' Ensure NA appears as a real NA and not character
+#'
+#' @param x 
+#'
+#' @return
+#'
+#' @examples
+clean_NA <- function(x) {
+  ifelse(x == "NA", NA_character_, x)
+}
   
+#' Title
+#'
+#' @param data 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 bind_trait_values <- function(data) {
 
   bind_x <- function(x) paste0(x, collapse = "--")
@@ -84,6 +126,15 @@ bind_trait_values <- function(data) {
     arrange(observation_id, trait_name, value_type)
 }
 
+#' Title
+#'
+#' @param data 
+#' @param definitions 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 separate_trait_values <- function(data, definitions) {
 
   separate_x <- function(x) strsplit(x, "--")[[1]]
@@ -124,6 +175,15 @@ separate_trait_values <- function(data, definitions) {
     arrange(observation_id, trait_name, value_type)
 }
 
+#' Title
+#'
+#' @param austraits 
+#' @param trait_name 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 extract_trait <- function(austraits, trait_name) {
 
   ret <- austraits
@@ -140,6 +200,14 @@ extract_trait <- function(austraits, trait_name) {
     ret[["traits"]][["value"]] <- as.numeric(ret[["traits"]][["value"]])
   }
 
+  ret[["methods"]] <- austraits[["methods"]] %>% filter(dataset_id %in%  ret[["traits"]][["dataset_id"]] )
+
+  keys <- union(ret$methods$source_primary_key, 
+                ret$methods$source_secondary_key) %>% 
+          unique() %>% na.omit() %>% as.character()
+                
+  ret[["sources"]] <- austraits$sources[keys]
+
   ret
 }
 
@@ -155,34 +223,69 @@ trait_is_categorical <- function(trait_name, definitions) {
   !trait_is_numeric(trait_name, definitions)
 }
 
+## Takes the traits df of AusTraits and searchs for possible duplicates
+
+label_suspected_duplicates <- function(austraits_traits, priority_sources = NULL) {
+  
+  # copy traits and create a new variable with year of dataset_id
+  # we will preference studies with a lower value
+  if(is.null(priority_sources))
+    priority_sources <- 
+      c(
+        "Kew_2019_1", "Kew_2019_2", "Kew_2019_3", "Kew_2019_4", "Kew_2019_5", "Kew_2019_6",
+        "ANBG_2019", "GrassBase_2014", "CPBR_2002", "NTH_2014","RBGK_2014", 
+        "NHNSW_2016", "RBGSYD__2014_2", "RBGSYD_2014", "TMAG_2009", "WAH_1998", "WAH_2016",
+        "Brock_1993", "Barlow_1981", "Hyland_2003"    
+      )
+  
+  tmp <- austraits_traits %>% 
+    # Extract year from dataset_id, so that we can keep the older record
+    mutate(
+      priority_source = (dataset_id %in% priority_sources),
+      year =  str_split(dataset_id, "_") %>% 
+        lapply(function(i) i[2]) %>% unlist() %>% 
+        gsub("0000", "9999", .)
+    ) %>%
+    # sort to align suspected duplicates
+    arrange(trait_name, species_name, value, desc(priority_source), year) %>%
+    # detect duplicates based on combination of variables
+    mutate(
+      to_check = paste(trait_name, species_name, value), 
+      duplicate = to_check %>% duplicated()
+      ) %>% 
+    # remove temporary variables
+    select(-year, -priority_source) %>%
+    # original sorting
+    arrange(observation_id, trait_name, value_type) %>% 
+    split(., .$duplicate)
+  
+  tmp[[2]] <- tmp[[2]] %>%
+  mutate(
+      i = match(to_check, tmp[[1]]$to_check),
+      duplicate_dataset_id = tmp[[1]]$dataset_id[i],
+      duplicate_obs_id = tmp[[1]]$observation_id[i]
+      )
+
+  tmp %>%  
+  bind_rows() %>% 
+  select(-to_check, -i) %>%
+  # original sorting
+  arrange(observation_id, trait_name, value_type)
+}
 
 ## move suspected duplicates from the `traits` frame of austraits
 ## to excluded_data. 
 
-remove_suspected_duplicates <- function(austraits) {
-  
-  # copy traits and create a new variable with year of dataset_id
-  # we will preference studies with a lower value
-  tmp <- 
-    austraits$traits %>% 
-    # Extract year from dataset_id, so that we can keep the older record
-    mutate(year =  str_split(dataset_id, "_") %>% 
-                    lapply(function(i) i[2]) %>% unlist() %>% 
-                    gsub("0000", "9999", .)
-                    ) %>%
-  # sort to align suspected duplicates
-  arrange(trait_name, species_name, value, year) %>%
-  # detect duplicates based on combination of variables
-  mutate(
-         to_check = paste(trait_name, species_name, value), 
-         is_duplicate = duplicated(to_check)
-         )
+remove_suspected_duplicates <- function(austraits, 
+                                        priority_sources = NULL
+                                        ) {
+  tmp <- label_suspected_duplicates(austraits$traits, priority_sources)
 
   # update `traits` with unique values only
   austraits$traits <- tmp %>% 
-    filter(!is_duplicate) %>% 
+    filter(!duplicate) %>% 
     # remove temporary variables
-    select(-year, -to_check, -is_duplicate) %>%
+    select(-starts_with("duplicate")) %>%
     # original sorting
     arrange(observation_id, trait_name, value_type)
 
@@ -191,13 +294,10 @@ remove_suspected_duplicates <- function(austraits) {
   austraits$excluded_data <- austraits$excluded_data %>% 
     bind_rows(
       tmp %>% 
-        filter(is_duplicate) %>% 
-        mutate(error = paste("suspected duplicate with ", 
-                             # find observatio_id for matching variable
-                             tmp$observation_id[match(to_check, tmp$to_check)])
-              ) %>% 
+        filter(duplicate) %>% 
+        mutate(error = sprintf("Duplicate of %s", duplicate_obs_id)) %>%
         # remove temporary variables
-        select(-year, -to_check, -is_duplicate)
+        select(-starts_with("duplicate"))
       ) %>%
     # original sorting
     arrange(observation_id, trait_name, value_type)
@@ -214,6 +314,22 @@ export_to_plain_text <- function(austraits, path) {
 }
 
 
+#' <brief desc>
+#'
+#' <full description>
+#' 
+#' compare_versions("export/austraits-0.rds", "export/austraits.rds", "export/blackman", dataset_id="Leishman_1992")
+
+#' compare_versions("export/austraits-0.rds", "export/austraits.rds")
+#'
+#' @param v1 <what param does>
+#' @param v2 <what param does>
+#' @param path = "export/tmp" <what param does>
+#' @param dataset_id=NULL <what param does>
+#' @param trait_name = NULL <what param does>
+#'
+#' @export
+#' @return
 compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trait_name = NULL) {
   unlink(path, TRUE, TRUE)
   dir.create(path, FALSE, TRUE)
@@ -240,36 +356,19 @@ compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trai
   message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
 }
 
-#compare_versions("export/austraits-0.rds", "export/austraits.rds", "export/blackman", dataset_id="Leishman_1992")
 
-#compare_versions("export/austraits-0.rds", "export/austraits.rds")
-
-
-
-compare_versions_df <- function (df1, df2, path = "export/tmp") {
-  unlink(path, TRUE, TRUE)
-  dir.create(path, FALSE, TRUE)
-
-
-  df1 %>% write_csv(sprintf("%s/df.csv", path))
- 
-  repo <- git2r::init(path)
-  git2r::add(repo, "*")
-
-  df2 %>% write_csv(sprintf("%s/df.csv", path))
-
-  message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
-}
-
-trait_distribution_by_datasetid <- function(...){
-  trait_distribution_plot(y_axis_category = "dataset_id", ...)
-}
-
-trait_distribution_by_family <- function(...){
-  trait_distribution_plot(y_axis_category = "family", ...)
-}
-
-
+#' Title
+#'
+#' @param austraits 
+#' @param plant_trait_name 
+#' @param y_axis_category 
+#' @param highlight 
+#' @param hide_ids 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axis_category, highlight=NA, hide_ids = FALSE) {
 
   # plant_trait_name <- "plant_height"
@@ -360,7 +459,7 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
   }
 
   # Define scale on x-axis and transform to log if required
-  if(range > 20) {
+  if(vals$minimum !=0 & range > 20) {
     #log transformation
     p1 <- p1 +
       scale_x_log10( name="",

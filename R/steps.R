@@ -45,11 +45,20 @@ load_study <- function(filename_data_raw,
   }
   sites <- add_all_columns(sites, definitions, "sites")
 
-  # record methods on study from metadata
+  # record contributors
+  contributors <- 
+    metadata$people %>%
+    list_to_df() %>% 
+    mutate(dataset_id = dataset_id) %>% 
+    select(dataset_id = dataset_id, everything()) %>% 
+    filter(!is.na(name))
 
-  source_primary <- convert_list_to_bib(metadata$source$primary)
-  source_secondary <- convert_list_to_bib(metadata$source$secondary)
- 
+  # record methods on study from metadata
+  sources <- metadata$source %>% 
+            lapply(convert_list_to_bib) %>% reduce(c)  
+  source_primary_key <- metadata$source$primary$key
+  source_secondary_keys <- setdiff(names(sources), source_primary_key)
+
   methods <-   
     full_join( by = "dataset_id",
       # methods used to collect each trait  
@@ -71,11 +80,13 @@ load_study <- function(filename_data_raw,
         #references
         tibble(
           dataset_id = dataset_id,
-          source_primary_citation = bib_print(source_primary),
-          source_primary_key = source_primary$key,
-          source_secondary_citation = ifelse(!is.null(source_secondary), bib_print(source_secondary), NA_character_),
-          source_secondary_key = ifelse(!is.null(source_secondary), source_secondary$key, NA_character_)
+          source_primary_key = source_primary_key,
+          source_primary_citation = bib_print(sources[[source_primary_key]]),
+          source_secondary_key = source_secondary_keys %>% paste(collapse = "; "),
+          source_secondary_citation = ifelse(length(source_secondary_keys) == 0, NA_character_,
+            map_chr(sources[source_secondary_keys], bib_print) %>% paste(collapse = "; ") %>% str_replace_all(".;", ";")
           )
+        )
       )
 
   # Retrieve taxonomic details
@@ -97,7 +108,8 @@ load_study <- function(filename_data_raw,
        excluded_data = traits %>% filter(!is.na(error)) %>% select(error, everything()),
        taxonomy = taxonomy,
        definitions = definitions,
-       sources =  c(source_primary, source_secondary)
+       contributors = contributors,
+       sources =  sources
        )
 }
 
@@ -143,12 +155,14 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
   # set format
   oldopts <- RefManageR::BibOptions(.opts)
   on.exit(RefManageR::BibOptions(oldopts))
+
   bib %>% 
     RefManageR:::format.BibEntry(.sort = F) %>%
     # HACK: remove some of formatting introduced in line above
     # would be nicer if we could apply csl style
     gsub("[] ", "", ., fixed = TRUE) %>% 
-    gsub("\\n", "", .) %>% 
+    gsub("\\n", " ", .) %>% 
+    gsub("  ", " ", .) %>% 
     gsub("DOI:", " doi: ", ., fixed = TRUE) %>% 
     gsub("URL:", " url: ", ., fixed = TRUE) %>% 
     ifelse(tolower(bib$bibtype) == "article",  gsub("In:", " ", .), .)
@@ -551,10 +565,11 @@ combine_austraits <- function(..., d=list(...), definitions) {
               excluded_data = combine("excluded_data", d),
               taxonomy=taxonomy,
               definitions = definitions,
+              contributors=combine("contributors", d),
               sources = sources,
               build_info = list(
-                      version=definitions$austraits$elements$version$value,
-                      git_SHA=get_SHA_link(),
+                      version=desc::desc_get_field("Version"),
+                      git_SHA=get_SHA(),
                       session_info = sessionInfo()
                       )
               )
