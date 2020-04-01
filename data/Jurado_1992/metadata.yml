@@ -44,12 +44,23 @@ sites:
     latitude (deg): -23.7
     longitude (deg): 133.87
     notes: seeds collected within 100 km of the given lat/lon
+contexts: 
+  temperature_treatment_12C:
+    description: seeds kept at 12C
+    type: treatment
+  temperature_treatment_20C:
+    description: seeds kept at 20C
+    type: treatment
+  temperature_treatment_28C:
+    description: seeds kept at 28C
+    type: treatment
 config:
   data_is_long_format: no
   variable_match:
     species_name: species
     site_name: site_name
-  custom_R_code: .na
+    context_name: temperature_treatment
+  custom_R_code: data %>% mutate(temperature_treatment = paste("temperature_treatment_",temperature_treatment,"C",sep=""))
 traits:
 - var_in: germination
   unit_in: '%'
@@ -135,8 +146,6 @@ taxonomic_updates:
   replace: Sporobolus carolii
   reason: Alignment with existing species identified by TaxonStand (2020-03-15)
 questions:
-  contextual: Note to Austraits, we will be adding "germination temperature" as a
-    contextual variable.
   additional_traits: There is also germination speed (days to 50% germination) in
     the data.csv sheet
 
