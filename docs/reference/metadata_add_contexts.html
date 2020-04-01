@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>split_then_sort: For a vector x in which individual cell may have multiple values (separated by 'sep'), sort records within each cell  alphabetically — split_then_sort • austraits.build</title>
+<title>For specified `dataset_id` import context data from a dataframe — metadata_add_contexts • austraits.build</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,11 @@
 
 
 
-<meta property="og:title" content="split_then_sort: For a vector x in which individual cell may have multiple values (separated by 'sep'), sort records within each cell  alphabetically — split_then_sort" />
-<meta property="og:description" content="split_then_sort: For a vector x in which individual cell may have multiple values (separated by 'sep'), sort records within each cell  alphabetically" />
+<meta property="og:title" content="For specified `dataset_id` import context data from a dataframe — metadata_add_contexts" />
+<meta property="og:description" content="This functions asks users which columns in the dataframe they would like to keep
+and records this appropriately in the metadata. The input data is assumed to be 
+in wide format.
+The output may require additional manual editing." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -139,42 +142,41 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>split_then_sort: For a vector x in which individual cell may have multiple values (separated by 'sep'), sort records within each cell  alphabetically</h1>
+    <h1>For specified `dataset_id` import context data from a dataframe</h1>
     
-    <div class="hidden name"><code>split_then_sort.Rd</code></div>
+    <div class="hidden name"><code>metadata_add_contexts.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>split_then_sort: For a vector x in which individual cell may have multiple values (separated by 'sep'), sort records within each cell  alphabetically</p>
+    <p>This functions asks users which columns in the dataframe they would like to keep
+and records this appropriately in the metadata. The input data is assumed to be 
+in wide format.
+The output may require additional manual editing.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>split_then_sort</span>(<span class='no'>x</span>, <span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>" "</span>)</pre>
+    <pre class="usage"><span class='fu'>metadata_add_contexts</span>(<span class='no'>dataset_id</span>, <span class='no'>context_data</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>an individual cell with multiple values</p></td>
+      <th>dataset_id</th>
+      <td><p>identifier for a particular study in the AusTraits compilation</p></td>
     </tr>
     <tr>
-      <th>sep</th>
-      <td><p>a separator, a whitespace is the default</p></td>
+      <th>context_data</th>
+      <td><p>A dataframe of context variables</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>a vector of alphabetically sorted records</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>split_then_sort</span>(<span class='st'>"z y x"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in split_then_sort("z y x"): could not find function "split_then_sort"</span></div></pre>
+    <pre class="examples"><div class='input'><span class='no'>austraits</span>$<span class='no'>contexts</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='https://rdrr.io/r/stats/filter.html'>filter</a></span>(<span class='no'>dataset_id</span> <span class='kw'>==</span> <span class='st'>"Hall_1981"</span>) <span class='kw'>%&gt;%</span> <span class='fu'>select</span>(-<span class='no'>dataset_id</span>) <span class='kw'>%&gt;%</span> <span class='fu'>spread</span>(<span class='no'>context_property</span>, <span class='no'>value</span>) <span class='kw'>%&gt;%</span> <span class='fu'>type_convert</span>()<span class='kw'>-&gt;</span> <span class='no'>context_data</span></div><div class='output co'>#&gt; <span class='error'>Error in eval(lhs, parent, parent): object 'austraits' not found</span></div><div class='input'><span class='fu'>metadata_add_contexts</span>(<span class='st'>"Hall_1981"</span>, <span class='no'>context_data</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: cannot open file 'data/Hall_1981/metadata.yml': No such file or directory</span></div><div class='output co'>#&gt; <span class='error'>Error in readLines(con): cannot open the connection</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

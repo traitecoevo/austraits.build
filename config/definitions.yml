@@ -2897,7 +2897,8 @@ austraits:
       elements:
         dataset_id: &dataset_id Primary identifier for each study contributed into AusTraits; most often these are scientific papers, books, or online resources. By default should be name of first author and year of publication, e.g. `Falster_2005`.
         species_name: &species_name Name of species after aligning taxonomy with standard sources.
-        site_name: &site_name Name of site where species was sampled. Cross-references between similar columns in context and data.
+        site_name: &site_name Name of site where individual was sampled. Cross-references between similar columns in site and data.
+        context_name: &context_name Name of contextual senario where individual was sampled. Cross-references between similar columns in context and data.
         observation_id: A unique identifier for the observation, useful for joining traits coming from the same observation_id. Observation ids are assigned automatically, based on `dataset_id` and row number in the file `data.csv`.
         trait_name: &trait_name Name of trait sampled. Allowable values specified in the table `traits`.
         value: &value Value of trait sampled. In the master dataset these are all stored as characters, then converted to numeric later where appropriate.
@@ -2906,12 +2907,20 @@ austraits:
         replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each measurement. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be `1`. If the value type is `expert_mean`, `expert_min`, or `expert_max` the replicate value should be `.na`.
         original_name: &orginal_name Taxonomic name given to species in the original data supplied by the authors
     sites:
-      description: A table containing observations of site characteristics associated with information in `data`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
+      description: A table containing observations of site characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
       type: table
       elements:
         dataset_id: *dataset_id
         site_name: *site_name
         site_property: The site characteristic being recorded. Name should include units of measurement, e.g. `longitude (deg)`. Ideally we have at least these variables for each site - `longitude (deg)`, `latitude (deg)`, `description`.
+        value: *value
+    contexts:
+      description: A table containing observations of contextual characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `context_name`.
+      type: table
+      elements:
+        dataset_id: *dataset_id
+        context_name: *context_name
+        context_property: The contextual characteristic being recorded. Name should include units of measurement, e.g. `temperature (deg)`. Ideally we have at least two variables for each context - `context_type` and `description`.
         value: *value
     methods:
       description: A table containing details on methods with which data were collected, including time frame and source
@@ -2935,7 +2944,7 @@ austraits:
       type: character
       value: Structure is identical to that presented in the `traits` table, only with an extra column called `error` indicating why the record was excluded. Common reasons are missing_unit_conversions, missing_value, and unsupported_trait_value.
     taxonomy:
-      description: A table containing details on species taxonomy associated with information in `data`. Cross referencing between the two dataframes is possible using the variable `species_name`. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI).
+      description: A table containing details on species taxonomy associated with information in `traits`. Cross referencing between the two dataframes is possible using the variable `species_name`. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI).
       type: table
       elements:
         species_name: *species_name
@@ -3016,12 +3025,14 @@ metadata:
         notes: Generic notes about the study and processing of data
     sites:
       description: A list of study sites and information about each of the study sites where data were collected. A list of sites. Each should include at least three variables - `latitude`, `longitude` and `description`. Additional variables can be included where available. Set to `.na` for herbarium studies and field studies where data values are a mean across many locations.
+    contexts:
+      description: A list of scenarios sites and contextial information about each of the scenarios where data were collected. A list of contexts. Each should include at least two variables - `context_type` and `description`. Additional variables can be included where available. Set to `.na` as default.
     config:
       description: Information on the format of the submitted data file
       type: character
       elements:
         data_is_long_format: Indicates if the data spreadsheet has a vertical (long) or  horizontal (wide) configuration with `yes` or `no` terminology
-        variable_match: Identifies which information is in each column in the file `data.csv`, excluding the actual trait data. One element within `variable_match` must be `species_name`. Datasets with `data_is_long_format` set to `yes` must also identify which column includes data on `value` and `trait_name`. Other allowed values include `site_name` and `observation_id`, if these columns are present in the `data.csv` file. 
+        variable_match: Identifies which information is in each column in the file `data.csv`, excluding the actual trait data. One element within `variable_match` must be `species_name`. Datasets with `data_is_long_format` set to `yes` must also identify which column includes data on `value` and `trait_name`. Other allowed values include `site_name`, `observation_id`, `context_name` if these columns are present in the `data.csv` file or created with custom R code.
         custom_R_code: A field where additional R code can be included. This allows for custom manipulation of the data in the submitted spreadsheet into a different format for easy integration with AusTraits. `.na` indicates no custom R code was used.
     traits:
       description: A translation table mapping traits and units in the original study onto corresponding variables in AusTraits. Also specified here are methods used to collect the data.

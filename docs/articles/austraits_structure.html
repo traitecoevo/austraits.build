@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1>Structure of AusTraits data compilation</h1>
             
-            <h4 class="date">2020-03-19</h4>
+            <h4 class="date">2020-04-02</h4>
       
       
       <div class="hidden name"><code>austraits_structure.Rmd</code></div>
@@ -164,7 +164,15 @@ Name of species after aligning taxonomy with standard sources.
 site_name
 </td>
 <td style="text-align:left;">
-Name of site where species was sampled. Cross-references between similar columns in context and data.
+Name of site where individual was sampled. Cross-references between similar columns in site and data.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+context_name
+</td>
+<td style="text-align:left;">
+Name of contextual senario where individual was sampled. Cross-references between similar columns in context and data.
 </td>
 </tr>
 <tr>
@@ -229,7 +237,7 @@ Taxonomic name given to species in the original data supplied by the authors
 <div id="sites" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sites" class="anchor"></a>sites</h3>
-<p><strong>Description:</strong> A table containing observations of site characteristics associated with information in <code>data</code>. Cross referencing between the two dataframes is possible using combinations of the variables <code>dataset_id</code>, <code>site_name</code>.</p>
+<p><strong>Description:</strong> A table containing observations of site characteristics associated with information in <code>traits</code>. Cross referencing between the two dataframes is possible using combinations of the variables <code>dataset_id</code>, <code>site_name</code>.</p>
 <p><strong>Content:</strong></p>
 <table class="table table table-striped table-hover table-condensed table-responsive">
 <thead><tr>
@@ -254,7 +262,7 @@ Primary identifier for each study contributed into AusTraits; most often these a
 site_name
 </td>
 <td style="text-align:left;">
-Name of site where species was sampled. Cross-references between similar columns in context and data.
+Name of site where individual was sampled. Cross-references between similar columns in site and data.
 </td>
 </tr>
 <tr>
@@ -263,6 +271,56 @@ site_property
 </td>
 <td style="text-align:left;">
 The site characteristic being recorded. Name should include units of measurement, e.g. <code>longitude (deg)</code>. Ideally we have at least these variables for each site - <code>longitude (deg)</code>, <code>latitude (deg)</code>, <code>description</code>.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+value
+</td>
+<td style="text-align:left;">
+Value of trait sampled. In the master dataset these are all stored as characters, then converted to numeric later where appropriate.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="contexts" class="section level3">
+<h3 class="hasAnchor">
+<a href="#contexts" class="anchor"></a>contexts</h3>
+<p><strong>Description:</strong> A table containing observations of contextual characteristics associated with information in <code>traits</code>. Cross referencing between the two dataframes is possible using combinations of the variables <code>dataset_id</code>, <code>context_name</code>.</p>
+<p><strong>Content:</strong></p>
+<table class="table table table-striped table-hover table-condensed table-responsive">
+<thead><tr>
+<th style="text-align:left;">
+key
+</th>
+<th style="text-align:left;">
+value
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+dataset_id
+</td>
+<td style="text-align:left;">
+Primary identifier for each study contributed into AusTraits; most often these are scientific papers, books, or online resources. By default should be name of first author and year of publication, e.g. <code>Falster_2005</code>.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+context_name
+</td>
+<td style="text-align:left;">
+Name of contextual senario where individual was sampled. Cross-references between similar columns in context and data.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+context_property
+</td>
+<td style="text-align:left;">
+The contextual characteristic being recorded. Name should include units of measurement, e.g. <code>temperature (deg)</code>. Ideally we have at least two variables for each context - <code>context_type</code> and <code>description</code>.
 </td>
 </tr>
 <tr>
@@ -407,7 +465,7 @@ Citation key for secondary source in <code>sources</code>. The key is typically 
 <div id="taxonomy" class="section level3">
 <h3 class="hasAnchor">
 <a href="#taxonomy" class="anchor"></a>taxonomy</h3>
-<p><strong>Description:</strong> A table containing details on species taxonomy associated with information in <code>data</code>. Cross referencing between the two dataframes is possible using the variable <code>species_name</code>. We have attempted to align species names with known taxonomic units, focussing primarily on the <a href="http://www.theplantlist.org/"><code>The Plant List</code> (TPL)</a> – a global working list of all known plant species. In addition we have tried to align these names with the <a href="https://biodiversity.org.au/nsl/services/apc"><code>Australian Plant Census</code> (APC)</a> and the <a href="https://biodiversity.org.au/nsl/services/APNI"><code>Australian Plant Names Index</code> (APNI)</a>.</p>
+<p><strong>Description:</strong> A table containing details on species taxonomy associated with information in <code>traits</code>. Cross referencing between the two dataframes is possible using the variable <code>species_name</code>. We have attempted to align species names with known taxonomic units, focussing primarily on the <a href="http://www.theplantlist.org/"><code>The Plant List</code> (TPL)</a> – a global working list of all known plant species. In addition we have tried to align these names with the <a href="https://biodiversity.org.au/nsl/services/apc"><code>Australian Plant Census</code> (APC)</a> and the <a href="https://biodiversity.org.au/nsl/services/APNI"><code>Australian Plant Names Index</code> (APNI)</a>.</p>
 <p><strong>Content:</strong></p>
 <table class="table table table-striped table-hover table-condensed table-responsive">
 <thead><tr>
@@ -718,7 +776,7 @@ Value type is not currently known
 <div id="taxonomic" class="section level2">
 <h2 class="hasAnchor">
 <a href="#taxonomic" class="anchor"></a>Taxonomy</h2>
-<p>Version 0.9.1.9000 of AusTraits contains records for 22441 different species. We have attempted to align species names with known taxonomic units, focussing primarily on the <a href="http://www.theplantlist.org/"><code>The Plant List</code> (TPL)</a> – a global working list of all known plant species. In addition we have tried to align these names with the <a href="https://biodiversity.org.au/nsl/services/apc"><code>Australian Plant Census</code> (APC)</a> and the <a href="https://biodiversity.org.au/nsl/services/APNI"><code>Australian Plant Names Index</code> (APNI)</a>. The <code>APNI_ID</code> can also be used to access relevant records for the species in the <a href="https://bie.ala.org.au/"><code>Atlas of Living Australia</code></a> (ALA).</p>
+<p>Version 0.9.1.9000 of AusTraits contains records for 22310 different species. We have attempted to align species names with known taxonomic units, focussing primarily on the <a href="http://www.theplantlist.org/"><code>The Plant List</code> (TPL)</a> – a global working list of all known plant species. In addition we have tried to align these names with the <a href="https://biodiversity.org.au/nsl/services/apc"><code>Australian Plant Census</code> (APC)</a> and the <a href="https://biodiversity.org.au/nsl/services/APNI"><code>Australian Plant Names Index</code> (APNI)</a>. The <code>APNI_ID</code> can also be used to access relevant records for the species in the <a href="https://bie.ala.org.au/"><code>Atlas of Living Australia</code></a> (ALA).</p>
 <p>Links to species records in these systems can be accessed via the relevant IDs as in these examples.</p>
 <ul>
 <li>The Plant List: <a href="http://www.theplantlist.org/tpl1.1/record/kew-450649">http://www.theplantlist.org/tpl1.1/record/kew-450649</a> where <code>kew-450649</code> is the <code>TPL_ID</code>
@@ -747,8 +805,8 @@ Value type is not currently known
 <ul>
 <li>label: Leaf area per unit leaf dry mass (specific leaf area, SLA)</li>
 <li>description: Leaf area per unit leaf dry mass; SLA</li>
-<li>number of records: 27486</li>
-<li>number of studies: 76</li>
+<li>number of records: 29114</li>
+<li>number of studies: 81</li>
 <li>type: numeric</li>
 <li>units: mm2/mg</li>
 <li>allowable range: 0.3 - 500 mm2/mg</li>
