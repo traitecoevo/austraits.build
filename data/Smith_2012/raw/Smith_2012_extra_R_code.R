@@ -41,5 +41,6 @@ for_context %>%
   distinct(context, .keep_all = TRUE) %>%
   select(context, Temp, CO2) %>%
   mutate(type = "treatment",
-         description = paste("plants grown at ",CO2,"" ppm CO2 and ambient temperature",sep="") -> context_table
+         description = paste("plants grown at ",CO2,"ppm CO2 and ambient temperature",sep="")) %>% 
+  write_csv("data/Smith_2012/raw/context_table.csv") -> context_table
 
