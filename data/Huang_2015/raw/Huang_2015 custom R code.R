@@ -23,7 +23,16 @@ read_csv("data/Huang_2015/raw/GHS30_IntVarClim_Waratah-PxTxCxW_Harvest_2011_L1.c
   mutate(species_name = "Telopea speciosissima",
          site_name = "University of Western Sydney",
          context = paste("Seeds_from_",Population,"_population_grown_at_",Temp,"_temp_and_",CO2,"_ppm_CO2",sep="")) %>% 
-  write_csv("data/Huang_2015/data.csv")
+  write_csv("data/Huang_2015/data.csv") -> for_context
+
+for_context %>%
+  select(context, Population, Temp, CO2) %>%
+  group_by(context) %>%
+  mutate_at(vars("Population", "Temp", "CO2"),funs(replace(.,duplicated(.),NA))) %>%
+  subset(!is.na(Population)) %>%
+  mutate(type = "treatment",
+         description = "seeds from coastal population grown at elevated 
+         temperature (30/20 deg C) and high CO2 (640 ppm)") -> context_table
   
 ##In the spreadsheet with ACi curves, pot 68 is marked as being from population 'BWK219T2', while in the spreadsheet with AQ curve data,
 pot 68 us marked as being from population 'BWK214T2'. Which is correct. (This inconsistency showed up as I was merging files by Pot number in R)
