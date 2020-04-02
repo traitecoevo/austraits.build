@@ -94,12 +94,44 @@ sites:
     soil_total_K (ppm): 190
     elevation (m): 285
     description: Savanna grassland.
+contexts: 
+  Control:
+    description: no nutrient additions
+    type: treatment_control
+  nitrogen:
+    description: added 10 gN m-2 yr-1 as timed-release urea
+    type: treatment_favourable
+  P:
+    description: added 10 gP m-2 yr-1 as triple super phosphate
+    type: treatment_favourable
+  K:
+    description: 10 gK m-2 yr-1 as potassium sulphate plus a one-off addition (100 g m-2 yr-1) of macro- and micronutrients (that is, Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca)
+    type: treatment_favourable
+  NP:
+    description: added 10 gN m-2 yr-1 as timed-release urea and 10 gP m-2 yr-1 as triple super phosphate
+    type: treatment_favourable
+  NK:
+    description: added 10 gN m-2 yr-1 as timed-release urea and 10 gK m-2 yr-1 as potassium sulphate plus a one-off addition (100 g m-2 yr-1) of macro- and micronutrients (that is, Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca)
+    type: treatment_favourable
+  PK:
+    description: added 10 gP m-2 yr-1 as triple super phosphate and 10 gK m-2 yr-1 as potassium sulphate plus a one-off addition (100 g m-2 yr-1) of macro- and micronutrients (that is, Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca)
+    type: treatment_favourable
+  NPK:
+    description: added 10 gN m-2 yr-1 as timed-release urea and 10 gP m-2 yr-1 as triple super phosphate and 10 gK m-2 yr-1 as potassium sulphate plus a one-off addition (100 g m-2 yr-1) of macro- and micronutrients (that is, Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca)
+    type: treatment_favourable
+  Fence:
+    description: fence desgined to exclude large aboveground mammalian herbivores
+    type: treatment_favourable
+  NPK+Fence:
+    description: added 10 gN m-2 yr-1 as timed-release urea and 10 gP m-2 yr-1 as triple super phosphate and 10 gK m-2 yr-1 as potassium sulphate plus a one-off addition (100 g m-2 yr-1) of macro- and micronutrients (that is, Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca); surrounded by fence desgined to exclude large aboveground mammalian herbivores
+    type: treatment_favourable
 config:
   data_is_long_format: no
   variable_match:
     species_name: Taxon
     site_name: site_name
-  custom_R_code: .na
+    context_name: trt
+  custom_R_code: data %>% mutate(trt = if_else(trt == 'N', "nitrogen",trt))
 traits:
 - var_in: functional_group
   unit_in: .na
@@ -174,7 +206,5 @@ taxonomic_updates:
 - find: Trachymene humilis ssp. Breviscapa
   replace: Trachymene humilis
   reason: Alignment with existing species identified by TaxonStand (2020-03-12)
-questions:
-  contextual: Notes from AusTraits, we will still be adding a contextual field to
-    this study. It will capture the different treatments applied.
+questions: .na
 

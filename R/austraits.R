@@ -8,17 +8,26 @@
 #' @return
 #' @export
 #'
+#' 
+#' 
 #' @examples
 extract_dataset <- function(austraits, dataset_id) {
 
+
   ret <- list()
-  for(v in c("traits", "sites", "methods", "excluded_data"))
+  for(v in c("traits", "sites", "contexts", "methods", "contributors", "excluded_data"))
     ret[[v]] <- austraits[[v]][ austraits[[v]][["dataset_id"]] %in% dataset_id,]
   # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
   ret[["taxonomy"]] <- austraits[["taxonomy"]] %>% filter(species_name %in% ret[["traits"]][["species_name"]])
-  ret[["definitions"]] <- austraits[["definitions"]]
 
-  ret
+  ret[["definitions"]] <- austraits[["definitions"]]
+  ret[["build_info"]] <- austraits[["build_info"]]
+
+  keys <- ret$methods %>% select(source_primary_key,source_secondary_key) %>% na_if("") %>% unlist() %>% na.omit() %>% unique()
+
+  ret[["sources"]] <- austraits[["sources"]][keys]
+
+  ret[names(austraits)]
 }
 
 #' Title
@@ -186,21 +195,32 @@ separate_trait_values <- function(data, definitions) {
 #' @examples
 extract_trait <- function(austraits, trait_name) {
 
+
   ret <- austraits
 
-  # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
   ret[["traits"]] <- austraits[["traits"]][ austraits[["traits"]][["trait_name"]] %in% trait_name,]
+
   ids <- ret[["traits"]][["dataset_id"]] %>% unique() %>% sort()
-  ret[["sites"]] <- austraits[["sites"]][austraits[["sites"]][["dataset_id"]] %in% ids,]
+
+  ret[["sites"]] <- austraits[["sites"]] %>% filter(site_name %in% ret[["traits"]][["site_name"]], dataset_id %in% ids)
+
+  ret[["contexts"]] <- austraits[["contexts"]]%>% filter(context_name %in% ret[["traits"]][["context_name"]], dataset_id %in% ids)
+
   ret[["taxonomy"]] <- austraits[["taxonomy"]] %>% filter(species_name %in% ret[["traits"]][["species_name"]])
   ret[["excluded_data"]] <- austraits[["excluded_data"]][austraits[["excluded_data"]][["trait_name"]] %in% trait_name,]
+
+  ret[["contributors"]] <- austraits[["contributors"]] %>% filter(dataset_id %in%  ids)
+
+  ret[["methods"]] <- austraits[["methods"]] %>% filter(dataset_id %in%  ids, trait_name %in% ret[["traits"]][["trait_name"]])
+
+  ret[["definitions"]] <- austraits[["definitions"]]
+  ret[["build_info"]] <- austraits[["build_info"]]
 
   # if numeric, convert to numeric
   if(!is.na(ret[["traits"]][["unit"]][1])){
     ret[["traits"]][["value"]] <- as.numeric(ret[["traits"]][["value"]])
   }
 
-  ret[["methods"]] <- austraits[["methods"]] %>% filter(dataset_id %in%  ret[["traits"]][["dataset_id"]] )
 
   keys <- union(ret$methods$source_primary_key, 
                 ret$methods$source_secondary_key) %>% 
@@ -208,7 +228,7 @@ extract_trait <- function(austraits, trait_name) {
                 
   ret[["sources"]] <- austraits$sources[keys]
 
-  ret
+  ret[names(austraits)]
 }
 
 trait_type  <- function(trait_name, definitions) {

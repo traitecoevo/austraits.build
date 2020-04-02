@@ -59,12 +59,32 @@ sites:
     notes: Lat/lon for the middle of Clarke Island, not specifically for the sites
     description: Mediterranean-type vegetation, including heathland, Casuarina forest,
       scrub and coastal scrub
+contexts:
+  global_average:
+    description: average survival across all sites
+    type: field
+  fire_severity_1:
+    description: in areas where foliage is retained
+    type: field
+  fire_severity_2:
+    description: in areas where foliage removed but fine twigs persisted (<0.5 cm diameter) 
+    type: field
+  fire_severity_3:
+    description: in areas where trees burnt down to thin branches (0.5 to 3 cm diameter)
+    type: field
+  fire_severity_4:
+    description: in areas where trees burnt down to thick branches (3 to 5 cm diameter)
+    type: field
+  fire_severity_5:
+    description: in areas where only stumps remain (all branches removed)
+    type: field
 config:
   data_is_long_format: no
   variable_match:
     species_name: Species
     site_name: site_name
-  custom_R_code: .na
+    context_name: severity
+  custom_R_code: 'data %>% mutate(resprouting_percentage_by_severity = ifelse(is.na(severity), resprouting_proportion_species_level*100, resprouting_percentage_by_severity), severity = ifelse(is.na(severity), "global_average", paste0("fire_severity_", severity)))'
 traits:
 - var_in: fire_response
   unit_in: .na
@@ -120,6 +140,5 @@ taxonomic_updates:
   replace: Leptospermum - unidentified
   reason: Spelling correction made by E. Wenk to match genus and family correctly
     (2020-03-12)
-questions:
-  contributor: .na
+questions: .na
 
