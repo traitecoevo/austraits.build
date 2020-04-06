@@ -448,9 +448,6 @@ parse_data <- function(data, dataset_id, metadata) {
   # Ensure all lower case
   out[["value"]] <- tolower(out[["value"]])
 
-  # Ensure all lower case
-  out[["value"]] <- tolower(out[["value"]])
-
   # Add information on trait type, precision, if not already present
   vars <- c("value_type", "replicates")
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
