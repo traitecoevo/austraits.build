@@ -47,31 +47,24 @@ A_sat_means %>%
   mutate(context = if_else(harvest_age=="",context,paste(context,"_and_",harvest_age,sep=""))) %>% 
   write_csv("data/Ghannoum_2010/data.csv") -> test
 
-unique(test$context)
-
-[1] "grown_at_Amb_temp_and_640_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days"
-[2] "grown_at_Elv_temp_and_280_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days"
-[3] "grown_at_Amb_temp_and_280_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days"
-[4] "grown_at_Amb_temp_and_400_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days"
-[5] "grown_at_Elv_temp_and_400_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days"
-[6] "grown_at_Elv_temp_and_400_ppm_CO2_and_measurements_made_at_28_deg_C"                          
-[7] "grown_at_Elv_temp_and_640_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days"
-[8] "grown_at_Amb_temp_and_640_ppm_CO2_and_measurements_made_at_34_deg_C"                          
-[9] "grown_at_Elv_temp_and_280_ppm_CO2_and_measurements_made_at_34_deg_C"                          
-[10] "grown_at_Amb_temp_and_280_ppm_CO2_and_measurements_made_at_34_deg_C"                          
-[11] "grown_at_Amb_temp_and_400_ppm_CO2_and_measurements_made_at_34_deg_C"                          
-[12] "grown_at_Elv_temp_and_400_ppm_CO2_and_measurements_made_at_34_deg_C"                          
-[13] "grown_at_Elv_temp_and_640_ppm_CO2_and_measurements_made_at_34_deg_C"                          
-[14] "grown_at_Amb_temp_and_400_ppm_CO2_and_harvested_at_80_days"                                   
-[15] "grown_at_Amb_temp_and_280_ppm_CO2_and_harvested_at_80_days"                                   
-[16] "grown_at_Amb_temp_and_640_ppm_CO2_and_harvested_at_80_days"                                   
-[17] "grown_at_Elv_temp_and_400_ppm_CO2_and_harvested_at_80_days"                                   
-[18] "grown_at_Elv_temp_and_280_ppm_CO2_and_harvested_at_80_days"                                   
-[19] "grown_at_Elv_temp_and_640_ppm_CO2_and_harvested_at_80_days"                                   
-[20] "grown_at_Amb_temp_and_400_ppm_CO2_and_harvested_at_150_days"                                  
-[21] "grown_at_Amb_temp_and_280_ppm_CO2_and_harvested_at_150_days"                                  
-[22] "grown_at_Amb_temp_and_640_ppm_CO2_and_harvested_at_150_days"                                  
-[23] "grown_at_Elv_temp_and_400_ppm_CO2_and_harvested_at_150_days"                                  
-[24] "grown_at_Elv_temp_and_280_ppm_CO2_and_harvested_at_150_days"                                  
-[25] "grown_at_Elv_temp_and_640_ppm_CO2_and_harvested_at_150_days"                                  
-[26] "grown_at_Elv_temp_and_280_ppm_CO2" 
+test %>%
+  distinct(context, .keep_all = TRUE) %>%
+  select(context, age_at_harvest, Temp, CO2, MeasTemp) %>%
+  mutate(type = "treatment",
+         description = context,
+         description = gsub("_"," ",description),
+         description = gsub("Amb","ambient",description),
+         description = gsub("temp","temperature",description),
+         description = gsub("Elv","elevated",description),
+         `measurement temperature description` = if_else(MeasTemp == 28, "Plants measured at 28 deg C, current growing season temperature", 
+                                                         "Plants measured at 34 deg C, 4 deg C above current growing season temperature"),
+         `growing temperature description` = if_else(Temp == "Amb", "Grown at ambient temperature, 26/18 (day/night)", 
+                                                     "Grown at elevated temperature, 30/22 (day/night)"),
+         `growing CO2 description` = if_else(CO2 == 280, "Grown at 280 ppm CO2, sub-ambient CO2 levels", 
+                                             if_else(CO2 == 400,"Grown at 400 ppm CO2, ambient CO2 levels",
+                                                     "Grown at 600 ppm CO2, elevated CO2 levels")),
+         `age at harvest description` = if_else(is.na(age_at_harvest),"",if_else(age_at_harvest == "150_days", 
+                                                                         "Harvested at 150 days of age","Harvested at 80 days of age")),
+         `context columns` = "age at harvest, growing CO2, growing temperature, measurement temperature") %>% 
+  rename(`measurement temperature (C)` = MeasTemp, `growing temperature (C)` = Temp,
+         `growing CO2 (ppm)` = CO2, `age at harvest (days)` = age_at_harvest) -> contexts
