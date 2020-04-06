@@ -22,7 +22,9 @@ load_study <- function(filename_data_raw,
     mutate(
       # For cells with multiple values (separated by a space), sort these alphabetically
       value =  ifelse(is.na(error), split_then_sort(value),value),
-      value_type = factor(value_type, levels = names(definitions$value_type$values))
+      value_type = factor(value_type, levels = names(definitions$value_type$values)),
+      #ensure dates are converted back to character
+      date = as.character(date)
       ) %>% 
     arrange(observation_id, trait_name, value_type) 
 
@@ -442,6 +444,9 @@ parse_data <- function(data, dataset_id, metadata) {
     out <- df
     out[["value"]] <- out[["value"]] %>%  as.character()
   }
+
+  # Ensure all lower case
+  out[["value"]] <- tolower(out[["value"]])
 
   # Ensure all lower case
   out[["value"]] <- tolower(out[["value"]])
