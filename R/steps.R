@@ -26,24 +26,34 @@ load_study <- function(filename_data_raw,
       ) %>% 
     arrange(observation_id, trait_name, value_type) 
 
-  # read contextual (site) data
-  if(length(unlist(metadata$sites)) > 1){
-    # extract contextual data from metadata
-    format_sites <- function(v, my_list) {
+  # read site data
+
+  format_sites_contexts <- function(v, my_list, context = FALSE) {
+    tmp <- 
       my_list[[v]] %>%
-      list1_to_df() %>%
-      rename(site_property="key") %>%
+      list1_to_df()
+    if(!context){
+      tmp %>% rename(site_property="key") %>%
       mutate(dataset_id=dataset_id, site_name = v)
-    }
-
-    sites <- lapply(metadata$sites, lapply, as.character) %>%
-      lapply(names(.), format_sites, .) %>%
-      dplyr::bind_rows()
-
-  } else {
-    sites <- tibble(dataset_id = character(), site_name = character())
+    } else {
+      tmp %>% rename(context_property="key") %>%
+      mutate(dataset_id=dataset_id, context_name = v)
+    }    
   }
-  sites <- add_all_columns(sites, definitions, "sites")
+
+  # extract site data from metadata
+  sites <- 
+    metadata$sites %>%  
+    format_sites(dataset_id) %>% 
+    add_all_columns(definitions, "sites") %>% 
+    select(-error)
+
+  # read contextual data
+  contexts <- 
+    metadata$contexts %>% 
+    format_sites(dataset_id, context = TRUE) %>% 
+    add_all_columns(definitions, "contexts") %>% 
+    select(-error)
 
   # record contributors
   contributors <- 
@@ -103,7 +113,8 @@ load_study <- function(filename_data_raw,
 
   list(dataset_id = dataset_id,
        traits       = traits %>% filter(is.na(error)) %>% select(-error),
-       sites    = sites %>% select(-error),
+       sites    = sites,
+       contexts    = contexts,
        methods    = methods,
        excluded_data = traits %>% filter(!is.na(error)) %>% select(error, everything()),
        taxonomy = taxonomy,
@@ -127,6 +138,35 @@ custom_manipulation <- function(txt) {
   }
 }
 
+
+format_sites <- function(my_list, dataset_id, context = FALSE) {
+
+  f_helper <- function(v, a_list, context = FALSE) {
+    tmp <- 
+      a_list[[v]] %>%
+      list1_to_df()
+    if(!context){
+      tmp %>% rename(site_property="key") %>%
+      mutate(site_name = v)
+    } else {
+      tmp %>% rename(context_property="key") %>%
+      mutate(context_name = v)
+    }    
+  }
+
+  # if length 1 then it's an "na"
+  if(length(unlist(my_list)) > 1){
+    out <- 
+      my_list %>%   
+      lapply(lapply, as.character) %>%
+      lapply(names(.), f_helper, ., context = context) %>%
+      dplyr::bind_rows() %>% 
+      mutate(dataset_id=dataset_id)
+  } else {
+    out <- tibble(dataset_id = character())
+  }
+  out
+}
 
 ## Remove any disallowed traits, as defined in definitions
 flag_unsupported_traits <- function(data, definitions) {
@@ -561,6 +601,7 @@ combine_austraits <- function(..., d=list(...), definitions) {
 
   ret <- list(traits=combine("traits", d),
               sites=combine("sites", d),
+              contexts=combine("contexts", d),
               methods=combine("methods", d),
               excluded_data = combine("excluded_data", d),
               taxonomy=taxonomy,
@@ -568,8 +609,8 @@ combine_austraits <- function(..., d=list(...), definitions) {
               contributors=combine("contributors", d),
               sources = sources,
               build_info = list(
-                      version=definitions$austraits$elements$version$value,
-                      git_SHA=get_SHA_link(),
+                      version=desc::desc_get_field("Version"),
+                      git_SHA=get_SHA(),
                       session_info = sessionInfo()
                       )
               )
