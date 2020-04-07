@@ -13,8 +13,8 @@ source:
     publisher: Wiley-Blackwell
     doi: 10.1111/j.1365-3040.2008.01918.x
 people:
-- name: Matthew Harrison
-  institution: University of Tasmania
+- name: Matthew Tom Harrison
+  institution: Tasmanian Institute of Agriculture, University of Tasmania
   role: collector, contact
 - name: John Evans
   institution: The Australian National University
@@ -42,12 +42,29 @@ sites:
   ANU Greenhouse:
     longitude (deg): 149.117
     latitude (deg): -35.277
+contexts:
+  no_context:
+    description: plants measured in ANU Botanic Garden
+    type: field
+  young_leaves_from_no_added_N_treatment:
+    description: young leaves on plant; treated with nutrient solution containing 4 mm CaCl2, instead of nitrogen-containing solution
+    type: treatment_harsh
+  old_leaves_from_no_added_N_treatment:
+    description: old leaves on plant; treated with nutrient solution containing 4 mm CaCl2, instead of nitrogen-containing solution
+    type: treatment_harsh
+  young_leaves_from_N_added_treatment:
+    description: young leaves on plant; treated with Rorison’s nutrient solution (4 mm Ca(NO3)2) twice a week
+    type: treatment_favourable
+  old_leaves_from_N_added_treatment:
+    description: old leaves on plant; treated with Rorison’s nutrient solution (4 mm Ca(NO3)2) twice a week
+    type: treatment_favourable
 config:
   data_is_long_format: no
   variable_match:
     species_name: species
     site_name: site_name
-  custom_R_code: .na
+    context_name: context_name
+  custom_R_code: data %>% mutate(age = gsub("O","old",age)) %>% mutate(age = gsub("Y","young",age)) %>% mutate(context_name = if_else(is.na(`age`),"no_context",paste(`age`,"_leaves_from_",`nitrogen treatment`,"_treatment")))
 traits:
 - var_in: photosynthetic pathway
   unit_in: .na
@@ -169,7 +186,7 @@ traits:
     by drying, divided by leaf area.
 - var_in: Asat (mmol m-2 s-1)
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_maximum
+  trait_name: photosynthetic_rate_per_area_saturated
   value_type: site_mean
   replicates: 4-5
   methods: Measurements of CO2 assimilation rate per unit area (Aa) in the ANBG were
@@ -213,7 +230,7 @@ traits:
     not shown).
 - var_in: A300/Na  PNUE (mmol (mol N)-1 s-1)
   unit_in: umolCO2/molN/s
-  trait_name: leaf_photosynthetic_nitrogen_use_efficiency_maximum
+  trait_name: leaf_photosynthetic_nitrogen_use_efficiency_saturated
   value_type: site_mean
   replicates: 4-5
   methods: PNUE [mmol CO2 (mol N)-1 s-1] was calculated by dividing the CO2 assimilation rate per unit area scaled to a common Ci (Aa300), by the nitrogen content per unit leaf area (Na).
@@ -287,6 +304,6 @@ taxonomic_updates:
   reason: Synonym reported by TaxonStand (2018-02-08)
 questions:
   contributors: Do you have lat/lon coordinates for the ANU Greenhouse? I've just put in the location of the biology department, but suspect the glasshouses are elsewhere.
-  contextual: Note to AusTraits, there is plant age, nitrogen treatment, and leaf temperature to add as contextual variables.
+  question_2: Your values are all tretament means - do you also have the raw data?
   additional_traits: Note to AusTraits, there is also data for 'Fraction of leaf N in Rubisco'
 

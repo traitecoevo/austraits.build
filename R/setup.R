@@ -66,6 +66,7 @@ metadata_create_template <- function(dataset_id,
                       original_file= "unknown",
                       notes= "unknown"),
        sites = NA,
+       contexts = NA,
        config = NA,
        traits = NA,
        substitutions = NA,
@@ -86,10 +87,10 @@ metadata_create_template <- function(dataset_id,
 
   if(data_is_long_format) {
     v1 <- c("species_name", "trait_name", "value")
-    v2 <- c("site_name", "observation_id")
+    v2 <- c("site_name", "context_name", "observation_id")
   } else {
     v1 <- c("species_name")
-    v2 <- c("site_name")
+    v2 <- c("site_name", "context_name")
   }
   for(v in v1) {      
     config[["variable_match"]][[v]] <- user_select_column(v, names(data))
@@ -110,7 +111,6 @@ user_select_column <- function(column, choices) {
   tmp <- menu(choices, title= sprintf("Select column for `%s`", column))
   choices[tmp]
 }
-
 
 user_select_names <- function(title, vars){
 
@@ -214,7 +214,6 @@ metadata_add_traits <- function(dataset_id) {
 #' @examples
 #' austraits$sites %>% filter(dataset_id == "Falster_2005_1") %>% select(-dataset_id) %>% spread(site_property, value) %>% type_convert()-> site_data
 #' metadata_add_sites("Falster_2005_1", site_data)
-#' 
 metadata_add_sites <- function(dataset_id, site_data) {
 
   # read metadata
@@ -232,6 +231,42 @@ metadata_add_sites <- function(dataset_id, site_data) {
             split(site_data[[site_name]]) %>% lapply(as.list)
 
   cat(sprintf("Following sites added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$sites), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
+  
+  metadata_write_dataset_id(metadata, dataset_id)
+}
+
+
+#' For specified `dataset_id` import context data from a dataframe
+#'
+#' This functions asks users which columns in the dataframe they would like to keep
+#' and records this appropriately in the metadata. The input data is assumed to be 
+#' in wide format.
+#' The output may require additional manual editing.
+#'
+#' @inheritParams metadata_path_dataset_id
+#' @param context_data A dataframe of context variables
+#'
+#' @export
+#' @examples
+#' austraits$contexts %>% filter(dataset_id == "Hall_1981") %>% select(-dataset_id) %>% spread(context_property, value) %>% type_convert()-> context_data
+#' metadata_add_contexts("Hall_1981", context_data)
+metadata_add_contexts <- function(dataset_id, context_data) {
+  
+  # read metadata
+  metadata <- metadata_read_dataset_id(dataset_id)
+  
+  # Choose column for context_name
+  context_name <- user_select_column("context_name", names(context_data))
+  
+  # From remaining variables, choose those to keep
+  context_sub <- select(context_data, -!!context_name)
+  keep <- user_select_names(paste("Indicate all columns you wish to keep as distinct context_properties in ", dataset_id), names(context_sub))
+  
+  # Save and notify
+  metadata$contexts <- select(context_data, one_of(keep)) %>%
+    split(context_data[[context_name]]) %>% lapply(as.list)
+  
+  cat(sprintf("Following contexts added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$contexts), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
   
   metadata_write_dataset_id(metadata, dataset_id)
 }
@@ -282,7 +317,8 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 #' Uses rcrossref package to access publication details from the crossref 
 #' database
 #'
-#' @inheritParams metadata_path_dataset_id metadata_add_source_bibtex
+#' @inheritParams metadata_path_dataset_id 
+#' @inheritParams metadata_add_source_bibtex
 #' @param doi doi of reference to add
 #'
 #' @export
@@ -344,14 +380,33 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
 }
 
 
-# function to add a taxonomic change into a yaml file for any dataset_id where species occurs
+#' Add a taxonomic change into a yaml file for any dataset_id where species occurs
+#'
+#' @param find 
+#' @param replace 
+#' @param reason 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 metadata_add_taxnomic_change_all_studies <- function(find, replace, reason) {
   studies <- austraits_find_species(find)
   for(s in studies)
     metadata_add_taxnomic_change(s, find, replace, reason)
 }
 
-# function to add a taxonomic change into a yaml file for a dataset_id
+#' add a taxonomic change into a yaml file for a dataset_id
+#'
+#' @param dataset_id 
+#' @param find 
+#' @param replace 
+#' @param reason 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 metadata_add_taxnomic_change <- function(dataset_id, find, replace, reason) {
 
   set_name <- "taxonomic_updates"
@@ -377,7 +432,16 @@ metadata_add_taxnomic_change <- function(dataset_id, find, replace, reason) {
 }
 
 
-# function to update a taxonomic change into a yaml file for any dataset_id where species occurs
+#' Update a taxonomic change into a yaml file for any dataset_id where species occurs
+#'
+#' @param find 
+#' @param replace 
+#' @param reason 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 metadata_update_taxnomic_change_all_studies <- function(find, replace, reason) {
   studies <- metadata_find_taxnomic_change(find)
   for(s in studies)
@@ -385,7 +449,17 @@ metadata_update_taxnomic_change_all_studies <- function(find, replace, reason) {
 }
 
 
-# function to update a substitution into a yaml file for a dataset_id
+#' update a substitution into a yaml file for a dataset_id
+#'
+#' @param dataset_id 
+#' @param find 
+#' @param replace 
+#' @param reason 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 metadata_update_taxnomic_change <- function(dataset_id, find, replace, reason) {
 
   set_name <- "taxonomic_updates"
@@ -408,9 +482,16 @@ metadata_update_taxnomic_change <- function(dataset_id, find, replace, reason) {
   metadata_write_dataset_id(metadata, dataset_id)
 }
 
-#metadata_update_taxnomic_change("Angevin_2010", "Elymus scaber", "newname", "newreason")
-
-# function to remove a taxonomic change from a yaml file for a dataset_id
+#' remove a taxonomic change from a yaml file for a dataset_id
+#'
+#' @param dataset_id 
+#' @param find 
+#' @param replace 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 metadata_remove_taxnomic_change <- function(dataset_id, find, replace=NULL) {
 
   set_name <- "taxonomic_updates"
@@ -443,6 +524,14 @@ metadata_remove_taxnomic_change <- function(dataset_id, find, replace=NULL) {
   metadata_write_dataset_id(metadata, dataset_id)
 }
 
+#' Title
+#'
+#' @param species_name 
+#' @param original_name 
+#'
+#' @return
+#'
+#' @examples
 austraits_find_species <- function(species_name, original_name = FALSE){
 
   data <- austraits$traits
@@ -460,6 +549,16 @@ austraits_find_species <- function(species_name, original_name = FALSE){
     lapply(species_name, f) 
 }
 
+#' Title
+#'
+#' @param find 
+#' @param replace 
+#' @param studies 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 metadata_find_taxnomic_change <- function(find, replace=NULL, studies = NULL){
 
   if(is.null(studies))
@@ -478,9 +577,18 @@ metadata_find_taxnomic_change <- function(find, replace=NULL, studies = NULL){
   studies[i]
 }
 
-# checks all taxa within against our list of known species
-# If not found, and update=TRUE, checks the unknown species against
-
+#' Checks all taxa within against our list of known species
+#' If not found, and update=TRUE, checks the unknown species against
+#'
+#' @param dataset_id 
+#' @param update 
+#' @param typos 
+#' @param diffchar 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 metadata_check_taxa <- function(dataset_id, update=TRUE, typos=FALSE, diffchar = 2) {
   
   x <- remake::make(dataset_id)
@@ -499,6 +607,10 @@ metadata_check_taxa <- function(dataset_id, update=TRUE, typos=FALSE, diffchar =
   if(!update) return();   
 
   message(crayon::red("Checking for unknown species"))
+
+  check_taxonstand <- function(species, corr = FALSE, ...){
+    Taxonstand::TPL(species, corr = corr, ...) 
+  }
 
   if(typos)
     tpl <- check_taxonstand(species[!i], corr = TRUE, diffchar=diffchar)
@@ -571,28 +683,15 @@ metadata_check_taxa <- function(dataset_id, update=TRUE, typos=FALSE, diffchar =
 }
 
 
-check_taxonstand <- function(species, corr = FALSE, ...){
-  Taxonstand::TPL(species, corr = corr, ...) 
-}
 
-align_tpl <- function(species) {
-  tpl <- check_taxonstand(species, FALSE)
-  species_name <- species
-  i <- tpl$New.ID != ""
-  species_name[i] <- tpl %>% filter(i) %>% format_tpl_species_name()
-
-  data.frame(original_name = species, species_name = species_name, TPL_ID = tpl$New.ID, stringsAsFactors = FALSE) %>% tbl_df()
-}
-
-format_tpl_species_name <- function(tpl) {
-
-  species <- paste(tpl$New.Genus, tpl$New.Species, 
-                       tpl$New.Infraspecific.rank,  tpl$New.Infraspecific)
-  i <- tpl$New.Infraspecific.rank == ""
-  species[i] <- paste(tpl$New.Genus, tpl$New.Species)[i]
-  species
-}
-
+#' Title
+#'
+#' @param tpl 
+#' @param use.new 
+#'
+#' @return
+#'
+#' @examples
 format_tpl_to_accepted_df <- function(tpl, use.new = FALSE){
 
   if(use.new) {
@@ -609,6 +708,14 @@ format_tpl_to_accepted_df <- function(tpl, use.new = FALSE){
      mutate(APC_name = "unknown", APC_ID = "unknown", APNI_ID = "unknown") 
 }
 
+#' Title
+#'
+#' @param accepted 
+#' @param to_add 
+#'
+#' @return
+#'
+#' @examples
 austraits_add_to_accepted_species <- function(accepted, to_add) {
 
   i <- !(to_add$species_name %in% accepted$species_name)
@@ -623,6 +730,15 @@ austraits_add_to_accepted_species <- function(accepted, to_add) {
 }
 
 
+#' Title
+#'
+#' @param species_name 
+#' @param dist 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 find_names_distance_to_neighbours <- function(species_name, dist=5) {
 
   # index of species to check
@@ -640,6 +756,11 @@ find_names_distance_to_neighbours <- function(species_name, dist=5) {
 }
 
 
+#' Title
+#'
+#' @export
+#'
+#' @examples
 austraits_run_tests <- function() {
   library(testthat)
 
@@ -655,6 +776,12 @@ austraits_run_tests <- function() {
   testthat::test_dir("tests", reporter = default_reporter())
 }
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 austraits_rebuild_remake_setup <- function( ) {
 
   library(whisker)
