@@ -66,6 +66,7 @@ metadata_create_template <- function(dataset_id,
                       original_file= "unknown",
                       notes= "unknown"),
        sites = NA,
+       contexts = NA,
        config = NA,
        traits = NA,
        substitutions = NA,
@@ -86,10 +87,10 @@ metadata_create_template <- function(dataset_id,
 
   if(data_is_long_format) {
     v1 <- c("species_name", "trait_name", "value")
-    v2 <- c("site_name", "observation_id")
+    v2 <- c("site_name", "context_name", "observation_id")
   } else {
     v1 <- c("species_name")
-    v2 <- c("site_name")
+    v2 <- c("site_name", "context_name")
   }
   for(v in v1) {      
     config[["variable_match"]][[v]] <- user_select_column(v, names(data))
@@ -230,6 +231,42 @@ metadata_add_sites <- function(dataset_id, site_data) {
             split(site_data[[site_name]]) %>% lapply(as.list)
 
   cat(sprintf("Following sites added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$sites), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
+  
+  metadata_write_dataset_id(metadata, dataset_id)
+}
+
+
+#' For specified `dataset_id` import context data from a dataframe
+#'
+#' This functions asks users which columns in the dataframe they would like to keep
+#' and records this appropriately in the metadata. The input data is assumed to be 
+#' in wide format.
+#' The output may require additional manual editing.
+#'
+#' @inheritParams metadata_path_dataset_id
+#' @param context_data A dataframe of context variables
+#'
+#' @export
+#' @examples
+#' austraits$contexts %>% filter(dataset_id == "Hall_1981") %>% select(-dataset_id) %>% spread(context_property, value) %>% type_convert()-> context_data
+#' metadata_add_contexts("Hall_1981", context_data)
+metadata_add_contexts <- function(dataset_id, context_data) {
+  
+  # read metadata
+  metadata <- metadata_read_dataset_id(dataset_id)
+  
+  # Choose column for context_name
+  context_name <- user_select_column("context_name", names(context_data))
+  
+  # From remaining variables, choose those to keep
+  context_sub <- select(context_data, -!!context_name)
+  keep <- user_select_names(paste("Indicate all columns you wish to keep as distinct context_properties in ", dataset_id), names(context_sub))
+  
+  # Save and notify
+  metadata$contexts <- select(context_data, one_of(keep)) %>%
+    split(context_data[[context_name]]) %>% lapply(as.list)
+  
+  cat(sprintf("Following contexts added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$contexts), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
   
   metadata_write_dataset_id(metadata, dataset_id)
 }

@@ -66,8 +66,8 @@ traits:
       units: mg/g
       label: Bark phosphorus (P) content per unit bark dry mass
       values:
-        minimum: 0.01
-        maximum: 100.0
+        minimum: 0.001
+        maximum: 10.0
     bark_K_per_dry_mass:
       description: Bark potassium (K) content per unit bark dry mass
       type: numeric
@@ -90,8 +90,8 @@ traits:
       units: mg/g
       label: Bark magnesium (Mg) content per unit bark dry mass
       values:
-        minimum: 0.1
-        maximum: 100.0
+        minimum: 0.01
+        maximum: 10.0
     bark_Na_per_dry_mass:
       description: Bark sodium (Na) content per unit bark dry mass
       type: numeric
@@ -266,7 +266,7 @@ traits:
       units: umol/m2
       label: Sum of chlorophyll A and B per leaf area
       values:
-        minimum: 50
+        minimum: 10
         maximum: 2000
     chlorophyll_A_per_area:
       description: Chlorophyll A content relative to leaf area
@@ -314,8 +314,8 @@ traits:
       units: umol/umol
       label: Ratio of chlorophyll A to chlorophyll B
       values:
-        minimum: 1.0
-        maximum: 10
+        minimum: 0.1
+        maximum: 6
     ca:
       description: ambient CO2 concentration (external CO2 concentration)
       type: numeric
@@ -339,7 +339,7 @@ traits:
       label: internal CO2 concentration under ambient conditions
       values:
         minimum: 50.0
-        maximum: 1000.0
+        maximum: 1300.0
     ci_at_Amax:
       description: CO2 concentration in interstitial spaces during Amax measurement
       type: numeric
@@ -347,15 +347,15 @@ traits:
       label: internal CO2 concentration during Amax measurement
       values:
         minimum: 50.0
-        maximum: 1000.0
+        maximum: 2100.0
     ci_at_Asat:
       description: CO2 concentration in interstitial spaces during Asat measurement
       type: numeric
       units: umol/mol
       label: internal CO2 concentration during Asat measurement
       values:
-        minimum: 50.0
-        maximum: 1000.0
+        minimum: 10.0
+        maximum: 1300.0
     ci_over_ca:
       description: Ratio of internal to external CO2 concentrations
       type: numeric
@@ -363,7 +363,7 @@ traits:
       label: Ratio of internal to external CO2 concentrations
       values:
         minimum: 0.0
-        maximum: 1.0
+        maximum: 2.5
     cotyledon_position:
       description: Binary variable distinguishing between seedlings where the cotyledon remains within the seed coat versus emerges from the seed coat at germination.
       type: categorical
@@ -516,38 +516,46 @@ traits:
       values:
         colourless: Colourless embryo
         green: Green embryo
-    upper_epidermis_thickness:
-      description: Thickness of the upper epidermis
-      type: numeric
-      units: um
-      label: Upper epidermis thickness
-      values:
-        minimum: 1.0
-        maximum: 100.0
-    lower_epidermis_thickness:
-      description: Thickness of the lower epidermis
-      type: numeric
-      units: um
-      label: Lower epidermis thickness
-      values:
-        minimum: 1.0
-        maximum: 100.0
-    epithelial_cell_density:
-      description: Epithelial cell density on the leaf surface
+    epidermal_cell_density_abaxial:
+      description: Epidermal cell density on the lower leaf surface
       type: numeric
       units: count/mm2
-      label: Epithelial cell density on the leaf surface
+      label: Epidermal cell density on the lower leaf surface
       values:
         minimum: 100
         maximum: 10000
-    epithelial_cell_layer_thickness:
-      description: Epithelial cell layer thickness on the leaf surface
+    epidermal_cell_density_adaxial:
+      description: Epidermal cell density on the upper leaf surface
+      type: numeric
+      units: count/mm2
+      label: Epidermal cell density on the upper leaf surface
+      values:
+        minimum: 100
+        maximum: 10000
+    epidermis_thickness:
+      description: Thickness of the epidermis, leaf surface not specified
       type: numeric
       units: um
-      label: Epithelial cell layer thickness on the leaf surface
+      label: Thickness of the epidermis, leaf surface not specified
       values:
-        minimum: 1
-        maximum: 100
+        minimum: 1.0
+        maximum: 100.0
+    epidermis_thickness_upper_leaf_surface:
+      description: Thickness of the epidermis on the upper leaf surface
+      type: numeric
+      units: um
+      label: Thickness of the epidermis on the upper leaf surface
+      values:
+        minimum: 1.0
+        maximum: 100.0
+    epidermis_thickness_lower_leaf_surface:
+      description: Thickness of the epidermis on the lower leaf surface
+      type: numeric
+      units: um
+      label: Thickness of the epidermis on the lower leaf surface
+      values:
+        minimum: 1.0
+        maximum: 100.0
     fire_response:
       description: Distinguishes between plants that are killed by fire and resprout following fire
       type: categorical
@@ -618,6 +626,22 @@ traits:
       values:
         minimum: 0
         maximum: 5
+    Jmax_per_area:
+      description: Capacity for photosynthetic electron transport, calculated from an A-Ci response curve, on an area basis
+      type: numeric
+      units: umol/m2/s
+      label: Capacity for photosynthetic electron transport, measured through chlorophyll fluorescence, on a per mass basis
+      values:
+        minimum: 10
+        maximum: 500
+    Vcmax_per_area:
+      description: Maximum carboxylase activity of ribulose 1,5-bisphosphate carboxylase/oxygenase (Rubisco), calculated from an A-Ci response curve, on an area basis
+      type: numeric
+      units: umol/m2/s
+      label: Maximum carboxylase activity of ribulose 1,5-bisphosphate carboxylase/oxygenase (Rubisco), measured through chlorophyll fluorescence, on a per mass basis
+      values:
+        minimum: 10
+        maximum: 500
     fruit_mass:
       description: The weight of a fruit, including the seed
       type: numeric
@@ -945,6 +969,14 @@ traits:
       values:
         minimum: 0.01
         maximum: 1.0
+    leaf_Cl_per_dry_mass:
+      description: Leaf chlorine (Cl) content per unit leaf dry mass
+      type: numeric
+      units: mg/kg
+      label: Leaf chlorine (Cl) content per unit leaf dry mass
+      values:
+        minimum: 10.0
+        maximum: 10000.0
     leaf_CN_ratio:
       description: Leaf carbon/nitrogen (C/N) ratio
       type: numeric
@@ -1212,7 +1244,7 @@ traits:
       label: Leaf magnesium (Mg) content per unit leaf dry mass
       values:
         minimum: 0.01
-        maximum: 100
+        maximum: 10000
     leaf_Mn_per_dry_mass:
       description: Leaf manganese (Mn) content per unit leaf dry mass
       type: numeric
@@ -1286,69 +1318,45 @@ traits:
         evergreen: Plant which retains its leaves year-round
         facultative_drought_deciduous: Plant that sometimes sheds its years in response to drought
         semi_deciduous: Plant that sheds its years each year for just a very brief period of time
-    leaf_photosynthetic_nitrogen_use_efficiency:
-      description: Ratio of photosynthesis (CO2 assimilation rate) to leaf nitrogen content
-      type: numeric
-      units: umolCO2/molN/s
-      label: Leaf photosynthesis rate per unit leaf nitrogen (N) content (photosynthetic nitrogen use efficiency, PNUE)
-      values:
-        minimum: 0.1
-        maximum: 800.0
     leaf_photosynthetic_nitrogen_use_efficiency_maximum:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf nitrogen content at saturating light and CO2 conditions
       type: numeric
       units: umolCO2/molN/s
       label: Leaf photosynthesis rate per unit leaf nitrogen (N) content (photosynthetic nitrogen use efficiency, PNUE) at saturating light and CO2 conditions
       values:
-        minimum: 0.1
-        maximum: 800.0
+        minimum: 10.0
+        maximum: 1000.0
     leaf_photosynthetic_nitrogen_use_efficiency_saturated:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf nitrogen content at saturating light conditions but ambient CO2 conditions
       type: numeric
       units: umolCO2/molN/s
       label: Leaf photosynthesis rate per unit leaf nitrogen (N) content (photosynthetic nitrogen use efficiency, PNUE) at saturating light conditions but ambient CO2 conditions
       values:
-        minimum: 0.1
-        maximum: 800.0
-    leaf_photosynthetic_phosphorus_use_efficiency:
-      description: Ratio of photosynthetic rate to leaf phosphorus concentration
-      type: numeric
-      units: umolCO2/molP/s
-      label: Photosynthetic phosphorus use efficiency
-      values:
-        minimum: 500
-        maximum: 50000
+        minimum: 10.0
+        maximum: 1000.0
     leaf_photosynthetic_phosphorus_use_efficiency_maximum:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf phosphorus content at saturating light and CO2 conditions
       type: numeric
       units: umolCO2/molP/s
       label: Leaf photosynthesis rate per unit leaf phosphorus (P) content (photosynthetic phosphorus use efficiency, PPUE) at saturating light and CO2 conditions
       values:
-        minimum: 500
-        maximum: 50000
+        minimum: 100.0
+        maximum: 100000.0
     leaf_photosynthetic_phosphorus_use_efficiency_saturated:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf phosphorus content at saturating light conditions but ambient CO2 conditions
       type: numeric
       units: umolCO2/molP/s
       label: Leaf photosynthesis rate per unit leaf phosphorus (P) content (photosynthetic phosphorus use efficiency, PPUE) at saturating light conditions but ambient CO2 conditions
       values:
-        minimum: 500
-        maximum: 50000
-    leaf_photosynthetic_water_use_efficiency:
-      description: WUE; Ratio of photosynthesis (CO2 assimilation rate) to leaf transpiration (water loss)
-      type: numeric
-      units: umolCO2/mmolH2O
-      label: Leaf photosynthesis rate per unit leaf transpiration (water use efficiency, WUE)
-      values:
-        minimum: 0.01
-        maximum: 1.0
+        minimum: 100.0
+        maximum: 100000.0
     leaf_S_per_dry_mass:
       description: Leaf sulphur (S) content per unit leaf dry mass
       type: numeric
       units: mg/kg
       label: Leaf sulphur (S) content per unit leaf dry mass
       values:
-        minimum: 100.0
+        minimum: 50.0
         maximum: 50000.0
     leaf_saturated_water_content_per_mass:
       description: Ratio of water in a saturated leaf (maximal water holding capacity at full turgidity) to leaf dry mass
@@ -1481,7 +1489,7 @@ traits:
       units: mmol/m2/s
       label: Leaf transpiration under ambient conditions
       values:
-        minimum: .0001
+        minimum: 0.0001
         maximum: 10000.0
     leaf_transpiration_at_Amax:
       description: Rate of water loss from leaf during Amax measurement
@@ -1489,7 +1497,7 @@ traits:
       units: mmol/m2/s
       label: Leaf transpiration during Amax measurement
       values:
-        minimum: .0001
+        minimum: 0.0001
         maximum: 10000.0
     leaf_transpiration_at_Asat:
       description: Rate of water loss from leaf during Asat measurement
@@ -1497,7 +1505,7 @@ traits:
       units: mmol/m2/s
       label: Leaf transpiration during Asat measurement
       values:
-        minimum: .0001
+        minimum: 0.0001
         maximum: 10000.0
     leaf_turgor_loss_point:
       description: Water potential at which a leaf loses turgor
@@ -1721,8 +1729,8 @@ traits:
       units: umolCO2/m2/s
       label: Leaf photosynthesis rate per unit leaf area at saturating light conditions
       values:
-        minimum: 0.25
-        maximum: 85
+        minimum: 0.01
+        maximum: 100
     photosynthetic_rate_per_dry_mass:
       description: Maximum rate at which a plant consumes carbon dioxide through photosynthesis, normalised to leaf dry mass
       type: numeric
@@ -1745,7 +1753,7 @@ traits:
       units: umolCO2/g/s
       label: Leaf photosynthesis rate per unit leaf dry mass at saturating light conditions
       values:
-        minimum: 0.01
+        minimum: 0.001
         maximum: 1.0
     physical_defence:
       description: Physical defences
@@ -2395,14 +2403,70 @@ traits:
       values:
         minimum: 0.1
         maximum: 20.0
+    soluable_starch_per_area:
+      description: Mass of soluble starch per leaf area
+      type: numeric
+      units: g/m2
+      label: Soluble starch per leaf area
+      values:
+        minimum: 0.1
+        maximum: 100.0
     soluable_sugars_per_area:
       description: Mass of soluble sugars per leaf area
       type: numeric
       units: g/m2
       label: Soluble sugars per leaf area
       values:
-        minimum: 1.0
+        minimum: 0.10
         maximum: 100.0
+    leaf_soluable_starch_per_mass:
+      description: Mass of soluble starch per leaf mass
+      type: numeric
+      units: mg/g
+      label: Soluble starch per leaf mass
+      values:
+        minimum: 0.1
+        maximum: 100.0
+    leaf_soluable_sugars_per_mass:
+      description: Mass of soluble sugars per leaf mass
+      type: numeric
+      units: mg/g
+      label: Soluble sugars per leaf mass
+      values:
+        minimum: 1.0
+        maximum: 200.0
+    stem_soluable_starch_per_mass:
+      description: Mass of soluble starch per stem mass
+      type: numeric
+      units: mg/g
+      label: Soluble starch per stem mass
+      values:
+        minimum: 0.1
+        maximum: 100.0
+    stem_soluable_sugars_per_mass:
+      description: Mass of soluble sugars per stem mass
+      type: numeric
+      units: mg/g
+      label: Soluble sugars per stem mass
+      values:
+        minimum: 1.0
+        maximum: 200.0
+    root_soluable_starch_per_mass:
+      description: Mass of soluble starch per root mass
+      type: numeric
+      units: mg/g
+      label: Soluble starch per root mass
+      values:
+        minimum: 0.1
+        maximum: 100.0
+    root_soluable_sugars_per_mass:
+      description: Mass of soluble sugars per root mass
+      type: numeric
+      units: mg/g
+      label: Soluble sugars per root mass
+      values:
+        minimum: 1.0
+        maximum: 200.0
     specific_leaf_area:
       description: Leaf area per unit leaf dry mass; SLA
       type: numeric
@@ -2491,6 +2555,14 @@ traits:
       values:
         minimum: 0.00000001
         maximum: 0.0001
+    stem_mass_fraction:
+      description: Ratio of stem dry mass to total plant dry mass
+      type: numeric
+      units: g/g
+      label: Stem mass fraction
+      values:
+        minimum: 0.01
+        maximum: 1.0
     stem_N_per_dry_mass:
       description: Stem carbon (N) content per unit stem dry mass
       type: numeric
@@ -2513,7 +2585,7 @@ traits:
       units: mmolH2O/m2/s
       label: Stomatal conductance per unit leaf area under ambient conditions
       values:
-        minimum: -0.1
+        minimum: 0.1
         maximum: 2000
     stomatal_conductance_per_area_at_Amax:
       description: Rate of water loss through stomata, per unit leaf area under saturated light and CO2 conditions
@@ -2521,7 +2593,7 @@ traits:
       units: mmolH2O/m2/s
       label: Stomatal conductance per unit leaf area under saturated light and CO2 conditions
       values:
-        minimum: -0.1
+        minimum: 0.1
         maximum: 2000
     stomatal_conductance_per_area_at_Asat:
       description: Rate of water loss through stomata, per unit leaf area under saturated light conditions
@@ -2529,15 +2601,23 @@ traits:
       units: mmolH2O/m2/s
       label: Stomatal conductance per unit leaf area under saturated light conditions
       values:
-        minimum: -0.1
+        minimum: 0.1
         maximum: 2000
     stomatal_density:
-      description: Stomatal density on the leaf surface
+      description: Stomatal density on the lower leaf surface
       type: numeric
       units: count/mm2
-      label: Stomatal density on the leaf surface
+      label: Stomatal density on the lower leaf surface
       values:
         minimum: 1
+        maximum: 1000
+    stomatal_density_adaxial:
+      description: Stomatal density on the upper leaf surface
+      type: numeric
+      units: count/mm2
+      label: Stomatal density on the upper leaf surface
+      values:
+        minimum: 0
         maximum: 1000
     support_fraction:
       description: Proportion of shoot dry mass that is stems (versus leaves)
@@ -2601,6 +2681,22 @@ traits:
       values:
         minimum: 0.01
         maximum: 100
+    vein_angle_secondary:
+      description: Angle of secondary veins
+      type: numeric
+      units: angle
+      label: Angle of secondary veins
+      values:
+        minimum: 0
+        maximum: 90
+    vein_density:
+      description: Count of veins per distance
+      type: numeric
+      units: count/mm
+      label: Count of veins per distance
+      values:
+        minimum: 0.01
+        maximum: 10
     water_band_index:
       description: Water band index, the ratio of the  reflectance at 970 nm / 900 nm, recorded from the spectro-radiometer.
       type: numeric
@@ -2638,14 +2734,30 @@ traits:
         weedy: This inexact term is meant to indicate a high degree of adaptability to sites, and proven tendency toward aggressive colonization of either dry or wet sites, or rarely, both. In general, weeds invade and colonize highly disturbed sites or areas. 
         xerohalophyte: Plants adapted to inland salt desert and saline habitats
         xerophyte: Drought-tolerant and drought-adapted plants
-    water_use_efficiency:
-      description: Rate of carbon dioxide uptake relative to water loss, per unit leaf area
+    water_use_efficiency_integrated:
+      description: WUE; Rate of carbon dioxide uptake relative to water loss, per unit leaf area. This measures how much biomass is produced relative to transpiration, and is therefore an integrated measure of water use efficiency. (Calculated as biomass production / transpiration)
       type: numeric
       units: mmolCO2/molH2O/m2/s
-      label: Water use efficiency
+      label: Integrated water use efficiency
       values:
         minimum: 1.0
         maximum: 200.0
+    water_use_efficiency_intrinsic:
+      description: PWUE calculated as Aarea/gs; Ratio of photosynthesis (CO2 assimilation rate) to stomatal conductance (gs). This is intrinsic water use efficiency.
+      type: numeric
+      units: umolCO2/mmolH2O
+      label: Leaf photosynthesis rate per unit stomatal conductance (photosynthetic water use efficiency, PWUE, or intrinsic WUE)
+      values:
+        minimum: 0.001
+        maximum: 2.0
+    water_use_efficiency_photosynthetic:
+      description: PWUE calculated as Aarea/E; Ratio of photosynthesis (CO2 assimilation rate) to leaf transpiration (E; water loss). This is also termed instantaneous water use efficiency.
+      type: numeric
+      units: umolCO2/mmolH2O
+      label: Leaf photosynthesis rate per unit leaf transpiration (photosynthetic water use efficiency, PWUE, or instantaneous WUE)
+      values:
+        minimum: 0.1
+        maximum: 20.0
     wood_delta13C:
       description: Wood carbon stable isotope signature
       type: numeric
@@ -2692,15 +2804,15 @@ traits:
       units: mg/g
       label: Wood phosphorus (P) content per unit wood dry mass
       values:
-        minimum: 0.01
-        maximum: 100.0
+        minimum: 0.001
+        maximum: 10.0
     wood_K_per_dry_mass:
       description: Wood potassium (K) content per unit wood dry mass
       type: numeric
       units: mg/g
       label: Wood potassium (K) content per unit wood dry mass
       values:
-        minimum: 0.1
+        minimum: 0.01
         maximum: 100.0
     wood_Ca_per_dry_mass:
       description: Wood calcium (Ca) content per unit wood dry mass
@@ -2708,16 +2820,16 @@ traits:
       units: mg/g
       label: Wood calcium (Ca) content per unit wood dry mass
       values:
-        minimum: 0.1
-        maximum: 100.0
+        minimum: 0.001
+        maximum: 10.0
     wood_Mg_per_dry_mass:
       description: Wood magnesium (Mg) content per unit wood dry mass
       type: numeric
       units: mg/g
       label: Wood magnesium (Mg) content per unit wood dry mass
       values:
-        minimum: 0.1
-        maximum: 100.0
+        minimum: 0.01
+        maximum: 10.0
     wood_Na_per_dry_mass:
       description: Wood sodium (Na) content per unit wood dry mass
       type: numeric
@@ -2740,16 +2852,16 @@ traits:
       units: mg/g
       label: Dead wood phosphorus (P) content per unit dead wood dry mass
       values:
-        minimum: 0.01
-        maximum: 100.0
+        minimum: 0.001
+        maximum: 10.0
     dead_wood_K_per_dry_mass:
       description: Dead wood potassium (K) content per unit dead wood dry mass
       type: numeric
       units: mg/g
       label: Dead wood potassium (K) content per unit dead wood dry mass
       values:
-        minimum: 0.1
-        maximum: 100.0
+        minimum: 0.01
+        maximum: 10.0
     dead_wood_Ca_per_dry_mass:
       description: Dead wood calcium (Ca) content per unit dead wood dry mass
       type: numeric
@@ -2764,16 +2876,16 @@ traits:
       units: mg/g
       label: Dead wood magnesium (Mg) content per unit dead wood dry mass
       values:
-        minimum: 0.1
-        maximum: 100.0
+        minimum: 0.01
+        maximum: 10.0
     dead_wood_Na_per_dry_mass:
       description: Dead wood sodium (Na) content per unit dead wood dry mass
       type: numeric
       units: mg/g
       label: Dead wood sodium (Na) content per unit dead wood dry mass
       values:
-        minimum: 0.1
-        maximum: 100.0
+        minimum: 0.001
+        maximum: 1.0
     woodiness:
       description: A plant's degree of lignification in stems
       type: categorical
@@ -2802,6 +2914,7 @@ value_type:
     experiment_mean: Value is the mean or median of measurements from an experimental study either in the field or a glasshouse
     experiment_max: Value is the maximum of measurements from an experimental study either in the field or a glasshouse
     individual_mean: Value is a mean of replicate measurements on an individual (usually for experimental ecophysiology studies)
+    individual_max: Value is a maximum of replicate measurements on an individual (usually for experimental ecophysiology studies)
     unknown: Value type is not currently known
 
 #-------------------------------------------------------------
@@ -2817,7 +2930,8 @@ austraits:
       elements:
         dataset_id: &dataset_id Primary identifier for each study contributed into AusTraits; most often these are scientific papers, books, or online resources. By default should be name of first author and year of publication, e.g. `Falster_2005`.
         species_name: &species_name Name of species after aligning taxonomy with standard sources.
-        site_name: &site_name Name of site where species was sampled. Cross-references between similar columns in context and data.
+        site_name: &site_name Name of site where individual was sampled. Cross-references between similar columns in site and data.
+        context_name: &context_name Name of contextual senario where individual was sampled. Cross-references between similar columns in context and data.
         observation_id: A unique identifier for the observation, useful for joining traits coming from the same observation_id. Observation ids are assigned automatically, based on `dataset_id` and row number in the file `data.csv`.
         trait_name: &trait_name Name of trait sampled. Allowable values specified in the table `traits`.
         value: &value Value of trait sampled. In the master dataset these are all stored as characters, then converted to numeric later where appropriate.
@@ -2826,12 +2940,20 @@ austraits:
         replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each measurement. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be `1`. If the value type is `expert_mean`, `expert_min`, or `expert_max` the replicate value should be `.na`.
         original_name: &orginal_name Taxonomic name given to species in the original data supplied by the authors
     sites:
-      description: A table containing observations of site characteristics associated with information in `data`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
+      description: A table containing observations of site characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
       type: table
       elements:
         dataset_id: *dataset_id
         site_name: *site_name
         site_property: The site characteristic being recorded. Name should include units of measurement, e.g. `longitude (deg)`. Ideally we have at least these variables for each site - `longitude (deg)`, `latitude (deg)`, `description`.
+        value: *value
+    contexts:
+      description: A table containing observations of contextual characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `context_name`.
+      type: table
+      elements:
+        dataset_id: *dataset_id
+        context_name: *context_name
+        context_property: The contextual characteristic being recorded. Name should include units of measurement, e.g. `temperature (deg)`. Ideally we have at least two variables for each context - `context_type` and `description`.
         value: *value
     methods:
       description: A table containing details on methods with which data were collected, including time frame and source
@@ -2855,7 +2977,7 @@ austraits:
       type: character
       value: Structure is identical to that presented in the `traits` table, only with an extra column called `error` indicating why the record was excluded. Common reasons are missing_unit_conversions, missing_value, and unsupported_trait_value.
     taxonomy:
-      description: A table containing details on species taxonomy associated with information in `data`. Cross referencing between the two dataframes is possible using the variable `species_name`. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI).
+      description: A table containing details on species taxonomy associated with information in `traits`. Cross referencing between the two dataframes is possible using the variable `species_name`. We have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI).
       type: table
       elements:
         species_name: *species_name
@@ -2936,12 +3058,14 @@ metadata:
         notes: Generic notes about the study and processing of data
     sites:
       description: A list of study sites and information about each of the study sites where data were collected. A list of sites. Each should include at least three variables - `latitude`, `longitude` and `description`. Additional variables can be included where available. Set to `.na` for herbarium studies and field studies where data values are a mean across many locations.
+    contexts:
+      description: A list of scenarios sites and contextial information about each of the scenarios where data were collected. A list of contexts. Each should include at least two variables - `context_type` and `description`. Additional variables can be included where available. Set to `.na` as default.
     config:
       description: Information on the format of the submitted data file
       type: character
       elements:
         data_is_long_format: Indicates if the data spreadsheet has a vertical (long) or  horizontal (wide) configuration with `yes` or `no` terminology
-        variable_match: Identifies which information is in each column in the file `data.csv`, excluding the actual trait data. One element within `variable_match` must be `species_name`. Datasets with `data_is_long_format` set to `yes` must also identify which column includes data on `value` and `trait_name`. Other allowed values include `site_name` and `observation_id`, if these columns are present in the `data.csv` file. 
+        variable_match: Identifies which information is in each column in the file `data.csv`, excluding the actual trait data. One element within `variable_match` must be `species_name`. Datasets with `data_is_long_format` set to `yes` must also identify which column includes data on `value` and `trait_name`. Other allowed values include `site_name`, `observation_id`, `context_name` if these columns are present in the `data.csv` file or created with custom R code.
         custom_R_code: A field where additional R code can be included. This allows for custom manipulation of the data in the submitted spreadsheet into a different format for easy integration with AusTraits. `.na` indicates no custom R code was used.
     traits:
       description: A translation table mapping traits and units in the original study onto corresponding variables in AusTraits. Also specified here are methods used to collect the data.

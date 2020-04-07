@@ -151,7 +151,7 @@ if(!is.null(metadata_study$questions) & !is.na(metadata_study$questions)) {
 ```
 
 
-# Study context
+# Study details
 
 We collect information about the context of the trait measurements. This includes details on the people involved, the sources, and details about type of collection, including location and time of collections.
 
@@ -238,7 +238,7 @@ for(v in missing) {
 ```
 
 
-## Locations sampled
+## Sites
 
 Data were collected at the following sites and locations. As a minimum, we are aiming to collect, the variables
 
@@ -318,13 +318,34 @@ if(nrow(context) > 0 ) {
     my_kable_styling() %>%
     writeLines()
 
-  new_question("(section `sites`) Do the additional contextual site details look complete?")
+  new_question("(section `sites`) Do the additional site details look complete?")
   } else{
-  writeLines("No contextual site data available.")
+  writeLines("No site data available.")
 }
 
 ```
 
+## Contexts
+
+
+The following contexts have been recorded for the measurements included in this study. The `type` column has been added to easily filter records across many studies.
+
+```{r, results='asis', echo=FALSE}
+data_study$contexts %>%
+  select(-dataset_id) %>%
+  spread(context_property, value) -> context
+
+if(nrow(context) > 0 ) {
+  context %>%
+    my_kable_styling() %>%
+    writeLines()
+
+  new_question("(section `contexts`) Do the additional context details look complete?")
+  } else{
+  writeLines("No contextual data available.")
+}
+
+```
 
 ## Species sampled
 
