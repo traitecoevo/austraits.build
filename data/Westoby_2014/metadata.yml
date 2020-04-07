@@ -12,8 +12,8 @@ source:
     pages: 343--352
     publisher: Wiley-Blackwell
     doi: 10.1111/j.1365-2435.2012.01962.x
-  xxx:
-    key: Westoby_2014
+  secondary_1:
+    key: Gleason_2014
     bibtype: Article
     year: 2014
     author: S. M. Gleason and C. J. Blackman and A. M. Cook and C. A. Laws and M.
@@ -26,8 +26,8 @@ source:
     number: '3'
     pages: 275--284
     doi: 10.1093/treephys/tpu001
-  tertiary:
-    key: Westoby_2014
+  secondary_2:
+    key: Blackman_2014
     bibtype: Article
     author: C. J. Blackman, S. M. Gleason, Y. Chang, A. M. Cook, C. Laws, M. Westoby
     year: 2014
@@ -38,10 +38,10 @@ source:
     pages: 435--440
     publisher: Oxford University Press (OUP)
     doi: 10.1093/aob/mcu131
-  xxxx:
-    key: Westoby_2014
+  secondary_3:
+    key: Butler_2011
     bibtype: Article
-    year: '2011'
+    year: 2011
     author: Don W. Butler and Sean M. Gleason and Ian Davidson and Yusuke Onoda and
       Mark Westoby
     journal: New Phytologist
@@ -51,16 +51,17 @@ source:
     number: '1'
     pages: 137--149
     doi: 10.1111/j.1469-8137.2011.03887.x
-  secondary:
-    key: Westoby_2014
+  secondary_4:
+    key: Zieminska_2013
     bibtype: Article
-    year: '2013'
+    year: 2013
     author: Kasia Zieminska and Don W. Butler and Sean M. Gleason and Ian J. Wright
       and Mark Westoby
     journal: '{AoB} {PLANTS}'
     title: Fibre wall and lumen fractions drive wood density variation across 24 Australian
       angiosperms
     volume: '5'
+    pages: plt046
     doi: 10.1093/aobpla/plt046
 people:
 - name: Sean Gleason
@@ -70,10 +71,10 @@ people:
   institution: Western Sydney University
   role: collector
 - name: Mark Westoby
-  institution: Macquarie University
+  institution: Macquarie University Sydney
   role: lab_leader
 - name: Don Bulter
-  institution: Macquarie University
+  institution: Macquarie University Sydney
   role: collector
 dataset:
   year_collected_start: 2011
@@ -324,13 +325,14 @@ sites:
     temp_min_monthly: 2.8
     temp_max_monthly: 28.6
     aridity index: 0.598
+contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: Genus_species
     site_name: location
   custom_R_code: data %>% mutate(`LMA (g m-2)` = replace(`LMA (g m-2)`, Genus_species
-    == "Canarium australianum", 108.2))
+    == "Canarium australianum", 108.2)) %>% mutate_at(c("gl Mo (mg/kg)","gl Na (mg/g)"), ~na_if(.,0))
 traits:
 - var_in: MOR (Pa)
   unit_in: Pa
@@ -400,7 +402,7 @@ traits:
   trait_name: wood_density
   value_type: site_mean
   replicates: '5'
-  methods: Wood density was measured on segments 3�5 cm long for each twig sample.
+  methods: Wood density was measured on segments 3-5 cm long for each twig sample.
     Bark and pith were removed and measurements were carried out on xylem only. In
     this paper we refer to xylem as 'wood'. After removing bark and pith, wood pieces
     were soaked in water for at least 48 h prior to volume measurement. Then a beaker
@@ -411,7 +413,7 @@ traits:
     From standard water density of 1 g cm-3 and knowing the mass of displaced water,
     we calculated sample volumes applying Archimedes' buoyancy principle (e.g. 1 g
     of displaced water equals 1 cm3 volume). Samples were then placed in paper envelopes
-    and dried at 70�C for at least 72 h. Wood density was calculated as the dry mass
+    and dried at 70 degC for at least 72 h. Wood density was calculated as the dry mass
     divided by water saturated volume (g cm-3).
 - var_in: LMA (g m-2)
   unit_in: g/m2
@@ -426,7 +428,7 @@ traits:
   trait_name: leaf_area
   value_type: site_mean
   replicates: '5'
-  methods: Mean, one-sided, projected area of c. 5�20 expanded leaves from five shoots
+  methods: Mean, one-sided, projected area of c. 5-20 expanded leaves from five shoots
     per species.
 - var_in: Ksap (kg m-1 s-1 MPa -1)
   unit_in: kg/m/s/MPa
@@ -511,8 +513,8 @@ traits:
     branch conductivity by the distal cross-sectional area (xylem) of each segment,
     subtracting pith.
 - var_in: LA/SA at 1.0 cm (m2/m2) whole leaf
-  unit_in: m2/m2
-  trait_name: leaf_area_per_sapwood_area
+  unit_in: mm2_leaf/mm2_sapwood
+  trait_name: huber_value
   value_type: site_mean
   replicates: '5'
   methods: For the ratio of leaf area to xylem area, we measured xylem diameters (inside
@@ -552,7 +554,7 @@ traits:
     potentials during hot, sunny days.
 - var_in: Amass (umol/kg/s)
   unit_in: umolCO2/kg/s
-  trait_name: photosynthetic_rate_per_dry_mass
+  trait_name: photosynthetic_rate_per_dry_mass_saturated
   value_type: site_mean
   replicates: '5'
   methods: Seven-step light response curves (PFD = 1500-0 lmol m-2 s-1) were constructed
@@ -574,7 +576,7 @@ traits:
     surface area.
 - var_in: Aarea (umol m-2 s-1)
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area
+  trait_name: photosynthetic_rate_per_area_saturated
   value_type: site_mean
   replicates: '5'
   methods: Seven-step light response curves (PFD = 1500-0 lmol m-2 s-1) were constructed
@@ -640,11 +642,11 @@ traits:
     surface area.
 - var_in: WUE (mmol CO2/mol H2O/m2/s
   unit_in: mmolCO2/molH2O/m2/s
-  trait_name: water_use_efficiency
+  trait_name: water_use_efficiency_integrated
   value_type: site_mean
   replicates: '5'
   methods: not specifically mentioned in the manuscript, but assume it is the ratio
-    of photosynthesis to respiration
+    of biomass production to transpiration
 - var_in: max_ht (m)
   unit_in: m
   trait_name: plant_height
@@ -661,7 +663,7 @@ traits:
     xylem cross sectional area.
 - var_in: E (mmol/m2/s)
   unit_in: mmol/m2/s
-  trait_name: leaf_transpiration
+  trait_name: leaf_transpiration_at_Asat
   value_type: site_mean
   replicates: '5'
   methods: Seven-step light response curves (PFD = 1500-0 lmol m-2 s-1) were constructed
@@ -706,7 +708,7 @@ traits:
   replicates: 5
   methods: Total C and N concentrations in leaf and stem tissues were determined by Leco combustion.  Metal concentrations in leaves and stems were determined using inductively coupled plasma spectroscopy after acid digestion.  13C was determined using isotope ratio mass spectrometry.
 - var_in: gl Na (mg/g)
-  unit_in: mg/kg
+  unit_in: mg/g
   trait_name: leaf_Na_per_dry_mass
   value_type: site_mean
   replicates: 5
