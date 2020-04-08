@@ -46,14 +46,22 @@ load_study <- function(filename_data_raw,
     metadata$sites %>%  
     format_sites(dataset_id) %>% 
     add_all_columns(definitions, "sites") %>% 
-    select(-error)
+    select(-error) %>% 
+    # reorder so type, description come first, if present
+    mutate(i = case_when(site_property == "description" ~ 1, site_property == "latitude (deg)" ~ 2,  site_property == "longitude (deg)" ~ 3, TRUE ~ 4)) %>%
+    arrange(site_name, i, site_property) %>% 
+    select(-i)
 
   # read contextual data
   contexts <- 
     metadata$contexts %>% 
     format_sites(dataset_id, context = TRUE) %>% 
     add_all_columns(definitions, "contexts") %>% 
-    select(-error)
+    select(-error) %>% 
+    # reorder so type, description come first, if present
+    mutate(i = case_when(context_property == "type" ~ 1, context_property == "description" ~ 2, TRUE ~ 3)) %>%
+    arrange(context_name, i, context_property) %>% 
+    select(-i)
 
   # record contributors
   contributors <- 
