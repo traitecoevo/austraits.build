@@ -84,8 +84,8 @@ dataset:
   collection_type: field
   sample_age_class: adult
   sampling_strategy: Sites were chosen in three bands of latitude (c. 18, 33 and 43_S)
-    and correspondingly experienced a wide range of temperature (MAT 10.0<U+FFFD>26.9
-    C) (Table S1, Fig. S2, Supporting information). Within each latitude, two or three
+    and correspondingly experienced a wide range of temperature (MAT 10.0-26.9 C)
+    (Table S1, Fig. S2, Supporting information). Within each latitude, two or three
     sites of contrasting aridity (precipitation / potential evapotranspiration) were
     selected for study. At each latitude, a 'Wet' site was selected where rainfall
     was nearly equal to potential evapotranspiration. 'Dry' and 'Arid' sites were
@@ -113,9 +113,9 @@ dataset:
     site, which was comparatively dry when sampled. We suspect that marginally low
     hydraulic conductance and CO2 assimilation rates at the hot-wet site resulted
     from these dry conditions. Trait collection times are as follows- September 2009
-    (hot-wet), November 2009 (hot-dry), May 2010 (hot<U+FFFD>arid), October 2010 (warm-wet),
+    (hot-wet), November 2009 (hot-dry), May 2010 (hot-arid), October 2010 (warm-wet),
     June 2009 (warm-dry), April 2009 (warm-arid), January 2010 (cool-wet) and March
-    2010 (cool-dry).  PLANT SELECTION, REPLICATION AND THE RATIO OF LEAF AREA TO XYLEM
+    2010 (cool-dry). PLANT SELECTION, REPLICATION AND THE RATIO OF LEAF AREA TO XYLEM
     AREA  Except where noted, all plant traits were measured on five individuals  of
     each species within each site. Replicates representative of a species'  height
     and vigour were selected when possible. For species >5 m in height, smaller plants
@@ -332,7 +332,8 @@ config:
     species_name: Genus_species
     site_name: location
   custom_R_code: data %>% mutate(`LMA (g m-2)` = replace(`LMA (g m-2)`, Genus_species
-    == "Canarium australianum", 108.2)) %>% mutate_at(c("gl Mo (mg/kg)","gl Na (mg/g)"), ~na_if(.,0))
+    == "Canarium australianum", 108.2)) %>% mutate_at(c("gl Mo (mg/kg)","gl Na (mg/g)"),
+    ~na_if(.,0))
 traits:
 - var_in: MOR (Pa)
   unit_in: Pa
@@ -359,39 +360,30 @@ traits:
   value_type: site_mean
   replicates: '5'
   methods: Total C and N concentrations in leaf and stem tissues were determined by
-    Leco combustion.  Metal concentrations in leaves and stems were determined using
-    inductively coupled plasma spectroscopy after acid digestion.  13C was determined
-    using isotope ratio mass spectrometry.
+    Leco combustion.
 - var_in: gl P (mg/g)
   unit_in: mg/g
   trait_name: leaf_P_per_dry_mass
   value_type: site_mean
   replicates: '5'
-  methods: Total C and N concentrations in leaf and stem tissues were determined by
-    Leco combustion.  Metal concentrations in leaves and stems were determined using
-    inductively coupled plasma spectroscopy after acid digestion.  13C was determined
-    using isotope ratio mass spectrometry.
+  methods: Metal concentrations in leaves and stems were determined using inductively
+    coupled plasma spectroscopy after acid digestion.
 - var_in: gl K (mg/g)
   unit_in: mg/g
   trait_name: leaf_K_per_dry_mass
   value_type: site_mean
   replicates: '5'
-  methods: Total C and N concentrations in leaf and stem tissues were determined by
-    Leco combustion.  Metal concentrations in leaves and stems were determined using
-    inductively coupled plasma spectroscopy after acid digestion.  13C was determined
-    using isotope ratio mass spectrometry.
+  methods: Metal concentrations in leaves and stems were determined using inductively
+    coupled plasma spectroscopy after acid digestion.
 - var_in: d13C
   unit_in: per mille
   trait_name: leaf_delta13C
   value_type: site_mean
   replicates: '5'
-  methods: Total C and N concentrations in leaf and stem tissues were determined by
-    Leco combustion.  Metal concentrations in leaves and stems were determined using
-    inductively coupled plasma spectroscopy after acid digestion.  13C was determined
-    using isotope ratio mass spectrometry.
+  methods: d13C was determined using isotope ratio mass spectrometry.
 - var_in: bark thickness (mm bark/mm whole-stem)
-  unit_in: mm
-  trait_name: bark_thickness
+  unit_in: mm/mm
+  trait_name: .na
   value_type: site_mean
   replicates: '5'
   methods: The inside-bark diameter (including all woody tissue beneath the cambium)
@@ -413,8 +405,8 @@ traits:
     From standard water density of 1 g cm-3 and knowing the mass of displaced water,
     we calculated sample volumes applying Archimedes' buoyancy principle (e.g. 1 g
     of displaced water equals 1 cm3 volume). Samples were then placed in paper envelopes
-    and dried at 70 degC for at least 72 h. Wood density was calculated as the dry mass
-    divided by water saturated volume (g cm-3).
+    and dried at 70  deg C for at least 72 h. Wood density was calculated as the dry
+    mass divided by water saturated volume (g cm-3).
 - var_in: LMA (g m-2)
   unit_in: g/m2
   trait_name: specific_leaf_area
@@ -522,7 +514,7 @@ traits:
     120 cm from the shoot tip. The inside-bark diameter (including all woody tissue
     beneath the cambium) at the distal and proximal ends were measured using digital
     callipers (precision = 0.1mm). Stems and leaves were separated, dried to constant
-    mass at 70degC and weighed (precision = 0.0001 g). Ordinary least squares regression
+    mass at 70 deg C and weighed (precision = 0.0001 g). Ordinary least squares regression
     was then used to predict leaf mass as a function of inside-bark stem diameter.
     Leaf mass per unit area values (methods described elsewhere) were then used to
     convert dry leaf mass into green leaf area for any given inside-bark stem diameter.
@@ -557,15 +549,15 @@ traits:
   trait_name: photosynthetic_rate_per_dry_mass_saturated
   value_type: site_mean
   replicates: '5'
-  methods: Seven-step light response curves (PFD = 1500-0 lmol m-2 s-1) were constructed
+  methods: Seven-step light response curves (PFD = 1500 umol m-2 s-1) were constructed
     in situ for the first plant of each species at each site to determine the appropriate
     light saturation intensities at which to measure maximum assimilation (Amax) and
     transpiration (E) rates using a portable photosynthesis system (Model 6400xt;
     LI-COR Biosciences, Lincoln, NE, USA). Assimilation rates at each step were judged
-    stable when varying less than c. 0.5 lmol m-2 s-1 for 5 min. Curves were visually
+    stable when varying less than c. 0.5 umol m-2 s-1 for 5 min. Curves were visually
     inspected in the field to determine the appropriate light intensity for Amax measurements.
     Measurements were taken between 08:00 and 11:30. Within-chamber CO2 concentration,
-    temperature and VPD were kept between 388 and 402 ppm, 23.0-27.0degC and 1.9-2.1
+    temperature and VPD were kept between 388 and 402 ppm, 23.0-27.0 deg C and 1.9-2.1
     kPa for all measurements. Although 2.0 kPaVPD results in reduced stomatal conductance,
     we note that CO2 assimilation is relatively flat between 0.4 and 2.0 kPa, even
     for rain forest plants (Cunningham 2004, 2005), and therefore, our across-species
@@ -579,15 +571,15 @@ traits:
   trait_name: photosynthetic_rate_per_area_saturated
   value_type: site_mean
   replicates: '5'
-  methods: Seven-step light response curves (PFD = 1500-0 lmol m-2 s-1) were constructed
+  methods: Seven-step light response curves (PFD = 1500 umol m-2 s-1) were constructed
     in situ for the first plant of each species at each site to determine the appropriate
     light saturation intensities at which to measure maximum assimilation (Amax) and
     transpiration (E) rates using a portable photosynthesis system (Model 6400xt;
     LI-COR Biosciences, Lincoln, NE, USA). Assimilation rates at each step were judged
-    stable when varying less than c. 0.5 lmol m-2 s-1 for 5 min. Curves were visually
+    stable when varying less than c. 0.5 umol m-2 s-1 for 5 min. Curves were visually
     inspected in the field to determine the appropriate light intensity for Amax measurements.
     Measurements were taken between 08:00 and 11:30. Within-chamber CO2 concentration,
-    temperature and VPD were kept between 388 and 402 ppm, 23.0-27.0degC and 1.9-2.1
+    temperature and VPD were kept between 388 and 402 ppm, 23.0-27.0 deg C and 1.9-2.1
     kPa for all measurements. Although 2.0 kPaVPD results in reduced stomatal conductance,
     we note that CO2 assimilation is relatively flat between 0.4 and 2.0 kPa, even
     for rain forest plants (Cunningham 2004, 2005), and therefore, our across-species
@@ -601,15 +593,15 @@ traits:
   trait_name: leaf_dark_respiration_per_dry_mass
   value_type: site_mean
   replicates: '5'
-  methods: Seven-step light response curves (PFD = 1500-0 lmol m-2 s-1) were constructed
+  methods: Seven-step light response curves (PFD = 1500 umol m-2 s-1) were constructed
     in situ for the first plant of each species at each site to determine the appropriate
     light saturation intensities at which to measure maximum assimilation (Amax) and
     transpiration (E) rates using a portable photosynthesis system (Model 6400xt;
     LI-COR Biosciences, Lincoln, NE, USA). Assimilation rates at each step were judged
-    stable when varying less than c. 0.5 lmol m-2 s-1 for 5 min. Curves were visually
+    stable when varying less than c. 0.5 umol m-2 s-1 for 5 min. Curves were visually
     inspected in the field to determine the appropriate light intensity for Amax measurements.
     Measurements were taken between 08:00 and 11:30. Within-chamber CO2 concentration,
-    temperature and VPD were kept between 388 and 402 ppm, 23.0-27.0degC and 1.9-2.1
+    temperature and VPD were kept between 388 and 402 ppm, 23.0-27.0 deg C and 1.9-2.1
     kPa for all measurements. Although 2.0 kPaVPD results in reduced stomatal conductance,
     we note that CO2 assimilation is relatively flat between 0.4 and 2.0 kPa, even
     for rain forest plants (Cunningham 2004, 2005), and therefore, our across-species
@@ -623,15 +615,15 @@ traits:
   trait_name: leaf_dark_respiration_per_area
   value_type: site_mean
   replicates: '5'
-  methods: Seven-step light response curves (PFD = 1500-0 lmol m-2 s-1) were constructed
+  methods: Seven-step light response curves (PFD = 1500 umol m-2 s-1) were constructed
     in situ for the first plant of each species at each site to determine the appropriate
     light saturation intensities at which to measure maximum assimilation (Amax) and
     transpiration (E) rates using a portable photosynthesis system (Model 6400xt;
     LI-COR Biosciences, Lincoln, NE, USA). Assimilation rates at each step were judged
-    stable when varying less than c. 0.5 lmol m-2 s-1 for 5 min. Curves were visually
+    stable when varying less than c. 0.5 umol m-2 s-1 for 5 min. Curves were visually
     inspected in the field to determine the appropriate light intensity for Amax measurements.
     Measurements were taken between 08:00 and 11:30. Within-chamber CO2 concentration,
-    temperature and VPD were kept between 388 and 402 ppm, 23.0-27.0degC and 1.9-2.1
+    temperature and VPD were kept between 388 and 402 ppm, 23.0-27.0 deg C and 1.9-2.1
     kPa for all measurements. Although 2.0 kPaVPD results in reduced stomatal conductance,
     we note that CO2 assimilation is relatively flat between 0.4 and 2.0 kPa, even
     for rain forest plants (Cunningham 2004, 2005), and therefore, our across-species
@@ -659,22 +651,21 @@ traits:
   trait_name: .na.character
   value_type: site_mean
   replicates: 3 replicates on 1 individual per species or 1 replicate on each individual
-  methods: not explicitly described, but assume part of measurements for determining
-    xylem cross sectional area.
+  methods: sapwood area
 - var_in: E (mmol/m2/s)
   unit_in: mmol/m2/s
   trait_name: leaf_transpiration_at_Asat
   value_type: site_mean
   replicates: '5'
-  methods: Seven-step light response curves (PFD = 1500-0 lmol m-2 s-1) were constructed
+  methods: Seven-step light response curves (PFD = 1500 umol m-2 s-1) were constructed
     in situ for the first plant of each species at each site to determine the appropriate
     light saturation intensities at which to measure maximum assimilation (Amax) and
     transpiration (E) rates using a portable photosynthesis system (Model 6400xt;
     LI-COR Biosciences, Lincoln, NE, USA). Assimilation rates at each step were judged
-    stable when varying less than c. 0.5 lmol m-2 s-1 for 5 min. Curves were visually
+    stable when varying less than c. 0.5 umol m-2 s-1 for 5 min. Curves were visually
     inspected in the field to determine the appropriate light intensity for Amax measurements.
     Measurements were taken between 08:00 and 11:30. Within-chamber CO2 concentration,
-    temperature and VPD were kept between 388 and 402 ppm, 23.0-27.0degC and 1.9-2.1
+    temperature and VPD were kept between 388 and 402 ppm, 23.0-27.0 deg C and 1.9-2.1
     kPa for all measurements. Although 2.0 kPaVPD results in reduced stomatal conductance,
     we note that CO2 assimilation is relatively flat between 0.4 and 2.0 kPa, even
     for rain forest plants (Cunningham 2004, 2005), and therefore, our across-species
@@ -688,67 +679,78 @@ traits:
   trait_name: leaf_S_per_dry_mass
   value_type: site_mean
   replicates: 5
-  methods: Total C and N concentrations in leaf and stem tissues were determined by Leco combustion.  Metal concentrations in leaves and stems were determined using inductively coupled plasma spectroscopy after acid digestion.  13C was determined using isotope ratio mass spectrometry.
+  methods: Metal concentrations in leaves and stems were determined using inductively
+    coupled plasma spectroscopy after acid digestion.
 - var_in: gl C (mg/g)
   unit_in: mg/g
   trait_name: leaf_C_per_dry_mass
   value_type: site_mean
   replicates: 5
-  methods: Total C and N concentrations in leaf and stem tissues were determined by Leco combustion.  Metal concentrations in leaves and stems were determined using inductively coupled plasma spectroscopy after acid digestion.  13C was determined using isotope ratio mass spectrometry.
+  methods: Total C and N concentrations in leaf and stem tissues were determined by
+    Leco combustion.
 - var_in: gl Ca (mg/g)
   unit_in: mg/g
   trait_name: leaf_Ca_per_dry_mass
   value_type: site_mean
   replicates: 5
-  methods: Total C and N concentrations in leaf and stem tissues were determined by Leco combustion.  Metal concentrations in leaves and stems were determined using inductively coupled plasma spectroscopy after acid digestion.  13C was determined using isotope ratio mass spectrometry.
+  methods: Metal concentrations in leaves and stems were determined using inductively
+    coupled plasma spectroscopy after acid digestion.
 - var_in: gl Mg (mg/g)
   unit_in: mg/g
   trait_name: leaf_Mg_per_dry_mass
   value_type: site_mean
   replicates: 5
-  methods: Total C and N concentrations in leaf and stem tissues were determined by Leco combustion.  Metal concentrations in leaves and stems were determined using inductively coupled plasma spectroscopy after acid digestion.  13C was determined using isotope ratio mass spectrometry.
+  methods: Metal concentrations in leaves and stems were determined using inductively
+    coupled plasma spectroscopy after acid digestion.
 - var_in: gl Na (mg/g)
   unit_in: mg/g
   trait_name: leaf_Na_per_dry_mass
   value_type: site_mean
   replicates: 5
-  methods: Total C and N concentrations in leaf and stem tissues were determined by Leco combustion.  Metal concentrations in leaves and stems were determined using inductively coupled plasma spectroscopy after acid digestion.  13C was determined using isotope ratio mass spectrometry.
+  methods: Metal concentrations in leaves and stems were determined using inductively
+    coupled plasma spectroscopy after acid digestion.
 - var_in: gl Cu (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Cu_per_dry_mass
   value_type: site_mean
   replicates: 5
-  methods: Total C and N concentrations in leaf and stem tissues were determined by Leco combustion.  Metal concentrations in leaves and stems were determined using inductively coupled plasma spectroscopy after acid digestion.  13C was determined using isotope ratio mass spectrometry.
+  methods: Metal concentrations in leaves and stems were determined using inductively
+    coupled plasma spectroscopy after acid digestion..
 - var_in: gl Zn (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Zn_per_dry_mass
   value_type: site_mean
   replicates: 5
-  methods: Total C and N concentrations in leaf and stem tissues were determined by Leco combustion.  Metal concentrations in leaves and stems were determined using inductively coupled plasma spectroscopy after acid digestion.  13C was determined using isotope ratio mass spectrometry.
+  methods: Metal concentrations in leaves and stems were determined using inductively
+    coupled plasma spectroscopy after acid digestion.
 - var_in: gl Mn (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Mn_per_dry_mass
   value_type: site_mean
   replicates: 5
-  methods: Total C and N concentrations in leaf and stem tissues were determined by Leco combustion.  Metal concentrations in leaves and stems were determined using inductively coupled plasma spectroscopy after acid digestion.  13C was determined using isotope ratio mass spectrometry.
+  methods: Metal concentrations in leaves and stems were determined using inductively
+    coupled plasma spectroscopy after acid digestion.
 - var_in: gl Fe (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Fe_per_dry_mass
   value_type: site_mean
   replicates: 5
-  methods: Total C and N concentrations in leaf and stem tissues were determined by Leco combustion.  Metal concentrations in leaves and stems were determined using inductively coupled plasma spectroscopy after acid digestion.  13C was determined using isotope ratio mass spectrometry.
+  methods: Metal concentrations in leaves and stems were determined using inductively
+    coupled plasma spectroscopy after acid digestion.
 - var_in: gl B (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_B_per_dry_mass
   value_type: site_mean
   replicates: 5
-  methods: Total C and N concentrations in leaf and stem tissues were determined by Leco combustion.  Metal concentrations in leaves and stems were determined using inductively coupled plasma spectroscopy after acid digestion.  13C was determined using isotope ratio mass spectrometry.
+  methods: Metal concentrations in leaves and stems were determined using inductively
+    coupled plasma spectroscopy after acid digestion.
 - var_in: gl Mo (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Mo_per_dry_mass
   value_type: site_mean
   replicates: 5
-  methods: Total C and N concentrations in leaf and stem tissues were determined by Leco combustion.  Metal concentrations in leaves and stems were determined using inductively coupled plasma spectroscopy after acid digestion.  13C was determined using isotope ratio mass spectrometry.
+  methods: Metal concentrations in leaves and stems were determined using inductively
+    coupled plasma spectroscopy after acid digestion.
 substitutions: .na
 taxonomic_updates:
 - find: Pogonolobus reticulatus
