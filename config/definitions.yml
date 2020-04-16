@@ -800,8 +800,8 @@ traits:
       units: pg
       label: Plant genome size
       values:
-        minimum: 1.0
-        maximum: 10.0
+        minimum: 0.5
+        maximum: 5.0
     glaucous:
       description: Variable indicating if a plant's leaves are glaucous or not
       type: categorical
@@ -863,8 +863,8 @@ traits:
       units: degrees
       label: Leaf angle, relative to horizontal
       values:
-        minimum: -90
-        maximum: 90
+        minimum: -180
+        maximum: 180
     leaf_area:
       description: Area of the leaf surface
       type: numeric
@@ -1212,7 +1212,7 @@ traits:
       units: g/g
       label: Leaf mass fraction
       values:
-        minimum: 0.1
+        minimum: 0.01
         maximum: 1.0
     leaf_mass_to_stem_mass:
       description: Ratio of leaf dry mass to stem dry mass
@@ -1220,7 +1220,7 @@ traits:
       units: g/g
       label: Ratio of leaf dry mass to stem dry mass
       values:
-        minimum: 0.1
+        minimum: 0.01
         maximum: 10.0
     leaf_mesophyll_conductance_per_area:
       description: Rate of CO2 movement between chloroplasts and sub-stomatal cavities (intracellular space), per unit leaf area
@@ -1968,13 +1968,21 @@ traits:
         minimum: -25.0
         maximum: 75.0  
     root_diameter:
-      description: Root diameter
+      description: Root diameter; should only be used to record the maximum root diameter
       type: numeric
       units: mm
       label: Root diameter
       values:
         minimum: 0.01
         maximum: 1000
+    root_distribution_coefficient:
+      description: Root biomass depth distribution coefficient (‘B’ from Gale & Grigal (1987), where high values indicate root biomass allocated deeper in the soil).
+      type: numeric
+      units: dimensionless
+      label: Root biomass depth distribution coefficient
+      values:
+        minimum: 0.5
+        maximum: 1.0
     root_dry_matter_content:
       description: Root dry mass per unit root fresh mass
       type: numeric
@@ -1983,6 +1991,14 @@ traits:
       values:
         minimum: 10.0
         maximum: 1000.0
+    root_fine_root_coarse_root_ratio:
+      description: Volume of fine root (<0.5mm diametre) / Volume of coarse root (>0.5mm diametre)
+      type: numeric
+      units: mm3/mm3
+      label: Volume of fine root / Volume of coarse root
+      values:
+        minimum: 0.05
+        maximum: 50.0
     root_mass_fraction:
       description: Fraction of plant dry mass comprised of root material
       type: numeric
@@ -2501,7 +2517,7 @@ traits:
       label: Root area per unit root dry mass (specific root area)
       values:
         minimum: 0.001
-        maximum: 500
+        maximum: 1.0
     specific_root_length:
       description: Root length per unit root dry mass; SRL
       type: numeric
@@ -2509,7 +2525,7 @@ traits:
       label: Root length per unit root dry mass (specific root length, SRL)
       values:
         minimum: 0.5
-        maximum: 500
+        maximum: 5000
     spongy_mesophyll_thickness:
       description: Thickness of the spongy mesophyll cells
       type: numeric
@@ -2651,8 +2667,9 @@ traits:
       type: categorical
       label: Tap root 
       values:  
-        '0': tap root not present
-        '1': tap root present
+        tap_root_absent: tap root not present
+        tap_root_present: tap root present
+        tap_root_sometimes_present: tap root sometimes present
     thickest_root_diameter:
       description: Diameter of the thickest root
       type: numeric
