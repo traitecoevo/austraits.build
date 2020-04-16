@@ -157,16 +157,43 @@ sites:
     soil type: Kurosolic, redoxic Hydrosol
     MAT (): 9.9
     MAP (mm): 1591.0
-contexts: .na
+contexts:
+  Dry:
+    type: field_harsh
+    description: sample collected during the dry season
+  Summer_favourable:
+    type: field_favourable
+    description: sample collected during the summer in a location where this is the
+      favourable season
+  Summer_unfavourable:
+    type: field_harsh
+    description: sample collected during the summer in a location where this is the
+      unfavourable season
+  Wet:
+    type: field_favourable
+    description: sample collected during the wet season
+  Winter_favourable:
+    type: field_favourable
+    description: sample collected during the winter in a location where this is the
+      favourable season
+  Winter_unfavourable:
+    type: field_harsh
+    description: sample collected during the winter in a location where this is the
+      unfavourable season
 config:
   data_is_long_format: no
   variable_match:
     species_name: Species
     site_name: Site
-    context_name: Visit
-    individual_id: Tree.id
+    observation_id: Tree.id
     date: Date
-  custom_R_code: .na
+    context_name: context
+  custom_R_code: data %>% mutate(context = ifelse(Site %in% c("Calperum mallee","Great
+    Western Woodlands","Alice Mulga") & Visit == "Summer", "Summer_unfavourable",Visit),
+    context = ifelse(Site %in% c("Cumberland Plain","Warra","Alice Mulga") & Visit
+    == "Winter", "Winter_unfavourable",context), context = ifelse(Site %in% c("Cumberland
+    Plain","Warra") & Visit == "Summer", "Summer_favourable",context), context = ifelse(Site
+    %in% c("Calperum mallee","Great Western Woodlands") & Visit == "Winter","Winter_favourable",context))
 traits:
 - var_in: A400.a
   unit_in: umolCO2/m2/s
@@ -362,7 +389,9 @@ traits:
   replicates: 1
   methods: On completion of the gas exchange measurements leaves were weighed for
     fresh mass and scanned for leaf area before being dried in an oven at 70  deg
-    C for a minimum of 48 hours, after which their dry mass was recorded; not included as a variable, because this records the amount of leaf area inside the LiCor chamber, not total leaf size
+    C for a minimum of 48 hours, after which their dry mass was recorded; not included
+    as a variable, because this records the amount of leaf area inside the LiCor chamber,
+    not total leaf size
 - var_in: LDMC
   unit_in: g/g
   trait_name: leaf_dry_matter_content
@@ -404,7 +433,7 @@ traits:
     colorimetric analysis using a flow injection system (QuikChem 8500, Lachat Instruments,
     Loveland, Colorado, USA).
 - var_in: RatioNP
-  unit_in: dimensionless
+  unit_in: g/g
   trait_name: N_to_P_ratio
   value_type: raw_value
   replicates: 1
@@ -588,5 +617,9 @@ taxonomic_updates:
 - find: Dodonaea angustissima
   replace: Dodonaea viscosa subsp. angustissima
   reason: Synonym reported by TaxonStand (2020-04-13)
-questions: .na
+questions:
+  contributor: In table S1, which indicates whether visits were made during each site's
+    "favourable" or "unfavourable" season, both visits to Alice Mulga are designated
+    as "unfavourable" - is this correct?
+  question_2: Your values for leaf photosynthetic nitrogen use efficiency are consideraly lower than for other studies in AusTraits. Does this seem correct to you? (To convert your units, umol CO2/gN/s or our units umol CO2/molN/S, your values were multiplied by the average molecular weight for nitrogen, 14.0067, by our unit conversion function.)
 
