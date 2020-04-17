@@ -74,7 +74,7 @@ subset(austraits$traits,trait_name=="plant_height" & dataset_id %in% c("Sams_201
   select(original_name, plant_height_unique) %>%
   rename(species_name = original_name)  ->  plant_height_comparison
 
-subset(austraits$traits,trait_name=="wood_density" & dataset_id %in% c("Sams_2017","Kooyman_2011","Zanne_2009","Ilic_2000")) %>%
+subset(austraits$traits,trait_name=="wood_density" & dataset_id %in% c("Sams_2017","Kooyman_2011","Zanne_2009","Ilic_2000","Metcalfe_2009")) %>%
   select(species_name,value,dataset_id,original_name) %>%
   mutate(wood_density = as.numeric(value)) %>%
   select(species_name,dataset_id,wood_density,original_name) %>%
@@ -84,13 +84,15 @@ subset(austraits$traits,trait_name=="wood_density" & dataset_id %in% c("Sams_201
   ungroup(unique_to_Sams_2017 = ifelse()) %>%
   subset(!is.na(Sams_2017)) %>%
   rename(wood_density_Sams_2017 = Sams_2017, wood_density_Kooyman_2011 = Kooyman_2011, wood_density_Zanne_2009 = Zanne_2009, 
-         wood_density_Ilic_2000 = Ilic_2000) %>%
+         wood_density_Ilic_2000 = Ilic_2000, wood_density_Metcalfe_2009 = Metcalfe_2009) %>%
   mutate(wood_density_to_keep = ifelse(round(wood_density_Sams_2017,2) == round(wood_density_Kooyman_2011,2) |
                                          round(wood_density_Sams_2017,2) == round(wood_density_Zanne_2009,2) |
+                                         round(wood_density_Sams_2017,2) == round(wood_density_Metcalfe_2009,2) |
                                        round(wood_density_Sams_2017,2) == round(wood_density_Ilic_2000,2),
                                        "omit","keep")) %>%
   mutate(wood_density_to_keep = ifelse(is.na(wood_density_to_keep),"keep",wood_density_to_keep)) %>%
   mutate(wood_density_unique = ifelse(wood_density_to_keep=="keep",wood_density_Sams_2017,NA)) %>%
+  write_csv("data/Sams_2017/raw/wood_density_comparison.csv") %>%
   select(original_name, wood_density_unique) %>%
   rename(species_name = original_name) -> wood_density_comparison
 
