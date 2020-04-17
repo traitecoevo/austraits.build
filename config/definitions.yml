@@ -363,7 +363,7 @@ traits:
       label: Ratio of internal to external CO2 concentrations
       values:
         minimum: 0.0
-        maximum: 2.5
+        maximum: 1.3
     cotyledon_position:
       description: Binary variable distinguishing between seedlings where the cotyledon remains within the seed coat versus emerges from the seed coat at germination.
       type: categorical
@@ -800,8 +800,8 @@ traits:
       units: pg
       label: Plant genome size
       values:
-        minimum: 1.0
-        maximum: 10.0
+        minimum: 0.5
+        maximum: 5.0
     glaucous:
       description: Variable indicating if a plant's leaves are glaucous or not
       type: categorical
@@ -863,8 +863,8 @@ traits:
       units: degrees
       label: Leaf angle, relative to horizontal
       values:
-        minimum: -90
-        maximum: 90
+        minimum: -180
+        maximum: 180
     leaf_area:
       description: Area of the leaf surface
       type: numeric
@@ -1014,7 +1014,7 @@ traits:
       label: Leaf respiration rate per unit leaf area
       values:
         values:
-        minimum: 1.0e-05
+        minimum: 1.0e-03
         maximum: 10.0
     leaf_dark_respiration_per_dry_mass:
       description: Leaf respiration rate per unit leaf dry mass
@@ -1023,7 +1023,7 @@ traits:
       label: Leaf respiration rate per unit leaf dry mass
       values:
         minimum: 1.0e-03
-        maximum: 100.0
+        maximum: 1.0
     leaf_light_respiration_per_area:
       description: Leaf respiration rate per unit leaf area under light
       type: numeric
@@ -1212,7 +1212,7 @@ traits:
       units: g/g
       label: Leaf mass fraction
       values:
-        minimum: 0.1
+        minimum: 0.01
         maximum: 1.0
     leaf_mass_to_stem_mass:
       description: Ratio of leaf dry mass to stem dry mass
@@ -1220,7 +1220,7 @@ traits:
       units: g/g
       label: Ratio of leaf dry mass to stem dry mass
       values:
-        minimum: 0.1
+        minimum: 0.01
         maximum: 10.0
     leaf_mesophyll_conductance_per_area:
       description: Rate of CO2 movement between chloroplasts and sub-stomatal cavities (intracellular space), per unit leaf area
@@ -1301,7 +1301,7 @@ traits:
       label: Leaf phosphorus (P) content per unit leaf area
       values:
         minimum: 0.005
-        maximum: 1.0
+        maximum: 1.2
     leaf_P_per_dry_mass:
       description: Leaf phosphorus (P) content per unit leaf dry mass
       type: numeric
@@ -1325,7 +1325,7 @@ traits:
       units: umolCO2/molN/s
       label: Leaf photosynthesis rate per unit leaf nitrogen (N) content (photosynthetic nitrogen use efficiency, PNUE) at saturating light and CO2 conditions
       values:
-        minimum: 10.0
+        minimum: 1.0
         maximum: 1000.0
     leaf_photosynthetic_nitrogen_use_efficiency_saturated:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf nitrogen content at saturating light conditions but ambient CO2 conditions
@@ -1333,7 +1333,7 @@ traits:
       units: umolCO2/molN/s
       label: Leaf photosynthesis rate per unit leaf nitrogen (N) content (photosynthetic nitrogen use efficiency, PNUE) at saturating light conditions but ambient CO2 conditions
       values:
-        minimum: 10.0
+        minimum: 1.0
         maximum: 1000.0
     leaf_photosynthetic_phosphorus_use_efficiency_maximum:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf phosphorus content at saturating light and CO2 conditions
@@ -1349,7 +1349,7 @@ traits:
       units: umolCO2/molP/s
       label: Leaf photosynthesis rate per unit leaf phosphorus (P) content (photosynthetic phosphorus use efficiency, PPUE) at saturating light conditions but ambient CO2 conditions
       values:
-        minimum: 100.0
+        minimum: 10.0
         maximum: 100000.0
     leaf_S_per_dry_mass:
       description: Leaf sulphur (S) content per unit leaf dry mass
@@ -1508,6 +1508,15 @@ traits:
       values:
         minimum: 0.0001
         maximum: 10000.0
+    leaf_dark_transpiration_per_area:
+      description: Leaf transpiration rate per unit leaf area, in the dark
+      type: numeric
+      units: mmol/m2/s
+      label: Leaf transpiration rate per unit leaf area, in the dark
+      values:
+        values:
+        minimum: 0.0001
+        maximum: 10000.0
     leaf_turgor_loss_point:
       description: Water potential at which a leaf loses turgor
       type: numeric
@@ -1618,22 +1627,30 @@ traits:
       values:
         minimum: 0.1
         maximum: 1
+    bulk_modulus_of_elasticity:
+      description: In leaves, the ratio of the change in cell turgor to the change in cell volume as a plant dries out; calculated from a pressure-volume curve
+      type: numeric
+      units: Pa
+      label: Bulk odulus of elasticity (e)
+      values:
+        minimum: 10
+        maximum: 10000
     modulus_of_elasticity:
       description:  A measure of xylem's resistance to being deformed elastically (i.e., non-permanently) when a stress is applied to it
       type: numeric
-      units: Pa
-      label: Bulk modulus of elasticity (Young's modulus)
+      units: MPa
+      label: Modulus of elasticity (Young's modulus)
       values:
-        minimum: 1
+        minimum: 10
         maximum: 100000
     modulus_of_rupture:
       description: A measure of the force required to rupture xylem vessel
       type: numeric
-      units: Pa
+      units: MPa
       label: Bulk modulus of rupture
       values:
         minimum: 1
-        maximum: 100000
+        maximum: 10000
     nitrogen_fixing:
       description: Binary variable describing whether or not a plant hosts a nitrogen-fixing bacteria
       type: categorical
@@ -1644,7 +1661,7 @@ traits:
     N_to_P_ratio:
       description: Ratio of N to P dry mass
       type: numeric
-      units: dimensionless
+      units: g/g
       label: Ratio of N to P dry mass
       values:
         minimum: 1
@@ -1951,13 +1968,21 @@ traits:
         minimum: -25.0
         maximum: 75.0  
     root_diameter:
-      description: Root diameter
+      description: Root diameter; should only be used to record the maximum root diameter
       type: numeric
       units: mm
       label: Root diameter
       values:
         minimum: 0.01
         maximum: 1000
+    root_distribution_coefficient:
+      description: Root biomass depth distribution coefficient (‘B’ from Gale & Grigal (1987), where high values indicate root biomass allocated deeper in the soil).
+      type: numeric
+      units: dimensionless
+      label: Root biomass depth distribution coefficient
+      values:
+        minimum: 0.5
+        maximum: 1.0
     root_dry_matter_content:
       description: Root dry mass per unit root fresh mass
       type: numeric
@@ -1966,6 +1991,14 @@ traits:
       values:
         minimum: 10.0
         maximum: 1000.0
+    root_fine_root_coarse_root_ratio:
+      description: Volume of fine root (<0.5mm diametre) / Volume of coarse root (>0.5mm diametre)
+      type: numeric
+      units: mm3/mm3
+      label: Volume of fine root / Volume of coarse root
+      values:
+        minimum: 0.05
+        maximum: 50.0
     root_mass_fraction:
       description: Fraction of plant dry mass comprised of root material
       type: numeric
@@ -2377,9 +2410,10 @@ traits:
       label: Serotiny
       values:
         not_serotinous: Plant does NOT display serotiny
-        serotinous: Plant does display serotiny
+        serotinous: Plant does display serotiny, level not specified
         serotiny_low: Plant displays a low level of serotiny
         serotiny_moderate: Plant displays a moderate level of serotiny
+        serotiny_high: Plant displays a moderate level of serotiny
     soil_salinity_tolerance:
       description: Maximum salinity tolerated by a species, reported as the conductivity of the soil
       type: numeric
@@ -2483,7 +2517,7 @@ traits:
       label: Root area per unit root dry mass (specific root area)
       values:
         minimum: 0.001
-        maximum: 500
+        maximum: 1.0
     specific_root_length:
       description: Root length per unit root dry mass; SRL
       type: numeric
@@ -2491,7 +2525,7 @@ traits:
       label: Root length per unit root dry mass (specific root length, SRL)
       values:
         minimum: 0.5
-        maximum: 500
+        maximum: 5000
     spongy_mesophyll_thickness:
       description: Thickness of the spongy mesophyll cells
       type: numeric
@@ -2546,7 +2580,7 @@ traits:
       units: mg/g
       label: Stem dry mass per unit stem fresh mass (Stem dry matter content)
       values:
-        minimum: 10.0
+        minimum: 100.0
         maximum: 1000.0
     stem_hydraulic_conductivity:
       description: Kh; Measure of how efficiently water is transported through the leaf, determined as the ratio of water flow rate through the leaf to the difference in water potential across the leaf, standardised to leaf area.
@@ -2633,8 +2667,9 @@ traits:
       type: categorical
       label: Tap root 
       values:  
-        '0': tap root not present
-        '1': tap root present
+        tap_root_absent: tap root not present
+        tap_root_present: tap root present
+        tap_root_sometimes_present: tap root sometimes present
     thickest_root_diameter:
       description: Diameter of the thickest root
       type: numeric
@@ -2758,7 +2793,7 @@ traits:
       label: Leaf photosynthesis rate per unit leaf transpiration (photosynthetic water use efficiency, PWUE, or instantaneous WUE)
       values:
         minimum: 0.1
-        maximum: 20.0
+        maximum: 200.0
     wood_delta13C:
       description: Wood carbon stable isotope signature
       type: numeric
@@ -2782,7 +2817,7 @@ traits:
       label: Stem dry mass per unit fresh stem volume
       values:
         minimum: 0.1
-        maximum: 1.3
+        maximum: 1.4
     wood_C_per_dry_mass:
       description: Wood carbon (C) content per unit wood dry mass
       type: numeric
@@ -2937,6 +2972,7 @@ austraits:
         trait_name: &trait_name Name of trait sampled. Allowable values specified in the table `traits`.
         value: &value Value of trait sampled. In the master dataset these are all stored as characters, then converted to numeric later where appropriate.
         unit: &units Units of the sampled trait value after aligning with AusTraits standards.
+        date: &date Date sample was taken, in the format yyyy-mm-dd, but with days and months only when specified.
         value_type: *value_type
         replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each measurement. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be `1`. If the value type is `expert_mean`, `expert_min`, or `expert_max` the replicate value should be `.na`.
         original_name: &orginal_name Taxonomic name given to species in the original data supplied by the authors
@@ -3066,7 +3102,7 @@ metadata:
       type: character
       elements:
         data_is_long_format: Indicates if the data spreadsheet has a vertical (long) or  horizontal (wide) configuration with `yes` or `no` terminology
-        variable_match: Identifies which information is in each column in the file `data.csv`, excluding the actual trait data. One element within `variable_match` must be `species_name`. Datasets with `data_is_long_format` set to `yes` must also identify which column includes data on `value` and `trait_name`. Other allowed values include `site_name`, `observation_id`, `context_name` if these columns are present in the `data.csv` file or created with custom R code.
+        variable_match: Identifies which information is in each column in the file `data.csv`, excluding the actual trait data. One element within `variable_match` must be `species_name`. Datasets with `data_is_long_format` set to `yes` must also identify which column includes data on `value` and `trait_name`. Other allowed values include `date`, `site_name`, `observation_id`, `context_name` if these columns are present in the `data.csv` file or created with custom R code.
         custom_R_code: A field where additional R code can be included. This allows for custom manipulation of the data in the submitted spreadsheet into a different format for easy integration with AusTraits. `.na` indicates no custom R code was used.
     traits:
       description: A translation table mapping traits and units in the original study onto corresponding variables in AusTraits. Also specified here are methods used to collect the data.
