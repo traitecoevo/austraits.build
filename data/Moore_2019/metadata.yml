@@ -646,8 +646,8 @@ config:
   variable_match:
     species_name: taxon
     site_name: site_name_new
-  custom_R_code: data %>% mutate_at(c("leaf_area (mm2)","specific_leaf_area (mm2/mg)"),
-    ~na_if(.,0))
+    date: date
+  custom_R_code: data %>% mutate_at(c("leaf_area (mm2)","specific_leaf_area (mm2/mg)"), ~na_if(.,0)) %>% mutate(date = ifelse(date == "2005-2006","2005", date %>% mdy(quiet=TRUE) %>% as.character))
 traits:
 - var_in: leaf_N_per_dry_mass (%DM)
   unit_in: '%'
