@@ -800,8 +800,8 @@ traits:
       units: pg
       label: Plant genome size
       values:
-        minimum: 1.0
-        maximum: 10.0
+        minimum: 0.5
+        maximum: 5.0
     glaucous:
       description: Variable indicating if a plant's leaves are glaucous or not
       type: categorical
@@ -863,8 +863,8 @@ traits:
       units: degrees
       label: Leaf angle, relative to horizontal
       values:
-        minimum: -90
-        maximum: 90
+        minimum: -180
+        maximum: 180
     leaf_area:
       description: Area of the leaf surface
       type: numeric
@@ -882,26 +882,34 @@ traits:
         minimum: 0.1
         maximum: 100.0
     leaf_absorption:
-      description: Proportion of incoming light between 400-700 nm that is absorbed by the leaf
+      description: Proportion of incoming visible light (between 400-700 nm) that is absorbed by the leaf
       type: numeric
       units: umol/umol
-      label: Proportion of incoming light that is absorbed by the leaf
+      label: Proportion of incoming visible light that is absorbed by the leaf
       values:
         minimum: 0.01
         maximum: 1.0
     leaf_reflectance:
-      description: Proportion of incoming light between 400-700 nm that is reflected by the leaf
+      description: Proportion of incoming visible light (between 400-700 nm) that is reflected by the leaf
       type: numeric
       units: umol/umol
-      label: Proportion of incoming light that is reflected by the leaf
+      label: Proportion of incoming visible light that is reflected by the leaf
       values:
-        minimum: 0.001
+        minimum: 0.01
+        maximum: 1.0
+    leaf_reflectance_near_infrared:
+      description: Proportion of incoming near infra-red light (between 750-10500 nm) that is reflected by the leaf
+      type: numeric
+      units: umol/umol
+      label: Proportion of incoming near infra-red light that is reflected by the leaf
+      values:
+        minimum: 0.1
         maximum: 1.0
     leaf_transmission:
-      description: Proportion of incoming light between 400-700 nm that is transmitted through the leaf
+      description: Proportion of incoming visible light (between 400-700 nm) that is transmitted through the leaf
       type: numeric
       units: umol/umol
-      label: Proportion of incoming light that is transmitted through the leaf
+      label: Proportion of incoming visible light that is transmitted through the leaf
       values:
         minimum: 0.001
         maximum: 1.0
@@ -1212,7 +1220,7 @@ traits:
       units: g/g
       label: Leaf mass fraction
       values:
-        minimum: 0.1
+        minimum: 0.01
         maximum: 1.0
     leaf_mass_to_stem_mass:
       description: Ratio of leaf dry mass to stem dry mass
@@ -1220,7 +1228,7 @@ traits:
       units: g/g
       label: Ratio of leaf dry mass to stem dry mass
       values:
-        minimum: 0.1
+        minimum: 0.01
         maximum: 10.0
     leaf_mesophyll_conductance_per_area:
       description: Rate of CO2 movement between chloroplasts and sub-stomatal cavities (intracellular space), per unit leaf area
@@ -1544,14 +1552,22 @@ traits:
       values:
         minimum: 10.0
         maximum: 1000.0
-    leaf_water_content_per_mass:
+    leaf_water_content_per_dry_mass:
       description: The ratio of the mass of water in a leaf relative to its dry mass. (See also leaf_dry_matter_content, the ratio of a leaf's dry mass to fresh mass, that is recorded by a greater number of studies.)
       type: numeric
       units: g/g
-      label: Leaf water content per unit mass
+      label: Leaf water content per unit dry mass
       values:
         minimum: 0.01
         maximum: 20.0
+    leaf_water_content_per_fresh_mass:
+      description: The ratio of the mass of water in a leaf relative to its fresh mass. (See also leaf_dry_matter_content, the ratio of a leaf's dry mass to fresh mass, that is recorded by a greater number of studies.)
+      type: numeric
+      units: g/g
+      label: Leaf water content per unit fresh mass
+      values:
+        minimum: 0.01
+        maximum: 1.0
     leaf_width:
       description: The longest width axis of a leaf; orthogonal to its length
       type: numeric
@@ -1661,7 +1677,7 @@ traits:
     N_to_P_ratio:
       description: Ratio of N to P dry mass
       type: numeric
-      units: dimensionless
+      units: g/g
       label: Ratio of N to P dry mass
       values:
         minimum: 1
@@ -1968,13 +1984,21 @@ traits:
         minimum: -25.0
         maximum: 75.0  
     root_diameter:
-      description: Root diameter
+      description: Root diameter; should only be used to record the maximum root diameter
       type: numeric
       units: mm
       label: Root diameter
       values:
         minimum: 0.01
         maximum: 1000
+    root_distribution_coefficient:
+      description: Root biomass depth distribution coefficient (‘B’ from Gale & Grigal (1987), where high values indicate root biomass allocated deeper in the soil).
+      type: numeric
+      units: dimensionless
+      label: Root biomass depth distribution coefficient
+      values:
+        minimum: 0.5
+        maximum: 1.0
     root_dry_matter_content:
       description: Root dry mass per unit root fresh mass
       type: numeric
@@ -1983,6 +2007,14 @@ traits:
       values:
         minimum: 10.0
         maximum: 1000.0
+    root_fine_root_coarse_root_ratio:
+      description: Volume of fine root (<0.5mm diametre) / Volume of coarse root (>0.5mm diametre)
+      type: numeric
+      units: mm3/mm3
+      label: Volume of fine root / Volume of coarse root
+      values:
+        minimum: 0.05
+        maximum: 50.0
     root_mass_fraction:
       description: Fraction of plant dry mass comprised of root material
       type: numeric
@@ -2501,7 +2533,7 @@ traits:
       label: Root area per unit root dry mass (specific root area)
       values:
         minimum: 0.001
-        maximum: 500
+        maximum: 1.0
     specific_root_length:
       description: Root length per unit root dry mass; SRL
       type: numeric
@@ -2509,7 +2541,7 @@ traits:
       label: Root length per unit root dry mass (specific root length, SRL)
       values:
         minimum: 0.5
-        maximum: 500
+        maximum: 5000
     spongy_mesophyll_thickness:
       description: Thickness of the spongy mesophyll cells
       type: numeric
@@ -2564,7 +2596,7 @@ traits:
       units: mg/g
       label: Stem dry mass per unit stem fresh mass (Stem dry matter content)
       values:
-        minimum: 10.0
+        minimum: 100.0
         maximum: 1000.0
     stem_hydraulic_conductivity:
       description: Kh; Measure of how efficiently water is transported through the leaf, determined as the ratio of water flow rate through the leaf to the difference in water potential across the leaf, standardised to leaf area.
@@ -2651,8 +2683,9 @@ traits:
       type: categorical
       label: Tap root 
       values:  
-        '0': tap root not present
-        '1': tap root present
+        tap_root_absent: tap root not present
+        tap_root_present: tap root present
+        tap_root_sometimes_present: tap root sometimes present
     thickest_root_diameter:
       description: Diameter of the thickest root
       type: numeric
@@ -2934,6 +2967,7 @@ value_type:
     experiment_max: Value is the maximum of measurements from an experimental study either in the field or a glasshouse
     individual_mean: Value is a mean of replicate measurements on an individual (usually for experimental ecophysiology studies)
     individual_max: Value is a maximum of replicate measurements on an individual (usually for experimental ecophysiology studies)
+    literature_source: Value is a site or multi-site mean that has been sourced from an unknown literature source
     unknown: Value type is not currently known
 
 #-------------------------------------------------------------
