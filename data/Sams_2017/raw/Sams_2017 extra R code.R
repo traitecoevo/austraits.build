@@ -1,7 +1,7 @@
 #code to create data.csv file without filtering columns
 read_csv("data/Sams_2017/raw/Sams_et_al_2017_site_coords.csv") -> sites
 
-read_csv("data/Sams_2017/raw/SLA_species_n_names_matched.csv")  %>%
+read_csv("data/Sams_2017/raw/SLA_species_n_names_matched_edited_lat_lon.csv") %>%
   rename(species_name = species) -> SLA_n
 
 read_csv("data/Sams_2017/raw/data_starting.csv") %>%
