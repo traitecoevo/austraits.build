@@ -311,10 +311,10 @@ The following variables have been recorded for the sites included in the study:
 data_study$sites %>%
   filter(!(site_property %in% site_main)) %>%
   select(-dataset_id) %>%
-  spread(site_property, value) -> context
+  spread(site_property, value) -> sites_extra
 
-if(nrow(context) > 0 ) {
-  context %>%
+if(nrow(sites_extra) > 0 ) {
+  sites_extra %>%
     my_kable_styling() %>%
     writeLines()
 
@@ -337,10 +337,12 @@ data_study$contexts %>%
 
 if(nrow(context) > 0 ) {
   context %>%
+    # make ordering of columns, same as dataframe
+    select(one_of(c("context_name", data_study$contexts$context_property %>% unique()))) %>%
     my_kable_styling() %>%
     writeLines()
 
-  new_question("(section `contexts`) Do the additional context details look complete?")
+  new_question("(section `contexts`) Do the context details look complete?")
   } else{
   writeLines("No contextual data available.")
 }
