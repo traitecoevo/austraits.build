@@ -8,9 +8,9 @@ read_csv("data/Sams_2017/raw/data_starting.csv") %>%
   mutate(species_name = paste(Genus,Species,sep=" ")) %>%
   select(species_name,`Hmax(m)`,WD, SLA, minseedlength, maxseedlength,`fruit size(min).mm2`,
          `fruit size(max).mm2`,Fruit_Type_2, dispersalmode, dispersal2,`Location.n`,`Rainforest.Type`) %>%
-  left_join(sites,by="Location.n") %>%
-  full_join(SLA_n,by="species_name") %>%
   distinct(species_name,.keep_all = TRUE) %>% 
+  full_join(SLA_n,by="species_name") %>%
+  mutate(SLA_no_site = ifelse(is.na(sla.mean),SLA,NA)) %>%
   write_csv("data/Sams_2017/raw/data_with_duplicates.csv")
 
 #code to add columns to filter out duplicates
@@ -96,7 +96,26 @@ subset(austraits$traits,trait_name=="wood_density" & dataset_id %in% c("Sams_201
   select(original_name, wood_density_unique) %>%
   rename(species_name = original_name) -> wood_density_comparison
 
-read_csv("data/Sams_2017/raw/data_before_filters.csv") %>%
+read_csv("data/Sams_2017/raw/wood_density_comparison.csv") %>%
+  select(original_name, wood_density_unique) %>%
+  rename(species_name = original_name) -> wood_density_comparison
+
+read_csv("data/Sams_2017/raw/plant_height_comparison.csv") %>%
+  mutate(plant_height_unique = ifelse(plant_height_to_keep=="keep",plant_height_Sams_2017,NA))%>%
+  select(original_name, plant_height_unique) %>%
+  rename(species_name = original_name)  ->  plant_height_comparison
+
+read_csv("data/Sams_2017/raw/seed_length_max_comparison.csv") %>%
+  mutate(seed_length_max_unique = ifelse(seed_length_max_to_keep=="keep",seed_length_max_Sams_2017,NA)) %>%
+  select(original_name, seed_length_max_unique) %>%
+  rename(species_name = original_name) -> seed_length_max_comparison
+
+read_csv("data/Sams_2017/raw/seed_length_min_comparison.csv") %>%
+  mutate(seed_length_min_unique = ifelse(seed_length_min_to_keep=="keep",seed_length_min_Sams_2017,NA)) %>%
+  select(original_name, seed_length_min_unique) %>%
+  rename(species_name = original_name) -> seed_length_min_comparison
+
+read_csv("data/Sams_2017/raw/data_with_duplicates.csv") %>%
   full_join(wood_density_comparison, by="species_name") %>%
   full_join(plant_height_comparison, by="species_name") %>%
   full_join(seed_length_min_comparison, by="species_name") %>%
