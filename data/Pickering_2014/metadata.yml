@@ -85,7 +85,7 @@ dataset:
     narrow transition zones were recognized.
   original_file: data_Pickering.csv
   notes: Lizzy Wenk changed the longitude for the study site 'Tall alpine herbfield
-    raised bog' from 158.331 to 148.331.
+    raised bog' from 158.331 to 148.331 to fall within the study region.
 sites:
   Below Clarke 4:
     elevation (m): 1875
@@ -388,7 +388,7 @@ config:
   variable_match:
     species_name: Species
     site_name: site
-  custom_R_code: .na
+  custom_R_code: data %>% mutate_at(c("LDMC (mg/g-1)"),~na_if(.,0))
 traits:
 - var_in: GF
   unit_in: .na
@@ -582,9 +582,6 @@ taxonomic_updates:
   replace: Brachyscome spathulata
   reason: Synonym reported by TaxonStand (2020-04-08)
 questions:
-  question_2: Some of the SLA values are very high. I am wondering if for a few species something is off
-    with the units. In particular, I am wondering if the units for leaf area are wrong
-    for Diplaspis nivis, Plantago euryphylla, leading to an incorrect SLA calculation.
-    Then, Aciphylla simplicifolia also has a very high SLA (thin leaves), but I would
-    have expected this species to have a very low SLA (thick leaves).
+  question_2: A few of the SLA values are extreme outliers and I am wondering if for a few species
+    something is off with the units for either leaf area or leaf dry mass. In particular, Colobanthus pulvinatus has a specific leaf area that is nearly 10x lower than any other species in your study (0.45 mm2/mg), while Senecio pinnatifolius var. pleiocephalus (194 mm2/mg) Aciphylla simplicifolia (264), and Psychrophile introloba (Caltha introloba) (376) have by far the highest SLA values in AusTraits. In addition, Diplaspis nivis (21381) and Plantago euryphylla (1269) have been excluded as having SLA values outside allowable trait limits. Since most species have completely "normal" SLA values I'm fairly certain the assigned units are correct. Should I just exclude the outliers?
 
