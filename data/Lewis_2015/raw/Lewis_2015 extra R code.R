@@ -3,6 +3,24 @@ read_csv("data/Lewis_2015/raw/GHS30_WollemiTxCO2_GXAsat_20081125-20090623_L1.csv
   mutate(date_gas_exchange = as.Date(date_gas_exchange, format = "%d/%m/%Y")) %>%
   mutate(Species = "Wollemia nobilis") -> Lewis_gas_exchange
 
+read_csv("data/Lewis_2015/raw/GHS30_WollemiTxCO2_GXACiAQ_20091215-20091223_L1.csv") %>%
+  rename(date_gas_exchange = `Date`) %>%
+  mutate(date_gas_exchange = as.Date(date_gas_exchange, format = "%d/%m/%Y")) %>%
+  mutate(Species = "Wollemia nobilis") %>%
+  subset(CO2R > 900) -> Lewis_Amax
+
+read_csv("data/Lewis_2015/raw/GHS30_WollemiTxCO2_GXACiAQ_20091215-20091223_L1.csv") %>%
+  rename(date_gas_exchange = `Date`) %>%
+  mutate(date_Aci = as.Date(date_gas_exchange, format = "%d/%m/%Y")) %>%
+  mutate(Species = "Wollemia nobilis") %>%
+  group_by(Species,Temp,CO2,Potnum) %>%
+  filter(CO2R == max(CO2R)) %>%
+  ungroup() %>%
+  select(Species,Temp,CO2,Potnum,Photo,Cond,PARi,CO2R) %>%
+  rename(Amax = Photo, gs_at_Amax = Cond,PAR_Amax = PARi,CO2R_Amax = CO2R) -> Lewis_Amax
+
+
+
 read_csv("data/Lewis_2015/raw/GHS30_WollemiTxCO2_Harvest_20100503_L1.csv") %>%
   mutate(leaf_area_ratio = `TotalLA (cm-2)`/ (`TotalLeafDW (g)`+`StemDW (g)`)) -> Lewis_harvest
 
@@ -47,6 +65,7 @@ Lewis_gas_exchange %>%
   `LMA (g m-2)`, `leaf_area_ratio`),funs(replace(.,duplicated(.),NA))) %>%
   ungroup() %>%
   bind_rows(Lewis_anatomy) %>%
+  bind_rows(Lewis_Amax) %>%
   mutate(Species = "Wollemia nobilis") %>%
   mutate(PAR_round = round(PARi,digits = -2)) %>%
   mutate(PAR_desc = if_else(is.na(PARi),"",paste("measured_at_",PAR_round,"_PAR",sep=""))) %>%

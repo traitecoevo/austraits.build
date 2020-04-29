@@ -16,10 +16,17 @@ read_csv("data/Huang_2015/raw/GHS30_IntVarClim_Waratah-PxTxCxW_GasExchangeAQ_201
   rename(A_sat_umol_per_m2_s1 = `Photo (umol m-2 s-1)`, Cond_at_A_sat_mol_per_m2_s1 = `Cond (mol m-2 s-1)`, 
          Ci_at_A_sat_ppm = `Ci (umol mol-1)`, Trans_at_A_sat_mmol_per_m2_s1 = `Trmmol (mmol m-2 s-1)`) -> A_sat_values
 
+read_csv("data/Huang_2015/raw/GHS30_IntVarClim_Waratah-PxTxCxW_ACiParameters_20110705-20110706_L1.csv") %>%
+  rename(A_max_umol_per_m2_s1 = Amax, A_sat_umol_per_m2_s1 = Asat, Cond_at_A_sat_mol_per_m2_s1 = gs) %>%
+  mutate(Temp = as.double(Temp),
+         Temp = gsub("30","Elv","Amb")) %>%
+  select(-Treatment) -> Aci_parameters
+      
 read_csv("data/Huang_2015/raw/GHS30_IntVarClim_Waratah-PxTxCxW_Harvest_2011_L1.csv") %>%
   full_join(carbo,by=c("Species", "Population", "Temp", "CO2", "Potnum")) %>%
   full_join(A_max_values, by=c("Species", "Population", "Temp", "CO2", "Potnum")) %>%
   full_join(A_sat_values, by=c("Species", "Population", "Temp", "CO2", "Potnum", "Genotype")) %>%
+  bind_rows(Aci_parameters) %>%
   mutate(species_name = "Telopea speciosissima",
          site_name = "University of Western Sydney",
          context = paste("Seeds_from_",Population,"_population_grown_at_",Temp,"_temp_and_",CO2,"_ppm_CO2",sep="")) %>% 
