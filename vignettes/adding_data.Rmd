@@ -112,8 +112,10 @@ metadata_create_template(dataset_id)
 The function will ask a series of questions and then create a relatively empty file `data/your_dataset_id/metadata.yml`. The key questions are:
 
 * Is the data long vs wide? A wide dataset has each variable(i.e. trait ) as a column. A long dataset has each variable as a row and column as a species. 
-*Select column for 'species_name'
-*Select column for 'site_name'
+* Select column for 'species_name'
+* Select column for 'site_name'
+* Select column for 'context_name'
+
 
 ### Adding a source
 
@@ -151,27 +153,6 @@ Occasionally all the changes we want to make to dataset may not fit into the pre
 ```{r, eval=FALSE, echo=TRUE}
   data <- 
     read_csv(filename_data_raw, col_types = cols()) %>%
-    custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
-    parse_data(dataset_id, metadata) %>%
-    ...
-```
-
-Note the second line. After loading the csv file, we can apply some Custom R code small manipulations to the dataframe before processing it. Custom R code is valid R code, but written inside the `metadata.yml` file. While developing this, you'll want to test your code. This can be achieved by running the function
-
-```{r, eval=FALSE, echo=TRUE}
-metadata_check_custom_R_code(dataset_id)
-```
-
-which returns a data frame, showing how the datasets looks after being manipulated.mes
-
-
-## Adding custom R code into metadata.yml {#custom_R_code}
-
-Occasionally all the changes we want to make to dataset may not fit into the prescribed workflow used in AusTraits. As an example, for `Blackman_2010` we want to combine two columns to create an appropriate site variable. So we want to make to make some custom modifications to this particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`load_study`](https://github.com/traitecoevo/austraits/blob/master/R/steps.R)) looks like:
-
-```{r, eval=FALSE, echo=TRUE}
-  data <- 
-    read_csv(filename_data_raw, ol_types = cols(), guess_max = 100000) %>%
     custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
     parse_data(dataset_id, metadata) %>%
     ...
@@ -226,7 +207,7 @@ metadata_add_traits(dataset_id)
 ```
 <!-- TODO: You will be asked to indicate the columns you wish to keep as distinct traits -->
 
-### Site details
+### Adding site details
 
 Add sites details
 
@@ -234,15 +215,35 @@ Add sites details
 metadata_add_sites(dataset_id, site_data)
 ```
 
-This function assumes you have site details stored in wide format, in R:
-
-<!-- TODO: need to indicate that the following code needs to be run with the assignment site_data for the previous code to work. --> 
+This function assumes you have site details stored in wide format, in R, such as 
 
 ```{r, echo=FALSE, results="markup"}
 austraits$sites %>% 
   filter(dataset_id == "Falster_2005_1") %>% 
   select(-dataset_id) %>% 
   spread(site_property, value) %>% 
+  type_convert()
+```
+
+If your data is in a file, you'll need to read it in first.
+
+### Context details
+
+Add contexts details
+
+```{r, eval=FALSE}
+metadata_add_contexts(dataset_id, context_data)
+```
+
+This function assumes you have context details stored in wide format, in R, such as 
+
+<!-- TODO: need to indicate that the following code needs to be run with the assignment context_data for the previous code to work. --> 
+
+```{r, echo=FALSE, results="markup"}
+austraits$contexts %>% 
+  filter(dataset_id == "Hall_1981") %>% 
+  select(-dataset_id) %>% 
+  spread(context_property, value) %>% 
   type_convert()
 ```
 
