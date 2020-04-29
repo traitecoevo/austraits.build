@@ -23,23 +23,22 @@ ENV LD_LIBRARY_PATH /usr/local/lib/R/lib
 
 ENV HOME /home/${NB_USER}
 WORKDIR ${HOME}
-RUN chown -R ${NB_USER} ${HOME}
 
 # ---------------------------------------------
 
-# Install extra packages not already available in verse
+# Add custom installations here
 
-# Set default source for new packages, using the MRAN snapshots of CRAN
+## Install packages based on DESCRIPTION file in repository. 
 
-RUN echo "options(repos = list(CRAN = 'http://mran.revolutionanalytics.com/snapshot/2019-08-26/'))" > /usr/local/lib/R/etc/Rprofile.site
+## Copies your description file into the Docker Container, specifying dependencies
 
-#RUN R --quiet -e "install.packages(c('ggbeeswarm', 'gridExtra', 'kableExtra', 'leaflet', 'pacman', 'rcrossref', 'RefManageR', 'Taxonstand', 'whisker'));"
+USER root
+COPY ./DESCRIPTION ${HOME}
+# The above line adds only the description file for the project
 
-# Install remake
+RUN chown -R ${NB_USER} ${HOME}
 
-#RUN R --quiet -e "remotes::install_github('richfitz/remake', dependencies=TRUE);"
-
-# Set behaviour of remake 
+RUN R --quiet -e "options(repos = list(CRAN = 'http://mran.revolutionanalytics.com/snapshot/2020-01-01/')); devtools::install_deps(upgrade = 'never')"
 
 RUN echo "options(remake.verbose.noop=FALSE)" >> /usr/local/lib/R/etc/Rprofile.site
 

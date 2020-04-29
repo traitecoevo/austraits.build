@@ -1856,13 +1856,15 @@ sites:
     no3: 0.959
     nh4incub: -0.266
     orgC: 0.695
+contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: species
     site_name: plot.id
+    date: collection.date
   custom_R_code: data %>% mutate(nitrogen_fixing = str_detect(specific.uptake.strategy, "/n fixing", negate = FALSE)) %>%
-    mutate(senesced_leaf_Zn = ifelse(senesced_leaf_Zn<0,0,senesced_leaf_Zn), senesced_leaf_Mo = ifelse(senesced_leaf_Mo<0,0,senesced_leaf_Mo),Mo_ug.g.DW = ifelse(Mo_ug.g.DW<0,0,Mo_ug.g.DW))
+    mutate(senesced_leaf_Zn = ifelse(senesced_leaf_Zn<0,0,senesced_leaf_Zn), senesced_leaf_Mo = ifelse(senesced_leaf_Mo<0,0,senesced_leaf_Mo),Mo_ug.g.DW = ifelse(Mo_ug.g.DW<0,0,Mo_ug.g.DW)) %>% mutate(collection.date = collection.date %>% dmy())
 traits:
 - var_in: uptake.strategy
   unit_in: .na
