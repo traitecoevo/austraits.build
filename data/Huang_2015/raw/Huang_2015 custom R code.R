@@ -1,20 +1,20 @@
 read_csv("data/Huang_2015/raw/GHS30_IntVarClim_Waratah-PxTxCxW_Carbohydrates_2011_L1.csv") -> carbo
 
 read_csv("data/Huang_2015/raw/GHS30_IntVarClim_Waratah-PxTxCxW_GasExchangeACi_20110705-20110706_L1.csv") %>%
-  select(-"VpdL (kPa)", -"Tleaf (deg C)", -"TBlk (deg C)", -"CO2S (umol mol-1)") %>%
+  select(-"VpdL (kPa)", -"Tleaf (deg C)", -"TBlk (deg C)", -"CO2S (umol mol-1)", -"CiCa (ratio)") %>%
   group_by(Species, Population, Temp, CO2, Genotype, Potnum) %>%
   top_n(1, `CO2R (umol mol-1)`) %>%
   rename(A_max_umol_per_m2_s1 = `Photo (umol m-2 s-1)`, Cond_at_A_max_mol_per_m2_s1 = `Cond (mol m-2 s-1)`, 
-         Ci_at_A_max_ppm = `Ci (umol mol-1)`, Trans_at_A_max_mmol_per_m2_s1 = `Trmmol (mmol m-2 s-1)`, 
-         ci_over_ca_at_Amax = `CiCa (ratio)`) %>%
-  select(-`CO2R (umol mol-1)`) -> A_max_values
+         Ci_at_A_max_ppm = `Ci (umol mol-1)`, Trans_at_A_max_mmol_per_m2_s1 = `Trmmol (mmol m-2 s-1)`) %>%
+  select(-`CO2R (umol mol-1)`,-A_max_umol_per_m2_s1) -> A_max_values
 
 read_csv("data/Huang_2015/raw/GHS30_IntVarClim_Waratah-PxTxCxW_GasExchangeAQ_20110706-20110708_L1.csv") %>%
   select(-`Area (cm2)`, -StmRat, -Tair, -Tleaf, -TBlk, -CO2R, -CO2S, -H2OR, -H2OS, -RH_R, -RH_S, -Flow, -PARi, -`VpdL (kPa)`, -Potnum_merged) %>%
   group_by(Species, Population, Temp, CO2, Genotype, Potnum) %>%
   top_n(1, `Photo (umol m-2 s-1)`) %>%
   rename(A_sat_umol_per_m2_s1 = `Photo (umol m-2 s-1)`, Cond_at_A_sat_mol_per_m2_s1 = `Cond (mol m-2 s-1)`, 
-         Ci_at_A_sat_ppm = `Ci (umol mol-1)`, Trans_at_A_sat_mmol_per_m2_s1 = `Trmmol (mmol m-2 s-1)`) -> A_sat_values
+         Ci_at_A_sat_ppm = `Ci (umol mol-1)`, Trans_at_A_sat_mmol_per_m2_s1 = `Trmmol (mmol m-2 s-1)`) %>%
+  select(-A_sat_umol_per_m2_s1, -Cond_at_A_sat_mol_per_m2_s1)-> A_sat_values
 
 read_csv("data/Huang_2015/raw/GHS30_IntVarClim_Waratah-PxTxCxW_ACiParameters_20110705-20110706_L1.csv") %>%
   rename(A_max_umol_per_m2_s1 = Amax, A_sat_umol_per_m2_s1 = Asat, Cond_at_A_sat_mol_per_m2_s1 = gs) %>%
