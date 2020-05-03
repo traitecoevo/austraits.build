@@ -35,12 +35,9 @@ config:
   data_is_long_format: no
   variable_match:
     species_name: SPECIES
-  custom_R_code: data$flowering_time <- NA; data[!is.na(data[["flowering start (month)"]]),]$flowering_time
-    <- paste(data[!is.na(data[["flowering start (month)"]]),]$`flowering start (month)`,
-    data[!is.na(data[["flowering start (month)"]]),]$`flowering finish (month)`, sep
-    = "-"); data[["flowering_time"]] <- convert_month_range_vec_to_binary(data[["flowering_time"]]);
-    data[["flowering start (month)"]] <- NULL; data[["flowering finish (month)"]]
-    <- NULL; data
+  custom_R_code: 'data %>%
+    mutate(flowering_time = sprintf("%s-%s", `flowering start (month)`, `flowering finish (month)`) %>% 
+    convert_month_range_vec_to_binary())'
 traits:
 - var_in: growth form
   unit_in: .na

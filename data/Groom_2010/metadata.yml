@@ -10,6 +10,30 @@ source:
     number: 1-2
     pages: 61--72
     doi: 10.1007/s11104-009-0135-6
+  reference_02:
+    key: Pate_1986
+    bibtype: Article
+    year: '1986'
+    author: J. S. Pate and E. Rasins and J. Rullo and J. Kuo
+    journal: Annals of Botany
+    title: Seed Nutrient Reserves of Proteaceae with Special Reference to Protein
+      Bodies and their Inclusions
+    volume: '57'
+    number: '6'
+    pages: 747--770
+    doi: 10.1093/oxfordjournals.aob.a087159
+  reference_03:
+    key: Stock_1991
+    bibtype: Article
+    year: '1991'
+    author: W. D. Stock and J. S. Pate and E. Rasins
+    journal: New Phytologist
+    title: Seed developmental patterns in Banksia attenuata R. Br. and B. laricina
+      C. Gardner in relation to mechanical defence costs
+    volume: '117'
+    number: '1'
+    pages: 109--114
+    doi: 10.1111/j.1469-8137.1991.tb00950.x
 people:
 - name: Philip K Groom
   institution: Curtin University
@@ -24,46 +48,65 @@ dataset:
     of values from the literature'
   collection_type: literature
   sample_age_class: adult
-  sampling_strategy: 'Study compares seed P and seed P recycling in Proteaceae species in southwestern Australia and South Africa to address the following questions: 1. How much shoot and reproductive-structure P is allocated to seeds and what affects the levels? 2. How much P is stored in individual seeds and how does seed P vary with seed size, fire response, level of serotiny, and region? 3. What is the form of P in seeds? 4. Do the data support the hypothesis that P is a limiting resource in these regions? The study uses values from the literature to address these questions. Values are used from: Denton et al. (2007) (data in AusTraits under Denton_2007), Kuo et al. (1982) (doi.org/10.1071/bt9820231), Milberg et al. (1998) (doi.org/10.1046/j.1365-2745.1998.00283.x), Stock et al. (1989) (doi.org/10.1111/j.1469-8137.1991.tb00950.x), Hocking (1986) (doi.org/10.1071/BT9860155), Hocking (1982) (doi.org/10.1071/BT9820219), Milberg and Lamont (1997) (doi.org/10.1046/j.1469-8137.1997.00870.x), Groom and Lamont (2004), Lamont and Groom (2002) (doi.org/10.1111/nph.13465; data in AusTraits under Lamont_2002), and Pate et al. (1986) (doi.org/10.1093/oxfordjournals.aob.a087159)'
+  sampling_strategy: 'Study compares seed P and seed P recycling in Proteaceae species
+    in southwestern Australia and South Africa to address the following questions:
+    1. How much shoot and reproductive-structure P is allocated to seeds and what
+    affects the levels? 2. How much P is stored in individual seeds and how does seed
+    P vary with seed size, fire response, level of serotiny, and region? 3. What is
+    the form of P in seeds? 4. Do the data support the hypothesis that P is a limiting
+    resource in these regions? The study uses values from the literature to address
+    these questions. Values are used from: Denton et al. (2007) (data in AusTraits
+    under Denton_2007), Kuo et al. (1982) (data in AusTraits under Kuo_1982), Milberg
+    et al. (1998) (data in AusTraits under Milberg_1998), Stock et al. (1989) (doi.org/10.1111/j.1469-8137.1991.tb00950.x),
+    Hocking (1986) (data in AusTraits under Hocking_1986), Hocking (1982) (data in
+    AusTraits under Hocking_1982), Milberg and Lamont (1997) (data in AusTraits under
+    Milberg_1997), Groom and Lamont (2004), Lamont and Groom (2002) (doi.org/10.1111/nph.13465;
+    data in AusTraits under Lamont_2002), and Pate et al. (1986) (doi.org/10.1093/oxfordjournals.aob.a087159)'
   original_file: none - extracted data from manuscript
-  notes: Three values that were identical to those reported in Denton_2007 were filtered out of AusTraits using custom_R_code; these duplicate values are still present in the data.csv file. Checking for duplicates, there are a number of categorical values with duplicate values in either Groom_1997 or Denton_2007, but there are no longer any overlapping numeric values. 
+  notes: Values derived from Denton_2007, Kuo_1982, Milberg_1998, Milberg_1997, Hocking_1986,
+    and Hocking_1982 have been filtered out, since they are in AusTraits under their
+    primary references; these duplicate values are still present in the data.csv file.
 sites:
   southwest Australia:
     latitude range (deg): -27.5 to -34.5
-    longitude range (deg): 114 - 122 
-    description: Mediterranea climate region 
+    longitude range (deg): 114 - 122
+    description: Mediterranea climate region
 contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: species
     site_name: site
-  custom_R_code: data %>% mutate(seed_dry_mass_mg = if_else(is.na(seed_dry_mass_mg_sourced),seed_dry_mass_mg,0), `P_content_mg_g-1` = if_else(is.na(`P_content_mg_g-1_sourced`),`P_content_mg_g-1`,0)) %>%  mutate_at(c("seed_dry_mass_mg","P_content_mg_g-1"), ~na_if(.,0))
+  custom_R_code: data %>% mutate(seed_dry_mass_mg = if_else(source %in% c("Kuo_1982","Denton_2007","Milberg_1998","Milberg_1997","Hocking_1982","Hocking_1986"), seed_dry_mass_mg,0), `P_content_mg_g-1` = if_else(source %in% c("Kuo_1982","Denton_2007","Milberg_1998","Milberg_1997","Hocking_1982","Hocking_1986"),`P_content_mg_g-1`,0)) %>%  mutate_at(c("seed_dry_mass_mg","P_content_mg_g-1"), ~na_if(.,0))
 traits:
 - var_in: fire_response
   unit_in: .na
   trait_name: fire_response
   value_type: expert_mean
   replicates: .na
-  methods: information sourced from other studies; there is some overlap between Denton_2007, Groom_1997 and this study, but since "expert_mean" values we're leaving them in
+  methods: information sourced from other studies; there is some overlap between Denton_2007,
+    Groom_1997 and this study, but since "expert_mean" values we're leaving them in
 - var_in: serotiny
   unit_in: .na
   trait_name: serotiny
   value_type: expert_mean
   replicates: .na
-  methods: information sourced from other studies; there is some overlap between Denton_2007, Groom_1997 and this study, but since "expert_mean" values we're leaving them in
+  methods: information sourced from other studies; there is some overlap between Denton_2007,
+    Groom_1997 and this study, but since "expert_mean" values we're leaving them in
 - var_in: seed_dry_mass_mg
   unit_in: mg
   trait_name: seed_mass
   value_type: site_mean
   replicates: unknown
-  methods: values sourced from other studies; values from Denton_2007 have been removed, since we also have this study in AusTraits
+  methods: values sourced from other studies; values from Denton_2007 have been removed,
+    since we also have this study in AusTraits
 - var_in: P_content_mg_g-1
   unit_in: mg/g
   trait_name: seed_P_concentration
   value_type: site_mean
   replicates: unknown
-  methods: values sourced from other studies; values from Denton_2007 have been removed, since we also have this study in AusTraits
+  methods: values sourced from other studies; values from Denton_2007 have been removed,
+    since we also have this study in AusTraits
 substitutions:
 - trait_name: fire_response
   find: K
@@ -79,7 +122,7 @@ substitutions:
   replace: serotiny_low
 - trait_name: serotiny
   find: 2
-  replace: serotinous
+  replace: serotiny_high
 taxonomic_updates:
 - find: Hakea crassifolia
   replace: Hakea pandanicarpa ssp. crassifolia
