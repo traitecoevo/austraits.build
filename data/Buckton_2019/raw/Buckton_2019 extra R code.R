@@ -1,21 +1,25 @@
+my_mean <- function(x) {mean(x, na.rm=TRUE)}
+summarise_all(my_mean)
+
+
 read_csv("data/Buckton_2019/raw/LICOR_ForR.csv") %>%
   select(Species,Tree.code,Ci,WUE) %>%
   group_by(Species,Tree.code) %>%
-  summarise_all(.funs=mean) %>%
+  summarise_all(my_mean) %>%
   ungroup() %>%
   rename(Tree = Tree.code) -> extra_gas_exchange
 
 read_csv("data/Buckton_2019/raw/LeafData.csv") %>%
   select(-Time,-ID,-Leaf,-LeafCode,-Lam1,-Lam2,-Lam3,-Spec.Code.old,-LMA,-Individual,-Growth.Form) %>%
   group_by(Species,Tree,Date) %>%
-  summarise_all(funs(mean), na.rm = TRUE) %>%
+  summarise_all(my_mean) %>%
   ungroup() %>%
   rename(date_leaf = Date) -> leaf_data
 
 read_csv("data/Buckton_2019/raw/StemData.csv") %>%
   select(-Growth.Form,-Species.Code.OLD,-Individual,-Length,-Diameter,-Fresh.Weight,-Vol.measured,-Vol.waterDisp, -Dry.Weight,-Species.Old) %>%
   group_by(Species, BranchCode) %>%
-  summarise_all(funs(mean), na.rm = TRUE) %>%
+  summarise_all(my_mean) %>%
   ungroup() %>%
   rename(Tree = BranchCode) -> stem_data
 
