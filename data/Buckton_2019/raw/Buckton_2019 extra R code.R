@@ -18,9 +18,6 @@ read_csv("data/Buckton_2019/raw/LeafData.csv") %>%
 
 read_csv("data/Buckton_2019/raw/StemData.csv") %>%
   select(-Growth.Form,-Species.Code.OLD,-Individual,-Length,-Diameter,-Fresh.Weight,-Vol.measured,-Vol.waterDisp, -Dry.Weight,-Species.Old) %>%
-  group_by(Species, BranchCode) %>%
-  summarise_all(my_mean) %>%
-  ungroup() %>%
   rename(Tree = BranchCode) -> stem_data
 
 read_csv("data/Buckton_2019/raw/Stem_water_18O.csv") %>%
