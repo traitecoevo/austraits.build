@@ -21,18 +21,6 @@ source:
       series)
     pages: 456
     ISBN: 0642568014, 9780642568014
-  secondary_02:
-    key: Jordan_2001
-    bibtype: Article
-    year: '2001'
-    author: Gregory J. Jordan
-    journal: Australian Journal of Botany
-    title: An investigation of long-distance dispersal based on species native to
-      both Tasmania and New Zealand
-    volume: '49'
-    number: '3'
-    pages: '333'
-    doi: 10.1071/bt00024
   secondary_03:
     key: McGlone_2010
     bibtype: Article
@@ -80,12 +68,9 @@ config:
   data_is_long_format: no
   variable_match:
     species_name: Spp Name
-  custom_R_code: data %>% mutate(Seed_Mass_g = ifelse(`Seed_Mass_interpolated_(1=Y,0=N)`==1,NA,Seed_Mass_g),`Plant_height_(m)`
-    = ifelse(`Plant_height_interpolated_(1=Y,0=N)`==1,NA,`Plant_height_(m)`),Leaf_Area_cm2
-    = ifelse(`Leaf_Area_interpolated_(1=Y,0=N)`==1,NA,Leaf_Area_cm2),Seed_Mass_g =
-    ifelse(`seed_mass_outcome`=="omit",NA,Seed_Mass_g),`Plant_height_(m)` = ifelse(`plant_height_outcome`=="omit",NA,`Plant_height_(m)`))
+  custom_R_code: .na
 traits:
-- var_in: Plant_height_(m)
+- var_in: plant_height_unique_values
   unit_in: m
   trait_name: plant_height
   value_type: expert_max
@@ -113,7 +98,7 @@ traits:
     collection by the authors. No values for leaf area were a priori filtered during
     data input by AusTraits as there was minimal overlap with species x value combinations
     already in AusTraits. These interpolated values have been filtered out of AusTraits.
-- var_in: Seed_Mass_g
+- var_in: seed_mass_unique_values
   unit_in: g
   trait_name: seed_mass
   value_type: expert_mean
@@ -126,7 +111,9 @@ traits:
     not be obtained for recorded species, we estimated species traits by applying
     the mean value across all species in the nearest taxonomic group (i.e. genus,
     family). These interpolated values have been filtered out of AusTraits. In addition,
-    seed mass values that are identical to those in Kew_2019_1 are filtered out
+    seed mass values that are identical to those in Kew_2019_1 are filtered out. Although
+    Jordan_2001 is in AusTraits and a source for this study, there is no overlap,
+    because Jordan recorded seed width and length, not actual seed mass.
 substitutions: .na
 taxonomic_updates:
 - find: Abrotanella forsteroides
