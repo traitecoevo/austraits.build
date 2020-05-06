@@ -72,11 +72,12 @@ dataset:
   original_file: Aust_RF_Traits_Kooyman_original.xls
   notes: none
 sites: .na
+contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: Species_reconciled with updates and additions
-  custom_R_code: .na
+  custom_R_code: data %>% group_by(`Species_reconciled with updates and additions`) %>% mutate_at(vars(`seed length maximum (mm)`,`seed length minimum (mm)`,`seed width maximum (mm)`,`seed width minimum (mm)`,`leaves lobed`), list(~ replace(.,duplicated(.),NA))) %>% ungroup()
 traits:
 - var_in: growth form
   unit_in: .na
@@ -183,7 +184,7 @@ traits:
 - var_in: seed width maximum (mm)
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_mean
+  value_type: expert_max
   replicates: .na
   methods: from floras
 - var_in: seed breadth (mm)

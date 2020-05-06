@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1>Structure of raw data for building AusTraits</h1>
             
-            <h4 class="date">2020-03-19</h4>
+            <h4 class="date">2020-04-02</h4>
       
       
       <div class="hidden name"><code>austraits_raw_data.Rmd</code></div>
@@ -596,7 +596,7 @@ x*14.0067
 <div id="metadata-yml" class="section level3">
 <h3 class="hasAnchor">
 <a href="#metadata-yml" class="anchor"></a>Metadata.yml</h3>
-<p>The metadata is compiled in a <code>.yml</code> file, a structured data file where information is presented in a hierarchical format (see <a href="#yaml">Appendix for details</a>). There are 9 values at the top hierarchical level: source, people, dataset, sites, config, traits, substitutions, taxonomic_updates, questions. These are each described below.</p>
+<p>The metadata is compiled in a <code>.yml</code> file, a structured data file where information is presented in a hierarchical format (see <a href="#yaml">Appendix for details</a>). There are 10 values at the top hierarchical level: source, people, dataset, sites, contexts, config, traits, substitutions, taxonomic_updates, questions. These are each described below.</p>
 <p>As a start, you may want to checkout some examples from <a href="https://github.com/traitecoevo/austraits/tree/master/data">existing studies in Austraits</a>, e.g. <a href="https://github.com/traitecoevo/austraits/blob/master/data/Angevin_2010/metadata.yml">Angevin_2010</a> or <a href="https://github.com/traitecoevo/austraits/blob/master/data/Wright_2004/metadata.yml">Wright_2004</a>.</p>
 <div id="source" class="section level4">
 <h4 class="hasAnchor">
@@ -784,7 +784,7 @@ The person to contact with questions about the data set
 <li>
 <strong>data_is_long_format</strong>: Indicates if the data spreadsheet has a vertical (long) or horizontal (wide) configuration with <code>yes</code> or <code>no</code> terminology</li>
 <li>
-<strong>variable_match</strong>: Identifies which information is in each column in the file <code>data.csv</code>, excluding the actual trait data. One element within <code>variable_match</code> must be <code>species_name</code>. Datasets with <code>data_is_long_format</code> set to <code>yes</code> must also identify which column includes data on <code>value</code> and <code>trait_name</code>. Other allowed values include <code>site_name</code> and <code>observation_id</code>, if these columns are present in the <code>data.csv</code> file.</li>
+<strong>variable_match</strong>: Identifies which information is in each column in the file <code>data.csv</code>, excluding the actual trait data. One element within <code>variable_match</code> must be <code>species_name</code>. Datasets with <code>data_is_long_format</code> set to <code>yes</code> must also identify which column includes data on <code>value</code> and <code>trait_name</code>. Other allowed values include <code>site_name</code>, <code>observation_id</code>, <code>context_name</code> if these columns are present in the <code>data.csv</code> file or created with custom R code.</li>
 <li>
 <strong>custom_R_code</strong>: A field where additional R code can be included. This allows for custom manipulation of the data in the submitted spreadsheet into a different format for easy integration with AusTraits. <code>.na</code> indicates no custom R code was used.</li>
 </ul>
@@ -1069,21 +1069,21 @@ The person to contact with questions about the data set
 <p>Look at everything</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">austraits<span class="op">$</span>excluded_data <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb35-2" title="2"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span>(dataset_id<span class="op">==</span><span class="st">"ANBG_2019"</span>)</a>
-<a class="sourceLine" id="cb35-3" title="3"><span class="co">#&gt; # A tibble: 2,043 x 11</span></a>
-<a class="sourceLine" id="cb35-4" title="4"><span class="co">#&gt;    error dataset_id species_name site_name observation_id trait_name value unit </span></a>
-<a class="sourceLine" id="cb35-5" title="5"><span class="co">#&gt;    &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;     &lt;chr&gt;          &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt;</span></a>
-<a class="sourceLine" id="cb35-6" title="6"><span class="co">#&gt;  1 Unsu… ANBG_2019  Abelmoschus… site_at_… ANBG_2019_0001 LengthSam… 7     &lt;NA&gt; </span></a>
-<a class="sourceLine" id="cb35-7" title="7"><span class="co">#&gt;  2 Unsu… ANBG_2019  Abelmoschus… site_at_… ANBG_2019_0001 WidthSamp… 7     &lt;NA&gt; </span></a>
-<a class="sourceLine" id="cb35-8" title="8"><span class="co">#&gt;  3 Unsu… ANBG_2019  Abutilon ot… site_at_… ANBG_2019_0010 LengthSam… 20    &lt;NA&gt; </span></a>
-<a class="sourceLine" id="cb35-9" title="9"><span class="co">#&gt;  4 Unsu… ANBG_2019  Abutilon ot… site_at_… ANBG_2019_0010 WidthSamp… 20    &lt;NA&gt; </span></a>
-<a class="sourceLine" id="cb35-10" title="10"><span class="co">#&gt;  5 Unsu… ANBG_2019  Acacia acin… site_at_… ANBG_2019_0012 LengthSam… 21    &lt;NA&gt; </span></a>
-<a class="sourceLine" id="cb35-11" title="11"><span class="co">#&gt;  6 Unsu… ANBG_2019  Acacia acin… site_at_… ANBG_2019_0012 WidthSamp… 22    &lt;NA&gt; </span></a>
-<a class="sourceLine" id="cb35-12" title="12"><span class="co">#&gt;  7 Unsu… ANBG_2019  Acacia acum… site_at_… ANBG_2019_0017 LengthSam… 9     &lt;NA&gt; </span></a>
-<a class="sourceLine" id="cb35-13" title="13"><span class="co">#&gt;  8 Unsu… ANBG_2019  Acacia acum… site_at_… ANBG_2019_0017 WidthSamp… 9     &lt;NA&gt; </span></a>
-<a class="sourceLine" id="cb35-14" title="14"><span class="co">#&gt;  9 Unsu… ANBG_2019  Acacia adsu… site_at_… ANBG_2019_0019 LengthSam… 11    &lt;NA&gt; </span></a>
-<a class="sourceLine" id="cb35-15" title="15"><span class="co">#&gt; 10 Unsu… ANBG_2019  Acacia adsu… site_at_… ANBG_2019_0019 WidthSamp… 11    &lt;NA&gt; </span></a>
-<a class="sourceLine" id="cb35-16" title="16"><span class="co">#&gt; # … with 2,033 more rows, and 3 more variables: value_type &lt;fct&gt;,</span></a>
-<a class="sourceLine" id="cb35-17" title="17"><span class="co">#&gt; #   replicates &lt;chr&gt;, original_name &lt;chr&gt;</span></a></code></pre></div>
+<a class="sourceLine" id="cb35-3" title="3"><span class="co">#&gt; # A tibble: 2,032 x 12</span></a>
+<a class="sourceLine" id="cb35-4" title="4"><span class="co">#&gt;    error dataset_id species_name site_name context_name observation_id</span></a>
+<a class="sourceLine" id="cb35-5" title="5"><span class="co">#&gt;    &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;     &lt;chr&gt;        &lt;chr&gt;         </span></a>
+<a class="sourceLine" id="cb35-6" title="6"><span class="co">#&gt;  1 Unsu… ANBG_2019  Abelmoschus… site_at_… &lt;NA&gt;         ANBG_2019_0001</span></a>
+<a class="sourceLine" id="cb35-7" title="7"><span class="co">#&gt;  2 Unsu… ANBG_2019  Abelmoschus… site_at_… &lt;NA&gt;         ANBG_2019_0001</span></a>
+<a class="sourceLine" id="cb35-8" title="8"><span class="co">#&gt;  3 Unsu… ANBG_2019  Abutilon ot… site_at_… &lt;NA&gt;         ANBG_2019_0010</span></a>
+<a class="sourceLine" id="cb35-9" title="9"><span class="co">#&gt;  4 Unsu… ANBG_2019  Abutilon ot… site_at_… &lt;NA&gt;         ANBG_2019_0010</span></a>
+<a class="sourceLine" id="cb35-10" title="10"><span class="co">#&gt;  5 Unsu… ANBG_2019  Acacia acin… site_at_… &lt;NA&gt;         ANBG_2019_0012</span></a>
+<a class="sourceLine" id="cb35-11" title="11"><span class="co">#&gt;  6 Unsu… ANBG_2019  Acacia acin… site_at_… &lt;NA&gt;         ANBG_2019_0012</span></a>
+<a class="sourceLine" id="cb35-12" title="12"><span class="co">#&gt;  7 Unsu… ANBG_2019  Acacia acum… site_at_… &lt;NA&gt;         ANBG_2019_0017</span></a>
+<a class="sourceLine" id="cb35-13" title="13"><span class="co">#&gt;  8 Unsu… ANBG_2019  Acacia acum… site_at_… &lt;NA&gt;         ANBG_2019_0017</span></a>
+<a class="sourceLine" id="cb35-14" title="14"><span class="co">#&gt;  9 Unsu… ANBG_2019  Acacia adsu… site_at_… &lt;NA&gt;         ANBG_2019_0019</span></a>
+<a class="sourceLine" id="cb35-15" title="15"><span class="co">#&gt; 10 Unsu… ANBG_2019  Acacia adsu… site_at_… &lt;NA&gt;         ANBG_2019_0019</span></a>
+<a class="sourceLine" id="cb35-16" title="16"><span class="co">#&gt; # … with 2,022 more rows, and 6 more variables: trait_name &lt;chr&gt;, value &lt;chr&gt;,</span></a>
+<a class="sourceLine" id="cb35-17" title="17"><span class="co">#&gt; #   unit &lt;chr&gt;, value_type &lt;fct&gt;, replicates &lt;chr&gt;, original_name &lt;chr&gt;</span></a></code></pre></div>
 <p>If you want to inspect this more closely, just pass it into <code>View</code></p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1">austraits<span class="op">$</span>excluded_data <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb36-2" title="2"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span>(dataset_id<span class="op">==</span><span class="st">"ANBG_2019"</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
@@ -1096,7 +1096,7 @@ The person to contact with questions about the data set
 <a class="sourceLine" id="cb37-5" title="5"><span class="co">#&gt;                     Missing value                 Unsupported trait </span></a>
 <a class="sourceLine" id="cb37-6" title="6"><span class="co">#&gt;                                36                              1986 </span></a>
 <a class="sourceLine" id="cb37-7" title="7"><span class="co">#&gt;           Unsupported trait value Value does not convert to numeric </span></a>
-<a class="sourceLine" id="cb37-8" title="8"><span class="co">#&gt;                                12                                 9</span></a></code></pre></div>
+<a class="sourceLine" id="cb37-8" title="8"><span class="co">#&gt;                                 1                                 9</span></a></code></pre></div>
 <p>How many of each type by trait:</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1">austraits<span class="op">$</span>excluded_data <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb38-2" title="2"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span>(dataset_id<span class="op">==</span><span class="st">"ANBG_2019"</span>) <span class="op">%&gt;%</span></a>
@@ -1107,7 +1107,7 @@ The person to contact with questions about the data set
 <a class="sourceLine" id="cb38-7" title="7"><span class="co">#&gt;   germination_treatment             0                 0                       1</span></a>
 <a class="sourceLine" id="cb38-8" title="8"><span class="co">#&gt;   LengthSample                      0               957                       0</span></a>
 <a class="sourceLine" id="cb38-9" title="9"><span class="co">#&gt;   seed_mass                         0                 0                       0</span></a>
-<a class="sourceLine" id="cb38-10" title="10"><span class="co">#&gt;   seed_shape                       36                 0                      11</span></a>
+<a class="sourceLine" id="cb38-10" title="10"><span class="co">#&gt;   seed_shape                       36                 0                       0</span></a>
 <a class="sourceLine" id="cb38-11" title="11"><span class="co">#&gt;   WidthSample                       0              1029                       0</span></a>
 <a class="sourceLine" id="cb38-12" title="12"><span class="co">#&gt;                        error</span></a>
 <a class="sourceLine" id="cb38-13" title="13"><span class="co">#&gt; trait_name              Value does not convert to numeric</span></a>

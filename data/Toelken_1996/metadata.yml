@@ -26,17 +26,14 @@ dataset:
   original_file: 1997_Toelken_kunzea.xls
   notes: none
 sites: .na
+contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: binomial
-  custom_R_code: data$flowering_time <- NA; data$`flowering month begin` <- as.numeric(data$`flowering
-    month begin`); data$`flowering month end` <- as.numeric(data$`flowering month
-    end`); data[!is.na(data$`flowering month begin`),]$flowering_time <- paste(month.abb[data[!is.na(data$`flowering
-    month begin`),]$`flowering month begin`], month.abb[data[!is.na(data$`flowering
-    month begin`),]$`flowering month end`], sep = "-"); data[["flowering_time"]] <-
-    convert_month_range_vec_to_binary(data[["flowering_time"]]); data$`flowering month
-    begin` <- NULL; data$`flowering month end` <- NULL; data
+  custom_R_code: 'data %>%
+    mutate(flowering_time = sprintf("%s-%s", month.abb[`flowering month begin`], month.abb[`flowering month end`]) %>% 
+    convert_month_range_vec_to_binary())'
 traits:
 - var_in: genus
   unit_in: .na
