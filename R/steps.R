@@ -22,28 +22,48 @@ load_study <- function(filename_data_raw,
     mutate(
       # For cells with multiple values (separated by a space), sort these alphabetically
       value =  ifelse(is.na(error), split_then_sort(value),value),
-      value_type = factor(value_type, levels = names(definitions$value_type$values))
+      value_type = factor(value_type, levels = names(definitions$value_type$values)),
+      #ensure dates are converted back to character
+      date = as.character(date)
       ) %>% 
     arrange(observation_id, trait_name, value_type) 
 
-  # read contextual (site) data
-  if(length(unlist(metadata$sites)) > 1){
-    # extract contextual data from metadata
-    format_sites <- function(v, my_list) {
+  # read site data
+
+  format_sites_contexts <- function(v, my_list, context = FALSE) {
+    tmp <- 
       my_list[[v]] %>%
-      list1_to_df() %>%
-      rename(site_property="key") %>%
+      list1_to_df()
+    if(!context){
+      tmp %>% rename(site_property="key") %>%
       mutate(dataset_id=dataset_id, site_name = v)
-    }
-
-    sites <- lapply(metadata$sites, lapply, as.character) %>%
-      lapply(names(.), format_sites, .) %>%
-      dplyr::bind_rows()
-
-  } else {
-    sites <- tibble(dataset_id = character(), site_name = character())
+    } else {
+      tmp %>% rename(context_property="key") %>%
+      mutate(dataset_id=dataset_id, context_name = v)
+    }    
   }
-  sites <- add_all_columns(sites, definitions, "sites")
+
+  # extract site data from metadata
+  sites <- 
+    metadata$sites %>%  
+    format_sites(dataset_id) %>% 
+    add_all_columns(definitions, "sites") %>% 
+    select(-error) %>% 
+    # reorder so type, description come first, if present
+    mutate(i = case_when(site_property == "description" ~ 1, site_property == "latitude (deg)" ~ 2,  site_property == "longitude (deg)" ~ 3, TRUE ~ 4)) %>%
+    arrange(site_name, i, site_property) %>% 
+    select(-i)
+
+  # read contextual data
+  contexts <- 
+    metadata$contexts %>% 
+    format_sites(dataset_id, context = TRUE) %>% 
+    add_all_columns(definitions, "contexts") %>% 
+    select(-error) %>% 
+    # reorder so type, description come first, if present
+    mutate(i = case_when(context_property == "type" ~ 1, context_property == "description" ~ 2, TRUE ~ 3)) %>%
+    arrange(context_name, i, context_property) %>% 
+    select(-i)
 
   # record contributors
   contributors <- 
@@ -54,9 +74,11 @@ load_study <- function(filename_data_raw,
     filter(!is.na(name))
 
   # record methods on study from metadata
-  source_primary <- convert_list_to_bib(metadata$source$primary)
-  source_secondary <- convert_list_to_bib(metadata$source$secondary)
- 
+  sources <- metadata$source %>% 
+            lapply(convert_list_to_bib) %>% reduce(c)  
+  source_primary_key <- metadata$source$primary$key
+  source_secondary_keys <- setdiff(names(sources), source_primary_key)
+
   methods <-   
     full_join( by = "dataset_id",
       # methods used to collect each trait  
@@ -78,11 +100,13 @@ load_study <- function(filename_data_raw,
         #references
         tibble(
           dataset_id = dataset_id,
-          source_primary_citation = bib_print(source_primary),
-          source_primary_key = source_primary$key,
-          source_secondary_citation = ifelse(!is.null(source_secondary), bib_print(source_secondary), NA_character_),
-          source_secondary_key = ifelse(!is.null(source_secondary), source_secondary$key, NA_character_)
+          source_primary_key = source_primary_key,
+          source_primary_citation = bib_print(sources[[source_primary_key]]),
+          source_secondary_key = source_secondary_keys %>% paste(collapse = "; "),
+          source_secondary_citation = ifelse(length(source_secondary_keys) == 0, NA_character_,
+            map_chr(sources[source_secondary_keys], bib_print) %>% paste(collapse = "; ") %>% str_replace_all(".;", ";")
           )
+        )
       )
 
   # Retrieve taxonomic details
@@ -99,13 +123,14 @@ load_study <- function(filename_data_raw,
 
   list(dataset_id = dataset_id,
        traits       = traits %>% filter(is.na(error)) %>% select(-error),
-       sites    = sites %>% select(-error),
+       sites    = sites,
+       contexts    = contexts,
        methods    = methods,
        excluded_data = traits %>% filter(!is.na(error)) %>% select(error, everything()),
        taxonomy = taxonomy,
        definitions = definitions,
        contributors = contributors,
-       sources =  c(source_primary, source_secondary)
+       sources =  sources
        )
 }
 
@@ -123,6 +148,35 @@ custom_manipulation <- function(txt) {
   }
 }
 
+
+format_sites <- function(my_list, dataset_id, context = FALSE) {
+
+  f_helper <- function(v, a_list, context = FALSE) {
+    tmp <- 
+      a_list[[v]] %>%
+      list1_to_df()
+    if(!context){
+      tmp %>% rename(site_property="key") %>%
+      mutate(site_name = v)
+    } else {
+      tmp %>% rename(context_property="key") %>%
+      mutate(context_name = v)
+    }    
+  }
+
+  # if length 1 then it's an "na"
+  if(length(unlist(my_list)) > 1){
+    out <- 
+      my_list %>%   
+      lapply(lapply, as.character) %>%
+      lapply(names(.), f_helper, ., context = context) %>%
+      dplyr::bind_rows() %>% 
+      mutate(dataset_id=dataset_id)
+  } else {
+    out <- tibble(dataset_id = character())
+  }
+  out
+}
 
 ## Remove any disallowed traits, as defined in definitions
 flag_unsupported_traits <- function(data, definitions) {
@@ -557,6 +611,7 @@ combine_austraits <- function(..., d=list(...), definitions) {
 
   ret <- list(traits=combine("traits", d),
               sites=combine("sites", d),
+              contexts=combine("contexts", d),
               methods=combine("methods", d),
               excluded_data = combine("excluded_data", d),
               taxonomy=taxonomy,
@@ -564,8 +619,8 @@ combine_austraits <- function(..., d=list(...), definitions) {
               contributors=combine("contributors", d),
               sources = sources,
               build_info = list(
-                      version=definitions$austraits$elements$version$value,
-                      git_SHA=get_SHA_link(),
+                      version=desc::desc_get_field("Version"),
+                      git_SHA=get_SHA(),
                       session_info = sessionInfo()
                       )
               )

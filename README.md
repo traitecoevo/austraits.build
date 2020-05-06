@@ -1,115 +1,81 @@
-# Austraits: A compilation of traits for Australian plant species
 
-## About
+# `austraits.build`: source for `AusTraits`
 
-The Austraits database (Austraits)  is an open-source platform for ongoing compilation and distribution of data on the traits of Australian plant species. So far, data have been assembled from over 100 individual primary and secondary sources, describing more than 100 plant traits and over 18k species.  The project is being led by Dr Rachael Gallagher and Dr Daniel Falster at Macquarie University, Australia.
+<!-- badges: start -->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3583418.svg)](https://doi.org/10.5281/zenodo.3583418)
 
-## Using Austraits
+<!-- badges: end -->
 
-We are yet to determine a suitable license for the data in Austraits so data cannot as yet be used without further permissions. Our aim is to release an open database, once we have cleared this with our contributors.
+<img src="docs/figures/logo.png">
 
-## Building the database from source
+AusTraits is a transformative database, containing measurements on the
+traits of Australia’s plant species, standardised from hundreds of
+disconnected primary sources. So far, data have been assembled \> 150
+distinct sources, describing more than 100 plant traits and over 19k
+species.
 
-Austraits can be rebuilt from source (raw data files) using our scripted workflow in R. The idea of this repository is to provide a fully-transparent process of combining data from multiple sources.
+The AusTraits project has two connected repositories.
 
-First download the code and raw data from github as either [zip file](https://github.com/traitecoevo/austraits/archive/master.zip), or by cloning the Austraits repository:
+  - [austraits.build](https://github.com/traitecoevo/austraits.build/)
+    (this repository): Is for those constructing and contributing data
+    to AusTraits,
+  - [austraits](https://github.com/traitecoevo/austraits/): For those
+    interesting in accessing or using AusTraits.
 
-```
-git clone git@github.com:traitecoevo/austraits.git
-```
+## Usage and access
 
-Then open R and set the downloaded folder as your working directory. Beyond base R, building of Austraits requires the package ['remake'](https://github.com/richfitz/remake). To install remake from within R, run:
+Those interested in using data from AusTraits, should visit the
+repositories for the compiled resource, at either: the
 
-```
-# installs the package devtools
-install.packages("devtools")
-# use devtools to install remake
-devtools::install_github("richfitz/remake")
-```
+  - AusTraits repository on GitHub at
+    [traitecoevo/austraits](https://github.com/traitecoevo/austraits),
+    or
+  - the versioned releases archived on Zenodo at doi:
+    [10.5281/zenodo.3568417](http://doi.org/https://doi.org/10.5281/zenodo.3568417).
 
-A number of other packages are also required. These can be installed using remake:
+There you will also find detailed information regarding appropriate use
+of AusTraits.
 
-```
-remake::install_missing_packages()
-```
+## We’re always rebuilding
 
-Then build the dataset
+This repository (`austraits.build`) contains the raw data and code used to compile AusTraits from diverse, original sources.
 
-```
-# build the dataset
-remake::make()
-````
+To handle the harmonising of diverse data sources, we use a reproducible
+workflow to implement the various changes required for each source to
+reformat it suitable for incorporation in AusTraits. Such changes
+include restructuring datasets, renaming variables, changing variable
+units, changing taxon names. For the sake of transparency and continuing
+development, the entire workflow is made available here.
 
-A copy of the dataset has been saved in the folder `export` as an `rds` (compressed data for R) file.
+AusTraits is continually evolving, as new datasets are contributed. As
+such, there is no single canonical version. We are continually making
+new versions available. Overtime, we expect that different versions will
+be released and used in different analyses.
 
-## Docker container for reproducible compute environment 
+## Contributing
 
-As the R compute environment and packages change over time, we use a Docker container for all our builds to ensure reproducibility. 
+We envision AusTraits as an on-going collaborative community resource
+that:
 
-If you have [Docker installed](https://hub.docker.com), you can recreate the compute environment as follows. For more instructions on running docker, see the info from the R docker project [rocker](https://hub.docker.com/r/rocker/rstudio).
+1.  Increases our collective understanding the Australian flora; and
+2.  Facilitates accumulating and sharing of trait data;
+3.  Builds a sense of community among contributors and users; and
+4.  Aspires to fully transparent and reproducible research of highest
+    standard.
 
-First fetch the container:
+As a community resource, we are very keen for people to contribute. 
 
-```
-docker pull traitecoevo/austraits.build:1.0
-```
-
-Then launch it via:
-
-```
-docker run --user root -v $(pwd):/home/rstudio/ -p 8787:8787 -e DISABLE_AUTH=true traitecoevo/austraits.build:1.0
-```
-
-Adding a `-d` into the command above will cause the image to run in the background. 
-
-The code above initialises a docker container, which runs an rstudio session, which is accessed by pointing your browser to [localhost:8787](http://localhost:8787). 
-
-Note, this container does not contain the actual github repo, only the software environment. If you run the above command from within your downloaded repo, it will map the working directory as the current working directory inside the docker container.
-
-
-The recipe used to build the docker container is included in the Dockerfile in this repo. Our image builds off [`rocker/verse:3.6.1` container](https://hub.docker.com/r/rocker/verse) via the following command, in a terminal contained within the downloaded repo:
-
-```
-docker build -t traitecoevo/austraits.build:1.0 .
-```
-
-Images are pushed to dockerhub ([here](https://cloud.docker.com/u/traitecoevo/repository/docker/traitecoevo/austraits.build)):
-
-```
-docker push traitecoevo/austraits.build:1.0
-```
-
-## Using AusTraits
-
-To load the dataset into R:
-
-```
-austraits <- readRDS('export/austraits.rds')
-```
-
-The database contains the following elements
-
-- `data`: amalgamated dataset (table), with columns as defined in `dictionary`
-- `metadata`: a table of metadata
-- `context`: a table of contextual site variables, where available
-
-These elements are available at both of the above links as a series of CSV and text files.
-
-## Contributing data to Austraits
-
-We welcome further contributions to Austraits. If you would like to contribute data, the minimal requirements are
-
-1. Data were collected for Australian plant species growing in Australia
-2. You collected data on one of the traits list in the [trait definitions table](config/definitions.yml).
-3. You are willing to release the data under an open license for reuse by the scientific community.
-
-See [these instructions](vignettes/CONTRIBUTING.md) on how to prepare data.
-
-Once sufficient additional data has been contributed, we plan to submit an update to the first data paper, inviting as co-authors anyone who has contributed data.
+For anyone working with the [austraits.build](https://github.com/traitecoevo/austraits.build/) repository, detailed documentation is available at  [our website](http://traitecoevo.github.io/austraits.build/), or in the docs folder.
 
 ## Acknowledgements
 
-We are extremely grateful to everyone who has contributed data. We would also like to acknowledge the following funding sources for supporting the data compilation:
+**Funding**: The project is supported by the Australian Research
+Council, via Fellowships to Daniel Falster and Rachael Gallagher, and by
+the [Australian Research Data Commons (ARDC)](https://ardc.edu.au) via a
+grant to Falster.
 
-- an MQRF grant to RV Gallagher
-- a Science and Industry Endowment Fund Grant to Falster (RP04-174).
+**Recognition**: At this stage, only the compiled dataset available via
+[traitecoevo/austraits](https://github.com/traitecoevo/austraits.build/)
+is available for reuse. The raw data sources provided in this repository
+are not available for reuse in their current form, without further
+discussion from data contributors.
