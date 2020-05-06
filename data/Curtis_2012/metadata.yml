@@ -19,8 +19,8 @@ people:
   institution: University of Technology Sydney
   role: collector
 dataset:
-  year_collected_start: unknown
-  year_collected_end: unknown
+  year_collected_start: 2010
+  year_collected_end: 2010
   description: Study investigating relationships between leaf traits that protect
     against critically high leaf temperatures and how these traits vary within a biome.
   collection_type: field
@@ -48,22 +48,62 @@ dataset:
     folder; the first and last worksheet were used
   notes: none
 sites:
-  north-west New South Wales:
-    latitude (deg): .na
-    longitude (deg): .na
-    description: area bounded by the Barrier and Byngnano Ranges at Mutawintji National
-      Park in the south and the Grey Range at Sturt National Park in the north
-    average maximum summer temp (C): 44
-    MAP (mm): <250
+  Mutawintje National Park, close to campground:
+    description: hot, arid climate
+    latitude (deg): -31.28
+    longitude (deg): 142.3
+    location notes: lat/lon approximate, based on place names
+    MAP (mm): < 250
+    average maximum summer temperature (C): 44.0
+  Mutawintji National Park in Mutawintji Gorge:
+    description: hot, arid climate
+    latitude (deg): -31.27
+    longitude (deg): 142.31
+    location notes: lat/lon approximate, based on place names
+    MAP (mm): < 250
+    average maximum summer temperature (C): 44.0
+  Silver City Highway near Fowlers Gap:
+    description: hot, arid climate
+    latitude (deg): -31.41
+    longitude (deg): 141.62
+    location notes: lat/lon approximate, based on place names
+    MAP (mm): < 250
+    average maximum summer temperature (C): 44.0
+  Sturt National Park, around Olive Downs Homestead:
+    description: hot, arid climate
+    latitude (deg): -29.05
+    longitude (deg): 141.86
+    location notes: lat/lon approximate, based on place names
+    MAP (mm): < 250
+    average maximum summer temperature (C): 44.0
 contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: Scientific Name
     site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "north-west New South Wales") %>% mutate(leaf_dry_matter_content
-    = `Leaf dry weight (petiole attached)`/`Leaf wet weight (petiole attached)`)
+  custom_R_code: data %>% mutate(leaf_dry_matter_content = `Leaf dry weight (petiole
+    attached)`/`Leaf wet weight (petiole attached)`) %>% group_by(`Scientific Name`)
+    %>% mutate_at(vars(Habit, LH, Pend),funs(replace(.,duplicated(.),NA))) %>% ungroup()
 traits:
+- var_in: Habit
+  unit_in: .na
+  trait_name: plant_growth_form
+  value_type: expert_mean
+  replicates: .na
+  methods: expert observation
+- var_in: LH
+  unit_in: .na
+  trait_name: life_history
+  value_type: expert_mean
+  replicates: .na
+  methods: expert observation
+- var_in: Pend
+  unit_in: .na
+  trait_name: pendulous_leaves
+  value_type: expert_mean
+  replicates: .na
+  methods: expert observation
 - var_in: Leaf area (approximated total area)
   unit_in: mm2
   trait_name: leaf_area
@@ -235,7 +275,31 @@ traits:
     taken from the outer north-facing canopy for each species. As spectral variation
     can vary within a species seasonally (Ehleringer and Bjorkman 1978), all measurements
     for this study were made within a 3-week period during autumn.
-substitutions: .na
+substitutions:
+- trait_name: plant_growth_form
+  find: 1
+  replace: herb
+- trait_name: plant_growth_form
+  find: 2
+  replace: shrub
+- trait_name: plant_growth_form
+  find: 3
+  replace: shrub tree
+- trait_name: life_history
+  find: 1
+  replace: annual
+- trait_name: life_history
+  find: 2
+  replace: perennial
+- trait_name: life_history
+  find: 3
+  replace: perennial
+- trait_name: pendulous_leaves
+  find: 1
+  replace: not_pendulous
+- trait_name: pendulous_leaves
+  find: 2
+  replace: pendulous
 taxonomic_updates:
 - find: Pimelea microcephala subsp. Microcephala
   replace: Pimelea microcephala
@@ -300,5 +364,4 @@ questions:
     to each observation in AusTraits, even if it is approximate. (I can otherwise
     use a value that is approximately in the middle of the box indicating the study
     area, but if there are known sampling locations, that would be preferred.)
-  question3: In what year were the measurements made?
 
