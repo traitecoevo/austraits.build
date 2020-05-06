@@ -68,3 +68,12 @@ test %>%
          `context columns` = "age at harvest, growing CO2, growing temperature, measurement temperature") %>% 
   rename(`measurement temperature (C)` = MeasTemp, `growing temperature (C)` = Temp,
          `growing CO2 (ppm)` = CO2, `age at harvest (days)` = age_at_harvest) -> contexts
+
+
+
+###fixing measurement temps
+read_csv("data/Ghannoum_2010/data.csv") %>%
+  mutate(MeasTemp = ifelse(MeasTemp == "34","32",MeasTemp),
+         sample_temp = gsub(34,32,sample_temp),
+         context =gsub(34,32,context)) %>% 
+  write_csv("data/Ghannoum_2010/data.csv")

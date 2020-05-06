@@ -94,3 +94,8 @@ read_csv("data/Lewis_2015/raw/context_edited.csv") %>%
 
 View(context_table)
 
+read_csv("data/Lewis_2015/data.csv") %>%
+  group_by(Potnum) %>%
+  mutate_at(vars(stem_CN, stem_percentC,stem_d13C,root_percentN),funs(replace(.,duplicated(.),NA))) %>%
+  ungroup() %>%
+write_csv("data/Lewis_2015/data.csv")
