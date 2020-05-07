@@ -19,12 +19,32 @@ people:
 dataset:
   year_collected_start: July 2010
   year_collected_end: August 2010
-  description: In this study, Eucalyptus and Acacia were collected along a south–north gradient from winter- to summer-dominated rainfall to investigate whether trait values indicate why these genera dominate across different parts of Australia
+  description: In this study, Eucalyptus and Acacia were collected along a south-north
+    gradient from winter- to summer-dominated rainfall to investigate whether trait
+    values indicate why these genera dominate across different parts of Australia
   collection_type: field
   sample_age_class: adult
-  sampling_strategy: In July and August 2010, leaves of Eucalyptus (and the closely-related Corymbia) and of Acacia (and the closelyrelated Vachellia, as well as associated woody Fabaceae) were sampled in the field along a south–north transect in Western Australia, starting at Lancelin and Southern Cross in the south (31 deg S) and terminating in the north at Wyndham (15 deg S). A total of 140 woody species were sampled, 62 belonging to non-nitrogen-fixing species, mainly of the genus Eucalyptus, and 78 potentially nitrogen-fixing woody Fabaceae, mainly of the genus Acacia. Plants were collected at 64 sites, which were chosen depending on uniformity of vegetation, and mainly on flat topography in valleys, on plateaus or on hilltops, and covering the range of woody species in each region. Sampling sites were generally far from settlements, but dust from unsealed roads could not always be avoided. For Eucalyptus, additional samples were taken from a common garden, which occurs in a winter-dominated rainfall region (near Adelaide) and which contains about 800 eucalypt species (Currency Creek Arboretum, Nicolle 2003). The garden cannot sustain summer rainfall species and it has no plantation of Acacia. The common garden allows comparison of traits of field-grown specimens with a common environmental background as a baseline, to which these species may be adapted or not (Schulze et al. 2006a, b). 
+  sampling_strategy: In July and August 2010, leaves of Eucalyptus (and the closely-related
+    Corymbia) and of Acacia (and the closelyrelated Vachellia, as well as associated
+    woody Fabaceae) were sampled in the field along a south-north transect in Western
+    Australia, starting at Lancelin and Southern Cross in the south (31 deg S) and
+    terminating in the north at Wyndham (15 deg S). A total of 140 woody species were
+    sampled, 62 belonging to non-nitrogen-fixing species, mainly of the genus Eucalyptus,
+    and 78 potentially nitrogen-fixing woody Fabaceae, mainly of the genus Acacia.
+    Plants were collected at 64 sites, which were chosen depending on uniformity of
+    vegetation, and mainly on flat topography in valleys, on plateaus or on hilltops,
+    and covering the range of woody species in each region. Sampling sites were generally
+    far from settlements, but dust from unsealed roads could not always be avoided.
+    For Eucalyptus, additional samples were taken from a common garden, which occurs
+    in a winter-dominated rainfall region (near Adelaide) and which contains about
+    800 eucalypt species (Currency Creek Arboretum, Nicolle 2003). The garden cannot
+    sustain summer rainfall species and it has no plantation of Acacia. The common
+    garden allows comparison of traits of field-grown specimens with a common environmental
+    background as a baseline, to which these species may be adapted or not (Schulze
+    et al. 2006a, b).
   original_file: WA_Tour_2010.xls
-  notes: The data file seems incomplete - very few of the traits indicated in the manuscript are included. 
+  notes: The data file seems incomplete - very few of the traits indicated in the
+    manuscript are included.
 sites:
   20km West of Kununurra:
     latitude (deg): -15.768
@@ -357,12 +377,16 @@ sites:
     longitude (deg): 127.88
     date_sampled: 8/7/2010
     description: Wyndham Five River Lookout
+contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: species_name
     site_name: site_name
-  custom_R_code: .na
+    date: date_sampled
+  custom_R_code: data %>% mutate(date_sampled = date_sampled %>% mdy()) %>% group_by(`species_name`)
+    %>% mutate_at(vars(physical_defence,`leaf type`,leaf_compoundness),funs(replace(.,duplicated(.),NA)))
+    %>% ungroup()
 traits:
 - var_in: leaf type
   unit_in: .na
@@ -387,7 +411,14 @@ traits:
   trait_name: leaf_area
   value_type: raw_value
   replicates: 1
-  methods: At each site, fully-developed leaves were sampled from the sun-lit part of the crown. These leaves were assumed to have grown 12 months prior to the sampling. The samples were stored in paper bags for rapid drying. Most species were evergreen with fairly tough (sclerophyllous) foliage and very little change in leaf area with drying. In the laboratory, leaf area was measured with a leaf area meter (Model 3100, Li-COR. Lincoln, Nebraska, USA). For a small number of species, this is the area of a leaflet; for these observations, there is a note in the comlumn 'lab Remarks' in the data.csv file.
+  methods: At each site, fully-developed leaves were sampled from the sun-lit part
+    of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
+    The samples were stored in paper bags for rapid drying. Most species were evergreen
+    with fairly tough (sclerophyllous) foliage and very little change in leaf area
+    with drying. In the laboratory, leaf area was measured with a leaf area meter
+    (Model 3100, Li-COR. Lincoln, Nebraska, USA). For a small number of species, this
+    is the area of a leaflet; for these observations, there is a note in the comlumn
+    'lab Remarks' in the data.csv file.
 substitutions:
 - trait_name: leaf_type
   find: phylloids
@@ -534,10 +565,9 @@ taxonomic_updates:
 - find: Acacia  long leaf
   replace: Acacia sp. long leaf
   reason: Alignment with genus by E. Wenk (2020-03-15)
-questions: 
-  contributor: Do you have data for the additional trait values discussed in the paper? The spreadsheet you submitted (WA_Tour_2010.xls) only had data on leaf area and leaf type. (Perhaps these were included in another dataset that Caitlan entered.)
-  question2: I've aligned your leaf type values with one (or more) of three traits in AusTraits (leaf_type, leaf_compoundness, and physical_defence). The only entry currently excluded is "linearly" - I could align that with our trait "leaf_shape". (I aligned "lanceolate" with "leaf_type"="broadleaf", but that would also be aligned with leaf shape.) What would you like me to do?
-  question3: Do you have approximate lat/lon coordinates for the sites that are currently lacking coordinates?
-  question4: I divided the given leaf area by the given leaf count to obtain leaf_area for a single leaf . I am confirming that the column 'LA (cm)' in the spreadsheet was indeed the total area of all leaves for that individual.
-  question5: There are some additional family/genus/species alignments I will fix once I'm sure I have the complete spreadsheet.
+questions:
+  contributor: The spreadsheet you submitted (WA_Tour_2010.xls) did not contain your d13C and d15N data. I've double checked all the spreadsheets you contributed to AusTraits and the data we have on file under "Schulze" and "Turner" and we do not have the stable isotope data from your WA transect. The spreadsheet you submitted only had data on leaf area and leaf type. Would it be possible to send us this data? We would love for AusTraits to include a complete collection of your isotope data.
+  question3: Do you have approximate lat/lon coordinates for the sites that are currently lacking coordinates? (Don't worry much about this!)
+  question5: There are some additional family/genus/species alignments I will fix
+    once I'm sure I have the final spreadsheet.
 
