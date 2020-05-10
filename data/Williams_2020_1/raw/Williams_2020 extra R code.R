@@ -24,9 +24,11 @@ Melbourne %>%
 #filtering duplicates
 subset(austraits_deduped$excluded_data,dataset_id==current_study & error !="Missing value") %>%
   subset(trait_name %in% c("specific_leaf_area")) %>%
-  write_csv("data/Williams_2020_1/raw/SLA_duplicates.csv") %>%
+  write_csv("data/Williams_2020_1/raw/SLA_duplicates.csv") 
+
+read_csv("data/Williams_2020_1/raw/SLA_duplicates.csv") %>%
   select(trait_name,original_name) %>%
-  rename(SLA_duplicate = trait_name) -> SLA_duplicates
+  rename(SLA_duplicate = trait_name, Species = original_name) -> SLA_duplicates
 
 subset(austraits_deduped$excluded_data,dataset_id==current_study & error !="Missing value") %>%
   subset(trait_name %in% c("seed_mass")) %>%
@@ -36,7 +38,7 @@ subset(austraits_deduped$excluded_data,dataset_id==current_study & error !="Miss
 
 read_csv("data/Williams_2020_1/raw/seed_mass_duplicates.csv") %>%
   select(trait_name,original_name) %>%
-  rename(seed_mass_duplicate = trait_name) -> seed_mass_duplicates
+  rename(seed_mass_duplicate = trait_name, Species = original_name) -> seed_mass_duplicates
 
 subset(austraits_deduped$excluded_data,dataset_id==current_study & error !="Missing value") %>%
   subset(trait_name %in% c("plant_height")) %>%
@@ -48,4 +50,14 @@ subset(austraits_deduped$excluded_data,dataset_id==current_study & error !="Miss
 
 read_csv("data/Williams_2020_1/raw/plant_height_duplicates_edited.csv") %>%
   select(trait_name,original_name) %>%
-  rename(plant_heigh_duplicate = trait_name) -> plant_heigh_duplicates
+  rename(plant_height_duplicate = trait_name, Species = original_name) -> plant_height_duplicates
+
+read_csv("data/Williams_2020_1/data.csv") %>%
+  full_join(SLA_duplicates,by="Species") %>% 
+  full_join(seed_mass_duplicates,by="Species") %>%
+  full_join(plant_height_duplicates,by="Species") %>%
+  mutate(SLA_filtered = ifelse(is.na(SLA_duplicate),SLA,NA),
+         `Plant height_filtered` = ifelse(is.na(plant_height_duplicate),`Plant height`,NA),
+         `Seed Mass_filtered` = ifelse(is.na(seed_mass_duplicate),`Seed Mass`,NA)) %>% 
+  write_csv("data/Williams_2020_1/data.csv")
+
