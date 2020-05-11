@@ -30,7 +30,8 @@ dataset:
     22 shrub species,and 13 tree species, were collected for anatomical and scanning
     electron microscope (SEM) examination (table 1).
   original_file: Burrows 2007.xls
-  notes: none
+  notes: The few duplicate values within this dataset and with Roderick dataset seem
+    to all be coincidental - they are independent measurements.
 sites:
   The Rock:
     latitude (deg): -35.2666667
@@ -55,7 +56,8 @@ config:
   variable_match:
     species_name: Genus_species
     site_name: SITE_text
-  custom_R_code: 'data %>% na_if(".na")'
+  custom_R_code: data %>% na_if(".na") %>% group_by("Genus_species","SITE_text") %>%
+    mutate_at(vars(leaf_type,leaf_shape), funs(replace(.,duplicated(.),NA))) %>% ungroup()
 traits:
 - var_in: Leaf_area_cm2
   unit_in: cm2

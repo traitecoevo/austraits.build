@@ -25,30 +25,18 @@ dataset:
   sample_age_class: adult_assumed
   sampling_strategy: herbarium specimens
   original_file: Chandler_2002_gastrolobium.xls
-  notes: none
+  notes: No duplication with other studies; some duplicates within study, for species
+    where min and max seed dimensions or leaf dimensions are identical.
 sites: .na
 contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: binomial
-  custom_R_code: data %>% mutate(
-    flowering_time =  ifelse(is.na(data$`flowering month begin`), NA,
-                             sprintf("%s-%s",month.abb[`flowering month begin`], month.abb[`flowering month end`]) %>% 
-                             convert_month_range_vec_to_binary()))
+  custom_R_code: data %>% mutate( flowering_time =  ifelse(is.na(data$`flowering month
+    begin`), NA, sprintf("%s-%s",month.abb[`flowering month begin`], month.abb[`flowering
+    month end`]) %>% convert_month_range_vec_to_binary()))
 traits:
-- var_in: genus
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: spp
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
 - var_in: max height (m)
   unit_in: m
   trait_name: plant_height
@@ -105,7 +93,8 @@ traits:
   unit_in: .na
   trait_name: life_history
   value_type: expert_mean
-  replicates: Verified during field work (expert opinion) and from prior references (i.e., all other references say the same thing).
+  replicates: Verified during field work (expert opinion) and from prior references
+    (i.e., all other references say the same thing).
   methods: unknown
 - var_in: growth form
   unit_in: .na
@@ -115,7 +104,7 @@ traits:
   methods: Seen in field and information from herbarium records.
 - var_in: min height (m)
   unit_in: m
-  trait_name: plant_height
+  trait_name: .na
   value_type: expert_min
   replicates: .na
   methods: unknown
@@ -154,13 +143,15 @@ traits:
   trait_name: seed_width
   value_type: expert_min
   replicates: .na
-  methods: Determined on herbarium specimens. Included pickled flowers for accurate measurements of floral traits.
+  methods: Determined on herbarium specimens. Included pickled flowers for accurate
+    measurements of floral traits.
 - var_in: seed max width (mm)
   unit_in: mm
   trait_name: seed_width
   value_type: expert_max
   replicates: .na
-  methods: Determined on herbarium specimens. Included pickled flowers for accurate measurements of floral traits.
+  methods: Determined on herbarium specimens. Included pickled flowers for accurate
+    measurements of floral traits.
 substitutions:
 - trait_name: life_history
   find: p
