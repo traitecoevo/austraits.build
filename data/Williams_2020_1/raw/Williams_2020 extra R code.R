@@ -1,3 +1,4 @@
+#merging Melbourne and Adelaide data
 read_csv("data/Williams_2020_1/raw/Adelaide_data.csv") %>%
   mutate(Adelaide = "Adelaide") -> Adelaide
 
@@ -18,8 +19,6 @@ Melbourne %>%
   bind_rows(Melbourne_unique) %>%
   bind_rows(Adelaide_unique) %>% 
   write_csv("data/Williams_2020_1/data.csv")
-
-
 
 #filtering duplicates
 subset(austraits_deduped$excluded_data,dataset_id==current_study & error !="Missing value") %>%

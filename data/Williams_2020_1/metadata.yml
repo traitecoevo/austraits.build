@@ -19,20 +19,34 @@ people:
 dataset:
   year_collected_start: 2011
   year_collected_end: 2013
-  description: To determine the traits of species that are advantaged and disadvantaged
+  description: A collection of trait data on species growing in Adelaide and Melbourne to determine the traits of species that are advantaged and disadvantaged
     by urbanisation.
   collection_type: field
   sample_age_class: adult
-  sampling_strategy: the data are extracted from the literature
+  sampling_strategy: trait data on species growing in Adelaide and Melbourne are extracted from the literature
   original_file: Adelaide data from RD.xls and Melb and Adeliade traits metadata.doc
     provided by author and archived in raw data folder and GoogleDrive folder
-  notes: SLA, seed mass, and plant height values that are duplicates and are from datasets known to have been sources for this compilation (mainly botanical collections, but also some datasets from John Morgan's lab, Trevor Meers data, and data from Macquarie University labs)
+  notes: SLA, seed mass, and plant height values that are duplicates and are from
+    datasets known to have been sources for this compilation (mainly botanical collections,
+    but also some datasets from John Morgan's lab, Trevor Meers data, and a few datasets
+    from Macquarie University labs, Leishman_1992 and Hughes_1992 in particular) have
+    been filtered out
 sites: .na
-contexts: .na
+contexts:
+  grows in Adelaide:
+    type: field
+    description: species occurs in Adelaide
+  grows in Melbourne:
+    type: field
+    description: species occurs in Melbourne
+  grows in Melbourne and Adelaide:
+    type: field
+    description: species occurs in Melbourne and Adelaide
 config:
   data_is_long_format: no
   variable_match:
     species_name: Species
+    context_name: context
   custom_R_code: data %>% mutate(Clonality = paste0(Clonality,Clonality_b)) %>% mutate(nitrogen_fixing
     = ifelse(`Nutrient uptake strategy` == 1,1,0)) %>% subset(`Extant/Extinct` ==
     1 & `Native/Exotic` == 0)
@@ -54,7 +68,11 @@ traits:
   trait_name: plant_height
   value_type: expert_max
   replicates: .na
-  methods: information gathered from floras and online state data
+  methods: information gathered from floras and online state data; Note from AusTraits,
+    plant height values that are duplicates and are from datasets known to have been
+    sources for this compilation (mainly botanical collections, but also some datasets
+    from John Morgan's lab, and a few datasets from Macquarie University labs, Leishman_1992
+    and Hughes_1992 in particular) have been filtered out
 - var_in: Clonality
   unit_in: .na
   trait_name: regen_strategy
@@ -104,9 +122,12 @@ traits:
   trait_name: seed_mass
   value_type: site_mean
   replicates: unknown
-  methods: information from Meers (2006), small amount data from Kew database. (note,
-    values from Meers are present in Meers_2010 and values from Kew are under Kew_2019_1
-    and filtered out of AusTraits under these dataset ids)
+  methods: information from Meers (2006), small amount data from Kew database. Note
+    from AusTraits, seed mass values that are duplicates and are from datasets known
+    to have been sources for this compilation (mainly botanical collections, but also
+    some datasets from John Morgan's lab, Trevor Meers data, and a few datasets from
+    Macquarie University labs, Leishman_1992 and Hughes_1992 in particular) have been
+    filtered out.
 - var_in: Pollination System
   unit_in: .na
   trait_name: pollination_system
@@ -126,9 +147,12 @@ traits:
   value_type: site_mean
   replicates: unknown
   methods: information from Meers (2006), small amount data forwarded from Macquarie
-    University (via PV), small amount calculated from field collections. (note, values
-    from Meers are present in Meers_2010 and filtered out of AusTraits under this
-    dataset id)
+    University (via PV), small amount calculated from field collections. Note from
+    AusTraits, SLA values that are duplicates and are from datasets known to have
+    been sources for this compilation (mainly botanical collections, but also some
+    datasets from John Morgan's lab, Trevor Meers data, and a few datasets from Macquarie
+    University labs, Leishman_1992 and Hughes_1992 in particular) have been filtered
+    out.
 substitutions:
 - trait_name: root_structure
   find: 1
@@ -1242,4 +1266,20 @@ questions:
   contributor: For the Melbourne data, Centella cordifolia has an 'n' under the second
     clonality column - i.e. the full clonality code is 3n. For Adelaide it is keyed
     as 3a. Can I assume the Melbourne value is a typo?
+  question_2: I've gone ahead and added the first of the manuscript references you
+    passed onto me as a reference, but this raised some more questions - apologies.
+    We standardly `name` a dataset based on the first author/date of the first paper
+    associated with the study. I suspect this model doesn't work well for this dataset,
+    because I'm assuming you were the lead author/organiser to build the dataset,
+    but it was then analysed by several collegues/students, and shouldn't simply be
+    filed under the name of whoever's paper was published first. The only instance
+    we've broken this naming convention was for a big data campaign out of Mark Westoby's
+    lab, where the study is filed under "Westoby_2014" even though the papers are
+    published by a large collection of postdocs. Should I do the same here? I'd call
+    the dataset "Williams_2011", reflecting the date of the first publication and
+    then list the three references?
+  question3: Please ignore the unmatched and unsolved taxa names for now. Our function
+    to automatically correct minor typos is not working properly right now and I'll
+    do the manual matching after you've reviewed the report.
+  question4: I've added which cities each species grows in as a "contextual" variable. It seems more appropriate to me than calling them "sites", since the values aren't site specific and it doesn't seem right to suggest they were explicitly collected in Melbourne or Adelaide.
 
