@@ -24,4 +24,5 @@ read_csv("data/Cernusak_2011/raw/leaf_trait_data_original.csv") %>%
   mutate(`Asat_umol_m-2_s-1` = ifelse(is.na(`Asat_umol_m-2_s-1`),`initial photosynthesis (umol m-2 s-1)`,`Asat_umol_m-2_s-1`),
          `g_at_Asat_mol_m-2_s-1` = ifelse(is.na(`g_at_Asat_mol_m-2_s-1`),`initial conductance (mol m-2 s-1)`,`g_at_Asat_mol_m-2_s-1`),
          ci_over_ca_at_Asat = ifelse(is.na(ci_over_ca_at_Asat),`initial ci/ca`,ci_over_ca_at_Asat)) %>%
+  mutate_all(~na_if(.x, ".")) %>%
   write_csv("data/Cernusak_2011/data.csv")

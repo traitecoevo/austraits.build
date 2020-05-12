@@ -222,3 +222,14 @@ separate_range <- function(data, x, y1, y2, sep="-", remove=TRUE) {
   data[[y2]] <- ifelse(is.na(data[[y2]]), data[[y1]], data[[y2]])
   data
 }
+
+
+#' replace_duplicates_with_NA replaces duplicate values in x with NA. 
+#'
+#' @param x vector
+#'
+#' @return vector
+#'
+replace_duplicates_with_NA <- function(x) {
+  x %>% replace(., duplicated(.), NA)
+}
