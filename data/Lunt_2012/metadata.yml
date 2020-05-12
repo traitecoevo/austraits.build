@@ -4,11 +4,14 @@ source:
     bibtype: Unpublished
     author: Ian Lunt, John Morgan
     year: 2012
-    title: "Unpublished data: Trait data from various Morgan and Lunt projects 1990-2012"
+    title: 'Unpublished data: Trait data from various Morgan and Lunt projects 1990-2012'
 people:
 - name: Ian Lunt
   institution: Charles Sturt University
   role: collector, contact, lab_leader
+- name: John Morgan
+  institution: La Trobe University
+  role: collector
 - name: Rachael Gallagher
   institution: Macquarie University Sydney
   role: contributor
@@ -16,32 +19,50 @@ dataset:
   year_collected_start: 1990
   year_collected_end: 2012
   description: Lunt, Morgan, Scarlett, Salmon, Angevin trait data 1990s-2012 via John
-    Morgan
-  collection_type: field_assumed
-  sample_age_class: adult_assumed
-  sampling_strategy: unknown
-  original_file: relevent data from the file "2014  updated plant functional trait database.xls" extracted. Original copy of the excel file located in Google Drive in the folder "Morgan_2011_1 Morgan_2011_2 Morgan_2014 Angevin_2010 Briggs_2010 Cross_2011 Lunt_2012 Roberts_2006 Scott_2010".
-  notes: In John Morgan's file (see above) the same SLA values are listed under reference 9 (Lunt, Morgan, Scarlett, Salmon, Angevin 1990s-2012) and reference 10 (Venn, Angevin, Pickering). They are all included in this dataset.
-sites: .na
+    Morgan. Data were collected from places including Mt Hotham Alpine Resort, Bogong
+    High Plains, Wail State Forest, Victorian Volcanic Plains, Gippsland Plains.
+  collection_type: field
+  sample_age_class: adult
+  sampling_strategy: Data were collected from places including Mt Hotham Alpine Resort,
+    Bogong High Plains, Wail State Forest, Victorian Volcanic Plains, Gippsland Plains.
+  original_file: relevent data from the file "2014  updated plant functional trait
+    database.xls" extracted. Original copy of the excel file located in Google Drive
+    in the folder "Morgan_2011_1 Morgan_2011_2 Morgan_2014 Angevin_2010 Briggs_2010
+    Cross_2011 Lunt_2012 Roberts_2006 Scott_2010".
+  notes: In John Morgan's original file (see above) the same SLA values are listed
+    under reference 9 (Lunt, Morgan, Scarlett, Salmon, Angevin 1990s-2012) and reference
+    10 (Venn, Angevin, Pickering). They are all included in this dataset; SLA values
+    duplicated in Angevin_2011, Cross_2009, and Meers_2010 have been filtered out.
+    There are a very few seed mass duplicate values from related labs, but these haven't
+    been filtered.
+sites:
+  Victoria:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: Data were collected from places including Mt Hotham Alpine Resort,
+      Bogong High Plains, Wail State Forest, Victorian Volcanic Plains, Gippsland
+      Plains.
 contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: Scientific Name
-  custom_R_code: .na
+    site_name: site_name
+  custom_R_code: data %>% mutate(site_name = "Victoria")
 traits:
-- var_in: SLA (mg/mm2)
+- var_in: SLA (mg/mm2)_filtered
   unit_in: mm2/mg
   trait_name: specific_leaf_area
   value_type: unknown
   replicates: unknown
-  methods: unknown
+  methods: unknown; values duplicated in Angevin_2011, Cross_2009, and Meers_2010
+    have been filtered out
 - var_in: Seed mass (mg)
   unit_in: mg
   trait_name: seed_mass
   value_type: unknown
   replicates: unknown
-  methods: unknown
+  methods: unknown; a very few duplicate values from related labs, but not filtered
 substitutions: .na
 taxonomic_updates:
 - find: Celmisia constiniana
@@ -110,6 +131,9 @@ taxonomic_updates:
 - find: Brunonia australiS
   replace: Brunonia australis
   reason: typo, align to known species (S Andrew)
-questions:  
-  contributor: Do you have a generic location where the data were collected? The name of the national park/reserve would be wonderful - then I can use the lat/lon of the park headquarters as an approximate location.
+- find: Epilobium billardiarim
+  replace: Epilobium billardierianum
+  reason: typo, align to known species by E. Wenk (2020-05-11)
+questions:
+  contributor: .na
 
