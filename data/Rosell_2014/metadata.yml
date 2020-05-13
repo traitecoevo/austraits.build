@@ -2,7 +2,7 @@ source:
   primary:
     key: Rosell_2014
     bibtype: Article
-    year: '2013'
+    year: '2014'
     author: Julieta A. Rosell and Sean Gleason and Rodrigo Mendez-Alonzo and Yvonne
       Chang and Mark Westoby
     journal: New Phytologist
@@ -20,8 +20,8 @@ people:
   institution: Macquarie University Sydney
   role: lab_leader
 dataset:
-  year_collected_start: unknown
-  year_collected_end: unknown
+  year_collected_start: 2011
+  year_collected_end: 2013
   description: To assess hypotheses regarding tradeoffs and functional coordination,
     we measured bark traits reflecting protection, storage, mechanics, and photosynthesis
     in branches of 90 species spanning a wide phylogenetic and environmental range.
@@ -50,7 +50,8 @@ dataset:
     as for the inner living portion only (mostly secondary phloem, and cortex if any;
     Fig. 1a).
   original_file: Rosell_et_al_2014_NewPhytol_Australian_Species.xls
-  notes: none
+  notes: There are additional traits that have not been mapped into AusTraits, including
+    inner bark density, which includes the inner living portion of bark only.
 sites:
   Bothwell:
     latitude (deg): -42.4
@@ -88,12 +89,16 @@ sites:
     fire intensity (kW m-1): 1000-5000
     fire interval (yr): 5-20
     crown fire: facultative
-contexts: .na
+contexts:
+  Twig:
+    type: field
+    description: measurements made on twigs
 config:
   data_is_long_format: no
   variable_match:
     species_name: Species
     site_name: site_name
+    context_name: Organ
   custom_R_code: data %>% mutate(Species = gsub("_"," ",Species))
 traits:
 - var_in: Wood density (g/cm^3)
@@ -121,15 +126,16 @@ traits:
   trait_name: bark_density
   value_type: site_mean
   replicates: 3-5
-  methods: Total bark density; We cut two stem disks 0.5-1 cm tall at the point where
-    bark thickness was measured. We carefully removed outer bark from one of the disks
-    with a razor blade. We calculated the density of wood and of total and inner bark
-    as the ratio of oven-dried mass to fresh volume. Samples were dried at 100 deg
-    C for 4 d to measure dry mass (Williamson & Wiemann, 2010). Fresh volume was measured
-    using the water displacement method and an analytical balance. We calculated the
-    water content of total and inner bark and of wood as the fresh weight minus the
-    dry weight divided by the dry weight, to reflect the mass of water expressed as
-    a percentage of the tissue's dry mass. To calculate the percentage of the total
+  methods: Total bark density; the data.csv file also includes data for inner bark
+    density; We cut two stem disks 0.5-1 cm tall at the point where bark thickness
+    was measured. We carefully removed outer bark from one of the disks with a razor
+    blade. We calculated the density of wood and of total and inner bark as the ratio
+    of oven-dried mass to fresh volume. Samples were dried at 100 deg C for 4 d to
+    measure dry mass (Williamson & Wiemann, 2010). Fresh volume was measured using
+    the water displacement method and an analytical balance. We calculated the water
+    content of total and inner bark and of wood as the fresh weight minus the dry
+    weight divided by the dry weight, to reflect the mass of water expressed as a
+    percentage of the tissue's dry mass. To calculate the percentage of the total
     water in the stem that is stored in bark, we first estimated the amount of water
     in bark per unit volume. We then multiplied this amount by the volume of bark
     of an imaginary disk with area equal to the cross-sectional area of bark and height
@@ -138,7 +144,7 @@ traits:
     in wood + water in bark)  x 100.
 - var_in: Inner bark density (g/cm^3)
   unit_in: g/cm3
-  trait_name: bark_density
+  trait_name: .na
   value_type: site_mean
   replicates: 3-5
   methods: Inner bark density; We cut two stem disks 0.5-1 cm tall at the point where
@@ -161,22 +167,22 @@ traits:
   trait_name: bark_thickness
   value_type: site_mean
   replicates: 3-5
-  methods: Bark thickness; the data.csv file also includes data for inner bark thickness
-    and outer bark thickness; We cut two stem disks 0.5-1 cm tall at the point where
-    bark thickness was measured. We carefully removed outer bark from one of the disks
-    with a razor blade. We calculated the density of wood and of total and inner bark
-    as the ratio of oven-dried mass to fresh volume. Samples were dried at 100 deg
-    C for 4 d to measure dry mass (Williamson & Wiemann, 2010). Fresh volume was measured
-    using the water displacement method and an analytical balance. We calculated the
-    water content of total and inner bark and of wood as the fresh weight minus the
-    dry weight divided by the dry weight, to reflect the mass of water expressed as
-    a percentage of the tissue's dry mass. To calculate the percentage of the total
-    water in the stem that is stored in bark, we first estimated the amount of water
-    in bark per unit volume. We then multiplied this amount by the volume of bark
-    of an imaginary disk with area equal to the cross-sectional area of bark and height
-    equal to 1. We repeated the same procedure to calculate the amount of water in
-    wood. The percentage of stem water stored in bark equaled water in bark/(water
-    in wood + water in bark)  x 100.
+  methods: Bark thickness measured on twigs; the data.csv file also includes data
+    for inner bark thickness and outer bark thickness; We cut two stem disks 0.5-1
+    cm tall at the point where bark thickness was measured. We carefully removed outer
+    bark from one of the disks with a razor blade. We calculated the density of wood
+    and of total and inner bark as the ratio of oven-dried mass to fresh volume. Samples
+    were dried at 100 deg C for 4 d to measure dry mass (Williamson & Wiemann, 2010).
+    Fresh volume was measured using the water displacement method and an analytical
+    balance. We calculated the water content of total and inner bark and of wood as
+    the fresh weight minus the dry weight divided by the dry weight, to reflect the
+    mass of water expressed as a percentage of the tissue's dry mass. To calculate
+    the percentage of the total water in the stem that is stored in bark, we first
+    estimated the amount of water in bark per unit volume. We then multiplied this
+    amount by the volume of bark of an imaginary disk with area equal to the cross-sectional
+    area of bark and height equal to 1. We repeated the same procedure to calculate
+    the amount of water in wood. The percentage of stem water stored in bark equaled
+    water in bark/(water in wood + water in bark)  x 100.
 - var_in: Relative bark thickness (%, standardized by stem diameter)
   unit_in: '%'
   trait_name: .na
@@ -238,11 +244,11 @@ traits:
     of stem water stored in bark equaled water in bark/(water in wood + water in bark)  x
     100.
 - var_in: Structural Young's modulus (N/m^2)
-  unit_in: N/m2
-  trait_name: modulus_of_elasticity_wood
+  unit_in: MPa
+  trait_name: modulus_of_elasticity_stem
   value_type: site_mean
   replicates: 3-5
-  methods: 'Strcutural modualus of whole stem; We collected straight, relatively unbranched
+  methods: 'Structural modulus of whole stem; We collected straight, relatively unbranched
     segments immediately distal to the sample used for density measurements. We performed
     three point bending tests on segments with a 1 : 20 span : length ratio using
     a universal testing machine (Instron 5542; Instron, Canton, MA, USA). We measured
@@ -260,11 +266,11 @@ traits:
     1999). We calculated the contribution of bark to the mechanical support of branches
     at 1 m from the tip as EIbark/EIstruct x 100. '
 - var_in: Wood Young's modulus (N/m^2)
-  unit_in: N/m2
-  trait_name: modulus_of_elasticity_wood
+  unit_in: MPa
+  trait_name: modulus_of_elasticity_xylem
   value_type: site_mean
   replicates: 3-5
-  methods: 'Strcutural modualus of wood; We collected straight, relatively unbranched
+  methods: 'Modulus of elasticity of wood; We collected straight, relatively unbranched
     segments immediately distal to the sample used for density measurements. We performed
     three point bending tests on segments with a 1 : 20 span : length ratio using
     a universal testing machine (Instron 5542; Instron, Canton, MA, USA). We measured
@@ -282,8 +288,30 @@ traits:
     1999). We calculated the contribution of bark to the mechanical support of branches
     at 1 m from the tip as EIbark/EIstruct x 100. '
 - var_in: Total bark Young's modulus (N/m^2)
-  unit_in: N/m2
+  unit_in: MPa
   trait_name: modulus_of_elasticity_bark
+  value_type: site_mean
+  replicates: 3-5
+  methods: 'Modulus of elasticity of bark; We collected straight, relatively unbranched
+    segments immediately distal to the sample used for density measurements. We performed
+    three point bending tests on segments with a 1 : 20 span : length ratio using
+    a universal testing machine (Instron 5542; Instron, Canton, MA, USA). We measured
+    the flexural stiffness (EI) of the whole branch (EIstruct) and of the wood (EIwood),
+    testing whole and debarked segments. The difference between these two quantities
+    was used as EIbark, the flexural stiffness of bark (Niklas, 1999). We then computed
+    moments of inertia (I) for the stem, the wood, and the bark using formulas for
+    hollow cylindrical cross-sections (Gere & Timoshenko, 1999), averaging basal and
+    apical diameters of the whole stem, bark, wood, and pith. We excluded pith area
+    from calculations of I. The elastic moduli (E) of whole branches (Estruct), wood
+    (Ewood), and bark (Ebark) resulted from dividing EI by I. In addition, we estimated
+    the modulus of rupture of wood (MOR) as (Fmax x  x Rwood)/4Iwood, where Fmax is
+    the maximum load on the debarked segment at breakage, L is the length between
+    supports, Rwood is the wood radius, and Iwood its moment of inertia (Gere & Timoshenko,
+    1999). We calculated the contribution of bark to the mechanical support of branches
+    at 1 m from the tip as EIbark/EIstruct x 100. '
+- var_in: MOR
+  unit_in: MPa
+  trait_name: modulus_of_rupture
   value_type: site_mean
   replicates: 3-5
   methods: 'Strcutural modualus of bark; We collected straight, relatively unbranched
@@ -334,6 +362,5 @@ taxonomic_updates:
 - find: Exocarpus cupressiformis
   replace: Exocarpos cupressiformis
   reason: Typo found by E. Wenk (2020-05-12)
-questions:
-  contributor: During what years were these measurements made?
+questions: .na
 
