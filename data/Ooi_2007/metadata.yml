@@ -1,7 +1,7 @@
 source:
   primary:
     key: Ooi_2007
-    bibtype: Unpublished 
+    bibtype: Unpublished
     year: 2007
     author: Mark K. J. Ooi, Peter Myerscough, Tony Auld
     title: Longterm seed mass field campaign
@@ -22,10 +22,12 @@ dataset:
     germination.
   collection_type: field
   sample_age_class: adult
-  sampling_strategy: Data collected by multiple people across numerous locations over many years.
+  sampling_strategy: Data collected by multiple people across numerous locations over
+    many years.
   original_file: Ooi_seed weight_dorm type spp for AusTraits.csv
-  notes:  Note from data processor - To fill in missing location details on sites, coordinates of the town or NP have been included where possible.
-    These coordinates are not exact and were sourced from NationalMap.
+  notes: Note from data processor - To fill in missing location details on sites,
+    coordinates of the town or NP have been included where possible. These coordinates
+    are not exact and were sourced from NationalMap.
 sites:
   10 miles south of Pelaw Main on Road to Morriset:
     longitude (deg): .na.real
@@ -40,7 +42,7 @@ sites:
     longitude (deg): .na.real
     latitude (deg): .na.real
   Ashford:
-    longitude (deg): 151.10
+    longitude (deg): 151.1
     latitude (deg): -29.32
   Awaba:
     longitude (deg): 151.54
@@ -88,10 +90,10 @@ sites:
     longitude (deg): 150.91
     latitude (deg): -33.77
   Bombah Point:
-    longitude (deg): 152.30
+    longitude (deg): 152.3
     latitude (deg): -32.51
   Bournda Recreation Reserve:
-    longitude (deg): 149.90
+    longitude (deg): 149.9
     latitude (deg): -36.81
   Brayton:
     longitude (deg): 149.96
@@ -125,7 +127,7 @@ sites:
     latitude (deg): -32.88
   Coff's Harbour:
     longitude (deg): 153.11
-    latitude (deg): -30.30
+    latitude (deg): -30.3
   Collongolook:
     longitude (deg): 152.32
     latitude (deg): -32.22
@@ -173,11 +175,11 @@ sites:
     latitude (deg): .na.real
   Greenwich Park:
     longitude (deg): 149.91
-    latitude (deg): -34.60
+    latitude (deg): -34.6
   Inverell:
     longitude (deg): 151.11
     latitude (deg): -29.78
-  "Jibbon Beach, Royal National Park":
+  Jibbon Beach, Royal National Park:
     longitude (deg): 151.16
     latitude (deg): -34.081
   Kanangra Boyd Plateau:
@@ -247,17 +249,17 @@ sites:
     longitude (deg): 149.84
     latitude (deg): -32.39
   Myall Lakes:
-    longitude (deg): 152.20
+    longitude (deg): 152.2
     latitude (deg): -32.63
   Narrabeen:
-    longitude (deg): 151.30
+    longitude (deg): 151.3
     latitude (deg): -33.72
   Nettle Hill:
     longitude (deg): .na.real
     latitude (deg): .na.real
   New England National Park:
     longitude (deg): 152.39
-    latitude (deg): -30.50
+    latitude (deg): -30.5
   Newport Beach:
     longitude (deg): 151.32
     latitude (deg): -33.65
@@ -327,7 +329,10 @@ config:
   variable_match:
     species_name: SPECIES
     site_name: SITE
-  custom_R_code: .na
+    date: DATE OF COLLECTION
+  custom_R_code: data %>% mutate(`DATE OF COLLECTION` = `DATE OF COLLECTION` %>% dmy())
+    %>% group_by("SPECIES") %>% mutate_at(vars(DORM_TYPE),replace_duplicates_with_NA)
+    %>% ungroup()
 traits:
 - var_in: SEED WEIGHT mg
   unit_in: mg
