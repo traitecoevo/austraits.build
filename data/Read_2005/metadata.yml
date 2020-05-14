@@ -42,49 +42,74 @@ dataset:
     on each soil type (all woody shrubs or trees, total of 44 species, Table 2) in
     spring (September) 2001. One plant per species was generally sampled at each of
     the five replicate patches, but some species could not be located in all five
-    patches so samples were spread through a lesser number of patches (Table 2).
+    patches so samples were spread through a lesser number of patches (Table 2). The
+    study was undertaken at Tutanning Nature Reserve in southwestern Australia (ca.
+    150 km south-east of Perth). This region has a diverse sclerophyllous flora, a
+    commonly larger leaf size than some other sclerophyllous floras which facilitates
+    some mechanical measurements, and mosaics of soils with contrasting nutrient status.
+    The reserve is a 2310-ha island of natural vegetation surrounded by cleared land.
+    It experiences a Mediterranean climate with an annual rainfall of 448 mm, 80%
+    of which falls from May to October, and a mean 96 daily maximum temperature of
+    23.1 C (Bureau of Meteorology for Pingelly, 20 km west of the reserve). The locality
+    was selected because of the close proximity of markedly different soil types,
+    allowing investigation of soil effects in a common climate. The Reserve includes
+    the residuals of a Tertiary lateritic plateau, where exposed indurated laterite
+    and deep siliceous sands or gravels overlying the laterite are flanked by areas
+    where the laterite has been stripped to expose granite and dolerite (Brown and
+    Hopkins, 1983; McArthur, 1991). Some changes, such as from exposed laterite to
+    deep grey sands, can take place over distances less than 50 m. The soils overlying
+    granite and dolerite support woodland dominated by Eucalyptus and/or Allocasuarina.
+    The exposed laterite typically supports shrublands dominated by Proteaceae, and
+    the deep sand supports shrublands dominated by Myrtaceae, Proteaceae and Fabaceae.
+    Both shrublands are exceptionally species-rich (Brown and Hopkins, 1983) and may
+    include emergent mallee-form eucalypts.
   original_file: WA raw values to send.xlsx
   notes: Field sampling occurred September 2001
 sites:
-  Tutanning Nature Reserve:
+  Tutanning Nature Reserve on dolerite soils:
     latitude (deg): -32.55399
     longitude (deg): 117.335394
     MAP (mm): 448
+    total N (%): 0.22
+    total P (mg/kg): 330
+    soil morphology: dark reddish brown loam
     mean daily maximum temperature (degrees): 23.1
-    description: The study was undertaken at Tutanning Nature Reserve in southwestern
-      Australia (ca. 150 km south-east of Perth). This region has a diverse sclerophyllous
-      flora, a commonly larger leaf size than some other sclerophyllous floras which
-      facilitates some mechanical measurements, and mosaics of soils with contrasting
-      nutrient status. The reserve is a 2310-ha island of natural vegetation surrounded
-      by cleared land. It experiences a Mediterranean climate with an annual rainfall
-      of 448 mm, 80% of which falls from May to October, and a mean 96 daily maximum
-      temperature of 23.1 C (Bureau of Meteorology for Pingelly, 20 km west of the
-      reserve). The locality was selected because of the close proximity of markedly
-      different soil types, allowing investigation of soil effects in a common climate.
-      The Reserve includes the residuals of a Tertiary lateritic plateau, where exposed
-      indurated laterite and deep siliceous sands or gravels overlying the laterite
-      are flanked by areas where the laterite has been stripped to expose granite
-      and dolerite (Brown and Hopkins, 1983; McArthur, 1991). Some changes, such as
-      from exposed laterite to deep grey sands, can take place over distances less
-      than 50 m. The soils overlying granite and dolerite support woodland dominated
-      by Eucalyptus and/or Allocasuarina. The exposed laterite typically supports
-      shrublands dominated by Proteaceae, and the deep sand supports shrublands dominated
-      by Myrtaceae, Proteaceae and Fabaceae. Both shrublands are exceptionally species-rich
-      (Brown and Hopkins, 1983) and may include emergent mallee-form eucalypts.
+    description: woodland dominated by Eucalyptus and/or Allocasuarina
+  Tutanning Nature Reserve on laterite soils:
+    latitude (deg): -32.55399
+    longitude (deg): 117.335394
+    MAP (mm): 448
+    total N (%): 0.14
+    total P (mg/kg): 124
+    soil morphology: yellowish brown loamy sand to loam
+    mean daily maximum temperature (degrees): 23.1
+    description: shrublands dominated by Proteaceae
+  Tutanning Nature Reserve on grey sand soils:
+    latitude (deg): -32.55399
+    longitude (deg): 117.335394
+    MAP (mm): 448
+    total N (%): 0.01
+    total P (mg/kg): 54
+    soil morphology: light gray sand
+    mean daily maximum temperature (degrees): 23.1
+    description: shrublands dominated by Myrtaceae, Proteaceae and Fabaceae
 contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     species_name: APC species
     site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "Tutanning Nature Reserve")
+  custom_R_code: data %>% group_by(`APC species`) %>% mutate_at(vars(leaf),replace_duplicates_with_NA)
+    %>% ungroup
 traits:
 - var_in: N-fixer
   unit_in: .na
   trait_name: .na
   value_type: expert_mean
   replicates: .na
-  methods: .na
+  methods: Nitrogen fixing status destinguishes between legumes and other species,
+    but the study didn't explicitly check whether individuals were fixing nitrogen,
+    so this trait has not been mapped into AusTraits
 - var_in: leaf
   unit_in: .na
   trait_name: leaf_compoundness

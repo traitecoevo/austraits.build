@@ -39,21 +39,21 @@ dataset:
   sample_age_class: adult
   sampling_strategy: The North Australian Tropical Transect (NATT) is one of the continental
     transects of the IGBP core project GCTE (Walker and Steffen 1997). It is approximately
-    900 km long, and reaches from Darwin (about 12 deg S) in the mesic north of the Northern
-    Territory to the edge of the Tanamai Desert (near Kalkaringi, about 17 deg S). The
-    NATT thus encompasses the majority of the Northern Territory landscapes where
-    the occurence of the summer rains is predictable, in that a wet season occurs
+    900 km long, and reaches from Darwin (about 12 deg S) in the mesic north of the
+    Northern Territory to the edge of the Tanamai Desert (near Kalkaringi, about 17
+    deg S). The NATT thus encompasses the majority of the Northern Territory landscapes
+    where the occurence of the summer rains is predictable, in that a wet season occurs
     each year. However, in order to encompass a larger range of rainfall the present
-    study extended this transect to Melville Island in the north (about 11 deg S) offshore
-    from Darwin, to Giles and the Olgas in the center of the continent (about 26 deg S,
-    Fig. 1). Sun exposed leaves were collected at the end of the dry season in October
-    1993 at 20 locations (Table 1). At each site the main species dominating the tree
-    canopy were sampled. The number of species sampled per site varied from 1 to 14.
-    Between 3 and 5 individual trees were sampled per species in an area of about
-    1 hectare. Tree height and diameter at breast height were recorded for each sample
-    tree. The sampling strategy was designed a priori to allow the collection of Eucalyptus
-    species which were widespread in their distribution, and which showed overlap
-    in their distribution with other, potentially co-ocurring species.
+    study extended this transect to Melville Island in the north (about 11 deg S)
+    offshore from Darwin, to Giles and the Olgas in the center of the continent (about
+    26 deg S, Fig. 1). Sun exposed leaves were collected at the end of the dry season
+    in October 1993 at 20 locations (Table 1). At each site the main species dominating
+    the tree canopy were sampled. The number of species sampled per site varied from
+    1 to 14. Between 3 and 5 individual trees were sampled per species in an area
+    of about 1 hectare. Tree height and diameter at breast height were recorded for
+    each sample tree. The sampling strategy was designed a priori to allow the collection
+    of Eucalyptus species which were widespread in their distribution, and which showed
+    overlap in their distribution with other, potentially co-ocurring species.
   original_file: NATTdata.xls
   notes: NOTE - Field sampling dates are recorded in original file 'NATTdata.xls'
     located in 'raw' folder. NOTE - To fill in missing location information for some
@@ -211,7 +211,8 @@ config:
     site_name: Site
   custom_R_code: data %>% mutate(N_area_young_mg_per_m2 = (`N [mg/g]_young`*1000/SLA_young),
     N_area_expanding_mg_per_m2 = (`N(mg/g)_expanding`*1000/`SLA_exp.`), N_area_old_mg_per_m2
-    = (`N [mg/g]_0ld`*1000/`SLA_old_m2/kg`)) 
+    = (`N [mg/g]_0ld`*1000/`SLA_old_m2/kg`)) %>% group_by("Species") %>% mutate_at(vars(`dec/ev`,`plant_growth_form`,`Type`),replace_duplicates_with_NA)
+    %>% ungroup()
 traits:
 - var_in: plant_growth_form
   unit_in: .na
@@ -282,8 +283,8 @@ traits:
     of samples were measured using a system combining an elemental analyzer (Heraeus
     CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping box
     HT for automatic cryo-purification of the combustion products, and a Finnigan
-    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 per mille (Gebauer
-    and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
+    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 per mille
+    (Gebauer and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
     on a leaf dry weight basis (mgN g-1).
 - var_in: N(mg/g)_expanding
   unit_in: mg/g
@@ -507,7 +508,5 @@ taxonomic_updates:
 - find: Eucalyptus gummiphylla
   replace: Corymbia gummifera
   reason: Name updated by E. Wenk (2020-03-19)
-questions:
-  note: Tree circumferance and height included in data.csv and metadata.yml but not
-    yet merged into AusTraits. Contextual field needed for leaf age.
+questions: .na
 
