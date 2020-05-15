@@ -529,8 +529,12 @@ standardise_names <- function(x) {
     f("\\saff(\\s|$)", " aff.\\1") %>%
     f("\\saffn(\\s|$)", " aff.\\1") %>%
 
-    ## remove double space
-    f("[\\s]+", " ") %>%
+    ## f. not forma
+    f("\\sforma(\\s|$)", " f.\\1") %>%
+
+    ## clean white space
+    #f("[\\s]+", " ") %>%
+    str_squish() %>%
 
     ## remove " ms" if present
     f(" ms", "")
