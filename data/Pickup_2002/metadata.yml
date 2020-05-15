@@ -27,44 +27,51 @@ sites:
     latitude (deg): -33.6938889
     location: lat and lon are approximate; values used are those from Wright_2002
 contexts:
-  tt:
+  branch segment tt:
     description: branch tip; actual branch diameter in data.csv file
     type: field
-  b1:
-    description: branch length beyond tip segment; actual branch diameter in data.csv file
+  branch segment b1:
+    description: branch length beyond tip segment; actual branch diameter in data.csv
+      file
     type: field
-  b2:
-    description: 2 branch lengths beyond tip segment; actual branch diameter in data.csv file
+  branch segment b2:
+    description: 2 branch lengths beyond tip segment; actual branch diameter in data.csv
+      file
     type: field
-  b3:
-    description: 3 branch lengths beyond tip segment; actual branch diameter in data.csv file
+  branch segment b3:
+    description: 3 branch lengths beyond tip segment; actual branch diameter in data.csv
+      file
     type: field
 config:
   data_is_long_format: no
   variable_match:
     species_name: species_name
     site_name: site_name
-    context_name: Segment
-  custom_R_code: data %>% mutate(site_name = "Kuringgai National Park")
+    context_name: context
+  custom_R_code: data %>% mutate(site_name = "Kuringgai National Park") %>% mutate(context
+    = ifelse(!is.na(Segment),paste("branch segment",Segment),NA))
 traits:
 - var_in: Density
   unit_in: mg/mm3
   trait_name: wood_density
   value_type: raw_value
   replicates: 1
-  methods: Wood density measured at successive locations along a branch; these locations are documented in the contextual column.
+  methods: Wood density measured at successive locations along a branch; these locations
+    are documented in the contextual column.
 - var_in: specific_leaf_area
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: .na
   value_type: site_mean
   replicates: unknown
-  methods: assume scanned and area measured with ImageJ software, or equivalent; leaves dried and weighted
-- var_in: leaf_size
+  methods: assume scanned and area measured with ImageJ software, or equivalent; leaves
+    dried and weighted; these values are part of the larger Westoby_2003 dataset
+- var_in: leaf_size_filtered
   unit_in: mm2
   trait_name: leaf_area
   value_type: site_mean
   replicates: unknown
-  methods: assume scanned and area measured with ImageJ software, or equivalent
+  methods: assume scanned and area measured with ImageJ software, or equivalent; all
+    but two of these values are part of the larger Westoby_2003 dataset
 substitutions: .na
 taxonomic_updates: .na
 questions: .na

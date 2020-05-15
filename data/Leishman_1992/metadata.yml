@@ -26,68 +26,35 @@ dataset:
   sampling_strategy: We sought to include all species occurring on de- fined sites,
     in order to avoid bias in favour of species which were easier to collect or characterize.
     A plant species list was collated for four sites (Table 1) within the semi-arid
-    woodlands of western New South Wales, in the vicinity of Louth (30"31'S, 145"08'E).
-    (A complete species list is available from the first author.) The four sites were
-    in the same climatic zone and have an annual rainfall of c.300 mm which is highly
-    unpredictable and aseasonal. The three main soil types of the region were represented,
-    site 1 had a level to slightly undulating topography of hard red-earth soils;
-    site 2a was a slightly undulating sandplain with soft red soils; and site 3
-    was located on the floodplain of the Darling River on gilgaid heavy-clay soils.
-    Each site was 200-500 ha in area. Site 2a was heavily grazed and had rela- tively
-    few species (n = 89); consequently a species list from another site within 50km
-    on the same soil type was used as a supplement (site 2b). This resulted in a total
-    of 131 species for the sandy red-earth soil type.
+    woodlands of western New South Wales, in the vicinity of Louth (30 deg 31'S, 145
+    deg 08'E). (A complete species list is available from the first author.) The four
+    sites were in the same climatic zone and have an annual rainfall of c.300 mm which
+    is highly unpredictable and aseasonal. The three main soil types of the region
+    were represented, site 1 had a level to slightly undulating topography of hard
+    red-earth soils; site 2a was a slightly undulating sandplain with soft red soils;
+    and site 3 was located on the floodplain of the Darling River on gilgaid heavy-clay
+    soils. Each site was 200-500 ha in area. Site 2a was heavily grazed and had rela-
+    tively few species (n = 89); consequently a species list from another site within
+    50km on the same soil type was used as a supplement (site 2b). This resulted in
+    a total of 131 species for the sandy red-earth soil type.
   original_file: WNSW(Leishman).xls
-  notes: Complete list of traits measured in this study is
-    GF, growth form
-    LF, lifeform according to Raunkiaer's classes
-    HT, height
-    LOGHT, log10(HT)
-    LO, longevity
-    LA, leaf area
-    LACL, leaf area class
-    LT, leaf texture
-    HY, leaf hairiness
-    RSP, resprout ability
-    RSY, root system depth
-    SO, storage organ
-    DR, drought resistance
-    FTAN, flowering anytime with rain
-    FTSP, flowering spring
-    FTSU, flowering summer
-    FTAU, flowering autumn
-    FTWI, flowering winter
-    FC, flower class according to van der Pjil (1978)
-    GRAN, growth anytime with rain
-    GRSP, growth spring
-    GRSU, growth summer
-    GRAU, growth autumn
-    GRWI, growth winter
-    GEAN, germination anytime with rain
-    GESP, germination spring
-    GESU, germination summer
-    GEAU, germination autumn
-    GEWI, germination winter
-    SEAN, seed release anytime with rain
-    SESP, seed release spring
-    SESU, seed release summer
-    SEAU, seed release autumn
-    SEWI, seed release winter
-    DWT, oven-dry diaspore weight (mg)
-    DWTCL, oven-dry diaspore weight put into Baker's half-log classes (14)
-    LOGDWT, log10(DWT)
-    DWTPS, oven-dry diaspore weight on a per seed basis
-    SWT, oven-dry seed weight (mg)
-    SWTCL oven-dry diaspore weight put into Baker's half-log classes (14)
-    LOGSWT, log10(SWT)
-    SD, dispersal mode
-    MU, mucilaginous
-    GM, seed germinability
-    PH, physiology
-    FM, fire mortality
-    PA, palatability
-    SP, spines present
-    SC, secondary compounds
+  notes: Complete list of traits measured in this study is GF, growth form LF, lifeform
+    according to Raunkiaer's classes HT, height LOGHT, log10(HT) LO, longevity LA,
+    leaf area LACL, leaf area class LT, leaf texture HY, leaf hairiness RSP, resprout
+    ability RSY, root system depth SO, storage organ DR, drought resistance FTAN,
+    flowering anytime with rain FTSP, flowering spring FTSU, flowering summer FTAU,
+    flowering autumn FTWI, flowering winter FC, flower class according to van der
+    Pjil (1978) GRAN, growth anytime with rain GRSP, growth spring GRSU, growth summer
+    GRAU, growth autumn GRWI, growth winter GEAN, germination anytime with rain GESP,
+    germination spring GESU, germination summer GEAU, germination autumn GEWI, germination
+    winter SEAN, seed release anytime with rain SESP, seed release spring SESU, seed
+    release summer SEAU, seed release autumn SEWI, seed release winter DWT, oven-dry
+    diaspore weight (mg) DWTCL, oven-dry diaspore weight put into Baker's half-log
+    classes (14) LOGDWT, log10(DWT) DWTPS, oven-dry diaspore weight on a per seed
+    basis SWT, oven-dry seed weight (mg) SWTCL oven-dry diaspore weight put into Baker's
+    half-log classes (14) LOGSWT, log10(SWT) SD, dispersal mode MU, mucilaginous GM,
+    seed germinability PH, physiology FM, fire mortality PA, palatability SP, spines
+    present SC, secondary compounds
 sites:
   Louth:
     longitude (deg): 145.1333
@@ -98,7 +65,8 @@ config:
   variable_match:
     species_name: SPECIES
     site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "Louth")
+  custom_R_code: data %>% mutate(site_name = "Louth") %>% mutate_at(vars(`height (cm)_filtered`,`leaf
+    area (mm2)`,`seed mass (mg)`,`diaspore weight (mg)`),~na_if(.,0))
 traits:
 - var_in: growth form
   unit_in: .na
@@ -107,23 +75,24 @@ traits:
   replicates: .na
   methods: Data on some attributes such as growth form, leaf texture and hairiness,
     flowering characteristics, presence of spines and seed dispersal mode could be
-    col- lected from observations of each species in the field. Where field specimens
+    collected from observations of each species in the field. Where field specimens
     were inadequate, herbarium specimens were used. Data on morphological features
     that could not be reliably collected from field specimens were obtained from exhaustive
     reviews of the literature. These features included maximum height gained, presence
     of storage organ, depth of root system and presence of secondary compounds.
-- var_in: height (cm)
+- var_in: height (cm)_filtered
   unit_in: cm
   trait_name: plant_height
-  value_type: expert_mean
+  value_type: expert_max
   replicates: .na
-  methods: Data from published flora. Data on some attributes such as growth form, leaf texture and hairiness,
-    flowering characteristics, presence of spines and seed dispersal mode could be
-    col- lected from observations of each species in the field. Where field specimens
-    were inadequate, herbarium specimens were used. Data on morphological features
-    that could not be reliably collected from field specimens were obtained from exhaustive
-    reviews of the literature. These features included maximum height gained, presence
-    of storage organ, depth of root system and presence of secondary compounds. 
+  methods: Data from published flora. Data on some attributes such as growth form,
+    leaf texture and hairiness, flowering characteristics, presence of spines and
+    seed dispersal mode could be collected from observations of each species in the
+    field. Where field specimens were inadequate, herbarium specimens were used. Data
+    on morphological features that could not be reliably collected from field specimens
+    were obtained from exhaustive reviews of the literature. These features included
+    maximum height gained, presence of storage organ, depth of root system and presence
+    of secondary compounds.
 - var_in: plant longevity
   unit_in: .na
   trait_name: life_history
@@ -142,19 +111,22 @@ traits:
     col- lected from observations of each species in the field. Where field specimens
     were inadequate, herbarium specimens were used. Leaf area and diaspore weight
     were measured using specimens collected from the field wherever possible, or alternatively
-    from herbarium specimens and seed collections. Leaf area is a continuous variable, based on measurements on collected leaves or from dimensions reported in a flora (length x width x 2/3)
+    from herbarium specimens and seed collections. Leaf area is a continuous variable,
+    based on measurements on collected leaves or from dimensions reported in a flora
+    (length x width x 2/3)
 - var_in: storage organ present
   unit_in: .na
   trait_name: regen_strategy
   value_type: expert_mean
   replicates: .na
-  methods: Data from published flora. Data on some attributes such as growth form, leaf texture and hairiness,
-    flowering characteristics, presence of spines and seed dispersal mode could be
-    col- lected from observations of each species in the field. Where field specimens
-    were inadequate, herbarium specimens were used. Data on morphological features
-    that could not be reliably collected from field specimens were obtained from exhaustive
-    reviews of the literature. These features included maximum height gained, presence
-    of storage organ, depth of root system and presence of secondary compounds.
+  methods: Data from published flora. Data on some attributes such as growth form,
+    leaf texture and hairiness, flowering characteristics, presence of spines and
+    seed dispersal mode could be collected from observations of each species in the
+    field. Where field specimens were inadequate, herbarium specimens were used. Data
+    on morphological features that could not be reliably collected from field specimens
+    were obtained from exhaustive reviews of the literature. These features included
+    maximum height gained, presence of storage organ, depth of root system and presence
+    of secondary compounds.
 - var_in: diaspore weight (mg)
   unit_in: mg
   trait_name: diaspore_mass
@@ -165,18 +137,19 @@ traits:
     collected from observations of each species in the field. Where field specimens
     were inadequate, herbarium specimens were used. Leaf area and diaspore weight
     were measured using specimens collected from the field wherever possible, or alternatively
-    from herbarium specimens and seed collections. (Values are categorical based on morphological descriptions of the diaspore. A minimum of 10 diaspores were sampled.)
+    from herbarium specimens and seed collections. (Values are categorical based on
+    morphological descriptions of the diaspore. A minimum of 10 diaspores were sampled.)
 - var_in: seed mass (mg)
   unit_in: mg
   trait_name: seed_mass
   value_type: site_mean
   replicates: 10
-  methods: Mean of at least 10 collected seeds. Data on some attributes such as growth form, leaf texture and hairiness,
-    flowering characteristics, presence of spines and seed dispersal mode could be
-    collected from observations of each species in the field. Where field specimens
-    were inadequate, herbarium specimens were used. Leaf area and diaspore weight
-    were measured using specimens collected from the field wherever possible, or alternatively
-    from herbarium specimens and seed collections. 
+  methods: Mean of at least 10 collected seeds. Data on some attributes such as growth
+    form, leaf texture and hairiness, flowering characteristics, presence of spines
+    and seed dispersal mode could be collected from observations of each species in
+    the field. Where field specimens were inadequate, herbarium specimens were used.
+    Leaf area and diaspore weight were measured using specimens collected from the
+    field wherever possible, or alternatively from herbarium specimens and seed collections.
 substitutions:
 - trait_name: plant_growth_form
   find: forb
