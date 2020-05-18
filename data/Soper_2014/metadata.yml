@@ -71,13 +71,22 @@ sites:
     MAP (mm): 600.0
     notes: near repeater station
     description: two sub-sites dominated by either Acacia or Eucalyptus
-contexts: .na
+contexts:
+  Trip 1 (wet season):
+    type: field
+    description: sampling conducted March-April 2003 (wet season)
+  Trip 2 (dry season):
+    type: field
+    description: sampled conducted August 2003 (usually dry season, but following
+      a brief period of rain)
 config:
   data_is_long_format: no
   variable_match:
     species_name: species_name_edited
     site_name: SITE
-  custom_R_code: .na
+    context_name: context_name
+  custom_R_code: data %>% mutate(context_name = ifelse(TRIP == 1, "Trip 1 (wet season)","Trip
+    2 (dry season)"))
 traits:
 - var_in: PLANT GROUP
   unit_in: .na
@@ -91,7 +100,7 @@ traits:
   value_type: raw_value
   replicates: 1
   methods: Fully expanded leaves and phyllodes were sampled from mature trees, air-dried
-    in the field, dried at 50  deg C for 3 days, homogenised and analysed for  C and
+    in the field, dried at 50 deg C for 3 days, homogenised and analysed for  C and
     N via dry combustion and infrared detection in a LECO analyser (CNS-2000; LECO,
     MI, USA).
 - var_in: del C_leaf
@@ -100,7 +109,7 @@ traits:
   value_type: raw_value
   replicates: 1
   methods: Fully expanded leaves and phyllodes were sampled from mature trees, air-dried
-    in the field, dried at 50  deg C for 3 days, homogenised and analysed for d13C
+    in the field, dried at 50 deg C for 3 days, homogenised and analysed for d13C
     and d15N via continuous flow isotope ratio mass spectrometry (Tracer Mass, routine
     precision 0.2 - SD; Europa Scientific, now PDZ Europa,Sandbach, UK).
 - var_in: '%N_leaf'
@@ -109,16 +118,7 @@ traits:
   value_type: raw_value
   replicates: 1
   methods: Fully expanded leaves and phyllodes were sampled from mature trees, air-dried
-    in the field, dried at 50  deg C for 3 days, homogenised and analysed for  C and
-    N via dry combustion and infrared detection in a LECO analyser (CNS-2000; LECO,
-    MI, USA).
-- var_in: '%N-2_leaf'
-  unit_in: '%'
-  trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
-  replicates: 1
-  methods: Fully expanded leaves and phyllodes were sampled from mature trees, air-dried
-    in the field, dried at 50  deg C for 3 days, homogenised and analysed for  C and
+    in the field, dried at 50 deg C for 3 days, homogenised and analysed for  C and
     N via dry combustion and infrared detection in a LECO analyser (CNS-2000; LECO,
     MI, USA).
 - var_in: Del N_leaf
@@ -206,7 +206,7 @@ traits:
   value_type: raw_value
   replicates: 1
   methods: Fully expanded leaves and phyllodes were sampled from mature trees, air-dried
-    in the field, dried at 50  deg C for 3 days, homogenised and analysed for  C and
+    in the field, dried at 50 deg C for 3 days, homogenised and analysed for  C and
     N via dry combustion and infrared detection in a LECO analyser (CNS-2000; LECO,
     MI, USA).
 - var_in: Del N_root

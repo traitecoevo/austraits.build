@@ -32,11 +32,17 @@ config:
   data_is_long_format: no
   variable_match:
     species_name: species_name
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(growth_habit = ifelse(height=="prostrate","prostrate",NA))
 traits:
 - var_in: form
   unit_in: .na
   trait_name: plant_growth_form
+  value_type: expert_mean
+  replicates: .na
+  methods: reference book
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: growth_habit
   value_type: expert_mean
   replicates: .na
   methods: reference book
@@ -114,9 +120,54 @@ traits:
   replicates: .na
   methods: reference book
 substitutions:
+- trait_name: plant_height
+  find: sometimes up to 25m
+  replace: 25
+- trait_name: plant_height
+  find: 8 (but up to 30m in qld)
+  replace: 30
+- trait_name: plant_height
+  find: 7 (rarely to 25)
+  replace: 25
+- trait_name: plant_height
+  find: 4 (rarely to 12)
+  replace: 12
+- trait_name: plant_height
+  find: 3 (rarely to 5)
+  replace: 5
+- trait_name: plant_height
+  find: 2 (rarely to 5)
+  replace: 5
+- trait_name: plant_height
+  find: 3 (rarely to 8)
+  replace: 8
+- trait_name: plant_height
+  find: 16 (rarely to 40)
+  replace: 40
+- trait_name: plant_height
+  find: 1 (rarely to 2)
+  replace: 2
+- trait_name: plant_height
+  find: 3 (occassionally small tree to 6m)
+  replace: 6
+- trait_name: plant_height
+  find: 15 (40 in nsw)
+  replace: 40
+- trait_name: plant_height
+  find: 1.5 (rarely to 6)
+  replace: 6
+- trait_name: plant_height
+  find: prostrate
+  replace: .na
+- trait_name: plant_height
+  find: '?'
+  replace: .na
 - trait_name: plant_growth_form
   find: herb/shrub
   replace: herb shrub
+- trait_name: plant_growth_form
+  find: shrub, but occassionally emergent tree
+  replace: shrub treelet
 - trait_name: plant_growth_form
   find: vine
   replace: climber
