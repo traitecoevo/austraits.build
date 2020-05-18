@@ -192,12 +192,12 @@ config:
     observation_id: Tree.id
     date: Date
     context_name: context
-  custom_R_code: data %>% mutate(context = ifelse(Site %in% c("Calperum mallee","Great
+  custom_R_code: data %>% mutate_at(vars(`Rdark.a`), ~na_if(.,0)) %>% mutate(Date = Date %>% dmy()) %>% mutate(context = ifelse(Site %in% c("Calperum mallee","Great
     Western Woodlands","Alice Mulga") & Visit == "Summer", "Summer_unfavourable",Visit),
     context = ifelse(Site %in% c("Cumberland Plain","Warra","Alice Mulga") & Visit
     == "Winter", "Winter_unfavourable",context), context = ifelse(Site %in% c("Cumberland
     Plain","Warra") & Visit == "Summer", "Summer_favourable",context), context = ifelse(Site
-    %in% c("Calperum mallee","Great Western Woodlands") & Visit == "Winter","Winter_favourable",context))
+    %in% c("Calperum mallee","Great Western Woodlands") & Visit == "Winter","Winter_favourable",context)) 
 traits:
 - var_in: A400.a
   unit_in: umolCO2/m2/s
