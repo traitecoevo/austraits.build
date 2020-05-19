@@ -4,7 +4,8 @@ source:
     bibtype: Unpublished
     author: Amy Zanne
     year: 2007
-    title: "Unpublished data: Hydraulic traits for NSW plant species from four field sites"
+    title: 'Unpublished data: Hydraulic traits for NSW plant species from four field
+      sites'
 people:
 - name: Amy Zanne
   institution: George Washington University
@@ -27,8 +28,8 @@ dataset:
   notes: Site data were extracted from Wright 2011 (doi.org/10.1046/j.0269-8463.2001.00542.x).
 sites:
   Mallee Round Hill Nature Reserve:
-    longitude (deg): 146.14583333333333
-    latitude (deg): -32.97638888888889
+    longitude (deg): 146.1458333
+    latitude (deg): -32.9763889
     description: open shrub mallee
     rainfall (mm): 387
     soil: Loamy red sand (Quaternary dune systems)
@@ -37,8 +38,8 @@ sites:
     Total C (%): 0.67
     CEC (meq kg-1): 38.7
   Murrua Track Kuringai Chase National Park:
-    longitude (deg): 151.14305555555556
-    latitude (deg): -33.69388888888889
+    longitude (deg): 151.1430556
+    latitude (deg): -33.6938889
     description: low open woodland
     rainfall (mm): 1220
     soil: Yellow-grey sand (Hawkesbury sandstone)
@@ -47,8 +48,8 @@ sites:
     Total C (%): 0.95
     CEC (meq kg-1): 9.0
   Westhead Kuringai Chase National Park:
-    longitude (deg): 151.29222222222222
-    latitude (deg): -33.57888888888889
+    longitude (deg): 151.2922222
+    latitude (deg): -33.5788889
     description: closed forest
     rainfall (mm): 1220
     soil: Red-brown clay (weathered volcanic dyke)
@@ -57,8 +58,8 @@ sites:
     Total C (%): 5.91
     CEC (meq kg-1): 55.6
   Woodland Round Hill Nature Reserve:
-    longitude (deg): 146.15472222222222
-    latitude (deg): -32.96666666666667
+    longitude (deg): 146.1547222
+    latitude (deg): -32.9666667
     description: open woodland
     rainfall (mm): 387
     soil: Loamy red sand (Quaternary dune systems)
@@ -72,44 +73,92 @@ config:
   variable_match:
     species_name: species
     site_name: site ID
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(Kl = Kl*10000) 
 traits:
 - var_in: SLA (cm2/g)
   unit_in: cm2/g
   trait_name: specific_leaf_area
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: unknown
 - var_in: LA/SA (cm2/cm2)
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
+  unit_in: mm2_leaf/mm2_sapwood
+  trait_name: huber_value
+  value_type: raw_value
+  replicates: 1
   methods: unknown
 - var_in: WD (g/cm3)
   unit_in: g/cm3
   trait_name: wood_density
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: unknown
 - var_in: Kh (kg*m/Mpa*s)
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: kg*m/s/MPa
+  trait_name: stem_hydraulic_conductivity
+  value_type: raw_value
+  replicates: 1
+  methods: Stem hydraulic conductivity was measured on branch samples
+    using previously described methods (Zwieniecki & Holbrook, 1998; Sperry & Hacke,
+    2002). Branches were hydrated overnight to avoid artifacts (Wheeler et al., 2013),
+    and the submerged branches were cut longer than the maximum vessel length (Cavender-Bares
+    & Holbrook, 2001).  Side branches were sealed using water-insoluble acrylic-based
+    glue (Loctite Super Bonder Quick Gel 409 and Accelerator 712, Henkel Australia
+    Pty. Ltd., Kilsyth, VIC, Australia). Stem ends were then wrapped in parafilm and
+    placed into connective tubing. Twenty mM KCl (made with deionized, degassed water)
+    was forced through a 0.22 um filter and into the distal stem end at 0.1 MPa. Outflow
+    from the proximal end was logged in 30 s intervals onto a balance. Stems were
+    flushed until the readings to the balance stabilized and then conductance was
+    measured as k = g MPa-1 s-1.  Measures were corrected by subtracting the background
+    flow rate when no pressure was applied to the stem. Conductivity (Kh; g m MPa-1
+    s-1) was determined by multiplying k by branch length. Sapwood specific (Ks) or
+    leaf specific (KL) conductivity was calculated by dividing Kh by either total
+    cross sectional area of the stem (minus bark; m2) or total leaf area subtending
+    the distal branch end, (m2) respectively.
 - var_in: Ks
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: kg/m/s/MPa
+  trait_name: sapwood_specific_conductivity
+  value_type: raw_value
+  replicates: 1
+  methods: Stem hydraulic conductivity was measured on branch samples
+    using previously described methods (Zwieniecki & Holbrook, 1998; Sperry & Hacke,
+    2002). Branches were hydrated overnight to avoid artifacts (Wheeler et al., 2013),
+    and the submerged branches were cut longer than the maximum vessel length (Cavender-Bares
+    & Holbrook, 2001).  Side branches were sealed using water-insoluble acrylic-based
+    glue (Loctite Super Bonder Quick Gel 409 and Accelerator 712, Henkel Australia
+    Pty. Ltd., Kilsyth, VIC, Australia). Stem ends were then wrapped in parafilm and
+    placed into connective tubing. Twenty mM KCl (made with deionized, degassed water)
+    was forced through a 0.22 um filter and into the distal stem end at 0.1 MPa. Outflow
+    from the proximal end was logged in 30 s intervals onto a balance. Stems were
+    flushed until the readings to the balance stabilized and then conductance was
+    measured as k = g MPa-1 s-1.  Measures were corrected by subtracting the background
+    flow rate when no pressure was applied to the stem. Conductivity (Kh; g m MPa-1
+    s-1) was determined by multiplying k by branch length. Sapwood specific (Ks) or
+    leaf specific (KL) conductivity was calculated by dividing Kh by either total
+    cross sectional area of the stem (minus bark; m2) or total leaf area subtending
+    the distal branch end, (m2) respectively.
 - var_in: Kl
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: 10^4 x kg/m/s/MPa
+  trait_name: leaf_specific_conductivity
+  value_type: raw_value
+  replicates: 1
+  methods: Stem hydraulic conductivity was measured on branch samples
+    using previously described methods (Zwieniecki & Holbrook, 1998; Sperry & Hacke,
+    2002). Branches were hydrated overnight to avoid artifacts (Wheeler et al., 2013),
+    and the submerged branches were cut longer than the maximum vessel length (Cavender-Bares
+    & Holbrook, 2001).  Side branches were sealed using water-insoluble acrylic-based
+    glue (Loctite Super Bonder Quick Gel 409 and Accelerator 712, Henkel Australia
+    Pty. Ltd., Kilsyth, VIC, Australia). Stem ends were then wrapped in parafilm and
+    placed into connective tubing. Twenty mM KCl (made with deionized, degassed water)
+    was forced through a 0.22 um filter and into the distal stem end at 0.1 MPa. Outflow
+    from the proximal end was logged in 30 s intervals onto a balance. Stems were
+    flushed until the readings to the balance stabilized and then conductance was
+    measured as k = g MPa-1 s-1.  Measures were corrected by subtracting the background
+    flow rate when no pressure was applied to the stem. Conductivity (Kh; g m MPa-1
+    s-1) was determined by multiplying k by branch length. Sapwood specific (Ks) or
+    leaf specific (KL) conductivity was calculated by dividing Kh by either total
+    cross sectional area of the stem (minus bark; m2) or total leaf area subtending
+    the distal branch end, (m2) respectively.
 substitutions: .na
 taxonomic_updates:
 - find: Philotheca difformis
@@ -121,7 +170,5 @@ taxonomic_updates:
 - find: Pultenea flexilis
   replace: Pultenaea flexilis
   reason: Align spelling with known species (D Falster, 2019-04-16)
-questions:
-  contributors: Site data were extracted from Wright 2011 (doi.org/10.1046/j.0269-8463.2001.00542.x).
-    Please confirm these are correct.
+questions: .na
 

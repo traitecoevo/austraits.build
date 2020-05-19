@@ -32,7 +32,8 @@ sites:
     latitude (deg): -36.89
     longitude (deg): 147.31
     description: Bogong High Plains in the Alpine National Park (36.87S, 147.32E;
-      about 1600-1860 m altitude), northeastern Victoria, Australia.McDougall K. L. & Walsh N. G. (2007) Treeless vegetation of the Australian Alps. Cunninghamia
+      about 1600-1860 m altitude), northeastern Victoria, Australia.McDougall K. L.
+      & Walsh N. G. (2007) Treeless vegetation of the Australian Alps. Cunninghamia
       10, 1-57.  Williams RJ, Ashton DH (1987) The composition, structure and distribution
       of heathland and grassland communities in the subalpine tract of the Bogong
       High Plains, Victoria. Australian Journal of Ecology 12, 57-71.
@@ -63,6 +64,8 @@ config:
     species_name: Spp_Name
     site_name: Site
   custom_R_code: data %>% mutate(Site = gsub("Basalt Hill bogs","Basalt Hill bog",Site))
+    %>% group_by(Spp_Name) %>% mutate_at(vars("plant_growth_form"),replace_duplicates_with_NA)
+    %>% ungroup()
 traits:
 - var_in: SLA(mm2/mg)
   unit_in: mm2/mg
@@ -184,7 +187,7 @@ taxonomic_updates:
 - find: Brachysome nivalis
   replace: Brachyscome nivalis
   reason: align to known species (E Wenk, 2019-09-27)
-- find: Juncus articulatus subsp. articulatus 
+- find: Juncus articulatus subsp. articulatus
   replace: Juncus articulatus
   reason: align to known species (E Wenk, 2019-09-27)
 questions: .na

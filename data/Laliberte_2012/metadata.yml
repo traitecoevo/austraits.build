@@ -2,7 +2,7 @@ source:
   primary:
     key: Laliberte_2012
     bibtype: Article
-    author: Etienne Laliberté, Benjamin L. Turner, Thomas Costes, Stuart J. Pearse,
+    author: Etienne Laliberte, Benjamin L. Turner, Thomas Costes, Stuart J. Pearse,
       Karl-Heinz Wyrwoll, Graham Zemunik, Hans Lambers
     year: 2012
     title: Experimental assessment of nutrient limitation along a 2-million-year dune
@@ -13,8 +13,8 @@ source:
     publisher: Wiley-Blackwell
     doi: 10.1111/j.1365-2745.2012.01962.x
 people:
-- name: Etienne Laliberté
-  institution: Université de Montréal
+- name: Etienne Laliberte
+  institution: Universite de Montreal
   role: collector, contact, lab_leader
 - name: Hans Lambers
   institution: University of Western Australia
@@ -615,146 +615,6 @@ sites:
     no3: 0.015
     totalPicp: 396.121
     orgC: 0.76
-  S.DS.10:
-    latitude (deg): -30.2485247
-    longitude (deg): 115.1001214
-    stage: '5'
-    dune: Spearwood deep sand
-    epoch: Middle Pleistocene
-    age: '500000'
-    geology: Tamala Limestone
-    date: -714244.0
-    don: 11.841
-    nh4: 1.443
-    no3: 0.469
-    totalPicp: 3.718
-    orgC: 0.471
-  S.DS.11:
-    latitude (deg): -30.186441
-    longitude (deg): 115.082126
-    stage: '5'
-    dune: Spearwood deep sand
-    epoch: Middle Pleistocene
-    age: '500000'
-    geology: Tamala Limestone
-    date: -714244.0
-    don: 8.042
-    nh4: 2.145
-    no3: 0.692
-    totalPicp: 8.509
-    orgC: 0.584
-  S.DS.17:
-    latitude (deg): -30.2965879
-    longitude (deg): 115.1623364
-    stage: '5'
-    dune: Spearwood deep sand
-    epoch: Middle Pleistocene
-    age: '500000'
-    geology: Tamala Limestone
-    date: -714974.0
-    don: 9.86
-    nh4: 3.558
-    no3: 0.55
-    totalPicp: 4.824
-    orgC: 0.302
-  S.DS.2:
-    latitude (deg): -30.1928014
-    longitude (deg): 115.1079648
-    stage: '5'
-    dune: Spearwood deep sand
-    epoch: Middle Pleistocene
-    age: '500000'
-    geology: Tamala Limestone
-    date: -714244.0
-    don: 12.987
-    nh4: 2.315
-    no3: 1.035
-    totalPicp: 6.113
-    orgC: 0.692
-  S.DS.23:
-    latitude (deg): -30.29954
-    longitude (deg): 115.119648
-    stage: '5'
-    dune: Spearwood deep sand
-    epoch: Middle Pleistocene
-    age: '500000'
-    geology: Tamala Limestone
-    date: -714974.0
-    don: 8.879
-    nh4: 3.788
-    no3: 0.599
-    totalPicp: 4.661
-    orgC: 0.375
-  S.DS.25:
-    latitude (deg): -30.2082176
-    longitude (deg): 115.0670687
-    stage: '5'
-    dune: Spearwood deep sand
-    epoch: Middle Pleistocene
-    age: '500000'
-    geology: Tamala Limestone
-    date: -714609.0
-    don: 7.773
-    nh4: 2.842
-    no3: 1.61
-    totalPicp: 17.699
-    orgC: 0.327
-  S.DS.3:
-    latitude (deg): -30.2589118
-    longitude (deg): 115.107134
-    stage: '5'
-    dune: Spearwood deep sand
-    epoch: Middle Pleistocene
-    age: '500000'
-    geology: Tamala Limestone
-    date: -714974.0
-    don: 7.83
-    nh4: 3.475
-    no3: 0.253
-    totalPicp: 2.656
-    orgC: 0.385
-  S.DS.4:
-    latitude (deg): -30.179164
-    longitude (deg): 115.0968566
-    stage: '5'
-    dune: Spearwood deep sand
-    epoch: Middle Pleistocene
-    age: '500000'
-    geology: Tamala Limestone
-    date: -714244.0
-    don: 8.499
-    nh4: 2.358
-    no3: 1.457
-    totalPicp: 6.351
-    orgC: 0.446
-  S.DS.6:
-    latitude (deg): -30.10711
-    longitude (deg): 115.08622
-    stage: '5'
-    dune: Spearwood deep sand
-    epoch: Middle Pleistocene
-    age: '500000'
-    geology: Tamala Limestone
-    date: -713513.0
-    don: 8.469
-    nh4: 1.608
-    no3: 1.02
-    totalPicp: 7.175
-    orgC: 0.338
-  S.DS.9:
-    latitude (deg): -30.2640601
-    longitude (deg): 115.1006166
-    stage: '5'
-    dune: Spearwood deep sand
-    epoch: Middle Pleistocene
-    age: '500000'
-    geology: Tamala Limestone
-    date: -714974.0
-    don: 8.589
-    nh4: 3.558
-    no3: 0.657
-    totalPicp: 5.385
-    orgC: 0.35
   S.W.11:
     latitude (deg): -30.1920924
     longitude (deg): 115.0630152
@@ -901,10 +761,9 @@ config:
   variable_match:
     species_name: species
     site_name: plot.id
-  custom_R_code: data %>% mutate(
-    n_fixer = grepl("Nitrogen fixer", strategy),
-    roots = gsub(", Nitrogen fixer", "", strategy)
-    ) %>% mutate_at(c("Mo_mature"), ~na_if(.,0))
+    date: collection.date
+  custom_R_code: data %>% mutate( n_fixer = grepl("Nitrogen fixer", strategy), roots
+    = gsub(", Nitrogen fixer", "", strategy) ) %>% mutate_at(c("Mo_mature"), ~na_if(.,0)) %>% group_by(species) %>% mutate_at(vars("growthform","n_fixer","roots"),replace_duplicates_with_NA) %>% ungroup()
 traits:
 - var_in: area
   unit_in: mm2
@@ -974,8 +833,8 @@ traits:
     we assumed that losses of nutrients through leaching or decomposition were minimal,
     although some photodegradation may have occurred. A total of 508 leaf samples
     (mature and senesced) were collected for nutrient analyses. Each leaf sample was
-    oven-dried (70 _C, 48 h) and finely ground using a Teflon-coated stainless steel
-    ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
     using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
     connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
     isotopes of C and N were analysed using a continuous flow system consisting of
@@ -1013,8 +872,8 @@ traits:
     we assumed that losses of nutrients through leaching or decomposition were minimal,
     although some photodegradation may have occurred. A total of 508 leaf samples
     (mature and senesced) were collected for nutrient analyses. Each leaf sample was
-    oven-dried (70 _C, 48 h) and finely ground using a Teflon-coated stainless steel
-    ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
     using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
     connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
     isotopes of C and N were analysed using a continuous flow system consisting of
@@ -1052,8 +911,8 @@ traits:
     we assumed that losses of nutrients through leaching or decomposition were minimal,
     although some photodegradation may have occurred. A total of 508 leaf samples
     (mature and senesced) were collected for nutrient analyses. Each leaf sample was
-    oven-dried (70 _C, 48 h) and finely ground using a Teflon-coated stainless steel
-    ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
     using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
     connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
     isotopes of C and N were analysed using a continuous flow system consisting of
@@ -1073,55 +932,352 @@ traits:
   trait_name: leaf_Ca_per_dry_mass
   value_type: site_mean
   replicates: 5-10
-  methods: see K_mature
+  methods: The number of individual collections (one collection = both mature and
+    senesced leaves) per species in each chronosequence stage ranged from five to
+    ten. In each case, representative samples of mature and senesced leaves were collected
+    using nitrile gloves in order to minimise sample contamination. Leaves were not
+    washed prior to nutrient analyses but we consider dust contamination to be highly
+    unlikely, given the sandy nature of the soils. Mature leaves were undamaged, fully
+    expanded and exposed to full sunlight. In most cases, senesced leaves were collected
+    directly from the plant by gently shaking the plant and collecting fallen leaves.
+    Senesced leaves were easily distinguished from green leaves, since they were yellow
+    or brown and detached easily from the plant. However, for a few species it was
+    not possible to collect senesced leaves from live plants, in which case senesced
+    leaves were collected directly beneath the plant from recently fallen litter.
+    In all cases, there was no visible degradation of senesced leaves collected from
+    this litter, which had predominantly fallen during the summer and had not been
+    exposed to any significant rain between litter fall and collection. Therefore,
+    we assumed that losses of nutrients through leaching or decomposition were minimal,
+    although some photodegradation may have occurred. A total of 508 leaf samples
+    (mature and senesced) were collected for nutrient analyses. Each leaf sample was
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
+    connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
+    isotopes of C and N were analysed using a continuous flow system consisting of
+    a SERCON 20-22 mass spectrometer connected with an automated N/C analyser (Sercon,
+    Crewe, UK). These analyses were done at the Western Australian Biogeochemistry
+    Centre, located at the University of Western Australia. A second subsample was
+    acid-digested using concentrated HNO3:HClO4 (3:1) and analysed for Ca, Cd, Cu,
+    Fe, K, Mg, Mn, Mo, Na, P, S and Zn concentrations using inductively coupled plasmaatomic
+    emission spectrometry (ICP-AES; ChemCentre, Perth, Australia). All digests were
+    first analysed using a simultaneous Varian Vista Pro (Australia), radially configured
+    ICP-AES equipment fitted with a charge-coupled device (CCD) detection system and
+    an A.I. Scientific AIM-3600 auto-sampler. Samples with P concentrations close
+    to minimum reporting limit were re-run on more sensitive axially-configured ICP-AES
+    equipment. The ICP analyses were done at the WA Chemcentre.
 - var_in: Cu_mature
   unit_in: ug/g
   trait_name: leaf_Cu_per_dry_mass
   value_type: site_mean
   replicates: 5-10
-  methods: see K_mature
+  methods: The number of individual collections (one collection = both mature and
+    senesced leaves) per species in each chronosequence stage ranged from five to
+    ten. In each case, representative samples of mature and senesced leaves were collected
+    using nitrile gloves in order to minimise sample contamination. Leaves were not
+    washed prior to nutrient analyses but we consider dust contamination to be highly
+    unlikely, given the sandy nature of the soils. Mature leaves were undamaged, fully
+    expanded and exposed to full sunlight. In most cases, senesced leaves were collected
+    directly from the plant by gently shaking the plant and collecting fallen leaves.
+    Senesced leaves were easily distinguished from green leaves, since they were yellow
+    or brown and detached easily from the plant. However, for a few species it was
+    not possible to collect senesced leaves from live plants, in which case senesced
+    leaves were collected directly beneath the plant from recently fallen litter.
+    In all cases, there was no visible degradation of senesced leaves collected from
+    this litter, which had predominantly fallen during the summer and had not been
+    exposed to any significant rain between litter fall and collection. Therefore,
+    we assumed that losses of nutrients through leaching or decomposition were minimal,
+    although some photodegradation may have occurred. A total of 508 leaf samples
+    (mature and senesced) were collected for nutrient analyses. Each leaf sample was
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
+    connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
+    isotopes of C and N were analysed using a continuous flow system consisting of
+    a SERCON 20-22 mass spectrometer connected with an automated N/C analyser (Sercon,
+    Crewe, UK). These analyses were done at the Western Australian Biogeochemistry
+    Centre, located at the University of Western Australia. A second subsample was
+    acid-digested using concentrated HNO3:HClO4 (3:1) and analysed for Ca, Cd, Cu,
+    Fe, K, Mg, Mn, Mo, Na, P, S and Zn concentrations using inductively coupled plasmaatomic
+    emission spectrometry (ICP-AES; ChemCentre, Perth, Australia). All digests were
+    first analysed using a simultaneous Varian Vista Pro (Australia), radially configured
+    ICP-AES equipment fitted with a charge-coupled device (CCD) detection system and
+    an A.I. Scientific AIM-3600 auto-sampler. Samples with P concentrations close
+    to minimum reporting limit were re-run on more sensitive axially-configured ICP-AES
+    equipment. The ICP analyses were done at the WA Chemcentre.
 - var_in: Fe_mature
   unit_in: ug/g
   trait_name: leaf_Fe_per_dry_mass
   value_type: site_mean
   replicates: 5-10
-  methods: see K_mature
+  methods: The number of individual collections (one collection = both mature and
+    senesced leaves) per species in each chronosequence stage ranged from five to
+    ten. In each case, representative samples of mature and senesced leaves were collected
+    using nitrile gloves in order to minimise sample contamination. Leaves were not
+    washed prior to nutrient analyses but we consider dust contamination to be highly
+    unlikely, given the sandy nature of the soils. Mature leaves were undamaged, fully
+    expanded and exposed to full sunlight. In most cases, senesced leaves were collected
+    directly from the plant by gently shaking the plant and collecting fallen leaves.
+    Senesced leaves were easily distinguished from green leaves, since they were yellow
+    or brown and detached easily from the plant. However, for a few species it was
+    not possible to collect senesced leaves from live plants, in which case senesced
+    leaves were collected directly beneath the plant from recently fallen litter.
+    In all cases, there was no visible degradation of senesced leaves collected from
+    this litter, which had predominantly fallen during the summer and had not been
+    exposed to any significant rain between litter fall and collection. Therefore,
+    we assumed that losses of nutrients through leaching or decomposition were minimal,
+    although some photodegradation may have occurred. A total of 508 leaf samples
+    (mature and senesced) were collected for nutrient analyses. Each leaf sample was
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
+    connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
+    isotopes of C and N were analysed using a continuous flow system consisting of
+    a SERCON 20-22 mass spectrometer connected with an automated N/C analyser (Sercon,
+    Crewe, UK). These analyses were done at the Western Australian Biogeochemistry
+    Centre, located at the University of Western Australia. A second subsample was
+    acid-digested using concentrated HNO3:HClO4 (3:1) and analysed for Ca, Cd, Cu,
+    Fe, K, Mg, Mn, Mo, Na, P, S and Zn concentrations using inductively coupled plasmaatomic
+    emission spectrometry (ICP-AES; ChemCentre, Perth, Australia). All digests were
+    first analysed using a simultaneous Varian Vista Pro (Australia), radially configured
+    ICP-AES equipment fitted with a charge-coupled device (CCD) detection system and
+    an A.I. Scientific AIM-3600 auto-sampler. Samples with P concentrations close
+    to minimum reporting limit were re-run on more sensitive axially-configured ICP-AES
+    equipment. The ICP analyses were done at the WA Chemcentre.
 - var_in: Mg_mature
   unit_in: ug/g
   trait_name: leaf_Mg_per_dry_mass
   value_type: site_mean
   replicates: 5-10
-  methods: see K_mature
+  methods: The number of individual collections (one collection = both mature and
+    senesced leaves) per species in each chronosequence stage ranged from five to
+    ten. In each case, representative samples of mature and senesced leaves were collected
+    using nitrile gloves in order to minimise sample contamination. Leaves were not
+    washed prior to nutrient analyses but we consider dust contamination to be highly
+    unlikely, given the sandy nature of the soils. Mature leaves were undamaged, fully
+    expanded and exposed to full sunlight. In most cases, senesced leaves were collected
+    directly from the plant by gently shaking the plant and collecting fallen leaves.
+    Senesced leaves were easily distinguished from green leaves, since they were yellow
+    or brown and detached easily from the plant. However, for a few species it was
+    not possible to collect senesced leaves from live plants, in which case senesced
+    leaves were collected directly beneath the plant from recently fallen litter.
+    In all cases, there was no visible degradation of senesced leaves collected from
+    this litter, which had predominantly fallen during the summer and had not been
+    exposed to any significant rain between litter fall and collection. Therefore,
+    we assumed that losses of nutrients through leaching or decomposition were minimal,
+    although some photodegradation may have occurred. A total of 508 leaf samples
+    (mature and senesced) were collected for nutrient analyses. Each leaf sample was
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
+    connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
+    isotopes of C and N were analysed using a continuous flow system consisting of
+    a SERCON 20-22 mass spectrometer connected with an automated N/C analyser (Sercon,
+    Crewe, UK). These analyses were done at the Western Australian Biogeochemistry
+    Centre, located at the University of Western Australia. A second subsample was
+    acid-digested using concentrated HNO3:HClO4 (3:1) and analysed for Ca, Cd, Cu,
+    Fe, K, Mg, Mn, Mo, Na, P, S and Zn concentrations using inductively coupled plasmaatomic
+    emission spectrometry (ICP-AES; ChemCentre, Perth, Australia). All digests were
+    first analysed using a simultaneous Varian Vista Pro (Australia), radially configured
+    ICP-AES equipment fitted with a charge-coupled device (CCD) detection system and
+    an A.I. Scientific AIM-3600 auto-sampler. Samples with P concentrations close
+    to minimum reporting limit were re-run on more sensitive axially-configured ICP-AES
+    equipment. The ICP analyses were done at the WA Chemcentre.
 - var_in: Mn_mature
   unit_in: ug/g
   trait_name: leaf_Mn_per_dry_mass
   value_type: site_mean
   replicates: 5-10
-  methods: see K_mature
+  methods: The number of individual collections (one collection = both mature and
+    senesced leaves) per species in each chronosequence stage ranged from five to
+    ten. In each case, representative samples of mature and senesced leaves were collected
+    using nitrile gloves in order to minimise sample contamination. Leaves were not
+    washed prior to nutrient analyses but we consider dust contamination to be highly
+    unlikely, given the sandy nature of the soils. Mature leaves were undamaged, fully
+    expanded and exposed to full sunlight. In most cases, senesced leaves were collected
+    directly from the plant by gently shaking the plant and collecting fallen leaves.
+    Senesced leaves were easily distinguished from green leaves, since they were yellow
+    or brown and detached easily from the plant. However, for a few species it was
+    not possible to collect senesced leaves from live plants, in which case senesced
+    leaves were collected directly beneath the plant from recently fallen litter.
+    In all cases, there was no visible degradation of senesced leaves collected from
+    this litter, which had predominantly fallen during the summer and had not been
+    exposed to any significant rain between litter fall and collection. Therefore,
+    we assumed that losses of nutrients through leaching or decomposition were minimal,
+    although some photodegradation may have occurred. A total of 508 leaf samples
+    (mature and senesced) were collected for nutrient analyses. Each leaf sample was
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
+    connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
+    isotopes of C and N were analysed using a continuous flow system consisting of
+    a SERCON 20-22 mass spectrometer connected with an automated N/C analyser (Sercon,
+    Crewe, UK). These analyses were done at the Western Australian Biogeochemistry
+    Centre, located at the University of Western Australia. A second subsample was
+    acid-digested using concentrated HNO3:HClO4 (3:1) and analysed for Ca, Cd, Cu,
+    Fe, K, Mg, Mn, Mo, Na, P, S and Zn concentrations using inductively coupled plasmaatomic
+    emission spectrometry (ICP-AES; ChemCentre, Perth, Australia). All digests were
+    first analysed using a simultaneous Varian Vista Pro (Australia), radially configured
+    ICP-AES equipment fitted with a charge-coupled device (CCD) detection system and
+    an A.I. Scientific AIM-3600 auto-sampler. Samples with P concentrations close
+    to minimum reporting limit were re-run on more sensitive axially-configured ICP-AES
+    equipment. The ICP analyses were done at the WA Chemcentre.
 - var_in: Mo_mature
   unit_in: ug/g
   trait_name: leaf_Mo_per_dry_mass
   value_type: site_mean
   replicates: 5-10
-  methods: see K_mature
+  methods: The number of individual collections (one collection = both mature and
+    senesced leaves) per species in each chronosequence stage ranged from five to
+    ten. In each case, representative samples of mature and senesced leaves were collected
+    using nitrile gloves in order to minimise sample contamination. Leaves were not
+    washed prior to nutrient analyses but we consider dust contamination to be highly
+    unlikely, given the sandy nature of the soils. Mature leaves were undamaged, fully
+    expanded and exposed to full sunlight. In most cases, senesced leaves were collected
+    directly from the plant by gently shaking the plant and collecting fallen leaves.
+    Senesced leaves were easily distinguished from green leaves, since they were yellow
+    or brown and detached easily from the plant. However, for a few species it was
+    not possible to collect senesced leaves from live plants, in which case senesced
+    leaves were collected directly beneath the plant from recently fallen litter.
+    In all cases, there was no visible degradation of senesced leaves collected from
+    this litter, which had predominantly fallen during the summer and had not been
+    exposed to any significant rain between litter fall and collection. Therefore,
+    we assumed that losses of nutrients through leaching or decomposition were minimal,
+    although some photodegradation may have occurred. A total of 508 leaf samples
+    (mature and senesced) were collected for nutrient analyses. Each leaf sample was
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
+    connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
+    isotopes of C and N were analysed using a continuous flow system consisting of
+    a SERCON 20-22 mass spectrometer connected with an automated N/C analyser (Sercon,
+    Crewe, UK). These analyses were done at the Western Australian Biogeochemistry
+    Centre, located at the University of Western Australia. A second subsample was
+    acid-digested using concentrated HNO3:HClO4 (3:1) and analysed for Ca, Cd, Cu,
+    Fe, K, Mg, Mn, Mo, Na, P, S and Zn concentrations using inductively coupled plasmaatomic
+    emission spectrometry (ICP-AES; ChemCentre, Perth, Australia). All digests were
+    first analysed using a simultaneous Varian Vista Pro (Australia), radially configured
+    ICP-AES equipment fitted with a charge-coupled device (CCD) detection system and
+    an A.I. Scientific AIM-3600 auto-sampler. Samples with P concentrations close
+    to minimum reporting limit were re-run on more sensitive axially-configured ICP-AES
+    equipment. The ICP analyses were done at the WA Chemcentre.
 - var_in: Na_mature
   unit_in: ug/g
   trait_name: leaf_Na_per_dry_mass
   value_type: site_mean
   replicates: 5-10
-  methods: see K_mature
+  methods: The number of individual collections (one collection = both mature and
+    senesced leaves) per species in each chronosequence stage ranged from five to
+    ten. In each case, representative samples of mature and senesced leaves were collected
+    using nitrile gloves in order to minimise sample contamination. Leaves were not
+    washed prior to nutrient analyses but we consider dust contamination to be highly
+    unlikely, given the sandy nature of the soils. Mature leaves were undamaged, fully
+    expanded and exposed to full sunlight. In most cases, senesced leaves were collected
+    directly from the plant by gently shaking the plant and collecting fallen leaves.
+    Senesced leaves were easily distinguished from green leaves, since they were yellow
+    or brown and detached easily from the plant. However, for a few species it was
+    not possible to collect senesced leaves from live plants, in which case senesced
+    leaves were collected directly beneath the plant from recently fallen litter.
+    In all cases, there was no visible degradation of senesced leaves collected from
+    this litter, which had predominantly fallen during the summer and had not been
+    exposed to any significant rain between litter fall and collection. Therefore,
+    we assumed that losses of nutrients through leaching or decomposition were minimal,
+    although some photodegradation may have occurred. A total of 508 leaf samples
+    (mature and senesced) were collected for nutrient analyses. Each leaf sample was
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
+    connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
+    isotopes of C and N were analysed using a continuous flow system consisting of
+    a SERCON 20-22 mass spectrometer connected with an automated N/C analyser (Sercon,
+    Crewe, UK). These analyses were done at the Western Australian Biogeochemistry
+    Centre, located at the University of Western Australia. A second subsample was
+    acid-digested using concentrated HNO3:HClO4 (3:1) and analysed for Ca, Cd, Cu,
+    Fe, K, Mg, Mn, Mo, Na, P, S and Zn concentrations using inductively coupled plasmaatomic
+    emission spectrometry (ICP-AES; ChemCentre, Perth, Australia). All digests were
+    first analysed using a simultaneous Varian Vista Pro (Australia), radially configured
+    ICP-AES equipment fitted with a charge-coupled device (CCD) detection system and
+    an A.I. Scientific AIM-3600 auto-sampler. Samples with P concentrations close
+    to minimum reporting limit were re-run on more sensitive axially-configured ICP-AES
+    equipment. The ICP analyses were done at the WA Chemcentre.
 - var_in: S_mature
   unit_in: ug/g
   trait_name: leaf_S_per_dry_mass
   value_type: site_mean
   replicates: 5-10
-  methods: see K_mature
+  methods: The number of individual collections (one collection = both mature and
+    senesced leaves) per species in each chronosequence stage ranged from five to
+    ten. In each case, representative samples of mature and senesced leaves were collected
+    using nitrile gloves in order to minimise sample contamination. Leaves were not
+    washed prior to nutrient analyses but we consider dust contamination to be highly
+    unlikely, given the sandy nature of the soils. Mature leaves were undamaged, fully
+    expanded and exposed to full sunlight. In most cases, senesced leaves were collected
+    directly from the plant by gently shaking the plant and collecting fallen leaves.
+    Senesced leaves were easily distinguished from green leaves, since they were yellow
+    or brown and detached easily from the plant. However, for a few species it was
+    not possible to collect senesced leaves from live plants, in which case senesced
+    leaves were collected directly beneath the plant from recently fallen litter.
+    In all cases, there was no visible degradation of senesced leaves collected from
+    this litter, which had predominantly fallen during the summer and had not been
+    exposed to any significant rain between litter fall and collection. Therefore,
+    we assumed that losses of nutrients through leaching or decomposition were minimal,
+    although some photodegradation may have occurred. A total of 508 leaf samples
+    (mature and senesced) were collected for nutrient analyses. Each leaf sample was
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
+    connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
+    isotopes of C and N were analysed using a continuous flow system consisting of
+    a SERCON 20-22 mass spectrometer connected with an automated N/C analyser (Sercon,
+    Crewe, UK). These analyses were done at the Western Australian Biogeochemistry
+    Centre, located at the University of Western Australia. A second subsample was
+    acid-digested using concentrated HNO3:HClO4 (3:1) and analysed for Ca, Cd, Cu,
+    Fe, K, Mg, Mn, Mo, Na, P, S and Zn concentrations using inductively coupled plasmaatomic
+    emission spectrometry (ICP-AES; ChemCentre, Perth, Australia). All digests were
+    first analysed using a simultaneous Varian Vista Pro (Australia), radially configured
+    ICP-AES equipment fitted with a charge-coupled device (CCD) detection system and
+    an A.I. Scientific AIM-3600 auto-sampler. Samples with P concentrations close
+    to minimum reporting limit were re-run on more sensitive axially-configured ICP-AES
+    equipment. The ICP analyses were done at the WA Chemcentre.
 - var_in: Zn_mature
   unit_in: ug/g
   trait_name: leaf_Zn_per_dry_mass
   value_type: site_mean
   replicates: 5-10
-  methods: see K_mature
+  methods: The number of individual collections (one collection = both mature and
+    senesced leaves) per species in each chronosequence stage ranged from five to
+    ten. In each case, representative samples of mature and senesced leaves were collected
+    using nitrile gloves in order to minimise sample contamination. Leaves were not
+    washed prior to nutrient analyses but we consider dust contamination to be highly
+    unlikely, given the sandy nature of the soils. Mature leaves were undamaged, fully
+    expanded and exposed to full sunlight. In most cases, senesced leaves were collected
+    directly from the plant by gently shaking the plant and collecting fallen leaves.
+    Senesced leaves were easily distinguished from green leaves, since they were yellow
+    or brown and detached easily from the plant. However, for a few species it was
+    not possible to collect senesced leaves from live plants, in which case senesced
+    leaves were collected directly beneath the plant from recently fallen litter.
+    In all cases, there was no visible degradation of senesced leaves collected from
+    this litter, which had predominantly fallen during the summer and had not been
+    exposed to any significant rain between litter fall and collection. Therefore,
+    we assumed that losses of nutrients through leaching or decomposition were minimal,
+    although some photodegradation may have occurred. A total of 508 leaf samples
+    (mature and senesced) were collected for nutrient analyses. Each leaf sample was
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
+    connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
+    isotopes of C and N were analysed using a continuous flow system consisting of
+    a SERCON 20-22 mass spectrometer connected with an automated N/C analyser (Sercon,
+    Crewe, UK). These analyses were done at the Western Australian Biogeochemistry
+    Centre, located at the University of Western Australia. A second subsample was
+    acid-digested using concentrated HNO3:HClO4 (3:1) and analysed for Ca, Cd, Cu,
+    Fe, K, Mg, Mn, Mo, Na, P, S and Zn concentrations using inductively coupled plasmaatomic
+    emission spectrometry (ICP-AES; ChemCentre, Perth, Australia). All digests were
+    first analysed using a simultaneous Varian Vista Pro (Australia), radially configured
+    ICP-AES equipment fitted with a charge-coupled device (CCD) detection system and
+    an A.I. Scientific AIM-3600 auto-sampler. Samples with P concentrations close
+    to minimum reporting limit were re-run on more sensitive axially-configured ICP-AES
+    equipment. The ICP analyses were done at the WA Chemcentre.
 - var_in: C_mature
   unit_in: '% dry weight'
   trait_name: leaf_C_per_dry_mass
@@ -1145,8 +1301,8 @@ traits:
     we assumed that losses of nutrients through leaching or decomposition were minimal,
     although some photodegradation may have occurred. A total of 508 leaf samples
     (mature and senesced) were collected for nutrient analyses. Each leaf sample was
-    oven-dried (70 _C, 48 h) and finely ground using a Teflon-coated stainless steel
-    ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
     using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
     connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
     isotopes of C and N were analysed using a continuous flow system consisting of
@@ -1184,8 +1340,8 @@ traits:
     we assumed that losses of nutrients through leaching or decomposition were minimal,
     although some photodegradation may have occurred. A total of 508 leaf samples
     (mature and senesced) were collected for nutrient analyses. Each leaf sample was
-    oven-dried (70 _C, 48 h) and finely ground using a Teflon-coated stainless steel
-    ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
     using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
     connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
     isotopes of C and N were analysed using a continuous flow system consisting of
@@ -1223,8 +1379,8 @@ traits:
     we assumed that losses of nutrients through leaching or decomposition were minimal,
     although some photodegradation may have occurred. A total of 508 leaf samples
     (mature and senesced) were collected for nutrient analyses. Each leaf sample was
-    oven-dried (70 _C, 48 h) and finely ground using a Teflon-coated stainless steel
-    ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+    oven-dried (70 deg C, 48 h) and finely ground using a Teflon-coated stainless
+    steel ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
     using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
     connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
     isotopes of C and N were analysed using a continuous flow system consisting of
@@ -1241,29 +1397,30 @@ traits:
     equipment. The ICP analyses were done at the WA Chemcentre.
 - var_in: N_senesced
   unit_in: ug/g
-  trait_name: senesced_leaf_N_per_dry_mass
+  trait_name: .na
   value_type: site_mean
   replicates: 5-10
-  methods: The number of individual collections (one collection = both mature and
-    senesced leaves) per species in each chronosequence stage ranged from five to
-    ten. In each case, representative samples of mature and senesced leaves were collected
-    using nitrile gloves in order to minimise sample contamination. Leaves were not
-    washed prior to nutrient analyses but we consider dust contamination to be highly
-    unlikely, given the sandy nature of the soils. Mature leaves were undamaged, fully
-    expanded and exposed to full sunlight. In most cases, senesced leaves were collected
-    directly from the plant by gently shaking the plant and collecting fallen leaves.
-    Senesced leaves were easily distinguished from green leaves, since they were yellow
-    or brown and detached easily from the plant. However, for a few species it was
-    not possible to collect senesced leaves from live plants, in which case senesced
-    leaves were collected directly beneath the plant from recently fallen litter.
-    In all cases, there was no visible degradation of senesced leaves collected from
-    this litter, which had predominantly fallen during the summer and had not been
-    exposed to any significant rain between litter fall and collection. Therefore,
-    we assumed that losses of nutrients through leaching or decomposition were minimal,
-    although some photodegradation may have occurred. A total of 508 leaf samples
-    (mature and senesced) were collected for nutrient analyses. Each leaf sample was
-    oven-dried (70 _C, 48 h) and finely ground using a Teflon-coated stainless steel
-    ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+  methods: Identical data present in Hayes_2014 and data included under that dataset
+    ID. The number of individual collections (one collection = both mature and senesced
+    leaves) per species in each chronosequence stage ranged from five to ten. In each
+    case, representative samples of mature and senesced leaves were collected using
+    nitrile gloves in order to minimise sample contamination. Leaves were not washed
+    prior to nutrient analyses but we consider dust contamination to be highly unlikely,
+    given the sandy nature of the soils. Mature leaves were undamaged, fully expanded
+    and exposed to full sunlight. In most cases, senesced leaves were collected directly
+    from the plant by gently shaking the plant and collecting fallen leaves. Senesced
+    leaves were easily distinguished from green leaves, since they were yellow or
+    brown and detached easily from the plant. However, for a few species it was not
+    possible to collect senesced leaves from live plants, in which case senesced leaves
+    were collected directly beneath the plant from recently fallen litter. In all
+    cases, there was no visible degradation of senesced leaves collected from this
+    litter, which had predominantly fallen during the summer and had not been exposed
+    to any significant rain between litter fall and collection. Therefore, we assumed
+    that losses of nutrients through leaching or decomposition were minimal, although
+    some photodegradation may have occurred. A total of 508 leaf samples (mature and
+    senesced) were collected for nutrient analyses. Each leaf sample was oven-dried
+    (70 deg C, 48 h) and finely ground using a Teflon-coated stainless steel ball
+    mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
     using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
     connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
     isotopes of C and N were analysed using a continuous flow system consisting of
@@ -1280,29 +1437,30 @@ traits:
     equipment. The ICP analyses were done at the WA Chemcentre.
 - var_in: P_senesced
   unit_in: ug/g
-  trait_name: senesced_leaf_P_per_dry_mass
+  trait_name: .na
   value_type: site_mean
   replicates: 5-10
-  methods: The number of individual collections (one collection = both mature and
-    senesced leaves) per species in each chronosequence stage ranged from five to
-    ten. In each case, representative samples of mature and senesced leaves were collected
-    using nitrile gloves in order to minimise sample contamination. Leaves were not
-    washed prior to nutrient analyses but we consider dust contamination to be highly
-    unlikely, given the sandy nature of the soils. Mature leaves were undamaged, fully
-    expanded and exposed to full sunlight. In most cases, senesced leaves were collected
-    directly from the plant by gently shaking the plant and collecting fallen leaves.
-    Senesced leaves were easily distinguished from green leaves, since they were yellow
-    or brown and detached easily from the plant. However, for a few species it was
-    not possible to collect senesced leaves from live plants, in which case senesced
-    leaves were collected directly beneath the plant from recently fallen litter.
-    In all cases, there was no visible degradation of senesced leaves collected from
-    this litter, which had predominantly fallen during the summer and had not been
-    exposed to any significant rain between litter fall and collection. Therefore,
-    we assumed that losses of nutrients through leaching or decomposition were minimal,
-    although some photodegradation may have occurred. A total of 508 leaf samples
-    (mature and senesced) were collected for nutrient analyses. Each leaf sample was
-    oven-dried (70 _C, 48 h) and finely ground using a Teflon-coated stainless steel
-    ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+  methods: Identical data present in Hayes_2014 and data included under that dataset
+    ID. The number of individual collections (one collection = both mature and senesced
+    leaves) per species in each chronosequence stage ranged from five to ten. In each
+    case, representative samples of mature and senesced leaves were collected using
+    nitrile gloves in order to minimise sample contamination. Leaves were not washed
+    prior to nutrient analyses but we consider dust contamination to be highly unlikely,
+    given the sandy nature of the soils. Mature leaves were undamaged, fully expanded
+    and exposed to full sunlight. In most cases, senesced leaves were collected directly
+    from the plant by gently shaking the plant and collecting fallen leaves. Senesced
+    leaves were easily distinguished from green leaves, since they were yellow or
+    brown and detached easily from the plant. However, for a few species it was not
+    possible to collect senesced leaves from live plants, in which case senesced leaves
+    were collected directly beneath the plant from recently fallen litter. In all
+    cases, there was no visible degradation of senesced leaves collected from this
+    litter, which had predominantly fallen during the summer and had not been exposed
+    to any significant rain between litter fall and collection. Therefore, we assumed
+    that losses of nutrients through leaching or decomposition were minimal, although
+    some photodegradation may have occurred. A total of 508 leaf samples (mature and
+    senesced) were collected for nutrient analyses. Each leaf sample was oven-dried
+    (70 deg C, 48 h) and finely ground using a Teflon-coated stainless steel ball
+    mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
     using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
     connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
     isotopes of C and N were analysed using a continuous flow system consisting of
@@ -1319,29 +1477,30 @@ traits:
     equipment. The ICP analyses were done at the WA Chemcentre.
 - var_in: K_senesced
   unit_in: ug/g
-  trait_name: senesced_leaf_K_per_dry_mass
+  trait_name: .na
   value_type: site_mean
   replicates: 5-10
-  methods: The number of individual collections (one collection = both mature and
-    senesced leaves) per species in each chronosequence stage ranged from five to
-    ten. In each case, representative samples of mature and senesced leaves were collected
-    using nitrile gloves in order to minimise sample contamination. Leaves were not
-    washed prior to nutrient analyses but we consider dust contamination to be highly
-    unlikely, given the sandy nature of the soils. Mature leaves were undamaged, fully
-    expanded and exposed to full sunlight. In most cases, senesced leaves were collected
-    directly from the plant by gently shaking the plant and collecting fallen leaves.
-    Senesced leaves were easily distinguished from green leaves, since they were yellow
-    or brown and detached easily from the plant. However, for a few species it was
-    not possible to collect senesced leaves from live plants, in which case senesced
-    leaves were collected directly beneath the plant from recently fallen litter.
-    In all cases, there was no visible degradation of senesced leaves collected from
-    this litter, which had predominantly fallen during the summer and had not been
-    exposed to any significant rain between litter fall and collection. Therefore,
-    we assumed that losses of nutrients through leaching or decomposition were minimal,
-    although some photodegradation may have occurred. A total of 508 leaf samples
-    (mature and senesced) were collected for nutrient analyses. Each leaf sample was
-    oven-dried (70 _C, 48 h) and finely ground using a Teflon-coated stainless steel
-    ball mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
+  methods: Identical data present in Hayes_2014 and data included under that dataset
+    ID. The number of individual collections (one collection = both mature and senesced
+    leaves) per species in each chronosequence stage ranged from five to ten. In each
+    case, representative samples of mature and senesced leaves were collected using
+    nitrile gloves in order to minimise sample contamination. Leaves were not washed
+    prior to nutrient analyses but we consider dust contamination to be highly unlikely,
+    given the sandy nature of the soils. Mature leaves were undamaged, fully expanded
+    and exposed to full sunlight. In most cases, senesced leaves were collected directly
+    from the plant by gently shaking the plant and collecting fallen leaves. Senesced
+    leaves were easily distinguished from green leaves, since they were yellow or
+    brown and detached easily from the plant. However, for a few species it was not
+    possible to collect senesced leaves from live plants, in which case senesced leaves
+    were collected directly beneath the plant from recently fallen litter. In all
+    cases, there was no visible degradation of senesced leaves collected from this
+    litter, which had predominantly fallen during the summer and had not been exposed
+    to any significant rain between litter fall and collection. Therefore, we assumed
+    that losses of nutrients through leaching or decomposition were minimal, although
+    some photodegradation may have occurred. A total of 508 leaf samples (mature and
+    senesced) were collected for nutrient analyses. Each leaf sample was oven-dried
+    (70 deg C, 48 h) and finely ground using a Teflon-coated stainless steel ball
+    mill. A subsample was analysed for carbon (C) and nitrogen (N) concentrations
     using a continuous-flow system consisting of a SERCON 20-22 mass spectrometer
     connected with an automated nitrogen/carbon analyser (Sercon, Crewe, UK). Stable
     isotopes of C and N were analysed using a continuous flow system consisting of
@@ -1427,6 +1586,20 @@ taxonomic_updates:
 - find: Acacia rostellifera (Summer-scented Wattle)
   replace: Acacia retinodes
   reason: Synonym reported by TaxonStand (2019-05-31)
-questions:
-  additional_traits: micronutrients dead leaves
+- find: Melaleuca aff. systena
+  replace: Melaleuca systena
+  reason: Alignment with existing species identified by TaxonStand (2020-05-19)
+- find: Conostylis crassinervia subsp. absens
+  replace: Conostylis crassinerva
+  reason: Alignment with existing species identified by TaxonStand (2020-05-19)
+- find: Stenanthemum notiale subsp. notiale
+  replace: Stenanthemum notiale
+  reason: Alignment with existing species identified by TaxonStand (2020-05-19)
+- find: Eremaea asterocarpa subsp. asterocarpa
+  replace: Eremaea asterocarpa
+  reason: Synonym reported by TaxonStand (2020-05-19)
+- find: Calothamnus quadrifidus subsp. quadrifidus
+  replace: Calothamnus quadrifidus
+  reason: Synonym reported by TaxonStand (2020-05-19)
+questions: .na
 
