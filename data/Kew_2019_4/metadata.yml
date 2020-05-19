@@ -14,26 +14,59 @@ dataset:
   year_collected_start: unknown
   year_collected_end: 2019
   description: See oil content data on species from Kew seed databases
-  collection_type: botanical collection
+  collection_type: literature compilation
   sample_age_class: adult
   sampling_strategy: information in data.csv file
   original_file: in raw data folder
-  notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative Commons licesne. Data not to be used for Commercial Purposes.
+  notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
+    Commons licesne. Data not to be used for Commercial Purposes.
 sites: .na
-contexts: .na
+contexts:
+  Embryo:
+    type: field
+    description: oil content determined on an Embryo
+  Embryo+endosperm:
+    type: field
+    description: oil content determined on an Embryo+endosperm
+  Endosperm:
+    type: field
+    description: oil content determined on the Endosperm
+  Entire seed/nut:
+    type: field
+    description: oil content determined on an Entire seed/nut
+  Kernel:
+    type: field
+    description: oil content determined on a Kernel
 config:
   data_is_long_format: no
   variable_match:
     species_name: taxa
-  custom_R_code: data %>% mutate(oilcontentval = oilcontentval/100)
+    context_name: oilmaterialdesc
+  custom_R_code: data %>% mutate(oilcontentval = oilcontentval/100) %>% group_by(taxa)
+    %>% mutate_at(vars(oilcontentval),replace_duplicates_with_NA) %>% ungroup()
 traits:
 - var_in: oilcontentval
   unit_in: g/g
   trait_name: seed_oil_content
-  value_type: expert_mean
+  value_type: raw_value
   replicates: See columns in raw data file with specific information for each entry
-  methods: unknown
+  methods: Data sourced from various primary literature. For a species, the identical
+    value often appears repeatedly under consecutive columns with different references
+    - it seems sources have quoted one another and these aren't independent values
+    so duplicates within a species have been filtered.
 substitutions: .na
-taxonomic_updates: .na
+taxonomic_updates:
+- find: Acacia lateriticola
+  replace: Racosperma lateriticola
+  reason: Alignment with existing species identified by TaxonStand (2020-05-19)
+- find: Elaeocarpus grandis
+  replace: Elaeocarpus angustifolius
+  reason: Synonym reported by TaxonStand (2020-05-19)
+- find: Acacia mucronata subsp. mucronata
+  replace: Acacia mucronata
+  reason: Synonym reported by TaxonStand (2020-05-19)
+- find: Solanum nodiflorum
+  replace: Solanum americanum
+  reason: Synonym reported by TaxonStand (2020-05-19)
 questions: .na
 

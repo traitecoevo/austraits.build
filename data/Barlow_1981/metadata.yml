@@ -22,7 +22,8 @@ dataset:
   sample_age_class: adult
   sampling_strategy: herbarium specimens
   original_file: STU
-  notes: Request ackowledgment "Data was sourced from the Flora of Australia with permission from the Australian Biological Resources Study"
+  notes: Request ackowledgment "Data was sourced from the Flora of Australia with
+    permission from the Australian Biological Resources Study"
 sites: .na
 contexts: .na
 config:
@@ -31,46 +32,31 @@ config:
     species_name: species_name
     trait_name: trait
     value: value
-  custom_R_code: '
-    data$i <- seq_len(nrow(data));
-    bind_rows(
-      filter(data, !is.na(units)) %>%
-      mutate(
-        value = as.numeric(value),
-        value = ifelse(units == "cm", value * 10, value), 
-        value = ifelse(units == "m", value * 1000, value),
-        units = ifelse(units %in% c("m", "cm"), "mm", units),
-        value = as.character(value)
-       ),
-      filter(data, is.na(units) & !(trait %in% c("longevity", "flowering time start", "flowering time end"))) %>%
-      mutate(
-          trait = ifelse(value %in% "articles", "leaf_type", trait), 
-          value = ifelse(value %in% "articles", "article", value)
-      ), 
-      filter(data, trait %in% c("flowering time start", "flowering time end")) %>% 
-        select(-i, -units) %>%
-        spread(trait, value) %>%
-        transmute(species_name, trait = "flowering_time", value = convert_month_range_vec_to_binary( sprintf("%s-%s", `flowering time start`,`flowering time end`)))%>% 
-        left_join(filter(data, trait == "flowering time start") %>% select(species_name, i), by = "species_name"), 
-      filter(data, !is.na(value) & trait == "longevity") %>% 
-      mutate(
-          trait = "leaf_phenology",
-          value = ifelse(value %in% c("EP", "E", "EAP", "EPB", "EB", "EAB", "EA"), "evergreen", value),
-          value = ifelse(value %in% c("DP", "D", "DPB"), "deciduous", value)
-          ) %>%
-        filter(value %in% c("evergreen", "deciduous")),
-      filter(data, !is.na(value) & trait == "longevity" & value %in% c("EP", "P", "DP", "EDP", "A", "EA", "EB", "B","AB", "EAB", "AP", "EAP", "EPB", "DPB", "PB")) %>%
-       mutate(
-          trait = "life_history",
-          value = ifelse(value %in% c("EP", "P", "DP", "EDP"), "perennial", value),
-          value = ifelse(value %in% c("A", "EA"), "annual", value),
-          value = ifelse(value %in% c("EB", "B"), "biennial", value),
-          value = ifelse(value %in% c("AB", "EAB"), "annual biennial", value),
-          value = ifelse(value %in% c("AP", "EAP"), "annual perennial", value),
-          value = ifelse(value %in% c("EPB", "DPB", "PB"), "biennial perennial", value)
-          )
-      ) %>% arrange(i) %>% select(-i)
-      # approach taken in the above is to use data to calculate a series of trait tables, which are bound together with bind_rows. The index i is used to sort data according to original order in the file'
+  custom_R_code: ' data$i <- seq_len(nrow(data)); bind_rows( filter(data, !is.na(units))
+    %>% mutate( value = as.numeric(value), value = ifelse(units == "cm", value * 10,
+    value), value = ifelse(units == "m", value * 1000, value), units = ifelse(units
+    %in% c("m", "cm"), "mm", units), value = as.character(value) ), filter(data, is.na(units)
+    & !(trait %in% c("longevity", "flowering time start", "flowering time end")))
+    %>% mutate( trait = ifelse(value %in% "articles", "leaf_type", trait), value =
+    ifelse(value %in% "articles", "article", value) ), filter(data, trait %in% c("flowering
+    time start", "flowering time end")) %>% select(-i, -units) %>% spread(trait, value)
+    %>% transmute(species_name, trait = "flowering_time", value = convert_month_range_vec_to_binary(
+    sprintf("%s-%s", `flowering time start`,`flowering time end`)))%>% left_join(filter(data,
+    trait == "flowering time start") %>% select(species_name, i), by = "species_name"),
+    filter(data, !is.na(value) & trait == "longevity") %>% mutate( trait = "leaf_phenology",
+    value = ifelse(value %in% c("EP", "E", "EAP", "EPB", "EB", "EAB", "EA"), "evergreen",
+    value), value = ifelse(value %in% c("DP", "D", "DPB"), "deciduous", value) ) %>%
+    filter(value %in% c("evergreen", "deciduous")), filter(data, !is.na(value) & trait
+    == "longevity" & value %in% c("EP", "P", "DP", "EDP", "A", "EA", "EB", "B","AB",
+    "EAB", "AP", "EAP", "EPB", "DPB", "PB")) %>% mutate( trait = "life_history", value
+    = ifelse(value %in% c("EP", "P", "DP", "EDP"), "perennial", value), value = ifelse(value
+    %in% c("A", "EA"), "annual", value), value = ifelse(value %in% c("EB", "B"), "biennial",
+    value), value = ifelse(value %in% c("AB", "EAB"), "annual biennial", value), value
+    = ifelse(value %in% c("AP", "EAP"), "annual perennial", value), value = ifelse(value
+    %in% c("EPB", "DPB", "PB"), "biennial perennial", value) ) ) %>% arrange(i) %>%
+    select(-i) # approach taken in the above is to use data to calculate a series
+    of trait tables, which are bound together with bind_rows. The index i is used
+    to sort data according to original order in the file'
 traits:
 - var_in: dispersal
   unit_in: .na
@@ -1403,5 +1389,8 @@ taxonomic_updates:
 - find: Orites diversifolia
   replace: Orites diversifolius
   reason: synonym, align to known species (S Andrew)
+- find: Goodenia sepalosa var. sepalosa
+  replace: Goodenia sepalosa
+  reason: Alignment with existing species identified by TaxonStand (2020-05-19)
 questions: .na
 
