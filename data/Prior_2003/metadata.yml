@@ -57,9 +57,7 @@ dataset:
     were considered semi-deciduous. Two species ( Acacia auriculiformis and Erythrophleum
     chlorostachys ) are considered nitrogen-fixers.
   original_file: Prior compiled.xls
-  notes: leaf_water_content_per_pass values appeared to be 100-fold too small, so
-    I changed them from % to g/g, reflecting what is indicated in the manuscript.
-    Lizzy Wenk 14 Nov 18
+  notes: none
 sites:
   dry monsoon forest:
     longitude (deg): 130.9
@@ -205,7 +203,11 @@ config:
     context_name: season
   custom_R_code: data %>% mutate(Species = recode(Species, "Melaleuca DMF" = "Melaleuca
     leucadendra", "Melaleuca W" = "Melaleuca viridiflora", "Melaleuca Sw" = "Melaleuca
-    viridiflora")) %>% mutate(leaf_dry_matter_content = 1 - `water%`) %>% group_by(Species) %>% mutate_at(vars("leaf longevity","growth form","leaf type","photosynthetic pathway","Nfixer"),replace_duplicates_with_NA) %>% ungroup()
+    viridiflora")) %>% mutate(leaf_density = 10/(`SLA (cm2/g)`*`Leaf thickness (mm)`))
+    %>% mutate(`chlorophyll_per_area_umol/m2`= (10000*`leaf chlorophyll (umol/g)`)/`SLA
+    (cm2/g)`) %>% mutate(leaf_dry_matter_content = 1 - `water%`) %>% group_by(Species)
+    %>% mutate_at(vars("leaf longevity","growth form","leaf type","photosynthetic
+    pathway","Nfixer"),replace_duplicates_with_NA) %>% ungroup()
 traits:
 - var_in: growth form
   unit_in: .na
@@ -278,6 +280,17 @@ traits:
   replicates: 1
   methods: Leaf thickness was measured in four places between major veins with a micrometer
     (Moore & Wright,Sheffield, UK).
+- var_in: leaf_density
+  unit_in: mg/mm3
+  trait_name: leaf_density
+  value_type: raw_value
+  replicates: 1
+  methods: Leaf thickness was measured in four places between major veins with a micrometer
+    (Moore & Wright,Sheffield, UK). Area of each leaf was then estimated using a Delta-T
+    Scan image analysis system (Delta-T Devices, Cambridge, UK). For the C. intratropica
+    branchlets, leaf area was estimated from total branchlet length and average branchlet
+    diameter. Dry mass was determined after leaves were dried for a minimum of 48
+    h at 70C.
 - var_in: water%
   unit_in: g/g
   trait_name: leaf_water_content_per_fresh_mass
@@ -396,6 +409,14 @@ traits:
   methods: Two readings were then taken on each leaf with a chlorophyll meter (SPAD-502;
     Minolta, Osaka, Japan), which was calibrated for each species individually using
     the extraction method of Coombs et al. (1985).
+- var_in: chlorophyll_per_area_umol/m2
+  unit_in: umol/m2
+  trait_name: chlorophyll_per_area
+  value_type: raw_value
+  replicates: 1
+  methods: Two readings were then taken on each leaf with a chlorophyll meter (SPAD-502;
+    Minolta, Osaka, Japan), which was calibrated for each species individually using
+    the extraction method of Coombs et al. (1985).
 substitutions:
 - trait_name: plant_growth_form
   find: T
@@ -435,5 +456,5 @@ taxonomic_updates:
   replace: Planchonia careya
   reason: Alignment with existing species identified by TaxonStand (2019-08-27)
 questions:
-  additional_traits: leaf density, DBH increment
+  additional_traits: DBH increment
 
