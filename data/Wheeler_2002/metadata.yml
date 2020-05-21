@@ -30,7 +30,8 @@ config:
     species_name: binomial
   custom_R_code: data %>% mutate(leaf_margin = ifelse(`leaf type` == "lobed" | `leaf
     shape` == "lobed", "lobed", "entire"), `leaf shape` = ifelse(`leaf shape` == "lobed",
-    NA, `leaf shape`)) %>% mutate_at(c("min leaf length (mm)","max leaf length (mm)","min
+    NA, `leaf shape`),`leaf type` = ifelse(`leaf type` == "lobed",
+    NA, `leaf type`)) %>% mutate_at(c("min leaf length (mm)","max leaf length (mm)","min
     leaf width (mm)","max leaf width (mm)"), ~na_if(.,0)) %>% mutate_at(c("min leaf
     width (mm)"), ~na_if(.,"`"))
 traits:
@@ -121,7 +122,7 @@ traits:
 substitutions:
 - trait_name: plant_growth_form
   find: vine
-  replace: climber
+  replace: climber_vine
 - trait_name: plant_growth_form
   find: grass
   replace: graminoid
