@@ -33,7 +33,7 @@ config:
   data_is_long_format: no
   variable_match:
     species_name: binomial
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(leaf_division = ifelse(stringr::str_detect(`leaf type`,"trifoliate"),"trifoliate",NA), `leaf type` = gsub("trifoliate","compound",`leaf type`))
 traits:
 - var_in: longevity
   unit_in: .na
@@ -50,6 +50,12 @@ traits:
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
+  value_type: expert_mean
+  replicates: .na
+  methods: expert observation or opinion, from herbarium specimens
+- var_in: leaf_division
+  unit_in: .na
+  trait_name: leaf_division
   value_type: expert_mean
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
