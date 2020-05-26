@@ -54,7 +54,7 @@ config:
     value), value = ifelse(value %in% c("AB", "EAB"), "annual biennial", value), value
     = ifelse(value %in% c("AP", "EAP"), "annual perennial", value), value = ifelse(value
     %in% c("EPB", "DPB", "PB"), "biennial perennial", value) ) ) %>% arrange(i) %>%
-    select(-i) # approach taken in the above is to use data to calculate a series
+    select(-i) %>% mutate(value = ifelse(species_name %in% c("Grevillea robusta","Garuga floribunda var. floribunda","Myristica globosa subsp. muelleri","Pararchidendron pruinosum var. pruinosum") &  trait == "lifeform","tree",value),value = ifelse(species_name %in% c("Corynocarpus rupestris subsp. arborescens","Mitrephora diversifolia") &  trait == "lifeform","shrub treelet",value), value = ifelse(species_name %in% c("Piper hederaceum var. hederaceum") &  trait == "lifeform","climber_vine_woody",value), value = ifelse(species_name %in% c("Stephania japonica var. discolor") &  trait == "lifeform","vine",value), value = ifelse(species_name %in% c("Caesalpinia subtropica") &  trait == "lifeform","climber_woody",value)) # approach taken in the above is to use data to calculate a series
     of trait tables, which are bound together with bind_rows. The index i is used
     to sort data according to original order in the file'
 traits:
@@ -196,28 +196,28 @@ substitutions:
   replace: shrub
 - trait_name: plant_growth_form
   find: TV
-  replace: climber
+  replace: .na
 - trait_name: plant_growth_form
   find: SC
-  replace: climber
+  replace: shrub climber_woody
 - trait_name: plant_growth_form
   find: L
-  replace: climber
+  replace: climber_liana
 - trait_name: plant_growth_form
   find: SV
   replace: climber
 - trait_name: plant_growth_form
   find: TH
-  replace: tree
+  replace: herb
 - trait_name: plant_growth_form
   find: HL
-  replace: climber
+  replace: climber_liana
 - trait_name: plant_growth_form
   find: CV
-  replace: climber_vine
+  replace: climber_vine_woody
 - trait_name: plant_growth_form
   find: SE
-  replace: graminoid
+  replace: epiphyte
 - trait_name: plant_growth_form
   find: C
   replace: climber
@@ -226,22 +226,22 @@ substitutions:
   replace: climber_shrub
 - trait_name: plant_growth_form
   find: TSC
-  replace: climber
+  replace: climber_tree climber_shrub
 - trait_name: plant_growth_form
   find: SU
-  replace: .na
+  replace: shrub subshrub
 - trait_name: plant_growth_form
   find: SH
-  replace: .na
+  replace: shrub herb
 - trait_name: plant_growth_form
   find: U
   replace: subshrub
 - trait_name: plant_growth_form
   find: VL
-  replace: climber
+  replace: climber_vine climber_liana
 - trait_name: plant_growth_form
   find: CP
-  replace: .na
+  replace: climber_vine_woody
 - trait_name: plant_growth_form
   find: SUH
   replace: .na
@@ -250,19 +250,19 @@ substitutions:
   replace: aquatic
 - trait_name: plant_growth_form
   find: TSV
-  replace: .na
+  replace: treelet
 - trait_name: plant_growth_form
   find: HA
   replace: aquatic_herb
 - trait_name: plant_growth_form
   find: HV
-  replace: climber_herb
+  replace: epiphyte_herb epiphyte_woody
 - trait_name: plant_growth_form
   find: E
-  replace: graminoid
+  replace: epiphyte
 - trait_name: plant_growth_form
   find: HE
-  replace: graminoid
+  replace: hemi-epiphyte
 - trait_name: seed_shape
   find: 'NULL'
   replace: .na
