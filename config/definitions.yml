@@ -132,6 +132,13 @@ traits:
       values:
         minimum: -100
         maximum: 100
+    calcicole_status:
+      description: Dichotonmous variable, defining plants as calcifuge (intolerant of basic soils) versus calcicole (tolerant of basic soils, such as calcareous sands and limestone derived soils)
+      type: categorical
+      label: Calcicole versus calcifuge status
+      values:
+        calcicole: tolerant of basic soils, such as calcareous sands and limestone derived soils
+        calcifuge: intolerant of basic soils
     carotenoid_per_area:
       description: Leaf carotenoid content per unit leaf area
       type: numeric
@@ -489,16 +496,22 @@ traits:
         barochory_small_seeds: Small seeds (<0.1 mg) that are dispersed without assistance; true dispersal syndrome
         bird: Seed dispersed by birds
         chamaechory: diaspore is rolled along ground surface by wind
+        dispersal_rare: Plant rarely produces propagules; mostly reproduces through vegetative spread
         dyszoochory: diaspore is eaten intentionally by an animal
         elaiosome: Fleshy (often fatty) appendage on seeds that attracts ants; dispersal appendage
         endozoochory: Diaspores that dispersed through ingestion by animals, either intentionally or unintentionally and are transported before dropping off; includes the term ingestion; true dispersal syndrome
+        endozoochory_mammal: Diaspores that dispersed through ingestion by mammals, either intentionally or unintentionally and are transported before dropping off; includes the term ingestion; true dispersal syndrome
+        endozoochory_bird: Diaspores that dispersed through ingestion by birds, either intentionally or unintentionally and are transported before dropping off; includes the term ingestion; true dispersal syndrome
         exozoochory: When seeds are dispersed on the surface of an animal; will overlap significantly with the terms adhesion and animal_vector
+        exozoochory_mammal: When seeds are dispersed on the surface of a mammal
+        exozoochory_bird: When seeds are dispersed on the surface of a bird
         fleshy_fruit: A fruit where part or all of the pericarp (fruit wall) is fleshy at maturity; fruit type
         fleshy_wings_capsule: A fruit whose capsule or wings are fleshy
         gravity: 
         hydrochory: Dispersal on the surface of water; see also the term water; true dispersal syndrome
         insect: Dispersal by ant or termite
         invertebrate: Dispersal by invertebrate other than insects
+        invertebrate_insect: Dispersal by invertebrates including insects
         mammal: Dispersed by mammals by unspecified mechanisms
         mobile: use 'unassisted' 
         mud_on_cars:
@@ -601,6 +614,8 @@ traits:
       values:
         fire_killed: Plants killed by hot fires
         resprouts: Plants resprout from underground storage organ following fire. (For studies that don't differentiate between respouting strength)
+        not_fire_killed_does_not_resprout: Plants that are rarely killed by a moderate-intensity fire, but do not resprout
+        fire_not_relevant: Plant never affected by fire (for aquatic species)
         unknown: Fire status assessed, but unknown
     fire_response_detailed:
       description: Detailed information distinguishing between plants that are killed by fire and resprout following fire
@@ -611,13 +626,40 @@ traits:
         weak_resprouting: Plant shows weak resprouting following fire
         intermediate_resprouting: Plant shows intermediate resprouting following fire
         strong_resprouting: Plant shows strong resprouting following fire
+    fire_response_juvenile:
+      description: Variable summarising how juvenile plants respond to fire
+      type: categorical
+      label: Juvenile plants resprout or killed by file
+      values:
+        juvenile_fire_killed: Juvenile plants killed by fires
+        juvenile_resprout: Juvenile plants survive and resprout following fire
+    fire_response_on_maturity:
+      description: Variable summarising how plants' maturity status changes following fire
+      type: categorical
+      label: Plants' maturity status after fire
+      values:
+        remain_mature: Mature plants remain mature following fire
+        mature_to_juvenile: Mature plants become juvenile following fire
+        mature_do_not_resprout: Mature plants do not resprout following fire
     fire_cued_seeding:
       description: Distinguishes between plants that do and do not have fire-cued seeding
       type: categorical
       label: Fire-cued seeding
       values:
         fire_cued_seeding: Plants that germinate robustly following fire
+        fire_cued_seeding_complete_germination: The entire seedbank germinates following fire; no seedbank remains
+        fire_cued_seeding_incomplete_germination: Only part of the seedbank germinates following fire
         no_fire_cued_seeding: Plants that do not show increased seeding following fire
+    fire_and_establishing:
+      description:
+      type: categorical
+      label:
+      values:
+        establish_just_after_fire_only: Plants establish immediately after a fire (within the first 2 seasons, and usually within the first season), but cannot continue recruitment as the vegetation ages further, unable to establish in mature vegetation
+        establish_intermediate_age: Plants can only establish at an intermediate stage, ie. cannot establish straight after fire nor in mature to over-mature vegetation.
+        establish_just_after_fire_and_mature_vegetation: Plants able to establish immediately after fire and also in mature to over-mature vegetation, cannot establish in intermediate aged vegetation
+        establish_intermediate_to_over_mature_vegetation: Plants unable to establish immediately after fire (within the first season or two), but can establish in older vegetation (including mature to over-mature vegetation), requires some environmental charateristics not found in vegetation straight after fires   
+        establish_anytime: Plants can establish immediately after fire and in later years as vegetation ages, right thru to mature and over-mature vegetation (assuming suitable seasonal conditions)
     flower_colour:
       description: Flower colour, with six possible outcomes
       type: categorical
@@ -866,6 +908,14 @@ traits:
       description: Months during which species is fruiting; keyed as a sequences of 12 0s (not flowering) and 1s (flowering) starting with January
       type: character
       label: Plant reproductive phenology timing (fruiting)
+    time_from_fire_to_fruit:
+      description: Elapsed time from fire to fruiting
+      type: numeric
+      units: months
+      label: Elapsed time from fire to fruiting
+      values:
+        minimum: 1
+        maximum: 500
     fv_over_fm:
       description: Chlorophyll fluorescence measurement that indicates whether plant stress affects photo-system II in a dark adapted state
       type: numeric
@@ -985,6 +1035,16 @@ traits:
       values:
         minimum: 1.0
         maximum: 100.0
+    inundation_tolerance:
+      description: Ability of species to tolerate being under water
+      type: categorical
+      label: Inundation tolerance
+      values:
+        not_applicable: Species' is not typically confronted with beng inundated and its response is unknown
+        '<1_month': Species able to tolerate being inundated for less than 1 month
+        '1-6_months': Species able to tolerate being inundated for 1-6 months
+        '>6_months': Species able to toleratebeing inundated for  more than 6 months
+        aquatic: Species truly aquatic and able to be permanantly inundated
     leaf_Al_per_dry_mass:
       description: Leaf aluminium (Al) content per unit leaf dry mass
       type: numeric
@@ -1804,13 +1864,19 @@ traits:
       type: categorical
       label: Life span (years)
       values:
+        post_fire_ephemeral: Plant that is short-lived following fires
         '<1': Plant that lives less than 1 year
+        '<3': Plant that lives less than 3 years
         '<5': Plant that lives less than 5 years
+        '<6': Plant that lives less than 6 years
+        '>6': Plant that lives more than 6 years
         '<10': Plant that lives less than 10 years
         '<20': Plant that lives less than 20 years
         '<50': Plant that lives less than 50 years
         '<100': Plant that lives less than 100 years
         '>100': Plant that lives more than 100 years
+        '50-500': Plant that lives between 50-500
+        '>500': Plant that lives more than 500 years
         '?': Plant with unknown lifespan
     sex_type:
       description: Plant sex type
@@ -1934,6 +2000,16 @@ traits:
       values:
         minimum: 1
         maximum: 10
+    parasitic:
+      description: Whether or not a plant is parasitic
+      type: categorical
+      label: Plant's parasitic status
+      values:
+        hemi-parasitic: Plant is hemi-parasitic
+        parasitic: Plant is parasitic
+        not_parasitic: Plant is not parasitic
+        root_parasitic: Plant that is a root parasite
+        stem_parasitic: Plant that is a stem parasite
     pendulous_leaves:
       description: Binary variable describing whether or not leaves are pendulous
       type: categorical
@@ -1959,6 +2035,7 @@ traits:
         cam: Plants which display crassulacean acid metabolism
         c3-cam: Species that shift between c3 and cam photosynthesis
         c4-cam: Species that shift between c4 and cam photosynthesis
+        unknown: Photosynthetic pathway unknown
     photosynthetic_rate_per_area_ambient:
       description: Rate at which a plant consumes carbon dioxide through photosynthesis, normalised to leaf area
       type: numeric
@@ -2049,12 +2126,17 @@ traits:
         fern_tree: Tree fern
         geophyte: A perennial plant with an underground food storage organ, such as a bulb, tuber, corm, or rhizome
         graminoid: Herbaceous plants with a grass-like morphology
+        graminoid_not_tussock: Herbaceous plants with a non-tussock grass-like morphology
+        graminoid_not_tussock_tall: Herbaceous plants with a non-tussock grass-like morphology that are more than 1 m in height
+        graminoid_tussock: Herbaceous plants with a tussock grass-like morphology; see also 'tussock'
+        graminoid_tussock_tall: Herbaceous plants with a tussock grass-like morphology that are more than 1 m in height
         grass-tree: Term specific refers to members of the family Xanthorrhoaceae, monocots with a tree-like growth-form
         hemi-epiphyte: Plant that partially grows on top of another plant
         hemi-epiphyte_shrub: Shrub that partially grows on top of another plant
         hemi-epiphyte_tree: Tree that partially grows on top of another plant
         hemi-parasite: A plant that derives some of its nutritional requirements from another living plant
         herb: A seed-bearing plant which does not have a woody stem and dies down to the ground after flowering; when available this term has been divided into more detailed terms
+        herb_large: An herbaceous plant >0.5 m tall
         leafless_shrub_tree: Shrubs and trees with green, non-succulent stems as the main photosynthetic structures
         long_basal: Large leaves >0.5 m long emerging from the soil surface; a sub-category of herb
         palm: Flowering plants in the family Arecaceae, most with large, compound evergreen leaves referred to as fronds
@@ -2063,6 +2145,7 @@ traits:
         parasite_woody: A woody plant that derives some or all of its nutritional requirements from another living plant
         primitive: includes club moss, selaginella
         prostrate: Plant that lies flat against the ground
+        prostrate_herb: Herbaceous plant that lies flat against the ground
         prostrate_shrub: Woody plant that lies flat against the ground
         rosette: Herb where the leaves are concentrated right at the ground surface
         saprophyte: Plant that acquires nutrients from decaying matter
@@ -2112,6 +2195,7 @@ traits:
       type: categorical
       label: Pollination syndrome
       values:
+        abiotic: Pollination occurs through wind, water, or collision of free-floating particles
         animal: Generic cath-all for any form of animal pollination
         bat: Bat-pollinated
         bee: Bee-pollinated
@@ -2122,7 +2206,9 @@ traits:
         insect: Insect-pollinated, type of insect not specified
         moth: Moth-pollinated
         none: Spore-producing plants
+        vertebrate: Vertebrate-pollinated, broadly defined
         wind: wind-pollinated
+        pollination_rare: plants mostly reproduce through vegetative spread and flowering is rare
     pollination_system:
       description: Pollination system
       type: categorical
@@ -2132,17 +2218,6 @@ traits:
         biotic_unspecialised: Species use living methods for pollen transfer, but do not have a specialist pollinator
         biotic_specialised: Species depend upon a specialist pollinator for pollen transfer
         self_pollination: Flowers are self-pollinated or pollinated by another flower on the same plant
-    propagule_longevity:
-      description: Propagule longevity
-      type: categorical
-      label: Propagule longevity
-      values:
-        short-lived: Propagule survives for weeks
-        intermediate: Propagule survives for months to less than a year
-        short_persistent_in_soil: Propagule is persistent in soil 1 to 5 years
-        long_persistent_in_soil: Propagule is persistent in soil for more than 5 years
-        short_persistent_in_canopy: Propagule persistent in canopy for 1 to 5 years
-        long_persistent_in_canopy: Propagule persistent in canopy for more than 5 years
     regen_strategy:
       description: Different regeneration strategies displayed by plants. Trait values include both generic terms and quite specific ones. See Pausus, Lamont et al. 2018, doi.org/10.1111/nph.14982 for trait values used and detailed desciptions of recolonization ability and level of fire protection provided by each regeneration strategy. This trait includes terminology for storage organs and regeneration strategies following fire. The trait "fire_response" is a binary trait distinguishing between fire-killed and regenerating species.
       type: categorical
@@ -2162,7 +2237,8 @@ traits:
         fleshy_underground_organ: Plants that use fleshy, generally underground organs (swellings) to regenerate; examples include corms, tubers, bulbs, and caudex
         lignotuber: Swollen woody structures are located at the transition between the stem base and root crown of woody shrubs, mallees and small trees, and are formed from stem tissues. Buds are located over the entire structure. No colonisation ability.
         fire_killed: Plant that is fire-killed and regenerates only by seed. (An obligate re-seeder.)
-        resprouts: Plant reprouts following fire, but the mechanism is not specified.
+        resprouts: Plant reprouts following fire
+        resprouts_non_fire_disturbance: Fire-killed plants that have the ability to resprout following a disturbance other than fire
         rhizome: Plant has an underground stem; this stem may be woody or non-woody. Rhizomes are both a mechanism for vegetative spread and a strategy to survive fire. 
         root_crown: Plant that produces a few vertical shoots from the root crown.
         root_tuber: Below ground storage organ derived from root tissue.
@@ -2176,6 +2252,20 @@ traits:
         storage_organ: Storage organ present, but the type is unknown
         underground: Plants that resprout from an underground organ, but the type of organ isn't specified.
         unknown: Assume this trait value means it is unknown if a storage organ is present or a plant can regenerate, not that the type is unknown
+    reproductive_maturity:
+      description: Age of plants at reproductive maturity, by category. For several big compilations with fire response data, this is neitherthe time to first flowering, nor to first seed set, but instead reproductive maturity refers to a seed load or a group of suckers sufficient to replace the adult population.
+      type: categorical
+      label: Age of plants at reproductive maturity
+      values:
+        '<1': Plants reach reproductive maturity before age 1
+        '1-2': Plants reach reproductive maturity between ages 1-2
+        '3-5': Plants reach reproductive maturity between ages 3-5
+        '1-5': Plants reach reproductive maturity between ages 1-5
+        '5-10': Plants reach reproductive maturity between ages 5-10
+        '5-20': Plants reach reproductive maturity between ages 5-20
+        '10-20': Plants reach reproductive maturity between ages 10-20
+        '>20': Plants reach reproductive maturity after age 20
+        '20-40': Plants reach reproductive maturity between ages 20-40
     resorption_leaf_N:
       description: Nitrogen resorption from leaves
       type: numeric
@@ -2343,6 +2433,17 @@ traits:
       values:
         minimum: 0.05
         maximum: 10.0
+    salt_tolerance:
+      description: Salt-tolerance categories; Kew data on salt tolerance included in 'water_tolerance' trait
+      type: categorical
+      label: Salt tolerance strategies
+      values:
+        glycophyte: Plants that cannot survive even one tenth the salt concentration found in seawater
+        halophyte: Plants that complete their life cycle in a salty environment; many survive in seawater or even higher concentrations of salt
+        halophyte_moderate: Plant that is moderately tolerant of soil salinity/sodicity
+        hydrohalophyte: Tidal swamp or ‘mangrove’ and coastal lagoon elements and temperate-zone salt-marsh species are classed together. 
+        salt_spray_tolerant: Plant that is tolerant of salt spray (typically inhabiting near-coastal environments)
+        salinity_tolerance_undefined: Plants ability to tolerate salt is unknown
     sapwood_specific_conductivity:
       description: Ks; Describes the flow rate of water (kg/s) along a stem for a given drop in pressure (1/MPa), normalised to the length of the segment (1/m). Calculated as leaf hydraulic conductivity divided by the sapwood cross-sectional area where the measurement is taken.
       type: numeric
@@ -2539,13 +2640,6 @@ traits:
         trigonal_pyramidal: Pyramid that is triangular in cross-section
         turbinate: A 3-dimensional shape; top shaped; inversely conical
         wedge_shaped: A 2 or 3-dimensional shape; tapers to a point at one end; includes the 2-D classificatiion "cuneate" and possibly plants that are more conical in outline
-    seed_storage_location:
-      description: Location where seeds are stored at maturity
-      type: categorical
-      label: Location where seeds are stored at maturity
-      values:
-        canopy: Seeds stored in the canopy, usually still within a woody cone
-        soil: Seeds stored in the soil
     seed_texture:
       description: The texture of a seed
       type: categorical
@@ -2617,12 +2711,52 @@ traits:
         minimum: 0.01
         maximum: 100.0
     soil_seedbank:
-      description: Binary variable indicating if seeds present in seedbank
+      description: Binary variable indicating if seeds present in soil seedbank; see also 'seed_longevity', 'seed_storage_location', 'canopy_seedbank', and 'serotiny'
       type: categorical
       label: Seeds present in soil seedbank
       values:
         '0': Seeds not present in soil seedbank
         '1': Seeds present in soil seedbank
+    seed_storage_location:
+      description: Location where seeds are stored at maturity; see also 'seed_longevity', 'soil_seedbank', 'canopy_seedbank', and 'serotiny'
+      type: categorical
+      label: Location where seeds are stored at maturity
+      values:
+        canopy: Seeds stored in the canopy, usually still within a woody cone
+        soil: Seeds stored in the soil
+    seed_longevity:
+      description: Seed longevity
+      type: categorical
+      label: Seed longevity
+      values:
+        short-lived: Seedbank survives for weeks
+        intermediate: Seedbank survives for months to less than a year
+        long-lived: Seedbank survives for more than 10 years
+        short_persistent_in_soil: Propagule is persistent in soil 1 to 5 years
+        short_persistent_in_soil_b: Propagule is persistent in soil for less than 2 years
+        long_persistent_in_soil: Propagule is persistent in soil for more than 5 years
+        long_persistent_in_soil_b: Propagule is persistent in soil for more than 2 years
+        short_persistent_in_canopy: Propagule persistent in canopy for 1 to 5 years
+        long_persistent_in_canopy: Propagule persistent in canopy for more than 5 years
+        widely_dispersed: Seed longevity not important, as seeds are widely dispersed and always available for germination
+    seed_release:
+      description: When a fruit or cone only releases its seeds following an environmental trigger, often fire; ; see also 'seed_longevity', 'seed_storage_location', 'soil_seedbank', 'canopy_seedbank', and 'serotiny'
+      type: categorical
+      label: Serotiny
+      values:
+        serotinous: Plant releases its seeds following an environmental trigger (usually fire)
+        mature_en_mass: Seeds released en masse when mature (eg annually)
+        gradual_release: Seeds maturing and released gradually from parent
+    serotiny:
+      description: When a fruit or cone only releases its seeds following an environmental trigger, often fire
+      type: categorical
+      label: Serotiny
+      values:
+        not_serotinous: Plant does not display serotiny
+        serotinous: Plant serotinous, level not specified
+        serotiny_low: Plant displays a low level of serotiny
+        serotiny_moderate: Plant displays a moderate level of serotiny
+        serotiny_high: Plant displays a moderate level of serotiny
     seedling_first_leaf:
       description: Binary variable distinguishing between seedlings where the first leaf is scale-like (cataphyll) versus leaf-like.
       type: categorical
@@ -2741,16 +2875,16 @@ traits:
       values:
         minimum: 0
         maximum: 100.0
-    serotiny:
-      description: When a fruit or cone only releases its seeds following an environmental trigger, often fire
+    snow_tolerance:
+      description: Description of a species' tolerance to snow cover
       type: categorical
-      label: Serotiny
+      label: Snow tolerance
       values:
-        not_serotinous: Plant does NOT display serotiny
-        serotinous: Plant does display serotiny, level not specified
-        serotiny_low: Plant displays a low level of serotiny
-        serotiny_moderate: Plant displays a moderate level of serotiny
-        serotiny_high: Plant displays a moderate level of serotiny
+        not_applicable: Species is virtually never confronted with snow in nature and the response is unknown 
+        intolerant: Species is frost tender and known to be killed by any snow
+        days: Species can tolerate snow for days (typically less than 1 week)
+        weeks: Species can tolerate snow for weeks (typically less than 1 month)
+        months: Species can tolerate snow for months
     soil_salinity_tolerance:
       description: Maximum salinity tolerated by a species, reported as the conductivity of the soil
       type: numeric
@@ -3153,6 +3287,16 @@ traits:
       values:
         minimum: 0.001
         maximum: 1.0
+    water_logging_tolerance:
+      description: Ability of species to tolerate water-logged soils
+      type: categorical
+      label: Water-logging tolerance
+      values:
+        not_applicable: Species' is not typically confronted with waterlogging and its response is unknown
+        '<1_month': Species able to tolerate less than 1 month of waterlogging
+        '1-6_months': Species able to tolerate 1-6 months of waterlogging
+        '>6_months': Species able to tolerate more than 6 months of waterlogging
+        aquatic: Species truly aquatic and able to be permanantly inundated
     wood_axial_parenchyma_fraction:
       description: Fraction of wood comprised of axial parenchyma
       type: numeric
