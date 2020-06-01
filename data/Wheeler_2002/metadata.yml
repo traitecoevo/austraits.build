@@ -33,7 +33,7 @@ config:
     NA, `leaf shape`),`leaf type` = ifelse(`leaf type` == "lobed",
     NA, `leaf type`)) %>% mutate_at(c("min leaf length (mm)","max leaf length (mm)","min
     leaf width (mm)","max leaf width (mm)"), ~na_if(.,0)) %>% mutate_at(c("min leaf
-    width (mm)"), ~na_if(.,"`"))
+    width (mm)"), ~na_if(.,"`")) %>% mutate(parasitic = ifelse(`growth form`=="parasitic","parasitic","not_parasitic"))
 traits:
 - var_in: genus
   unit_in: .na
@@ -56,6 +56,12 @@ traits:
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
+  value_type: expert_mean
+  replicates: .na
+  methods: unknown
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
   value_type: expert_mean
   replicates: .na
   methods: unknown

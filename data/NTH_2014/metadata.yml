@@ -39,7 +39,7 @@ config:
     "seed_length_min", "seed_length_max") %>% separate_range("seed diameter (mm)",
     "seed_width_min", "seed_width_max") %>% separate_range("seed depth (mm)", "seed_depth_min",
     "seed_depth_max") %>% mutate(GF = ifelse(aquatic %in% c("yes","y"),"aquatic_herb",
-    GF))
+    GF)) %>% mutate(parasitic = ifelse(GF=="parasitic","parasitic","not_parasitic"))
 traits:
 - var_in: longevity
   unit_in: .na
@@ -50,6 +50,12 @@ traits:
 - var_in: GF
   unit_in: .na
   trait_name: plant_growth_form
+  value_type: expert_mean
+  replicates: .na
+  methods: unknown
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
   value_type: expert_mean
   replicates: .na
   methods: unknown
