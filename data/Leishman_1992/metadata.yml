@@ -66,7 +66,7 @@ config:
     species_name: SPECIES
     site_name: site_name
   custom_R_code: data %>% mutate(site_name = "Louth") %>% mutate_at(vars(`height (cm)_filtered`,`leaf
-    area (mm2)`,`seed mass (mg)`,`diaspore weight (mg)`),~na_if(.,0))
+    area (mm2)`,`seed mass (mg)`,`diaspore weight (mg)`),~na_if(.,0)) %>% mutate(parasitic = ifelse(`growth form`=="stem parasite","stem_parasitic",NA),parasitic = ifelse(`growth form`=="root parasite","root_parasitic","not_parasitic"))
 traits:
 - var_in: growth form
   unit_in: .na
@@ -80,6 +80,12 @@ traits:
     that could not be reliably collected from field specimens were obtained from exhaustive
     reviews of the literature. These features included maximum height gained, presence
     of storage organ, depth of root system and presence of secondary compounds.
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
+  value_type: expert_mean
+  replicates: .na
+  methods: unknown
 - var_in: height (cm)_filtered
   unit_in: cm
   trait_name: plant_height
