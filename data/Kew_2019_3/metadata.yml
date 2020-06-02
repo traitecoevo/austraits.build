@@ -30,16 +30,22 @@ config:
   custom_R_code: data %>% mutate(planttype = ifelse(planttype=="-",NA,planttype))
     %>% mutate(maxdsm = ifelse(maxdsm=="SW",80,maxdsm)) %>% mutate(maxdsm = ifelse(maxdsm=="sw?",80,maxdsm))
     %>% group_by(taxa) %>% mutate_at(vars("planttype","maxdsm","phopath"),replace_duplicates_with_NA)
-    %>% ungroup()
+    %>% ungroup() %>% mutate(salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"), planttype, NA))
 traits:
 - var_in: planttype
   unit_in: .na
-  trait_name: water_tolerance
+  trait_name: plant_type_by_resource_use
   value_type: expert_mean
   replicates: .na
   methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
     the same value has been reported in multiple sources included and so identical
     values for a species have been filtered out
+- var_in: salt_tolerance
+  unit_in: .na
+  trait_name: salt_tolerance
+  value_type: expert_mean
+  replicates: .na
+  methods: Kew Gardens collections, with details in data.csv file under column "refdesc"; subset of 'planttype' values referring to salt tolerance strategies have been duplicates here; the same value has been reported in multiple sources included and so identical values for a species have been filtered out
 - var_in: maxdsm
   unit_in: dS/m
   trait_name: soil_salinity_tolerance
@@ -78,22 +84,28 @@ substitutions:
 - trait_name: photosynthetic_pathway
   find: C4?
   replace: c4
-- trait_name: water_tolerance
+- trait_name: salt_tolerance
   find: hyhal
   replace: hydrohalophyte
-- trait_name: water_tolerance
-  find: psamm
-  replace: psammophile
-- trait_name: water_tolerance
-  find: xero
-  replace: xerophyte
-- trait_name: water_tolerance
+- trait_name: salt_tolerance
   find: xeroh
   replace: xerohalophyte
-- trait_name: water_tolerance
+- trait_name: plant_type_by_resource_use
+  find: hyhal
+  replace: hydrohalophyte
+- trait_name: plant_type_by_resource_use
+  find: psamm
+  replace: psammophile
+- trait_name: plant_type_by_resource_use
+  find: xero
+  replace: xerophyte
+- trait_name: plant_type_by_resource_use
+  find: xeroh
+  replace: xerohalophyte
+- trait_name: plant_type_by_resource_use
   find: phrea
   replace: phreatophyte
-- trait_name: water_tolerance
+- trait_name: plant_type_by_resource_use
   find: psarnm
   replace: psammophile
 taxonomic_updates:
