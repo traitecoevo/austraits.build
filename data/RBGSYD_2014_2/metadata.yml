@@ -29,7 +29,7 @@ config:
     trait_name: trait
   custom_R_code: data <- collapse_multirow_phenology_data_to_binary_vec(data, "flowering
     month", "flowering_time"); data <- collapse_multirow_phenology_data_to_binary_vec(data,
-    "fruiting", "fruiting_time"); data
+    "fruiting", "fruiting_time"); data %>% bind_rows(.,data %>% subset(trait == "special life form" & lookup_data =="parasitic") %>% mutate(trait == "parasitic"))
 traits:
 - var_in: flowering_time
   unit_in: .na
@@ -49,9 +49,9 @@ traits:
   value_type: .na
   replicates: .na
   methods: expert observation or opinion
-- var_in: special life form
+- var_in: parasitic
   unit_in: .na
-  trait_name: plant_growth_form
+  trait_name: parasitic
   value_type: expert_mean
   replicates: .na
   methods: unknown
@@ -140,6 +140,12 @@ traits:
   replicates: .na
   methods: unknown
 - var_in: special growth form
+  unit_in: .na
+  trait_name: plant_growth_form
+  value_type: expert_mean
+  replicates: .na
+  methods: unknown
+- var_in: special life form
   unit_in: .na
   trait_name: plant_growth_form
   value_type: expert_mean
