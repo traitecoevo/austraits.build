@@ -30,7 +30,8 @@ config:
   custom_R_code: data %>% mutate(planttype = ifelse(planttype=="-",NA,planttype))
     %>% mutate(maxdsm = ifelse(maxdsm=="SW",80,maxdsm)) %>% mutate(maxdsm = ifelse(maxdsm=="sw?",80,maxdsm))
     %>% group_by(taxa) %>% mutate_at(vars("planttype","maxdsm","phopath"),replace_duplicates_with_NA)
-    %>% ungroup() %>% mutate(salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"), planttype, NA))
+    %>% ungroup() %>% mutate(salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"),
+    planttype, NA))
 traits:
 - var_in: planttype
   unit_in: .na
@@ -45,7 +46,10 @@ traits:
   trait_name: salt_tolerance
   value_type: expert_mean
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc"; subset of 'planttype' values referring to salt tolerance strategies have been duplicates here; the same value has been reported in multiple sources included and so identical values for a species have been filtered out
+  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
+    subset of 'planttype' values referring to salt tolerance strategies have been
+    duplicates here; the same value has been reported in multiple sources included
+    and so identical values for a species have been filtered out
 - var_in: maxdsm
   unit_in: dS/m
   trait_name: soil_salinity_tolerance
