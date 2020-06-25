@@ -707,7 +707,8 @@ update_taxonomy <- function(austraits_raw, taxa) {
               taxa %>% select(cleaned_name, taxon_name)
               ) %>% 
     select(dataset_id, taxon_name, everything()) %>% 
-    mutate(taxon_name = ifelse(is.na(taxon_name), cleaned_name, taxon_name))
+    mutate(taxon_name = ifelse(is.na(taxon_name), cleaned_name, taxon_name)) %>% 
+    select(-cleaned_name)
   
   species_tmp <-
     austraits_raw$traits %>% 
