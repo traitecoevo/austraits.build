@@ -144,57 +144,6 @@ as_link <- function(link, text, type="md") {
     sprintf("<a href='%s'> %s </a>", link, text)
 }
 
-#' Title
-#'
-#' @param ID 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-as_url_tpl <- function(ID) {
-  sprintf("http://www.theplantlist.org/tpl1.1/record/%s", ID)
-}
-
-#' Title
-#'
-#' @param ID 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-as_link_tpl <- function(ID) {
-  as_url_tpl(ID) %>%
-  as_link(ID)
-}
-
-#' Title
-#'
-#' @param ID 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-as_link_apc <- function(ID) {
-  sprintf("https://biodiversity.org.au/nsl/services/node/apc/%s", ID) %>%
-  as_link(ID)
-}
-
-#' Title
-#'
-#' @param ID 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-as_link_apni <- function(ID) {
-  sprintf("http://id.biodiversity.org.au/node/apni/%s", ID) %>%
-  as_link(ID)
-}
-
 
 ## Function to format a tree structure from a vector
 ## X is a vector of terms

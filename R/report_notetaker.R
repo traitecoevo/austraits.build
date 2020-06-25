@@ -59,7 +59,7 @@ random_string <- function(n=8) {
 
 # Store a txt note in a tibble with two columns
 as_note <- function(note, link=NA_character_) {
-  tibble(note = note, link = ifelse(is.na(link), random_string(), link))
+  tibble(note = note, link = ifelse(is.na(link), random_string(), link)) %>% mutate_all(as.character)
 }
 
 # start note recoder
