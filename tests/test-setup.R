@@ -103,7 +103,7 @@ for (dataset_id in dataset_ids) {
 
   # minimal requirements
   expect_isin(names(metadata[["config"]][["variable_match"]]), 
-        c("species_name", "value", "trait_name","site_name", "observation_id", "context_name", "date"), 
+        c("taxon_name", "value", "trait_name","site_name", "observation_id", "context_name", "date"), 
         info=f, " - minimal requirements for variable_match")
 
   # sites
@@ -115,7 +115,7 @@ for (dataset_id in dataset_ids) {
       sites <-
       metadata$sites %>%
       format_sites(dataset_id) %>%
-      add_all_columns(definitions, "sites")
+      add_all_columns(names(definitions[["austraits"]][["elements"]][["sites"]][["elements"]]))
     )
 
     test_dataframe_names_contain(sites, c("dataset_id", "site_name", "site_property", "value"), info=paste0(f, " - sites"))
@@ -135,7 +135,7 @@ for (dataset_id in dataset_ids) {
       contexts <-
       metadata$contexts %>%
       format_sites(dataset_id, context = TRUE) %>%
-      add_all_columns(definitions, "contexts")
+      add_all_columns(names(definitions[["austraits"]][["elements"]][["contexts"]][["elements"]]))
     )
 
     test_dataframe_names_contain(contexts, c("dataset_id", "context_name", "context_property", "value"), info=paste0(f, " - contexts"))
@@ -198,7 +198,7 @@ for (dataset_id in dataset_ids) {
   if(metadata[["config"]][["data_is_long_format"]]) {
 
     # Variable match
-    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name",  "trait_name", "value","site_name", "observation_id", "context_name", "date"), info=paste0(f, " - variable_match"))  
+    expect_isin(names(metadata[["config"]][["variable_match"]]), c("taxon_name",  "trait_name", "value","site_name", "observation_id", "context_name", "date"), info=paste0(f, " - variable_match"))  
 
     # For vertical datasets, expect all values of "trait column" found in traits
     var_out <- names(metadata[["config"]][["variable_match"]])
@@ -209,7 +209,7 @@ for (dataset_id in dataset_ids) {
   } else {
 
     # Variable match
-    expect_isin(names(metadata[["config"]][["variable_match"]]), c("species_name", "site_name", "observation_id", "context_name", "date"), info=paste0(f, " - variable_match"))
+    expect_isin(names(metadata[["config"]][["variable_match"]]), c("taxon_name", "site_name", "observation_id", "context_name", "date"), info=paste0(f, " - variable_match"))
 
     # For wide datasets, expect variables in cfgChar are header in the data
     values <- names(data)

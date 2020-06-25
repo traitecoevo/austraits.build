@@ -26,11 +26,12 @@ contexts: .na
 config:
   data_is_long_format: no
   variable_match:
-    species_name: taxa
+    taxon_name: taxa
   custom_R_code: data %>% mutate(planttype = ifelse(planttype=="-",NA,planttype))
     %>% mutate(maxdsm = ifelse(maxdsm=="SW",80,maxdsm)) %>% mutate(maxdsm = ifelse(maxdsm=="sw?",80,maxdsm))
     %>% group_by(taxa) %>% mutate_at(vars("planttype","maxdsm","phopath"),replace_duplicates_with_NA)
-    %>% ungroup() %>% mutate(salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"), planttype, NA))
+    %>% ungroup() %>% mutate(salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"),
+    planttype, NA))
 traits:
 - var_in: planttype
   unit_in: .na
@@ -45,7 +46,10 @@ traits:
   trait_name: salt_tolerance
   value_type: expert_mean
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc"; subset of 'planttype' values referring to salt tolerance strategies have been duplicates here; the same value has been reported in multiple sources included and so identical values for a species have been filtered out
+  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
+    subset of 'planttype' values referring to salt tolerance strategies have been
+    duplicates here; the same value has been reported in multiple sources included
+    and so identical values for a species have been filtered out
 - var_in: maxdsm
   unit_in: dS/m
   trait_name: soil_salinity_tolerance
@@ -108,21 +112,7 @@ substitutions:
 - trait_name: plant_type_by_resource_use
   find: psarnm
   replace: psammophile
-taxonomic_updates:
-- find: Eucalyptus largiflorens
-  replace: Eucalyptus bicolor
-  reason: Alignment with existing species identified by TaxonStand (2019-09-27)
-- find: Heterozostera tasmanica
-  replace: Zostera tasmanica
-  reason: Alignment with existing species identified by TaxonStand (2019-09-27)
-- find: Tetragonia tetragonoides
-  replace: Tetragonia tetragonioides
-  reason: Alignment with existing species identified by TaxonStand (2020-05-19)
-- find: Atriplex billardierei
-  replace: Atriplex billardieri
-  reason: Alignment with existing species identified by TaxonStand (2020-05-19)
-- find: Diplachne fusca
-  replace: Leptochloa fusca
-  reason: Synonym reported by TaxonStand (2020-05-19)
+taxonomic_updates: .na
+exclude_observations: .na
 questions: .na
 

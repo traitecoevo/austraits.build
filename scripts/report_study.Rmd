@@ -351,19 +351,19 @@ if(nrow(context) > 0 ) {
 
 ## Species sampled
 
-We have records on `r data_study$traits$species_name %>% unique() %>% length()` species from your study. We have attempted to align species names with [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. The full list of names for species recorded in your study are listed below.
+We have records on `r data_study$traits$taxon_name %>% unique() %>% length()` species from your study. We have attempted to align species names with [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. The full list of names for species recorded in your study are listed below.
 
 # Trait measurements
 
 ## Overview
 
-The dataset includes `r data_study$traits %>% nrow()` individual data points from `r data_study$traits$species_name %>% unique() %>% length()` species, with data included for the following `r data_study$traits$trait_name %>% unique() %>% length()` traits:
+The dataset includes `r data_study$traits %>% nrow()` individual data points from `r data_study$traits$taxon_name %>% unique() %>% length()` species, with data included for the following `r data_study$traits$trait_name %>% unique() %>% length()` traits:
 
 ```{r summary_table, results='asis', echo=FALSE}
 n_records <- data_study$traits %>%
   group_by(trait_name) %>%
     summarise(
-        species = length(unique(species_name)),
+        species = length(unique(taxon_name)),
         records = length(value)) %>%
    mutate(records_per_species = round(records / species, digits=2) )
 
@@ -403,7 +403,7 @@ if(nrow(data_study$excluded_data) > 0 ) {
 
 ## Numerical traits
 
-```{r numerical, results='asis', echo=FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=10}
+```{r numerical, results='asis', echo=FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=10, eval=TRUE}
 traits <- data_study$traits$trait_name %>% unique() %>% sort()
 traits_numeric <- traits[trait_is_numeric(traits, definitions)]
 
@@ -607,57 +607,70 @@ for(trait in traits_categorical) {
 }
 ```
 
-# Species list
+# Taxon list
 
+We have records on the following taxa from your study. We have attempted to align taxon names in this study with the Australian Plant Census (APC) or Australian Plant Names Index (APNI). 
 
-```{r corrections, results='hide', echo=FALSE}
+## Aligned taxa
 
-corrections <- tibble(original_name= character(), notes = character())
-
-if(suppressWarnings(!is.null(metadata_study$taxonomic_updates) & !is.na(metadata_study$taxonomic_updates))) {
-  corrections <- metadata_study$taxonomic_updates %>%
-    list_to_df() %>%
-    select(original_name = find, notes = reason)
-}
-
-species <- data_study$traits %>%
-  select(original_name, species_name) %>%
-  distinct() %>%
-  arrange(original_name) %>%
-  left_join(austraits$taxonomy, by ="species_name") %>%
-  rename(TPL_name = species_name) %>%
-  mutate(TPL_name = ifelse(TPL_name == original_name, "", TPL_name),
-         APC_name = ifelse(APC_name == original_name, "", APC_name)
-         ) %>%
- left_join(corrections, by = "original_name")  %>%
- mutate(notes = ifelse(is.na(notes), "", notes))
-```
-
-We have records on the following species from your study. You'll note that we have attempted to align species names with known taxonomic units, focussing primarily on the [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. In addition we have tried to align these names with the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI). Our main reason for focussing on TPL is the existence of automated tools for querying the database. In the future, we will look to align primarily with APC.  The table below shows the aligned taxonomy, with columns:
+The table below shows the table of aligned taxa, with columns:
 
 ```{r, results='asis', echo=FALSE}
-definitions$austraits$elements$taxonomy$elements %>%
+definitions$austraits$elements$taxa$elements %>%
   list1_to_df() %>%
-  bind_rows(
-    tibble(
-        key=c("original_name", "notes", "genus"),   
-        value=c("Name provided by contrtibutor", "The reason a name change was implemented (where relevant)", "Genus of the aligned species"))) %>%
-  mutate(key = gsub("species_name", "TPL_name", key, fixed=TRUE)) %>%
-  arrange(match(key, names(species))) %>%
   my_kable_styling()
 ```
 
-Updated names are shown only where different to the original name supplied. We also include links to the species records in the relevant systems. Clicking on the links will take you to the relevant taxonomic record in each system for that species.
+Clicking on the name will take you to the relevant taxonomic record in the APC or APNI, where known:
 
 ```{r species_list2, results='asis', echo=FALSE}
-species %>%
+data_study$taxa %>%
+  select(one_of(names(definitions$austraits$elements$taxa$elements))) %>%
   mutate(
-    TPL_ID = as_link_tpl(TPL_ID),
-    APC_ID = as_link_apc(APC_ID),
-    APNI_ID = as_link_apni(APNI_ID)
-  ) %>%
+    taxon_name = as_link(acceptedNameUsageID, taxon_name)) %>%
+  select(-acceptedNameUsageID, -ccAttributionIRI) %>%
+  mutate_all(replace_na, "") %>%
   my_kable_styling()
 ```
+
+## Taxonomic changes
+
+To create the list of aligned species, we needed to make some taxonomic changes. This involved two stages. 
+
+* **Stage 1**: Where possible (i.e. there was no or only a few characters difference), the name you supplied was matched automatically with a known name in APC or APNI. In other cases we may have aligned the species by searching for an appropriate match. Such changes are documented in the study metadata file.  The variable `cleaned_name` shows the updated name. The variable `d1` shows the number of characters difference between the `original_name` and `cleaned_name`. 
+* **Stage 2**: Once aligned with a known name, we used the APC to update the `cleaned_name` to an accepted name. The taxonomic status of the cleaned name is indicated in column `status cleaned name`. If accepted, no change was made. If it is a synonym or otherwise, the name was changed according to the recommendation given in the APC. Where they existed, we preferred to take the accepted status of an `cleaned_name`, if it existed. Alternative status values are indicated in brackets. This indicate if alternative uses of the name were ever applied. 
+
+Links on `cleaned_name` and `taxon_name` take you to the APC or APNI record for that name.
+
+```{r}
+data_study$taxonomic_updates %>% select(-dataset_id) %>% 
+  filter(original_name !=taxon_name) %>% 
+  mutate(
+    d1 = map2_dbl(original_name, cleaned_name, ~adist(.x, .y)) %>% as.character() %>% str_replace("0", ""),
+    d2 = map2_dbl(taxon_name, cleaned_name, ~adist(.x, .y)) %>% as.character() %>% str_replace("0", ""),
+    cleaned_name = as_link(taxonIDClean, cleaned_name),
+    taxon_name = as_link(acceptedNameUsageID, taxon_name),
+    alternativeTaxonomicStatusClean = replace_na(alternativeTaxonomicStatusClean, ""),
+    `status cleaned name` = sprintf("%s %s", taxonomicStatusClean, ifelse(alternativeTaxonomicStatusClean=="", "", paste("(", alternativeTaxonomicStatusClean, ")")))
+    ) %>% 
+  select(original_name, d1, cleaned_name, d2, taxon_name, `status cleaned name`) %>%
+  mutate_all(replace_na, "") %>% 
+  my_kable_styling()
+```
+
+## Unknown species
+
+We were unable to find taxonomic matches for the following species in the data. Where genus and family are shown, the specified genus aligns with an accepted genus.
+
+```{r species_list3, results='asis', echo=FALSE}
+data_study$taxa %>%
+  filter(is.na(acceptedNameUsageID)) %>%
+  select(one_of(names(definitions$austraits$elements$taxa$elements))) %>%
+  select(-acceptedNameUsageID, -ccAttributionIRI, -taxonDistribution) %>%
+  mutate_all(replace_na, "") %>%
+  my_kable_styling()
+```
+
 
 ```{r, results='asis', echo=FALSE}
 new_question("(section `taxonomic_updates`) Do these taxonomic alignments and corrections look reasonable?")

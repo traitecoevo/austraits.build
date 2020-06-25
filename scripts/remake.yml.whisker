@@ -47,21 +47,25 @@ targets:
   unit_conversions:
     command: make_unit_conversion_functions("config/unit_conversions.csv")
 
-  species_list:
-    command: read_csv_char("config/species_list.csv")
+  taxon_list:
+    command: read_csv_char("config/taxon_list.csv")
 
 {{#dataset_ids}}
+  {{dataset_id}}_config:
+    command: >
+      subset_config("data/{{dataset_id}}/metadata.yml",
+                 definitions,
+                 unit_conversions
+                 )
+
   {{dataset_id}}:
     command: >
       load_study("data/{{dataset_id}}/data.csv",
-                 "data/{{dataset_id}}/metadata.yml",
-                 definitions,
-                 unit_conversions,
-                 species_list
+                  {{dataset_id}}_config
                  )
 {{/dataset_ids}}
 
-  austraits:
+  austraits_raw:
     command: >
       combine_austraits(
 {{#dataset_ids}}
@@ -69,3 +73,7 @@ targets:
 {{/dataset_ids}}
        definitions=definitions)
     depends: version_number
+
+  austraits:
+    command: update_taxonomy(austraits_raw, taxon_list)
+    

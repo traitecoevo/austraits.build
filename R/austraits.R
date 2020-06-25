@@ -13,13 +13,16 @@
 #' @examples
 extract_dataset <- function(austraits, dataset_id) {
 
-
+  austraits$taxonomic_updates <-
+    separate_rows(austraits$taxonomic_updates, dataset_id, sep=" ")
+  
   ret <- list()
-  for(v in c("traits", "sites", "contexts", "methods", "contributors", "excluded_data"))
+  for(v in c("traits", "sites", "contexts", "methods", "contributors", "excluded_data", "taxonomic_updates"))
     ret[[v]] <- austraits[[v]][ austraits[[v]][["dataset_id"]] %in% dataset_id,]
   # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
-  ret[["taxonomy"]] <- austraits[["taxonomy"]] %>% filter(species_name %in% ret[["traits"]][["species_name"]])
 
+  ret[["taxa"]] <- austraits[["taxa"]] %>% filter(taxon_name %in% ret[["traits"]][["taxon_name"]])
+  
   ret[["definitions"]] <- austraits[["definitions"]]
   ret[["build_info"]] <- austraits[["build_info"]]
 
@@ -45,7 +48,7 @@ spread_trait_data <- function(data) {
   for(v in vars) {
     ret[[v]] <- data %>% 
         rename(to_spread = !!v) %>%
-        select(dataset_id, species_name, site_name, observation_id, trait_name, to_spread, original_name) %>%
+        select(dataset_id, taxon_name, site_name, observation_id, trait_name, to_spread, original_name) %>%
         spread(trait_name, to_spread)
   }
 
@@ -63,7 +66,7 @@ spread_trait_data <- function(data) {
 #' @examples
 gather_trait_data <- function(data, definitions) {
 
-  id_variables <- c("dataset_id", "species_name", "site_name", "observation_id", "trait_name", "value", "unit", "value_type", "replicates", "original_name")
+  id_variables <- c("dataset_id", "taxon_name", "site_name", "observation_id", "trait_name", "value", "unit", "value_type", "replicates", "original_name")
   
   traits <- names(data$value)[!(names(data$value) %in% id_variables)]
   
@@ -206,7 +209,7 @@ extract_trait <- function(austraits, trait_name) {
 
   ret[["contexts"]] <- austraits[["contexts"]]%>% filter(context_name %in% ret[["traits"]][["context_name"]], dataset_id %in% ids)
 
-  ret[["taxonomy"]] <- austraits[["taxonomy"]] %>% filter(species_name %in% ret[["traits"]][["species_name"]])
+  ret[["taxa"]] <- austraits[["taxa"]] %>% filter(taxon_name %in% ret[["traits"]][["taxon_name"]])
   ret[["excluded_data"]] <- austraits[["excluded_data"]][austraits[["excluded_data"]][["trait_name"]] %in% trait_name,]
 
   ret[["contributors"]] <- austraits[["contributors"]] %>% filter(dataset_id %in%  ids)
@@ -267,10 +270,10 @@ label_suspected_duplicates <- function(austraits_traits, priority_sources = NULL
         gsub("0000", "9999", .)
     ) %>%
     # sort to align suspected duplicates
-    arrange(trait_name, species_name, value, desc(priority_source), year) %>%
+    arrange(trait_name, taxon_name, value, desc(priority_source), year) %>%
     # detect duplicates based on combination of variables
     mutate(
-      to_check = paste(trait_name, species_name, value), 
+      to_check = paste(trait_name, taxon_name, value), 
       duplicate = to_check %>% duplicated()
       ) %>% 
     # remove temporary variables
@@ -327,7 +330,7 @@ remove_suspected_duplicates <- function(austraits,
 
 export_to_plain_text <- function(austraits, path) {
   dir.create(path, FALSE, TRUE)
-  for(v in c("traits","sites", "contexts", "methods", "excluded_data", "taxonomy"))
+  for(v in c("traits", "sites", "contexts", "methods", "excluded_data", "taxa", "taxonomic_updates"))
     write_csv(austraits[[v]], sprintf("%s/%s.csv", path, v))
   write_yaml(austraits[["definitions"]],  sprintf("%s/definitions.yml", path))
   RefManageR::WriteBib(austraits$sources, sprintf("%s/sources", path))
@@ -410,10 +413,9 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
   }
   
   data <- austraits_trait$traits %>%
-    mutate(log_value = log10(value),
-           shapes = as_shape(value_type)) %>%
-    left_join(., select(austraits_trait$taxonomy, 'species_name', 'family'),
-              by = "species_name")
+    mutate(shapes = as_shape(value_type)) %>%
+    left_join(., select(austraits_trait$taxa, taxon_name, family),
+              by = "taxon_name")
 
   # Define grouping variables and derivatives
   if(!y_axis_category %in% names(data)){
@@ -421,14 +423,19 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
   }
 
   # define grouping variable, ordered by group-level by mean values
-  data$Group = forcats::fct_reorder(data[[y_axis_category]], data$log_value, na.rm=TRUE)
-
+  # use log_value where possible
+  if(min(data$value, na.rm=TRUE) > 0 ) {
+    data$value2 <- log10(data$value)
+  } else {
+    data$value2 <- data$value
+  }
+  data$Group = forcats::fct_reorder(data[[y_axis_category]], data$value2, na.rm=TRUE)
+  
   n_group <- levels(data$Group) %>% length()
 
   # set colour to be alternating
   data$colour = ifelse(data$Group %in% levels(data$Group)[seq(1, n_group, by=2)],
                        "a", "b")
-
 
   # set colour of group to highlight
   if(!is.na(highlight) & highlight %in% data$Group) {
