@@ -88,16 +88,16 @@ sites:
     rainfall (mm): 1000
     description: Leaves were collected in November 1995 from Lilly Pilly Gully at
       Wilson's Promontory National Park in the far south-eastern Australian mainland
-      (39o1'S, 146o20'E). The climate is relatively mild with few extremes of temperature
-      and with an annual rainfall of c. 1000 mm (ASHTON & WEBB, 1977). The rainfall
-      is higher and more uniformly distributed through the year than much of the southern
-      mainland, allowing close proximity of rainforest, eucalypt-dominated forest
-      and heath. However, none of the species investigated is endemic to this area,
-      most also occurring in areas with a more pronounced winter-high rainfall regime.      The
-      plants were sampled over a distance of c. 500 m. The vegetation graded from
-      Open forest dominated by Eucalyptus obliqua with a shrub and tree understorey
-      including rainforest species, through an intermediate forest dominated by E.
-      obliqua and E. baxteri, to a 1-2 m heath with occasional stunted E. baxteri.
+      (39 deg 1'S, 146 deg 20'E). The climate is relatively mild with few extremes
+      of temperature and with an annual rainfall of c. 1000 mm (ASHTON & WEBB, 1977).
+      The rainfall is higher and more uniformly distributed through the year than
+      much of the southern mainland, allowing close proximity of rainforest, eucalypt-dominated
+      forest and heath. However, none of the species investigated is endemic to this
+      area, most also occurring in areas with a more pronounced winter-high rainfall
+      regime. The plants were sampled over a distance of c. 500 m. The vegetation
+      graded from Open forest dominated by Eucalyptus obliqua with a shrub and tree
+      understorey including rainforest species, through an intermediate forest dominated
+      by E. obliqua and E. baxteri, to a 1-2 m heath with occasional stunted E. baxteri.
       Banksia marginata was collected in both the forest understorey and the heath
       but in this study only the heath collection is reported. All plants occurred
       on sandy soils. The heath was recorded on highly-leached siliceous beach sands
@@ -112,37 +112,37 @@ config:
   variable_match:
     taxon_name: name_original
     site_name: site
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(`work_to_punch_x102_J/m2` = ifelse(`name_original` %in% c("Goodenia ovata","Bedfordia arborescens"),NA,`work_to_punch_x102_J/m2`),`work_to_punch_adjusted_MJ/m2/m` = ifelse(`name_original` %in% c("Goodenia ovata","Bedfordia arborescens"),NA,`work_to_punch_adjusted_MJ/m2/m`))
 traits:
 - var_in: growth form
-  unit_in: .na
+  unit_in: .na.character
   trait_name: plant_growth_form
   value_type: expert_mean
-  replicates: .na
+  replicates: .na.character
   methods: expert opinion and observation
 - var_in: leaf longevity
-  unit_in: .na
+  unit_in: .na.character
   trait_name: leaf_phenology
   value_type: expert_mean
-  replicates: .na
+  replicates: .na.character
   methods: expert opinion and observation
 - var_in: leaf_type
-  unit_in: .na
+  unit_in: .na.character
   trait_name: leaf_compoundness
   value_type: expert_mean
-  replicates: .na
+  replicates: .na.character
   methods: expert opinion and observation
 - var_in: N_fixer
-  unit_in: .na
+  unit_in: .na.character
   trait_name: nitrogen_fixing
   value_type: expert_mean
-  replicates: .na
+  replicates: .na.character
   methods: expert opinion and observation
 - var_in: SLA (mm2/mg)
   unit_in: mm2/mg
   trait_name: specific_leaf_area
   value_type: raw_value
-  replicates: 1
+  replicates: '1'
   methods: 'SLA was sourced from Edwards C, Read J, Sanson G. (2000) Characterising
     sclerophylly: some mechanical properties of leaves from heath and forest. Oecologia
     123, 158-167. Leaf area was measured by image analysis. Leaf dry mass was measured
@@ -151,13 +151,13 @@ traits:
   unit_in: mm2
   trait_name: leaf_area
   value_type: raw_value
-  replicates: 1
+  replicates: '1'
   methods: Leaf area was measured by image analysis (Bioscan Image Analyser).
 - var_in: Lamina_Thickness (mm)
   unit_in: mm
   trait_name: leaf_thickness
   value_type: raw_value
-  replicates: 1
+  replicates: '1'
   methods: 'Leaves were kept as fully hydrated as possible prior to measuring mechanical
     properties and were stored at c. 5C prior to measurement of leaf anatomy and morphology.
     Hand sections were cut from a fresh leaf of each of the five replicate plants
@@ -174,14 +174,14 @@ traits:
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
   value_type: raw_value
-  replicates: 1
+  replicates: '1'
   methods: Leaf N was measured by automated distillation of ammonia and colorimetry
     following digestion using a Tecator Kjeltec Auto 1030 Analyzer.
 - var_in: Leaf N per area (g/m2)
   unit_in: g/m2
   trait_name: leaf_N_per_area
   value_type: raw_value
-  replicates: 1
+  replicates: '1'
   methods: Leaf N was measured by automated distillation of ammonia and colorimetry
     following digestion using a Tecator Kjeltec Auto 1030 Analyzer. Leaf area was
     measured by image analysis (Bioscan Image Analyser).
@@ -189,7 +189,7 @@ traits:
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
   value_type: site_mean
-  replicates: 5
+  replicates: '5'
   methods: Leaf material was dried, then ground in a Tecator Cyclotec Mill to pass
     through a 1-mm mesh. Foliar P was measured by the molybdenum-blue colorimetric
     method (Grimshaw et al. 1989) following digestion of c. 0.2 g of ground sample
@@ -203,7 +203,7 @@ traits:
   unit_in: g/m2
   trait_name: leaf_P_per_area
   value_type: site_mean
-  replicates: 5
+  replicates: '5'
   methods: Leaf material was dried, then ground in a Tecator Cyclotec Mill to pass
     through a 1-mm mesh. Foliar P was measured by the molybdenum-blue colorimetric
     method (Grimshaw et al. 1989) following digestion of c. 0.2 g of ground sample
@@ -213,6 +213,353 @@ traits:
     Ecology) and Grimshaw HM, Allen SE, Parkinson JA (1989)  Nutrient elements.  In
     'Chemical Analysis of ecological materials'. (Ed. SE Allen), pp. 81-159 (Blackwell
     Scientific Publications' Oxford)
+- var_in: punch_strength_MN/m2
+  unit_in: MN/m2
+  trait_name: .na
+  value_type: site_mean
+  replicates: 5
+  methods: Tests were undertaken within 48 h of collection on one of three haphazardly
+    chosen leaves from each replicate plant of each species, including the two separate
+    collections of B. marginata. A Universal Testing Machine (Chatillon Universal
+    Tension and Compression Tester, model UTSE-2) was modified to produce a data output
+    of 800 points per second to a personal computer. Punching, tearing and shearing
+    tests were undertaken and the mechanical properties (Table 2) derived from force-displacement
+    curves using software written by M. Logan (Monash University). Toughness was measured
+    as the area under the force-displacement curve until complete fracture, which
+    we term work to fracture.  Some aspects of these tests have been evaluated more
+    recently by Aranwela et al. (1999). PUNCH TEST This test involves punching a hole
+    through the leaf lamina. It has been commonly described as a test of compression
+    properties, though Vincent (1992) suggested the resistance to penetration is a
+    combination of shear and compressive strength and resistance to crack propagation.
+    A die was mounted onto the moving head of the test machine so that it engaged
+    a steel, flat-ended, sharp-edged cylindrical punch with 1.13 mm2 area and a clearance
+    of 0.068 mm. The displacement speed was set at 0.5 mm s-1. Ideally, the mechanical
+    properties of both the tissue between the main veins (midrib and 2deg veins) and
+    the vascular tissue should be investigated. However, time was a major constraint
+    since leaves had to be tested as soon as possible after collection. Therefore,
+    we standardised the punch position to the left-hand side of the leaves mid- way
+    between leaf tip and base, between the midrib and the leaf margin, avoiding main
+    veins where possible. A blank run was per- formed every 10-20 runs to measure
+    background friction and was subtracted from the leaf force-displacement curves.
+    Lamina thickness was measured in video-projected microscope images of fresh sections
+    (the mean of three measures). Leaf strength and tough- ness were derived from
+    the force-displacement curve (Fig. 1; Table 2).
+- var_in: punch_strength_adjusted_x103_MN/m2/m
+  unit_in: MN/m2/m
+  trait_name: .na
+  value_type: site_mean
+  replicates: 5
+  methods: Tests were undertaken within 48 h of collection on one of three haphazardly
+    chosen leaves from each replicate plant of each species, including the two separate
+    collections of B. marginata. A Universal Testing Machine (Chatillon Universal
+    Tension and Compression Tester, model UTSE-2) was modified to produce a data output
+    of 800 points per second to a personal computer. Punching, tearing and shearing
+    tests were undertaken and the mechanical properties (Table 2) derived from force-displacement
+    curves using software written by M. Logan (Monash University). Toughness was measured
+    as the area under the force-displacement curve until complete fracture, which
+    we term work to fracture.  Some aspects of these tests have been evaluated more
+    recently by Aranwela et al. (1999). PUNCH TEST This test involves punching a hole
+    through the leaf lamina. It has been commonly described as a test of compression
+    properties, though Vincent (1992) suggested the resistance to penetration is a
+    combination of shear and compressive strength and resistance to crack propagation.
+    A die was mounted onto the moving head of the test machine so that it engaged
+    a steel, flat-ended, sharp-edged cylindrical punch with 1.13 mm2 area and a clearance
+    of 0.068 mm. The displacement speed was set at 0.5 mm s-1. Ideally, the mechanical
+    properties of both the tissue between the main veins (midrib and 2deg veins) and
+    the vascular tissue should be investigated. However, time was a major constraint
+    since leaves had to be tested as soon as possible after collection. Therefore,
+    we standardised the punch position to the left-hand side of the leaves mid- way
+    between leaf tip and base, between the midrib and the leaf margin, avoiding main
+    veins where possible. A blank run was per- formed every 10-20 runs to measure
+    background friction and was subtracted from the leaf force-displacement curves.
+    Lamina thickness was measured in video-projected microscope images of fresh sections
+    (the mean of three measures). Leaf strength and tough- ness were derived from
+    the force-displacement curve (Fig. 1; Table 2).
+- var_in: work_to_punch_x102_J/m2
+  unit_in: 100xJ/m2
+  trait_name: leaf_work_to_punch
+  value_type: site_mean
+  replicates: 5
+  methods: Tests were undertaken within 48 h of collection on one of three haphazardly
+    chosen leaves from each replicate plant of each species, including the two separate
+    collections of B. marginata. A Universal Testing Machine (Chatillon Universal
+    Tension and Compression Tester, model UTSE-2) was modified to produce a data output
+    of 800 points per second to a personal computer. Punching, tearing and shearing
+    tests were undertaken and the mechanical properties (Table 2) derived from force-displacement
+    curves using software written by M. Logan (Monash University). Toughness was measured
+    as the area under the force-displacement curve until complete fracture, which
+    we term work to fracture.  Some aspects of these tests have been evaluated more
+    recently by Aranwela et al. (1999). PUNCH TEST This test involves punching a hole
+    through the leaf lamina. It has been commonly described as a test of compression
+    properties, though Vincent (1992) suggested the resistance to penetration is a
+    combination of shear and compressive strength and resistance to crack propagation.
+    A die was mounted onto the moving head of the test machine so that it engaged
+    a steel, flat-ended, sharp-edged cylindrical punch with 1.13 mm2 area and a clearance
+    of 0.068 mm. The displacement speed was set at 0.5 mm s-1. Ideally, the mechanical
+    properties of both the tissue between the main veins (midrib and 2deg veins) and
+    the vascular tissue should be investigated. However, time was a major constraint
+    since leaves had to be tested as soon as possible after collection. Therefore,
+    we standardised the punch position to the left-hand side of the leaves mid- way
+    between leaf tip and base, between the midrib and the leaf margin, avoiding main
+    veins where possible. A blank run was per- formed every 10-20 runs to measure
+    background friction and was subtracted from the leaf force-displacement curves.
+    Lamina thickness was measured in video-projected microscope images of fresh sections
+    (the mean of three measures). Leaf strength and tough- ness were derived from
+    the force-displacement curve (Fig. 1; Table 2).
+- var_in: work_to_punch_adjusted_MJ/m2/m
+  unit_in: MJ/m2/m
+  trait_name: leaf_work_to_punch_adjusted
+  value_type: site_mean
+  replicates: 5
+  methods: Tests were undertaken within 48 h of collection on one of three haphazardly
+    chosen leaves from each replicate plant of each species, including the two separate
+    collections of B. marginata. A Universal Testing Machine (Chatillon Universal
+    Tension and Compression Tester, model UTSE-2) was modified to produce a data output
+    of 800 points per second to a personal computer. Punching, tearing and shearing
+    tests were undertaken and the mechanical properties (Table 2) derived from force-displacement
+    curves using software written by M. Logan (Monash University). Toughness was measured
+    as the area under the force-displacement curve until complete fracture, which
+    we term work to fracture.  Some aspects of these tests have been evaluated more
+    recently by Aranwela et al. (1999). PUNCH TEST This test involves punching a hole
+    through the leaf lamina. It has been commonly described as a test of compression
+    properties, though Vincent (1992) suggested the resistance to penetration is a
+    combination of shear and compressive strength and resistance to crack propagation.
+    A die was mounted onto the moving head of the test machine so that it engaged
+    a steel, flat-ended, sharp-edged cylindrical punch with 1.13 mm2 area and a clearance
+    of 0.068 mm. The displacement speed was set at 0.5 mm s-1. Ideally, the mechanical
+    properties of both the tissue between the main veins (midrib and 2deg veins) and
+    the vascular tissue should be investigated. However, time was a major constraint
+    since leaves had to be tested as soon as possible after collection. Therefore,
+    we standardised the punch position to the left-hand side of the leaves mid- way
+    between leaf tip and base, between the midrib and the leaf margin, avoiding main
+    veins where possible. A blank run was per- formed every 10-20 runs to measure
+    background friction and was subtracted from the leaf force-displacement curves.
+    Lamina thickness was measured in video-projected microscope images of fresh sections
+    (the mean of three measures). Leaf strength and tough- ness were derived from
+    the force-displacement curve (Fig. 1; Table 2).
+- var_in: strength_to_tear_MN/m2
+  unit_in: MN/m2
+  trait_name: .na
+  value_type: site_mean
+  replicates: 5
+  methods: Tests were undertaken within 48 h of collection on one of three haphazardly
+    chosen leaves from each replicate plant of each species, including the two separate
+    collections of B. marginata. A Universal Testing Machine (Chatillon Universal
+    Tension and Compression Tester, model UTSE-2) was modified to produce a data output
+    of 800 points per second to a personal computer. Punching, tearing and shearing
+    tests were undertaken and the mechanical properties (Table 2) derived from force-displacement
+    curves using software written by M. Logan (Monash University). Toughness was measured
+    as the area under the force-displacement curve until complete fracture, which
+    we term work to fracture.  Some aspects of these tests have been evaluated more
+    recently by Aranwela et al. (1999). TEARING TEST A longitudinal strip of lamina
+    32-40 mm long and 4-5 mm wide was cut from the middle of the left-hand side of
+    each leaf, where large enough, such that the length was more than 8 times the
+    width to counter the effects of necking (Vincent 1990; Lucas et al. 1991). Test
+    strips were clamped in the force-tester using pneumatic clamps set at 350 kPa.
+    The clamped ends of the test strips were wrapped in damp absorbent tissue to reduce
+    cell collapse that might lead to low force readings due to the lamina breaking
+    at this point. The strips were inspected following the test to determine if slippage
+    had occurred. Where it was detected the test was repeated on a fresh strip. The
+    strips were notched on the left-hand side up to a known length of 2 mm, maintaining
+    a constant ratio of notch to test strip width as far as possible. The notch directs
+    the position of fracture so the test strip does not break at the clamps. However,
+    this might cause a stress concentration at the notch, possibly leading to inaccurate
+    estimation of fracture properties in notch-sensitive materials. To test for notch-sensitivity,
+    tensile strength can be plotted against the relative length of the notch (expressed
+    as a fraction of the strip width). A notch-insensitive material is indicated by
+    a straight line (Vincent 1990; Lucas et al. 1991). However, we had insufficient
+    time between collection and the time when it was considered testing should be
+    completed to test notch sensitivity. In addition, the small leaves of many species
+    prevented a sufficiently wide range of notch lengths being accurately applied
+    to allow testing of notch sensitivity. There was no solution to this problem.
+    Any effect was minimised by standardising the relative notch length as far as
+    possible. It was impossible to obtain the recommended aspect ratio from lamina
+    tissue alone in the small- and narrow-leaved species (Acacia suaveolens, Banksia
+    spp., Platylobium obtusangulum, Hibbertia aspera, Leptospermum laevigatum and
+    Monotoca scoparia) and therefore the test strips of these species included the
+    midrib and leaf margins. In Melaleuca squarrosa we could not maintain the aspect
+    ratio and whole leaves were used. The fracture length of the leaf was measured
+    using callipers and lamina thickness was measured as for the punch test to estimate
+    the cross-sectional area of the fractured leaf, corrected for the area of the
+    initial notch. The head speed was set at 0.5 mm s-1. Figure 2 illustrates a typical
+    tearing force-displacement plot from which the tensile strength and toughness
+    were derived (Table 2). The initial linear section of the slope could not be consistently
+    detected. Therefore, measurement of stiffness was abandoned.
+- var_in: work_to_tear_x10-3_J/m
+  unit_in: J/m
+  trait_name: .na
+  value_type: site_mean
+  replicates: 5
+  methods: Tests were undertaken within 48 h of collection on one of three haphazardly
+    chosen leaves from each replicate plant of each species, including the two separate
+    collections of B. marginata. A Universal Testing Machine (Chatillon Universal
+    Tension and Compression Tester, model UTSE-2) was modified to produce a data output
+    of 800 points per second to a personal computer. Punching, tearing and shearing
+    tests were undertaken and the mechanical properties (Table 2) derived from force-displacement
+    curves using software written by M. Logan (Monash University). Toughness was measured
+    as the area under the force-displacement curve until complete fracture, which
+    we term work to fracture.  Some aspects of these tests have been evaluated more
+    recently by Aranwela et al. (1999). TEARING TEST A longitudinal strip of lamina
+    32-40 mm long and 4-5 mm wide was cut from the middle of the left-hand side of
+    each leaf, where large enough, such that the length was more than 8 times the
+    width to counter the effects of necking (Vincent 1990; Lucas et al. 1991). Test
+    strips were clamped in the force-tester using pneumatic clamps set at 350 kPa.
+    The clamped ends of the test strips were wrapped in damp absorbent tissue to reduce
+    cell collapse that might lead to low force readings due to the lamina breaking
+    at this point. The strips were inspected following the test to determine if slippage
+    had occurred. Where it was detected the test was repeated on a fresh strip. The
+    strips were notched on the left-hand side up to a known length of 2 mm, maintaining
+    a constant ratio of notch to test strip width as far as possible. The notch directs
+    the position of fracture so the test strip does not break at the clamps. However,
+    this might cause a stress concentration at the notch, possibly leading to inaccurate
+    estimation of fracture properties in notch-sensitive materials. To test for notch-sensitivity,
+    tensile strength can be plotted against the relative length of the notch (expressed
+    as a fraction of the strip width). A notch-insensitive material is indicated by
+    a straight line (Vincent 1990; Lucas et al. 1991). However, we had insufficient
+    time between collection and the time when it was considered testing should be
+    completed to test notch sensitivity. In addition, the small leaves of many species
+    prevented a sufficiently wide range of notch lengths being accurately applied
+    to allow testing of notch sensitivity. There was no solution to this problem.
+    Any effect was minimised by standardising the relative notch length as far as
+    possible. It was impossible to obtain the recommended aspect ratio from lamina
+    tissue alone in the small- and narrow-leaved species (Acacia suaveolens, Banksia
+    spp., Platylobium obtusangulum, Hibbertia aspera, Leptospermum laevigatum and
+    Monotoca scoparia) and therefore the test strips of these species included the
+    midrib and leaf margins. In Melaleuca squarrosa we could not maintain the aspect
+    ratio and whole leaves were used. The fracture length of the leaf was measured
+    using callipers and lamina thickness was measured as for the punch test to estimate
+    the cross-sectional area of the fractured leaf, corrected for the area of the
+    initial notch. The head speed was set at 0.5 mm s-1. Figure 2 illustrates a typical
+    tearing force-displacement plot from which the tensile strength and toughness
+    were derived (Table 2). The initial linear section of the slope could not be consistently
+    detected. Therefore, measurement of stiffness was abandoned.
+- var_in: work_to_tear_adjusted_kJ/m2
+  unit_in: kJ/m2
+  trait_name: leaf_work_to_tear_adjusted
+  value_type: site_mean
+  replicates: 5
+  methods: Work to tear leaf, adjusted to cross-sectional area; Tests were undertaken
+    within 48 h of collection on one of three haphazardly chosen leaves from each
+    replicate plant of each species, including the two separate collections of B.
+    marginata. A Universal Testing Machine (Chatillon Universal Tension and Compression
+    Tester, model UTSE-2) was modified to produce a data output of 800 points per
+    second to a personal computer. Punching, tearing and shearing tests were undertaken
+    and the mechanical properties (Table 2) derived from force-displacement curves
+    using software written by M. Logan (Monash University). Toughness was measured
+    as the area under the force-displacement curve until complete fracture, which
+    we term work to fracture.  Some aspects of these tests have been evaluated more
+    recently by Aranwela et al. (1999). TEARING TEST A longitudinal strip of lamina
+    32-40 mm long and 4-5 mm wide was cut from the middle of the left-hand side of
+    each leaf, where large enough, such that the length was more than 8 times the
+    width to counter the effects of necking (Vincent 1990; Lucas et al. 1991). Test
+    strips were clamped in the force-tester using pneumatic clamps set at 350 kPa.
+    The clamped ends of the test strips were wrapped in damp absorbent tissue to reduce
+    cell collapse that might lead to low force readings due to the lamina breaking
+    at this point. The strips were inspected following the test to determine if slippage
+    had occurred. Where it was detected the test was repeated on a fresh strip. The
+    strips were notched on the left-hand side up to a known length of 2 mm, maintaining
+    a constant ratio of notch to test strip width as far as possible. The notch directs
+    the position of fracture so the test strip does not break at the clamps. However,
+    this might cause a stress concentration at the notch, possibly leading to inaccurate
+    estimation of fracture properties in notch-sensitive materials. To test for notch-sensitivity,
+    tensile strength can be plotted against the relative length of the notch (expressed
+    as a fraction of the strip width). A notch-insensitive material is indicated by
+    a straight line (Vincent 1990; Lucas et al. 1991). However, we had insufficient
+    time between collection and the time when it was considered testing should be
+    completed to test notch sensitivity. In addition, the small leaves of many species
+    prevented a sufficiently wide range of notch lengths being accurately applied
+    to allow testing of notch sensitivity. There was no solution to this problem.
+    Any effect was minimised by standardising the relative notch length as far as
+    possible. It was impossible to obtain the recommended aspect ratio from lamina
+    tissue alone in the small- and narrow-leaved species (Acacia suaveolens, Banksia
+    spp., Platylobium obtusangulum, Hibbertia aspera, Leptospermum laevigatum and
+    Monotoca scoparia) and therefore the test strips of these species included the
+    midrib and leaf margins. In Melaleuca squarrosa we could not maintain the aspect
+    ratio and whole leaves were used. The fracture length of the leaf was measured
+    using callipers and lamina thickness was measured as for the punch test to estimate
+    the cross-sectional area of the fractured leaf, corrected for the area of the
+    initial notch. The head speed was set at 0.5 mm s-1. Figure 2 illustrates a typical
+    tearing force-displacement plot from which the tensile strength and toughness
+    were derived (Table 2). The initial linear section of the slope could not be consistently
+    detected. Therefore, measurement of stiffness was abandoned.
+- var_in: work_to_shear_J/m
+  unit_in: J/m
+  trait_name: leaf_work_to_shear
+  value_type: site_mean
+  replicates: 5
+  methods: Tests were undertaken within 48 h of collection on one of three haphazardly
+    chosen leaves from each replicate plant of each species, including the two separate
+    collections of B. marginata. A Universal Testing Machine (Chatillon Universal
+    Tension and Compression Tester, model UTSE-2) was modified to produce a data output
+    of 800 points per second to a personal computer. Punching, tearing and shearing
+    tests were undertaken and the mechanical properties (Table 2) derived from force-displacement
+    curves using software written by M. Logan (Monash University). Toughness was measured
+    as the area under the force-displacement curve until complete fracture, which
+    we term work to fracture.  Some aspects of these tests have been evaluated more
+    recently by Aranwela et al. (1999). SHEARING TEST Previous studies have used mounted
+    scissors in shearing tests (Lucas and Pereira 1990; Lucas et al. 1991; Choong
+    et al. 1992). In this method the approach angle is constantly changing, thereby
+    altering the amount of tissue being sheared as the blades close and rendering
+    the data more difficult to interpret. In the following tests a guillotine with
+    silver-steel gauge plates was mounted onto the Chatillon Universal force-testing
+    machine. The cutting edge was horizontal in the lower blade and 12deg in the upper
+    blade. This pro- vided a constant approach angle of 12deg. The widest part of
+    each leaf was placed beneath the upper stationary blade and the bottom, horizontal
+    blade moved at a displacement speed set at 0.5 mm s-1, shearing the test leaf
+    into two parts. Neither blade was raked but the bottom blade had a relief angle
+    of c. 5deg. A blank run of the blades was undertaken before every 15-20 test runs
+    to record background friction and was subtracted from the test force- displacement
+    curves. The blade was started in exactly the same place each time to standardise
+    background friction. A transverse cut was made across the leaf, midway between
+    the base and tip, including the midrib. Initial trials indicated that the midrib
+    and 2deg veins could be distinguished from the intercostal lamina in a trans-
+    verse cut, thereby allowing additional information about these components. However,
+    the experimental force-displacement plots showed considerable variation among
+    species in shape, and dis- crimination of veins (Fig. 3). The only consistent
+    measurements that could be made were of work to fracture obtained from the full
+    transverse cut. The cross-sectional area of the leaf at the shearing plane was
+    estimated by measurement of leaf width by callipers and leaf thickness as in the
+    punch test to allow work to be ex- pressed per unit leaf width and thickness (Table
+    2).
+- var_in: work_to_shear_adjusted_kJ/m2
+  unit_in: kJ/m2
+  trait_name: leaf_work_to_shear_adjusted
+  value_type: site_mean
+  replicates: 5
+  methods: Tests were undertaken within 48 h of collection on one of three haphazardly
+    chosen leaves from each replicate plant of each species, including the two separate
+    collections of B. marginata. A Universal Testing Machine (Chatillon Universal
+    Tension and Compression Tester, model UTSE-2) was modified to produce a data output
+    of 800 points per second to a personal computer. Punching, tearing and shearing
+    tests were undertaken and the mechanical properties (Table 2) derived from force-displacement
+    curves using software written by M. Logan (Monash University). Toughness was measured
+    as the area under the force-displacement curve until complete fracture, which
+    we term work to fracture.  Some aspects of these tests have been evaluated more
+    recently by Aranwela et al. (1999). SHEARING TEST Previous studies have used mounted
+    scissors in shearing tests (Lucas and Pereira 1990; Lucas et al. 1991; Choong
+    et al. 1992). In this method the approach angle is constantly changing, thereby
+    altering the amount of tissue being sheared as the blades close and rendering
+    the data more difficult to interpret. In the following tests a guillotine with
+    silver-steel gauge plates was mounted onto the Chatillon Universal force-testing
+    machine. The cutting edge was horizontal in the lower blade and 12deg in the upper
+    blade. This pro- vided a constant approach angle of 12deg. The widest part of
+    each leaf was placed beneath the upper stationary blade and the bottom, horizontal
+    blade moved at a displacement speed set at 0.5 mm s-1, shearing the test leaf
+    into two parts. Neither blade was raked but the bottom blade had a relief angle
+    of c. 5deg. A blank run of the blades was undertaken before every 15-20 test runs
+    to record background friction and was subtracted from the test force- displacement
+    curves. The blade was started in exactly the same place each time to standardise
+    background friction. A transverse cut was made across the leaf, midway between
+    the base and tip, including the midrib. Initial trials indicated that the midrib
+    and 2deg veins could be distinguished from the intercostal lamina in a trans-
+    verse cut, thereby allowing additional information about these components. However,
+    the experimental force-displacement plots showed considerable variation among
+    species in shape, and dis- crimination of veins (Fig. 3). The only consistent
+    measurements that could be made were of work to fracture obtained from the full
+    transverse cut. The cross-sectional area of the leaf at the shearing plane was
+    estimated by measurement of leaf width by callipers and leaf thickness as in the
+    punch test to allow work to be ex- pressed per unit leaf width and thickness (Table
+    2).
 substitutions:
 - trait_name: plant_growth_form
   find: T
@@ -245,6 +592,11 @@ taxonomic_updates:
 - find: Banksia marginata heath
   replace: Banksia marginata
   reason: Alignment with existing species identified by TaxonStand (2020-05-14)
+<<<<<<< HEAD
 exclude_observations: .na
 questions: .na
+=======
+questions:
+  additional_traits: there are also various measures of leaf strength, measured through punching, tearing, shearing
+>>>>>>> fire_response_and_more
 
