@@ -36,6 +36,7 @@ $(document).ready(function() {
 root.dir = rprojroot::find_root("remake.yml")
 knitr::opts_knit$set(root.dir = root.dir)
 knitr::opts_chunk$set(echo=FALSE, cache=FALSE)
+
 # default for table format
 options(knitr.table.format = "html")
 
@@ -351,7 +352,7 @@ if(nrow(context) > 0 ) {
 
 ## Species sampled
 
-We have records on `r data_study$traits$taxon_name %>% unique() %>% length()` species from your study. We have attempted to align species names with [`The Plant List` (TPL)](http://www.theplantlist.org/) -- a global working list of all known plant species. The full list of names for species recorded in your study are listed below.
+We have records on `r data_study$traits$taxon_name %>% unique() %>% length()` species from your study. We have attempted to align species names with [the Australian Plant Census  (APC)](https://biodiversity.org.au/nsl/services/APC) -- a global working list of all known Australian vascular plant species. The full list of names for species recorded in your study are listed below.
 
 # Trait measurements
 
@@ -611,9 +612,9 @@ for(trait in traits_categorical) {
 
 We have records on the following taxa from your study. We have attempted to align taxon names in this study with the Australian Plant Census (APC) or Australian Plant Names Index (APNI). 
 
-## Aligned taxa
+## Full taxa list
 
-The table below shows the table of aligned taxa, with columns:
+The table below shows the table of all taxa in this study, where possible using the name aligned with the APC. Columns are as follows:
 
 ```{r, results='asis', echo=FALSE}
 definitions$austraits$elements$taxa$elements %>%
@@ -625,12 +626,21 @@ Clicking on the name will take you to the relevant taxonomic record in the APC o
 
 ```{r species_list2, results='asis', echo=FALSE}
 data_study$taxa %>%
-  select(one_of(names(definitions$austraits$elements$taxa$elements))) %>%
+  select(one_of(names(definitions$austraits$elements$taxa$elements))) -> tmp
+
+if(nrow(tmp) < 10000 ){
+  tmp %>%
   mutate(
     taxon_name = as_link(acceptedNameUsageID, taxon_name)) %>%
   select(-acceptedNameUsageID, -ccAttributionIRI) %>%
   mutate_all(replace_na, "") %>%
   my_kable_styling()
+} else{
+  cat(crayon:red("\t\tTable too large to dsiplay\n"))
+  tmp %>%
+  mutate_all(replace_na, "") %>% 
+  write_csv(file.path(root.dir,"export/reports", paste0(dataset_id,"_taxa.csv")))
+}
 ```
 
 ## Taxonomic changes
