@@ -74,7 +74,7 @@ dataset:
     obtained from the Bureau of Meteorology. These are the closest meteorological
     stations to Royal National Park and Crosslands Reserve, respectively.
   original_file: Hydraulic traits for Austraits.xls
-  notes: none
+  notes: Adjusted values for sapwood_specific_conductivity to match those in publication (10x too big in contributed data vs. publication, although same units provided)
 sites:
   Crosslands_mangrove:
     latitude (deg): -33.667
@@ -114,7 +114,7 @@ config:
     site_name: Site name expanded
     date: Date
     context: context
-  custom_R_code: data %>% mutate(Date = "2003-01")
+  custom_R_code: data %>% mutate(Date = "2003-01") %>% mutate(stem_hydraulic_conductivity = `Hydraulic condictivity`/10)
 traits:
 - var_in: Hv sapwood
   unit_in: mm2_sapwood/mm2_leaf
@@ -129,7 +129,7 @@ traits:
     of branch in 0.5% toluidine blue solution. The stained sapwood area was measured
     with a calibrated eyepiece micrometer.
 - var_in: Hydraulic condictivity
-  unit_in: mg*cm/s/MPa
+  unit_in: 10^6 x kg*m/s/MPa
   trait_name: stem_hydraulic_conductivity
   value_type: raw_value
   replicates: 1
@@ -156,7 +156,7 @@ traits:
     calculated by multiplying the conductance by the branch length and was expressed
     in terms of leaf area, sapwood area and branch transverse area.
 - var_in: HC per leaf area
-  unit_in: 10^4 x kg/m/s/MPa
+  unit_in: 10^3 x kg/m/s/MPa
   trait_name: leaf_specific_conductivity
   value_type: raw_value
   replicates: 1
@@ -183,7 +183,7 @@ traits:
     calculated by multiplying the conductance by the branch length and was expressed
     in terms of leaf area, sapwood area and branch transverse area.
 - var_in: HC per branch TA
-  unit_in: kg/m/s/MPa
+  unit_in: 10^1 x kg/m/s/MPa
   trait_name: transverse_branch_area_specific_conductivity
   value_type: raw_value
   replicates: 1
@@ -210,7 +210,7 @@ traits:
     (kg s-1 m MPa-1) was calculated by multiplying the conductance by the branch length
     and was expressed in terms of leaf area, sapwood area and branch transverse area.
 - var_in: HC per SW area
-  unit_in: kg/m/s/MPa
+  unit_in: 10^1 x kg/m/s/MPa
   trait_name: sapwood_specific_conductivity
   value_type: raw_value
   replicates: 1
