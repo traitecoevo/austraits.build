@@ -680,8 +680,6 @@ combine_austraits <- function(..., d=list(...), definitions) {
               contributors=combine("contributors", d),
               sources = sources,
               build_info = list(
-                      version=desc::desc_get_field("Version"),
-                      git_SHA=get_SHA(),
                       session_info = sessionInfo()
                       )
               )
@@ -743,4 +741,21 @@ update_taxonomy <- function(austraits_raw, taxa) {
     arrange(taxon_name)
 
   austraits_raw
+}
+
+add_version_info <- function(austraits, version, git_sha) {
+  
+  austraits$build_info <- list(
+    version=version,
+    git_SHA=git_sha,
+    session_info = austraits$build_info$session_info
+  )
+
+  austraits
+}
+
+
+export_version <- function(austraits_versioned, target_name, version_number) {
+  saveRDS(austraits_versioned, target_name)
+  saveRDS(austraits_versioned, gsub(".rds", sprintf("_%s.rds",version_number), target_name, fixed=TRUE))
 }
