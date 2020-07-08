@@ -36,10 +36,15 @@ targets:
       - export/data/austraits.rds
 
   export/data/austraits.rds:
-    command: saveRDS(austraits, target_name)
+    command: export_version(austraits_versioned, target_name, version_number)
 
   version_number:
-    command: desc_get_version()
+    command: desc_get_version("./DESCRIPTION")
+    
+  git_SHA:
+    command: get_SHA()
+    depends:
+      - .git/index  
 
   definitions:
     command: read_yaml("config/definitions.yml")
@@ -3409,8 +3414,9 @@ targets:
         Zieminska_2013,
         Zieminska_2015,
        definitions=definitions)
-    depends: version_number
 
   austraits:
     command: update_taxonomy(austraits_raw, taxon_list)
     
+  austraits_versioned:
+    command: add_version_info(austraits, version_number, git_SHA)
