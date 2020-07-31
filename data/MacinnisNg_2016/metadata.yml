@@ -97,8 +97,7 @@ config:
     taxon_name: species
     site_name: site
     context_name: season
-  custom_R_code: data %>% mutate(site = "Crookwell") %>% mutate_at(vars("SLA"),replace_duplicates_with_NA)
-    %>% mutate_at(vars("Hydraulic condictivity","HC per branch TA","HC per leaf area","HC
+  custom_R_code: data %>% mutate(site = "Crookwell") %>% mutate_at(vars("SLA"),replace_duplicates_with_NA) %>% mutate(stem_hydraulic_conductivity = 10*`Hydraulic condictivity`) %>% mutate_at(vars("Hydraulic condictivity","HC per branch TA","HC per leaf area","HC
     per SW area"),~na_if(.,0))
 traits:
 - var_in: Hv sapwood
@@ -115,7 +114,7 @@ traits:
     cross-sectional area was determined by soaking thin sections of branch in 0.5%
     toluidine blue solution. The stained sapwood area was measured with a calibrated
     eyepiece micrometer.
-- var_in: Hydraulic condictivity
+- var_in: stem_hydraulic_conductivity
   unit_in: 10^6 x kg*m/s/MPa
   trait_name: stem_hydraulic_conductivity
   value_type: raw_value
