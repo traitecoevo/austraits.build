@@ -774,7 +774,7 @@ metadata_check_taxa <- function(dataset_id,
             j <- which(distance_c %in% (sort(distance_c)[1:5]))
             closest_names <- to_check[[v]]$canonicalName[j]
 
-            cat(sprintf("\nFor %s - are any of these names from %s appropropriate?\n",  crayon::blue(s), v))
+            cat(sprintf("\nFor %s - are any of these names from %s appropriate?\n",  crayon::blue(s), v))
             tmp <- menu(c("None", sprintf("%s -- %s -- %s", crayon::green(closest_names), to_check[[v]]$taxonomicStatus[j], to_check[[v]]$ID[j])))
             if(tmp > 1){
               found <- 
@@ -806,7 +806,7 @@ metadata_check_taxa <- function(dataset_id,
     filename <- sprintf("export/taxa_review/%s.csv", dataset_id)
     dir.create(dirname(filename), FALSE, TRUE)
     write_csv(to_review, filename)
-    cat(sprintf("Reveiw further suggestions for these taxa in %s\n", 
+    cat(sprintf("Review further suggestions for these taxa in %s\n", 
                 crayon::green(filename)))
   }
     
@@ -837,7 +837,7 @@ load_taxonomic_resources <- function() {
   }
 
   if(!exists("taxonomic_resources",  envir = .GlobalEnv)) {
-    message(crayon::red("loading object `taxonomic_resources` into glabal environment"))
+    message(crayon::red("loading object `taxonomic_resources` into global environment"))
     taxonomic_resources <- list()
     taxonomic_resources$APC <- read_csv_char(file_paths$APC)
     taxonomic_resources$APNI <- read_csv_char(file_paths$APNI)
@@ -898,7 +898,7 @@ austraits_rebuild_taxon_list <- function() {
                                      "doubtful pro parte misapplied"))) %>%
     arrange(cleaned_name, my_order) %>%
     # For each species, keep the first record (accepted if present) and 
-    # record any alternative status to indicate where there was ambuguity
+    # record any alternative status to indicate where there was ambiguity
     group_by(cleaned_name) %>% 
     mutate(
       alternativeTaxonomicStatusClean = ifelse(taxonomicStatusClean[1] == "accepted", taxonomicStatusClean %>% unique() %>%  subset(. , . !="accepted") %>% paste0(collapse = " | ") %>% na_if(""), NA)
