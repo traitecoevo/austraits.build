@@ -71,6 +71,7 @@ metadata_create_template <- function(dataset_id,
        traits = NA,
        substitutions = NA,
        taxonomic_updates = NA,
+       exclude_observations = NA,
        questions = NA
        )
 
