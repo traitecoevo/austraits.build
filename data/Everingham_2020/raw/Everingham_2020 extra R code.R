@@ -20,12 +20,18 @@ read_csv("data/Everingham_2020/raw/SE_Seed mass data.csv") %>%
 read_csv("data/Everingham_2020/raw/SE_stem density data.csv") %>% 
   select(-"Latitude (deg min sec S/N)",-"Longitude (deg min sec E/W)") -> stem_density
 
+read_csv("data/Everingham_2020/raw/SE_Root to shoot data.csv") %>% 
+  select(-"Latitude (deg min sec S/N)",-"Longitude (deg min sec E/W)") -> root_shoot
+
+
+
 seed_size %>%
   bind_rows(seed_mass) %>%
   bind_rows(LMA) %>%
   bind_rows(stem_density) %>%
   bind_rows(germination) %>%
   bind_rows(photosynthesis) %>%
+  bind_rows(root_shoot) %>%
   write_csv("data/Everingham_2020/data.csv") %>%
   distinct(site, .keep_all = TRUE) %>%
   select(`latitude (deg)`, `longitude (deg)`, `site`) -> site

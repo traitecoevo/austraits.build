@@ -16,7 +16,7 @@ people:
   role: lab_leader
 dataset:
   year_collected_start: 1971
-  year_collected_end: 2017
+  year_collected_end: 2018
   description: Seed and seedling trait measurements from resurrected historic seeds
     and compared these with modern seed and seedling traits collected from the same
     species in the same geographic location to understand trait responses to climate
@@ -82,7 +82,9 @@ dataset:
   original_file: SE_Germination Data.xls, SE_LMA data.xls, SE_Photosynthesis data.xls,
     SE_Seed dimension data.xls, SE_Seed mass data.xls, and SE_stem density data.xls,
     submitted by author and archived in raw data folder
-  notes: none
+  notes: Dates that specifiy a collection month, instead of date, 16-Dec, 14-Nov,
+    16-Nov, 8-Nov, are rekeyed as having occurred on the first of the month, so that
+    all cells have the same formatting. That is 16-Dec becomes 01-December-2016.
 sites:
   site_at_26.4500_S_and_150.6500_E:
     latitude (deg): -26.45
@@ -326,7 +328,8 @@ config:
     site_name: site
     context_name: Modern/Historic
     date: Date Collected
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(root_mass_fraction = `Root (g)`/`Totalplant`, stem_mass_fraction
+    = `Totalshoot (g)`/Totalplant) %>% mutate(`Date Collected` = `Date Collected` %>% mdy())
 traits:
 - var_in: Seed Length (mm)
   unit_in: mm
@@ -416,7 +419,7 @@ traits:
     1 x 10-4 accuracy). LMA was calculated as oven-dry mass divided by fresh area.
 - var_in: Stem Density (g/mL)
   unit_in: mg/mm3
-  trait_name: wood_density
+  trait_name: stem_density
   value_type: raw_value
   replicates: 1
   methods: Fresh volume of the stem was calculated using the water displacement method
@@ -546,6 +549,42 @@ traits:
     two seconds apart and used the average. We recorded photosynthetic rate (Asat;
     umol CO2 m-2 s-1) derived from photosynthesis equations by von Caemmerer and Farquhar
     [57]. We also recorded stomatal conductance (gs; mmol H2O m-2 s-1).
+- var_in: Roottoshoot
+  unit_in: mg_root/mg_shoot
+  trait_name: root_shoot_ratio
+  value_type: raw_value
+  replicates: 1
+  methods: After six months, we followed standard protocols to quantify plant height,
+    biomass, root to shoot ratio (root:shoot) and stem density (Perez-Harguindeguy
+    et al., (2013). We measured plant height from the top of the soil to the tip of
+    the tallest apical meristem on each plant. All shoot tissue was harvested at the
+    level of the soil and all plant roots were individually harvested and washed using
+    distilled water. Roots and shoots were separated, dried at 60 deg C for 72 hr,
+    and weighed. Masses were used to calculate total plant biomass and root:shoot.
+- var_in: stem_mass_fraction
+  unit_in: g/g
+  trait_name: stem_mass_fraction
+  value_type: raw_value
+  replicates: 1
+  methods: After six months, we followed standard protocols to quantify plant height,
+    biomass, root to shoot ratio (root:shoot) and stem density (Perez-Harguindeguy
+    et al., (2013). We measured plant height from the top of the soil to the tip of
+    the tallest apical meristem on each plant. All shoot tissue was harvested at the
+    level of the soil and all plant roots were individually harvested and washed using
+    distilled water. Roots and shoots were separated, dried at 60 deg C for 72 hr,
+    and weighed. Masses were used to calculate total plant biomass and root:shoot.
+- var_in: root_mass_fraction
+  unit_in: g/g
+  trait_name: root_mass_fraction
+  value_type: raw_value
+  replicates: 1
+  methods: After six months, we followed standard protocols to quantify plant height,
+    biomass, root to shoot ratio (root:shoot) and stem density (Perez-Harguindeguy
+    et al., (2013). We measured plant height from the top of the soil to the tip of
+    the tallest apical meristem on each plant. All shoot tissue was harvested at the
+    level of the soil and all plant roots were individually harvested and washed using
+    distilled water. Roots and shoots were separated, dried at 60 deg C for 72 hr,
+    and weighed. Masses were used to calculate total plant biomass and root:shoot.
 substitutions: .na
 taxonomic_updates:
 - find: Eucalyptus nichollii
@@ -555,15 +594,5 @@ taxonomic_updates:
   replace: Callitris endlicheri
   reason: Automatic alignment with name in APC list (accepted) (2020-08-20)
 exclude_observations: .na
-questions:
-  contributor: Do the replicate numbers for the seed mass and seed dimension data
-    refer to the same seeds? Then I can merge those files to link the replicate numbers.
-  question2: I realise I was too dismissive of "allometric" data - we can include
-    root:shoot ratio - just not the actual root, shoot masses.
-  question3: Under dates the following appear 16-Dec, 14-Nov, 16-Nov, 8-Nov - when
-    I open them in Excel they all add "2020" as the date, which is of course not plausible.
-    What should the year be for these?
-  question4: I'm fairly certain your units for conductance should be 'molH2O/m2/s'.
-    I've switched to using these units, as your data plotted several of orders of
-    magnitude too low.
+questions: .na
 
