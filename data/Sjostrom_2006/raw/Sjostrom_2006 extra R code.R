@@ -1,3 +1,23 @@
+#This data set is a mix of data for four traits at the species and genus level. 
+#For some genera, there are multiple rows of data with different trait values, but no way to know which members of the genus have which trait values
+#Overall, Lizzy Wenk took the following steps to decipher the data and map the parts that were useful for AusTraits onto a list of all APC names:
+
+#I went through the data file and separated data into four categories:
+#1. Excluded non-native taxa
+#2. Species with complete names, extracted from the submitted data set; need to have their taxonomy updated
+#   Then these species names are "subtracted" off the complete list of APC names, leaving the remainder of the list as species that need to be
+#   matched at the genus level.
+#3. For genera where all four traits are conserved, match all known species within genus (from APC list) for all four trait values
+#4. For genera where one or more traits aren't conserved, Lizzy looked through the genera and added columns flagging which traits are/aren't conserved
+#   Traits that are "conserved" by all members of the genus can be mapped onto all species in the genus; 
+#   Traits that have varible values within the genus are excluded, since we can't work out which species are attached to which trait values
+
+#Explicit steps taken are detailed below.
+# Only the raw data files are archived in the Github raw data folder associated with the study. Other intermediary files are archived in the GoogleDrive
+#folder associated with the study
+
+
+
 #steps to take
 #first need to input complete species names list and align with new names - see above for creating data.csv file
 #next remake AusTraits and check taxa for Sjostrom_2006
