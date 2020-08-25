@@ -1,5 +1,15 @@
-#This data set is a mix of data for four traits at the species and genus level. 
-#For some genera, there are multiple rows of data with different trait values, but no way to know which members of the genus have which trait values
+# This data set is a mix of data for four traits at the species and genus level.
+# data were originally collected for each species. Then this summary was created,
+# showing where traits are entirely conserved or vary within genera.
+#
+# Unfortunately we no longer have the original dataset, so need to recover
+# the species-level information where possible.
+
+# We took a conservative approach: we only use trait info where they are either recorded
+# at the species level OR there is no variation within genera. For the latter we apply the
+# same trait value across all spp within the genus, using modern taxononomy
+
+#More specifically, for some genera, there are multiple rows of data with different trait values, but no way to know which members of the genus have which trait values
 #Overall, Lizzy Wenk took the following steps to decipher the data and map the parts that were useful for AusTraits onto a list of all APC names:
 
 #I went through the data file and separated data into four categories:
