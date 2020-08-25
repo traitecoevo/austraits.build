@@ -3,7 +3,7 @@ read_csv("data/Jagdish_2020/raw/AusTraits_raw.csv") %>%
   write_csv("data/Jagdish_2020/data.csv") -> data_Jagdish
 
 data_Jagdish %>%
-  select(`latitude (deg)`, `longitude (deg)`,Site) %>%
+  select(`latitude (deg)`, `longitude (deg)`,`Site`, `LAI`, `Site abbreviation`, `description`) %>%
   distinct(Site, .keep_all = TRUE) -> sites
 
 data_Jagdish %>%
