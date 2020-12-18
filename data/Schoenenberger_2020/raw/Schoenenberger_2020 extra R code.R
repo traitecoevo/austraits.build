@@ -27,5 +27,19 @@ character_values %>%
   bind_rows(mean_values) %>%
   bind_rows(min_values) %>%
   bind_rows(max_values) %>%
+  left_join(taxa_in_Austraits) %>%
   write_csv("data/Schoenenberger_2020/data.csv")
-  
+
+#excluded data:
+subset(austraits$excluded_data,dataset_id==current_study & error!="Missing value") %>%
+  write_csv("data/Schoenenberger_2020/raw/excluded_data.csv")
+
+
+#taxon match
+read_csv("config/taxon_list.csv") %>%
+  mutate(taxa_to_keep = 1) %>%
+  rename(Taxon = taxon_name) %>%
+  select(Taxon, taxa_to_keep) -> taxa_in_Austraits
+
+
+
