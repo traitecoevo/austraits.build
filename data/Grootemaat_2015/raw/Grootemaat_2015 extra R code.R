@@ -24,6 +24,6 @@ read_csv("data/Grootemaat_2015/raw/data_raw.csv") %>%
          senesced_leaf_P_per_dry_mass = ifelse(`material`=="SENESCED",`P (%mass)`,NA),
          `N (%mass)` =  ifelse(`material`=="DRIED",`N (%mass)`,NA),
          `P (%mass)` =  ifelse(`material`=="DRIED",`P (%mass)`,NA)
-         ) %>%
-  mutate(SLA = `SA (cm2)`/`dry mass (g)`) %>% View()
+  ) %>%
+  mutate(SLA = `SA (cm2)`/`dry mass (g)`) %>% 
   write_csv("data/Grootemaat_2015/data.csv")
