@@ -70,13 +70,15 @@ contexts:
 config:
   data_is_long_format: no
   variable_match:
-    taxon_name: Species
+    taxon_name: Taxon
     context_name: Material
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(specific_leaf_area = `Leaf area (cm2)`/`Leaf dry
+    mass (g)`) %>% group_by(Material,Taxon) %>% mutate_at(vars(`Leaf moisture (at
+    time of measuring) (%odw)`),funs(replace(.,duplicated(.),NA))) %>% ungroup()
 traits:
 - var_in: Leaf Energy (MJ/kg)
   unit_in: MJ/kg
-  trait_name: .na
+  trait_name: .na.character
   value_type: unknown
   replicates: unknown
   methods: Energy content (MJ kg-1) of ground bark or leaf material was measured with
@@ -84,15 +86,16 @@ traits:
 - var_in: Leaf C (wght %)
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: unknown
-  replicates: unknown
-  methods: 0.25 g of sample was weighed out into a tin foil capsule which was placed
-    into the induction furnace of a LECO Truspec CHN combustion analyser set at 1100
-    deg C and calibrated on EDTA. The carbon present was combusted to CO2 which was
-    determined with an infrared detection cell. The nitrogen present was combusted
-    to N2, NO2 and NO. The oxides were reduced to N2 which was determined quantitatively
-    using a thermal conductivity cell. (Rayment, G.E. & Lyons, D.J. (2011) Soil Chemical
-    Methods, Australasia. CSIRO Publishing. Handbook section 6B2, p75.)
+  value_type: raw_value
+  replicates: 1
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out into a tin foil capsule which was placed into the induction furnace of a LECO
+    Truspec CHN combustion analyser set at 1100 deg C and calibrated on EDTA. The
+    carbon present was combusted to CO2 which was determined with an infrared detection
+    cell. The nitrogen present was combusted to N2, NO2 and NO. The oxides were reduced
+    to N2 which was determined quantitatively using a thermal conductivity cell. (Rayment,
+    G.E. & Lyons, D.J. (2011) Soil Chemical Methods, Australasia. CSIRO Publishing.
+    Handbook section 6B2, p75.)
 - var_in: Leaf N (wght %)
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
@@ -284,23 +287,23 @@ traits:
     S.A. & Kerven, G.L. (1998) A rapid method for the measurement of Leucaena spp
     proanthocyanidins by the proanthocyanidin (butanol/HCl) assay. Journal of the
     Science of Food and Agriculture, 78, 405-416.)
-- var_in: Bark AreaFlam (cm2)
+- var_in: Bark area (cm2)
   unit_in: cm2
-  trait_name: .na
+  trait_name: .na.character
   value_type: unknown
   replicates: unknown
   methods: One-sided surface area was estimated with a LI-3100C area meter (Li-Cor,
     Lincoln, NE, USA).
-- var_in: Bark ThicknFlam (mm)
+- var_in: Bark thickness (mm)
   unit_in: mm
   trait_name: bark_thickness
   value_type: unknown
   replicates: unknown
   methods: Thickness (mean of three measurements for bark) was measured with a thickness
     gauge.
-- var_in: Bark DryMassFlam (g)
+- var_in: Bark dry mass (g)
   unit_in: g
-  trait_name: .na
+  trait_name: .na.character
   value_type: unknown
   replicates: unknown
   methods: Dry mass was determined after oven drying at 60 deg C (when equilibrium
@@ -314,7 +317,7 @@ traits:
     the experimental burns. These samples were remeasured after 24 h of oven-drying
     at 105 deg C. Fuel moisture content was then expressed as a percentage of oven-dry
     weight.
-- var_in: Bark TTI (s)
+- var_in: TTI (s)
   unit_in: seconds
   trait_name: fire_time_to_ignition
   value_type: unknown
@@ -339,7 +342,7 @@ traits:
     and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
     as initial sample mass (corresponding approximately with total mass burnt) divided
     by total burning time (sum of FD and SD).
-- var_in: Bark FD (s)
+- var_in: FD (s)
   unit_in: seconds
   trait_name: fire_flame_duration
   value_type: unknown
@@ -364,7 +367,7 @@ traits:
     and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
     as initial sample mass (corresponding approximately with total mass burnt) divided
     by total burning time (sum of FD and SD).
-- var_in: Bark SD (s)
+- var_in: SD (s)
   unit_in: seconds
   trait_name: fire_smoulder_duration
   value_type: unknown
@@ -389,7 +392,7 @@ traits:
     and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
     as initial sample mass (corresponding approximately with total mass burnt) divided
     by total burning time (sum of FD and SD).
-- var_in: Bark TBT (s)
+- var_in: TBT (s)
   unit_in: seconds
   trait_name: fire_total_burn_duration
   value_type: unknown
@@ -414,9 +417,9 @@ traits:
     and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
     as initial sample mass (corresponding approximately with total mass burnt) divided
     by total burning time (sum of FD and SD).
-- var_in: Bark Combustibility (mg/s)
+- var_in: Combustibility (mg/s)
   unit_in: mg/s
-  trait_name: .na
+  trait_name: .na.character
   value_type: unknown
   replicates: unknown
   methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
@@ -439,9 +442,9 @@ traits:
     and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
     as initial sample mass (corresponding approximately with total mass burnt) divided
     by total burning time (sum of FD and SD).
-- var_in: Bark FDperMASS (s/g)
+- var_in: FD/mass (s/g)
   unit_in: s/g
-  trait_name: .na
+  trait_name: .na.character
   value_type: unknown
   replicates: unknown
   methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
@@ -464,9 +467,9 @@ traits:
     and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
     as initial sample mass (corresponding approximately with total mass burnt) divided
     by total burning time (sum of FD and SD).
-- var_in: Bark SDperMASS (s/g)
+- var_in: SD/mass (s/g)
   unit_in: s/g
-  trait_name: .na
+  trait_name: .na.character
   value_type: unknown
   replicates: unknown
   methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
@@ -489,27 +492,6 @@ traits:
     and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
     as initial sample mass (corresponding approximately with total mass burnt) divided
     by total burning time (sum of FD and SD).
-- var_in: Bark MEANThickn (mm)
-  unit_in: mm
-  trait_name: bark_thickness
-  value_type: unknown
-  replicates: unknown
-  methods: Thickness (mean of three measurements for bark) was measured with a thickness
-    gauge.
-- var_in: Bark Area (mm)
-  unit_in: mm
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: One-sided surface area was estimated with a LI-3100C area meter (Li-Cor,
-    Lincoln, NE, USA).
-- var_in: Bark DryMass (g)
-  unit_in: g
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: Dry mass was determined after oven drying at 60 deg C (when equilibrium
-    was reached).
 - var_in: Bark Volume (cm3)
   unit_in: cm3
   trait_name: .na
@@ -517,7 +499,7 @@ traits:
   replicates: unknown
   methods: Bark particle volume was estimated by using the gravimetric (water replacement)
     method.
-- var_in: Bark Density (g/cm3)
+- var_in: Bark density (g/cm3)
   unit_in: g/cm3
   trait_name: bark_density
   value_type: unknown
@@ -549,7 +531,7 @@ traits:
     surface area was estimated with a LI-3100C area meter (Li-Cor, Lincoln, NE, USA).
 - var_in: Bark Energy (MJ/kg)
   unit_in: MJ/kg
-  trait_name: .na
+  trait_name: .na.character
   value_type: unknown
   replicates: unknown
   methods: Energy content (MJ kg-1) of ground bark or leaf material was measured with
@@ -557,8 +539,8 @@ traits:
 - var_in: Bark C (wght %)
   unit_in: '%'
   trait_name: bark_C_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out into a tin foil capsule which was placed
     into the induction furnace of a LECO Truspec CHN combustion analyser set at 1100
     deg C and calibrated on EDTA. The carbon present was combusted to CO2 which was
@@ -569,8 +551,8 @@ traits:
 - var_in: Bark N (wght %)
   unit_in: '%'
   trait_name: bark_N_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out into a tin foil capsule which was placed
     into the induction furnace of a LECO Truspec CHN combustion analyser set at 1100
     deg C and calibrated on EDTA. The carbon present was combusted to CO2 which was
@@ -581,8 +563,8 @@ traits:
 - var_in: Bark Al (mg/kg)
   unit_in: mg/kg
   trait_name: bark_Al_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
     acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
     were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
@@ -591,8 +573,8 @@ traits:
 - var_in: Bark B (mg/kg)
   unit_in: mg/kg
   trait_name: bark_B_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
     acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
     were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
@@ -601,8 +583,8 @@ traits:
 - var_in: Bark Ca (wght %)
   unit_in: '%'
   trait_name: bark_Ca_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
     acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
     were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
@@ -611,8 +593,8 @@ traits:
 - var_in: Bark Cu (mg/kg)
   unit_in: mg/kg
   trait_name: bark_Cu_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
     acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
     were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
@@ -621,8 +603,8 @@ traits:
 - var_in: Bark Fe (mg/kg)
   unit_in: mg/kg
   trait_name: bark_Fe_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
     acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
     were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
@@ -631,8 +613,8 @@ traits:
 - var_in: Bark K (wght %)
   unit_in: '%'
   trait_name: bark_K_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
     acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
     were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
@@ -641,8 +623,8 @@ traits:
 - var_in: Bark Mg (wght %)
   unit_in: '%'
   trait_name: bark_Mg_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
     acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
     were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
@@ -651,8 +633,8 @@ traits:
 - var_in: Bark Mn (mg/kg)
   unit_in: mg/kg
   trait_name: bark_Mn_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
     acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
     were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
@@ -661,8 +643,8 @@ traits:
 - var_in: Bark Na (mg/kg)
   unit_in: mg/kg
   trait_name: bark_Na_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
     acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
     were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
@@ -671,8 +653,8 @@ traits:
 - var_in: Bark P (mg/kg)
   unit_in: mg/kg
   trait_name: bark_P_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
     acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
     were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
@@ -681,8 +663,8 @@ traits:
 - var_in: Bark S (wght %)
   unit_in: '%'
   trait_name: bark_S_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
     acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
     were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
@@ -691,8 +673,8 @@ traits:
 - var_in: Bark Zn (mg/kg)
   unit_in: mg/kg
   trait_name: bark_Zn_per_dry_mass
-  value_type: unknown
-  replicates: unknown
+  value_type: raw_value
+  replicates: 1
   methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
     acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
     were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
@@ -740,7 +722,7 @@ traits:
     J.D. (1994) Lignin and cellulose fractionation in decomposition studies using
     acid-detergent fibre methods. Communications in Soil Science and Plant Analysis,
     25, 269-277.)
-- var_in: Bark TotalTannins (wght %)
+- var_in: Bark Total Tannins (wt%)
   unit_in: '%'
   trait_name: bark_tannin_per_dry_mass
   value_type: unknown
@@ -757,6 +739,88 @@ traits:
     S.A. & Kerven, G.L. (1998) A rapid method for the measurement of Leucaena spp
     proanthocyanidins by the proanthocyanidin (butanol/HCl) assay. Journal of the
     Science of Food and Agriculture, 78, 405-416.)
+- var_in: Bark FMC (%)
+  unit_in: '%'
+  trait_name: bark_water_content_per_saturated_mass
+  value_type: unknown
+  replicates: unknown
+  methods: unknown
+- var_in: Leaf FMC (%odw)
+  unit_in: '%'
+  trait_name: leaf_water_content_per_dry_mass
+  value_type: unknown
+  replicates: unknown
+  methods: unknown
+- var_in: Leaf length (cm)
+  unit_in: mm
+  trait_name: leaf_length
+  value_type: raw_value
+  replicates: 1
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+- var_in: Leaf width (cm)
+  unit_in: mm
+  trait_name: leaf_width
+  value_type: raw_value
+  replicates: 1
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+- var_in: Leaf thickness (mm)
+  unit_in: mm
+  trait_name: leaf_thickness
+  value_type: raw_value
+  replicates: 1
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+- var_in: Leaf area (cm2)
+  unit_in: cm2
+  trait_name: leaf_area
+  value_type: raw_value
+  replicates: 1
+  methods: Surface area (SA, in cm2) was estimated with a LI-3100C area meter (LI-COR,
+    Lincoln, NE, USA). For terete leaves (e.g. Allocasuarina spp., Hakea teretifolia
+    and Acacia havilandiorum), one-sided leaf area was calculated as projected area
+    * pi/2.
+- var_in: Leaf moisture (at time of measuring) (%odw)
+  unit_in: '%'
+  trait_name: leaf_water_content_per_dry_mass
+  value_type: raw_value
+  replicates: 1
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+    Subsamples for fuel moisture content (FMC) were held apart; leaves were measured
+    at their actual weight and remeasured after 24 h of drying at 105 deg C, when
+    equilibrium was reached (Matthews 2010). Fuel moisture content, as a percentage
+    of oven dried weight, was then defined as follows, (leaf mass - leaf dry mass)/(leaf
+    dry mass)*100
+- var_in: Leaf dry mass (g)
+  unit_in: g
+  trait_name: leaf_dry_mass
+  value_type: raw_value
+  replicates: 1
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+- var_in: Leaf density (g/cm3)
+  unit_in: g/cm3
+  trait_name: leaf_density
+  value_type: raw_value
+  replicates: 1
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+- var_in: specific_leaf_area
+  unit_in: cm2/g
+  trait_name: specific_leaf_area
+  value_type: raw_value
+  replicates: 1
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+    This trait was recalculated for AusTraits using the standard formulation, the
+    one-sided surface area of a fresh leaf divided by its ovendry mass (Prez-Harguindeguy
+    et al. 2013). However, for the purpose of this study, we did not oven-dry the
+    samples because we were particularly interested in the flammability across the
+    three material types in the actual condition they were in (i.e. fresh, dried and
+    senesced). We therefore named this variable, based on the actual weight, 'SLA*'.
+    Data for 'SLA*' are also present in the data file but not incorporated into AusTraits.
 substitutions: .na
 taxonomic_updates:
 - find: Anophora hispida

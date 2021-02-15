@@ -41,5 +41,4 @@ curliness %>%
          site_name = gsub("NA rainfall NA soil P","unknown site",site_name)) %>%
   write_csv("data/Grootemaat_2017_2/data.csv")
 
-  
-  
+
