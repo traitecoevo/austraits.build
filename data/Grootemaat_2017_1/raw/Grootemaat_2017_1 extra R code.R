@@ -7,3 +7,8 @@ read_csv("data/Grootemaat_2017_1/raw/leaves.csv")%>%
   rename(Abbreviation = Species) %>%
   full_join(species_match, by = "Abbreviation") %>% 
   write_csv("data/Grootemaat_2017_1/data.csv")
+
+
+read_csv("data/Grootemaat_2017_1/data.csv") %>%
+  left_join(species_match) %>% 
+  write_csv("data/Grootemaat_2017_1/data.csv")

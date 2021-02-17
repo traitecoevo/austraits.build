@@ -13,16 +13,28 @@ source:
     pages: 1486--1497
     doi: 10.1111/1365-2435.12449
     editor: Jennifer Schweitzer
+  secondary:
+    key: Cornwell_2006
+    bibtype: Thesis
+    year: '2006'
+    author: William K. Cornwell
+    title: 'Causes and consequences of functional trait diversity: plant community
+      assembly and leaf decomposition.'
+    institution: Stanford University, California
+    type: PhD Thesis
 people:
 - name: Saskia Grootemaat
   institution: University of New South Wales
   role: collector, contact
+- name: Will Cornwell
+  institution: Macquarie University
+  role: collector
 - name: Ian Wright
   institution: Macquarie University
   role: lab_leader
 dataset:
-  year_collected_start: unknown
-  year_collected_end: unknown
+  year_collected_start: 2012
+  year_collected_end: 2012
   description: The aim of this study was twofold, (i) to determine which morphological
     and chemical leaf traits drive flammability and (ii) to determine whether different
     (combinations of) morphological and chemical leaf traits drive interspecific variation
@@ -125,14 +137,15 @@ contexts:
     description: fresh leaves
   SENESCED:
     type: field
-    description: sensced leaves
+    description: senesced leaves
 config:
   data_is_long_format: no
   variable_match:
     taxon_name: taxon
     site_name: site_name
     context_name: material
-  custom_R_code: data %>% filter(taxon != "NA NA")
+  custom_R_code: data %>% filter(taxon != "NA NA") %>% group_by(taxon) %>%  mutate_at(vars(`N
+    (%mass)`,`P (%mass)`,`lignin (%mass)`,`tannin (%mass)`,`FMC  (% odw)`,senesced_leaf_N_per_dry_mass,senesced_leaf_P_per_dry_mass),funs(replace(.,duplicated(.),NA))) %>% ungroup()
 traits:
 - var_in: length (mm)
   unit_in: mm
@@ -148,13 +161,15 @@ traits:
   replicates: 1
   methods: Standard protocols were followed for measuring leaf length (mm), effective
     leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
-- var_in: thickness (mm)
+- var_in: NEWthickness (mm)
   unit_in: mm
   trait_name: leaf_thickness
   value_type: raw_value
   replicates: 1
   methods: Standard protocols were followed for measuring leaf length (mm), effective
     leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+    For terete leaves, the following equation was used, thickness =  (pi*thickness)/4,
+    to control for the shape of the leaves. See Lamont et al. 2015.
 - var_in: actual mass (g)
   unit_in: g
   trait_name: leaf_fresh_mass
@@ -214,48 +229,48 @@ traits:
 - var_in: N (%mass)
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  value_type: site_mean
+  replicates: unknown
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). In brief, litter N and P were quantified by Kjeldahl digestions and colorimetric
     assays (OI Analytical, Wilsonville, OR, USA).
 - var_in: senesced_leaf_N_per_dry_mass
   unit_in: '%'
   trait_name: senesced_leaf_N_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  value_type: site_mean
+  replicates: unknown
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). In brief, litter N and P were quantified by Kjeldahl digestions and colorimetric
     assays (OI Analytical, Wilsonville, OR, USA).
 - var_in: P (%mass)
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  value_type: site_mean
+  replicates: unknown
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). In brief, litter N and P were quantified by Kjeldahl digestions and colorimetric
     assays (OI Analytical, Wilsonville, OR, USA).
 - var_in: senesced_leaf_P_per_dry_mass
   unit_in: '%'
   trait_name: senesced_leaf_P_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  value_type: site_mean
+  replicates: unknown
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). In brief, litter N and P were quantified by Kjeldahl digestions and colorimetric
     assays (OI Analytical, Wilsonville, OR, USA).
 - var_in: lignin (%mass)
   unit_in: '%'
   trait_name: leaf_lignin_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  value_type: site_mean
+  replicates: unknown
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). Lignin was calculated as the difference between the sum of non-polar,
     water-soluble and acid-soluble fractions from the total sample.
 - var_in: tannin (%mass)
   unit_in: '%'
   trait_name: leaf_tannin_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  value_type: site_mean
+  replicates: unknown
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). Soluble polyphenols (tannins) were determined using the Folin-Denis method
     (Allen et al. 1974).
@@ -432,6 +447,9 @@ questions:
     "leaf nutrient per dry mass" calculation. I'd using "DRIED" for now. The leaf
     N & P data from senesced leaves are under separate variables
   question3: During what year(s) was this study carried out?
-  question4: I simply copied the site data from one of Ian's AusTraits submissions. Quickly check to make sure I aligned it correctly.
-  question5: Are there any additional authors who should be included; these should be people who made substantial intellectual contributions to the experimental design and collection of data.
+  question4: I simply copied the site data from one of Ian's AusTraits submissions.
+    Quickly check to make sure I aligned it correctly.
+  question5: Are there any additional authors who should be included; these should
+    be people who made substantial intellectual contributions to the experimental
+    design and collection of data.
 
