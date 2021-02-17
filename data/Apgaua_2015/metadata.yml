@@ -23,10 +23,10 @@ people:
   role: collector
 - name: Susan Laurance
   institution: James Cook University
-  role: collector
+  role: collector, lab_leader
 dataset:
-  year_collected_start: unknown
-  year_collected_end: unknown
+  year_collected_start: middle of 2014
+  year_collected_end: late 2014 to early 2015
   description: Using a multi-disciplinary approach, this study examined the hydraulic
     variability in trees in a lowland tropical rainforest in north-eastern Australia.
   collection_type: field
@@ -35,32 +35,35 @@ dataset:
     lowland tropical rainforest at the Daintree Rainforest Observatory, Cape Tribulation
     (16deg 06' 20'', 145deg 26' 40'') in north-eastern Australia. We selected seven
     common eudicot and one monocot palm (>8 tree stems/ha >10 cm DBH), representing
-    different functional groups [33] (Table 1). These species belong to different
-    genera and families, thereby preventing bias due to close phylogenetic relatedness
-    [34]. For brevity, we henceforth refer to our study species by their genus. We
-    sampled four mature individuals (>60% potential height) of each species, with
-    the exception of Castanospermum for which resources limited sampling to two individuals.
-    Our sample selection was complemented with a canopy crane assessment to ensure
-    that we selected individuals with well-illuminated crowns, that were not overtopped
+    different functional groups (Table 1). These species belong to different genera
+    and families, thereby preventing bias due to close phylogenetic relatedness. For
+    brevity, we henceforth refer to our study species by their genus. We sampled four
+    mature individuals (>60% potential height) of each species, with the exception
+    of Castanospermum for which resources limited sampling to two individuals. Our
+    sample selection was complemented with a canopy crane assessment to ensure that
+    we selected individuals with well-illuminated crowns, that were not overtopped
     by other species, and which had limited liana load. In the case of Myristica,
     which is an understorey tree, all the individuals we selected were partially overtopped
     by canopy trees (60% to 70% crown exposed). However the variation in crown exposure
     of the four selected individuals was minimal, and in all cases well-illuminated
     branches were accessible by the crane.
   original_file: Apgaua et al. 2015.xls
-  notes: none
+  notes: Another researcher has data on Huber Value, predawn water potential, and
+    midday water potential reported in the study. These data have not yet been merged
+    into AusTraits.
 sites:
   Daintree Rainforest Observatory:
     latitude (deg): -16.1055556
     longitude (deg): 145.4444444
-    description: lowland tropical rainforest
+    description: lowland tropical rainforest, locally known as 'complex mesophyll
+      vine forest'
 contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     taxon_name: Species
     site_name: Study site
-  custom_R_code: data %>% mutate(vessel_diameter = sqrt(`Vessel Area (um2)`)/3.14159)
+  custom_R_code: data %>% mutate(vessel_diameter = sqrt(`Vessel Area (um2)`/3.14159))
 traits:
 - var_in: Theoretical Specific Conductivity (kg s-1 MPa-1)
   unit_in: 10^6 x kg/m/s/MPa
@@ -86,7 +89,11 @@ traits:
     as, Ks = pi/128nA[cross sectional area] x SD4, where n is the viscosity (1.002
     x 10-9 MPa s-1) and p is the density of water (998.23 kg m-3) respectively at
     20 deg C. We also derived a vulnerability index (VI = Vdia/VD, susceptibility
-    to cavitation) for each individual.
+    to cavitation) for each individual. (Note, these units are different from those
+    reported in the manuscript. Other studies in AusTraits have used the same formula
+    to calculate these values, but then adjusted them to be comparable to Ks (not
+    theoretical), and the same was done to merge this dataset into AusTraits; that
+    is, the units used are '10^6 x kg/m/s/MPa' versus 'kg/s/MPa' in the manuscript.)
 - var_in: vessel_diameter
   unit_in: um
   trait_name: vessel_diameter
@@ -208,6 +215,30 @@ traits:
     canopy. For the compound-leaved Castanospermum, leaflets were taken to be the
     functional unit equivalent to leaves. Leaf areas were obtained from scans processed
     in imaging software GIMP.
+- var_in: Length (cm)
+  unit_in: cm
+  trait_name: leaf_length
+  value_type: raw_value
+  replicates: 1
+  methods: We used the canopy crane to access leaf and branch material in the canopy.
+    For leaf area, leaf slenderness (defined as the ratio of the leaf length to leaf
+    breadth), leaf mass per area (LMA) and leaf dry matter content (LDMC), five to
+    20 replicates per individual of sun-exposed leaves were obtained from the tree
+    canopy. For the compound-leaved Castanospermum, leaflets were taken to be the
+    functional unit equivalent to leaves. Leaf areas were obtained from scans processed
+    in imaging software GIMP.
+- var_in: Width (cm)
+  unit_in: cm
+  trait_name: leaf_width
+  value_type: raw_value
+  replicates: 1
+  methods: We used the canopy crane to access leaf and branch material in the canopy.
+    For leaf area, leaf slenderness (defined as the ratio of the leaf length to leaf
+    breadth), leaf mass per area (LMA) and leaf dry matter content (LDMC), five to
+    20 replicates per individual of sun-exposed leaves were obtained from the tree
+    canopy. For the compound-leaved Castanospermum, leaflets were taken to be the
+    functional unit equivalent to leaves. Leaf areas were obtained from scans processed
+    in imaging software GIMP.
 - var_in: Leaf Dry Matter Content (mg/mg)
   unit_in: mg/mg
   trait_name: leaf_dry_matter_content
@@ -246,26 +277,5 @@ traits:
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
-questions:
-  contributor: AusTraits also includes Huber Value, predawn water potential, and midday
-    water potential as traits if you also have this data to submit
-  question2: Do you have leaf width and length as separate variables (vs. the calculated
-    leaf slenderness trait). For leaf dimensions, we prefer to include the more raw
-    data format if possible.
-  question3: For theoretical specific conductivity you give the units of kg s-1 MPa-1.
-    All other studies in AusTraits use kg m-1 s-1 MPa-1, the same units studies use
-    for "sapwood_specific_conductivity". I've gone back to the handful of studies
-    that report either of these traits to confirm I didn't mix up units. In addition
-    your values are 10^6 higher than other in AusTraits - I have fudged them by 10^6
-    in the attached plots. I'm assuming I must have misinterpreted your trait and
-    need to devise a new trait for your data. Is this correct? How would your trait
-    be different from this definition for current trait "sapwood_specific_conductivity_theoretical",
-    defined as "Theoretical Ks or Kp; Describes the theoretical flow rate of water
-    (kg/s) along a stem for a given drop in pressure (1/MPa). Calculated as theoretical
-    Kh, calculated based on Hagen-Poiseuille's law, divided by the microscopically
-    determined cross-sectional area without bark and pit."
-  question5: I've changed your units for leaf_thickness from 'cm' to 'mm' aligning
-    the data with more likely values and following the units given in Table 2. I've
-    done the same for leaf_area, aligning the values in your file with those in the
-    manuscript figures.
+questions: .na
 
