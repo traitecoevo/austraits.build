@@ -132,8 +132,10 @@ expect_no_error <- function (object, regexp = NULL, ..., info = NULL, label = NU
    invisible(NULL)
 }
 
-expect_list_elements_contain <- function(object, expected, ...) {
-  tmp <- lapply(object, function(x) expect_contains(names(x), expected, ...))
-  invisible(object)
+expect_list_elements_contain <- function(object, expected, info) {
+
+  for(i in seq_along(object)) expect_contains(names(object[[i]]), expected, info = paste(info, i))
+
+  invisible(NULL)
 }
 
