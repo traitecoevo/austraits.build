@@ -158,7 +158,7 @@ for (dataset_id in dataset_ids) {
 
   # Substitutions
   if(!is.na(metadata[["substitutions"]][1])) {
-    expect_list_elements_contain(metadata[["substitutions"]], definitions$metadata$elements$substitutions$values %>% names())
+    expect_list_elements_contain(metadata[["substitutions"]], definitions$metadata$elements$substitutions$values %>% names(), "metadata - substitution #")
     trait_names <- sapply(metadata[["substitutions"]], "[[", "trait_name")
     expect_isin(unique(trait_names), definitions$traits$elements %>% names(), info=f)
     expect_isin(unique(trait_names), unique(sapply(metadata[["traits"]], "[[", "trait_name")), info=paste0(f, " - substitutions"))
