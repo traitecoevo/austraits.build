@@ -50,7 +50,7 @@ traits:
       label: Bark dry mass per unit fresh bark volume
       values:
         minimum: 0.1
-        maximum: 2.0
+        maximum: 1.1
     bark_C_per_dry_mass:
       description: Bark carbon (C) content per unit bark dry mass
       type: numeric
@@ -90,7 +90,7 @@ traits:
       label: Bark aluminium (Al) content per unit bark dry mass
       values:
         minimum: 0.01
-        maximum: 12000.0
+        maximum: 10.0
     bark_B_per_dry_mass:
       description: Bark boron (B) content per unit bark dry mass
       type: numeric
@@ -98,7 +98,7 @@ traits:
       label: Bark boron (B) content per unit bark dry mass
       values:
         minimum: 0.001
-        maximum: 100.0
+        maximum: 1.0
     bark_Ca_per_dry_mass:
       description: Bark calcium (Ca) content per unit bark dry mass
       type: numeric
@@ -113,8 +113,8 @@ traits:
       units: mg/g
       label: Bark copper (Cu) content per unit bark dry mass
       values:
-        minimum: 0.001
-        maximum: 150.0
+        minimum: 0.0001
+        maximum: 1.0
     bark_Fe_per_dry_mass:
       description: Bark iron (Fe) content per unit bark dry mass
       type: numeric
@@ -122,7 +122,7 @@ traits:
       label: Bark iron (Fe) content per unit bark dry mass
       values:
         minimum: 0.001
-        maximum: 100.0
+        maximum: 10.0
     bark_Mg_per_dry_mass:
       description: Bark magnesium (Mg) content per unit bark dry mass
       type: numeric
@@ -138,7 +138,7 @@ traits:
       label: Bark manganese (Mn) content per unit bark dry mass
       values:
         minimum: 0.001
-        maximum: 10000.0
+        maximum: 1.0
     bark_Na_per_dry_mass:
       description: Bark sodium (Na) content per unit bark dry mass
       type: numeric
@@ -154,7 +154,7 @@ traits:
       label: Bark sulphur (S) content per unit bark dry mass
       values:
         minimum: 0.1
-        maximum: 50000.0
+        maximum: 100.0
     bark_Zn_per_dry_mass:
       description: Bark zinc (Zn) content per unit bark dry mass
       type: numeric
@@ -162,7 +162,7 @@ traits:
       label: Bark zinc (Zn) content per unit bark dry mass
       values:
         minimum: 0.001
-        maximum: 1000.0
+        maximum: 10.0
     bark_morphology:
       description: Description of bark morphology
       type: categorical
@@ -197,7 +197,7 @@ traits:
       units: mg/mg
       label: Bark cellulose per unit bark dry mass
       values:
-        minimum: 0.001
+        minimum: 0.1
         maximum: 1.0
     bark_lignin_per_dry_mass:
       description: Bark lignin per unit bark dry mass
@@ -205,7 +205,7 @@ traits:
       units: mg/mg
       label: Bark lignin per unit bark dry mass
       values:
-        minimum: 0.001
+        minimum: 0.01
         maximum: 1.0
     bark_tannin_per_dry_mass:
       description: Bark tannins (polyphenols) per unit bark dry mass
@@ -441,7 +441,7 @@ traits:
     ca:
       description: Ambient CO2 concentration (external CO2 concentration)
       type: numeric
-      units: umol/mol
+      units: umolCO2/mol
       label: ambient CO2 concentration
       values:
         minimum: 50.0
@@ -449,15 +449,15 @@ traits:
     cc:
       description: CO2 concentration inside chloroplasts
       type: numeric
-      units: umol/umol
+      units: umolCO2/umol
       label: CO2 concentration inside chloroplasts
       values:
         minimum: 50.0
         maximum: 1000.0
-    ci:
+    ci_at_ambient:
       description: CO2 concentration in interstitial spaces under ambient conditions
       type: numeric
-      units: umol/mol
+      units: umolCO2/mol
       label: internal CO2 concentration under ambient conditions
       values:
         minimum: 50.0
@@ -465,7 +465,7 @@ traits:
     ci_at_Amax:
       description: CO2 concentration in interstitial spaces during Amax measurement
       type: numeric
-      units: umol/mol
+      units: umolCO2/mol
       label: internal CO2 concentration during Amax measurement
       values:
         minimum: 50.0
@@ -473,7 +473,7 @@ traits:
     ci_at_Asat:
       description: CO2 concentration in interstitial spaces during Asat measurement
       type: numeric
-      units: umol/mol
+      units: umolCO2/mol
       label: internal CO2 concentration during Asat measurement
       values:
         minimum: 10.0
@@ -481,7 +481,7 @@ traits:
     ci_over_ca:
       description: Ratio of internal to external CO2 concentrations
       type: numeric
-      units: umol/umol
+      units: umolCO2 internal/umolCO2 ambient
       label: Ratio of internal to external CO2 concentrations
       values:
         minimum: 0.0
@@ -679,6 +679,7 @@ traits:
         mammals: mammals
         non-flying: mammals and non-flying birds (i.e. cassowary)
         passive: no dispersal agent
+        rodents: rodents
         vertebrate: vertebrate
         wind: wind
         water: water
@@ -785,8 +786,10 @@ traits:
       type: categorical
       label: Fire-cued seeding
       values:
-        fire_cued_seeding: Plants that germinate robustly following fire
+        fire_cued_seeding: Plants that germinate robustly following fire; or number of seedlings not specified
         fire_cued_seeding_minimal: A small number of seedlings present post-fire
+        fire_cued_seeding_moderate: A moderate number of seedlings present post-fire
+        fire_cued_seeding_high: A high number of seedlings present post-fire
         fire_cued_seeding_complete_germination: The entire seedbank germinates following fire; no seedbank remains
         fire_cued_seeding_incomplete_germination: Only part of the seedbank germinates following fire
         no_fire_cued_seeding: Plants that do not show increased seeding following fire
@@ -801,10 +804,10 @@ traits:
         establish_intermediate_to_over_mature_vegetation: Plants unable to establish immediately after fire (within the first season or two), but can establish in older vegetation (including mature to over-mature vegetation), requires some environmental charateristics not found in vegetation straight after fires   
         establish_anytime: Plants can establish immediately after fire and in later years as vegetation ages, right thru to mature and over-mature vegetation (assuming suitable seasonal conditions)
     fire_flame_duration:
-      description: Flame duration. Time from the first visible flame until no more flames could be seen (seconds)
+      description: Flame duration for a single leaf. Time from the first visible flame until no more flames could be seen (seconds)
       type: numeric
       units: seconds
-      label: Flame duration.
+      label: Flame duration for a single leaf.
       values:
         minimum: 0.1
         maximum: 200  
@@ -833,23 +836,23 @@ traits:
         minimum: 0.01
         maximum: 1.0 
     fire_smoulder_duration:
-      description: Smoulder duration. Time from the end of the last visible flame until the glowing phase died out (seconds)
+      description: Smoulder duration for a single leaf. Time from the end of the last visible flame until the glowing phase died out (seconds)
       type: numeric
       units: seconds
-      label: Smoulder duration.
+      label: Smoulder duration for a single leaf.
       values:
         minimum: 0.1
         maximum: 1000  
     fire_total_burn_duration:
-      description: Sum of flame duration and smoulder duration
+      description: Sum of flame duration and smoulder duration for a single leaf.
       type: numeric
       units: seconds
-      label: Sum of flame duration and smoulder duration
+      label: Sum of flame duration and smoulder duration for a single leaf.
       values:
         minimum: 0.1
         maximum: 1500 
     fire_time_to_ignition:
-      description: Time to ignition. Time from ignition source contacting leaf (or other material) until ignition occurs.
+      description: Time to ignition for a single leaf. Time from ignition source contacting leaf (or other material) until ignition occurs.
       type: numeric
       units: seconds
       label: Time to ignition
@@ -1157,6 +1160,9 @@ traits:
         imbibed_seed_primer: soaked in seed primer
         imbibed_then_nicked: soaked, then seed is nicked
         incise_pericarp: make incision into pericarp
+        light: light
+        mycorhizal_association: Requires mycorhizal symbiont to germinate
+        none: No special germination treatment required
         remove_bracts: remove bracts surrounding the seed
         remove_mericarp_plug: remove the mericarp plug
         remove_seed_casing: UNKNOWN
@@ -1173,9 +1179,9 @@ traits:
         scarify_sand_seed_coat: Sand the seed coat
         scarify_seed_coat_vice: UNKNOWN
         simulate_smoke: Simulate smoke conditions for a period using the disk method.
+        smoke: Seed requires smoke to germinate
         smoked_water: Soak seed in smoked water
-        smoke: Expose seed to smoke
-        smoke_and_heat: Expose see to a combination of smoke and heat
+        smoke_and_heat: Expose seed to a combination of smoke and heat
         smoke_and_light: Expose seed to smoke and light
         sterilise_calcium_hydroxide: Seed sterilised in calcium hydroxide (or similar)
         sterilise_domestos: Seed sterilised in 10% doemestos (or similar)
@@ -1296,7 +1302,7 @@ traits:
       units: mm2/mg
       label: Leaf area per unit plant dry mass
       values:
-        minimum: 0.1
+        minimum: 0.05
         maximum: 100.0
     leaf_absorption:
       description: Proportion of incoming visible light (between 400-700 nm) that is absorbed by the leaf
@@ -1398,7 +1404,7 @@ traits:
     leaf_cell_wall_N:
       description: Proportion of leaf cell wall material that is nitrogen
       type: numeric
-      units: mmol/g
+      units: mmolN/g
       label: Leaf cell wall nitrogen concentration
       values:
         minimum: 0.1
@@ -1526,7 +1532,7 @@ traits:
       label: Leaf tissue density
       values:
         minimum: 0.05
-        maximum: 10.0
+        maximum: 1.1
     leaf_dry_mass:
       description: Leaf dry mass
       type: numeric
@@ -1566,7 +1572,7 @@ traits:
       label: Leaf fresh mass
       values:
         minimum: 0.1
-        maximum: 25000.0
+        maximum: 30000.0
     leaf_fresh_mass_per_area:
       description: Leaf fresh mass per leaf area
       type: numeric
@@ -1643,7 +1649,7 @@ traits:
       units: mg/mg
       label: Leaf cellulose per unit leaf dry mass
       values:
-        minimum: 0.001
+        minimum: 0.01
         maximum: 1.0
     leaf_lignin_per_dry_mass:
       description: Leaf lignin per unit leaf dry mass
@@ -1651,7 +1657,7 @@ traits:
       units: mg/mg
       label: Leaf lignin per unit leaf dry mass
       values:
-        minimum: 0.001
+        minimum: 0.01
         maximum: 1.0
     leaf_tannin_per_dry_mass:
       description: Leaf tannins (polyphenols) per unit leaf dry mass
@@ -1963,10 +1969,18 @@ traits:
       values:
         minimum: 0.01
         maximum: 51.0
+    whole_plant_transpiration:
+      description: Rate of water loss per plant, as calculated across longer periods of time under experimental conditions.
+      type: numeric
+      units: g/day/cm2
+      label: Whole plant transpiration
+      values:
+        minimum: .01
+        maximum: 1000
     leaf_transpiration:
       description: Rate of water loss from leaf under ambient conditions
       type: numeric
-      units: mmol/m2/s
+      units: mmolH2O/m2/s
       label: Leaf transpiration under ambient conditions
       values:
         minimum: 0.0001
@@ -1974,7 +1988,7 @@ traits:
     leaf_transpiration_at_Amax:
       description: Rate of water loss from leaf during Amax measurement
       type: numeric
-      units: mmol/m2/s
+      units: mmolH2O/m2/s
       label: Leaf transpiration during Amax measurement
       values:
         minimum: 0.0001
@@ -1982,7 +1996,7 @@ traits:
     leaf_transpiration_at_Asat:
       description: Rate of water loss from leaf during Asat measurement
       type: numeric
-      units: mmol/m2/s
+      units: mmolH2O/m2/s
       label: Leaf transpiration during Asat measurement
       values:
         minimum: 0.0001
@@ -1990,7 +2004,7 @@ traits:
     leaf_dark_transpiration_per_area:
       description: Leaf transpiration rate per unit leaf area, in the dark
       type: numeric
-      units: mmol/m2/s
+      units: mmolH2O/m2/s
       label: Leaf transpiration rate per unit leaf area, in the dark
       values:
         values:
@@ -2004,6 +2018,30 @@ traits:
       values:
         minimum: .01
         maximum: 100
+    leaf_relative_water_content_at_turgor_loss_point:
+      description: Ratio of water in a fresh leaf to water in a leaf at turgor loss; calculated from a pressure-volume curve.
+      type: numeric
+      units: g/g
+      label: Leaf relative water content at turgor loss point
+      values:
+        minimum: 0.1
+        maximum: 1.0
+    bulk_modulus_of_elasticity:
+      description: In leaves, the ratio of the change in cell turgor to the change in cell volume as a plant dries out; calculated from a pressure-volume curve
+      type: numeric
+      units: MPa
+      label: Bulk modulus of elasticity (e)
+      values:
+        minimum: 0.1
+        maximum: 100
+    osmotic_potential_at_full_turgor:
+      description: Osmotic potential at full tugor; calculated from a pressure-volume curve
+      type: numeric
+      units: MPa
+      label: Osmotic potential at full tugor
+      values:
+        minimum: .1
+        maximum: 10
     leaf_type:
       description: Broad definitions of leaf type
       type: categorical
@@ -2022,7 +2060,7 @@ traits:
       label: Leaf water content per unit area
       values:
         minimum: 10.0
-        maximum: 1000.0
+        maximum: 5000.0
     leaf_water_content_per_dry_mass:
       description: Ratio of the mass of water in a leaf to leaf dry mass. (See also leaf_dry_matter_content, the ratio of a leaf's dry mass to fresh mass, that is recorded by a greater number of studies.)
       type: numeric
@@ -2070,7 +2108,7 @@ traits:
       label: Bark water content per unit dry mass
       values:
         minimum: 0.01
-        maximum: 20.0
+        maximum: 1.0
     leaf_width:
       description: Longest width axis of a leaf; orthogonal to its length
       type: numeric
@@ -2211,14 +2249,6 @@ traits:
       values:
         minimum: 0.1
         maximum: 1
-    bulk_modulus_of_elasticity:
-      description: In leaves, the ratio of the change in cell turgor to the change in cell volume as a plant dries out; calculated from a pressure-volume curve
-      type: numeric
-      units: MPa
-      label: Bulk modulus of elasticity (e)
-      values:
-        minimum: 0.1
-        maximum: 100
     modulus_of_elasticity_xylem:
       description: A measure of xylem's resistance to being deformed elastically (i.e., non-permanently) when a stress is applied to it; definition for measurements on wood (secondary xylem)
       type: numeric
@@ -2349,6 +2379,7 @@ traits:
         cam: Plants which display crassulacean acid metabolism
         c3-cam: Taxa that shift between c3 and cam photosynthesis
         c4-cam: Taxa that shift between c4 and cam photosynthesis
+        facultative_cam: Species that shifts between C3 and CAM photosynesis depending on water availablility.
         unknown: Photosynthetic pathway unknown
     photosynthetic_rate_per_area_ambient:
       description: Rate at which a plant consumes carbon dioxide through photosynthesis, per unit leaf area
@@ -2555,8 +2586,9 @@ traits:
         aboveground_caudex: Plant regenerates from above-ground apical meristems. Also termed a caudex. Term refers to palm-like plants with aerial buds that resprout, including grass trees, palms, tree ferns, and pandanus.
         aboveground_other: vegetative buds or plant fragments that can disperse and produce new plants (including axillary buds, bulbils and turions)
         adventitious_root_buds: Adventitious root buds on main root or lateral roots
-        apical_buds: Apical buds.
+        apical_buds: Plant resprouts from apical buds.
         basal: Plant regenerates from the base of the stem (versus underground). Generally synonymous with "lignotuber", especially among Australian plants.
+        basal_stem_buds: Plant resprouts from basal stem buds.
         belowground: Plants that resprout from a belowground organ, but the type of organ isn't specified.
         belowground_caudex: Plant regenerates from belowe-ground caudex. 
         bud-bearing_root: Lateral root that produces vertical suckers, adventitious roots
@@ -2573,6 +2605,7 @@ traits:
         root_crown: Plant that produces a few vertical shoots from the root crown.
         root_tuber: Below ground storage organ derived from root tissue.
         seed: Plants that regenerate only or primarily by seed. These are mostly fire-killed taxa, but the not always
+        stem_buds: Plant resprouts from stem buds (separate to epicormic buds)
         stem_tuber: Below ground storage organ derived from stem tissue.
         stolon: Plants having horizontal branches (stems) from the base of the plant that produce new plants from buds at its tip or nodes
         woody_rootstock: Plant that regenerate by resprouting from wood rootstock.
@@ -3063,6 +3096,7 @@ traits:
       values:
         canopy: Seeds stored in the canopy, usually still within a woody cone
         soil: Seeds stored in the soil
+        none: Seeds are not stored
         not_canopy: Seed explicitly not stored in the canopy; other storage locations unknown
     seed_longevity:
       description: Seed longevity
@@ -3072,18 +3106,19 @@ traits:
         short-lived: Seedbank survives for weeks
         intermediate: Seedbank survives for months to less than a year
         long-lived: Seedbank survives for more than 10 years
-        persistent: Seedbank persistent; location not specified
         short_lived_in_soil: Propagule is short-lived in soil
         short_persistent_in_soil: Propagule is persistent in soil 1 to 5 years
         short_persistent_in_soil_b: Propagule is persistent in soil for less than 2 years
         long_persistent_in_soil: Propagule is persistent in soil for more than 5 years
         long_persistent_in_soil_b: Propagule is persistent in soil for more than 2 years
+        persistent_in_canopy: Propagule persistent in canopy for unspecified length of time
+        persistent_in_soil: Propagule persistent in soil for unspecified length of time
         short_persistent_in_canopy: Propagule persistent in canopy for 1 to 5 years
         long_persistent_in_canopy: Propagule persistent in canopy for more than 5 years
-        transient_in_canopy: Propagule persistent in canopy for short period of time
-        transient_in_soil: Propagule persistent in soil for short period of time
-        persistent_in_canopy: Propagule is persistent in canopy, exact time not specified
-        persistent_in_soil: Propagule is persistent in soil, exact time not specified
+        persistent: Propagule persistent, location not specified
+        transient: Propagule transient, location not specified
+        transient_in_canopy: Propagule transient in canopy
+        transient_in_soil: Propagule transient in soil
         widely_dispersed: Seed longevity not important, as seeds are widely dispersed and always available for germination
     seed_release:
       description: When a fruit or cone only releases its seeds following an environmental trigger, often fire; ; see also 'seed_longevity', 'seed_storage_location', 'soil_seedbank', 'canopy_seedbank', and 'serotiny'
@@ -3117,6 +3152,30 @@ traits:
       values:
         single: When there is a single leaf at the first node
         paired: When there is a pair of leaves at the first node
+    senesced_leaf_Al_per_dry_mass:
+      description: Senesced leaf aluminium (Al) content per unit leaf dry mass
+      type: numeric
+      units: mg/g
+      label: Senesced leaf aluminium (Al) content per unit leaf dry mass
+      values:
+        minimum: 0.01
+        maximum: 10.0
+    senesced_leaf_B_per_dry_mass:
+      description: Senesced leaf boron (B) content per unit leaf dry mass
+      type: numeric
+      units: mg/g
+      label: Senesced leaf boron (B) content per unit leaf dry mass
+      values:
+        minimum: 0.001
+        maximum: 10.0
+    senesced_leaf_C_per_dry_mass:
+      description: Senesced leaf carbon (C) content per unit leaf dry mass
+      type: numeric
+      units: '%'
+      label: Senesced leaf carbon (C) content per unit leaf dry mass
+      values:
+        minimum: 10.0
+        maximum: 100.0
     senesced_leaf_Ca_per_dry_mass:
       description: Senesced leaf calcium (Ca) content per unit leaf dry mass
       type: numeric
@@ -3179,7 +3238,7 @@ traits:
       units: mg/g
       label: Senesced leaf nitrogen (N) content per unit leaf dry mass
       values:
-        minimum: 0.1
+        minimum: 1.0
         maximum: 100.0
     senesced_leaf_Na_per_dry_mass:
       description: Senesced leaf sodium (Na) content per unit leaf dry mass
@@ -3187,7 +3246,7 @@ traits:
       units: mg/kg
       label: Senesced leaf sodium (Na) content per unit leaf dry mass
       values:
-        minimum: 1.0
+        minimum: 100.0
         maximum: 20000.0
     senesced_leaf_Ni_per_dry_mass:
       description: Senesced leaf nickel (Ni) content per unit leaf dry mass
@@ -3203,8 +3262,8 @@ traits:
       units: mg/g
       label: Senesced leaf phosphorus (P) content per unit leaf dry mass
       values:
-        minimum: 0.01
-        maximum: 12
+        minimum: 0.005
+        maximum: 15
     senesced_leaf_S_per_dry_mass:
       description: Senesced leaf sulphur (S) content per unit leaf dry mass
       type: numeric
@@ -3341,7 +3400,7 @@ traits:
       units: mm2/mg
       label: Leaf area per unit leaf dry mass (specific leaf area, SLA)
       values:
-        minimum: 0.3
+        minimum: 0.1
         maximum: 500
     specific_root_area:
       description: Root area per unit root dry mass
@@ -3774,6 +3833,14 @@ traits:
       values:
         minimum: -8
         maximum: 0
+    leaf_relative_water_content_predawn:
+      description: Ratio of water in a fresh leaf to water in a saturated leaf; measured pre-dawn
+      type: numeric
+      units: g/g
+      label: Leaf relative water content predawn
+      values:
+        minimum: 0.1
+        maximum: 1.4
     water_potential_50percent_lost_conductivity:
       description: Xylem pressure at which 50% of conductivity is lost
       type: numeric
@@ -3801,10 +3868,10 @@ traits:
     water_use_efficiency_integrated:
       description: WUE; Rate of carbon dioxide uptake relative to water loss, per unit leaf area. This measures how much biomass is produced relative to transpiration, and is therefore an integrated measure of water use efficiency. (Calculated as biomass production / transpiration)
       type: numeric
-      units: mmolCO2/molH2O/m2/s
+      units: g H2O/g biomass
       label: Integrated water use efficiency
       values:
-        minimum: 1.0
+        minimum: 0.1
         maximum: 200.0
     water_use_efficiency_intrinsic:
       description: PWUE calculated as Aarea/gs; Ratio of photosynthesis (CO2 assimilation rate) to stomatal conductance (gs). This is intrinsic water use efficiency.
@@ -3852,7 +3919,7 @@ traits:
       units: mg/mm3
       label: Stem dry mass per unit fresh stem volume
       values:
-        minimum: 0.1
+        minimum: 0.05
         maximum: 1.4
     wood_C_per_dry_mass:
       description: Wood carbon (C) content per unit wood dry mass
