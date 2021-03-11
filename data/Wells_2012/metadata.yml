@@ -9,15 +9,6 @@ source:
       secondary rainforests in Australia''s Wet Tropics.'
     type: PhD
     institution: University of Queensland
-  secondary:
-    key: Kanowski_1999
-    bibtype: Thesis
-    year: 1999
-    author: John Kanowski
-    title: Ecological determinants of the distribution and abundance of the folivorous
-      marsupials endemic to the rainforests of the Atherton uplands, north Queensland.
-    type: PhD
-    institution: James Cook University, Townsville
 people:
 - name: Jessie Wells
   institution: University of Queensland
@@ -112,57 +103,6 @@ sites:
   Gourka Rd Topaz 2A vine forest:
     latitude (deg): -17.375
     longitude (deg): 145.715
-  Kanowski JK1:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK10:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK11:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK12:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK13:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK14:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK15:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK16:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK17:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK2:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK3:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK4:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK5:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK6:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK7:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK8:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-  Kanowski JK9:
-    latitude (deg): .na.real
-    longitude (deg): .na.real
   Koolmoon Creek Cardstone Basalt 980 m:
     latitude (deg): -17.748
     longitude (deg): 145.618
@@ -223,6 +163,74 @@ sites:
   Windsor Tableland CSIRO 800m Plot 16 EP40 Agapetes Scientific Area:
     latitude (deg): -16.283
     longitude (deg): 145.1
+  Kanowski JK1:
+    description: Longlands Gap (basalt)
+    latitude (deg): -17.46028
+    longitude (deg): 145.47473
+  Kanowski JK10:
+    description: Wallace Rd (Glen Allyn)
+    latitude (deg): -17.42063
+    longitude (deg): 145.67164
+  Kanowski JK11:
+    description: Tully Falls Rd, near TF
+    latitude (deg): -17.75847
+    longitude (deg): 145.54569
+  Kanowski JK12:
+    description: 'Palmerston: Malaan Rd turnoff'
+    latitude (deg): -17.59143
+    longitude (deg): 145.70355
+  Kanowski JK13:
+    description: Cairns Track
+    latitude (deg): -17.35164
+    longitude (deg): 145.72726
+  Kanowski JK14:
+    description: Robson Ck
+    latitude (deg): -17.11917
+    longitude (deg): 145.62952
+  Kanowski JK15:
+    description: TF Rd rhyolite
+    latitude (deg): -17.78676
+    longitude (deg): 145.55958
+  Kanowski JK16:
+    description: Sutties Gap Rd
+    latitude (deg): -17.64678
+    longitude (deg): 145.63772
+  Kanowski JK17:
+    description: Thomas Rd (recent basalt)
+    latitude (deg): -17.26548
+    longitude (deg): 145.56578
+  Kanowski JK2:
+    description: 'Mt Fisher: Kjellberg Rd'
+    latitude (deg): -17.54112
+    longitude (deg): 145.56136
+  Kanowski JK3:
+    description: 'Tully Falls Rd: Smiths'
+    latitude (deg): -17.68174
+    longitude (deg): 145.52989
+  Kanowski JK4:
+    description: Malaan SF
+    latitude (deg): -17.58672
+    longitude (deg): 145.582
+  Kanowski JK5:
+    description: Longlands Gap (rhyolite)
+    latitude (deg): -17.45501
+    longitude (deg): 145.47862
+  Kanowski JK6:
+    description: Mt Haig
+    latitude (deg): -17.10111
+    longitude (deg): 145.57346
+  Kanowski JK7:
+    description: Arthur Baillie Rd
+    latitude (deg): -17.68914
+    longitude (deg): 145.50649
+  Kanowski JK8:
+    description: Massey Creek
+    latitude (deg): -17.60993
+    longitude (deg): 145.56264
+  Kanowski JK9:
+    description: Lamins Hill (Cairns track)
+    latitude (deg): -17.36528
+    longitude (deg): 145.71537
 contexts:
   Stratum_1_seedling:
     type: field
@@ -238,8 +246,10 @@ config:
     context_name: StrataBinary
   custom_R_code: data %>% group_by(Species) %>% mutate_at(vars(LF, HeightMax, ReproAge,
     ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3,
-    cotsExp, cotsEH, cotsFR, LEE, seed_mass_to_use),funs(replace(.,duplicated(.),NA)))
-    %>% ungroup()
+    cotsExp, cotsEH, cotsFR, LEE, seed_mass_to_use),funs(replace(.,duplicated(.),NA)))    %>%
+    ungroup() %>% mutate(`LA` = if_else(omit=="Kanowski",0,`LA`),LtLeaf = if_else(omit=="Kanowski",0,LtLeaf),
+    LWC = if_else(omit=="Kanowski",0,LWC), LMA = if_else(omit=="Kanowski",0,LMA))
+    %>% mutate_at(c("LA","LtLeaf","LMA","LWC"), ~na_if(.,0))
 traits:
 - var_in: seed_mass_to_use
   unit_in: mg
