@@ -74,7 +74,9 @@ dataset:
     and kept cool in an ice-chest. Upon return to the laboratory, petioles were clipped
     from these leaves.
   original_file: J Kanowski rainforest leaf nutrient analysis PhD.xls
-  notes: none
+  notes: For a few of the micronutrients, Co, Cr, Ni, and Se, for many observations
+    the "lower detection limit" was reported. These have been filtered out using custom
+    R code, as John Kanowski suspects the values are lower than the reported value.
 sites:
   Arthur Baillie Rd:
     site number: 7
@@ -82,109 +84,151 @@ sites:
     longitude (deg): 145.50649
     altitude: highland (800-1200 m)
     geology: acid igneous or metamorphic
+    comments: ridge with gently sloping sides
+    rainfall (MAP, mm): 1793
   Cairns Track:
     site number: 13
     latitude (deg): -17.35164
     longitude (deg): 145.72726
     altitude: upland (400 - 800 m)
     geology: acid igneous or metamorphic
+    comments: steep ridge, close to basalt flow
+    rainfall (MAP, mm): 2488
   Lamins Hill (Cairns track):
     site number: 9
     latitude (deg): -17.36528
     longitude (deg): 145.71537
     altitude: upland (400 - 800 m)
     geology: basalt
+    comments: ridge, near edge of basalt flow
+    rainfall (MAP, mm): 2844
   Longlands Gap (basalt):
     site number: 1
     latitude (deg): -17.46028
     longitude (deg): 145.47473
     altitude: highland (800-1200 m)
     geology: basalt
+    comments: ridge, near edge of basalt flow
+    rainfall (MAP, mm): 2244
   Longlands Gap (rhyolite):
     site number: 5
     latitude (deg): -17.45501
     longitude (deg): 145.47862
     altitude: highland (800-1200 m)
     geology: acid igneous or metamorphic
+    comments: narrow, steep-sided ridge
+    rainfall (MAP, mm): 2302
   Malaan SF:
     site number: 4
     latitude (deg): -17.58672
     longitude (deg): 145.582
     altitude: highland (800-1200 m)
     geology: basalt
+    comments: narrow, steep-sided ridge
+    rainfall (MAP, mm): 2292
   Massey Creek:
     site number: 8
     latitude (deg): -17.60993
     longitude (deg): 145.56264
     altitude: highland (800-1200 m)
     geology: acid igneous or metamorphic
+    comments: rhyolite outcrop in basalt landscape
+    rainfall (MAP, mm): 2296
   'Mt Fisher: Kjellberg Rd':
     site number: 2
     latitude (deg): -17.54112
     longitude (deg): 145.56136
     altitude: highland (800-1200 m)
     geology: basalt
+    comments: narrow, steep-sided ridge
+    rainfall (MAP, mm): 2429
   Mt Haig:
     site number: 6
     latitude (deg): -17.10111
     longitude (deg): 145.57346
     altitude: highland (800-1200 m)
     geology: acid igneous or metamorphic
+    comments: steep-sided ridge
+    rainfall (MAP, mm): 2897
   'Palmerston: Malaan Rd turnoff':
     site number: 12
     latitude (deg): -17.59143
     longitude (deg): 145.70355
     altitude: upland (400 - 800 m)
     geology: basalt
+    comments: gently sloping site
+    rainfall (MAP, mm): 3191
   Robson Ck:
     site number: 14
     latitude (deg): -17.11917
     longitude (deg): 145.62952
     altitude: upland (400 - 800 m)
     geology: acid igneous or metamorphic
+    comments: saddle a short distance above a creek
+    rainfall (MAP, mm): 1953
   Sutties Gap Rd:
     site number: 16
     latitude (deg): -17.64678
     longitude (deg): 145.63772
     altitude: upland (400 - 800 m)
     geology: acid igneous or metamorphic
+    comments: steep ridge, close to basalt flow
+    rainfall (MAP, mm): 2762
   TF Rd rhyolite:
     site number: 15
     latitude (deg): -17.78676
     longitude (deg): 145.55958
     altitude: upland (400 - 800 m)
     geology: acid igneous or metamorphic
+    comments: gently sloping site
+    rainfall (MAP, mm): 2198
   Thomas Rd (recent basalt):
     site number: 17
     latitude (deg): -17.26548
     longitude (deg): 145.56578
     altitude: .na
     geology: basalt
+    comments: .na
+    rainfall (MAP, mm): .na
   Tully Falls Rd, near TF:
     site number: 11
     latitude (deg): -17.75847
     longitude (deg): 145.54569
     altitude: upland (400 - 800 m)
     geology: basalt
+    comments: flat site
+    rainfall (MAP, mm): 2088
   'Tully Falls Rd: Smiths':
     site number: 3
     latitude (deg): -17.68174
     longitude (deg): 145.52989
     altitude: highland (800-1200 m)
     geology: basalt
+    comments: ridge, near edge of basalt flow
+    rainfall (MAP, mm): 2255
   Wallace Rd (Glen Allyn):
     site number: 10
     latitude (deg): -17.42063
     longitude (deg): 145.67164
     altitude: upland (400 - 800 m)
     geology: basalt
-contexts: .na
+    comments: flat site
+    rainfall (MAP, mm): 3004
+contexts:
+  climax:
+    description: Species in climax community
+    type: field
+  pioneer:
+    description: Pioneer species
+    type: field
 config:
   data_is_long_format: no
   variable_match:
     taxon_name: Species
     site_name: site name
-  custom_R_code: .na
+    context_name: Seral
+  custom_R_code: data %>% mutate(`Co` = ifelse(`Co`==0.1,NA,`Co`), `Cr` = ifelse(`Cr`==0.3,NA,`Cr`),
+    `Ni` = ifelse(`Ni`== 5,NA,`Ni`), `Se` = ifelse(`Se`==1,NA,`Se`))
 traits:
 - var_in: 'N'
   unit_in: '%'
@@ -299,7 +343,9 @@ traits:
     trace elements Al, As, B, Cd, Co, Cr, Cu, Fe, Mn, Mo, Ni, Pb, Se and Zn by inductively
     coupled plasma optical emission spectrometry (Zarcinas et al. 1987). These analyses
     were conducted by staff at the laboratories of CSIRO Land and Water, Adelaide,
-    Australia.
+    Australia. (For many observations the "lower detection limit" was reported. These
+    have been filtered out using custom R code, as John Kanowski suspects the values
+    are lower than the reported value.)
 - var_in: Cr
   unit_in: ppm
   trait_name: leaf_Cr_per_dry_mass
@@ -312,7 +358,9 @@ traits:
     trace elements Al, As, B, Cd, Co, Cr, Cu, Fe, Mn, Mo, Ni, Pb, Se and Zn by inductively
     coupled plasma optical emission spectrometry (Zarcinas et al. 1987). These analyses
     were conducted by staff at the laboratories of CSIRO Land and Water, Adelaide,
-    Australia.
+    Australia. (For many observations the "lower detection limit" was reported. These
+    have been filtered out using custom R code, as John Kanowski suspects the values
+    are lower than the reported value.)
 - var_in: Cu
   unit_in: ppm
   trait_name: leaf_Cu_per_dry_mass
@@ -377,7 +425,9 @@ traits:
     trace elements Al, As, B, Cd, Co, Cr, Cu, Fe, Mn, Mo, Ni, Pb, Se and Zn by inductively
     coupled plasma optical emission spectrometry (Zarcinas et al. 1987). These analyses
     were conducted by staff at the laboratories of CSIRO Land and Water, Adelaide,
-    Australia.
+    Australia. (For many observations the "lower detection limit" was reported. These
+    have been filtered out using custom R code, as John Kanowski suspects the values
+    are lower than the reported value.)
 - var_in: Zn
   unit_in: ppm
   trait_name: leaf_Zn_per_dry_mass
@@ -403,7 +453,9 @@ traits:
     trace elements Al, As, B, Cd, Co, Cr, Cu, Fe, Mn, Mo, Ni, Pb, Se and Zn by inductively
     coupled plasma optical emission spectrometry (Zarcinas et al. 1987). These analyses
     were conducted by staff at the laboratories of CSIRO Land and Water, Adelaide,
-    Australia.
+    Australia. (For many observations the "lower detection limit" was reported. These
+    have been filtered out using custom R code, as John Kanowski suspects the values
+    are lower than the reported value.)
 - var_in: cellulose
   unit_in: '%'
   trait_name: leaf_cellulose_per_dry_mass
