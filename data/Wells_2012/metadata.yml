@@ -246,7 +246,7 @@ config:
     context_name: StrataBinary
   custom_R_code: data %>% group_by(Species) %>% mutate_at(vars(LF, HeightMax, ReproAge,
     ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3,
-    cotsExp, cotsEH, cotsFR, LEE, seed_mass_to_use),funs(replace(.,duplicated(.),NA)))    %>%
+    cotsExp, cotsEH, cotsFR, LEE, seed_mass_to_use),~replace(.x,duplicated(.x),NA))    %>%
     ungroup() %>% mutate(`LA` = if_else(omit=="Kanowski",0,`LA`),LtLeaf = if_else(omit=="Kanowski",0,LtLeaf),
     LWC = if_else(omit=="Kanowski",0,LWC), LMA = if_else(omit=="Kanowski",0,LMA))
     %>% mutate_at(c("LA","LtLeaf","LMA","LWC"), ~na_if(.,0))
