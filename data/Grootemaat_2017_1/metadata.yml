@@ -1,0 +1,973 @@
+source:
+  primary:
+    key: Grootemaat_2017_1
+    bibtype: Article
+    year: '2017'
+    author: Saskia Grootemaat and Ian J. Wright and Peter M. van Bodegom and Johannes
+      H. C. Cornelissen and Veronica Shaw
+    journal: Australian Journal of Botany
+    title: Bark traits, decomposition and flammability of Australian forest trees
+    volume: '65'
+    number: '4'
+    pages: '327'
+    doi: 10.1071/bt16258
+people:
+- name: Saskia Grootemaat
+  institution: University of New South Wales
+  role: collector, contact
+- name: Ian Wright
+  institution: Macquarie University
+  role: lab_leader
+- name: Veronica Shaw
+  institution: Macquarie University
+  role: assistant
+dataset:
+  year_collected_start: December 2012
+  year_collected_end: 2015
+  description: This study measured the decomposition rate and flammability (ignitibility,
+    sustainability and combustibility) of bark from 10 common forest tree species,
+    and quantified correlations with potentially important traits to understand the
+    interspecific differences in bark decomposability and flammability, and what chemical
+    or physical traits drive variation in these properties.
+  collection_type: field, experiment
+  sample_age_class: adult
+  sampling_strategy: Ten tree species with characteristic bark features were selected
+    in the dry sclerophyll forests of Ku-ring-gai Chase National Park (33deg37'25'S,
+    151deg14'39''E) and Blackwall Mountain Reserve (33deg30'26'S, 151deg20'0''E),
+    north of Sydney (New South Wales, Australia). The soils at these sites are predominantly
+    sandy (derived from Hawkesbury Sandstone) and very low in P (30-80 mg kg-1; Leishman
+    and Thomson 2005). Mean annual temperature was 17 deg C and mean annual rainfall
+    1332mm for these sites over the past 50 years or more (http://www.bom.gov. au/climate/data/,
+    accessed on 8 October 2015). Tree species, all belonging to the Myrtaceae family,
+    were selected based on their bark characteristics, abundance and their contribution
+    of bark to the litter layer (a full list of species is provided in Table 1). We
+    deliberately chose species with visually different bark types, including 'smooth
+    barks' and 'stringybarks' (Fig. 1). Although the stringybark species (Eucalyptus
+    eugenioides Sieber ex Spreng. and Syncarpia glomulifera Sm. Nied.) do not shed
+    their bark like the other species, they were included for comparison and because
+    of their importance in fire spread (see further discussion below). ^p Material
+    collection and trait measurements ^p Bark ^p  Bark from nine individual trees
+    per species was collected in December 2012 and stored in paper bags under ambient
+    laboratory conditions (21deg C). Depending on the species, the bark came off in
+    different sizes and shapes (flakes, slabs and ribbons). For comparison we roughly
+    standardised the bark samples by splitting them into pieces of ~13 cm2 (one sided
+    surface area). This size was practical to work with, both for the decomposition
+    experiments (limited by the size of the litterbags) and for the experimental burns
+    (limited by the size of the muffle furnace). ^p Leaves ^p Freshly senesced leaves
+    of the same species were collected from the forest floor after windy days; these
+    were easily distinguished from older (partially decomposed) senesced leaves by
+    their yellow colour. Unlike the samples of bark, which were true replicates of
+    nine individual trees, the leaf samples were taken from a bulk-sample from ~10-40
+    individual trees per species. The samples were stored in paper bags under ambient
+    laboratory conditions (21 deg C).
+  original_file: Grootemaat2017_AjoB_Data.xls
+  notes: none
+sites:
+  Blackwall Mountain:
+    latitude (deg): -33.5072222
+    longitude (deg): 151.3333
+    description: dry sclerophyll forest
+    soils: infertile sandy soil at the interface between Hawkesbury and Narrabeen
+      Sandstones
+    soil_P (mg/kg): 30-80
+    MAT (C): 17
+    MAP (mm): 1332
+    notes: .na
+  Bobbin Head:
+    latitude (deg): -33.661582
+    longitude (deg): 151.149208
+    description: dry sclerophyll forest
+    soils: sandy, derived from Hawkesbury sandstone
+    soil_P (mg/kg): 30-80
+    MAT (C): 17
+    MAP (mm): 1332
+    notes: .na
+  West Head:
+    latitude (deg): -33.578781
+    longitude (deg): 151.304784
+    description: dry sclerophyll forest
+    soil_P (mg/kg): 30-80
+    MAT (C): 17
+    MAP (mm): 1332
+    notes: Note, lat/lon values is just one of the sites sampled in the West Head area; the
+      actual sampling occurred at three sites at, -33.578781, 151.304784; -33.619800,
+      151.267429; and -33.651660;, 151.255547.
+    soils: sandy, derived from Hawkesbury sandstone
+contexts:
+  BARK:
+    type: field
+    description: measurements made on bark
+  LEAVES:
+    type: field
+    description: measurements made on leaves
+config:
+  data_is_long_format: no
+  variable_match:
+    taxon_name: Taxon
+    context_name: Material
+    site_name: Site
+  custom_R_code: data %>% mutate(specific_leaf_area = `Leaf area (cm2)`/`Leaf dry
+    mass (g)`) %>% group_by(Material,Taxon) %>% mutate_at(vars(`Leaf moisture (at
+    time of measuring) (%odw)`),~replace(.x,duplicated(.x),NA)) %>% ungroup() %>%
+    mutate(`FD (s)` = ifelse(Material == "BARK",NA,`FD (s)`)) %>% mutate(`TBT (s)`
+    = ifelse(Material == "BARK",NA,`TBT (s)`)) %>% mutate(`SD (s)` = ifelse(Material
+    == "BARK",NA,`SD (s)`)) %>% mutate(`TTI (s)` = ifelse(Material == "BARK",NA,`TTI
+    (s)`))
+traits:
+- var_in: Leaf Energy (MJ/kg)
+  unit_in: MJ/kg
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. Energy content (MJ kg-1) of
+    ground bark or leaf material was measured with a Parr 6400 calorimeter (Parr Instrument
+    Co., Moline, IL, USA).
+- var_in: Leaf C (wght %)
+  unit_in: '%'
+  trait_name: senesced_leaf_C_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out into a tin foil capsule which was placed into the induction furnace of a LECO
+    Truspec CHN combustion analyser set at 1100 deg C and calibrated on EDTA. The
+    carbon present was combusted to CO2 which was determined with an infrared detection
+    cell. The nitrogen present was combusted to N2, NO2 and NO. The oxides were reduced
+    to N2 which was determined quantitatively using a thermal conductivity cell. (Rayment,
+    G.E. & Lyons, D.J. (2011) Soil Chemical Methods, Australasia. CSIRO Publishing.
+    Handbook section 6B2, p75.)
+- var_in: Leaf N (wght %)
+  unit_in: '%'
+  trait_name: senesced_leaf_N_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out into a tin foil capsule which was placed into the induction furnace of a LECO
+    Truspec CHN combustion analyser set at 1100 deg C and calibrated on EDTA. The
+    carbon present was combusted to CO2 which was determined with an infrared detection
+    cell. The nitrogen present was combusted to N2, NO2 and NO. The oxides were reduced
+    to N2 which was determined quantitatively using a thermal conductivity cell. (Rayment,
+    G.E. & Lyons, D.J. (2011) Soil Chemical Methods, Australasia. CSIRO Publishing.
+    Handbook section 6B2, p75.)
+- var_in: Leaf Al (mg/kg)
+  unit_in: mg/kg
+  trait_name: senesced_leaf_Al_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
+    was made up to a volume of 25 ml and the elemental concentrations were then determined
+    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
+    perchloric acid mixtures for various organic substances and the identities of
+    residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Leaf B (mg/kg)
+  unit_in: mg/kg
+  trait_name: senesced_leaf_B_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
+    was made up to a volume of 25 ml and the elemental concentrations were then determined
+    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
+    perchloric acid mixtures for various organic substances and the identities of
+    residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Leaf Ca (wght %)
+  unit_in: '%'
+  trait_name: senesced_leaf_Ca_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
+    was made up to a volume of 25 ml and the elemental concentrations were then determined
+    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
+    perchloric acid mixtures for various organic substances and the identities of
+    residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Leaf Cu (mg/kg)
+  unit_in: mg/kg
+  trait_name: senesced_leaf_Cu_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
+    was made up to a volume of 25 ml and the elemental concentrations were then determined
+    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
+    perchloric acid mixtures for various organic substances and the identities of
+    residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Leaf Fe (mg/kg)
+  unit_in: mg/kg
+  trait_name: senesced_leaf_Fe_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
+    was made up to a volume of 25 ml and the elemental concentrations were then determined
+    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
+    perchloric acid mixtures for various organic substances and the identities of
+    residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Leaf K (wght %)
+  unit_in: '%'
+  trait_name: senesced_leaf_K_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
+    was made up to a volume of 25 ml and the elemental concentrations were then determined
+    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
+    perchloric acid mixtures for various organic substances and the identities of
+    residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Leaf Mg (wght %)
+  unit_in: '%'
+  trait_name: senesced_leaf_Mg_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
+    was made up to a volume of 25 ml and the elemental concentrations were then determined
+    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
+    perchloric acid mixtures for various organic substances and the identities of
+    residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Leaf Mn (mg/kg)
+  unit_in: mg/kg
+  trait_name: senesced_leaf_Mn_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
+    was made up to a volume of 25 ml and the elemental concentrations were then determined
+    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
+    perchloric acid mixtures for various organic substances and the identities of
+    residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Leaf Na (mg/kg)
+  unit_in: mg/kg
+  trait_name: senesced_leaf_Na_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
+    was made up to a volume of 25 ml and the elemental concentrations were then determined
+    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
+    perchloric acid mixtures for various organic substances and the identities of
+    residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Leaf P (mg/kg)
+  unit_in: mg/kg
+  trait_name: senesced_leaf_P_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
+    was made up to a volume of 25 ml and the elemental concentrations were then determined
+    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
+    perchloric acid mixtures for various organic substances and the identities of
+    residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Leaf S (wght %)
+  unit_in: '%'
+  trait_name: senesced_leaf_S_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
+    was made up to a volume of 25 ml and the elemental concentrations were then determined
+    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
+    perchloric acid mixtures for various organic substances and the identities of
+    residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Leaf Zn (mg/kg)
+  unit_in: mg/kg
+  trait_name: senesced_leaf_Zn_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
+    was made up to a volume of 25 ml and the elemental concentrations were then determined
+    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
+    perchloric acid mixtures for various organic substances and the identities of
+    residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Leaf Lignin (wght %)
+  unit_in: '%'
+  trait_name: leaf_lignin_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. ADF analysis measures cellulose
+    + lignin + ash content. ADF reagent was prepared from CTAB (cetyltrimethylammonium
+    bromide) and H2SO4. 1.0 g of sample was extracted with 45 ml of ADF reagent at
+    100 deg C for 70 minutes. The samples were then filtered, rinsed and dried at
+    60 deg C for 12 hrs. The dried samples were then reacted with 25 mL of cold 72%
+    H2SO4 for 3 hours; then filtered and rinsed again prior to ashing at 500 deg C
+    for three hours. (Rowland, A.P. & Roberts, J.D. (1994) Lignin and cellulose fractionation
+    in decomposition studies using acid-detergent fibre methods. Communications in
+    Soil Science and Plant Analysis, 25, 269-277.)
+- var_in: Leaf Cellulose (wght %)
+  unit_in: '%'
+  trait_name: leaf_cellulose_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. ADF analysis measures cellulose
+    + lignin + ash content. ADF reagent was prepared from CTAB (cetyltrimethylammonium
+    bromide) and H2SO4. 1.0 g of sample was extracted with 45 ml of ADF reagent at
+    100 deg C for 70 minutes. The samples were then filtered, rinsed and dried at
+    60 deg C for 12 hrs. The dried samples were then reacted with 25 mL of cold 72%
+    H2SO4 for 3 hours; then filtered and rinsed again prior to ashing at 500 deg C
+    for three hours. (Rowland, A.P. & Roberts, J.D. (1994) Lignin and cellulose fractionation
+    in decomposition studies using acid-detergent fibre methods. Communications in
+    Soil Science and Plant Analysis, 25, 269-277.)
+- var_in: Leaf Ash (wght %)
+  unit_in: '%'
+  trait_name: leaf_ash_content_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. ADF analysis measures cellulose
+    + lignin + ash content. ADF reagent was prepared from CTAB (cetyltrimethylammonium
+    bromide) and H2SO4. 1.0 g of sample was extracted with 45 ml of ADF reagent at
+    100 deg C for 70 minutes. The samples were then filtered, rinsed and dried at
+    60 deg C for 12 hrs. The dried samples were then reacted with 25 mL of cold 72%
+    H2SO4 for 3 hours; then filtered and rinsed again prior to ashing at 500 deg C
+    for three hours. (Rowland, A.P. & Roberts, J.D. (1994) Lignin and cellulose fractionation
+    in decomposition studies using acid-detergent fibre methods. Communications in
+    Soil Science and Plant Analysis, 25, 269-277.)
+- var_in: Leaf TotalTannins (wght %)
+  unit_in: '%'
+  trait_name: leaf_tannin_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Bulked sample across multiple individuals. 0.2 g of sample was weighed
+    out and extracted 3 times with 8 ml of 70% acetone for 45 minutes with the extracts
+    made up to 25 mL volume. 1 ml of extract was heated with 5 ml of 19:1 butanol-HCl
+    at 95deg C for 45 minutes in a water bath. The extracts were analysed at a wavelength
+    specific to the tannin in question. Bound tannin is measured by adding 5 ml of
+    Butanol HCl to the extraction residue and heating as above. Please note that these
+    samples have been quantified using a condensed tannin stock prepared from Acacia
+    aneura (mulga) which was the best fit we could find for the range of samples in
+    question. As a consequence these values should be reported as relative numbers
+    rather than absolutes.(Dalzell, S.A. & Kerven, G.L. (1998) A rapid method for
+    the measurement of Leucaena spp proanthocyanidins by the proanthocyanidin (butanol/HCl)
+    assay. Journal of the Science of Food and Agriculture, 78, 405-416.)
+- var_in: Bark area (cm2)
+  unit_in: cm2
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: One-sided surface area was estimated with a LI-3100C area meter (Li-Cor,
+    Lincoln, NE, USA).
+- var_in: Bark thickness (mm)
+  unit_in: mm
+  trait_name: bark_thickness
+  value_type: raw_value
+  replicates: '1'
+  methods: Thickness (mean of three measurements for bark) was measured with a thickness
+    gauge.
+- var_in: Bark dry mass (g)
+  unit_in: g
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: Dry mass was determined after oven drying at 60 deg C (when equilibrium
+    was reached).
+- var_in: Bark FMC (%)
+  unit_in: '%'
+  trait_name: bark_water_content_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Fuel moisture contents were measured on air-dried subsamples just before
+    the experimental burns. These samples were remeasured after 24 h of oven-drying
+    at 105 deg C. Fuel moisture content was then expressed as a percentage of oven-dry
+    weight.
+- var_in: TTI (s)
+  unit_in: seconds
+  trait_name: fire_time_to_ignition
+  value_type: raw_value
+  replicates: '1'
+  methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
+    horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
+    NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
+    in a parallel direction to the furnace door. A high frequency electrical spark
+    gun was held ~8mm above the centre of each sample to provide a source of ignition
+    (Gill and Moore 1996). Three thermocouples (type K, chromel-alumel) were attached
+    to a stainless steel grill perpendicular to the opening of the furnace. When the
+    average temperature value of the three thermocouples was ~400 deg C (+/- 10 deg
+    C) leaf samples were inserted. ^p A similar set-up was used for the experimental
+    burns of bark, with a few adjustments, the bark samples were inserted by tongs
+    and then left on the grill. The remaining ash was collected in a stainless steel
+    dish (99x99x18 mm) underneath the grill. However, the mass of the remaining ash
+    was undetectable on a scale with three digits and therefore we considered the
+    burns as complete combustions. The combustion process was filmed and subsequently
+    analysed by using the digital video editor 'VideoPad' (NCH Software, Canberra,
+    ACT, Australia). This allowed us to measure time-to-ignition (TTI) as a proxy
+    for ignitibility, while sustainability was registered both by flame duration (FD)
+    and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
+    as initial sample mass (corresponding approximately with total mass burnt) divided
+    by total burning time (sum of FD and SD).
+- var_in: FD (s)
+  unit_in: seconds
+  trait_name: fire_flame_duration
+  value_type: raw_value
+  replicates: '1'
+  methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
+    horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
+    NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
+    in a parallel direction to the furnace door. A high frequency electrical spark
+    gun was held ~8mm above the centre of each sample to provide a source of ignition
+    (Gill and Moore 1996). Three thermocouples (type K, chromel-alumel) were attached
+    to a stainless steel grill perpendicular to the opening of the furnace. When the
+    average temperature value of the three thermocouples was ~400 deg C (+/- 10 deg
+    C) leaf samples were inserted. ^p A similar set-up was used for the experimental
+    burns of bark, with a few adjustments, the bark samples were inserted by tongs
+    and then left on the grill. The remaining ash was collected in a stainless steel
+    dish (99x99x18 mm) underneath the grill. However, the mass of the remaining ash
+    was undetectable on a scale with three digits and therefore we considered the
+    burns as complete combustions. The combustion process was filmed and subsequently
+    analysed by using the digital video editor 'VideoPad' (NCH Software, Canberra,
+    ACT, Australia). This allowed us to measure time-to-ignition (TTI) as a proxy
+    for ignitibility, while sustainability was registered both by flame duration (FD)
+    and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
+    as initial sample mass (corresponding approximately with total mass burnt) divided
+    by total burning time (sum of FD and SD).
+- var_in: SD (s)
+  unit_in: seconds
+  trait_name: fire_smoulder_duration
+  value_type: raw_value
+  replicates: '1'
+  methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
+    horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
+    NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
+    in a parallel direction to the furnace door. A high frequency electrical spark
+    gun was held ~8mm above the centre of each sample to provide a source of ignition
+    (Gill and Moore 1996). Three thermocouples (type K, chromel-alumel) were attached
+    to a stainless steel grill perpendicular to the opening of the furnace. When the
+    average temperature value of the three thermocouples was ~400 deg C (+/- 10 deg
+    C) leaf samples were inserted. ^p A similar set-up was used for the experimental
+    burns of bark, with a few adjustments, the bark samples were inserted by tongs
+    and then left on the grill. The remaining ash was collected in a stainless steel
+    dish (99x99x18 mm) underneath the grill. However, the mass of the remaining ash
+    was undetectable on a scale with three digits and therefore we considered the
+    burns as complete combustions. The combustion process was filmed and subsequently
+    analysed by using the digital video editor 'VideoPad' (NCH Software, Canberra,
+    ACT, Australia). This allowed us to measure time-to-ignition (TTI) as a proxy
+    for ignitibility, while sustainability was registered both by flame duration (FD)
+    and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
+    as initial sample mass (corresponding approximately with total mass burnt) divided
+    by total burning time (sum of FD and SD).
+- var_in: TBT (s)
+  unit_in: seconds
+  trait_name: fire_total_burn_duration
+  value_type: raw_value
+  replicates: '1'
+  methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
+    horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
+    NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
+    in a parallel direction to the furnace door. A high frequency electrical spark
+    gun was held ~8mm above the centre of each sample to provide a source of ignition
+    (Gill and Moore 1996). Three thermocouples (type K, chromel-alumel) were attached
+    to a stainless steel grill perpendicular to the opening of the furnace. When the
+    average temperature value of the three thermocouples was ~400 deg C (+/- 10 deg
+    C) leaf samples were inserted. ^p A similar set-up was used for the experimental
+    burns of bark, with a few adjustments, the bark samples were inserted by tongs
+    and then left on the grill. The remaining ash was collected in a stainless steel
+    dish (99x99x18 mm) underneath the grill. However, the mass of the remaining ash
+    was undetectable on a scale with three digits and therefore we considered the
+    burns as complete combustions. The combustion process was filmed and subsequently
+    analysed by using the digital video editor 'VideoPad' (NCH Software, Canberra,
+    ACT, Australia). This allowed us to measure time-to-ignition (TTI) as a proxy
+    for ignitibility, while sustainability was registered both by flame duration (FD)
+    and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
+    as initial sample mass (corresponding approximately with total mass burnt) divided
+    by total burning time (sum of FD and SD).
+- var_in: Combustibility (mg/s)
+  unit_in: mg/s
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
+    horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
+    NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
+    in a parallel direction to the furnace door. A high frequency electrical spark
+    gun was held ~8mm above the centre of each sample to provide a source of ignition
+    (Gill and Moore 1996). Three thermocouples (type K, chromel-alumel) were attached
+    to a stainless steel grill perpendicular to the opening of the furnace. When the
+    average temperature value of the three thermocouples was ~400 deg C (+/- 10 deg
+    C) leaf samples were inserted. ^p A similar set-up was used for the experimental
+    burns of bark, with a few adjustments, the bark samples were inserted by tongs
+    and then left on the grill. The remaining ash was collected in a stainless steel
+    dish (99x99x18 mm) underneath the grill. However, the mass of the remaining ash
+    was undetectable on a scale with three digits and therefore we considered the
+    burns as complete combustions. The combustion process was filmed and subsequently
+    analysed by using the digital video editor 'VideoPad' (NCH Software, Canberra,
+    ACT, Australia). This allowed us to measure time-to-ignition (TTI) as a proxy
+    for ignitibility, while sustainability was registered both by flame duration (FD)
+    and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
+    as initial sample mass (corresponding approximately with total mass burnt) divided
+    by total burning time (sum of FD and SD).
+- var_in: FD/mass (s/g)
+  unit_in: s/g
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
+    horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
+    NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
+    in a parallel direction to the furnace door. A high frequency electrical spark
+    gun was held ~8mm above the centre of each sample to provide a source of ignition
+    (Gill and Moore 1996). Three thermocouples (type K, chromel-alumel) were attached
+    to a stainless steel grill perpendicular to the opening of the furnace. When the
+    average temperature value of the three thermocouples was ~400 deg C (+/- 10 deg
+    C) leaf samples were inserted. ^p A similar set-up was used for the experimental
+    burns of bark, with a few adjustments, the bark samples were inserted by tongs
+    and then left on the grill. The remaining ash was collected in a stainless steel
+    dish (99x99x18 mm) underneath the grill. However, the mass of the remaining ash
+    was undetectable on a scale with three digits and therefore we considered the
+    burns as complete combustions. The combustion process was filmed and subsequently
+    analysed by using the digital video editor 'VideoPad' (NCH Software, Canberra,
+    ACT, Australia). This allowed us to measure time-to-ignition (TTI) as a proxy
+    for ignitibility, while sustainability was registered both by flame duration (FD)
+    and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
+    as initial sample mass (corresponding approximately with total mass burnt) divided
+    by total burning time (sum of FD and SD).
+- var_in: SD/mass (s/g)
+  unit_in: s/g
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
+    horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
+    NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
+    in a parallel direction to the furnace door. A high frequency electrical spark
+    gun was held ~8mm above the centre of each sample to provide a source of ignition
+    (Gill and Moore 1996). Three thermocouples (type K, chromel-alumel) were attached
+    to a stainless steel grill perpendicular to the opening of the furnace. When the
+    average temperature value of the three thermocouples was ~400 deg C (+/- 10 deg
+    C) leaf samples were inserted. ^p A similar set-up was used for the experimental
+    burns of bark, with a few adjustments, the bark samples were inserted by tongs
+    and then left on the grill. The remaining ash was collected in a stainless steel
+    dish (99x99x18 mm) underneath the grill. However, the mass of the remaining ash
+    was undetectable on a scale with three digits and therefore we considered the
+    burns as complete combustions. The combustion process was filmed and subsequently
+    analysed by using the digital video editor 'VideoPad' (NCH Software, Canberra,
+    ACT, Australia). This allowed us to measure time-to-ignition (TTI) as a proxy
+    for ignitibility, while sustainability was registered both by flame duration (FD)
+    and smoulder duration (SD) (Grootemaat et al. 2015). Combustibility was expressed
+    as initial sample mass (corresponding approximately with total mass burnt) divided
+    by total burning time (sum of FD and SD).
+- var_in: Bark volume (cm3)
+  unit_in: cm3
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: Bark particle volume was estimated by using the gravimetric (water replacement)
+    method.
+- var_in: Bark density (g/cm3)
+  unit_in: g/cm3
+  trait_name: bark_density
+  value_type: raw_value
+  replicates: '1'
+  methods: Dry mass was determined after oven drying at 60 deg C (when equilibrium
+    was reached). Bark particle volume was estimated by using the gravimetric (water
+    replacement) method.
+- var_in: Bark MaxFlexLoad (Newton)
+  unit_in: 'N'
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: Bark tensile strength was measured by means of a 3mm punch-test, using
+    an Instron machine, model 5542 (Instron, Norwood, MA, USA).
+- var_in: Bark MFLperTHICKN (N/mm)
+  unit_in: N/mm
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: Bark tensile strength was measured by means of a 3mm punch-test, using
+    an Instron machine, model 5542 (Instron, Norwood, MA, USA).
+- var_in: BAM (cm2/g)
+  unit_in: cm2/g
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: bark area per mass, the equivalent to specific leaf area. Dry mass was
+    determined after oven drying at 60 deg C (when equilibrium was reached).  One-sided
+    surface area was estimated with a LI-3100C area meter (Li-Cor, Lincoln, NE, USA).
+- var_in: Bark Energy (MJ/kg)
+  unit_in: MJ/kg
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: Energy content (MJ kg-1) of ground bark or leaf material was measured with
+    a Parr 6400 calorimeter (Parr Instrument Co., Moline, IL, USA).
+- var_in: Bark C (wght %)
+  unit_in: '%'
+  trait_name: bark_C_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out into a tin foil capsule which was placed
+    into the induction furnace of a LECO Truspec CHN combustion analyser set at 1100
+    deg C and calibrated on EDTA. The carbon present was combusted to CO2 which was
+    determined with an infrared detection cell. The nitrogen present was combusted
+    to N2, NO2 and NO. The oxides were reduced to N2 which was determined quantitatively
+    using a thermal conductivity cell. (Rayment, G.E. & Lyons, D.J. (2011) Soil Chemical
+    Methods, Australasia. CSIRO Publishing. Handbook section 6B2, p75.)
+- var_in: Bark N (wght %)
+  unit_in: '%'
+  trait_name: bark_N_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out into a tin foil capsule which was placed
+    into the induction furnace of a LECO Truspec CHN combustion analyser set at 1100
+    deg C and calibrated on EDTA. The carbon present was combusted to CO2 which was
+    determined with an infrared detection cell. The nitrogen present was combusted
+    to N2, NO2 and NO. The oxides were reduced to N2 which was determined quantitatively
+    using a thermal conductivity cell. (Rayment, G.E. & Lyons, D.J. (2011) Soil Chemical
+    Methods, Australasia. CSIRO Publishing. Handbook section 6B2, p75.)
+- var_in: Bark Al (mg/kg)
+  unit_in: mg/kg
+  trait_name: bark_Al_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
+    acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
+    were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
+    efficiencies of perchloric acid mixtures for various organic substances and the
+    identities of residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Bark B (mg/kg)
+  unit_in: mg/kg
+  trait_name: bark_B_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
+    acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
+    were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
+    efficiencies of perchloric acid mixtures for various organic substances and the
+    identities of residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Bark Ca (wght %)
+  unit_in: '%'
+  trait_name: bark_Ca_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
+    acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
+    were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
+    efficiencies of perchloric acid mixtures for various organic substances and the
+    identities of residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Bark Cu (mg/kg)
+  unit_in: mg/kg
+  trait_name: bark_Cu_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
+    acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
+    were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
+    efficiencies of perchloric acid mixtures for various organic substances and the
+    identities of residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Bark Fe (mg/kg)
+  unit_in: mg/kg
+  trait_name: bark_Fe_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
+    acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
+    were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
+    efficiencies of perchloric acid mixtures for various organic substances and the
+    identities of residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Bark K (wght %)
+  unit_in: '%'
+  trait_name: bark_K_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
+    acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
+    were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
+    efficiencies of perchloric acid mixtures for various organic substances and the
+    identities of residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Bark Mg (wght %)
+  unit_in: '%'
+  trait_name: bark_Mg_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
+    acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
+    were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
+    efficiencies of perchloric acid mixtures for various organic substances and the
+    identities of residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Bark Mn (mg/kg)
+  unit_in: mg/kg
+  trait_name: bark_Mn_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
+    acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
+    were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
+    efficiencies of perchloric acid mixtures for various organic substances and the
+    identities of residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Bark Na (mg/kg)
+  unit_in: mg/kg
+  trait_name: bark_Na_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
+    acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
+    were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
+    efficiencies of perchloric acid mixtures for various organic substances and the
+    identities of residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Bark P (mg/kg)
+  unit_in: mg/kg
+  trait_name: bark_P_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
+    acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
+    were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
+    efficiencies of perchloric acid mixtures for various organic substances and the
+    identities of residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Bark S (wght %)
+  unit_in: '%'
+  trait_name: bark_S_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
+    acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
+    were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
+    efficiencies of perchloric acid mixtures for various organic substances and the
+    identities of residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Bark Zn (mg/kg)
+  unit_in: mg/kg
+  trait_name: bark_Zn_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.25 g of sample was weighed out and digested with 15 ml of 5:1 nitric-perchloric
+    acid. The digested sample was made up to a volume of 25 ml and the elemental concentrations
+    were then determined by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation
+    efficiencies of perchloric acid mixtures for various organic substances and the
+    identities of residual matter. Analytical Chemistry, 48, 70-74.)
+- var_in: Bark Lignin (wght %)
+  unit_in: '%'
+  trait_name: bark_lignin_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: ADF analysis measures cellulose + lignin + ash content. ADF reagent was
+    prepared from CTAB (cetyltrimethylammonium bromide) and H2SO4. 1.0 g of sample
+    was extracted with 45 ml of ADF reagent at 100 deg C for 70 minutes. The samples
+    were then filtered, rinsed and dried at 60 deg C for 12 hrs. The dried samples
+    were then reacted with 25 mL of cold 72% H2SO4 for 3 hours; then filtered and
+    rinsed again prior to ashing at 500 deg C for three hours. (Rowland, A.P. & Roberts,
+    J.D. (1994) Lignin and cellulose fractionation in decomposition studies using
+    acid-detergent fibre methods. Communications in Soil Science and Plant Analysis,
+    25, 269-277.)
+- var_in: Bark Cellulose (wght %)
+  unit_in: '%'
+  trait_name: bark_cellulose_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: ADF analysis measures cellulose + lignin + ash content. ADF reagent was
+    prepared from CTAB (cetyltrimethylammonium bromide) and H2SO4. 1.0 g of sample
+    was extracted with 45 ml of ADF reagent at 100 deg C for 70 minutes. The samples
+    were then filtered, rinsed and dried at 60 deg C for 12 hrs. The dried samples
+    were then reacted with 25 mL of cold 72% H2SO4 for 3 hours; then filtered and
+    rinsed again prior to ashing at 500 deg C for three hours. (Rowland, A.P. & Roberts,
+    J.D. (1994) Lignin and cellulose fractionation in decomposition studies using
+    acid-detergent fibre methods. Communications in Soil Science and Plant Analysis,
+    25, 269-277.)
+- var_in: Bark Ash (wght %)
+  unit_in: '%'
+  trait_name: bark_ash_content_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: ADF analysis measures cellulose + lignin + ash content. ADF reagent was
+    prepared from CTAB (cetyltrimethylammonium bromide) and H2SO4. 1.0 g of sample
+    was extracted with 45 ml of ADF reagent at 100 deg C for 70 minutes. The samples
+    were then filtered, rinsed and dried at 60 deg C for 12 hrs. The dried samples
+    were then reacted with 25 mL of cold 72% H2SO4 for 3 hours; then filtered and
+    rinsed again prior to ashing at 500 deg C for three hours. (Rowland, A.P. & Roberts,
+    J.D. (1994) Lignin and cellulose fractionation in decomposition studies using
+    acid-detergent fibre methods. Communications in Soil Science and Plant Analysis,
+    25, 269-277.)
+- var_in: Bark Total Tannins (wt%)
+  unit_in: '%'
+  trait_name: bark_tannin_per_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: 0.2 g of sample was weighed out and extracted 3 times with 8 ml of 70%
+    acetone for 45 minutes with the extracts made up to 25 mL volume. 1 ml of extract
+    was heated with 5 ml of 19:1 butanol-HCl at 95deg C for 45 minutes in a water
+    bath. The extracts were analysed at a wavelength specific to the tannin in question.
+    Bound tannin is measured by adding 5 ml of Butanol HCl to the extraction residue
+    and heating as above. Please note that these samples have been quantified using
+    a condensed tannin stock prepared from Acacia aneura (mulga) which was the best
+    fit we could find for the range of samples in question. As a consequence these
+    values should be reported as relative numbers rather than absolutes.(Dalzell,
+    S.A. & Kerven, G.L. (1998) A rapid method for the measurement of Leucaena spp
+    proanthocyanidins by the proanthocyanidin (butanol/HCl) assay. Journal of the
+    Science of Food and Agriculture, 78, 405-416.)
+- var_in: Leaf FMC (%odw)
+  unit_in: '%'
+  trait_name: .na
+  value_type: raw_value
+  replicates: '1'
+  methods: leaf_water_content_per_dry_mass, but the leaves collected were dry (senesced)
+    so not comparable to other values in AusTraits. Standard protocols were followed
+    for measuring leaf length (mm), effective leaf width (mm), thickness (mm) and
+    mass (g) (Perez-Harguindeguy et al. 2013).
+- var_in: Leaf length (cm)
+  unit_in: mm
+  trait_name: leaf_length
+  value_type: raw_value
+  replicates: '1'
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+- var_in: Leaf width (cm)
+  unit_in: mm
+  trait_name: leaf_width
+  value_type: raw_value
+  replicates: '1'
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+- var_in: Leaf thickness (mm)
+  unit_in: mm
+  trait_name: leaf_thickness
+  value_type: raw_value
+  replicates: '1'
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+- var_in: Leaf area (cm2)
+  unit_in: cm2
+  trait_name: leaf_area
+  value_type: raw_value
+  replicates: '1'
+  methods: Surface area (SA, in cm2) was estimated with a LI-3100C area meter (LI-COR,
+    Lincoln, NE, USA). For terete leaves (e.g. Allocasuarina spp., Hakea teretifolia
+    and Acacia havilandiorum), one-sided leaf area was calculated as projected area
+    * pi/2.
+- var_in: Leaf moisture (at time of measuring) (%odw)
+  unit_in: '%'
+  trait_name: .na
+  value_type: raw_value
+  replicates: '1'
+  methods: leaf_water_content_per_dry_mass - not included because the water content of senesced leaves; Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+    Subsamples for fuel moisture content (FMC) were held apart; leaves were measured
+    at their actual weight and remeasured after 24 h of drying at 105 deg C, when
+    equilibrium was reached (Matthews 2010). Fuel moisture content, as a percentage
+    of oven dried weight, was then defined as follows, (leaf mass - leaf dry mass)/(leaf
+    dry mass)*100
+- var_in: Leaf dry mass (g)
+  unit_in: g
+  trait_name: leaf_dry_mass
+  value_type: raw_value
+  replicates: '1'
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+- var_in: Leaf density (g/cm3)
+  unit_in: g/cm3
+  trait_name: leaf_density
+  value_type: raw_value
+  replicates: '1'
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+- var_in: specific_leaf_area
+  unit_in: cm2/g
+  trait_name: specific_leaf_area
+  value_type: raw_value
+  replicates: '1'
+  methods: Standard protocols were followed for measuring leaf length (mm), effective
+    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
+    This trait was recalculated for AusTraits using the standard formulation, the
+    one-sided surface area of a fresh leaf divided by its ovendry mass (Prez-Harguindeguy
+    et al. 2013). However, for the purpose of this study, we did not oven-dry the
+    samples because we were particularly interested in the flammability across the
+    three material types in the actual condition they were in (i.e. fresh, dried and
+    senesced). We therefore named this variable, based on the actual weight, 'SLA*'.
+    Data for 'SLA*' are also present in the data file but not incorporated into AusTraits.
+- var_in: MassLoss_3.5 (%)
+  unit_in: '%'
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: percentage mass lost after 3.5 month (%) [LEAVES only]; Fibreglass litterbags
+    (20x15 cm; 1.5-2mm mesh) were filled with bark particles of ~13 cm2 each, or 1.0
+    g of intact senesced leaves, and placed in a common garden at Macquarie University
+    Fauna Park, North Ryde (33deg46'9''S, 151deg6'46''E) in January 2013. This site
+    consists mainly of S. glomulifera forest - a characteristic vegetation type of
+    this region (Martyn 2010). Long-term climate data indicate a mean annual rainfall
+    of 1397mm (Turramurra weather station) and mean annual temperature of 17.3 degC
+    (Riverview Observatory; Australian Bureau of Meteorology), i.e. similar to the
+    climate of the collection sites. An overview of the seasonal pattern of rainfall
+    and temperature during our study period is shown in Fig. S1, available as Supplementary
+    Material to this paper. Litterbags were distributed at random on the cleared forest
+    floor and staked down with 10 cm long nails. Large trees surrounding our plots
+    (semi-)shaded the litterbags for most of the time. We deliberately left the samples
+    uncovered, so natural processes like revegetation and litterfall could continue
+    as per normal. We started the decomposition experiment with 270 bark litterbags
+    (10 species x nine replicates x three retrieval times) and 180 leaf litter bags
+    (10 species x six replicates x three retrieval times). After 3 months one replicate
+    of each species (both for bark and leaf samples) was harvested to obtain a preliminary
+    estimate of the decomposition rate. Based on the latter, we decided to harvest
+    the first batch of leaves after 3.5 months. Since bark decomposition was slower,
+    we left the 330 Australian Journal of Botany S. Grootemaat et al. bark for a later
+    harvest. The two other harvest moments were after 12 and 24 months (bark and leaves).
+    After harvesting, samples were dried at 60 degC for >=10 days until equilibrium
+    mass. After brushing off any dirt, the remaining sample mass was weighed.
+- var_in: MassLoss_12 (%)
+  unit_in: '%'
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: percentage mass lost after 12 months (%) [for both BARK and LEAVES]; Fibreglass
+    litterbags (20x15 cm; 1.5-2mm mesh) were filled with bark particles of ~13 cm2
+    each, or 1.0 g of intact senesced leaves, and placed in a common garden at Macquarie
+    University Fauna Park, North Ryde (33deg46'9''S, 151deg6'46''E) in January 2013.
+    This site consists mainly of S. glomulifera forest - a characteristic vegetation
+    type of this region (Martyn 2010). Long-term climate data indicate a mean annual
+    rainfall of 1397mm (Turramurra weather station) and mean annual temperature of
+    17.3 degC (Riverview Observatory; Australian Bureau of Meteorology), i.e. similar
+    to the climate of the collection sites. An overview of the seasonal pattern of
+    rainfall and temperature during our study period is shown in Fig. S1, available
+    as Supplementary Material to this paper. Litterbags were distributed at random
+    on the cleared forest floor and staked down with 10 cm long nails. Large trees
+    surrounding our plots (semi-)shaded the litterbags for most of the time. We deliberately
+    left the samples uncovered, so natural processes like revegetation and litterfall
+    could continue as per normal. We started the decomposition experiment with 270
+    bark litterbags (10 species x nine replicates x three retrieval times) and 180
+    leaf litter bags (10 species x six replicates x three retrieval times). After
+    3 months one replicate of each species (both for bark and leaf samples) was harvested
+    to obtain a preliminary estimate of the decomposition rate. Based on the latter,
+    we decided to harvest the first batch of leaves after 3.5 months. Since bark decomposition
+    was slower, we left the 330 Australian Journal of Botany S. Grootemaat et al.
+    bark for a later harvest. The two other harvest moments were after 12 and 24 months
+    (bark and leaves). After harvesting, samples were dried at 60 degC for >=10 days
+    until equilibrium mass. After brushing off any dirt, the remaining sample mass
+    was weighed.
+- var_in: MassLoss_24 (%)
+  unit_in: '%'
+  trait_name: .na.character
+  value_type: raw_value
+  replicates: '1'
+  methods: percentage mass lost after 24 months (%) [for both BARK and LEAVES]; Fibreglass
+    litterbags (20x15 cm; 1.5-2mm mesh) were filled with bark particles of ~13 cm2
+    each, or 1.0 g of intact senesced leaves, and placed in a common garden at Macquarie
+    University Fauna Park, North Ryde (33deg46'9''S, 151deg6'46''E) in January 2013.
+    This site consists mainly of S. glomulifera forest - a characteristic vegetation
+    type of this region (Martyn 2010). Long-term climate data indicate a mean annual
+    rainfall of 1397mm (Turramurra weather station) and mean annual temperature of
+    17.3 degC (Riverview Observatory; Australian Bureau of Meteorology), i.e. similar
+    to the climate of the collection sites. An overview of the seasonal pattern of
+    rainfall and temperature during our study period is shown in Fig. S1, available
+    as Supplementary Material to this paper. Litterbags were distributed at random
+    on the cleared forest floor and staked down with 10 cm long nails. Large trees
+    surrounding our plots (semi-)shaded the litterbags for most of the time. We deliberately
+    left the samples uncovered, so natural processes like revegetation and litterfall
+    could continue as per normal. We started the decomposition experiment with 270
+    bark litterbags (10 species x nine replicates x three retrieval times) and 180
+    leaf litter bags (10 species x six replicates x three retrieval times). After
+    3 months one replicate of each species (both for bark and leaf samples) was harvested
+    to obtain a preliminary estimate of the decomposition rate. Based on the latter,
+    we decided to harvest the first batch of leaves after 3.5 months. Since bark decomposition
+    was slower, we left the 330 Australian Journal of Botany S. Grootemaat et al.
+    bark for a later harvest. The two other harvest moments were after 12 and 24 months
+    (bark and leaves). After harvesting, samples were dried at 60 degC for >=10 days
+    until equilibrium mass. After brushing off any dirt, the remaining sample mass
+    was weighed.
+substitutions: .na
+taxonomic_updates:
+- find: Anophora hispida
+  replace: Angophora hispida
+  reason: Automatic alignment with name in APC list (accepted) (2021-02-10)
+exclude_observations: .na
+questions:
+  additional_traits: Note to AusTraits data processors, this study includes many additional
+    traits measuring bark strength (MaxFlexLoad and MFLperTHICKN), bark flammability,
+    energy content (leaf and bark) and mass loss (decomposition data) that are not
+    yet traits in AusTraits
+
