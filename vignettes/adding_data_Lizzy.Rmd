@@ -794,7 +794,7 @@ data %>% group_by(Species) %>%
 mutate_at(vars(leaf_percentN, `plant growth form`),~replace(.x,duplicated(.x),NA)) %>%
 ungroup()
 ```
-Note: You would use `group_by(Species,Site)` if the duplication is at the species x site level.
+Note: You would use `group_by(Species,Site)` if there are unique values at the species x site level.
 
 ### Duplicates between studies {#duplicates_between_studies}
 
@@ -813,7 +813,7 @@ Identifying duplicates in numeric traits between studies can be difficult, but e
    
    5. Data from a number of studies from `Leishman` and `Wright` have been extensively shared within the trait ecology community, especially through TRY
 
-If the dataset you are processing has a large number of numeric trait duplicates that follow one of the `patterns of duplication` listed, the duplicates should be filtered out. Any other data indicated in the manuscript as `sourced` should also be filtered out. Most difficult are studies that have partially sourced data, often from many small studies, and partially collected new data, but not identified the source of each value.
+If the dataset you are processing has a number of numeric trait duplicates that follow one of the `patterns of duplication` listed, the duplicates should be filtered out. Any other data explicitly indicated in the manuscript as sourced should also be filtered out. Most difficult are studies that have partially sourced data, often from many small studies, and partially collected new data, but not identified the source of each value.
 
 Filtering duplicate data is a three-step process. In brief:
 
@@ -826,9 +826,11 @@ Filtering duplicate data is a three-step process. In brief:
 In detail:  
 
 #### Identify traits and studies
-1. Either in R or Excel, manipulate [`duplicates_for_dataset_id`](#dataframe_of_duplicates) to remove rows that you believe are legitimate duplicates, including duplicates within the same study and instances when a single value (or a few) are duplicated with a study. Carefully consider which datasets and trait's to include/exclude from the filter.  
+1. Either in R or Excel, manipulate [`duplicates_for_dataset_id`](#dataframe_of_duplicates) to remove rows that you believe are legitimate duplicates, including duplicates within the same study and instances when a single value (or a few) are duplicated with a study. Carefully consider which datasets and traits to include/exclude from the filter.  
+
 As an example:  
 ```{r, eval=FALSE, echo=TRUE}
+#Note, this code will be replaced by a function in the future.
 duplicates_for_dataset_id %>%
   mutate(dataset_with_duplicate = gsub("Duplicate of ","",error),
          dataset_with_duplicate = gsub("[[:alnum:]]$","",dataset_with_duplicate),
@@ -843,6 +845,7 @@ duplicates_for_dataset_id %>%
 ```
 2. Use the following code to add columns to `data.csv` that identify specific values as duplicates:
 ```{r, eval=FALSE, echo=TRUE}
+#Note, this code will be replaced by a function in the future.
 wood_density_duplicates <- duplicates_to_filter %>% 
   filter(trait_name == "wood_density") %>% 
   select(error, original_name) %>% 
@@ -882,7 +885,7 @@ read_csv("data/dataset_id/data.csv") %>%
   left_join(leaf_length_max_duplicates, by = c("column_with_species_name" = "original_name")) %>% 
 write_csv("data/dataset_id/data.csv")
 ```
-3. For the above example, add the following code to custom R code:
+3. For the above example, then add the following code to custom R code, that filters the duplicate values from the data columns as the dataset is read into AusTraits.
 ```{r, eval=FALSE, echo=TRUE}
 data %>%
   mutate(`wood density` = ifelse(is.na(wood_density_duplicate),`wood density`,NA),
@@ -894,8 +897,8 @@ data %>%
   )
 ```
 
-Difficulties:
-•	This method only identifies values as duplicates if they have the same number of significant figures. More complex matching can be done for these. For seed mass in particular, some studies likely source values from the Kew database and then round these values. They may similarly source several values from Kew and then include the mean in their dataset. If their methods or correspondence with the contributor suggests the values were sourced from Kew (or another lab, papers, etc.) I generally filter out all values, EXCEPT, species that are not yet represented in AusTraits. 
+Difficulties:  
+•	This method only identifies values as duplicates if they have the same number of significant figures. More complex matching can be done for these. For seed mass in particular, some studies likely source values from the Kew database and then round these values. They may similarly source several values from Kew and then include the mean in their dataset. If their methods or correspondence with the contributor suggests the values were sourced from Kew (or another lab, papers, etc.) I generally filter out all values, EXCEPT species that are not yet represented in AusTraits for the trait in question. 
 
 
 ## Build study report
@@ -909,11 +912,11 @@ austraits <- remake::make("austraits")
 build_study_report(current_study)
 ```
 
-Check the study report to ensure:
-•	All possible metadata fields were filled in
-•	The sites plot sensibly on the map of Australia
-•	For numeric traits, the trait values plot sensibly relative to other studies
-•	The list of unknown/unmatched species doesn’t include names you think should be recognized/aligned
+Check the study report to ensure:  
+•	All possible metadata fields were filled in  
+•	The sites plot sensibly on the map of Australia  
+•	For numeric traits, the trait values plot sensibly relative to other studies  
+•	The list of unknown/unmatched species doesn’t include names you think should be recognized/aligned  
 
 If necessary, cycle back through earlier steps to fix any errors, rebuilding the study report as necessary
 
