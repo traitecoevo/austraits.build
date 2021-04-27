@@ -35,13 +35,13 @@ config:
       data %>% filter(trait == "flowering month", lookup_id <= 12) %>% select(species, lookup_id) %>%
       group_by(species) %>%
       nest(months = c(lookup_id)) %>%
-      mutate(trait = "flowering_time", lookup_data = map_chr(months, ~check_months(.x$lookup_id))) %>% select(-months)
+      mutate(trait = "flowering_time", lookup_data = map_chr(months, ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months)
     ) %>% 
     bind_rows(
       data %>% filter(trait == "fruiting", lookup_id <= 12) %>% select(species, lookup_id) %>%
       group_by(species) %>%
       nest(months = c(lookup_id)) %>%
-      mutate(trait = "fruiting_time", lookup_data = map_chr(months, ~check_months(.x$lookup_id))) %>% select(-months)
+      mutate(trait = "fruiting_time", lookup_data = map_chr(months, ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months)
     ) %>% 
     bind_rows(
       data %>% subset(trait == "special life form" & lookup_data =="parasitic") %>% mutate(trait = "parasitic")

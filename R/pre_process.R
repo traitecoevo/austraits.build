@@ -36,12 +36,18 @@ format_flowering_months <- function(start, end){
 #' @export
 #' @return character string of length 12 consisting of Y & N, e.g. "YYYNNNNNNYYY"
 convert_month_range_vec_to_binary <- function(vec) {
+  browser()
   out <- 
     unlist(lapply(vec, function(x) convert_month_range_string_to_binary(x))) %>%
-    gsub("1", "y", ., fixed=TRUE) %>%
-    gsub("0", "n", ., fixed=TRUE)
+    convert_01_ny()
   out[out=="NA"] <- NA_character_
   out
+}
+
+convert_01_ny <- function(txt) {
+  txt %>%   
+  gsub("1", "y", ., fixed=TRUE) %>%
+  gsub("0", "n", ., fixed=TRUE)
 }
 
 #' Converts flowering and fruiting month ranges to 12 element character strings of binary data
