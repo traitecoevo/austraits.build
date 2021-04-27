@@ -338,17 +338,13 @@ flag_unsupported_values <- function(data, definitions) {
 
       ii <- data[["trait_name"]] == trait
 
-      # Contains non-number
-      i <-  ii & is.na(data[["error"]]) & grepl("\\D", data[["value"]])
-      data <- mutate(data, error = ifelse(i, "Time contains non-number", error))
-
-      # Only 0-1
-      i <-  ii & is.na(data[["error"]]) & grepl("[2-9]+", data[["value"]])
+      # Only Y,N
+      i <-  ii & is.na(data[["error"]]) & grepl("[YN]+", data[["value"]])
       data <- mutate(data, error = ifelse(i, "Time can only contain 0 & 1s", error))
 
       # Must be length 12
       i <-  ii & is.na(data[["error"]]) & str_length(data[["value"]]) != 12
-      data <- mutate(data, error = ifelse(i, "Time must be length 12", error))
+      data <- mutate(data, error = ifelse(i, "Times must be length 12", error))
     }
 
     # Numerical traits out of range

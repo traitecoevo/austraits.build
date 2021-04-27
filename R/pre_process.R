@@ -28,19 +28,32 @@ format_flowering_months <- function(start, end){
 
 #' convert vectors of month range to 12 element character strings of binary data
 #'
-#' converts vectors of month range type values (i.e. 'Jan-Apr') to vectors of 12 element character strings of binary data
-# e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)
-# wrapper function for convert_month_range_string_to_binary
+#' converts vectors of month range type values (i.e. 'Jan-Apr') to character strings 
+#' of length 12 consisting of Y & N, e.g. "YYYNNNNNNYYY"
 #'
 #' @param vec <what param does>
 #'
 #' @export
-#' @return a 12 element character string, e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
+#' @return character string of length 12 consisting of Y & N, e.g. "YYYNNNNNNYYY"
 convert_month_range_vec_to_binary <- function(vec) {
-  out <- unlist(lapply(vec, function(x)
-        paste0(convert_month_range_string_to_binary(x), collapse="")))
+  out <- 
+    unlist(lapply(vec, function(x) convert_month_range_string_to_binary(x))) %>%
+    gsub("1", "y", ., fixed=TRUE) %>%
+    gsub("0", "n", ., fixed=TRUE)
   out[out=="NA"] <- NA_character_
   out
+}
+
+#' Converts flowering and fruiting month ranges to 12 element character strings of binary data
+#' consisting of 1 & 0 e.g. "111000000111"
+#'
+#' @param str text string
+#'
+#' @export
+#' @return a character string  length-12, e.g. "111000000111"
+convert_month_range_string_to_binary <- function(str) {
+  convert_month_range_string_to_binary_worker(str) %>% 
+    paste(collapse="") 
 }
 
 #' Converts flowering and fruiting month ranges to 12 element character strings of binary data
@@ -49,9 +62,8 @@ convert_month_range_vec_to_binary <- function(vec) {
 #'
 #' @param str text string
 #'
-#' @export
 #' @return a 12 element character string, e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
-convert_month_range_string_to_binary <- function(str) {
+convert_month_range_string_to_binary_worker <- function(str) {
   str <- trim(str) %>%
     tolower()
   
