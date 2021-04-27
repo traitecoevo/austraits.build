@@ -40,8 +40,7 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: Species_Name
-  custom_R_code: data %>% subset(NonIndigenous != 1) %>% mutate(flowering_season =
-    paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec)) %>% mutate(flowering_season = ifelse(as.character(flowering_season) == "000000000000",NA,flowering_season)) %>% mutate(flowering_season = as.character(flowering_season), flowering_season = gsub("0","n",flowering_season),flowering_season = gsub("1","y",flowering_season))
+  custom_R_code: data %>% subset(NonIndigenous != 1) %>% mutate(flowering_season = paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec) %>% na_if("000000000000") %>% convert_01_ny)
 traits:
 - var_in: dispersal_syndrome
   unit_in: .na
