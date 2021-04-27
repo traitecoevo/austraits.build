@@ -27,10 +27,25 @@ config:
     taxon_name: species
     value: lookup_data
     trait_name: trait
-  custom_R_code: data <- collapse_multirow_phenology_data_to_binary_vec(data, "flowering
-    month", "flowering_time"); data <- collapse_multirow_phenology_data_to_binary_vec(data,
-    "fruiting", "fruiting_time"); data %>% bind_rows(.,data %>% subset(trait == "special
-    life form" & lookup_data =="parasitic") %>% mutate(trait == "parasitic")) %>% mutate(lookup_data = ifelse(as.character(lookup_data) == "000000000000",NA,lookup_data))
+  custom_R_code: '
+    check_months <-  function(x){(1:12 %in% x %>% as.integer() %>% paste(collapse=""))}
+
+    bind_rows(
+      data %>% filter(! trait %in% c("fruiting", "flowering month")),
+      data %>% filter(trait == "flowering month", lookup_id <= 12) %>% select(species, lookup_id) %>%
+      group_by(species) %>%
+      nest(months = c(lookup_id)) %>%
+      mutate(trait = "flowering_time", lookup_data = map_chr(months, ~check_months(.x$lookup_id))) %>% select(-months)
+    ) %>% 
+    bind_rows(
+      data %>% filter(trait == "fruiting", lookup_id <= 12) %>% select(species, lookup_id) %>%
+      group_by(species) %>%
+      nest(months = c(lookup_id)) %>%
+      mutate(trait = "fruiting_time", lookup_data = map_chr(months, ~check_months(.x$lookup_id))) %>% select(-months)
+    ) %>% 
+    bind_rows(
+      data %>% subset(trait == "special life form" & lookup_data =="parasitic") %>% mutate(trait == "parasitic")
+      )'
 traits:
 - var_in: flowering_time
   unit_in: .na

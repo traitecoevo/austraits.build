@@ -145,67 +145,6 @@ convert_month_range_string_to_binary <- function(str) {
   return(NA)
 }
 
-#' Converts multirow phenology data to a 12 digit binary string 
-#' 
-#' # e.g.  Acacia dealbata, 3
-#'       Acacia dealbata, 4
-#'       Acacia dealbata, 5
-#'       Acacia dealbata, 6
-#'   >>  Acacia dealbata, 001111000000
-#'
-#' 
-#' @param data data frame
-#' @param trait="flowering month" <what param does>
-#' @param renamed_trait="flowering time" <what param does>
-#'
-#' @export
-#' @return 
-collapse_multirow_phenology_data_to_binary_vec <- function(data, trait="flowering month", renamed_trait="flowering time") {
-
-  data_summary <- data[data$trait == trait,] %>%
-                    group_by(species) %>%
-                    summarise(
-                      months_string = paste(lookup_id, collapse = ", "))
-
-  # collapse this info into a 12 digit binary string
-  my.list <- vector("list", nrow(data_summary))
-  
-  for(i in 1:nrow(data_summary)) {
-    
-    data_months <- trim(strsplit(data_summary$months_string[i], ",")[[1]])
-    outvec <- c(0,0,0,0,0,0,0,0,0,0,0,0)
-    
-    for(j in 1:12) {
-      if(any(data_months %in% j)) {
-        outvec[j] <- 1
-      }
-    }
-    
-    sp <- data_summary$species[i]
-    out <- data.frame(cbind(sp, paste(outvec, collapse= "")), stringsAsFactors=FALSE)
-    my.list[[i]] <- out
-    
-  }
-  
-  # append reworked values to dataset and remove multirow data
-  x <- bind_rows(my.list)
-  y <- x
-  y$sp <- NULL
-  y$V2 <- NULL
-  
-  y$species <- x$sp
-  y$col_id <- NA
-  y$lookup_id <- NA
-  y$lookup_data <- x$V2
-  y$trait <- renamed_trait
-  y$units <- NA
-  
-  data <- bind_rows(data, y)
-  data <- data[!data$trait == trait,]
-  return(data)
-}
-
-
 
 #' Separate values cells with a range into columns with minimum and maximum
 #'
