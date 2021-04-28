@@ -495,6 +495,13 @@ traits:
         mid: Shrubs reaching maximum heights of c. 1–2 m
         upper: Tall shrubs reaching maximum heights of c. 3–5 m
         post_fire_ephemeral: Taxa that avoid competition with other strata by rapidly completing their life cycle after fire; a sub-category of 'ground'
+    cotyledon_function:
+      description: Cotyledon function
+      type: categorical
+      label: Cotyledon function
+      values:
+        foliaceous: Cotyledons are photosynthetic and function as leaves.
+        reserve: Cotyledons function as energy reserve organs.
     cotyledon_position:
       description: Binary variable distinguishing between seedlings where the cotyledon remains within the seed coat versus emerges from the seed coat at germination.
       type: categorical
@@ -508,7 +515,30 @@ traits:
       label: Cotyledon type
       values:
         glabrous: Cotyledon lacks hairs
-        hairy: Cotyledon has hairs
+        hairy: Cotyledon has hairs   
+    seedling_germination_location:
+      description: Binary variable distinguishing between seedlings that germinate above versus below ground.
+      type: categorical
+      label: Seedling germination location
+      values:
+        epigeal: Germinant with one or more cotyledons emerging aboveground.
+        hypogeal: Germinant with all cotyledons remaining belowground.
+    establishment_light_environment_index:
+      description: The light environment required by seedlings for establishment, scaled from 0 to 8, where 0 indicates no direct light and extremely low transmitted light and 8 indicates full exposure of >80% of the crown area to direct light (referenced Wells 2012).
+      type: numeric
+      units: dimensionless
+      label:  Canopy light environment required for seedling establishment
+      values:
+        minimum: 0
+        maximum: 8
+    reproductive_light_environment_index:
+      description: The canopy light environment required for reproduction, scaled from 0 to 8, where 0 indicates no direct light and extremely low transmitted light and 8 indicates full exposure of >80% of the crown area to direct light (referenced Wells 2012).
+      type: numeric
+      units: dimensionless
+      label:  Canopy light environment required for reproduction
+      values:
+        minimum: 0
+        maximum: 8
     upper_cuticle_thickness:
       description: Thickness of the upper cuticle
       type: numeric
@@ -639,7 +669,7 @@ traits:
       type: categorical
       label: Fruit dispersal agents
       values:
-        aborigines: aborigines
+        aborigines: aboriginal people
         ants: ants
         bats: bats
         birds: birds
@@ -649,6 +679,7 @@ traits:
         mammals: mammals
         non-flying: mammals and non-flying birds (i.e. cassowary)
         passive: no dispersal agent
+        rodents: rodents
         vertebrate: vertebrate
         wind: wind
         water: water
@@ -1421,6 +1452,7 @@ traits:
         remove_seed_casing: UNKNOWN
         remove_seed_coat: same as excise pericarp
         rinse: rinse the seed (generic)
+        scarify: Unspecified seed scarification
         scarify_file_seed_coat: UNKNOWN
         scarify_fruit: Remove or partially remove a covering that is not the seed coat
         scarify_fruit_vice: Remove or partially remove a covering that is not the seed coat. Covering sufficiently tough a vice is required to break it.
@@ -1840,7 +1872,7 @@ traits:
       label: Leaf fresh mass
       values:
         minimum: 0.1
-        maximum: 25000.0
+        maximum: 30000.0
     leaf_fresh_mass_per_area:
       description: Leaf fresh mass per leaf area
       type: numeric
@@ -2294,6 +2326,30 @@ traits:
       values:
         minimum: .01
         maximum: 100
+    leaf_relative_water_content_at_turgor_loss_point:
+      description: Ratio of water in a fresh leaf to water in a leaf at turgor loss; calculated from a pressure-volume curve.
+      type: numeric
+      units: g/g
+      label: Leaf relative water content at turgor loss point
+      values:
+        minimum: 0.1
+        maximum: 1.0
+    bulk_modulus_of_elasticity:
+      description: In leaves, the ratio of the change in cell turgor to the change in cell volume as a plant dries out; calculated from a pressure-volume curve
+      type: numeric
+      units: MPa
+      label: Bulk modulus of elasticity (e)
+      values:
+        minimum: 0.1
+        maximum: 100
+    osmotic_potential_at_full_turgor:
+      description: Osmotic potential at full tugor; calculated from a pressure-volume curve
+      type: numeric
+      units: MPa
+      label: Osmotic potential at full tugor
+      values:
+        minimum: .1
+        maximum: 10
     leaf_type:
       description: Broad definitions of leaf type
       type: categorical
@@ -2312,7 +2368,7 @@ traits:
       label: Leaf water content per unit area
       values:
         minimum: 10.0
-        maximum: 1000.0
+        maximum: 5000.0
     leaf_water_content_per_dry_mass:
       description: Ratio of the mass of water in a leaf to leaf dry mass. (See also leaf_dry_matter_content, the ratio of a leaf's dry mass to fresh mass, that is recorded by a greater number of studies.)
       type: numeric
@@ -2501,14 +2557,6 @@ traits:
       values:
         minimum: 0.1
         maximum: 1
-    bulk_modulus_of_elasticity:
-      description: In leaves, the ratio of the change in cell turgor to the change in cell volume as a plant dries out; calculated from a pressure-volume curve
-      type: numeric
-      units: MPa
-      label: Bulk modulus of elasticity (e)
-      values:
-        minimum: 0.1
-        maximum: 100
     modulus_of_elasticity_xylem:
       description: A measure of xylem's resistance to being deformed elastically (i.e., non-permanently) when a stress is applied to it; definition for measurements on wood (secondary xylem)
       type: numeric
@@ -2639,6 +2687,7 @@ traits:
         cam: Plants which display crassulacean acid metabolism
         c3-cam: Taxa that shift between c3 and cam photosynthesis
         c4-cam: Taxa that shift between c4 and cam photosynthesis
+        facultative_cam: Species that shifts between C3 and CAM photosynesis depending on water availablility.
         unknown: Photosynthetic pathway unknown
     photosynthetic_rate_per_area_ambient:
       description: Rate at which a plant consumes carbon dioxide through photosynthesis, per unit leaf area
@@ -2852,6 +2901,7 @@ traits:
         belowground_caudex: Plant regenerates from belowe-ground caudex. 
         bud-bearing_root: Lateral root that produces vertical suckers, adventitious roots
         bulb: Below ground storage organ derived from stem (and sometimes leaf) tissue.
+        coppice: Shoots regrowing from base of stem following managed cutting to ground level
         corm: Below ground storage organ derived from stem tissue.
         epicormic: Plants that resprout from epicormic buds; these are buds beneath the bark on stems that survive fire 
         fleshy_underground_organ: Plants that use fleshy, generally underground organs (swellings) to regenerate; examples include corms, tubers, bulbs, and caudex
@@ -3658,7 +3708,7 @@ traits:
       units: mm2/mg
       label: Leaf area per unit leaf dry mass (specific leaf area, SLA)
       values:
-        minimum: 0.3
+        minimum: 0.1
         maximum: 500
     specific_root_area:
       description: Root area per unit root dry mass
@@ -3784,6 +3834,14 @@ traits:
       values:
         minimum: 0.01
         maximum: 5000.0
+    stomatal_resistance_conductance_ambient:
+      description: Leaf stomatal resistance under ambient conditions. This is the original way leaf stomatal conductance was measured and reported and is still regularly used in environmental models and meteorology. An equation converts between resistance conductance and the molar values obtained through gas exchange readings ("Plants and Microclimate" by H.G. Jones (1992), page 55 and Appendix 3; "Elevated Carbon Dioxide Impacts on Soil and Plant Water Relations" by M.B. Kirkham (2011), page 149).
+      type: numeric
+      units: cm/s
+      label: Leaf resistance conductance under ambient conditions
+      values:
+        minimum: 0.0001
+        maximum: 10
     stomatal_conductance_per_area_ambient:
       description: Rate of water loss through stomata under ambient conditions, per unit leaf area
       type: numeric
@@ -4081,8 +4139,16 @@ traits:
       units: MPa
       label: Pre-dawn water potential
       values:
-        minimum: -6
+        minimum: -8
         maximum: 0
+    leaf_relative_water_content_predawn:
+      description: Ratio of water in a fresh leaf to water in a saturated leaf; measured pre-dawn
+      type: numeric
+      units: g/g
+      label: Leaf relative water content predawn
+      values:
+        minimum: 0.1
+        maximum: 1.4
     water_potential_50percent_lost_conductivity:
       description: Xylem pressure at which 50% of conductivity is lost
       type: numeric
@@ -4161,7 +4227,7 @@ traits:
       units: mg/mm3
       label: Stem dry mass per unit fresh stem volume
       values:
-        minimum: 0.1
+        minimum: 0.05
         maximum: 1.4
     wood_C_per_dry_mass:
       description: Wood carbon (C) content per unit wood dry mass
