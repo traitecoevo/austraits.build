@@ -29,14 +29,13 @@ format_flowering_months <- function(start, end){
 #' convert vectors of month range to 12 element character strings of binary data
 #'
 #' converts vectors of month range type values (i.e. 'Jan-Apr') to character strings 
-#' of length 12 consisting of Y & N, e.g. "YYYNNNNNNYYY"
+#' of length 12 consisting of y & n, e.g. "yyynnnnnnyyy"
 #'
 #' @param vec <what param does>
 #'
 #' @export
-#' @return character string of length 12 consisting of Y & N, e.g. "YYYNNNNNNYYY"
+#' @return character string of length 12 consisting of y & n, e.g. "yyynnnnnnyyy"
 convert_month_range_vec_to_binary <- function(vec) {
-  browser()
   out <- 
     unlist(lapply(vec, function(x) convert_month_range_string_to_binary(x))) %>%
     convert_01_ny()
