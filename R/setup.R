@@ -86,13 +86,13 @@ metadata_create_template <- function(dataset_id,
                  variable_match = list(),
                  custom_R_code = NA)
 
+  v1 <- c("taxon_name")
+    v2 <- c("site_name", "context_name", "observation_id",  "date")
+  
   if(data_is_long_format) {
     v1 <- c("taxon_name", "trait_name", "value")
-    v2 <- c("site_name", "context_name", "observation_id")
-  } else {
-    v1 <- c("taxon_name")
-    v2 <- c("site_name", "context_name")
   }
+  
   for(v in v1) {      
     config[["variable_match"]][[v]] <- user_select_column(v, names(data))
   }
@@ -392,7 +392,7 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
 #' @export
 #'
 #' @examples
-metadata_add_taxnomic_change <- function(dataset_id, find, replace, reason) {
+metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
 
   if(length(replace) > 1 ) {
     stop(sprintf("Cannot replace with two names!! (for %s -> %s)\n", crayon::red(find), crayon::red(replace)))
@@ -472,7 +472,7 @@ metadata_exclude_observations <- function(dataset_id, variable, find, reason) {
 #' @export
 #'
 #' @examples
-metadata_update_taxnomic_change <- function(dataset_id, find, replace, reason) {
+metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) {
 
   set_name <- "taxonomic_updates"
 
@@ -504,7 +504,7 @@ metadata_update_taxnomic_change <- function(dataset_id, find, replace, reason) {
 #' @export
 #'
 #' @examples
-metadata_remove_taxnomic_change <- function(dataset_id, find, replace=NULL) {
+metadata_remove_taxonomic_change <- function(dataset_id, find, replace=NULL) {
 
   set_name <- "taxonomic_updates"
   metadata <- metadata_read_dataset_id(dataset_id)
@@ -571,7 +571,7 @@ austraits_find_species <- function(taxon_name, original_name = FALSE){
 #' @export
 #'
 #' @examples
-metadata_find_taxnomic_change <- function(find, replace=NULL, studies = NULL){
+metadata_find_taxonomic_change <- function(find, replace=NULL, studies = NULL){
 
   if(is.null(studies))
     studies <- dirname(dir("data", pattern="metadata.yml", recursive = TRUE))
@@ -719,19 +719,19 @@ metadata_check_taxa <- function(dataset_id,
           found <- TRUE
           break;
         } else if(s %in% to_check[[v]]$scientificName) {
-          found <- metadata_add_taxnomic_change(dataset_id, s,
+          found <- metadata_add_taxonomic_change(dataset_id, s,
                                                 to_check[[v]]$canonicalName[match(s, to_check[[v]]$scientificName)], 
                                                 sprintf("Automatic alignment with name in %s (%s)", v, Sys.Date())
           )
           break;
         } else if(stripped_name %in% to_check[[v]]$stripped_canonical) {
-          found <- metadata_add_taxnomic_change(dataset_id, s,
+          found <- metadata_add_taxonomic_change(dataset_id, s,
             to_check[[v]]$canonicalName[match(stripped_name, to_check[[v]]$stripped_canonical)], 
             sprintf("Automatic alignment with name in %s (%s)", v, Sys.Date())
             )
           break;
         } else if(stripped_name %in% to_check[[v]]$stripped_scientific) {
-          found <- metadata_add_taxnomic_change(dataset_id, s,
+          found <- metadata_add_taxonomic_change(dataset_id, s,
                                                 to_check[[v]]$canonicalName[match(stripped_name, to_check[[v]]$stripped_scientific)], 
                                                 sprintf("Automatic alignment with name in %s (%s)", v, Sys.Date())
           )
@@ -754,7 +754,7 @@ metadata_check_taxa <- function(dataset_id,
             length(which(distance_c==min_dist_abs_c))==1
             ) {
               found <- 
-                metadata_add_taxnomic_change(dataset_id, s, 
+                metadata_add_taxonomic_change(dataset_id, s, 
                   to_check[[v]]$canonicalName[which(distance_c==min_dist_abs_c)], 
                   sprintf("Automatic alignment with name in %s (%s)", v, Sys.Date())
             )
@@ -767,7 +767,7 @@ metadata_check_taxa <- function(dataset_id,
             length(which(distance_s==min_dist_abs_s))==1
           ) {
             found <- 
-              metadata_add_taxnomic_change(dataset_id, s, 
+              metadata_add_taxonomic_change(dataset_id, s, 
                                            to_check[[v]]$canonicalName[which(distance_s==min_dist_abs_s)], 
                                            sprintf("Automatic alignment with name in %s (%s)", v, Sys.Date())
               )
@@ -779,7 +779,7 @@ metadata_check_taxa <- function(dataset_id,
             tmp <- menu(c("None", sprintf("%s -- %s -- %s", crayon::green(closest_names), to_check[[v]]$taxonomicStatus[j], to_check[[v]]$ID[j])))
             if(tmp > 1){
               found <- 
-                metadata_add_taxnomic_change(dataset_id, s,  closest_names[tmp-1], 
+                metadata_add_taxonomic_change(dataset_id, s,  closest_names[tmp-1], 
                     sprintf("Alignment with known name in %s (%s, %s)", v, author, Sys.Date()))
               }
           } else {
