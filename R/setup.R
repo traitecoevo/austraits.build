@@ -381,6 +381,30 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
 }
 
 
+#' Add a dataframe of substitutions into a metadata file for a dataset_id
+#'
+#' @param dataset_id 
+#' @param substitutions 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+metadata_add_substitutions_list <- function(dataset_id, substitutions) {
+  
+  #read metadata
+  metadata <- metadata_read_dataset_id(dataset_id)
+  
+  #read in dataframe of substitutions, split into single-row lists, and add to metadata file
+  metadata$substitutions <- 
+    substitutions %>%
+    group_split(trait_name,find) %>% lapply(as.list)
+  
+  #write metadata
+  metadata_write_dataset_id(metadata, dataset_id)
+}  
+
+
 #' add a taxonomic change into a yaml file for a dataset_id
 #'
 #' @param dataset_id 
@@ -422,8 +446,31 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
   return(invisible(TRUE))
 }
 
+#' Add a dataframe of taxonomic updates into a metadata file for a dataset_id
+#'
+#' @param dataset_id 
+#' @param taxonomic_updates 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
+  
+  # read metadata
+  metadata <- metadata_read_dataset_id(dataset_id)
+  
+  #read in dataframe of taxonomic changes, split into single-row lists, and add to metadata file
+  metadata$taxonomic_updates <- 
+    taxonomic_updates %>%
+    group_split(find) %>% lapply(as.list)
+  
+  # write metadata
+  metadata_write_dataset_id(metadata, dataset_id)
+}
 
-#' add a taxonomic change into a yaml file for a dataset_id
+
+#' exclude observations in a yaml file for a dataset_id
 #'
 #' @param dataset_id 
 #' @param variable 
