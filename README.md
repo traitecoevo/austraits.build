@@ -10,27 +10,14 @@
 
 AusTraits is a transformative database, containing measurements on the
 traits of Australia’s plant species, standardised from hundreds of
-disconnected primary sources. So far, data have been assembled \> 150
-distinct sources, describing more than 100 plant traits and over 19k
-species.
-
-The AusTraits project has two connected repositories.
-
-  - [austraits.build](https://github.com/traitecoevo/austraits.build/)
-    (this repository): Is for those constructing and contributing data
-    to AusTraits,
-  - [austraits](https://github.com/traitecoevo/austraits/): For those
-    interesting in accessing or using AusTraits.
+disconnected primary sources. So far, data have been assembled \> 250
+distinct sources, describing more than 400 plant traits and over 25k
+taxa.
 
 ## Usage and access
 
-Those interested in using data from AusTraits, should visit the
-repositories for the compiled resource, at either: the
-
-  - AusTraits repository on GitHub at
-    [traitecoevo/austraits](https://github.com/traitecoevo/austraits),
-    or
-  - the versioned releases archived on Zenodo at doi:
+Those interested in simply using data from AusTraits, should visit download the
+compiled resource from the versioned releases archived on Zenodo at doi:
     [10.5281/zenodo.3568417](http://doi.org/https://doi.org/10.5281/zenodo.3568417).
 
 There you will also find detailed information regarding appropriate use
@@ -69,10 +56,16 @@ For anyone working with the [austraits.build](https://github.com/traitecoevo/aus
 
 ## Acknowledgements
 
-**Funding**: The project is supported by the Australian Research
-Council, via Fellowships to Daniel Falster and Rachael Gallagher, and by
-the [Australian Research Data Commons (ARDC)](https://ardc.edu.au) via a
-grant to Falster.
+**Funding**: This work was supported via the following funding sources:
+fellowship grants from Australian Research Council to Falster
+(FT160100113), Gallagher (DE170100208) and Wright (FT100100910), a grant
+from Macquarie University to Gallagher, and grants from the[Australian
+Research Data Commons (ARDC)](https://ardc.edu.au), via their
+“Transformation data collections” [doi:
+10.47486/TD044](https://doi.org/10.47486/TD044) and “Data Partnerships”
+[doi: 10.47486/DP720](https://doi.org/10.47486/DP720) programs. The ARDC
+is enabled by NCRIS.
+
 
 **Recognition**: At this stage, only the compiled dataset available via
 [traitecoevo/austraits](https://github.com/traitecoevo/austraits.build/)
