@@ -1,3 +1,36 @@
+
+# AusTraits v3.0.1
+
+This is minor release of the AusTraits database.
+
+-   austraits-3.0.1.zip: contains the compiled dataset and detailed of
+    structure
+-   austraits-3.0.1.rds: contains a version of the dataset for direct
+    loading in R
+-   source code v3.0.1.zip: contains the source materials used to build
+    the compiled dataset
+
+For details on access, structure and usage please visit
+<https://doi.org/10.5281/zenodo.3568417>
+
+This release was generated from source materials available at
+<https://github.com/traitecoevo/austraits.build/releases/tag/v3.0.1> A
+full set of changes in the source can be viewed at:
+<https://github.com/traitecoevo/austraits.build/compare/v3.0.0…v3.0.1>
+
+Compared to the last version, this release contains substantial
+additions of new data and improvement of old data.
+
+| version | dataset\_id |  taxa | sites | traits | records |
+|:--------|------------:|------:|------:|-------:|--------:|
+| 3.0.0   |         283 | 28639 |  4721 |    446 |  997808 |
+| 3.0.1   |         283 | 28640 |  4721 |    448 |  997808 |
+
+This release contains:
+
+- fixes to leaf areas in previous version in Everingham\_2020
+- updates on definitions
+
 # AusTraits v3.0.0
 
 This is major release of the AusTraits database.
