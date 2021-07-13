@@ -21,22 +21,10 @@ targets:
   all:
     depends:
       - austraits
-      - export
+      - export/data/curr/austraits.rds
 
-  website:
-    command: build_website()
-    depends:
-      - version_number
-      - _pkgdown.yml
-      - export/data/austraits.rds
-
-  ## exporting targets
-  export:
-    depends:
-      - export/data/austraits.rds
-
-  export/data/austraits.rds:
-    command: export_version(austraits_versioned, target_name, version_number)
+  export/data/curr/austraits.rds:
+    command: saveRDS(austraits_versioned, target_name)
 
   version_number:
     command: desc_get_version("./DESCRIPTION")
@@ -3742,6 +3730,7 @@ targets:
 
   austraits:
     command: update_taxonomy(austraits_raw, taxon_list)
-    
+  
   austraits_versioned:
     command: add_version_info(austraits, version_number, git_SHA)
+

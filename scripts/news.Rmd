@@ -1,0 +1,102 @@
+---
+params:
+  v_prev: NA
+  v_curr: NA
+output: github_document
+keep_md: TRUE
+---
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
+knitr::opts_knit$set(root.dir = rprojroot::find_root("NEWS.md"))
+
+library(tidyverse)
+library(RefManageR)
+
+clean <- function(v) gsub("v", "", v, fixed=TRUE)
+vclean <- function(v) paste0("v", clean(v))
+
+v_prev <- clean(params$v_prev)
+v_curr <- clean(params$v_curr)
+
+# Create news
+filename <- function(v) {
+  here::here(sprintf("export/data/austraits-%s/austraits-%s.rds", v, v))
+}
+
+austraits_prev <- readRDS(filename(v_prev))
+austraits_curr <- readRDS(filename(v_curr))
+```
+
+
+# AusTraits v`r v_curr`
+
+This is major/minor release of the AusTraits database. 
+
+- `r sprintf("austraits-%s.zip", v_curr)`: contains the compiled dataset and detailed of structure
+- `r sprintf("austraits-%s.rds", v_curr)`: contains a version of the dataset for direct loading in R
+- source code `r sprintf("v%s.zip", v_curr)`: contains the source materials used to build the compiled dataset
+
+For details on access, structure and usage please visit <https://doi.org/10.5281/zenodo.3568417>
+
+This release was generated from source materials available at `r sprintf("https://github.com/traitecoevo/austraits.build/releases/tag/v%s", v_curr)`
+A full set of changes in the source can be viewed at: `r sprintf("https://github.com/traitecoevo/austraits.build/compare/v%s...v%s", v_prev, v_curr)` 
+
+Compared to the last version, this release contains substantial additions of new data and improvement of old data. 
+
+```{r, results="asis"}
+
+f_summarsie <- function(data, v) { 
+  data$traits %>% 
+  summarise(version = data$build_info$version,
+            dataset_id = n_distinct(dataset_id),
+            taxa = n_distinct(taxon_name),
+            sites = n_distinct(site_name),
+            traits = n_distinct(trait_name),
+            records= n()
+  )
+  }
+
+bind_rows(
+  austraits_prev %>% f_summarsie(v_prev),
+  austraits_curr %>% f_summarsie(v_curr)
+) %>% knitr::kable("markdown") %>% writeLines()
+```
+
+
+This release contains:
+
+```{r, results='asis'}
+remove_studies <- austraits_prev$traits %>% filter(!(dataset_id %in% austraits_curr$traits$dataset_id)) %>% pull(dataset_id) %>% unique()
+new_studies <- austraits_curr$traits %>% filter(!(dataset_id %in% austraits_prev$traits$dataset_id)) %>% pull(dataset_id) %>% unique()
+
+new_data <- austraits_curr$traits %>% filter(!(dataset_id %in% austraits_prev$traits$dataset_id))
+new_traits <- new_data %>% filter(!trait_name %in% austraits_prev$traits$trait_name) %>% pull(trait_name) %>% unique() %>% sort()
+
+new_people <- austraits_curr$contributors %>% filter(!name %in% austraits_prev$contributors$name) %>% pull(name) %>% unique() %>% sort() 
+```
+
+
+- **`r length(new_studies)` new sources added to the dataset**: `r new_studies %>% paste(collapse = ", " )`
+- **`r length(new_people)` new contributors:** `r new_people %>% paste(collapse = ", " )`
+
+- **`r length(remove_studies)` sources removed**-- most replaced by corrected 
+  or updated sources above: `r remove_studies %>% paste(collapse = ", " )`
+
+- **`r new_data %>% filter(trait_name %in% austraits_prev$traits$trait_name) %>% nrow()` new or updated records for `r new_data %>% filter(trait_name %in% austraits_prev$traits$trait_name) %>% pull(trait_name) %>% n_distinct()` existing traits**
+
+- **`r new_data %>% filter(!trait_name %in% austraits_prev$traits$trait_name) %>% nrow()` new records for `r new_traits %>% n_distinct()` new traits:** `r new_traits %>% paste(collapse = ", " )`
+
+
+Details on new studies: 
+
+```{r, results="asis"}
+new_data %>% 
+	group_by(dataset_id) %>% 
+	summarise(taxa = length(unique(taxon_name)), 
+	          sites = length(unique(site_name)),
+	          traits = length(unique(trait_name)),
+	          records= n()
+	          ) %>% knitr::kable("markdown") %>% writeLines()
+```
+

@@ -479,7 +479,7 @@ trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axi
             axis.text.x=element_text(size=rel(1.25)),
             axis.text.y=element_text(size=rel(y.text))
             ) +
-      guides(colour=FALSE)
+      guides(colour="none")
   
   if(hide_ids) {
     p2 <- p2 + theme(axis.text.y = element_blank())

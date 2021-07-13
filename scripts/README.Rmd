@@ -1,0 +1,106 @@
+---
+title: "`AusTraits`: a curated plant trait database for the Australian flora"
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# `AusTraits`: a curated plant trait database for the Australian flora
+
+```{r setup, include=FALSE, results='hide', message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(RefManageR)
+```
+
+
+## Introduction
+
+AusTraits is a transformative database, containing measurements on the traits of Australia’s plant taxa, standardised from hundreds of disconnected primary sources. So far, data have been assembled from `r austraits$traits$dataset_id %>% n_distinct()` distinct sources, describing `r austraits$traits$trait_name %>% n_distinct()` plant traits and  `r austraits$taxa %>% nrow()` taxa.
+
+To handle the harmonising of diverse data sources, we use a reproducible workflow to implement the various changes required for each source to reformat it suitable for incorporation in AusTraits. Such changes include restructuring datasets, renaming variables, changing variable units, changing taxon names. While this repository contains the harmonised data, the raw data and code used to build the resource will also be made available,
+
+## Contributors
+
+The project is jointly led by Dr Daniel Falster (UNSW Sydney), Dr Rachael Gallagher (Macquarie University), Dr Elizabeth Wenk (UNSW Sydney), and Dr Hervé Sauquet (Royal Botanic Gardens And Domain Trust Sydney), with input from `r austraits$contributors$name %>% unique() %>% length()` contributors from over `r austraits$contributors$institution %>% unique() %>% length()` institutions.
+
+The following people and institutions have have contributed to building this resource.
+
+**Data contributors (individuals)**:
+```{r, results='asis'}
+austraits$contributors %>% select(name) %>% separate_rows(name, sep =",") %>% distinct() %>% mutate(surname = str_split(name, " ") %>% lapply(last) %>% unlist()) %>% arrange(surname) %>% pull(name) %>% paste( collapse=", ") %>% writeLines()
+```
+
+**Data contributors (institutions)**: Australian National Botanic Garden, Brisbane Rainforest Action and Information Network, Kew Botanic Gardens, National Herbarium of NSW, Northern Territory Herbarium, Queensland Herbarium, Western Australian Herbarium, South Australian Herbarium, State Herbarium of South Australia, Tasmanian Herbarium
+
+**Data processing**: Daniel Falster, Elizabeth Wenk, Sam Andrew, James Lawson, Stuart Allen
+
+**Project initiation and data compilation**: Rachael Gallagher, Ian Wright
+
+**Funding**: This work was supported by investment from the Australian Research Data Commons (ARDC), via their "Transformative data collections" (https://doi.org/10.47486/TD044) and "Data Partnerships" (https://doi.org/10.47486/DP720) programs; fellowship grants from Australian Research Council to Falster (FT160100113), Gallagher (DE170100208) and Wright (FT100100910), a grant from Macquarie University to Gallagher. The ARDC is enabled by National Collaborative Research Investment Strategy (NCRIS).
+
+## Accessing and use of data
+
+The compiled AusTraits database is released under an open source licence (CC-BY), enabling re-use by the community. 
+
+A requirement of use is that users cite the AusTraits resource paper, which includes all contributors as co-authors:
+> Falster, Gallagher et al (2021) *AusTraits, a curated plant trait database for the Australian flora*. Scientific Data (in press)
+or 
+> Falster, Gallagher et al (2021) *AusTraits: a curated plant trait database for the Australian flora*. bioRxiv 2021.01.04.425314,  http://doi.org/10.1101/2021.01.04.425314
+
+In addition, we encourage users you to cite the original data sources, wherever possible. 
+
+Note that under the license data may be redistributed, provided the attribution is mainatined. 
+
+## Austraits R package
+
+For users of R, access and manipulation of data is asssisted with the `austraits` package, available at http://github.com/traitecoevo/austraits 
+
+## Contributing
+
+We envision AusTraits as an on-going collaborative community resource that:
+
+1. Increases our collective understanding the Australian flora; and 
+2. Facilitates accumulating and sharing of trait data;
+3. Builds a sense of community among contributors and users; and
+4. Aspires to fully transparent and reproducible research of highest standard.
+
+As a community resource, we are very keen for people to contribute. Here are some of the ways you can contribute: 
+
+**Reporting Errors**: If you notice a possible error in AusTraits, please post an issue on GitHub at https://github.com/traitecoevo/austraits.build/issues.
+
+**Refining documentation:** We welcome additions and edits that make using the existing data or adding new data easier for the community.
+
+**Contributing new data**: We gladly accept new data contributions to AusTraits. 
+
+Assembly of the database is managed on github at https://github.com/traitecoevo/austraits.build. Please visit that page for full instructions on how to contribute. 
+
+## Structure of AusTraits data 
+
+The compiled AusTraits database has the following main components:
+
+```
+austraits
+├── traits
+├── sites
+├── contexts
+├── methods
+├── excluded_data
+├── taxanomic_updates
+├── taxa
+├── definitions
+├── contributors
+├── sources
+└── build_info
+```
+
+These elements include all the data and contextual information submitted with each contributed datasets. 
+
+Full details on each of these components and columns therein are contained within the document `dictionary.html`.

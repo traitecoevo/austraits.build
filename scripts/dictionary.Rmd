@@ -1,57 +1,66 @@
 ---
-title: Structure of AusTraits data compilation
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{ Structure of AusTraits data compilation}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+title: "Dictionary for `AusTraits` data compilation - a curated plant trait database for the Australian flora"
+output:
+  html_document:
+    keep_md: no
+    smart: no
+    theme: yeti
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
 editor_options:
   chunk_output_type: console
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  results = "asis",
-  echo=FALSE, 
-  message=FALSE, 
-  warning=FALSE
-  )
+<!-- hack to get indentation on 3rd level of floating TOC; see
+https://stackoverflow.com/questions/46201753/rmarkdown-indentation-of-toc-items-in-html-output
+ -->
+<script>
+$(document).ready(function() {
+  $items = $('div#TOC li');
+  $items.each(function(idx) {
+    num_ul = $(this).parentsUntil('#TOC').length;
+    $(this).css({'text-indent': num_ul * 10, 'padding-left': 0});
+  });
 
-library(austraits.build)
-library(dplyr)
-library(readr)
+});
+</script>
 
-root.dir = rprojroot::find_root("remake.yml")
-knitr::opts_knit$set(root.dir = root.dir)
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
+# knitr defaults
+knitr::opts_chunk$set(echo=FALSE, cache=FALSE, results='asis', message=FALSE, warning=FALSE)
 
-my_kable_styling <- my_kable_styling_html
+# default for table format
+options(knitr.table.format = "html")
+
+# Guidelines for writing report code
+# - use tidyverse style and format: http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html
+# - use kableExtra for styling: https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+# - use knitr chunk options: https://rmarkdown.rstudio.com/lesson-3.html
+
 ```
 
-```{r, echo=FALSE, results='hide', message=FALSE}
-## Assumes to items exist in global name space
-if(!exists("austraits")) {
-  austraits <- readRDS("export/data/austraits.rds")
-  # stop("austraits must exist in global name space to knit a report")
-}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
+library(tidyverse)
+library(RefManageR)
+library(knitr)
+library(kableExtra)
+
+my_kable_styling <- my_kable_styling_html
 
 definitions <- austraits$definitions
 ```
 
-
-This document describes the structure of the AusTraits compilation, corresponding to **Version `r austraits$definitions$austraits$elements$build_info$elements$version$value`** of the dataset. 
+This document describes the structure of the AusTraits compilation, corresponding to **Version `r austraits$build_info$version`** of the dataset. 
 Note that the information provided below is based on the information provided within the file `definitions.yml`. 
 
+For details on access, structure and usage please visit https://doi.org/10.5281/zenodo.3568417
 
-AusTraits is essentially a series of linked components, which cross link against each other::
+# Elements of AusTraits
 
-```{r, results="hide", comment = '', eval=F}
-names(austraits) %>% 
-  create_tree_branch("austraits") %>%
-  writeLines()
-```
+The compiled AusTraits database has the following main components:
 
 ```
 austraits
@@ -61,18 +70,14 @@ austraits
 ├── methods
 ├── excluded_data
 ├── taxa
-├── taxanomic_updates
+├── taxonomic_updates
 ├── definitions
 ├── contributors
 ├── sources
 └── build_info
 ```
 
-These include all the data and contextual information submitted with each contributed dataset. 
-
-## Components
-
-The core components are defined as follows.
+These elements include all the data and contextual information submitted with each contributed datasets. Each component  is defined as follows:
 
 ```{r}
 print_defintions_element <- function(elements) {
@@ -88,7 +93,7 @@ print_defintions_element <- function(elements) {
 
     elements$elements %>% 
       list1_to_df() %>%
-      my_kable_styling() %>% 
+      my_kable_styling_markdown() %>% 
       writeLines()
   }
 }
@@ -96,7 +101,7 @@ print_defintions_element <- function(elements) {
 for(v in names(austraits)) {
   elements <- austraits$definitions$austraits$elements[[v]]
   
-  sprintf("### %s {#%s}\n\n**Description:** %s.\n", v, v, elements$description) %>% str_replace_all("\\.\\.", "\\.") %>% 
+  sprintf("## %s {#%s}\n\n**Description:** %s\n", v, v, elements$description) %>% 
     writeLines()
   
   elements %>%
@@ -105,6 +110,9 @@ for(v in names(austraits)) {
   writeLines(c(""))
 }
 ```
+
+
+# Methological details {#methods}
 
 ## Dataset IDs
 
@@ -116,7 +124,7 @@ As well as a `dataset_id`, each trait measurement has an associated `observation
 
 Generally, `observation_id` has the format `dataset_id_XX` where `XX` is a unique number within each dataset. For example, if multiple traits were collected on the same individual, the `observation_id` allows us to gather these together. For floras, which report a species averages, the `observation_id` is assigned at the species level.
 
-For datasets that arrive in wide format we assume each row has a unique `observation_id`. For datasets that arrive in long format, the `observation_id` is assigned based on a specified grouping variable.  If missing, `observation_id` is assigned based on `species_name`. 
+For datasets that arrive in wide format we assume each row has a unique `observation_id`. For datasets that arrive in long format, the `observation_id` is assigned based on a specified grouping variable.  If missing, `observation_id` is assigned based on `taxon_name`. 
 
 ## Site names
 
@@ -146,13 +154,13 @@ austraits$definitions$value_type$values %>%
 
 AusTraits does not include intra-individual observations. When multiple measurements per individual are submitted to AusTraits, we take the mean of the values and record the value_type as `individual_mean`.
 
-## Taxonomy {#taxonomic}
+## Taxonomy
 
-Version `r desc::desc_get_field("Version")` of AusTraits contains records for `r austraits$traits$species_name %>% unique() %>% length()` different taxa. We have attempted to align species names with known taxonomic units in the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and/or the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI). 
-
-The table `taxa` lists all taxa in the database, including additional infomration about the taxa (see Table above). 
+Version `r austraits$build_info$version` of AusTraits contains records for `r austraits$taxa %>% nrow()` different taxa. We have aligned taxa with known taxonomic units in the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and/or the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI). Of the `r austraits$taxa %>% nrow()` taxa included, `r austraits$taxa %>% filter(!is.na(source)) %>% nrow()` are aligned with known taxa. 
 
 The `traits` table reports both the original and the updated taxon name alongside each trait record.
+
+The table `taxa` lists all taxa in the database, including additional infomration about the taxa. 
 
 The table `taxanomic_updates` provdies details on all taxonomic names changes implemented in aligning with APC and APNI.
 
@@ -163,19 +171,26 @@ For each dataset in the compilation there is the option to list primary and seco
 1. Within the table [methods](#methods), where we provide a formatted version of each.
 2. In the element [sources](#sources), where we provided bibtex versions of all sources which can be imported into your reference library. The keys for these references are listed within the [methods]{#methods}. 
 
-## Trait definitions
+# Trait definitions {#traitdefs}
 
-Allowable traits and values are defined in the definitions file. Each trait is 
-labelled as either `numeric` or `categorical`. An example of each type is as follows. For the full list, see the section on Trait definitions.
-
+Followign is a list of traits included in this version.
 
 ```{r, traits}
-for(trait in c("specific_leaf_area", "woodiness")) {
+traits <- austraits$traits$trait_name %>% unique()
+for(trait in traits) {
   elements <- austraits$definitions$traits$elements[[trait]]
   
   data_trait <- austraits$traits %>% filter(trait_name == trait)
   
-  c( sprintf("**%s**\n\n", trait), sprintf("- label: %s", elements$label ), sprintf("- description: %s", elements$description ), sprintf("- number of records: %s", data_trait %>% nrow() ), sprintf("- number of studies: %s", data_trait %>% pull(dataset_id) %>% unique() %>% length() ), sprintf("- type: %s%s", elements$type,   ifelse(elements$type == "numeric",        sprintf("\n- units: %s", elements$units), "")), ifelse(elements$type == "numeric",        sprintf("- allowable range: %s - %s %s", elements$values$minimum,         elements$values$maximum, elements$units),      sprintf("- allowable values:\n%s\n",                paste0("    - *",elements$values %>% names(), "*: ", elements$values %>% unlist(), collapse="\n"))), ""
-  ) %>% writeLines()
+  c( 
+   sprintf("## %s\n", trait),
+   sprintf("- label: %s", elements$label ),
+   sprintf("- description: %s", elements$description ),
+   sprintf("- type: %s%s", elements$type,  
+      ifelse(elements$type == "numeric", sprintf("\n- units: %s", elements$units), "")), 
+   ifelse(elements$type == "numeric", sprintf("- allowable range: %s - %s %s", elements$values$minimum,         elements$values$maximum, elements$units), sprintf("- allowable values:\n%s\n",                paste0("    - *",elements$values %>% names(), "*: ", elements$values %>% unlist(), collapse="\n"))),
+   sprintf("- number of records: %s", data_trait %>% nrow() ),
+   sprintf("- number of studies: %s", data_trait %>% pull(dataset_id) %>% unique() %>% length() ),
+   "") %>% writeLines()
 }
 ```
