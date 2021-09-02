@@ -44,7 +44,9 @@ dataset:
         `Minimum maturity` = str_extract(`Minimum maturity`,"[:digit:]"),
         `Maximum maturity` = str_extract(`Maximum maturity`,"[:digit:]"),
         `Lifespan > than` = str_extract(`Lifespan > than`,"[:digit:]"),
-        `Lifespan < than` = str_extract(`Lifespan < than`,"[:digit:]")
+        `Lifespan < than` = str_extract(`Lifespan < than`,"[:digit:]"),
+        growth_habit = ifelse(`Life form` == "P", "prostrate", NA),
+        `Life form` = ifelse(`Life form` == "P", NA, `Life form`)
       ) %>%
       group_by(`Current Scientific Name`) %>%
         mutate(observation_number = row_number()) %>%
@@ -71,6 +73,16 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: H=herb S=shrub T=tree P=prostarte C=climber V=vine F=fern TF=tree fern
+    FF=forkfern CM=clubmoss; See original file in raw data folder for extensive reference
+    list.
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: life form values indicating plants are `prostrate`. (All life form values include, H=herb S=shrub T=tree P=prostarte C=climber V=vine F=fern TF=tree fern 
     FF=forkfern CM=clubmoss; See original file in raw data folder for extensive reference
     list.
 - var_in: Fireresponse
@@ -329,7 +341,7 @@ substitutions:
 - trait_name: plant_growth_form
   find: sT or M
   replace: treelet
-- trait_name: plant_growth_form
+- trait_name: growth_habit
   find: P
   replace: prostrate
 - trait_name: plant_growth_form
