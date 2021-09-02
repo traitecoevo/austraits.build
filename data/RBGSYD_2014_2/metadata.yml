@@ -30,6 +30,9 @@ config:
   custom_R_code: '
     check_months <-  function(x){(1:12 %in% x %>% as.integer() %>% paste(collapse=""))}
 
+   data <- data %>% mutate(trait = ifelse(trait == "special life form" & lookup_data =="parasitic","parasitic",trait)) %>% mutate(trait = ifelse(trait == "special growth form" & lookup_data =="geophyte","life_form",trait)) %>% mutate(trait = ifelse(trait == "special growth form" & lookup_data =="prostrate","growth_habit",trait)) %>% mutate(trait = ifelse(trait == "special growth form" & lookup_data =="creeper rooting along stems","growth_habit",trait)) %>% mutate(lookup_data = ifelse(trait == "special life form" & lookup_data =="climbing","climber",lookup_data)) %>% group_by(c(species)) %>% mutate_at(vars(lookup_data),
+    replace_duplicates_with_NA) %>% ungroup()
+    
     bind_rows(
       data %>% filter(! trait %in% c("fruiting", "flowering month")),
       data %>% filter(trait == "flowering month", lookup_id <= 12) %>% select(species, lookup_id) %>%
@@ -42,10 +45,7 @@ config:
       group_by(species) %>%
       nest(months = c(lookup_id)) %>%
       mutate(trait = "fruiting_time", lookup_data = map_chr(months, ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months)
-    ) %>% 
-    bind_rows(
-      data %>% subset(trait == "special life form" & lookup_data =="parasitic") %>% mutate(trait = "parasitic")
-      )'
+    ) '
 traits:
 - var_in: flowering_time
   unit_in: .na
@@ -167,6 +167,18 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: unknown
+- var_in: life_form
+  unit_in: .na
+  trait_name: life_form
+  value_type: expert_mean
+  replicates: .na
+  methods: unknown
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: growth_habit
+  value_type: expert_mean
+  replicates: .na
+  methods: unknown
 - var_in: height class
   unit_in: .na
   trait_name: .na
@@ -186,7 +198,7 @@ traits:
   replicates: unknown
   methods: unknown
 substitutions:
-- trait_name: plant_growth_form
+- trait_name: growth_habit
   find: creeper rooting along stems
   replace: creeper
 - trait_name: plant_growth_form
@@ -195,9 +207,6 @@ substitutions:
 - trait_name: plant_growth_form
   find: climbing
   replace: climber
-- trait_name: plant_growth_form
-  find: parasitic
-  replace: parasite
 - trait_name: leaf_margin
   find: toothed or lobed
   replace: lobed

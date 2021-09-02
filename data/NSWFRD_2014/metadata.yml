@@ -40,7 +40,7 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: Current Scientific Name
-  custom_R_code: data %>% mutate(seed_longevity = `Seed storage`) %>% mutate(fire_response_detailed = Fireresponse) %>% mutate(flowering_time_edited = convert_month_range_vec_to_binary(flowering_time_edited),fruiting_time_edited = convert_month_range_vec_to_binary(fruiting_time_edited))
+  custom_R_code: data %>% mutate(seed_longevity = `Seed storage`) %>% mutate(fire_response_detailed = Fireresponse) %>% mutate(flowering_time_edited = convert_month_range_vec_to_binary(flowering_time_edited),fruiting_time_edited = convert_month_range_vec_to_binary(fruiting_time_edited)) %>% mutate(growth_habit = ifelse(`Life form` == "P", "prostrate", NA)) %>% mutate(`Life form` = ifelse(`Life form` == "P", NA, `Life form`))
 traits:
 - var_in: Life form
   unit_in: .na
@@ -48,6 +48,14 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: H=herb S=shrub T=tree P=prostarte C=climber V=vine F=fern TF=tree fern
+    FF=forkfern CM=clubmoss; See original file in raw data folder for extensive reference
+    list.
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: growth_habit
+  value_type: expert_mean
+  replicates: .na
+  methods: life form values indicating plants are `prostrate`. (All life form values include, H=herb S=shrub T=tree P=prostarte C=climber V=vine F=fern TF=tree fern 
     FF=forkfern CM=clubmoss; See original file in raw data folder for extensive reference
     list.
 - var_in: Fireresponse
@@ -234,7 +242,7 @@ substitutions:
 - trait_name: plant_growth_form
   find: sT or M
   replace: treelet
-- trait_name: plant_growth_form
+- trait_name: growth_habit
   find: P
   replace: prostrate
 - trait_name: plant_growth_form

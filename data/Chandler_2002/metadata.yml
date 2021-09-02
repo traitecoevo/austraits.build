@@ -35,7 +35,7 @@ config:
     taxon_name: binomial
   custom_R_code: data %>% mutate( flowering_time =  ifelse(is.na(data$`flowering month
     begin`), NA, sprintf("%s-%s",month.abb[`flowering month begin`], month.abb[`flowering
-    month end`]) %>% convert_month_range_vec_to_binary()))
+    month end`]) %>% convert_month_range_vec_to_binary())) %>% mutate(growth_habit = ifelse(`growth form` %in% c("p","s p"),"prostrate", NA))
 traits:
 - var_in: max height (m)
   unit_in: m
@@ -102,6 +102,12 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: Seen in field and information from herbarium records.
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: growth_habit
+  value_type: expert_mean
+  replicates: .na
+  methods: Seen in field and information from herbarium records.
 - var_in: min height (m)
   unit_in: m
   trait_name: .na
@@ -161,7 +167,7 @@ substitutions:
   replace: shrub
 - trait_name: plant_growth_form
   find: p
-  replace: prostrate
+  replace: prostrate_shrub
 - trait_name: plant_growth_form
   find: s p
   replace: prostrate_shrub

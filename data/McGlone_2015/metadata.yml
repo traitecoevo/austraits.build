@@ -58,7 +58,7 @@ config:
   variable_match:
     taxon_name: species name
     site_name: sites
-  custom_R_code: data %>% mutate(woodiness = "woody")
+  custom_R_code: data %>% mutate(woodiness = "woody") %>% mutate(parasitic = ifelse(`habit` %in% c("mistletoe","parasite"), "parasitic", NA)) %>% mutate(habit = ifelse(`habit` %in% c("mistletoe","parasite"), NA, habit))
 traits:
 - var_in: ht (m)
   unit_in: m
@@ -90,6 +90,12 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: data sourced from reference books listed as secondary references
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
+  value_type: expert_mean
+  replicates: .na
+  methods: data sourced from reference books listed as secondary references; a subset of data under `habit`
 - var_in: woodiness
   unit_in: .na
   trait_name: woodiness
@@ -98,18 +104,12 @@ traits:
   methods: all species in study designated as woody, as study specifies it sampled
     all Victorian and Tasmanian woody plant taxa
 substitutions:
-- trait_name: plant_growth_form
+- trait_name: parasitic
   find: mistletoe
-  replace: parasite_woody
-- trait_name: plant_growth_form
+  replace: parasitic
+- trait_name: parasitic
   find: parasite
-  replace: parasite_woody
-- trait_name: plant_growth_form
-  find: sprawling
-  replace: prostrate_shrub
-- trait_name: plant_growth_form
-  find: prostrate
-  replace: prostrate_shrub
+  replace: parasitic
 - trait_name: plant_growth_form
   find: scandent
   replace: climber_woody

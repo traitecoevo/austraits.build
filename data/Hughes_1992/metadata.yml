@@ -34,7 +34,7 @@ config:
   variable_match:
     taxon_name: name original
   custom_R_code: data %>% mutate(`flowering duration` = convert_month_range_vec_to_binary(`flowering
-    duration`)) %>% mutate(parasitic = ifelse(`growth form`=="para"|`growth form`=="PARA","parasitic",NA))
+    duration`)) %>% mutate(parasitic = ifelse(`growth form` %in% c("para", "PARA"),"parasitic",NA)) %>% mutate(`growth form` = ifelse(`growth form` %in% c("para", "PARA"),NA,`growth form`)) %>% mutate(growth_habit = ifelse(`growth form` == "Herb, cree", "creeper", NA)) %>% mutate(root_structure = ifelse(`growth form` == "saprophyte", "saprophyte", NA)) %>% mutate(`growth form` = ifelse(`growth form` == "saprophyte", NA,`growth form`)) %>% mutate(`growth form` = ifelse(`name original` == "Commelina cyanea", "herb",`growth form`)) %>% mutate(`growth form` = ifelse(`name original` == "Hibbertia dentata", "climber_twiner",`growth form`)) %>% mutate(`growth form` = ifelse(`name original` == "Xanthosia tridentata", "subshrub",`growth form`))    
 traits:
 - var_in: growth form
   unit_in: .na
@@ -42,9 +42,21 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: published literature
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: growth_habit
+  value_type: expert_mean
+  replicates: .na
+  methods: published literature
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
+  value_type: expert_mean
+  replicates: .na
+  methods: unknown
+- var_in: root_structure
+  unit_in: .na
+  trait_name: root_structure
   value_type: expert_mean
   replicates: .na
   methods: unknown
@@ -81,7 +93,7 @@ traits:
 substitutions:
 - trait_name: plant_growth_form
   find: Floater
-  replace: aquatic
+  replace: aquatic_floating
 - trait_name: plant_growth_form
   find: Trailer
   replace: climber
@@ -108,22 +120,13 @@ substitutions:
   replace: graminoid
 - trait_name: plant_growth_form
   find: Herb, cree
-  replace: creeper
+  replace: herb
 - trait_name: plant_growth_form
   find: Herb, Pere
   replace: herb
 - trait_name: plant_growth_form
-  find: Herb, wood
-  replace: subshrub herb
-- trait_name: plant_growth_form
   find: Woody herb
-  replace: subshrub herb
-- trait_name: plant_growth_form
-  find: PARA
-  replace: parasite
-- trait_name: plant_growth_form
-  find: para
-  replace: parasite
+  replace: herb
 - trait_name: plant_growth_form
   find: mallee
   replace: treelet
