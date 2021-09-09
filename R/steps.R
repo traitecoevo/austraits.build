@@ -7,7 +7,7 @@ subset_config <- function(
   dataset_id <- basename(dirname(filename_metadata))
   
   # read metadata
-  metadata <- read_yaml(filename_metadata)
+  metadata <- read_metadata(filename_metadata)
   
   # table of trait_mapping
   trait_mapping <- 
