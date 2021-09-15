@@ -145,6 +145,9 @@ append_to_list <- function(my_list, to_append) {
 }
 
 #' @rdname write_metadata
+#' 
+#' 
+#' @export
 read_metadata <- function(path) {
   
   data <- read_yaml(path)
@@ -169,7 +172,7 @@ read_metadata <- function(path) {
 }
 
 #' Functions to read and write metadata.yml for a study
-#' @param data austraits metadata object (list)
+#' @param data austraits metadata object (a list)
 #' @param filename  a character string for naming a file
 #' @param style_code  should the R code be styled?
 #' @rdname write_metadata
