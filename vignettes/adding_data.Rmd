@@ -20,8 +20,8 @@ knitr::opts_chunk$set(
   warning=FALSE
   )
 
+# Load austraits.build file
 devtools::load_all()
-#Daniel: This previously read library(austraits.build) which wasn't accepted
 library(dplyr)
 library(readr)
 
@@ -31,18 +31,18 @@ knitr::opts_knit$set(root.dir = root.dir)
 my_kable_styling <- my_kable_styling_html
 ```
 
-Daniel: the remake austraits line previously was "austraits <- readRDS("export/data/austraits.rds")" which failed
+XXX-Daniel: the remake austraits line previously was "austraits <- readRDS("export/data/austraits.rds")" which failed
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Assumes to items exist in global name space
 if(!exists("austraits")) {
   austraits <- remake::make("austraits")
-  # stop("austraits must exist in global name space to knit a report")
 }
 
 definitions <- austraits$definitions
 ```
 
-This sections explains how to format files to contribute a new study to AusTraits. Before starting this, you should read more about the [structure of the compiled AusTraits database](austraits_structure.md), the [structure of the raw data files](austraits_raw_data.md), and [how to build AusTraits](building_austraits.md).
+This sections explains how to format files to contribute a new study to AusTraits. Before starting this, you should read more about the [structure of the compiled AusTraits database](http://traitecoevo.github.io/austraits.build/articles/austraits_structure.html), the [structure of the raw data files](http://traitecoevo.github.io/austraits.build/articles/austraits_raw_data.html), and [how to build AusTraits](http://traitecoevo.github.io/austraits.build/articles/austraits.build.html).
+XXX - Daniel, the "how to build" used to link to "building_austraits.md" - I don't know where this file resides. Is the link I used OK?
 
 It is important that all steps are followed so that our automated workflow proceeds without problems. 
 
@@ -58,7 +58,7 @@ The main steps are:
 8. Return to step 6 if changes are made to the `data.csv` or `metadata.yml` files.
 9. Push to a GitHub branch.
 
-It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits/tree/master/data) and use it as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits/tree/master/config), in particular the `definitions` files for the list of traits we cover and the supported trait values for each trait. Or read through information on the supported traits and trait values.
+It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) and use it as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), in particular the `definitions` files for the list of traits we cover and the supported trait values for each trait. Or read through information on the supported traits and trait values.
 
 Once you have prepared your `data.csv` and `metadata.yml` files within a folder in the `data` directory, you can incorporate the new data into Austraits by running:
 
@@ -185,8 +185,8 @@ This checks 10,000 rows of data before declaring the column is non-numeric. The 
 
 ## Constructing the `metadata.yml` file  
 
-One way to construct the `metadata.yml` file is to use one of the existing files and modify yours to follow the same format. As a start, checkout some examples from [existing studies in Austraits](https://github.com/traitecoevo/austraits/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits/blob/master/data/Angevin_2010/metadata.yml) or [Wright_2004](https://github.com/traitecoevo/austraits/blob/master/data/Wright_2004/metadata.yml).
-XXXX-Daniel: these links don't work.  
+One way to construct the `metadata.yml` file is to use one of the existing files and modify yours to follow the same format. As a start, checkout some examples from [existing studies in Austraits](https://github.com/traitecoevo/austraits.build/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits.build/tree/master/data/Angevin_2011/metadata.yml) or [Wright_2009](https://github.com/traitecoevo/austraits.build/tree/master/data/Wright_2009/metadata.yml).
+XXX-Daniel: I've changed these links - confirm these are what you intended. 
 
 Note, when editing the `metadata.yml`, edits should be made in a proper text editor (Microsoft word tends to stuff up the formatting). For example, Rstudio, textmate, sublime text, and Visual Studio Code are all good editors.  
 
@@ -238,7 +238,7 @@ metadata_add_source_doi(dataset_id, doi, type="secondary")
 ```
 
   * Secondary sources will be assigned the same dataset_id as the primary source. Manually edit the `key` in the metadata.yml file to be the appropriate `author_yyyy` code for the secondary reference. Sequential qualifiers can be used if necessary (e.g. `author_yyyy_2`)  
-  * If there are many sources to add (i.e. for datasets compiled for metaanalyses), after you add each secondary reference, in the `metadata.yml` file manually change the source's header from `secondary` to `secondary_01` (and then `secondary_02`, etc.). See [Richards_2008](https://github.com/traitecoevo/austraits/blob/master/data/Richards_2008/metadata.yml) for an example of a complex source list.  
+  * If there are many sources to add (i.e. for datasets compiled for metaanalyses), after you add each secondary reference, in the `metadata.yml` file manually change the source's header from `secondary` to `secondary_01` (and then `secondary_02`, etc.). See [Richards_2008](https://github.com/traitecoevo/austraits.build/blob/master/data/Richards_2008/metadata.yml) for an example of a complex source list.  
 
 Alternatively, if you have reference details saved in a bibtex file called `myref.bib` you can use the function  
 
@@ -280,7 +280,7 @@ For many studies there are changes we want to make to a dataset before the data.
 
 #### Background  
 
-In each case we want to make some custom modifications to a particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`load_study`](https://github.com/traitecoevo/austraits/blob/master/R/steps.R)) looks like this:  
+In each case we want to make some custom modifications to a particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`load_study`](https://github.com/traitecoevo/austraits.build/blob/master/R/steps.R)) looks like this:  
 
 ```{r, eval=FALSE, echo=TRUE}
 data <- 
@@ -453,6 +453,8 @@ read_csv("data/dataset_id/raw/site_data.csv") -> site_data
 
 As an example of what the site table should look like:  
 ```{r, echo=FALSE, results="markup"}
+data_Falster_2005 <- 
+  remake::make("Falster_2005_1")
 austraits$sites %>% 
   filter(dataset_id == "Falster_2005_1") %>% 
   select(-dataset_id) %>% 
@@ -530,10 +532,6 @@ There are a few additional metadata fields that need to be filled in manually:
 
 #### Sampling date  
 Under `config` > `variable_match` you can add another subheading `date:` where you'd report the column in the data.csv file (or the column defined through custom R code) containing sampling dates.
-
-#### Observation Id  
-
-Under `config` > `variable_match` you can add another subheading `observation_id:` XXXX Daniel: questions here  
 
 #### Dataset  
 
