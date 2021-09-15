@@ -95,6 +95,15 @@ print_all_notes <- function(notes, ..., numbered=TRUE) {
 }
 
 # returns as secific note, as indicated by row number i
+#' Title
+#'
+#' @param notes 
+#' @param i 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 get_note <- function(notes, i=nrow(notes)) {
   notes[i,]
 }
