@@ -15,16 +15,16 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   results = "asis",
-  echo=FALSE, 
-  message=FALSE, 
-  warning=FALSE
-  )
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
 
 library(austraits.build)
 library(dplyr)
 library(readr)
 
-root.dir = rprojroot::find_root("remake.yml")
+root.dir <- rprojroot::find_root("remake.yml")
 knitr::opts_knit$set(root.dir = root.dir)
 
 my_kable_styling <- my_kable_styling_html
@@ -32,7 +32,7 @@ my_kable_styling <- my_kable_styling_html
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Assumes to items exist in global name space
-if(!exists("austraits")) {
+if (!exists("austraits")) {
   austraits <- readRDS("export/data/austraits.rds")
   # stop("austraits must exist in global name space to knit a report")
 }
@@ -45,7 +45,9 @@ definitions <- austraits$definitions
 The main directory for the [`austraits.build` repository](https://github.com/traitecoevo/austraits.build/)  repository contains the following files and folders, with purpose as indicated.
 
 ```{r, eval=FALSE}
-dir() %>% create_tree_branch(title = "austraits") %>% writeLines()
+dir() %>%
+  create_tree_branch(title = "austraits") %>%
+  writeLines()
 ```
 
 ```
@@ -80,16 +82,16 @@ The file `definitions.yml` defines the structure of the database and all terms. 
 The file `species_list.csv` is our master list of known species. Each species is listed once, with known IDs (see [section above](#taxonomic) for details). 
 
 ```{r, results='show'}
-read_csv("config/species_list.csv") %>% select(species_name,family,authority,TPL_ID,status,APC_name,APC_ID,APNI_ID) %>% 
+read_csv("config/species_list.csv") %>%
+  select(species_name, family, authority, TPL_ID, status, APC_name, APC_ID, APNI_ID) %>%
   slice(1:10) %>%
   my_kable_styling()
-
 ```
 
 The file `unit_conversions.csv` defines the unit conversions that are used when converting traits to common units, e.g.
 
 ```{r, results='show',}
-read_csv("config/unit_conversions.csv", col_types = "ccc") %>% 
+read_csv("config/unit_conversions.csv", col_types = "ccc") %>%
   slice(1:10) %>%
   my_kable_styling()
 ```
@@ -238,7 +240,8 @@ Note that in these first examples `secondary` is set as `.na`. If a secondary so
 This section provides `r tolower(definitions$metadata$elements$people$description)`. Roles are defined as follows:
 
 ```{r, echo=FALSE, results="show"}
-austraits$definitions$metadata$elements$people$elements$role$values %>% list1_to_df() %>%
+austraits$definitions$metadata$elements$people$elements$role$values %>%
+  list1_to_df() %>%
   my_kable_styling()
 ```
 
@@ -265,7 +268,7 @@ The following elements are included under the element `dataset`:
 
 ```{r}
 values <- definitions$metadata$elements$dataset$values
-for(value in names(values)) {
+for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
 ```
@@ -292,7 +295,7 @@ Values are as follows:
 
 ```{r}
 values <- definitions$metadata$elements$config$elements
-for(value in names(values)) {
+for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
 ```
@@ -318,7 +321,7 @@ For each trait submitted to Austraits, there is the following information:
 
 ```{r}
 values <- definitions$metadata$elements$traits$elements
-for(value in names(values)) {
+for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
 ```
@@ -354,7 +357,7 @@ Each substitution is documented using the following elements:
 
 ```{r}
 values <- definitions$metadata$elements$substitutions$values
-for(value in names(values)) {
+for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
 ```
@@ -380,7 +383,7 @@ Each substitution is documented using the following elements:
 
 ```{r}
 values <- definitions$metadata$elements$taxonomic_updates$values
-for(value in names(values)) {
+for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
 ```
@@ -487,7 +490,7 @@ metadata_add_source_doi(dataset_id, doi)
 and the different elements within source will automatically be generated. By default, details are added as a primary source. To override this, specify the type
 
 ```{r, eval=FALSE, echo=TRUE}
-metadata_add_source_doi(dataset_id, doi, type="secondary")
+metadata_add_source_doi(dataset_id, doi, type = "secondary")
 ```
 
 Alternatively, if you have reference details saved in a bibtex file called `myref.bib` you can use the function
@@ -507,11 +510,11 @@ The function `metadata_create_template` creates a template for entering details 
 Occasionally all the changes we want to make to dataset may not fit into the prescribed workflow used in Austraits. For example, we assume each trait has a single unit. But there are a few datasets where data on different rows have different units. So we want to make to make some custom modifications to this particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`load_study`](https://github.com/traitecoevo/austraits/blob/master/R/steps.R)) looks like this:
 
 ```{r, eval=FALSE, echo=TRUE}
-  data <- 
-    read_csv(filename_data_raw, col_types = cols()) %>%
-    custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
-    parse_data(dataset_id, metadata) %>%
-    ...
+data <-
+  read_csv(filename_data_raw, col_types = cols()) %>%
+  custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
+  parse_data(dataset_id, metadata) %>%
+  ...()
 ```
 
 Note the second line. After loading the csv file, we can apply some Custom R code small manipulations to the dataframe before processing it. Custom R code is valid R code, but written inside the `metadata.yml` file. While developing this, you'll want to test your code. This can be achieved by running the function
@@ -544,10 +547,10 @@ This function assumes you have site details stored in wide format, in R:
 <!-- TODO: need to indicate that the following code needs to be run with the assignment site_data for the previous code to work. --> 
 
 ```{r, echo=FALSE, results="markup"}
-austraits$sites %>% 
-  filter(dataset_id == "Falster_2005_1") %>% 
-  select(-dataset_id) %>% 
-  spread(site_property, value) %>% 
+austraits$sites %>%
+  filter(dataset_id == "Falster_2005_1") %>%
+  select(-dataset_id) %>%
+  spread(site_property, value) %>%
   type_convert()
 ```
 
@@ -584,7 +587,7 @@ There are additional arguments you can add for the function `metadata_check_taxa
 Therefore, if you want the function  `metadata_check_taxa` to correct 1 and 2 character typos, run the function as follows:
 
 ```{r, eval=FALSE, echo=TRUE}
-metadata_check_taxa("Westoby_2014", typos=TRUE)
+metadata_check_taxa("Westoby_2014", typos = TRUE)
 ```
 
 If TaxonStand fails to find a suitable alignment, and you have identified one yourself, you can add it to the metadata by running
@@ -644,7 +647,7 @@ Both functions `build_study_report` & `build_study_reports` can accept an additi
 
 
 ```{r, eval=FALSE, echo=TRUE}
-build_study_report("Wright_2002", overwrite=TRUE)
+build_study_report("Wright_2002", overwrite = TRUE)
 ```
 
 One thing to check in particular, is any data have been excluded. These are available in the frame `excluded_data`.
@@ -664,32 +667,33 @@ For your dataset, you can investigate why you have excluded data as follows.
 Look at everything 
 
 ```{r, echo=TRUE, results="show"}
-austraits$excluded_data %>% 
-  filter(dataset_id=="ANBG_2019")
+austraits$excluded_data %>%
+  filter(dataset_id == "ANBG_2019")
 ```
 
 If you want to inspect this more closely, just pass it into `View`
 
 ```{r, echo=TRUE, eval=FALSE}
-austraits$excluded_data %>% 
-  filter(dataset_id=="ANBG_2019") %>% 
+austraits$excluded_data %>%
+  filter(dataset_id == "ANBG_2019") %>%
   View()
 ```
 
 How many of each type:
 
 ```{r, echo=TRUE, results="show"}
-austraits$excluded_data %>% 
-  filter(dataset_id=="ANBG_2019") %>%
-  pull(error) %>% table()
+austraits$excluded_data %>%
+  filter(dataset_id == "ANBG_2019") %>%
+  pull(error) %>%
+  table()
 ```
 
 
 How many of each type by trait:
 
 ```{r, echo=TRUE, results="show"}
-austraits$excluded_data %>% 
-  filter(dataset_id=="ANBG_2019") %>%
+austraits$excluded_data %>%
+  filter(dataset_id == "ANBG_2019") %>%
   select(trait_name, error) %>%
   table()
 ```
@@ -697,8 +701,8 @@ austraits$excluded_data %>%
 View records that aren't missing values
 
 ```{r, echo=TRUE, eval=FALSE}
-austraits$excluded_data %>% 
-  filter(dataset_id=="ANBG_2019", error !="Missing value") %>%
+austraits$excluded_data %>%
+  filter(dataset_id == "ANBG_2019", error != "Missing value") %>%
   View()
 ```
 
@@ -724,11 +728,11 @@ The `yml` file extension (pronounced "YAML") [is a type structured data file](ht
 Occasionally all the changes we want to make to dataset may not fit into the prescribed workflow used in AusTraits. For example, we assume each trait has a single unit. But there are a few datasets where data on different rows have different units. So we want to make to make some custom modifications to this particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`read_data_study`](https://github.com/traitecoevo/austraits/blob/master/R/steps.R#L59)) looks like:
 
 ```{r, eval=FALSE, echo=TRUE}
-  data <- 
-    read_csv(filename_data_raw, col_types = cols()) %>%
-    custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
-    parse_data(dataset_id, metadata) %>%
-    ...
+data <-
+  read_csv(filename_data_raw, col_types = cols()) %>%
+  custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
+  parse_data(dataset_id, metadata) %>%
+  ...()
 ```
 
 Note the second line. 
@@ -739,9 +743,9 @@ As an example, for `Blackman_2010` we want to combine two columns to create an a
 
 ```{r, eval=FALSE, echo=TRUE}
 data %>% mutate(
-    site = ifelse(site == "Mt Field" & habitat == "Montane rainforest", "Mt Field_wet", site),
-    site = ifelse(site == "Mt Field" & habitat == "Dry sclerophyll", "Mt Field_dry", site)
-    )
+  site = ifelse(site == "Mt Field" & habitat == "Montane rainforest", "Mt Field_wet", site),
+  site = ifelse(site == "Mt Field" & habitat == "Dry sclerophyll", "Mt Field_dry", site)
+)
 ```
 
 This is the finished solution, but to get there we did as follows. 

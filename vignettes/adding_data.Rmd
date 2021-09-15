@@ -15,17 +15,17 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   results = "asis",
-  echo=FALSE, 
-  message=FALSE, 
-  warning=FALSE
-  )
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
 
 # Load austraits.build file
 devtools::load_all()
 library(dplyr)
 library(readr)
 
-root.dir = rprojroot::find_root("remake.yml")
+root.dir <- rprojroot::find_root("remake.yml")
 knitr::opts_knit$set(root.dir = root.dir)
 
 my_kable_styling <- my_kable_styling_html
@@ -33,7 +33,7 @@ my_kable_styling <- my_kable_styling_html
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Assumes to items exist in global name space
-if(!exists("austraits")) {
+if (!exists("austraits")) {
   austraits <- remake::make("austraits")
 }
 
@@ -102,9 +102,12 @@ read_csv("data/dataset_id/data.csv") %>%
 
 ```{r, eval=FALSE, echo=TRUE}
 read_csv("data/dataset_id/data.csv") %>%
-  mutate(context = 
-           paste(light_levels, "light_and", CO2_concentration, "CO2_and",
-                 water_treatment, sep="_")
+  mutate(
+    context =
+      paste(light_levels, "light_and", CO2_concentration, "CO2_and",
+        water_treatment,
+        sep = "_"
+      )
   )
 ```
 
@@ -114,7 +117,7 @@ When there is just a single row of values to summarise, use:
 
 ```{r, eval=FALSE, echo=TRUE} 
 read_csv("data/dataset_id/raw/raw_data.csv") %>%
-  group_by(individual,`species name`,site,context,etc) %>%
+  group_by(individual, `species name`, site, context, etc) %>%
   summarise(individual_mean = mean(replicate)) %>%
   ungroup()
 ```
@@ -124,7 +127,7 @@ When you want to take the mean of a series of continuous variables, use:
     
 ```{r, eval=FALSE, echo=TRUE} 
 read_csv("data/dataset_id/raw/raw_data.csv") %>%
-  group_by(individual,`species name`,site,context,etc) %>%
+  group_by(individual, `species name`, site, context, etc) %>%
   summarise(.funs = mean) %>%
   ungroup()
 ```
@@ -134,9 +137,11 @@ When you want to choose a different function for each variable, use:
 
 ```{r, eval=FALSE, echo=TRUE} 
 read_csv("data/dataset_id/raw/raw_data.csv") %>%
-  group_by(individual,`species name`,site,context,etc) %>%
-  summarise(mean_buds = mean(buds_per_branch), max_height = max(`plant height`), 
-            fire_response = first(`killed or alive`)) %>%
+  group_by(individual, `species name`, site, context, etc) %>%
+  summarise(
+    mean_buds = mean(buds_per_branch), max_height = max(`plant height`),
+    fire_response = first(`killed or alive`)
+  ) %>%
   ungroup()
 ```
 (This allows you to retain character variables, but can be tedious with many columns. Generally use the function `first` for categorical variables - it simply retains the trait value in the first column. In the rare case when rows in a particular grouping have different categorical values more complex manipulations are required.)
@@ -148,7 +153,7 @@ read_csv("data/dataset_id/raw/raw_data.csv") %>%
 ```{r, eval=FALSE, echo=TRUE} 
 read_csv("data/dataset_id/raw/data_file_1.csv") -> data_1
 read_csv("data/dataset_id/raw/data_file_2.csv") -> data_2
-data_1 %>% full_join(data_2, by =c("Individual","Taxon","Site","Context"))
+data_1 %>% full_join(data_2, by = c("Individual", "Taxon", "Site", "Context"))
 ```
 
   b. If the spreadsheets include trait measurements for different individuals (or possibly data at a different scales - such as individual level data for some traits and species means for other traits), they are best merged using `bind_rows`. Ensure the column names for taxon name, site name, context, individual, and sample date are identical between spreadsheets. If there is data for the same traits in both spreadsheets, make sure those column headers are identical as well. 
@@ -164,15 +169,15 @@ data_1 %>% bind_rows(data_2)
 ```{r, eval=FALSE, echo=TRUE} 
 read_csv("data/dataset_id/raw/continuous_data.csv") -> continuous_data
 read_csv("data/dataset_id/raw/categorical_data.csv") -> categorical_data
-continuous_data %>% full_join(data_2, by =c("Taxon"))
+continuous_data %>% full_join(data_2, by = c("Taxon"))
 ```
 
 4. Taxon names need to be complete names. If the main data file includes code names, with a key as a separate file, they need to be merged:  
 
 ```{r, eval=FALSE, echo=TRUE}
-read_csv("data/dataset_id/raw/species_key.csv") -> species_key     
+read_csv("data/dataset_id/raw/species_key.csv") -> species_key
 read_csv("data/dataset_id/raw/data_file.csv") %>%
-left_join(species_key,by="code")
+  left_join(species_key, by = "code")
 ```
 
 ### Unexpected hangups  
@@ -180,7 +185,7 @@ left_join(species_key,by="code")
 * If you're reading a file into R where there are lots of blanks at the beginning of a column of numeric data, the defaults for `read_csv` fail to register the column as numeric. It is fixed by adding the argument `guess_max`:  
 
 ```{r, eval=FALSE, echo=TRUE}
-read_csv("data/dataset_id/raw/raw_data.csv", guess_max = 10000) 
+read_csv("data/dataset_id/raw/raw_data.csv", guess_max = 10000)
 ```
 This checks 10,000 rows of data before declaring the column is non-numeric. The value can be set even higher...  
 
@@ -229,7 +234,7 @@ The function `metadata_create_template` creates a template for the primary sourc
 If you have a `doi` for your study, use the function:  
 
 ```{r, eval=FALSE, echo=TRUE}
-metadata_add_source_doi(dataset_id = current_study, doi = "doi") 
+metadata_add_source_doi(dataset_id = current_study, doi = "doi")
 ```
 and the different elements within source will automatically be generated. Double check the information added to ensure:  
 1. The title is in `sentence case`  
@@ -239,7 +244,7 @@ and the different elements within source will automatically be generated. Double
 By default, details are added as the primary source. If multiple sources are linked to a single `dataset_id`, you can specify a source as `secondary`  
 
 ```{r, eval=FALSE, echo=TRUE}
-metadata_add_source_doi(dataset_id, doi, type="secondary")
+metadata_add_source_doi(dataset_id, doi, type = "secondary")
 ```
 
   * Secondary sources will be assigned the same dataset_id as the primary source. Manually edit the `key` in the metadata.yml file to be the appropriate `author_yyyy` code for the secondary reference. Sequential qualifiers can be used if necessary (e.g. `author_yyyy_2`)  
@@ -288,7 +293,7 @@ For many studies there are changes we want to make to a dataset before the data.
 In each case we want to make some custom modifications to a particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`load_study`](https://github.com/traitecoevo/austraits.build/blob/master/R/steps.R)) looks like this:  
 
 ```{r, eval=FALSE, echo=TRUE}
-data <- 
+data <-
   read_csv(filename_data_raw, col_types = cols(), guess_max = 1e5) %>%
   custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
   parse_data(dataset_id, metadata)
@@ -322,13 +327,13 @@ Note the second line. This is where the custom code gets applied, right after th
 5. Author has represented missing data values with a symbol, such as `0` :  
 
 ```{r, eval=FALSE, echo=TRUE}
-data %>% mutate_at(vars(`height (cm)`,`leaf area (mm2)`), ~na_if(.,0)) 
+data %>% mutate_at(vars(`height (cm)`, `leaf area (mm2)`), ~ na_if(., 0))
 ```
 
 6. If a subset of data in a column are also `values` for a second trait in AusTraits, some data values can be duplicated in a second temporary column. In the example below, some data in the contributor's `growth_form` column also apply to the trait `parasitic` in AusTraits:  
 
 ```{r, eval=FALSE, echo=TRUE}
-data %>% mutate(parasitic = ifelse(`growth form`=="parasitic herb","parasitic",NA))
+data %>% mutate(parasitic = ifelse(`growth form` == "parasitic herb", "parasitic", NA))
 ```
 
 7. If the `data.csv` file includes raw data that you want to manipulate into a `trait` or the contributor presents the data in a different formulation than AusTraits:  
@@ -338,9 +343,11 @@ data %>% mutate(root_mass_fraction = `root mass` / (`root mass` + `shoot mass`))
 
 8. You can do manipulations like adding a column with `sites` or manipulating `site names`. This works well for studies with a single (or few) site, where manually adding the site data to the `metadata.yml` file is easy, but is not recommended for studies with multiple sites since you cannot automatically propagate site data into metadata (see below). An example (Blackman_2010 dataset):  
 ```{r, eval=FALSE, echo=TRUE}
-data %>% 
-  mutate(site = ifelse(site == "Mt Field" & habitat == "Montane rainforest", "Mt Field_wet", site),
-         site = ifelse(site == "Mt Field" & habitat == "Dry sclerophyll", "Mt Field_dry", site))
+data %>%
+  mutate(
+    site = ifelse(site == "Mt Field" & habitat == "Montane rainforest", "Mt Field_wet", site),
+    site = ifelse(site == "Mt Field" & habitat == "Dry sclerophyll", "Mt Field_dry", site)
+  )
 ```
 
 9. You can reformat `sampling dates` supplied into the `yyyy-mm-dd` format or add a date column
@@ -443,9 +450,9 @@ A few contributors provide a standalone file of all site data. Otherwise, the fo
 1. Identify all site names in the data.csv file. The following code extracts a list of site names and any other columns in the data file that include site-specific information:        
 ```{r, eval=FALSE, echo=TRUE}
 read_csv("data/dataset_id/data.csv") %>%
-  distinct(site, .keep_all = TRUE) %>%   #the argument `.keep_all` ensures columns aren't dropped
-  select(site,rainfall,lat,lon) %>%   #list of relevant columns to keep
-  rename(`latitude (deg)` = lat, `longitude (deg)` = long) %>%  #rename columns to how you want them to appear in the metadata file. Faster to do it once here than repeatedly in the metadata file          
+  distinct(site, .keep_all = TRUE) %>% # the argument `.keep_all` ensures columns aren't dropped
+  select(site, rainfall, lat, lon) %>% # list of relevant columns to keep
+  rename(`latitude (deg)` = lat, `longitude (deg)` = long) %>% # rename columns to how you want them to appear in the metadata file. Faster to do it once here than repeatedly in the metadata file
   write_csv("data/dataset_id/raw/site_data.csv")
 ```
 
@@ -458,12 +465,12 @@ read_csv("data/dataset_id/raw/site_data.csv") -> site_data
 
 As an example of what the site table should look like:  
 ```{r, echo=FALSE, results="markup"}
-data_Falster_2005 <- 
+data_Falster_2005 <-
   remake::make("Falster_2005_1")
-austraits$sites %>% 
-  filter(dataset_id == "Falster_2005_1") %>% 
-  select(-dataset_id) %>% 
-  spread(site_property, value) %>% 
+austraits$sites %>%
+  filter(dataset_id == "Falster_2005_1") %>%
+  select(-dataset_id) %>%
+  spread(site_property, value) %>%
   type_convert()
 ```
 
@@ -484,9 +491,12 @@ Context data includes the context name (see above), type (usually `experiment` o
 ```{r, eval=FALSE, echo=TRUE}
 read_csv("data/dataset_id/data.csv") %>%
   distinct(context, .keep_all = TRUE) %>%
-  select(context,light_levels,CO2_concentration,water_treatment) %>%
-  mutate(light_levels = gsub("high","1800 PAR",light_levels),
-         light_levels = gsub("low","1200 PAR",light_levels)) %>%      #add lines for other contexts
+  select(context, light_levels, CO2_concentration, water_treatment) %>%
+  mutate(
+    light_levels = gsub("high", "1800 PAR", light_levels),
+    light_levels = gsub("low", "1200 PAR", light_levels)
+  ) %>%
+  # add lines for other contexts
   mutate(type = "experiment") %>%
   write_csv("data/dataset_id/raw/context_data.csv")
 ```
@@ -500,10 +510,10 @@ read_csv("data/dataset_id/raw/context_data.csv") -> context_data
 
 As an example of what the context table should look like:  
 ```{r, echo=FALSE, results="markup"}
-austraits$contexts %>% 
-  filter(dataset_id == "Hall_1981") %>% 
-  select(-dataset_id) %>% 
-  spread(context_property, value) %>% 
+austraits$contexts %>%
+  filter(dataset_id == "Hall_1981") %>%
+  select(-dataset_id) %>%
+  spread(context_property, value) %>%
   type_convert()
 ```
 4. This context data can then be read into `metadata.yml`:  
@@ -636,17 +646,19 @@ A few values may be legitimately excluded due to other errors, but check each en
 
 The best way to view excluded data for a study is:  
 ```{r, eval=FALSE, echo=TRUE}
-austraits$excluded_data %>% 
-  filter(dataset_id==current_study, 
-         error!="Missing value",
-         error!="Observation excluded in metadata") %>% 
+austraits$excluded_data %>%
+  filter(
+    dataset_id == current_study,
+    error != "Missing value",
+    error != "Observation excluded in metadata"
+  ) %>%
   View()
 ```
 
 Or, if you want to check missing values and intentionally excluded metadata:  
 ```{r, eval=FALSE, echo=TRUE}
-austraits$excluded_data %>% 
-  filter(dataset_id==current_study) %>% 
+austraits$excluded_data %>%
+  filter(dataset_id == current_study) %>%
   View()
 ```
 
@@ -673,16 +685,19 @@ Possible reasons for excluding trait value include:
 
 You can also ask how many of each error type are present for a study:  
 ```{r, echo=TRUE, results="show"}
-austraits$excluded_data %>% 
-  filter(dataset_id=="Cheal_2017") %>%
-  pull(error) %>% table()
+austraits$excluded_data %>%
+  filter(dataset_id == "Cheal_2017") %>%
+  pull(error) %>%
+  table()
 ```
 
 Or produce a table of error type by trait:  
 ```{r, echo=TRUE, results="show"}
-austraits$excluded_data %>% 
-  filter(dataset_id=="Cheal_2017", 
-         error != "Missing value") %>%
+austraits$excluded_data %>%
+  filter(
+    dataset_id == "Cheal_2017",
+    error != "Missing value"
+  ) %>%
   select(trait_name, error) %>%
   table()
 ```
@@ -693,21 +708,23 @@ Note, most studies have no excluded data. This study is the extreme example!
 For categorical traits, if you want to create a list of all values that require substitutions:  
 ```{r, eval=FALSE, echo=TRUE}
 austraits$excluded_data %>%
-  filter(dataset_id==current_study,
-         error=="Unsupported trait value") %>%
-  distinct(dataset_id, trait_name, value) %>% 
+  filter(
+    dataset_id == current_study,
+    error == "Unsupported trait value"
+  ) %>%
+  distinct(dataset_id, trait_name, value) %>%
   rename(find = value) %>%
   select(-dataset_id) %>%
   write_csv("data/dataset_id/raw/substitutions_required.csv")
 ```
 For studies with a small number of substitutions, add them individually, using: 
 ```{r, eval=FALSE, echo=TRUE}
-metadata_add_substitution(dataset_id,trait_name,find,replace)  
+metadata_add_substitution(dataset_id, trait_name, find, replace)
 ```
 For studies with large number of substitutions required, you can add an additional column to this table, `replace`, and fill in all the correct trait values. Then read the list of substitutions directly into the metadata file:   
 ```{r, eval=FALSE, echo=TRUE}
 substitutions_to_add <-
-  read_csv("data/dataset_id/raw/substitutions_required_after_editing.csv") 
+  read_csv("data/dataset_id/raw/substitutions_required_after_editing.csv")
 
 metadata_add_substitutions_list(dataset_id, substitutions_to_add)
 ```
@@ -769,10 +786,10 @@ For a study requiring a large number of manual taxonomic changes, you can create
 Begin by generating a list of taxa that haven't been matched:  
 ```{r, eval = FALSE, echo=TRUE}
 recognised_taxa <-
-  austraits$taxa %>% 
+  austraits$taxa %>%
   filter(source %in% c("APC", "APNI"))
 
-austraits$traits %>% 
+austraits$traits %>%
   filter(dataset_id == current_study) %>%
   distinct(taxon_name) %>%
   anti_join(recognised_taxa) %>%
@@ -804,10 +821,12 @@ In addition, there are tests to check for duplicates within and across dataset_i
 
 ```{r, eval=FALSE, echo=TRUE}
 austraits_deduped <- remove_suspected_duplicates(austraits)
-duplicates_for_dataset_id  <- 
+duplicates_for_dataset_id <-
   austraits_deduped$excluded_data %>%
-  filter(dataset_id==current_study,
-         error !="Missing value")
+  filter(
+    dataset_id == current_study,
+    error != "Missing value"
+  )
 
 View(duplicates_for_dataset_id)
 ```
@@ -821,10 +840,12 @@ View(duplicates_for_dataset_id)
 3.	If a species-level measurement has been entered for all within-site replicates, you need to filter out the duplicates. This is true for both numeric and categorical values. Enter the following code as `extra R code` in the dataset's metadata file. (Using custom R code instead of filtering the values in the data.csv file itself, ensures the relevant trait values are still associated with each line of data in the data.csv file, but only read into AusTraits a single time.)  
 
 ```{r, eval=FALSE, echo=TRUE}
-data %>% 
+data %>%
   group_by(Species) %>%
-  mutate_at(vars(leaf_percentN, `plant growth form`),
-            ~replace(.x,duplicated(.x),NA)) %>%
+  mutate_at(
+    vars(leaf_percentN, `plant growth form`),
+    ~ replace(.x, duplicated(.x), NA)
+  ) %>%
   ungroup()
 ```
 Note: You would use `group_by(Species, Site)` if there are unique values at the species x site level.
@@ -860,79 +881,81 @@ Filtering duplicate data is a three-step process. In brief:
 
 As an example:  
 ```{r, eval=FALSE, echo=TRUE}
-#Note, this code will be replaced by a function in the future.
+# Note, this code will be replaced by a function in the future.
 duplicates_to_filter <-
   duplicates_for_dataset_id %>%
-  mutate(dataset_with_duplicate = 
-          error %>%
-          gsub("Duplicate of ","", .) %>%
-          gsub("[[:alnum:]]$","", .) %>%
-          gsub("[[:punct:]]$","", .)
-         ) %>%
-  filter(dataset_with_duplicate %in% c("Ilic_2000","Zanne_2009","Kew_2019_1","Barlow_1981","NTH_2014")) %>%
-  filter(trait_name %in% c("wood_density","seed_mass","leaf_length","leaf_width"))
+  mutate(
+    dataset_with_duplicate =
+      error %>%
+        gsub("Duplicate of ", "", .) %>%
+        gsub("[[:alnum:]]$", "", .) %>%
+        gsub("[[:punct:]]$", "", .)
+  ) %>%
+  filter(dataset_with_duplicate %in% c("Ilic_2000", "Zanne_2009", "Kew_2019_1", "Barlow_1981", "NTH_2014")) %>%
+  filter(trait_name %in% c("wood_density", "seed_mass", "leaf_length", "leaf_width"))
 ```
 
 2. Use the following code to add columns to `data.csv` that identify specific values as duplicates:
 
 ```{r, eval=FALSE, echo=TRUE}
-#Note, this code will be replaced by a function in the future.
-wood_density_duplicates <- 
-  duplicates_to_filter %>% 
-  filter(trait_name == "wood_density") %>% 
-  select(error, original_name) %>% 
+# Note, this code will be replaced by a function in the future.
+wood_density_duplicates <-
+  duplicates_to_filter %>%
+  filter(trait_name == "wood_density") %>%
+  select(error, original_name) %>%
   rename(wood_density_duplicate = error)
 
-seed_mass_duplicates <- 
-  duplicates_to_filter %>% 
-  filter(trait_name == "seed_width") %>% 
-  select(error, original_name) %>% 
-  rename (seed_mass_duplicate = error)
+seed_mass_duplicates <-
+  duplicates_to_filter %>%
+  filter(trait_name == "seed_width") %>%
+  select(error, original_name) %>%
+  rename(seed_mass_duplicate = error)
 
-leaf_width_min_duplicates <- 
-  duplicates_to_filter %>% 
-  filter(trait_name == "leaf_width", value_type == "expert_min") %>% 
-  select(error, original_name) %>% 
-  rename (leaf_width_min_duplicate = error)
+leaf_width_min_duplicates <-
+  duplicates_to_filter %>%
+  filter(trait_name == "leaf_width", value_type == "expert_min") %>%
+  select(error, original_name) %>%
+  rename(leaf_width_min_duplicate = error)
 
-leaf_width_max_duplicates <- 
-  duplicates_to_filter %>% 
-  filter(trait_name == "leaf_width", value_type == "expert_max") %>% 
-  select(error, original_name) %>% 
-  rename (leaf_width_max_duplicate = error)
+leaf_width_max_duplicates <-
+  duplicates_to_filter %>%
+  filter(trait_name == "leaf_width", value_type == "expert_max") %>%
+  select(error, original_name) %>%
+  rename(leaf_width_max_duplicate = error)
 
 leaf_length_min_duplicates <-
-  duplicates_to_filter %>% 
-  filter(trait_name == "leaf_length", value_type == "expert_min") %>% 
-  select(error, original_name) %>% 
-  rename (leaf_length_min_duplicate = error)
+  duplicates_to_filter %>%
+  filter(trait_name == "leaf_length", value_type == "expert_min") %>%
+  select(error, original_name) %>%
+  rename(leaf_length_min_duplicate = error)
 
-leaf_length_max_duplicates <- 
-  duplicates_to_filter %>% 
-  filter(trait_name == "leaf_length", value_type == "expert_max") %>% 
-  select(error, original_name) %>% 
-  rename (leaf_length_max_duplicate = error)
+leaf_length_max_duplicates <-
+  duplicates_to_filter %>%
+  filter(trait_name == "leaf_length", value_type == "expert_max") %>%
+  select(error, original_name) %>%
+  rename(leaf_length_max_duplicate = error)
 
 read_csv("data/dataset_id/data.csv") %>%
-  left_join(wood_density_duplicates, by = c("column_with_species_name" = "original_name")) %>% 
-  left_join(seed_mass_duplicates, by = c("column_with_species_name" = "original_name")) %>% 
-  left_join(leaf_width_min_duplicates, by = c("column_with_species_name" = "original_name")) %>% 
-  left_join(leaf_width_max_duplicates, by = c("column_with_species_name" = "original_name")) %>% 
-  left_join(leaf_length_min_duplicates, by = c("column_with_species_name" = "original_name")) %>% 
-  left_join(leaf_length_max_duplicates, by = c("column_with_species_name" = "original_name")) %>% 
-write_csv("data/dataset_id/data.csv")
+  left_join(wood_density_duplicates, by = c("column_with_species_name" = "original_name")) %>%
+  left_join(seed_mass_duplicates, by = c("column_with_species_name" = "original_name")) %>%
+  left_join(leaf_width_min_duplicates, by = c("column_with_species_name" = "original_name")) %>%
+  left_join(leaf_width_max_duplicates, by = c("column_with_species_name" = "original_name")) %>%
+  left_join(leaf_length_min_duplicates, by = c("column_with_species_name" = "original_name")) %>%
+  left_join(leaf_length_max_duplicates, by = c("column_with_species_name" = "original_name")) %>%
+  write_csv("data/dataset_id/data.csv")
 ```
 
 3. For the above example, then add the following code to custom R code, that removes the duplicate values from the data columns (by seeting them as `NA`) as the dataset is read into AusTraits.
 
 ```{r, eval=FALSE, echo=TRUE}
 data %>%
-  mutate(`wood density` = ifelse(is.na(wood_density_duplicate),`wood density`,NA),
-         `seed mass (mg)` = ifelse(is.na(seed_mass_duplicate),`seed mass (mg)`,NA),
-         `leaf width minimum (mm)` = ifelse(is.na(leaf_width_min_duplicate),`leaf width minimum (mm)`,NA),
-         `leaf width maximum (mm)` = ifelse(is.na(leaf_width_max_duplicate),`leaf width maximum (mm)`,NA),
-         `leaf length minimum (mm)` = ifelse(is.na(leaf_length_min_duplicate),`leaf length minimum (mm)`,NA),
-         `leaf length maximum (mm)` = ifelse(is.na(leaf_length_max_duplicate),`leaf length maximum (mm)`,NA)
+  mutate(
+    `wood density` = ifelse(is.na(wood_density_duplicate), `wood density`, NA),
+    `seed mass (mg)` = ifelse(is.na(seed_mass_duplicate), `seed mass (mg)`, NA),
+    `leaf width minimum (mm)` = ifelse(is.na(leaf_width_min_duplicate), `leaf width minimum (mm)`, NA),
+    `leaf width maximum (mm)` = ifelse(is.na(leaf_width_max_duplicate), `leaf width maximum (mm)`, NA),
+    `leaf length minimum (mm)` = ifelse(is.na(leaf_length_min_duplicate), `leaf length minimum (mm)`, NA),
+    `leaf length maximum (mm)` = ifelse(is.na(leaf_length_max_duplicate), `leaf length maximum (mm)`, NA)
   )
 ```
 
@@ -974,17 +997,17 @@ dataset_ids <- current_study
 austraits_run_tests()
 
 austraits <- remake::make("austraits")
-build_study_report(current_study,overwrite=TRUE)
+build_study_report(current_study, overwrite = TRUE)
 ```
 
 To generate a report for a collection of studies:  
 ```{r, eval=FALSE, echo=TRUE}
-build_study_reports(c("Falster_2005_1", "Wright_2002"),overwrite=TRUE)
+build_study_reports(c("Falster_2005_1", "Wright_2002"), overwrite = TRUE)
 ```
 
 Or for all studies:  
 ```{r, eval=FALSE, echo=TRUE}
-build_study_reports(overwrite=TRUE)
+build_study_reports(overwrite = TRUE)
 ```
 
 Add the argument `overwrite=TRUE` if you already have a copy of a specific report stored in your computer and want to replace it with a newer version.
@@ -1057,7 +1080,7 @@ metadata_check_taxa(dataset_ids)
 # run tests on dataset
 austraits_run_tests()
 
-# read and write yaml to prevent future reformatting 
+# read and write yaml to prevent future reformatting
 f <- file.path("data", dataset_ids, "metadata.yml")
 read_yaml(f) %>% write_yaml(f)
 
