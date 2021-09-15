@@ -189,3 +189,29 @@ separate_range <- function(data, x, y1, y2, sep="-", remove=TRUE) {
 replace_duplicates_with_NA <- function(x) {
   x %>% replace(., duplicated(.), NA)
 }
+
+#' Move select trait values from a pre-existing column (trait_name) to a new column (new trait_name)
+#'
+#' @param data data frame, representing a specific dataset_id
+#' @param original_trait name of the variable in the original data file, representing a trait in a wide dataset
+#' @param new_trait name of the new variable being created, representing an additional trait in a wide dataset
+#' @param original_values values of the original trait that need to be remapped to a different (new) trait
+#' @param value_to_use the appropriate value of the new trait; this may be identical to the original values, or may be a slightly different word/syntax 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' data <- read_csv(data/"Hughes_1992/data.csv")
+#' data %>% move_values_to_new_trait(data, "growth form", "root_structure", "Saprophyte", "saprophyte") -> data
+move_values_to_new_trait <- 
+  function(data, original_trait, new_trait, original_values, value_to_use) {
+    
+    i <- data[[original_trait]] %in% original_values
+    
+    data[[new_trait]]= ifelse(i, value_to_use, NA)
+    
+    data[[original_trait]] = ifelse(i, NA, original_trait)
+
+    data
+}
