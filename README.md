@@ -39,20 +39,8 @@ such, there is no single canonical version. We are continually making
 new versions available. Overtime, we expect that different versions will
 be released and used in different analyses.
 
-## Contributing
-
-We envision AusTraits as an on-going collaborative community resource
-that:
-
-1.  Increases our collective understanding the Australian flora; and
-2.  Facilitates accumulating and sharing of trait data;
-3.  Builds a sense of community among contributors and users; and
-4.  Aspires to fully transparent and reproducible research of highest
-    standard.
-
-As a community resource, we are very keen for people to contribute. 
-
-For anyone working with the [austraits.build](https://github.com/traitecoevo/austraits.build/) repository, detailed documentation is available at  [our website](http://traitecoevo.github.io/austraits.build/), or in the docs folder.
+Those interested in contributing to AusTraits should see further information at
+http://traitecoevo.github.io/austraits.build/articles/austraits.build.html
 
 ## Acknowledgements
 
