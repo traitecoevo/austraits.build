@@ -4,8 +4,8 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Structure of raw data in AusTraits}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 editor_options:
   chunk_output_type: console
 ---
@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-library(austraits.build)
+library(austraits)
 library(dplyr)
 library(readr)
 
@@ -79,11 +79,11 @@ config
 
 The file `definitions.yml` defines the structure of the database and all terms. The tables and definitions provided in the section on Structure of AusTraits are defined in this file, as are trait definitions. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). You will need to edit this file if you are changing or adding trait definitions.
 
-The file `species_list.csv` is our master list of known species. Each species is listed once, with known IDs (see [section above](#taxonomic) for details). 
+The file `species_list.csv` is our master list of known taxa. Each species is listed once, with known IDs (see [section above](#taxonomic) for details). 
 
 ```{r, results='show'}
-read_csv("config/species_list.csv") %>%
-  select(species_name, family, authority, TPL_ID, status, APC_name, APC_ID, APNI_ID) %>%
+read_csv("config/taxon_list.csv") %>%
+  select(taxon_name, family, scientificNameAuthorship, source, taxonomicStatusClean, taxonIDClean) %>%
   slice(1:10) %>%
   my_kable_styling()
 ```
@@ -147,9 +147,9 @@ This section provides `r tolower(definitions$metadata$elements$source$descriptio
 - maximum of one primary source allowed.
 - elements are names as in [bibtex format](https://en.wikipedia.org/wiki/BibTeX).
 - keys should be named in the format `Surname_year` and should be identical to the name given to the dataset folder. A second instance of the identical Surname_year should have  the key Surname_year_2.
-- one or more secondary source may be if traits from a single dataset were presented in two different manuscripts. Multiple sources are also appropriate if an author has compiled data from a number of sources, that are not individually in AusTraits, for a published or unpublished compilation.
+- one or more secondary source may be included if traits from a single dataset were presented in two different manuscripts. Multiple sources are also appropriate if an author has compiled data from a number of sources, that are not individually in AusTraits, for a published or unpublished compilation.
 - if your data is from an unpublished study, only include the elements that are applicable.
-- If someone has transcribed a published source, the primary source will be the published work and the person who has completed the transcription will be acknowledged as the `contributor of the dataset.
+- If someone has transcribed a published source, the primary source will be the published work and the person who has completed the transcription will be acknowledged as the `contributor` of the dataset.
 
 Following are some examples for different types of source.
 
@@ -158,42 +158,43 @@ A journal article:
 ```
 source:
   primary:
-    key: Falster_2005
+    key: Falster_2005_1
     bibtype: Article
     author: Daniel S. Falster, Mark Westoby
-    year: 2005 title: Alternative height strategies among 45 dicot rain forest species from tropical Queensland, Australia
-    journal: Journal of Ecology volume: 93 pages: 521--535
+    year: 2005
+    title: Alternative height strategies among 45 dicot rain forest species from tropical Queensland, Australia
+    journal: Journal of Ecology
+    volume: 93
+    pages: 521--535
     publisher: Wiley-Blackwell
     doi: 10.1111/j.0022-0477.2005.00992.x
-  secondary: .na
 ```
 A book:
 
 ```
 source:
   primary:
-    key: Cooper_2004
+    key: Cooper_2013
     bibtype: Book
-    author: Wendy Cooper, William T. Cooper
-    year: 2004
-    title: Fruits of the Australian tropical rainforest
-    publisher: Nokomis Editions
-    isbn: '9780958174213'
-  secondary: .na
+    year: 2013
+    author: Wendy Cooper and William T. Cooper
+    title: Australian rainforest fruits
+    publisher: CSIRO Publishing
+    pages: 272
 ```
 
 An online resource:
 
 ```
 source:
-  primary: key: WAH_1998
-    bibtype: Misc
-    author: Western Australian Herbarium
-    year: 1998
-    title: FloraBase--the Western Australian Flora
-    publisher: Department of Parks and Wildlife
-    url: https://florabase.dpaw.wa.gov.au/
-  secondary: .na
+  primary:
+    key: TMAG_2009
+    bibtype: Online
+    author: '{Tasmanian Herbarium}'
+    year: 2009
+    title: Flora of Tasmania Online
+    publisher: Tasmanian Museum & Art Gallery (Hobart)
+    url: http://www.tmag.tas.gov.au/floratasmania
 ```
 
 An unpublished resource:
@@ -205,34 +206,37 @@ source:
     bibtype: Unpublished
     author: David H. Duncan
     year: 1998
-    title: Leaf anatomy of Australian plant species
-    note: Collected while at Macquarie University
-  secondary: .na
+    title: 'Unpublished data: Structural basis of variation in leaf mass per area in three plant clades, Macquarie University'
 ```
 
-Note that in these first examples `secondary` is set as `.na`. If a secondary source is included it may look like:
+Note that in these first examples only `primary` is included. If a secondary source is included it may look like:
 
 ```
   primary:
-    key: Chave_2009
+    key: Choat_2006
     bibtype: Article
-    author: Jerome Chave, David Coomes, Steven Jansen, Simon L. Lewis, Nathan G. Swenson, Amy E. Zanne
-    year: 2009 title: Towards a worldwide wood economics spectrum
-    journal: Ecology Letters
-    volume: 12
-    pages: 351--366
-    publisher: Wiley-Blackwell
-    doi: 10.1111/j.1461-0248.2009.01285.x
+    year: '2006'
+    author: B. Choat and M. C. Ball and J. G. Luly and C. F. Donnelly and J. A. M.
+      Holtum
+    journal: Tree Physiology
+    title: Seasonal patterns of leaf gas exchange and water relations in dry rain
+      forest trees of contrasting leaf phenology
+    volume: '26'
+    number: '5'
+    pages: 657--664
+    doi: 10.1093/treephys/26.5.657
   secondary:
-    key: Zanne_2009
+    key: Choat_2005
     bibtype: Article
-    author: Amy E. Zanne, G. Lopez-Gonzalez, David A. Coomes, Jugo Ilic, Steven Jansen, Simon L. Lewis, Regis B. Miller, Nathan G. Swenson, Michael C. Wiemann, Jerome   Chave
-    year: 2009
-    title: 'Data from: Towards a worldwide wood economics spectrum'
-    volume: .na
-    pages: .na
-    journal: Dryad Digital Repository
-    doi: 10.5061/dryad.234
+    year: '2005'
+    author: Brendan Choat and Marilyn C. Ball and Jon G. Luly and Joseph A. M. Holtum
+    journal: Trees
+    title: Hydraulic architecture of deciduous and evergreen dry rainforest tree species
+      from north-eastern Australia
+    volume: '19'
+    number: '3'
+    pages: 305--311
+    doi: 10.1007/s00468-004-0392-1
 ```
 
 #### People
