@@ -183,7 +183,7 @@ for (dataset_id in dataset_ids) {
 
   # data.csv
   f <- files[1]
-  expect_silent(data <- read_csv(f, col_types = cols(), guess_max = 100000))
+  expect_silent(data <- read_csv(f, col_types = cols(), guess_max = 1e5, progress=FALSE))
   test_dataframe_valid(data, info=f)
 
   # custom R code

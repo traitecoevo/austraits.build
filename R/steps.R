@@ -51,7 +51,7 @@ load_study <- function(filename_data_raw,
   unit_conversion_functions <- config_for_dataset$unit_conversion_functions
     
   # load and clean trait data
-  traits <- read_csv(filename_data_raw, col_types = cols(), guess_max = 100000) %>%
+  traits <- read_csv(filename_data_raw, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
     custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
     parse_data(dataset_id, metadata) %>%
     add_all_columns(definitions$columns_traits) %>%
@@ -364,7 +364,7 @@ flag_unsupported_values <- function(data, definitions) {
 }
 
 make_unit_conversion_functions <- function(filename) {
-  x <- read_csv(filename, col_types = cols())
+  x <- read_csv(filename, col_types = cols(), progress=FALSE)
 
   # make functions from text
   fs <- lapply(x[["function"]], function(x) {

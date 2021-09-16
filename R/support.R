@@ -19,7 +19,7 @@ NULL
 #' @export
 #' @return
 read_csv_char <- function(...){
-  readr::read_csv(..., col_types = cols(.default = "c"))
+  readr::read_csv(..., col_types = cols(.default = "c"), progress=FALSE)
 }
 
 
