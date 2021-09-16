@@ -1,4 +1,13 @@
-
+#' Title
+#'
+#' @param filename_metadata 
+#' @param definitions 
+#' @param unit_conversion_functions 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 subset_config <- function(
   filename_metadata,
   definitions, 
@@ -41,6 +50,15 @@ subset_config <- function(
        unit_conversion_functions = unit_conversion_functions_sub) 
 }
 
+#' Title
+#'
+#' @param filename_data_raw 
+#' @param config_for_dataset 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 load_study <- function(filename_data_raw, 
                        config_for_dataset) {
     
@@ -177,6 +195,14 @@ load_study <- function(filename_data_raw,
 ## indicate no manipulations will be  done.
 ## The code custom_R_code assumes a single input -- a  data.frame
 ## called `data` and returns a data.frame
+#' Title
+#'
+#' @param txt 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 custom_manipulation <- function(txt) {
   if (!is.null(txt) && !is.na(txt)  && nchar(txt) > 0) {
     function(data) {eval(parse(text=txt), env=new.env())}
@@ -186,6 +212,16 @@ custom_manipulation <- function(txt) {
 }
 
 
+#' Title
+#'
+#' @param my_list 
+#' @param dataset_id 
+#' @param context 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 format_sites <- function(my_list, dataset_id, context = FALSE) {
 
   f_helper <- function(v, a_list, context = FALSE) {
@@ -216,6 +252,15 @@ format_sites <- function(my_list, dataset_id, context = FALSE) {
 }
 
 ## Remove any disallowed traits, as defined in definitions
+#' Title
+#'
+#' @param data 
+#' @param definitions 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 flag_unsupported_traits <- function(data, definitions) {
   
   # create error column if not already present
@@ -229,6 +274,15 @@ flag_unsupported_traits <- function(data, definitions) {
 
 
 ## Remove any disallowed traits, as defined in definitions
+#' Title
+#'
+#' @param data 
+#' @param metadata 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 flag_excluded_observations <- function(data, metadata) {
   
   if(length(metadata$exclude_observations)==1 && is.na(metadata$exclude_observations)) return(data)
@@ -253,6 +307,16 @@ flag_excluded_observations <- function(data, metadata) {
 # checks if values in vector x are in y
 # values in x may contain multiple values separated by `sep`
 # so first split these
+#' Title
+#'
+#' @param x 
+#' @param y 
+#' @param sep 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 check_all_values_in <- function(x, y, sep=" "){
   x %>% str_split(sep) %>% sapply(function(xi) all(xi %in% y))
 }
@@ -260,6 +324,15 @@ check_all_values_in <- function(x, y, sep=" "){
 
 # formats bibentry according to desired style using RefManageR
 # not using print.BibEntry as this message to screen
+#' Title
+#'
+#' @param bib 
+#' @param .opts 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, style="markdown") ) {
 
   # set format
@@ -279,6 +352,14 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
 }
 
 # convert a list of elements into a valid bibEntry
+#' Title
+#'
+#' @param ref 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 convert_list_to_bib <- function(ref) {
   if(is.null(ref)) return(NULL)
 
@@ -295,6 +376,14 @@ convert_list_to_bib <- function(ref) {
   RefManageR::as.BibEntry(ref)
 }
 
+#' Title
+#'
+#' @param bib 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 convert_bib_to_list <- function(bib) {
 
   # Read in file, convert to list, set key
@@ -309,6 +398,15 @@ convert_bib_to_list <- function(bib) {
 }
 
 ## Flag any values outside allowable range
+#' Title
+#'
+#' @param data 
+#' @param definitions 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 flag_unsupported_values <- function(data, definitions) {
 
   # NA values
@@ -363,6 +461,14 @@ flag_unsupported_values <- function(data, definitions) {
   data
 }
 
+#' Title
+#'
+#' @param filename 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 make_unit_conversion_functions <- function(filename) {
   x <- read_csv(filename, col_types = cols(), progress=FALSE)
 
@@ -375,9 +481,30 @@ make_unit_conversion_functions <- function(filename) {
   fs
 }
 
-unit_conversion_name <- function(from, to) {sprintf("%s-%s", from, to)}
+#' Title
+#'
+#' @param from 
+#' @param to 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+unit_conversion_name <- function(from, to) {
+  sprintf("%s-%s", from, to)
+}
 
 ## Convert units to desired type
+#' Title
+#'
+#' @param data 
+#' @param definitions 
+#' @param unit_conversion_functions 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 convert_units <- function(data, definitions, unit_conversion_functions) {
 
   # List of original variable names
@@ -416,6 +543,15 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
 
 # Add or remove columns of data as needed so that all sets have
 # the same columns.
+#' Title
+#'
+#' @param data 
+#' @param vars 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 add_all_columns <- function(data, vars) {
 
   missing <- setdiff(vars, names(data))
@@ -429,6 +565,16 @@ add_all_columns <- function(data, vars) {
 }
 
 # processes a single dataset
+#' Title
+#'
+#' @param data 
+#' @param dataset_id 
+#' @param metadata 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 parse_data <- function(data, dataset_id, metadata) {
 
   # get config data for dataset
@@ -556,6 +702,14 @@ parse_data <- function(data, dataset_id, metadata) {
 
 
 ## Enforce some standards on species names
+#' Title
+#'
+#' @param x 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 standardise_names <- function(x) {
 
   f <- function(x, find, replace) {
@@ -604,6 +758,15 @@ standardise_names <- function(x) {
 
 }
 
+#' Title
+#'
+#' @param study_data 
+#' @param metadata 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 apply_taxonomic_updates  <- function(study_data, metadata){
 
   out <- study_data
@@ -636,6 +799,16 @@ apply_taxonomic_updates  <- function(study_data, metadata){
   out
 }
 
+#' Title
+#'
+#' @param ... 
+#' @param d 
+#' @param definitions 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 combine_austraits <- function(..., d=list(...), definitions) {
 
   
@@ -683,6 +856,15 @@ combine_austraits <- function(..., d=list(...), definitions) {
 }
 
 
+#' Title
+#'
+#' @param austraits_raw 
+#' @param taxa 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 update_taxonomy <- function(austraits_raw, taxa) {
   
   austraits_raw$taxonomic_updates <- 
@@ -739,6 +921,16 @@ update_taxonomy <- function(austraits_raw, taxa) {
   austraits_raw
 }
 
+#' Title
+#'
+#' @param austraits 
+#' @param version 
+#' @param git_sha 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 add_version_info <- function(austraits, version, git_sha) {
   
   austraits$build_info <- list(
@@ -751,6 +943,15 @@ add_version_info <- function(austraits, version, git_sha) {
 }
 
 
+#' Title
+#'
+#' @param austraits 
+#' @param path 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 export_version_plaintext <- function(austraits, path) {
 
   unlink(path, TRUE)
@@ -772,6 +973,15 @@ export_version_plaintext <- function(austraits, path) {
   }
 }
 
+#' Title
+#'
+#' @param austraits 
+#' @param v_prev 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 create_release <- function(austraits, v_prev= NULL) {
   version_number <- austraits$build_info$version
 

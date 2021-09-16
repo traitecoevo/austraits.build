@@ -108,11 +108,29 @@ metadata_create_template <- function(dataset_id,
   write_yaml(out, path)
 }
 
+#' Title
+#'
+#' @param column 
+#' @param choices 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 user_select_column <- function(column, choices) {
   tmp <- menu(choices, title= sprintf("Select column for `%s`", column))
   choices[tmp]
 }
 
+#' Title
+#'
+#' @param title 
+#' @param vars 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 user_select_names <- function(title, vars){
 
   txt <- sprintf("%s (by number separated by space; e.g. '1 2 4'):\n%s\n", title, paste(sprintf("%d: %s", seq_len(length(vars)), vars), collapse="\n"))

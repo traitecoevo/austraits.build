@@ -10,14 +10,13 @@
 #' @usage lhs \%>\% rhs
 NULL
 
-#' <brief desc>
+#' Title
 #'
-#' <full description>
+#' @param ... 
 #'
-#' @param ... <what param does>
+#' @return
 #'
 #' @export
-#' @return
 read_csv_char <- function(...){
   readr::read_csv(..., col_types = cols(.default = "c"), progress=FALSE)
 }
@@ -100,10 +99,12 @@ df_to_list <- function(df) {
 # requires that every list have same named elements
 
 #' Convert a list of lists to dataframe requires that every list have same named elements
+#' 
 #' @param Convert a list of lists to dataframe 
 #' @param as_character logical:  indicating whether the values are read as character
 #' @param on_empty 
-
+#' 
+#' @return
 #' @export
 #' @examples list_to_df(df_to_list(iris))
 list_to_df <- function(my_list, as_character= TRUE, on_empty=NA) {
@@ -161,6 +162,12 @@ write_yaml <- function(y, filename) {
 }
 
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 build_website <- function() {
   devtools::document()
   pkgdown::build_site()

@@ -148,7 +148,7 @@ as_link <- function(link, text, type="md") {
 ## Function to format a tree structure from a vector
 ## X is a vector of terms
 ## title is name of master branch
-## prefix sepcifies amount of indentation
+## prefix specifies amount of indentation
 #' Title
 #'
 #' @param x 

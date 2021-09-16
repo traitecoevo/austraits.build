@@ -53,16 +53,39 @@
 # qu(add_note, as_note("new_note")) %>% print_notes(as_anchor=TRUE)
 
 # A random strng of letters -- useful for defining unique hyperlinks
+#' Title
+#'
+#' @param n 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 random_string <- function(n=8) {
   base::sample(LETTERS, n, TRUE) %>% paste0(collapse="")
 }
 
 # Store a txt note in a tibble with two columns
+#' Title
+#'
+#' @param note 
+#' @param link 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 as_note <- function(note, link=NA_character_) {
   tibble(note = note, link = ifelse(is.na(link), random_string(), link)) %>% mutate_all(as.character)
 }
 
 # start note recoder
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 start_notetaker <- function() {
   ret <- as_note(character(), character())
 
@@ -71,10 +94,30 @@ start_notetaker <- function() {
   }
 }
 
+#' Title
+#'
+#' @param notes 
+#' @param new_note 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 add_note <- function(notes, new_note) {
   bind_rows(notes, new_note)
 }
 
+#' Title
+#'
+#' @param note 
+#' @param as_anchor 
+#' @param anchor_text 
+#' @param link_text 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "link") {
   if(as_anchor)
     sprintf('%s <a name="%s"> %s </a>', note$note, note$link, anchor_text )
@@ -82,12 +125,32 @@ print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "lin
     sprintf('%s [%s](#%s)', note$note, link_text, note$link)
 }
 
+#' Title
+#'
+#' @param notes 
+#' @param i 
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 print_notes <- function(notes, i=nrow(notes), ...) {
   notes %>%
     get_note(i) %>%
     print_note(...)
 }
 
+#' Title
+#'
+#' @param notes 
+#' @param ... 
+#' @param numbered 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 print_all_notes <- function(notes, ..., numbered=TRUE) {
   i <- seq_len(nrow(notes))
   x <- print_notes(notes, i =i)
