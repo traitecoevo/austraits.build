@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-library(austraits)
+library(austraits.build)
 library(dplyr)
 library(readr)
 
@@ -33,7 +33,7 @@ my_kable_styling <- my_kable_styling_html
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Assumes to items exist in global name space
 if (!exists("austraits")) {
-  austraits <- readRDS("export/data/austraits.rds")
+  austraits <- readRDS("export/data/curr/austraits.rds")
   # stop("austraits must exist in global name space to knit a report")
 }
 
@@ -47,7 +47,7 @@ Note that the information provided below is based on the information provided wi
 
 AusTraits is essentially a series of linked components, which cross link against each other::
 
-```{r, results="hide", comment = '', eval=F}
+```{r, results="hide", comment = '', eval=FALSE}
 names(austraits) %>%
   create_tree_branch("austraits") %>%
   writeLines()
@@ -96,7 +96,7 @@ for (v in names(austraits)) {
   elements <- austraits$definitions$austraits$elements[[v]]
 
   sprintf("### %s {#%s}\n\n**Description:** %s.\n", v, v, elements$description) %>%
-    str_replace_all("\\.\\.", "\\.") %>%
+    strigr::str_replace_all("\\.\\.", "\\.") %>%
     writeLines()
 
   elements %>%

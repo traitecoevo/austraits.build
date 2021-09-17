@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-library(austraits)
+library(austraits.build)
 library(dplyr)
 library(readr)
 
@@ -312,7 +312,12 @@ config:
     species_name: Taxon
     value: trait value
     trait_name: trait
-  custom_R_code: mutate(data, `trait value` = ifelse(trait == 'flowering time', convert_month_range_vec_to_binary(`trait value`), `trait value`))
+  custom_R_code: ' 
+    data %>% 
+    mutate(`trait value` = ifelse(trait == 'flowering time', 
+      convert_month_range_vec_to_binary(`trait value`), `trait value`)
+      )
+    '
 ```
 
 A common use of the `custom_R_code` is to automate the conversion of a verbal description of flowering or fruiting periods into the supported trait values, as occurs in  this example. It might also be used if values for a single trait are expressed across multiple columns and need to be merged. See the `Catford_2014` as an example of this.
