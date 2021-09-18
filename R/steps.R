@@ -1,10 +1,10 @@
-#' Title
+#' Configure AusTraits database object
 #'
 #' @param filename_metadata 
 #' @param definitions 
 #' @param unit_conversion_functions 
 #'
-#' @return
+#' @return list, AusTraits database object
 #' @export
 #'
 #' @examples
@@ -50,12 +50,12 @@ subset_config <- function(
        unit_conversion_functions = unit_conversion_functions_sub) 
 }
 
-#' Title
+#' Load Study
 #'
 #' @param filename_data_raw 
 #' @param config_for_dataset 
 #'
-#' @return
+#' @return list, AusTraits database object
 #' @export
 #'
 #' @examples
@@ -195,11 +195,15 @@ load_study <- function(filename_data_raw,
 ## indicate no manipulations will be  done.
 ## The code custom_R_code assumes a single input -- a  data.frame
 ## called `data` and returns a data.frame
-#' Title
+#' Apply custom data manipulations
+#' 
+#' Applies custom data manipulations if the metadata field custom_R_code is not empty
+#' Otherwise no manipulations will be done. 
 #'
-#' @param txt 
+#' @param txt character text within custom_R_code
 #'
-#' @return
+#' @return character text containing custom_R_code if custom_R_code is not empty,
+#' otherwise no changes are made 
 #' @export
 #'
 #' @examples
@@ -212,13 +216,13 @@ custom_manipulation <- function(txt) {
 }
 
 
-#' Title
+#' Format sites 
 #'
-#' @param my_list 
-#' @param dataset_id 
-#' @param context 
+#' @param my_list list of input information
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param context study context, default = FALSE
 #'
-#' @return
+#' @return dataframe with site and context details if available
 #' @export
 #'
 #' @examples
@@ -252,9 +256,11 @@ format_sites <- function(my_list, dataset_id, context = FALSE) {
 }
 
 ## Remove any disallowed traits, as defined in definitions
-#' Title
+#' Remove any disallowed traits
+#' 
+#' Remove any disallowed traits, as defined in definitions
 #'
-#' @param data 
+#' @param data
 #' @param definitions 
 #'
 #' @return
@@ -274,7 +280,7 @@ flag_unsupported_traits <- function(data, definitions) {
 
 
 ## Remove any disallowed traits, as defined in definitions
-#' Title
+#' Remove any excluded observations
 #'
 #' @param data 
 #' @param metadata 
@@ -307,13 +313,13 @@ flag_excluded_observations <- function(data, metadata) {
 # checks if values in vector x are in y
 # values in x may contain multiple values separated by `sep`
 # so first split these
-#' Title
+#' Check values in one vector against values in another vector
 #'
-#' @param x 
-#' @param y 
-#' @param sep 
+#' @param x vector
+#' @param y vector
+#' @param sep amount of space separating values to be split, default = " " (a single space)
 #'
-#' @return
+#' @return vector of logical values
 #' @export
 #'
 #' @examples
@@ -324,12 +330,14 @@ check_all_values_in <- function(x, y, sep=" "){
 
 # formats bibentry according to desired style using RefManageR
 # not using print.BibEntry as this message to screen
-#' Title
+#' Format BibEntry using RefManageR
+#' 
+#' Format BibEntry object according to desired style using RefManageR
 #'
-#' @param bib 
-#' @param .opts 
+#' @param bib BibEntry object
+#' @param .opts list of parameters for formatting style
 #'
-#' @return
+#' @return 
 #' @export
 #'
 #' @examples
@@ -352,11 +360,11 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
 }
 
 # convert a list of elements into a valid bibEntry
-#' Title
+#' Convert a list of elements into a BibEntry object
 #'
-#' @param ref 
+#' @param ref list of elements for a reference
 #'
-#' @return
+#' @return BibEntry object
 #' @export
 #'
 #' @examples
@@ -376,11 +384,11 @@ convert_list_to_bib <- function(ref) {
   RefManageR::as.BibEntry(ref)
 }
 
-#' Title
+#' Convert BibEntry to object to a list
 #'
-#' @param bib 
+#' @param bib BibEntry object
 #'
-#' @return
+#' @return list
 #' @export
 #'
 #' @examples
@@ -397,8 +405,7 @@ convert_bib_to_list <- function(bib) {
     bib
 }
 
-## Flag any values outside allowable range
-#' Title
+#' Flag values outside of allowable range
 #'
 #' @param data 
 #' @param definitions 
@@ -461,11 +468,11 @@ flag_unsupported_values <- function(data, definitions) {
   data
 }
 
-#' Title
+#' Make unit conversion functions
 #'
-#' @param filename 
+#' @param filename name of file containing unit conversions
 #'
-#' @return
+#' @return list of conversion functions
 #' @export
 #'
 #' @examples
@@ -481,7 +488,7 @@ make_unit_conversion_functions <- function(filename) {
   fs
 }
 
-#' Title
+#' Generate unit conversion name
 #'
 #' @param from 
 #' @param to 
@@ -494,8 +501,7 @@ unit_conversion_name <- function(from, to) {
   sprintf("%s-%s", from, to)
 }
 
-## Convert units to desired type
-#' Title
+#' Convert units to desired type
 #'
 #' @param data 
 #' @param definitions 
@@ -543,7 +549,10 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
 
 # Add or remove columns of data as needed so that all sets have
 # the same columns.
-#' Title
+#' Add or remove columns of data
+#' 
+#' Add or remove columns of data as needed so that all sets
+#' have the same columns.
 #'
 #' @param data 
 #' @param vars 
@@ -565,13 +574,13 @@ add_all_columns <- function(data, vars) {
 }
 
 # processes a single dataset
-#' Title
+#' Process a single dataset
 #'
-#' @param data 
-#' @param dataset_id 
-#' @param metadata 
+#' @param data dataframe containing study data
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param metadata yaml file with metadata
 #'
-#' @return
+#' @return list
 #' @export
 #'
 #' @examples
@@ -702,11 +711,11 @@ parse_data <- function(data, dataset_id, metadata) {
 
 
 ## Enforce some standards on species names
-#' Title
+#' Standardise species names
 #'
-#' @param x 
+#' @param x vector, dataframe or list containing original species names 
 #'
-#' @return
+#' @return vector with standardised species names
 #' @export
 #'
 #' @examples
@@ -758,12 +767,12 @@ standardise_names <- function(x) {
 
 }
 
-#' Title
+#' Apply taxonomic updates
 #'
-#' @param study_data 
-#' @param metadata 
+#' @param study_data dataframe of study data
+#' @param metadata yaml file containing the metadata
 #'
-#' @return
+#' @return dataframe of study data containing taxonomic update
 #' @export
 #'
 #' @examples
@@ -799,7 +808,7 @@ apply_taxonomic_updates  <- function(study_data, metadata){
   out
 }
 
-#' Title
+#' Combine AusTraits
 #'
 #' @param ... 
 #' @param d 
@@ -856,7 +865,7 @@ combine_austraits <- function(..., d=list(...), definitions) {
 }
 
 
-#' Title
+#' Update taxonomy
 #'
 #' @param austraits_raw 
 #' @param taxa 
@@ -921,13 +930,13 @@ update_taxonomy <- function(austraits_raw, taxa) {
   austraits_raw
 }
 
-#' Title
+#' Add version information to AusTraits
 #'
-#' @param austraits 
-#' @param version 
-#' @param git_sha 
+#' @param austraits AusTraits database object
+#' @param version version number
+#' @param git_sha Git SHA 
 #'
-#' @return
+#' @return AusTraits database object with version information added 
 #' @export
 #'
 #' @examples
@@ -943,10 +952,10 @@ add_version_info <- function(austraits, version, git_sha) {
 }
 
 
-#' Title
+#' Export AusTraits version as plain text
 #'
-#' @param austraits 
-#' @param path 
+#' @param austraits AusTraits database object
+#' @param path pathway to save file
 #'
 #' @return
 #' @export
@@ -973,9 +982,9 @@ export_version_plaintext <- function(austraits, path) {
   }
 }
 
-#' Title
+#' Create release
 #'
-#' @param austraits 
+#' @param austraits AusTraits database object
 #' @param v_prev 
 #'
 #' @return
@@ -1030,5 +1039,4 @@ create_release <- function(austraits, v_prev= NULL) {
 
   message("Export created at ", export_dir)
 
- 
 }

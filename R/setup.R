@@ -8,7 +8,6 @@ metadata_path_dataset_id <- function(dataset_id) {
   file.path("data", dataset_id, "metadata.yml")
 }
 
-
 #' Read the `metadata.yml` file for specified `dataset_id`
 #'
 #' @inheritParams metadata_path_dataset_id
@@ -18,12 +17,14 @@ metadata_path_dataset_id <- function(dataset_id) {
 metadata_read_dataset_id <- function(dataset_id) {
   dataset_id %>% metadata_path_dataset_id() %>% read_yaml()
 }
+
 #' Write the YAML representation of metadata.yml for specified `dataset_id` to
 #' file \code{data/dataset_id/metadata.yml}
 #'
 #' @inheritParams metadata_path_dataset_id
-#' @param metadata <what param does>
+#' @param metadata 
 #'
+#' @return a yml file
 #' @export 
 metadata_write_dataset_id <- function(metadata, dataset_id) {
   write_yaml(metadata, dataset_id %>% metadata_path_dataset_id())
@@ -36,6 +37,7 @@ metadata_write_dataset_id <- function(metadata, dataset_id) {
 #' @inheritParams metadata_path_dataset_id
 #' @param path location of file where output is saved
 #' 
+#' @return a yml file template for metadata
 #' @export
 metadata_create_template <- function(dataset_id, 
                                      path = file.path("data", dataset_id, "metadata.yml")
@@ -108,7 +110,7 @@ metadata_create_template <- function(dataset_id,
   write_yaml(out, path)
 }
 
-#' Title
+#' Select column by user
 #'
 #' @param column 
 #' @param choices 
@@ -122,10 +124,10 @@ user_select_column <- function(column, choices) {
   choices[tmp]
 }
 
-#' Title
+#' Select names by user
 #'
 #' @param title 
-#' @param vars 
+#' @param vars variable names
 #'
 #' @return
 #' @export
@@ -300,6 +302,7 @@ metadata_add_contexts <- function(dataset_id, context_data) {
 #' @param key The bibtex key to be used. By default set to `dataset_id`
 #' @param drop Variables to ignore
 #'
+#' @return yml file with citation details added
 #' @export
 #'
 metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dataset_id, drop = c("dateobj", "month")) {
@@ -340,6 +343,7 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 #' @inheritParams metadata_add_source_bibtex
 #' @param doi doi of reference to add
 #'
+#' @return yml file with citation details added
 #' @export
 #'
 metadata_add_source_doi <- function(doi, ...) {
@@ -357,13 +361,14 @@ metadata_add_source_doi <- function(doi, ...) {
 }
 
 
-#' function to add a substitution into a metadata file for a dataset_id
+#' Function to add a substitution into a metadata file for a dataset_id
 #'
-#' @param dataset_id 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
 #' @param trait_name 
 #' @param find 
 #' @param replace 
 #'
+#' @return yml file with a substition added
 #' @export
 #'
 #' @examples
@@ -401,10 +406,10 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
 
 #' Add a dataframe of substitutions into a metadata file for a dataset_id
 #'
-#' @param dataset_id 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
 #' @param substitutions 
 #'
-#' @return
+#' @return yml file with multiple substitions added
 #' @export
 #'
 #' @examples
@@ -423,14 +428,14 @@ metadata_add_substitutions_list <- function(dataset_id, substitutions) {
 }  
 
 
-#' add a taxonomic change into a yaml file for a dataset_id
+#' Add a taxonomic change into a yaml file for a dataset_id
 #'
-#' @param dataset_id 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
 #' @param find 
 #' @param replace 
 #' @param reason 
 #'
-#' @return
+#' @return yml file with taxonomic change added
 #' @export
 #'
 #' @examples
@@ -466,10 +471,10 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
 
 #' Add a dataframe of taxonomic updates into a metadata file for a dataset_id
 #'
-#' @param dataset_id 
-#' @param taxonomic_updates 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param taxonomic_updates dataframe of taxonomic updates
 #'
-#' @return
+#' @return yml file with multiple taxonmic updates added
 #' @export
 #'
 #' @examples
@@ -488,14 +493,14 @@ metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
 }
 
 
-#' exclude observations in a yaml file for a dataset_id
+#' Exclude observations in a yaml file for a dataset_id
 #'
-#' @param dataset_id 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
 #' @param variable 
 #' @param find 
 #' @param reason 
 #'
-#' @return
+#' @return yml file with exluded observations
 #' @export
 #'
 #' @examples
@@ -526,14 +531,14 @@ metadata_exclude_observations <- function(dataset_id, variable, find, reason) {
   return(invisible(TRUE))
 }
 
-#' update a substitution into a yaml file for a dataset_id
+#' Update a substitution into a yaml file for a dataset_id
 #'
-#' @param dataset_id 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
 #' @param find 
 #' @param replace 
 #' @param reason 
 #'
-#' @return
+#' @return yml file with added substitution
 #' @export
 #'
 #' @examples
@@ -559,13 +564,13 @@ metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) 
   metadata_write_dataset_id(metadata, dataset_id)
 }
 
-#' remove a taxonomic change from a yaml file for a dataset_id
+#' Remove a taxonomic change from a yaml file for a dataset_id
 #'
-#' @param dataset_id 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
 #' @param find 
 #' @param replace 
 #'
-#' @return
+#' @return yml file with a taxonomic change removed
 #' @export
 #'
 #' @examples
@@ -601,12 +606,12 @@ metadata_remove_taxonomic_change <- function(dataset_id, find, replace=NULL) {
   metadata_write_dataset_id(metadata, dataset_id)
 }
 
-#' Title
+#' Find list of all unique species within AusTraits
 #'
-#' @param taxon_name 
-#' @param original_name 
+#' @param taxon_name name of column which contains the cleaned species names
+#' @param original_name name of column which contains original species names, default = FALSE
 #'
-#' @return
+#' @return list of all unique and distinct species names
 #'
 #' @examples
 austraits_find_species <- function(taxon_name, original_name = FALSE){
@@ -626,11 +631,11 @@ austraits_find_species <- function(taxon_name, original_name = FALSE){
     lapply(taxon_name, f) 
 }
 
-#' Title
+#' Find taxonomic changes within the metadata yml files
 #'
-#' @param find 
-#' @param replace 
-#' @param studies 
+#' @param find name of original species
+#' @param replace name of replacement species, default = NULL
+#' @param studies name of studies, default = NULL
 #'
 #' @return
 #' @export
@@ -662,13 +667,16 @@ strip_names <- function(x) {
     str_squish() %>% tolower() 
 }
 
+#' Check taxa against list of known species
+#' 
 #' Checks all taxa within against our list of known species
 #' If not found, and update=TRUE, checks the unknown species against
 #'
-#' @param dataset_id 
-#' @param update 
-#' @param typos 
-#' @param diffchar 
+#' @param max_distance_abs numerical value for absolute max distance, default = 3
+#' @param max_distance_rel numerical value for relative max distance, default = 0.2
+#' @param try_outside_guesses logical value, default = FALSE
+#' @param author name of author
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
 #'
 #' @export
 #'
@@ -880,7 +888,10 @@ metadata_check_taxa <- function(dataset_id,
       crayon::blue("austraits_rebuild_taxon_list()"), "\n\n")
 }
 
-#' Title
+#' Load taxonomic resources from the APC and APNI
+#' 
+#' Load taxonomic resources from the Australian Plant Census
+#' and the Australian Plant Name Index
 #'
 #' @param path_apc location of downloaded APC taxon file
 #' @param path_apni location of downloaded APNI name file
@@ -914,7 +925,7 @@ load_taxonomic_resources <- function() {
 }
 
 #' Builds list of potential species from the Australian Plant Census (APC) and 
-#' Australian Plant names Index (APNI)
+#' Australian Plant Names Index (APNI)
 #' 
 #' Compiled list is saved at "config/taxa.csv". While this list is 
 #' only an intermediate structure constructed entirely from 
@@ -1013,12 +1024,12 @@ austraits_rebuild_taxon_list <- function() {
 }
 
 
-#' Title
+#' Find the distance for nearby species 
 #'
-#' @param taxon_name 
-#' @param dist 
+#' @param taxon_name vector of species names
+#' @param dist numerical value for distance, default = 5
 #'
-#' @return
+#' @return a vector of distances between species
 #' @export
 #'
 #' @examples
@@ -1039,7 +1050,9 @@ find_names_distance_to_neighbours <- function(taxon_name, dist=5) {
 }
 
 
-#' Title
+#' Run AusTraits tests
+#' 
+#' Run the tests to ensure that the database is building correctly
 #'
 #' @export
 #'
@@ -1059,9 +1072,11 @@ austraits_run_tests <- function() {
   testthat::test_dir("tests", reporter = default_reporter())
 }
 
-#' Title
+#' Rebuild AusTraits database object
+#' 
+#' Rebuild AusTraits database integrating new studies 
 #'
-#' @return
+#' @return AusTraits database object
 #' @export
 #'
 #' @examples

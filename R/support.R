@@ -10,24 +10,28 @@
 #' @usage lhs \%>\% rhs
 NULL
 
-#' Title
+#' Read in a csv as a tibble with column types as characters
 #'
-#' @param ... 
+#' Reads in a csv file using the read_csv function from readr
+#' with columns as characters
 #'
-#' @return
+#' @param ... other arguments passed from the read_csv function from readr
 #'
 #' @export
+#' @return
 read_csv_char <- function(...){
   readr::read_csv(..., col_types = cols(.default = "c"), progress=FALSE)
 }
 
 
-#' Swap a null vale to something else
+#' Swap a null value to something else
+#' 
+#' null_as converts NULL values in a vector
 #'
-#' @param x 
-#' @param val 
+#' @param x a vector containing null values
+#' @param val specify what the null value should be returned as, default is NA 
 #'
-#' @return
+#' @return a vector with null values replaced
 #'
 #' @export
 #' @examples
@@ -63,7 +67,10 @@ rename_columns <- function(obj, from, to) {
   obj
 }
 
-#' split_then_sort: For a vector x in which individual cell may have multiple values (separated by 'sep'), sort records within each cell  alphabetically
+#'  Split and sort cells with multiple values
+#'
+#'  split_then_sort: For a vector x in which individual cell may have 
+#'  multiple values (separated by 'sep'), sort records within each cell alphabetically
 #'
 #' @param x an individual cell with multiple values 
 #' @param sep a separator, a whitespace is the default
@@ -83,7 +90,9 @@ split_then_sort <- function(x, sep=" ") {
 }
 
 
-#' Convert a dataframe to a named list, useful when converting to yaml
+#'  Convert dataframe to list
+#'
+#'  Convert a dataframe to a named list, useful when converting to yaml
 #'
 #' @param df a dataframe
 #' @return a (yaml) list
@@ -98,13 +107,14 @@ df_to_list <- function(df) {
 # Convert a list of lists to dataframe
 # requires that every list have same named elements
 
+#' Convert a list of lists to dataframe
+#' 
 #' Convert a list of lists to dataframe requires that every list have same named elements
 #' 
 #' @param Convert a list of lists to dataframe 
 #' @param as_character logical:  indicating whether the values are read as character
 #' @param on_empty 
 #' 
-#' @return
 #' @export
 #' @examples list_to_df(df_to_list(iris))
 list_to_df <- function(my_list, as_character= TRUE, on_empty=NA) {
@@ -119,6 +129,7 @@ list_to_df <- function(my_list, as_character= TRUE, on_empty=NA) {
 }
 
 #' Convert a list with single entries to dataframe
+#' 
 #' @param my_list a list with single entries
 #' @return a tibble with two columns
 #' @export
@@ -135,6 +146,7 @@ list1_to_df <- function(my_list) {
 }
 
 #' Add an item to the end of a list
+#' 
 #' @param my_list a list 
 #' @param to_append a list
 #'
@@ -150,6 +162,7 @@ append_to_list <- function(my_list, to_append) {
 read_yaml <- yaml::yaml.load_file
 
 #' Write yaml to filename with preferred defaults, Designed so that read_yaml(write_yaml(y)) == y
+#' 
 #' @param y a (yaml) list or a data frame
 #' @param filename  a character string for naming a file
 #'
@@ -162,7 +175,9 @@ write_yaml <- function(y, filename) {
 }
 
 
-#' Title
+#' Build website
+#' 
+#' Build website using the build_site() function from pkgdown
 #'
 #' @return
 #' @export

@@ -1,6 +1,9 @@
-#' Title
+#' Build reports for all studies
+#' 
+#' Build reports for all studies 
+#' using the build_study_report() function
 #'
-#' @param dataset_ids 
+#' @param dataset_ids names of studies/ datasets, default is NULL
 #' @param ... 
 #'
 #' @return
@@ -18,11 +21,12 @@ build_study_reports <- function(dataset_ids=NULL, ...) {
     build_study_report(dataset_id, ...)
 }
 
-#' Title
+#' Build report for a specific study
 #'
-#' @param dataset_id 
-#' @param overwrite 
-#' @param path 
+#' @param dataset_id name of specific study/dataset
+#' @param overwrite logical default = FALSE, 
+#' if report exists already set to TRUE to overwrite
+#' @param path location where report will be saved
 #'
 #' @return
 #' @export
@@ -58,8 +62,10 @@ build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/repor
   cat(" -> done\n")
 }
 
-#' Title
-#'
+#' Get SHA link
+#' 
+#' Get SHA link using the get_SHA() function
+#' 
 #' @param ... 
 #'
 #' @return
@@ -71,7 +77,9 @@ get_SHA_link <- function(...) {
   sprintf("[%s](https://github.com/traitecoevo/austraits/tree/%s)",   sha, sha)
 }
 
-#' Title
+#' Get SHA from github repository
+#' 
+#' Get SHA for the remake.yml file from github
 #'
 #' @param path 
 #'
@@ -83,7 +91,7 @@ get_SHA <- function(path = rprojroot::find_root("remake.yml")) {
   git2r::branch_target(git2r::repository_head(git2r::repository(path)))
 }
 
-#' Title
+#' Format table with kable and default styling for html
 #'
 #' @param ... 
 #'
@@ -102,7 +110,7 @@ my_kable_styling_html <- function(...) {
     gsub('style="width: auto ', 'style="margin-left:30px; width: auto ', .)
 }
 
-#' Title
+#' Format table with kable and default styling for pdf 
 #'
 #' @param ... 
 #'
@@ -114,8 +122,8 @@ my_kable_styling_pdf <- function(...) {
     kableExtra::kable(...)
 }
 
-## format a table with kable and default styling
-#' Title
+
+#' Format table with kable and default styling for markdown
 #'
 #' @param ... 
 #'
@@ -127,13 +135,15 @@ my_kable_styling_markdown <- function(...) {
   kableExtra::kable(...)
 }
 
-#' Title
+#' Generate hyperlink for markdown and html
+#' 
+#' Generate hyperlink for markdown and html files
 #'
-#' @param link 
-#' @param text 
-#' @param type 
+#' @param link character string for the url link
+#' @param text character string for the text to display
+#' @param type file type, default is markdown "md" otherwise html
 #'
-#' @return
+#' @return character string with the text and link formatted for md and html
 #' @export
 #'
 #' @examples
@@ -145,17 +155,16 @@ as_link <- function(link, text, type="md") {
 }
 
 
-## Function to format a tree structure from a vector
-## X is a vector of terms
-## title is name of master branch
-## prefix specifies amount of indentation
-#' Title
+
+#' Format a tree structure from a vector
+#' 
+#' create_tree_branch() formats a tree structure from a vector of terms
 #'
-#' @param x 
-#' @param title 
-#' @param prefix 
+#' @param x vector of terms
+#' @param title name of master branch
+#' @param prefix specifies the amount of indentation
 #'
-#' @return
+#' @return vector of character strings for the tree structure
 #' @export
 #'
 #' @examples

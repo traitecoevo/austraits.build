@@ -52,12 +52,15 @@
 # # create note and print it as anchor
 # qu(add_note, as_note("new_note")) %>% print_notes(as_anchor=TRUE)
 
-# A random strng of letters -- useful for defining unique hyperlinks
-#' Title
+# A random string of letters -- useful for defining unique hyperlinks
+#' Create a string of random letters
+#' 
+#' Creates a string of random letters with 8 as the default
+#' useful for defining unique hyperlinks 
 #'
-#' @param n 
+#' @param n numerical integer, default is 8 
 #'
-#' @return
+#' @return character string with 8 letters
 #' @export
 #'
 #' @examples
@@ -66,23 +69,26 @@ random_string <- function(n=8) {
 }
 
 # Store a txt note in a tibble with two columns
-#' Title
+#' Create a tibble with two columns with note and link
+#' 
+#' Creates a tibble with two columns with one column consisting 
+#' of a randomly generated string of letters
 #'
-#' @param note 
-#' @param link 
+#' @param note character string 
+#' @param link character string, default is NA_character_ which generates a random string 
 #'
-#' @return
+#' @return a tibble with two columns named note and link
 #' @export
 #'
 #' @examples
 as_note <- function(note, link=NA_character_) {
-  tibble(note = note, link = ifelse(is.na(link), random_string(), link)) %>% mutate_all(as.character)
+  tidyr::tibble(note = note, link = ifelse(is.na(link), random_string(), link)) %>% dplyr::mutate_all(as.character)
 }
 
-# start note recoder
-#' Title
+# start note recorder
+#' Start note recorder
 #'
-#' @return
+#' @return 
 #' @export
 #'
 #' @examples
@@ -94,7 +100,7 @@ start_notetaker <- function() {
   }
 }
 
-#' Title
+#' Add a notes as a new row
 #'
 #' @param notes 
 #' @param new_note 
@@ -104,15 +110,15 @@ start_notetaker <- function() {
 #'
 #' @examples
 add_note <- function(notes, new_note) {
-  bind_rows(notes, new_note)
+  dplyr::bind_rows(notes, new_note)
 }
 
-#' Title
+#' Print note
 #'
 #' @param note 
-#' @param as_anchor 
-#' @param anchor_text 
-#' @param link_text 
+#' @param as_anchor logical default is FALSE
+#' @param anchor_text character string default is ""
+#' @param link_text character string default is "link"
 #'
 #' @return
 #' @export
@@ -125,7 +131,9 @@ print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "lin
     sprintf('%s [%s](#%s)', note$note, link_text, note$link)
 }
 
-#' Title
+#' Print a specific row from notes
+#' 
+#' Prints a specific row from notes specified by i
 #'
 #' @param notes 
 #' @param i 
@@ -141,11 +149,11 @@ print_notes <- function(notes, i=nrow(notes), ...) {
     print_note(...)
 }
 
-#' Title
+#' Print all notes
 #'
 #' @param notes 
 #' @param ... 
-#' @param numbered 
+#' @param numbered logical default is TRUE
 #'
 #' @return
 #' @export
@@ -157,13 +165,15 @@ print_all_notes <- function(notes, ..., numbered=TRUE) {
   sprintf("%d. %s", i, x)
 }
 
-# returns as secific note, as indicated by row number i
-#' Title
+# returns a specific note, as indicated by row number i
+#' Return a specific row from notes
+#' 
+#' Returns a specific row from notes specified by i 
 #'
 #' @param notes 
 #' @param i 
 #'
-#' @return
+#' @return a single row from a tibble
 #' @export
 #'
 #' @examples
