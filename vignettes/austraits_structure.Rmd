@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-library(austraits.build)
+library(austraits)
 library(dplyr)
 library(readr)
 
@@ -61,7 +61,7 @@ austraits
 ├── methods
 ├── excluded_data
 ├── taxa
-├── taxanomic_updates
+├── taxonomic_updates
 ├── definitions
 ├── contributors
 ├── sources
@@ -75,7 +75,7 @@ These include all the data and contextual information submitted with each contri
 The core components are defined as follows.
 
 ```{r}
-print_defintions_element <- function(elements) {
+print_definitions_element <- function(elements) {
   if (elements$type == "character") {
     sprintf("**Content:** %s\n", elements$value) %>%
       writeLines()
@@ -96,11 +96,11 @@ for (v in names(austraits)) {
   elements <- austraits$definitions$austraits$elements[[v]]
 
   sprintf("### %s {#%s}\n\n**Description:** %s.\n", v, v, elements$description) %>%
-    strigr::str_replace_all("\\.\\.", "\\.") %>%
+    stringr::str_replace_all("\\.\\.", "\\.") %>%
     writeLines()
 
   elements %>%
-    print_defintions_element()
+    print_definitions_element()
 
   writeLines(c(""))
 }
@@ -130,12 +130,12 @@ As well as `dataset_id`, `observation_id`, and `site_name`, where appropriate, t
 
 Each record in the table of trait data has an associated `value` and `value_type`. 
 
-Traits are either `numeric` or `categorical`. For traits with numerical values, the recorded value has been converted into standardised units and we have check that the value can be converted into a number and lies within the allowable range.  For categorical variables, we only include records that are defined in the definitions. Moreover, we use a format whereby
+Traits are either `numeric` or `categorical`. For traits with numerical values, the recorded value has been converted into standardised units and we have checked that the value can be converted into a number and lies within the allowable range.  For categorical variables, we only include records whose values are included as allowable values in a trait's definition in the definitions table. Moreover, we use a format whereby
 
 - we use `_` for multi-word terms, e.g. `semi_deciduous`
-- use a space for situations where there are two possible values for that trait, e.g. `annual biennial` for something which is either annual or biennial 
+- we use a space for situations where a single study reports two possible values for that trait, e.g. `annual biennial` for something which is either annual or biennial 
 
-Each trait measurement also an associated `value_type`, which gives ``r austraits$definitions$value_type$description``. Possible values are:
+Each trait measurement also has an associated `value_type`, which is ``r austraits$definitions$value_type$description`` Possible values are:
 
 ```{r value_type}
 austraits$definitions$value_type$values %>%
@@ -150,15 +150,15 @@ AusTraits does not include intra-individual observations. When multiple measurem
 
 Version `r desc::desc_get_field("Version")` of AusTraits contains records for `r austraits$traits$species_name %>% unique() %>% length()` different taxa. We have attempted to align species names with known taxonomic units in the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and/or the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI). 
 
-The table `taxa` lists all taxa in the database, including additional infomration about the taxa (see Table above). 
+The table `taxa` lists all taxa in the database, including additional information about the taxa (see Table above). 
 
 The `traits` table reports both the original and the updated taxon name alongside each trait record.
 
-The table `taxanomic_updates` provdies details on all taxonomic names changes implemented in aligning with APC and APNI.
+The table `taxonomic_updates` provides details on all taxonomic names changes implemented in aligning with APC and APNI.
 
 ## Sources
 
-For each dataset in the compilation there is the option to list primary and secondary citations. The primary citation `r austraits$definitions$metadata$elements$source$values$primary` while the secondary citation is `r austraits$definitions$metadata$elements$source$values$secondary`. These references are included in two places:
+For each dataset in the compilation there is the option to list primary and secondary citations. The primary citation is defined as, ``r austraits$definitions$metadata$elements$source$values$primary`` The secondary citation is defined as, ``r austraits$definitions$metadata$elements$source$values$secondary`` These references are included in two places:
 
 1. Within the table [methods](#methods), where we provide a formatted version of each.
 2. In the element [sources](#sources), where we provided bibtex versions of all sources which can be imported into your reference library. The keys for these references are listed within the [methods]{#methods}. 
