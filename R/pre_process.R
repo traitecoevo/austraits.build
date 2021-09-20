@@ -1,12 +1,3 @@
-#' Remove blank spaces from strings
-#' 
-#' Remove extra blank spaces from the start and end of strings
-#'
-#' @param x vector of strings
-#' 
-#' @return vector of strings
-#' @examples
-trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
 #' Return month for given indices
 #' 
@@ -98,7 +89,7 @@ convert_month_range_string_to_binary <- function(str) {
 #'
 #' @return a 12 element character string, e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
 convert_month_range_string_to_binary_worker <- function(str) {
-  str <- trim(str) %>%
+  str <- str %>% stringr::str_trim() %>%
     tolower()
   
   regexMonths <- paste0("(", paste(tolower(month.abb), collapse="|"), ")")
