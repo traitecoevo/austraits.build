@@ -1,12 +1,14 @@
 #' Build reports for all studies
 #' 
-#' Build reports for all studies 
-#' using the build_study_report() function
+#' Build reports for all studies using the `build_study_report()` function. This
+#' function builds a study report for every study with a unique `dataset_id` that
+#' has been loaded into AusTraits using `build_study_report()`. The reports are 
+#' rendered as html files and saved in the "export/reports" folder.  
 #'
 #' @param dataset_ids names of studies/ datasets, default is NULL
-#' @param ... 
+#' @param ... arguments passed to build_study_report()
 #'
-#' @return
+#' @return html files of the study report for all studies 
 #' @export
 #'
 #' @examples
@@ -22,13 +24,18 @@ build_study_reports <- function(dataset_ids=NULL, ...) {
 }
 
 #' Build report for a specific study
+#' 
+#' Builds a report for a specified study using `dataset_id`. The information for 
+#' the report is stored in an Rmd file and the final report is rendered as an html.  
+#' The report is generated from the `report_study.Rmd` file in the scripts folder. 
+#' Existing reports can be overwritten by setting overwrite = TRUE
 #'
 #' @param dataset_id name of specific study/dataset
-#' @param overwrite logical default = FALSE, 
-#' if report exists already set to TRUE to overwrite
-#' @param path location where report will be saved
+#' @param overwrite logical value to determine whether to overwrite existing report,
+#' default = FALSE, if report exists already set to TRUE to overwrite
+#' @param path location where rendered report will be saved
 #'
-#' @return
+#' @return html file of the rendered report located in the "export/reports" folder
 #' @export
 #'
 #' @examples
@@ -62,13 +69,15 @@ build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/repor
   cat(" -> done\n")
 }
 
-#' Get SHA link
+#' Get SHA link from Github
 #' 
-#' Get SHA link using the get_SHA() function
+#' Get SHA link using the get_SHA() function. The link generated leads to the latest
+#' commit for the Github repository. SHA is the abbreviated SHA-1 40 digit
+#' hexadecimal number which Github uses to track commits and changes made to a repository. 
 #' 
-#' @param ... 
+#' @param ... arguments passed to the get_SHA() function
 #'
-#' @return
+#' @return SHA link to a github commit as a character string formatted using markdown syntax
 #' @export
 #'
 #' @examples
@@ -77,13 +86,16 @@ get_SHA_link <- function(...) {
   sprintf("[%s](https://github.com/traitecoevo/austraits/tree/%s)",   sha, sha)
 }
 
-#' Get SHA from github repository
+#' Get SHA string from Github repository for latest commit
 #' 
-#' Get SHA for the remake.yml file from github
+#' Get SHA string for the latest commit on Github for the repository. SHA is the
+#' abbreviated SHA-1 40 digit hexadecimal number which Github uses as the 
+#' Commit ID to track changes made to a repo
 #'
-#' @param path 
+#' @param path root directory where a specified file is located, default file name
+#' is the remake.yml file
 #'
-#' @return
+#' @return 40-digit SHA character string for the latest commit to the repository 
 #' @export
 #'
 #' @examples
@@ -156,7 +168,7 @@ as_link <- function(link, text, type="md") {
 
 
 
-#' Format a tree structure from a vector
+#' Format a tree structure from a vector (needs review)
 #' 
 #' create_tree_branch() formats a tree structure from a vector of terms
 #'
