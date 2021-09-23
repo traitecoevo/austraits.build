@@ -179,7 +179,15 @@ load_study <- function(filename_data_raw,
 ## called `data` and returns a data.frame
 custom_manipulation <- function(txt) {
   if (!is.null(txt) && !is.na(txt)  && nchar(txt) > 0) {
-    function(data) {eval(parse(text=txt), env=new.env())}
+
+    txt2 <- 
+      # Trim white space, quotes, new line from from and back
+      txt %>% stringi::stri_trim_both("[^'\"\\ \\n]", negate=F) %>%
+      # Squish internal white space, also removes new line characters
+      stringr::str_replace_all("\\s+", " ")
+    # test: txt <-" '' \n Total of 23.5 bitcoins. "
+    
+    function(data) {eval(parse(text=txt2), env=new.env())}
   } else {
     identity
   }

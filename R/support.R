@@ -149,18 +149,21 @@ read_metadata <- function(path) {
   
   data <- read_yaml(path)
   
-  # Read in again, extracting custom R code
   # We want to preserve formatting in custom R code
-  # but read_yaml looses it. So read in as text
-  data2 <- readLines(path)
+  # but read_yaml looses it. So read in as text, if not empty
+  if(!is.na(data$config$custom_R_code)) {
+    # Read in again, extracting custom R code
+    
+    data2 <- readLines(path)
   
-  code_start <- grep("  custom_R_code:", data2, fixed = TRUE)
-  code_end <- which(data2 == "traits:")-1
+    code_start <- grep("  custom_R_code:", data2, fixed = TRUE)
+    code_end <- which(data2 == "traits:")-1
 
-  data$config$custom_R_code <- 
-    data2[code_start:code_end] %>%
-    gsub("  custom_R_code:", "", ., fixed = TRUE) %>%
-    paste(sep="\n")
+    data$config$custom_R_code <- 
+      data2[code_start:code_end] %>%
+      gsub("  custom_R_code:", "", ., fixed = TRUE) %>%
+      paste(collapse = "\n")
+  }
   
   data
 }
@@ -181,16 +184,20 @@ write_metadata <- function(data, path, style_code=FALSE) {
   y <- data
   y$config$custom_R_code <- NA
 
-  txt <- yaml::as.yaml(y, column.major = FALSE, indent=2)
-  txt <- gsub(": ~",":", txt, fixed=TRUE)
+  txt <- yaml::as.yaml(y, column.major = FALSE, indent=2) %>%
+    gsub(": ~",":", ., fixed=TRUE)
   
   #reinsert custom R code
-  code <- data$config$custom_R_code
+  if(!is.na(data$config$custom_R_code)) {
+
+    code <- data$config$custom_R_code
   
-  if(style_code)
-    code <- code %>% suppressWarnings(styler::style_text(transformers = tidyverse_style(strict = TRUE)))
+    if(style_code)
+      code <- code %>% suppressWarnings(styler::style_text(transformers = tidyverse_style(strict = TRUE)))
   
-  txt <- gsub("custom_R_code: .na", code %>% paste(collapse = "\n") %>% paste0("custom_R_code:", .), txt, fixed = TRUE)
+    txt <- gsub("custom_R_code: .na", code %>% paste(collapse = "\n") %>% 
+                  paste0("custom_R_code:", .), txt, fixed = TRUE)
+  }
   
   file <- file(path, "w", encoding = "UTF-8")
   on.exit(close(file))
