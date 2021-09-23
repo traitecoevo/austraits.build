@@ -4410,7 +4410,7 @@ austraits:
       type: table
       elements:
         dataset_id: &dataset_id Primary identifier for each study contributed into AusTraits; most often these are scientific papers, books, or online resources. By default should be name of first author and year of publication, e.g. `Falster_2005`.
-        taxon_name: &taxon_name Whenever possible, the currently accepted scientific name of a taxon, per the Australian Plant Census. If a `taxon_name` is not accepted by the APC, it is aligned to the Australian Plant Names Index, if possible, or remains an unmatchable name submitted by a data contributor.
+        taxon_name: &taxon_name Whenever possible, this field indicates the currently accepted scientific name of a taxon, per the Australian Plant Census (APC). Alternatively, `taxon_name` can indicate an alignment with a name inventoried on the comprehensive Australian Plant Names Index (APNI) or a name that cannot be aligned to available lists of Australian plant names.
         site_name: &site_name Name of site where individual was sampled. Cross-references between similar columns in `sites` and `traits`.
         context_name: &context_name Name of contextual senario where individual was sampled. Cross-references between similar columns in `contexts` and `traits`.
         observation_id: A unique identifier for the observation, useful for joining traits coming from the same `observation_id`. These are assigned automatically, based on the `dataset_id` and row number of the raw data.
@@ -4464,14 +4464,14 @@ austraits:
       elements:
         taxon_name: *taxon_name
         source: Source of taxonomic information, either APC or APNI.
-        acceptedNameUsageID: The APNI identifier for the taxon indicated under `taxon_name`; applicable for taxa whose `taxonomicStatus` is `accepted`.
-        scientificNameAuthorship: Authority for the taxon indicated under `taxon_name`; applicable for taxa whose `taxonomicStatus` is `accepted`.
+        acceptedNameUsageID: The APC identifier for the taxon indicated under `taxon_name`; applicable for taxa whose APC `taxonomicStatus` is `accepted`.
+        scientificNameAuthorship: Authority for the taxon indicated under `taxon_name`; applicable for most taxa on the APC.
         taxonRank: Rank of the taxon.
-        taxonomicStatus: Taxonomic status of the taxon; `accepted` indicates the taxon name is on the APC list and has been endorsed by the Council of Heads of Australasian Herbaria.
+        taxonomicStatus: "Taxonomic status of the taxon, where `accepted` indicates the taxon name is considered `current` by the APC, a list endorsed by the Council of Heads of Australasian Herbaria. Alternate statuses are: `unplaced` indicating the taxon name is included on the APNI but has yet to be reviewed for inclusion/exclusion as a name (or synonym) on the APC list; `genus_known` indicating the taxon name can only be aligned to the genus level; and `unknown` indicating a taxon name submitted to AusTraits that cannot be aligned to even the genus level."
         family: Family of the taxon.
         genus: Genus of the taxon.
         taxonDistribution: Known distribution of the taxon, by Australian state.
-        ccAttributionIRI: Source of taxonomic information.
+        ccAttributionIRI: Source of taxonomic information (for taxa on the APC list) or name information (for taxa on the APNI list, but unplaced on the APC list).
     definitions:
       description: A copy of the definitions for all tables and terms. Information included here was used to process data and generate any documentation for the study.
       type: categorical
@@ -4488,16 +4488,16 @@ austraits:
         institution: Last known institution or affiliation
         role: Their role in the study
     taxonomic_updates:
-      description: A table of all taxonomic changes implemented in the construction of AusTraits. Changes are determined by comparing against the APC (Australian Plant Census) and APNI (Australian Plant Names Index). Cross referencing with the `traits` table is possible using combinations of the variables `dataset_id`, `taxon_name`.
+      description: A table of all taxonomic changes implemented in the construction of AusTraits. Changes are determined by comparing the originally submitted taxon name against the APC (Australian Plant Census) and APNI (Australian Plant Names Index). Cross referencing with the `traits` table is possible using combinations of the variables `dataset_id`, `taxon_name`.
       type: table
       elements:
         dataset_id: *dataset_id
         original_name: *orginal_name
-        cleaned_name: Name of the taxon after implementing any changes encoded for this taxon in the metadata file for the correpsonding `dataset_id`.
-        taxonIDClean: The APNI identifier for the `cleaned_name` of the taxon, applicable if the taxon name appears in the APNI list (includes all APC recognised species).
-        taxonomicStatusClean: The APNI taxonomic status for the `cleaned_name` of the taxon identified by `taxonIDClean`. 
-        alternativeTaxonomicStatusClean: The status of alternative records with the name `cleaned_name` in the APNI/APC lists.
-        acceptedNameUsageID: The APNI identifier for the accepted name (`taxon_name`) for a taxon; different from `taxonIDClean` if `taxonomicStatusClean` is not `accepted`.
+        cleaned_name: Name of the taxon after implementing both automated syntax standardisation and spelling changes and syntax alignments encoded for this taxon in the metadata file for the corresponding `dataset_id`.
+        taxonIDClean: The APC identifier for the `cleaned_name` of the taxon (for taxa on the APC list) or APNI identifier (for taxa on the APNI list, but unplaced on the APC list).
+        taxonomicStatusClean: The APC taxonomic status for the `cleaned_name` of the taxon identified by `taxonIDClean`. 
+        alternativeTaxonomicStatusClean: The taxonomic status of alternative records with the name `cleaned_name` in the APC list.
+        acceptedNameUsageID: The APC identifier for the accepted name (`taxon_name`) for a taxon; different from `taxonIDClean` if `taxonomicStatusClean` is not `accepted`.
         taxon_name: *taxon_name
     build_info:
       description: A description of the computing environment used to create this version of the dataset, including version number, git commit and R session_info.
@@ -4535,7 +4535,7 @@ metadata:
           description: Person's role in the study
           type: categorical
           values:
-            collector: The person (people) leading data collection (up to 2 permitted)
+            collector: The person (people) leading data collection (generally 1-2 people)
             contributor: Person responsible for entering data into AusTraits
             lab_leader: Leader of lab group at time of collection
             assistant: Anyone else who assisted in collection of the data
@@ -4581,7 +4581,7 @@ metadata:
         find: Contributor's trait value that needs to be changed
         replace: AusTraits supported replacement value
     taxonomic_updates:
-      description: A list of taxonomic name changes needed to align original names in dataset with taxa on the APNI list.
+      description: A list of taxonomic name changes needed to align original names in dataset with taxa on the APC and APNI lists.
       type: array
       values:
         find: *orginal_name
