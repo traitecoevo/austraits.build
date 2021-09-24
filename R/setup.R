@@ -1038,7 +1038,7 @@ austraits_run_tests <- function() {
     stop("The variable `dataset_ids` must be defined in the global namespace for the test suite to work")
   }
   
-  testthat::test_dir("tests", reporter = default_reporter())
+  testthat::test_dir("test-data", reporter = default_reporter())
 }
 
 #' Title
