@@ -51,21 +51,44 @@ dir() %>%
   writeLines()
 ```
 
+#### R project file
 ```
-austraits
-├── austraits.build.Rproj  # Rstudio project 
-├── config                 # configuration and definition files
-├── data                   # raw data files
-├── DESCRIPTION            # R package description
-├── Dockerfile             # Creates container for docker
-├── docs                   # documentation
-├── export                 # for output
-├── R                      # R functions used during build
-├── README.md              # landing page
-├── remake.yml             # instructions for build
-├── scripts                # 
-└── tests                  # defines tests applied to datasets
+├── austraits.build.Rproj     # Rstudio project
 ```
+
+#### Files for maintaining a repo on github
+
+```
+├── README.md         # landing page
+├── .github           # folder containing github actions, issue templates, code of conduct
+├── LICENCE
+├── NEWS.md
+├── _pkgdown.yml      # used to create packagedown website
+├── docs              # contains website
+├── Dockerfile        # creates an image of R environment used in build
+```  
+
+#### Files used for creation of R package austraits.build
+```
+├── NAMESPACE             # functions being exported
+├── DESCRIPTION           # R package description
+├── man                   # XXXX-not in file structure
+├── R                     # folder with functions and scripts to build AusTraits
+├── tests                 # defines tests applied to datasets
+├── vignettes             # documentation of repo file structure, AusTraits database structure, definitions, data input processes
+``` 
+
+#### Files used for data compilation
+```
+├── remake.yml            # instructions for build
+├── config                # configuration and definition files
+├── data                  # raw data files
+├── export                # folder for output
+└── scripts               # scripts for processing files before/after building austraits, including compiling reports
+```
+
+## Details on files used for data compilation:
+  
 
 ## Configuration
 
@@ -78,9 +101,9 @@ config
 └── unit_conversions.csv
 ```
 
-The file `definitions.yml` defines the structure of the database and all terms. The tables and definitions described in the vignette [Structure of AusTraits data compilation](http://traitecoevo.github.io/austraits.build/articles/austraits_structure.html)  are defined in this file, as are trait definitions. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)).
+The file `definitions.yml` defines the structure of the database and all terms. There are three main sections to the `definitions.yml` file, the trait definitions used to compile AusTraits, allowable trait values, and definitions of all elements included in the tables that comprise AusTraits. The [trait definitions](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) and [definitions of all elements in AusTraits (and value types)](http://traitecoevo.github.io/austraits.build/articles/austraits_structure.html) are fully described in additional vignettes. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). 
 
-The file `taxon_list.csv` is our master list of known taxa. Each species is listed once, with links to species' identifiers provided by the Australian Plant Name Index (APNI). The file `taxon_list.csv` is added to if a study includes taxa not previously represented in AusTraits. These can be names either on the APC/APNI lists, a compilation of taxonomic concepts for plants that are either native to or naturalised in Australia, or taxa without recognised names.  
+The file `taxon_list.csv` is our master list of known taxa. Each species is listed once, with links to species' identifiers provided by the Australian Plant Name Index (APNI). The file `taxon_list.csv` is added to if a study includes taxa not previously represented in AusTraits. These can be names included in either the APC/APNI, compilations of taxonomic concepts (APC) or names (APNI) for plants that are either native to or naturalised in Australia, or taxa without recognised names.  
 
 ```{r, results='show'}
 read_csv("config/taxon_list.csv") %>%
@@ -97,12 +120,11 @@ read_csv("config/unit_conversions.csv", col_types = "ccc") %>%
   my_kable_styling()
 ```
 
-## R
-XXX To be added
-
 ## Data
 
-The folder `data` contains the raw data from individual studies  included in AusTraits.  Data from each study is organised into a separate folder, with two files:
+The folder `data` contains the raw data from individual studies included in AusTraits.  
+
+Records within the `data` folder are organised as coming from a particular study, defined by the `dataset_id`. Data from each study is organised into a separate folder, with two files:
 
 - `data.csv`: a table containing the actual trait data.
 - `metadata.yml`: a file that contains study metadata (source, methods, sites, and context), maps trait names and units onto standard types, and lists any substitutions applied to the data in processing. 
