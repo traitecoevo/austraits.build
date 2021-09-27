@@ -70,7 +70,7 @@ austraits
 
 These include all the data and contextual information submitted with each contributed dataset. 
 
-## Components
+# Components
 
 The core components are defined as follows.
 
@@ -91,11 +91,13 @@ print_definitions_element <- function(elements) {
       writeLines()
   }
 }
+```
 
-for (v in names(austraits)) {
-  elements <- austraits$definitions$austraits$elements[[v]]
+## traits {#traits}
+```{r}
+elements <- austraits$definitions$austraits$elements$traits
 
-  sprintf("### %s {#%s}\n\n**Description:** %s.\n", v, v, elements$description) %>%
+  sprintf("**Description:** %s.\n", elements$description) %>%
     stringr::str_replace_all("\\.\\.", "\\.") %>%
     writeLines()
 
@@ -103,39 +105,29 @@ for (v in names(austraits)) {
     print_definitions_element()
 
   writeLines(c(""))
-}
 ```
 
-## Dataset IDs
+**Details:**  
 
-The core organising unit behind AusTraits is the `dataset_id`. Records are organisation as coming from a particular study, defined by the  `dataset_id`. Our preferred format for `dataset_id` is surname of the first author of any corresponding publication, followed by the year, as `surname_year`. E.g. `Falster_2005`. Wherever there are multiple studies with the same id, we add a suffix `_2`, `_3` etc. E.g.`Falster_2005`, `Falster_2005_2`.
+#### Observation IDs
 
-## Observation IDs
+Each trait measurement has an associated `observation_id`.  Observation IDs bind together related measurements within any dataset, and thereby allow transformation between long format (e.g. with variables `trait_name` and `value`) and wide format (e.g. with traits as columns). When multiple traits were collected on the same individual, the `observation_id` identified which measurements were made on the same individual (or population,  species depending on the level of detail supplied). Generally, `observation_id` has the format `dataset_id_XX` where `XX` is a unique number within each dataset. 
 
-As well as a `dataset_id`, each trait measurement has an associated `observation_id`.  Observation IDs bind together related measurements within any dataset, and thereby allow transformation between long  (e.g. with variables `trait_name` and `value`) and wide (e.g. with traits as columns) formats.
+For datasets submitted to AusTraits in long format, a column specifying `observation_id` should already exist, assigned based on a specified grouping variable.  If missing, `observation_id` is assigned based on `species_name`. 
 
-Generally, `observation_id` has the format `dataset_id_XX` where `XX` is a unique number within each dataset. For example, if multiple traits were collected on the same individual, the `observation_id` allows us to gather these together. For floras, which report a species averages, the `observation_id` is assigned at the species level.
+For datasets submitted to AusTraits in wide format each row is assigned a unique `observation_id` during processing, allowing conversion to long format. 
 
-For datasets that arrive in wide format we assume each row has a unique `observation_id`. For datasets that arrive in long format, the `observation_id` is assigned based on a specified grouping variable.  If missing, `observation_id` is assigned based on `species_name`. 
 
-## Site names
-
-As well as `dataset_id` and `observation_id`, where appropriate, trait values are associated with a `site_name`. Unique combinations of `dataset_id` and `site_name` can be used to cross-match against the sites table, which provide further details on the site sampled.
-
-## Context names
-
-As well as `dataset_id`, `observation_id`, and `site_name`, where appropriate, trait values are associated with a `context_name`. Unique combinations of `dataset_id` and `context_name` can be used to cross-match against the context table, which provide further details on the context sampled.
-
-## Values and Value types {#value_types}
+#### Values and Value types {#value_types}
 
 Each record in the table of trait data has an associated `value` and `value_type`. 
 
 Traits are either `numeric` or `categorical`. For traits with numerical values, the recorded value has been converted into standardised units and we have checked that the value can be converted into a number and lies within the allowable range.  For categorical variables, we only include records whose values are included as allowable values in a trait's definition in the definitions table. Moreover, we use a format whereby
 
-- we use `_` for multi-word terms, e.g. `semi_deciduous`
+- we use `_` for multi-word terms, e.g. `semi_deciduous`  
 - we use a space for situations where a single study reports two possible values for that trait, e.g. `annual biennial` for something which is either annual or biennial 
 
-Each trait measurement also has an associated `value_type`, which is ``r austraits$definitions$value_type$description`` Possible values are:
+Each trait measurement also has an associated `value_type`, which is ``r austraits$definitions$value_type$description`` Possible values are:  
 
 ```{r value_type}
 austraits$definitions$value_type$values %>%
@@ -144,28 +136,118 @@ austraits$definitions$value_type$values %>%
   writeLines()
 ```
 
-AusTraits does not include intra-individual observations. When multiple measurements per individual are submitted to AusTraits, we take the mean of the values and record the value_type as `individual_mean`.
+AusTraits does not include intra-individual observations. When multiple measurements per individual are submitted to AusTraits, we take the mean of the values and record the value_type as `individual_mean`.  
 
-## Taxonomy {#taxonomic}
+## sites
+```{r}
+elements <- austraits$definitions$austraits$elements$sites
 
-Version `r desc::desc_get_field("Version")` of AusTraits contains records for `r austraits$traits$species_name %>% unique() %>% length()` different taxa. We have attempted to align species names with known taxonomic units in the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and/or the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI). 
+  sprintf("**Description:** %s.\n", elements$description) %>%
+    stringr::str_replace_all("\\.\\.", "\\.") %>%
+    writeLines()
 
-The table `taxa` lists all taxa in the database, including additional information about the taxa (see Table above). 
+  elements %>%
+    print_definitions_element()
 
-The `traits` table reports both the original and the updated taxon name alongside each trait record.
+  writeLines(c(""))
+```
 
-The table `taxonomic_updates` provides details on all taxonomic names changes implemented in aligning with APC and APNI.
+## contexts
+```{r}
+elements <- austraits$definitions$austraits$elements$contexts
 
-## Sources
+  sprintf("**Description:** %s.\n", elements$description) %>%
+    stringr::str_replace_all("\\.\\.", "\\.") %>%
+    writeLines()
 
-For each dataset in the compilation there is the option to list primary and secondary citations. The primary citation is defined as, ``r austraits$definitions$metadata$elements$source$values$primary`` The secondary citation is defined as, ``r austraits$definitions$metadata$elements$source$values$secondary`` These references are included in two places:
+  elements %>%
+    print_definitions_element()
 
-1. Within the table [methods](#methods), where we provide a formatted version of each.
-2. In the element [sources](#sources), where we provided bibtex versions of all sources which can be imported into your reference library. The keys for these references are listed within the [methods]{#methods}. 
+  writeLines(c(""))
+```
 
-## Trait definitions
+## methods {#methods}
+```{r}
+elements <- austraits$definitions$austraits$elements$methods
 
-Allowable traits and values are defined in the definitions file. Each trait is 
+  sprintf("**Description:** %s.\n", elements$description) %>%
+    stringr::str_replace_all("\\.\\.", "\\.") %>%
+    writeLines()
+
+  elements %>%
+    print_definitions_element()
+
+  writeLines(c(""))
+```
+
+
+## exluded_data
+```{r}
+elements <- austraits$definitions$austraits$elements$excluded_data
+
+  sprintf("**Description:** %s.\n", elements$description) %>%
+    stringr::str_replace_all("\\.\\.", "\\.") %>%
+    writeLines()
+
+  elements %>%
+    print_definitions_element()
+
+  writeLines(c(""))
+```
+
+
+## taxa
+
+**Description:** A table containing details on taxa that are included in the table [`traits`](#traits). We have attempted to align species names with known taxonomic units in the [`Australian Plant Census` (APC)](https://biodiversity.org.au/nsl/services/apc) and/or the [`Australian Plant Names Index` (APNI)](https://biodiversity.org.au/nsl/services/APNI); the sourced information is released under a CC-BY3 license. 
+
+
+Version `r desc::desc_get_field("Version")` of AusTraits contains records for `r austraits$traits$taxon_name %>% unique() %>% length()` different taxa. 
+
+
+```{r}
+elements <- austraits$definitions$austraits$elements$taxa
+
+  elements %>%
+    print_definitions_element()
+
+  writeLines(c(""))
+```
+
+
+## taxonomic_updates
+
+```{r}
+elements <- austraits$definitions$austraits$elements$taxonomic_updates
+
+  sprintf("**Description:** %s.\n", elements$description) %>%
+    stringr::str_replace_all("\\.\\.", "\\.") %>%
+    writeLines()
+
+  elements %>%
+    print_definitions_element()
+
+  writeLines(c(""))
+```
+
+
+Both the original and the updated taxon names are included in the [`traits`](#traits) table.
+
+
+## definitions
+```{r}
+elements <- austraits$definitions$austraits$elements$definitions
+
+  sprintf("**Description:** %s.\n", elements$description) %>%
+    stringr::str_replace_all("\\.\\.", "\\.") %>%
+    writeLines()
+
+  elements %>%
+    print_definitions_element()
+
+  writeLines(c(""))
+```
+
+**Details on trait definitions:** The allowable trait names and trait values are defined in the definitions file. Each trait is 
 labelled as either `numeric` or `categorical`. An example of each type is as follows. For the full list, see the section on Trait definitions.
 
 
@@ -177,4 +259,53 @@ for (trait in c("specific_leaf_area", "woodiness")) {
 
   c(sprintf("**%s**\n\n", trait), sprintf("- label: %s", elements$label), sprintf("- description: %s", elements$description), sprintf("- number of records: %s", data_trait %>% nrow()), sprintf("- number of studies: %s", data_trait %>% pull(dataset_id) %>% unique() %>% length()), sprintf("- type: %s%s", elements$type, ifelse(elements$type == "numeric", sprintf("\n- units: %s", elements$units), "")), ifelse(elements$type == "numeric", sprintf("- allowable range: %s - %s %s", elements$values$minimum, elements$values$maximum, elements$units), sprintf("- allowable values:\n%s\n", paste0("    - *", elements$values %>% names(), "*: ", elements$values %>% unlist(), collapse = "\n"))), "") %>% writeLines()
 }
+```
+
+
+## contributors
+```{r}
+elements <- austraits$definitions$austraits$elements$contributors
+
+  sprintf("**Description:** %s.\n", elements$description) %>%
+    stringr::str_replace_all("\\.\\.", "\\.") %>%
+    writeLines()
+
+  elements %>%
+    print_definitions_element()
+
+  writeLines(c(""))
+```
+
+
+## sources
+
+For each dataset in the compilation there is the option to list primary and secondary citations. The primary citation is defined as, ``r austraits$definitions$metadata$elements$source$values$primary`` The secondary citation is defined as, ``r austraits$definitions$metadata$elements$source$values$secondary`` 
+
+The element `sources` includes bibtex versions of all sources which can be imported into your reference library:
+```
+WriteBib(austraits$sources)                             #write all sources to file
+WriteBib(austraits$sources["Falster_2005_1"])           #write a single reference to a file
+```
+
+Or individually viewed:
+```
+austraits$sources["Falster_2005_1"]
+```
+
+A formatted version of the sources also exists within the table [methods](#methods). 
+
+
+
+## build_info
+```{r}
+elements <- austraits$definitions$austraits$elements$build_info
+
+  sprintf("**Description:** %s.\n", elements$description) %>%
+    stringr::str_replace_all("\\.\\.", "\\.") %>%
+    writeLines()
+
+  elements %>%
+    print_definitions_element()
+
+  writeLines(c(""))
 ```
