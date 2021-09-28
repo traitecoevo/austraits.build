@@ -1026,19 +1026,24 @@ find_names_distance_to_neighbours <- function(taxon_name, dist=5) {
 #' @export
 #'
 #' @examples
-austraits_run_tests <- function() {
-  library(testthat)
+test_data_setup <- function(dataset_ids = NULL) {
 
-  root.dir <- rprojroot::find_root("remake.yml")
-
-  pwd <- setwd(root.dir)
-  on.exit(setwd(pwd))
-
-  if(!exists("dataset_ids") || is.null(dataset_ids)) {
-    stop("The variable `dataset_ids` must be defined in the global namespace for the test suite to work")
+  if(is.null(dataset_ids)) {
+    stop("The variable `dataset_ids` must be specified for the test suite to work")
   }
+
+  # Save dataset_ids in global environment, needed to get tests running
+  assign("test_dataset_ids", dataset_ids, envir = globalenv())
   
-  testthat::test_dir("test-data", reporter = default_reporter())
+  root.dir <- rprojroot::find_root("remake.yml")
+  pwd <- setwd(root.dir)
+  on.exit({
+    setwd(pwd)
+    rm(test_dataset_ids, envir = globalenv())
+    })
+
+  library(testthat)
+  testthat::test_dir("tests/testdata", reporter = default_reporter())
 }
 
 #' Title

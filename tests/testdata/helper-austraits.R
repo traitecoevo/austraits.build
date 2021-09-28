@@ -3,14 +3,6 @@ library(stringr)
 library(readr)
 library(dplyr, warn.conflicts=FALSE)
 
-## assumes variable `dataset_ids` is defined, being the names of datasets to test
-
-root.dir <- rprojroot::find_root("remake.yml")
-
-tmp <- lapply(list.files(file.path(root.dir, "R"), full.names=TRUE), source)
-
-definitions <- read_yaml(file.path(root.dir, "config/definitions.yml"))
-
 ## New expect_that helper functions; test that a number is in a range,
 ## or that a range contains a number.
 
@@ -139,3 +131,42 @@ expect_list_elements_contain <- function(object, expected, info) {
   invisible(NULL)
 }
 
+
+test_dataframe_valid <- function(data, info) {
+  expect_not_NA(colnames(data), info = info)
+  expect_allowed_text(colnames(data), info = info)
+  expect_unique(colnames(data), info = info)
+  expect_true(is.data.frame(data), info = info)
+}
+
+test_dataframe_named <- function(data, expected_colnames, info) {
+  test_dataframe_valid(data, info)
+  expect_named(data, expected_colnames, info= info)
+}
+
+test_dataframe_names_contain <- function(data, expected_colnames, info) {
+  test_dataframe_valid(data, info)
+  expect_contains(names(data), expected_colnames, info= info)
+}
+
+test_list <- function(data, info) {
+  expect_true(class(data)=="list", info = info)
+}
+
+test_list_names_valid <- function(data, info) {
+  test_list(data, info)
+  expect_not_NA(names(data), info = info)
+  expect_allowed_text(names(data), info = info)
+  expect_unique(names(data), info = info)
+}
+
+
+test_list_named <- function(data, expected_names, info) {
+  test_list_names_valid(data, info)
+  expect_named(data, expected_names, info= info)
+}
+
+test_list_named_contains <- function(data, expected_names, info) {
+  test_list_names_valid(data, info)
+  expect_isin(names(data), expected_names)
+}
