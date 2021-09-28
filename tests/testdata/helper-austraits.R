@@ -3,6 +3,9 @@ library(stringr)
 library(readr)
 library(dplyr, warn.conflicts=FALSE)
 
+root.dir <- rprojroot::find_root("remake.yml")
+definitions <- read_yaml(file.path(root.dir, "config/definitions.yml"))
+
 ## New expect_that helper functions; test that a number is in a range,
 ## or that a range contains a number.
 

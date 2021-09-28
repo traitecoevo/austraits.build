@@ -1,15 +1,12 @@
-library(testthat)
-
-context(" Functions in support.r")
 
 test_that("extract_list_element returns an element in character",{
-  expect_is(extract_list_element(1, definitions$traits$elements, "units"), "character")
-  expect_is(extract_list_element("seed_mass", definitions$traits$elements, "type"), "character")
+  expect_type(extract_list_element(1, definitions$traits$elements, "units"), "character")
+  expect_type(extract_list_element("seed_mass", definitions$traits$elements, "type"), "character")
   expect_error(extract_list_element((length(definitions$traits$elements)+1), definitions$traits$elements, "units"), "subscript out of bounds")
 })
 
 test_that("split_then_sort returns alphabetically sorted characters",{
-  expect_is(split_then_sort("z y x"), "character")
+  expect_type(split_then_sort("z y x"), "character")
   expect_match(split_then_sort("z y x"), "x y z")
   expect_match(split_then_sort("300 200 100 1 2 3"), "1 100 2 200 3 300")
 })
