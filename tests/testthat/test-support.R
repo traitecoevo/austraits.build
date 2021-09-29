@@ -13,9 +13,9 @@ test_that("extract_list_element returns an element in character",{
 })
 
 test_that("split_then_sort returns alphabetically sorted characters",{
-  expect_type(split_then_sort("z y x"), "character")
-  expect_match(split_then_sort("z y x"), "x y z")
-  expect_match(split_then_sort("300 200 100 1 2 3"), "1 100 2 200 3 300")
+  expect_type(austraits.build:::split_then_sort("z y x"), "character")
+  expect_match(austraits.build:::split_then_sort("z y x"), "x y z")
+  expect_match(austraits.build:::split_then_sort("300 200 100 1 2 3"), "1 100 2 200 3 300")
 })
 
 test_that("df_to_list, expect_match, write_yaml",{
@@ -23,8 +23,8 @@ test_that("df_to_list, expect_match, write_yaml",{
   
   expect_match(class(list_to_df(df_to_list(iris)))[1], "tbl_df")
   
-  expect_match(class(append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3)])), "list")
-  expect_equal(length(append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3)])), 3)
+  expect_match(class(austraits.build:::append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3)])), "list")
+  expect_equal(length( austraits.build:::append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3)])), 3)
   
   tmp <- "ignore/iris.yaml"
   dir.create(dirname(tmp), FALSE, TRUE)
