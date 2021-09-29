@@ -49,10 +49,10 @@ test_that("constancy of product", {
   # some datasets to compare against
   expect_no_error(austraits_raw <- build_comparison_set(root.dir), info = "Building comaprison set")
   
-  file_comparison <- "tests/testthat/comparison_set_3.0.2.rds"
+  file_comparison <- "tests/build/comparison_set_3.0.2.rds"
   
-  # Unocmment to update building of caomaprison set
-  #  saveRDS(austraits_raw, file.path(root.dir, file_comparison))
+  # Uncomment to update building of comparison set
+  # saveRDS(austraits_raw, file.path(root.dir, file_comparison))
   
   austraits_raw_comaprsion <- readRDS(file.path(root.dir, file_comparison))
   

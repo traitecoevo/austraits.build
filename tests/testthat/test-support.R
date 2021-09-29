@@ -1,8 +1,15 @@
 
+
+
 test_that("extract_list_element returns an element in character",{
-  expect_type(extract_list_element(1, definitions$traits$elements, "units"), "character")
-  expect_type(extract_list_element("seed_mass", definitions$traits$elements, "type"), "character")
-  expect_error(extract_list_element((length(definitions$traits$elements)+1), definitions$traits$elements, "units"), "subscript out of bounds")
+  
+  test_list <- df_to_list(iris)
+  names(test_list) <- paste("row", seq_len(nrow(iris)))
+  
+  expect_type(extract_list_element(1, test_list, "Sepal.Length"), "double")
+  expect_equal(extract_list_element(1, test_list,  "Sepal.Length"), 5.1)
+  expect_equal(extract_list_element("row 2", test_list,  "Sepal.Length"), 4.9)
+  expect_error(extract_list_element((length(test_list)+1), test_list, "units"), "subscript out of bounds")
 })
 
 test_that("split_then_sort returns alphabetically sorted characters",{
@@ -18,7 +25,6 @@ test_that("df_to_list, expect_match, write_yaml",{
   
   expect_match(class(append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3)])), "list")
   expect_equal(length(append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3)])), 3)
-  
   
   tmp <- "ignore/iris.yaml"
   dir.create(dirname(tmp), FALSE, TRUE)

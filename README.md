@@ -3,7 +3,8 @@
 
 <!-- badges: start -->
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3583418.svg)](https://doi.org/10.5281/zenodo.3583418)
-
+[![Build](https://github.com/traitecoevo/austraits.build/workflows/build/badge.svg)](https://github.com/traitecoevo/austraits.build/actions)
+[![R-CMD-check](https://github.com/traitecoevo/austraits.build/workflows/R-CMD-check/badge.svg)](https://github.com/traitecoevo/austraits.build/actions)
 <!-- badges: end -->
 
 <img src="docs/figures/logo.png">

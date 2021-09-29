@@ -7,9 +7,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
-#      - main
-#      - master
-#      - develop
+      - main
+      - master
+      - develop
 
 name: test-coverage
 
@@ -40,18 +40,12 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install dependencies
-        run: |
-          install.packages(c("remotes"))
-          remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("covr")
+      - uses: r-lib/actions/setup-r-dependencies@v1
+
+      - name: Test build infrastructure
+        run: testthat::test_dir("tests/build/")
         shell: Rscript {0}
 
-      - name: Run tests
-        run: testthat::test_local()
+      - name: build austraits
+        run: remake::make()
         shell: Rscript {0}
-
-
-      # - name: Test coverage
-      #   run: covr::codecov(quiet=FALSE)
-      #   shell: Rscript {0}
