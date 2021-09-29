@@ -4410,7 +4410,7 @@ austraits:
       type: table
       elements:
         dataset_id: &dataset_id Primary identifier for each study contributed into AusTraits; most often these are scientific papers, books, or online resources. By default should be name of first author and year of publication, e.g. `Falster_2005`.
-        taxon_name: &taxon_name Whenever possible, this field indicates the currently accepted scientific name of a taxon, per the Australian Plant Census (APC). Alternatively, `taxon_name` can indicate an alignment with a name inventoried on the comprehensive Australian Plant Names Index (APNI) or a name that cannot be aligned to available lists of Australian plant names.
+        taxon_name: &taxon_name Whenever possible, this field indicates the currently accepted scientific name of a taxon, per the Australian Plant Census (APC). Alternatively, `taxon_name` can indicate an alignment with a name included in the comprehensive Australian Plant Names Index (APNI) but not currently marked as accepted in APC or a name that cannot be aligned to available lists of Australian plant names.
         site_name: &site_name Name of site where individual was sampled. Cross-references between similar columns in `sites` and `traits`.
         context_name: &context_name Name of contextual senario where individual was sampled. Cross-references between similar columns in `contexts` and `traits`.
         observation_id: A unique identifier for the observation, useful for joining traits coming from the same `observation_id`. These are assigned automatically, based on the `dataset_id` and row number of the raw data.
@@ -4464,14 +4464,14 @@ austraits:
       elements:
         taxon_name: *taxon_name
         source: Source of taxonomic information, either APC or APNI.
-        acceptedNameUsageID: The APC identifier for the taxon indicated under `taxon_name`; applicable for taxa whose APC `taxonomicStatus` is `accepted`.
-        scientificNameAuthorship: Authority for the taxon indicated under `taxon_name`; applicable for most taxa on the APC.
+        acceptedNameUsageID: The identifier of the accepted concept in APC for this taxon name.
+        scientificNameAuthorship: Authority for the taxon indicated under `taxon_name`; applicable for most taxa in APC.
         taxonRank: Rank of the taxon.
-        taxonomicStatus: "Taxonomic status of the taxon, where `accepted` indicates the taxon name is considered `current` by the APC, a list endorsed by the Council of Heads of Australasian Herbaria. Alternate statuses are: `unplaced` indicating the taxon name is included on the APNI but has yet to be reviewed for inclusion/exclusion as a name (or synonym) on the APC list; `genus_known` indicating the taxon name can only be aligned to the genus level; and `unknown` indicating a taxon name submitted to AusTraits that cannot be aligned to even the genus level."
+        taxonomicStatus: "Taxonomic status of the taxon. `accepted` indicates the taxon name is designated as `current` in APC, a taxonomy endorsed by the Council of Heads of Australasian Herbaria. Alternate statuses are: `unplaced` indicating the taxon name is included in APNI but has yet to be reviewed for inclusion/exclusion as a current name (or synonym) for APC; `genus_known` indicating the taxon name can only be aligned to the genus level; `family_known` indicating the taxon name can only be aligned to the family level; and `unknown` indicating a taxon name submitted to AusTraits that cannot be aligned to even the genus level."
         family: Family of the taxon.
         genus: Genus of the taxon.
         taxonDistribution: Known distribution of the taxon, by Australian state.
-        ccAttributionIRI: Source of taxonomic information (for taxa on the APC list) or name information (for taxa on the APNI list, but unplaced on the APC list).
+        ccAttributionIRI: Source of taxonomic information (for taxa designated as current for APC) or name information (for taxa included in APNI, but unplaced  for APC).
     definitions:
       description: A copy of the definitions for all tables and terms. Information included here was used to process data and generate any documentation for the study.
       type: categorical
@@ -4494,9 +4494,9 @@ austraits:
         dataset_id: *dataset_id
         original_name: *orginal_name
         cleaned_name: Name of the taxon after implementing both automated syntax standardisation and spelling changes and syntax alignments encoded for this taxon in the metadata file for the corresponding `dataset_id`.
-        taxonIDClean: The APC identifier for the `cleaned_name` of the taxon (for taxa on the APC list) or APNI identifier (for taxa on the APNI list, but unplaced on the APC list).
+        taxonIDClean: The APC identifier for the `cleaned_name` of the taxon (for taxa designated as current for APC) or APNI identifier (for taxa included in APNI, but unplaced for APC).
         taxonomicStatusClean: The APC taxonomic status for the `cleaned_name` of the taxon identified by `taxonIDClean`. 
-        alternativeTaxonomicStatusClean: The taxonomic status of alternative records with the name `cleaned_name` in the APC list.
+        alternativeTaxonomicStatusClean: The APC taxonomic status of alternative APC records with the name `cleaned_name`.
         acceptedNameUsageID: The APC identifier for the accepted name (`taxon_name`) for a taxon; different from `taxonIDClean` if `taxonomicStatusClean` is not `accepted`.
         taxon_name: *taxon_name
     build_info:
@@ -4581,14 +4581,14 @@ metadata:
         find: Contributor's trait value that needs to be changed
         replace: AusTraits supported replacement value
     taxonomic_updates:
-      description: A list of taxonomic name changes needed to align original names in dataset with taxa on the APC and APNI lists.
+      description: A table of taxonomic name changes needed to align original names in dataset with taxa in APC and APNI.
       type: array
       values:
         find: *orginal_name
         replace: *taxon_name
         reason: Records why the change was implemented, e.g. `typos`, `taxonomic synonyms`, and `standardising spellings`
     exclude_observations:
-      description: A list of observations to remove from compilation
+      description: A table of observations to remove from compilation
       type: array
       values:
         variable: A variable from the traits table, typically `taxon_name`, `site_name` or `context_name`
