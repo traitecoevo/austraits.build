@@ -11,10 +11,10 @@ on:
       - master
       - develop
 
-name: test-build
+name: build
 
 jobs:
-  test-build:
+  build:
     if: github.event.pull_request.draft == false
     runs-on: macOS-latest
     env:
@@ -49,3 +49,9 @@ jobs:
       - name: build austraits
         run: remake::make()
         shell: Rscript {0}
+      
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: austraits
+          path: export/data/curr/austraits.rds
