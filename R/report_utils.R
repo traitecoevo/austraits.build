@@ -80,7 +80,7 @@ get_SHA_link <- function(...) {
 #'
 #' @examples
 get_SHA <- function(path = rprojroot::find_root("remake.yml")) {
-  git2r::branch_target(git2r::repository_head(git2r::repository(path)))
+  git2r::sha(git2r::last_commit(git2r::repository(path)))
 }
 
 #' Title
