@@ -12,7 +12,7 @@ on:
       - master
       - develop
 
-name: bench
+name: benchmarks
 
 jobs:
   lint:
@@ -39,16 +39,15 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install dependencies
-        run: |
-          install.packages(c("remotes"))
-          remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("bench")
-        shell: Rscript {0}
+      - uses: r-lib/actions/setup-r-dependencies@v1
+        with:
+          extra-packages: bench
 
       - name: Install package
         run: R CMD INSTALL .
 
       - name: Benchmark
-        run: austraits.build::run_benchmark()
+        run: |
+          library(austraits.build)
+          run_benchmark()
         shell: Rscript {0}

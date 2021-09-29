@@ -2,7 +2,7 @@ library(testthat)
 library(austraits.build)
 
 root.dir <- rprojroot::find_root("remake.yml")
-definitions <- read_yaml(file.path(root.dir, "config/definitions.yml"))
+definitions <- yaml::read_yaml(file.path(root.dir, "config/definitions.yml"))
 
 # Better than expect_silent as contains `info` and allows for complete failures
 expect_no_error <- function (object, regexp = NULL, ..., info = NULL, label = NULL)

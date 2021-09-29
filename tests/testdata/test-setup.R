@@ -25,7 +25,7 @@ for (dataset_id in test_dataset_ids) {
   # Metadata
   f <- files[2]
   expect_allowed_text(readLines(f), info = f)
-  expect_silent(metadata <- read_yaml(f))
+  expect_silent(metadata <- yaml::read_yaml(f))
   test_list_named(metadata, definitions$metadata$elements %>% names(), info=f)
 
   # source

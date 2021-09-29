@@ -10,7 +10,7 @@ build_comparison_set <- function(root.dir = rprojroot::find_root("remake.yml")) 
 #  Westoby_2014 -  big collection of numeric traits; but no "issues"; includes sites
 #  Tomlinson_2019 - complete taxonomic changes
   
-  definitions <- read_yaml(file.path(root.dir, "config/definitions.yml"))
+  definitions <- yaml::read_yaml(file.path(root.dir, "config/definitions.yml"))
   unit_conversions <- make_unit_conversion_functions(file.path(root.dir, "config/unit_conversions.csv"))
 
   Baker_2019_config <- subset_config(file.path(root.dir, "data/Baker_2019/metadata.yml"), definitions, unit_conversions)
@@ -67,7 +67,7 @@ test_that("structure of asset", {
 
   root.dir = rprojroot::find_root("remake.yml")
   
-  definitions <- read_yaml(file.path(root.dir, "config/definitions.yml"))
+  definitions <- yaml::read_yaml(file.path(root.dir, "config/definitions.yml"))
   unit_conversions <- make_unit_conversion_functions(file.path(root.dir, "config/unit_conversions.csv"))
   taxon_list <- read_csv_char(file.path(root.dir, "config/taxon_list.csv"))
 
