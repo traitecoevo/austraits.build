@@ -57,7 +57,7 @@ test_that("constancy of product", {
   austraits_raw_comaprsion <- readRDS(file.path(root.dir, file_comparison))
   
   for(v in names(austraits_raw)) {
-    expect_equal(austraits_raw[[v]], austraits_raw_comaprsion[[v]], info = paste("comparing", v, "to ", file_comparison))
+    expect_equal(austraits_raw[[v]], austraits_raw_comaprsion[[v]], info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
   }
  
 })
