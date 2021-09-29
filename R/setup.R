@@ -763,7 +763,7 @@ metadata_check_taxa <- function(dataset_id,
   to_check[["APNI names"]] <- 
     taxonomic_resources$APNI %>% filter(nameElement != "sp.") %>% 
     select(canonicalName, scientificName, ID = scientificNameID) %>% 
-    mutate( taxonomicStatus = "unplaced", 
+    mutate( taxonomicStatus = "unplaced for APC", 
             stripped_canonical = strip_names(canonicalName),
             stripped_scientific = strip_names(scientificName)
             ) %>%
@@ -912,7 +912,10 @@ load_taxonomic_resources <- function() {
     }
     stop("Need to download taxonomic resources to proceed")
   }
-
+  # for the following if statement to work there can't be another object named 
+  # "taxonomic resources" already in the global environment otherwise it won't return
+  # the correct "taxonomic resources"
+  suppressWarnings(rm(taxonomic_resources))
   if(!exists("taxonomic_resources",  envir = .GlobalEnv)) {
     message(crayon::red("loading object `taxonomic_resources` into global environment"))
     taxonomic_resources <- list()
@@ -1008,7 +1011,7 @@ austraits_rebuild_taxon_list <- function() {
     mutate(
       source =ifelse(is.na(taxonIDClean), NA, "APNI"),
       taxon_name = ifelse(is.na(taxonIDClean), NA, cleaned_name),
-      taxonomicStatusClean = ifelse(is.na(taxonIDClean), "unknown", "unplaced"),
+      taxonomicStatusClean = ifelse(is.na(taxonIDClean), "unknown", "unplaced for APC"),
       taxonomicStatus = taxonomicStatusClean
     )
 
