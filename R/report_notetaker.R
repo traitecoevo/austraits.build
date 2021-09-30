@@ -52,17 +52,48 @@
 # # create note and print it as anchor
 # qu(add_note, as_note("new_note")) %>% print_notes(as_anchor=TRUE)
 
-# A random strng of letters -- useful for defining unique hyperlinks
+# A random string of letters -- useful for defining unique hyperlinks
+#' Create a string of random letters
+#' 
+#' Creates a string of random letters with 8 characters as the default,
+#' useful for defining unique hyperlinks 
+#'
+#' @param n numerical integer, default is 8 
+#'
+#' @return character string with 8 letters
+#' @export
+#'
+#' @examples
 random_string <- function(n=8) {
   base::sample(LETTERS, n, TRUE) %>% paste0(collapse="")
 }
 
 # Store a txt note in a tibble with two columns
+#' Create a tibble with two columns with note and link
+#' 
+#' Creates a tibble with two columns with one column consisting 
+#' of a randomly generated string of letters
+#'
+#' @param note character string 
+#' @param link character string, default is NA_character_ which generates a random string 
+#'
+#' @return a tibble with two columns named note and link
+#' @export
+#'
+#' @examples
 as_note <- function(note, link=NA_character_) {
-  tibble(note = note, link = ifelse(is.na(link), random_string(), link)) %>% mutate_all(as.character)
+  tidyr::tibble(note = note, link = ifelse(is.na(link), random_string(), link)) %>% dplyr::mutate_all(as.character)
 }
 
-# start note recoder
+# start note recorder
+#' Start note recorder (needs review?)
+#' 
+#' Note recorder used in report_study.Rmd file to initiate note recorder
+#' 
+#' @return 
+#' @export
+#'
+#' @examples
 start_notetaker <- function() {
   ret <- as_note(character(), character())
 
@@ -71,10 +102,30 @@ start_notetaker <- function() {
   }
 }
 
+#' Add a note to the note recorder as a new row
+#'
+#' @param notes object containing the report notes
+#' @param new_note vector of character notes to be added to existing notes
+#'
+#' @return
+#' @export
+#'
+#' @examples
 add_note <- function(notes, new_note) {
-  bind_rows(notes, new_note)
+  dplyr::bind_rows(notes, new_note)
 }
 
+#' Print note (needs review?)
+#'
+#' @param note object containing the report notes
+#' @param as_anchor logical default is FALSE
+#' @param anchor_text character string, default is ""
+#' @param link_text character string, default is "link"
+#'
+#' @return character string containing the notes
+#' @export
+#'
+#' @examples
 print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "link") {
   if(as_anchor)
     sprintf('%s <a name="%s"> %s </a>', note$note, note$link, anchor_text )
@@ -82,19 +133,52 @@ print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "lin
     sprintf('%s [%s](#%s)', note$note, link_text, note$link)
 }
 
+#' Print a specific row from notes
+#' 
+#' Prints a specific row from notes specified by i
+#'
+#' @param notes object containing the report notes
+#' @param i 
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 print_notes <- function(notes, i=nrow(notes), ...) {
   notes %>%
     get_note(i) %>%
     print_note(...)
 }
 
+#' Print all notes
+#'
+#' @param notes object containing the report notes
+#' @param ... 
+#' @param numbered logical default is TRUE
+#'
+#' @return
+#' @export
+#'
+#' @examples
 print_all_notes <- function(notes, ..., numbered=TRUE) {
   i <- seq_len(nrow(notes))
   x <- print_notes(notes, i =i)
   sprintf("%d. %s", i, x)
 }
 
-# returns as secific note, as indicated by row number i
+# returns a specific note, as indicated by row number i
+#' Return a specific row from notes
+#' 
+#' Returns a specific row from notes specified by i 
+#'
+#' @param notes object containing the report notes
+#' @param i 
+#'
+#' @return a single row from a tibble
+#' @export
+#'
+#' @examples
 get_note <- function(notes, i=nrow(notes)) {
   notes[i,]
 }
