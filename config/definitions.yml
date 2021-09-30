@@ -4410,10 +4410,10 @@ austraits:
       type: table
       elements:
         dataset_id: &dataset_id Primary identifier for each study contributed into AusTraits; most often these are scientific papers, books, or online resources. By default should be name of first author and year of publication, e.g. `Falster_2005`.
-        taxon_name: &taxon_name Whenever possible, this field indicates the currently accepted scientific name of a taxon, per the Australian Plant Census (APC). Alternatively, `taxon_name` can indicate an alignment with a name included in the comprehensive Australian Plant Names Index (APNI) but not currently marked as accepted in APC or a name that cannot be aligned to available lists of Australian plant names.
+        taxon_name: &taxon_name Whenever possible, this field indicates the currently accepted scientific name of a taxon, per the Australian Plant Census (APC). Alternatively, `taxon_name` can indicate an alignment with a name included in the comprehensive Australian Plant Names Index (APNI) but not currently marked as accepted in APC; or a name that cannot be aligned to available lists of Australian plant names.
         site_name: &site_name Name of site where individual was sampled. Cross-references between similar columns in `sites` and `traits`.
         context_name: &context_name Name of contextual senario where individual was sampled. Cross-references between similar columns in `contexts` and `traits`.
-        observation_id: &observation_id A unique identifier for the observation, useful for joining traits coming from the same `observation_id`. These are assigned automatically, based on the `dataset_id` and row number of the raw data.
+        observation_id: &observation_id A unique identifier for the observation, useful for joining traits coming from the same `observation_id`. For wide datasets, these are assigned automatically, based on the `dataset_id` and row number of the raw data.
         trait_name: &trait_name Name of trait sampled. Allowable values specified in the table `definitions`.
         value: &value Measured value.
         unit: &units Units of the sampled trait value after aligning with AusTraits standards.
@@ -4427,7 +4427,7 @@ austraits:
       elements:
         dataset_id: *dataset_id
         site_name: *site_name
-        site_property: The site characteristic being recorded. Name should include units of measurement, e.g. `longitude (deg)`. Ideally we have at least these variables for each site - `longitude (deg)`, `latitude (deg)`, `description`.
+        site_property: The site characteristic being recorded. Name should include units of measurement, e.g. `MAT (C)`. Ideally we have at least these variables for each site - `longitude (deg)`, `latitude (deg)`, `description`.
         value: *value
     contexts:
       description: A table containing observations of contextual characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `context_name`.
@@ -4435,7 +4435,7 @@ austraits:
       elements:
         dataset_id: *dataset_id
         context_name: *context_name
-        context_property: The contextual characteristic being recorded. Name should include units of measurement, e.g. `elevation (m)`.
+        context_property: The contextual characteristic being recorded. Name should include units of measurement, e.g. `CO2 concentration (ppm)`.
         value: *value
     methods:
       description: A table containing details on methods with which data were collected, including time frame and source. Cross referencing with the `traits` table is possible using combinations of the variables `dataset_id`, `trait_name`.
@@ -4477,7 +4477,7 @@ austraits:
       elements:
         dataset_id: *dataset_id
         original_name: *orginal_name
-        cleaned_name: Name of the taxon after implementing both automated syntax standardisation and spelling changes and syntax alignments encoded for this taxon in the metadata file for the corresponding `dataset_id`.
+        cleaned_name: Name of the taxon after implementing automated syntax standardisation and spelling changes as well as manually encoded syntax alignments for this taxon in the metadata file for the corresponding `dataset_id`.
         taxonIDClean: The APC identifier for the `cleaned_name` of the taxon (for taxa designated as current for APC) or APNI identifier (for taxa included in APNI, but unplaced for APC).
         taxonomicStatusClean: The APC taxonomic status for the `cleaned_name` of the taxon identified by `taxonIDClean`. 
         alternativeTaxonomicStatusClean: The APC taxonomic status of alternative APC records with the name `cleaned_name`.
@@ -4492,7 +4492,7 @@ austraits:
         acceptedNameUsageID: The identifier of the accepted concept in APC for this taxon name.
         scientificNameAuthorship: Authority for the taxon indicated under `taxon_name`; applicable for most taxa in APC.
         taxonRank: Rank of the taxon.
-        taxonomicStatus: "Taxonomic status of the taxon. `accepted` indicates the taxon name is designated as `current` in APC, a taxonomy endorsed by the Council of Heads of Australasian Herbaria. Alternate statuses are: `unplaced` indicating the taxon name is included in APNI but has yet to be reviewed for inclusion/exclusion as a current name (or synonym) for APC; `genus_known` indicating the taxon name can only be aligned to the genus level; `family_known` indicating the taxon name can only be aligned to the family level; and `unknown` indicating a taxon name submitted to AusTraits that cannot be aligned to even the genus level."
+        taxonomicStatus: "Taxonomic status of the taxon. `accepted` indicates the taxon name is designated as `current` in APC, a taxonomy endorsed by the Council of Heads of Australasian Herbaria. Alternate statuses are: `unplaced` indicating the taxon name is included in APNI but has yet to be reviewed for inclusion/exclusion as a current name (or synonym) for APC; `genus_known` indicating the taxon name can only be aligned to the genus level; `family_known` indicating the taxon name can only be aligned to the family level; and `unknown` indicating a taxon name submitted to AusTraits that cannot be aligned at any level."
         family: Family of the taxon.
         taxonDistribution: Known distribution of the taxon, by Australian state.
         ccAttributionIRI: Source of taxonomic information (for taxa designated as current for APC) or name information (for taxa included in APNI, but unplaced  for APC).
@@ -4537,7 +4537,7 @@ metadata:
       type: categorical
       values:
         primary: &source_primary The original study in which data were collected.
-        secondary: &source_secondary A subsequent study where data were compiled or re-analysed and then made available.
+        secondary: &source_secondary A subsequent study where data were compiled or re-analysed.
     people:
       description: A list of the key contributors to the study, their respective institutions and roles in the study.
       type: array

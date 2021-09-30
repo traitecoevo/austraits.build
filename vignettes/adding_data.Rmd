@@ -37,11 +37,14 @@ my_kable_styling <- my_kable_styling_html
   definitions <- austraits$definitions
 ```
 
-This sections explains how to format files to contribute a new study to AusTraits. Before starting this, you should read more about 
+This vignette explains the protocol for addong a new study to AusTraits. Before starting this, you should read more about 
 
+- an [overview of AusTraits](http://traitecoevo.github.io/austraits.build/articles/austraits_overview.html),
+- the instructions provided to [data contributors](http://traitecoevo.github.io/austraits.build/articles/contributing_data.html),
 - the [structure of the compiled AusTraits database](http://traitecoevo.github.io/austraits.build/articles/austraits_database_structure.html), 
 - the [structure of the raw data files](http://traitecoevo.github.io/austraits.build/articles/austraits_file_structure.html), and 
 - [how to build AusTraits](http://traitecoevo.github.io/austraits.build/articles/austraits.build.html).
+
 
 It is important that all steps are followed so that our automated workflow proceeds without problems.
 
@@ -49,15 +52,15 @@ It is important that all steps are followed so that our automated workflow proce
 
 The main steps are:
 
-1. Clone the `austraits.build` repository from github and create a new branch in the repo with the name of your dataset_id. 
+1. Clone the `austraits.build` repository from github and create a new branch in the repo with the name of the `dataset_id`, e.g. `Gallagher_2014`. 
 2. Create a new folder within the folder `data` with a name of the `dataset_id`, e.g. `Gallagher_2014`.
-3. Prepare the file `data.csv` and place it within the new folder.
-4. Prepare the file `metadata.yml` and place it within the new folder.
+3. Prepare the file `data.csv` and place it within the new folder ([details](#csv_file) here).
+4. Prepare the file `metadata.yml` and place it within the new folder ([details](#metadata_file) here).
 5. Add the new study into the build framework and rebuild AusTraits.
-6. Run tests and quality checks on the newly added dataset and correct the `data.csv` and `metadata.yml` files as necessary.
+6. Run tests and quality checks on the newly added dataset and correct the `data.csv` and `metadata.yml` files as necessary ([details](#quality_checks) here).
 7. Generate and proofread a report on the data. In particular, check that numeric trait values fall within a logical range relative to other studies and that individual trait observations are not unnecessarily excluded because their trait values are unsupported.
 8. Return to step 6 if changes are made to the `data.csv` or `metadata.yml` files.
-9. Push to a GitHub branch.
+9. Push the GitHub branch.
 
 It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) and use it as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), in particular the `definitions` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html).
 
@@ -71,7 +74,7 @@ This step updates the file `remake.yml` with appropriate rules for the new datas
 
 You can then rebuild AusTraits, including your dataset.
 
-# Getting started
+# Getting started 
 
 The `austraits.build` repository includes a bunch of functions that help build the repository. To use these, you'll need to make them available. 
 
@@ -89,11 +92,11 @@ Add a new folder within the `data` folder. Its name should be the study's `datas
 
 Our preferred format for `dataset_id` is surname of the first author of any corresponding publication, followed by the year, as `surname_year`. E.g. `Falster_2005`. Wherever there are multiple studies with the same id, we add a suffix `_2`, `_3` etc. E.g.`Falster_2005`, `Falster_2005_2`.
 
-## Constructing the `data.csv` file
+## Constructing the `data.csv` file {#csv_file} 
 
 All data for a study (`dataset_id`) must be merged into a single spreadsheet, `data.csv`.
 
-1. Columns must include `taxon name`, `site name` (if appropriate), `contexts` (if appropriate), and `sample date` (if appropriate). Trait data can be in either a wide format (1 column for each trait, with `trait name` as the column header) or long format (1 column for all `trait values` and additional columns for `trait name` and `units`) See sections [adding sites](#adding_sites) and [adding contexts](#adding_contexts) below for more information on compiling site and context data.
+1. Columns must include `taxon name`, `site_name` (if appropriate), `contexts` (if appropriate), and `sample_date` (if appropriate). Trait data can be in either a wide format (1 column for each trait, with `trait name` as the column header) or long format (1 column for all `trait values` and additional columns for `trait name` and `units`) See sections [adding sites](#adding_sites) and [adding contexts](#adding_contexts) below for more information on compiling site and context data.
 
   a.   For all field studies, ensure there is a column for `site name`, even if all measurements were made at a single site.
 
@@ -198,7 +201,7 @@ read_csv("data/dataset_id/raw/raw_data.csv", guess_max = 10000)
 This checks 10,000 rows of data before declaring the column is non-numeric. The value can be set even higher...  
 
 
-## Constructing the `metadata.yml` file  
+## Constructing the `metadata.yml` file  {#metadata_file} 
 
 One way to construct the `metadata.yml` file is to use one of the existing files and modify yours to follow the same format. As a start, checkout some examples from [existing studies in AusTraits](https://github.com/traitecoevo/austraits.build/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits.build/tree/master/data/Angevin_2011/metadata.yml) or [Wright_2009](https://github.com/traitecoevo/austraits.build/tree/master/data/Wright_2009/metadata.yml).
 
@@ -645,7 +648,7 @@ At the very bottom of the `metadata.yml` file is a section titled `questions`. T
 
 2. This is a place to list any trait data that are not yet `traits` supported by AusTraits. Use the following syntax, indented once: `additional_traits: `, followed by a list of traits.  
 
-# Quality checks  
+# Quality checks {#quality_checks}
 
 Before starting the quality checks, it is helpful to assign a variable, `current_study`:
 ```{r, eval=FALSE, echo=TRUE}
