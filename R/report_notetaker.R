@@ -55,7 +55,7 @@
 # A random string of letters -- useful for defining unique hyperlinks
 #' Create a string of random letters
 #' 
-#' Creates a string of random letters with 8 as the default
+#' Creates a string of random letters with 8 characters as the default,
 #' useful for defining unique hyperlinks 
 #'
 #' @param n numerical integer, default is 8 
@@ -86,8 +86,10 @@ as_note <- function(note, link=NA_character_) {
 }
 
 # start note recorder
-#' Start note recorder
-#'
+#' Start note recorder (needs review?)
+#' 
+#' Note recorder used in report_study.Rmd file to initiate note recorder
+#' 
 #' @return 
 #' @export
 #'
@@ -100,10 +102,10 @@ start_notetaker <- function() {
   }
 }
 
-#' Add a notes as a new row
+#' Add a note to the note recorder as a new row
 #'
-#' @param notes 
-#' @param new_note 
+#' @param notes object containing the report notes
+#' @param new_note vector of character notes to be added to existing notes
 #'
 #' @return
 #' @export
@@ -113,14 +115,14 @@ add_note <- function(notes, new_note) {
   dplyr::bind_rows(notes, new_note)
 }
 
-#' Print note
+#' Print note (needs review?)
 #'
-#' @param note 
+#' @param note object containing the report notes
 #' @param as_anchor logical default is FALSE
-#' @param anchor_text character string default is ""
-#' @param link_text character string default is "link"
+#' @param anchor_text character string, default is ""
+#' @param link_text character string, default is "link"
 #'
-#' @return
+#' @return character string containing the notes
 #' @export
 #'
 #' @examples
@@ -135,7 +137,7 @@ print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "lin
 #' 
 #' Prints a specific row from notes specified by i
 #'
-#' @param notes 
+#' @param notes object containing the report notes
 #' @param i 
 #' @param ... 
 #'
@@ -151,7 +153,7 @@ print_notes <- function(notes, i=nrow(notes), ...) {
 
 #' Print all notes
 #'
-#' @param notes 
+#' @param notes object containing the report notes
 #' @param ... 
 #' @param numbered logical default is TRUE
 #'
@@ -170,7 +172,7 @@ print_all_notes <- function(notes, ..., numbered=TRUE) {
 #' 
 #' Returns a specific row from notes specified by i 
 #'
-#' @param notes 
+#' @param notes object containing the report notes
 #' @param i 
 #'
 #' @return a single row from a tibble

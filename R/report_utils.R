@@ -168,12 +168,15 @@ as_link <- function(link, text, type="md") {
 
 
 
-#' Format a tree structure from a vector (needs review)
+#' Format a tree structure from a vector 
 #' 
-#' create_tree_branch() formats a tree structure from a vector of terms
+#' `create_tree_branch()` is used to create a tree structure to show how things
+#' are related. In AusTraits, this is used in the vignettes to show the file 
+#' structure of the repository and also to show the different components of the 
+#' AusTraits database 
 #'
 #' @param x vector of terms
-#' @param title name of master branch
+#' @param title name of branch
 #' @param prefix specifies the amount of indentation
 #'
 #' @return vector of character strings for the tree structure

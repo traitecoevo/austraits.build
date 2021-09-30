@@ -1,10 +1,15 @@
-#' Configure AusTraits database object
+#' Configure AusTraits database object (needs review)
+#' 
+#' Used in the remake::make process to configure individual studies mapping the 
+#' individual traits found in that study along with any relevant unit conversions 
+#' and trait definitions. `subset_config` and `load_study` are applied to every study
+#' in the remake.yml file
 #'
-#' @param filename_metadata 
-#' @param definitions 
-#' @param unit_conversion_functions 
+#' @param filename_metadata metadata yaml file for a given study
+#' @param definitions definitions read in from the definitions.yml file in the config folder
+#' @param unit_conversion_functions unit_conversion.csv file read in from the config folder
 #'
-#' @return list, AusTraits database object
+#' @return list
 #' @export
 #'
 #' @examples
@@ -51,9 +56,13 @@ subset_config <- function(
 }
 
 #' Load Study
+#' 
+#' load_study is used to load individual studies using the config file generated 
+#' from `subset_config()`. `subset_config` and `load_study` are applied to every 
+#' study in the remake.yml file
 #'
-#' @param filename_data_raw 
-#' @param config_for_dataset 
+#' @param filename_data_raw raw data.csv file for any given study
+#' @param config_for_dataset config settings generated from subset_config()
 #'
 #' @return list, AusTraits database object
 #' @export
@@ -216,7 +225,9 @@ custom_manipulation <- function(txt) {
 }
 
 
-#' Format sites 
+#' Format sites (needs review)
+#' 
+#' Format sites with context information if available 
 #'
 #' @param my_list list of input information
 #' @param dataset_id identifier for a particular study in the AusTraits compilation
@@ -279,13 +290,16 @@ flag_unsupported_traits <- function(data, definitions) {
 }
 
 
-## Remove any disallowed traits, as defined in definitions
-#' Remove any excluded observations
+#' Flag any excluded observations
+#' 
+#' Checks the metadata yaml file for any excluded observations. If there are none, 
+#' returns the original data. If there are excluded observations returns the mutated data 
+#' with excluded observations flagged in a new column
 #'
-#' @param data 
-#' @param metadata 
+#' @param data data file 
+#' @param metadata metadata yaml file for any given study
 #'
-#' @return
+#' @return dataframe with flagged excluded observations if there are any
 #' @export
 #'
 #' @examples
@@ -384,7 +398,7 @@ convert_list_to_bib <- function(ref) {
   RefManageR::as.BibEntry(ref)
 }
 
-#' Convert BibEntry to object to a list
+#' Convert BibEntry object to a list
 #'
 #' @param bib BibEntry object
 #'
@@ -406,9 +420,12 @@ convert_bib_to_list <- function(bib) {
 }
 
 #' Flag values outside of allowable range
+#' 
+#' Flags any values that are outside the allowable range defined in the 
+#' definitions.yml file. NA values are flagged as errors. 
 #'
-#' @param data 
-#' @param definitions 
+#' @param data datafrane for any given study
+#' @param definitions definitions defined in the definitions.yml file
 #'
 #' @return
 #' @export
@@ -489,11 +506,14 @@ make_unit_conversion_functions <- function(filename) {
 }
 
 #' Generate unit conversion name
+#' 
+#' creates the unit conversion name based on the original units and the units to
+#' converted to
 #'
-#' @param from 
-#' @param to 
+#' @param from character of original units
+#' @param to character of units to be converted to
 #'
-#' @return
+#' @return character string containing the name what units are being converted to
 #' @export
 #'
 #' @examples
@@ -503,9 +523,9 @@ unit_conversion_name <- function(from, to) {
 
 #' Convert units to desired type
 #'
-#' @param data 
-#' @param definitions 
-#' @param unit_conversion_functions 
+#' @param data dataframe for a given study
+#' @param definitions trait definitions defined in the definitions.yml file
+#' @param unit_conversion_functions unit_conversions.csv file stored in the config folder
 #'
 #' @return
 #' @export
@@ -575,6 +595,11 @@ add_all_columns <- function(data, vars) {
 
 # processes a single dataset
 #' Process a single dataset
+#' 
+#' Process a single dataset using the original dataframe and the associated 
+#' metadata.yml file based on `dataset_id`. Creates the config data and adds trait 
+#' information with corrected names. `parse data` is used in the core workflow 
+#' pipeline (such as in `load study`).
 #'
 #' @param data dataframe containing study data
 #' @param dataset_id identifier for a particular study in the AusTraits compilation
@@ -808,11 +833,14 @@ apply_taxonomic_updates  <- function(study_data, metadata){
   out
 }
 
-#' Combine AusTraits
+#' Combine all the AusTraits studies into the compiled AusTraits database
+#'
+#' `combine_austraits` compiles all the loaded studies into a single AusTraits 
+#' database object as a large list
 #'
 #' @param ... 
 #' @param d 
-#' @param definitions 
+#' @param definitions trait definitions contained in the definitions.yml file
 #'
 #' @return
 #' @export
