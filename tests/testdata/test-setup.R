@@ -1,54 +1,17 @@
-
 config_files <- c("data.csv", "metadata.yml")
 
-test_dataframe_valid <- function(data, info) {
-  expect_not_NA(colnames(data), info = info)
-  expect_allowed_text(colnames(data), info = info)
-  expect_unique(colnames(data), info = info)
-  expect_is(data, "data.frame", info = info)
-}
-
-test_dataframe_named <- function(data, expected_colnames, info) {
-  test_dataframe_valid(data, info)
-  expect_named(data, expected_colnames, info= info)
-}
-
-test_dataframe_names_contain <- function(data, expected_colnames, info) {
-  test_dataframe_valid(data, info)
-  expect_contains(names(data), expected_colnames, info= info)
-}
-
-test_list <- function(data, info) {
-  expect_is(data, "list", info = info)
-}
-
-test_list_names_valid <- function(data, info) {
-  test_list(data, info)
-  expect_not_NA(names(data), info = info)
-  expect_allowed_text(names(data), info = info)
-  expect_unique(names(data), info = info)
-}
-
-
-test_list_named <- function(data, expected_names, info) {
-  test_list_names_valid(data, info)
-  expect_named(data, expected_names, info= info)
-}
-
-test_list_named_contains <- function(data, expected_names, info) {
-  test_list_names_valid(data, info)
-  expect_isin(names(data), expected_names)
-}
-
-
-for (dataset_id in dataset_ids) {
-
+for (dataset_id in test_dataset_ids) {
 
   s <- file.path(root.dir, "data", dataset_id)
 
-  context(sprintf("%s", dataset_id))
   test_that(dataset_id, {
-
+  
+  # We're using 2nd dition of test that, which has "context" field
+  # https://cran.r-project.org/web/packages/testthat/vignettes/third-edition.html  
+  local_edition(2)
+  
+  context(sprintf("%s", dataset_id))
+    
   # Exists
   files <- file.path(s, config_files)
   for(f in files) {
@@ -62,7 +25,7 @@ for (dataset_id in dataset_ids) {
   # Metadata
   f <- files[2]
   expect_allowed_text(readLines(f), info = f)
-  expect_silent(metadata <- read_yaml(f))
+  expect_silent(metadata <- yaml::read_yaml(f))
   test_list_named(metadata, definitions$metadata$elements %>% names(), info=f)
 
   # source
@@ -97,9 +60,9 @@ for (dataset_id in dataset_ids) {
 
   # config
   test_list_named(metadata[["config"]], definitions$metadata$elements$config$elements %>% names(), info=f)
-  expect_is(metadata[["config"]][["data_is_long_format"]], "logical")
+  expect_type(metadata[["config"]][["data_is_long_format"]], "logical")
   
-  expect_is(metadata[["config"]][["variable_match"]], "list")
+  expect_type(metadata[["config"]][["variable_match"]], "list")
 
   # minimal requirements
   expect_isin(names(metadata[["config"]][["variable_match"]]), 
@@ -154,7 +117,7 @@ for (dataset_id in dataset_ids) {
   allowed <- definitions$value_type$values %>% names
   expect_isin(value_types, allowed, info=paste0(f, " - value types"))
   cfgChar <- list_to_df(metadata[["traits"]])
-  expect_is(cfgChar, "data.frame")
+  expect_true(is.data.frame(cfgChar))
 
   # Substitutions
   if(!is.na(metadata[["substitutions"]][1])) {

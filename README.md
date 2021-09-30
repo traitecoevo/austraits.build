@@ -3,7 +3,8 @@
 
 <!-- badges: start -->
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3583418.svg)](https://doi.org/10.5281/zenodo.3583418)
-
+[![build](https://github.com/traitecoevo/austraits.build/actions/workflows/check-build.yml/badge.svg)](https://github.com/traitecoevo/austraits.build/actions/workflows/check-build.yml)
+[![R-CMD-check](https://github.com/traitecoevo/austraits.build/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/traitecoevo/austraits.build/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 <img src="docs/figures/logo.png">
