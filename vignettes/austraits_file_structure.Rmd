@@ -32,13 +32,9 @@ my_kable_styling <- my_kable_styling_html
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
-## Assumes to items exist in global name space
-if (!exists("austraits")) {
-  austraits <- readRDS("export/data/curr/austraits.rds")
-  # stop("austraits must exist in global name space to knit a report")
-}
-
-definitions <- austraits$definitions
+## Loads austraits into global name space
+  austraits <- remake::make("austraits")
+  definitions <- austraits$definitions
 ```
 
 ## File structure
@@ -101,7 +97,7 @@ config
 └── unit_conversions.csv
 ```
 
-The file `definitions.yml` defines the structure of the database and all terms. There are three main sections to the `definitions.yml` file, the trait definitions used to compile AusTraits, allowable trait values, and definitions of all elements included in the tables that comprise AusTraits. The [trait definitions](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) and [definitions of all elements in AusTraits (and value types)](http://traitecoevo.github.io/austraits.build/articles/austraits_structure.html) are fully described in additional vignettes. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). 
+The file `definitions.yml` defines the structure of the database and all terms. There are three main sections to the `definitions.yml` file, the trait definitions used to compile AusTraits, allowable trait values, and definitions of all elements included in the tables that comprise AusTraits. The [trait definitions](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) and [definitions of all elements in AusTraits (and value types)](http://traitecoevo.github.io/austraits.build/articles/austraits_database_structure.html) are fully described in additional vignettes. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). 
 
 The file `taxon_list.csv` is our master list of known taxa. Each species is listed once, with links to species' identifiers provided by the Australian Plant Name Index (APNI). The file `taxon_list.csv` is added to if a study includes taxa not previously represented in AusTraits. These can be names included in either the APC/APNI, compilations of taxonomic concepts (APC) or names (APNI) for plants that are either native to or naturalised in Australia, or taxa without recognised names.  
 
@@ -314,7 +310,7 @@ A common use of the `custom_R_code` is to automate the conversion of a verbal de
 
 This section provides `r stringr::str_replace(definitions$metadata$elements$traits$description,"A","a")`
 
-For each trait submitted to Austraits, there is the following information:
+For each trait submitted to AusTraits, there is the following information:
 
 ```{r}
 values <- definitions$metadata$elements$traits$elements
@@ -440,7 +436,7 @@ Note the second line.
 
 ### Example problem 
 
-As an example, for `Blackman_2010` we want to combine two columns to create an appropriate site variable. Here is the code that was included in [data/Blackman_2010/metadata.yml](https://github.com/traitecoevo/austraits/blob/master/data/Blackman_2010/metadata.yml) under `custom_R_code`.
+As an example, for `Blackman_2010` we want to combine two columns to create an appropriate site variable. Here is the code that was included in [data/Blackman_2010/metadata.yml](https://github.com/traitecoevo/austraits.build/blob/master/data/Blackman_2010/metadata.yml) under `custom_R_code`.
 
 ```{r, eval=FALSE, echo=TRUE}
 data %>% mutate(
