@@ -1,16 +1,6 @@
 ## Functions for extracting bits from Austraits
 
-#' Title
-#'
-#' @param austraits 
-#' @param dataset_id 
-#'
-#' @return
-#' @export
-#'
-#' 
-#' 
-#' @examples
+## function migrated to austraits package
 extract_dataset <- function(austraits, dataset_id) {
 
   austraits$taxonomic_updates <-
@@ -33,14 +23,7 @@ extract_dataset <- function(austraits, dataset_id) {
   ret[names(austraits)]
 }
 
-#' Title
-#'
-#' @param data 
-#'
-#' @return
-#' @export
-#'
-#' @examples
+## function has been migrated and renamed to trait_pivot_wider in austraits package
 spread_trait_data <- function(data) {
 
   vars <- c("value", "unit", "value_type", "replicates")
@@ -55,15 +38,7 @@ spread_trait_data <- function(data) {
   ret
 }
 
-#' Title
-#'
-#' @param data 
-#' @param definitions 
-#'
-#' @return
-#' @export
-#'
-#' @examples
+## function has been migrated and renamed to trait_pivot_longer in austraits package
 gather_trait_data <- function(data, definitions) {
 
   id_variables <- c("dataset_id", "taxon_name", "site_name", "observation_id", "trait_name", "value", "unit", "value_type", "replicates", "original_name")
@@ -92,25 +67,12 @@ gather_trait_data <- function(data, definitions) {
     select(id_variables)
 }
 
-#' Ensure NA appears as a real NA and not character
-#'
-#' @param x 
-#'
-#' @return
-#'
-#' @examples
+## function has been migrated to austraits package but is not an exported function 
 clean_NA <- function(x) {
   ifelse(x == "NA", NA_character_, x)
 }
   
-#' Title
-#'
-#' @param data 
-#'
-#' @return
-#' @export
-#'
-#' @examples
+## function migrated to austraits package
 bind_trait_values <- function(data) {
 
   bind_x <- function(x) paste0(x, collapse = "--")
@@ -138,15 +100,7 @@ bind_trait_values <- function(data) {
     arrange(observation_id, trait_name, value_type)
 }
 
-#' Title
-#'
-#' @param data 
-#' @param definitions 
-#'
-#' @return
-#' @export
-#'
-#' @examples
+## function migrated to austraits package
 separate_trait_values <- function(data, definitions) {
 
   separate_x <- function(x) strsplit(x, "--")[[1]]
@@ -187,15 +141,7 @@ separate_trait_values <- function(data, definitions) {
     arrange(observation_id, trait_name, value_type)
 }
 
-#' Title
-#'
-#' @param austraits 
-#' @param trait_name 
-#'
-#' @return
-#' @export
-#'
-#' @examples
+## function migrated to austraits package
 extract_trait <- function(austraits, trait_name) {
 
 
@@ -328,6 +274,7 @@ remove_suspected_duplicates <- function(austraits,
   austraits
 }
 
+### function has been migrated to and modified in steps.R
 export_to_plain_text <- function(austraits, path) {
   dir.create(path, FALSE, TRUE)
   for(v in c("traits", "sites", "contexts", "methods", "excluded_data", "taxa", "taxonomic_updates"))
@@ -337,22 +284,7 @@ export_to_plain_text <- function(austraits, path) {
 }
 
 
-#' <brief desc>
-#'
-#' <full description>
-#' 
-#' compare_versions("export/austraits-0.rds", "export/austraits.rds", "export/blackman", dataset_id="Leishman_1992")
-
-#' compare_versions("export/austraits-0.rds", "export/austraits.rds")
-#'
-#' @param v1 <what param does>
-#' @param v2 <what param does>
-#' @param path = "export/tmp" <what param does>
-#' @param dataset_id=NULL <what param does>
-#' @param trait_name = NULL <what param does>
-#'
-#' @export
-#' @return
+### Doesnt appear to be migrated to austraits package nor is it used in austraits.build ### 
 compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trait_name = NULL) {
   unlink(path, TRUE, TRUE)
   dir.create(path, FALSE, TRUE)
@@ -380,18 +312,7 @@ compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trai
 }
 
 
-#' Title
-#'
-#' @param austraits 
-#' @param plant_trait_name 
-#' @param y_axis_category 
-#' @param highlight 
-#' @param hide_ids 
-#'
-#' @return
-#' @export
-#'
-#' @examples
+## function migrated and renamed to plot_trait_distribution_beeswarm in austraits package
 trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axis_category, highlight=NA, hide_ids = FALSE) {
 
   # plant_trait_name <- "plant_height"

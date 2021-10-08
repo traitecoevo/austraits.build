@@ -15,18 +15,19 @@ NULL
 #' Reads in a csv file using the read_csv function from readr
 #' with columns as characters
 #'
-#' @param ... other arguments passed from the read_csv function from readr
+#' @param ... arguments passed to the read_csv()
 #'
+#' @return tibble 
 #' @export
-#' @return
 read_csv_char <- function(...){
   readr::read_csv(..., col_types = cols(.default = "c"), progress=FALSE)
 }
 
 
-#' Swap a null value to something else
+#' Convert NULL values to a different value
 #' 
-#' null_as converts NULL values in a vector
+#' null_as converts NULL values in a vector to a different value. Default is 
+#' converting NuLL to NA
 #'
 #' @param x a vector containing null values
 #' @param val specify what the null value should be returned as, default is NA 
@@ -34,7 +35,7 @@ read_csv_char <- function(...){
 #' @return a vector with null values replaced
 #'
 #' @export
-#' @examples
+#' @examples null_as(NULL)
 null_as <- function(x, val=NA){
   if(is.null(x)) return(val)
   x
@@ -49,7 +50,10 @@ null_as <- function(x, val=NA){
 #' @return the element/properties of a trait
 #'
 #' @export
-#' @examples extract_list_element(1, definitions$traits$elements, "units")
+#' @examples 
+#' \dontrun{
+#' extract_list_element(1, definitions$traits$elements, "units")
+#' }
 extract_list_element <- function(i, my_list, var) {
   i %>% lapply(function(x) my_list[[x]][[var]]) %>% lapply(null_as) %>% unlist()
 }
@@ -76,6 +80,8 @@ rename_columns <- function(obj, from, to) {
 #' @param sep a separator, a whitespace is the default
 #'
 #' @return a vector of alphabetically sorted records
+#' 
+#' @export
 #' @examples split_then_sort("z y x")
 split_then_sort <- function(x, sep=" ") {
 
@@ -111,9 +117,9 @@ df_to_list <- function(df) {
 #' 
 #' Convert a list of lists to dataframe requires that every list have same named elements
 #' 
-#' @param Convert a list of lists to dataframe 
+#' @param my_list a list of lists to dataframe 
 #' @param as_character logical:  indicating whether the values are read as character
-#' @param on_empty 
+#' @param on_empty value to return if my_list is NULL, NA or is length == 0, default = NA
 #' 
 #' @export
 #' @examples list_to_df(df_to_list(iris))
@@ -151,6 +157,7 @@ list1_to_df <- function(my_list) {
 #' @param to_append a list
 #'
 #' @return a list merged with an added item at the end
+#' @export
 #' @examples  append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3,4)])
 append_to_list <- function(my_list, to_append) {
   my_list[[length(my_list)+1]] <-  to_append
@@ -177,12 +184,8 @@ write_yaml <- function(y, filename) {
 
 #' Build website
 #' 
-#' Build website using the build_site() function from pkgdown
+#' Build website using the build_site() function from `pkgdown`
 #'
-#' @return
-#' @export
-#'
-#' @examples
 build_website <- function() {
   devtools::document()
   pkgdown::build_site()

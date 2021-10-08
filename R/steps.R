@@ -96,21 +96,24 @@ load_study <- function(filename_data_raw,
       ) %>% 
     arrange(observation_id, trait_name, value_type) 
 
+############ Remove this function as it appears to be redundant. Code is the same as `format_sites` #######  
+  
   # read site data
+  # format_sites_contexts <- function(v, my_list, context = FALSE) {
+  #   tmp <- 
+  #     my_list[[v]] %>%
+  #     list1_to_df()
+  #   if(!context){
+  #     tmp %>% rename(site_property="key") %>%
+  #     mutate(dataset_id=dataset_id, site_name = v)
+  #   } else {
+  #     tmp %>% rename(context_property="key") %>%
+  #     mutate(dataset_id=dataset_id, context_name = v)
+  #   }    
+  # }
 
-  format_sites_contexts <- function(v, my_list, context = FALSE) {
-    tmp <- 
-      my_list[[v]] %>%
-      list1_to_df()
-    if(!context){
-      tmp %>% rename(site_property="key") %>%
-      mutate(dataset_id=dataset_id, site_name = v)
-    } else {
-      tmp %>% rename(context_property="key") %>%
-      mutate(dataset_id=dataset_id, context_name = v)
-    }    
-  }
-
+################################################################################  
+  
   # extract site data from metadata
   sites <- 
     metadata$sites %>%  
@@ -225,18 +228,23 @@ custom_manipulation <- function(txt) {
 }
 
 
-#' Format sites (needs review)
+#' Format site and context data from list to tibble
 #' 
-#' Format sites with context information if available 
+#' Format site data read in from the metadata.yml file. Converts from list to tibble.
+#' Includes context information if available by specifying context = TRUE
 #'
 #' @param my_list list of input information
-#' @param dataset_id identifier for a particular study in the AusTraits compilation
-#' @param context study context, default = FALSE
+#' @param dataset_id identifier for a particular study in the AusTraits database
+#' @param context logical, adds context information if available, default = FALSE
 #'
-#' @return dataframe with site and context details if available
+#' @return tibble with site and context details if available
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' format_sites(yaml::read_yaml("data/Falster_2003/metadata.yml")$sites, "Falster_2003")
+#' format_sites(yaml::read_yaml("data/Apgaua_2017/metadata.yml")$context, "Apgaua_2017", context = TRUE)
+#' }
 format_sites <- function(my_list, dataset_id, context = FALSE) {
 
   f_helper <- function(v, a_list, context = FALSE) {
@@ -266,18 +274,15 @@ format_sites <- function(my_list, dataset_id, context = FALSE) {
   out
 }
 
-## Remove any disallowed traits, as defined in definitions
-#' Remove any disallowed traits
+#' Flag any unrecognised traits 
 #' 
-#' Remove any disallowed traits, as defined in definitions
+#' Flag any unrecognised traits, as defined in the definitions.yml file
 #'
-#' @param data
-#' @param definitions 
+#' @param data tibble or dataframe containing the study data
+#' @param definitions definitions read in from the definitions.yml file in the config folder
 #'
-#' @return
+#' @return tibble with unrecognised traits flagged as "Unsupported trait" in the "error" column
 #' @export
-#'
-#' @examples
 flag_unsupported_traits <- function(data, definitions) {
   
   # create error column if not already present
@@ -286,7 +291,7 @@ flag_unsupported_traits <- function(data, definitions) {
 
   # exclude traits not in definitions
   i <- data$trait_name %in% names(definitions$traits)
-  mutate(data, error = ifelse(!i, "Unsupported trait", error))
+  dplyr::mutate(data, error = ifelse(!i, "Unsupported trait", error))
 }
 
 
@@ -296,7 +301,7 @@ flag_unsupported_traits <- function(data, definitions) {
 #' returns the original data. If there are excluded observations returns the mutated data 
 #' with excluded observations flagged in a new column
 #'
-#' @param data data file 
+#' @param data tibble or dataframe containing the study data
 #' @param metadata metadata yaml file for any given study
 #'
 #' @return dataframe with flagged excluded observations if there are any
@@ -424,8 +429,8 @@ convert_bib_to_list <- function(bib) {
 #' Flags any values that are outside the allowable range defined in the 
 #' definitions.yml file. NA values are flagged as errors. 
 #'
-#' @param data datafrane for any given study
-#' @param definitions definitions defined in the definitions.yml file
+#' @param data tibble or dataframe containing the study data
+#' @param definitions definitions read in from the definitions.yml file in the config folder
 #'
 #' @return
 #' @export
@@ -523,8 +528,8 @@ unit_conversion_name <- function(from, to) {
 
 #' Convert units to desired type
 #'
-#' @param data dataframe for a given study
-#' @param definitions trait definitions defined in the definitions.yml file
+#' @param data tibble or dataframe containing the study data
+#' @param definitions definitions read in from the definitions.yml file in the config folder
 #' @param unit_conversion_functions unit_conversions.csv file stored in the config folder
 #'
 #' @return
@@ -572,15 +577,17 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
 #' Add or remove columns of data
 #' 
 #' Add or remove columns of data as needed so that all sets
-#' have the same columns.
+#' have the same columns. Used for adding extra columns for the trait, sites
+#' and context tibbles
 #'
-#' @param data 
-#' @param vars 
+#' @param data tibble or dataframe containing the study data
+#' @param vars additional data to be added
 #'
-#' @return
+#' @return list or tibble with additional data added  
 #' @export
 #'
 #' @examples
+#' 
 add_all_columns <- function(data, vars) {
 
   missing <- setdiff(vars, names(data))
@@ -593,22 +600,20 @@ add_all_columns <- function(data, vars) {
     mutate(error = NA_character_)
 }
 
-# processes a single dataset
 #' Process a single dataset
 #' 
-#' Process a single dataset using the original dataframe and the associated 
-#' metadata.yml file based on `dataset_id`. Creates the config data and adds trait 
-#' information with corrected names. `parse data` is used in the core workflow 
-#' pipeline (such as in `load study`).
+#' Processes a single dataset using the original dataframe and the associated 
+#' metadata.yml file based on `dataset_id`. Builds a tibble with the study data 
+#' and adds the corrected trait names, assigns a unique observation_id and implements
+#' any categorical trait value substituions. `parse data` is used in the core 
+#' workflow pipeline (such as in `load study`).
 #'
-#' @param data dataframe containing study data
-#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param data tibble or dataframe containing the study data
+#' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param metadata yaml file with metadata
 #'
-#' @return list
+#' @return tibble
 #' @export
-#'
-#' @examples
 parse_data <- function(data, dataset_id, metadata) {
 
   # get config data for dataset
@@ -741,9 +746,6 @@ parse_data <- function(data, dataset_id, metadata) {
 #' @param x vector, dataframe or list containing original species names 
 #'
 #' @return vector with standardised species names
-#' @export
-#'
-#' @examples
 standardise_names <- function(x) {
 
   f <- function(x, find, replace) {
@@ -793,17 +795,16 @@ standardise_names <- function(x) {
 }
 
 #' Apply taxonomic updates
+#' 
+#' Applies taxonomic updates to the study data from the metadata.yml file
 #'
-#' @param study_data dataframe of study data
+#' @param data tibble or dataframe containing the study data
 #' @param metadata yaml file containing the metadata
 #'
-#' @return dataframe of study data containing taxonomic update
-#' @export
-#'
-#' @examples
-apply_taxonomic_updates  <- function(study_data, metadata){
+#' @return tibble with the taxonomic updates applied
+apply_taxonomic_updates  <- function(data, metadata){
 
-  out <- study_data
+  out <- data
 
   # copy original species name to a new column
   out[["original_name"]] <- out[["taxon_name"]]
@@ -838,14 +839,12 @@ apply_taxonomic_updates  <- function(study_data, metadata){
 #' `combine_austraits` compiles all the loaded studies into a single AusTraits 
 #' database object as a large list
 #'
-#' @param ... 
-#' @param d 
-#' @param definitions trait definitions contained in the definitions.yml file
+#' @param ... arguments passed to other functions
+#' @param d list of all the AusTraits studies
+#' @param definitions definitions read in from the definitions.yml file in the config folder
 #'
-#' @return
+#' @return AusTraits compilation database as a large list
 #' @export
-#'
-#' @examples
 combine_austraits <- function(..., d=list(...), definitions) {
 
   
@@ -893,15 +892,15 @@ combine_austraits <- function(..., d=list(...), definitions) {
 }
 
 
-#' Update taxonomy
+#' Apply taxonomic updates to austraits_raw
+#' 
+#' Applies taxonomic updates to austraits_raw
 #'
-#' @param austraits_raw 
-#' @param taxa 
+#' @param austraits_raw AusTraits compiled data as a large list without taxonomic updates applied
+#' @param taxa taxon list
 #'
-#' @return
+#' @return list AusTraits compiled data with taxonomic updates applied
 #' @export
-#'
-#' @examples
 update_taxonomy <- function(austraits_raw, taxa) {
   
   austraits_raw$taxonomic_updates <- 
@@ -965,9 +964,6 @@ update_taxonomy <- function(austraits_raw, taxa) {
 #' @param git_sha Git SHA 
 #'
 #' @return AusTraits database object with version information added 
-#' @export
-#'
-#' @examples
 add_version_info <- function(austraits, version, git_sha) {
   
   austraits$build_info <- list(
@@ -985,10 +981,8 @@ add_version_info <- function(austraits, version, git_sha) {
 #' @param austraits AusTraits database object
 #' @param path pathway to save file
 #'
-#' @return
-#' @export
-#'
-#' @examples
+#' @return csv files of tibbles containing traits, sites, contexts, methods, excluded_data,
+#' taxonomic updates, taxa, contributors
 export_version_plaintext <- function(austraits, path) {
 
   unlink(path, TRUE)
@@ -1011,14 +1005,13 @@ export_version_plaintext <- function(austraits, path) {
 }
 
 #' Create release
+#' 
+#' Builds various files to go with the release of a new AusTraits version. Including 
+#' austraits.rds, a readme file, dictionary.rmd file, plain text files with csv, and
+#' a NEWS.md file.
 #'
 #' @param austraits AusTraits database object
-#' @param v_prev 
-#'
-#' @return
-#' @export
-#'
-#' @examples
+#' @param v_prev specify whether to update the NEWS.md file, default = NULL
 create_release <- function(austraits, v_prev= NULL) {
   version_number <- austraits$build_info$version
 

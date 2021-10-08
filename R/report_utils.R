@@ -10,8 +10,6 @@
 #'
 #' @return html files of the study report for all studies 
 #' @export
-#'
-#' @examples
 build_study_reports <- function(dataset_ids=NULL, ...) {
 
   # define if does not already exist, 
@@ -37,8 +35,6 @@ build_study_reports <- function(dataset_ids=NULL, ...) {
 #'
 #' @return html file of the rendered report located in the "export/reports" folder
 #' @export
-#'
-#' @examples
 build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/reports") {
   
   if(!file.exists(path)) {
@@ -75,12 +71,10 @@ build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/repor
 #' commit for the Github repository. SHA is the abbreviated SHA-1 40 digit
 #' hexadecimal number which Github uses to track commits and changes made to a repository. 
 #' 
-#' @param ... arguments passed to the get_SHA() function
+#' @param ... arguments passed to the get_SHA()
 #'
 #' @return SHA link to a github commit as a character string formatted using markdown syntax
 #' @export
-#'
-#' @examples
 get_SHA_link <- function(...) {
   sha <- get_SHA(...)
   sprintf("[%s](https://github.com/traitecoevo/austraits/tree/%s)",   sha, sha)
@@ -97,20 +91,15 @@ get_SHA_link <- function(...) {
 #'
 #' @return 40-digit SHA character string for the latest commit to the repository 
 #' @export
-#'
-#' @examples
 get_SHA <- function(path = rprojroot::find_root("remake.yml")) {
   git2r::sha(git2r::last_commit(git2r::repository(path)))
 }
 
 #' Format table with kable and default styling for html
 #'
-#' @param ... 
-#'
-#' @return
+#' @param ... arguments passed to `kableExtra::kable()`
+#' 
 #' @export
-#'
-#' @examples
 my_kable_styling_html <- function(...) {
     kableExtra::kable(...) %>%
     kableExtra::kable_styling(..., 
@@ -124,12 +113,9 @@ my_kable_styling_html <- function(...) {
 
 #' Format table with kable and default styling for pdf 
 #'
-#' @param ... 
+#' @param ... arguments passed to `kableExtra::kable()`
 #'
-#' @return
 #' @export
-#'
-#' @examples
 my_kable_styling_pdf <- function(...) {
     kableExtra::kable(...)
 }
@@ -137,12 +123,9 @@ my_kable_styling_pdf <- function(...) {
 
 #' Format table with kable and default styling for markdown
 #'
-#' @param ... 
+#' @param ... arguments passed to `kableExtra::kable()`
 #'
-#' @return
 #' @export
-#'
-#' @examples
 my_kable_styling_markdown <- function(...) {
   kableExtra::kable(...)
 }
@@ -158,7 +141,7 @@ my_kable_styling_markdown <- function(...) {
 #' @return character string with the text and link formatted for md and html
 #' @export
 #'
-#' @examples
+#' @examples as_link("www.austraits.org", "austraits")
 as_link <- function(link, text, type="md") {
   if(type=="md")
     sprintf('[%s](%s)', text, link)
@@ -187,7 +170,7 @@ create_tree_branch <- function(x, title, prefix="") {
   c(
     sprintf("%s%s", prefix,title), 
     sprintf("%s%s %s", prefix,
-            c(rep("├──", length(x) -1), "└──"),
+            c(rep("\u251c\u2500\u2500", length(x) -1), "\u2514\u2500\u2500"),
             x)
   )
 }

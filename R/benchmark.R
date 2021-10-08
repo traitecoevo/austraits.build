@@ -1,8 +1,5 @@
 #' Check performance on current system using package bench
 #'
-#' @param strategy_types A list of name strategy types to be tests
-#' @param iterations The number of iterations to be run
-#'
 #' @return A dataframe of results
 #' @export
 

@@ -1,6 +1,6 @@
 #' Path to the `metadata.yml` file for specified `dataset_id`
 #'
-#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param dataset_id identifier for a particular study in the AusTraits database
 #'
 #' @export 
 #' @return A string
@@ -22,7 +22,7 @@ metadata_read_dataset_id <- function(dataset_id) {
 #' file \code{data/dataset_id/metadata.yml}
 #'
 #' @inheritParams metadata_path_dataset_id
-#' @param metadata 
+#' @param metadata metadata file
 #'
 #' @return a yml file
 #' @export 
@@ -242,8 +242,11 @@ metadata_add_traits <- function(dataset_id) {
 #'
 #' @export
 #' @examples
-#' austraits$sites %>% filter(dataset_id == "Falster_2005_1") %>% select(-dataset_id) %>% spread(site_property, value) %>% type_convert()-> site_data
+#' \dontrun{
+#' austraits$sites %>% filter(dataset_id == "Falster_2005_1") %>% 
+#' select(-dataset_id) %>% spread(site_property, value) %>% type_convert()-> site_data
 #' metadata_add_sites("Falster_2005_1", site_data)
+#' }
 metadata_add_sites <- function(dataset_id, site_data) {
 
   # read metadata
@@ -278,8 +281,11 @@ metadata_add_sites <- function(dataset_id, site_data) {
 #'
 #' @export
 #' @examples
-#' austraits$contexts %>% filter(dataset_id == "Hall_1981") %>% select(-dataset_id) %>% spread(context_property, value) %>% type_convert()-> context_data
+#' \dontrun{
+#' austraits$contexts %>% filter(dataset_id == "Hall_1981") %>% 
+#' select(-dataset_id) %>% spread(context_property, value) %>% type_convert()-> context_data
 #' metadata_add_contexts("Hall_1981", context_data)
+#' }
 metadata_add_contexts <- function(dataset_id, context_data) {
   
   # read metadata
@@ -348,9 +354,8 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 #' Uses rcrossref package to access publication details from the crossref 
 #' database
 #'
-#' @inheritParams metadata_path_dataset_id 
-#' @inheritParams metadata_add_source_bibtex
 #' @param doi doi of reference to add
+#' @param ... arguments passed from metadata_add_source_bibtex()
 #'
 #' @return yml file with citation details added
 #' @export
@@ -376,7 +381,7 @@ metadata_add_source_doi <- function(doi, ...) {
 #' by a contributor to the categorical values supported by AusTraits. These values
 #' are defined in the `definitions.yml` file
 #'
-#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param trait_name the AusTraits defined name for a particular trait
 #' @param find trait value in the original data.csv file
 #' @param replace trait value supported by AusTraits
@@ -419,7 +424,7 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
 
 #' Add a dataframe of trait value substitutions into a metadata file for a dataset_id
 #'
-#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param substitutions dataframe of trait value substitutions
 #'
 #' @return yml file with multiple trait value substitutions added
@@ -445,7 +450,7 @@ metadata_add_substitutions_list <- function(dataset_id, substitutions) {
 #' 
 #' Add a single taxonomic change into the metadata yaml file for a specific study
 #'
-#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param find original name used by the contributor 
 #' @param replace taxonomic name accepted by APC or APNI 
 #' @param reason reason for taxonomic change
@@ -484,18 +489,16 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
   return(invisible(TRUE))
 }
 
-#' Add a dataframe of taxonomic updates into a metadata file for a dataset_id
+#' Add a list of taxonomic updates into a metadata file for a dataset_id
 #' 
 #' Add multiple taxonomic changes to the metadata yaml file using a dataframe 
 #' containing the taxonomic changes to be made. 
 #'
-#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param taxonomic_updates dataframe of taxonomic updates
 #'
 #' @return yml file with multiple taxonmic updates added
 #' @export
-#'
-#' @examples
 metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
   
   # read metadata
@@ -513,9 +516,9 @@ metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
 
 #' Exclude observations in a yaml file for a dataset_id
 #'
-#' @param dataset_id identifier for a particular study in the AusTraits compilation
-#' @param variable 
-#' @param find 
+#' @param dataset_id identifier for a particular study in the AusTraits database
+#' @param variable variable name
+#' @param find term to find by
 #' @param reason reason for exclusion
 #'
 #' @return yml file with excluded observations
@@ -551,7 +554,7 @@ metadata_exclude_observations <- function(dataset_id, variable, find, reason) {
 
 #' Update a taxonomic change into a yaml file for a dataset_id
 #'
-#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param find original taxonomic name 
 #' @param replace updated taxonomic name to replace original taxonomic name
 #' @param reason reason for change
@@ -584,7 +587,7 @@ metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) 
 
 #' Remove a taxonomic change from a yaml file for a dataset_id
 #'
-#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param find taxonomic name to find
 #' @param replace taxonomic name to replace with 
 #'
@@ -694,7 +697,7 @@ strip_names <- function(x) {
 #' @param max_distance_rel numerical value for relative max distance, default = 0.2
 #' @param try_outside_guesses logical value, default = FALSE
 #' @param author name of author
-#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param dataset_id identifier for a particular study in the AusTraits database
 #'
 #' @export
 #'
@@ -908,19 +911,19 @@ metadata_check_taxa <- function(dataset_id,
 
 #' Load taxonomic resources from the APC and APNI
 #' 
-#' Load taxonomic resources from the Australian Plant Census
-#' and the Australian Plant Name Index
+#' Load taxonomic resources from the Australian Plant Census and the Australian 
+#' Plant Name Index. Taxonomic resources are stored as csv files in the NSL folder
 #'
 #' @param path_apc location of downloaded APC taxon file
 #' @param path_apni location of downloaded APNI name file
 #'
 #' @export
-#'
-load_taxonomic_resources <- function() {
+load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14-1332.csv", 
+                                     path_apni = "config/NSL/APNI-names-2020-05-14-1341.csv") {
   
   file_paths <- list(
-    APC = "config/NSL/APC-taxon-2020-05-14-1332.csv",
-    APNI = "config/NSL/APNI-names-2020-05-14-1341.csv"
+    APC = path_apc,
+    APNI = path_apni
   )
 
   if(!all(file.exists(unlist(file_paths)))) {
@@ -950,9 +953,7 @@ load_taxonomic_resources <- function() {
 #' the downloaded files, it saves us keeping copies of the entire 
 #' lists (~8 vs 230Mb)
 #' 
-#' 
 #' @export
-#'
 austraits_rebuild_taxon_list <- function() {
 
   taxonomic_resources <- load_taxonomic_resources()
@@ -1071,6 +1072,8 @@ find_names_distance_to_neighbours <- function(taxon_name, dist=5) {
 #' Test AusTraits studies have the correct format
 #' 
 #' Run the tests to ensure that all compiled studies have the correct format
+#'
+#' @param dataset_ids unique study identifier for austraits
 #'
 #' @export
 #'

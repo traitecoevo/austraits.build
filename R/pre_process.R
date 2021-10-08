@@ -9,7 +9,8 @@
 #'
 #' @return vector containing abbreviated months
 #'
-#' @examples
+#' @export
+#' @examples get_month(c(1,1,2,3,3,3,4,5,6))
 get_month <- function(i) {
   month.abb[suppressWarnings(as.integer(i))]
 }
@@ -59,7 +60,7 @@ convert_month_range_vec_to_binary <- function(vec) {
 #' @return vector of character strings
 #' @export
 #'
-#' @examples
+#' @examples convert_01_ny(c(0,1,1,1,0))
 convert_01_ny <- function(txt) {
   txt %>%   
   gsub("1", "y", ., fixed=TRUE) %>%
@@ -192,6 +193,7 @@ convert_month_range_string_to_binary_worker <- function(str) {
 #' @param y1 name of variable to hold minimum
 #' @param y2 name of variable to hold maximum
 #' @param sep separator, by default "-"
+#' @param remove logical, default = TRUE
 #'
 #' @return modified data frame
 #'
