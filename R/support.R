@@ -89,12 +89,11 @@ split_then_sort <- function(x, sep=" ") {
   i <- grep(sep, x)
   # for those cells, split, sort then combine
   x[i] <- x[i] %>% 
-      str_split(" ") %>%  
+      stringr::str_split(" ") %>%  
       lapply(function(xi) xi %>% sort() %>% paste(collapse=" ")) %>%
       unlist()
   x
 }
-
 
 #'  Convert dataframe to list
 #'
@@ -131,7 +130,7 @@ list_to_df <- function(my_list, as_character= TRUE, on_empty=NA) {
   if(as_character)
     my_list <- lapply(my_list, lapply, as.character)
 
-  dplyr::bind_rows(lapply(my_list, as_tibble))
+  dplyr::bind_rows(lapply(my_list, tibble::as_tibble))
 }
 
 #' Convert a list with single entries to dataframe
@@ -140,7 +139,6 @@ list_to_df <- function(my_list, as_character= TRUE, on_empty=NA) {
 #' @return a tibble with two columns
 #' @export
 #' @examples list1_to_df(as.list(iris)[2])
-#' 
 list1_to_df <- function(my_list) {
 
   for(f in names(my_list)) {
@@ -148,7 +146,7 @@ list1_to_df <- function(my_list) {
       my_list[[f]] <- NA
   }
   
-  tibble(key = names(my_list), value = unlist(my_list))
+  tibble::tibble(key = names(my_list), value = unlist(my_list))
 }
 
 #' Add an item to the end of a list

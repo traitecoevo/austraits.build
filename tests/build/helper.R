@@ -1,4 +1,4 @@
-library(testthat)
+requireNamespace("testthat", quietly = TRUE)
 library(austraits.build)
 
 root.dir <- rprojroot::find_root("remake.yml")

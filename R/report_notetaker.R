@@ -78,9 +78,9 @@ random_string <- function(n=8) {
 #' @return a tibble with two columns named note and link
 #' @export
 as_note <- function(note, link=NA_character_) {
-  tidyr::tibble(note = note, link = ifelse(is.na(link), random_string(), link)) %>% dplyr::mutate_all(as.character)
+  tibble::tibble(note = note, link = ifelse(is.na(link), random_string(), link)) %>% dplyr::mutate_all(as.character)
 }
-
+tibble::tibble
 # start note recorder
 #' Start note recorder (needs review?)
 #' 

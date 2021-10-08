@@ -163,9 +163,6 @@ as_link <- function(link, text, type="md") {
 #' @param prefix specifies the amount of indentation
 #'
 #' @return vector of character strings for the tree structure
-#' @export
-#'
-#' @examples
 create_tree_branch <- function(x, title, prefix="") {
   c(
     sprintf("%s%s", prefix,title), 
