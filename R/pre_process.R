@@ -215,3 +215,46 @@ move_values_to_new_trait <-
 
     data
 }
+
+#' Substitutions from csv
+#' @description Function that simultaneously adds many trait value replacements, potentially across many trait_names and dataset_ids, to the respective metadata.yml files.
+#' This function will be used to quickly re-align/re-assign trait values across all AusTraits studies.
+#'
+#' @param dataframe_of_substitutions dataframe with columns indicating dataset_id, trait_name, original trait values (find), and AusTraits aligned trait value (replace)
+#' @param dataset_id study's dataset_id in AusTraits
+#' @param trait_name trait name for which a trait value replacement needs to be made
+#' @param find trait value submitted by the contributor for a data observation
+#' @param replace AusTraits aligned trait value
+#'
+#' @return 
+#' @export
+#'
+#' @examples read_csv("export/dispersal_syndrome_substitutions.csv") %>% select(-extra) %>% filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
+#' @examples substitutions_from_csv(dataframe_of_substitutions,dataset_id,trait_name,find,replace)
+
+substitutions_from_csv <- function(dataframe_of_substitutions,dataset_id,trait_name,find,replace) {
+  
+  #split dataframe of substitutions by row  
+  dataframe_of_substitutions %>%
+    dplyr::mutate(rows = row_number()) %>% 
+    dplyr::group_split(rows) -> dataframe_of_substitutions
+
+  set_name <- "substitutions"
+    
+  #add substitutions to metadata files
+  for (i in 1:max(dataframe_of_substitutions)$rows) {
+    metadata <- metadata_read_dataset_id(dataframe_of_substitutions[[i]]$dataset_id)
+    
+    to_add <- list(trait_name = dataframe_of_substitutions[[i]]$trait_name, find = dataframe_of_substitutions[[i]]$find, replace = dataframe_of_substitutions[[i]]$replace)
+    
+    if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]])) {
+      metadata[[set_name]] <- list()
+    }
+    
+    data <-  list_to_df(metadata[[set_name]])  
+    
+    metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
+    
+    metadata_write_dataset_id(metadata, dataframe_of_substitutions[[i]]$dataset_id)
+  }  
+}
