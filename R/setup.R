@@ -186,7 +186,8 @@ metadata_check_custom_R_code <- function(dataset_id) {
 #' Can also be used to add a trait to an existing metadata file
 #'
 #' @inheritParams metadata_path_dataset_id
-#'
+#' 
+#' @importFrom rlang .data
 #' @export
 metadata_add_traits <- function(dataset_id) {
 
@@ -236,6 +237,7 @@ metadata_add_traits <- function(dataset_id) {
 #' @inheritParams metadata_path_dataset_id
 #' @param site_data A dataframe of site variables
 #'
+#' @importFrom rlang .data
 #' @export
 #' @examples
 #' \dontrun{
@@ -275,6 +277,7 @@ metadata_add_sites <- function(dataset_id, site_data) {
 #' @inheritParams metadata_path_dataset_id
 #' @param context_data A dataframe of context variables
 #'
+#' @importFrom rlang .data
 #' @export
 #' @examples
 #' \dontrun{
@@ -421,7 +424,9 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
 #' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param substitutions dataframe of trait value substitutions
 #'
+#'
 #' @return yml file with multiple trait value substitutions added
+#' @importFrom rlang .data
 #' @export
 metadata_add_substitutions_list <- function(dataset_id, substitutions) {
   
@@ -431,7 +436,7 @@ metadata_add_substitutions_list <- function(dataset_id, substitutions) {
   #read in dataframe of substitutions, split into single-row lists, and add to metadata file
   metadata$substitutions <- 
     substitutions %>%
-    group_split(trait_name,find) %>% lapply(as.list)
+    dplyr::group_split(.data$trait_name, .data$find) %>% lapply(as.list)
   
   #write metadata
   metadata_write_dataset_id(metadata, dataset_id)
@@ -487,6 +492,7 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
 #' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param taxonomic_updates dataframe of taxonomic updates
 #'
+#' @importFrom rlang .data
 #' @return yml file with multiple taxonmic updates added
 #' @export
 metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
@@ -497,12 +503,11 @@ metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
   #read in dataframe of taxonomic changes, split into single-row lists, and add to metadata file
   metadata$taxonomic_updates <- 
     taxonomic_updates %>%
-    group_split(find) %>% lapply(as.list)
+    dplyr::group_split(.data$find) %>% lapply(as.list)
   
   # write metadata
   metadata_write_dataset_id(metadata, dataset_id)
 }
-
 
 #' Exclude observations in a yaml file for a dataset_id
 #'
@@ -561,7 +566,7 @@ metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) 
   i <- match(find, data$find)
   # add `set_name` category if it doesn't yet exist
   if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]]) || nrow(data) == 0 || length(i) == 0) {
-    stop(sprintf("Substitution for %s in %s  does not exist", find, filename_metadata))
+    stop(sprintf("Substitution for %s in %s  does not exist", find, metadata))
   }
 
   metadata[[set_name]][[i]][["replace"]] <- replace
@@ -616,17 +621,19 @@ metadata_remove_taxonomic_change <- function(dataset_id, find, replace=NULL) {
 #' @param taxon_name name of column which contains the cleaned species names
 #' @param original_name name of column which contains original species names, default = FALSE
 #'
+#' @importFrom rlang .data
 #' @return list of all unique and distinct species names
 austraits_find_species <- function(taxon_name, original_name = FALSE){
 
+  austraits <- remake::make("austraits")
   data <- austraits$traits
 
   if(!original_name)
-    data <- data %>% dplyr::select(name =  taxon_name, dataset_id) %>% dplyr::distinct()
+    data <- data %>% dplyr::select(name =  taxon_name, .data$dataset_id) %>% dplyr::distinct()
   else
-    data <- data %>% dplyr::select(name =  original_name, dataset_id) %>% dplyr::distinct()
+    data <- data %>% dplyr::select(name =  original_name, .data$dataset_id) %>% dplyr::distinct()
 
-  f <- function(sp)  dplyr::filter(data, name == sp) %>%  dplyr::pull(dataset_id) %>% unique()
+  f <- function(sp)  dplyr::filter(data, .data$name == sp) %>%  dplyr::pull(.data$dataset_id) %>% unique()
 
   if(length(taxon_name) == 1) 
     f(taxon_name)
@@ -640,7 +647,7 @@ austraits_find_species <- function(taxon_name, original_name = FALSE){
 #' @param replace name of replacement species, default = NULL
 #' @param studies name of studies, default = NULL
 #'
-#' @importFrom stringr str_remove_all
+#' @importFrom stringr str_remove_all str_replace_all
 #' @export
 metadata_find_taxonomic_change <- function(find, replace=NULL, studies = NULL){
 
@@ -680,6 +687,7 @@ strip_names <- function(x) {
 #' @param author name of author
 #' @param dataset_id identifier for a particular study in the AusTraits database
 #'
+#' @importFrom rlang .data
 #' @export
 metadata_check_taxa <- function(dataset_id, 
                                 max_distance_abs = 3, max_distance_rel = 0.2,
@@ -694,9 +702,9 @@ metadata_check_taxa <- function(dataset_id,
     dplyr::mutate(stripped_name = strip_names(cleaned_name))
 
   species <- 
-    x$traits %>% dplyr::select(original_name, taxon_name) %>% dplyr::distinct() %>% 
+    x$traits %>% dplyr::select(.data$original_name, .data$taxon_name) %>% dplyr::distinct() %>% 
     dplyr::mutate(
-      known = taxon_name %in% taxa$cleaned_name
+      known = .data$taxon_name %in% taxa$cleaned_name
     )
 
   if(all(species$known)){
@@ -711,7 +719,7 @@ metadata_check_taxa <- function(dataset_id,
   
   cat(crayon::red(sum(!species$known)), " taxa are not yet matched\n")
   
-  species <- species %>% dplyr::filter(!known)
+  species <- species %>% dplyr::filter(!.data$known)
   
   # Check if existing substitution in metadata
   metadata <- metadata_read_dataset_id(dataset_id)
@@ -721,18 +729,18 @@ metadata_check_taxa <- function(dataset_id,
     
     species <- species %>% 
         dplyr::mutate(
-          known = original_name %in% metata_changes$find
+          known = .data$original_name %in% metata_changes$find
         )
     
     if(any(species$known)) {
       cat(crayon::red(sum(species$known)), " of these already have substitutions in metadata:\n")
-      tmp <- metata_changes %>% dplyr::filter(find %in% (species %>% dplyr::filter(known) %>% pull(original_name)))
+      tmp <- metata_changes %>% dplyr::filter(.data$find %in% (species %>% dplyr::filter(.data$known) %>% dplyr::pull(.data$original_name)))
       for(i in seq_along(tmp$find))
         cat(sprintf("\t%s -> %s (%s)\n", crayon::blue(tmp$find[i]), crayon::green(tmp$replace[i]), tmp$reason[i]))
-      species <- species %>% dplyr::filter(!known)
+      species <- species %>% dplyr::filter(!.data$known)
     }
   }
-  
+
   species <- species$original_name[!species$known]
   
   if(length(species)==0) return(invisible());
@@ -741,35 +749,35 @@ metadata_check_taxa <- function(dataset_id,
   
   taxonomic_resources <- load_taxonomic_resources()
   
-  genera_accepted <-  taxonomic_resources$APC %>% dplyr::filter(taxonRank %in% c('Genus'), taxonomicStatus == "accepted") 
+  genera_accepted <-  taxonomic_resources$APC %>% dplyr::filter(.data$taxonRank %in% c('Genus'), .data$taxonomicStatus == "accepted") 
     
   to_check <- list()
-  to_review <- tibble::tibble(dataset_id = character(), taxon_name =  character())
+  to_review <- tibble::tibble(dataset_id = character(), taxon_name = character())
 
   APC_tmp <- 
     taxonomic_resources$APC %>% 
-    dplyr::filter(taxonRank %in% c('Series', 'Subspecies', 'Species', 'Forma', 'Varietas')) %>% 
-    dplyr::select(canonicalName, scientificName, taxonomicStatus, ID = taxonID) %>% 
+    dplyr::filter(.data$taxonRank %in% c('Series', 'Subspecies', 'Species', 'Forma', 'Varietas')) %>% 
+    dplyr::select(.data$canonicalName, .data$scientificName, .data$taxonomicStatus, ID = .data$taxonID) %>% 
     dplyr::mutate(
-      stripped_canonical = strip_names(canonicalName),
-      stripped_scientific = strip_names(scientificName)
+      stripped_canonical = strip_names(.data$canonicalName),
+      stripped_scientific = strip_names(.data$scientificName)
       ) %>%
     dplyr::distinct()
-  
-  to_check[["APC list (accepted)"]] <- APC_tmp %>% dplyr::filter(taxonomicStatus == "accepted")
-  to_check[["APC list (known names)"]] <- APC_tmp %>% dplyr::filter(taxonomicStatus != "accepted")
+
+  to_check[["APC list (accepted)"]] <- APC_tmp %>% dplyr::filter(.data$taxonomicStatus == "accepted")
+  to_check[["APC list (known names)"]] <- APC_tmp %>% dplyr::filter(.data$taxonomicStatus != "accepted")
   
   to_check[["APNI names"]] <- 
-    taxonomic_resources$APNI %>% dplyr::filter(nameElement != "sp.") %>% 
-    dplyr::select(canonicalName, scientificName, ID = scientificNameID) %>% 
-    dplyr::mutate( taxonomicStatus = "unplaced", 
-            stripped_canonical = strip_names(canonicalName),
-            stripped_scientific = strip_names(scientificName)
+    taxonomic_resources$APNI %>% dplyr::filter(.data$nameElement != "sp.") %>% 
+    dplyr::select(.data$canonicalName, .data$scientificName, ID = .data$scientificNameID) %>% 
+    dplyr::mutate(taxonomicStatus = "unplaced", 
+            stripped_canonical = strip_names(.data$canonicalName),
+            stripped_scientific = strip_names(.data$scientificName)
             ) %>%
-    dplyr::distinct() %>% arrange(canonicalName)
+    dplyr::distinct() %>% dplyr::arrange(.data$canonicalName)
 
   for(s in species) {
-      
+    
       cleaned_name <- standardise_names(s)
       stripped_name <- strip_names(cleaned_name)
       genus <-stringr::str_split(s, " ")[[1]][1]
@@ -811,12 +819,12 @@ metadata_check_taxa <- function(dataset_id,
         } else {
           distance_c <- utils::adist(stripped_name, to_check[[v]]$stripped_canonical, fixed=TRUE)[1,]
           min_dist_abs_c <-  min(distance_c)
-          min_dist_per_c <-  min(distance_c) / str_length(stripped_name)
+          min_dist_per_c <-  min(distance_c) / stringr::str_length(stripped_name)
 
           distance_s <- utils::adist(stripped_name, to_check[[v]]$stripped_scientific, fixed=TRUE)[1,]
           min_dist_abs_s <-  min(distance_s)
-          min_dist_per_s <-  min(distance_s) / str_length(stripped_name)
-          
+          min_dist_per_s <-  min(distance_s) / stringr::str_length(stripped_name)
+     
           if(
             ## Within allowable number of characters (absolute)
             min_dist_abs_c <= max_distance_abs & 
@@ -865,7 +873,7 @@ metadata_check_taxa <- function(dataset_id,
                              keep = 0, reason = sprintf("Alignment with known name in %s (%s, %s)", v, author, Sys.Date()))
                       )
             
-            if(v == last(names(to_check))){
+            if(v == dplyr::last(names(to_check))){
               cat(sprintf("\tTaxa not found: %s. Note, genus %s is %s in APC\n", 
                         crayon::blue(s), crayon::green(genus), 
                     ifelse(genus %in% genera_accepted$canonicalName, crayon::green("IS"), crayon::red("IS NOT"))))
@@ -874,11 +882,11 @@ metadata_check_taxa <- function(dataset_id,
         }
     }
   }
-  
+
   if(!try_outside_guesses & nrow(to_review) > 0 ) {
     filename <- sprintf("export/taxa_review/%s.csv", dataset_id)
     dir.create(dirname(filename), FALSE, TRUE)
-    write_csv(to_review, filename)
+    readr::write_csv(to_review, filename)
     cat(sprintf("Review further suggestions for these taxa in %s\n", 
                 crayon::green(filename)))
   }
@@ -931,6 +939,7 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
 #' the downloaded files, it saves us keeping copies of the entire 
 #' lists (~8 vs 230Mb)
 #' 
+#' @importFrom rlang .data
 #' @export
 austraits_rebuild_taxon_list <- function() {
 
@@ -942,79 +951,87 @@ austraits_rebuild_taxon_list <- function() {
   taxa <- 
     # build list of observed species names
     austraits$traits %>% 
-    dplyr::select(cleaned_name = taxon_name) %>% 
+    dplyr::select(cleaned_name = .data$taxon_name) %>% 
     dplyr::distinct() %>%
     # match our cleaned names against names in APC list
-    dplyr::left_join(by = "cleaned_name",
-      taxonomic_resources$APC %>% dplyr::filter(!grepl("sp\\.$", canonicalName)) %>% dplyr::select(cleaned_name = canonicalName, taxonIDClean = taxonID, 
-                     taxonomicStatusClean = taxonomicStatus, acceptedNameUsageID)
-    ) %>%
+    dplyr::left_join(
+      by = "cleaned_name", taxonomic_resources$APC %>% 
+        dplyr::filter(!grepl("sp\\.$", .data$canonicalName)) %>% 
+        dplyr::select(cleaned_name = .data$canonicalName, taxonIDClean = .data$taxonID, 
+                      taxonomicStatusClean = .data$taxonomicStatus, .data$acceptedNameUsageID)) %>%
     # Also add all accepted genera species, varieties etc
     dplyr::bind_rows(
-      taxonomic_resources$APC %>% dplyr::filter(taxonRank %in% c('Series', 'Genus', 'Species', 'Forma', 'Varietas'), taxonomicStatus == "accepted") %>% dplyr::select(cleaned_name = canonicalName, taxonIDClean = taxonID, taxonomicStatusClean = taxonomicStatus, acceptedNameUsageID)
-      ) %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(source = ifelse(!is.na(taxonIDClean), "APC", NA)) %>% 
-    # Now find accepted names for each name in the list (sometimes they are the same)
-    dplyr::left_join(by = "acceptedNameUsageID",
       taxonomic_resources$APC %>% 
-      dplyr::filter(taxonomicStatus =="accepted") %>% 
-      dplyr::select(acceptedNameUsageID, taxon_name = canonicalName, taxonomicStatus, scientificNameAuthorship, 
-             family, taxonDistribution, taxonRank, ccAttributionIRI)
-    ) %>%
+        dplyr::filter(.data$taxonRank %in% c('Series', 'Genus', 'Species', 'Forma', 'Varietas'), 
+                      .data$taxonomicStatus == "accepted") %>% 
+        dplyr::select(cleaned_name = .data$canonicalName, taxonIDClean = .data$taxonID, 
+                      taxonomicStatusClean = .data$taxonomicStatus, .data$acceptedNameUsageID)) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(source = ifelse(!is.na(.data$taxonIDClean), "APC", NA)) %>% 
+    # Now find accepted names for each name in the list (sometimes they are the same)
+    dplyr::left_join(
+      by = "acceptedNameUsageID", taxonomic_resources$APC %>% 
+        dplyr::filter(.data$taxonomicStatus =="accepted") %>% 
+        dplyr::select(.data$acceptedNameUsageID, taxon_name = .data$canonicalName, 
+                      .data$taxonomicStatus, .data$scientificNameAuthorship, .data$family, 
+                      .data$taxonDistribution, .data$taxonRank, .data$ccAttributionIRI)) %>%
     # Some species have multiple matches. We will prefer the accepted usage, but record others if they exists
     # To do this we define the order we want variables to sort by,m with accepted at the top
-    dplyr::mutate(my_order = taxonomicStatusClean %>% 
+    dplyr::mutate(my_order = .data$taxonomicStatusClean %>% 
              forcats::fct_relevel( c("accepted", "taxonomic synonym", "basionym", "nomenclatural synonym", "isonym", 
                                      "orthographic variant", "common name", "doubtful taxonomic synonym", "replaced synonym", 
                                      "misapplied", "doubtful pro parte taxonomic synonym", "pro parte nomenclatural synonym", 
                                      "pro parte taxonomic synonym", "pro parte misapplied", "excluded", "doubtful misapplied", 
                                      "doubtful pro parte misapplied"))) %>%
-    arrange(cleaned_name, my_order) %>%
+    arrange(.data$cleaned_name, .data$my_order) %>%
     # For each species, keep the first record (accepted if present) and 
     # record any alternative status to indicate where there was ambiguity
-    dplyr::group_by(cleaned_name) %>% 
+    dplyr::group_by(.data$cleaned_name) %>% 
     dplyr::mutate(
-      alternativeTaxonomicStatusClean = ifelse(taxonomicStatusClean[1] == "accepted", taxonomicStatusClean %>% unique() %>%  subset(. , . !="accepted") %>% paste0(collapse = " | ") %>% na_if(""), NA)
-    ) %>%
+      alternativeTaxonomicStatusClean = ifelse(.data$taxonomicStatusClean[1] == "accepted", 
+                                               .data$taxonomicStatusClean %>% 
+          unique() %>% 
+          subset(.data, .data !="accepted") %>% 
+          paste0(collapse = " | ") %>% 
+          dplyr::na_if(""), NA)) %>% 
     dplyr::slice(1) %>%  
     dplyr::ungroup() %>% 
-    dplyr::select(-my_order) %>% 
-    dplyr::select(cleaned_name, source, taxonIDClean, taxonomicStatusClean, alternativeTaxonomicStatusClean,
-           acceptedNameUsageID, taxon_name, scientificNameAuthorship, taxonRank, taxonomicStatus, family, taxonDistribution,  
-           ccAttributionIRI)
+    dplyr::select(-.data$my_order) %>% 
+    dplyr::select(.data$cleaned_name, .data$source, .data$taxonIDClean, .data$taxonomicStatusClean, 
+                  .data$alternativeTaxonomicStatusClean, .data$acceptedNameUsageID, 
+                  .data$taxon_name, .data$scientificNameAuthorship, .data$taxonRank, 
+                  .data$taxonomicStatus, .data$family, .data$taxonDistribution, .data$ccAttributionIRI)
 
   taxa1 <- 
-    taxa %>% dplyr::filter(!is.na(taxonIDClean)) %>% 
+    taxa %>% dplyr::filter(!is.na(.data$taxonIDClean)) %>% 
     dplyr::distinct() 
   
   # Now check against APNI for any species not found in APC
   # Only keep those species with a match
 
   taxa2 <-
-    taxa %>% dplyr::filter(is.na(taxon_name))  %>%
-    dplyr::select(cleaned_name) %>%
-    dplyr::left_join(by = "cleaned_name",
-      taxonomic_resources$APNI %>% dplyr::filter(nameElement != "sp.") %>% dplyr::select(cleaned_name = canonicalName, taxonIDClean = scientificNameID, family, taxonRank)
-    ) %>% dplyr::group_by(cleaned_name) %>%
+    taxa %>% 
+    dplyr::filter(is.na(.data$taxon_name)) %>% 
+    dplyr::select(.data$cleaned_name) %>%
+    dplyr::left_join(by = "cleaned_name", taxonomic_resources$APNI %>% 
+                       dplyr::filter(.data$nameElement != "sp.") %>%
+                       dplyr::select(cleaned_name = .data$canonicalName, taxonIDClean = .data$scientificNameID, 
+                                     .data$family, .data$taxonRank)) %>% 
+    dplyr::group_by(.data$cleaned_name) %>%
     dplyr::mutate(
-      taxonIDClean = paste(taxonIDClean, collapse = " ") %>% dplyr::na_if("NA"),
-      family = ifelse(dplyr::n_distinct(family) > 1, NA, family[1])
-    ) %>%
+      taxonIDClean = paste(.data$taxonIDClean, collapse = " ") %>% 
+        dplyr::na_if("NA"), family = ifelse(dplyr::n_distinct(.data$family) > 1, NA, .data$family[1])) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(
-      source =ifelse(is.na(taxonIDClean), NA, "APNI"),
-      taxon_name = ifelse(is.na(taxonIDClean), NA, cleaned_name),
-      taxonomicStatusClean = ifelse(is.na(taxonIDClean), "unknown", "unplaced"),
-      taxonomicStatus = taxonomicStatusClean
-    )
+      source = ifelse(is.na(.data$taxonIDClean), NA, "APNI"),
+      taxon_name = ifelse(is.na(.data$taxonIDClean), NA, .data$cleaned_name),
+      taxonomicStatusClean = ifelse(is.na(.data$taxonIDClean), "unknown", "unplaced"),
+      taxonomicStatus = .data$taxonomicStatusClean)
 
-  taxa_all <- 
-    taxa1 %>% 
-    dplyr::bind_rows(
-      taxa2 %>% dplyr::filter(!is.na(taxonIDClean))
-    ) %>%
-    arrange(cleaned_name) 
+  taxa_all <- taxa1 %>% 
+    dplyr::bind_rows(taxa2 %>% 
+        dplyr::filter(!is.na(.data$taxonIDClean))) %>% 
+    arrange(.data$cleaned_name) 
   
   taxa_all %>%
     readr::write_csv("config/taxon_list.csv")
@@ -1049,7 +1066,8 @@ find_names_distance_to_neighbours <- function(taxon_name, dist=5) {
 #' Run the tests to ensure that all compiled studies have the correct format
 #'
 #' @param dataset_ids unique study identifier for austraits
-#'
+#' 
+#' @importFrom rlang .data .env
 #' @export
 test_data_setup <- function(dataset_ids = NULL) {
 
@@ -1064,11 +1082,11 @@ test_data_setup <- function(dataset_ids = NULL) {
   pwd <- setwd(root.dir)
   on.exit({
     setwd(pwd)
-    rm(test_dataset_ids, envir = globalenv())
+    rm(.env$test_dataset_ids, envir = globalenv())
     })
 
   requireNamespace("testthat", quietly = TRUE)
-  testthat::test_dir("tests/testdata", reporter = default_reporter())
+  testthat::test_dir("tests/testdata", reporter = testthat::default_reporter())
 }
 
 #' Update the remake.yml file with new studies

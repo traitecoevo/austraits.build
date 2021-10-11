@@ -1,6 +1,7 @@
 #' Check performance on current system using package bench
 #'
 #' @return A dataframe of results
+#' @importFrom rlang .data .env
 #' @export
 
 run_benchmark <- function( ) {
@@ -24,7 +25,7 @@ run_benchmark <- function( ) {
                    check = FALSE,
                    # We're not expecting different results to be equivalent
                    iterations = 1,
-                   data = f_build(dataset_id)
+                   data = f_build(.env$dataset_id)
                  )
                })
 }

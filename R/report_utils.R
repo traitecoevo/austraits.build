@@ -9,6 +9,7 @@
 #' @param ... arguments passed to build_study_report()
 #'
 #' @return html files of the study report for all studies 
+#' @importFrom rlang .data
 #' @export
 build_study_reports <- function(dataset_ids=NULL, ...) {
 
@@ -98,7 +99,7 @@ get_SHA <- function(path = rprojroot::find_root("remake.yml")) {
 #' Format table with kable and default styling for html
 #'
 #' @param ... arguments passed to `kableExtra::kable()`
-#' 
+#' @importFrom rlang .env
 #' @export
 my_kable_styling_html <- function(...) {
     kableExtra::kable(...) %>%
@@ -119,7 +120,6 @@ my_kable_styling_html <- function(...) {
 my_kable_styling_pdf <- function(...) {
     kableExtra::kable(...)
 }
-
 
 #' Format table with kable and default styling for markdown
 #'

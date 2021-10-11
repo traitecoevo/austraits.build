@@ -63,8 +63,8 @@ convert_month_range_vec_to_binary <- function(vec) {
 #' @examples convert_01_ny(c(0,1,1,1,0))
 convert_01_ny <- function(txt) {
   txt %>%   
-  gsub("1", "y", ., fixed=TRUE) %>%
-  gsub("0", "n", ., fixed=TRUE)
+  gsub("1", "y", .data, fixed=TRUE) %>%
+  gsub("0", "n", .data, fixed=TRUE)
 }
 
 #' Convert month range to 12 element binary string
@@ -210,7 +210,7 @@ separate_range <- function(data, x, y1, y2, sep="-", remove=TRUE) {
 #' @param x vector containing values
 #'
 #' @return vector with duplicate values as NA
-#'
+#' @importFrom rlang .data
 replace_duplicates_with_NA <- function(x) {
   x %>% replace(., duplicated(.), NA)
 }
