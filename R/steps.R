@@ -1,6 +1,8 @@
-#' Configure AusTraits database object (needs review)
+#' Configure AusTraits database object 
 #' 
-#' Used in the remake::make process to configure individual studies mapping the 
+#' Creates the config object which gets passed onto `load_study`. The config list contains
+#' the subset of trait definitions and unit conversions for those traits for a each study.
+#' `subset_config` is used in the remake::make process to configure individual studies mapping the 
 #' individual traits found in that study along with any relevant unit conversions 
 #' and trait definitions. `subset_config` and `load_study` are applied to every study
 #' in the remake.yml file
@@ -9,7 +11,7 @@
 #' @param definitions definitions read in from the definitions.yml file in the config folder
 #' @param unit_conversion_functions unit_conversion.csv file read in from the config folder
 #'
-#' @return list
+#' @return list with dataset_id, metadata, definitions and unit_conversion_functions
 #' @export
 #'
 #' @examples
@@ -62,7 +64,7 @@ subset_config <- function(
 #' study in the remake.yml file
 #'
 #' @param filename_data_raw raw data.csv file for any given study
-#' @param config_for_dataset config settings generated from subset_config()
+#' @param config_for_dataset config settings generated from `subset_config()`
 #'
 #' @return list, AusTraits database object
 #' @export
@@ -567,17 +569,15 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
     select(one_of(vars))
 }
 
-# Add or remove columns of data as needed so that all sets have
-# the same columns.
-#' Add or remove columns of data
+#' Add or remove columns of data 
 #' 
-#' Add or remove columns of data as needed so that all sets
-#' have the same columns.
+#' Add or remove columns of data as needed so that all datasets
+#' have the same columns. Also adds in an error column.
 #'
-#' @param data 
-#' @param vars 
+#' @param data dataframe containing study data read in as a csv file
+#' @param vars vector of variable columns names to be included in the final formatted tibble
 #'
-#' @return
+#' @return tibble with the correct selection of columns including an error column
 #' @export
 #'
 #' @examples
@@ -596,16 +596,17 @@ add_all_columns <- function(data, vars) {
 # processes a single dataset
 #' Process a single dataset
 #' 
-#' Process a single dataset using the original dataframe and the associated 
-#' metadata.yml file based on `dataset_id`. Creates the config data and adds trait 
-#' information with corrected names. `parse data` is used in the core workflow 
-#' pipeline (such as in `load study`).
+#' Process a single dataset with `dataset_id` using the associated `data.csv` and
+#' `metadata.yml` files. Adds a unique observation id for each row of observation, 
+#' trait names are formatted using AusTrait accepted names and trait substituions 
+#' are added. `parse data` is used in the core workflow #' pipeline (i.e. in `load study`).
 #'
-#' @param data dataframe containing study data
+#' @param data dataframe containing study data read in as a csv file
 #' @param dataset_id identifier for a particular study in the AusTraits compilation
 #' @param metadata yaml file with metadata
 #'
-#' @return list
+#' @return tibble in long format with AusTrait formatted trait names, trait 
+#' substitutions added, unique observation id added and 
 #' @export
 #'
 #' @examples
@@ -672,7 +673,7 @@ parse_data <- function(data, dataset_id, metadata) {
     stop(paste(dataset_id, ": missing traits: ", setdiff(cfgChar[["var_in"]], colnames(data))))
   }
 
-  ## if needed, change from wide to long style
+  ## if needed, change from wide to long format
   if (data_is_long_format == FALSE) {
     # if the dataset is "wide" then process each variable in turn, to create the "long" dataset -
     # say the original dataset has 20 rows of data and 5 traits, then we will end up with 100 rows
@@ -687,7 +688,7 @@ parse_data <- function(data, dataset_id, metadata) {
     }
     out <- dplyr::bind_rows(out)
   } else {
-    out <- df
+    out <- df %>% filter(trait_name %in% cfgChar$var_in)
     out[["value"]] <- out[["value"]] %>%  as.character()
   }
 
