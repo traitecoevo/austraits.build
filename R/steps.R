@@ -23,7 +23,7 @@ subset_config <- function(
   dataset_id <- basename(dirname(filename_metadata))
   
   # read metadata
-  metadata <- yaml::read_yaml(filename_metadata)
+  metadata <- read_yaml(filename_metadata)
   
   # table of trait_mapping
   trait_mapping <- 
@@ -569,17 +569,15 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
     select(one_of(vars))
 }
 
-# Add or remove columns of data as needed so that all sets have
-# the same columns.
 #' Add or remove columns of data 
 #' 
 #' Add or remove columns of data as needed so that all datasets
-#' have the same columns.
+#' have the same columns. Also adds in an error column.
 #'
-#' @param data  dataframe containing study data read in as a csv file
-#' @param vars variable columns to be added
+#' @param data dataframe containing study data read in as a csv file
+#' @param vars vector of variable columns names to be included in the final formatted tibble
 #'
-#' @return tibble with the correct selection of columns
+#' @return tibble with the correct selection of columns including an error column
 #' @export
 #'
 #' @examples
