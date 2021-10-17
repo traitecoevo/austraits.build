@@ -24,16 +24,18 @@ knitr::opts_chunk$set(
 devtools::load_all()
 library(dplyr)
 library(readr)
+library(austraits)
 
-root.dir <- rprojroot::find_root("remake.yml")
-knitr::opts_knit$set(root.dir = root.dir)
+# root.dir <- rprojroot::find_root("remake.yml")
+# knitr::opts_knit$set(root.dir = root.dir)
 
 my_kable_styling <- my_kable_styling_html
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Loads austraits into global name space
-  austraits <- remake::make("austraits")
+  austraits <- austraits::load_austraits()
+  # austraits <- remake::make("austraits")
   definitions <- austraits$definitions
 ```
 
@@ -517,8 +519,8 @@ read_csv("data/dataset_id/raw/site_data.csv") -> site_data
 
 As an example of what the site table should look like:  
 ```{r, echo=FALSE, results="markup"}
-data_Falster_2005 <-
-  remake::make("Falster_2005_1")
+# data_Falster_2005 <-
+#   remake::make("Falster_2005_1")
 austraits$sites %>%
   filter(dataset_id == "Falster_2005_1") %>%
   select(-dataset_id) %>%
@@ -1255,7 +1257,7 @@ Our approach to incrementing version numbers is
 - `patch`: Increment to communicate correction of errors in the actual data, without any changes to the structure. Such changes are unlikely to break or change analyses
 written with the previous version in a substantial way.
 
-<img src="../docs/figures/giz035fig2.png">
+<img src="figures/giz035fig2.png">
 
 **Figure:** Semantic versioning communicates to users the types of changes that have occurred between successive versions of an evolving dataset, using a tri-digit label where increments in a number indicate major, minor, and patch-level changes, respectively. From [Falster et al 2019](http://doi.org/10.1093/gigascience/giz035), (CC-BY). 
 
