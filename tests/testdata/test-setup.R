@@ -147,6 +147,7 @@ for (dataset_id in test_dataset_ids) {
   # data.csv
   f <- files[1]
   expect_silent(data <- read_csv(f, col_types = cols(), guess_max = 1e5, progress=FALSE))
+
   # check no issues flagged when parsing file
   expect_no_error(stop_for_problems(data), info=sprintf("problems present when reading data, run `read_csv(%s)` to investigate", f))
   

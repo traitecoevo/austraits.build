@@ -108,7 +108,6 @@ check_disallowed_chars <- function(x) {
   # allow some utf8 characters, those with accents over letters for foreign names
   # list of codes is here: http://www.utf8-chartable.de/
   # note c3 is needed because this is prefix for allowed UTF8 chars
-  exceptions <- c("âíåæäãàáíčóöøéłńl°êÜüùúû±µµ“”‘’-–—≈˜×")
 
   is_allowed <- i %in% charToRaw(exceptions)
   !(is_ascii | is_allowed)

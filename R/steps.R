@@ -12,6 +12,7 @@
 #' @param unit_conversion_functions unit_conversion.csv file read in from the config folder
 #'
 #' @return list with dataset_id, metadata, definitions and unit_conversion_functions
+#' @return list
 #' @export
 #'
 #' @examples
@@ -586,6 +587,7 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
 #' @param vars vector of variable columns names to be included in the final formatted tibble
 #'
 #' @return tibble with the correct selection of columns including an error column
+#' @return
 #' @export
 #'
 #' @examples
@@ -604,6 +606,7 @@ add_all_columns <- function(data, vars) {
 # processes a single dataset
 #' Process a single dataset
 #' 
+
 #' Process a single dataset with `dataset_id` using the associated `data.csv` and
 #' `metadata.yml` files. Adds a unique observation id for each row of observation, 
 #' trait names are formatted using AusTrait accepted names and trait substituions 
