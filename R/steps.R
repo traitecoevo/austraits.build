@@ -222,7 +222,7 @@ custom_manipulation <- function(txt) {
   if (!is.null(txt) && !is.na(txt)  && nchar(txt) > 0) {
 
     txt2 <- 
-      # Trim white space, quotes, new line from from and back
+      # Trim white space, quotes, new line from front and back
       txt %>% stringi::stri_trim_both("[^'\"\\ \\n]", negate=F) %>%
       # Squish internal white space, also removes new line characters
       stringr::str_replace_all("\\s+", " ")
