@@ -8,7 +8,6 @@ metadata_path_dataset_id <- function(dataset_id) {
   file.path("data", dataset_id, "metadata.yml")
 }
 
-
 #' Read the `metadata.yml` file for specified `dataset_id`
 #'
 #' @inheritParams metadata_path_dataset_id
@@ -18,12 +17,14 @@ metadata_path_dataset_id <- function(dataset_id) {
 metadata_read_dataset_id <- function(dataset_id) {
   dataset_id %>% metadata_path_dataset_id() %>% read_yaml()
 }
+
 #' Write the YAML representation of metadata.yml for specified `dataset_id` to
 #' file \code{data/dataset_id/metadata.yml}
 #'
 #' @inheritParams metadata_path_dataset_id
-#' @param metadata <what param does>
+#' @param metadata 
 #'
+#' @return a yml file
 #' @export 
 metadata_write_dataset_id <- function(metadata, dataset_id) {
   write_yaml(metadata, dataset_id %>% metadata_path_dataset_id())
@@ -36,6 +37,7 @@ metadata_write_dataset_id <- function(metadata, dataset_id) {
 #' @inheritParams metadata_path_dataset_id
 #' @param path location of file where output is saved
 #' 
+#' @return a yml file template for metadata
 #' @export
 metadata_create_template <- function(dataset_id, 
                                      path = file.path("data", dataset_id, "metadata.yml")
@@ -108,11 +110,38 @@ metadata_create_template <- function(dataset_id,
   write_yaml(out, path)
 }
 
+#' Select column by user
+#' 
+#' `user_select_column` is used to select which columns in a dataframe/ tibble 
+#' corresponds to the variable of interest. It is used compile the metadata yaml
+#' file by prompting the user to choose the relevant columns. It is used in 
+#' `metadata_add_sites` and `metadata_add_contexts` and `metadata_create_template`
+#'
+#' @param column name of the variable of interest
+#' @param choices the options that can be selected from
+#'
+#' @return
+#' @export
+#'
+#' @examples
 user_select_column <- function(column, choices) {
   tmp <- menu(choices, title= sprintf("Select column for `%s`", column))
   choices[tmp]
 }
 
+#' Select variable names by user
+#' 
+#' `user_select names` is used to prompt the user to select the variables that 
+#' are relevant for compiling the metadata yaml file. It is currently used for
+#' `metadata_add_traits`, `metadata_add_sites` and `metadata_add_contexts` 
+#'
+#' @param title character string providing the instruction for the user
+#' @param vars variable names
+#'
+#' @return
+#' @export
+#'
+#' @examples
 user_select_names <- function(title, vars){
 
   txt <- sprintf("%s (by number separated by space; e.g. '1 2 4'):\n%s\n", title, paste(sprintf("%d: %s", seq_len(length(vars)), vars), collapse="\n"))
@@ -282,6 +311,7 @@ metadata_add_contexts <- function(dataset_id, context_data) {
 #' @param key The bibtex key to be used. By default set to `dataset_id`
 #' @param drop Variables to ignore
 #'
+#' @return yml file with citation details added
 #' @export
 #'
 metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dataset_id, drop = c("dateobj", "month")) {
@@ -322,6 +352,7 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 #' @inheritParams metadata_add_source_bibtex
 #' @param doi doi of reference to add
 #'
+#' @return yml file with citation details added
 #' @export
 #'
 metadata_add_source_doi <- function(doi, ...) {
@@ -339,13 +370,18 @@ metadata_add_source_doi <- function(doi, ...) {
 }
 
 
-#' function to add a substitution into a metadata file for a dataset_id
+#' Add a categorical trait value substitution into a metadata file for a dataset_id
+#' 
+#' `metadata_add_substitution` is used to align the categorical trait values used
+#' by a contributor to the categorical values supported by AusTraits. These values
+#' are defined in the `definitions.yml` file
 #'
-#' @param dataset_id 
-#' @param trait_name 
-#' @param find 
-#' @param replace 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param trait_name the AusTraits defined name for a particular trait
+#' @param find trait value in the original data.csv file
+#' @param replace trait value supported by AusTraits
 #'
+#' @return yaml file with a substitution added
 #' @export
 #'
 #' @examples
@@ -381,12 +417,12 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
 }
 
 
-#' Add a dataframe of substitutions into a metadata file for a dataset_id
+#' Add a dataframe of trait value substitutions into a metadata file for a dataset_id
 #'
-#' @param dataset_id 
-#' @param substitutions 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param substitutions dataframe of trait value substitutions
 #'
-#' @return
+#' @return yml file with multiple trait value substitutions added
 #' @export
 #'
 #' @examples
@@ -405,14 +441,16 @@ metadata_add_substitutions_list <- function(dataset_id, substitutions) {
 }  
 
 
-#' add a taxonomic change into a yaml file for a dataset_id
+#' Add a taxonomic change into the metadata yaml file for a dataset_id
+#' 
+#' Add a single taxonomic change into the metadata yaml file for a specific study
 #'
-#' @param dataset_id 
-#' @param find 
-#' @param replace 
-#' @param reason 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param find original name used by the contributor 
+#' @param replace taxonomic name accepted by APC or APNI 
+#' @param reason reason for taxonomic change
 #'
-#' @return
+#' @return yml file with taxonomic change added
 #' @export
 #'
 #' @examples
@@ -447,11 +485,14 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
 }
 
 #' Add a dataframe of taxonomic updates into a metadata file for a dataset_id
+#' 
+#' Add multiple taxonomic changes to the metadata yaml file using a dataframe 
+#' containing the taxonomic changes to be made. 
 #'
-#' @param dataset_id 
-#' @param taxonomic_updates 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param taxonomic_updates dataframe of taxonomic updates
 #'
-#' @return
+#' @return yml file with multiple taxonmic updates added
 #' @export
 #'
 #' @examples
@@ -470,14 +511,14 @@ metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
 }
 
 
-#' exclude observations in a yaml file for a dataset_id
+#' Exclude observations in a yaml file for a dataset_id
 #'
-#' @param dataset_id 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
 #' @param variable 
 #' @param find 
-#' @param reason 
+#' @param reason reason for exclusion
 #'
-#' @return
+#' @return yml file with excluded observations
 #' @export
 #'
 #' @examples
@@ -508,14 +549,14 @@ metadata_exclude_observations <- function(dataset_id, variable, find, reason) {
   return(invisible(TRUE))
 }
 
-#' update a substitution into a yaml file for a dataset_id
+#' Update a taxonomic change into a yaml file for a dataset_id
 #'
-#' @param dataset_id 
-#' @param find 
-#' @param replace 
-#' @param reason 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param find original taxonomic name 
+#' @param replace updated taxonomic name to replace original taxonomic name
+#' @param reason reason for change
 #'
-#' @return
+#' @return yml file with added substitution
 #' @export
 #'
 #' @examples
@@ -541,13 +582,13 @@ metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) 
   metadata_write_dataset_id(metadata, dataset_id)
 }
 
-#' remove a taxonomic change from a yaml file for a dataset_id
+#' Remove a taxonomic change from a yaml file for a dataset_id
 #'
-#' @param dataset_id 
-#' @param find 
-#' @param replace 
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param find taxonomic name to find
+#' @param replace taxonomic name to replace with 
 #'
-#' @return
+#' @return yml file with a taxonomic change removed
 #' @export
 #'
 #' @examples
@@ -583,12 +624,12 @@ metadata_remove_taxonomic_change <- function(dataset_id, find, replace=NULL) {
   metadata_write_dataset_id(metadata, dataset_id)
 }
 
-#' Title
+#' Find list of all unique species within AusTraits
 #'
-#' @param taxon_name 
-#' @param original_name 
+#' @param taxon_name name of column which contains the cleaned species names
+#' @param original_name name of column which contains original species names, default = FALSE
 #'
-#' @return
+#' @return list of all unique and distinct species names
 #'
 #' @examples
 austraits_find_species <- function(taxon_name, original_name = FALSE){
@@ -608,11 +649,11 @@ austraits_find_species <- function(taxon_name, original_name = FALSE){
     lapply(taxon_name, f) 
 }
 
-#' Title
+#' Find taxonomic changes within the metadata yml files
 #'
-#' @param find 
-#' @param replace 
-#' @param studies 
+#' @param find name of original species
+#' @param replace name of replacement species, default = NULL
+#' @param studies name of studies, default = NULL
 #'
 #' @return
 #' @export
@@ -644,13 +685,16 @@ strip_names <- function(x) {
     str_squish() %>% tolower() 
 }
 
+#' Check taxa against list of known species
+#' 
 #' Checks all taxa within against our list of known species
 #' If not found, and update=TRUE, checks the unknown species against
 #'
-#' @param dataset_id 
-#' @param update 
-#' @param typos 
-#' @param diffchar 
+#' @param max_distance_abs numerical value for absolute max distance, default = 3
+#' @param max_distance_rel numerical value for relative max distance, default = 0.2
+#' @param try_outside_guesses logical value, default = FALSE
+#' @param author name of author
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
 #'
 #' @export
 #'
@@ -862,7 +906,10 @@ metadata_check_taxa <- function(dataset_id,
       crayon::blue("austraits_rebuild_taxon_list()"), "\n\n")
 }
 
-#' Title
+#' Load taxonomic resources from the APC and APNI
+#' 
+#' Load taxonomic resources from the Australian Plant Census
+#' and the Australian Plant Name Index
 #'
 #' @param path_apc location of downloaded APC taxon file
 #' @param path_apni location of downloaded APNI name file
@@ -896,9 +943,9 @@ load_taxonomic_resources <- function() {
 }
 
 #' Builds list of potential species from the Australian Plant Census (APC) and 
-#' Australian Plant names Index (APNI)
+#' Australian Plant Names Index (APNI)
 #' 
-#' Compiled list is saved at "config/taxa.csv". While this list is 
+#' Compiled list is saved at "config/taxon_list.csv". While this list is 
 #' only an intermediate structure constructed entirely from 
 #' the downloaded files, it saves us keeping copies of the entire 
 #' lists (~8 vs 230Mb)
@@ -914,7 +961,7 @@ austraits_rebuild_taxon_list <- function() {
 
   # First align to APC where possible 
   taxa <- 
-    # build list fo observed species names
+    # build list of observed species names
     austraits$traits %>% 
     select(cleaned_name = taxon_name) %>% 
     distinct() %>%
@@ -995,12 +1042,12 @@ austraits_rebuild_taxon_list <- function() {
 }
 
 
-#' Title
+#' Find the distance for nearby species (needs review)
 #'
-#' @param taxon_name 
-#' @param dist 
+#' @param taxon_name vector of species names
+#' @param dist numerical value for distance, default = 5
 #'
-#' @return
+#' @return a vector of distances between species
 #' @export
 #'
 #' @examples
@@ -1021,29 +1068,39 @@ find_names_distance_to_neighbours <- function(taxon_name, dist=5) {
 }
 
 
-#' Title
+#' Test AusTraits studies have the correct format
+#' 
+#' Run the tests to ensure that all compiled studies have the correct format
 #'
 #' @export
 #'
 #' @examples
-austraits_run_tests <- function() {
-  library(testthat)
+test_data_setup <- function(dataset_ids = NULL) {
 
-  root.dir <- rprojroot::find_root("remake.yml")
-
-  pwd <- setwd(root.dir)
-  on.exit(setwd(pwd))
-
-  if(!exists("dataset_ids") || is.null(dataset_ids)) {
-    stop("The variable `dataset_ids` must be defined in the global namespace for the test suite to work")
+  if(is.null(dataset_ids)) {
+    stop("The variable `dataset_ids` must be specified for the test suite to work")
   }
+
+  # Save dataset_ids in global environment, needed to get tests running
+  assign("test_dataset_ids", dataset_ids, envir = globalenv())
   
-  testthat::test_dir("tests", reporter = default_reporter())
+  root.dir <- rprojroot::find_root("remake.yml")
+  pwd <- setwd(root.dir)
+  on.exit({
+    setwd(pwd)
+    rm(test_dataset_ids, envir = globalenv())
+    })
+
+  library(testthat)
+  testthat::test_dir("tests/testdata", reporter = default_reporter())
 }
 
-#' Title
+#' Update the remake.yml file with new studies
+#' 
+#' `austraits_rebuild_remake_setup` rewrites the remake.yml file to include new
+#' studies
 #'
-#' @return
+#' @return Updated remake.yml file 
 #' @export
 #'
 #' @examples

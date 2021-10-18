@@ -2,7 +2,7 @@
 
 We envision AusTraits as an on-going collaborative community resource that:
 
-1. Increases our collective understanding the Australian flora;
+1. Increases our collective understanding of the Australian flora;
 2. Facilitates accumulating and sharing of trait data;
 3. Aspires to fully transparent and reproducible research of highest standard, and 
 4. Builds a sense of community among contributors and users.
