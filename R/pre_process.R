@@ -1,23 +1,30 @@
-trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
-# Returns month for given indices
-# if needed, i is coerced to integer
-# warnings suppressed because as.integer gives a warning for NAs
+#' Return month for given indices
+#' 
+#' Returns abbreviated month for given indices/ integers,
+#' if needed, i is coerced to integer
+#' warnings suppressed because as.integer gives a warning for NAs
+#' 
+#' @param i vector with indices/integers representing months 
+#'
+#' @return vector containing abbreviated months
+#'
+#' @examples
 get_month <- function(i) {
   month.abb[suppressWarnings(as.integer(i))]
 }
 
-#' Create flowertimes from start to end pair
+#' Create flowering times from start to end pair
 #' 
-#' A common processing pattern when creating flowing times
+#' A common processing pattern when creating flowering times
 #' We have an integer for start and end month
 #' Converts these into binary vector
 #'
-#' @param start <what param does>
-#' @param end <what param does>
+#' @param start numeric value between 1 and 12 representing earliest flowering month
+#' @param end numeric value between 1 and 12 representing latest flowering month
 #'
 #' @export
-#' @return a 12 element character string, e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
+#' @return a 12 element character string consisting of y & n, e.g. "yyyynnnnnnnn"  
 format_flowering_months <- function(start, end){
   x <- rep(NA_character_, length(start))
   i <- !is.na(start) & !is.na(end)
@@ -26,15 +33,15 @@ format_flowering_months <- function(start, end){
   x
 }
 
-#' convert vectors of month range to 12 element character strings of binary data
+#' Convert vectors of month range to 12 element character strings of binary data
 #'
-#' converts vectors of month range type values (i.e. 'Jan-Apr') to character strings 
-#' of length 12 consisting of y & n, e.g. "yyynnnnnnyyy"
+#' Converts vectors of month range type values (i.e. 'Jan-Apr') to character strings 
+#' of length 12 consisting of y & n, e.g. "yyyynnnnnnnn"
 #'
-#' @param vec <what param does>
+#' @param vec vector of month range using abbreviated month names (e.g. "Jan-Apr")
 #'
 #' @export
-#' @return character string of length 12 consisting of y & n, e.g. "yyynnnnnnyyy"
+#' @return character string of length 12 consisting of y & n, e.g. "yyyynnnnnnnn"
 convert_month_range_vec_to_binary <- function(vec) {
   out <- 
     unlist(lapply(vec, function(x) convert_month_range_string_to_binary(x))) %>%
@@ -43,16 +50,28 @@ convert_month_range_vec_to_binary <- function(vec) {
   out
 }
 
+#' Convert 0/1 to n/y
+#' 
+#' Convert binary 0/1 to n/y representing yes & no
+#'
+#' @param txt vector of character strings
+#'
+#' @return vector of character strings
+#' @export
+#'
+#' @examples
 convert_01_ny <- function(txt) {
   txt %>%   
   gsub("1", "y", ., fixed=TRUE) %>%
   gsub("0", "n", ., fixed=TRUE)
 }
 
-#' Converts flowering and fruiting month ranges to 12 element character strings of binary data
-#' consisting of 1 & 0 e.g. "111000000111"
+#' Convert month range to 12 element binary string
+#' 
+#' Converts flowering and fruiting month ranges to a string of 12 characters of binary data
+#' consisting of 1 & 0 e.g. "11100000111"
 #'
-#' @param str text string
+#' @param str character string of month range using abbreviated month names. e.g. "Oct- Mar"
 #'
 #' @export
 #' @return a character string  length-12, e.g. "111000000111"
@@ -61,15 +80,16 @@ convert_month_range_string_to_binary <- function(str) {
     paste(collapse="") 
 }
 
-#' Converts flowering and fruiting month ranges to 12 element character strings of binary data
+#' Convert month range to binary
 #' 
+#' Converts flowering and fruiting month ranges to 12 element character strings of 0 and 1 representing Jan - Dec
 #' e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
 #'
 #' @param str text string
 #'
 #' @return a 12 element character string, e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
 convert_month_range_string_to_binary_worker <- function(str) {
-  str <- trim(str) %>%
+  str <- str %>% stringr::str_trim() %>%
     tolower()
   
   regexMonths <- paste0("(", paste(tolower(month.abb), collapse="|"), ")")
@@ -163,28 +183,31 @@ convert_month_range_string_to_binary_worker <- function(str) {
 }
 
 
+#' Separate cells with a range to min and max
+#' 
 #' Separate values cells with a range into columns with minimum and maximum
 #'
 #' @param data data frame
 #' @param x name of variable containing range
 #' @param y1 name of variable to hold minimum
 #' @param y2 name of variable to hold maximum
-#' @param sep seperator, by default "-"
+#' @param sep separator, by default "-"
 #'
 #' @return modified data frame
 #'
 separate_range <- function(data, x, y1, y2, sep="-", remove=TRUE) {
-  data <- separate(data, !!x, sep = "-", into = c(y1, y2), remove=remove, fill="right")
+  data <- tidyr::separate(data, !!x, sep = "-", into = c(y1, y2), remove=remove, fill="right")
   data[[y2]] <- ifelse(is.na(data[[y2]]), data[[y1]], data[[y2]])
   data
 }
 
-
+#' Replace duplicate values with NA
+#' 
 #' replace_duplicates_with_NA replaces duplicate values in x with NA. 
 #'
-#' @param x vector
+#' @param x vector containing values
 #'
-#' @return vector
+#' @return vector with duplicate values as NA
 #'
 replace_duplicates_with_NA <- function(x) {
   x %>% replace(., duplicated(.), NA)

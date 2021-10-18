@@ -1,9 +1,14 @@
-#' Title
+#' Build reports for all studies
+#' 
+#' Build reports for all studies using the `build_study_report()` function. This
+#' function builds a study report for every study with a unique `dataset_id` that
+#' has been loaded into AusTraits using `build_study_report()`. The reports are 
+#' rendered as html files and saved in the "export/reports" folder.  
 #'
-#' @param dataset_ids 
-#' @param ... 
+#' @param dataset_ids names of studies/ datasets, default is NULL
+#' @param ... arguments passed to build_study_report()
 #'
-#' @return
+#' @return html files of the study report for all studies 
 #' @export
 #'
 #' @examples
@@ -18,13 +23,19 @@ build_study_reports <- function(dataset_ids=NULL, ...) {
     build_study_report(dataset_id, ...)
 }
 
-#' Title
+#' Build report for a specific study
+#' 
+#' Builds a report for a specified study using `dataset_id`. The information for 
+#' the report is stored in an Rmd file and the final report is rendered as an html.  
+#' The report is generated from the `report_study.Rmd` file in the scripts folder. 
+#' Existing reports can be overwritten by setting overwrite = TRUE
 #'
-#' @param dataset_id 
-#' @param overwrite 
-#' @param path 
+#' @param dataset_id name of specific study/dataset
+#' @param overwrite logical value to determine whether to overwrite existing report,
+#' default = FALSE, if report exists already set to TRUE to overwrite
+#' @param path location where rendered report will be saved
 #'
-#' @return
+#' @return html file of the rendered report located in the "export/reports" folder
 #' @export
 #'
 #' @examples
@@ -58,11 +69,15 @@ build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/repor
   cat(" -> done\n")
 }
 
-#' Title
+#' Get SHA link from Github
+#' 
+#' Get SHA link using the get_SHA() function. The link generated leads to the latest
+#' commit for the Github repository. SHA is the abbreviated SHA-1 40 digit
+#' hexadecimal number which Github uses to track commits and changes made to a repository. 
+#' 
+#' @param ... arguments passed to the get_SHA() function
 #'
-#' @param ... 
-#'
-#' @return
+#' @return SHA link to a github commit as a character string formatted using markdown syntax
 #' @export
 #'
 #' @examples
@@ -71,19 +86,24 @@ get_SHA_link <- function(...) {
   sprintf("[%s](https://github.com/traitecoevo/austraits/tree/%s)",   sha, sha)
 }
 
-#' Title
+#' Get SHA string from Github repository for latest commit
+#' 
+#' Get SHA string for the latest commit on Github for the repository. SHA is the
+#' abbreviated SHA-1 40 digit hexadecimal number which Github uses as the 
+#' Commit ID to track changes made to a repo
 #'
-#' @param path 
+#' @param path root directory where a specified file is located, default file name
+#' is the remake.yml file
 #'
-#' @return
+#' @return 40-digit SHA character string for the latest commit to the repository 
 #' @export
 #'
 #' @examples
 get_SHA <- function(path = rprojroot::find_root("remake.yml")) {
-  git2r::branch_target(git2r::repository_head(git2r::repository(path)))
+  git2r::sha(git2r::last_commit(git2r::repository(path)))
 }
 
-#' Title
+#' Format table with kable and default styling for html
 #'
 #' @param ... 
 #'
@@ -102,7 +122,7 @@ my_kable_styling_html <- function(...) {
     gsub('style="width: auto ', 'style="margin-left:30px; width: auto ', .)
 }
 
-#' Title
+#' Format table with kable and default styling for pdf 
 #'
 #' @param ... 
 #'
@@ -114,8 +134,8 @@ my_kable_styling_pdf <- function(...) {
     kableExtra::kable(...)
 }
 
-## format a table with kable and default styling
-#' Title
+
+#' Format table with kable and default styling for markdown
 #'
 #' @param ... 
 #'
@@ -127,13 +147,15 @@ my_kable_styling_markdown <- function(...) {
   kableExtra::kable(...)
 }
 
-#' Title
+#' Generate hyperlink for markdown and html
+#' 
+#' Generate hyperlink for markdown and html files
 #'
-#' @param link 
-#' @param text 
-#' @param type 
+#' @param link character string for the url link
+#' @param text character string for the text to display
+#' @param type file type, default is markdown "md" otherwise html
 #'
-#' @return
+#' @return character string with the text and link formatted for md and html
 #' @export
 #'
 #' @examples
@@ -145,17 +167,19 @@ as_link <- function(link, text, type="md") {
 }
 
 
-## Function to format a tree structure from a vector
-## X is a vector of terms
-## title is name of master branch
-## prefix sepcifies amount of indentation
-#' Title
+
+#' Format a tree structure from a vector 
+#' 
+#' `create_tree_branch()` is used to create a tree structure to show how things
+#' are related. In AusTraits, this is used in the vignettes to show the file 
+#' structure of the repository and also to show the different components of the 
+#' AusTraits database 
 #'
-#' @param x 
-#' @param title 
-#' @param prefix 
+#' @param x vector of terms
+#' @param title name of branch
+#' @param prefix specifies the amount of indentation
 #'
-#' @return
+#' @return vector of character strings for the tree structure
 #' @export
 #'
 #' @examples

@@ -4,20 +4,20 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Definitions for traits in AusTraits}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 editor_options:
   chunk_output_type: console
 ---
 
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 # knitr defaults
-root.dir = rprojroot::find_root("remake.yml")
+root.dir <- rprojroot::find_root("remake.yml")
 knitr::opts_knit$set(root.dir = root.dir)
 
 knitr::opts_chunk$set(
-  echo=FALSE, cache=FALSE, message=FALSE, warning=FALSE,
-  results='asis'
+  echo = FALSE, cache = FALSE, message = FALSE, warning = FALSE,
+  results = "asis"
 )
 ```
 
@@ -28,62 +28,64 @@ library(kableExtra)
 source("R/report_utils.R")
 
 print_defintions_element <- function(elements) {
-  if(elements$type == "character") {
-    sprintf("**Content:** %s\n", elements$value) %>% 
+  if (elements$type == "character") {
+    sprintf("**Content:** %s\n", elements$value) %>%
       writeLines()
   }
-  
-  if(elements$type == "table") {
-    
-    sprintf("**Content:** \n") %>% 
+
+  if (elements$type == "table") {
+    sprintf("**Content:** \n") %>%
       writeLines()
 
-    elements$elements %>% 
+    elements$elements %>%
       list1_to_df() %>%
-      my_kable_styling() %>% 
+      my_kable_styling() %>%
       writeLines()
   }
 }
 
 # default for table format
-if(knitr::is_html_output()) {
+if (knitr::is_html_output()) {
   options(knitr.table.format = "html")
-  my_kable_styling <- my_kable_styling_html  
+  my_kable_styling <- my_kable_styling_html
 } else {
   options(knitr.table.format = "latex")
-  my_kable_styling <- my_kable_styling_pdf  
+  my_kable_styling <- my_kable_styling_pdf
 }
-  
+
 
 ## Assumes to items exist in global name space
-if(!exists("austraits")) {
+if (!exists("austraits")) {
   definitions <- remake::make("definitions")
   # stop("austraits must exist in global name space to knit a report")
 }
-
 ```
 
 
-This document provides a full list of trait definitions used in AusTraits version `r desc::desc_get_field("Version")`, as defined in the file configuration files [`config/definitions.yml`](https://github.com/traitecoevo/austraits.build/blob/master/config/definitions.yml)).
+This document provides a full list of trait definitions used in AusTraits version `r desc::desc_get_field("Version")`, as defined in the file configuration files [`config/definitions.yml`](https://github.com/traitecoevo/austraits.build/blob/master/config/definitions.yml).
 
 ```{r, results="asis"}
-for(trait in names(definitions$traits$elements)) {
+for (trait in names(definitions$traits$elements)) {
   elements <- definitions$traits$elements[[trait]]
-  
-#  data_trait <- austraits$traits %>% filter(trait_name == trait)
-  
-  c( sprintf("## %s\n\n", trait), 
-     sprintf("- label: %s", elements$label ), 
-     sprintf("- description: %s", elements$description ), 
-     #sprintf("- number of records: %s", data_trait %>% nrow() ), 
-     #sprintf("- number of studies: %s", data_trait %>% pull(dataset_id) %>% unique() %>% length() ), 
-     sprintf("- type: %s%s", elements$type,   
-             ifelse(elements$type == "numeric", sprintf("\n- units: %s", elements$units), "")), 
-     ifelse(elements$type == "numeric", 
-             sprintf("- allowable range: %s - %s %s", elements$values$minimum,elements$values$maximum, elements$units), 
-             sprintf("- allowable values:\n%s\n", paste0("    - *",elements$values %>% names(), "*: ", elements$values %>% unlist(), collapse="\n"))
-                     ), 
-     "") %>% 
+
+  #  data_trait <- austraits$traits %>% filter(trait_name == trait)
+
+  c(
+    sprintf("## %s\n\n", trait),
+    sprintf("- label: %s", elements$label),
+    sprintf("- description: %s", elements$description),
+    # sprintf("- number of records: %s", data_trait %>% nrow() ),
+    # sprintf("- number of studies: %s", data_trait %>% pull(dataset_id) %>% unique() %>% length() ),
+    sprintf(
+      "- type: %s%s", elements$type,
+      ifelse(elements$type == "numeric", sprintf("\n- units: %s", elements$units), "")
+    ),
+    ifelse(elements$type == "numeric",
+      sprintf("- allowable range: %s - %s %s", elements$values$minimum, elements$values$maximum, elements$units),
+      sprintf("- allowable values:\n%s\n", paste0("    - *", elements$values %>% names(), "*: ", elements$values %>% unlist(), collapse = "\n"))
+    ),
+    ""
+  ) %>%
     writeLines()
 }
 ```
