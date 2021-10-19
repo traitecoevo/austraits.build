@@ -23,7 +23,7 @@ subset_config <- function(
   dataset_id <- basename(dirname(filename_metadata))
   
   # read metadata
-  metadata <- read_yaml(filename_metadata)
+  metadata <- read_metadata(filename_metadata)
   
   # table of trait_mapping
   trait_mapping <- 
@@ -220,7 +220,15 @@ load_study <- function(filename_data_raw,
 #' @examples
 custom_manipulation <- function(txt) {
   if (!is.null(txt) && !is.na(txt)  && nchar(txt) > 0) {
-    function(data) {eval(parse(text=txt), env=new.env())}
+
+    txt2 <- 
+      # Trim white space, quotes, new line from front and back
+      txt %>% stringi::stri_trim_both("[^'\"\\ \\n]", negate=F) %>%
+      # Squish internal white space, also removes new line characters
+      stringr::str_replace_all("\\s+", " ")
+    # test: txt <-" '' \n Total of 23.5 bitcoins. "
+    
+    function(data) {eval(parse(text=txt2), env=new.env())}
   } else {
     identity
   }
@@ -1000,7 +1008,7 @@ export_version_plaintext <- function(austraits, path) {
   writeLines(build_info, sprintf("%s/build_info.md", path))
 
   # Save definitions
-  write_yaml(austraits[["definitions"]], sprintf("%s/definitions.yml", path))
+  yaml::write_yaml(austraits[["definitions"]], sprintf("%s/definitions.yml", path))
 
   # Save references
   RefManageR::WriteBib(austraits$sources, sprintf("%s/sources", path))

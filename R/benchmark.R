@@ -9,7 +9,7 @@
 run_benchmark <- function( ) {
   f_build <- function(x, n_max=2000) {
 
-    definitions <- read_yaml("config/definitions.yml")
+    definitions <- yaml::read_yaml("config/definitions.yml")
     unit_conversions <- make_unit_conversion_functions("config/unit_conversions.csv")
     
     config <- subset_config(sprintf("data/%s/metadata.yml", x), definitions, unit_conversions)
