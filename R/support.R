@@ -157,22 +157,82 @@ append_to_list <- function(my_list, to_append) {
   my_list
 }
 
-# Provide an easier entry point for
-# parsing a YAML file
-read_yaml <- yaml::yaml.load_file
-
-#' Write yaml to filename with preferred defaults, Designed so that read_yaml(write_yaml(y)) == y
+#' @rdname write_metadata
 #' 
-#' @param y a (yaml) list or a data frame
-#' @param filename  a character string for naming a file
-#'
+#' 
 #' @export
-#' @examples write_yaml(iris, "iris.yaml")
-write_yaml <- function(y, filename) {
-  txt <- yaml::as.yaml(y, column.major = FALSE, indent=2)
-  txt <- gsub(": ~",":", txt, fixed=TRUE)
-  writeLines(txt, filename)
+read_metadata <- function(path) {
+  
+  data <- yaml::read_yaml(path)
+  
+  # We want to preserve formatting in custom R code
+  # but read_yaml looses it. So read in as text, if not empty
+  if(!is.na(data$config$custom_R_code)) {
+    # Read in again, extracting custom R code
+    
+    data2 <- readLines(path)
+  
+    code_start <- grep("  custom_R_code:", data2, fixed = TRUE)
+    code_end <- which(data2 == "traits:")-1
+
+    data$config$custom_R_code <- 
+      data2[code_start:code_end] %>%
+      gsub("  custom_R_code:", "", ., fixed = TRUE) %>%
+      paste(collapse = "\n")
+  }
+  
+  data
 }
+
+#' Functions to read and write metadata.yml for a study
+#' @param data austraits metadata object (a list)
+#' @param filename  a character string for naming a file
+#' @param style_code  should the R code be styled?
+#' @rdname write_metadata
+#' @export
+#' @examples {
+#' f <- "data/Falster_2003/metadata.yml
+#' data <- read_metadata(f)
+#' write_metadata(data, f)
+#' }
+write_metadata <- function(data, path, style_code=FALSE) {
+  
+  y <- data
+  y$config$custom_R_code <- NA
+
+  txt <- yaml::as.yaml(y, column.major = FALSE, indent=2) %>%
+    gsub(": ~",":", ., fixed=TRUE)
+  
+  #reinsert custom R code
+  if(!is.na(data$config$custom_R_code)) {
+
+    code <- data$config$custom_R_code
+  
+    if(style_code)
+      code <- code %>% suppressWarnings(styler::style_text(transformers = tidyverse_style(strict = TRUE)))
+  
+    txt <- gsub("custom_R_code: .na", code %>% paste(collapse = "\n") %>% 
+                  paste0("custom_R_code:", .), txt, fixed = TRUE)
+  }
+  
+  file <- file(path, "w", encoding = "UTF-8")
+  on.exit(close(file))
+  cat(txt, file=file)
+}
+
+##' Read yaml (from package yaml)
+##' @importFrom yaml read_yaml
+##' @name read_yaml
+##' @rdname read_yaml
+##' @export
+NULL
+
+##' write yaml (from package yaml)
+##' @importFrom yaml write_yaml
+##' @name write_yaml
+##' @rdname write_yaml
+##' @export
+NULL
 
 
 #' Build website
