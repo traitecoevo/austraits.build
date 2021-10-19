@@ -1008,7 +1008,7 @@ export_version_plaintext <- function(austraits, path) {
   writeLines(build_info, sprintf("%s/build_info.md", path))
 
   # Save definitions
-  write_yaml(austraits[["definitions"]], sprintf("%s/definitions.yml", path))
+  yaml::write_yaml(austraits[["definitions"]], sprintf("%s/definitions.yml", path))
 
   # Save references
   RefManageR::WriteBib(austraits$sources, sprintf("%s/sources", path))

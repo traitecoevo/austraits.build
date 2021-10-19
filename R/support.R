@@ -163,7 +163,7 @@ append_to_list <- function(my_list, to_append) {
 #' @export
 read_metadata <- function(path) {
   
-  data <- read_yaml(path)
+  data <- yaml::read_yaml(path)
   
   # We want to preserve formatting in custom R code
   # but read_yaml looses it. So read in as text, if not empty
