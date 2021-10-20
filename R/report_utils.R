@@ -32,26 +32,27 @@ build_study_reports <- function(dataset_ids=NULL, ...) {
 #' @param dataset_id name of specific study/dataset
 #' @param overwrite logical value to determine whether to overwrite existing report,
 #' default = FALSE, if report exists already set to TRUE to overwrite
-#' @param path location where rendered report will be saved
+#' @param output_path location where rendered report will be saved
+#' @param input_file report script (.Rmd) file to build study report
 #'
 #' @return html file of the rendered report located in the "export/reports" folder
 #' @export
-build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/reports") {
+build_study_report <- function(dataset_id, overwrite=FALSE, output_path = "export/reports", input_file = "scripts/report_study.Rmd") {
   
-  if(!file.exists(path)) {
-    dir.create(path, FALSE, TRUE)
+  if(!file.exists(output_path)) {
+    dir.create(output_path, FALSE, TRUE)
   }
   
   cat(sprintf("Building report for %s: ", dataset_id))
   
   # filenames
-  input_Rmd <- sprintf("%s/%s.Rmd", path, dataset_id)
-  output_html <- sprintf("%s/%s.html", path, dataset_id)
+  input_Rmd <- sprintf("%s/%s.Rmd", output_path, dataset_id)
+  output_html <- sprintf("%s/%s.html", output_path, dataset_id)
   
   if(overwrite | !file.exists(output_html)) {
     
     # Create a new Rmd file with name embedded in title
-    x <- readLines("scripts/report_study.Rmd")
+    x <- readLines(input_file)
     x <- gsub("title: Report on study from",  sprintf("title: Report on study `%s` from", dataset_id), x)
     writeLines(x, input_Rmd)
     
