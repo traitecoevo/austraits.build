@@ -1,31 +1,31 @@
-# ## Functions for extracting bits from Austraits
+## Functions for extracting bits from Austraits
 # 
 # ## function migrated to austraits package
 # extract_dataset <- function(austraits, dataset_id) {
-# 
+#
 #   austraits$taxonomic_updates <-
 #     separate_rows(austraits$taxonomic_updates, dataset_id, sep=" ")
-# 
+#
 #   ret <- list()
 #   for(v in c("traits", "sites", "contexts", "methods", "contributors", "excluded_data", "taxonomic_updates"))
 #     ret[[v]] <- austraits[[v]][ austraits[[v]][["dataset_id"]] %in% dataset_id,]
 #   # NB: can't use dplyr::filter in the above as it doesn't behave when the variable name is the same as a column name
-# 
+#
 #   ret[["taxa"]] <- austraits[["taxa"]] %>% filter(taxon_name %in% ret[["traits"]][["taxon_name"]])
-# 
+#
 #   ret[["definitions"]] <- austraits[["definitions"]]
 #   ret[["build_info"]] <- austraits[["build_info"]]
-# 
+#
 #   keys <- ret$methods %>% select(source_primary_key,source_secondary_key) %>% na_if("") %>% unlist() %>% na.omit() %>% unique()
-# 
+#
 #   ret[["sources"]] <- austraits[["sources"]][keys]
-# 
+#
 #   ret[names(austraits)]
 # }
-# 
+#
 # ## function has been migrated and renamed to trait_pivot_wider in austraits package
 # spread_trait_data <- function(data) {
-# 
+#
 #   vars <- c("value", "unit", "value_type", "replicates")
 #   ret <- list()
 #   for(v in vars) {
@@ -34,49 +34,49 @@
 #         select(dataset_id, taxon_name, site_name, observation_id, trait_name, to_spread, original_name) %>%
 #         spread(trait_name, to_spread)
 #   }
-# 
+#
 #   ret
 # }
-# 
+#
 # ## function has been migrated and renamed to trait_pivot_longer in austraits package
 # gather_trait_data <- function(data, definitions) {
-# 
+#
 #   id_variables <- c("dataset_id", "taxon_name", "site_name", "observation_id", "trait_name", "value", "unit", "value_type", "replicates", "original_name")
-# 
+#
 #   traits <- names(data$value)[!(names(data$value) %in% id_variables)]
-# 
+#
 #   vars <- names(data)
-# 
+#
 #   gather_f <- function(df, v) {
 #     df[[v]] %>% gather(one_of(traits), key = "trait_name", value = !!v)
 #   }
-# 
+#
 #   ret <- gather_f(data, vars[1])
-# 
+#
 #   for(v in vars[-c(1)])
 #     ret <- ret %>%
 #               left_join(
 #                         gather_f(data, v),
 #                         by = setdiff(id_variables, vars)
 #                         )
-# 
+#
 #   ret <- ret %>%
 #     mutate(value = clean_NA(value)) %>%
 #     filter(!is.na(value)) %>%
 #     arrange(observation_id, trait_name) %>%
 #     select(id_variables)
 # }
-# 
+#
 # ## function has been migrated to austraits package but is not an exported function
 # clean_NA <- function(x) {
 #   ifelse(x == "NA", NA_character_, x)
 # }
-# 
+#
 # ## function migrated to austraits package
 # bind_trait_values <- function(data) {
-# 
+#
 #   bind_x <- function(x) paste0(x, collapse = "--")
-# 
+#
 #   bind_values_worker <- function(.data) {
 #     # If more than one value per group need to combine
 #     if(nrow(.data) > 1) {
@@ -92,21 +92,21 @@
 #     }
 #     .data
 #   }
-# 
+#
 #   data  %>%
 #     group_by(observation_id, trait_name) %>%
 #     bind_values_worker() %>%
 #     ungroup() %>%
 #     arrange(observation_id, trait_name, value_type)
 # }
-# 
+#
 # ## function migrated to austraits package
 # separate_trait_values <- function(data, definitions) {
-# 
+#
 #   separate_x <- function(x) strsplit(x, "--")[[1]]
-# 
+#
 #   separate_values_worker <- function(df) {
-# 
+#
 #     df[rep(1, df$n_vals[1]),] %>%
 #       mutate(
 #            value = separate_x(value[1]),
@@ -114,22 +114,22 @@
 #            replicates = separate_x(replicates[1])
 #            )
 #   }
-# 
-# 
+#
+#
 #   # record the number of values in each row of data
 #   data$n_vals <- 1 + str_count(data$value_type, "--")
-# 
+#
 #   # separate out those rows requiring no modification
 #   out_1 <- data %>%
 #     filter(n_vals == 1)
-# 
+#
 #   # separate out those rows requiring modification & modify
 #   out_2 <- data %>%
 #     filter(n_vals > 1) %>%
 #     split(paste(.$observation_id, .$trait_name)) %>%
 #     lapply(separate_values_worker) %>%
 #     bind_rows()
-# 
+#
 #   # join it all back together, clean up and sort as in original
 #   bind_rows(out_1, out_2) %>%
 #     select(-n_vals) %>%
@@ -140,62 +140,62 @@
 #            ) %>%
 #     arrange(observation_id, trait_name, value_type)
 # }
-# 
+#
 # ## function migrated to austraits package
 # extract_trait <- function(austraits, trait_name) {
-# 
-# 
+#
+#
 #   ret <- austraits
-# 
+#
 #   ret[["traits"]] <- austraits[["traits"]][ austraits[["traits"]][["trait_name"]] %in% trait_name,]
-# 
+#
 #   ids <- ret[["traits"]][["dataset_id"]] %>% unique() %>% sort()
-# 
+#
 #   ret[["sites"]] <- austraits[["sites"]] %>% filter(site_name %in% ret[["traits"]][["site_name"]], dataset_id %in% ids)
-# 
+#
 #   ret[["contexts"]] <- austraits[["contexts"]]%>% filter(context_name %in% ret[["traits"]][["context_name"]], dataset_id %in% ids)
-# 
+#
 #   ret[["taxa"]] <- austraits[["taxa"]] %>% filter(taxon_name %in% ret[["traits"]][["taxon_name"]])
 #   ret[["excluded_data"]] <- austraits[["excluded_data"]][austraits[["excluded_data"]][["trait_name"]] %in% trait_name,]
-# 
+#
 #   ret[["contributors"]] <- austraits[["contributors"]] %>% filter(dataset_id %in%  ids)
-# 
+#
 #   ret[["methods"]] <- austraits[["methods"]] %>% filter(dataset_id %in%  ids, trait_name %in% ret[["traits"]][["trait_name"]])
-# 
+#
 #   ret[["definitions"]] <- austraits[["definitions"]]
 #   ret[["build_info"]] <- austraits[["build_info"]]
-# 
+#
 #   # if numeric, convert to numeric
 #   if(!is.na(ret[["traits"]][["unit"]][1])){
 #     ret[["traits"]][["value"]] <- as.numeric(ret[["traits"]][["value"]])
 #   }
-# 
-# 
+#
+#
 #   keys <- union(ret$methods$source_primary_key,
 #                 ret$methods$source_secondary_key) %>%
 #           unique() %>% na.omit() %>% as.character()
-# 
+#
 #   ret[["sources"]] <- austraits$sources[keys]
-# 
+#
 #   ret[names(austraits)]
 # }
-# 
+#
 # trait_type  <- function(trait_name, definitions) {
 #   extract_list_element(trait_name, definitions$traits$elements, "type")
 # }
-# 
+#
 # trait_is_numeric <- function(trait_name, definitions) {
 #   trait_type(trait_name, definitions) == "numeric"
 # }
-# 
+#
 # trait_is_categorical <- function(trait_name, definitions) {
 #   !trait_is_numeric(trait_name, definitions)
 # }
-# 
+#
 # ## Takes the traits df of AusTraits and searchs for possible duplicates
-# 
+#
 # label_suspected_duplicates <- function(austraits_traits, priority_sources = NULL) {
-# 
+#
 #   # copy traits and create a new variable with year of dataset_id
 #   # we will preference studies with a lower value
 #   if(is.null(priority_sources))
@@ -206,7 +206,7 @@
 #         "NHNSW_2016", "RBGSYD__2014_2", "RBGSYD_2014", "TMAG_2009", "WAH_1998", "WAH_2016",
 #         "Brock_1993", "Barlow_1981", "Hyland_2003"
 #       )
-# 
+#
 #   tmp <- austraits_traits %>%
 #     # Extract year from dataset_id, so that we can keep the older record
 #     mutate(
@@ -227,29 +227,29 @@
 #     # original sorting
 #     arrange(observation_id, trait_name, value_type) %>%
 #     split(., .$duplicate)
-# 
+#
 #   tmp[[2]] <- tmp[[2]] %>%
 #   mutate(
 #       i = match(to_check, tmp[[1]]$to_check),
 #       duplicate_dataset_id = tmp[[1]]$dataset_id[i],
 #       duplicate_obs_id = tmp[[1]]$observation_id[i]
 #       )
-# 
+#
 #   tmp %>%
 #   bind_rows() %>%
 #   select(-to_check, -i) %>%
 #   # original sorting
 #   arrange(observation_id, trait_name, value_type)
 # }
-# 
+#
 # ## move suspected duplicates from the `traits` frame of austraits
 # ## to excluded_data.
-# 
+#
 # remove_suspected_duplicates <- function(austraits,
 #                                         priority_sources = NULL
 #                                         ) {
 #   tmp <- label_suspected_duplicates(austraits$traits, priority_sources)
-# 
+#
 #   # update `traits` with unique values only
 #   austraits$traits <- tmp %>%
 #     filter(!duplicate) %>%
@@ -257,7 +257,7 @@
 #     select(-starts_with("duplicate")) %>%
 #     # original sorting
 #     arrange(observation_id, trait_name, value_type)
-# 
+#
 #   # add suspected duplicates to bottom of excluded_data, noting
 #   # observartion_id of the matching data in the error column
 #   austraits$excluded_data <- austraits$excluded_data %>%
@@ -270,10 +270,10 @@
 #       ) %>%
 #     # original sorting
 #     arrange(observation_id, trait_name, value_type)
-# 
+#
 #   austraits
 # }
-# 
+#
 # ### function has been migrated to and modified in steps.R
 # export_to_plain_text <- function(austraits, path) {
 #   dir.create(path, FALSE, TRUE)
@@ -282,67 +282,67 @@
 #   write_yaml(austraits[["definitions"]],  sprintf("%s/definitions.yml", path))
 #   RefManageR::WriteBib(austraits$sources, sprintf("%s/sources", path))
 # }
-# 
-# 
+#
+#
 # ### Doesnt appear to be migrated to austraits package nor is it used in austraits.build ###
 # compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trait_name = NULL) {
 #   unlink(path, TRUE, TRUE)
 #   dir.create(path, FALSE, TRUE)
-# 
+#
 #   v1 <- readRDS(v1)
 #   v2 <- readRDS(v2)
-# 
+#
 #   if(!is.null(dataset_id)){
 #     v1 <- v1 %>% extract_dataset(dataset_id)
 #     v2 <- v2 %>% extract_dataset(dataset_id)
 #   }
-# 
+#
 #   if(!is.null(trait_name)){
 #     v1 <- v1 %>% extract_trait(trait_name)
 #     v2 <- v2 %>% extract_trait(trait_name)
 #   }
-# 
-# 
+#
+#
 #   v1 %>% export_to_plain_text(path)
 #   repo <- git2r::init(path)
 #   git2r::add(repo, "*")
 #   v2 %>% export_to_plain_text(path)
-# 
+#
 #   message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
 # }
-# 
-# 
+#
+#
 # ## function migrated and renamed to plot_trait_distribution_beeswarm in austraits package
 # trait_distribution_plot_numerical <- function(austraits, plant_trait_name, y_axis_category, highlight=NA, hide_ids = FALSE) {
-# 
+#
 #   # plant_trait_name <- "plant_height"
 #   # y_axis_category <- "dataset_id"
 #   # highlight= "Blackman_2014"
-# 
+#
 #   # Subset data to this trait
 #   austraits_trait <- extract_trait(austraits, plant_trait_name)
-# 
+#
 #   my_shapes = c("_min" = 60, "_mean" = 16, "_max" =62, "unknown" = 18)
-# 
+#
 #   as_shape <- function(value_type) {
 #     p <- rep("unknown", length(value_type))
-# 
+#
 #     p[grepl("mean", value_type)] <- "_mean" #16
 #     p[grepl("min", value_type)] <- "_min" #60
 #     p[grepl("max", value_type)] <- "_max" #62
 #     factor(p, levels=names(my_shapes))
 #   }
-# 
+#
 #   data <- austraits_trait$traits %>%
 #     mutate(shapes = as_shape(value_type)) %>%
 #     left_join(., select(austraits_trait$taxa, taxon_name, family),
 #               by = "taxon_name")
-# 
+#
 #   # Define grouping variables and derivatives
 #   if(!y_axis_category %in% names(data)){
 #    stop("incorrect grouping variable")
 #   }
-# 
+#
 #   # define grouping variable, ordered by group-level by mean values
 #   # use log_value where possible
 #   if(min(data$value, na.rm=TRUE) > 0 ) {
@@ -351,26 +351,26 @@
 #     data$value2 <- data$value
 #   }
 #   data$Group = forcats::fct_reorder(data[[y_axis_category]], data$value2, na.rm=TRUE)
-# 
+#
 #   n_group <- levels(data$Group) %>% length()
-# 
+#
 #   # set colour to be alternating
 #   data$colour = ifelse(data$Group %in% levels(data$Group)[seq(1, n_group, by=2)],
 #                        "a", "b")
-# 
+#
 #   # set colour of group to highlight
 #   if(!is.na(highlight) & highlight %in% data$Group) {
 #     data <- mutate(data, colour = ifelse(Group %in% highlight, "c", colour))
 #   }
-# 
+#
 #   # Check range on x-axis
 #   vals <- austraits_trait$definitions$traits$elements[[plant_trait_name]]$values
 #   range <- (vals$maximum/vals$minimum)
-# 
+#
 #   # Check range on y-axis
 #   y.text <- ifelse(n_group > 20, 0.75, 1)
 #   heights = c(1, max(1, n_group/7))
-# 
+#
 #   # Top plot - plain histogram of data
 #   p1 <-
 #     ggplot(data, aes(x=value)) +
@@ -401,11 +401,11 @@
 #             axis.text.y=element_text(size=rel(y.text))
 #             ) +
 #       guides(colour="none")
-# 
+#
 #   if(hide_ids) {
 #     p2 <- p2 + theme(axis.text.y = element_blank())
 #   }
-# 
+#
 #   # Define scale on x-axis and transform to log if required
 #   if(vals$minimum !=0 & range > 20) {
 #     #log transformation
@@ -423,9 +423,9 @@
 #     p1 <- p1 + scale_x_continuous(limits=c(vals$minimum, vals$maximum))
 #     p2 <- p2 + scale_x_continuous(limits=c(vals$minimum, vals$maximum)) +
 #           xlab(paste(plant_trait_name, ' (', data$unit[1], ')'))
-# 
+#
 #   }
-# 
+#
 #   # combine plots
 #   f <- function(x) {suppressWarnings(ggplot_gtable(ggplot_build(x)))}
 #   p1 <- f(p1)

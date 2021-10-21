@@ -15,7 +15,7 @@ metadata_path_dataset_id <- function(dataset_id) {
 #' @export 
 #' @return A list with contents of metadata for specified `dataset_id`
 metadata_read_dataset_id <- function(dataset_id) {
-  dataset_id %>% metadata_path_dataset_id() %>% read_yaml()
+  dataset_id %>% metadata_path_dataset_id() %>% read_metadata()
 }
 
 #' Write the YAML representation of metadata.yml for specified `dataset_id` to
@@ -27,7 +27,7 @@ metadata_read_dataset_id <- function(dataset_id) {
 #' @return a yml file
 #' @export 
 metadata_write_dataset_id <- function(metadata, dataset_id) {
-  write_yaml(metadata, dataset_id %>% metadata_path_dataset_id())
+  write_metadata(metadata, dataset_id %>% metadata_path_dataset_id())
 }
 
 #' Create a template of file `metadata.yml` for specified `dataset_id`
@@ -109,7 +109,7 @@ metadata_create_template <- function(dataset_id,
 
   out[["config"]] <- config
 
-  write_yaml(out, path)
+  write_metadata(out, path)
 }
 
 #' Select column by user

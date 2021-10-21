@@ -1,7 +1,9 @@
-#' Configure AusTraits database object (needs review)
-#' 
-#' Used in the remake::make process to configure individual studies mapping the 
-#' individual traits found in that study along with any relevant unit conversions 
+#' Configure AusTraits database object
+#'
+#' Creates the config object which gets passed onto `load_study`. The config list contains
+#' the subset of trait definitions and unit conversions for those traits for a each study.
+#' `subset_config` is used in the remake::make process to configure individual studies mapping the
+#' individual traits found in that study along with any relevant unit conversions
 #' and trait definitions. `subset_config` and `load_study` are applied to every study
 #' in the remake.yml file
 #'
@@ -9,7 +11,7 @@
 #' @param definitions definitions read in from the definitions.yml file in the config folder
 #' @param unit_conversion_functions unit_conversion.csv file read in from the config folder
 #'
-#' @return list
+#' @return list with dataset_id, metadata, definitions and unit_conversion_functions
 #' @importFrom purrr map_chr
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
@@ -17,43 +19,43 @@
 #'
 #' @examples
 #' \dontrun{
-#' subset_config("data/Falster_2003/metadata.yml", read_yaml("config/definitions.yml"), 
+#' subset_config("data/Falster_2003/metadata.yml", read_yaml("config/definitions.yml"),
 #' make_unit_conversion_functions("config/unit_conversions.csv"))
 #' }
 subset_config <- function(
   filename_metadata,
-  definitions, 
+  definitions,
   unit_conversion_functions) {
-  
+
   dataset_id <- basename(dirname(filename_metadata))
-  
+
   # read metadata
-  metadata <- read_yaml(filename_metadata)
-  
+  metadata <- read_metadata(filename_metadata)
+
   # table of trait_mapping
-  trait_mapping <- 
+  trait_mapping <-
     metadata[["traits"]] %>%
     list_to_df() %>%
-    filter(!is.na(.data$trait_name)) %>% 
+    filter(!is.na(.data$trait_name)) %>%
     # determine unit conversions
     dplyr::mutate(
       i = match(.data$trait_name, names(definitions$traits$elements)),
       to = map_chr(.data$i, ~extract_list_element(.x, definitions$traits$elements, "units")),
       conversion = unit_conversion_name(.data$unit_in, .data$to)
     )
-  
-  unit_conversion_functions_sub <- 
-    unit_conversion_functions[trait_mapping %>% 
+
+  unit_conversion_functions_sub <-
+    unit_conversion_functions[trait_mapping %>%
     filter(.data$unit_in!=.data$to) %>% dplyr::pull(.data$conversion) %>% unique()]
-  
+
   # subset of trait definitions
   traits <-
     definitions$traits$elements[names(definitions$traits$elements) %in% trait_mapping$trait_name]
-  
+
   value_type <- definitions$value_type
-  
+
   list(dataset_id = dataset_id,
-       metadata = metadata, 
+       metadata = metadata,
        definitions = list(
          traits = traits,
          value_type = value_type,
@@ -61,39 +63,39 @@ subset_config <- function(
          columns_sites = names(definitions[["austraits"]][["elements"]][["sites"]][["elements"]]),
          columns_contexts = names(definitions[["austraits"]][["elements"]][["contexts"]][["elements"]])
        ),
-       unit_conversion_functions = unit_conversion_functions_sub) 
+       unit_conversion_functions = unit_conversion_functions_sub)
 }
 
 #' Load Study
-#' 
-#' load_study is used to load individual studies using the config file generated 
-#' from `subset_config()`. `subset_config` and `load_study` are applied to every 
+#'
+#' load_study is used to load individual studies using the config file generated
+#' from `subset_config()`. `subset_config` and `load_study` are applied to every
 #' study in the remake.yml file
 #'
 #' @param filename_data_raw raw data.csv file for any given study
-#' @param config_for_dataset config settings generated from subset_config()
+#' @param config_for_dataset config settings generated from `subset_config()`
 #'
 #' @return list, AusTraits database object
 #' @export
 #' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything one_of
-#' @importFrom tidyr spread 
+#' @importFrom tidyr spread
 #' @importFrom purrr reduce map_chr
 #' @importFrom rlang .data
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' load_study("data/Falster_2003/data.csv", subset_config("data/Falster_2003/metadata.yml",
 #' read_yaml("config/definitions.yml"), make_unit_conversion_functions("config/unit_conversions.csv"))
 #' }
-load_study <- function(filename_data_raw, 
+load_study <- function(filename_data_raw,
                        config_for_dataset) {
-    
+
   dataset_id <- config_for_dataset$dataset_id
   metadata <- config_for_dataset$metadata
   definitions <- config_for_dataset$definitions
-    
+
   unit_conversion_functions <- config_for_dataset$unit_conversion_functions
-  
+
   # load and clean trait data
   traits <- readr::read_csv(filename_data_raw, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
     custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
@@ -110,14 +112,14 @@ load_study <- function(filename_data_raw,
       value_type = factor(.data$value_type, levels = names(definitions$value_type$values)),
       #ensure dates are converted back to character
       date = as.character(.data$date)
-      ) %>% 
-    dplyr::arrange(.data$observation_id, .data$trait_name, .data$value_type) 
+      ) %>%
+    dplyr::arrange(.data$observation_id, .data$trait_name, .data$value_type)
 
-############ Remove this function as it appears to be redundant. Code is the same as `format_sites` #######  
-  
+############ Remove this function as it appears to be redundant. Code is the same as `format_sites` #######
+
   # read site data
   # format_sites_contexts <- function(v, my_list, context = FALSE) {
-  #   tmp <- 
+  #   tmp <-
   #     my_list[[v]] %>%
   #     list1_to_df()
   #   if(!context){
@@ -126,62 +128,62 @@ load_study <- function(filename_data_raw,
   #   } else {
   #     tmp %>% rename(context_property="key") %>%
   #     mutate(dataset_id=dataset_id, context_name = v)
-  #   }    
+  #   }
   # }
 
-################################################################################  
-  
+################################################################################
+
   # extract site data from metadata
-  sites <- 
-    metadata$sites %>%  
-    format_sites(dataset_id) %>% 
-    add_all_columns(definitions$columns_sites) %>% 
-    dplyr::select(-.data$error) %>% 
+  sites <-
+    metadata$sites %>%
+    format_sites(dataset_id) %>%
+    add_all_columns(definitions$columns_sites) %>%
+    dplyr::select(-.data$error) %>%
     # reorder so type, description come first, if present
-    dplyr::mutate(i = case_when(site_property == "description" ~ 1, site_property == "latitude (deg)" ~ 2, 
+    dplyr::mutate(i = case_when(site_property == "description" ~ 1, site_property == "latitude (deg)" ~ 2,
                                 site_property == "longitude (deg)" ~ 3, TRUE ~ 4)) %>%
-    dplyr::arrange(.data$site_name, .data$i, .data$site_property) %>% 
+    dplyr::arrange(.data$site_name, .data$i, .data$site_property) %>%
     dplyr::select(-.data$i)
 
   # read contextual data
-  contexts <- 
-    metadata$contexts %>% 
-    format_sites(dataset_id, context = TRUE) %>% 
-    add_all_columns(definitions$columns_contexts) %>% 
-    dplyr::select(-.data$error) %>% 
+  contexts <-
+    metadata$contexts %>%
+    format_sites(dataset_id, context = TRUE) %>%
+    add_all_columns(definitions$columns_contexts) %>%
+    dplyr::select(-.data$error) %>%
     # reorder so type, description come first, if present
     dplyr::mutate(i = case_when(context_property == "type" ~ 1, context_property == "description" ~ 2, TRUE ~ 3)) %>%
-    dplyr::arrange(.data$context_name, .data$i, .data$context_property) %>% 
+    dplyr::arrange(.data$context_name, .data$i, .data$context_property) %>%
     dplyr::select(-.data$i)
 
   # record contributors
-  contributors <- 
+  contributors <-
     metadata$people %>%
-    list_to_df() %>% 
-    dplyr::mutate(dataset_id = dataset_id) %>% 
-    dplyr::select(dataset_id = dataset_id, everything()) %>% 
+    list_to_df() %>%
+    dplyr::mutate(dataset_id = dataset_id) %>%
+    dplyr::select(dataset_id = dataset_id, everything()) %>%
     filter(!is.na(.data$name))
 
   # record methods on study from metadata
-  sources <- metadata$source %>% 
-            lapply(convert_list_to_bib) %>% reduce(c)  
+  sources <- metadata$source %>%
+            lapply(convert_list_to_bib) %>% reduce(c)
   source_primary_key <- metadata$source$primary$key
   source_secondary_keys <- setdiff(names(sources), source_primary_key)
 
-  methods <-   
+  methods <-
     full_join( by = "dataset_id",
-      # methods used to collect each trait  
+      # methods used to collect each trait
       metadata[["traits"]] %>%
         list_to_df() %>%
-        filter(!is.na(.data$trait_name)) %>% 
+        filter(!is.na(.data$trait_name)) %>%
         dplyr::mutate(dataset_id = dataset_id) %>%
-        dplyr::select(dataset_id, .data$trait_name, .data$methods) 
+        dplyr::select(dataset_id, .data$trait_name, .data$methods)
       ,
       # study methods
-      metadata$dataset %>% 
-        list1_to_df() %>% 
+      metadata$dataset %>%
+        list1_to_df() %>%
         spread(.data$key, .data$value) %>%
-        dplyr::select(one_of(names(metadata$dataset))) %>% 
+        dplyr::select(one_of(names(metadata$dataset))) %>%
           dplyr::mutate(dataset_id = dataset_id) %>%
           dplyr::select(-.data$original_file, -.data$notes)
       )  %>%
@@ -193,17 +195,17 @@ load_study <- function(filename_data_raw,
           source_primary_citation = bib_print(sources[[source_primary_key]]),
           source_secondary_key = source_secondary_keys %>% paste(collapse = "; "),
           source_secondary_citation = ifelse(length(source_secondary_keys) == 0, NA_character_,
-          map_chr(sources[source_secondary_keys], bib_print) %>% paste(collapse = "; ") %>% 
+          map_chr(sources[source_secondary_keys], bib_print) %>% paste(collapse = "; ") %>%
           stringr::str_replace_all(".;", ";")
           )
         )
       )
 
   # Retrieve taxonomic details for known species
-  taxonomic_updates <-  
-    traits %>% 
-    dplyr::select(dataset_id, .data$original_name, cleaned_name = .data$taxon_name) %>% 
-    dplyr::distinct() %>% 
+  taxonomic_updates <-
+    traits %>%
+    dplyr::select(dataset_id, .data$original_name, cleaned_name = .data$taxon_name) %>%
+    dplyr::distinct() %>%
     dplyr::arrange(.data$cleaned_name)
 
   list(dataset_id = dataset_id,
@@ -227,25 +229,33 @@ load_study <- function(filename_data_raw,
 ## The code custom_R_code assumes a single input -- a  data.frame
 ## called `data` and returns a data.frame
 #' Apply custom data manipulations
-#' 
+#'
 #' Applies custom data manipulations if the metadata field custom_R_code is not empty
-#' Otherwise no manipulations will be done. 
+#' Otherwise no manipulations will be done.
 #'
 #' @param txt character text within custom_R_code
 #'
 #' @return character text containing custom_R_code if custom_R_code is not empty,
-#' otherwise no changes are made 
+#' otherwise no changes are made
 #' @export
 custom_manipulation <- function(txt) {
   if (!is.null(txt) && !is.na(txt)  && nchar(txt) > 0) {
-    function(data) {eval(parse(text=txt), env = new.env())}
+
+    txt2 <-
+      # Trim white space, quotes, new line from front and back
+      txt %>% stringi::stri_trim_both("[^'\"\\ \\n]", negate=FALSE) %>%
+      # Squish internal white space, also removes new line characters
+      stringr::str_replace_all("\\s+", " ")
+    # test: txt <-" '' \n Total of 23.5 bitcoins. "
+
+    function(data) {eval(parse(text=txt2), envir=new.env())}
   } else {
     identity
   }
 }
 
 #' Format site and context data from list to tibble
-#' 
+#'
 #' Format site data read in from the metadata.yml file. Converts from list to tibble.
 #' Includes context information if available by specifying context = TRUE
 #'
@@ -264,7 +274,7 @@ custom_manipulation <- function(txt) {
 format_sites <- function(my_list, dataset_id, context = FALSE) {
 
   f_helper <- function(v, a_list, context = FALSE) {
-    tmp <- 
+    tmp <-
       a_list[[v]] %>%
       list1_to_df()
     if(!context){
@@ -273,16 +283,16 @@ format_sites <- function(my_list, dataset_id, context = FALSE) {
     } else {
       tmp %>% dplyr::rename(context_property = "key") %>%
       dplyr::mutate(context_name = v)
-    }    
+    }
   }
 
   # if length 1 then it's an "na"
   if(length(unlist(my_list)) > 1){
-    out <- 
-      my_list %>%   
+    out <-
+      my_list %>%
       lapply(lapply, as.character) %>%
       lapply(names(.), f_helper, ., context = context) %>%
-      dplyr::bind_rows() %>% 
+      dplyr::bind_rows() %>%
       dplyr::mutate(dataset_id = dataset_id)
   } else {
     out <- tibble::tibble(dataset_id = character())
@@ -290,18 +300,18 @@ format_sites <- function(my_list, dataset_id, context = FALSE) {
   out
 }
 
-#' Flag any unrecognised traits 
-#' 
+#' Flag any unrecognised traits
+#'
 #' Flag any unrecognised traits, as defined in the definitions.yml file
 #'
 #' @param data tibble or dataframe containing the study data
 #' @param definitions definitions read in from the definitions.yml file in the config folder
-#' 
+#'
 #' @importFrom rlang .data
 #' @return tibble with unrecognised traits flagged as "Unsupported trait" in the "error" column
 #' @export
 flag_unsupported_traits <- function(data, definitions) {
-  
+
   # create error column if not already present
   if(is.null(data[["error"]]))
     data[["error"]] <- NA_character_
@@ -310,37 +320,37 @@ flag_unsupported_traits <- function(data, definitions) {
   i <- data$trait_name %in% names(definitions$traits)
   data %>%
     dplyr::mutate(error = ifelse(!i, "Unsupported trait", .data$error))
-  
+
   data
 }
 
 #' Flag any excluded observations
-#' 
-#' Checks the metadata yaml file for any excluded observations. If there are none, 
-#' returns the original data. If there are excluded observations returns the mutated data 
+#'
+#' Checks the metadata yaml file for any excluded observations. If there are none,
+#' returns the original data. If there are excluded observations returns the mutated data
 #' with excluded observations flagged in a new column
 #'
 #' @param data tibble or dataframe containing the study data
 #' @param metadata metadata yaml file for any given study
-#' 
+#'
 #' @importFrom stringr str_squish
 #' @importFrom rlang .data
 #' @return dataframe with flagged excluded observations if there are any
 #' @export
 flag_excluded_observations <- function(data, metadata) {
-  
+
   if(length(metadata$exclude_observations)==1 && is.na(metadata$exclude_observations)) return(data)
-  
-  fix <- 
-    metadata$exclude_observations %>% 
-    list_to_df() %>% 
-    tidyr::separate_rows(.data$find, sep=", ") %>% 
+
+  fix <-
+    metadata$exclude_observations %>%
+    list_to_df() %>%
+    tidyr::separate_rows(.data$find, sep=", ") %>%
     dplyr::mutate(find = str_squish(.data$find))
-  
+
   if(nrow(fix) == 0) return(data)
 
   fix <- split(fix, fix$variable)
-  
+
   for(v in names(fix))
     data <- data %>%
       dplyr::mutate(error = ifelse(data[[v]] %in% fix[[v]]$find, "Observation excluded in metadata", .data$error))
@@ -366,7 +376,7 @@ check_all_values_in <- function(x, y, sep=" "){
 # formats bibentry according to desired style using RefManageR
 # not using print.BibEntry as this message to screen
 #' Format BibEntry using RefManageR
-#' 
+#'
 #' Format BibEntry object according to desired style using RefManageR
 #'
 #' @param bib BibEntry object
@@ -381,15 +391,15 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
   oldopts <- RefManageR::BibOptions(.opts)
   on.exit(RefManageR::BibOptions(oldopts))
 
-  bib %>% 
+  bib %>%
     format.BibEntry(.sort = F) %>%
     # HACK: remove some of formatting introduced in line above
     # would be nicer if we could apply csl style
-    gsub("[] ", "", ., fixed = TRUE) %>% 
-    gsub("\\n", " ", .) %>% 
-    gsub("  ", " ", .) %>% 
-    gsub("DOI:", " doi: ", ., fixed = TRUE) %>% 
-    gsub("URL:", " url: ", ., fixed = TRUE) %>% 
+    gsub("[] ", "", ., fixed = TRUE) %>%
+    gsub("\\n", " ", .) %>%
+    gsub("  ", " ", .) %>%
+    gsub("DOI:", " doi: ", ., fixed = TRUE) %>%
+    gsub("URL:", " url: ", ., fixed = TRUE) %>%
     ifelse(tolower(bib$bibtype) == "article",  gsub("In:", " ", .), .)
 }
 
@@ -426,7 +436,7 @@ convert_bib_to_list <- function(bib) {
 
   # Read in file, convert to list, set key
     bib <- bib %>% unlist()
-  
+
     if(!is.null(bib$author))
       bib$author <- paste(bib$author, collapse=" and ")
     if(!is.null(bib$editor))
@@ -436,32 +446,32 @@ convert_bib_to_list <- function(bib) {
 }
 
 #' Flag values outside of allowable range
-#' 
-#' Flags any values that are outside the allowable range defined in the 
-#' definitions.yml file. NA values are flagged as errors. 
+#'
+#' Flags any values that are outside the allowable range defined in the
+#' definitions.yml file. NA values are flagged as errors.
 #'
 #' @param data tibble or dataframe containing the study data
 #' @param definitions definitions read in from the definitions.yml file in the config folder
 #'
 #' @importFrom rlang .data
-#' @return tibble with flagged values outside of allowable range, unsupported categorical 
+#' @return tibble with flagged values outside of allowable range, unsupported categorical
 #' trait values or missing values
 #' @export
 flag_unsupported_values <- function(data, definitions) {
 
   # NA values
-  data <- data %>% 
+  data <- data %>%
     dplyr::mutate(
       error = ifelse(is.na(.data$value), "Missing value", .data$error),
       error = ifelse(is.na(.data$taxon_name), "Missing species name", .data$error),
     )
 
   # only check traits not already flagged as errors
-  traits <- data %>% 
+  traits <- data %>%
     dplyr::filter(is.na(.data$error)) %>% dplyr::pull(.data$trait_name) %>% unique()
 
   for(trait in traits ) {
-   
+
     # General categorical traits
     if(definitions$traits[[trait]]$type == "categorical") {
 
@@ -469,7 +479,7 @@ flag_unsupported_values <- function(data, definitions) {
             data[["trait_name"]] == trait &
             !is.null(definitions$traits[[trait]]$values) &
             !check_all_values_in(data$value, names(definitions$traits[[trait]]$values))
-      data <- data %>% 
+      data <- data %>%
         dplyr::mutate(error = ifelse(i, "Unsupported trait value", .data$error))
     }
 
@@ -480,7 +490,7 @@ flag_unsupported_values <- function(data, definitions) {
 
       # Only Y,N
       i <-  ii & is.na(data[["error"]]) & grepl("[YN]+", data[["value"]])
-      data <- data %>% 
+      data <- data %>%
         dplyr::mutate(error = ifelse(i, "Time can only contain 0 & 1s", .data$error))
 
       # Must be length 12
@@ -496,10 +506,10 @@ flag_unsupported_values <- function(data, definitions) {
       i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & is.na(x)
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Value does not convert to numeric", .data$error))
- 
+
       i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait &
         (x < definitions$traits[[trait]]$values$minimum | x > definitions$traits[[trait]]$values$maximum)
-      data <- data %>% 
+      data <- data %>%
         dplyr::mutate(error = ifelse(i, "Value out of allowable range", .data$error))
     }
   }
@@ -515,7 +525,7 @@ flag_unsupported_values <- function(data, definitions) {
 #' @importFrom readr cols read_csv
 #' @export
 #'
-#' @examples 
+#' @examples
 #' \dontrun{
 #' make_unit_conversion_functions("config/unit_conversions.csv")
 #' }
@@ -532,7 +542,7 @@ make_unit_conversion_functions <- function(filename) {
 }
 
 #' Generate unit conversion name
-#' 
+#'
 #' creates the unit conversion name based on the original units and the units to
 #' converted to
 #'
@@ -550,7 +560,7 @@ unit_conversion_name <- function(from, to) {
 #' @param data tibble or dataframe containing the study data
 #' @param definitions definitions read in from the definitions.yml file in the config folder
 #' @param unit_conversion_functions unit_conversions.csv file stored in the config folder
-#' 
+#'
 #' @importFrom rlang .data
 #' @return tibble with converted units
 #' @export
@@ -573,7 +583,7 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
         data[["to_convert"]] & !data[["ucn"]] %in% names(unit_conversion_functions)
 
   data <- data %>%
-    dplyr::mutate(error = ifelse(j, "Missing unit conversion", .data$error), 
+    dplyr::mutate(error = ifelse(j, "Missing unit conversion", .data$error),
                   to_convert = ifelse(j, FALSE, .data$to_convert))
 
   f <- function(value, name) {
@@ -590,18 +600,15 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
     dplyr::select(dplyr::one_of(vars))
 }
 
-# Add or remove columns of data as needed so that all sets have
-# the same columns.
 #' Add or remove columns of data
-#' 
-#' Add or remove columns of data as needed so that all sets
-#' have the same columns. Used for adding extra columns for the trait, sites
-#' and context tibbles
 #'
-#' @param data tibble or dataframe containing the study data
-#' @param vars additional data to be added
+#' Add or remove columns of data as needed so that all datasets
+#' have the same columns. Also adds in an error column.
 #'
-#' @return list or tibble with additional data added  
+#' @param data dataframe containing study data read in as a csv file
+#' @param vars vector of variable columns names to be included in the final formatted tibble
+#'
+#' @return tibble with the correct selection of columns including an error column
 #' @importFrom data.table :=
 #' @export
 add_all_columns <- function(data, vars) {
@@ -611,26 +618,25 @@ add_all_columns <- function(data, vars) {
   for(v in missing)
     data <- data%>%
       dplyr::mutate(!!v := NA_character_)
-  
+
   data %>%
     dplyr::select(dplyr::one_of(vars)) %>%
     dplyr::mutate(error = NA_character_)
 }
 
 #' Process a single dataset
-#' 
-#' Processes a single dataset using the original dataframe and the associated 
-#' metadata.yml file based on `dataset_id`. Builds a tibble with the study data 
-#' and adds the corrected trait names, assigns a unique observation_id and implements
-#' any categorical trait value substituions. `parse data` is used in the core 
-#' workflow pipeline (such as in `load study`).
 #'
-#' @param data tibble or dataframe containing the study data
-#' @param dataset_id identifier for a particular study in the AusTraits database
+#' Process a single dataset with `dataset_id` using the associated `data.csv` and
+#' `metadata.yml` files. Adds a unique observation id for each row of observation,
+#' trait names are formatted using AusTraits accepted names and trait substitutions
+#' are added. `parse data` is used in the core workflow pipeline (i.e. in `load study`).
+#'
+#' @param data dataframe containing study data read in as a csv file
+#' @param dataset_id identifier for a particular study in the AusTraits compilation
 #' @param metadata yaml file with metadata
 #'
-#' @return tibble
-#' @importFrom rlang .data
+#' @return tibble in long format with AusTraits formatted trait names, trait
+#' substitutions and unique observation id added
 #' @export
 parse_data <- function(data, dataset_id, metadata) {
 
@@ -647,24 +653,24 @@ parse_data <- function(data, dataset_id, metadata) {
 
   df <- data %>%
         dplyr::select(one_of(var_in)) %>%
-        rename_columns(var_in, var_out) %>% 
+        rename_columns(var_in, var_out) %>%
         dplyr::mutate(dataset_id = dataset_id)
 
-  # Add unique observation ids 
+  # Add unique observation ids
   # function builds id -- determine number of 00s needed based on number of records
-  make_id <- function(n, dataset_id) 
-              sprintf(paste0("%s_%0", ceiling(log10(n)), "d"), 
+  make_id <- function(n, dataset_id)
+              sprintf(paste0("%s_%0", ceiling(log10(n)), "d"),
                               dataset_id, seq_len(n))
 
   if(!data_is_long_format) {
     # For wide datasets rows are assumed to be natural grouping
-    df <- df %>% 
+    df <- df %>%
             dplyr::mutate(observation_id = make_id(nrow(.), dataset_id))
   } else {
-    
+
     # For long datasets, create unique identifier from taxon_name, site, and observation_id (if specified)
     df[["observation_id_tmp"]] <- gsub(" ", "-", df[["taxon_name"]])
-      
+
     if(!is.null(df[["site_name"]][1]))
       df[["observation_id_tmp"]] <- paste0(df[["observation_id_tmp"]],"_", df[["site_name"]])
 
@@ -675,19 +681,19 @@ parse_data <- function(data, dataset_id, metadata) {
 
     df <- df %>%
               dplyr::left_join(by = "observation_id_tmp",
-                        tibble::tibble(observation_id_tmp = df[["observation_id_tmp"]] %>% unique() %>% sort(), 
+                        tibble::tibble(observation_id_tmp = df[["observation_id_tmp"]] %>% unique() %>% sort(),
                                observation_id = make_id(length(.data$observation_id_tmp), dataset_id))
                         ) %>%
               dplyr::select(-.data$observation_id_tmp)
   }
-  
+
   # Step 2. Add trait information, with correct names
 
   cfgChar <-
     metadata[["traits"]] %>%
     list_to_df() %>%
     dplyr::filter(!is.na(.data$trait_name))  # remove any rows without a matching trait record
-   
+
   # check that the trait names as specified in config actually exist in data
   # if not then we need to stop and fix this problem
   # NOTE - only need to do this step for wide (non-vertical) data
@@ -695,7 +701,7 @@ parse_data <- function(data, dataset_id, metadata) {
     stop(paste(dataset_id, ": missing traits: ", setdiff(cfgChar[["var_in"]], colnames(data))))
   }
 
-  ## if needed, change from wide to long style
+  ## if needed, change from wide to long format
   if (data_is_long_format == FALSE) {
     # if the dataset is "wide" then process each variable in turn, to create the "long" dataset -
     # say the original dataset has 20 rows of data and 5 traits, then we will end up with 100 rows
@@ -710,7 +716,7 @@ parse_data <- function(data, dataset_id, metadata) {
     }
     out <- dplyr::bind_rows(out)
   } else {
-    out <- df
+    out <- df %>% filter(trait_name %in% cfgChar$var_in)
     out[["value"]] <- out[["value"]] %>%  as.character()
   }
 
@@ -761,8 +767,8 @@ parse_data <- function(data, dataset_id, metadata) {
 ## Enforce some standards on species names
 #' Standardise species names
 #'
-#' @param x vector, dataframe or list containing original species names 
-#' 
+#' @param x vector, dataframe or list containing original species names
+#'
 #' @importFrom stringr str_squish
 #' @return vector with standardised species names
 standardise_names <- function(x) {
@@ -814,12 +820,12 @@ standardise_names <- function(x) {
 }
 
 #' Apply taxonomic updates
-#' 
+#'
 #' Applies taxonomic updates to the study data from the metadata.yml file
-#' 
+#'
 #' @param data tibble or dataframe containing the study data
 #' @param metadata yaml file containing the metadata
-#' 
+#'
 #' @return tibble with the taxonomic updates applied
 apply_taxonomic_updates  <- function(data, metadata){
 
@@ -836,7 +842,7 @@ apply_taxonomic_updates  <- function(data, metadata){
   }
 
   to_update <- rep(TRUE, nrow(out))
-  
+
   ## Makes replacements, row by row
   for(i in seq_len(nrow(cfgLookup))) {
     j <- which(out[["taxon_name"]] == cfgLookup[["find"]][i])
@@ -855,7 +861,7 @@ apply_taxonomic_updates  <- function(data, metadata){
 
 #' Combine all the AusTraits studies into the compiled AusTraits database
 #'
-#' `combine_austraits` compiles all the loaded studies into a single AusTraits 
+#' `combine_austraits` compiles all the loaded studies into a single AusTraits
 #' database object as a large list
 #'
 #' @param ... arguments passed to other functions
@@ -867,29 +873,29 @@ apply_taxonomic_updates  <- function(data, metadata){
 #' @export
 combine_austraits <- function(..., d=list(...), definitions) {
 
-  
+
   purrr::map_lgl(d, ~.data$site_name %>% is.logical())
   combine <- function(name, d) {
     dplyr::bind_rows(lapply(d, "[[", name))
   }
 
   # combine sources and remove duplicates
-  sources <- d %>% lapply("[[", "sources") 
+  sources <- d %>% lapply("[[", "sources")
   keys <- sources %>% lapply(names)  %>% unlist() %>% unique() %>% sort()
   sources <- sources %>% purrr::reduce(c) %>% .data[keys]
-  
+
   # drop null datasets
   d[sapply(d, is.null)] <- NULL
 
   names(d) <- sapply(d, "[[", "dataset_id")
 
-  # taxonomy 
-  taxonomic_updates <- 
+  # taxonomy
+  taxonomic_updates <-
     combine("taxonomic_updates", d) %>%
     dplyr::group_by(.data$original_name, .data$cleaned_name) %>%
-    dplyr::mutate(dataset_id = paste(.data$dataset_id, collapse = " ")) %>% 
-    dplyr::ungroup() %>% 
-    dplyr::distinct() %>% 
+    dplyr::mutate(dataset_id = paste(.data$dataset_id, collapse = " ")) %>%
+    dplyr::ungroup() %>%
+    dplyr::distinct() %>%
     dplyr::arrange(.data$original_name, .data$cleaned_name)
 
   traits <- combine("traits", d)
@@ -912,7 +918,7 @@ combine_austraits <- function(..., d=list(...), definitions) {
 }
 
 #' Apply taxonomic updates to austraits_raw
-#' 
+#'
 #' Applies taxonomic updates to austraits_raw
 #'
 #' @param austraits_raw AusTraits compiled data as a large list without taxonomic updates applied
@@ -921,33 +927,33 @@ combine_austraits <- function(..., d=list(...), definitions) {
 #' @return list AusTraits compiled data with taxonomic updates applied
 #' @importFrom dplyr contains
 #' @importFrom rlang .data
-#' 
+#'
 #' @export
 update_taxonomy <- function(austraits_raw, taxa) {
-  
-  austraits_raw$taxonomic_updates <- 
-    austraits_raw$taxonomic_updates %>% 
-    dplyr::left_join(by = "cleaned_name", 
-              taxa %>% dplyr::select(.data$cleaned_name, .data$taxonIDClean, .data$taxonomicStatusClean, 
+
+  austraits_raw$taxonomic_updates <-
+    austraits_raw$taxonomic_updates %>%
+    dplyr::left_join(by = "cleaned_name",
+              taxa %>% dplyr::select(.data$cleaned_name, .data$taxonIDClean, .data$taxonomicStatusClean,
                                       .data$alternativeTaxonomicStatusClean, .data$acceptedNameUsageID, .data$taxon_name)
-              ) %>% 
-    dplyr::distinct() %>% 
+              ) %>%
+    dplyr::distinct() %>%
     dplyr::arrange(.data$cleaned_name)
-  
-  austraits_raw$traits <- 
-    austraits_raw$traits %>% 
-    dplyr::rename(cleaned_name = .data$taxon_name) %>% 
-    dplyr::left_join(by = "cleaned_name", 
+
+  austraits_raw$traits <-
+    austraits_raw$traits %>%
+    dplyr::rename(cleaned_name = .data$taxon_name) %>%
+    dplyr::left_join(by = "cleaned_name",
               taxa %>% dplyr::select(.data$cleaned_name, .data$taxon_name)
-              ) %>% 
-    dplyr::select(.data$dataset_id, .data$taxon_name, everything()) %>% 
-    dplyr::mutate(taxon_name = ifelse(is.na(.data$taxon_name), .data$cleaned_name, .data$taxon_name)) %>% 
+              ) %>%
+    dplyr::select(.data$dataset_id, .data$taxon_name, everything()) %>%
+    dplyr::mutate(taxon_name = ifelse(is.na(.data$taxon_name), .data$cleaned_name, .data$taxon_name)) %>%
     dplyr::select(-.data$cleaned_name)
-  
+
   species_tmp <-
-    austraits_raw$traits %>% 
-    dplyr::select(.data$taxon_name) %>% 
-    dplyr::distinct() %>% 
+    austraits_raw$traits %>%
+    dplyr::select(.data$taxon_name) %>%
+    dplyr::distinct() %>%
     dplyr::left_join(by = "taxon_name",
       taxa %>% dplyr::select(-contains("clean")) %>% dplyr::distinct()
     ) %>%
@@ -955,26 +961,26 @@ update_taxonomy <- function(austraits_raw, taxa) {
     dplyr::mutate(
       genus = .data$taxon_name  %>% stringr::str_split(" ") %>% map_chr(1),
       genus = ifelse(.data$genus %in% taxa$taxon_name, .data$genus, NA)
-    )  %>% 
-    dplyr::arrange(.data$taxon_name) %>% 
+    )  %>%
+    dplyr::arrange(.data$taxon_name) %>%
     dplyr::mutate(
       taxonomicStatus = ifelse(is.na(.data$taxonomicStatus) & !is.na(.data$genus), "genus_known", .data$taxonomicStatus),
       taxonomicStatus = ifelse(is.na(.data$taxonomicStatus) & is.na(.data$genus), "unknown", .data$taxonomicStatus),
-    ) %>% 
+    ) %>%
     split(.$taxonomicStatus)
-  
+
   # retrieve families from list of known genera - prioritise genera with accepted names
-   species_tmp[["genus_known"]] <- 
-     species_tmp[["genus_known"]] %>% 
-     dplyr::select(-.data$family) %>% 
-     dplyr::left_join(by="genus", 
-               taxa %>% dplyr::filter(.data$taxonRank == "Genus") %>% 
+   species_tmp[["genus_known"]] <-
+     species_tmp[["genus_known"]] %>%
+     dplyr::select(-.data$family) %>%
+     dplyr::left_join(by="genus",
+               taxa %>% dplyr::filter(.data$taxonRank == "Genus") %>%
                  dplyr::select(genus = .data$taxon_name, .data$family) %>% dplyr::distinct()
      )
 
   austraits_raw$taxa <-
-    species_tmp %>% 
-    dplyr::bind_rows() %>% 
+    species_tmp %>%
+    dplyr::bind_rows() %>%
     dplyr::arrange(.data$taxon_name)
 
   austraits_raw
@@ -984,11 +990,11 @@ update_taxonomy <- function(austraits_raw, taxa) {
 #'
 #' @param austraits AusTraits database object
 #' @param version version number
-#' @param git_sha Git SHA 
+#' @param git_sha Git SHA
 #'
-#' @return AusTraits database object with version information added 
+#' @return AusTraits database object with version information added
 add_version_info <- function(austraits, version, git_sha) {
-  
+
   austraits$build_info <- list(
     version=version,
     git_SHA=git_sha,
@@ -1015,7 +1021,7 @@ export_version_plaintext <- function(austraits, path) {
   writeLines(build_info, sprintf("%s/build_info.md", path))
 
   # Save definitions
-  write_yaml(austraits[["definitions"]], sprintf("%s/definitions.yml", path))
+  yaml::write_yaml(austraits[["definitions"]], sprintf("%s/definitions.yml", path))
 
   # Save references
   RefManageR::WriteBib(austraits$sources, sprintf("%s/sources", path))
@@ -1027,8 +1033,8 @@ export_version_plaintext <- function(austraits, path) {
 }
 
 #' Create release
-#' 
-#' Builds various files to go with the release of a new AusTraits version. Including 
+#'
+#' Builds various files to go with the release of a new AusTraits version. Including
 #' austraits.rds, a readme file, dictionary.rmd file, plain text files with csv, and
 #' a NEWS.md file.
 #'
@@ -1069,7 +1075,7 @@ create_release <- function(austraits, v_prev= NULL) {
   }
 
   file.copy("NEWS.md", sprintf("%s/NEWS.md", export_dir))
-  
+
   # Go to directory and zip
   # remove existing file
   wd <- setwd(dirname(path))
