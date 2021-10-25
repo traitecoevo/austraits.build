@@ -15,6 +15,7 @@
 #' @importFrom purrr map_chr
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
+#' @importFrom lubridate dmy
 #' @export
 #'
 #' @examples
@@ -115,24 +116,6 @@ load_study <- function(filename_data_raw,
       ) %>%
     dplyr::arrange(.data$observation_id, .data$trait_name, .data$value_type)
 
-############ Remove this function as it appears to be redundant. Code is the same as `format_sites` #######
-
-  # read site data
-  # format_sites_contexts <- function(v, my_list, context = FALSE) {
-  #   tmp <-
-  #     my_list[[v]] %>%
-  #     list1_to_df()
-  #   if(!context){
-  #     tmp %>% rename(site_property="key") %>%
-  #     mutate(dataset_id=dataset_id, site_name = v)
-  #   } else {
-  #     tmp %>% rename(context_property="key") %>%
-  #     mutate(dataset_id=dataset_id, context_name = v)
-  #   }
-  # }
-
-################################################################################
-
   # extract site data from metadata
   sites <-
     metadata$sites %>%
@@ -222,18 +205,13 @@ load_study <- function(filename_data_raw,
        )
 }
 
-## Creates a function that applies custom data manipulations as needed
-## If the metadata field custom_R_code is not empty, apply code
-## specified there. Otherwise we apply the identity function to
-## indicate no manipulations will be  done.
-## The code custom_R_code assumes a single input -- a  data.frame
-## called `data` and returns a data.frame
 #' Apply custom data manipulations
 #'
 #' Applies custom data manipulations if the metadata field custom_R_code is not empty
-#' Otherwise no manipulations will be done.
+#' Otherwise no manipulations will be done by applying the `identity` function.
+#' The code custom_R_code assumes a single input.
 #'
-#' @param txt character text within custom_R_code
+#' @param txt character text within custom_R_code of a metadata.yml file
 #'
 #' @return character text containing custom_R_code if custom_R_code is not empty,
 #' otherwise no changes are made
@@ -264,12 +242,14 @@ custom_manipulation <- function(txt) {
 #' @param context logical, adds context information if available, default = FALSE
 #'
 #' @return tibble with site and context details if available
+#' @importFrom rlang .data
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' format_sites(yaml::read_yaml("data/Falster_2003/metadata.yml")$sites, "Falster_2003")
-#' format_sites(yaml::read_yaml("data/Apgaua_2017/metadata.yml")$context, "Apgaua_2017", context = TRUE)
+#' format_sites(yaml::read_yaml("data/Apgaua_2017/metadata.yml")$context,
+#' "Apgaua_2017", context = TRUE)
 #' }
 format_sites <- function(my_list, dataset_id, context = FALSE) {
 
@@ -358,10 +338,10 @@ flag_excluded_observations <- function(data, metadata) {
   data
 }
 
-# checks if values in vector x are in y
-# values in x may contain multiple values separated by `sep`
-# so first split these
 #' Check values in one vector against values in another vector
+#' 
+#' `check_all_values_in` checks if values in vector x are in y. Values in x may
+#' contain multiple values separated by `sep` so these are split first using `str_split`.
 #'
 #' @param x vector
 #' @param y vector
@@ -373,8 +353,6 @@ check_all_values_in <- function(x, y, sep=" "){
   x %>% stringr::str_split(sep) %>% sapply(function(xi) all(xi %in% y))
 }
 
-# formats bibentry according to desired style using RefManageR
-# not using print.BibEntry as this message to screen
 #' Format BibEntry using RefManageR
 #'
 #' Format BibEntry object according to desired style using RefManageR
@@ -403,7 +381,6 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
     ifelse(tolower(bib$bibtype) == "article",  gsub("In:", " ", .), .)
 }
 
-# convert a list of elements into a valid bibEntry
 #' Convert a list of elements into a BibEntry object
 #'
 #' @param ref list of elements for a reference
@@ -631,8 +608,8 @@ add_all_columns <- function(data, vars) {
 #' trait names are formatted using AusTraits accepted names and trait substitutions
 #' are added. `parse data` is used in the core workflow pipeline (i.e. in `load study`).
 #'
-#' @param data dataframe containing study data read in as a csv file
-#' @param dataset_id identifier for a particular study in the AusTraits compilation
+#' @param data tibble or dataframe containing the study data
+#' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param metadata yaml file with metadata
 #'
 #' @return tibble in long format with AusTraits formatted trait names, trait
@@ -666,6 +643,7 @@ parse_data <- function(data, dataset_id, metadata) {
     # For wide datasets rows are assumed to be natural grouping
     df <- df %>%
             dplyr::mutate(observation_id = make_id(nrow(.), dataset_id))
+#    df$observation_id <-  make_id(nrow(df), df$dataset_id)
   } else {
 
     # For long datasets, create unique identifier from taxon_name, site, and observation_id (if specified)
@@ -716,7 +694,7 @@ parse_data <- function(data, dataset_id, metadata) {
     }
     out <- dplyr::bind_rows(out)
   } else {
-    out <- df %>% filter(trait_name %in% cfgChar$var_in)
+    out <- df %>% filter(.data$trait_name %in% cfgChar$var_in)
     out[["value"]] <- out[["value"]] %>%  as.character()
   }
 
@@ -763,9 +741,9 @@ parse_data <- function(data, dataset_id, metadata) {
   out
 }
 
-
-## Enforce some standards on species names
 #' Standardise species names
+#' 
+#' Enforces some standards on species names
 #'
 #' @param x vector, dataframe or list containing original species names
 #'

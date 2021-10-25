@@ -9,14 +9,14 @@ load_study(filename_data_raw, config_for_dataset)
 \arguments{
 \item{filename_data_raw}{raw data.csv file for any given study}
 
-\item{config_for_dataset}{config settings generated from subset_config()}
+\item{config_for_dataset}{config settings generated from `subset_config()`}
 }
 \value{
 list, AusTraits database object
 }
 \description{
-load_study is used to load individual studies using the config file generated 
-from `subset_config()`. `subset_config` and `load_study` are applied to every 
+load_study is used to load individual studies using the config file generated
+from `subset_config()`. `subset_config` and `load_study` are applied to every
 study in the remake.yml file
 }
 \examples{

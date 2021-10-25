@@ -12,7 +12,7 @@ create_release(austraits, v_prev = NULL)
 \item{v_prev}{specify whether to update the NEWS.md file, default = NULL}
 }
 \description{
-Builds various files to go with the release of a new AusTraits version. Including 
+Builds various files to go with the release of a new AusTraits version. Including
 austraits.rds, a readme file, dictionary.rmd file, plain text files with csv, and
 a NEWS.md file.
 }

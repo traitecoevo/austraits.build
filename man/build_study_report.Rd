@@ -4,7 +4,12 @@
 \alias{build_study_report}
 \title{Build report for a specific study}
 \usage{
-build_study_report(dataset_id, overwrite = FALSE, path = "export/reports")
+build_study_report(
+  dataset_id,
+  overwrite = FALSE,
+  output_path = "export/reports",
+  input_file = "scripts/report_study.Rmd"
+)
 }
 \arguments{
 \item{dataset_id}{name of specific study/dataset}
@@ -12,7 +17,9 @@ build_study_report(dataset_id, overwrite = FALSE, path = "export/reports")
 \item{overwrite}{logical value to determine whether to overwrite existing report,
 default = FALSE, if report exists already set to TRUE to overwrite}
 
-\item{path}{location where rendered report will be saved}
+\item{output_path}{location where rendered report will be saved}
+
+\item{input_file}{report script (.Rmd) file to build study report}
 }
 \value{
 html file of the rendered report located in the "export/reports" folder

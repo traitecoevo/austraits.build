@@ -2,7 +2,7 @@
 % Please edit documentation in R/steps.R
 \name{subset_config}
 \alias{subset_config}
-\title{Configure AusTraits database object (needs review)}
+\title{Configure AusTraits database object}
 \usage{
 subset_config(filename_metadata, definitions, unit_conversion_functions)
 }
@@ -14,17 +14,19 @@ subset_config(filename_metadata, definitions, unit_conversion_functions)
 \item{unit_conversion_functions}{unit_conversion.csv file read in from the config folder}
 }
 \value{
-list
+list with dataset_id, metadata, definitions and unit_conversion_functions
 }
 \description{
-Used in the remake::make process to configure individual studies mapping the 
-individual traits found in that study along with any relevant unit conversions 
+Creates the config object which gets passed onto `load_study`. The config list contains
+the subset of trait definitions and unit conversions for those traits for a each study.
+`subset_config` is used in the remake::make process to configure individual studies mapping the
+individual traits found in that study along with any relevant unit conversions
 and trait definitions. `subset_config` and `load_study` are applied to every study
 in the remake.yml file
 }
 \examples{
 \dontrun{
-subset_config("data/Falster_2003/metadata.yml", read_yaml("config/definitions.yml"), 
+subset_config("data/Falster_2003/metadata.yml", read_yaml("config/definitions.yml"),
 make_unit_conversion_functions("config/unit_conversions.csv"))
 }
 }

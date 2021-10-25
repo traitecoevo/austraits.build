@@ -373,7 +373,6 @@ metadata_add_source_doi <- function(doi, ...) {
   metadata_add_source_bibtex(file=file, ...)
 }
 
-
 #' Add a categorical trait value substitution into a metadata file for a dataset_id
 #' 
 #' `metadata_add_substitution` is used to align the categorical trait values used
@@ -418,7 +417,6 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
   metadata_write_dataset_id(metadata, dataset_id)
 }
 
-
 #' Add a dataframe of trait value substitutions into a metadata file for a dataset_id
 #'
 #' @param dataset_id identifier for a particular study in the AusTraits database
@@ -441,7 +439,6 @@ metadata_add_substitutions_list <- function(dataset_id, substitutions) {
   #write metadata
   metadata_write_dataset_id(metadata, dataset_id)
 }  
-
 
 #' Add a taxonomic change into the metadata yaml file for a dataset_id
 #' 
@@ -1059,7 +1056,6 @@ find_names_distance_to_neighbours <- function(taxon_name, dist=5) {
   # now check every species against nearby species, get distance in chars
   unlist(lapply(n, function(i) min(utils::adist(taxon_name[i], taxon_name[ii[[i]]]))))
 }
-
 
 #' Test AusTraits studies have the correct format
 #' 

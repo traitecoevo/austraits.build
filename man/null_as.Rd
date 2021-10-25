@@ -15,7 +15,7 @@ null_as(x, val = NA)
 a vector with null values replaced
 }
 \description{
-null_as converts NULL values in a vector to a different value. Default is 
+null_as converts NULL values in a vector to a different value. Default is
 converting NuLL to NA
 }
 \examples{

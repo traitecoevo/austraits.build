@@ -23,6 +23,7 @@ Includes context information if available by specifying context = TRUE
 \examples{
 \dontrun{
 format_sites(yaml::read_yaml("data/Falster_2003/metadata.yml")$sites, "Falster_2003")
-format_sites(yaml::read_yaml("data/Apgaua_2017/metadata.yml")$context, "Apgaua_2017", context = TRUE)
+format_sites(yaml::read_yaml("data/Apgaua_2017/metadata.yml")$context,
+"Apgaua_2017", context = TRUE)
 }
 }

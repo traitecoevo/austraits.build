@@ -18,12 +18,22 @@ test_that("split_then_sort returns alphabetically sorted characters",{
   expect_match(austraits.build:::split_then_sort("300 200 100 1 2 3"), "1 100 2 200 3 300")
 })
 
-test_that("df_to_list, expect_match",{
+test_that("df_to_list",{
   expect_match(class(df_to_list(iris)), "list")
   
   expect_match(class(list_to_df(df_to_list(iris)))[1], "tbl_df")
   
   expect_match(class(austraits.build:::append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3)])), "list")
   expect_equal(length( austraits.build:::append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3)])), 3)
+
+
+})
+
+test_that("list_to_df",{
+  expect_equal(list_to_df(NULL), NA)
+  expect_equal(list_to_df(NA), NA)
+  
+  my_list <- list(NA)
+  expect_error(list_to_df())
   
 })

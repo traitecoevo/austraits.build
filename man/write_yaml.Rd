@@ -2,18 +2,7 @@
 % Please edit documentation in R/support.R
 \name{write_yaml}
 \alias{write_yaml}
-\title{Write yaml to filename with preferred defaults, Designed so that read_yaml(write_yaml(y)) == y}
-\usage{
-write_yaml(y, filename)
-}
-\arguments{
-\item{y}{a (yaml) list or a data frame}
-
-\item{filename}{a character string for naming a file}
-}
+\title{write yaml (from package yaml)}
 \description{
-Write yaml to filename with preferred defaults, Designed so that read_yaml(write_yaml(y)) == y
-}
-\examples{
-write_yaml(iris, "iris.yaml")
+write yaml (from package yaml)
 }

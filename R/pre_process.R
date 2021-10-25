@@ -1,4 +1,3 @@
-
 #' Return month for given indices
 #' 
 #' Returns abbreviated month for given indices/ integers,
@@ -183,7 +182,6 @@ convert_month_range_string_to_binary_worker <- function(str) {
   return(NA)
 }
 
-
 #' Separate cells with a range to min and max
 #' 
 #' Separate values cells with a range into columns with minimum and maximum
@@ -212,5 +210,5 @@ separate_range <- function(data, x, y1, y2, sep="-", remove=TRUE) {
 #' @return vector with duplicate values as NA
 #' @importFrom rlang .data
 replace_duplicates_with_NA <- function(x) {
-  x %>% replace(., duplicated(.), NA)
+  base::replace(x, duplicated(x), NA)
 }

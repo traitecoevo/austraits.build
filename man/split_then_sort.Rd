@@ -15,7 +15,7 @@ split_then_sort(x, sep = " ")
 a vector of alphabetically sorted records
 }
 \description{
-split_then_sort: For a vector x in which individual cell may have 
+split_then_sort: For a vector x in which individual cell may have
  multiple values (separated by 'sep'), sort records within each cell alphabetically
 }
 \examples{

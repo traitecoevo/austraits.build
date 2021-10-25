@@ -9,7 +9,6 @@
 #' @param ... arguments passed to build_study_report()
 #'
 #' @return html files of the study report for all studies 
-#' @importFrom rlang .data
 #' @export
 build_study_reports <- function(dataset_ids=NULL, ...) {
 
@@ -100,7 +99,7 @@ get_SHA <- function(path = rprojroot::find_root("remake.yml")) {
 #' Format table with kable and default styling for html
 #'
 #' @param ... arguments passed to `kableExtra::kable()`
-#' @importFrom rlang .env
+#' @importFrom rlang .data
 #' @export
 my_kable_styling_html <- function(...) {
     kableExtra::kable(...) %>%
@@ -150,8 +149,6 @@ as_link <- function(link, text, type="md") {
     sprintf("<a href='%s'> %s </a>", link, text)
 }
 
-
-
 #' Format a tree structure from a vector 
 #' 
 #' `create_tree_branch()` is used to create a tree structure to show how things
@@ -172,5 +169,3 @@ create_tree_branch <- function(x, title, prefix="") {
             x)
   )
 }
-
-

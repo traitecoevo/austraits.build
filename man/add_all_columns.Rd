@@ -7,15 +7,14 @@
 add_all_columns(data, vars)
 }
 \arguments{
-\item{data}{tibble or dataframe containing the study data}
+\item{data}{dataframe containing study data read in as a csv file}
 
-\item{vars}{additional data to be added}
+\item{vars}{vector of variable columns names to be included in the final formatted tibble}
 }
 \value{
-list or tibble with additional data added
+tibble with the correct selection of columns including an error column
 }
 \description{
-Add or remove columns of data as needed so that all sets
-have the same columns. Used for adding extra columns for the trait, sites
-and context tibbles
+Add or remove columns of data as needed so that all datasets
+have the same columns. Also adds in an error column.
 }

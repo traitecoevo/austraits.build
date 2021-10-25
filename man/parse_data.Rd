@@ -14,12 +14,12 @@ parse_data(data, dataset_id, metadata)
 \item{metadata}{yaml file with metadata}
 }
 \value{
-tibble
+tibble in long format with AusTraits formatted trait names, trait
+substitutions and unique observation id added
 }
 \description{
-Processes a single dataset using the original dataframe and the associated 
-metadata.yml file based on `dataset_id`. Builds a tibble with the study data 
-and adds the corrected trait names, assigns a unique observation_id and implements
-any categorical trait value substituions. `parse data` is used in the core 
-workflow pipeline (such as in `load study`).
+Process a single dataset with `dataset_id` using the associated `data.csv` and
+`metadata.yml` files. Adds a unique observation id for each row of observation,
+trait names are formatted using AusTraits accepted names and trait substitutions
+are added. `parse data` is used in the core workflow pipeline (i.e. in `load study`).
 }

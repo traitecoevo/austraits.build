@@ -15,7 +15,7 @@ flag_excluded_observations(data, metadata)
 dataframe with flagged excluded observations if there are any
 }
 \description{
-Checks the metadata yaml file for any excluded observations. If there are none, 
-returns the original data. If there are excluded observations returns the mutated data 
+Checks the metadata yaml file for any excluded observations. If there are none,
+returns the original data. If there are excluded observations returns the mutated data
 with excluded observations flagged in a new column
 }

@@ -17,6 +17,6 @@ combine_austraits(..., d = list(...), definitions)
 AusTraits compilation database as a large list
 }
 \description{
-`combine_austraits` compiles all the loaded studies into a single AusTraits 
+`combine_austraits` compiles all the loaded studies into a single AusTraits
 database object as a large list
 }
