@@ -21,23 +21,24 @@ knitr::opts_chunk$set(
 )
 
 # Load austraits.build file
-devtools::load_all()
 library(dplyr)
 library(readr)
+library(austraits)
+library(austraits.build)
 
-root.dir <- rprojroot::find_root("remake.yml")
-knitr::opts_knit$set(root.dir = root.dir)
+# root.dir <- rprojroot::find_root("remake.yml")
+# knitr::opts_knit$set(root.dir = root.dir)
 
 my_kable_styling <- my_kable_styling_html
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Loads austraits into global name space
-  austraits <- remake::make("austraits")
-  definitions <- austraits$definitions
+austraits <- austraits::load_austraits_lite()
+definitions <- austraits$definitions
 ```
 
-This vignette explains the protocol for addong a new study to AusTraits. Before starting this, you should read more about 
+This vignette explains the protocol for adding a new study to AusTraits. Before starting this, you should read more about 
 
 - an [overview of AusTraits](http://traitecoevo.github.io/austraits.build/articles/austraits_overview.html),
 - the instructions provided to [data contributors](http://traitecoevo.github.io/austraits.build/articles/contributing_data.html),
@@ -82,6 +83,11 @@ The easiest way is to load the functions into your work space is to run the foll
 
 ```{r, echo=TRUE, eval=FALSE}
 devtools::load_all()
+```
+or
+
+```{r, echo=TRUE, eval=FALSE}
+library(austraits.build)
 ```
 
 # Inputting data
@@ -356,7 +362,7 @@ Note the second line. This is where the custom code gets applied, right after th
 
 #### Examples of appropriate use of custom R code 
 
-1. Most datasets from herbaria record `flowering_time` and `fruiting_time` as a span of months, while AusTraits codes these variables as a sequence of 12 N's and Y's for the 12 months. A series of functions make this conversion in custom_R_code. These include:  
+1. Most sources from herbaria record `flowering_time` and `fruiting_time` as a span of months, while AusTraits codes these variables as a sequence of 12 N's and Y's for the 12 months. A series of functions make this conversion in custom_R_code. These include:  
 
     - '`format_flowering_months`' (Create flowering times from start to end pair)  
     - '`convert_month_range_string_to_binary`' (Converts flowering and fruiting month ranges to 12 element character strings of binary data)  
@@ -517,8 +523,8 @@ read_csv("data/dataset_id/raw/site_data.csv") -> site_data
 
 As an example of what the site table should look like:  
 ```{r, echo=FALSE, results="markup"}
-data_Falster_2005 <-
-  remake::make("Falster_2005_1")
+# data_Falster_2005 <-
+#   remake::make("Falster_2005_1")
 austraits$sites %>%
   filter(dataset_id == "Falster_2005_1") %>%
   select(-dataset_id) %>%
@@ -1255,7 +1261,7 @@ Our approach to incrementing version numbers is
 - `patch`: Increment to communicate correction of errors in the actual data, without any changes to the structure. Such changes are unlikely to break or change analyses
 written with the previous version in a substantial way.
 
-<img src="../docs/figures/giz035fig2.png">
+<img src="figures/giz035fig2.png">
 
 **Figure:** Semantic versioning communicates to users the types of changes that have occurred between successive versions of an evolving dataset, using a tri-digit label where increments in a number indicate major, minor, and patch-level changes, respectively. From [Falster et al 2019](http://doi.org/10.1093/gigascience/giz035), (CC-BY). 
 

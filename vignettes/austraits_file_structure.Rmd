@@ -20,21 +20,22 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-library(austraits.build)
 library(dplyr)
 library(readr)
 library(tidyr)
+library(austraits)
+library(austraits.build)
 
-root.dir <- rprojroot::find_root("remake.yml")
-knitr::opts_knit$set(root.dir = root.dir)
+# root.dir <- rprojroot::find_root("remake.yml")
+# knitr::opts_knit$set(root.dir = root.dir)
 
 my_kable_styling <- my_kable_styling_html
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Loads austraits into global name space
-  austraits <- remake::make("austraits")
-  definitions <- austraits$definitions
+austraits <- austraits::load_austraits_lite()
+definitions <- austraits$definitions
 ```
 
 ## File structure
@@ -102,7 +103,7 @@ The file `definitions.yml` defines the structure of the database and all terms. 
 The file `taxon_list.csv` is our master list of known taxa. Each species is listed once, with links to species' identifiers provided by the Australian Plant Name Index (APNI). The file `taxon_list.csv` is added to if a study includes taxa not previously represented in AusTraits. These can be names included in either the APC/APNI, compilations of taxonomic concepts (APC) or names (APNI) for plants that are either native to or naturalised in Australia, or taxa without recognised names.  
 
 ```{r, results='show'}
-read_csv("config/taxon_list.csv") %>%
+read_csv("config/taxon_list.csv", show_col_types = FALSE) %>%
   select(taxon_name, family, scientificNameAuthorship, source, taxonomicStatusClean, taxonIDClean) %>%
   slice(1:10) %>%
   my_kable_styling()
@@ -111,7 +112,7 @@ read_csv("config/taxon_list.csv") %>%
 The file `unit_conversions.csv` defines the unit conversions that are used when converting contributed trait data to common units, e.g.
 
 ```{r, results='show',}
-read_csv("config/unit_conversions.csv", col_types = "ccc") %>%
+read_csv("config/unit_conversions.csv", col_types = "ccc",show_col_types = FALSE) %>%
   slice(1:10) %>%
   my_kable_styling()
 ```

@@ -10,8 +10,6 @@
 #'
 #' @return html files of the study report for all studies 
 #' @export
-#'
-#' @examples
 build_study_reports <- function(dataset_ids=NULL, ...) {
 
   # define if does not already exist, 
@@ -33,28 +31,27 @@ build_study_reports <- function(dataset_ids=NULL, ...) {
 #' @param dataset_id name of specific study/dataset
 #' @param overwrite logical value to determine whether to overwrite existing report,
 #' default = FALSE, if report exists already set to TRUE to overwrite
-#' @param path location where rendered report will be saved
+#' @param output_path location where rendered report will be saved
+#' @param input_file report script (.Rmd) file to build study report
 #'
 #' @return html file of the rendered report located in the "export/reports" folder
 #' @export
-#'
-#' @examples
-build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/reports") {
+build_study_report <- function(dataset_id, overwrite=FALSE, output_path = "export/reports", input_file = "scripts/report_study.Rmd") {
   
-  if(!file.exists(path)) {
-    dir.create(path, FALSE, TRUE)
+  if(!file.exists(output_path)) {
+    dir.create(output_path, FALSE, TRUE)
   }
   
   cat(sprintf("Building report for %s: ", dataset_id))
   
   # filenames
-  input_Rmd <- sprintf("%s/%s.Rmd", path, dataset_id)
-  output_html <- sprintf("%s/%s.html", path, dataset_id)
+  input_Rmd <- sprintf("%s/%s.Rmd", output_path, dataset_id)
+  output_html <- sprintf("%s/%s.html", output_path, dataset_id)
   
   if(overwrite | !file.exists(output_html)) {
     
     # Create a new Rmd file with name embedded in title
-    x <- readLines("scripts/report_study.Rmd")
+    x <- readLines(input_file)
     x <- gsub("title: Report on study from",  sprintf("title: Report on study `%s` from", dataset_id), x)
     writeLines(x, input_Rmd)
     
@@ -75,12 +72,10 @@ build_study_report <- function(dataset_id, overwrite=FALSE, path = "export/repor
 #' commit for the Github repository. SHA is the abbreviated SHA-1 40 digit
 #' hexadecimal number which Github uses to track commits and changes made to a repository. 
 #' 
-#' @param ... arguments passed to the get_SHA() function
+#' @param ... arguments passed to the get_SHA()
 #'
 #' @return SHA link to a github commit as a character string formatted using markdown syntax
 #' @export
-#'
-#' @examples
 get_SHA_link <- function(...) {
   sha <- get_SHA(...)
   sprintf("[%s](https://github.com/traitecoevo/austraits/tree/%s)",   sha, sha)
@@ -97,20 +92,15 @@ get_SHA_link <- function(...) {
 #'
 #' @return 40-digit SHA character string for the latest commit to the repository 
 #' @export
-#'
-#' @examples
 get_SHA <- function(path = rprojroot::find_root("remake.yml")) {
   git2r::sha(git2r::last_commit(git2r::repository(path)))
 }
 
 #' Format table with kable and default styling for html
 #'
-#' @param ... 
-#'
-#' @return
+#' @param ... arguments passed to `kableExtra::kable()`
+#' @importFrom rlang .data
 #' @export
-#'
-#' @examples
 my_kable_styling_html <- function(...) {
     kableExtra::kable(...) %>%
     kableExtra::kable_styling(..., 
@@ -124,25 +114,18 @@ my_kable_styling_html <- function(...) {
 
 #' Format table with kable and default styling for pdf 
 #'
-#' @param ... 
+#' @param ... arguments passed to `kableExtra::kable()`
 #'
-#' @return
 #' @export
-#'
-#' @examples
 my_kable_styling_pdf <- function(...) {
     kableExtra::kable(...)
 }
 
-
 #' Format table with kable and default styling for markdown
 #'
-#' @param ... 
+#' @param ... arguments passed to `kableExtra::kable()`
 #'
-#' @return
 #' @export
-#'
-#' @examples
 my_kable_styling_markdown <- function(...) {
   kableExtra::kable(...)
 }
@@ -158,15 +141,13 @@ my_kable_styling_markdown <- function(...) {
 #' @return character string with the text and link formatted for md and html
 #' @export
 #'
-#' @examples
+#' @examples as_link("www.austraits.org", "austraits")
 as_link <- function(link, text, type="md") {
   if(type=="md")
     sprintf('[%s](%s)', text, link)
   else
     sprintf("<a href='%s'> %s </a>", link, text)
 }
-
-
 
 #' Format a tree structure from a vector 
 #' 
@@ -180,16 +161,11 @@ as_link <- function(link, text, type="md") {
 #' @param prefix specifies the amount of indentation
 #'
 #' @return vector of character strings for the tree structure
-#' @export
-#'
-#' @examples
 create_tree_branch <- function(x, title, prefix="") {
   c(
     sprintf("%s%s", prefix,title), 
     sprintf("%s%s %s", prefix,
-            c(rep("├──", length(x) -1), "└──"),
+            c(rep("\u251c\u2500\u2500", length(x) -1), "\u2514\u2500\u2500"),
             x)
   )
 }
-
-
