@@ -39,17 +39,17 @@ build_comparison_set <- function(root.dir = rprojroot::find_root("remake.yml")) 
 test_that("constancy of product", {
 
   # some datasets to compare against
-  expect_no_error(austraits_raw <- build_comparison_set(root.dir), info = "Building comaprison set")
+  expect_no_error(austraits_raw <- build_comparison_set(root.dir), info = "Building comparison set")
   
   file_comparison <- "tests/build/comparison_set_3.0.2.rds"
   
   # Uncomment to update building of comparison set
   # saveRDS(austraits_raw, file.path(root.dir, file_comparison))
   
-  austraits_raw_comaprsion <- readRDS(file.path(root.dir, file_comparison))
+  austraits_raw_comparison <- readRDS(file.path(root.dir, file_comparison))
   
   for(v in names(austraits_raw)) {
-    expect_equal(austraits_raw[[v]], austraits_raw_comaprsion[[v]], info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
+    expect_equal(austraits_raw[[v]], austraits_raw_comparison[[v]], info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
   }
  
 })

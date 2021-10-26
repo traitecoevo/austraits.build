@@ -1,7 +1,6 @@
 #' Check performance on current system using package bench
 #'
 #' @return A dataframe of results
-#' @importFrom rlang .data .env
 #' @export
 
 run_benchmark <- function( ) {
@@ -16,6 +15,7 @@ run_benchmark <- function( ) {
     data
   }
   
+  dataset_id <- NULL
   dataset_ids <- c("ANBG_2019", "Baker_2019", "Bloomfield_2018", "Catford_2014", "Cheal_2017", "Maslin_2012", "Tomlinson_2019", "Westoby_2014")
 
   message("Running benchmarks via `run_benchmarks`")
@@ -25,7 +25,7 @@ run_benchmark <- function( ) {
                    check = FALSE,
                    # We're not expecting different results to be equivalent
                    iterations = 1,
-                   data = f_build(.env$dataset_id)
+                   data = f_build(dataset_id)
                  )
                })
 }
