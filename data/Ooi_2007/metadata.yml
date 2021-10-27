@@ -330,11 +330,9 @@ config:
     taxon_name: SPECIES
     site_name: SITE
     date: DATE OF COLLECTION
-  custom_R_code: data %>% mutate(`DATE OF COLLECTION` = `DATE OF COLLECTION` %>% dmy())
-    %>% group_by("SPECIES") %>% mutate_at(vars(DORM_TYPE),replace_duplicates_with_NA)
-    %>% ungroup()
+  custom_R_code: data %>% mutate(`DATE OF COLLECTION` = `DATE OF COLLECTION` %>% lubridate::dmy()) %>% group_by(SPECIES) %>% mutate_at(vars(DORM_TYPE), replace_duplicates_with_NA) %>% ungroup()
 traits:
-- var_in: SEED WEIGHT mg
+- var_in: SEED WEIGHT mg edited
   unit_in: mg
   trait_name: seed_mass
   value_type: raw_value
