@@ -17,5 +17,6 @@ check_all_values_in(x, y, sep = " ")
 vector of logical values
 }
 \description{
-Check values in one vector against values in another vector
+`check_all_values_in` checks if values in vector x are in y. Values in x may
+contain multiple values separated by `sep` so these are split first using `str_split`.
 }

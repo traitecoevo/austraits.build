@@ -5,7 +5,6 @@
 #' @name %>%
 #' @rdname pipe
 #' @keywords internal
-#' @export
 #' @importFrom magrittr %>%
 #' @usage lhs \%>\% rhs
 NULL
@@ -33,7 +32,6 @@ read_csv_char <- function(...){
 #'
 #' @return a vector with null values replaced
 #'
-#' @export
 #' @examples null_as(NULL)
 null_as <- function(x, val=NA){
   if(is.null(x)) return(val)
@@ -57,13 +55,17 @@ extract_list_element <- function(i, my_list, var) {
   i %>% lapply(function(x) my_list[[x]][[var]]) %>% lapply(null_as) %>% unlist()
 }
 
-#' Rename columns
+#' Rename column names
+#' 
+#' `rename_columns` renames column names within a tibble or data frame by matching
+#' the names given by the argument `from`. The new column names are renamed using the 
+#' names given by the argument `to`.
 #'
-#' @param obj a  tibble with multiple columns
-#' @param from a vector of the initial column names
-#' @param to  a vector of the new column names
+#' @param obj tibble or data frame with 1 or more columns
+#' @param from character string of the initial column name
+#' @param to  character string of the new column name
 #'
-#' @return a  tibble with new column names
+#' @return a tibble with new column names
 rename_columns <- function(obj, from, to) {
   names(obj)[match(from, names(obj))] <- to
   obj
@@ -230,14 +232,12 @@ write_metadata <- function(data, path, style_code=FALSE) {
 ##' @importFrom yaml read_yaml
 ##' @name read_yaml
 ##' @rdname read_yaml
-##' @export
 NULL
 
 ##' write yaml (from package yaml)
 ##' @importFrom yaml write_yaml
 ##' @name write_yaml
 ##' @rdname write_yaml
-##' @export
 NULL
 
 #' Build website
