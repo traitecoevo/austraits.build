@@ -154,7 +154,8 @@ load_study <- function(filename_data_raw,
   source_secondary_keys <- setdiff(names(sources), source_primary_key)
 
   methods <-
-    full_join( by = "dataset_id",
+    full_join(
+      by = "dataset_id", 
       # methods used to collect each trait
       metadata[["traits"]] %>%
         list_to_df() %>%
@@ -167,20 +168,22 @@ load_study <- function(filename_data_raw,
         list1_to_df() %>%
         spread(.data$key, .data$value) %>%
         dplyr::select(one_of(names(metadata$dataset))) %>%
-          dplyr::mutate(dataset_id = dataset_id) %>%
-          dplyr::select(-.data$original_file, -.data$notes)
+        dplyr::mutate(dataset_id = dataset_id) %>%
+        dplyr::select(-.data$original_file, -.data$notes)
       )  %>%
-      full_join( by = "dataset_id",
-        #references
-        tibble::tibble(
-          dataset_id = dataset_id,
-          source_primary_key = source_primary_key,
-          source_primary_citation = bib_print(sources[[source_primary_key]]),
-          source_secondary_key = source_secondary_keys %>% paste(collapse = "; "),
-          source_secondary_citation = ifelse(length(source_secondary_keys) == 0, NA_character_,
-          map_chr(sources[source_secondary_keys], bib_print) %>% paste(collapse = "; ") %>%
-          stringr::str_replace_all(".;", ";")
-          )
+    full_join(
+      by = "dataset_id",
+      #references
+      tibble::tibble(
+        dataset_id = dataset_id,
+        source_primary_key = source_primary_key,
+        source_primary_citation = bib_print(sources[[source_primary_key]]),
+        source_secondary_key = source_secondary_keys %>% paste(collapse = "; "),
+        source_secondary_citation = ifelse(length(source_secondary_keys) == 0, NA_character_,
+                                           map_chr(sources[source_secondary_keys], bib_print) %>%
+                                             paste(collapse = "; ") %>%
+                                             stringr::str_replace_all(".;", ";")
+                                           )
         )
       )
 
@@ -711,7 +714,24 @@ parse_data <- function(data, dataset_id, metadata) {
       out[[v]][j] <- cfgChar[[v]][i[j]]
     }
   }
-
+  # Replace any replicates containing a range with the actual replicate number
+  if(any(grep("-", out$replicates))){
+    v1 <- out %>% 
+      slice(grep("-", out$replicates)) %>% 
+      group_by(trait_name) %>%
+      count(taxon_name) %>% 
+      mutate(replicates = as.character(n)) %>% 
+      select(-n)
+    
+    v2 <- out %>% 
+      slice(grep("-", out$replicates)) %>%
+      select(-replicates) %>% 
+      left_join(v1, by = c("taxon_name", "trait_name"))
+    
+    out <- out %>% 
+      rows_update(v2, by = c("taxon_name", "site_name", "dataset_id", 
+                             "observation_id", "trait_name", "value", "value_type")) 
+  }
   # Now process any name changes as per metadata[["traits"]]
   out[["unit"]] <- NA_character_
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])

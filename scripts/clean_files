@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# call by passing in names of files, `clean_files data.csv more_data.csv`
+
+perl -pi -e 's/\r\n/\n/g' $*   # change windows line ends to unix
+perl -pi -e 's/\r/\n/g' $*     # change oldtsyle mac line endings to unix
+perl -pi -e 's/\x96/-/g' $*    # standardise hypen
+perl -pi -e 's/\xA0/ /g' $*    # standardise space
+perl -pi -e 's/\xB5/y/g' $*    # change µ to y
+perl -pi -e 's/\x89/%/g' $*    # standardise %
+perl -pi -e "s/\x91/'/g" $*    # funny apostrophe
+perl -pi -e "s/\x92/'/g" $*    # funny apostrophe
+perl -pi -e "s/[ \t]+$//g" $*    # trailing whitespace
+perl -pi -e "s/ ,/,/g" $*    # trailing whitespace
