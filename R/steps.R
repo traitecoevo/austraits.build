@@ -717,7 +717,7 @@ parse_data <- function(data, dataset_id, metadata) {
     for(v in cfgChar$var_in){
       v1 <- cfgChar$replicates[which(cfgChar$var_in == v)]
       if(v1 %in% names(data)){
-        out$replicates[which(out$trait_name == v)] = dplyr::pull(data[which(names(data)== v1)])
+        out$replicates[which(out$trait_name == v)] = dplyr::pull(data[which(names(data) == v1)])
       }
     }
   }
