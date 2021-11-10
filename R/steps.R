@@ -712,6 +712,16 @@ parse_data <- function(data, dataset_id, metadata) {
     }
   }
 
+  # Replace replicates that contain a range with actual replicate numbers for wide datasets
+  if(any(cfgChar$replicates %in% colnames(data))){
+    for(v in cfgChar$var_in){
+      v1 <- cfgChar$replicates[which(cfgChar$var_in == v)]
+      if(v1 %in% names(data)){
+        out$replicates[which(out$trait_name == v)] = dplyr::pull(data[which(names(data)== v1)])
+      }
+    }
+  }
+  
   # Now process any name changes as per metadata[["traits"]]
   out[["unit"]] <- NA_character_
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
