@@ -2,9 +2,10 @@ read_csv("data/Cernusak_2006/raw/leaf_photosynthesis.csv") %>%
   subset(Irradiance == "saturating" & `Leaf type` == "mature") %>%
   select(-Obs,-`initial entry`, -Irradiance, -`Leaf type`) %>%  
   group_by(Tree,species,sampling_period) %>%
+  mutate(count_photo = n()) %>%
   summarise_all(.funs=mean, na.rm = TRUE) %>% 
   ungroup() %>%
-  select("species","Tree", "sampling_period","Photosynthesis (umol m-2 s-1)", "PARi (umol m-2 s-1)", "Stomatal conductance (mol m-2 s-1)", "Ci (umol mol-1)", 
+  select("species","Tree", "count_photo", "sampling_period","Photosynthesis (umol m-2 s-1)", "PARi (umol m-2 s-1)", "Stomatal conductance (mol m-2 s-1)", "Ci (umol mol-1)", 
          "Transpiration (mmol m-2 s-1)") -> photo
 
 read_csv("data/Cernusak_2006/raw/leaf_respiration.csv") %>%
