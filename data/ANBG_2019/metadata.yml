@@ -13246,7 +13246,8 @@ config:
     site_name: site_name_shorter
     observation_id: item_ID
     date: STARTDATE
-  custom_R_code: data %>% mutate(STARTDATE = STARTDATE %>% dmy())
+  custom_R_code: data %>% mutate(STARTDATE = STARTDATE %>% dmy()) %>% move_values_to_new_trait_long("Texture", "seed_surface_hairs", "trait", "value", c("plumose", "tomentose", "hairs", "ciliate",
+    "stellate", "cilliate", "velutinous")) %>% add_values_to_additional_trait_long("seed_surface_hairs", "trait", "value", c("stellate dimpled", "costate tomentose"), c("hairs_branched","hairs_simple"))
 traits:
 - var_in: Seed Sample
   unit_in: mg
@@ -13270,7 +13271,7 @@ traits:
     raw data files
 - var_in: Texture
   unit_in: .na
-  trait_name: seed_texture
+  trait_name: seed_surface_texture
   value_type: expert_mean
   replicates: .na
   methods: 'expert observation; Texture terms used: rugose (wrinkled); finely textured;
@@ -13278,6 +13279,13 @@ traits:
     in nodules); spinose; striate; plumose (feathery); ciliate; scabrous (covered
     in small rough projections); tomentose (covered in cottony hairs); papillose (covered
     in papillae); costate (ribbed); chartaceous (papery)'
+- var_in: seed_surface_hairs
+  unit_in: .na
+  trait_name: seed_surface_hairs
+  value_type: expert_mean
+  replicates: .na
+  methods: expert observation; Subset of texture terms used that refer to seed surface
+    hairiness, plumose (feathery); ciliate; tomentose (covered in cottony hairs)
 - var_in: Appendage
   unit_in: .na
   trait_name: dispersal_appendage
@@ -13290,7 +13298,7 @@ traits:
   unit_in: um
   trait_name: seed_width
   value_type: site_mean
-  replicates: various; in raw data files with trait value WidthSample
+  replicates: WidthSample
   methods: Calibrated group digital images of 20-30 seeds enable measurements of size
     with calculations of average size and variation among seeds (standard deviation).
     Measurements of seeddimensions width (at widest point) and length (longest point)
@@ -13353,7 +13361,7 @@ traits:
   unit_in: um
   trait_name: seed_length
   value_type: site_mean
-  replicates: various; in raw data files with trait value LengthSample
+  replicates: LengthSample
   methods: Calibrated group digital images of 20-30 seeds enable measurements of size
     with calculations of average size and variation among seeds (standard deviation).
     Measurements of seeddimensions width (at widest point) and length (longest point)
@@ -13866,72 +13874,315 @@ substitutions:
 - trait_name: dispersal_appendage
   find: persistent bracts
   replace: bracts
-- trait_name: seed_texture
-  find: shallowly costate
-  replace: shallowly_costate
-- trait_name: seed_texture
-  find: shalllowly reticulate striate
-  replace: shallowly_reticulate striate
-- trait_name: seed_texture
-  find: shalllowly reticulate
-  replace: shallowly_reticulate
-- trait_name: seed_texture
-  find: rugose shallowly reticulate
-  replace: shallowly_reticulate rugose
-- trait_name: seed_texture
-  find: rugose occasionally tuberculate
-  replace: rugose tuberculate
-- trait_name: seed_texture
-  find: smooth finely reticuate
-  replace: smooth finely_reticulate
-- trait_name: seed_texture
-  find: rugose finely textured
-  replace: rugose finely_textured
-- trait_name: seed_texture
-  find: shallowly rugose
-  replace: shallowly_rugose
-- trait_name: seed_texture
-  find: finely textured
-  replace: finely_textured
-- trait_name: seed_texture
-  find: slightly rugose
-  replace: slightly_rugose
-- trait_name: seed_texture
-  find: shallowly cosate
-  replace: shallowly_costate
-- trait_name: seed_texture
-  find: finely rugose
-  replace: finely_rugose
-- trait_name: seed_texture
-  find: costate finely textured
-  replace: costate finely_textured
-- trait_name: seed_texture
-  find: raised edge
-  replace: raised_edge
-- trait_name: seed_texture
-  find: shallowly reticulate
-  replace: shallowly_reticulate
-- trait_name: seed_texture
-  find: acutely reticulate
-  replace: acutely_reticulate
-- trait_name: seed_texture
-  find: very rough
-  replace: very_rough
-- trait_name: seed_texture
-  find: deeply reticulate
-  replace: deeply_reticulate
-- trait_name: seed_texture
-  find: deeply rugose
-  replace: deeply_rugose
-- trait_name: seed_texture
-  find: shallowly pitted
-  replace: shallowly_pitted
-- trait_name: seed_texture
-  find: cilliate
-  replace: ciliate
 - trait_name: germination_treatment
-  find: "soak the seed for a time period. \r\n\r\n\r\n"
+  find: soak the seed for a time period.
   replace: imbibed
+- trait_name: seed_surface_texture
+  find: finely textured
+  replace: '.na'
+- trait_name: seed_surface_texture
+  find: multi-faceted
+  replace: '.na'
+- trait_name: seed_surface_texture
+  find: tuberculate
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: undulate
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: papillate
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: papillose
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: micronate-tubercular
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: shallowly reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: acutely reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: shalllowly reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: deeply reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: shalllowly reticulate striate
+  replace: netted ribbed
+- trait_name: seed_surface_texture
+  find: reticulate striate
+  replace: netted ribbed
+- trait_name: seed_surface_texture
+  find: chartaceous
+  replace: papery
+- trait_name: seed_surface_texture
+  find: stellate dimpled
+  replace: pitted
+- trait_name: seed_surface_texture
+  find: dimpled
+  replace: pitted
+- trait_name: seed_surface_texture
+  find: shallowly pitted
+  replace: pitted
+- trait_name: seed_surface_texture
+  find: pitted papillose
+  replace: pitted bumpy
+- trait_name: seed_surface_texture
+  find: dimpled rough
+  replace: pitted rough
+- trait_name: seed_surface_texture
+  find: shallowly costate
+  replace: ribbed
+- trait_name: seed_surface_texture
+  find: costate
+  replace: ribbed
+- trait_name: seed_surface_texture
+  find: costate finely textured
+  replace: ribbed
+- trait_name: seed_surface_texture
+  find: striate
+  replace: ribbed
+- trait_name: seed_surface_texture
+  find: lineolate
+  replace: ribbed
+- trait_name: seed_surface_texture
+  find: scalar
+  replace: ribbed
+- trait_name: seed_surface_texture
+  find: raised edge
+  replace: ribbed
+- trait_name: seed_surface_texture
+  find: fluted
+  replace: ribbed
+- trait_name: seed_surface_texture
+  find: costate tomentose
+  replace: ribbed
+- trait_name: seed_surface_texture
+  find: costate papillose
+  replace: ribbed bumpy
+- trait_name: seed_surface_texture
+  find: ribbed chartaceous
+  replace: ribbed papery
+- trait_name: seed_surface_texture
+  find: costate smooth
+  replace: ribbed smooth
+- trait_name: seed_surface_texture
+  find: scabrous
+  replace: rough
+- trait_name: seed_surface_texture
+  find: very rough
+  replace: rough
+- trait_name: seed_surface_texture
+  find: undulate rough
+  replace: rough bumpy
+- trait_name: seed_surface_texture
+  find: smooth finely reticuate
+  replace: smooth netted
+- trait_name: seed_surface_texture
+  find: smooth scabrous
+  replace: smooth rough
+- trait_name: seed_surface_texture
+  find: smooth rugose
+  replace: smooth wrinkled
+- trait_name: seed_surface_texture
+  find: smooth undulate rugose
+  replace: smooth wrinkled bumpy
+- trait_name: seed_surface_texture
+  find: shallowly rugose
+  replace: wrinkled
+- trait_name: seed_surface_texture
+  find: slightly rugose
+  replace: wrinkled
+- trait_name: seed_surface_texture
+  find: rugose
+  replace: wrinkled
+- trait_name: seed_surface_texture
+  find: finely rugose
+  replace: wrinkled
+- trait_name: seed_surface_texture
+  find: rugose occasionally tuberculate
+  replace: wrinkled
+- trait_name: seed_surface_texture
+  find: deeply rugose
+  replace: wrinkled
+- trait_name: seed_surface_texture
+  find: rugose finely textured
+  replace: wrinkled
+- trait_name: seed_surface_texture
+  find: rugose tuberculate
+  replace: wrinkled bumpy
+- trait_name: seed_surface_texture
+  find: rugose papillose
+  replace: wrinkled bumpy
+- trait_name: seed_surface_texture
+  find: rugose shallowly reticulate
+  replace: wrinkled netted
+- trait_name: seed_surface_texture
+  find: rugose striate
+  replace: wrinkled ribbed
+- trait_name: seed_surface_texture
+  find: rugose smooth
+  replace: wrinkled smooth
+- trait_name: seed_surface_hairs
+  find: plumose
+  replace: hairs_branched
+- trait_name: seed_surface_hairs
+  find: tomentose
+  replace: hairs_simple
+- trait_name: seed_surface_hairs
+  find: stellate dimpled
+  replace: hairs_branched
+- trait_name: seed_surface_hairs
+  find: hairs
+  replace: hairs
+- trait_name: seed_surface_hairs
+  find: costate tomentose
+  replace: hairs_simple
+- trait_name: seed_surface_hairs
+  find: ciliate
+  replace: hairs_simple
+- trait_name: seed_surface_hairs
+  find: stellate
+  replace: hairs_branched
+- trait_name: seed_surface_hairs
+  find: cilliate
+  replace: hairs_simple
+- trait_name: seed_surface_hairs
+  find: velutinous
+  replace: hairs_simple
+- trait_name: seed_surface_texture
+  find: finely textured
+  replace: '.na'
+- trait_name: seed_surface_texture
+  find: multi-faceted
+  replace: '.na'
+- trait_name: seed_surface_texture
+  find: tuberculate
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: undulate
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: papillate
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: papillose
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: micronate-tubercular
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: shallowly reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: acutely reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: shalllowly reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: deeply reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: shalllowly reticulate striate
+  replace: netted ribbed
+- trait_name: seed_surface_texture
+  find: reticulate striate
+  replace: netted ribbed
+- trait_name: seed_surface_texture
+  find: chartaceous
+  replace: papery
+- trait_name: seed_surface_texture
+  find: stellate dimpled
+  replace: pitted
+- trait_name: seed_surface_texture
+  find: dimpled
+  replace: pitted
+- trait_name: seed_surface_texture
+  find: shallowly pitted
+  replace: pitted
+- trait_name: seed_surface_texture
+  find: pitted papillose
+  replace: pitted bumpy
+- trait_name: seed_surface_texture
+  find: finely textured
+  replace: '.na'
+- trait_name: seed_surface_texture
+  find: multi-faceted
+  replace: '.na'
+- trait_name: seed_surface_texture
+  find: tuberculate
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: undulate
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: papillate
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: papillose
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: micronate-tubercular
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: shallowly reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: acutely reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: shalllowly reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: deeply reticulate
+  replace: netted
+- trait_name: seed_surface_texture
+  find: shalllowly reticulate striate
+  replace: netted ribbed
+- trait_name: seed_surface_texture
+  find: reticulate striate
+  replace: netted ribbed
+- trait_name: seed_surface_texture
+  find: chartaceous
+  replace: papery
+- trait_name: seed_surface_texture
+  find: finely textured
+  replace: '.na'
+- trait_name: seed_surface_texture
+  find: multi-faceted
+  replace: '.na'
+- trait_name: seed_surface_texture
+  find: tuberculate
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: undulate
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: papillate
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: papillose
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: micronate-tubercular
+  replace: bumpy
+- trait_name: seed_surface_texture
+  find: reticulate
+  replace: netted
 taxonomic_updates:
 - find: Luzula acutifolia var. acutifolia
   replace: Luzula acutifolia subsp. acutifolia
