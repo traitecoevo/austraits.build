@@ -35,14 +35,13 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: taxon
-  custom_R_code: 'data %>% mutate( flowering = convert_month_range_vec_to_binary(flowering),
+  custom_R_code: data %>% mutate( flowering = convert_month_range_vec_to_binary(flowering),
     fruiting = convert_month_range_vec_to_binary(fruiting), leaf_lobed = ifelse(`leaf
     type` == "lobed", 1 , NA), `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf
     type`)) %>% separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max")
     %>% separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
     separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>% separate_range("seed
-    width (mm)", "seed_width_min", "seed_width_max") %>% mutate(dispersal_appendage
-    = ifelse(`dispersal mode` == "samara","samara", NA)) '
+    width (mm)", "seed_width_min", "seed_width_max") %>% move_values_to_new_trait("dispersal mode", "fruit_type", "samara", "samara", "wings") 
 traits:
 - var_in: longevity
   unit_in: .na
@@ -154,16 +153,16 @@ traits:
   methods: unknown
 - var_in: dispersal mode
   unit_in: .na
-  trait_name: dispersal_syndrome
-  value_type: expert_mean
-  replicates: .na
-  methods: unknown
-- var_in: dispersal_appendage
-  unit_in: .na
   trait_name: dispersal_appendage
   value_type: expert_mean
   replicates: .na
-  methods: Extracted from records of dispersal syndrome.
+  methods: unknown
+- var_in: fruit_type
+  unit_in: .na
+  trait_name: fruit_type
+  value_type: expert_mean
+  replicates: .na
+  methods: Extracted from records of dispersal_appendage.
 substitutions:
 - trait_name: leaf_shape
   find: articles
@@ -174,12 +173,9 @@ substitutions:
 - trait_name: plant_growth_form
   find: vine
   replace: climber_vine
-- trait_name: dispersal_syndrome
+- trait_name: dispersal_appendage
   find: winged seed
-  replace: anemochory
-- trait_name: dispersal_syndrome
-  find: samara
-  replace: anemochory
+  replace: wings
 - trait_name: leaf_width
   find: '''10'
   replace: '10'

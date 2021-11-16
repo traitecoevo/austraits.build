@@ -45,7 +45,15 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: species
-  custom_R_code: data %>% mutate(`flowering_time`= format_flowering_months(flowering_time_start, flowering_time_end)) %>% mutate(fruit_dehiscence = `Fruit.Type.Specific`) %>% move_values_to_new_trait("Fruit.Type.Specific", "fruit_dehiscence", c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle", "berry", "utricle", "syncarp", "syconium", "schizocarp"), c("dehiscent", "dehiscent", "indehiscent", "indehiscent", "indehiscent", "indehiscent", "dehiscent", "indehiscent", "indehiscent", "indehiscent", "indehiscent", NA), c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle", "berry", "utricle", "syncarp", "syconium", "schizocarp"))
+  custom_R_code: data %>% mutate(`flowering_time`= format_flowering_months(flowering_time_start,
+    flowering_time_end)) %>% mutate(fruit_dehiscence = `Fruit.Type.Specific`) %>%
+    move_values_to_new_trait("Fruit.Type.Specific", "fruit_dehiscence", c("pod", "capsule",
+    "drupe", "achene", "nut", "samara", "follicle", "berry", "utricle", "syncarp",
+    "syconium", "schizocarp"), c("dehiscent", "dehiscent", "indehiscent", "indehiscent",
+    "indehiscent", "indehiscent", "dehiscent", "indehiscent", "indehiscent", "indehiscent",
+    "indehiscent", NA), c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle",
+    "berry", "utricle", "syncarp", "syconium", "schizocarp")) %>% mutate(fruit_dehiscence
+    = gsub(`Adaptive.Trait` %in% c("indehiscent", "indehiscent, woody"),"indehiscent",fruit_dehiscence))
 traits:
 - var_in: Fruit.Type.Botany
   unit_in: .na
@@ -156,78 +164,69 @@ traits:
   replicates: .na
   methods: literature search
 substitutions:
+- trait_name: fruit_type
+  find: syncarp
+  replace: syconium
+- trait_name: fruit_type
+  find: pod
+  replace: legume
 - trait_name: dispersal_appendage
-  find: fleshy wings/capsule
-  replace: fleshy_wings_capsule
+  find: caruncle
+  replace: elaiosome
 - trait_name: dispersal_appendage
-  find: fruit separates into fleshy nutlets
-  replace: fleshy_fruit
+  find: indehiscent
+  replace: .na.character
+- trait_name: dispersal_appendage
+  find: seed unilaterally winged
+  replace: wings
+- trait_name: dispersal_appendage
+  find: seed winged
+  replace: wings
 - trait_name: dispersal_appendage
   find: fruit winged
-  replace: winged_fruit
+  replace: wings
 - trait_name: dispersal_appendage
-  find: indehiscent, woody
-  replace: indehiscent
-- trait_name: dispersal_appendage
-  find: nut winged
-  replace: winged_fruit
+  find: seed containing a sac of air
+  replace: inflated_parts
 - trait_name: dispersal_appendage
   find: pericarp, aril, arillode
   replace: aril
-- trait_name: dispersal_appendage
-  find: seed winged
-  replace: winged_fruit
-- trait_name: dispersal_appendage
-  find: seed containing a sac of air
-  replace: seed_airsac
 - trait_name: dispersal_appendage
   find: thick and succulent pericarp; aril
   replace: aril
 - trait_name: dispersal_appendage
   find: bladdery wings
-  replace: bladdery_wings
+  replace: wings
 - trait_name: dispersal_appendage
-  find: fleshy dehiscent capsule
-  replace: fleshy_dehiscent_capsule
+  find: nut winged
+  replace: wings
 - trait_name: dispersal_appendage
-  find: fleshy wings or capsule
-  replace: fleshy_wings_capsule
+  find: fleshy wings/capsule
+  replace: wings
 - trait_name: dispersal_appendage
-  find: seed unilaterally winged
-  replace: seed_unilaterally_winged
-- trait_name: dispersal_appendage
-  find: seed wing obsolete
-  replace: seed_wing_obsolete
+  find: indehiscent, woody
+  replace: .na.character
 - trait_name: dispersal_appendage
   find: strophiole on seed
-  replace: strophiole_on_seed
+  replace: elaiosome
 - trait_name: dispersal_appendage
-  find: winged fruit
-  replace: winged_fruit
+  find: fleshy dehiscent capsule
+  replace: .na.character
 - trait_name: dispersal_appendage
-  find: winged nut
-  replace: winged_fruit
+  find: fruit separates into fleshy nutlets
+  replace: .na.character
 - trait_name: dispersal_appendage
-  find: strophiole_on_seed
-  replace: caruncle
-- trait_name: dispersal_appendage
-  find: seed_unilaterally_winged
-  replace: caruncle
-- trait_name: dispersal_appendage
-  find: fleshy seeds
-  replace: fleshy_fruit
+  find: seed wing obsolete
+  replace: none
 - trait_name: dispersal_appendage
   find: receptacle (small and inconspicuous)
   replace: receptacle
 - trait_name: dispersal_appendage
   find: woody bract scales; fertile scales not fleshy at maturity
   replace: woody_bract_scales
-- trait_name: fruit_type
-  find: syncarp
-  replace: multiple_fruit
-- trait_name: fruit_type
-  find: pod
-  replace: legume
+- trait_name: dispersal_appendage
+  find: fleshy seeds
+  replace: .na.character
 taxonomic_updates:
 - find: Acacia verricula
   replace: Acacia verriculum
