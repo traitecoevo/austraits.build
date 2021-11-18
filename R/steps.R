@@ -694,8 +694,16 @@ parse_data <- function(data, dataset_id, metadata) {
     }
     out <- dplyr::bind_rows(out)
   } else {
+    # filter the data to only contain trait names which are found in var_in
     out <- df %>% filter(.data$trait_name %in% cfgChar$var_in)
     out[["value"]] <- out[["value"]] %>%  as.character()
+    # if any of the replicate values in cfgChar is one of the column names in data, bind those columns to df
+    if(any(cfgChar$replicates %in% colnames(data))){
+      df <- df %>% bind_cols(
+        select(data, 
+               cfgChar$replicates[which(cfgChar$replicates %in% colnames(data))])) %>%
+        filter(.data$trait_name %in% cfgChar$var_in)
+    }
   }
 
   # Ensure all lower case
@@ -713,15 +721,28 @@ parse_data <- function(data, dataset_id, metadata) {
   }
 
   # Replace replicates that contain a range with actual replicate numbers for wide datasets
-  if(any(cfgChar$replicates %in% colnames(data))){
-    for(v in cfgChar$var_in){
-      v1 <- cfgChar$replicates[which(cfgChar$var_in == v)]
-      if(v1 %in% names(data)){
-        out$replicates[which(out$trait_name == v)] = dplyr::pull(data[which(names(data) == v1)])
+  if(data_is_long_format == FALSE){
+    if(any(cfgChar$replicates %in% colnames(data))){
+      for(v in cfgChar$var_in){
+        v1 <- cfgChar$replicates[which(cfgChar$var_in == v)]
+        if(v1 %in% names(data)){
+          out$replicates[which(out$trait_name == v)] = dplyr::pull(data[which(names(data) == v1)])
+        }
+      }
+    }
+  } else {
+    # Replace replicates that contain a range with actual replicate numbers for long datasets
+    if(any(cfgChar$replicates %in% colnames(df))){
+      for(v in cfgChar$var_in){
+        v1 <- cfgChar$replicates[which(cfgChar$var_in == v)]
+        if(v1 %in% names(df)){
+          out$replicates[which(out$trait_name == v)] = 
+            dplyr::pull(df[which(names(df) == v1)][which(df$trait_name == v),])
+        }
       }
     }
   }
-  
+
   # Now process any name changes as per metadata[["traits"]]
   out[["unit"]] <- NA_character_
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])

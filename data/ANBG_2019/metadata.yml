@@ -13246,7 +13246,15 @@ config:
     site_name: site_name_shorter
     observation_id: item_ID
     date: STARTDATE
-  custom_R_code: data %>% mutate(STARTDATE = STARTDATE %>% dmy())
+  custom_R_code: data %>% mutate(STARTDATE = STARTDATE %>% dmy()) %>% 
+    dplyr::left_join(by = c("item_ID", "trait", "value_numeric"),
+    dplyr::bind_rows(
+    dplyr::left_join(by = "item_ID",
+    data %>% filter(trait %in% c("Width")) %>% select(item_ID, trait, value_numeric) %>% distinct(), 
+    data %>% filter(trait %in% c("Width","WidthSample")) %>% select(item_ID, trait, value_numeric) %>% distinct() %>% mutate(column_numbers = row_number()) %>% filter(!(column_numbers %in% c(101,323,325,517,611,1153,1805,1838))) %>% select(-column_numbers) %>% filter(trait == "WidthSample") %>% spread(key = trait, value = value_numeric)),
+    dplyr::left_join(by = "item_ID",
+    data %>% filter(trait %in% c("Length")) %>% select(item_ID, trait, value_numeric) %>% distinct(),
+    data %>% filter(trait %in% c("Length","LengthSample")) %>% select(item_ID, trait, value_numeric) %>% distinct() %>% mutate(column_numbers = row_number()) %>% filter(!(column_numbers %in% c(36,91,94,95,571,756,1426,1438))) %>% select(-column_numbers) %>% filter(trait == "LengthSample") %>% spread(key = trait, value = value_numeric))))
 traits:
 - var_in: Seed Sample
   unit_in: mg
