@@ -266,7 +266,7 @@ check_missing_values <- function(filename_data_csv, filename_metadata){
   definitions <- config_for_dataset$definitions
   unit_conversion_functions <- config_for_dataset$unit_conversion_functions
   
-  readr::read_csv(filename_data_raw, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
+  readr::read_csv(filename_data_csv, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
     custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
     parse_data(dataset_id, metadata) %>%
     add_all_columns(definitions$columns_traits) %>%
