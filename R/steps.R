@@ -192,17 +192,17 @@ load_study <- function(filename_data_raw,
     dplyr::arrange(.data$cleaned_name)
 
   list(dataset_id = dataset_id,
-       traits       = traits %>% filter(is.na(.data$error)) %>% filter(error != "Missing value") %>%
+       traits     = traits %>% filter(is.na(.data$error)) %>% filter(error != "Missing value") %>%
          dplyr::select(-.data$error),
-       sites    = sites,
-       contexts    = contexts,
+       sites      = sites,
+       contexts   = contexts,
        methods    = methods,
        excluded_data = traits %>% filter(!is.na(.data$error)) %>% dplyr::select(.data$error, everything()),
        taxonomic_updates = taxonomic_updates,
-       taxa = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
+       taxa       = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
        definitions = definitions,
        contributors = contributors,
-       sources =  sources
+       sources    = sources
        )
 }
 
