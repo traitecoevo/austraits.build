@@ -53,7 +53,7 @@ config:
     "indehiscent", "indehiscent", "dehiscent", "indehiscent", "indehiscent", "indehiscent",
     "indehiscent", NA), c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle",
     "berry", "utricle", "syncarp", "syconium", "schizocarp")) %>% mutate(fruit_dehiscence
-    = gsub(`Adaptive.Trait` %in% c("indehiscent", "indehiscent, woody"),"indehiscent",fruit_dehiscence))
+    = if_else(`Adaptive.Trait` %in% c("indehiscent", "indehiscent, woody"),"indehiscent",fruit_dehiscence))
 traits:
 - var_in: Fruit.Type.Botany
   unit_in: .na
@@ -165,9 +165,6 @@ traits:
   methods: literature search
 substitutions:
 - trait_name: fruit_type
-  find: syncarp
-  replace: syconium
-- trait_name: fruit_type
   find: pod
   replace: legume
 - trait_name: dispersal_appendage
@@ -223,7 +220,7 @@ substitutions:
   replace: receptacle
 - trait_name: dispersal_appendage
   find: woody bract scales; fertile scales not fleshy at maturity
-  replace: woody_bract_scales
+  replace: flotation_scales
 - trait_name: dispersal_appendage
   find: fleshy seeds
   replace: .na.character
