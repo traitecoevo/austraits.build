@@ -240,6 +240,50 @@ NULL
 ##' @export
 NULL
 
+#' Check missing values from excluded data
+#' 
+#' `check_missing_values` shows missing values from the excluded_data table. 
+#' Missing values are filtered out from the main austraits table and 
+#' check_missing_values allows missing values to be checked for individual studies.
+#'
+#' @param filename_data_csv location of data.csv file 
+#' @param filename_metadata location of metadata.yml file
+#'
+#' @return tibble with excluded data including missing values. 
+#' 
+#' @example 
+#' \dontrun{
+#' check_missing_values("data/ANBG_2019/data.csv", "data/ANBG_2019/metadata.yml")
+#' }
+check_missing_values <- function(filename_data_csv, filename_metadata){
+  
+  config_for_dataset <- subset_config(filename_metadata, 
+                                      read_yaml("config/definitions.yml"),
+                                      make_unit_conversion_functions("config/unit_conversions.csv"))
+  
+  dataset_id <- config_for_dataset$dataset_id
+  metadata <- config_for_dataset$metadata
+  definitions <- config_for_dataset$definitions
+  unit_conversion_functions <- config_for_dataset$unit_conversion_functions
+  
+  readr::read_csv(filename_data_raw, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
+    custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
+    parse_data(dataset_id, metadata) %>%
+    add_all_columns(definitions$columns_traits) %>%
+    flag_unsupported_traits(definitions) %>%
+    flag_excluded_observations(metadata) %>%
+    convert_units(definitions, unit_conversion_functions) %>%
+    flag_unsupported_values(definitions) %>%
+    apply_taxonomic_updates(metadata) %>%
+    dplyr::mutate(
+      value = ifelse(is.na(.data$error), split_then_sort(.data$value), .data$value),
+      value_type = factor(.data$value_type, levels = names(definitions$value_type$values)),
+      date = as.character(.data$date)) %>%
+    dplyr::arrange(.data$observation_id, .data$trait_name, .data$value_type) %>% 
+    filter(!is.na(.data$error)) %>%
+    dplyr::select(.data$error, everything())
+}
+
 #' Build website
 #'
 #' Build website using the build_site() function from `pkgdown`
