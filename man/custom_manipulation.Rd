@@ -7,7 +7,7 @@
 custom_manipulation(txt)
 }
 \arguments{
-\item{txt}{character text within custom_R_code}
+\item{txt}{character text within custom_R_code of a metadata.yml file}
 }
 \value{
 character text containing custom_R_code if custom_R_code is not empty,
@@ -15,5 +15,6 @@ otherwise no changes are made
 }
 \description{
 Applies custom data manipulations if the metadata field custom_R_code is not empty
-Otherwise no manipulations will be done.
+Otherwise no manipulations will be done by applying the `identity` function.
+The code custom_R_code assumes a single input.
 }
