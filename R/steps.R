@@ -192,7 +192,8 @@ load_study <- function(filename_data_raw,
     dplyr::arrange(.data$cleaned_name)
 
   list(dataset_id = dataset_id,
-       traits       = traits %>% filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
+       traits       = traits %>% filter(is.na(.data$error)) %>% filter(error != "Missing value") %>%
+         dplyr::select(-.data$error),
        sites    = sites,
        contexts    = contexts,
        methods    = methods,
