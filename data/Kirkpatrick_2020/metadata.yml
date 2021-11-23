@@ -26,7 +26,7 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: species_name
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(dispersal_syndrome = if_else(Wind == "y", if_else(`Bird/mammal` == "y","anemochory zoochory","anemochory"), ifelse(`Bird/mammal` == "y","zoochory", "neither"))) %>% mutate(dispersers = if_else(Wind == "y", if_else(`Bird/mammal` == "y","wind birds mammals","wind"), if_else(`Bird/mammal` == "y","birds mammals","neither")))
 traits:
 - var_in: Resprout
   unit_in: .na
@@ -40,21 +40,15 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: author knowledge
-- var_in: Wind
+- var_in: dispersal_syndrome
   unit_in: .na
   trait_name: dispersal_syndrome
   value_type: expert_mean
   replicates: .na
   methods: author knowledge
-- var_in: Bird/mammal
+- var_in: dispersers
   unit_in: .na
-  trait_name: dispersal_syndrome
-  value_type: expert_mean
-  replicates: .na
-  methods: author knowledge
-- var_in: Bird/mammal
-  unit_in: .na
-  trait_name: disperers
+  trait_name: dispersers
   value_type: expert_mean
   replicates: .na
   methods: author knowledge
@@ -84,22 +78,10 @@ substitutions:
   find: 'n'
   replace: not_serotinous
 - trait_name: dispersal_syndrome
-  find: 'y'
-  replace: anemochory
-- trait_name: dispersal_syndrome
-  find: 'n'
-  replace: .na
-- trait_name: dispersal_syndrome
-  find: 'y'
-  replace: zoochory
-- trait_name: dispersal_syndrome
-  find: 'n'
+  find: neither
   replace: .na
 - trait_name: dispersers
-  find: 'y'
-  replace: birds mammals
-- trait_name: dispersers
-  find: 'n'
+  find: neither
   replace: .na
 taxonomic_updates: .na
 exclude_observations: .na
