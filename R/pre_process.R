@@ -89,7 +89,6 @@ convert_month_range_string_to_binary <- function(str) {
 #' terms such as (all year) and seasons (e.g. summer). The text can also include a range 
 #' separated with "-" (e.g. "Jan-Jul")   
 #' 
-#' @export
 #' @return a numeric vector with 12 elements, e.g. c(1,1,1,0,0,0,0,0,0,0,0,1)   
 convert_month_range_string_to_binary_worker <- function(str) {
   str <- str %>% stringr::str_trim() %>%

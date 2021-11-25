@@ -44,9 +44,14 @@ testthat::test_that("convert_01_ny returns correct character",{
   
   expect_match(convert_01_ny(0), "n")
   expect_match(convert_01_ny(1), "y")
+  expect_match(convert_01_ny("00"), "nn")
+  expect_match(convert_01_ny(10), "yn")
   expect_match(convert_01_ny(2), "2")
   expect_equal(convert_01_ny(NA), "NA")
   expect_equal(convert_01_ny("NA"), "NA")
+  expect_equal(convert_01_ny("a"), "a")
+  expect_equal(convert_01_ny("abc"), "abc")
+  expect_equal(convert_01_ny("a100"), "aynn")
 })
 
 testthat::test_that("convert_month_range_string_to_binary",{
