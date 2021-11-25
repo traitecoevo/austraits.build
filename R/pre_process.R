@@ -239,6 +239,7 @@ move_values_to_new_trait <- function(data, original_trait, new_trait, original_v
             data[[original_trait]] = ifelse(i, values_to_keep[[j]], data[[original_trait]])
             data
        }
+       
   return(data)
 }
 
