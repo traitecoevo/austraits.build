@@ -136,8 +136,8 @@ convert_month_range_string_to_binary_worker <- function(str) {
     return(`[<-`(rep(0, 12), which(tolower(month.abb) %in% m), 1))
   }  
   
-  # one or more month ranges
-  if (grepl(paste0("^", regexMonths, " *- *", regexMonths, "([/,] *", regexMonths, " *- *", regexMonths, ")*$"), str)) {  
+  # one or more month ranges separated with / or , or ; or :
+  if (grepl(paste0("^", regexMonths, " *- *", regexMonths, "([/,;:] *", regexMonths, " *- *", regexMonths, ")*$"), str)) {  
     m <- regmatches(str, gregexpr(paste0(regexMonths, " *- *", regexMonths), str))[[1]]
     bin <- rep(0, 12)
     
