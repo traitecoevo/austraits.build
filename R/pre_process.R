@@ -162,7 +162,7 @@ convert_month_range_string_to_binary_worker <- function(str) {
   }
   
   # seasons separated with / or ,
-  if (grepl(paste0("^", regexSeasons, " *([/,] *", regexSeasons, ")+$"), str)) {
+  if (grepl(paste0("^", regexSeasons, " *([/,;:] *", regexSeasons, ")+$"), str)) {
     m <- regmatches(str, gregexpr(regexSeasons, str))[[1]]
     return(`[<-`(rep(0, 12), which(tolower(seasons) %in% m), 1))
   }  

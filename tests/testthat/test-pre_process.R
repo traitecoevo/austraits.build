@@ -33,6 +33,7 @@ testthat::test_that("convert_month_range_vec_to_binary returns a single 12 chara
   expect_match(convert_month_range_vec_to_binary("Nov-Apr"), "yyyynnnnnnyy")
   expect_match(convert_month_range_vec_to_binary("nov-apr"), "yyyynnnnnnyy")
   expect_match(convert_month_range_vec_to_binary("Feb-Mar;Oct-Nov"), "nyynnnnnnyyn")
+  expect_equal(convert_month_range_vec_to_binary("Mar,Apr"), "nnyynnnnnnnn")
   expect_equal(convert_month_range_vec_to_binary(c("Mar", "Apr")), c("nnynnnnnnnnn","nnnynnnnnnnn"))
   expect_equal(convert_month_range_vec_to_binary("March"), "NA")
   expect_equal(convert_month_range_vec_to_binary(3), "NA")
