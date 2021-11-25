@@ -85,9 +85,11 @@ convert_month_range_string_to_binary <- function(str) {
 #' Converts flowering and fruiting month ranges to 12 element character strings of 0 and 1 representing Jan - Dec
 #' e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
 #'
-#' @param str text string
+#' @param str character string with abbreviated months (i.e. "Jan", "Feb"). Also accepts other
+#' terms such as (all year) and seasons (e.g. summer). The text can also include a range 
+#' separated with "-" (e.g. "Jan-Jul")   
 #'
-#' @return a 12 element character string, e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
+#' @return a numeric vector with 12 elements, e.g. c(1,1,1,0,0,0,0,0,0,0,0,1)   
 convert_month_range_string_to_binary_worker <- function(str) {
   str <- str %>% stringr::str_trim() %>%
     tolower()
@@ -116,7 +118,7 @@ convert_month_range_string_to_binary_worker <- function(str) {
     return(NA)
   }
   
-   # periodic
+   # irregular
   if (grepl("irregular", str)) {
     return(NA)
   }
