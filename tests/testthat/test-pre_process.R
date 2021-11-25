@@ -41,13 +41,13 @@ testthat::test_that("convert_month_range_vec_to_binary returns a single 12 chara
 })
 
 testthat::test_that("convert_01_ny returns correct character",{
-  expect_match(class(convert_01_ny(1)), "character")
+  expect_match(class(convert_01_ny("1")), "character")
   
-  expect_match(convert_01_ny(0), "n")
-  expect_match(convert_01_ny(1), "y")
+  expect_match(convert_01_ny("0"), "n")
+  expect_match(convert_01_ny("1"), "y")
   expect_match(convert_01_ny("00"), "nn")
-  expect_match(convert_01_ny(10), "yn")
-  expect_match(convert_01_ny(2), "2")
+  expect_match(convert_01_ny("10"), "yn")
+  expect_match(convert_01_ny("2"), "2")
   expect_equal(convert_01_ny(NA), "NA")
   expect_equal(convert_01_ny("NA"), "NA")
   expect_equal(convert_01_ny("a"), "a")
