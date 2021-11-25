@@ -78,6 +78,7 @@ testthat::test_that("convert_month_range_string_to_binary_worker",{
   expect_equal(convert_month_range_string_to_binary_worker("Summer/Spring"), c(1,1,0,0,0,0,0,0,1,1,1,1))
   expect_equal(convert_month_range_string_to_binary_worker("Summer/winter"), c(1,1,0,0,0,1,1,1,0,0,0,1))
   expect_equal(convert_month_range_string_to_binary_worker("Summer,winter"), c(1,1,0,0,0,1,1,1,0,0,0,1))
+  expect_equal(convert_month_range_string_to_binary_worker("Summer;winter"), c(1,1,0,0,0,1,1,1,0,0,0,1))
   expect_equal(convert_month_range_string_to_binary_worker("Jan-Mar"), c(1,1,1,0,0,0,0,0,0,0,0,0))
   expect_equal(convert_month_range_string_to_binary_worker("Jan/Mar"), c(1,0,1,0,0,0,0,0,0,0,0,0))
   expect_equal(convert_month_range_string_to_binary_worker("Jan/Mar/Jul"), c(1,0,1,0,0,0,1,0,0,0,0,0))
@@ -97,6 +98,5 @@ testthat::test_that("convert_month_range_string_to_binary_worker",{
   expect_equal(convert_month_range_string_to_binary_worker("Periodic"), NA)
   expect_equal(convert_month_range_string_to_binary_worker("After fire"), NA)
   expect_equal(convert_month_range_string_to_binary_worker("Doesnt flower"), NA)
-  expect_equal(convert_month_range_string_to_binary_worker("Summer;winter"), NA)
 })
 
