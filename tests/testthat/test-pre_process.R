@@ -70,6 +70,7 @@ testthat::test_that("convert_month_range_string_to_binary_worker",{
   expect_equal(convert_month_range_string_to_binary_worker("All Year"), c(1,1,1,1,1,1,1,1,1,1,1,1))
   expect_equal(convert_month_range_string_to_binary_worker("AllYear"), c(1,1,1,1,1,1,1,1,1,1,1,1))
   expect_equal(convert_month_range_string_to_binary_worker("ALLYEAR"), c(1,1,1,1,1,1,1,1,1,1,1,1))
+  expect_equal(convert_month_range_string_to_binary_worker("All Year-All Year"), c(1,1,1,1,1,1,1,1,1,1,1,1))
   expect_equal(convert_month_range_string_to_binary_worker("Summer"), c(1,1,0,0,0,0,0,0,0,0,0,1))
   expect_equal(convert_month_range_string_to_binary_worker("Autumn"), c(0,0,1,1,1,0,0,0,0,0,0,0))
   expect_equal(convert_month_range_string_to_binary_worker("Winter"), c(0,0,0,0,0,1,1,1,0,0,0,0))
