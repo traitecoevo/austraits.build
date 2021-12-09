@@ -720,22 +720,17 @@ parse_data <- function(data, dataset_id, metadata) {
     }
   }
 
-  # Replace replicates that contain a range with actual replicate numbers for wide datasets
-  if(data_is_long_format == FALSE){
-    if(any(cfgChar$replicates %in% colnames(data))){
-      for(v in cfgChar$var_in){
-        v1 <- cfgChar$replicates[which(cfgChar$var_in == v)]
-        if(v1 %in% names(data)){
-          out$replicates[which(out$trait_name == v)] = dplyr::pull(data[which(names(data) == v1)])
-        }
-      }
-    }
-  } else {
-    # Replace replicates that contain a range with actual replicate numbers for long datasets
-    if(any(cfgChar$replicates %in% colnames(df))){
-      for(v in cfgChar$var_in){
-        v1 <- cfgChar$replicates[which(cfgChar$var_in == v)]
-        if(v1 %in% names(df)){
+  # Replace replicate values in out with replicate values stored in columns in data
+  if(any(cfgChar$replicates %in% colnames(data))){
+    for(v in cfgChar$var_in){
+      v1 <- cfgChar$replicates[which(cfgChar$var_in == v)]
+      if(v1 %in% names(data)){
+        if(data_is_long_format == FALSE){
+          # Replace replicates  for wide datasets
+          out$replicates[which(out$trait_name == v)] = 
+            dplyr::pull(data[which(names(data) == v1)])
+          # Replace replicates for long datasets
+          } else {
           out$replicates[which(out$trait_name == v)] = 
             dplyr::pull(df[which(names(df) == v1)][which(df$trait_name == v),])
         }
