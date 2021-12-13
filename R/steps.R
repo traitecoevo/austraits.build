@@ -184,6 +184,24 @@ load_study <- function(filename_data_raw,
         )
       )
 
+  # Where missing, fill collection_type, sample_age_class with values from sites, then dataset
+  
+  # merge in to traits (from site level) via sites
+  
+  ### Site level code
+  
+  # merge in to traits (from dataset level) via methods
+  traits <- traits %>% 
+    dplyr::left_join(by = "trait_name", 
+      methods %>% dplyr::select(.data$trait_name, 
+                                col_tmp1 = .data$collection_type, 
+                                col_tmp2 = .data$sample_age_class)) %>% 
+    dplyr::mutate(collection_type = dplyr::case_when(is.na(.data$collection_type) ~ .data$col_tmp1,
+                                                     TRUE ~ .data$collection_type),
+                 sample_age_class = dplyr::case_when(is.na(.data$sample_age_class) ~ .data$col_tmp2,
+                                                     TRUE ~ .data$sample_age_class)) %>% 
+    dplyr::select(-.data$col_tmp1, -.data$col_tmp2)
+  
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
     traits %>%
@@ -195,7 +213,7 @@ load_study <- function(filename_data_raw,
        traits       = traits %>% filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
        sites    = sites,
        contexts    = contexts,
-       methods    = methods,
+       methods    = methods %>% select(-collection_type, -sample_age_class),
        excluded_data = traits %>% filter(!is.na(.data$error)) %>% dplyr::select(.data$error, everything()),
        taxonomic_updates = taxonomic_updates,
        taxa = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
@@ -702,13 +720,18 @@ parse_data <- function(data, dataset_id, metadata) {
   out[["value"]] <- tolower(out[["value"]])
 
   # Add information on trait type, precision, if not already present
-  vars <- c("value_type", "replicates")
+  vars <- c("value_type", "replicates", "collection_type", "sample_age_class", "date_collected",
+            "basisofRecord", "methods")
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
   if(length(i) >0 ) {
     j <- !is.na(i)
     for(v in vars) {
-      out[[v]] <- NA
-      out[[v]][j] <- cfgChar[[v]][i[j]]
+      out[[v]] <- as.character(NA)
+      if(!is.null(cfgChar[[v]])){
+        if(v %in% colnames(cfgChar)){
+          out[[v]][j] <- cfgChar[[v]][i[j]]
+        }
+      }
     }
   }
 
