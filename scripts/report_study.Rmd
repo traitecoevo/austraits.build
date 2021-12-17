@@ -54,9 +54,9 @@ options(dplyr.summarise.inform = FALSE)
 library(tidyverse)
 library(knitr)
 library(kableExtra)
+library(austraits)
 
 source("R/support.R")
-source("R/austraits.R")
 source("R/report_utils.R")
 source("R/report_notetaker.R")
 
@@ -74,7 +74,7 @@ if(!exists("dataset_id")) {
 
 definitions <- austraits$definitions
 data_study <- extract_dataset(austraits, dataset_id)
-metadata_study <- read_yaml(sprintf("data/%s/metadata.yml", dataset_id))
+metadata_study <- read_metadata(sprintf("data/%s/metadata.yml", dataset_id))
 
 knitr::opts_chunk$set(fig.cap='', fig.path = file.path(root.dir,"export/figures", paste0(dataset_id,"_")))
 
@@ -531,6 +531,9 @@ if(nrow(subset(data_study$excluded_data, error == "Value out of allowable range"
 }
 
   trait_distribution_plot_numerical(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
+
+  austraits::plot_trait_distribution_beeswarm(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
+
 
   writeLines(c(""))
 
