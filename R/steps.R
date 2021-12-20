@@ -185,17 +185,38 @@ load_study <- function(filename_data_raw,
       )
 
   # Where missing, fill collection_type, sample_age_class with values from sites, then dataset
+  vars <- c("collection_type", "sample_age_class", "date_collected", "basisofRecord",
+             "value_type", "replicates")
   
-  # merge in to traits (from site level) via sites
-  
-  ### Site level code
+  # merge in to traits (from site level) via sites 
+  for(v in vars){
+    if(v %in% sites$site_property){
+      traits_tmp <- traits %>% 
+        dplyr::left_join(by = "site_name",
+                         sites %>% tidyr::pivot_wider(names_from = site_property, values_from = value) %>%
+                           dplyr::dplyr::select(.data$site_name, col_tmp = v))
+    #  traits[v] <- traits_tmp %>% pull(col_tmp)
+    }
+  }
   
   # merge in to traits (from dataset level) via methods
+  for(v in vars){
+    if(v %in% colnames(methods)){
+     traits_tmp <- traits %>% 
+       dplyr::left_join(by = "trait_name", 
+                        methods %>% dplyr::select(.data$trait_name, col_tmp = v))
+     traits[v] <- traits_tmp %>% pull(col_tmp)
+    }
+  }
+
+ #dplyr::mutate(b[v], v = dplyr::case_when(is.na(.data$collection_type) ~ .data$col_tmp, TRUE ~ .data$collection_type))
+  
+  # merge in to traits (from dataset level) via methods (original version)
   traits <- traits %>% 
     dplyr::left_join(by = "trait_name", 
-      methods %>% dplyr::select(.data$trait_name, 
-                                col_tmp1 = .data$collection_type, 
-                                col_tmp2 = .data$sample_age_class)) %>% 
+                     methods %>% dplyr::select(.data$trait_name, 
+                                               col_tmp1 = .data$collection_type, 
+                                               col_tmp2 = .data$sample_age_class)) %>% 
     dplyr::mutate(collection_type = dplyr::case_when(is.na(.data$collection_type) ~ .data$col_tmp1,
                                                      TRUE ~ .data$collection_type),
                  sample_age_class = dplyr::case_when(is.na(.data$sample_age_class) ~ .data$col_tmp2,
@@ -721,7 +742,7 @@ parse_data <- function(data, dataset_id, metadata) {
 
   # Add information on trait type, precision, if not already present
   vars <- c("value_type", "replicates", "collection_type", "sample_age_class", "date_collected",
-            "basisofRecord", "methods")
+            "basisofRecord")
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
   if(length(i) >0 ) {
     j <- !is.na(i)
@@ -729,7 +750,17 @@ parse_data <- function(data, dataset_id, metadata) {
       out[[v]] <- as.character(NA)
       if(!is.null(cfgChar[[v]])){
         if(v %in% colnames(cfgChar)){
-          out[[v]][j] <- cfgChar[[v]][i[j]]
+          out[[v]][j] <- cfgChar[[v]][i[j]] # fill values in from traits level
+        }
+      }
+      if(v %in% colnames(data)){
+        df[[v]] <- data[[v]]
+        if(data_is_long_format == FALSE){
+          # if column exists in wide data use that instead, but multiply the rows by the number of accepted traits first
+          out[[v]] <- rep(df[[v]], nrow(cfgChar)) 
+        } else {
+          # if column exists in long data use that instead after removing rows with excluded traits
+          out[[v]] <- df %>% dplyr::filter(.data$trait_name %in% cfgChar$var_in) %>% pull(v)
         }
       }
     }
