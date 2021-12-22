@@ -13,5 +13,5 @@ standardise_names(x)
 vector with standardised species names
 }
 \description{
-Standardise species names
+Enforces some standards on species names
 }

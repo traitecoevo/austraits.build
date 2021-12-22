@@ -291,31 +291,26 @@ custom_manipulation <- function(txt) {
 #' "Apgaua_2017", context = TRUE)
 #' }
 format_sites <- function(my_list, dataset_id, context = FALSE) {
-
-  f_helper <- function(v, a_list, context = FALSE) {
-    tmp <-
-      a_list[[v]] %>%
-      list1_to_df()
-    if(!context){
-      tmp %>% dplyr::rename(site_property = "key") %>%
-      dplyr::mutate(site_name = v)
-    } else {
-      tmp %>% dplyr::rename(context_property = "key") %>%
-      dplyr::mutate(context_name = v)
-    }
+  
+  # default, if length 1 then it's an "na"
+  if (length(unlist(my_list)) == 1) {
+    return(tibble::tibble(dataset_id = character()))
   }
-
-  # if length 1 then it's an "na"
-  if(length(unlist(my_list)) > 1){
-    out <-
-      my_list %>%
-      lapply(lapply, as.character) %>%
-      lapply(names(.), f_helper, ., context = context) %>%
-      dplyr::bind_rows() %>%
-      dplyr::mutate(dataset_id = dataset_id)
+  
+  out <-
+    my_list %>%
+    lapply(lapply, as.character) %>%
+    purrr::map_df(list1_to_df, .id = "name") %>%
+    dplyr::mutate(dataset_id = dataset_id)
+  
+  if (!context) {
+    out <- out %>%
+      dplyr::rename(site_property = "key", site_name = "name")
   } else {
-    out <- tibble::tibble(dataset_id = character())
+    out <- out %>%
+      dplyr::rename(context_property = "key", context_name = "name")
   }
+  
   out
 }
 
