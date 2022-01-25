@@ -35,7 +35,7 @@ label_suspected_duplicates <- function(austraits_traits, priority_sources = NULL
                    dplyr::desc(.data$priority_source), .data$year) %>%
     # detect duplicates based on combination of variables
     dplyr::mutate(
-      to_check = paste(trait_name, taxon_name, value), 
+      to_check = paste(.data$trait_name, .data$taxon_name, .data$value), 
       duplicate = .data$to_check %>% duplicated()
     ) %>% 
     # remove temporary variables
@@ -46,7 +46,7 @@ label_suspected_duplicates <- function(austraits_traits, priority_sources = NULL
   
   tmp[[2]] <- tmp[[2]] %>%
     dplyr::mutate(
-      i = match(to_check, tmp[[1]]$to_check),
+      i = match(.data$to_check, tmp[[1]]$to_check),
       duplicate_dataset_id = tmp[[1]]$dataset_id[i],
       duplicate_obs_id = tmp[[1]]$observation_id[i]
     )
