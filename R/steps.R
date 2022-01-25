@@ -194,7 +194,7 @@ load_study <- function(filename_data_raw,
       traits_tmp <- traits %>% 
         dplyr::left_join(by = "site_name",
                          sites %>% tidyr::pivot_wider(names_from = site_property, values_from = value) %>%
-                           dplyr::dplyr::select(.data$site_name, col_tmp = v))
+                           dplyr::select(.data$site_name, col_tmp = v))
     #  traits[v] <- traits_tmp %>% pull(col_tmp)
     }
   }
