@@ -203,25 +203,11 @@ load_study <- function(filename_data_raw,
   for(v in vars){
     if(v %in% colnames(methods)){
      traits_tmp <- traits %>% 
-       dplyr::left_join(by = "trait_name", 
-                        methods %>% dplyr::select(.data$trait_name, col_tmp = v))
-     traits[v] <- traits_tmp %>% pull(col_tmp)
+       dplyr::left_join(by = "trait_name",
+                        methods %>% dplyr::select(.data$trait_name, col_tmp = all_of(v)) %>% distinct())
+     traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
   }
-
- #dplyr::mutate(b[v], v = dplyr::case_when(is.na(.data$collection_type) ~ .data$col_tmp, TRUE ~ .data$collection_type))
-  
-  # merge in to traits (from dataset level) via methods (original version)
-  traits <- traits %>% 
-    dplyr::left_join(by = "trait_name", 
-                     methods %>% dplyr::select(.data$trait_name, 
-                                               col_tmp1 = .data$collection_type, 
-                                               col_tmp2 = .data$sample_age_class)) %>% 
-    dplyr::mutate(collection_type = dplyr::case_when(is.na(.data$collection_type) ~ .data$col_tmp1,
-                                                     TRUE ~ .data$collection_type),
-                 sample_age_class = dplyr::case_when(is.na(.data$sample_age_class) ~ .data$col_tmp2,
-                                                     TRUE ~ .data$sample_age_class)) %>% 
-    dplyr::select(-.data$col_tmp1, -.data$col_tmp2)
   
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
