@@ -195,7 +195,7 @@ load_study <- function(filename_data_raw,
         dplyr::left_join(by = "site_name",
                          sites %>% tidyr::pivot_wider(names_from = site_property, values_from = value) %>%
                            dplyr::select(.data$site_name, col_tmp = v)) 
-     traits[[v]] <- traits_tmp %>% pull(col_tmp)
+     traits[[v]] <- traits_tmp %>% dplyr::pull(col_tmp)
     }
   }
   
@@ -738,7 +738,7 @@ parse_data <- function(data, dataset_id, metadata) {
         df[[v]] <- data[[v]]
         if(data_is_long_format == FALSE){
           # if column exists in wide data use that instead, but multiply the rows by the number of accepted traits first
-          out[[v]] <- rep(df[[v]], nrow(cfgChar)) 
+          out[[v]] <- as.character(rep(df[[v]], nrow(cfgChar))) 
         } else {
           # if column exists in long data use that instead after removing rows with excluded traits
           out[[v]] <- df %>% dplyr::filter(.data$trait_name %in% cfgChar$var_in) %>% pull(v)
