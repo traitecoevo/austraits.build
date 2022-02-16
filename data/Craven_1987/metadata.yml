@@ -32,9 +32,7 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: binomial
-  custom_R_code: ' data[["flowering_time"]] <- format_flowering_months(data[["flowering
-    month begin"]], data[["flowering month end"]]); data[["flowering month begin"]]
-    <- NULL; data[["flowering month end"]] <- NULL; data'
+  custom_R_code: data %>% mutate(`flowering month begin` = if_else(`flowering month begin` == "all year","1",`flowering month begin`)) %>% mutate(`flowering month end` = if_else(`flowering month end` == "all year","12",`flowering month end`)) %>% mutate(flowering_time = format_flowering_months(`flowering month begin`,`flowering month end`))
 traits:
 - var_in: longevity
   unit_in: .na

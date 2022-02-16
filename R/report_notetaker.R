@@ -62,8 +62,6 @@
 #'
 #' @return character string with 8 letters
 #' @export
-#'
-#' @examples
 random_string <- function(n=8) {
   base::sample(LETTERS, n, TRUE) %>% paste0(collapse="")
 }
@@ -79,21 +77,17 @@ random_string <- function(n=8) {
 #'
 #' @return a tibble with two columns named note and link
 #' @export
-#'
-#' @examples
 as_note <- function(note, link=NA_character_) {
-  tidyr::tibble(note = note, link = ifelse(is.na(link), random_string(), link)) %>% dplyr::mutate_all(as.character)
+  tibble::tibble(note = note, link = ifelse(is.na(link), random_string(), link)) %>% dplyr::mutate_all(as.character)
 }
-
+tibble::tibble
 # start note recorder
 #' Start note recorder (needs review?)
 #' 
 #' Note recorder used in report_study.Rmd file to initiate note recorder
 #' 
-#' @return 
+#' @return A tibble where notes are recorded
 #' @export
-#'
-#' @examples
 start_notetaker <- function() {
   ret <- as_note(character(), character())
 
@@ -107,10 +101,8 @@ start_notetaker <- function() {
 #' @param notes object containing the report notes
 #' @param new_note vector of character notes to be added to existing notes
 #'
-#' @return
+#' @return A tibble with additional notes added
 #' @export
-#'
-#' @examples
 add_note <- function(notes, new_note) {
   dplyr::bind_rows(notes, new_note)
 }
@@ -124,8 +116,6 @@ add_note <- function(notes, new_note) {
 #'
 #' @return character string containing the notes
 #' @export
-#'
-#' @examples
 print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "link") {
   if(as_anchor)
     sprintf('%s <a name="%s"> %s </a>', note$note, note$link, anchor_text )
@@ -138,13 +128,11 @@ print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "lin
 #' Prints a specific row from notes specified by i
 #'
 #' @param notes object containing the report notes
-#' @param i 
-#' @param ... 
+#' @param i specify the row which contains the note to be returned
+#' @param ... arguments passed to print_note()
 #'
-#' @return
+#' @return character string containing the notes
 #' @export
-#'
-#' @examples
 print_notes <- function(notes, i=nrow(notes), ...) {
   notes %>%
     get_note(i) %>%
@@ -154,33 +142,27 @@ print_notes <- function(notes, i=nrow(notes), ...) {
 #' Print all notes
 #'
 #' @param notes object containing the report notes
-#' @param ... 
+#' @param ... arguments passed to other functions
 #' @param numbered logical default is TRUE
 #'
-#' @return
+#' @return character string containing the notes
 #' @export
-#'
-#' @examples
 print_all_notes <- function(notes, ..., numbered=TRUE) {
   i <- seq_len(nrow(notes))
   x <- print_notes(notes, i =i)
   sprintf("%d. %s", i, x)
 }
 
-# returns a specific note, as indicated by row number i
 #' Return a specific row from notes
 #' 
-#' Returns a specific row from notes specified by i 
+#' Returns a specific row from notes specified by i. Default is nrow(notes) which 
+#' returns the last note
 #'
 #' @param notes object containing the report notes
-#' @param i 
+#' @param i numerical; row number for corresponding note, default is nrow(notes)
 #'
 #' @return a single row from a tibble
 #' @export
-#'
-#' @examples
 get_note <- function(notes, i=nrow(notes)) {
   notes[i,]
 }
-
-
