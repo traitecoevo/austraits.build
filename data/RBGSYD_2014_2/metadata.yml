@@ -28,21 +28,21 @@ config:
     value: lookup_data
     trait_name: trait
   custom_R_code: '
-    check_months <-  function(x){(1:12 %in% x %>% as.integer() %>% paste(collapse=""))}
+    check_months <-  function(x){(1:12 %in% x %>% as.integer() %>% paste(collapse=""))};
 
     bind_rows(
       data %>% filter(! trait %in% c("fruiting", "flowering month")),
-      data %>% filter(trait == "flowering month", lookup_id <= 12) %>% select(species, lookup_id) %>%
+      data %>% filter(trait == "flowering month", lookup_id <= 13) %>% select(species, lookup_id) %>%
       group_by(species) %>%
       nest(months = c(lookup_id)) %>%
       mutate(trait = "flowering_time", lookup_data = map_chr(months, ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months)
-    ) %>% 
+    ) %>%
     bind_rows(
-      data %>% filter(trait == "fruiting", lookup_id <= 12) %>% select(species, lookup_id) %>%
+      data %>% filter(trait == "fruiting", lookup_id <= 13) %>% select(species, lookup_id) %>%
       group_by(species) %>%
       nest(months = c(lookup_id)) %>%
       mutate(trait = "fruiting_time", lookup_data = map_chr(months, ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months)
-    ) %>% 
+    ) %>%
     bind_rows(
       data %>% subset(trait == "special life form" & lookup_data =="parasitic") %>% mutate(trait = "parasitic")
       )'
@@ -387,7 +387,7 @@ taxonomic_updates:
   reason: Confirm alignment with accepted phrase name on APC list (E. Wenk, 2020-05-24)
 - find: Agrostis sp. B sensu Jacobs & Hastings (1993)
   replace: Agrostis joyceae
-  reason: "Align previous phrase name with current APC name (E. Wenk, 2020-05-24)\r\n"
+  reason: "Align previous phrase name with current APC name (E. Wenk, 2020-05-24)"
 - find: Alangium polyosmoides
   replace: Alangium villosum subsp. polyosmoides
   reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
@@ -1487,4 +1487,3 @@ exclude_observations:
   find: Cleome houtteana
   reason: non-native (South America)
 questions: .na
-

@@ -1,4 +1,3 @@
-
 #' Return month for given indices
 #' 
 #' Returns abbreviated month for given indices/ integers,
@@ -9,7 +8,8 @@
 #'
 #' @return vector containing abbreviated months
 #'
-#' @examples
+#' @export
+#' @examples get_month(c(1,1,2,3,3,3,4,5,6))
 get_month <- function(i) {
   month.abb[suppressWarnings(as.integer(i))]
 }
@@ -59,7 +59,7 @@ convert_month_range_vec_to_binary <- function(vec) {
 #' @return vector of character strings
 #' @export
 #'
-#' @examples
+#' @examples convert_01_ny(c(0,1,1,1,0))
 convert_01_ny <- function(txt) {
   txt %>%   
   gsub("1", "y", ., fixed=TRUE) %>%
@@ -85,9 +85,11 @@ convert_month_range_string_to_binary <- function(str) {
 #' Converts flowering and fruiting month ranges to 12 element character strings of 0 and 1 representing Jan - Dec
 #' e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
 #'
-#' @param str text string
-#'
-#' @return a 12 element character string, e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
+#' @param str character string with abbreviated months (i.e. "Jan", "Feb"). Also accepts other
+#' terms such as (all year) and seasons (e.g. summer). The text can also include a range 
+#' separated with "-" (e.g. "Jan-Jul")   
+#' 
+#' @return a numeric vector with 12 elements, e.g. c(1,1,1,0,0,0,0,0,0,0,0,1)   
 convert_month_range_string_to_binary_worker <- function(str) {
   str <- str %>% stringr::str_trim() %>%
     tolower()
@@ -116,7 +118,7 @@ convert_month_range_string_to_binary_worker <- function(str) {
     return(NA)
   }
   
-   # periodic
+   # irregular
   if (grepl("irregular", str)) {
     return(NA)
   }
@@ -134,8 +136,8 @@ convert_month_range_string_to_binary_worker <- function(str) {
     return(`[<-`(rep(0, 12), which(tolower(month.abb) %in% m), 1))
   }  
   
-  # one or more month ranges
-  if (grepl(paste0("^", regexMonths, " *- *", regexMonths, "([/,] *", regexMonths, " *- *", regexMonths, ")*$"), str)) {  
+  # one or more month ranges separated with / or , or ; or :
+  if (grepl(paste0("^", regexMonths, " *- *", regexMonths, "([/,;:] *", regexMonths, " *- *", regexMonths, ")*$"), str)) {  
     m <- regmatches(str, gregexpr(paste0(regexMonths, " *- *", regexMonths), str))[[1]]
     bin <- rep(0, 12)
     
@@ -160,7 +162,7 @@ convert_month_range_string_to_binary_worker <- function(str) {
   }
   
   # seasons separated with / or ,
-  if (grepl(paste0("^", regexSeasons, " *([/,] *", regexSeasons, ")+$"), str)) {
+  if (grepl(paste0("^", regexSeasons, " *([/,;:] *", regexSeasons, ")+$"), str)) {
     m <- regmatches(str, gregexpr(regexSeasons, str))[[1]]
     return(`[<-`(rep(0, 12), which(tolower(seasons) %in% m), 1))
   }  
@@ -182,7 +184,6 @@ convert_month_range_string_to_binary_worker <- function(str) {
   return(NA)
 }
 
-
 #' Separate cells with a range to min and max
 #' 
 #' Separate values cells with a range into columns with minimum and maximum
@@ -192,6 +193,7 @@ convert_month_range_string_to_binary_worker <- function(str) {
 #' @param y1 name of variable to hold minimum
 #' @param y2 name of variable to hold maximum
 #' @param sep separator, by default "-"
+#' @param remove logical, default = TRUE
 #'
 #' @return modified data frame
 #'
@@ -208,9 +210,9 @@ separate_range <- function(data, x, y1, y2, sep="-", remove=TRUE) {
 #' @param x vector containing values
 #'
 #' @return vector with duplicate values as NA
-#'
+#' @importFrom rlang .data
 replace_duplicates_with_NA <- function(x) {
-  x %>% replace(., duplicated(.), NA)
+  base::replace(x, duplicated(x), NA)
 }
 
 
