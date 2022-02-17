@@ -4,7 +4,7 @@ source:
     bibtype: Unpublished
     year: 2020
     author: Daniel Metcalfe
-    title: "Unpublished data: Traits of Poaceae spp, CSIRO"
+    title: 'Unpublished data: Traits of Poaceae spp, CSIRO'
 people:
 - name: Daniel Metcalfe
   institution: CSIRO
@@ -54,7 +54,7 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: current full name without authority
-  custom_R_code: .na
+  custom_R_code: data %>%  mutate(fruit_fleshiness = Fruit_type, fruit_dehiscence = Fruit_type)
 traits:
 - var_in: Endemicity_level
   unit_in: .na
@@ -162,6 +162,18 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: from reference book
+- var_in: fruit_fleshiness
+  unit_in: .na
+  trait_name: fruit_fleshiness
+  value_type: expert_mean
+  replicates: .na
+  methods: from reference book
+- var_in: fruit_dehiscence
+  unit_in: .na
+  trait_name: fruit_dehiscence
+  value_type: expert_mean
+  replicates: .na
+  methods: from reference book
 - var_in: Fruit_functional_type
   unit_in: .na
   trait_name: dispersal_appendage
@@ -182,19 +194,19 @@ traits:
   methods: from reference book
 - var_in: Min_breadth_fruit(mm)
   unit_in: mm
-  trait_name: fruit_breadth
+  trait_name: fruit_height
   value_type: expert_min
   replicates: .na
   methods: from reference book
 - var_in: Max_breadth_fruit(mm)
   unit_in: mm
-  trait_name: fruit_breadth
+  trait_name: fruit_height
   value_type: expert_max
   replicates: .na
   methods: from reference book
 - var_in: seed_mass_unique
   unit_in: mg
-  trait_name: seed_mass
+  trait_name: seed_dry_mass
   value_type: expert_mean
   replicates: .na
   methods: from reference book; data already in AusTraits from Kew_2019_1 and BRGK_2014
@@ -257,16 +269,49 @@ substitutions:
   replace: non_mycorrhizal
 - trait_name: dispersal_appendage
   find: Dry dehiscent or indehsicent without attractant or wing
-  replace: indehiscent dry_dehiscent
+  replace: none
 - trait_name: dispersal_syndrome
   find: passive
-  replace: unassisted
+  replace: barochory
 - trait_name: dispersal_syndrome
   find: passive water
-  replace: unassisted water
+  replace: barochory hydrochory
 - trait_name: dispersal_syndrome
   find: wind passive
-  replace: wind unassisted
+  replace: anemochory barochory
+- trait_name: dispersal_syndrome
+  find: exozoochory water
+  replace: epizoochory hydrochory
+- trait_name: dispersal_syndrome
+  find: exozoochory wind
+  replace: epizoochory anemochory
+- trait_name: dispersal_syndrome
+  find: water exozoochory
+  replace: hydrochory epizoochory
+- trait_name: dispersal_syndrome
+  find: wind exozoochory
+  replace: anemochory epizoochory
+- trait_name: dispersal_syndrome
+  find: exozoochory
+  replace: epizoochory
+- trait_name: dispersal_syndrome
+  find: water
+  replace: hydrochory
+- trait_name: dispersal_syndrome
+  find: wind
+  replace: anemochory
+- trait_name: dispersal_syndrome
+  find: water wind
+  replace: hydrochory anemochory
+- trait_name: dispersal_syndrome
+  find: wind water
+  replace: anemochory hydrochory
+- trait_name: fruit_dehiscence
+  find: caryopsis
+  replace: indehiscent dehiscent
+- trait_name: fruit_fleshiness
+  find: caryopsis
+  replace: dry
 taxonomic_updates:
 - find: Calyptochloa sp. (Charters Towers E.J.Thompson+ CHA554)
   replace: Calyptochloa sp. Charters Towers (E.J.Thompson+ CHA554)

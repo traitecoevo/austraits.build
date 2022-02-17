@@ -29,3 +29,11 @@ read_csv("data/Dwyer_2017/raw/species.in.quadrat.scale.data.csv") %>%
             funs(replace(.,duplicated(.),NA))) %>%
   write_csv("data/Dwyer_2017/data.csv")
       
+
+#E. Wenk recreated data.csv file 2021.11.11 to include individual replicate counts; previous work by C. Baxter
+read_csv("data/Dwyer_2017/raw/species.in.quadrat.scale.data.csv") %>%
+  mutate(species = gsub(".", " ", species, fixed=TRUE), 
+         seed_mass = exp(mean.log.seed.mass), 
+         max_height = rem.scale.max.sqrt.height^2,
+         specific_leaf_area = exp(rem.scale.mean.log.sla)) %>%
+  write_csv("data/Dwyer_2017/data.csv")

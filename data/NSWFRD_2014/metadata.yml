@@ -1,11 +1,13 @@
 source:
   primary:
     key: NSWFRD_2014
-    bibtype: unpublished
+    bibtype: report
     year: 2014
     author: Belinda Kenny, Corinna Orscheg, Elizabeth Tasker, Malcolm A. Gill and
       Ross Bradstock
-    title: 'Unpublished data: NSW Flora Fire Response Database, v2.1 updated May 2014, NSW Department of Planning Industry and Environment.'
+    title: NSW Flora Fire Response Database, v2.1
+    institution: NSW Department of Planning Industry and Environment
+    type: database
 people:
 - name: Elizabeth Tasker
   institution: NSW Department of Planning Industry and Environment
@@ -38,7 +40,10 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: Current Scientific Name
-  custom_R_code: data %>% mutate(seed_longevity = `Seed storage`) %>% mutate(fire_response_detailed = Fireresponse) %>% mutate(flowering_time_edited = convert_month_range_vec_to_binary(flowering_time_edited),fruiting_time_edited = convert_month_range_vec_to_binary(fruiting_time_edited))
+  custom_R_code: data %>% mutate(seed_longevity = `Seed storage`) %>% mutate(fire_response_detailed
+    = Fireresponse) %>% mutate(flowering_time_edited = convert_month_range_vec_to_binary(flowering_time_edited),fruiting_time_edited
+    = convert_month_range_vec_to_binary(fruiting_time_edited)) %>% mutate(dispersers
+    = `Seed dispersal mechanism`)
 traits:
 - var_in: Life form
   unit_in: .na
@@ -126,6 +131,15 @@ traits:
 - var_in: Seed dispersal mechanism
   unit_in: .na
   trait_name: dispersal_syndrome
+  value_type: expert_mean
+  replicates: .na
+  methods: Known vector for dispersal (wind, bird, ants, mammal, adhesion, etc); a-
+    indicates seed is adapted for dispersal by the given vector (but not necessarily
+    shown to use this vector); ? indicates possible vector. See original file in raw
+    data folder for extensive reference list.
+- var_in: dispersers
+  unit_in: .na
+  trait_name: dispersers
   value_type: expert_mean
   replicates: .na
   methods: Known vector for dispersal (wind, bird, ants, mammal, adhesion, etc); a-
@@ -250,222 +264,6 @@ substitutions:
 - trait_name: plant_growth_form
   find: FF
   replace: primitive
-- trait_name: dispersal_syndrome
-  find: ant
-  replace: myrmecochory
-- trait_name: dispersal_syndrome
-  find: a-ant
-  replace: myrmecochory
-- trait_name: dispersal_syndrome
-  find: ant?
-  replace: myrmecochory
-- trait_name: dispersal_syndrome
-  find: a-ant?
-  replace: myrmecochory
-- trait_name: dispersal_syndrome
-  find: bird & ant
-  replace: myrmecochory bird
-- trait_name: dispersal_syndrome
-  find: bird / ant
-  replace: myrmecochory bird
-- trait_name: dispersal_syndrome
-  find: bird? / ant?
-  replace: myrmecochory bird
-- trait_name: dispersal_syndrome
-  find: bird? & ant
-  replace: myrmecochory bird
-- trait_name: dispersal_syndrome
-  find: bird
-  replace: bird
-- trait_name: dispersal_syndrome
-  find: bird?
-  replace: bird
-- trait_name: dispersal_syndrome
-  find: water?
-  replace: water
-- trait_name: dispersal_syndrome
-  find: ant? / water?
-  replace: myrmecochory water
-- trait_name: dispersal_syndrome
-  find: bird? / water?
-  replace: bird water
-- trait_name: dispersal_syndrome
-  find: wind & ants
-  replace: wind myrmecochory
-- trait_name: dispersal_syndrome
-  find: water & wind
-  replace: water wind
-- trait_name: dispersal_syndrome
-  find: probably bird dispersed
-  replace: bird
-- trait_name: dispersal_syndrome
-  find: wind? / water?
-  replace: wind water
-- trait_name: dispersal_syndrome
-  find: bird / vertebrate
-  replace: bird vertebrate
-- trait_name: dispersal_syndrome
-  find: wind / water
-  replace: wind water
-- trait_name: dispersal_syndrome
-  find: a-adhesion
-  replace: adhesion
-- trait_name: dispersal_syndrome
-  find: bird / a-vertebrate
-  replace: bird
-- trait_name: dispersal_syndrome
-  find: explosive capsule
-  replace: ballistic
-- trait_name: dispersal_syndrome
-  find: wind?
-  replace: wind
-- trait_name: dispersal_syndrome
-  find: explosive capsule / ant?
-  replace: myrmecochory ballistic
-- trait_name: dispersal_syndrome
-  find: explosive capsule / ant / bird
-  replace: myrmecochory ballistic bird
-- trait_name: dispersal_syndrome
-  find: bird? / a-vertebrate
-  replace: bird vertebrate
-- trait_name: dispersal_syndrome
-  find: bird / water / a-vertebrate
-  replace: bird vertebrate water
-- trait_name: dispersal_syndrome
-  find: bird / water
-  replace: bird water
-- trait_name: dispersal_syndrome
-  find: vertebrate?
-  replace: vertebrate
-- trait_name: dispersal_syndrome
-  find: a-ant? / a-vertebrate
-  replace: myrmecochory vertebrate
-- trait_name: dispersal_syndrome
-  find: ballistic capsule
-  replace: ballistic
-- trait_name: dispersal_syndrome
-  find: ant?, wind
-  replace: myrmecochory wind
-- trait_name: dispersal_syndrome
-  find: a-adhesion
-  replace: adhesion
-- trait_name: dispersal_syndrome
-  find: a-wind
-  replace: wind
-- trait_name: dispersal_syndrome
-  find: gravity / ant?
-  replace: gravity myrmecochory
-- trait_name: dispersal_syndrome
-  find: a-ingestion
-  replace: endozoochory
-- trait_name: dispersal_syndrome
-  find: ant / a-vertebrate
-  replace: myrmecochory vertebrate
-- trait_name: dispersal_syndrome
-  find: a-water
-  replace: water
-- trait_name: dispersal_syndrome
-  find: burr
-  replace: adhesion
-- trait_name: dispersal_syndrome
-  find: possibly ant dispersed
-  replace: myrmecochory
-- trait_name: dispersal_syndrome
-  find: a-vertebrate / bird?
-  replace: vertebrate bird
-- trait_name: dispersal_syndrome
-  find: a-ant & a-vertebrate
-  replace: myrmecochory vertebrate
-- trait_name: dispersal_syndrome
-  find: bird & vertebrate
-  replace: bird vertebrate
-- trait_name: dispersal_syndrome
-  find: water and wind
-  replace: water wind
-- trait_name: dispersal_syndrome
-  find: wind & water
-  replace: water wind
-- trait_name: dispersal_syndrome
-  find: a-ant / explosive capsule
-  replace: myrmecochory ballistic
-- trait_name: dispersal_syndrome
-  find: explosive capsule / a-ant
-  replace: myrmecochory ballistic
-- trait_name: dispersal_syndrome
-  find: wind / a-ant
-  replace: myrmecochory wind
-- trait_name: dispersal_syndrome
-  find: ballistic (1) a-ant? (55)
-  replace: myrmecochory ballistic
-- trait_name: dispersal_syndrome
-  find: a-ant (55) wind (96)
-  replace: myrmecochory wind
-- trait_name: dispersal_syndrome
-  find: explosive capsule & a-ant
-  replace: myrmecochory ballistic
-- trait_name: dispersal_syndrome
-  find: gravity / a-ant?
-  replace: myrmecochory gravity
-- trait_name: dispersal_syndrome
-  find: a-vertebrate
-  replace: vertebrate
-- trait_name: dispersal_syndrome
-  find: gravity a-vertebrate
-  replace: gravity vertebrate
-- trait_name: dispersal_syndrome
-  find: wind / water / vertebrate
-  replace: wind water vertebrate
-- trait_name: dispersal_syndrome
-  find: bird / a-vertebrate / a-ant
-  replace: bird vertebrate myrmecochory
-- trait_name: dispersal_syndrome
-  find: wind / water?
-  replace: wind water
-- trait_name: dispersal_syndrome
-  find: gravity  a-ant?
-  replace: gravity myrmecochory
-- trait_name: dispersal_syndrome
-  find: bird? / a-vertebrate / a-ant
-  replace: bird vertebrate myrmecochory
-- trait_name: dispersal_syndrome
-  find: gravity / wind
-  replace: gravity wind
-- trait_name: dispersal_syndrome
-  find: a-wind a-adhesion
-  replace: wind adhesion
-- trait_name: dispersal_syndrome
-  find: probably bird or mammal
-  replace: bird mammal
-- trait_name: dispersal_syndrome
-  find: a-adhesion?
-  replace: adhesion
-- trait_name: dispersal_syndrome
-  find: a-wind (54), gravity, wind (1)
-  replace: wind gravity
-- trait_name: dispersal_syndrome
-  find: mobile (54); wind? (1)
-  replace: unassisted wind
-- trait_name: dispersal_syndrome
-  find: water / flood
-  replace: water
-- trait_name: dispersal_syndrome
-  find: no dispersal mechanism
-  replace: unassisted
-- trait_name: dispersal_syndrome
-  find: passive
-  replace: unassisted
-- trait_name: dispersal_syndrome
-  find: mud on cars
-  replace: mud_on_cars
-- trait_name: dispersal_syndrome
-  find: wind, water, animal, mud on cars
-  replace: wind water animal_vector mud_on_cars
-- trait_name: dispersal_syndrome
-  find: in mud on cars
-  replace: mud_on_cars
-- trait_name: dispersal_syndrome
-  find: none developed
-  replace: unassisted
 - trait_name: fire_cued_seeding
   find: 'yes'
   replace: fire_cued_seeding
@@ -776,195 +574,6 @@ substitutions:
 - trait_name: fire_cued_seeding
   find: yes; some germination in undisturbed sites
   replace: fire_cued_seeding_high
-- trait_name: germination_treatment
-  find: a-heat
-  replace: heat
-- trait_name: germination_treatment
-  find: heat & smoke
-  replace: heat smoke
-- trait_name: germination_treatment
-  find: heat & smoke / light
-  replace: heat smoke_and_light
-- trait_name: germination_treatment
-  find: heat & smoke combined
-  replace: smoke_and_heat
-- trait_name: germination_treatment
-  find: heat & smoke combined (87), smoke (110)
-  replace: smoke_and_heat smoke
-- trait_name: germination_treatment
-  find: heat (25) / smoke (93)
-  replace: heat smoke
-- trait_name: germination_treatment
-  find: heat (90oc best)
-  replace: heat
-- trait_name: germination_treatment
-  find: heat (soaked hot water)
-  replace: imbibed heat
-- trait_name: germination_treatment
-  find: heat (soaked warm water)
-  replace: smoked_water heat
-- trait_name: germination_treatment
-  find: heat / light
-  replace: heat light
-- trait_name: germination_treatment
-  find: heat / scarification
-  replace: heat scarify
-- trait_name: germination_treatment
-  find: heat / scarification (93) / heat 50 deg (98)
-  replace: heat scarify
-- trait_name: germination_treatment
-  find: heat >40
-  replace: heat
-- trait_name: germination_treatment
-  find: heat >50
-  replace: heat
-- trait_name: germination_treatment
-  find: heat >60
-  replace: heat
-- trait_name: germination_treatment
-  find: heat >60 (1), smoke & heat (best combined) (88)
-  replace: heat smoke_and_heat
-- trait_name: germination_treatment
-  find: heat >60 <100
-  replace: heat
-- trait_name: germination_treatment
-  find: heat >60 <100 deg (a) / heat 80 deg (98)
-  replace: heat
-- trait_name: germination_treatment
-  find: heat >60oc (1), smoke & heat (80-100oc) (88)
-  replace: heat smoke_and_heat
-- trait_name: germination_treatment
-  find: heat >80
-  replace: heat
-- trait_name: germination_treatment
-  find: heat 70 deg
-  replace: heat
-- trait_name: germination_treatment
-  find: heat 70-110
-  replace: heat
-- trait_name: germination_treatment
-  find: heat 80-110
-  replace: heat
-- trait_name: germination_treatment
-  find: heat 80deg
-  replace: heat
-- trait_name: germination_treatment
-  find: heat 80deg (93), heat & smoke (109, 110)
-  replace: heat smoke_and_heat
-- trait_name: germination_treatment
-  find: heat 80deg (93), heat & smoke (110)
-  replace: heat smoke_and_heat
-- trait_name: germination_treatment
-  find: heat 80deg (93), heat (110)
-  replace: heat
-- trait_name: germination_treatment
-  find: heat 90-100 & smoke / after ripening
-  replace: heat smoke_and_heat
-- trait_name: germination_treatment
-  find: heat 90deg
-  replace: heat
-- trait_name: germination_treatment
-  find: heat 90oc
-  replace: heat
-- trait_name: germination_treatment
-  find: heat, scarification or smoke
-  replace: heat scarify smoke
-- trait_name: germination_treatment
-  find: heat?
-  replace: heat
-- trait_name: germination_treatment
-  find: mycorrhizae?
-  replace: mycorhizal_association
-- trait_name: germination_treatment
-  find: none
-  replace: none
-- trait_name: germination_treatment
-  find: none required
-  replace: none
-- trait_name: germination_treatment
-  find: none, germinates quickly
-  replace: none
-- trait_name: germination_treatment
-  find: remove seedcoat
-  replace: remove_seed_coat
-- trait_name: germination_treatment
-  find: remove seedcoat, fresh seed
-  replace: remove_seed_coat
-- trait_name: germination_treatment
-  find: require light
-  replace: light
-- trait_name: germination_treatment
-  find: require light (1) / stratification (93)
-  replace: light stratification
-- trait_name: germination_treatment
-  find: requires fungal association
-  replace: mycorhizal_association
-- trait_name: germination_treatment
-  find: requires mycorhizal association
-  replace: mycorhizal_association
-- trait_name: germination_treatment
-  find: scarification
-  replace: scarify
-- trait_name: germination_treatment
-  find: scarification & heat
-  replace: scarify heat
-- trait_name: germination_treatment
-  find: scarification (93), heat & smoke combined (88)
-  replace: scarify smoke_and_heat
-- trait_name: germination_treatment
-  find: seed germination requires mycorrhizal association
-  replace: mycorhizal_association
-- trait_name: germination_treatment
-  find: smoke
-  replace: smoke
-- trait_name: germination_treatment
-  find: smoke & heat
-  replace: smoke_and_heat
-- trait_name: germination_treatment
-  find: smoke & heat (best combined)
-  replace: smoke_and_heat
-- trait_name: germination_treatment
-  find: smoke & heat combined
-  replace: smoke_and_heat
-- trait_name: germination_treatment
-  find: smoke (87), after ripening (93)
-  replace: smoke
-- trait_name: germination_treatment
-  find: smoke / heat
-  replace: smoke_and_heat
-- trait_name: germination_treatment
-  find: smoke / scarification
-  replace: smoke scarify
-- trait_name: germination_treatment
-  find: smoke / wash
-  replace: smoke rinse
-- trait_name: germination_treatment
-  find: smoke and heat (best combined)
-  replace: smoke_and_heat
-- trait_name: germination_treatment
-  find: smoke, germinates quickly
-  replace: smoke
-- trait_name: germination_treatment
-  find: soak
-  replace: imbibed
-- trait_name: germination_treatment
-  find: soak (cold or hot)
-  replace: imbibed
-- trait_name: germination_treatment
-  find: cold stratification
-  replace: stratification
-- trait_name: germination_treatment
-  find: stratification / none
-  replace: stratification
-- trait_name: germination_treatment
-  find: wash
-  replace: rinse
-- trait_name: germination_treatment
-  find: remove fruit
-  replace: scarify_fruit
-- trait_name: germination_treatment
-  find: wash  scarification
-  replace: rinse scarify
 - trait_name: regen_strategy
   find: apical
   replace: apical_buds
@@ -1418,6 +1027,755 @@ substitutions:
 - trait_name: seed_longevity
   find: viviparous
   replace: .na
+- trait_name: dispersal_syndrome
+  find: a-wind
+  replace: anemochory
+- trait_name: dispersal_syndrome
+  find: wind
+  replace: anemochory
+- trait_name: dispersal_syndrome
+  find: wind?
+  replace: anemochory
+- trait_name: dispersal_syndrome
+  find: a-wind (54), gravity, wind (1)
+  replace: anemochory barochory
+- trait_name: dispersal_syndrome
+  find: mobile (54); wind? (1)
+  replace: anemochory barochory
+- trait_name: dispersal_syndrome
+  find: a-wind a-adhesion
+  replace: anemochory epizoochory
+- trait_name: dispersal_syndrome
+  find: water & wind
+  replace: anemochory hydrochory
+- trait_name: dispersal_syndrome
+  find: water and wind
+  replace: anemochory hydrochory
+- trait_name: dispersal_syndrome
+  find: wind & water
+  replace: anemochory hydrochory
+- trait_name: dispersal_syndrome
+  find: wind / water?
+  replace: anemochory hydrochory
+- trait_name: dispersal_syndrome
+  find: wind? / water?
+  replace: anemochory hydrochory
+- trait_name: dispersal_syndrome
+  find: wind / water / vertebrate
+  replace: anemochory hydrochory zoochory
+- trait_name: dispersal_syndrome
+  find: a-ant (55) wind (96)
+  replace: anemochory myrmecochory
+- trait_name: dispersal_syndrome
+  find: ant?, wind
+  replace: anemochory myrmecochory
+- trait_name: dispersal_syndrome
+  find: wind & ants
+  replace: anemochory myrmecochory
+- trait_name: dispersal_syndrome
+  find: wind / a-ant
+  replace: anemochory myrmecochory
+- trait_name: dispersal_syndrome
+  find: garden refuse
+  replace: anthrochory
+- trait_name: dispersal_syndrome
+  find: in mud on cars
+  replace: anthrochory
+- trait_name: dispersal_syndrome
+  find: mud on cars
+  replace: anthrochory
+- trait_name: dispersal_syndrome
+  find: ballistic
+  replace: ballistic
+- trait_name: dispersal_syndrome
+  find: ballistic capsule
+  replace: ballistic
+- trait_name: dispersal_syndrome
+  find: explosive capsule
+  replace: ballistic
+- trait_name: dispersal_syndrome
+  find: gravity
+  replace: barochory
+- trait_name: dispersal_syndrome
+  find: long-distance wind-dispersal of the fruit would not be expected
+  replace: barochory
+- trait_name: dispersal_syndrome
+  find: no dispersal mechanism
+  replace: barochory
+- trait_name: dispersal_syndrome
+  find: none developed
+  replace: barochory
+- trait_name: dispersal_syndrome
+  find: passive
+  replace: barochory
+- trait_name: dispersal_syndrome
+  find: gravity / wind
+  replace: barochory anemochory
+- trait_name: dispersal_syndrome
+  find: gravity  a-ant?
+  replace: barochory myrmecochory
+- trait_name: dispersal_syndrome
+  find: gravity / a-ant?
+  replace: barochory myrmecochory
+- trait_name: dispersal_syndrome
+  find: gravity / ant?
+  replace: barochory myrmecochory
+- trait_name: dispersal_syndrome
+  find: gravity a-vertebrate
+  replace: barochory zoochory
+- trait_name: dispersal_syndrome
+  find: a-adhesion?
+  replace: epizoochory
+- trait_name: dispersal_syndrome
+  find: a-ingestion
+  replace: epizoochory
+- trait_name: dispersal_syndrome
+  find: burr
+  replace: epizoochory
+- trait_name: dispersal_syndrome
+  find: a-water
+  replace: hydrochory
+- trait_name: dispersal_syndrome
+  find: water
+  replace: hydrochory
+- trait_name: dispersal_syndrome
+  find: water / flood
+  replace: hydrochory
+- trait_name: dispersal_syndrome
+  find: water?
+  replace: hydrochory
+- trait_name: dispersal_syndrome
+  find: a-ant
+  replace: myrmecochory
+- trait_name: dispersal_syndrome
+  find: a-ant?
+  replace: myrmecochory
+- trait_name: dispersal_syndrome
+  find: ant
+  replace: myrmecochory
+- trait_name: dispersal_syndrome
+  find: ant?
+  replace: myrmecochory
+- trait_name: dispersal_syndrome
+  find: possibly ant dispersed
+  replace: myrmecochory
+- trait_name: dispersal_syndrome
+  find: a-ant / explosive capsule
+  replace: myrmecochory ballistic
+- trait_name: dispersal_syndrome
+  find: ballistic (1) a-ant? (55)
+  replace: myrmecochory ballistic
+- trait_name: dispersal_syndrome
+  find: explosive capsule & a-ant
+  replace: myrmecochory ballistic
+- trait_name: dispersal_syndrome
+  find: explosive capsule / a-ant
+  replace: myrmecochory ballistic
+- trait_name: dispersal_syndrome
+  find: explosive capsule / ant?
+  replace: myrmecochory ballistic
+- trait_name: dispersal_syndrome
+  find: explosive capsule / ant / bird
+  replace: myrmecochory ballistic zoochory
+- trait_name: dispersal_syndrome
+  find: a-adhesion
+  replace: myrmecochory epizoochory
+- trait_name: dispersal_syndrome
+  find: ant? / water?
+  replace: myrmecochory hydrochory
+- trait_name: dispersal_syndrome
+  find: a-ant & a-vertebrate
+  replace: myrmecochory zoochory
+- trait_name: dispersal_syndrome
+  find: a-ant? / a-vertebrate
+  replace: myrmecochory zoochory
+- trait_name: dispersal_syndrome
+  find: ant / a-vertebrate
+  replace: myrmecochory zoochory
+- trait_name: dispersal_syndrome
+  find: bird & ant
+  replace: myrmecochory zoochory
+- trait_name: dispersal_syndrome
+  find: bird / ant
+  replace: myrmecochory zoochory
+- trait_name: dispersal_syndrome
+  find: bird / a-vertebrate / a-ant
+  replace: myrmecochory zoochory
+- trait_name: dispersal_syndrome
+  find: bird? & ant
+  replace: myrmecochory zoochory
+- trait_name: dispersal_syndrome
+  find: bird? / ant?
+  replace: myrmecochory zoochory
+- trait_name: dispersal_syndrome
+  find: bird? / a-vertebrate / a-ant
+  replace: myrmecochory zoochory
+- trait_name: dispersal_syndrome
+  find: seed wing poorly developed
+  replace: .na
+- trait_name: dispersal_syndrome
+  find: a-vertebrate
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: a-vertebrate / bird?
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: bird
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: bird & vertebrate
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: bird / a-vertebrate
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: bird / vertebrate
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: bird?
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: bird? / a-vertebrate
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: invertebrate
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: probably bird dispersed
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: probably bird or mammal
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: vertebrate
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: bird / water
+  replace: zoochory hydrochory
+- trait_name: dispersal_syndrome
+  find: bird / water / a-vertebrate
+  replace: zoochory hydrochory
+- trait_name: dispersal_syndrome
+  find: bird? / water?
+  replace: zoochory hydrochory
+- trait_name: dispersal_syndrome
+  find: vertebrate?
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: wind / water
+  replace: anemochory hydrochory
+- trait_name: dispersal_syndrome
+  find: wind, water, animal, mud on cars
+  replace: anemochory hydrochory anthrochory zoochory
+- trait_name: dispersers
+  find: a-wind
+  replace: wind
+- trait_name: dispersers
+  find: wind
+  replace: wind
+- trait_name: dispersers
+  find: wind?
+  replace: wind
+- trait_name: dispersers
+  find: a-wind (54), gravity, wind (1)
+  replace: wind
+- trait_name: dispersers
+  find: mobile (54); wind? (1)
+  replace: wind
+- trait_name: dispersers
+  find: a-wind a-adhesion
+  replace: wind
+- trait_name: dispersers
+  find: water & wind
+  replace: wind water
+- trait_name: dispersers
+  find: water and wind
+  replace: wind water
+- trait_name: dispersers
+  find: wind & water
+  replace: wind water
+- trait_name: dispersers
+  find: wind / water?
+  replace: wind water
+- trait_name: dispersers
+  find: wind? / water?
+  replace: wind water
+- trait_name: dispersers
+  find: wind / water / vertebrate
+  replace: vertebrates wind water
+- trait_name: dispersers
+  find: a-ant (55) wind (96)
+  replace: ants wind
+- trait_name: dispersers
+  find: ant?, wind
+  replace: ants wind
+- trait_name: dispersers
+  find: wind & ants
+  replace: ants wind
+- trait_name: dispersers
+  find: wind / a-ant
+  replace: ants wind
+- trait_name: dispersers
+  find: garden refuse
+  replace: garden_refuse
+- trait_name: dispersers
+  find: in mud on cars
+  replace: vehicles
+- trait_name: dispersers
+  find: mud on cars
+  replace: vehicles
+- trait_name: dispersers
+  find: ballistic
+  replace: .na
+- trait_name: dispersers
+  find: ballistic capsule
+  replace: .na
+- trait_name: dispersers
+  find: explosive capsule
+  replace: .na
+- trait_name: dispersers
+  find: gravity
+  replace: .na
+- trait_name: dispersers
+  find: long-distance wind-dispersal of the fruit would not be expected
+  replace: .na
+- trait_name: dispersers
+  find: no dispersal mechanism
+  replace: .na
+- trait_name: dispersers
+  find: none developed
+  replace: .na
+- trait_name: dispersers
+  find: passive
+  replace: .na
+- trait_name: dispersers
+  find: gravity / wind
+  replace: wind
+- trait_name: dispersers
+  find: gravity  a-ant?
+  replace: ants
+- trait_name: dispersers
+  find: gravity / a-ant?
+  replace: ants
+- trait_name: dispersers
+  find: gravity / ant?
+  replace: ants
+- trait_name: dispersers
+  find: gravity a-vertebrate
+  replace: vertebrates
+- trait_name: dispersers
+  find: a-adhesion?
+  replace: .na
+- trait_name: dispersers
+  find: a-ingestion
+  replace: .na
+- trait_name: dispersers
+  find: burr
+  replace: vertebrates
+- trait_name: dispersers
+  find: a-water
+  replace: water
+- trait_name: dispersers
+  find: water
+  replace: water
+- trait_name: dispersers
+  find: water / flood
+  replace: floods
+- trait_name: dispersers
+  find: water?
+  replace: water
+- trait_name: dispersers
+  find: a-ant
+  replace: ants
+- trait_name: dispersers
+  find: a-ant?
+  replace: ants
+- trait_name: dispersers
+  find: ant
+  replace: ants
+- trait_name: dispersers
+  find: ant?
+  replace: ants
+- trait_name: dispersers
+  find: possibly ant dispersed
+  replace: ants
+- trait_name: dispersers
+  find: a-ant / explosive capsule
+  replace: ants
+- trait_name: dispersers
+  find: ballistic (1) a-ant? (55)
+  replace: ants
+- trait_name: dispersers
+  find: explosive capsule & a-ant
+  replace: ants
+- trait_name: dispersers
+  find: explosive capsule / a-ant
+  replace: ants
+- trait_name: dispersers
+  find: explosive capsule / ant?
+  replace: ants
+- trait_name: dispersers
+  find: explosive capsule / ant / bird
+  replace: ants birds
+- trait_name: dispersers
+  find: a-adhesion
+  replace: ants
+- trait_name: dispersers
+  find: ant? / water?
+  replace: ants water
+- trait_name: dispersers
+  find: a-ant & a-vertebrate
+  replace: ants vertebrates
+- trait_name: dispersers
+  find: a-ant? / a-vertebrate
+  replace: ants vertebrates
+- trait_name: dispersers
+  find: ant / a-vertebrate
+  replace: ants vertebrates
+- trait_name: dispersers
+  find: bird & ant
+  replace: ants birds
+- trait_name: dispersers
+  find: bird / ant
+  replace: ants birds
+- trait_name: dispersers
+  find: bird / a-vertebrate / a-ant
+  replace: ants birds vertebrates
+- trait_name: dispersers
+  find: bird? & ant
+  replace: ants birds
+- trait_name: dispersers
+  find: bird? / ant?
+  replace: ants birds
+- trait_name: dispersers
+  find: bird? / a-vertebrate / a-ant
+  replace: ants birds vertebrates
+- trait_name: dispersers
+  find: seed wing poorly developed
+  replace: .na
+- trait_name: dispersers
+  find: a-vertebrate
+  replace: vertebrates
+- trait_name: dispersers
+  find: a-vertebrate / bird?
+  replace: birds vertebrates
+- trait_name: dispersers
+  find: bird
+  replace: birds
+- trait_name: dispersers
+  find: bird & vertebrate
+  replace: birds vertebrates
+- trait_name: dispersers
+  find: bird / a-vertebrate
+  replace: birds vertebrates
+- trait_name: dispersers
+  find: bird / vertebrate
+  replace: birds vertebrates
+- trait_name: dispersers
+  find: bird?
+  replace: birds
+- trait_name: dispersers
+  find: bird? / a-vertebrate
+  replace: birds vertebrates
+- trait_name: dispersers
+  find: invertebrate
+  replace: invertebrates
+- trait_name: dispersers
+  find: probably bird dispersed
+  replace: birds
+- trait_name: dispersers
+  find: probably bird or mammal
+  replace: birds mammals
+- trait_name: dispersers
+  find: vertebrate
+  replace: vertebrates
+- trait_name: dispersers
+  find: bird / water
+  replace: birds water
+- trait_name: dispersers
+  find: bird / water / a-vertebrate
+  replace: birds vertebrates water
+- trait_name: dispersers
+  find: bird? / water?
+  replace: birds water
+- trait_name: dispersers
+  find: vertebrate?
+  replace: vertebrates
+- trait_name: dispersers
+  find: wind / water
+  replace: wind water
+- trait_name: dispersers
+  find: wind, water, animal, mud on cars
+  replace: vehicles wind water
+- trait_name: germination_treatment
+  find: after ripening
+  replace: after_ripening
+- trait_name: germination_treatment
+  find: after ripening period of several months required
+  replace: after_ripening
+- trait_name: germination_treatment
+  find: short after ripening (93), sensitive to high temperatures (60oC lethal) (88)
+  replace: after_ripening heat_lethal
+- trait_name: germination_treatment
+  find: after ripening / stratification (93), heat & smoke combined (88)
+  replace: after_ripening heat+smoke
+- trait_name: germination_treatment
+  find: after ripening / smoke
+  replace: after_ripening smoke
+- trait_name: germination_treatment
+  find: smoke (87), after ripening (93)
+  replace: after_ripening smoke
+- trait_name: germination_treatment
+  find: dark
+  replace: dark
+- trait_name: germination_treatment
+  find: requires dark
+  replace: dark
+- trait_name: germination_treatment
+  find: a-heat
+  replace: heat
+- trait_name: germination_treatment
+  find: heat
+  replace: heat
+- trait_name: germination_treatment
+  find: heat (90oC best)
+  replace: heat
+- trait_name: germination_treatment
+  find: heat >40
+  replace: heat
+- trait_name: germination_treatment
+  find: heat >50
+  replace: heat
+- trait_name: germination_treatment
+  find: heat >60
+  replace: heat
+- trait_name: germination_treatment
+  find: heat >60 <100
+  replace: heat
+- trait_name: germination_treatment
+  find: heat >60 <100 deg (A) / heat 80 deg (98)
+  replace: heat
+- trait_name: germination_treatment
+  find: heat >80
+  replace: heat
+- trait_name: germination_treatment
+  find: heat 70 deg
+  replace: heat
+- trait_name: germination_treatment
+  find: heat 70-110
+  replace: heat
+- trait_name: germination_treatment
+  find: heat 80-110
+  replace: heat
+- trait_name: germination_treatment
+  find: heat 80deg
+  replace: heat
+- trait_name: germination_treatment
+  find: heat 80deg (93), heat (110)
+  replace: heat
+- trait_name: germination_treatment
+  find: heat 90deg
+  replace: heat
+- trait_name: germination_treatment
+  find: heat 90oC
+  replace: heat
+- trait_name: germination_treatment
+  find: heat?
+  replace: heat
+- trait_name: germination_treatment
+  find: 'heat (13) / heat response variable between sites: temperature required 80-90,
+    100, 40-110 with different seed lots; 120 deg always lethal (R34)'
+  replace: heat heat_lethal
+- trait_name: germination_treatment
+  find: heat & smoke combined (87), smoke (110)
+  replace: heat heat+smoke
+- trait_name: germination_treatment
+  find: heat >60 (1), smoke & heat (best combined) (88)
+  replace: heat heat+smoke
+- trait_name: germination_treatment
+  find: heat >60oC (1), smoke & heat (80-100oC) (88)
+  replace: heat heat+smoke
+- trait_name: germination_treatment
+  find: heat 80deg (93), heat & smoke (109, 110)
+  replace: heat heat+smoke
+- trait_name: germination_treatment
+  find: heat 80deg (93), heat & smoke (110)
+  replace: heat heat+smoke
+- trait_name: germination_treatment
+  find: heat / light
+  replace: heat light
+- trait_name: germination_treatment
+  find: heat / scarification
+  replace: heat scarify
+- trait_name: germination_treatment
+  find: heat / scarification (93) / heat 50 deg (98)
+  replace: heat scarify
+- trait_name: germination_treatment
+  find: scarification & heat
+  replace: heat scarify
+- trait_name: germination_treatment
+  find: heat, scarification or smoke
+  replace: heat scarify smoke
+- trait_name: germination_treatment
+  find: heat (25) / smoke (93)
+  replace: heat smoke
+- trait_name: germination_treatment
+  find: germination decreased with fire; possibly lethal heat effect
+  replace: heat_lethal
+- trait_name: germination_treatment
+  find: senitive to high temperatures (100oC lethal)
+  replace: heat_lethal
+- trait_name: germination_treatment
+  find: senitive to high temperatures (80oC lethal)
+  replace: heat_lethal
+- trait_name: germination_treatment
+  find: heat & smoke
+  replace: heat+smoke
+- trait_name: germination_treatment
+  find: heat & smoke combined
+  replace: heat+smoke
+- trait_name: germination_treatment
+  find: smoke & heat
+  replace: heat+smoke
+- trait_name: germination_treatment
+  find: smoke & heat (best combined)
+  replace: heat+smoke
+- trait_name: germination_treatment
+  find: smoke & heat combined
+  replace: heat+smoke
+- trait_name: germination_treatment
+  find: smoke and heat (best combined)
+  replace: heat+smoke
+- trait_name: germination_treatment
+  find: heat 90-100 & smoke / after ripening
+  replace: heat+smoke after_ripening
+- trait_name: germination_treatment
+  find: heat & smoke / light
+  replace: heat+smoke light
+- trait_name: germination_treatment
+  find: heat (soaked warm water)
+  replace: imbibe_hot
+- trait_name: germination_treatment
+  find: soak
+  replace: .na
+- trait_name: germination_treatment
+  find: wash
+  replace: .na
+- trait_name: germination_treatment
+  find: wash  scarification
+  replace: scarify
+- trait_name: germination_treatment
+  find: wash / remove seedcoat / scarification
+  replace: scarify
+- trait_name: germination_treatment
+  find: heat (soaked hot water)
+  replace: imbibe_hot
+- trait_name: germination_treatment
+  find: soak (cold or hot)
+  replace: imbibe_hot
+- trait_name: germination_treatment
+  find: leaching
+  replace: leaching
+- trait_name: germination_treatment
+  find: require light
+  replace: light
+- trait_name: germination_treatment
+  find: require light (1) / stratification (93)
+  replace: light stratification
+- trait_name: germination_treatment
+  find: mycorrhizae?
+  replace: mycorrhizae
+- trait_name: germination_treatment
+  find: requires fungal association
+  replace: mycorrhizae
+- trait_name: germination_treatment
+  find: requires mycorhizal association
+  replace: mycorrhizae
+- trait_name: germination_treatment
+  find: seed germination requires mycorrhizal association
+  replace: mycorrhizae
+- trait_name: germination_treatment
+  find: germination erratic
+  replace: .na.character
+- trait_name: germination_treatment
+  find: heat effect inconclusive
+  replace: .na.character
+- trait_name: germination_treatment
+  find: inhibited by leachates from Crofton weed
+  replace: .na.character
+- trait_name: germination_treatment
+  find: .na.character
+  replace: .na.character
+- trait_name: germination_treatment
+  find: no seedlings have been recorded from any site and attempts to germinate seeds
+    after pre-sowing treatment have been largely unsuccessful
+  replace: .na.character
+- trait_name: germination_treatment
+  find: germinates readily
+  replace: none
+- trait_name: germination_treatment
+  find: none
+  replace: none
+- trait_name: germination_treatment
+  find: none required
+  replace: none
+- trait_name: germination_treatment
+  find: none, germinates quickly
+  replace: none
+- trait_name: germination_treatment
+  find: none required (1) / germination is quicker at cooler times of the year (93)
+  replace: none cold
+- trait_name: germination_treatment
+  find: germ after rain
+  replace: rain
+- trait_name: germination_treatment
+  find: remove fruit
+  replace: scarify
+- trait_name: germination_treatment
+  find: remove seedcoat
+  replace: scarify
+- trait_name: germination_treatment
+  find: remove seedcoat, fresh seed
+  replace: scarify
+- trait_name: germination_treatment
+  find: scarification
+  replace: scarify
+- trait_name: germination_treatment
+  find: scarification (93), heat & smoke combined (88)
+  replace: scarify heat+smoke
+- trait_name: germination_treatment
+  find: smoke
+  replace: smoke
+- trait_name: germination_treatment
+  find: smoke, germinates quickly
+  replace: smoke
+- trait_name: germination_treatment
+  find: smoke / heat
+  replace: smoke heat
+- trait_name: germination_treatment
+  find: smoke, sensitive to high temperatures (>80oC inhibitory)
+  replace: smoke heat_lethal
+- trait_name: germination_treatment
+  find: smoke, sensitive to high temperatures (90oC lethal)
+  replace: smoke heat_lethal
+- trait_name: germination_treatment
+  find: smoke; sensitive to high temperatures (80oC inhibitory, 100oC lethal)
+  replace: smoke heat_lethal
+- trait_name: germination_treatment
+  find: smoke / wash
+  replace: smoke
+- trait_name: germination_treatment
+  find: smoke / scarification
+  replace: smoke scarify
+- trait_name: germination_treatment
+  find: stratification
+  replace: stratification
+- trait_name: germination_treatment
+  find: stratification / none
+  replace: stratification
+- trait_name: germination_treatment
+  find: cold stratification
+  replace: stratification_cold
 taxonomic_updates:
 - find: Acaena ovina
   replace: Acaena x ovina

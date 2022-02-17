@@ -1,11 +1,11 @@
 source:
   primary:
     key: Maslin_2012
-    bibtype: Misc
+    bibtype: Book
     author: Bruce Maslin
-    title: 'WATTLE: Acacias of Australia'
-    year: 2012
-    publisher: Australian Biological Resources Study
+    title: WATTLE, Interactive Identification of Australian Acacia. Version 2
+    year: 2014
+    publisher: Australian Biological Resources Study, Canberra
 people:
 - name: Bruce Maslin
   institution: Macquarie University Sydney
@@ -33,13 +33,28 @@ config:
     taxon_name: species_name
     trait_name: trait
     value: value
-  custom_R_code: |-
+  custom_R_code: '
     traits <- c("leaf length maximum", "leaf length minimum", "leaf width maximum", "leaf width minimum", "plant height maximum", "plant height minimum"); a <- list(cm=10, m=1000); for(t in traits){ for(v in names(a)) { i <- which(data[["trait"]]==t & data[["units"]] == v); data[["value"]][i] <- as.character(as.numeric(data[["value"]][i]) * a[[v]]); data[["units"]][i] <- "mm"; }; };
-    i <- data$trait == "flowering time start"; data[i, "value"] <- format_flowering_months(data[i,]$value, data[data$trait == "flowering time end",]$value); data[i, "trait"] <- "flowering_time"; data <- data[!data$trait == "flowering time end",];
-    leaf_phenology <- data[data$trait == "longevity",]; life_history <- data[data$trait == "longevity",]; leaf_phenology[leaf_phenology$trait == "longevity",]$trait <- "leaf_phenology"; leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EP", "E", "EAP", "EPB", "EAPB"),]$value <- "evergreen"; leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("DP"),]$value <- "deciduous"; leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EDP", "EDPB", "P", "ED"),]$value <- NA; leaf_phenology <- leaf_phenology[!is.na(leaf_phenology$value),];
-    life_history[life_history$trait == "longevity",]$trait <- "life_history"; life_history[life_history$trait == "life_history" & life_history$value %in% c("EP", "EDP", "P", "DP"),]$value <- "perennial"; life_history[life_history$trait == "life_history" & life_history$value %in% c("EAP"),]$value <- "annual perennial"; life_history[life_history$trait == "life_history" & life_history$value %in% c("EPB", "EDPB"),]$value <- "biennial perennial"; life_history[life_history$trait == "life_history" & life_history$value %in% c("EAPB"),]$value <- "annual biennial perennial"; life_history[life_history$trait %in% "life_history" & life_history$value %in% c("E","ED"),]$value <- NA; life_history <- life_history[!is.na(life_history$value),];
-    data <- rbind(data[!data$trait %in% "longevity",], leaf_phenology, life_history); data[data$value %in% "articles",]$value <- c("article"); data[data$value %in% "article",]$trait <- c("leaf_type");
-    data
+    i <- data$trait == "flowering time start"; 
+    data[i, "value"] <- format_flowering_months(data[i,]$value, data[data$trait == "flowering time end",]$value); 
+    data[i, "trait"] <- "flowering_time"; data <- data[!data$trait == "flowering time end",];
+    leaf_phenology <- data[data$trait == "longevity",]; life_history <- data[data$trait == "longevity",]; 
+    leaf_phenology[leaf_phenology$trait == "longevity",]$trait <- "leaf_phenology"; 
+    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EP", "E", "EAP", "EPB", "EAPB"),]$value <- "evergreen"; 
+    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("DP"),]$value <- "deciduous"; 
+    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EDP", "EDPB", "P", "ED"),]$value <- NA; 
+    leaf_phenology <- leaf_phenology[!is.na(leaf_phenology$value),];
+    life_history[life_history$trait == "longevity",]$trait <- "life_history"; 
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("EP", "EDP", "P", "DP"),]$value <- "perennial"; 
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("EAP"),]$value <- "annual perennial"; 
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("EPB", "EDPB"),]$value <- "biennial perennial"; 
+    life_history[life_history$trait == "life_history" & life_history$value %in% c("EAPB"),]$value <- "annual biennial perennial"; 
+    life_history[life_history$trait %in% "life_history" & life_history$value %in% c("E","ED"),]$value <- NA; 
+    life_history <- life_history[!is.na(life_history$value),];
+    data <- rbind(data[!data$trait %in% "longevity",], leaf_phenology, life_history); 
+    data[data$value %in% "articles",]$value <- c("article"); 
+    data[data$value %in% "article",]$trait <- c("leaf_type");
+    data'
 traits:
 - var_in: dispersal
   unit_in: .na
@@ -139,13 +154,13 @@ traits:
   methods: unknown
 - var_in: seed breadth minimum
   unit_in: mm
-  trait_name: seed_breadth
+  trait_name: seed_height
   value_type: expert_min
   replicates: .na
   methods: unknown
 - var_in: seed breadth maximum
   unit_in: mm
-  trait_name: seed_breadth
+  trait_name: seed_height
   value_type: expert_max
   replicates: .na
   methods: unknown
@@ -189,9 +204,15 @@ substitutions:
 - trait_name: plant_growth_form
   find: L
   replace: climber_liana
+- trait_name: dispersal_appendage
+  find: exarillate
+  replace: none
 - trait_name: seed_shape
   find: elliptical
   replace: ellipsoid
+- trait_name: seed_shape
+  find: orbicular
+  replace: orbicular
 taxonomic_updates:
 - find: Acacia affin ancistrophylla
   replace: Acacia ancistrophylla
