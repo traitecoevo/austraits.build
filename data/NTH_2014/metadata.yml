@@ -39,7 +39,8 @@ config:
     "seed_length_min", "seed_length_max") %>% separate_range("seed diameter (mm)",
     "seed_width_min", "seed_width_max") %>% separate_range("seed depth (mm)", "seed_depth_min",
     "seed_depth_max") %>% mutate(GF = ifelse(aquatic %in% c("yes","y"),"aquatic_herb",
-    GF)) %>% mutate(parasitic = ifelse(GF=="parasite","parasitic",NA))
+    GF)) %>% mutate(parasitic = ifelse(GF=="parasite","parasitic",NA)) %>% mutate(fruit_type = NA) %>% move_values_to_new_trait("dispersal
+    appendage", "fruit_type", c("drupe", "samara"), c("drupe", "samara"), c(NA,"wings"))
 traits:
 - var_in: longevity
   unit_in: .na
@@ -151,13 +152,13 @@ traits:
   methods: unknown
 - var_in: seed_depth_min
   unit_in: mm
-  trait_name: seed_breadth
+  trait_name: seed_height
   value_type: expert_min
   replicates: .na
   methods: unknown
 - var_in: seed_depth_max
   unit_in: mm
-  trait_name: seed_breadth
+  trait_name: seed_height
   value_type: expert_max
   replicates: .na
   methods: unknown
@@ -172,6 +173,12 @@ traits:
   trait_name: fruiting_time
   value_type: unknown
   replicates: unknown
+  methods: unknown
+- var_in: fruit_type
+  unit_in: .na
+  trait_name: fruit_type
+  value_type: expert_mean
+  replicates: .na
   methods: unknown
 - var_in: dispersal appendage
   unit_in: .na
@@ -261,9 +268,6 @@ substitutions:
 - trait_name: leaf_margin
   find: 1
   replace: lobed
-- trait_name: seed_shape
-  find: compressed obovoid
-  replace: compressed_obovoid
 - trait_name: dispersal_appendage
   find: winged seed
   replace: wings
@@ -277,62 +281,119 @@ substitutions:
   find: palmately lobed
   replace: palmately_lobed
 - trait_name: seed_shape
-  find: broadly obovoid
-  replace: broadly_obovoid
-- trait_name: seed_shape
   find: comma shaped
-  replace: comma_shaped
+  replace: comma-shaped
+- trait_name: seed_shape
+  find: cylindrical
+  replace: cylindrical
+- trait_name: seed_shape
+  find: subcylindrical
+  replace: cylindrical
+- trait_name: seed_shape
+  find: circular
+  replace: discoid
+- trait_name: seed_shape
+  find: discoidal
+  replace: discoid
+- trait_name: seed_shape
+  find: round
+  replace: discoid
+- trait_name: seed_shape
+  find: ellipsoid
+  replace: ellipsoid
+- trait_name: seed_shape
+  find: oblong
+  replace: ellipsoid
 - trait_name: seed_shape
   find: compressed-ellipsoid
-  replace: compressed_ellipsoid
+  replace: ellipsoid_flattened
 - trait_name: seed_shape
-  find: compressed-obovoid
-  replace: compressed_obovoid
-- trait_name: seed_shape
-  find: pea shape
-  replace: globoid
+  find: fusiform
+  replace: fusiform
 - trait_name: seed_shape
   find: globular
   replace: globoid
 - trait_name: seed_shape
-  find: discoidal
-  replace: discoid
+  find: pea shape
+  replace: globoid
+- trait_name: seed_shape
+  find: spherical
+  replace: globoid
+- trait_name: seed_shape
+  find: spheroidal
+  replace: globoid
+- trait_name: seed_shape
+  find: subcircular
+  replace: globoid_flattened
+- trait_name: seed_shape
+  find: subglobular
+  replace: globoid_flattened
+- trait_name: seed_shape
+  find: suborbicular
+  replace: globoid_flattened
+- trait_name: seed_shape
+  find: semicircular
+  replace: hemispheric
+- trait_name: seed_shape
+  find: lenticular
+  replace: lenticular
+- trait_name: seed_shape
+  find: orbicular
+  replace: orbicular
+- trait_name: seed_shape
+  find: broadly obovoid
+  replace: ovoid
+- trait_name: seed_shape
+  find: lanceolate
+  replace: ovoid
+- trait_name: seed_shape
+  find: obovate
+  replace: ovoid
+- trait_name: seed_shape
+  find: obovoid
+  replace: ovoid
+- trait_name: seed_shape
+  find: ovate
+  replace: ovoid
+- trait_name: seed_shape
+  find: ovoid
+  replace: ovoid
+- trait_name: seed_shape
+  find: obclavate
+  replace: ovoid_elongated
+- trait_name: seed_shape
+  find: compressed obovoid
+  replace: ovoid_flattened
+- trait_name: seed_shape
+  find: compressed-obovoid
+  replace: ovoid_flattened
+- trait_name: seed_shape
+  find: angular
+  replace: polyhedral
+- trait_name: seed_shape
+  find: rhombic
+  replace: polyhedral
+- trait_name: seed_shape
+  find: square
+  replace: polyhedral
+- trait_name: seed_shape
+  find: subtriangular
+  replace: polyhedral
+- trait_name: seed_shape
+  find: triangular
+  replace: polyhedral
+- trait_name: seed_shape
+  find: cordiform
+  replace: reniform
+- trait_name: seed_shape
+  find: reniform
+  replace: reniform
 - trait_name: seed_shape
   find: segment shaped
   replace: sectoroid
 - trait_name: seed_shape
   find: wedge-shaped
-  replace: wedge_shaped
-- trait_name: seed_shape
-  find: oblong
-  replace: obloid
-- trait_name: seed_shape
-  find: ovate
-  replace: ovoid
-- trait_name: seed_shape
-  find: obovate
-  replace: obovoid
-- trait_name: seed_shape
-  find: rhombic
-  replace: rhomboid
-- trait_name: seed_shape
-  find: spheroidal
-  replace: spheroid
-- trait_name: seed_shape
-  find: fusiform spheroidal
-  replace: fusiform spheroid
-- trait_name: seed_shape
-  find: square
-  replace: square_prism
-- trait_name: seed_shape
-  find: subcircular
-  replace: subgloboid
-- trait_name: seed_shape
-  find: subglobular
-  replace: subgloboid
-- trait_name: seed_shape
-  find: semicircular
-  replace: semigloboid
+  replace: sectoroid
 taxonomic_updates:
 - find: Asteromyrtus symphocarpa
   replace: Asteromyrtus symphyocarpa
