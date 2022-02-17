@@ -43,7 +43,10 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: name_original
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(fruit_fleshiness = `fruit type`, fruit_dehiscence
+    = `fruit type`, dispersal_appendage = NA) %>% move_values_to_new_trait("fruit type", "dispersal_appendage",
+    c("nut/winged","capsule/sds (wing)","capsule/sd, aril"), c("wings","wings","aril"),
+    c("nut/winged","capsule/sds (wing)","capsule/sd, aril"))
 traits:
 - var_in: seed_volume_mm3
   unit_in: mm3
@@ -52,7 +55,7 @@ traits:
   replicates: unknown
   methods: Seeds were assumed to be ellipsoids and the volumes calculated for 302
     species from measurements of seed length (l), breadth (b) and width (w) (volume
-    = pi / 6.1 .b.w). Seed volume ranged from 0.001 mm3 (Drosera bunnaniz) to 93,530
+    = pi / 6*length*breadth*width). Seed volume ranged from 0.001 mm3 (Drosera bunnaniz) to 93,530
     mm3 (Aleurites molucanna) and was log transformed prior to analyses since the
     distribution was log normal.
   collection_type: field
@@ -72,6 +75,45 @@ traits:
     suggested by the results and/or relevant literature.'
   collection_type: field
   sample_age_class: adult
+- var_in: fruit_fleshiness
+  unit_in: .na
+  trait_name: fruit_fleshiness
+  value_type: expert_mean
+  replicates: .na
+  methods: 'Fruit type was recorded for all species for which we had seed volume and/or
+    embryo data (total 488 species). Nine categories were recorded: achene (10 species),
+    berry (79), capsule (158), cypsela (18, all Asteraceae), drupe (121; 88 of which
+    from Lauraceae), legume (69, all Fabales), nut (16), schizocarp (9), and utricle
+    (8, all Caryophyllales). Data on presence/absence of endosperm (Clifford & Ludlow,
+    1978) and average seed oil content (Earle & Jones, 1962; Jones & Earle, 1966;
+    Barclay & Earle, 1974; Levin, 1974) were collated in order to explore relationships
+    suggested by the results and/or relevant literature.'
+- var_in: fruit_dehiscence
+  unit_in: .na
+  trait_name: fruit_dehiscence
+  value_type: expert_mean
+  replicates: .na
+  methods: 'Fruit type was recorded for all species for which we had seed volume and/or
+    embryo data (total 488 species). Nine categories were recorded: achene (10 species),
+    berry (79), capsule (158), cypsela (18, all Asteraceae), drupe (121; 88 of which
+    from Lauraceae), legume (69, all Fabales), nut (16), schizocarp (9), and utricle
+    (8, all Caryophyllales). Data on presence/absence of endosperm (Clifford & Ludlow,
+    1978) and average seed oil content (Earle & Jones, 1962; Jones & Earle, 1966;
+    Barclay & Earle, 1974; Levin, 1974) were collated in order to explore relationships
+    suggested by the results and/or relevant literature.'
+- var_in: dispersal_appendage
+  unit_in: .na
+  trait_name: dispersal_appendage
+  value_type: expert_mean
+  replicates: .na
+  methods: 'Fruit type was recorded for all species for which we had seed volume and/or
+    embryo data (total 488 species). Nine categories were recorded: achene (10 species),
+    berry (79), capsule (158), cypsela (18, all Asteraceae), drupe (121; 88 of which
+    from Lauraceae), legume (69, all Fabales), nut (16), schizocarp (9), and utricle
+    (8, all Caryophyllales). Data on presence/absence of endosperm (Clifford & Ludlow,
+    1978) and average seed oil content (Earle & Jones, 1962; Jones & Earle, 1966;
+    Barclay & Earle, 1974; Levin, 1974) were collated in order to explore relationships
+    suggested by the results and/or relevant literature.'
 - var_in: crypto
   unit_in: .na
   trait_name: cotyledon_position
@@ -236,53 +278,209 @@ substitutions:
   find: 2
   replace: green
 - trait_name: fruit_type
-  find: achnene
+  find: cypsela
   replace: achene
 - trait_name: fruit_type
-  find: legindehiscent
-  replace: legume_indehiscent
+  find: nut/winged
+  replace: nut
+- trait_name: fruit_type
+  find: utricle/spiny
+  replace: utricle
+- trait_name: fruit_type
+  find: anthocarp/nut
+  replace: anthocarp nut
+- trait_name: fruit_type
+  find: utricle/p.fleshy
+  replace: utricle
+- trait_name: fruit_type
+  find: capsule/sds (wing)
+  replace: capsule
+- trait_name: fruit_type
+  find: achnene
+  replace: achene
 - trait_name: fruit_type
   find: legume/indeh
   replace: legume_indehiscent
 - trait_name: fruit_type
-  find: utrticle
-  replace: utricle
-- trait_name: fruit_type
   find: drupe/end-elast
   replace: drupe
 - trait_name: fruit_type
-  find: capsule/sd, aril
-  replace: capsule_aril
-- trait_name: fruit_type
-  find: capsule/sds (wing)
-  replace: capsule_wing
-- trait_name: fruit_type
-  find: anthocarp/nut
-  replace: anthocarp_nut
-- trait_name: fruit_type
   find: anthocarp/viscid
-  replace: anthocarp_viscid
+  replace: anthocarp
 - trait_name: fruit_type
-  find: berry/inf
-  replace: berry_inf
+  find: utrticle
+  replace: utricle
 - trait_name: fruit_type
-  find: capsule/explosive
-  replace: capsule_explosive
-- trait_name: fruit_type
-  find: drupe/fibrous
-  replace: drupe_fibrous
-- trait_name: fruit_type
-  find: legume/indehiscent
+  find: legindehiscent
   replace: legume_indehiscent
 - trait_name: fruit_type
+  find: drupe/fibrous
+  replace: drupe
+- trait_name: fruit_type
+  find: capsule/sd, aril
+  replace: capsule
+- trait_name: fruit_type
+  find: capsule/explosive
+  replace: capsule
+- trait_name: fruit_type
+  find: berry/inf
+  replace: berry
+- trait_name: fruit_dehiscence
+  find: berry
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: legume
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: achene
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: capsule
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: cypsela
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: drupe
+  replace: indehiscent
+- trait_name: fruit_dehiscence
   find: nut/winged
-  replace: nut_winged
-- trait_name: fruit_type
-  find: utricle/p.fleshy
-  replace: utricle_fleshy
-- trait_name: fruit_type
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: utricle
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: follicle
+  replace: dehiscent
+- trait_name: fruit_dehiscence
   find: utricle/spiny
-  replace: utricle_spiny
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: anthocarp/nut
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: schizocarp
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: nut
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: utricle/p.fleshy
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: capsule/sds (wing)
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: achnene
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: legume/indeh
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: drupe/end-elast
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: anthocarp/viscid
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: nutlet
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: utrticle
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: legindehiscent
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: drupe/fibrous
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: capsule/sd, aril
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: capsule/explosive
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: berry/inf
+  replace: indehiscent
+- trait_name: fruit_fleshiness
+  find: berry
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: legume
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: achene
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: capsule
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: cypsela
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: drupe
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: nut/winged
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: utricle
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: follicle
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: utricle/spiny
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: anthocarp/nut
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: schizocarp
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: nut
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: utricle/p.fleshy
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: capsule/sds (wing)
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: achnene
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: legume/indeh
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: drupe/end-elast
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: anthocarp/viscid
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: nutlet
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: utrticle
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: legindehiscent
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: drupe/fibrous
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: capsule/sd, aril
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: capsule/explosive
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: berry/inf
+  replace: fleshy
 taxonomic_updates:
 - find: Acacia amblyogona
   replace: Acacia amblygona
