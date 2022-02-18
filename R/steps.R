@@ -195,7 +195,7 @@ load_study <- function(filename_data_raw,
         dplyr::left_join(by = "site_name",
                          sites %>% tidyr::pivot_wider(names_from = site_property, values_from = value) %>%
                            dplyr::select(.data$site_name, col_tmp = v)) 
-     traits[[v]] <- traits_tmp %>% dplyr::pull(col_tmp)
+     traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
   }
   
@@ -220,8 +220,8 @@ load_study <- function(filename_data_raw,
        traits       = traits %>% filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
        sites    = sites,
        contexts    = contexts,
-       methods    = methods %>% select(-collection_type, -sample_age_class),
-       excluded_data = traits %>% filter(!is.na(.data$error)) %>% dplyr::select(.data$error, everything()),
+       methods    = methods %>% dplyr::select(-.data$collection_type, -.data$sample_age_class),
+       excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% dplyr::select(.data$error, everything()),
        taxonomic_updates = taxonomic_updates,
        taxa = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
        definitions = definitions,
@@ -725,28 +725,29 @@ parse_data <- function(data, dataset_id, metadata) {
   vars <- c("value_type", "replicates", "collection_type", "sample_age_class", "date_collected",
             "basisofRecord")
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
+  # read in values from a column in data.csv
+  for(v in vars) {
+    out[[v]] <- as.character(NA)
+    if(v %in% colnames(data)){
+      df[[v]] <- data[[v]]
+      if(data_is_long_format == FALSE){
+        # if column exists in wide data use that instead, but multiply the rows by the number of accepted traits first
+        out[[v]] <- as.character(rep(df[[v]], nrow(cfgChar))) 
+      } else {
+        # if column exists in long data use that instead after removing rows with excluded traits
+        out[[v]] <- df %>% dplyr::filter(.data$trait_name %in% cfgChar$var_in) %>% pull(v)
+      }
+    }
   if(length(i) >0 ) {
     j <- !is.na(i)
-    for(v in vars) {
-      out[[v]] <- as.character(NA)
       if(!is.null(cfgChar[[v]])){
         if(v %in% colnames(cfgChar)){
-          out[[v]][j] <- cfgChar[[v]][i[j]] # fill values in from traits level
-        }
-      }
-      if(v %in% colnames(data)){
-        df[[v]] <- data[[v]]
-        if(data_is_long_format == FALSE){
-          # if column exists in wide data use that instead, but multiply the rows by the number of accepted traits first
-          out[[v]] <- as.character(rep(df[[v]], nrow(cfgChar))) 
-        } else {
-          # if column exists in long data use that instead after removing rows with excluded traits
-          out[[v]] <- df %>% dplyr::filter(.data$trait_name %in% cfgChar$var_in) %>% pull(v)
+          out[[v]][j] <- ifelse(is.na(out[[v]][j]), cfgChar[[v]][i[j]], out[[v]][j]) # fill values in from traits level
         }
       }
     }
   }
-
+  
   # Now process any name changes as per metadata[["traits"]]
   out[["unit"]] <- NA_character_
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])

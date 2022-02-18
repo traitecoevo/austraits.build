@@ -101,11 +101,11 @@ test_build_study <- function(path_metadata, path_data, info) {
   
   # test it builds with no errors
   expect_no_error({
-    build_config <- austraits.build:::subset_config(path_metadata, definitions, unit_conversions)
+    build_config <- subset_config(path_metadata, definitions, unit_conversions)
   }, info = paste(info, " config"))
   
   expect_no_error({
-    build_study <- austraits.build:::load_study(path_data, build_config)
+    build_study <- load_study(path_data, build_config)
   }, info = paste(info, " load_study"))
   
   test_structure(build_study, info, single_study = TRUE)
