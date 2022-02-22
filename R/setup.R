@@ -45,8 +45,8 @@ metadata_create_template <- function(dataset_id,
                                      path = file.path("data", dataset_id, "metadata.yml")
                                      ) {
 
-  people <- tibble::tibble(name = "unknown", institution = "unknown", role = "unknown") 
-
+  collectors <- tibble::tibble(last_name = "unknown", given_name = "unknown", institution = "unknown") 
+  
   out <- list(
        source = list(primary=list(key=dataset_id, 
                                   bibtype = "Article",
@@ -60,7 +60,11 @@ metadata_create_template <- function(dataset_id,
                                   doi = "unknown"
                                   )
                      ),
-       people = people %>% df_to_list(),
+       people = list(collectors = collectors %>% df_to_list,
+                     contact = "unknown",
+                     curator = "unknown",
+                     assistants = "unknown"
+                     ),
        dataset = list(year_collected_start= "unknown",
                       year_collected_end= "unknown",
                       description= "unknown",
