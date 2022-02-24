@@ -141,11 +141,11 @@ load_study <- function(filename_data_raw,
 
   # record contributors
   contributors <-
-    metadata$people %>%
+    metadata$contributors$data_collectors %>%
     list_to_df() %>%
     dplyr::mutate(dataset_id = dataset_id) %>%
     dplyr::select(dataset_id = dataset_id, everything()) %>%
-    filter(!is.na(.data$name))
+    filter(!is.na(.data$last_name))
 
   # record methods on study from metadata
   sources <- metadata$source %>%
@@ -153,6 +153,17 @@ load_study <- function(filename_data_raw,
   source_primary_key <- metadata$source$primary$key
   source_secondary_keys <- setdiff(names(sources), source_primary_key)
 
+  # add data_curator and assistants into the methods table
+  data_curator_tmp <-
+    metadata$contributors[2] %>%
+    list_to_df() %>%
+    dplyr::mutate(dataset_id = dataset_id) 
+  
+  assistants_tmp <-
+    metadata$contributors[3] %>%
+    list_to_df() %>%
+    dplyr::mutate(dataset_id = dataset_id)
+  
   methods <-
     full_join( by = "dataset_id",
       # methods used to collect each trait
@@ -182,7 +193,9 @@ load_study <- function(filename_data_raw,
           stringr::str_replace_all(".;", ";")
           )
         )
-      )
+      ) %>% 
+    dplyr::mutate(data_curator = data_curator_tmp$name,
+                  assistants = assistants_tmp$name)
 
   # Retrieve taxonomic details for known species
   taxonomic_updates <-

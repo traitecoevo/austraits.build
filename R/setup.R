@@ -44,8 +44,6 @@ metadata_write_dataset_id <- function(metadata, dataset_id) {
 metadata_create_template <- function(dataset_id, 
                                      path = file.path("data", dataset_id, "metadata.yml")
                                      ) {
-
-  collectors <- tibble::tibble(last_name = "unknown", given_name = "unknown", institution = "unknown") 
   
   out <- list(
        source = list(primary=list(key=dataset_id, 
@@ -60,11 +58,14 @@ metadata_create_template <- function(dataset_id,
                                   doi = "unknown"
                                   )
                      ),
-       people = list(collectors = collectors %>% df_to_list,
-                     contact = "unknown",
-                     curator = "unknown",
-                     assistants = "unknown"
-                     ),
+       contributors = list(data_collector=list(last_name = "unknown", 
+                                               given_name = "unknown",
+                                               ORCID = "unknown", 
+                                               affiliation = "unknown",
+                                               additional_role = "unknown"),
+                           data_curator = "unknown",
+                           assistants = "unknown"
+                           ),
        dataset = list(year_collected_start= "unknown",
                       year_collected_end= "unknown",
                       description= "unknown",
