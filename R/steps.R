@@ -154,15 +154,14 @@ load_study <- function(filename_data_raw,
   source_secondary_keys <- setdiff(names(sources), source_primary_key)
 
   # add data_curator and assistants into the methods table
-  data_curator_tmp <-
-    metadata$contributors[2] %>%
-    list_to_df() %>%
-    dplyr::mutate(dataset_id = dataset_id) 
   
-  assistants_tmp <-
-    metadata$contributors[3] %>%
-    list_to_df() %>%
-    dplyr::mutate(dataset_id = dataset_id)
+  for(i in nrow(contributors)){
+    collectors[i] <- stringr::str_c(contributors$given_name[i], " ", 
+                                    contributors$last_name[i], " ",
+                                    ifelse("contact" %in% contributors$additional_role[i],
+                                           "(contact)", ""))
+    }
+  collectors_tmp <- paste(collectors, collapse = ", ")
   
   methods <-
     full_join( by = "dataset_id",
@@ -194,8 +193,9 @@ load_study <- function(filename_data_raw,
           )
         )
       ) %>% 
-    dplyr::mutate(data_curator = data_curator_tmp$name,
-                  assistants = assistants_tmp$name)
+    dplyr::mutate(data_collectors = collectors_tmp,
+                  assistants = as.character(metadata$contributors$assistants),
+                  data_curators = metadata$contributors$data_curators)
 
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
