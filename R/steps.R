@@ -194,8 +194,13 @@ load_study <- function(filename_data_raw,
         )
       ) %>% 
     dplyr::mutate(data_collectors = collectors_tmp,
-                  assistants = as.character(metadata$contributors$assistants),
-                  data_curators = metadata$contributors$data_curators)
+                  assistants = ifelse(is.null(metadata$contributors$assistants), as.character(NA),
+                                      as.character(metadata$contributors$assistants)
+                                      ),
+                  data_curators = ifelse(is.null(metadata$contributors$data_curators), as.character(NA),
+                                                 as.character(metadata$contributors$data_curators)
+                                         )
+                  )
 
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
