@@ -923,8 +923,10 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
                                      path_apni = "config/NSL/APNI-names-2020-05-14-1341.csv") {
   
   file_paths <- list(
-    APC = path_apc,
-    APNI = path_apni
+    #APC = path_apc,
+    #APNI = path_apni
+    APC = "config/NSL/APC-taxon-2022-02-24-0732.csv",
+    APNI = "config/NSL/APNI-names-2022-02-24-0712.csv"
   )
 
   if(!all(file.exists(unlist(file_paths)))) {
