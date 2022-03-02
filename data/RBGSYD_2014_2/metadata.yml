@@ -27,25 +27,24 @@ config:
     taxon_name: species
     value: lookup_data
     trait_name: trait
-  custom_R_code: '
-    check_months <-  function(x){(1:12 %in% x %>% as.integer() %>% paste(collapse=""))}
-
-   data <- data %>% mutate(trait = ifelse(trait == "special life form" & lookup_data =="parasitic","parasitic",trait)) %>% mutate(trait = ifelse(trait == "special growth form" & lookup_data =="geophyte","life_form",trait)) %>% mutate(trait = ifelse(trait == "special growth form" & lookup_data =="prostrate","growth_habit",trait)) %>% mutate(trait = ifelse(trait == "special growth form" & lookup_data =="creeper rooting along stems","growth_habit",trait)) %>% mutate(lookup_data = ifelse(trait == "special life form" & lookup_data =="climbing","climber",lookup_data)) %>% group_by(c(species)) %>% mutate_at(vars(lookup_data),
-    replace_duplicates_with_NA) %>% ungroup()
-    
-    bind_rows(
-      data %>% filter(! trait %in% c("fruiting", "flowering month")),
-      data %>% filter(trait == "flowering month", lookup_id <= 12) %>% select(species, lookup_id) %>%
-      group_by(species) %>%
-      nest(months = c(lookup_id)) %>%
-      mutate(trait = "flowering_time", lookup_data = map_chr(months, ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months)
-    ) %>% 
-    bind_rows(
-      data %>% filter(trait == "fruiting", lookup_id <= 12) %>% select(species, lookup_id) %>%
-      group_by(species) %>%
-      nest(months = c(lookup_id)) %>%
-      mutate(trait = "fruiting_time", lookup_data = map_chr(months, ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months)
-    ) '
+  custom_R_code: " check_months <-  function(x){(1:12 %in% x %>% as.integer() %>%
+    paste(collapse=\"\"))}\ndata <- data %>% mutate(trait = ifelse(trait == \"special
+    life form\" & lookup_data ==\"parasitic\",\"parasitic\",trait)) %>% mutate(trait
+    = ifelse(trait == \"special growth form\" & lookup_data ==\"geophyte\",\"life_form\",trait))
+    %>% mutate(trait = ifelse(trait == \"special growth form\" & lookup_data ==\"prostrate\",\"growth_habit\",trait))
+    %>% mutate(trait = ifelse(trait == \"special growth form\" & lookup_data ==\"creeper
+    rooting along stems\",\"growth_habit\",trait)) %>% mutate(lookup_data = ifelse(trait
+    == \"special life form\" & lookup_data ==\"climbing\",\"climber\",lookup_data))
+    %>% group_by(c(species)) %>% mutate_at(vars(lookup_data), replace_duplicates_with_NA)
+    %>% ungroup()\nbind_rows( data %>% filter(! trait %in% c(\"fruiting\", \"flowering
+    month\")), data %>% filter(trait == \"flowering month\", lookup_id <= 12) %>%
+    select(species, lookup_id) %>% group_by(species) %>% nest(months = c(lookup_id))
+    %>% mutate(trait = \"flowering_time\", lookup_data = map_chr(months, ~check_months(.x$lookup_id))
+    %>% convert_01_ny) %>% select(-months) ) %>% bind_rows( data %>% filter(trait
+    == \"fruiting\", lookup_id <= 12) %>% select(species, lookup_id) %>% group_by(species)
+    %>% nest(months = c(lookup_id)) %>% mutate(trait = \"fruiting_time\", lookup_data
+    = map_chr(months, ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months)
+    ) "
 traits:
 - var_in: flowering_time
   unit_in: .na
@@ -1488,9 +1487,16 @@ taxonomic_updates:
 - find: Sporobolus sp. [Sporobolus diander]
   replace: Sporobolus diander
   reason: Alignment with known name in APNI names (Elizabeth Wenk, 2020-06-18)
+- find: Hylocereus undatus
+  replace: Selenicereus undatus
+  reason: updated name, E. Wenk 2022.03.01
+- find: Frankenia sp. A
+  replace: Frankenia serpyllifolia
+  reason: replace with current name, E. Wenk 2022.03.10
 exclude_observations:
 - variable: taxon_name
-  find: Gaura mollis, Opuntia macrorhiza subsp. pottsii, Ranunculus aquatilis var. diffusus
+  find: Gaura mollis, Opuntia macrorhiza subsp. pottsii, Ranunculus aquatilis var.
+    diffusus
   reason: non-native (North America)
 - variable: taxon_name
   find: Cleome houtteana

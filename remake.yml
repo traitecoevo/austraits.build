@@ -43,6 +43,18 @@ targets:
   taxon_list:
     command: read_csv_char("config/taxon_list.csv")
 
+  AA_config:
+    command: >
+      subset_config("data/AA/metadata.yml",
+                 definitions,
+                 unit_conversions
+                 )
+
+  AA:
+    command: >
+      load_study("data/AA/data.csv",
+                  AA_config
+                 )
   Ahrens_2019_config:
     command: >
       subset_config("data/Ahrens_2019/metadata.yml",
@@ -823,18 +835,6 @@ targets:
       load_study("data/Firn_2019/data.csv",
                   Firn_2019_config
                  )
-  Flora_bionet_config:
-    command: >
-      subset_config("data/Flora_bionet/metadata.yml",
-                 definitions,
-                 unit_conversions
-                 )
-
-  Flora_bionet:
-    command: >
-      load_study("data/Flora_bionet/data.csv",
-                  Flora_bionet_config
-                 )
   Flora_Florabase_config:
     command: >
       subset_config("data/Flora_Florabase/metadata.yml",
@@ -858,6 +858,18 @@ targets:
     command: >
       load_study("data/Flora_Lucid/data.csv",
                   Flora_Lucid_config
+                 )
+  Flora_NT_config:
+    command: >
+      subset_config("data/Flora_NT/metadata.yml",
+                 definitions,
+                 unit_conversions
+                 )
+
+  Flora_NT:
+    command: >
+      load_study("data/Flora_NT/data.csv",
+                  Flora_NT_config
                  )
   Flora_of_Australia_config:
     command: >
@@ -3527,6 +3539,7 @@ targets:
   austraits_raw:
     command: >
       combine_austraits(
+        AA,
         Ahrens_2019,
         ANBG_2019,
         Angevin_2011,
@@ -3592,9 +3605,9 @@ targets:
         Farrell_2013,
         Farrell_2017,
         Firn_2019,
-        Flora_bionet,
         Flora_Florabase,
         Flora_Lucid,
+        Flora_NT,
         Flora_of_Australia,
         Flora_PlantNet,
         Flora_SA,

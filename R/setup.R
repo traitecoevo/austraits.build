@@ -872,8 +872,8 @@ metadata_check_taxa <- function(dataset_id,
 load_taxonomic_resources <- function() {
   
   file_paths <- list(
-    APC = "config/NSL/APC-taxon-2020-05-14-1332.csv",
-    APNI = "config/NSL/APNI-names-2020-05-14-1341.csv"
+    APC = "config/NSL/APC-taxon-2022-02-24-0732.csv",
+    APNI = "config/NSL/APNI-names-2022-02-24-0712.csv"
   )
 
   if(!all(file.exists(unlist(file_paths)))) {
