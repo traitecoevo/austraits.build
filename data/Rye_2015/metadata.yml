@@ -33,7 +33,7 @@ config:
   variable_match:
     taxon_name: taxon
   custom_R_code: data %>% mutate(flowering_time = sprintf("%s-%s", month.abb[`flowering
-    month begin`], month.abb[`flowering month end`]) %>% convert_month_range_vec_to_binary())
+    month begin`], month.abb[`flowering month end`]) %>% convert_month_range_vec_to_binary()) %>% mutate(post-fire_regeneration_location = lignotuber)
 traits:
 - var_in: longevity
   unit_in: .na
@@ -49,7 +49,13 @@ traits:
   methods: unknown
 - var_in: lignotuber
   unit_in: .na
-  trait_name: regen_strategy
+  trait_name: vegetative_regeneration_or_reproduction_strategy
+  value_type: expert_mean
+  replicates: .na
+  methods: unknown
+- var_in: post-fire_regeneration_location
+  unit_in: .na
+  trait_name: post-fire_regeneration_location
   value_type: expert_mean
   replicates: .na
   methods: unknown
@@ -152,15 +158,24 @@ substitutions:
 - trait_name: plant_growth_form
   find: s
   replace: shrub
-- trait_name: regen_strategy
+- trait_name: vegetative_regeneration_or_reproduction_strategy
   find: 'n'
   replace: no_storage_organ
-- trait_name: regen_strategy
+- trait_name: vegetative_regeneration_or_reproduction_strategy
   find: 'y'
   replace: lignotuber
-- trait_name: regen_strategy
-  find: no storage organ
-  replace: no_storage_organ
+- trait_name: vegetative_regeneration_or_reproduction_strategy
+  find: unknown
+  replace: .na
+- trait_name: post-fire_regeneration_location
+  find: 'n'
+  replace: .na
+- trait_name: post-fire_regeneration_location
+  find: 'y'
+  replace: basal
+- trait_name: post-fire_regeneration_location
+  find: unknown
+  replace: .na
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na

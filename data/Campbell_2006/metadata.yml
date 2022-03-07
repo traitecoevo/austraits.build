@@ -133,7 +133,7 @@ config:
     taxon_name: Species
     site_name: Site
     context_name: Fire intensity
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(fire_response == `Fire Response`)
 traits:
 - var_in: Growth Form
   unit_in: .na
@@ -176,7 +176,28 @@ traits:
     sources.
 - var_in: Fire Response
   unit_in: .na
-  trait_name: regen_strategy
+  trait_name: vegetative_regeneration_or_reproduction_strategy
+  value_type: site_mean
+  replicates: .na
+  methods: Responses of woody plant species to fire were recorded at four sites within
+    burnt forest at WPNP and MGNP. At each of these sites two transects (20 x 2 m)
+    were placed along each of three topographical positions - ridge, slope and gully.
+    Topographical position accounted for differences in vegetation composition prior
+    to fire and differences in fire intensity. Post-fire responses of adult plants
+    were recorded along each transect in four categories- 1) killed by fire, 2) resprouting
+    via root suckers, 3) resprouting via basal stem buds, and 4) resprouting via stem
+    buds. The presence of post-fire seedling recruits was also recorded. In addition
+    to these observations, post-fire responses of other woody species outside of transects
+    (16 species) were recorded to gain a more comprehensive overview of fire-response
+    traits of wet sclerophyll forest understorey species. Plant species were allocated
+    to one of five fire response syndromes based on categories defined by Gill and
+    Bradstock (1992). Note that because of the low frequency of occurrence, species
+    killed by fire were classified into one group regardless of seed bank type. An
+    additional group was also formed with the combination of regeneration by root
+    suckering (Category IV) and resprouting by basal stem buds (Category V).
+- var_in: fire_response
+  unit_in: .na
+  trait_name: fire_response
   value_type: site_mean
   replicates: .na
   methods: Responses of woody plant species to fire were recorded at four sites within
@@ -236,21 +257,36 @@ substitutions:
 - trait_name: seed_storage_location
   find: Canopy
   replace: canopy
-- trait_name: regen_strategy
+- trait_name: vegetative_regeneration_or_reproduction_strategy
   find: IV & V
   replace: bud-bearing_root basal_stem_buds
-- trait_name: regen_strategy
+- trait_name: vegetative_regeneration_or_reproduction_strategy
   find: II
   replace: fire_killed
-- trait_name: regen_strategy
+- trait_name: vegetative_regeneration_or_reproduction_strategy
   find: V
   replace: basal_stem_buds
-- trait_name: regen_strategy
+- trait_name: vegetative_regeneration_or_reproduction_strategy
   find: VI
   replace: stem_buds
-- trait_name: regen_strategy
+- trait_name: vegetative_regeneration_or_reproduction_strategy
   find: IV
-  replace: bud-bearing_root
+  replace: resprouts
+- trait_name: fire_response
+  find: IV & V
+  replace: resprouts
+- trait_name: fire_response
+  find: II
+  replace: fire_killed
+- trait_name: fire_response
+  find: V
+  replace: resprouts
+- trait_name: fire_response
+  find: VI
+  replace: resprouts
+- trait_name: fire_response
+  find: IV
+  replace: resprouts
 - trait_name: fire_cued_seeding
   find: +
   replace: fire_cued_seeding
