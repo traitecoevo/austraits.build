@@ -62,7 +62,8 @@ subset_config <- function(
          value_type = value_type,
          columns_traits = names(definitions[["austraits"]][["elements"]][["traits"]][["elements"]]),
          columns_sites = names(definitions[["austraits"]][["elements"]][["sites"]][["elements"]]),
-         columns_contexts = names(definitions[["austraits"]][["elements"]][["contexts"]][["elements"]])
+         columns_contexts = names(definitions[["austraits"]][["elements"]][["contexts"]][["elements"]]),
+         columns_contributors = names(definitions[["austraits"]][["elements"]][["contributors"]][["elements"]])
        ),
        unit_conversion_functions = unit_conversion_functions_sub)
 }
@@ -140,12 +141,20 @@ load_study <- function(filename_data_raw,
     dplyr::select(-.data$i)
 
   # record contributors
+  if(any(!is.na(metadata$contributors$data_collectors))){
   contributors <-
     metadata$contributors$data_collectors %>%
     list_to_df() %>%
     dplyr::mutate(dataset_id = dataset_id) %>%
     dplyr::select(dataset_id = dataset_id, everything()) %>%
     filter(!is.na(.data$last_name))
+  } else {
+    contributors <- 
+      tibble(0) %>%
+      dplyr::mutate(dataset_id = dataset_id) %>% 
+      add_all_columns(definitions$columns_contributors)  %>%
+      dplyr::select(-.data$error)
+  }
 
   # record methods on study from metadata
   sources <- metadata$source %>%
@@ -155,13 +164,14 @@ load_study <- function(filename_data_raw,
 
   # add data_curator and assistants into the methods table
   
-  for(i in nrow(contributors)){
-    collectors[i] <- stringr::str_c(contributors$given_name[i], " ", 
+  data_collectors <- NA
+  for(i in seq_len(nrow(contributors))){
+    data_collectors[i] <- stringr::str_c(contributors$given_name[i], " ", 
                                     contributors$last_name[i], " ",
                                     ifelse("contact" %in% contributors$additional_role[i],
                                            "(contact)", ""))
     }
-  collectors_tmp <- paste(collectors, collapse = ", ")
+  collectors_tmp <- paste(data_collectors, collapse = ", ")
   
   methods <-
     full_join( by = "dataset_id",
