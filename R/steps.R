@@ -141,20 +141,19 @@ load_study <- function(filename_data_raw,
     dplyr::select(-.data$i)
 
   # record contributors
-  if(any(!is.na(metadata$contributors$data_collectors))){
+  if (length(unlist(metadata$contributors$data_collectors)) >1 ){
   contributors <-
     metadata$contributors$data_collectors %>%
     list_to_df() %>%
     dplyr::mutate(dataset_id = dataset_id) %>%
-    dplyr::select(dataset_id = dataset_id, everything()) %>%
     filter(!is.na(.data$last_name))
   } else {
-    contributors <- 
-      tibble(0) %>%
-      dplyr::mutate(dataset_id = dataset_id) %>% 
-      add_all_columns(definitions$columns_contributors)  %>%
-      dplyr::select(-.data$error)
+   contributors <- tibble::tibble(dataset_id = character())
   }
+  
+  contributors <- 
+    contributors %>% 
+    add_all_columns(definitions$columns_contributors, add_error_column = FALSE)
 
   # record methods on study from metadata
   sources <- metadata$source %>%
@@ -607,11 +606,12 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
 #'
 #' @param data dataframe containing study data read in as a csv file
 #' @param vars vector of variable columns names to be included in the final formatted tibble
+#' @param add_error_column adds an extra column called error if TRUE
 #'
 #' @return tibble with the correct selection of columns including an error column
 #' @importFrom data.table :=
 #' @export
-add_all_columns <- function(data, vars) {
+add_all_columns <- function(data, vars, add_error_column = TRUE) {
 
   missing <- setdiff(vars, names(data))
 
@@ -619,9 +619,14 @@ add_all_columns <- function(data, vars) {
     data <- data%>%
       dplyr::mutate(!!v := NA_character_)
 
-  data %>%
-    dplyr::select(dplyr::one_of(vars)) %>%
-    dplyr::mutate(error = NA_character_)
+  data <- data %>%
+    dplyr::select(dplyr::one_of(vars)) 
+  
+  if(add_error_column){
+    data <- data %>%
+      dplyr::mutate(error = NA_character_)
+  }
+  data
 }
 
 #' Process a single dataset
