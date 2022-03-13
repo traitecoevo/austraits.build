@@ -4330,11 +4330,11 @@ austraits:
       type: table
       elements:
         dataset_id: *dataset_id
-        last_name: Last name of contributor
-        given_name: Given names of contributor
-        ORCID: ORCID of contributor
+        last_name: Last name of the data collector
+        given_name: Given names of the data collector
+        ORCID: ORCID of the data collector
         affiliation: Last known institution or affiliation
-        additional_role: Additional roles of contributor, mostly contact person
+        additional_role: Additional roles of data collector, mostly contact person
     sources:
       description: Bibtex entries for all primary and secondary sources in the compilation.
       type: list
@@ -4364,21 +4364,22 @@ metadata:
       values:
         primary: &source_primary The original study in which data were collected.
         secondary: &source_secondary A subsequent study where data were compiled or re-analysed.
-    people:
-      description: A list of the key contributors to the study, their respective institutions and roles in the study.
+    contributors:
+      description: A list of contributors to the study, their respective affiliations, roles in the study, and ORCIDs.
       type: array
       elements:
-        name: Name of person
-        institution: Institution of person
-        role:
-          description: Person's role in the study
+        data_collectors:
+          description: The person (people) leading data collection (generally 1-2 people)
+          last_name: Last name of data collector
+          given_name: Given name of data collector
+          affiliation: Affiliation of data collector
+          ORCID: ORCID iD (Open Researcher and Contributor ID) for the data collector, if available
+          additional_role: Any additional roles the data collector had in the study, a field most frequently used to identify which data contributor is the contact person for the dataset.
           type: categorical
-          values:
-            collector: The person (people) leading data collection (generally 1-2 people)
-            contributor: Person responsible for entering data into AusTraits
-            lab_leader: Leader of lab group at time of collection
-            assistant: Anyone else who assisted in collection of the data
-            contact: The person to contact with questions about the data set
+        assistants:
+          description: Names of additional people who played a more minor role in data collection for the study.
+        data_curators: 
+          description: Names of AusTraits team member(s) who contacted the data collectors and added the study to the AusTraits repository.
     dataset:
       description: Study details, including study description, sampling strategy, sampling time frame, and sample age class.
       type: categorical
