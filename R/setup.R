@@ -944,6 +944,10 @@ austraits_rebuild_taxon_list <- function() {
   
   austraits <- remake::make("austraits_raw")
 
+  subset_accepted <- function(x) {
+    x[x!= "accepted"]
+  }
+  
   # First align to APC where possible 
   taxa <- 
     # build list of observed species names
@@ -988,7 +992,7 @@ austraits_rebuild_taxon_list <- function() {
       alternativeTaxonomicStatusClean = ifelse(.data$taxonomicStatusClean[1] == "accepted", 
                                                .data$taxonomicStatusClean %>% 
           unique() %>% 
-          subset(.data, .data !="accepted") %>% 
+          subset_accepted() %>% 
           paste0(collapse = " | ") %>% 
           dplyr::na_if(""), NA)) %>% 
     dplyr::slice(1) %>%  
