@@ -185,8 +185,8 @@ load_study <- function(filename_data_raw,
       )
 
   # Where missing, fill collection_type, sample_age_class with values from sites, then dataset
-  vars <- c("collection_type", "sample_age_class", "date_collected", "basisofRecord",
-             "value_type", "replicates")
+  vars <- c("collection_type", "sample_age_class", "collection_date", "measurement_remarks",
+            "basis_of_record", "value_type", "replicates")
   
   # merge in to traits (from site level) via sites 
   for(v in vars){
@@ -722,8 +722,8 @@ parse_data <- function(data, dataset_id, metadata) {
   out[["value"]] <- tolower(out[["value"]])
 
   # Add information on trait type, precision, if not already present
-  vars <- c("value_type", "replicates", "collection_type", "sample_age_class", "date_collected",
-            "basisofRecord")
+  vars <- c("value_type", "replicates", "collection_type", "sample_age_class", "collection_date",
+            "measurement_remarks", "basis_of_record")
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
   # read in values from a column in data.csv
   for(v in vars) {
