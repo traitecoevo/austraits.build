@@ -39,7 +39,7 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: name_original
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(dispersers = NA, fruit_fleshiness = NA) %>% move_values_to_new_trait("Dispersal mechanism","dispersers",c("Vertebrates","Ants","Wind"),c("vertebrates","ants","wind"),c("Vertebrates","Ants","wind")) %>% move_values_to_new_trait("Dispersal mechanism","fruit_fleshiness",c("Fleshy-fruited","fleshy_fruit"),c("fleshy","fleshy"),c(NA,NA))
 traits:
 - var_in: growth form
   unit_in: .na
@@ -50,6 +50,18 @@ traits:
 - var_in: Dispersal mechanism
   unit_in: .na
   trait_name: dispersal_syndrome
+  value_type: expert_mean
+  replicates: .na
+  methods: expert observation or opinion; sourced from literature
+- var_in: fruit_fleshiness
+  unit_in: .na
+  trait_name: fruit_fleshiness
+  value_type: expert_mean
+  replicates: .na
+  methods: expert observation or opinion; sourced from literature
+- var_in: dispersers
+  unit_in: .na
+  trait_name: dispersers
   value_type: expert_mean
   replicates: .na
   methods: expert observation or opinion; sourced from literature
@@ -67,17 +79,14 @@ substitutions:
   find: Ants
   replace: myrmecochory
 - trait_name: dispersal_syndrome
-  find: Fleshy-fruited
-  replace: fleshy_fruit
-- trait_name: dispersal_syndrome
   find: Vertebrates
-  replace: vertebrate
-- trait_name: dispersal_syndrome
-  find: fleshy fruit
-  replace: fleshy_fruit
+  replace: zoochory
 - trait_name: dispersal_syndrome
   find: wind
   replace: anemochory
+- trait_name: dispersal_syndrome
+  find: unassisted
+  replace: barochory
 taxonomic_updates:
 - find: Bursaria spinosa subsp. microphylla
   replace: Bursaria spinosa var. microphylla

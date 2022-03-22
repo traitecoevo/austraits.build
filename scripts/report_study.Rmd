@@ -1,5 +1,5 @@
 ---
-title: Report on study from the `Austraits` data compilation
+title: Report on study from the `AusTraits` data compilation
 output:
   html_document:
     df_print: kable
@@ -40,6 +40,9 @@ knitr::opts_chunk$set(echo=FALSE, cache=FALSE)
 # default for table format
 options(knitr.table.format = "html")
 
+# remove warnings from dplyr about "summarise"
+options(dplyr.summarise.inform = FALSE)
+
 # Guidelines for writing report code
 # - use tidyverse style and format: http://htmlpreview.github.io/?https://github.com/nicercode/2018_BEES_regression/blob/master/tidyverse.html
 # - use kableExtra for styling: https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
@@ -51,9 +54,9 @@ options(knitr.table.format = "html")
 library(tidyverse)
 library(knitr)
 library(kableExtra)
+library(austraits)
 
 source("R/support.R")
-source("R/austraits.R")
 source("R/report_utils.R")
 source("R/report_notetaker.R")
 
@@ -71,7 +74,7 @@ if(!exists("dataset_id")) {
 
 definitions <- austraits$definitions
 data_study <- extract_dataset(austraits, dataset_id)
-metadata_study <- read_yaml(sprintf("data/%s/metadata.yml", dataset_id))
+metadata_study <- read_metadata(sprintf("data/%s/metadata.yml", dataset_id))
 
 knitr::opts_chunk$set(fig.cap='', fig.path = file.path(root.dir,"export/figures", paste0(dataset_id,"_")))
 
@@ -91,23 +94,23 @@ structures_already_defined <- c("names")
 
 # Introduction
 
-## About Austraits
+## About AusTraits
 
-`Austraits` is an open-source compilation of trait data for Australian plant species. The traits we are considering are any structural or physiological variable that: 1. Tend to vary widely among species; and 2. Have been collected across a moderate number of species. Many people collect trait data, and as such, data is spread across many sources, under a variety of formats and terms.
+`AusTraits` is an open-source compilation of trait data for Australian plant species. The traits we are considering are any morphological, functional or physiological variable that: 1. Tend to vary widely among species; and 2. Have been collected across a moderate number of species. Many people collect trait data, and as such, data is spread across many sources, under a variety of formats and terms.
 
-The goal of the Austraits project is to combine all of these data fragments into a harmonised compilation, to be made publicly available.
+AusTraits combines all of these data fragments into a harmonised, error checked, publicly available compilation.
 
-Austraits is built from many different sources, here referred to as `studies` (so called because the sources are most-often individual scientific papers), with each study denoted by a distinct `dataset_id`. Our data processing pipeline seeks to combine all of the different studies in a transparent and reproducible way. In addition, the Austraits repository consists of configuration files defining the list of known species, the definitions for each trait and table, and appropriate unit conversions.
+AusTraits is built from many different sources, here referred to as `studies` (so called because the sources are most-often individual scientific papers), with each study denoted by a distinct `dataset_id`. Our data processing pipeline seeks to combine all of the different studies in a transparent and reproducible way. In addition, the AusTraits repository consists of configuration files defining the list of known species, the definitions for each trait and table, and appropriate unit conversions. Detailed descriptions of the `definitions`, `database structure`, and `file format` are all available on the [project homepage](http://traitecoevo.github.io/austraits.build/) under the `Details` tab.
 
 ## Purpose of this report
 
-The Austraits compilation includes data from a study with dataset_id **` `r dataset_id` `**. This document describes the information we have on that study.
-This report gives both you, as a data contributor, and us, as Austraits compilers, the opportunity to:
+The AusTraits compilation includes data from a study with dataset_id **` `r dataset_id` `**. This document describes the information we have on that study.
+This report gives both you, as a data contributor, and us, as AusTraits compilers, the opportunity to:
 
 1. Verify that our understanding and handling of your data is correct
 2. Provide any missing information about the data
 
-Data from each study in Austraits is organised into two files, within its own folder:
+Data from each study in AusTraits is organised into two files, within its own folder:
 
 - ` data/`r dataset_id`/data.csv`: contains the primary trait measurements, in either long or wide format
 - ` data/`r dataset_id`/metadata.yml`: contains all the contextual data (or metadata) about the trait measurements.
@@ -124,14 +127,16 @@ We would welcome any of the following:
 
 To aid your review, we have attached the following files:
 
-- `Austraits.html`: A document describing the Austraits compilation
-- `Workflow`: A document describing the data structures and workflow used to build `Austraits`
-- ` `r dataset_id`/data.csv` and ` `r dataset_id`/metadata.yml`: The raw inputs for your study.
+- `r dataset_id`/data.csv` and ` `r dataset_id`/metadata.yml`: The raw inputs for your study.
 
-Send feedback by 
+### Send feedback by 
 
-1. Filling in the [response survey](https://forms.gle/vhZgxDd734dDddG88) with answers to the questions we ask throughout the document, and summarised at the end of the document.
-2. Sending edited versions of the input files for your study: ` `r dataset_id`/data.csv` and ` `r dataset_id`/metadata.yml` (if appropriate) to email [austraits.database@gmail.com](mailto:austraits.database@gmail.com).
+1. **Copying and pasting the questions at the end of the report into an email and answering as many as possible.** 
+
+    The majority of the questions are automatically generated prompts to look at the pertinent metadata or data plot (or table) and confirm it matches your expectations - for these simply answer "yes". There are often a few questions targeted to your study, written by an AusTraits data curator as they merged in your study. Please consider these carefully, as they usually indicate missing metadata or some source of ambiguity (e.g. units not provided, uncertainty about trait value substitutions).    
+2. If appropriate, send a new spreadsheet to replace the existing `data.csv` file.
+3. You may edit the `metadata.yml` file associated with your study yourself, but most contributors prefer to answer the flagged questions and have an AusTraits data curator make the changes to the file.
+4. Sending your responses and any edited files to our email [austraits.database@gmail.com](mailto:austraits.database@gmail.com).
 
 
 ```{r, results='asis', echo=FALSE}
@@ -158,7 +163,7 @@ We collect information about the context of the trait measurements. This include
 
 ## People
 
-The following people are listed as contacts for this study:
+The following people are listed as involved in this study:
 
 ```{r, results='asis', echo=FALSE}
 metadata_study$people %>%
@@ -167,7 +172,9 @@ metadata_study$people %>%
   my_kable_styling()
 ```
 
-Institutions are optional. Roles are as follows:
+If a current affiliation isn't known, provide the last known institution. We also require an email address for all people. People involved in the study who cannot be tracked down, need to be designated as assistants.
+
+Roles are as follows:
 
 ```{r, results='asis', echo=FALSE}
 definitions$metadata$elements$people$elements$role$values %>% list1_to_df() %>%
@@ -321,7 +328,7 @@ if(nrow(sites_extra) > 0 ) {
 
   new_question("(section `sites`) Do the additional site details look complete?")
   } else{
-  writeLines("No site data available.")
+  writeLines("There is currently no additional site data associated with this dataset.")
 }
 
 ```
@@ -345,7 +352,7 @@ if(nrow(context) > 0 ) {
 
   new_question("(section `contexts`) Do the context details look complete?")
   } else{
-  writeLines("No contextual data available.")
+  writeLines("There is currently no contextual data associated with this dataset.")
 }
 
 ```
@@ -384,20 +391,50 @@ new_question("(section `traits`) Were any of your data sourced from other studie
 
 ```
 
-```{r excluded,  results='asis', echo=FALSE}
+```{r excluded,  results='asis', echo=FALSE, warning = FALSE}
 
-writeLines(ifelse(nrow(data_study$excluded_data) == 0,
+writeLines(ifelse(nrow(subset(data_study$excluded_data, error != "Missing value")) == 0,
         "All data passed quality control so nothing was excluded in this study. (Yay!)",
-        "We excluded some records in your dataset as they did not pass the quality control. The number of points and reasons for exclusion are as follows:"))
+        "We excluded some records in your dataset as they did not pass the quality control. A summary of the number of points and reasons for exclusion are as follows:"))
 
-if(nrow(data_study$excluded_data) > 0 ) {
+if(nrow(subset(data_study$excluded_data,error!="Missing value")) > 0 ) {
   data_study$excluded_data %>%
+    filter(error!="Missing value") %>%
     group_by(trait_name, error) %>%
-    summarise(`points excluded` = n())  %>%
+    summarise(`points excluded` = n()) %>%
+    ungroup() %>%
     my_kable_styling() %>%
     writeLines()
 
-  new_question("(section `traits`) Can you provide any additional information so that above exclusions no longer apply?")
+  writeLines(ifelse(nrow(subset(data_study$excluded_data, error == "Unsupported trait value")) > 0,
+    "In particular, the following data points were excluded because the supplied trait value could not be aligned with the allowable values in AusTraits (error = `Unsupported trait value`). The allowable values for each trait are listed in the [definitions file](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) and lower in this report.",""))
+
+
+  if(nrow(subset(data_study$excluded_data,error == "Unsupported trait value")) > 0 ) {
+    data_study$excluded_data %>%
+      filter(error=="Unsupported trait value") %>%
+      select(trait_name,value) %>%
+      rename(`value that is unaligned` = value) %>%
+      distinct() %>%
+      arrange(trait_name, `value that is unaligned`) %>%
+      my_kable_styling() %>%
+      writeLines()
+  }
+
+  writeLines(ifelse(nrow(subset(data_study$excluded_data, error == "Observation excluded in metadata")) > 0 ,
+      "The following observations were explicitly excluded (error = `Observation excluded in metadata`). This decision was most likely made by the data curators because the study included non-native, not naturalised taxa or species that aren't vascular plants.",""))
+"  "
+
+  if(nrow(subset(data_study$excluded_data,error == "Observation excluded in metadata")) > 0) { 
+    metadata_study$exclude_observations %>%
+      list_to_df() %>%
+      my_kable_styling() %>%
+      writeLines()
+  }
+
+  writeLines("Summaries of excluded numeric observations are included later in the report.")
+
+  new_question("(section `traits`) Can you provide any additional information so that above exclusions (required substitutions or other errors) no longer apply?")
 }
 ```
 
@@ -440,7 +477,7 @@ define_variable <- function(var, definitions) {
 
 writeLines(ifelse(length(traits_numeric) == 0,
         "No numerical traits data are currently available in this dataset",
-        "We have recorded the following traits with continuous numerical values in this dataset. Plots are shown comparing the distribution of values in your study (blue) to those in other datasets within Austraits (red, green). For each trait, please eyeball the information provided and let us know of any issues or updates where appropriate."))
+        "We have recorded the following traits with continuous numerical values in this dataset. Plots are shown comparing the distribution of values in your study (blue) to those in other datasets within AusTraits (red, green). For each trait, please eyeball the information provided and let us know of any issues or updates where appropriate."))
 
 for(trait in traits_numeric) {
 
@@ -462,13 +499,13 @@ for(trait in traits_numeric) {
   c("", "",
     sprintf("### %s", trait),
     "",
-    sprintf("We aligned the contributed variable called `%s` in the data you supplied with the trait `%s` in the Austraits database, with value_types `%s`.\n\nThe original variable was supplied with units `%s`; these were converted to our standard `%s`.\n\nThe data has the following properties:", transforms$var_in %>% paste0(collapse=", "), trait, transforms$value_type %>% paste0(collapse=", "), transforms$unit_in[1], elements$units),
+    sprintf("We aligned the contributed variable called `%s` in the data you supplied with the trait `%s` in the AusTraits database, with value_types `%s`.\n\nThe original variable was supplied with units `%s`; these were converted to our standard `%s`.\n\nThe data has the following properties:", transforms$var_in %>% paste0(collapse=", "), trait, transforms$value_type %>% paste0(collapse=", "), transforms$unit_in[1], elements$units),
     "",
     sprintf("- **standardised name**: %s", trait ),
     sprintf("- **standardised description**: %s", elements$description ),
     sprintf("- **label**: %s", elements$label ),
     sprintf("- **units**: %s", units ),
-    sprintf("- **records**: %s in this study (of %s in Austraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
+    sprintf("- **records**: %s in this study (of %s in AusTraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
     sprintf("- **allowable range**: %s - %s %s", elements$values$minimum,
             elements$values$maximum, units),
     sprintf("- **observed range in this study**: %s - %s %s", data_trait_study %>% dplyr::pull(value) %>% min(),
@@ -481,7 +518,22 @@ for(trait in traits_numeric) {
     "","") %>%
   writeLines()
 
+  writeLines("  ")
+
+  writeLines(ifelse(nrow(subset(data_study$excluded_data, error == "Value out of allowable range" & trait_name == trait)) > 0,
+    "The following data points were excluded because the values were outside the allowable range (error = `Value out of allowable range`). Our ranges of allowable values are sufficiently generous, that most excluded data are well outside the expected range for the trait, but if you believe these data are valid, accurate measurements that will be useful to future AusTraits users, let us know.",""))
+
+if(nrow(subset(data_study$excluded_data, error == "Value out of allowable range" & trait_name == trait)) > 0 ) {
+  data_study$excluded_data %>% filter(error == "Value out of allowable range" & trait_name == trait) %>%
+    select(observation_id, taxon_name, site_name, context_name, value, unit) %>%
+    my_kable_styling() %>%
+    writeLines()
+}
+
   trait_distribution_plot_numerical(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
+
+  austraits::plot_trait_distribution_beeswarm(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
+
 
   writeLines(c(""))
 
@@ -496,7 +548,7 @@ for(trait in traits_numeric) {
     writeLines(sprintf("OUTLIERS: %s of points in your dataset lie in either the bottom or top 2.5 percent of data\n", nrow(outliers)))
     percent_outliers <- nrow(outliers)/nrow(data_trait_study)*100
     if(percent_outliers > 10) {
-      new_question(paste0("(section `traits`) More than 10% of your data points for the trait `", trait, "` are outliers, does this seem reasonable, given what you know about the biology of these species and overall distribution of values in Austraits?"))
+      new_question(paste0("(section `traits`) More than 10% of your data points for the trait `", trait, "` are outliers, does this seem reasonable, given what you know about the biology of these species and overall distribution of values in AusTraits?"))
     } else {
       new_question(
     sprintf("(section `traits`) Do the data for the trait `%s` appear correct?", trait)
@@ -539,6 +591,7 @@ writeLines(
 for(trait in traits_categorical) {
 
   transforms <- metadata_study$traits %>% list_to_df() %>% filter(trait_name == trait)
+  substitutions_for_trait <- metadata_study$substitutions %>% list_to_df() %>% filter(trait_name == trait)
 
   data_trait_study <- data_study$traits %>%
     filter(trait_name == trait)
@@ -546,24 +599,35 @@ for(trait in traits_categorical) {
   data_trait_all <- austraits$traits %>%
     filter(trait_name == trait)
 
+  trait_definitions <- austraits$definitions
+
   elements <- austraits$definitions$traits$elements[[trait]]
 
   x <- c("", "",
     sprintf("### %s", trait),
     "",
-    sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the Austraits database.\n\nThe contributed data has the following properties:", transforms$var_in, trait),
+    sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the AusTraits database.\n\nThe contributed data has the following properties:", transforms$var_in, trait),
     "",
     sprintf("- **standardised name**: %s", trait ),
     sprintf("- **standardised description**: %s", definitions$traits$elements[[trait]]$description ),
     sprintf("- **label**: %s", elements$label ),
-    sprintf("- **records**: %s in this study (of %s in Austraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
-    "",
+    sprintf("- **records**: %s in this study (of %s in AusTraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
+    "", 
     "Data for this trait in this study were collected using the following methods:", "",
     sprintf("- **value_type**: %s", transforms$value_type),
     sprintf("- **replicates**: %s", transforms$replicates),
     sprintf("- **methods**: %s", transforms$methods),
     "",
-    "The following table shows distribution of recorded values in your study and Austraits as a whole:",
+    "The allowable values for this trait in AusTraits are:",
+    "",
+    elements$values %>% unlist() %>% as.data.frame() %>% tibble::rownames_to_column() %>% rename(trait_value = "rowname", definition = ".") %>% arrange(trait_value) %>% my_kable_styling(),
+    "",
+    ifelse(nrow(substitutions_for_trait)>0,
+    "The following substitutions have been implemented to align categorical trait values in the submitted data table with allowable trait values specified in the AusTraits definitions file.",
+    "No substitutions were required to align the data for this trait with AusTraits allowed trait values."),
+    ifelse(nrow(substitutions_for_trait)>0,
+    substitutions_for_trait %>% rename("value in contributed data table"=find,"AusTraits aligned value"=replace)%>% my_kable_styling(),""),
+    "The following table shows distribution of recorded values in your study and AusTraits as a whole. Note that space-delimited strings of values, indicate when multiple trait values were recorded for a single `observation` (species or individual-level) within a single study.",
     "") %>%
   writeLines()
 
@@ -575,8 +639,9 @@ for(trait in traits_categorical) {
   mutate(
     study = ifelse(is.na(study), 0, study),
     `% study` = round(study/sum(study)*100),
-    `% total` = round(total/sum(total)*100)
+    `% total` = round(total/sum(total)*100) 
   ) %>%
+  arrange(-`study`,-`total`) %>%
   my_kable_styling() %>%
   add_header_above(c(" ", "Counts" = 2, "Percent" = 2)) %>%
   column_spec(1, border_right = TRUE) %>%
@@ -670,7 +735,7 @@ data_study$taxonomic_updates %>% select(-dataset_id) %>%
 
 ## Unknown species
 
-We were unable to find taxonomic matches for the following species in the data. Where genus and family are shown, the specified genus aligns with an accepted genus.
+We were unable to find taxonomic matches for the following species in the data. Where genus and family are shown, the specified genus aligns with an accepted genus. The term `unplaced` appears as the `status` for names on the APNI list, but not yet reviewed by the APC.
 
 ```{r species_list3, results='asis', echo=FALSE}
 data_study$taxa %>%
