@@ -1012,7 +1012,7 @@ austraits_rebuild_taxon_list <- function() {
       alternativeTaxonomicStatusClean = ifelse(.data$taxonomicStatusClean[1] == "accepted", 
                                                .data$taxonomicStatusClean %>% 
           unique() %>% 
-          subset_accepted() %>% 
+          subset_accepted() %>%
           paste0(collapse = " | ") %>% 
           dplyr::na_if(""), NA)) %>% 
     dplyr::slice(1) %>%  
