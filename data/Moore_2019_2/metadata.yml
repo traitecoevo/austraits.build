@@ -95,8 +95,8 @@ config:
     taxon_name: Species
     site_name: site_name
     context_name: Water_treatment
-  custom_R_code: data %>% mutate(site_name = "La Trobe University (Bundoora) Glasshouse")
-    %>% mutate(fire_response = ifelse(fire_response_numeric > 0,"resprouts","fire_killed"))
+  custom_R_code: data %>% mutate(site_name = "La Trobe University (Bundoora) Glasshouse") %>%
+    mutate(fire_response = ifelse(resprouting_proportion_individuals > 0.7,"resprouts",(ifelse(resprouting_proportion_individuals < 0.3,"fire_killed","mixed_response"))))
 traits:
 - var_in: Wet_weight_mg
   unit_in: mg
@@ -179,7 +179,7 @@ traits:
   replicates: 5
   methods: Tillers were counted before the fire treatment. After 10 wk, plant survival
     and the number of post-fire tillers per plant were recorded.
-- var_in: fire_response_numeric
+- var_in: resprouting_proportion_individuals
   unit_in: dimensionless
   trait_name: fire_response_numeric
   value_type: experiment_mean
