@@ -55,7 +55,9 @@ config:
     taxon_name: Species
     site_name: site_name
   custom_R_code: data %>% mutate(site_name = "Epping Forest") %>% mutate(fire_response
-    = if_else(`%topkilled stems resprouting`==0,"fire_killed","resprouts"))
+    = ifelse(`%topkilled stems resprouting`<30,"fire_killed",NA), fire_response
+    = ifelse(`%topkilled stems resprouting`>70,"resprouts",fire_response), fire_response
+    = ifelse(`%topkilled stems resprouting`>30 & `%topkilled stems resprouting`<70,"partial_resprouting",fire_response))
 traits:
 - var_in: fire_response
   unit_in: .na
@@ -83,7 +85,7 @@ traits:
     could not be identified to species level.
 - var_in: regen_strategy
   unit_in: .na
-  trait_name: vegetative_regeneration_or_reproduction_strategy
+  trait_name: bud_bank_location
   value_type: expert_mean
   replicates: .na
   methods: We recorded the status of each individual as "alive" no epicormics (if
@@ -92,7 +94,16 @@ traits:
     present) or "dead" (main stem dead and no live resprouts). For analyses of survival,
     "live stems" included those with live epicormic resprouts, and "live whole plants"
     included those with live epicormic or basal resprouts.
-substitutions: .na
+substitutions:
+- trait_name: bud_bank_location
+  find: basal epicormic
+  replace: basal_buds epicormic_buds
+- trait_name: bud_bank_location
+  find: basal
+  replace: basal_buds
+- trait_name: bud_bank_location
+  find: fire_killed
+  replace: none
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na

@@ -43,7 +43,7 @@ config:
   custom_R_code: data %>% mutate(seed_longevity = `Seed storage`) %>% mutate(fire_response_detailed
     = Fireresponse) %>% mutate(flowering_time_edited = convert_month_range_vec_to_binary(flowering_time_edited),fruiting_time_edited
     = convert_month_range_vec_to_binary(fruiting_time_edited)) %>% mutate(dispersers
-    = `Seed dispersal mechanism`)
+    = `Seed dispersal mechanism`) %>% mutate(storage_organ = ifelse(stringr::str_detect(`Resprout location`, "lignotuber"), "lignotuber", NA)) %>% mutate(serotiny = ifelse(stringr::str_detect(`Seed storage`, "serotinous"), "serotinous", NA))  
 traits:
 - var_in: Life form
   unit_in: .na
@@ -89,7 +89,20 @@ traits:
     extensive reference list.
 - var_in: Resprout location
   unit_in: .na
-  trait_name: vegetative_regeneration_or_reproduction_strategy
+  trait_name: bud_bank_location
+  value_type: expert_mean
+  replicates: .na
+  methods: Source of buds for vegetative regenerators. Plum text indicates that the
+    source of this information is from the fire response category given by one or
+    more references (see Fire Response columns); a- indicates this is an assumption
+    based on the species morphology. Where multiple methods are given, seperated by
+    & both methods recorded by one observer; seperated by / different methods recorded
+    by different observers. Where a category 4 fire response is given without specifying
+    root suckers or rhizome, root suckers is listed here. See original file in raw
+    data folder for extensive reference list.
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ
   value_type: expert_mean
   replicates: .na
   methods: Source of buds for vegetative regenerators. Plum text indicates that the
@@ -117,6 +130,20 @@ traits:
 - var_in: seed_longevity
   unit_in: .na
   trait_name: seed_longevity
+  value_type: expert_mean
+  replicates: .na
+  methods: The following definitions have been used for seed-bank type. Soil seedbank,
+    persistent=some carry over of viable seeds from year to year, transient=no viable
+    seeds persist for more than 1 year [Thompson & Grime 1979 JEc 67:893-921]; Canopy
+    seedbank, serotinous=most seed retained for a few years (released by fire, death,
+    drying over time) [Lamont et al 1991 BotRev 57:277-317] canopy transient=retained
+    on plant for short period only. Plum text indicates that the source of this information
+    is from the fire response category given by one or more references (see Fire Response
+    columns); blue text indicates this is an assumption based on the species morphology.
+    See original file in raw data folder for extensive reference list.
+- var_in: serotiny
+  unit_in: .na
+  trait_name: serotiny
   value_type: expert_mean
   replicates: .na
   methods: The following definitions have been used for seed-bank type. Soil seedbank,
@@ -574,207 +601,216 @@ substitutions:
 - trait_name: post_fire_recruitment
   find: yes; some germination in undisturbed sites
   replace: post_fire_recruitment
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: apical
   replace: apical_buds
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: apical / basal
-  replace: apical_buds basal
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: apical_buds basal_buds
+- trait_name: bud_bank_location
   find: apical buds
   replace: apical_buds
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: a-rhizome
   replace: rhizome
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: a-rootstock
-  replace: root_crown
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root
+- trait_name: bud_bank_location
   find: a-tuber
-  replace: root_tuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: stem_tuber
+- trait_name: bud_bank_location
+  find: basal
+  replace: basal_buds
+- trait_name: bud_bank_location
   find: basal & epicormic
-  replace: basal epicormic
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds epicormic_buds
+- trait_name: bud_bank_location
   find: basal & root suckers
-  replace: basal bud-bearing_root
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds bud-bearing_root
+- trait_name: bud_bank_location
   find: basal & some epicormic
-  replace: basal epicormic
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds epicormic_buds
+- trait_name: bud_bank_location
   find: basal & stolons
-  replace: basal stolon
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds stolon
+- trait_name: bud_bank_location
   find: basal / apical
-  replace: basal apical_buds
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds apical_buds
+- trait_name: bud_bank_location
   find: basal / rhizome
-  replace: basal rhizome
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds rhizome
+- trait_name: bud_bank_location
   find: basal / root suckers
-  replace: basal bud-bearing_root
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds bud-bearing_root
+- trait_name: bud_bank_location
   find: basal buds
-  replace: basal
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds
+- trait_name: bud_bank_location
   find: basal or epicormic
-  replace: basal epicormic
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds epicormic_buds
+- trait_name: bud_bank_location
   find: basal, possibly rhizome
-  replace: basal rhizome
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds rhizome
+- trait_name: bud_bank_location
   find: 'basal: tuber (10; 48)'
   replace: stem_tuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: basal; stem buds; swamp form basal buds
-  replace: basal stem_buds
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds stem_buds
+- trait_name: bud_bank_location
   find: coppice
-  replace: coppice
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
   find: coppice / epicormic
-  replace: coppice epicormic
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_stem_buds epicormic_buds
+- trait_name: bud_bank_location
+  find: epicormic
+  replace: epicormic_buds
+- trait_name: bud_bank_location
   find: epicormic & basal
-  replace: basal epicormic
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds epicormic_buds
+- trait_name: bud_bank_location
   find: epicormic & basal & root suckers
-  replace: basal epicormic bud-bearing_root
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds epicormic_buds bud-bearing_root
+- trait_name: bud_bank_location
   find: epicormic & basal / root suckers
-  replace: basal epicormic bud-bearing_root
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds epicormic_buds bud-bearing_root
+- trait_name: bud_bank_location
   find: epicormic & lignotuber
-  replace: epicormic lignotuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: epicormic_buds basal_stem_buds
+- trait_name: bud_bank_location
   find: epicormic & rootstock
-  replace: epicormic woody_rootstock
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: epicormic_buds bud-bearing_root
+- trait_name: bud_bank_location
   find: epicormic / lignotuber
-  replace: epicormic lignotuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: epicormic_buds basal_stem_buds
+- trait_name: bud_bank_location
   find: epicormic or apical & rhizome
-  replace: epicormic rhizome apical_buds
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: epicormic_buds rhizome apical_buds
+- trait_name: bud_bank_location
   find: epicormic, lignotuber and root suckers
-  replace: epicormic bud-bearing_root lignotuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: epicormic_buds bud-bearing_root basal_stem_buds
+- trait_name: bud_bank_location
   find: epicormic, root buds
-  replace: epicormic bud-bearing_root
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: epicormic_buds bud-bearing_root
+- trait_name: bud_bank_location
   find: has rhizome
   replace: rhizome
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
+  find: lignotuber
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
   find: lignotuber & epicormic
-  replace: epicormic lignotuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: epicormic_buds basal_stem_buds
+- trait_name: bud_bank_location
   find: lignotuber & epicormic; stem buds
-  replace: epicormic lignotuber stem_buds
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: epicormic_buds basal_stem_buds stem_buds
+- trait_name: bud_bank_location
   find: lignotuber & root suckers
-  replace: bud-bearing_root lignotuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root basal_stem_buds
+- trait_name: bud_bank_location
   find: lignotuber / epicormic
-  replace: epicormic lignotuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: epicormic_buds basal_stem_buds
+- trait_name: bud_bank_location
   find: lignotuber / root suckers; basal buds
-  replace: bud-bearing_root lignotuber basal
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root basal_stem_buds basal_buds
+- trait_name: bud_bank_location
   find: lignotuber / rootuckers
-  replace: bud-bearing_root lignotuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root basal_stem_buds
+- trait_name: bud_bank_location
   find: lignotuber / sometimes suckers
-  replace: bud-bearing_root lignotuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root basal_stem_buds
+- trait_name: bud_bank_location
   find: lignotuber and coppice
-  replace: lignotuber coppice
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
   find: lignotuber and coppice; stem buds
-  replace: lignotuber coppice stem_buds
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_stem_buds stem_buds
+- trait_name: bud_bank_location
   find: lignotuber; basal buds
-  replace: lignotuber basal
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_stem_buds basal_buds
+- trait_name: bud_bank_location
   find: rhizome or apical
   replace: rhizome apical_buds
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: rhizome, basal
-  replace: basal rhizome
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds rhizome
+- trait_name: bud_bank_location
   find: rhizome?
   replace: rhizome
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: root buds
   replace: bud-bearing_root
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: root buds (133
   replace: bud-bearing_root
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: root stock
-  replace: woody_rootstock
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root
+- trait_name: bud_bank_location
   find: root suckers
   replace: bud-bearing_root
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: root suckers & basal & epicormic
-  replace: bud-bearing_root basal epicormic
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root basal_buds epicormic_buds
+- trait_name: bud_bank_location
   find: root suckers & rhizome
   replace: bud-bearing_root rhizome
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: root suckers / basal
-  replace: bud-bearing_root basal
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root basal_buds
+- trait_name: bud_bank_location
   find: root suckers / lignotuber
-  replace: bud-bearing_root lignotuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root basal_stem_buds
+- trait_name: bud_bank_location
   find: root suckers / lignotuber & epicormic
-  replace: epicormic bud-bearing_root lignotuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: epicormic_buds bud-bearing_root basal_stem_buds
+- trait_name: bud_bank_location
   find: root suckers/rhizome
   replace: bud-bearing_root rhizome
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: root suckers; basal buds
-  replace: bud-bearing_root basal
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root basal_buds
+- trait_name: bud_bank_location
   find: roots
-  replace: woody_rootstock
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root
+- trait_name: bud_bank_location
   find: rootstock
-  replace: woody_rootstock
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root
+- trait_name: bud_bank_location
   find: rootstock & coppice
-  replace: woody_rootstock coppice
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root basal_stem_buds
+- trait_name: bud_bank_location
   find: rootstock & root suckers
-  replace: woody_rootstock bud-bearing_root
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root bud-bearing_root
+- trait_name: bud_bank_location
   find: rootstock / root suckers
-  replace: woody_rootstock bud-bearing_root
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root bud-bearing_root
+- trait_name: bud_bank_location
   find: rootstock, basal
-  replace: woody_rootstock basal
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root basal_buds
+- trait_name: bud_bank_location
   find: rootstock; stem buds
-  replace: woody_rootstock stem_buds
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root stem_buds
+- trait_name: bud_bank_location
   find: rootsuckers &/or rhizome
-  replace: woody_rootstock rhizome
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root rhizome
+- trait_name: bud_bank_location
   find: stem bases
-  replace: basal
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
   find: stem buds
-  replace: aboveground_other
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: stem_buds
+- trait_name: bud_bank_location
   find: stolons
   replace: stolon
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: tap root
-  replace: .na
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: bud-bearing_root
+- trait_name: bud_bank_location
   find: tuber
-  replace: root_tuber
+  replace: stem_tuber
 - trait_name: seed_storage_location
   find: a-canopy
   replace: canopy
@@ -829,6 +865,9 @@ substitutions:
 - trait_name: seed_storage_location
   find: persistent (6) / transient (49)
   replace: .na
+- trait_name: seed_storage_location
+  find: persistent soil
+  replace: soil
 - trait_name: seed_storage_location
   find: persistent soil / canopy
   replace: canopy soil
@@ -902,35 +941,38 @@ substitutions:
   find: viviparous
   replace: .na
 - trait_name: seed_longevity
+  find: canopy
+  replace: .na
+- trait_name: seed_longevity
   find: a-canopy
   replace: .na
 - trait_name: seed_longevity
   find: a-persistent soil
-  replace: persistent_in_soil
+  replace: persistent
 - trait_name: seed_longevity
   find: canopy - transient
-  replace: transient_in_canopy
+  replace: transient
 - trait_name: seed_longevity
   find: canopy (>1y) & soil
-  replace: persistent_in_canopy persistent_in_soil
+  replace: persistent
 - trait_name: seed_longevity
   find: canopy (1; 9) / soil (6)
-  replace: persistent_in_canopy persistent_in_soil
+  replace: persistent
 - trait_name: seed_longevity
   find: canopy (released before next flowering period)
-  replace: short_persistent_in_canopy
+  replace: short_persistent
 - trait_name: seed_longevity
   find: canopy (remains on stem for several years)
-  replace: short_persistent_in_canopy
+  replace: short_persistent
 - trait_name: seed_longevity
   find: canopy (retained several years, very low density of seed in soil; 32)
-  replace: short_persistent_in_canopy
+  replace: short_persistent
 - trait_name: seed_longevity
   find: canopy / persistent soil
-  replace: persistent_in_soil
+  replace: persistent
 - trait_name: seed_longevity
   find: canopy / persistent soil (84)
-  replace: persistent_in_soil
+  replace: persistent
 - trait_name: seed_longevity
   find: canopy / released at maturity (1)
   replace: .na
@@ -956,20 +998,23 @@ substitutions:
   find: persistent (6) / transient (49)
   replace: persistent transient
 - trait_name: seed_longevity
+  find: persistent soil
+  replace: persistent
+- trait_name: seed_longevity
   find: persistent soil / canopy
-  replace: persistent_in_soil persistent_in_canopy
+  replace: persistent
 - trait_name: seed_longevity
   find: persistent soil / transient
-  replace: persistent_in_soil transient_in_soil
+  replace: persistent transient
 - trait_name: seed_longevity
   find: persistent soil / transient (38)
-  replace: persistent_in_soil transient_in_soil
+  replace: persistent transient
 - trait_name: seed_longevity
   find: persistent soil, exhausted by disturbance
-  replace: persistent_in_soil
+  replace: persistent
 - trait_name: seed_longevity
   find: persistent soil?
-  replace: persistent_in_soil
+  replace: persistent
 - trait_name: seed_longevity
   find: released at maturity
   replace: .na
@@ -978,19 +1023,19 @@ substitutions:
   replace: .na
 - trait_name: seed_longevity
   find: serotinous canopy
-  replace: long_persistent_in_canopy
+  replace: long_persistent
 - trait_name: seed_longevity
   find: serotinous canopy (11% follicles open without fire; 73)
-  replace: long_persistent_in_canopy
+  replace: long_persistent
 - trait_name: seed_longevity
   find: serotinous canopy (4% follicles open without fire; 73)
-  replace: long_persistent_in_canopy
+  replace: long_persistent
 - trait_name: seed_longevity
   find: serotinous canopy (max retention 15y)
-  replace: long_persistent_in_canopy
+  replace: long_persistent
 - trait_name: seed_longevity
   find: serotinous canopy (retention >8y; 20)
-  replace: long_persistent_in_canopy
+  replace: long_persistent
 - trait_name: seed_longevity
   find: sets no seed
   replace: .na
@@ -1002,28 +1047,31 @@ substitutions:
   replace: .na
 - trait_name: seed_longevity
   find: short-lived persistent soil
-  replace: short_persistent_in_soil
+  replace: short_persistent
 - trait_name: seed_longevity
   find: short-lived soil
-  replace: short_persistent_in_soil
+  replace: short_persistent
 - trait_name: seed_longevity
   find: short-lived soil, exhausted by disturbance
-  replace: short_persistent_in_soil
+  replace: short_persistent
 - trait_name: seed_longevity
-  find: transient
-  replace: short-lived
-- trait_name: seed_longevity
-  find: transient / persistent soil
-  replace: transient_in_canopy transient_in_soil
-- trait_name: seed_longevity
-  find: transient or canopy?
+  find: soil
   replace: .na
 - trait_name: seed_longevity
+  find: transient
+  replace: transient
+- trait_name: seed_longevity
+  find: transient / persistent soil
+  replace: transient persistent
+- trait_name: seed_longevity
+  find: transient or canopy?
+  replace: transient
+- trait_name: seed_longevity
   find: transient; requires reinvasion from unburnt sites
-  replace: short-lived
+  replace: transient
 - trait_name: seed_longevity
   find: transient?
-  replace: short-lived
+  replace: transient
 - trait_name: seed_longevity
   find: viviparous
   replace: .na

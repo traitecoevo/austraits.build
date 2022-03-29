@@ -57,8 +57,7 @@ config:
   variable_match:
     taxon_name: Species
     site_name: site_name
-  custom_R_code: data %>% na_if(".na") %>% mutate(site_name = "southwest Australia")
-    %>% mutate(fire_response = if_else(regeneration_mode=="NS","fire_killed","resprouts"))
+  custom_R_code: data %>% na_if(".na") %>% mutate(site_name = "southwest Australia") %>% mutate(fire_response = if_else(regeneration_mode=="NS","fire_killed","resprouts")) %>% mutate(storage_organ = ifelse(regeneration_mode %in% c("RS","RS/EP","RS?"),"lignotuber", NA))
 traits:
 - var_in: seed_mass_mg
   unit_in: mg
@@ -72,7 +71,19 @@ traits:
     as seeds were to be germinated.
 - var_in: regeneration_mode
   unit_in: .na
-  trait_name: vegetative_regeneration_or_reproduction_strategy
+  trait_name: bud_bank_location
+  value_type: expert_mean
+  replicates: .na
+  methods: Data relating to regenerative mode and fruit production were compiled from
+    observations in the field. Regenerative mode was determined by digging around
+    the base of the stem to see if a lignotuber or sucker was present. Plants were
+    also examined to determine whether they had resprouted via epicormic buds. Non-sprouters
+    typicallv were single stemmed at the base and lignotuberous resprouters were multi-stemmed.
+    Where possible, regenerative mode was confirmed by examining burnt plants at nearby
+    locations.
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ
   value_type: expert_mean
   replicates: .na
   methods: Data relating to regenerative mode and fruit production were compiled from
@@ -170,27 +181,27 @@ substitutions:
 - trait_name: serotiny
   find: '4'
   replace: not_serotinous
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: NS
-  replace: fire_killed
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: none
+- trait_name: bud_bank_location
   find: RTS
   replace: bud-bearing_root
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: RS
-  replace: lignotuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds
+- trait_name: bud_bank_location
   find: RS?
-  replace: lignotuber
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds
+- trait_name: bud_bank_location
   find: EP
-  replace: epicormic
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: epicormic_buds
+- trait_name: bud_bank_location
   find: RS/EP
-  replace: lignotuber epicormic
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_buds epicormic_buds
+- trait_name: bud_bank_location
   find: RTS/EP
-  replace: bud-bearing_root epicormic
+  replace: bud-bearing_root epicormic_buds
 - trait_name: pollination_syndrome
   find: i
   replace: insect

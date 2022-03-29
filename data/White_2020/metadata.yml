@@ -43,8 +43,9 @@ config:
   variable_match:
     taxon_name: Species_Name
   custom_R_code: data %>% subset(NonIndigenous != 1) %>% mutate(flowering_season =
-    paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec)
-    %>% na_if("000000000000") %>% convert_01_ny) %>% mutate(dispersers = dispersal_syndrome)
+    paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec)%>% na_if("000000000000") %>% convert_01_ny) %>% mutate(dispersers = dispersal_syndrome) %>% mutate(reproductive_maturity_max = ifelse(reproductive_maturity == "<1",1, NA),
+    reproductive_maturity_max = ifelse(reproductive_maturity == "1-5",5, reproductive_maturity_max),reproductive_maturity_max = ifelse(reproductive_maturity == "5-20",20, reproductive_maturity_max)) %>% mutate(reproductive_maturity_min = ifelse(reproductive_maturity == ">20",20, NA),
+    reproductive_maturity_min = ifelse(reproductive_maturity == "1-5",1, reproductive_maturity_min),reproductive_maturity_min = ifelse(reproductive_maturity == "5-20",5, reproductive_maturity_min))
 traits:
 - var_in: dispersal_syndrome
   unit_in: .na
@@ -130,7 +131,7 @@ traits:
   methods: compilation from diverse sources and expert opinion
 - var_in: Proliferate
   unit_in: .na
-  trait_name: vegetative_regeneration_ability
+  trait_name: vegetative_reproduction_ability
   value_type: expert_mean
   replicates: .na
   methods: compilation from diverse sources and expert opinion
@@ -142,7 +143,7 @@ traits:
   methods: compilation from diverse sources and expert opinion
 - var_in: regen_strategy
   unit_in: .na
-  trait_name: vegetative_regeneration_or_reproduction_strategy
+  trait_name: regeneration_non_fire_disturbance
   value_type: expert_mean
   replicates: .na
   methods: compilation from diverse sources and expert opinion
@@ -152,10 +153,16 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: compilation from diverse sources and expert opinion
-- var_in: reproductive_maturity
-  unit_in: .na
+- var_in: reproductive_maturity_min
+  unit_in: years
   trait_name: reproductive_maturity_primary
   value_type: expert_min
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
+- var_in: reproductive_maturity_max
+  unit_in: years
+  trait_name: reproductive_maturity_primary
+  value_type: expert_max
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: Parasite
@@ -189,15 +196,6 @@ traits:
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 substitutions:
-- trait_name: reproductive_maturity_primary
-  find: 1-5
-  replace: 1
-- trait_name: reproductive_maturity_primary
-  find: 5-20
-  replace: 5
-- trait_name: reproductive_maturity_primary
-  find: '>20'
-  replace: 20
 - trait_name: spinescence
   find: 0
   replace: 0_no_spines
@@ -228,12 +226,15 @@ substitutions:
 - trait_name: life_form
   find: 0
   replace: .na
-- trait_name: vegetative_regeneration_ability
+- trait_name: vegetative_reproduction_ability
   find: 1
   replace: vegetative
-- trait_name: vegetative_regeneration_ability
+- trait_name: vegetative_reproduction_ability
   find: 0
   replace: not_vegetative
+- trait_name: regeneration_non_fire_disturbance
+  find: resprouts
+  replace: resprouts_non_fire_disturbance
 - trait_name: parasitic
   find: 1
   replace: parasitic

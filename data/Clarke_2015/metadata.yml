@@ -84,11 +84,22 @@ config:
     taxon_name: species records
     site_name: Ecosystem
   custom_R_code: data %>% mutate(`species records` = gsub("_", " ", `species records`,
-    fixed=TRUE))
+    fixed=TRUE)) %>% mutate(storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA))
 traits:
 - var_in: resp.type
   unit_in: .na
-  trait_name: vegetative_regeneration_or_reproduction_strategy
+  trait_name: bud_bank_location
+  value_type: expert_mean
+  replicates: .na
+  methods: 'Expert field observations:  The position of resprouts was identified as
+    apical, basal, epicormic, or underground. Basal and underground resprouting were
+    distinguished by basal resprouting being from the base of the stem while underground
+    resprouting was from the root stock (P.J. Clarke et al., 2013). If more than one
+    resprouting type was observed for a taxon then the most common resprouting type
+    was recorded.'
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ
   value_type: expert_mean
   replicates: .na
   methods: 'Expert field observations:  The position of resprouts was identified as
@@ -127,27 +138,27 @@ traits:
     2014). Accordingly, we classified the flora as resprouters (R+) or non-resprouters
     (R-), and seeders (S+) or non-seeders (S-).
 substitutions:
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: Killed
-  replace: fire_killed
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: none
+- trait_name: bud_bank_location
   find: Underground
-  replace: underground
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: underground_buds
+- trait_name: bud_bank_location
   find: Epicormic
-  replace: epicormic
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: epicormic_buds
+- trait_name: bud_bank_location
   find: Apical
-  replace: aboveground_caudex
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: apical_buds
+- trait_name: bud_bank_location
   find: Basal
-  replace: basal
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
   find: X
   replace: .na
-- trait_name: vegetative_regeneration_or_reproduction_strategy
+- trait_name: bud_bank_location
   find: Lignotuber
-  replace: lignotuber
+  replace: basal_buds
 - trait_name: fire_response
   find: 'no'
   replace: fire_killed

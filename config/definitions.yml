@@ -701,8 +701,9 @@ traits:
       type: categorical
       label: Resprouts or is killed by fire
       values:
-        fire_killed: Plants killed by a hot fire.
-        resprouts: Plants resprout following a hot fire.
+        fire_killed: Fewer than 30% of plants resprout following a hot fire.
+        resprouts: More than 70% of plants resprout following a hot fire.
+        partial_resprouting: Between 30-70% of plants resprout following a hot fire.
         not_fire_killed_does_not_resprout: Plants are rarely killed by a moderate-intensity fire, but also do not resprout.
         fire_not_relevant: Plant never affected by fire (for aquatic taxon).
         unknown: Fire status assessed, but unknown.
@@ -712,9 +713,9 @@ traits:
       label: Resprouts or is killed by fire
       values:
         fire_killed: Plants killed by hot fires
-        weak_resprouting: Plant shows weak resprouting following fire
-        intermediate_resprouting: Plant shows intermediate resprouting following fire
-        strong_resprouting: Plant shows strong resprouting following fire
+        weak_resprouting: Plant shows weak resprouting following fire; unless an author defines a study-specific cut-off, this term is applied to populations where some individuals, but fewer than 30% of individuals resprout following a fire. 
+        intermediate_resprouting: Plant shows intermediate resprouting following fire; unless an author defines a study-specific cut-off, this term is  applied to populations where between 30-70% of individuals resprout.
+        strong_resprouting: Plant shows strong resprouting following fire; unless an author defines a study-specific cut-off, this term is  applied to populations where > 70% of individuals resprout.
     fire_response_juvenile:
       description: Variable summarising how juvenile plants respond to fire
       type: categorical
@@ -742,13 +743,14 @@ traits:
         post_fire_recruitment_moderate: Plants with a moderate number of seedlings present post-fire.
         no_post_fire_recruitment: Plants that do not show increased seeding following fire.
     fire_and_establishing:
-      description: Variable capturing post-fire time frame during which species establishes. Includes trait values for a broad range of responses, from species that establish immediately following fire to those that only establish in mature forest stands.
+      description: Trait capturing post-fire time frame during which species establishes. The selection of trait values does not distinguish between intermediate age and mature vegetation, as this level of detail is rarely provide in datasets.
       type: categorical
       label: Post-fire establishment
       values:
-        establish_just_after_fire_only: Plants establish immediately after a fire (within the first 2 seasons, and usually within the first season), but cannot continue recruitment as the vegetation ages further, unable to establish in mature vegetation
+        establish_just_after_fire_only: Plants establish immediately after a fire (within the first 2 seasons, and usually within the first season), but cannot continue recruitment as the vegetation ages further, unable to establish in mature vegetation.
+        establish_just_after_fire_and_mature_vegetation: Plants can establish immediately after fire and in later years as vegetation ages, right thru to mature and over-mature vegetation (assuming suitable seasonal conditions).
+        establish_mature_vegetation_only: Plants unable to establish immediately after fire (within the first season or two), but can establish in older vegetation (including mature to over-mature vegetation), requires some environmental charateristics not found in vegetation straight after fires.
         establish_intermediate_age: Plants can only establish at an intermediate stage, ie. cannot establish straight after fire nor in mature to over-mature vegetation.
-        establish_just_after_fire_and_mature_vegetation: Plants able to establish immediately after fire and also in mature to over-mature vegetation, cannot establish in intermediate aged vegetation
         establish_just_after_fire_and_intermediate_age: Plants able to establish immediately after fire and also in intermediate aged vegetation.
         establish_intermediate_to_over_mature_vegetation: Plants unable to establish immediately after fire (within the first season or two), but can establish in older vegetation (including mature to over-mature vegetation), requires some environmental charateristics not found in vegetation straight after fires   
         establish_anytime: Plants can establish immediately after fire and in later years as vegetation ages, right thru to mature and over-mature vegetation (assuming suitable seasonal conditions)
@@ -2794,51 +2796,67 @@ traits:
         biotic_unspecialised: Taxa use living methods for pollen transfer, but do not have a specialist pollinator
         biotic_specialised: Taxa depend upon a specialist pollinator for pollen transfer
         self_pollination: Flowers are self-pollinated or pollinated by another flower on the same plant
-    post_fire_regeneration_location:
+    bud_bank_location:
       description: Location of resprouting buds following a fire. The trait `vegetative_regeneration_or_reproduction_strategy` captures the explicit tissue types that  provides a more detailed list of species' ability to regenerate vegetatively and their bud locations. [checked - Rye_2015]
       type: categorical
       label: Location of resprouting buds following a fire.
       values:
-        basal: Plants resprout from the soil surface following a fire.
-        epicormic: Plants resprout from the stem or trunk following a fire.
+        apical_buds: Plant resprouts from above-ground apical meristems. Also termed a caudex. Term refers to palm-like plants with aerial buds that resprout, including grass trees, palms, tree ferns, and pandanus.
+        basal_buds: Plant resproutes from its base, with basal stem versus underground buds not distinguished between.
+        basal_stem_buds: Plants resprout from the base of the stem following a fire. Australian plants with basal stem buds usually have a lignotuber; see the trait `storage_organ`.
+        bud-bearing_root: Root buds produce vertical suckers (from root crown) or adventitious roots following a fire.
+        epicormic_buds: Plants resprout from the stem or trunk following a fire.
+        rhizome: Plants reprout from a rhizome.
+        stem_buds: Plant resprouts from stem buds (separate to epicormic buds)
+        stem_tuber: Plant resprouts from buds on a stem tuber
+        stolon: Plants resprouts from buds on horizontal branches (stems) growing from the base of the plant.
+        underground_buds: Plants that resprout from underground organ, but the type of organ isn't specified.
+        none: Plant lacks regenerative buds.
+    storage_organ:
+      description: Storage organ
+      type: categorical
+      label: Storage organ, either for post-fire regeneration or general energy storage.
+      values:      
+        bulb: Below ground storage organ derived from stem (and sometimes leaf) tissue.
+        fleshy_underground_organ: Plants that use fleshy, generally underground organs (swellings) to regenerate; examples include corms, tubers, bulbs, and caudex
+        lignotuber: Swollen woody structures are located at the transition between the stem base and root crown of woody shrubs, mallees and small trees, and are formed from stem tissues. Buds are located over the entire structure. No colonisation ability.
+        rhizome: Plant has an underground stem; this stem may be woody or non-woody. Rhizomes are both a mechanism for vegetative spread and a strategy to survive fire.
+        storage_organ: Storage organ present, but the type is unknown
+        woody_rootstock_or_lignotuber: Plant that regenerates by resprouting from either a woody rootstock or lignotuber.
+        no_storage_organ: No storage organ present
+    regeneration_non_fire_disturbance:
+      description: An indication of whether a plant is able to regenerate from a disturbance other than fire.
+      type: categorical
+      label: A plant's ability to regenerate following a non-fire disturbance.
+      values:
+        resprouts_non_fire_disturbance: Fire-killed plants that have the ability to resprout following a disturbance other than fire.
+    clonal_spread_mechanism:
+      description: Mechanisms a plant uses to grow vegetatively, including the production of clones. Overlap with terms under `storage_organ` and `bud_bank_location`. 
+      type: categorical
+      label: Clonal growth mechanisms
+      values:
+        aboveground_clonal: Vegetative buds or plant fragments that can disperse and produce new plants (including axillary buds, bulbils and turions).
+        adventitious_root_buds: Adventitious root buds on main root or lateral roots      
+        bulb: Below ground storage organ derived from stem (and sometimes leaf) tissue, that divides into new individuals.
+        belowground_caudex: Plant regenerates from below-ground caudex.
+        belowground_clonal: Plants use an unspecified underground organ for clonal spread.
+        corm: Below ground organ derived from stem tissue that can function either for vegetative spread or to regenerate following a disturbance.
+        rhizome: Plant has an underground stem; this stem may be woody or non-woody. Rhizomes are both a mechanism for vegetative spread and a strategy to survive fire.        
+        rooting_at_nodes: 
+        root_buds: Lateral root that produces vertical suckers, adventitious roots       
+        root_tuber: Below ground storage organ derived from root tissue.
+        stem_tuber: Below ground storage organ derived from stem tissue.
+        stolon: Plants having horizontal branches (stems) from the base of the plant that produce new plants from buds at its tip or nodes
+        viviparous:
+        non_clonal: Plant does not display clonal growth
     vegetative_regeneration_or_reproduction_strategy:
       description: Different regeneration strategies displayed by plants. Trait values include both generic terms and quite specific ones. See Pausus, Lamont et al. 2018, doi.org/10.1111/nph.14982 for trait values used and detailed desciptions of recolonization ability and level of fire protection provided by each regeneration strategy. This trait includes terminology for storage organs and regeneration strategies following fire. The trait "fire_response" is a binary trait distinguishing between fire-killed and regenerating taxa.
       type: categorical
       label: Regeneration strategy
       values:
-        aboveground: Plants that resprout from an aboveground organ, but the type of organ isn't specified.
-        aboveground_caudex: Plant regenerates from above-ground apical meristems. Also termed a caudex. Term refers to palm-like plants with aerial buds that resprout, including grass trees, palms, tree ferns, and pandanus.
-        aboveground_other: vegetative buds or plant fragments that can disperse and produce new plants (including axillary buds, bulbils and turions)
-        adventitious_root_buds: Adventitious root buds on main root or lateral roots
-        apical_buds: Plant resprouts from apical buds.
-        basal: Plant regenerates from the base of the stem (versus underground). Generally synonymous with "lignotuber", especially among Australian plants.
-        basal_stem_buds: Plant resprouts from basal stem buds.
         belowground: Plants that resprout from a belowground organ, but the type of organ isn't specified.
-        belowground_caudex: Plant regenerates from belowe-ground caudex. 
-        bud-bearing_root: Lateral root that produces vertical suckers, adventitious roots
-        bulb: Below ground storage organ derived from stem (and sometimes leaf) tissue.
-        coppice: Shoots regrowing from base of stem following managed cutting to ground level
-        corm: Below ground storage organ derived from stem tissue.
-        epicormic: Plants that resprout from epicormic buds; these are buds beneath the bark on stems that survive fire 
-        fleshy_underground_organ: Plants that use fleshy, generally underground organs (swellings) to regenerate; examples include corms, tubers, bulbs, and caudex
-        lignotuber: Swollen woody structures are located at the transition between the stem base and root crown of woody shrubs, mallees and small trees, and are formed from stem tissues. Buds are located over the entire structure. No colonisation ability.
-        fire_killed: Plant that is fire-killed and regenerates only by seed. (An obligate re-seeder.)
-        resprouts: Plant reprouts following fire
-        resprouts_non_fire_disturbance: Fire-killed plants that have the ability to resprout following a disturbance other than fire
-        rhizome: Plant has an underground stem; this stem may be woody or non-woody. Rhizomes are both a mechanism for vegetative spread and a strategy to survive fire. 
-        root_crown: Plant that produces a few vertical shoots from the root crown.
-        root_tuber: Below ground storage organ derived from root tissue.
-        seed: Plants that regenerate only or primarily by seed. These are mostly fire-killed taxa, but the not always
-        stem_buds: Plant resprouts from stem buds (separate to epicormic buds)
-        stem_tuber: Below ground storage organ derived from stem tissue.
-        stolon: Plants having horizontal branches (stems) from the base of the plant that produce new plants from buds at its tip or nodes
-        woody_rootstock: Plant that regenerate by resprouting from wood rootstock.
-        woody_rootstock_or_lignotuber: Plant that regenerates by resprouting from either a woody rootstock or lignotuber.
-        no_storage_organ: No storage organ present
-        none: Does not regenerate vegetatively
-        storage_organ: Storage organ present, but the type is unknown
-        underground: Plants that resprout from an underground organ, but the type of organ isn't specified.
-        unknown: Assume this trait value means it is unknown if a storage organ is present or a plant can regenerate, not that the type is unknown
+ 
+             
     reproductive_maturity:
       description: Age of plants at reproductive maturity, by category. In most studies, 'reproductive maturity' refers to the time to first flowering or to first seedset. However, for several big compilations with fire response data, the term 'reproductive maturity' instead refers to a seed load or a group of suckers sufficient to replace the adult population. This trait encompasses all records referring to 'reproductive maturity.'
       type: categorical
@@ -2853,7 +2871,7 @@ traits:
         '10-20': Plants reach reproductive maturity between ages 10-20
         '>20': Plants reach reproductive maturity after age 20
         '20-40': Plants reach reproductive maturity between ages 20-40
-    reproductive_maturity_numeric:
+    reproductive_maturity_primary:
       description: Age of plants at reproductive maturity, numeric
       type: numeric
       units: years
@@ -2861,7 +2879,7 @@ traits:
       values:
         minimum: .1
         maximum: 100
-    reproductive_maturity_secondary:
+    reproductive_maturity_secondary_after_fire:
       description: Number of years post-distiurbance required for species that survive the disturbance to resprout and re-reach reproductive maturity. This trait is most commonly used for species that resprout following fire
       type: numeric
       units: years
@@ -3266,14 +3284,26 @@ traits:
         soil: Seeds stored in the soil
         none: Seeds are not stored
         not_canopy: Seed explicitly not stored in the canopy; other storage locations unknown
-    seed_longevity:
+    seed_longevity_numeric:
       description: Seed longevity
+      type: numeric
+      label: Seed longevity
+      units: years
+      values:
+        minimum: 0.01
+        maximum: 1000.0
+    seed_longevity:
+      description: Seed or propagule longevity
       type: categorical
       label: Seed longevity
       values:
+        persistent: Propagule persistent
+        transient: Propagule transient, lasting in the seedbank for only weeks to months.
+        short_persistent: Propagule is persistent for approximately 1 to 5 years, although cutoff varies by study.
+        long_persistent: Propagule is persistent for more than 5 years, although cutoff varies by study.
+        widely_dispersed: Seed longevity not important, as seeds are widely dispersed and always available for germination.
         short-lived: Seedbank survives for weeks
         intermediate: Seedbank survives for months to less than a year
-        long-lived: Seedbank survives for more than 10 years
         short_lived_in_soil: Propagule is short-lived in soil
         short_persistent_in_soil: Propagule is persistent in soil 1 to 5 years
         short_persistent_in_soil_b: Propagule is persistent in soil for less than 2 years
@@ -3283,11 +3313,8 @@ traits:
         persistent_in_soil: Propagule persistent in soil for unspecified length of time
         short_persistent_in_canopy: Propagule persistent in canopy for 1 to 5 years
         long_persistent_in_canopy: Propagule persistent in canopy for more than 5 years
-        persistent: Propagule persistent, location not specified
-        transient: Propagule transient, location not specified
         transient_in_canopy: Propagule transient in canopy
         transient_in_soil: Propagule transient in soil
-        widely_dispersed: Seed longevity not important, as seeds are widely dispersed and always available for germination
     seed_release:
       description: When a fruit or cone only releases its seeds following an environmental trigger, often fire; ; see also 'seed_longevity', 'seed_storage_location', 'soil_seedbank', 'canopy_seedbank', and 'serotiny'
       type: categorical

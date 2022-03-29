@@ -146,9 +146,9 @@ config:
   variable_match:
     taxon_name: Species
     site_name: site_name
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(fire_response = ifelse(`percent_burnt_stems_resprouting` < 30, "fire_killed",ifelse(`percent_burnt_stems_resprouting` > 70, "resprouts","partial_resprouting")))
 traits:
-- var_in: '% burnt stems resprouting'
+- var_in: percent_burnt_stems_resprouting
   unit_in: '%'
   trait_name: fire_response_numeric
   value_type: multisite_mean
@@ -170,7 +170,7 @@ traits:
     seedlings of all woody taxa.
 - var_in: regen_strategy
   unit_in: .na
-  trait_name: vegetative_regeneration_or_reproduction_strategy
+  trait_name: bud_bank_location
   value_type: multisite_mean
   replicates: .na
   methods: To assess resprouting, a 1 x 1 m quadrat was positioned at each observation
@@ -178,7 +178,16 @@ traits:
     recruitment was assessed by haphazardly dropping, at each observation point, a
     25 x 25 cm quadrat within the transect, and counting the total number of live
     seedlings of all woody taxa.
-substitutions: .na
+substitutions:
+- trait_name: bud_bank_location
+  find: basal
+  replace: basal_buds
+- trait_name: bud_bank_location
+  find: basal epicormic
+  replace: basal_buds epicormic_buds
+- trait_name: bud_bank_location
+  find: fire_killed
+  replace: none
 taxonomic_updates:
 - find: Baekia leptocaulis
   replace: Baeckea leptocaulis
