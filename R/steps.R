@@ -880,7 +880,6 @@ apply_taxonomic_updates  <- function(data, metadata){
 combine_austraits <- function(..., d=list(...), definitions) {
 
 
-  purrr::map_lgl(d, ~.data$site_name %>% is.logical())
   combine <- function(name, d) {
     dplyr::bind_rows(lapply(d, "[[", name))
   }
@@ -888,7 +887,8 @@ combine_austraits <- function(..., d=list(...), definitions) {
   # combine sources and remove duplicates
   sources <- d %>% lapply("[[", "sources")
   keys <- sources %>% lapply(names)  %>% unlist() %>% unique() %>% sort()
-  sources <- sources %>% purrr::reduce(c) %>% .data[keys]
+  sources <- sources %>% purrr::reduce(c)
+  sources <- sources[keys]
 
   # drop null datasets
   d[sapply(d, is.null)] <- NULL
