@@ -42,10 +42,7 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: Species_Name
-  custom_R_code: data %>% subset(NonIndigenous != 1) %>% mutate(flowering_season =
-    paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec)%>% na_if("000000000000") %>% convert_01_ny) %>% mutate(dispersers = dispersal_syndrome) %>% mutate(reproductive_maturity_max = ifelse(reproductive_maturity == "<1",1, NA),
-    reproductive_maturity_max = ifelse(reproductive_maturity == "1-5",5, reproductive_maturity_max),reproductive_maturity_max = ifelse(reproductive_maturity == "5-20",20, reproductive_maturity_max)) %>% mutate(reproductive_maturity_min = ifelse(reproductive_maturity == ">20",20, NA),
-    reproductive_maturity_min = ifelse(reproductive_maturity == "1-5",1, reproductive_maturity_min),reproductive_maturity_min = ifelse(reproductive_maturity == "5-20",5, reproductive_maturity_min))
+  custom_R_code: data %>% subset(NonIndigenous != 1) %>% mutate(flowering_season = paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec)%>% na_if("000000000000") %>% convert_01_ny) %>% mutate(dispersers = dispersal_syndrome) %>% mutate(reproductive_maturity_max = ifelse(reproductive_maturity == "<1",1, NA), reproductive_maturity_max = ifelse(reproductive_maturity == "1-5",5, reproductive_maturity_max),reproductive_maturity_max = ifelse(reproductive_maturity == "5-20",20, reproductive_maturity_max)) %>% mutate(reproductive_maturity_min = ifelse(reproductive_maturity == ">20",20, NA), reproductive_maturity_min = ifelse(reproductive_maturity == "1-5",1, reproductive_maturity_min),reproductive_maturity_min = ifelse(reproductive_maturity == "5-20",5, reproductive_maturity_min))
 traits:
 - var_in: dispersal_syndrome
   unit_in: .na
@@ -153,6 +150,12 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: compilation from diverse sources and expert opinion
+- var_in: reproductive_maturity
+  unit_in: .na
+  trait_name: reproductive_maturity
+  value_type: expert_mean
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
 - var_in: reproductive_maturity_min
   unit_in: years
   trait_name: reproductive_maturity_primary
@@ -196,6 +199,9 @@ traits:
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 substitutions:
+- trait_name: fire_response
+  find: fire_killed resprouts
+  replace: partial_resprouting
 - trait_name: spinescence
   find: 0
   replace: 0_no_spines
@@ -204,10 +210,10 @@ substitutions:
   replace: spines_present
 - trait_name: seed_longevity
   find: 10
-  replace: short_persistent_in_soil_b
+  replace: short_persistent
 - trait_name: seed_longevity
   find: '01'
-  replace: long_persistent_in_soil_b
+  replace: long_persistent
 - trait_name: seed_longevity
   find: '00'
   replace: .na
@@ -226,6 +232,18 @@ substitutions:
 - trait_name: life_form
   find: 0
   replace: .na
+- trait_name: reproductive_maturity
+  find: '<1'
+  replace: "<1_year"
+- trait_name: reproductive_maturity
+  find: '1-5'
+  replace: 1-5_years
+- trait_name: reproductive_maturity
+  find: '5-20'
+  replace: 5-20_years
+- trait_name: reproductive_maturity
+  find: '>20'
+  replace: '>20_years'
 - trait_name: vegetative_reproduction_ability
   find: 1
   replace: vegetative

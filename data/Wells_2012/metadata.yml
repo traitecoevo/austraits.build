@@ -244,16 +244,7 @@ config:
     taxon_name: Species
     site_name: Site
     context_name: StrataBinary
-  custom_R_code: data %>% group_by(Species) %>% mutate_at(vars(LF, HeightMax, ReproAge,
-    ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3,
-    cotsExp, cotsEH, cotsFR, LEE, seed_mass_to_use),~replace(.x,duplicated(.x),NA))    %>%
-    ungroup() %>% mutate(`LA` = if_else(omit=="Kanowski",0,`LA`),LtLeaf = if_else(omit=="Kanowski",0,LtLeaf),
-    LWC = if_else(omit=="Kanowski",0,LWC), LMA = if_else(omit=="Kanowski",0,LMA))
-    %>% mutate_at(c("LA","LtLeaf","LMA","LWC"), ~na_if(.,0)) %>% mutate(fruit_fleshiness
-    = Fruit_type, fruit_dehiscence = Fruit_type, dispersal_appendage = NA) %>% move_values_to_new_trait("Fruit_type",
-    "dispersal_appendage", c("Dry dehiscent with fleshy reward  (e.g. aril, funicle,
-    elaiosome, etc.)"), c("fleshy_reward"), c("Dry dehiscent with fleshy reward  (e.g.
-    aril, funicle, elaiosome, etc.)"))
+  custom_R_code: data %>% group_by(Species) %>% mutate_at(vars(LF, HeightMax, ReproAge, ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3, cotsExp, cotsEH, cotsFR, LEE, seed_mass_to_use),~replace(.x,duplicated(.x),NA)) %>% ungroup() %>% mutate(`LA` = if_else(omit=="Kanowski",0,`LA`),LtLeaf = if_else(omit=="Kanowski",0,LtLeaf), LWC = if_else(omit=="Kanowski",0,LWC), LMA = if_else(omit=="Kanowski",0,LMA)) %>% mutate_at(c("LA","LtLeaf","LMA","LWC"), ~na_if(.,0)) %>% mutate(fruit_fleshiness = Fruit_type, fruit_dehiscence = Fruit_type, dispersal_appendage = NA) %>% move_values_to_new_trait("Fruit_type","dispersal_appendage", c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)"), c("fleshy_reward"), c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)")) %>% mutate(reproductive_maturity_max = ifelse(ReproAge == "<5",5, NA), reproductive_maturity_max = ifelse(ReproAge == "5-10",10, reproductive_maturity_max),reproductive_maturity_max = ifelse(ReproAge == "10-20",20, reproductive_maturity_max)) %>% mutate(reproductive_maturity_min = ifelse(ReproAge == ">20",20, NA),    reproductive_maturity_min = ifelse(ReproAge == "5-10",5, reproductive_maturity_min),reproductive_maturity_min = ifelse(ReproAge == "10-20",10, reproductive_maturity_min))
 traits:
 - var_in: seed_mass_to_use
   unit_in: mg
@@ -581,7 +572,19 @@ traits:
 - var_in: ReproAge
   unit_in: .na
   trait_name: reproductive_maturity
+  value_type: expert_mean
+  replicates: .na
+  methods: CSIRO TFRC arboretum records, and Botanist and Landholder interviews
+- var_in: reproductive_maturity_min
+  unit_in: years
+  trait_name: reproductive_maturity_primary
   value_type: expert_min
+  replicates: .na
+  methods: CSIRO TFRC arboretum records, and Botanist and Landholder interviews
+- var_in: reproductive_maturity_max
+  unit_in: years
+  trait_name: reproductive_maturity_primary
+  value_type: expert_max
   replicates: .na
   methods: CSIRO TFRC arboretum records, and Botanist and Landholder interviews
 - var_in: ReproCLE
@@ -772,16 +775,16 @@ substitutions:
   replace: bats birds cassowaries mammals
 - trait_name: reproductive_maturity
   find: 1
-  replace: 1
+  replace: "<5_years"
 - trait_name: reproductive_maturity
   find: 2
-  replace: 5
+  replace: 5-10_years
 - trait_name: reproductive_maturity
   find: 3
-  replace: 10
+  replace: 10-20_years
 - trait_name: reproductive_maturity
   find: 4
-  replace: 20
+  replace: '>20_years'
 - trait_name: cotyledon_position
   find: 1
   replace: cryptocotylar

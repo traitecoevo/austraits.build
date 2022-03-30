@@ -36,9 +36,7 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: Species
-  custom_R_code: data %>% mutate(fire_response_juvenile = `PERVEG V, U, W, N, X (F=inadequate
-    data)`, fire_response = `PERVEG V, U, W, N, X (F=inadequate data)`, seed_longevity
-    = `PERSEED D, S, G, C, Z (F=inadequate data)`)
+  custom_R_code: data %>% mutate(fire_response_juvenile = `PERVEG V, U, W, N, X (F=inadequate data)`, fire_response = `PERVEG V, U, W, N, X (F=inadequate data)`, seed_longevity = `PERSEED D, S, G, C, Z (F=inadequate data)`) %>% mutate(fire_cued_seeding = ifelse(`PERSEED D, S, G, C, Z (F=inadequate data)` %in% c("S","G","C"),"fire_cued_seeding",NA), fire_cued_seeding = ifelse(`T, I, R, M, K (F=inadequate data)` %in% c("I","T"),"fire_cued_seeding",fire_cued_seeding), fire_cued_seeding = ifelse(`PERSEED D, S, G, C, Z (F=inadequate data)` %in% c("Z"),"no_fire_cued_seeding",fire_cued_seeding), fire_cued_seeding = ifelse(`T, I, R, M, K (F=inadequate data)` %in% c("R","M"),"no_fire_cued_seeding",fire_cued_seeding))
 traits:
 - var_in: PERSEED D, S, G, C, Z (F=inadequate data)
   unit_in: .na
@@ -181,14 +179,17 @@ substitutions:
   replace: widely_dispersed
 - trait_name: seed_longevity
   find: S
-  replace: long-lived
+  replace: long_persistent
 - trait_name: seed_longevity
   find: G
-  replace: long-lived
+  replace: long_persistent
 - trait_name: seed_longevity
   find: C
-  replace: short-lived
+  replace: transient
 - trait_name: seed_longevity
+  find: Z
+  replace: .na
+- trait_name: post_fire_recruitment
   find: Z
   replace: no_post_fire_recruitment
 - trait_name: post_fire_recruitment
@@ -211,13 +212,13 @@ substitutions:
   replace: establish_just_after_fire_only
 - trait_name: fire_and_establishing
   find: R
-  replace: establish_intermediate_to_over_mature_vegetation
+  replace: establish_intermediate_to_mature_vegetation_only
 - trait_name: fire_and_establishing
   find: M
-  replace: establish_intermediate_age
+  replace: establish_intermediate_to_mature_vegetation_only
 - trait_name: fire_and_establishing
   find: K
-  replace: establish_just_after_fire_and_mature_vegetation
+  replace: establish_anytime
 - trait_name: fire_and_establishing
   find: F
   replace: .na
