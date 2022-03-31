@@ -125,17 +125,13 @@ sites:
     latitude (deg): -33.246
     longitude (deg): 151.389
     description: unknown
-contexts:
-  core (only hardwood):
-    type: field
-    description: wood density measured on hardwood sample
+contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     taxon_name: species
     site_name: site
-    context_name: Sample_type
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(measurement_remarks = ifelse(Sample_type == "core (only hardwood)","wood density measured on hardwood sample", NA))
 traits:
 - var_in: Value
   unit_in: g/cm3

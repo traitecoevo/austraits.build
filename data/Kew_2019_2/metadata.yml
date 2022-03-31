@@ -23,19 +23,12 @@ dataset:
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons licesne. Data not to be used for Commercial Purposes.
 sites: .na
-contexts:
-  Entire seed/nut:
-    type: field
-    description: oil content determined on an Entire seed/nut
-  Kernel:
-    type: field
-    description: oil content determined on a Kernel
+contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     taxon_name: SID taxa
-    context_name: oilmaterialdesc
-  custom_R_code: data %>% mutate(protcontentval = protcontentval/100)
+  custom_R_code: data %>% mutate(protcontentval = protcontentval/100) %>% mutate(measurement_remarks = ifelse(oilmaterialdesc == "Entire seed/nut","oil content determined on an Entire seed/nut", NA),measurement_remarks = ifelse(oilmaterialdesc == "Kernel","oil content determined on a Kernel", measurement_remarks))
 traits:
 - var_in: protcontentval
   unit_in: '%'

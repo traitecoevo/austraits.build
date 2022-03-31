@@ -93,18 +93,11 @@ sites:
       area; the actual sampling occurred at three sites at, -33.578781, 151.304784;
       -33.619800, 151.267429; and -33.651660;, 151.255547.
     geology (parent material): sandy, derived from Hawkesbury sandstone
-contexts:
-  BARK:
-    type: field
-    description: measurements made on bark
-  LEAVES:
-    type: field
-    description: measurements made on leaves
+contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     taxon_name: Taxon
-    context_name: Material
     site_name: Site
   custom_R_code: data %>% mutate(specific_leaf_area = `Leaf area (cm2)`/`Leaf dry
     mass (g)`) %>% group_by(Material,Taxon) %>% mutate_at(vars(`Leaf moisture (at
@@ -112,7 +105,7 @@ config:
     mutate(`FD (s)` = ifelse(Material == "BARK",NA,`FD (s)`)) %>% mutate(`TBT (s)`
     = ifelse(Material == "BARK",NA,`TBT (s)`)) %>% mutate(`SD (s)` = ifelse(Material
     == "BARK",NA,`SD (s)`)) %>% mutate(`TTI (s)` = ifelse(Material == "BARK",NA,`TTI
-    (s)`))
+    (s)`)) %>% mutate(measurement_remarks = ifelse(Material == "BARK","measurements made on bark", NA),measurement_remarks = ifelse(Material == "LEAVES","measurements made on leaves", measurement_remarks))
 traits:
 - var_in: Leaf Energy (MJ/kg)
   unit_in: MJ/kg

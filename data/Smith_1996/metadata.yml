@@ -152,24 +152,20 @@ sites:
     site code, alternate: T3
 contexts:
   canopy:
-    description: Measurements made on canopy leaves
-    type: field
-  subcanopy sapling:
-    description: Measurements made on subcanopy sapling leaves
-    type: field
-  juvenile:
-    description: Measurements made on juvenile leaves
-    type: field
-  seedling:
-    description: Measurements made on seedling leaves
-    type: field
+    canopy position: canopy [field]
+    description: .na
+    type: .na
+  subcanopy:
+    canopy position: subcanopy [field]
+    description: .na
+    type: .na
 config:
   data_is_long_format: no
   variable_match:
     taxon_name: species
     site_name: site2
-    context_name: contextual
-  custom_R_code: data %>% mutate(sample_age_class = ifelse(contextual == "juvenile","adult", NA), sample_age_class = ifelse(contextual == "seedling","seedling", sample_age_class), sample_age_class = ifelse(contextual == "canopy","adult", sample_age_class),sample_age_class = ifelse(contextual == "subcanopy sapling","sapling", sample_age_class))
+    context_name: canopy_position
+  custom_R_code: data %>% mutate(sample_age_class = ifelse(contextual == "juvenile","juvenile", NA), sample_age_class = ifelse(contextual == "seedling","seedling", sample_age_class), sample_age_class = ifelse(contextual == "canopy","adult", sample_age_class),sample_age_class = ifelse(contextual == "subcanopy sapling","sapling", sample_age_class)) %>% mutate(canopy_position = ifelse(contextual == "canopy", "canopy", NA), canopy_position = ifelse(contextual == "subcanopy sapling", "subcanopy", canopy_position))
 traits:
 - var_in: LENGTH
   unit_in: mm

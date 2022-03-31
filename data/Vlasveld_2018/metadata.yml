@@ -44,35 +44,14 @@ sites:
     latitude (deg): -35.44
     longitude (deg): 138.77
     description: trees grown in rows
-contexts:
-  lamina + petiole from adult plants:
-    plant_age: adult
-    leaf_parts: lamina + petiole
-    type: field
-    description: leaf lamina + petiole measured on adult plants
-  lamina + petiole from juvenile plants:
-    plant_age: juvenile
-    leaf_parts: lamina + petiole
-    type: field
-    description: leaf lamina + petiole measured on juvenile plants
-  lamina from adult plants:
-    plant_age: adult
-    leaf_parts: lamina
-    type: field
-    description: leaf lamina measured on adult plants
-  lamina from juvenile plants:
-    plant_age: juvenile
-    leaf_parts: lamina
-    type: field
-    description: leaf lamina measured on juvenile plants
+contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     taxon_name: Species
     site_name: Site
-    context_name: context
     date: year collected
-  custom_R_code: .na
+  custom_R_code: data %>% rename(sample_age_class = plant_age) %>% mutate(measurement_remarks = paste0("measured on ", leaf_parts))
 traits:
 - var_in: vein frequency (veins per mm)
   unit_in: count/mm

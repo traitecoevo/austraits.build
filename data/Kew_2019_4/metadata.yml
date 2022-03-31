@@ -21,29 +21,12 @@ dataset:
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons licesne. Data not to be used for Commercial Purposes.
 sites: .na
-contexts:
-  Embryo:
-    type: field
-    description: oil content determined on an Embryo
-  Embryo+endosperm:
-    type: field
-    description: oil content determined on an Embryo+endosperm
-  Endosperm:
-    type: field
-    description: oil content determined on the Endosperm
-  Entire seed/nut:
-    type: field
-    description: oil content determined on an Entire seed/nut
-  Kernel:
-    type: field
-    description: oil content determined on a Kernel
+contexts: .na
 config:
   data_is_long_format: no
   variable_match:
     taxon_name: taxa
-    context_name: oilmaterialdesc
-  custom_R_code: data %>% mutate(oilcontentval = oilcontentval/100) %>% group_by(taxa)
-    %>% mutate_at(vars(oilcontentval),replace_duplicates_with_NA) %>% ungroup()
+  custom_R_code: data %>% mutate(oilcontentval = oilcontentval/100) %>% group_by(taxa) %>% mutate_at(vars(oilcontentval),replace_duplicates_with_NA) %>% ungroup() %>% mutate(measurement_remarks = ifelse(oilmaterialdesc == "Embryo","oil content determined on an Embryo", NA), measurement_remarks = ifelse(oilmaterialdesc == "Embryo+endosperm","oil content determined on an Embryo+endosperm", measurement_remarks), measurement_remarks = ifelse(oilmaterialdesc == "Endosperm","oil content determined on an Endosperm", measurement_remarks), measurement_remarks = ifelse(oilmaterialdesc == "Entire seed/nut","oil content determined on an Entire seed/nut", measurement_remarks), measurement_remarks = ifelse(oilmaterialdesc == "Kernel","oil content determined on a Kernel", measurement_remarks))
 traits:
 - var_in: oilcontentval
   unit_in: g/g
