@@ -42,7 +42,7 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: Species_Name
-  custom_R_code: data %>% subset(NonIndigenous != 1) %>% mutate(flowering_season = paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec)%>% na_if("000000000000") %>% convert_01_ny) %>% mutate(dispersers = dispersal_syndrome) %>% mutate(reproductive_maturity_max = ifelse(reproductive_maturity == "<1",1, NA), reproductive_maturity_max = ifelse(reproductive_maturity == "1-5",5, reproductive_maturity_max),reproductive_maturity_max = ifelse(reproductive_maturity == "5-20",20, reproductive_maturity_max)) %>% mutate(reproductive_maturity_min = ifelse(reproductive_maturity == ">20",20, NA), reproductive_maturity_min = ifelse(reproductive_maturity == "1-5",1, reproductive_maturity_min),reproductive_maturity_min = ifelse(reproductive_maturity == "5-20",5, reproductive_maturity_min))
+  custom_R_code: data %>% subset(NonIndigenous != 1) %>% mutate(flowering_season = paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec)%>% na_if("000000000000") %>% convert_01_ny) %>% mutate(dispersers = dispersal_syndrome) %>% mutate(reproductive_maturity_max = ifelse(reproductive_maturity == "<1",1, NA), reproductive_maturity_max = ifelse(reproductive_maturity == "1-5",5, reproductive_maturity_max),reproductive_maturity_max = ifelse(reproductive_maturity == "5-20",20, reproductive_maturity_max)) %>% mutate(reproductive_maturity_min = ifelse(reproductive_maturity == ">20",20, NA), reproductive_maturity_min = ifelse(reproductive_maturity == "1-5",1, reproductive_maturity_min),reproductive_maturity_min = ifelse(reproductive_maturity == "5-20",5, reproductive_maturity_min)) %>% mutate(fire_exposure_level = ifelse(fire_response %in% c("fire_not_relevant", "fire_not_relevant fire_killed","fire_killed fire_not_relevant", "fire_not_relevant resprouts","fire_not_relevant not_fire_killed_does_not_resprout"), "fire_not_relevant", NA))
 traits:
 - var_in: dispersal_syndrome
   unit_in: .na
@@ -71,6 +71,16 @@ traits:
 - var_in: fire_response
   unit_in: .na
   trait_name: fire_response
+  value_type: expert_mean
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion; with rare exceptions,
+    this dataset has marked species as either "fire-killed" or "resprouts", rather
+    than including mixed-strategies. These are based on the most common outcome for
+    a moderate-intensity fire, acknowledging that for a high intensity fire even many
+    resprouters will die.
+- var_in: fire_exposure_level
+  unit_in: .na
+  trait_name: fire_exposure_level
   value_type: expert_mean
   replicates: .na
   methods: compilation from diverse sources and expert opinion; with rare exceptions,
@@ -202,6 +212,24 @@ substitutions:
 - trait_name: fire_response
   find: fire_killed resprouts
   replace: partial_resprouting
+- trait_name: fire_response
+  find: fire_not_relevant
+  replace: .na
+- trait_name: fire_response
+  find: fire_not_relevant fire_killed 
+  replace: fire_killed
+- trait_name: fire_response
+  find: fire_killed fire_not_relevant
+  replace: fire_killed
+- trait_name: fire_response
+  find: fire_not_relevant resprouts
+  replace: resprouts
+- trait_name: fire_response
+  find: fire_not_relevant not_fire_killed_does_not_resprout
+  replace: no_significant_fire_response
+- trait_name: fire_response
+  find: not_fire_killed_does_not_resprout
+  replace: no_significant_fire_response
 - trait_name: spinescence
   find: 0
   replace: 0_no_spines
