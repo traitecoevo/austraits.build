@@ -58,22 +58,25 @@ metadata_create_template <- function(dataset_id,
                                   doi = "unknown"
                                   )
                      ),
-       contributors = list(data_collector=list(last_name = "unknown", 
-                                               given_name = "unknown",
-                                               ORCID = "unknown", 
-                                               affiliation = "unknown",
-                                               additional_role = "unknown"),
-                           data_curator = "unknown",
+       contributors = list(data_collectors = 
+                             list(
+                               last_name = "unknown", 
+                               given_name = "unknown",
+                               ORCID = "unknown", 
+                               affiliation = "unknown",
+                               additional_role = "unknown"
+                                ),
+                           austraits_curators = "unknown",
                            assistants = "unknown"
                            ),
-       dataset = list(year_collected_start= "unknown",
-                      year_collected_end= "unknown",
-                      description= "unknown",
-                      collection_type= "unknown",
-                      sample_age_class= "unknown",
-                      sampling_strategy= "unknown",
-                      original_file= "unknown",
-                      notes= "unknown"),
+       dataset = list(year_collected_start = "unknown",
+                      year_collected_end = "unknown",
+                      description = "unknown",
+                      collection_type = "unknown",
+                      sample_age_class = "unknown",
+                      sampling_strategy = "unknown",
+                      original_file = "unknown",
+                      notes = "unknown"),
        sites = NA,
        contexts = NA,
        config = NA,
@@ -96,7 +99,7 @@ metadata_create_template <- function(dataset_id,
                  custom_R_code = NA)
 
   v1 <- c("taxon_name")
-    v2 <- c("site_name", "context_name", "observation_id",  "date")
+  v2 <- c("site_name", "context_name", "observation_id",  "date")
   
   if(data_is_long_format) {
     v1 <- c("taxon_name", "trait_name", "value")

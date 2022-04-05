@@ -161,16 +161,13 @@ load_study <- function(filename_data_raw,
   source_primary_key <- metadata$source$primary$key
   source_secondary_keys <- setdiff(names(sources), source_primary_key)
 
-  # add data_curator and assistants into the methods table
-  
-  data_collectors <- NA
-  for(i in seq_len(nrow(contributors))){
-    data_collectors[i] <- stringr::str_c(contributors$given_name[i], " ", 
-                                    contributors$last_name[i], " ",
-                                    ifelse("contact" %in% contributors$additional_role[i],
-                                           "(contact)", ""))
-    }
-  collectors_tmp <- paste(data_collectors, collapse = ", ")
+  # combine collectors to add into the methods table
+  collectors_tmp <- 
+    stringr::str_c(contributors$given_name, " ", 
+                   contributors$last_name,
+                   ifelse(!is.na(contributors$additional_role),
+                          paste0(" (", contributors$additional_role, ")"),
+                          ""))  %>% paste(collapse = ", ")
   
   methods <-
     full_join( by = "dataset_id",
@@ -203,12 +200,10 @@ load_study <- function(filename_data_raw,
         )
       ) %>% 
     dplyr::mutate(data_collectors = collectors_tmp,
-                  assistants = ifelse(is.null(metadata$contributors$assistants), as.character(NA),
-                                      as.character(metadata$contributors$assistants)
+                  assistants = ifelse(is.null(metadata$contributors$assistants), NA_character_,
+                                      metadata$contributors$assistants
                                       ),
-                  austraits_curators = ifelse(is.null(metadata$contributors$austraits_curators), as.character(NA),
-                                                 as.character(metadata$contributors$austraits_curators)
-                                         )
+                  austraits_curators = metadata$contributors$austraits_curators
                   )
 
   # Retrieve taxonomic details for known species
