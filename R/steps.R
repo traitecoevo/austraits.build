@@ -206,8 +206,8 @@ load_study <- function(filename_data_raw,
                   assistants = ifelse(is.null(metadata$contributors$assistants), as.character(NA),
                                       as.character(metadata$contributors$assistants)
                                       ),
-                  AusTraits_curators = ifelse(is.null(metadata$contributors$AusTraits_curators), as.character(NA),
-                                                 as.character(metadata$contributors$AusTraits_curators)
+                  austraits_curators = ifelse(is.null(metadata$contributors$austraits_curators), as.character(NA),
+                                                 as.character(metadata$contributors$austraits_curators)
                                          )
                   )
 
