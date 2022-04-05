@@ -182,26 +182,27 @@ load_study <- function(filename_data_raw,
         )
       )
 
-  # Where missing, fill collection_type, sample_age_class with values from sites, then dataset
-  vars <- c("collection_type", "sample_age_class", "measurement_remarks", "value_type", "replicates")
-  
-  # merge in to traits (from site level) via sites 
-  for(v in vars){
+  # Where missing, fill collection_type, sample_age_class with values from sites, then methods
+  for(v in 
+      c("collection_type", "sample_age_class", "collection_date", "measurement_remarks",
+             "value_type", "replicates")){
+    # merge in to traits (from site level) via sites 
     if(v %in% sites$site_property){
       traits_tmp <- traits %>% 
         dplyr::left_join(by = "site_name",
                          sites %>% tidyr::pivot_wider(names_from = site_property, values_from = value) %>%
-                           dplyr::select(.data$site_name, col_tmp = v)) 
+                           dplyr::select(.data$site_name, col_tmp = v))
+     ## filling any missing values
      traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
-  }
-  
-  # merge in to traits (from dataset level) via methods
-  for(v in vars){
+    
+    # merge in to traits (from dataset level) via methods
     if(v %in% colnames(methods)){
-     traits_tmp <- traits %>% 
-       dplyr::left_join(by = "trait_name",
-                        methods %>% dplyr::select(.data$trait_name, col_tmp = all_of(v)) %>% distinct())
+      traits_tmp <- traits %>% 
+        dplyr::left_join(by = "trait_name",
+                        methods %>% 
+                          dplyr::select(.data$trait_name, col_tmp = all_of(v)) %>% 
+                          distinct())
      traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
   }
@@ -697,7 +698,7 @@ parse_data <- function(data, dataset_id, metadata) {
   }
 
   ## if needed, change from wide to long format
-  if (data_is_long_format == FALSE) {
+  if (!data_is_long_format) {
     # if the dataset is "wide" then process each variable in turn, to create the "long" dataset -
     # say the original dataset has 20 rows of data and 5 traits, then we will end up with 100 rows
     out <- list()
@@ -718,15 +719,23 @@ parse_data <- function(data, dataset_id, metadata) {
   # Ensure all lower case
   out[["value"]] <- tolower(out[["value"]])
 
-  # Add information on trait type, precision, if not already present
+  # Add information on various features of data
+  
   vars <- c("value_type", "replicates", "collection_type", "sample_age_class", "measurement_remarks")
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
-  # read in values from a column in data.csv
+  
+  # Can be sourced from any of following, in order of precedence
+  #  - as column in data (sourced from data.csv)
+  #  - as specified in metadata in traits (here as a column cfgChar)
+  #  - from site level infromation
+  #  - from dataset level infromation in methods
+  
+  # First check for a column in the data
   for(v in vars) {
     out[[v]] <- as.character(NA)
     if(v %in% colnames(data)){
       df[[v]] <- data[[v]]
-      if(data_is_long_format == FALSE){
+      if(!data_is_long_format){
         # if column exists in wide data use that instead, but multiply the rows by the number of accepted traits first
         out[[v]] <- as.character(rep(df[[v]], nrow(cfgChar))) 
       } else {
