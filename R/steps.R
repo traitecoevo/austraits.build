@@ -62,7 +62,8 @@ subset_config <- function(
          value_type = value_type,
          columns_traits = names(definitions[["austraits"]][["elements"]][["traits"]][["elements"]]),
          columns_sites = names(definitions[["austraits"]][["elements"]][["sites"]][["elements"]]),
-         columns_contexts = names(definitions[["austraits"]][["elements"]][["contexts"]][["elements"]])
+         columns_contexts = names(definitions[["austraits"]][["elements"]][["contexts"]][["elements"]]),
+         columns_contributors = names(definitions[["austraits"]][["elements"]][["contributors"]][["elements"]])
        ),
        unit_conversion_functions = unit_conversion_functions_sub)
 }
@@ -140,12 +141,19 @@ load_study <- function(filename_data_raw,
     dplyr::select(-.data$i)
 
   # record contributors
+  if (length(unlist(metadata$contributors$data_collectors)) >1 ){
   contributors <-
-    metadata$people %>%
+    metadata$contributors$data_collectors %>%
     list_to_df() %>%
     dplyr::mutate(dataset_id = dataset_id) %>%
-    dplyr::select(dataset_id = dataset_id, everything()) %>%
-    filter(!is.na(.data$name))
+    filter(!is.na(.data$last_name))
+  } else {
+   contributors <- tibble::tibble(dataset_id = character())
+  }
+  
+  contributors <- 
+    contributors %>% 
+    add_all_columns(definitions$columns_contributors, add_error_column = FALSE)
 
   # record methods on study from metadata
   sources <- metadata$source %>%
@@ -153,6 +161,14 @@ load_study <- function(filename_data_raw,
   source_primary_key <- metadata$source$primary$key
   source_secondary_keys <- setdiff(names(sources), source_primary_key)
 
+  # combine collectors to add into the methods table
+  collectors_tmp <- 
+    stringr::str_c(contributors$given_name, " ", 
+                   contributors$last_name,
+                   ifelse(!is.na(contributors$additional_role),
+                          paste0(" (", contributors$additional_role, ")"),
+                          ""))  %>% paste(collapse = ", ")
+  
   methods <-
     full_join( by = "dataset_id",
       # methods used to collect each trait
@@ -182,7 +198,13 @@ load_study <- function(filename_data_raw,
           stringr::str_replace_all(".;", ";")
           )
         )
-      )
+      ) %>% 
+    dplyr::mutate(data_collectors = collectors_tmp,
+                  assistants = ifelse(is.null(metadata$contributors$assistants), NA_character_,
+                                      metadata$contributors$assistants
+                                      ),
+                  austraits_curators = metadata$contributors$austraits_curators
+                  )
 
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
@@ -579,11 +601,12 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
 #'
 #' @param data dataframe containing study data read in as a csv file
 #' @param vars vector of variable columns names to be included in the final formatted tibble
+#' @param add_error_column adds an extra column called error if TRUE
 #'
 #' @return tibble with the correct selection of columns including an error column
 #' @importFrom data.table :=
 #' @export
-add_all_columns <- function(data, vars) {
+add_all_columns <- function(data, vars, add_error_column = TRUE) {
 
   missing <- setdiff(vars, names(data))
 
@@ -591,9 +614,14 @@ add_all_columns <- function(data, vars) {
     data <- data%>%
       dplyr::mutate(!!v := NA_character_)
 
-  data %>%
-    dplyr::select(dplyr::one_of(vars)) %>%
-    dplyr::mutate(error = NA_character_)
+  data <- data %>%
+    dplyr::select(dplyr::one_of(vars)) 
+  
+  if(add_error_column){
+    data <- data %>%
+      dplyr::mutate(error = NA_character_)
+  }
+  data
 }
 
 #' Process a single dataset
