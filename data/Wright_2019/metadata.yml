@@ -17,6 +17,15 @@ people:
   institution: Macquarie University Sydney
   role: collector, contributor, lab_leader
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(site_name = "Howard_Springs") %>% mutate_at(c("Cu"),
+    ~na_if(.,0)) %>% mutate(season = date) %>% mutate(sample_date = sample_date %>%
+    mdy(quiet=TRUE)) %>% group_by(Species,Rep,context) %>% mutate_at(vars(7:49),replace_duplicates_with_NA)
+    %>% ungroup() %>% mutate(sample_age_class = age)
+  taxon_name: Species
+  site_name: site_name
+  context_name: date
+  date: sample_date
   year_collected_start: 2010
   year_collected_end: 2011
   description: traits of NT savannah species
@@ -74,17 +83,6 @@ contexts:
     sampling season: dry season (Septmeber 2010)
   wet season (May 2011):
     sampling season: wet season (May 2011)
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-    context_name: date
-    date: sample_date
-  custom_R_code: data %>% mutate(site_name = "Howard_Springs") %>% mutate_at(c("Cu"),
-    ~na_if(.,0)) %>% mutate(season = date) %>% mutate(sample_date = sample_date %>%
-    mdy(quiet=TRUE)) %>% group_by(Species,Rep,context) %>% mutate_at(vars(7:49),replace_duplicates_with_NA)
-    %>% ungroup() %>% mutate(sample_age_class = age)
 traits:
 - var_in: WD kg/m3
   unit_in: kg/m3

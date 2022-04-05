@@ -24,6 +24,19 @@ people:
   institution: Australian National University
   role: collector, lab_leader,contact
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate_at(vars(`Rdark.a`), ~na_if(.,0)) %>% mutate(Date
+    = Date %>% dmy()) %>% mutate(context = ifelse(Site %in% c("Calperum mallee","Great
+    Western Woodlands","Alice Mulga") & Visit == "Summer", "Summer_unfavourable",Visit),
+    context = ifelse(Site %in% c("Cumberland Plain","Warra","Alice Mulga") & Visit
+    == "Winter", "Winter_unfavourable",context), context = ifelse(Site %in% c("Cumberland
+    Plain","Warra") & Visit == "Summer", "Summer_favourable",context), context = ifelse(Site
+    %in% c("Calperum mallee","Great Western Woodlands") & Visit == "Winter","Winter_favourable",context))
+  taxon_name: Species
+  site_name: Site
+  observation_id: Tree.id
+  date: Date
+  context_name: context
   year_collected_start: 2010
   year_collected_end: 2014
   description: A field study of leaf trait variation at seven sites spanning a range
@@ -173,21 +186,6 @@ contexts:
     sampling season: winter in a location where this is the favourable season
   Winter_unfavourable:
     sampling season: winter in a location where this is the unfavourable season
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: Site
-    observation_id: Tree.id
-    date: Date
-    context_name: context
-  custom_R_code: data %>% mutate_at(vars(`Rdark.a`), ~na_if(.,0)) %>% mutate(Date
-    = Date %>% dmy()) %>% mutate(context = ifelse(Site %in% c("Calperum mallee","Great
-    Western Woodlands","Alice Mulga") & Visit == "Summer", "Summer_unfavourable",Visit),
-    context = ifelse(Site %in% c("Cumberland Plain","Warra","Alice Mulga") & Visit
-    == "Winter", "Winter_unfavourable",context), context = ifelse(Site %in% c("Cumberland
-    Plain","Warra") & Visit == "Summer", "Summer_favourable",context), context = ifelse(Site
-    %in% c("Calperum mallee","Great Western Woodlands") & Visit == "Winter","Winter_favourable",context))
 traits:
 - var_in: A400.a
   unit_in: umolCO2/m2/s

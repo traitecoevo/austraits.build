@@ -17,6 +17,14 @@ people:
   institution: James Cook University
   role: collector, contact
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(site_name = "Howard River catchment") %>% group_by(species)
+    %>% mutate_at(vars(`specific leaf area (m2 kg-1)`), replace_duplicates_with_NA)
+    %>% ungroup() %>% mutate(date = date %>% mdy())
+  taxon_name: species
+  context_name: context
+  date: date
+  site_name: site_name
   year_collected_start: 2004
   year_collected_end: 2004
   description: Measurements of stem CO2 efflux and leaf gas exchange in a tropical
@@ -85,16 +93,6 @@ contexts:
   unburnt tree sampled in September:
     burn status: unburnt
     sampling season: September
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    context_name: context
-    date: date
-    site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "Howard River catchment") %>% group_by(species)
-    %>% mutate_at(vars(`specific leaf area (m2 kg-1)`), replace_duplicates_with_NA)
-    %>% ungroup() %>% mutate(date = date %>% mdy())
 traits:
 - var_in: R25_stem
   unit_in: umolCO2/g/s

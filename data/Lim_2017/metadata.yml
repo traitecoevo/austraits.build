@@ -22,6 +22,17 @@ people:
   institution: University of Melbourne
   role: collector
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(plant_growth_form = "shrub") %>% mutate(Site = gsub("Dick1","23S",Site))
+    %>% mutate(Site = gsub("DickN","23N",Site)) %>% mutate(Site = gsub("Jim'sHillNorth","JimHillN",Site))
+    %>% mutate(Site = gsub("Jim'sHIllsouth","JimHillS",Site)) %>% mutate(vessel_diameter_xylem
+    = (sqrt(`area/individ vessel`))/3.14159) %>% mutate(Date = Date %>% str_replace("Apr",
+    "Apr-2012") %>% dmy()) %>% group_by(Species) %>% mutate_at(vars("plant_growth_form"),replace_duplicates_with_NA)
+    %>% ungroup()
+  taxon_name: Species
+  site_name: Site
+  context_name: Position
+  date: Date
   year_collected_start: 2011
   year_collected_end: 2012
   description: functional trait measurements in relation to landscape position in
@@ -298,19 +309,6 @@ contexts:
     topography: site between the bottom of a frost hollow and the top of the slope
   Top:
     topography: site at the top of a slope in open woodland
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: Site
-    context_name: Position
-    date: Date
-  custom_R_code: data %>% mutate(plant_growth_form = "shrub") %>% mutate(Site = gsub("Dick1","23S",Site))
-    %>% mutate(Site = gsub("DickN","23N",Site)) %>% mutate(Site = gsub("Jim'sHillNorth","JimHillN",Site))
-    %>% mutate(Site = gsub("Jim'sHIllsouth","JimHillS",Site)) %>% mutate(vessel_diameter_xylem
-    = (sqrt(`area/individ vessel`))/3.14159) %>% mutate(Date = Date %>% str_replace("Apr",
-    "Apr-2012") %>% dmy()) %>% group_by(Species) %>% mutate_at(vars("plant_growth_form"),replace_duplicates_with_NA)
-    %>% ungroup()
 traits:
 - var_in: plant_growth_form
   unit_in: .na

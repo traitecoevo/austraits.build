@@ -20,6 +20,10 @@ people:
   institution: Australian Wildlife Conservancy
   role: collector
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% select(Species, cotsExp, cotsEH, cotsFR, LEE) %>% filter(!is.na(LEE)) %>% group_by(Species) %>% distinct() %>% ungroup %>% mutate(sample_age_class = "seedling") -> seedling_traits; data %>% select(Species, LF, HeightMax, ReproAge, ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3) %>%    group_by(Species) %>% distinct(LF, HeightMax, ReproAge, ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3) %>% ungroup %>% mutate(sample_age_class = "adult") -> adult_traits; data %>% select(-cotsExp, -cotsEH, -cotsFR, -LEE, -LF, -HeightMax, -ReproAge, -ReproCLE, -Pollination_syndrome, -Fruit_type, -FruitFG, -DispClass, -DispSimple, -DispC3) %>% mutate(`LA` = if_else(omit=="Kanowski",0,`LA`),LtLeaf = if_else(omit=="Kanowski",0,LtLeaf), LWC = if_else(omit=="Kanowski",0,LWC), LMA = if_else(omit=="Kanowski",0,LMA)) %>% mutate_at(c("LA","LtLeaf","LMA","LWC"), ~na_if(.,0)) %>% mutate(sample_age_class = ifelse(StrataBinary == "Stratum_2_adult_plant","adult", NA), sample_age_class = ifelse(StrataBinary == "Stratum_1_seedling", "seedling", sample_age_class)) %>% bind_rows(seedling_traits) %>% bind_rows(adult_traits) %>% mutate(fruit_fleshiness = Fruit_type, fruit_dehiscence = Fruit_type, dispersal_appendage = NA) %>% mutate("dispersal_appendage" = ifelse(Fruit_type == "Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)", "fleshy_reward", NA))
+  taxon_name: Species
+  site_name: Site
   year_collected_start: 2004
   year_collected_end: 2005
   description: This research combines studies of plant phylogeny, trait inter-relations
@@ -235,12 +239,6 @@ sites:
     latitude (deg): -17.36528
     longitude (deg): 145.71537
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: Site
-  custom_R_code: data %>% select(Species, cotsExp, cotsEH, cotsFR, LEE) %>% filter(!is.na(LEE)) %>% group_by(Species) %>% distinct() %>% ungroup %>% mutate(sample_age_class = "seedling") -> seedling_traits; data %>% select(Species, LF, HeightMax, ReproAge, ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3) %>%    group_by(Species) %>% distinct(LF, HeightMax, ReproAge, ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3) %>% ungroup %>% mutate(sample_age_class = "adult") -> adult_traits; data %>% select(-cotsExp, -cotsEH, -cotsFR, -LEE, -LF, -HeightMax, -ReproAge, -ReproCLE, -Pollination_syndrome, -Fruit_type, -FruitFG, -DispClass, -DispSimple, -DispC3) %>% mutate(`LA` = if_else(omit=="Kanowski",0,`LA`),LtLeaf = if_else(omit=="Kanowski",0,LtLeaf), LWC = if_else(omit=="Kanowski",0,LWC), LMA = if_else(omit=="Kanowski",0,LMA)) %>% mutate_at(c("LA","LtLeaf","LMA","LWC"), ~na_if(.,0)) %>% mutate(sample_age_class = ifelse(StrataBinary == "Stratum_2_adult_plant","adult", NA), sample_age_class = ifelse(StrataBinary == "Stratum_1_seedling", "seedling", sample_age_class)) %>% bind_rows(seedling_traits) %>% bind_rows(adult_traits) %>% mutate(fruit_fleshiness = Fruit_type, fruit_dehiscence = Fruit_type, dispersal_appendage = NA) %>% mutate("dispersal_appendage" = ifelse(Fruit_type == "Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)", "fleshy_reward", NA))
 traits:
 - var_in: seed_mass_to_use
   unit_in: mg

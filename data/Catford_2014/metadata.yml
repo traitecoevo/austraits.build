@@ -29,6 +29,31 @@ people:
   institution: King's College, London
   role: collector, contact
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(Taxa = str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
+    %>% mutate(site_name = "Yarrawonga") %>% mutate(str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
+    %>% mutate_at(c("Plant height max (m)","plant height min (m)","Leaf size (cm^2)"),
+    ~na_if(.,0)) %>% replace_na(list(Tree = 0, Gram = 0, Forb=0, Annual=0, Biennial=0,
+    Perennial=0, rhizomes=0,stolons=0,`prostrate/decumbent`=0, Terrestrial=0, Tda=0,
+    Tdr=0, Amphibious=0, Dispersal="", `dispersal 2`="", `dispersal 3`="")) %>% mutate(
+    Tree = ifelse(Tree, "tree", ""), Gram = ifelse(Gram, "graminoid", ""), Forb =
+    ifelse(Forb, "herb", ""), Annual = ifelse(Annual, "annual", ""), Biennial = ifelse(Biennial,
+    "biennial", ""), Perennial = ifelse(Perennial, "perennial", ""), rhizomes = ifelse(rhizomes,
+    "rhizomatous", ""), stolons = ifelse(stolons, "stoloniferous", ""), `prostrate/decumbent`
+    = ifelse(`prostrate/decumbent`, "prostrate", ""), Terrestrial = ifelse(Terrestrial,
+    "terrestrial","aquatic"), Tda = ifelse(Tda, "tda",""), Tdr = ifelse(Tdr, "tdr",""),
+    Amphibious = ifelse(Amphibious, "amphibious","") ) %>% unite(col = "plant_growth_form",
+    Tree, Gram, Forb, sep = " ") %>% unite(col = "life_history", Annual, Biennial,
+    Perennial, sep = " ") %>% unite(col = "growth_habit", rhizomes, stolons, `prostrate/decumbent`,
+    sep = " ") %>% unite(col = "aquatic_terrestrial_detailed", Tda, Tdr, Amphibious,
+    sep = " ")  %>% unite(col = "dispersal_syndrome", Dispersal, `dispersal 2`, `dispersal
+    3`, sep = " ") %>% mutate( plant_growth_form = stringr::str_squish(plant_growth_form)
+    %>% na_if(""), life_history = stringr::str_squish(life_history) %>% na_if(""),
+    growth_habit = stringr::str_squish(growth_habit) %>% na_if(""), aquatic_terrestrial_detailed
+    = stringr::str_squish(aquatic_terrestrial_detailed) %>% na_if(""), dispersal_syndrome
+    = stringr::str_squish(dispersal_syndrome) %>% na_if(""))
+  taxon_name: Taxa
+  site_name: site_name
   year_collected_start: 2012
   year_collected_end: 2012
   description: Study of River Murray wetland plants
@@ -99,33 +124,6 @@ sites:
       canopy directly above the study wetlands. All soil in the region was similar
       (~45% clay content).
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Taxa
-    site_name: site_name
-  custom_R_code: data %>% mutate(Taxa = str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
-    %>% mutate(site_name = "Yarrawonga") %>% mutate(str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
-    %>% mutate_at(c("Plant height max (m)","plant height min (m)","Leaf size (cm^2)"),
-    ~na_if(.,0)) %>% replace_na(list(Tree = 0, Gram = 0, Forb=0, Annual=0, Biennial=0,
-    Perennial=0, rhizomes=0,stolons=0,`prostrate/decumbent`=0, Terrestrial=0, Tda=0,
-    Tdr=0, Amphibious=0, Dispersal="", `dispersal 2`="", `dispersal 3`="")) %>% mutate(
-    Tree = ifelse(Tree, "tree", ""), Gram = ifelse(Gram, "graminoid", ""), Forb =
-    ifelse(Forb, "herb", ""), Annual = ifelse(Annual, "annual", ""), Biennial = ifelse(Biennial,
-    "biennial", ""), Perennial = ifelse(Perennial, "perennial", ""), rhizomes = ifelse(rhizomes,
-    "rhizomatous", ""), stolons = ifelse(stolons, "stoloniferous", ""), `prostrate/decumbent`
-    = ifelse(`prostrate/decumbent`, "prostrate", ""), Terrestrial = ifelse(Terrestrial,
-    "terrestrial","aquatic"), Tda = ifelse(Tda, "tda",""), Tdr = ifelse(Tdr, "tdr",""),
-    Amphibious = ifelse(Amphibious, "amphibious","") ) %>% unite(col = "plant_growth_form",
-    Tree, Gram, Forb, sep = " ") %>% unite(col = "life_history", Annual, Biennial,
-    Perennial, sep = " ") %>% unite(col = "growth_habit", rhizomes, stolons, `prostrate/decumbent`,
-    sep = " ") %>% unite(col = "aquatic_terrestrial_detailed", Tda, Tdr, Amphibious,
-    sep = " ")  %>% unite(col = "dispersal_syndrome", Dispersal, `dispersal 2`, `dispersal
-    3`, sep = " ") %>% mutate( plant_growth_form = stringr::str_squish(plant_growth_form)
-    %>% na_if(""), life_history = stringr::str_squish(life_history) %>% na_if(""),
-    growth_habit = stringr::str_squish(growth_habit) %>% na_if(""), aquatic_terrestrial_detailed
-    = stringr::str_squish(aquatic_terrestrial_detailed) %>% na_if(""), dispersal_syndrome
-    = stringr::str_squish(dispersal_syndrome) %>% na_if(""))
 traits:
 - var_in: Leaf size (cm^2)
   unit_in: cm2

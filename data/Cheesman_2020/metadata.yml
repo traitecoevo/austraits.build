@@ -20,6 +20,13 @@ people:
   institution: James Cook University
   role: collector
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(collection_type = ifelse(Treatment == "Drought","field_experiment","field"), collection_type = ifelse(is.na(collection_type),"field",collection_type)) %>% group_by(Species) %>% mutate_at(vars("Form"),replace_duplicates_with_NA) %>% ungroup() 
+  taxon_name: Species
+  site_name: site
+  context_name: context
+  date: Data_Set
+  observation_id: Branch_ID
   year_collected_start: 2014
   year_collected_end: 2017
   description: Study to determine how isotopic, micro- and macro-morphological traits,
@@ -116,15 +123,6 @@ contexts:
   measurements made on UNDERSTOREY branches in CONTROL rainfall plot:
     light environment: understorey
     water treatment: control
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site
-    context_name: context
-    date: Data_Set
-    observation_id: Branch_ID
-  custom_R_code: data %>% mutate(collection_type = ifelse(Treatment == "Drought","field_experiment","field"), collection_type = ifelse(is.na(collection_type),"field",collection_type)) %>% group_by(Species) %>% mutate_at(vars("Form"),replace_duplicates_with_NA) %>% ungroup() 
 traits:
 - var_in: Form
   unit_in: .na.character

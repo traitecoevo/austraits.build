@@ -11,6 +11,9 @@ people:
   institution: Kew Botanic Gardens
   role: contact
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(oilcontentval = oilcontentval/100) %>% group_by(taxa) %>% mutate_at(vars(oilcontentval),replace_duplicates_with_NA) %>% ungroup() %>% mutate(measurement_remarks = ifelse(oilmaterialdesc == "Embryo","oil content determined on an Embryo", NA), measurement_remarks = ifelse(oilmaterialdesc == "Embryo+endosperm","oil content determined on an Embryo+endosperm", measurement_remarks), measurement_remarks = ifelse(oilmaterialdesc == "Endosperm","oil content determined on an Endosperm", measurement_remarks), measurement_remarks = ifelse(oilmaterialdesc == "Entire seed/nut","oil content determined on an Entire seed/nut", measurement_remarks), measurement_remarks = ifelse(oilmaterialdesc == "Kernel","oil content determined on a Kernel", measurement_remarks))
+  taxon_name: taxa
   year_collected_start: unknown
   year_collected_end: 2019
   description: See oil content data on species from Kew seed databases
@@ -22,11 +25,6 @@ dataset:
     Commons licesne. Data not to be used for Commercial Purposes.
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: taxa
-  custom_R_code: data %>% mutate(oilcontentval = oilcontentval/100) %>% group_by(taxa) %>% mutate_at(vars(oilcontentval),replace_duplicates_with_NA) %>% ungroup() %>% mutate(measurement_remarks = ifelse(oilmaterialdesc == "Embryo","oil content determined on an Embryo", NA), measurement_remarks = ifelse(oilmaterialdesc == "Embryo+endosperm","oil content determined on an Embryo+endosperm", measurement_remarks), measurement_remarks = ifelse(oilmaterialdesc == "Endosperm","oil content determined on an Endosperm", measurement_remarks), measurement_remarks = ifelse(oilmaterialdesc == "Entire seed/nut","oil content determined on an Entire seed/nut", measurement_remarks), measurement_remarks = ifelse(oilmaterialdesc == "Kernel","oil content determined on a Kernel", measurement_remarks))
 traits:
 - var_in: oilcontentval
   unit_in: g/g

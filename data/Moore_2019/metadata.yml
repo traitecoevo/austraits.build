@@ -15,6 +15,13 @@ people:
   institution: .na
   role: collector
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate_at(c("leaf_area (mm2)","specific_leaf_area (mm2/mg)"),
+    ~na_if(.,0)) %>% mutate(date = ifelse(date == "2005-2006","2005", date %>% mdy(quiet=TRUE)
+    %>% as.character))
+  taxon_name: taxon
+  site_name: site_name_new
+  date: date
   year_collected_start: 2005
   year_collected_end: 2006
   description: Leaf traits of the Eucalyptus series Siderophloiae
@@ -784,15 +791,6 @@ sites:
     elevation (m): 553.0
     site code: site_57
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: taxon
-    site_name: site_name_new
-    date: date
-  custom_R_code: data %>% mutate_at(c("leaf_area (mm2)","specific_leaf_area (mm2/mg)"),
-    ~na_if(.,0)) %>% mutate(date = ifelse(date == "2005-2006","2005", date %>% mdy(quiet=TRUE)
-    %>% as.character))
 traits:
 - var_in: leaf_N_per_dry_mass (%DM)
   unit_in: '%'

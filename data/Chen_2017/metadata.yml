@@ -18,6 +18,17 @@ people:
   institution: University of New South Wales
   role: lab_leader
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(`flowering_time`= format_flowering_months(flowering_time_start,
+    flowering_time_end)) %>% mutate(fruit_dehiscence = `Fruit.Type.Specific`) %>%
+    move_values_to_new_trait("Fruit.Type.Specific", "fruit_dehiscence", c("pod", "capsule",
+    "drupe", "achene", "nut", "samara", "follicle", "berry", "utricle", "syncarp",
+    "syconium", "schizocarp"), c("dehiscent", "dehiscent", "indehiscent", "indehiscent",
+    "indehiscent", "indehiscent", "dehiscent", "indehiscent", "indehiscent", "indehiscent",
+    "indehiscent", NA), c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle",
+    "berry", "utricle", "syncarp", "syconium", "schizocarp")) %>% mutate(fruit_dehiscence
+    = if_else(`Adaptive.Trait` %in% c("indehiscent", "indehiscent, woody"),"indehiscent",fruit_dehiscence))
+  taxon_name: species
   year_collected_start: 2014
   year_collected_end: 2014
   description: angiosperm and gymnosperm dispersal data from Si-Chong Chen PhD
@@ -41,19 +52,6 @@ dataset:
     of Australia Online.
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-  custom_R_code: data %>% mutate(`flowering_time`= format_flowering_months(flowering_time_start,
-    flowering_time_end)) %>% mutate(fruit_dehiscence = `Fruit.Type.Specific`) %>%
-    move_values_to_new_trait("Fruit.Type.Specific", "fruit_dehiscence", c("pod", "capsule",
-    "drupe", "achene", "nut", "samara", "follicle", "berry", "utricle", "syncarp",
-    "syconium", "schizocarp"), c("dehiscent", "dehiscent", "indehiscent", "indehiscent",
-    "indehiscent", "indehiscent", "dehiscent", "indehiscent", "indehiscent", "indehiscent",
-    "indehiscent", NA), c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle",
-    "berry", "utricle", "syncarp", "syconium", "schizocarp")) %>% mutate(fruit_dehiscence
-    = if_else(`Adaptive.Trait` %in% c("indehiscent", "indehiscent, woody"),"indehiscent",fruit_dehiscence))
 traits:
 - var_in: Fruit.Type.Botany
   unit_in: .na

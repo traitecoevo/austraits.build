@@ -35,6 +35,19 @@ people:
   institution: Macquarie University Sydney
   role: contributor
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(leaf_water_content = (100 - leaf_water_content))
+    %>% mutate(regen_strategy = ifelse(life_history=="r","resprouts","")) %>% mutate(life_history
+    = ifelse(life_history=="r","p",life_history)) %>% mutate(regen_strategy = ifelse(life_history=="o","seed",""))
+    %>% mutate(life_history = ifelse(life_history=="o","p",life_history)) %>% mutate(regen_strategy=
+    ifelse(plant_growth_form=="f","fern","")) %>% mutate(life_history = ifelse(life_history=="f","",life_history))
+    %>% mutate_at(c("life_history","regen_strategy"), ~na_if(.,"")) %>% mutate_at(c("leaf_water_content"),
+    ~na_if(.,0)) %>% mutate(context_name = if_else(TRIP == 1,"dry",""), context_name
+    = if_else(TRIP == 2, "wet",context_name)) %>% group_by("species_name") %>% mutate_at(vars("regen_strategy","root_structure","C3C4","Nfixer","plant_growth_form","life_history","phenology"),replace_duplicates_with_NA)
+    %>% ungroup()
+  taxon_name: species_name
+  site_name: site_name
+  context_name: context_name
   year_collected_start: 1994
   year_collected_end: 1998
   description: Susanne Schmidt's Kakadu data, merged from several spreadsheets
@@ -341,21 +354,6 @@ contexts:
   wet:
     sampling season: wet season (Samples collected during the second trip, which occurred
       during the wet season.)
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-    site_name: site_name
-    context_name: context_name
-  custom_R_code: data %>% mutate(leaf_water_content = (100 - leaf_water_content))
-    %>% mutate(regen_strategy = ifelse(life_history=="r","resprouts","")) %>% mutate(life_history
-    = ifelse(life_history=="r","p",life_history)) %>% mutate(regen_strategy = ifelse(life_history=="o","seed",""))
-    %>% mutate(life_history = ifelse(life_history=="o","p",life_history)) %>% mutate(regen_strategy=
-    ifelse(plant_growth_form=="f","fern","")) %>% mutate(life_history = ifelse(life_history=="f","",life_history))
-    %>% mutate_at(c("life_history","regen_strategy"), ~na_if(.,"")) %>% mutate_at(c("leaf_water_content"),
-    ~na_if(.,0)) %>% mutate(context_name = if_else(TRIP == 1,"dry",""), context_name
-    = if_else(TRIP == 2, "wet",context_name)) %>% group_by("species_name") %>% mutate_at(vars("regen_strategy","root_structure","C3C4","Nfixer","plant_growth_form","life_history","phenology"),replace_duplicates_with_NA)
-    %>% ungroup()
 traits:
 - var_in: leaf_water_content
   unit_in: '%'
