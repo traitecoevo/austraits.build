@@ -53,17 +53,17 @@ It is important that all steps are followed so that our automated workflow proce
 
 The main steps are:
 
-1. Clone the `austraits.build` repository from github and create a new branch in the repo with the name of the `dataset_id`, e.g. `Gallagher_2014`. 
-2. Create a new folder within the folder `data` with a name of the `dataset_id`, e.g. `Gallagher_2014`.
+1. Clone the `austraits.build` repository from github and create a new branch in the repo with the name `dataset_id`, e.g. `Gallagher_2014`. 
+2. Create a new folder within the folder `data` with the name `dataset_id`, e.g. `Gallagher_2014`.
 3. Prepare the file `data.csv` and place it within the new folder ([details](#csv_file) here).
 4. Prepare the file `metadata.yml` and place it within the new folder ([details](#metadata_file) here).
 5. Add the new study into the build framework and rebuild AusTraits.
 6. Run tests and quality checks on the newly added dataset and correct the `data.csv` and `metadata.yml` files as necessary ([details](#quality_checks) here).
-7. Generate and proofread a report on the data. In particular, check that numeric trait values fall within a logical range relative to other studies and that individual trait observations are not unnecessarily excluded because their trait values are unsupported.
+7. Generate and proofread a report on the data. In particular, check that numeric trait values fall within a logical range relative to other studies, and that individual trait observations are not unnecessarily excluded because their trait values are unsupported.
 8. Return to step 6 if changes are made to the `data.csv` or `metadata.yml` files.
 9. Push the GitHub branch.
 
-It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) and use it as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), in particular the `definitions` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html).
+It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) to use as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), particularly the `definitions` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html).
 
 Once you have prepared your `data.csv` and `metadata.yml` files within a folder in the `data` directory, you can incorporate the new data into AusTraits by running:
 
@@ -71,7 +71,7 @@ Once you have prepared your `data.csv` and `metadata.yml` files within a folder 
 austraits_rebuild_remake_setup()
 ```
 
-This step updates the file `remake.yml` with appropriate rules for the new dataset; similarly if you remove datasets, do the same. (At this stage, [remake](https://github.com/richfitz/remake) offers no looping constructs so for now we generate the remake file using [whisker](https://github.com/edwindj/whisker).)
+This step updates the file `remake.yml` with appropriate rules for the new dataset; similarly if you remove datasets, do the same. (At this stage, [remake](https://github.com/richfitz/remake) offers no looping constructs, so for now we generate the remake file using: [whisker](https://github.com/edwindj/whisker).)
 
 You can then rebuild AusTraits, including your dataset.
 
@@ -79,7 +79,7 @@ You can then rebuild AusTraits, including your dataset.
 
 The `austraits.build` repository includes a bunch of functions that help build the repository. To use these, you'll need to make them available. 
 
-The easiest way is to load the functions into your work space is to run the following (from within the repository)
+The easiest way to load the functions into your workspace is to run the following (from within the repository)
 
 ```{r, echo=TRUE, eval=FALSE}
 devtools::load_all()
@@ -96,13 +96,13 @@ library(austraits.build)
 
 Add a new folder within the `data` folder. Its name should be the study's `dataset_id`, the core organising unit behind AusTraits.
 
-Our preferred format for `dataset_id` is surname of the first author of any corresponding publication, followed by the year, as `surname_year`. E.g. `Falster_2005`. Wherever there are multiple studies with the same id, we add a suffix `_2`, `_3` etc. E.g.`Falster_2005`, `Falster_2005_2`.
+Our preferred format for `dataset_id` is the surname of the first author of any corresponding publication, followed by the year, as `surname_year`. E.g. `Falster_2005`. Wherever there are multiple studies with the same id, we add a suffix `_2`, `_3` etc. E.g.`Falster_2005`, `Falster_2005_2`.
 
 ## Constructing the `data.csv` file {#csv_file} 
 
-All data for a study (`dataset_id`) must be merged into a single spreadsheet, `data.csv`.
+All data for a study (`dataset_id`) must be merged into a single spreadsheet: `data.csv`.
 
-1. Columns must include `taxon name`, `site_name` (if appropriate), `contexts` (if appropriate), and `sample_date` (if appropriate). Trait data can be in either a wide format (1 column for each trait, with `trait name` as the column header) or long format (1 column for all `trait values` and additional columns for `trait name` and `units`) See sections [adding sites](#adding_sites) and [adding contexts](#adding_contexts) below for more information on compiling site and context data.
+1. Columns must include `taxon name`, `site_name` (if appropriate), `contexts` (if appropriate), and `sample_date` (if appropriate). Trait data can either be in a wide format (1 column for each trait, with `trait name` as the column header) or long format (1 column for all `trait values` and additional columns for `trait name` and `units`) See sections [adding sites](#adding_sites) and [adding contexts](#adding_contexts) below for more information on compiling site and context data.
 
   a.   For all field studies, ensure there is a column for `site name`, even if all measurements were made at a single site.
 
@@ -115,7 +115,7 @@ read_csv("data/dataset_id/data.csv") %>%
   c.   [Creating context names]{#creating_context_name}   
   
   (Note: Development is in progress to allow AusTraits to recognise and include multiple contextual columns.)  
-  Variation in contextual values must be summarised in a single column. This is easy in most circumstances, where context values will be a single column of values, distinguishing, for instance, between `wet_season` vs. `dry_season` or `sun_leaves` vs. `shade_leaves`. It can become much more difficult for experimental studies with multiple manipulations, applied factorially to the study plants. For instance, measurements may have been made under `high` vs. `low` light, `high` vs. `low` CO2 concentration, and `well-watered` vs. `drought` conditions. A contributor will likely have three columns, labeled, `light_levels`, `CO2_concentration` and `water_treatment`, which need to be merged into a single column, `context`. The values in context need to merge the contributor's three context columns to create unique values for each factorial treatment. For instance:  
+  Variation in contextual values must be summarised in a single column. This is easy in most circumstances, where context values will be a single column of values, distinguishing, for instance, between `wet_season` vs. `dry_season` or `sun_leaves` vs. `shade_leaves`. It can become much more difficult for experimental studies with multiple manipulations applied factorially to the study plants. For instance, measurements may have been made under `high` vs. `low` light, `high` vs. `low` CO2 concentration, and `well-watered` vs. `drought` conditions. A contributor will likely have three columns, labeled, `light_levels`, `CO2_concentration` and `water_treatment`, which need to be merged into a single column, `context`. The values in context need to merge the contributor's three context columns to create unique values for each factorial treatment. For instance:  
 
 ```{r, eval=FALSE, echo=TRUE}
 read_csv("data/dataset_id/data.csv") %>%
@@ -128,7 +128,7 @@ read_csv("data/dataset_id/data.csv") %>%
   )
 ```
 
-2. Data submitted by a contributor should be in the rawest form possibly - always request data with individual measurements over site/species means. Some studies make replicate measurements on an individual. For these studies, individual means need to be calculated. `austraits$traits` does not include multiple measurements per individual, although the data are preserved in the contributor's raw data files.
+2. Data submitted by a contributor should be in the rawest form possible; always request data with individual measurements over site/species means. Some studies make replicate measurements on an individual. For these studies, individual means need to be calculated. `austraits$traits` does not include multiple measurements per individual, although the data is preserved in the contributor's raw data files.
 
 When there is just a single row of values to summarise, use: 
 
@@ -161,7 +161,7 @@ read_csv("data/dataset_id/raw/raw_data.csv") %>%
   ) %>%
   ungroup()
 ```
-(This allows you to retain character variables, but can be tedious with many columns. Generally use the function `first` for categorical variables - it simply retains the trait value in the first column. In the rare case when rows in a particular grouping have different categorical values more complex manipulations are required.)
+(This allows you to retain character variables, but can be tedious with many columns. Generally use the function `first` for categorical variables - it simply retains the trait value in the first column. In the rare case when rows in a particular grouping have different categorical values, more complex manipulations are required.)
 
 3. If multiple spreadsheets of data are submitted these must be merged together.
     
@@ -173,7 +173,7 @@ read_csv("data/dataset_id/raw/data_file_2.csv") -> data_2
 data_1 %>% full_join(data_2, by = c("Individual", "Taxon", "Site", "Context"))
 ```
 
-  b. If the spreadsheets include trait measurements for different individuals (or possibly data at a different scales - such as individual level data for some traits and species means for other traits), they are best merged using `bind_rows`. Ensure the column names for taxon name, site name, context, individual, and sample date are identical between spreadsheets. If there is data for the same traits in both spreadsheets, make sure those column headers are identical as well. 
+  b. If the spreadsheets include trait measurements for different individuals (or possibly data at different scales - such as individual level data for some traits and species means for other traits), they are best merged using `bind_rows`. Ensure the column names for taxon name, site name, context, individual, and sample date are identical between spreadsheets. If there is data for the same traits in both spreadsheets, make sure those column headers are identical as well. 
 
 ```{r, eval=FALSE, echo=TRUE} 
 read_csv("data/dataset_id/raw/data_file_1.csv") -> data_1
@@ -209,13 +209,13 @@ This checks 10,000 rows of data before declaring the column is non-numeric. The 
 
 ## Constructing the `metadata.yml` file  {#metadata_file} 
 
-One way to construct the `metadata.yml` file is to use one of the existing files and modify yours to follow the same format. As a start, checkout some examples from [existing studies in AusTraits](https://github.com/traitecoevo/austraits.build/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits.build/tree/master/data/Angevin_2011/metadata.yml) or [Wright_2009](https://github.com/traitecoevo/austraits.build/tree/master/data/Wright_2009/metadata.yml).
+One way to construct the `metadata.yml` file is to use one of the existing files and modify yours to follow the same format. As a start, check out some examples from [existing studies in AusTraits](https://github.com/traitecoevo/austraits.build/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits.build/tree/master/data/Angevin_2011/metadata.yml) or [Wright_2009](https://github.com/traitecoevo/austraits.build/tree/master/data/Wright_2009/metadata.yml).
 
-Note, when editing the `metadata.yml`, edits should be made in a proper text editor (Microsoft word tends to stuff up the formatting). For example, Rstudio, textmate, sublime text, and Visual Studio Code are all good editors.  
+Note, when editing the `metadata.yml`, edits should be made in a proper text editor (Microsoft word tends to mess up the formatting). For example, Rstudio, textmate, sublime text, and Visual Studio Code are all good editors.  
 
-To assist you in constructing the `metadata.yml` file, we have developed functions to help fill in the different sections of the file. You then manually edit the file further to fill in missing details.  
+To assist you in constructing the `metadata.yml` file, we have developed functions to help fill in the different sections of the file. You cqn then manually edit the file further to fill in missing details.  
 
-First run the following, to make the functions available
+First run the following to make the functions available
 
 ```{r, eval=FALSE, echo=TRUE}
 devtools::load_all()
@@ -223,7 +223,7 @@ devtools::load_all()
 
 ### Creating a template
 
-First create a basic template for the `metadata.yml` file for your study. Note, it requires you to have already created a file `data.csv` in the folder `data/your_dataset_id`.
+Create a basic template for the `metadata.yml` file for your study. Note, it requires you to have already created a file `data.csv` in the folder `data/your_dataset_id`.
 
 Let's imagine you're entering a study called `Yang_2028`
 
@@ -244,7 +244,7 @@ If your `data.csv` file does not yet have `site` or `context` columns, this info
 
 ### Adding a source
 
-Three functions are available to help entering citation details for the source data.  
+Three functions are available to help with entering citation details for the source data.  
 
 The function `metadata_create_template` creates a template for the primary source with default fields for a journal article, which you can then edit manually.  
 
@@ -253,7 +253,7 @@ If you have a `doi` for your study, use the function:
 ```{r, eval=FALSE, echo=TRUE}
 metadata_add_source_doi(dataset_id = current_study, doi = "doi")
 ```
-and the different elements within source will automatically be generated. Double check the information added to ensure:  
+and the different elements within the source will automatically be generated. Double check the information added to ensure:  
 1. The title is in `sentence case`  
 2. Overall, the information isn't in `all caps` (information from a few journals is read in like this)  
 3. Pages numbers are present and added as, for example, `123 -- 134`
@@ -328,11 +328,11 @@ source:
       title: "Unpublished data: Herbivory survey within Royal National Park"  
 ```
 
-Note, if you manually add information, note that if there is a colon (:) or apostrophe (') in a reference, the text for that line must be in quotes (").
+If you manually add information, note that if there is a colon (:) or apostrophe (') in a reference, the text for that line must be in quotes (").
 
 ### Adding people  
 
-The skeletal `metadata.yml` file created by the function `metadata_create_template` includes a template for entering details about people. Edit it manually, duplicating if details for multiple people are required.
+The skeletal `metadata.yml` file created by the function `metadata_create_template` includes a template for entering details about people. Edit this manually, duplicating if details for multiple people are required.
 
 ### Custom R code  
 
@@ -356,7 +356,7 @@ Note the second line. This is where the custom code gets applied, right after th
 - assume a single object called `data`, and apply whatever fixes are needed  
 - use functions from the packages [dplyr](https://dplyr.tidyverse.org) or [tiydr](https://tidyr.tidyverse.org), like `mutate`, `rename`, etc, and otherwise avoid external packages  
 - alternatively, use functions we've created explicitly for pre-processing data, found in [pre_process.R](https://github.com/traitecoevo/austraits.build/blob/master/R/pre_process.R) and loaded through `devtools::load_all()`
-- be fully self contained (we're not going to use any of the other remake machinery here)  
+- be fully self-contained (we're not going to use any of the other remake machinery here)  
 - use pipes to weave together a single statement, where possible. (Otherwise you'll need a semi colons `;` at the end of each statement).  
 - you can't add line breaks between pipes  
 
@@ -406,12 +406,12 @@ data %>% mutate(parasitic = ifelse(`growth form` == "parasitic herb", "parasitic
 data %>% move_values_to_new_trait(original_trait_name = "growth form", new_trait_name = "parasitic", original_values = "parasitic", value_to_use = "parasitic")
 ```
 
-8. If the `data.csv` file includes raw data that you want to manipulate into a `trait` or the contributor presents the data in a different formulation than AusTraits:  
+8. If the `data.csv` file includes raw data that you want to manipulate into a `trait`, or the contributor presents the data in a different formulation than AusTraits:  
 ```{r, eval=FALSE, echo=TRUE}
 data %>% mutate(root_mass_fraction = `root mass` / (`root mass` + `shoot mass`))
 ```
 
-9. You can do manipulations like adding a column with `sites` or manipulating `site names`. This is only recommended for studies with a single (or few) site, where manually adding the site data to the `metadata.yml` file is fast, since in precludes automatically propagating site data into metadata (see [Adding site details](#Adding site details)). An example (Blackman_2010 dataset):  
+9. You can do manipulations, such as adding a column with `sites` or manipulating `site names`. This is only recommended for studies with a single (or few) site, where manually adding the site data to the `metadata.yml` file is fast, since in precludes automatically propagating site data into metadata (see [Adding site details](#Adding site details)). As an example (Blackman_2010 dataset):  
 ```{r, eval=FALSE, echo=TRUE}
 data %>%
   mutate(
@@ -420,7 +420,7 @@ data %>%
   )
 ```
 
-10. You can reformat `sampling dates` supplied into the `yyyy-mm-dd` format or add a date column
+10. You can reformat `sampling dates` supplied into the `yyyy-mm-dd` format, or add a date column
 
 Converting from any `mdy` format to `yyyy-mm-dd` (e.g. `Dec 3 2015` to `2015-12-03`)  
 ```{r, eval=FALSE, echo=TRUE}
@@ -432,17 +432,17 @@ Converting from any `dmy` format to `yyyy-mm-dd` (e.g. `3-12-2015` to `2015-12-0
 data %>% mutate(Date = Date %>% dmy())
 ```
 
-Converting from `mmm-yyyy` (string) format to `yyyy-mm` (e.g. `Dec 2015` to `2015-12`)
+Converting from a `mmm-yyyy` (string) format to `yyyy-mm` (e.g. `Dec 2015` to `2015-12`)
 ```{r, eval=FALSE, echo=TRUE}
 data %>% mutate(Date = parse_date_time(Date, orders = "my") %>% format.Date("%Y-%m"))
 ```
  
-Converting from `mdy` format to `yyyy-mm` (e.g. Excel has reinterpreted the data as full dates `12-01-2015` but the resolution should be "month" `2015-12`)
+Converting from a `mdy` format to `yyyy-mm` (e.g. Excel has reinterpreted the data as full dates `12-01-2015` but the resolution should be "month" `2015-12`)
 ```{r, eval=FALSE, echo=TRUE}
 data %>% mutate(Date = parse_date_time(Date, orders = "mdy") %>% format.Date("%Y-%m"))
 ```
 
-Add a single date in `yyyy-mm` format to an entire dataset
+Add a single date in a `yyyy-mm` format to an entire dataset
 ```{r, eval=FALSE, echo=TRUE}
 data %>% mutate(Date = "2015-12")
 ```
@@ -485,7 +485,7 @@ The trait details then need to be filled in manually.
 - *replicates*: Fill in with the appropriate value. For categorical variables, leave this as `.na`.  
 
 - *methods*: This information can usually be copied verbatim from a manuscript. 
-In general, methods sections extracted from pdf's include "special characters" (non-UTF-8 characters). Non-English alphabet characters are recognised (e.g. é, ö) and should remain unchanged. Other characters will be re-formatted during the study input process, so double check that degree symbols (º), en-dashes (–), em-dashes (—), and curly quotes (‘,’,“,”) have been maintained or reformatted with a suitable alternative. Greek letter's and some other characters are replaced with their Unicode equivalent (e.g. <U+03A8> replaces Psi (Ψ)); for these it is best to replace the symbol with an interpretable English-character equivalent.
+In general, methods sections extracted from pdfs include "special characters" (non-UTF-8 characters). Non-English alphabet characters are recognised (e.g. é, ö) and should remain unchanged. Other characters will be re-formatted during the study input process, so double check that degree symbols (º), en-dashes (–), em-dashes (—), and curly quotes (‘,’,“,”) have been maintained or reformatted with a suitable alternative. Greek letters and some other characters are replaced with their Unicode equivalent (e.g. <U+03A8> replaces Psi (Ψ)); for these it is best to replace the symbol with an interpretable English-character equivalent.
 
 
 ### Adding site details {#adding_sites}  
@@ -494,7 +494,7 @@ Site data includes site names, latitude/longitude coordinates, verbal site descr
 
 1. Site names must be identical (including syntax, case) to those in `data.csv` 
 
-2. Columns headers for latitude and longitude data must read `latitude (deg)` and `longitude (deg)`  
+2. Column headers for latitude and longitude data must read `latitude (deg)` and `longitude (deg)`  
 
 3. Latitude and longitude must be in decimal degrees (i.e. -46.5832). There are many online converters to convert from `degrees,minutes,seconds` format or `UTM`. Or use the following formula:
  `decimel_degrees = degrees + (minutes/60) + (seconds/3600)`  
@@ -514,7 +514,7 @@ read_csv("data/dataset_id/data.csv") %>%
   write_csv("data/dataset_id/raw/site_data.csv")
 ```
 
-2. Open the spreadsheet in Excel (or any editor of your choice) and manually add any additional data from the manuscript. Save as .csv file.  
+2. Open the spreadsheet in Excel (or any editor of your choice) and manually add any additional data from the manuscript. Save as a .csv file.  
 
 3. Open in R  
 ```{r, eval=FALSE, echo=TRUE}
@@ -559,7 +559,7 @@ read_csv("data/dataset_id/data.csv") %>%
   write_csv("data/dataset_id/raw/context_data.csv")
 ```
 
-2. Then in Excel you'd add a column named `description` and write out a description for each factorial context, such as `Plants were growth at high light (1800 PAR), low CO2 (300 ppm), and were well-watered`. Save as a .csv file.  
+2. Then, in Excel, add a column named `description` and write out a description for each factorial context, such as `Plants were growth at high light (1800 PAR), low CO2 (300 ppm), and were well-watered`. Save as a .csv file.  
 
 3. At the end, reopen in R  
 ```{r, eval=FALSE, echo=TRUE}
@@ -584,7 +584,7 @@ You are first prompted to identify the column with the context name and then to 
 
 ### Using substitutions  
 
-It is very unlikely that a contributor will use entirely identical categorical trait values to those in the `definitions.yml` file. You need to add substitutions for those that do not exactly align to match the wording and syntax supported by AusTraits. Combinations of multiple trait values are allowed - simply list them, space delimited (e.g. `shrub tree` for a species whose growth form includes both)
+It is very unlikely that a contributor will use categorical trait values that are entirely identical to those in the `definitions.yml` file. You need to add substitutions for those that do not exactly align to match the wording and syntax supported by AusTraits. Combinations of multiple trait values are allowed - simply list them, space delimited (e.g. `shrub tree` for a species whose growth form includes both)
 
 Single substitutions can be added by running:
 ```{r, eval=FALSE, echo=TRUE}
@@ -608,10 +608,10 @@ Under `config` > `variable_match` you can add another subheading `date:` where y
 
 #### Dataset  
 
-Toward the top of the metadata is a section title `dataset:`. This needs to be filled in manually.  
+Toward the top of the metadata is a section titled `dataset:`. This needs to be filled in manually.  
   - *year_collected_start:*   Year data sampling began.  
   - *year_collected_end:*    Year data sampling was completed.  
-  - *description:* 1-2 sentence description of the study's goals. The abstract of a manuscript usually includes some good sentences/phrases to borrow from.  
+  - *description:* 1-2 sentence description of the study's goals. The abstract of a manuscript usually includes some good sentences/phrases to borrow.  
   - *collection_type:*   Possible values include: Field, botanical collection, field_experiment, glasshouse, literature  
   - *sample_age_class:*   Possible values include: Adult, sapling, seedling, unknown  
   - *sampling_strategy:*  Often a quite long description of the sampling strategy, extracted verbatim from a manuscript.  
@@ -666,9 +666,9 @@ It is best to run tests and fix formatting first.
 
 ## Clear formatting  
 
-The `clear formatting` code below, is essential reading and re-writing the yaml file, the same process that is repeated when running functions that automatically add substitutions or check taxonomy. Running it first ensures that formatting issues introduced (or fixed) during the read/write process are identified and solved first.
+The `clear formatting` code below is essential in reading and re-writing the yaml file- the same process that is repeated when running functions that automatically add substitutions or check taxonomy. Running it first ensures that any formatting issues introduced (or fixed) during the read/write process are identified and solved first.
 
-For instance, the `write_metadata` function inserts line breaks every 80 characters, reworks other line breaks (except in custom_R_code). It also reformats special characters in the text, substituting in its accepted format for degree symbols, en-dashes, em-dashes, and quotes and substituting in Unicode codes for more obscure symbols.  
+For instance, the `write_metadata` function inserts line breaks every 80 characters and reworks other line breaks (except in custom_R_code). It also reformats special characters in the text, substituting in its accepted format for degree symbols, en-dashes, em-dashes and quotes, and substituting in Unicode codes for more obscure symbols.  
 
 ```{r, eval=FALSE, echo=TRUE}
 f <- file.path("data", current_study, "metadata.yml")
@@ -677,13 +677,13 @@ read_metadata(f) %>% write_metadata(f)
 
 ## Running tests {#running_tests}
 
-You begin by running some automated tests to ensure the dataset meets required set up. The tests run through a collection of pre-specified checks on the files for each study. The output alerts you to possible issues needing to be fixed, by comparing the data in the files with expected structure and allowed values, as specified in the definitions.   
+Begin by running some automated tests to ensure the dataset meets the required set up. The tests run through a collection of pre-specified checks on the files for each study. The output alerts you to possible issues needing to be fixed, by comparing the data in the files with the expected structure and allowed values, as specified in the definitions.   
 
 Certain special characters may show up as errors and need to be manually adjusted in the `metadata.yml` file 
 
 The tests also identify mismatches between the site names in the data.csv file vs. metadata.yml file (same for context), unsupported trait names, etc. 
 
-To run the tests, the variable `dataset_ids` must be defined in the global namespace, containing a vector of ids to check. For example
+To run the tests, the variable `dataset_ids` must be defined in the global namespace, containing a vector of ids to check. For example:
 
 ```{r, eval=FALSE, echo=TRUE}
 # load relevant functions
@@ -703,7 +703,7 @@ austraits_run_tests()
 ```
 Fix as many errors as you can and then rerun `austraits_run_tests()` repeatedly until no errors remain. 
 
-See below for suggestions to implement large numbers of trait value substitutions.
+See below for suggestions on how to implement large numbers of trait value substitutions.
 
 ## Rebuild AusTraits  
 
