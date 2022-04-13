@@ -738,11 +738,11 @@ austraits$excluded_data %>%
   View()
 ```
 
-### Reasons data are excluded  
+### Reasons for data to be excluded  
 
-Possible reasons for excluding trait value include:  
+Possible reasons for excluding a trait value includes:  
 
-- *Missing species name*: Species name missing from data.csv file for a given row of data. This usually occurs when there are stray characters in the data.csv file below the data – delete these rows. 
+- *Missing species name*: Species name is missing from data.csv file for a given row of data. This usually occurs when there are stray characters in the data.csv file below the data – delete these rows. 
 
 - *Missing value*: Value was missing. Do nothing – these almost always represent honestly missing data. Large numbers of missing values are often present if two data frames with values for different traits are connected together with `bind_rows()` or if duplicate values have been omitted using custom R code.  
 - *Missing unit conversion*: Value was present but appropriate unit conversion was missing -> you need to add it to the file `config/unit_conversions.csv`. Add additional conversions near similar unit conversions already in the file for easier searching in the future.  
@@ -753,11 +753,11 @@ Possible reasons for excluding trait value include:
 
 - *Unsupported trait*: `trait_name` not listed in `config/definitions.yml`, under `traits`. Double check you have used the correct spelling/exact syntax for the `trait_name`, adding a new `trait` to the `definitions` file if appropriate. If there is a trait that is currently unsupported by AusTraits, leave `trait_name: .na` - do not fill in an arbitrary name. (Note, if you have data in long format, all traits are automatically added to the list of traits in `metadata.yml` and even if you indicate `trait_name: .na` these appear as `unsupported trait` in the `excluded_data` table.)  
 
-- *Unsupported trait value*: This error, referencing categorical traits, means the `value` for a trait is not included in the list of supported trait values for that trait in `config/definitions.yml`. See `Adding many substitutions` if these are many trait values requiring substitutions. If appropriate add another trait value to the definitions file.  
+- *Unsupported trait value*: This error, referencing categorical traits, means that the `value` for a trait is not included in the list of supported trait values for that trait in `config/definitions.yml`. See `Adding many substitutions` if there are many trait values requiring substitutions. If appropriate, add another trait value to the definitions file.  
 
 - *Value does not convert to numeric*: Is there a strange character in the file preventing easy conversion? This error is rare and generally justified.  
 
-- *Value out of allowable range*: This error, referencing numeric traits, means the trait value, after unit conversions, falls outside of the allowable range specified for that trait in `config/definitions.yml`. Sometimes the AusTraits range is too narrow and other times the author’s value is truly an outlier that should be excluded. Look closely at these and adjust the range in `config/definitions.yml` if justified. Generally, don’t change the range until you’ve create a report for the study and confirmed that the general cloud of data aligns with other studies as excepted. Most frequently the units or unit conversion is what is incorrect.  
+- *Value out of allowable range*: This error, referencing numeric traits, means that the trait value, after unit conversions, falls outside of the allowable range specified for that trait in `config/definitions.yml`. Sometimes the AusTraits range is too narrow and other times the author’s value is truly an outlier that should be excluded. Look closely at these and adjust the range in `config/definitions.yml` if justified. Generally, don’t change the range until you’ve create a report for the study and confirmed that the general cloud of data aligns with other studies as excepted. Most frequently the units or unit conversion is what is incorrect.  
 
 You can also ask how many of each error type are present for a study:  
 ```{r, echo=TRUE, results="show"}
@@ -777,7 +777,7 @@ austraits$excluded_data %>%
   select(trait_name, error) %>%
   table()
 ```
-Note, most studies have no excluded data. This study is the extreme example!
+Note, most studies have no excluded data. This study is an extreme example!
 
 ## Adding many substitutions {#adding_many_substitutions}  
 
@@ -793,7 +793,7 @@ austraits$excluded_data %>%
   select(-dataset_id) %>%
   write_csv("data/dataset_id/raw/substitutions_required.csv")
 ```
-For studies with a small number of substitutions, add them individually, using: 
+For studies with a small number of substitutions, add them individually using: 
 ```{r, eval=FALSE, echo=TRUE}
 metadata_add_substitution(dataset_id, trait_name, find, replace)
 ```
@@ -846,7 +846,7 @@ metadata_check_taxa(dataset_id, max_distance_abs = 2, max_distance_rel = 0.2, tr
 2. Taxon alignments made by `metadata_check_taxa` are added to the `taxonomic_updates:` section of the `metadata.yml` file
     Check all substitutions added to the metadata file, to confirm they make sense.
     
-    a. On occasion there are nonsensical realignments due to fuzzy matching. These most often occur when measurements were made on are non-naturalised horticultural plants, whose names do not appear on the APNI/APC lists. If this is the case, add these taxa to the excluded_data list. For instance, in eFLOWER_2021, the inclusion of many non-native species in the dataset submitted led to the following two incorrect substitutions, that needs to be manually deleted, with the species added to the excluded data section.
+    a. On occasion there are nonsensical realignments due to fuzzy matching. These most often occur when measurements were made on non-naturalised horticultural plants, whose names do not appear on the APNI/APC lists. If this is the case, add these taxa to the excluded_data list. For instance, in eFLOWER_2021, the inclusion of many non-native species in the submitted dataset led to the following two incorrect substitutions. These need to be manually deleted, with the species added to the excluded data section.
     
     ```{r, eval=FALSE, echo=TRUE}
     - find: Byrsonima crassifolia
@@ -857,7 +857,7 @@ metadata_check_taxa(dataset_id, max_distance_abs = 2, max_distance_rel = 0.2, tr
       reason: Automatic alignment with name in APC list (accepted) (2021-09-16)
     ```
     
-    If the species is obviously a misspelled Australian species, but was mismatched, manually correct the correct alignment.
+    If the species is obviously a misspelled Australian species, but was mismatched, manually correct the alignment.
     
  
 
@@ -867,7 +867,7 @@ metadata_check_taxa(dataset_id, max_distance_abs = 2, max_distance_rel = 0.2, tr
 metadata_check_taxa(dataset_id, max_distance_abs = 3, max_distance_rel = 0.2, try_outside_guesses = TRUE)
 ```    
  
-  b. If there are unrecognised names that you know are either non-naturalised horticultural plants or measurements made outside Australia on a non-native, naturalised species), exclude them in the metadata. In addition, exclude mosses, liverworts, etc. - these are not (yet) in AusTraits. For instance, from the `excluded_data` section of eFLOWER_2021:  
+  b. If there are unrecognised names that you know are either non-naturalised horticultural plants (or measurements made outside Australia on a non-native, naturalised species), exclude them in the metadata. In addition, exclude mosses, liverworts, etc. - these are not (yet) in AusTraits. For instance, from the `excluded_data` section of eFLOWER_2021:  
 
 ```{r, eval=FALSE, echo=TRUE}
 excluded_data:  
@@ -887,7 +887,7 @@ excluded_data:
 ```{r, eval=FALSE, echo=TRUE}
 metadata_add_taxonomic_change("study", "find", "replace", "reason")
 ```
-or manually typing the information into the `metadata.yml` file:
+or by manually typing the information into the `metadata.yml` file:
 ```{r, eval=FALSE, echo=TRUE}
 - find: Senna sturtii
   replace: Senna artemisioides subsp. x sturtii
@@ -942,7 +942,7 @@ austraits_rebuild_taxon_list()
 
 AusTraits strives to have no duplicate entries for numeric (continuous) trait measurements. 
 
-When you receive/solicit a dataset, ask the data contributor if all data submitted were collected for the specific study and if they suspect other studies from their lab/colleagues may also have contributed any of this data.  
+When you receive/solicit a dataset, ask the data contributor if all data submitted was collected for the specific study and if they suspect other studies from their lab/colleagues may also have contributed any of this data.  
 
 In addition, there are tests to check for duplicates within and across dataset_ids.  
 
@@ -977,14 +977,14 @@ data %>%
   ) %>%
   ungroup()
 ```
-Note: Using custom R code instead of filtering the values in the data.csv file itself, ensures the relevant trait values are still associated with each line of data in the data.csv file, but only read into AusTraits a single time. 
+Note: Using custom R code instead of filtering the values in the data.csv file itself ensures the relevant trait values are still associated with each line of data in the data.csv file, but only read into AusTraits a single time. 
 Note: You would use `group_by(Species, Site)` if there are unique values at the species x site level.
 
 ### Duplicates between studies {#duplicates_between_studies}  
 
-AusTraits does not attempt to filter out duplicates in categorical traits between studies. The commonly duplicated traits like `life_form`, `plant_growth_form`, `photosynthetic_pathway`, `fire_response`, etc. are legitimately duplicated and if   the occasional study reported a different `plant_growth_form` or `fire_response` it would be important to have documented that one trait value was much more common than another. Such categorical trait values may have been sourced from a reference material or measured/identified by this research team.  
+AusTraits does not attempt to filter out duplicates in categorical traits between studies. The commonly duplicated traits like `life_form`, `plant_growth_form`, `photosynthetic_pathway`, `fire_response`, etc. are legitimately duplicated and if the occasional study reported a different `plant_growth_form` or `fire_response` it would be important to have documented that one trait value was much more common than another. Such categorical trait values may have been sourced from reference material or measured/identified by this research team.  
 
-Identifying duplicates in numeric traits between studies can be difficult, but is essential - we attempt to filter out all duplicate occurrences of the same measurement. Some common patterns of duplication include:
+Identifying duplicates in numeric traits between studies can be difficult, but it is essential that we attempt to filter out all duplicate occurrences of the same measurement. Some common patterns of duplication include:
 
  1. For a single trait, if there are a large number of values duplicated in a specific other dataset_id (i.e. the `error` repeatedly starts with the same `dataset_id`), be suspicious. Before contacting the author, check the metadata for the two datasets, especially authors and study locations, to see if it is likely these are data values that have been jointly collected and shared across studies. Similar site names/locations, identical university affiliations, or similar lists of traits being measured are good clues.  
  
@@ -1077,7 +1077,7 @@ read_csv("data/dataset_id/data.csv") %>%
   write_csv("data/dataset_id/data.csv")
 ```
 
-3. For the above example, then add the following code to custom R code, that removes the duplicate values from the data columns (by setting them as `NA`) as the dataset is read into AusTraits.
+3. For the above example, then add the following code to custom R code, removing the duplicate values from the data columns (by setting them as `NA`) as the dataset is read into AusTraits.
 
 ```{r, eval=FALSE, echo=TRUE}
 data %>%
@@ -1099,9 +1099,9 @@ Difficulties:
 
 ## Build study report  
 
-A final quality check is generating a report on the data in each study. 
+A final quality check is conducted by generating a report on the data in each study. 
 
-Rebuild the taxon list and AusTraits to ensure other changes made during the quality checks are implemented. Then build the study report:  
+Rebuild the taxon list and AusTraits to ensure other changes made during the quality checks were implemented. Then build the study report:  
 
 ```{r, eval=FALSE, echo=TRUE}
 austraits_rebuild_taxon_list()
@@ -1148,7 +1148,7 @@ Add the argument `overwrite=TRUE` if you already have a copy of a specific repor
 
 # Working with our GitHub repository
 
-By far our preferred way of contributing is for you to contribute files directly into the repository and then send a  [pull request](https://help.github.com/articles/using-pull-requests/) with you input. You can do this by
+By far our preferred way of contributing is for you to contribute files directly into the repository and then send a  [pull request](https://help.github.com/articles/using-pull-requests/) with your input. You can do this by
 
 - (for approved maintainers of austraits.build) Creating a branch, or
 - (for others) forking the database in github
@@ -1169,10 +1169,10 @@ If this is not possible, you could email the relevant files (see above) to the A
 There are multiple ways to merge a pull request, including using GitHub's built-in options for merging and squashing. When merging a PR, we ideally want
 
 - a single commit
-- attributing the work to the original author
+- to attribute the work to the original author
 - to run various checks along the way 
 
-There's two ways to do this. For both you need to be an approved maintainer. 
+There are two ways to do this. For both, you need to be an approved maintainer. 
 
 ### Merging in your own PR
 
@@ -1189,7 +1189,7 @@ When merging in someone else's PR, the built-in  options aren't ideal, as they e
 
 The workflow below describes how to merge a pull request from the command line, with a single commit & attributing the work to the original author. Lets assume a branch of name `Smith_1995`.
 
-First from the master branch in the repo, run the following:
+First, from the master branch in the repo, run the following:
 
 ```
 git merge --squash origin/Smith_1995
@@ -1267,7 +1267,7 @@ written with the previous version in a substantial way.
 
 The process of making a release is as follows. Note that corresponding releases and versions are needed in both `austraits` and `austraits.build`:
 
-1. Update the version number in the DECRIPTION file, using `
+1. Update the version number in the DESCRIPTION file, using `
 
 ```{r, eval=FALSE}
 desc::desc_bump_version()
@@ -1297,7 +1297,7 @@ A comma-separated values (CSV) file is a delimited text file that uses a comma t
 
 ### YAML files {#yaml}
 
-The `yml` file extension (pronounced "YAML") [is a type structured data file](https://en.wikipedia.org/wiki/YAML), that is both human and machine readable. You can edit it any text editor, or also in Rstudio. Generally, yml is used in situations where a table does not suit because of variable lengths and or nested structures. It has the advantage over a spreadsheet in that the nested “headers” can have variable numbers of categories. The data under each of the hierarchical headings are easily extracted by R.
+The `yml` file extension (pronounced "YAML") [is a type structured data file](https://en.wikipedia.org/wiki/YAML), that is both human and machine readable. You can edit it in any text editor, or in Rstudio. Generally, yml is used in situations where a table does not suit because of variable lengths and/or nested structures. It has the advantage over a spreadsheet in that the nested “headers” can have variable numbers of categories. The data under each of the hierarchical headings are easily extracted by R.
 
 ## Extracting data from PDF tables
 
@@ -1311,4 +1311,4 @@ java -jar tabula-1.0.3-jar-with-dependencies.jar my_table.pdf -o my_data.csv
 ```
 This should output the data from the table in `my_table.pdf` into the csv `my_data.csv`
 
-3. Clean up in Excel. check especially for correct locations of white spaces.
+3. Clean up in Excel. check especially that the locations of white spaces are correct.
