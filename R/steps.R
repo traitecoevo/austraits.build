@@ -650,12 +650,12 @@ parse_data <- function(data, dataset_id, metadata) {
 
   # Step 1b. import any values that aren't columns of data
   vars <- c("value_type", "replicates", "year_collected_start","year_collected_end", 
-            "collection_type", "sample_age_class", "measurement_remarks") 
-  
+            "collection_type", "sample_age_class", "measurement_remarks")
+
   df <- 
-    df %>% 
+    df %>%  
     bind_cols(
-      metadata[["dataset"]][names(metadata[["dataset"]]) %in% vars] %>% as_tibble()
+      metadata[["dataset"]][names(metadata[["dataset"]]) %in% vars[!vars %in% names(df)]] %>% as_tibble()
     )
   
   # Add unique observation ids
@@ -665,7 +665,7 @@ parse_data <- function(data, dataset_id, metadata) {
                               dataset_id, seq_len(n))
 
   if(!data_is_long_format) {
-#    browser()
+
     # For wide datasets rows are assumed to be natural grouping
     df <- df %>%
             dplyr::mutate(observation_id = make_id(nrow(.), dataset_id))
@@ -727,13 +727,14 @@ parse_data <- function(data, dataset_id, metadata) {
       for(v in vars_to_check) {
         # get value
         value <- cfgChar[i,v, drop=TRUE]
-#        cat(v, " ")
- #       if(v== "replicates") browser()
+
         # Check if it is a column in data or not and process accordingly
-        if(!is.na(value) && !is.null(data[[value]])) {
-          out[[i]][[v]] <- data[[value]] %>% as.character()
-        } else {
-          out[[i]][[v]] <- value
+        if(!is.na(value)) {
+          if(!is.null(data[[value]])) {
+            out[[i]][[v]] <- data[[value]] %>% as.character()
+          } else {
+            out[[i]][[v]] <- value
+          }
         }
       }
     }
@@ -756,7 +757,6 @@ parse_data <- function(data, dataset_id, metadata) {
       }
     }
     
-#    browser()
   }
 
   # Ensure all lower case
