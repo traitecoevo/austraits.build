@@ -166,7 +166,7 @@ load_study <- function(filename_data_raw,
         spread(.data$key, .data$value) %>%
         dplyr::select(tidyselect::any_of(names(metadata$dataset))) %>%
           dplyr::mutate(dataset_id = dataset_id) %>%
-          dplyr::select(-tidyselect::any_of(c("original_file", "notes", "data_is_long_format", "site_name", "date", "custom_R_code", "taxon_name", "collection_type", "sample_age_class")))
+          dplyr::select(-tidyselect::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", "trait_name", "observation_id", "context_name", "site_name", "date", "custom_R_code", "taxon_name", "collection_type", "sample_age_class")))
       )  %>%
       full_join( by = "dataset_id",
         #references
@@ -182,7 +182,7 @@ load_study <- function(filename_data_raw,
         )
       )
 
-  # Where missing, fill collection_type, sample_age_class with values from sites, then methods
+  # Where missing, fill variables with values from sites
   vars <- c("collection_type", "sample_age_class", "collection_date", "measurement_remarks",
                   "value_type", "replicates")
   
@@ -655,7 +655,7 @@ parse_data <- function(data, dataset_id, metadata) {
   df <- 
     df %>%  
     bind_cols(
-      metadata[["dataset"]][names(metadata[["dataset"]]) %in% vars[!vars %in% names(df)]] %>% as_tibble()
+      metadata[["dataset"]][names(metadata[["dataset"]]) %in% vars[!vars %in% names(df)]] %>% tibble::as_tibble()
     )
   
   # Add unique observation ids
@@ -665,7 +665,6 @@ parse_data <- function(data, dataset_id, metadata) {
                               dataset_id, seq_len(n))
 
   if(!data_is_long_format) {
-
     # For wide datasets rows are assumed to be natural grouping
     df <- df %>%
             dplyr::mutate(observation_id = make_id(nrow(.), dataset_id))
@@ -707,7 +706,6 @@ parse_data <- function(data, dataset_id, metadata) {
   ## if needed, change from wide to long format
   if (!data_is_long_format) {
     
-  
     # if the dataset is "wide" then process each variable in turn, to create the "long" dataset -
     # say the original dataset has 20 rows of data and 5 traits, then we will end up with 100 rows
     out <- list()
@@ -756,44 +754,10 @@ parse_data <- function(data, dataset_id, metadata) {
         }
       }
     }
-    
   }
 
   # Ensure all lower case
   out[["value"]] <- tolower(out[["value"]])
-
-  # Add information on various features of data
-  
-  # i <- match(out[["trait_name"]], cfgChar[["var_in"]])
-  # 
-  # # Can be sourced from any of following, in order of precedence
-  # #  - as column in data (sourced from data.csv)
-  # #  - as specified in metadata in traits (here as a column cfgChar)
-  # #  - from site level infromation
-  # #  - from dataset level infromation in methods
-  # 
-  # # First check for a column in the data
-  # for(v in vars) {
-  #   out[[v]] <- as.character(NA)
-  #   if(v %in% colnames(data)){
-  #     df[[v]] <- data[[v]]
-  #     if(!data_is_long_format){
-  #       # if column exists in wide data use that instead, but multiply the rows by the number of accepted traits first
-  #       out[[v]] <- as.character(rep(df[[v]], nrow(cfgChar))) 
-  #     } else {
-  #       # if column exists in long data use that instead after removing rows with excluded traits
-  #       out[[v]] <- df %>% dplyr::filter(.data$trait_name %in% cfgChar$var_in) %>% pull(v)
-  #     }
-  #   }
-  # if(length(i) >0 ) {
-  #   j <- !is.na(i)
-  #     if(!is.null(cfgChar[[v]])){
-  #       if(v %in% colnames(cfgChar)){
-  #         out[[v]][j] <- ifelse(is.na(out[[v]][j]), cfgChar[[v]][i[j]], out[[v]][j]) # fill values in from traits level
-  #       }
-  #     }
-  #   }
-  # }
   
   # Now process any name changes as per metadata[["traits"]]
   out[["unit"]] <- NA_character_

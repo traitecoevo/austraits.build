@@ -18,7 +18,7 @@ testthat::test_that("test datasets", {
   # Build example -- this runs a bunch of tests already
   
   # Example 1 - Test for collection_type and sample_age_class at the dataset level
-  # test1-metadata and test1-data are copies of falster_2005_1
+  # test1-metadata and test1-data are copies of Falster_2005_1
   Ex1 <- test_build_study(file.path(examples.dir, "test1-metadata.yml"), file.path(examples.dir, "test1-data.csv"), "Example 1")
   
   expect_equal(Ex1$traits$collection_type %>% unique, "field")
