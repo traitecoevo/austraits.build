@@ -78,7 +78,7 @@ subset_config <- function(
 #'
 #' @return list, AusTraits database object
 #' @export
-#' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything one_of
+#' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of
 #' @importFrom tidyr spread
 #' @importFrom purrr reduce map_chr
 #' @importFrom rlang .data
@@ -99,7 +99,7 @@ load_study <- function(filename_data_raw,
 
   # load and clean trait data
   traits <- readr::read_csv(filename_data_raw, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
-    custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
+    custom_manipulation(metadata[["dataset"]][["custom_R_code"]])() %>%
     parse_data(dataset_id, metadata) %>%
     add_all_columns(definitions$columns_traits) %>%
     flag_unsupported_traits(definitions) %>%
@@ -164,9 +164,9 @@ load_study <- function(filename_data_raw,
       metadata$dataset %>%
         list1_to_df() %>%
         spread(.data$key, .data$value) %>%
-        dplyr::select(one_of(names(metadata$dataset))) %>%
+        dplyr::select(tidyselect::any_of(names(metadata$dataset))) %>%
           dplyr::mutate(dataset_id = dataset_id) %>%
-          dplyr::select(-.data$original_file, -.data$notes)
+          dplyr::select(-tidyselect::any_of(c("original_file", "notes", "data_is_long_format", "site_name", "date", "custom_R_code", "taxon_name", "collection_type", "sample_age_class")))
       )  %>%
       full_join( by = "dataset_id",
         #references
@@ -183,28 +183,29 @@ load_study <- function(filename_data_raw,
       )
 
   # Where missing, fill collection_type, sample_age_class with values from sites, then methods
-  for(v in 
-      c("collection_type", "sample_age_class", "collection_date", "measurement_remarks",
-             "value_type", "replicates")){
-    # merge in to traits (from site level) via sites 
+  vars <- c("collection_type", "sample_age_class", "collection_date", "measurement_remarks",
+                  "value_type", "replicates")
+  
+  for(v in vars){
+    # merge in to traits from site level
     if(v %in% sites$site_property){
       traits_tmp <- traits %>% 
         dplyr::left_join(by = "site_name",
                          sites %>% tidyr::pivot_wider(names_from = site_property, values_from = value) %>%
-                           dplyr::select(.data$site_name, col_tmp = v))
+                           dplyr::select(.data$site_name, col_tmp = tidyselect::any_of(v)))
      ## filling any missing values
      traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
-    
-    # merge in to traits (from dataset level) via methods
-    if(v %in% colnames(methods)){
-      traits_tmp <- traits %>% 
-        dplyr::left_join(by = "trait_name",
-                        methods %>% 
-                          dplyr::select(.data$trait_name, col_tmp = all_of(v)) %>% 
-                          distinct())
-     traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
-    }
+     
+    # # merge in to traits (from dataset level) via methods
+    # if(v %in% colnames(methods)){
+    #   traits_tmp <- traits %>% 
+    #     dplyr::left_join(by = "trait_name",
+    #                     methods %>% 
+    #                       dplyr::select(.data$trait_name, col_tmp = tidyselect::all_of(v)) %>% 
+    #                       distinct())
+    #  traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
+    # }
   }
   
   # Retrieve taxonomic details for known species
@@ -218,7 +219,7 @@ load_study <- function(filename_data_raw,
        traits       = traits %>% filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
        sites    = sites,
        contexts    = contexts,
-       methods    = methods %>% dplyr::select(-.data$collection_type, -.data$sample_age_class),
+       methods    = methods,
        excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% dplyr::select(.data$error, everything()),
        taxonomic_updates = taxonomic_updates,
        taxa = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
@@ -592,7 +593,7 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
       value = ifelse(.data$to_convert, f(.data$value, .data$ucn[1]), .data$value),
       unit = ifelse(.data$to_convert, .data$to, .data$unit)) %>%
     dplyr::ungroup() %>%
-    dplyr::select(dplyr::one_of(vars))
+    dplyr::select(tidyselect::any_of(vars))
 }
 
 #' Add or remove columns of data
@@ -615,7 +616,7 @@ add_all_columns <- function(data, vars) {
       dplyr::mutate(!!v := NA_character_)
 
   data %>%
-    dplyr::select(dplyr::one_of(vars)) %>%
+    dplyr::select(tidyselect::any_of(vars)) %>%
     dplyr::mutate(error = NA_character_)
 }
 
@@ -636,21 +637,27 @@ add_all_columns <- function(data, vars) {
 parse_data <- function(data, dataset_id, metadata) {
 
   # get config data for dataset
-  data_is_long_format <- metadata[["config"]][["data_is_long_format"]]
+  data_is_long_format <- metadata[["dataset"]][["data_is_long_format"]]
 
-  # Step 1. create dataframe with data for vars that we want to keep, and set to correct names
-  # all names in "variable_match" must exist in dataset, if not then we need to stop and fix the problem
-  var_in <- unlist(metadata[["config"]][["variable_match"]])
-  var_out <- names(metadata[["config"]][["variable_match"]])
-  if (any(!var_in %in% colnames(data))) {
-    stop(paste0("\nVariable '", setdiff(var_in, colnames(data)), "' from data.csv not found in configVarnames"))
-  }
-
+  # Step 1a. create dataframe with data for vars that we want to keep, and set to correct names
+  var_in <- unlist(metadata[["dataset"]])
+  i <- var_in %in% names(data)
+  
   df <- data %>%
-        dplyr::select(one_of(var_in)) %>%
-        rename_columns(var_in, var_out) %>%
+        # next step selects and renames columns based on named vector
+        dplyr::select(any_of(var_in[i])) %>%
         dplyr::mutate(dataset_id = dataset_id)
 
+  # Step 1b. import any values that aren't columns of data
+  vars <- c("value_type", "replicates", "year_collected_start","year_collected_end", 
+            "collection_type", "sample_age_class", "measurement_remarks") 
+  
+  df <- 
+    df %>% 
+    bind_cols(
+      metadata[["dataset"]][names(metadata[["dataset"]]) %in% vars] %>% as_tibble()
+    )
+  
   # Add unique observation ids
   # function builds id -- determine number of 00s needed based on number of records
   make_id <- function(n, dataset_id)
@@ -658,10 +665,10 @@ parse_data <- function(data, dataset_id, metadata) {
                               dataset_id, seq_len(n))
 
   if(!data_is_long_format) {
+#    browser()
     # For wide datasets rows are assumed to be natural grouping
     df <- df %>%
             dplyr::mutate(observation_id = make_id(nrow(.), dataset_id))
-#    df$observation_id <-  make_id(nrow(df), df$dataset_id)
   } else {
 
     # For long datasets, create unique identifier from taxon_name, site, and observation_id (if specified)
@@ -684,7 +691,6 @@ parse_data <- function(data, dataset_id, metadata) {
   }
 
   # Step 2. Add trait information, with correct names
-
   cfgChar <-
     metadata[["traits"]] %>%
     list_to_df() %>%
@@ -696,9 +702,12 @@ parse_data <- function(data, dataset_id, metadata) {
   if (data_is_long_format == FALSE & any(! cfgChar[["var_in"]] %in% colnames(data))) {
     stop(paste(dataset_id, ": missing traits: ", setdiff(cfgChar[["var_in"]], colnames(data))))
   }
-
+  
+  
   ## if needed, change from wide to long format
   if (!data_is_long_format) {
+    
+  
     # if the dataset is "wide" then process each variable in turn, to create the "long" dataset -
     # say the original dataset has 20 rows of data and 5 traits, then we will end up with 100 rows
     out <- list()
@@ -709,11 +718,45 @@ parse_data <- function(data, dataset_id, metadata) {
       # to x we append columns of data for trait_name, unit and value (the latter is retrieved from the data)
       out[[i]][["trait_name"]] <- cfgChar[["var_in"]][i]
       out[[i]][["value"]] <- data[[cfgChar[["var_in"]][i]]] %>% as.character()
+      
+      # Pull in additional information for each trait as specified in traits part of metadata, here represented as cfgChar
+      # Values in table can specify a column in the original data OR a value to use
+
+      vars_to_check <- vars[vars%in% names(cfgChar)]
+      # For each column in cfgChar
+      for(v in vars_to_check) {
+        # get value
+        value <- cfgChar[i,v, drop=TRUE]
+#        cat(v, " ")
+ #       if(v== "replicates") browser()
+        # Check if it is a column in data or not and process accordingly
+        if(!is.na(value) && !is.null(data[[value]])) {
+          out[[i]][[v]] <- data[[value]] %>% as.character()
+        } else {
+          out[[i]][[v]] <- value
+        }
+      }
     }
     out <- dplyr::bind_rows(out)
   } else {
     out <- df %>% filter(.data$trait_name %in% cfgChar$var_in)
     out[["value"]] <- out[["value"]] %>%  as.character()
+    
+    # Pull in additional information for each trait as specified in traits part of metadata, here represented as cfgChar
+    # Values in table can specify a column in the original data OR a value to use
+    
+    vars_to_check <- vars[vars%in% names(cfgChar)]
+    # For each column in cfgChar
+    for (i in seq_len(nrow(cfgChar))) {
+      for(v in vars_to_check) {
+        value <- cfgChar[i,v, drop=TRUE]
+        if(!is.na(value)) {
+          out[[v]][out$trait_name == cfgChar[["var_in"]][i]] <- value
+        }
+      }
+    }
+    
+#    browser()
   }
 
   # Ensure all lower case
@@ -721,37 +764,36 @@ parse_data <- function(data, dataset_id, metadata) {
 
   # Add information on various features of data
   
-  vars <- c("value_type", "replicates", "collection_type", "sample_age_class", "measurement_remarks")
-  i <- match(out[["trait_name"]], cfgChar[["var_in"]])
-  
-  # Can be sourced from any of following, in order of precedence
-  #  - as column in data (sourced from data.csv)
-  #  - as specified in metadata in traits (here as a column cfgChar)
-  #  - from site level infromation
-  #  - from dataset level infromation in methods
-  
-  # First check for a column in the data
-  for(v in vars) {
-    out[[v]] <- as.character(NA)
-    if(v %in% colnames(data)){
-      df[[v]] <- data[[v]]
-      if(!data_is_long_format){
-        # if column exists in wide data use that instead, but multiply the rows by the number of accepted traits first
-        out[[v]] <- as.character(rep(df[[v]], nrow(cfgChar))) 
-      } else {
-        # if column exists in long data use that instead after removing rows with excluded traits
-        out[[v]] <- df %>% dplyr::filter(.data$trait_name %in% cfgChar$var_in) %>% pull(v)
-      }
-    }
-  if(length(i) >0 ) {
-    j <- !is.na(i)
-      if(!is.null(cfgChar[[v]])){
-        if(v %in% colnames(cfgChar)){
-          out[[v]][j] <- ifelse(is.na(out[[v]][j]), cfgChar[[v]][i[j]], out[[v]][j]) # fill values in from traits level
-        }
-      }
-    }
-  }
+  # i <- match(out[["trait_name"]], cfgChar[["var_in"]])
+  # 
+  # # Can be sourced from any of following, in order of precedence
+  # #  - as column in data (sourced from data.csv)
+  # #  - as specified in metadata in traits (here as a column cfgChar)
+  # #  - from site level infromation
+  # #  - from dataset level infromation in methods
+  # 
+  # # First check for a column in the data
+  # for(v in vars) {
+  #   out[[v]] <- as.character(NA)
+  #   if(v %in% colnames(data)){
+  #     df[[v]] <- data[[v]]
+  #     if(!data_is_long_format){
+  #       # if column exists in wide data use that instead, but multiply the rows by the number of accepted traits first
+  #       out[[v]] <- as.character(rep(df[[v]], nrow(cfgChar))) 
+  #     } else {
+  #       # if column exists in long data use that instead after removing rows with excluded traits
+  #       out[[v]] <- df %>% dplyr::filter(.data$trait_name %in% cfgChar$var_in) %>% pull(v)
+  #     }
+  #   }
+  # if(length(i) >0 ) {
+  #   j <- !is.na(i)
+  #     if(!is.null(cfgChar[[v]])){
+  #       if(v %in% colnames(cfgChar)){
+  #         out[[v]][j] <- ifelse(is.na(out[[v]][j]), cfgChar[[v]][i[j]], out[[v]][j]) # fill values in from traits level
+  #       }
+  #     }
+  #   }
+  # }
   
   # Now process any name changes as per metadata[["traits"]]
   out[["unit"]] <- NA_character_
