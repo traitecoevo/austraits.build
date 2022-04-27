@@ -7,16 +7,19 @@ source:
     title: Flora of Tasmania Online
     publisher: Tasmanian Museum & Art Gallery (Hobart)
     url: http://www.tmag.tas.gov.au/floratasmania
-people:
-- name: Marco Duretto
-  institution: National Herbarium of NSW
-  role: curator
-- name: Miguel de Salas
-  institution: Tasmanian Herbarium
-  role: curator
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor, contact
+contributors:
+  data_collectors:
+  - last_name: Duretto
+    given_name: Marco
+    ORCID: 0000-0003-1013-4291
+    affiliation: National Herbarium of New South Wales, Australian Institute of Botanical
+      Science, Royal Botanic Gardens and Domain Trust, Sydney, Australia
+  - last_name: de Salas
+    given_name: Miguel
+    ORCID: .na.character
+    affiliation: Tasmanian Herbarium, Australia
+    notes: no contact
+  austraits_curators: Rachael Gallagher
 dataset:
   year_collected_start: 2009
   year_collected_end: 2009
@@ -35,14 +38,14 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: taxon
-  custom_R_code: 'data %>% mutate( flowering = convert_month_range_vec_to_binary(flowering),
+  custom_R_code: data %>% mutate( flowering = convert_month_range_vec_to_binary(flowering),
     fruiting = convert_month_range_vec_to_binary(fruiting), leaf_lobed = ifelse(`leaf
     type` == "lobed", 1 , NA), `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf
     type`)) %>% separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max")
     %>% separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
     separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>% separate_range("seed
-    width (mm)", "seed_width_min", "seed_width_max") %>% mutate(dispersal_appendage
-    = ifelse(`dispersal mode` == "samara","samara", NA)) '
+    width (mm)", "seed_width_min", "seed_width_max") %>% mutate(fruit_type = NA) %>% move_values_to_new_trait("dispersal
+    mode", "fruit_type", "samara", "samara", "wings")
 traits:
 - var_in: longevity
   unit_in: .na
@@ -136,7 +139,7 @@ traits:
   methods: unknown
 - var_in: seed breadth (mm)
   unit_in: mm
-  trait_name: seed_breadth
+  trait_name: seed_height
   value_type: expert_mean
   replicates: .na
   methods: unknown
@@ -154,16 +157,16 @@ traits:
   methods: unknown
 - var_in: dispersal mode
   unit_in: .na
-  trait_name: dispersal_syndrome
-  value_type: expert_mean
-  replicates: .na
-  methods: unknown
-- var_in: dispersal_appendage
-  unit_in: .na
   trait_name: dispersal_appendage
   value_type: expert_mean
   replicates: .na
-  methods: Extracted from records of dispersal syndrome.
+  methods: unknown
+- var_in: fruit_type
+  unit_in: .na
+  trait_name: fruit_type
+  value_type: expert_mean
+  replicates: .na
+  methods: Extracted from records of dispersal_appendage.
 substitutions:
 - trait_name: leaf_shape
   find: articles
@@ -174,12 +177,9 @@ substitutions:
 - trait_name: plant_growth_form
   find: vine
   replace: climber_vine
-- trait_name: dispersal_syndrome
+- trait_name: dispersal_appendage
   find: winged seed
-  replace: anemochory
-- trait_name: dispersal_syndrome
-  find: samara
-  replace: anemochory
+  replace: wings
 - trait_name: leaf_width
   find: '''10'
   replace: '10'
@@ -187,20 +187,62 @@ substitutions:
   find: elliptic
   replace: elliptical
 - trait_name: seed_shape
+  find: turbinate
+  replace: conical
+- trait_name: seed_shape
+  find: cylindrical
+  replace: cylindrical
+- trait_name: seed_shape
+  find: flat
+  replace: discoid
+- trait_name: seed_shape
+  find: ellipsoid
+  replace: ellipsoid
+- trait_name: seed_shape
+  find: oblong
+  replace: ellipsoid
+- trait_name: seed_shape
+  find: fusiform
+  replace: fusiform
+- trait_name: seed_shape
   find: globose
   replace: globoid
 - trait_name: seed_shape
-  find: obovate
-  replace: obovoid
+  find: spherical
+  replace: globoid
 - trait_name: seed_shape
-  find: oblong
-  replace: obloid
+  find: lenticular
+  replace: lenticular
+- trait_name: seed_shape
+  find: plano-convex
+  replace: lenticular
+- trait_name: seed_shape
+  find: orbicular
+  replace: orbicular
+- trait_name: seed_shape
+  find: obovate
+  replace: ovoid
+- trait_name: seed_shape
+  find: obovoid
+  replace: ovoid
 - trait_name: seed_shape
   find: ovate
   replace: ovoid
 - trait_name: seed_shape
-  find: plano-convex
-  replace: lenticular
+  find: ovoid
+  replace: ovoid
+- trait_name: seed_shape
+  find: pyriform
+  replace: ovoid
+- trait_name: seed_shape
+  find: lachrimiform
+  replace: ovoid_elongated
+- trait_name: seed_shape
+  find: reniform
+  replace: reniform
+- trait_name: seed_shape
+  find: muricate
+  replace: .na.character
 taxonomic_updates:
 - find: Australina pusilla subsp. Pusila
   replace: Australina pusilla subsp. pusilla
@@ -285,4 +327,3 @@ taxonomic_updates:
   reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
 exclude_observations: .na
 questions: .na
-

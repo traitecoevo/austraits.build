@@ -4,15 +4,21 @@ source:
     bibtype: Unpublished
     year: 2020
     author: James Kirkpatrick
-    title: "Unpublished data: Fire response traits for woody Tasmanian endemic species, University of Tasmania"
-people:
-- name: James Kirkpatrick
-  institution: University of Tasmania
-  role: collector, contact
+    title: 'Unpublished data: Fire response traits for woody Tasmanian endemic species,
+      University of Tasmania'
+contributors:
+  data_collectors:
+  - last_name: Kirkpatrick
+    given_name: James
+    ORCID: .na.character
+    affiliation: University of Tasmania, Australia
+    notes: acknowledge only
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
   year_collected_start: 2020
   year_collected_end: 2020
-  description: Jamie Kirkpatrick's knwledge of fire response traits for woody Tasmanian
+  description: Jamie Kirkpatrick's knowledge of fire response traits for woody Tasmanian
     endemics
   collection_type: field
   sample_age_class: adult
@@ -26,8 +32,7 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: species_name
-  custom_R_code: data %>% mutate(Wind = ifelse(Wind == "y","wind",NA), 'Bird/mammal'
-    = ifelse('Bird/mammal' == "y","bird mammal",NA))
+  custom_R_code: data %>% mutate(dispersal_syndrome = if_else(Wind == "y", if_else(`Bird/mammal` == "y","anemochory zoochory","anemochory"), ifelse(`Bird/mammal` == "y","zoochory", "neither"))) %>% mutate(dispersers = if_else(Wind == "y", if_else(`Bird/mammal` == "y","wind birds mammals","wind"), if_else(`Bird/mammal` == "y","birds mammals","neither")))
 traits:
 - var_in: Resprout
   unit_in: .na
@@ -41,15 +46,15 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: author knowledge
-- var_in: Wind
+- var_in: dispersal_syndrome
   unit_in: .na
   trait_name: dispersal_syndrome
   value_type: expert_mean
   replicates: .na
   methods: author knowledge
-- var_in: Bird/mammal
+- var_in: dispersers
   unit_in: .na
-  trait_name: dispersal_syndrome
+  trait_name: dispersers
   value_type: expert_mean
   replicates: .na
   methods: author knowledge
@@ -78,7 +83,12 @@ substitutions:
 - trait_name: serotiny
   find: 'n'
   replace: not_serotinous
+- trait_name: dispersal_syndrome
+  find: neither
+  replace: .na
+- trait_name: dispersers
+  find: neither
+  replace: .na
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

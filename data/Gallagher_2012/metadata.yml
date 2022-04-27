@@ -10,13 +10,19 @@ source:
     number: '10'
     pages: 1757--1771
     doi: 10.1111/j.1365-2699.2012.02773.x
-people:
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor, contact
-- name: Michelle Leishman
-  institution: Macquarie University Sydney
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Gallagher
+    given_name: Rachael
+    ORCID: 0000-0002-4680-8115
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  - last_name: Leishman
+    given_name: Michelle
+    ORCID: 0000-0003-4830-5797
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  austraits_curators: Rachael Gallagher
 dataset:
   year_collected_start: 2012
   year_collected_end: 2012
@@ -47,10 +53,7 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: species_name
-  custom_R_code: data %>% mutate(dispersal_syndrome = ifelse(`dispersal appendage/syndrome`
-    %in% c("animal","water"),`dispersal appendage/syndrome`,NA),`dispersal appendage/syndrome`
-    = ifelse(`dispersal appendage/syndrome` %in% c("animal","water"),NA,`dispersal
-    appendage/syndrome`))
+  custom_R_code: data %>% mutate(fruit_dehiscence = NA, fruit_fleshiness = NA, fruit_type = NA, dispersal_syndrome = NA, ) %>% move_values_to_new_trait("dispersal appendage/syndrome", "fruit_type", c("drupe", "berry","fleshy syncarp"), c("drupe", "berry","syconium"), c(NA,NA,"fleshy syncarp")) %>% move_values_to_new_trait("dispersal appendage/syndrome", "fruit_fleshiness", c("fleshy syncarp", "fleshy"), c("fleshy", "fleshy"), c("fleshy syncarp", NA)) %>% move_values_to_new_trait("dispersal appendage/syndrome", "fruit_dehiscence", "fleshy syncarp", "indehiscent", NA)  %>% move_values_to_new_trait("dispersal appendage/syndrome", "dispersal_syndrome", c("unassisted", "wind","water","animal"), c("unassisted", "wind","water","animal"), c(NA,NA,NA,NA))
 traits:
 - var_in: SLA (mm2/mg)
   unit_in: mm2/mg
@@ -66,7 +69,7 @@ traits:
   methods: data downloaded from TRY (data source 57)
 - var_in: seed mass (mg)
   unit_in: mg
-  trait_name: seed_mass
+  trait_name: seed_dry_mass
   value_type: unknown
   replicates: unknown
   methods: field collections Garreth Kyle (data source 48), Janet Lake (data source
@@ -78,13 +81,43 @@ traits:
   value_type: unknown
   replicates: unknown
   methods: data from Gallagher littoral rainforest survey (data source 15)
+- var_in: fruit_type
+  unit_in: .na
+  trait_name: fruit_type
+  value_type: expert_mean
+  replicates: .na
+  methods: Component of dispersal data, that are fruit types; We defined abiotic dispersal
+    as the movement of propagules by wind or water, and biotic dispersal as the movement
+    of propagules by animals, either through ingestion or adhesion. Unassisted seeds
+    were classified as those species with no specialized structures for long-distance
+    dispersal, which were also too large to be transported by wind.
+- var_in: fruit_fleshiness
+  unit_in: .na
+  trait_name: fruit_fleshiness
+  value_type: expert_mean
+  replicates: .na
+  methods: Component of dispersal data, that are fruit types; We defined abiotic dispersal
+    as the movement of propagules by wind or water, and biotic dispersal as the movement
+    of propagules by animals, either through ingestion or adhesion. Unassisted seeds
+    were classified as those species with no specialized structures for long-distance
+    dispersal, which were also too large to be transported by wind.
+- var_in: fruit_dehiscence
+  unit_in: .na
+  trait_name: fruit_dehiscence
+  value_type: expert_mean
+  replicates: .na
+  methods: Component of dispersal data, that are fruit types; We defined abiotic dispersal
+    as the movement of propagules by wind or water, and biotic dispersal as the movement
+    of propagules by animals, either through ingestion or adhesion. Unassisted seeds
+    were classified as those species with no specialized structures for long-distance
+    dispersal, which were also too large to be transported by wind.
 - var_in: dispersal appendage/syndrome
   unit_in: .na
   trait_name: dispersal_appendage
   value_type: expert_mean
   replicates: .na
   methods: We defined abiotic dispersal as the movement of propagules by wind or water,
-    and bio- tic dispersal as the movement of propagules by animals, either through
+    and biotic dispersal as the movement of propagules by animals, either through
     ingestion or adhesion. Unassisted seeds were classified as those species with
     no specialized structures for long-distance dispersal, which were also too large
     to be transported by wind.
@@ -94,7 +127,7 @@ traits:
   value_type: expert_mean
   replicates: .na
   methods: We defined abiotic dispersal as the movement of propagules by wind or water,
-    and bio- tic dispersal as the movement of propagules by animals, either through
+    and biotic dispersal as the movement of propagules by animals, either through
     ingestion or adhesion. Unassisted seeds were classified as those species with
     no specialized structures for long-distance dispersal, which were also too large
     to be transported by wind.
@@ -113,22 +146,19 @@ traits:
 substitutions:
 - trait_name: dispersal_syndrome
   find: animal
-  replace: animal_vector
+  replace: zoochory
 - trait_name: dispersal_syndrome
   find: water
   replace: hydrochory
+- trait_name: dispersal_syndrome
+  find: wind
+  replace: anemochory
+- trait_name: dispersal_syndrome
+  find: unassisted
+  replace: barochory
 - trait_name: dispersal_appendage
   find: coma
   replace: hairs
-- trait_name: dispersal_appendage
-  find: fleshy
-  replace: fleshy_fruit
-- trait_name: dispersal_appendage
-  find: fleshy syncarp
-  replace: fleshy_fruit
-- trait_name: dispersal_appendage
-  find: unassisted
-  replace: none
 - trait_name: dispersal_appendage
   find: wing
   replace: wings
@@ -150,4 +180,3 @@ taxonomic_updates:
   reason: Align to APC accepted synonym (E. Wenk, 2020-05-24)
 exclude_observations: .na
 questions: .na
-

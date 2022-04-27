@@ -7,16 +7,24 @@ source:
     title: Australian rainforest fruits
     publisher: CSIRO Publishing
     pages: 272
-people:
-- name: Daniel Metcalfe
-  institution: CSIRO
-  role: contact, contributor
-- name: Wendy Cooper
-  institution: consultant
-  role: collector
-- name: William Cooper
-  institution: consultant
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Metcalfe
+    given_name: Daniel
+    ORCID: 0000-0001-6853-7072
+    affiliation: CSIRO Land and Water, Australia
+    additional_role: contact
+  - last_name: Cooper
+    given_name: Wendy
+    ORCID: .na.character
+    affiliation: consultant
+    notes: no contact
+  - last_name: Cooper
+    given_name: William
+    ORCID: .na.character
+    affiliation: consultant
+    notes: deceased
+  austraits_curators: Elizabeth Wenk
 dataset:
   year_collected_start: 2013
   year_collected_end: 2013
@@ -32,7 +40,7 @@ config:
   data_is_long_format: no
   variable_match:
     taxon_name: species_name
-  custom_R_code: data %>% mutate(growth_habit = ifelse(height=="prostrate","prostrate",NA))
+  custom_R_code: data %>% mutate(growth_habit = ifelse(height=="prostrate","prostrate",NA)) %>% mutate(fruit_fleshiness = fruits, fruit_dehiscence = fruits, dispersal_appendage = NA) %>% move_values_to_new_trait("fruits", "dispersal_appendage", c("dry & winged", "enclosed in aril"), c("wings", "aril"), c("dry & winged", "enclosed in aril")) 
 traits:
 - var_in: form
   unit_in: .na
@@ -61,6 +69,24 @@ traits:
 - var_in: fruits
   unit_in: .na
   trait_name: fruit_type
+  value_type: expert_mean
+  replicates: .na
+  methods: reference book
+- var_in: fruit_fleshiness
+  unit_in: .na
+  trait_name: fruit_fleshiness
+  value_type: expert_mean
+  replicates: .na
+  methods: reference book
+- var_in: fruit_dehiscence
+  unit_in: .na
+  trait_name: fruit_dehiscence
+  value_type: expert_mean
+  replicates: .na
+  methods: reference book
+- var_in: dispersal_appendage
+  unit_in: .na
+  trait_name: dispersal_appendage
   value_type: expert_mean
   replicates: .na
   methods: reference book
@@ -217,86 +243,47 @@ substitutions:
   find: multiple fruit
   replace: multiple_fruit
 - trait_name: fruit_type
-  find: dehiscent pod
-  replace: dehiscent_pod
-- trait_name: fruit_type
-  find: indehiscent pod
-  replace: indehiscent_pod
+  find: cocci
+  replace: follicle
 - trait_name: fruit_type
   find: dry & winged
-  replace: dry_winged
-- trait_name: fruit_type
-  find: dry berry
-  replace: berry_dry
-- trait_name: fruit_type
-  find: capsule or samara
-  replace: capsule samara
+  replace: .na.character
 - trait_name: fruit_type
   find: drupe?
   replace: drupe
-- trait_name: fruit_type
-  find: thin-walled capsule
-  replace: capsule
-- trait_name: fruit_type
-  find: samala or capsule
-  replace: capsule samara
-- trait_name: fruit_type
-  find: samala or capsule?
-  replace: capsule samara
-- trait_name: fruit_type
-  find: woody capsule
-  replace: capsule
-- trait_name: fruit_type
-  find: woody follicle
-  replace: follicle
-- trait_name: fruit_type
-  find: capsule or follicle
-  replace: capsule follicle
-- trait_name: fruit_type
-  find: aggregate fruit
-  replace: aggregate_fruit
-- trait_name: fruit_type
-  find: drupe-like
-  replace: drupe
-- trait_name: fruit_type
-  find: multiple fruit or berry
-  replace: aggregate_fruit
-- trait_name: fruit_type
-  find: many-seeded nut
-  replace: nut
-- trait_name: fruit_type
-  find: seed-like nut
-  replace: nut
-- trait_name: fruit_type
-  find: nut (the seed-like object inside each fleshy sac)
-  replace: nut
-- trait_name: fruit_type
-  find: cluster of capsules
-  replace: capsule aggregate_fruit
-- trait_name: fruit_type
-  find: berry?
-  replace: berry
-- trait_name: fruit_type
-  find: nut disguised as a drupe
-  replace: nut
-- trait_name: fruit_type
-  find: samara or nut
-  replace: nut samara
 - trait_name: fruit_type
   find: nut or achene
   replace: nut achene
 - trait_name: fruit_type
   find: cypsella
-  replace: cypsela
+  replace: achene
+- trait_name: fruit_type
+  find: dehiscent pod
+  replace: legume
+- trait_name: fruit_type
+  find: indehiscent pod
+  replace: legume_indehiscent
+- trait_name: fruit_type
+  find: pod
+  replace: legume
 - trait_name: fruit_type
   find: flat pod
-  replace: pod
+  replace: legume
 - trait_name: fruit_type
   find: cone containing samaras
   replace: samara
 - trait_name: fruit_type
+  find: dry berry
+  replace: berry
+- trait_name: fruit_type
+  find: woody capsule
+  replace: capsule
+- trait_name: fruit_type
+  find: fleshy
+  replace: .na.character
+- trait_name: fruit_type
   find: disarticulating pod
-  replace: dehiscent_pod
+  replace: legume
 - trait_name: fruit_type
   find: nut-like
   replace: nut
@@ -304,14 +291,368 @@ substitutions:
   find: shizocarp
   replace: schizocarp
 - trait_name: fruit_type
+  find: samara or nut
+  replace: nut samara
+- trait_name: fruit_type
+  find: nut disguised as a drupe
+  replace: nut
+- trait_name: fruit_type
+  find: many-seeded nut
+  replace: .na.character
+- trait_name: fruit_type
+  find: fig
+  replace: syconium
+- trait_name: fruit_type
+  find: multiple fruit or berry
+  replace: multiple_fruit berry
+- trait_name: fruit_type
+  find: berry?
+  replace: berry
+- trait_name: fruit_type
   find: aggregated capsule
-  replace: capsule aggregate_fruit
+  replace: capsule multiple_fruit
+- trait_name: fruit_type
+  find: drupe-like
+  replace: drupe
+- trait_name: fruit_type
+  find: woody follicle
+  replace: follicle
 - trait_name: fruit_type
   find: cluster of nuts or achenes
   replace: nut achene
 - trait_name: fruit_type
+  find: aggregate fruit
+  replace: multiple_fruit
+- trait_name: fruit_type
+  find: capsule or follicle
+  replace: capsule follicle
+- trait_name: fruit_type
+  find: thin-walled capsule
+  replace: capsule
+- trait_name: fruit_type
+  find: samala or capsule?
+  replace: capsule samara
+- trait_name: fruit_type
+  find: capsule or samara
+  replace: capsule samara
+- trait_name: fruit_type
   find: enclosed in aril
-  replace: capsule_aril
+  replace: .na.character
+- trait_name: fruit_type
+  find: cluster of capsules
+  replace: capsule
+- trait_name: fruit_type
+  find: nut (the seed-like object inside each fleshy sac)
+  replace: .na.character
+- trait_name: fruit_type
+  find: seed-like nut
+  replace: nut
+- trait_name: fruit_dehiscence
+  find: capsule
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: berry
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: drupe
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: nut
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: follicle
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: nutlet
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: schizocarp
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: a pair of mericarps
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: capsule?
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: multiple fruit
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: cocci
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: dry & winged
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: drupe?
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: nut or achene
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: cypsella
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: achene
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: dehiscent pod
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: indehiscent pod
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: pod
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: flat pod
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: samara
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: cone containing samaras
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: dry berry
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: woody capsule
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: fleshy
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: disarticulating pod
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: nut-like
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: shizocarp
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: samara or nut
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: nut disguised as a drupe
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: many-seeded nut
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: fig
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: multiple fruit or berry
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: berry?
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: aggregated capsule
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: drupe-like
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: woody follicle
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: cluster of nuts or achenes
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: aggregate fruit
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: capsule or follicle
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: thin-walled capsule
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: samala or capsule?
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: capsule or samara
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: enclosed in aril
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: cluster of capsules
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: nut (the seed-like object inside each fleshy sac)
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: seed-like nut
+  replace: indehiscent
+- trait_name: fruit_fleshiness
+  find: capsule
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: berry
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: drupe
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: nut
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: follicle
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: nutlet
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: schizocarp
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: a pair of mericarps
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: capsule?
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: multiple fruit
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: cocci
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: dry & winged
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: drupe?
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: nut or achene
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: cypsella
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: achene
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: dehiscent pod
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: indehiscent pod
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: pod
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: flat pod
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: samara
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: cone containing samaras
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: dry berry
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: woody capsule
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: disarticulating pod
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: nut-like
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: shizocarp
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: samara or nut
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: nut disguised as a drupe
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: many-seeded nut
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: fig
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: multiple fruit or berry
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: berry?
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: aggregated capsule
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: drupe-like
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: woody follicle
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: cluster of nuts or achenes
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: aggregate fruit
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: capsule or follicle
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: thin-walled capsule
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: samala or capsule?
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: capsule or samara
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: enclosed in aril
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: cluster of capsules
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: nut (the seed-like object inside each fleshy sac)
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: seed-like nut
+  replace: dry
+- trait_name: dispersers
+  find: cassowary
+  replace: cassowaries
+- trait_name: dispersers
+  find: birds cassowary
+  replace: birds cassowaries
+- trait_name: dispersers
+  find: birds bats cassowary
+  replace: birds bats cassowaries
+- trait_name: dispersers
+  find: cassowary mammals
+  replace: cassowaries mammals
+- trait_name: dispersers
+  find: cassowary bats
+  replace: cassowaries bats
+- trait_name: dispersers
+  find: birds mammals cassowary
+  replace: birds mammals cassowaries
+- trait_name: dispersers
+  find: cassowary bats mammals
+  replace: cassowaries bats mammals
+- trait_name: dispersers
+  find: birds bats mammals cassowary
+  replace: birds bats mammals cassowaries
+- trait_name: dispersers
+  find: aborigines
+  replace: indigenous_people
 taxonomic_updates:
 - find: Acacia disparrima calidestris
   replace: Acacia disparrima subsp. calidestris
@@ -1216,16 +1557,16 @@ taxonomic_updates:
     2020-05-24)
 - find: Actephila (Possum Scrub)
   replace: Actephila venusta
-  reason: "Align previous phrase name with current APC name (E. Wenk, 2020-05-24)"
+  reason: Align previous phrase name with current APC name (E. Wenk, 2020-05-24)
 - find: Actephila (Rocky River)
   replace: Actephila traceyi
-  reason: "Align previous phrase name with current APC name (E. Wenk, 2020-05-24)"
+  reason: Align previous phrase name with current APC name (E. Wenk, 2020-05-24)
 - find: Actephila (Wooroonooran NP)
   replace: Actephila vernicosa
-  reason: "Align previous phrase name with current APC name (E. Wenk, 2020-05-24)"
+  reason: Align previous phrase name with current APC name (E. Wenk, 2020-05-24)
 - find: Aglaia (Silver Plaines)
   replace: Aglaia cooperae
-  reason: "Align previous phrase name with current APC name (E. Wenk, 2020-05-24)"
+  reason: Align previous phrase name with current APC name (E. Wenk, 2020-05-24)
 - find: Aidia (Gap Creek)
   replace: Aidia sp. Gap Creek (L.W.Jessup 651)
   reason: Align with APC accepted phrase name (E. Wenk, 2020-05-24)
@@ -1889,4 +2230,3 @@ exclude_observations:
   find: Sambucus canadnsis
   reason: non-native (E Wenk, 2020.06.18)
 questions: .na
-

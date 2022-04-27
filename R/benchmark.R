@@ -1,8 +1,5 @@
 #' Check performance on current system using package bench
 #'
-#' @param strategy_types A list of name strategy types to be tests
-#' @param iterations The number of iterations to be run
-#'
 #' @return A dataframe of results
 #' @export
 
@@ -18,6 +15,7 @@ run_benchmark <- function( ) {
     data
   }
   
+  dataset_id <- NULL
   dataset_ids <- c("ANBG_2019", "Baker_2019", "Bloomfield_2018", "Catford_2014", "Cheal_2017", "Maslin_2012", "Tomlinson_2019", "Westoby_2014")
 
   message("Running benchmarks via `run_benchmarks`")
