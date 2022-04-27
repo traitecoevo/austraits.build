@@ -62,7 +62,8 @@ subset_config <- function(
          value_type = value_type,
          columns_traits = names(definitions[["austraits"]][["elements"]][["traits"]][["elements"]]),
          columns_sites = names(definitions[["austraits"]][["elements"]][["sites"]][["elements"]]),
-         columns_contexts = names(definitions[["austraits"]][["elements"]][["contexts"]][["elements"]])
+         columns_contexts = names(definitions[["austraits"]][["elements"]][["contexts"]][["elements"]]),
+         columns_contributors = names(definitions[["austraits"]][["elements"]][["contributors"]][["elements"]])
        ),
        unit_conversion_functions = unit_conversion_functions_sub)
 }
@@ -138,18 +139,33 @@ load_study <- function(filename_data_raw,
     dplyr::arrange(.data$context_name, .data$context_property)
 
   # record contributors
+  if (length(unlist(metadata$contributors$data_collectors)) >1 ){
   contributors <-
-    metadata$people %>%
+    metadata$contributors$data_collectors %>%
     list_to_df() %>%
     dplyr::mutate(dataset_id = dataset_id) %>%
-    dplyr::select(dataset_id = dataset_id, everything()) %>%
-    filter(!is.na(.data$name))
+    filter(!is.na(.data$last_name))
+  } else {
+   contributors <- tibble::tibble(dataset_id = character())
+  }
+
+  contributors <-
+    contributors %>%
+    add_all_columns(definitions$columns_contributors, add_error_column = FALSE)
 
   # record methods on study from metadata
   sources <- metadata$source %>%
             lapply(convert_list_to_bib) %>% reduce(c)
   source_primary_key <- metadata$source$primary$key
   source_secondary_keys <- setdiff(names(sources), source_primary_key)
+
+  # combine collectors to add into the methods table
+  collectors_tmp <-
+    stringr::str_c(contributors$given_name, " ",
+                   contributors$last_name,
+                   ifelse(!is.na(contributors$additional_role),
+                          paste0(" (", contributors$additional_role, ")"),
+                          ""))  %>% paste(collapse = ", ")
 
   methods <-
     full_join( by = "dataset_id",
@@ -180,34 +196,40 @@ load_study <- function(filename_data_raw,
           stringr::str_replace_all(".;", ";")
           )
         )
-      )
+      ) %>%
+    dplyr::mutate(data_collectors = collectors_tmp,
+                  assistants = ifelse(is.null(metadata$contributors$assistants), NA_character_,
+                                      metadata$contributors$assistants
+                                      ),
+                  austraits_curators = metadata$contributors$austraits_curators
+                  )
 
   # Where missing, fill variables with values from sites
   vars <- c("collection_type", "sample_age_class", "collection_date", "measurement_remarks",
                   "value_type", "replicates")
-  
+
   for(v in vars){
     # merge in to traits from site level
     if(v %in% sites$site_property){
-      traits_tmp <- traits %>% 
+      traits_tmp <- traits %>%
         dplyr::left_join(by = "site_name",
                          sites %>% tidyr::pivot_wider(names_from = site_property, values_from = value) %>%
                            dplyr::select(.data$site_name, col_tmp = tidyselect::any_of(v)))
      ## filling any missing values
      traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
-     
+
     # # merge in to traits (from dataset level) via methods
     # if(v %in% colnames(methods)){
-    #   traits_tmp <- traits %>% 
+    #   traits_tmp <- traits %>%
     #     dplyr::left_join(by = "trait_name",
-    #                     methods %>% 
-    #                       dplyr::select(.data$trait_name, col_tmp = tidyselect::all_of(v)) %>% 
+    #                     methods %>%
+    #                       dplyr::select(.data$trait_name, col_tmp = tidyselect::all_of(v)) %>%
     #                       distinct())
     #  traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
     # }
   }
-  
+
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
     traits %>%
@@ -276,18 +298,18 @@ custom_manipulation <- function(txt) {
 #' "Apgaua_2017", context = TRUE)
 #' }
 format_sites <- function(my_list, dataset_id, context = FALSE) {
-  
+
   # default, if length 1 then it's an "na"
   if (length(unlist(my_list)) == 1) {
     return(tibble::tibble(dataset_id = character()))
   }
-  
+
   out <-
     my_list %>%
     lapply(lapply, as.character) %>%
     purrr::map_df(list1_to_df, .id = "name") %>%
     dplyr::mutate(dataset_id = dataset_id)
-  
+
   if (!context) {
     out <- out %>%
       dplyr::rename(site_property = "key", site_name = "name")
@@ -295,7 +317,7 @@ format_sites <- function(my_list, dataset_id, context = FALSE) {
     out <- out %>%
       dplyr::rename(context_property = "key", context_name = "name")
   }
-  
+
   out
 }
 
@@ -358,7 +380,7 @@ flag_excluded_observations <- function(data, metadata) {
 }
 
 #' Check values in one vector against values in another vector
-#' 
+#'
 #' `check_all_values_in` checks if values in vector x are in y. Values in x may
 #' contain multiple values separated by `sep` so these are split first using `str_split`.
 #'
@@ -603,11 +625,12 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
 #'
 #' @param data dataframe containing study data read in as a csv file
 #' @param vars vector of variable columns names to be included in the final formatted tibble
+#' @param add_error_column adds an extra column called error if TRUE
 #'
 #' @return tibble with the correct selection of columns including an error column
 #' @importFrom data.table :=
 #' @export
-add_all_columns <- function(data, vars) {
+add_all_columns <- function(data, vars, add_error_column = TRUE) {
 
   missing <- setdiff(vars, names(data))
 
@@ -615,9 +638,14 @@ add_all_columns <- function(data, vars) {
     data <- data%>%
       dplyr::mutate(!!v := NA_character_)
 
-  data %>%
-    dplyr::select(tidyselect::any_of(vars)) %>%
-    dplyr::mutate(error = NA_character_)
+  data <- data %>%
+    dplyr::select(tidyselect::any_of(vars))
+
+  if(add_error_column){
+    data <- data %>%
+      dplyr::mutate(error = NA_character_)
+  }
+  data
 }
 
 #' Process a single dataset
@@ -642,22 +670,22 @@ parse_data <- function(data, dataset_id, metadata) {
   # Step 1a. create dataframe with data for vars that we want to keep, and set to correct names
   var_in <- unlist(metadata[["dataset"]])
   i <- var_in %in% names(data)
-  
+
   df <- data %>%
         # next step selects and renames columns based on named vector
         dplyr::select(any_of(var_in[i])) %>%
         dplyr::mutate(dataset_id = dataset_id)
 
   # Step 1b. import any values that aren't columns of data
-  vars <- c("value_type", "replicates", "year_collected_start","year_collected_end", 
+  vars <- c("value_type", "replicates", "year_collected_start","year_collected_end",
             "collection_type", "sample_age_class", "measurement_remarks")
 
-  df <- 
-    df %>%  
+  df <-
+    df %>%
     bind_cols(
       metadata[["dataset"]][names(metadata[["dataset"]]) %in% vars[!vars %in% names(df)]] %>% tibble::as_tibble()
     )
-  
+
   # Add unique observation ids
   # function builds id -- determine number of 00s needed based on number of records
   make_id <- function(n, dataset_id)
@@ -701,11 +729,11 @@ parse_data <- function(data, dataset_id, metadata) {
   if (data_is_long_format == FALSE & any(! cfgChar[["var_in"]] %in% colnames(data))) {
     stop(paste(dataset_id, ": missing traits: ", setdiff(cfgChar[["var_in"]], colnames(data))))
   }
-  
-  
+
+
   ## if needed, change from wide to long format
   if (!data_is_long_format) {
-    
+
     # if the dataset is "wide" then process each variable in turn, to create the "long" dataset -
     # say the original dataset has 20 rows of data and 5 traits, then we will end up with 100 rows
     out <- list()
@@ -716,7 +744,7 @@ parse_data <- function(data, dataset_id, metadata) {
       # to x we append columns of data for trait_name, unit and value (the latter is retrieved from the data)
       out[[i]][["trait_name"]] <- cfgChar[["var_in"]][i]
       out[[i]][["value"]] <- data[[cfgChar[["var_in"]][i]]] %>% as.character()
-      
+
       # Pull in additional information for each trait as specified in traits part of metadata, here represented as cfgChar
       # Values in table can specify a column in the original data OR a value to use
 
@@ -740,10 +768,10 @@ parse_data <- function(data, dataset_id, metadata) {
   } else {
     out <- df %>% filter(.data$trait_name %in% cfgChar$var_in)
     out[["value"]] <- out[["value"]] %>%  as.character()
-    
+
     # Pull in additional information for each trait as specified in traits part of metadata, here represented as cfgChar
     # Values in table can specify a column in the original data OR a value to use
-    
+
     vars_to_check <- vars[vars%in% names(cfgChar)]
     # For each column in cfgChar
     for (i in seq_len(nrow(cfgChar))) {
@@ -758,7 +786,7 @@ parse_data <- function(data, dataset_id, metadata) {
 
   # Ensure all lower case
   out[["value"]] <- tolower(out[["value"]])
-  
+
   # Now process any name changes as per metadata[["traits"]]
   out[["unit"]] <- NA_character_
   i <- match(out[["trait_name"]], cfgChar[["var_in"]])
@@ -789,7 +817,7 @@ parse_data <- function(data, dataset_id, metadata) {
 }
 
 #' Standardise species names
-#' 
+#'
 #' Enforces some standards on species names
 #'
 #' @param x vector, dataframe or list containing original species names
