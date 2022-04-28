@@ -12,17 +12,32 @@ source:
     number: '6'
     pages: 564--584
     doi: 10.1093/treephys/tpu016
-people:
-- name: Lasantha K. Weerasinghe
-  institution: Research School of Biology, Australian National University
-  role: collector
-- name: Owen Atkin
-  institution: Research School of Biology, Australian National University
-  role: lab_leader
-- name: Kristine Crous
-  institution: Hawkesbury Institute for the Environment, Western Sydney University
-  role: collector, contact, contributor
+contributors:
+  data_collectors:
+  - last_name: Weerasinghe
+    given_name: Lasantha K.
+    ORCID: 0000-0002-5173-8000
+    affiliation: Faculty of Agriculture, University of Peradeniya, Peradeniya 20400,
+      Sri Lanka
+  - last_name: Atkin
+    given_name: Owen
+    ORCID: 0000-0003-1041-5202
+    affiliation: The Australian National University, Australia
+  - last_name: Crous
+    given_name: Kristine
+    ORCID: 0000-0001-9478-7593
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate_at(c("Photo","Cond","Ci","Trmmol","Rdark"), ~na_if(.,"-"))
+    %>% mutate(Date = Date %>% dmy())
+  taxon_name: Species
+  site_name: site_name
+  context_name: Canopy location
+  date: Date
   year_collected_start: 2010
   year_collected_end: 2010
   description: A study exploring the impact of canopy position on leaf respiration
@@ -409,26 +424,11 @@ sites:
     description: lowland tropical wet forest
 contexts:
   upper:
-    type: field
-    description: north-facing, sun-exposed leaves at the top of the canopy collected
-    natural irradiance (umol photons m-2 s-1): 2400
+    irradiance (umol photons m-2 s-1): 2400 PAR (upper canopy location)
   lower:
-    type: field
-    description: south-facing leaves from deep in the canopy collected
-    natural irradiance (umol photons m-2 s-1): 117
+    irradiance (umol photons m-2 s-1): 117 PAR (lower canopy location)
   understory:
-    type: field
-    description: leaves collected from understory species
-    natural irradiance (umol photons m-2 s-1): 11
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-    context_name: Canopy location
-    date: Date
-  custom_R_code: data %>% mutate_at(c("Photo","Cond","Ci","Trmmol","Rdark"), ~na_if(.,"-"))
-    %>% mutate(Date = Date %>% dmy())
+    irradiance (umol photons m-2 s-1): 11 PAR (understory)
 traits:
 - var_in: Photo
   unit_in: umolCO2/m2/s

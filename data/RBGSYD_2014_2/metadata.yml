@@ -6,27 +6,11 @@ source:
     title: 'PLantNET: NSW flora online'
     year: 2014
     url: http://plantnet.rbgsyd.nsw.gov.au/
-people:
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor, contact
+contributors:
+  data_collectors: .na.character
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2014
-  year_collected_end: 2014
-  description: Flora of NSW data from PLantNET
-  collection_type: botanical_collection
-  sample_age_class: adult
-  sampling_strategy: herbarium specimens
-  original_file: PLantNET.xls
-  notes: Request acknowledgement of "National Herbarium of NSW and PLantNET"
-sites: .na
-contexts: .na
-config:
   data_is_long_format: yes
-  variable_match:
-    taxon_name: species
-    value: lookup_data
-    trait_name: trait
   custom_R_code: '
     check_months <-  function(x){(1:12 %in% x %>% as.integer() %>% paste(collapse=""))};
 
@@ -46,6 +30,19 @@ config:
     bind_rows(
       data %>% subset(trait == "special life form" & lookup_data =="parasitic") %>% mutate(trait = "parasitic")
       )'
+  taxon_name: species
+  value: lookup_data
+  trait_name: trait
+  year_collected_start: 2014
+  year_collected_end: 2014
+  description: Flora of NSW data from PLantNET
+  collection_type: botanical_collection
+  sample_age_class: adult
+  sampling_strategy: herbarium specimens
+  original_file: PLantNET.xls
+  notes: Request acknowledgement of "National Herbarium of NSW and PLantNET"
+sites: .na
+contexts: .na
 traits:
 - var_in: flowering_time
   unit_in: .na
@@ -387,7 +384,7 @@ taxonomic_updates:
   reason: Confirm alignment with accepted phrase name on APC list (E. Wenk, 2020-05-24)
 - find: Agrostis sp. B sensu Jacobs & Hastings (1993)
   replace: Agrostis joyceae
-  reason: "Align previous phrase name with current APC name (E. Wenk, 2020-05-24)"
+  reason: Align previous phrase name with current APC name (E. Wenk, 2020-05-24)
 - find: Alangium polyosmoides
   replace: Alangium villosum subsp. polyosmoides
   reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
@@ -1481,7 +1478,8 @@ taxonomic_updates:
   reason: Alignment with known name in APNI names (Elizabeth Wenk, 2020-06-18)
 exclude_observations:
 - variable: taxon_name
-  find: Gaura mollis, Opuntia macrorhiza subsp. pottsii, Ranunculus aquatilis var. diffusus
+  find: Gaura mollis, Opuntia macrorhiza subsp. pottsii, Ranunculus aquatilis var.
+    diffusus
   reason: non-native (North America)
 - variable: taxon_name
   find: Cleome houtteana

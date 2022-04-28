@@ -229,8 +229,10 @@ replace_duplicates_with_NA <- function(x) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data <- read_csv(data/"Hughes_1992/data.csv")
 #' data %>% move_values_to_new_trait(data, "growth form", "root_structure", "Saprophyte", "saprophyte") -> data
+#' }
 move_values_to_new_trait <- function(data, original_trait, new_trait, original_values, values_for_new_trait, values_to_keep) {
   
        for (j in 1:length(original_values)) {
@@ -280,8 +282,10 @@ move_values_to_new_trait_long <-
 #' @return 
 #' @export
 #'
-#' @examples read_csv("export/dispersal_syndrome_substitutions.csv") %>% select(-extra) %>% filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
-#' @examples substitutions_from_csv(dataframe_of_substitutions,dataset_id,trait_name,find,replace)
+#' @examples \dontrun{
+#' read_csv("export/dispersal_syndrome_substitutions.csv") %>% select(-extra) %>% filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
+#' substitutions_from_csv(dataframe_of_substitutions,dataset_id,trait_name,find,replace)
+#' }
 
 substitutions_from_csv <- function(dataframe_of_substitutions,dataset_id,trait_name,find,replace) {
 

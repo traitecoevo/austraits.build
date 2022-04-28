@@ -2,20 +2,22 @@
 % Please edit documentation in R/support.R
 \name{rename_columns}
 \alias{rename_columns}
-\title{Rename columns}
+\title{Rename column names}
 \usage{
 rename_columns(obj, from, to)
 }
 \arguments{
-\item{obj}{a  tibble with multiple columns}
+\item{obj}{tibble or data frame with 1 or more columns}
 
-\item{from}{a vector of the initial column names}
+\item{from}{character string of the initial column name}
 
-\item{to}{a vector of the new column names}
+\item{to}{character string of the new column name}
 }
 \value{
-a  tibble with new column names
+a tibble with new column names
 }
 \description{
-Rename columns
+`rename_columns` renames column names within a tibble or data frame by matching
+the names given by the argument `from`. The new column names are renamed using the 
+names given by the argument `to`.
 }

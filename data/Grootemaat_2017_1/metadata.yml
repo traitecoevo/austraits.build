@@ -11,17 +11,32 @@ source:
     number: '4'
     pages: '327'
     doi: 10.1071/bt16258
-people:
-- name: Saskia Grootemaat
-  institution: University of New South Wales
-  role: collector, contact
-- name: Ian Wright
-  institution: Macquarie University
-  role: lab_leader
-- name: Veronica Shaw
-  institution: Macquarie University
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Grootemaat
+    given_name: Saskia
+    ORCID: .na.character
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Wright
+    given_name: Ian
+    ORCID: 0000-0001-8338-9143
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  assistants: Veronica Shaw
+  austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(specific_leaf_area = `Leaf area (cm2)`/`Leaf dry
+    mass (g)`) %>% group_by(Material,Taxon) %>% mutate_at(vars(`Leaf moisture (at
+    time of measuring) (%odw)`),~replace(.x,duplicated(.x),NA)) %>% ungroup() %>%
+    mutate(`FD (s)` = ifelse(Material == "BARK",NA,`FD (s)`)) %>% mutate(`TBT (s)`
+    = ifelse(Material == "BARK",NA,`TBT (s)`)) %>% mutate(`SD (s)` = ifelse(Material
+    == "BARK",NA,`SD (s)`)) %>% mutate(`TTI (s)` = ifelse(Material == "BARK",NA,`TTI
+    (s)`)) %>% mutate(measurement_remarks = ifelse(Material == "BARK","measurements made on bark", NA),measurement_remarks = ifelse(Material == "LEAVES","measurements made on leaves", measurement_remarks))
+  taxon_name: Taxon
+  site_name: Site
   year_collected_start: December 2012
   year_collected_end: 2015
   description: This study measured the decomposition rate and flammability (ignitibility,
@@ -29,7 +44,7 @@ dataset:
     and quantified correlations with potentially important traits to understand the
     interspecific differences in bark decomposability and flammability, and what chemical
     or physical traits drive variation in these properties.
-  collection_type: field, experiment
+  collection_type: field
   sample_age_class: adult
   sampling_strategy: Ten tree species with characteristic bark features were selected
     in the dry sclerophyll forests of Ku-ring-gai Chase National Park (33deg37'25'S,
@@ -93,26 +108,7 @@ sites:
       area; the actual sampling occurred at three sites at, -33.578781, 151.304784;
       -33.619800, 151.267429; and -33.651660;, 151.255547.
     geology (parent material): sandy, derived from Hawkesbury sandstone
-contexts:
-  BARK:
-    type: field
-    description: measurements made on bark
-  LEAVES:
-    type: field
-    description: measurements made on leaves
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Taxon
-    context_name: Material
-    site_name: Site
-  custom_R_code: data %>% mutate(specific_leaf_area = `Leaf area (cm2)`/`Leaf dry
-    mass (g)`) %>% group_by(Material,Taxon) %>% mutate_at(vars(`Leaf moisture (at
-    time of measuring) (%odw)`),~replace(.x,duplicated(.x),NA)) %>% ungroup() %>%
-    mutate(`FD (s)` = ifelse(Material == "BARK",NA,`FD (s)`)) %>% mutate(`TBT (s)`
-    = ifelse(Material == "BARK",NA,`TBT (s)`)) %>% mutate(`SD (s)` = ifelse(Material
-    == "BARK",NA,`SD (s)`)) %>% mutate(`TTI (s)` = ifelse(Material == "BARK",NA,`TTI
-    (s)`))
+contexts: .na
 traits:
 - var_in: Leaf Energy (MJ/kg)
   unit_in: MJ/kg

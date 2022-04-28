@@ -16,14 +16,32 @@ source:
     number: '6'
     pages: 1492--1506
     doi: 10.1111/1365-2435.13097
-people:
-- name: Keith Bloomfield
-  institution: Australian National University
-  role: collector
-- name: Owen Atkin
-  institution: Australian National University
-  role: collector, lab_leader,contact
+contributors:
+  data_collectors:
+  - last_name: Bloomfield
+    given_name: Keith
+    ORCID: .na.character
+    affiliation: Imperial College, London, United Kingdom
+  - last_name: Atkin
+    given_name: Owen
+    ORCID: 0000-0003-1041-5202
+    affiliation: The Australian National University, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate_at(vars(`Rdark.a`), ~na_if(.,0)) %>% mutate(Date
+    = Date %>% dmy()) %>% mutate(context = ifelse(Site %in% c("Calperum mallee","Great
+    Western Woodlands","Alice Mulga") & Visit == "Summer", "Summer_unfavourable",Visit),
+    context = ifelse(Site %in% c("Cumberland Plain","Warra","Alice Mulga") & Visit
+    == "Winter", "Winter_unfavourable",context), context = ifelse(Site %in% c("Cumberland
+    Plain","Warra") & Visit == "Summer", "Summer_favourable",context), context = ifelse(Site
+    %in% c("Calperum mallee","Great Western Woodlands") & Visit == "Winter","Winter_favourable",context))
+  taxon_name: Species
+  site_name: Site
+  observation_id: Tree.id
+  date: Date
+  context_name: context
   year_collected_start: 2010
   year_collected_end: 2014
   description: A field study of leaf trait variation at seven sites spanning a range
@@ -162,42 +180,17 @@ sites:
     precipitation, MAP (mm): 1591.0
 contexts:
   Dry:
-    type: field_harsh
-    description: sample collected during the dry season
+    sampling season: dry season
   Summer_favourable:
-    type: field_favourable
-    description: sample collected during the summer in a location where this is the
-      favourable season
+    sampling season: summer in a location where this is the favourable season
   Summer_unfavourable:
-    type: field_harsh
-    description: sample collected during the summer in a location where this is the
-      unfavourable season
+    sampling season: summer in a location where this is the unfavourable season
   Wet:
-    type: field_favourable
-    description: sample collected during the wet season
+    sampling season: wet season
   Winter_favourable:
-    type: field_favourable
-    description: sample collected during the winter in a location where this is the
-      favourable season
+    sampling season: winter in a location where this is the favourable season
   Winter_unfavourable:
-    type: field_harsh
-    description: sample collected during the winter in a location where this is the
-      unfavourable season
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: Site
-    observation_id: Tree.id
-    date: Date
-    context_name: context
-  custom_R_code: data %>% mutate_at(vars(`Rdark.a`), ~na_if(.,0)) %>% mutate(Date
-    = Date %>% dmy()) %>% mutate(context = ifelse(Site %in% c("Calperum mallee","Great
-    Western Woodlands","Alice Mulga") & Visit == "Summer", "Summer_unfavourable",Visit),
-    context = ifelse(Site %in% c("Cumberland Plain","Warra","Alice Mulga") & Visit
-    == "Winter", "Winter_unfavourable",context), context = ifelse(Site %in% c("Cumberland
-    Plain","Warra") & Visit == "Summer", "Summer_favourable",context), context = ifelse(Site
-    %in% c("Calperum mallee","Great Western Woodlands") & Visit == "Winter","Winter_favourable",context))
+    sampling season: winter in a location where this is the unfavourable season
 traits:
 - var_in: A400.a
   unit_in: umolCO2/m2/s

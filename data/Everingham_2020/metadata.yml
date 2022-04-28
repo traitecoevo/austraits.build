@@ -11,22 +11,35 @@ source:
     volume: 102
     pages: e03272
     doi: 10.1002/ecy.3272
-people:
-- name: Susan Everingham
-  institution: University of New South Wales
-  role: contact, collector
-- name: Angela Moles
-  institution: University of New South Wales
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Everingham
+    given_name: Susan
+    ORCID: 0000-0002-4780-2700
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Moles
+    given_name: Angela
+    ORCID: 0000-0003-2041-7762
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(root_mass_fraction = `Root (g)`/`Totalplant`, stem_mass_fraction
+    = `Totalshoot (g)`/Totalplant) %>% mutate(`Date Collected` = `Date Collected` %>% mdy()) %>% mutate(`Leaf area (cm2)` = `Leaf area (cm2)`/Count_of_leaves_scanned,`Leaf mass (g)` = `Leaf mass (g)`/Count_of_leaves_scanned,
+    `Leaflet area (cm2)` = ifelse(Leaf_or_leaflet == "Leaflet",`Leaf area (cm2)`,NA),`Leaf area (cm2)` = ifelse(Leaf_or_leaflet == "Leaf",`Leaf area (cm2)`,NA),`Leaflet mass (g)` = ifelse(Leaf_or_leaflet == "Leaflet",`Leaf mass (g)`,NA),`Leaf mass (g)` = ifelse(Leaf_or_leaflet == "Leaf",`Leaf mass (g)`,NA))
+  taxon_name: Species
+  site_name: site
+  context_name: Modern/Historic
+  date: Date Collected
   year_collected_start: 1971
   year_collected_end: 2018
   description: Seed and seedling trait measurements from resurrected historic seeds
     and compared these with modern seed and seedling traits collected from the same
     species in the same geographic location to understand trait responses to climate
     through time.
-  collection_type: field, glasshouse
-  sample_age_class: seedling, adult
   sampling_strategy: "To determine if plant traits have changed within a species over
     time, we compared historic and modern accessions of seeds of 43 native Australian
     plant species from regions in south-eastern Australia which have experience differing
@@ -83,6 +96,8 @@ dataset:
     applied at c. 200 mL of fertiliser per 75 L of soil. All plants were grown with
     adequate water supplied by overhead sprinklers and ambient light conditions in
     a glasshouse at UNSW, Sydney."
+  collection_type: glasshouse, field
+  sample_age_class: seedling, adult
   original_file: SE_Germination Data.xls, SE_LMA data.xls, SE_Photosynthesis data.xls,
     SE_Seed dimension data.xls, SE_Seed mass data.xls, and SE_stem density data.xls,
     submitted by author and archived in raw data folder
@@ -320,21 +335,9 @@ sites:
     longitude (deg): 147.2483
 contexts:
   Historic:
-    type: field
-    description: historic seed collections used
+    seed age: historic seed collections used
   Modern:
-    type: field
-    description: seed collected at the time of the study were used
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site
-    context_name: Modern/Historic
-    date: Date Collected
-  custom_R_code: data %>% mutate(root_mass_fraction = `Root (g)`/`Totalplant`, stem_mass_fraction
-    = `Totalshoot (g)`/Totalplant) %>% mutate(`Date Collected` = `Date Collected` %>% mdy()) %>% mutate(`Leaf area (cm2)` = `Leaf area (cm2)`/Count_of_leaves_scanned,`Leaf mass (g)` = `Leaf mass (g)`/Count_of_leaves_scanned,
-    `Leaflet area (cm2)` = ifelse(Leaf_or_leaflet == "Leaflet",`Leaf area (cm2)`,NA),`Leaf area (cm2)` = ifelse(Leaf_or_leaflet == "Leaf",`Leaf area (cm2)`,NA),`Leaflet mass (g)` = ifelse(Leaf_or_leaflet == "Leaflet",`Leaf mass (g)`,NA),`Leaf mass (g)` = ifelse(Leaf_or_leaflet == "Leaf",`Leaf mass (g)`,NA))
+    seed age: seeds collected at the time of the study were used
 traits:
 - var_in: Seed Length (mm)
   unit_in: mm
@@ -347,6 +350,8 @@ traits:
     small seeds (< 0.1 mg) were weighed in groups of five or ten, and their dimensions
     were not measured. Only filled historic and modern seeds were measured in our
     study.
+  collection_type: field
+  sample_age_class: adult
 - var_in: Seed Width (mm)
   unit_in: mm
   trait_name: seed_width
@@ -358,6 +363,8 @@ traits:
     small seeds (< 0.1 mg) were weighed in groups of five or ten, and their dimensions
     were not measured. Only filled historic and modern seeds were measured in our
     study.
+  collection_type: field
+  sample_age_class: adult
 - var_in: Seed Depth (mm)
   unit_in: mm
   trait_name: seed_height
@@ -369,6 +376,8 @@ traits:
     small seeds (< 0.1 mg) were weighed in groups of five or ten, and their dimensions
     were not measured. Only filled historic and modern seeds were measured in our
     study.
+  collection_type: field
+  sample_age_class: adult
 - var_in: Mass (g)
   unit_in: g
   trait_name: seed_dry_mass
@@ -377,11 +386,15 @@ traits:
   methods: For each species, we measured the oven dry mass of up to 50 historic and
     50 modern seeds using a microbalance (Mettler Toledo AG204, 1 x 10-4 g accuracy).
     Only filled historic and modern seeds were measured in our study.
+  collection_type: field
+  sample_age_class: adult
 - var_in: Leaflet area (cm2)
   unit_in: cm2
   trait_name: leaflet_area
   value_type: raw_value
   replicates: 1
+  collection_type: glasshouse
+  sample_age_class: seedling
   methods: To measure LMA, we collected three fresh leaves (excluding the petiole)
     from each individual plant at the end of the six-month growing period. For some
     species, due to their size/age, we were not able to measure area on three leaves
@@ -391,12 +404,14 @@ traits:
     area calculations measured in ImageJ. The leaves were then dried to a constant
     temperature using a drying oven at 60 deg C for 72 hr. Oven dry mass (g) for the
     leaves was measured by weighing on a microbalance(Mettler Toledo AG204-microbalance,
-    1 x 10-4 accuracy). LMA was calculated as oven-dry mass divided by fresh area. 
+    1 x 10-4 accuracy). LMA was calculated as oven-dry mass divided by fresh area.
 - var_in: Leaflet mass (g)
   unit_in: g
   trait_name: leaflet_dry_mass
   value_type: raw_value
   replicates: 1
+  collection_type: glasshouse
+  sample_age_class: sapling
   methods: To measure LMA, we collected three fresh leaves (excluding the petiole)
     from each individual plant at the end of the six-month growing period. For some
     species, due to their size/age, we were not able to measure area on three leaves
@@ -412,6 +427,8 @@ traits:
   trait_name: leaf_area
   value_type: raw_value
   replicates: 1
+  collection_type: glasshouse
+  sample_age_class: seedling
   methods: To measure LMA, we collected three fresh leaves (excluding the petiole)
     from each individual plant at the end of the six-month growing period. For some
     species, due to their size/age, we were not able to measure area on three leaves
@@ -427,6 +444,8 @@ traits:
   trait_name: leaf_dry_mass
   value_type: raw_value
   replicates: 1
+  collection_type: glasshouse
+  sample_age_class: seedling
   methods: To measure LMA, we collected three fresh leaves (excluding the petiole)
     from each individual plant at the end of the six-month growing period. For some
     species, due to their size/age, we were not able to measure area on three leaves
@@ -442,6 +461,8 @@ traits:
   trait_name: specific_leaf_area
   value_type: raw_value
   replicates: 1
+  collection_type: glasshouse
+  sample_age_class: seedling
   methods: To measure LMA, we collected three fresh leaves (excluding the petiole)
     from each individual plant at the end of the six-month growing period. For some
     species, due to their size/age, we were not able to measure area on three leaves
@@ -457,6 +478,8 @@ traits:
   trait_name: stem_density
   value_type: raw_value
   replicates: 1
+  collection_type: glasshouse
+  sample_age_class: seedling
   methods: Fresh volume of the stem was calculated using the water displacement method
     (Perez-Harguindeguy et al. 2013). Stem sections were dried at 60 deg C for 72
     hr in a drying oven and weighed. Specific stem density was calculated as the ratio
@@ -466,6 +489,8 @@ traits:
   trait_name: germination
   value_type: site_mean
   replicates: 50-100
+  collection_type: glasshouse
+  sample_age_class: seedling
   methods: Where enough seeds were available, we germinated 100 historic and 100 modern
     seeds of each species on agar in incubators, for two weeks or until the cotyledon
     had appeared in at least 90 % of the germinated seeds. Most species (35 out of
@@ -487,6 +512,8 @@ traits:
   trait_name: seed_viability
   value_type: site_mean
   replicates: 50-100
+  collection_type: glasshouse
+  sample_age_class: adult
   methods: Where enough seeds were available, we germinated 100 historic and 100 modern
     seeds of each species on agar in incubators, for two weeks or until the cotyledon
     had appeared in at least 90 % of the germinated seeds. Most species (35 out of
@@ -508,6 +535,8 @@ traits:
   trait_name: photosynthetic_rate_per_area_saturated
   value_type: individual_mean
   replicates: 5
+  collection_type: glasshouse
+  sample_age_class: seedling
   methods: Seeds were then germinated under controlled conditions and when they reached
     seedling age, were transferred to trays made up of 24-cells each measuring in
     2x2 cm cells. The seedlings grew for two weeks in the trays to ensure early seedling
@@ -535,6 +564,8 @@ traits:
   trait_name: stomatal_conductance_per_area_at_Asat
   value_type: individual_mean
   replicates: 5
+  collection_type: glasshouse
+  sample_age_class: seedling
   methods: Seeds were then germinated under controlled conditions and when they reached
     seedling age, were transferred to trays made up of 24-cells each measuring in
     2x2 cm cells. The seedlings grew for two weeks in the trays to ensure early seedling
@@ -562,6 +593,8 @@ traits:
   trait_name: ci_at_Asat
   value_type: individual_mean
   replicates: 5
+  collection_type: glasshouse
+  sample_age_class: seedling
   methods: Seeds were then germinated under controlled conditions and when they reached
     seedling age, were transferred to trays made up of 24-cells each measuring in
     2x2 cm cells. The seedlings grew for two weeks in the trays to ensure early seedling
@@ -589,6 +622,8 @@ traits:
   trait_name: root_shoot_ratio
   value_type: raw_value
   replicates: 1
+  collection_type: glasshouse
+  sample_age_class: seedling
   methods: After six months, we followed standard protocols to quantify plant height,
     biomass, root to shoot ratio (root:shoot) and stem density (Perez-Harguindeguy
     et al., (2013). We measured plant height from the top of the soil to the tip of
@@ -601,6 +636,8 @@ traits:
   trait_name: stem_mass_fraction
   value_type: raw_value
   replicates: 1
+  collection_type: glasshouse
+  sample_age_class: seedling
   methods: After six months, we followed standard protocols to quantify plant height,
     biomass, root to shoot ratio (root:shoot) and stem density (Perez-Harguindeguy
     et al., (2013). We measured plant height from the top of the soil to the tip of
@@ -613,6 +650,8 @@ traits:
   trait_name: root_mass_fraction
   value_type: raw_value
   replicates: 1
+  collection_type: glasshouse
+  sample_age_class: seedling
   methods: After six months, we followed standard protocols to quantify plant height,
     biomass, root to shoot ratio (root:shoot) and stem density (Perez-Harguindeguy
     et al., (2013). We measured plant height from the top of the soil to the tip of
@@ -630,4 +669,3 @@ taxonomic_updates:
   reason: Automatic alignment with name in APC list (accepted) (2020-08-20)
 exclude_observations: .na
 questions: .na
-
