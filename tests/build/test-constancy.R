@@ -50,12 +50,12 @@ test_that("constancy of with version 3.0.2", {
   
   # change some names so comparison to new version still runs
   austraits_raw_comparison$traits$trait_name <- austraits_raw_comparison$traits$trait_name %>%
-    gsub("seed_dry_mass","seed_mass", . ) %>%
-    gsub("seed_height", "seed_breadth", .)
+    gsub("seed_mass", "seed_dry_mass", . ) %>%
+    gsub("seed_breadth", "seed_height", .)
   
   austraits_raw_comparison$methods$trait_name <- austraits_raw_comparison$methods$trait_name %>%
-    gsub("seed_dry_mass","seed_mass", . ) %>%
-    gsub("seed_height", "seed_breadth", .)
+    gsub("seed_mass", "seed_dry_mass", . ) %>%
+    gsub("seed_breadth", "seed_height", .)
   
 
   # Compare some select columns of select elements 
@@ -69,7 +69,7 @@ test_that("constancy of with version 3.0.2", {
   v2 <- austraits_raw[[v]][,vv] %>% 
     dplyr::arrange(observation_id, trait_name) %>% 
     filter(!trait_name %in% not_to_check)
-  expect_equal(v1, v2,
+  expect_equal(v2, v1,
     info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
 
   v <- "sites"
@@ -81,7 +81,7 @@ test_that("constancy of with version 3.0.2", {
   v2 <- austraits_raw[[v]][,vv] %>% 
     dplyr::arrange(dataset_id, site_name) %>% 
     filter(site_property %in% to_check)
-  expect_equal(v1, v2,
+  expect_equal(v2, v1,
                info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
   
   v <- "methods"
@@ -90,7 +90,7 @@ test_that("constancy of with version 3.0.2", {
     dplyr::arrange(dataset_id, trait_name)
   v2 <- austraits_raw[[v]][,vv] %>% 
     dplyr::arrange(dataset_id, trait_name)
-  expect_equal(v1, v2,
+  expect_equal(v2, v1,
                info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
     
 })
