@@ -9,17 +9,25 @@ source:
     journal: Journal of Ecology
     volume: 79
     pages: 811-828
-people:
-- name: Enrique Jurado
-  institution: Autonomous University of Nuevo Leon
-  role: collector, contact
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Jurado
+    given_name: Enrique
+    ORCID: 0000-0002-4043-5549
+    affiliation: Universidad Autonoma de Nuevo Leon, Mexico
+    additional_role: contact
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  austraits_curators: Ian Wright
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(site_name = "Kunoth_Paddock") %>% mutate_at(c("height (cm)","leaf area (mm2)","seed mass (mg)"), ~na_if(.,0)) %>% mutate(parasitic =
+    ifelse(`growth form 1=tree, 2=shrub, 3=subshrub, 4=forb, 5=grass, 6=parasite,
+    10=twiner`=="6","parasitic",NA)) %>% mutate(`seed mass (mg)` = ifelse(is.na(filtering_column),`seed mass (mg)`,NA)) %>% mutate(dispersal_appendage = NA) %>% move_values_to_new_trait("dispersal mode 1=unassisted, 2=elaiosome, 3=flesh/aril, 4=adhesive, 5=wind", "dispersal_appendage", c("2","3"), c("2","3"), c(NA,NA))'
+  taxon_name: name_original
+  site_name: site_name
   year_collected_start: 1987
   year_collected_end: 1989
   description: trait data for species at Kunnoth Paddock Alice Springs
@@ -36,7 +44,7 @@ sites:
   Kunoth_Paddock:
     longitude (deg): 133.616667
     latitude (deg): -23.5
-    rainfall (mm): 263
+    precipitation, MAP (mm): 263
     description: Collections were made in open woodlands, floodplains and mulga country
       around Alice Springs (23 deg 42' S, 133 deg 52' E), Northern Territory. Alice
       Springs has an arid climate, with a mean annual rainfall of 263 mm, of which
@@ -45,15 +53,6 @@ sites:
       coldest (Low 1978). The exact location was in Kunoth Paddock on Hamilton Downs
       Station to the north-west of Alice Springs. Rainfall values are for Alice Springs.
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-    site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "Kunoth_Paddock") %>% mutate_at(c("height
-    (cm)","leaf area (mm2)","seed mass (mg)"), ~na_if(.,0)) %>% mutate(parasitic =
-    ifelse(`growth form 1=tree, 2=shrub, 3=subshrub, 4=forb, 5=grass, 6=parasite,
-    10=twiner`=="6","parasitic",NA))
 traits:
 - var_in: growth form 1=tree, 2=shrub, 3=subshrub, 4=forb, 5=grass, 6=parasite, 10=twiner
   unit_in: .na
@@ -63,12 +62,14 @@ traits:
   methods: Growth form was classified as follows, graminoid, including all species
     of the Poaceae and Cyperaceae; forb, including all non-woody species that were
     not graminoids; woody.
+  collection_type: field
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
   value_type: expert_mean
   replicates: .na
   methods: unknown
+  collection_type: literature
 - var_in: height (cm)
   unit_in: cm
   trait_name: plant_height
@@ -84,9 +85,10 @@ traits:
     from exhaustive reviews of the literature. These features included maximum height
     gained, presence of storage organ, depth of root system and presence of secondary
     compounds.
+  collection_type: field
 - var_in: seed mass (mg)
   unit_in: mg
-  trait_name: seed_mass
+  trait_name: seed_dry_mass
   value_type: site_mean
   replicates: 10-20
   methods: The term diaspore is used when referring to the seed and dispersal structures.
@@ -101,9 +103,40 @@ traits:
     were dissected, and parts (seed coat, reserve, husks and dispersal structure)
     were weighed separately. When diaspores had more than one seed, weight was expressed
     on a per-seed basis.
-- var_in: 'dispersal mode: 1=unassisted, 2=elaiosome, 3=flesh/aril, 4=adhesive, 5=wind'
+  collection_type: field
+- var_in: dispersal mode 1=unassisted, 2=elaiosome, 3=flesh/aril, 4=adhesive, 5=wind
   unit_in: .na
   trait_name: dispersal_syndrome
+  value_type: expert_mean
+  replicates: .na
+  methods: Species were classified into dispersal categories according to the presence
+    of structures on the seed, (i) unassisted; seeds with no apparent dispersal structure;
+    (ii) flesh, red and yellow arils or glue-like sweet substances (referred to as
+    bird- dispersed); (iii) elaiosome (white arils, ant-dispersed); (iv) adhesive
+    structures or substances associated with external dispersion by animals (adhesive);
+    (v) structures enhancing air resistance (wind-dispersed). Species categorized
+    as unassisted should not be regarded as undispersed. Indeed this category included
+    species with very small seeds borne in the uppermost part of the plant that are
+    likely to be wind-dispersed to considerable distances. Other species included
+    in this category could be dispersed by herbivores that eat seeds while feed- ing
+    on the mother plant and excrete viable seeds later (Janzen 1971). Because of the
+    lack of evidence of actual dispersal achieved by seeds, however, the presence
+    of structures was the sole consideration in classifying dispersal. Thus the terms
+    ant-, bird- and wind-dispersed and adhesive are used for seeds having distinct
+    structures associated with a syndrome, and therefore likely to be dispersed by
+    those agents. Some of the species classified here as having adhesive diaspores
+    (e.g. Aristida spp.) have been reported to have hygroscopic awns that are active
+    means of sec- ondary dispersal and not structures for passive dispersal (Peart
+    1979). However, such structures could be associated both with passive dispersal
+    on the skin of mam- mals and active dispersal on the soil surface. Some of the
+    awned diaspores remain in the inflorescence well beyond the time of seed maturity
+    (E. Jurado, personal observation). The elevation and exposure of the awned diaspores
+    could be an adaptation for more-efficient attachment to the skin of passing mammals.
+    Moreover, some diaspores stuck to the arms of one of the authors during collection.
+  collection_type: field
+- var_in: dispersal_appendage
+  unit_in: .na
+  trait_name: dispersal_appendage
   value_type: expert_mean
   replicates: .na
   methods: Species were classified into dispersal categories according to the presence
@@ -144,6 +177,7 @@ traits:
     years; perennial with an upper lifespan of 50-100 years; perennial with an upper
     lifespan of > 100 years. This classification is necessarily approximate, but it
     describes meaningful variation among the perennial species.
+  collection_type: field
 - var_in: leaf area (mm2)
   unit_in: mm2
   trait_name: leaf_area
@@ -152,6 +186,7 @@ traits:
   methods: Michelle Leishman collected this data. It isn't duplicated elsewhere and
     assuming methods are identical to those she used in other studies, as follows.
     "Leaf Area measured using leaf area meter."
+  collection_type: field
 substitutions:
 - trait_name: plant_growth_form
   find: 1
@@ -176,19 +211,19 @@ substitutions:
   replace: climber_twiner
 - trait_name: dispersal_syndrome
   find: 1
-  replace: unassisted
-- trait_name: dispersal_syndrome
+  replace: barochory
+- trait_name: dispersal_appendage
   find: 2
   replace: elaiosome
-- trait_name: dispersal_syndrome
+- trait_name: dispersal_appendage
   find: 3
   replace: aril
 - trait_name: dispersal_syndrome
   find: 4
-  replace: adhesion
+  replace: epizoochory
 - trait_name: dispersal_syndrome
   find: 5
-  replace: wind
+  replace: anemochory
 taxonomic_updates:
 - find: Amphipogon carcinus
   replace: Amphipogon caricinus
@@ -246,4 +281,3 @@ taxonomic_updates:
   reason: Align to genus (E. Wenk, 2020-05-25)
 exclude_observations: .na
 questions: .na
-

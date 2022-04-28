@@ -11,26 +11,32 @@ source:
     number:
     pages: 532--537
     doi: http://dx.doi.org/10.1071/WF16211
-people:
-- name: Aine Nicholson
-  institution: University of Tasmania
-  role: collector, contributor
-- name: Lynda Prior
-  institution: University of Tasmania
-  role: collector, contact
-- name: David Bowman
-  institution: University of Tasmania
-  role: lab_leader
-- name: George Perry
-  institution: University of Auckland
-  role: assistant
-- name: Mary Maconochie
-  institution: University of Tasmania
-  role: assistant
-- name: Kaely Kreger
-  institution: University of Tasmania
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Nicholson
+    given_name: Áine
+    ORCID: .na.character
+    affiliation: University of Tasmania, Australia
+  - last_name: Prior
+    given_name: Lynda
+    ORCID: 0000-0002-5511-2320
+    affiliation: University of Tasmania, Australia
+    additional_role: contact
+  - last_name: Bowman
+    given_name: David
+    ORCID: 0000-0001-8075-124X
+    affiliation: University of Tasmania, Australia
+  assistants: Kaely Kreger, Mary Maconochie, George Perry 
+  austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(resprouting_percentage_by_severity = ifelse(is.na(severity),
+    resprouting_proportion_species_level*100, resprouting_percentage_by_severity),
+    severity = ifelse(is.na(severity), "global_average", paste0("fire_severity_",
+    severity)))
+  taxon_name: Species
+  site_name: site_name
+  context_name: severity
   year_collected_start: 2014
   year_collected_end: 2015
   description: We report a case of widespread mortality of resprouters following a
@@ -61,34 +67,21 @@ sites:
       scrub and coastal scrub
 contexts:
   global_average:
-    description: average survival across all sites
-    type: field
+    fire intensity: average across all sites
   fire_severity_1:
-    description: in areas where foliage is retained
-    type: field
+    fire intensity: fire severity 1 (of 5); areas where foliage is retained
   fire_severity_2:
-    description: in areas where foliage removed but fine twigs persisted (<0.5 cm
-      diameter)
-    type: field
+    fire intensity: fire severity 2 (of 5); areas where foliage removed but fine twigs
+      persisted (<0.5 cm diameter)
   fire_severity_3:
-    description: in areas where trees burnt down to thin branches (0.5 to 3 cm diameter)
-    type: field
+    fire intensity: fire severity 3 (of 5); areas where trees burnt down to thin branches
+      (0.5 to 3 cm diameter)
   fire_severity_4:
-    description: in areas where trees burnt down to thick branches (3 to 5 cm diameter)
-    type: field
+    fire intensity: fire severity 4 (of 5); areas where trees burnt down to thick
+      branches (3 to 5 cm diameter)
   fire_severity_5:
-    description: in areas where only stumps remain (all branches removed)
-    type: field
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-    context_name: severity
-  custom_R_code: data %>% mutate(resprouting_percentage_by_severity = ifelse(is.na(severity),
-    resprouting_proportion_species_level*100, resprouting_percentage_by_severity),
-    severity = ifelse(is.na(severity), "global_average", paste0("fire_severity_",
-    severity)))
+    fire intensity: fire severity 5 (of 5); areas where only stumps remain (all branches
+      removed)
 traits:
 - var_in: fire_response
   unit_in: .na
@@ -160,4 +153,3 @@ taxonomic_updates:
   reason: Align to genus (E. Wenk, 2020-05-25)
 exclude_observations: .na
 questions: .na
-

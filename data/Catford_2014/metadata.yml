@@ -24,11 +24,40 @@ source:
     number: '2'
     pages: 432--442
     doi: 10.1111/j.1365-2664.2010.01945.x
-people:
-- name: Jane A. Catford
-  institution: King's College, London
-  role: collector, contact
+contributors:
+  data_collectors:
+  - last_name: Catford
+    given_name: Jane A.
+    ORCID: 0000-0003-0582-5960
+    affiliation: King's College London, London, United Kingdom
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(Taxa = str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
+    %>% mutate(site_name = "Yarrawonga") %>% mutate(str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
+    %>% mutate_at(c("Plant height max (m)","plant height min (m)","Leaf size (cm^2)"),
+    ~na_if(.,0)) %>% replace_na(list(Tree = 0, Gram = 0, Forb=0, Annual=0, Biennial=0,
+    Perennial=0, rhizomes=0,stolons=0,`prostrate/decumbent`=0, Terrestrial=0, Tda=0,
+    Tdr=0, Amphibious=0, Dispersal="", `dispersal 2`="", `dispersal 3`="")) %>% mutate(
+    Tree = ifelse(Tree, "tree", ""), Gram = ifelse(Gram, "graminoid", ""), Forb =
+    ifelse(Forb, "herb", ""), Annual = ifelse(Annual, "annual", ""), Biennial = ifelse(Biennial,
+    "biennial", ""), Perennial = ifelse(Perennial, "perennial", ""), rhizomes = ifelse(rhizomes,
+    "rhizomatous", ""), stolons = ifelse(stolons, "stoloniferous", ""), `prostrate/decumbent`
+    = ifelse(`prostrate/decumbent`, "prostrate", ""), Terrestrial = ifelse(Terrestrial,
+    "terrestrial","aquatic"), Tda = ifelse(Tda, "tda",""), Tdr = ifelse(Tdr, "tdr",""),
+    Amphibious = ifelse(Amphibious, "amphibious","") ) %>% unite(col = "plant_growth_form",
+    Tree, Gram, Forb, sep = " ") %>% unite(col = "life_history", Annual, Biennial,
+    Perennial, sep = " ") %>% unite(col = "growth_habit", rhizomes, stolons, `prostrate/decumbent`,
+    sep = " ") %>% unite(col = "aquatic_terrestrial_detailed", Tda, Tdr, Amphibious,
+    sep = " ")  %>% unite(col = "dispersal_syndrome", Dispersal, `dispersal 2`, `dispersal
+    3`, sep = " ") %>% mutate( plant_growth_form = stringr::str_squish(plant_growth_form)
+    %>% na_if(""), life_history = stringr::str_squish(life_history) %>% na_if(""),
+    growth_habit = stringr::str_squish(growth_habit) %>% na_if(""), aquatic_terrestrial_detailed
+    = stringr::str_squish(aquatic_terrestrial_detailed) %>% na_if(""), dispersal_syndrome
+    = stringr::str_squish(dispersal_syndrome) %>% na_if(""))
+  taxon_name: Taxa
+  site_name: site_name
   year_collected_start: 2012
   year_collected_end: 2012
   description: Study of River Murray wetland plants
@@ -82,7 +111,10 @@ dataset:
   original_file: Data extracted from two worksheets in the file 'Catford_River Murray
     wetland plants_260215_contributed to AusTraits.xls'. The two sheets were combined
     using some custom R code saved in the Austraits project.
-  notes: .na
+  notes: There are a few species whose seed masses are almost certainly in grams (instead
+    of mg), as their seed mass values are on the order of 10^3 smaller than other
+    AusTraits entries. These values have been manually adjusted in AusTraits, 15-02-2022,
+    E Wenk
 sites:
   Yarrawonga:
     longitude (deg): 145.99973
@@ -96,33 +128,6 @@ sites:
       canopy directly above the study wetlands. All soil in the region was similar
       (~45% clay content).
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Taxa
-    site_name: site_name
-  custom_R_code: data %>% mutate(Taxa = str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
-    %>% mutate(site_name = "Yarrawonga") %>% mutate(str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
-    %>% mutate_at(c("Plant height max (m)","plant height min (m)","Leaf size (cm^2)"),
-    ~na_if(.,0)) %>% replace_na(list(Tree = 0, Gram = 0, Forb=0, Annual=0, Biennial=0,
-    Perennial=0, rhizomes=0,stolons=0,`prostrate/decumbent`=0, Terrestrial=0, Tda=0,
-    Tdr=0, Amphibious=0, Dispersal="", `dispersal 2`="", `dispersal 3`="")) %>% mutate(
-    Tree = ifelse(Tree, "tree", ""), Gram = ifelse(Gram, "graminoid", ""), Forb =
-    ifelse(Forb, "herb", ""), Annual = ifelse(Annual, "annual", ""), Biennial = ifelse(Biennial,
-    "biennial", ""), Perennial = ifelse(Perennial, "perennial", ""), rhizomes = ifelse(rhizomes,
-    "rhizomatous", ""), stolons = ifelse(stolons, "stoloniferous", ""), `prostrate/decumbent`
-    = ifelse(`prostrate/decumbent`, "prostrate", ""), Terrestrial = ifelse(Terrestrial,
-    "terrestrial","aquatic"), Tda = ifelse(Tda, "tda",""), Tdr = ifelse(Tdr, "tdr",""),
-    Amphibious = ifelse(Amphibious, "amphibious","") ) %>% unite(col = "plant_growth_form",
-    Tree, Gram, Forb, sep = " ") %>% unite(col = "life_history", Annual, Biennial,
-    Perennial, sep = " ") %>% unite(col = "growth_habit", rhizomes, stolons, `prostrate/decumbent`,
-    sep = " ") %>% unite(col = "aquatic_terrestrial_detailed", Tda, Tdr, Amphibious,
-    sep = " ")  %>% unite(col = "dispersal_syndrome", Dispersal, `dispersal 2`, `dispersal
-    3`, sep = " ") %>% mutate( plant_growth_form = stringr::str_squish(plant_growth_form)
-    %>% na_if(""), life_history = stringr::str_squish(life_history) %>% na_if(""),
-    growth_habit = stringr::str_squish(growth_habit) %>% na_if(""), aquatic_terrestrial_detailed
-    = stringr::str_squish(aquatic_terrestrial_detailed) %>% na_if(""), dispersal_syndrome
-    = stringr::str_squish(dispersal_syndrome) %>% na_if("") )
 traits:
 - var_in: Leaf size (cm^2)
   unit_in: cm2
@@ -154,12 +159,15 @@ traits:
     6 leaves minimum; grass blades used (not sheath); one side of rushes and sedges
 - var_in: Seed mass (g)
   unit_in: mg
-  trait_name: seed_mass
+  trait_name: seed_dry_mass
   value_type: expert_mean
   replicates: .na
   methods: Information about species' seed mass was sourced from available databases
     (Liu et al. 2008, Kew Seed Database (http://data.kew.org/sid/) or from field collections
-    (9 species). For the field collected species, 2-30 seeds were collected.
+    (9 species). For the field collected species, 2-30 seeds were collected. [Note
+    from AusTraits data processors, there are 9 species with values that seem to be
+    in grams and the remaining species are in mg. A column has been added to tentatively
+    adjust some species values.]
 - var_in: plant height min (m)
   unit_in: m
   trait_name: .na
@@ -288,45 +296,12 @@ traits:
     to flooding scheme with Casanova and Brock (2000), Reid and Quinn (2004) and Porter
     et al. (2007) providing additional information regarding species classification.
 substitutions:
-- trait_name: dispersal_syndrome
-  find: animal
-  replace: animal_vector
 - trait_name: vegetative_regeneration
   find: 1
   replace: vegetative
 - trait_name: vegetative_regeneration
   find: 0
   replace: not_vegetative
-- trait_name: dispersal_syndrome
-  find: animal??
-  replace: animal_vector
-- trait_name: dispersal_syndrome
-  find: fleshy_wings_or_capsule
-  replace: fleshy_wings_capsule
-- trait_name: dispersal_syndrome
-  find: fleshy aril
-  replace: aril
-- trait_name: dispersal_syndrome
-  find: animal water
-  replace: animal_vector hydrochory
-- trait_name: dispersal_syndrome
-  find: water animal
-  replace: animal_vector hydrochory
-- trait_name: dispersal_syndrome
-  find: water wind animal
-  replace: animal_vector hydrochory anemochory
-- trait_name: dispersal_syndrome
-  find: animal wind
-  replace: animal_vector anemochory
-- trait_name: dispersal_syndrome
-  find: methods originating from parent plant or diaspore; explosive mechanism;
-  replace: ballistic
-- trait_name: dispersal_syndrome
-  find: methods originating from parent plant or diaspore; explosive mechanism
-  replace: ballistic
-- trait_name: dispersal_syndrome
-  find: water
-  replace: hydrochory
 - trait_name: flood_regime_classification
   find: tda
   replace: Terrestrial_damp
@@ -336,6 +311,51 @@ substitutions:
 - trait_name: flood_regime_classification
   find: amphibious
   replace: Amphibious
+- trait_name: dispersal_syndrome
+  find: Animal
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: animal??
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: animal
+  replace: zoochory
+- trait_name: dispersal_syndrome
+  find: animal water
+  replace: zoochory hydrochory
+- trait_name: dispersal_syndrome
+  find: Water
+  replace: hydrochory
+- trait_name: dispersal_syndrome
+  find: wind
+  replace: anemochory
+- trait_name: dispersal_syndrome
+  find: unassisted
+  replace: barochory
+- trait_name: dispersal_syndrome
+  find: wind unassisted
+  replace: anemochory barochory
+- trait_name: dispersal_syndrome
+  find: Methods originating from parent plant or diaspore; Explosive mechanism;
+  replace: ballistic
+- trait_name: dispersal_syndrome
+  find: water
+  replace: hydrochory
+- trait_name: dispersal_syndrome
+  find: water wind animal
+  replace: hydrochory anemochory zoochory
+- trait_name: dispersal_syndrome
+  find: animal wind
+  replace: zoochory anemochory
+- trait_name: dispersal_syndrome
+  find: wind water
+  replace: anemochory hydrochory
+- trait_name: dispersal_syndrome
+  find: Methods originating from parent plant or diaspore; Explosive mechanism
+  replace: ballistic
+- trait_name: dispersal_syndrome
+  find: water animal
+  replace: hydrochory zoochory
 taxonomic_updates:
 - find: Anthoxanthum odaratum
   replace: Anthoxanthum odoratum
@@ -471,4 +491,3 @@ exclude_observations:
 questions:
   additional_traits: germination conditions (wet vs. dry), native  vs. introduced,
     and detailed information on exact amounts of moisture species require/tolerate
-

@@ -85,9 +85,11 @@ convert_month_range_string_to_binary <- function(str) {
 #' Converts flowering and fruiting month ranges to 12 element character strings of 0 and 1 representing Jan - Dec
 #' e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
 #'
-#' @param str text string
-#'
-#' @return a 12 element character string, e.g. c(1,1,1,1,0,0,0,0,0,0,0,1)  
+#' @param str character string with abbreviated months (i.e. "Jan", "Feb"). Also accepts other
+#' terms such as (all year) and seasons (e.g. summer). The text can also include a range 
+#' separated with "-" (e.g. "Jan-Jul")   
+#' 
+#' @return a numeric vector with 12 elements, e.g. c(1,1,1,0,0,0,0,0,0,0,0,1)   
 convert_month_range_string_to_binary_worker <- function(str) {
   str <- str %>% stringr::str_trim() %>%
     tolower()
@@ -116,7 +118,7 @@ convert_month_range_string_to_binary_worker <- function(str) {
     return(NA)
   }
   
-   # periodic
+   # irregular
   if (grepl("irregular", str)) {
     return(NA)
   }
@@ -134,8 +136,8 @@ convert_month_range_string_to_binary_worker <- function(str) {
     return(`[<-`(rep(0, 12), which(tolower(month.abb) %in% m), 1))
   }  
   
-  # one or more month ranges
-  if (grepl(paste0("^", regexMonths, " *- *", regexMonths, "([/,] *", regexMonths, " *- *", regexMonths, ")*$"), str)) {  
+  # one or more month ranges separated with / or , or ; or :
+  if (grepl(paste0("^", regexMonths, " *- *", regexMonths, "([/,;:] *", regexMonths, " *- *", regexMonths, ")*$"), str)) {  
     m <- regmatches(str, gregexpr(paste0(regexMonths, " *- *", regexMonths), str))[[1]]
     bin <- rep(0, 12)
     
@@ -160,7 +162,7 @@ convert_month_range_string_to_binary_worker <- function(str) {
   }
   
   # seasons separated with / or ,
-  if (grepl(paste0("^", regexSeasons, " *([/,] *", regexSeasons, ")+$"), str)) {
+  if (grepl(paste0("^", regexSeasons, " *([/,;:] *", regexSeasons, ")+$"), str)) {
     m <- regmatches(str, gregexpr(regexSeasons, str))[[1]]
     return(`[<-`(rep(0, 12), which(tolower(seasons) %in% m), 1))
   }  
@@ -211,4 +213,103 @@ separate_range <- function(data, x, y1, y2, sep="-", remove=TRUE) {
 #' @importFrom rlang .data
 replace_duplicates_with_NA <- function(x) {
   base::replace(x, duplicated(x), NA)
+}
+
+
+#' Move select trait values from a pre-existing column (trait_name) to a new column (new trait_name)
+#'
+#' @param data data frame, representing a specific dataset_id
+#' @param original_trait name of the variable in the original data file, representing a trait in a wide dataset
+#' @param new_trait name of the new variable being created, representing an additional trait in a wide dataset
+#' @param original_values values of the original trait that need to be remapped to a different (new) trait
+#' @param value_for_new_trait the appropriate value of the new trait; this may be identical to the original values, or may be a slightly different word/syntax 
+#' @param value_to_keep the appropriate value to retain for the old trait; this may be identical to the original values or may be NA 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data <- read_csv(data/"Hughes_1992/data.csv")
+#' data %>% move_values_to_new_trait(data, "growth form", "root_structure", "Saprophyte", "saprophyte") -> data
+#' }
+move_values_to_new_trait <- function(data, original_trait, new_trait, original_values, values_for_new_trait, values_to_keep) {
+  
+       for (j in 1:length(original_values)) {
+            
+            i <- data[[original_trait]] == original_values[[j]]
+            
+            data[[new_trait]] = ifelse(i, values_for_new_trait[[j]], data[[new_trait]])
+            data[[original_trait]] = ifelse(i, values_to_keep[[j]], data[[original_trait]])
+            data
+       }
+       
+  return(data)
+}
+
+
+add_values_to_additional_trait_long <- 
+  function(data, new_trait, traits_column, values_column, original_values, new_values) {  
+    i <- filter(data,data[[values_column]] %in% original_values)
+    i[[traits_column]] <- new_trait
+    i[[values_column]] <- new_values
+    data <- bind_rows(data,i)
+  }
+
+
+move_values_to_new_trait_long <- 
+  function(data, original_trait, new_trait, traits_column, values_column, original_values) {
+    
+    i <- data[[values_column]] %in% original_values
+    
+    data[[traits_column]] = ifelse(i, new_trait, data[[traits_column]])
+
+    data
+  } 
+
+
+
+#' Substitutions from csv
+#' @description Function that simultaneously adds many trait value replacements, potentially across many trait_names and dataset_ids, to the respective metadata.yml files.
+#' This function will be used to quickly re-align/re-assign trait values across all AusTraits studies.
+#'
+#' @param dataframe_of_substitutions dataframe with columns indicating dataset_id, trait_name, original trait values (find), and AusTraits aligned trait value (replace)
+#' @param dataset_id study's dataset_id in AusTraits
+#' @param trait_name trait name for which a trait value replacement needs to be made
+#' @param find trait value submitted by the contributor for a data observation
+#' @param replace AusTraits aligned trait value
+#'
+#' @return 
+#' @export
+#'
+#' @examples \dontrun{
+#' read_csv("export/dispersal_syndrome_substitutions.csv") %>% select(-extra) %>% filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
+#' substitutions_from_csv(dataframe_of_substitutions,dataset_id,trait_name,find,replace)
+#' }
+
+substitutions_from_csv <- function(dataframe_of_substitutions,dataset_id,trait_name,find,replace) {
+
+  #split dataframe of substitutions by row  
+  dataframe_of_substitutions %>%
+    dplyr::mutate(rows = row_number()) %>% 
+    dplyr::group_split(rows) -> dataframe_of_substitutions
+
+  set_name <- "substitutions"
+
+  #add substitutions to metadata files
+  for (i in 1:max(dataframe_of_substitutions)$rows) {
+    metadata <- metadata_read_dataset_id(dataframe_of_substitutions[[i]]$dataset_id)
+
+    to_add <- list(trait_name = dataframe_of_substitutions[[i]]$trait_name, find = dataframe_of_substitutions[[i]]$find, replace = dataframe_of_substitutions[[i]]$replace)
+
+    if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]])) {
+      metadata[[set_name]] <- list()
+    }
+
+    data <-  list_to_df(metadata[[set_name]])  
+
+    metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
+
+    metadata_write_dataset_id(metadata, dataframe_of_substitutions[[i]]$dataset_id)
+  }  
 }
