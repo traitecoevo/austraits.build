@@ -4,12 +4,14 @@
 \alias{add_all_columns}
 \title{Add or remove columns of data}
 \usage{
-add_all_columns(data, vars)
+add_all_columns(data, vars, add_error_column = TRUE)
 }
 \arguments{
 \item{data}{dataframe containing study data read in as a csv file}
 
 \item{vars}{vector of variable columns names to be included in the final formatted tibble}
+
+\item{add_error_column}{adds an extra column called error if TRUE}
 }
 \value{
 tibble with the correct selection of columns including an error column

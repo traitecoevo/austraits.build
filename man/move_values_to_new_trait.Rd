@@ -33,6 +33,8 @@ move_values_to_new_trait(
 Move select trait values from a pre-existing column (trait_name) to a new column (new trait_name)
 }
 \examples{
+\dontrun{
 data <- read_csv(data/"Hughes_1992/data.csv")
 data \%>\% move_values_to_new_trait(data, "growth form", "root_structure", "Saprophyte", "saprophyte") -> data
+}
 }

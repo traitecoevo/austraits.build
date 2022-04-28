@@ -653,6 +653,7 @@ add_all_columns <- function(data, vars, add_error_column = TRUE) {
 #' @return tibble in long format with AusTraits formatted trait names, trait
 #' substitutions and unique observation id added
 #' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of
+#' @importFrom rlang .data
 #' @export
 parse_data <- function(data, dataset_id, metadata) {
 
