@@ -25,11 +25,18 @@ contributors:
     affiliation: The Australian National University, Australia
   austraits_curators: Ian Wright
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(age = gsub("O","old",age)) %>% mutate(age = gsub("Y","young",age))
+    %>% mutate(context_name = if_else(is.na(`age`),"no_context",paste0(`age`,"_leaves_from_",`nitrogen
+    treatment`,"_treatment")))
+  taxon_name: species
+  site_name: site_name
+  context_name: context_name
   year_collected_start: 2006
   year_collected_end: 2006
   description: leaf traits for scleorphyllous species in Harrison (2009)
-  collection_type: field, glasshouse
   sample_age_class: seedling, adult
+  collection_type: field, glasshouse
   sampling_strategy: 'Morphological and physiological measurements were obtained from
     two independent investigations: a field study comparing species pairs from eight
     genera and a greenhouse experiment that examined seven species of the genus Eucalyptus.
@@ -40,7 +47,7 @@ dataset:
     study was conducted at the Australian National University, Canberra, using 12-month-old
     seedlings of Eucalyptus bridgesiana, Eucalyptus elata, Eucalyptus mannifera, Eucalyptus
     moorei, Eucalyptus pauciflora, Eucalyptus polyanthemos and Eucalyptus rossii,which
-    were purchased from theYarralumla Nursery (Canberra).At the nursery, seedlings
+    were purchased from theYarralumla Nursery (Canberra). At the nursery, seedlings
     were grown in potting mix that contained a controlled-release fertilizer (18%
     nitrogen), applied at a rate of 3 kg m-3.All species were grown in full sunlight
     on the same site. Seedlings were transplanted from nursery tubes into large plastic
@@ -68,38 +75,33 @@ sites:
   Australian National Botanic Gardens:
     longitude (deg): 149.067
     latitude (deg): -35.2
+    collection_type: arboretum
+    sample_age_class: adult
   ANU Greenhouse:
     longitude (deg): 149.117
     latitude (deg): -35.277
+    collection_type: glasshouse
+    sample_age_class: seedling
 contexts:
   no_context:
-    description: plants measured in ANU Botanic Garden
-    type: field
+    leaf age: .na
+    nutrient treatment: .na
   young_leaves_from_no_added_N_treatment:
-    description: young leaves on plant; treated with nutrient solution containing
-      4 mm CaCl2, instead of nitrogen-containing solution
-    type: treatment_harsh
+    leaf age: young
+    nutrient treatment: treated with nutrient solution containing 4 mm CaCl2, instead
+      of nitrogen-containing solution [manipulated]
   old_leaves_from_no_added_N_treatment:
-    description: old leaves on plant; treated with nutrient solution containing 4
-      mm CaCl2, instead of nitrogen-containing solution
-    type: treatment_harsh
+    leaf age: old
+    nutrient treatment: treated with nutrient solution containing 4 mm CaCl2, instead
+      of nitrogen-containing solution [manipulated]
   young_leaves_from_N_added_treatment:
-    description: young leaves on plant; treated with Rorison's nutrient solution (4
-      mm Ca(NO3)2) twice a week
-    type: treatment_favourable
+    leaf age: young
+    nutrient treatment: treated with Rorison's nutrient solution (4 mm Ca(NO3)2) twice
+      a week [manipulated]
   old_leaves_from_N_added_treatment:
-    description: old leaves on plant; treated with Rorison's nutrient solution (4
-      mm Ca(NO3)2) twice a week
-    type: treatment_favourable
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    site_name: site_name
-    context_name: context_name
-  custom_R_code: data %>% mutate(age = gsub("O","old",age)) %>% mutate(age = gsub("Y","young",age))
-    %>% mutate(context_name = if_else(is.na(`age`),"no_context",paste0(`age`,"_leaves_from_",`nitrogen
-    treatment`,"_treatment")))
+    leaf age: old
+    nutrient treatment: treated with Rorison's nutrient solution (4 mm Ca(NO3)2) twice
+      a week [manipulated]
 traits:
 - var_in: photosynthetic pathway
   unit_in: .na

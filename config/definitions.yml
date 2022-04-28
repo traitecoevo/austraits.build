@@ -4244,7 +4244,10 @@ austraits:
         date: &date Date sample was taken, in the format `yyyy-mm-dd`, `yyyy-mm` or `yyyy` depending on resoluton specified.
         value_type: *value_type
         replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each measurement. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be 1. If the value type is `expert_mean`, `expert_min`, or `expert_max` the replicate value should be `.na`.
-        original_name: &orginal_name Name given to taxon in the original data supplied by the authors
+        collection_type: &collection_type A field to indicate where the majority of plants on which traits were measured were collected -  in the `field`, `lab`, `glasshouse`, `botanical collection`, or `literature`. The latter should only be used when the data were sourced from the literature and the collection type is unknown.
+        sample_age_class: &sample_age_class A field to indicate if the study was completed on `adult` or `juvenile` plants.
+        measurement_remarks: &measurement_remarks Comments or notes accompanying the trait measurement.
+        original_name: &orginal_name Name given to taxon in the original data supplied by the authors.
     sites:
       description: A table containing observations of site characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
       type: table
@@ -4271,8 +4274,6 @@ austraits:
         year_collected_start: &year_collected_start The year data collection commenced.
         year_collected_end: &year_collected_end The year data collection was completed.
         description: &description A 1-2 sentence description of the purpose of the study.
-        collection_type: &collection_type A field to indicate where the majority of plants on which traits were measured were collected -  in the `field`, `lab`, `glasshouse`, `botanical collection`, or `literature`. The latter should only be used when the data were sourced from the literature and the collection type is unknown.
-        sample_age_class: &sample_age_class A field to indicate if the study was completed on `adult` or `juvenile` plants.
         sampling_strategy: &sampling_strategy A written description of how study sites were selected and how study individuals were selected. When available, this information is lifted verbatim from a published manuscript. For botanical collections, this field ideally indicates which records were 'sampled' to measure a specific trait.
         source_primary_key: Citation key for primary source in `sources`. The key is typically of format `Surname_year`.
         source_primary_citation: Citation for primary source. This detail is generated from the primary source in the metadata.
@@ -4297,6 +4298,9 @@ austraits:
         date: *date
         value_type: *value_type
         replicates: *replicates
+        collection_type: *collection_type
+        sample_age_class: *sample_age_class
+        measurement_remarks: *measurement_remarks
         original_name: *orginal_name
     taxonomic_updates:
       description: A table of all taxonomic changes implemented in the construction of AusTraits. Changes are determined by comparing the originally submitted taxon name against the APC (Australian Plant Census) and APNI (Australian Plant Names Index). Cross referencing with the `traits` table is possible using combinations of the variables `dataset_id`, `taxon_name`.
@@ -4385,9 +4389,17 @@ metadata:
         austraits_curators:
           description: *austraits_curators
     dataset:
-      description: Study details, including study description, sampling strategy, sampling time frame, and sample age class.
+      description: Study details, including format of the data, custom R code applied to data, and various descriptors. Each can a header for a column of the data, or actual value to be used.
       type: categorical
       values:
+        data_is_long_format: Indicates if the data spreadsheet has a vertical (long) or  horizontal (wide) configuration with `yes` or `no` terminology
+        custom_R_code: A field where additional R code can be included. This allows for custom manipulation of the data in the submitted spreadsheet into a different format for easy integration with AusTraits. `.na` indicates no custom R code was used.
+        taxon_name: *taxon_name
+        site_name: *site_name
+        context_name: *context_name
+        observation_id: *observation_id
+        trait_name: *trait_name
+        value: *value
         year_collected_start: *year_collected_start
         year_collected_end: *year_collected_end
         description: *description
@@ -4400,13 +4412,6 @@ metadata:
       description: A list of study sites and information about each of the study sites where data were collected. A list of sites. Each should include at least three variables - `latitude`, `longitude` and `description`. Additional variables can be included where available. Set to `.na` for botanical collections and field studies where data values are a mean across many locations.
     contexts:
       description: A list of scenarios sites and contextial information about each of the scenarios where data were collected. A list of contexts. Each should include at least two variables - `context_type` and `description`. Additional variables can be included where available. Set to `.na` as default.
-    config:
-      description: Information on the format of the submitted data file.
-      type: categorical
-      elements:
-        data_is_long_format: Indicates if the data spreadsheet has a vertical (long) or  horizontal (wide) configuration with `yes` or `no` terminology
-        variable_match: Identifies which information is in each column in the file `data.csv`, excluding the actual trait data. One element within `variable_match` must be `taxon_name`. Datasets with `data_is_long_format` set to `yes` must also identify which column includes data on `value` and `trait_name`. Other allowed values include `date`, `site_name`, `observation_id`, `context_name` if these columns are present in the `data.csv` file or created with custom R code.
-        custom_R_code: A field where additional R code can be included. This allows for custom manipulation of the data in the submitted spreadsheet into a different format for easy integration with AusTraits. `.na` indicates no custom R code was used.
     traits:
       description: A translation table mapping traits and units from a contributed study onto corresponding variables in AusTraits. Also specified here are methods used to collect the data.
       type: array
