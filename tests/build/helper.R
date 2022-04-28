@@ -1,8 +1,19 @@
-library(testthat)
+requireNamespace("testthat", quietly = TRUE)
 library(austraits.build)
 
 root.dir <- rprojroot::find_root("remake.yml")
 definitions <- yaml::read_yaml(file.path(root.dir, "config/definitions.yml"))
+unit_conversions <- austraits.build:::make_unit_conversion_functions(file.path(root.dir, "config/unit_conversions.csv"))
+taxon_list <- read_csv_char(file.path(root.dir, "config/taxon_list.csv"))
+
+vars_austraits <- 
+  definitions$austraits$elements %>% names() 
+
+vars_study <- 
+  vars_austraits %>% c("dataset_id", .) %>% 
+  subset(., !grepl("build",.))
+
+vars_tables <- vars_austraits %>% subset(., !(. %in% c("dataset_id", "definitions", "sources", "build_info")))
 
 # Better than expect_silent as contains `info` and allows for complete failures
 expect_no_error <- function (object, regexp = NULL, ..., info = NULL, label = NULL)
@@ -83,4 +94,49 @@ test_dataframe_valid <- function(data, info) {
 test_dataframe_named <- function(data, expected_colnames, info) {
   test_dataframe_valid(data, info)
   expect_named(data, expected_colnames, info= info)
+}
+
+
+test_build_study <- function(path_metadata, path_data, info) {
+  
+  # test it builds with no errors
+  expect_no_error({
+    build_config <- subset_config(path_metadata, definitions, unit_conversions)
+  }, info = paste(info, " config"))
+  
+  expect_no_error({
+    build_study <- load_study(path_data, build_config)
+  }, info = paste(info, " load_study"))
+  
+  test_structure(build_study, info, single_study = TRUE)
+  
+  build_study
+}
+
+test_structure <- function(data, info, single_study = TRUE) {
+  
+  # test lists have the right objects
+  comparison <- vars_austraits
+  if(single_study) comparison <- vars_study
+  
+  test_list_named(data, comparison, info = c(info, " - main elements"))
+  
+  # test structure of tables
+  for(v in vars_tables) {
+    
+    comparison <- definitions$austraits$elements[[v]]$elements %>% names()
+    
+    # individual studies only have some the variables
+    if(single_study) {
+      if(v == "taxa")
+        comparison <- comparison[1]
+      else if(v == "taxonomic_updates")
+        comparison <- comparison[1:3]
+    }
+    
+    test_dataframe_named(data[[v]], comparison, info = paste(info, " - structure of ", v))
+  }
+  
+  # contains allowed traits
+  expect_isin(data$traits$trait_name %>% unique(), definitions$traits$elements %>% names(), info = paste("traits ", v))
 }

@@ -10,14 +10,31 @@ source:
     volume: 40
     pages: 531--538
     doi: abs/10.1111/ecog.02010
-people:
-- name: Si-Chong Chen
-  institution: University of New South Wales
-  role: collector, contact, contributor
-- name: Angela Moles
-  institution: University of New South Wales
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Chen
+    given_name: Si-Chong
+    ORCID: 0000-0002-6855-2595
+    affiliation: Royal Botanic Gardens, Kew, United Kingdom
+    additional_role: contact
+  - last_name: Moles
+    given_name: Angela
+    ORCID: 0000-0003-2041-7762
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(`flowering_time`= format_flowering_months(flowering_time_start,
+    flowering_time_end)) %>% mutate(fruit_dehiscence = `Fruit.Type.Specific`) %>%
+    move_values_to_new_trait("Fruit.Type.Specific", "fruit_dehiscence", c("pod", "capsule",
+    "drupe", "achene", "nut", "samara", "follicle", "berry", "utricle", "syncarp",
+    "syconium", "schizocarp"), c("dehiscent", "dehiscent", "indehiscent", "indehiscent",
+    "indehiscent", "indehiscent", "dehiscent", "indehiscent", "indehiscent", "indehiscent",
+    "indehiscent", NA), c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle",
+    "berry", "utricle", "syncarp", "syconium", "schizocarp")) %>% mutate(fruit_dehiscence
+    = if_else(`Adaptive.Trait` %in% c("indehiscent", "indehiscent, woody"),"indehiscent",fruit_dehiscence))
+  taxon_name: species
   year_collected_start: 2014
   year_collected_end: 2014
   description: angiosperm and gymnosperm dispersal data from Si-Chong Chen PhD
@@ -41,15 +58,10 @@ dataset:
     of Australia Online.
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-  custom_R_code: data %>% mutate(`flowering_time`= format_flowering_months(flowering_time_start, flowering_time_end))
 traits:
 - var_in: Fruit.Type.Botany
   unit_in: .na
-  trait_name: fruit_type_botanical
+  trait_name: fruit_fleshiness
   value_type: expert_mean
   replicates: .na
   methods: We categorized the fruit of each species as either fleshy or non-fleshy
@@ -79,9 +91,29 @@ traits:
     or bract or succulent pedicel); otherwise, they were classified as non-fleshy
     (this functional definition is similar to that used by Willson et al. 1989, Chen
     and Moles 2015).
+- var_in: fruit_dehiscence
+  unit_in: .na
+  trait_name: fruit_dehiscence
+  value_type: expert_mean
+  replicates: .na
+  methods: We categorized the fruit of each species as either fleshy or non-fleshy
+    according to species descriptions in the 'Flora of Australia online database'
+    (Flora of Australia online 2009). For species that lacked fruit information in
+    'Flora of Australia online', we referred to descriptions in other sources, including
+    FloraBase (Western Australian Herbarium 1998), PLantNET (The Royal Botanic Gardens
+    and Domain Trust 1999) and the database of Australian tropical rainforest plants
+    (Centre for Australian National Biodiversity Research 2010). Fruits were defined
+    in a functional manner, as dispersal units, including true fruits (e.g. Beilschmiedia
+    recurva), accessory fruits (such as the receptacle in Semecarpus australiensis
+    or the receptacle in Podocarpus) and appendages (e.g. the sarcotesta in Cycads).
+    Fruits were classified as fleshy if they possessed conspicuous fleshy pericarps
+    or fleshy appendages when mature (e.g. aril, thalamus, receptacle, calyx, rachis
+    or bract or succulent pedicel); otherwise, they were classified as non-fleshy
+    (this functional definition is similar to that used by Willson et al. 1989, Chen
+    and Moles 2015).
 - var_in: Fruit.Type.Function
   unit_in: .na
-  trait_name: fruit_type_functional
+  trait_name: diaspore_fleshiness
   value_type: expert_mean
   replicates: .na
   methods: Fruits were defined in a functional manner, as dispersal units, including
@@ -136,75 +168,66 @@ traits:
   replicates: .na
   methods: literature search
 substitutions:
+- trait_name: fruit_type
+  find: pod
+  replace: legume
 - trait_name: dispersal_appendage
-  find: fleshy wings/capsule
-  replace: fleshy_wings_capsule
+  find: caruncle
+  replace: elaiosome
 - trait_name: dispersal_appendage
-  find: fruit separates into fleshy nutlets
-  replace: fleshy_fruit
+  find: indehiscent
+  replace: .na.character
+- trait_name: dispersal_appendage
+  find: seed unilaterally winged
+  replace: wings
+- trait_name: dispersal_appendage
+  find: seed winged
+  replace: wings
 - trait_name: dispersal_appendage
   find: fruit winged
-  replace: winged_fruit
+  replace: wings
 - trait_name: dispersal_appendage
-  find: indehiscent, woody
-  replace: indehiscent
-- trait_name: dispersal_appendage
-  find: nut winged
-  replace: winged_fruit
+  find: seed containing a sac of air
+  replace: inflated_parts
 - trait_name: dispersal_appendage
   find: pericarp, aril, arillode
   replace: aril
-- trait_name: dispersal_appendage
-  find: seed winged
-  replace: winged_fruit
-- trait_name: dispersal_appendage
-  find: seed containing a sac of air
-  replace: seed_airsac
 - trait_name: dispersal_appendage
   find: thick and succulent pericarp; aril
   replace: aril
 - trait_name: dispersal_appendage
   find: bladdery wings
-  replace: bladdery_wings
+  replace: wings
 - trait_name: dispersal_appendage
-  find: fleshy dehiscent capsule
-  replace: fleshy_dehiscent_capsule
+  find: nut winged
+  replace: wings
 - trait_name: dispersal_appendage
-  find: fleshy wings or capsule
-  replace: fleshy_wings_capsule
+  find: fleshy wings/capsule
+  replace: wings
 - trait_name: dispersal_appendage
-  find: seed unilaterally winged
-  replace: seed_unilaterally_winged
-- trait_name: dispersal_appendage
-  find: seed wing obsolete
-  replace: seed_wing_obsolete
+  find: indehiscent, woody
+  replace: .na.character
 - trait_name: dispersal_appendage
   find: strophiole on seed
-  replace: strophiole_on_seed
+  replace: elaiosome
 - trait_name: dispersal_appendage
-  find: winged fruit
-  replace: winged_fruit
+  find: fleshy dehiscent capsule
+  replace: .na.character
 - trait_name: dispersal_appendage
-  find: winged nut
-  replace: winged_fruit
+  find: fruit separates into fleshy nutlets
+  replace: .na.character
 - trait_name: dispersal_appendage
-  find: strophiole_on_seed
-  replace: caruncle
-- trait_name: dispersal_appendage
-  find: seed_unilaterally_winged
-  replace: caruncle
-- trait_name: dispersal_appendage
-  find: fleshy seeds
-  replace: fleshy_fruit
+  find: seed wing obsolete
+  replace: none
 - trait_name: dispersal_appendage
   find: receptacle (small and inconspicuous)
   replace: receptacle
 - trait_name: dispersal_appendage
   find: woody bract scales; fertile scales not fleshy at maturity
-  replace: woody_bract_scales
-- trait_name: fruit_type
-  find: syconium
-  replace: synconium
+  replace: flotation_scales
+- trait_name: dispersal_appendage
+  find: fleshy seeds
+  replace: .na.character
 taxonomic_updates:
 - find: Acacia verricula
   replace: Acacia verriculum
@@ -270,4 +293,3 @@ exclude_observations: .na
 questions:
   contributor: Proteaceae have among the shortest fruit lengths in this study - that
     surprises us - is this data correct?
-

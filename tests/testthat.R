@@ -1,4 +1,4 @@
-library(testthat)
+requireNamespace("testthat", quietly = TRUE)
 library(austraits.build)
 
-test_check("austraits.build")
+testthat::test_check("austraits.build")

@@ -12,9 +12,6 @@ editor_options:
 
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 # knitr defaults
-root.dir <- rprojroot::find_root("remake.yml")
-knitr::opts_knit$set(root.dir = root.dir)
-
 knitr::opts_chunk$set(
   echo = FALSE, cache = FALSE, message = FALSE, warning = FALSE,
   results = "asis"
@@ -24,8 +21,7 @@ knitr::opts_chunk$set(
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 library(knitr)
 library(kableExtra)
-
-source("R/report_utils.R")
+library(austraits.build)
 
 print_defintions_element <- function(elements) {
   if (elements$type == "character") {
@@ -55,9 +51,8 @@ if (knitr::is_html_output()) {
 
 
 ## Assumes to items exist in global name space
-if (!exists("austraits")) {
-  definitions <- remake::make("definitions")
-  # stop("austraits must exist in global name space to knit a report")
+if (!exists("definitions")) {
+  definitions <- austraits:::austraits_lite$definitions
 }
 ```
 

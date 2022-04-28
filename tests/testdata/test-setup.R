@@ -147,8 +147,15 @@ for (dataset_id in test_dataset_ids) {
   # data.csv
   f <- files[1]
   expect_silent(data <- read_csv(f, col_types = cols(), guess_max = 1e5, progress=FALSE))
+  # check no issues flagged when parsing file
+  expect_no_error(stop_for_problems(data), info=sprintf("problems present when reading data, run `read_csv(%s)` to investigate", f))
+  
   test_dataframe_valid(data, info=f)
-
+  
+  # check variables names do not contain double spaces
+  i <- grepl("  ", names(data))
+  expect_false(any(i), info = sprintf("Remove double spaces from variables names in %s and metadata: %s", f, paste0("`", names(data)[i], "`", collapse = ",")))
+  
   # custom R code
   txt <- metadata[["config"]][["custom_R_code"]]
   #expect_false(grepl("#", txt), label=paste0(files[3], "-custom_R_code cannot contain comments, except on last line"))

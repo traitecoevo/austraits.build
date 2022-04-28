@@ -4,22 +4,33 @@ source:
     bibtype: Thesis
     year: 2012
     author: Jessie Anne Wells
-    title: "Phylogeny and inter-relations of ecological traits and seed dispersal
+    title: 'Phylogeny and inter-relations of ecological traits and seed dispersal
       in rainforest plants: Exploring aspects of functional diversity in primary and
-      secondary rainforests in Australia's Wet Tropics."
+      secondary rainforests in Australia''s Wet Tropics.'
     type: PhD
     institution: University of Queensland
-people:
-- name: Jessie Wells
-  institution: University of Queensland
-  role: collector, contact
-- name: Hugh Possingham
-  institution: University of Queensland
-  role: lab_leader
-- name: John Kanowski
-  institution: Australian Wildlife Conservancy
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Wells
+    given_name: Jessie
+    ORCID: 0000-0002-3555-5108
+    affiliation: School of Biological Sciences, The University of Queensland, Australia
+    additional_role: contact
+  - last_name: Possingham
+    given_name: Hugh
+    ORCID: 0000-0001-7755-996X
+    affiliation: The University of Queensland, Australia
+    notes: no contact
+  - last_name: Kanowski
+    given_name: John
+    ORCID: .na.character
+    affiliation: Australian Wildlife Conservancy, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% select(Species, cotsExp, cotsEH, cotsFR, LEE) %>% filter(!is.na(LEE)) %>% group_by(Species) %>% distinct() %>% ungroup %>% mutate(sample_age_class = "seedling") -> seedling_traits; data %>% select(Species, LF, HeightMax, ReproAge, ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3) %>%    group_by(Species) %>% distinct(LF, HeightMax, ReproAge, ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3) %>% ungroup %>% mutate(sample_age_class = "adult") -> adult_traits; data %>% select(-cotsExp, -cotsEH, -cotsFR, -LEE, -LF, -HeightMax, -ReproAge, -ReproCLE, -Pollination_syndrome, -Fruit_type, -FruitFG, -DispClass, -DispSimple, -DispC3) %>% mutate(`LA` = if_else(omit=="Kanowski",0,`LA`),LtLeaf = if_else(omit=="Kanowski",0,LtLeaf), LWC = if_else(omit=="Kanowski",0,LWC), LMA = if_else(omit=="Kanowski",0,LMA)) %>% mutate_at(c("LA","LtLeaf","LMA","LWC"), ~na_if(.,0)) %>% mutate(sample_age_class = ifelse(StrataBinary == "Stratum_2_adult_plant","adult", NA), sample_age_class = ifelse(StrataBinary == "Stratum_1_seedling", "seedling", sample_age_class)) %>% bind_rows(seedling_traits) %>% bind_rows(adult_traits) %>% mutate(fruit_fleshiness = Fruit_type, fruit_dehiscence = Fruit_type, dispersal_appendage = NA) %>% mutate("dispersal_appendage" = ifelse(Fruit_type == "Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)", "fleshy_reward", NA))
+  taxon_name: Species
+  site_name: Site
   year_collected_start: 2004
   year_collected_end: 2005
   description: This research combines studies of plant phylogeny, trait inter-relations
@@ -29,8 +40,7 @@ dataset:
     by a spectrum of correlated traits of plant life-history and ecophysiology, and
     highlights the importance of seed dispersal in shaping the distribution and ecological
     diversity of regeneration in secondary rainforests in Australia's Wet Tropics.
-  collection_type: field, literature
-  sample_age_class: adult
+  collection_type: field
   sampling_strategy: Field studies of the spatial distributions of species and plant
     functional traits were located in Brooks Valley, Mungalli, on the south-eastern
     edge of Atherton Tablelands. Plants of all species, from 4th-leaf seedlings to
@@ -65,7 +75,7 @@ dataset:
     adjacent primary forest is of CMVF Type 1b.
   original_file: WT_Wells_LeafStem_Indivplants.txt, WT_Wells_MetaData.xls, WT_Wells_Species_Names_Genbank.xls,
     WT_Wells_SpeciesLevel.xls
-  notes: none
+  notes: .na
 sites:
   Atherton Gillies Range Road:
     latitude (deg): -17.262
@@ -118,6 +128,7 @@ sites:
   Lit:
     latitude (deg): .na.real
     longitude (deg): .na.real
+    collection_type: literature
   Longlands Gap Rd Wondecla:
     latitude (deg): -17.453
     longitude (deg): 145.449
@@ -136,6 +147,7 @@ sites:
   QRS:
     latitude (deg): .na.real
     longitude (deg): .na.real
+    collection_type: botanical_collection
   Robson Creek primary CSIRO SNVF 2200mm metamorphic:
     latitude (deg): -17.121
     longitude (deg): 145.634
@@ -145,6 +157,7 @@ sites:
   TFRC Arboretum:
     latitude (deg): -17.258
     longitude (deg): 145.485
+    collection_type: arboretum
   Tolga Scrub:
     latitude (deg): -17.235
     longitude (deg): 145.48
@@ -231,29 +244,11 @@ sites:
     description: Lamins Hill (Cairns track)
     latitude (deg): -17.36528
     longitude (deg): 145.71537
-contexts:
-  Stratum_1_seedling:
-    type: field
-    description: traits measured on seedlings
-  Stratum_2_adult_plant:
-    type: field
-    description: traits measured on adults
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: Site
-    context_name: StrataBinary
-  custom_R_code: data %>% group_by(Species) %>% mutate_at(vars(LF, HeightMax, ReproAge,
-    ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3,
-    cotsExp, cotsEH, cotsFR, LEE, seed_mass_to_use),~replace(.x,duplicated(.x),NA))    %>%
-    ungroup() %>% mutate(`LA` = if_else(omit=="Kanowski",0,`LA`),LtLeaf = if_else(omit=="Kanowski",0,LtLeaf),
-    LWC = if_else(omit=="Kanowski",0,LWC), LMA = if_else(omit=="Kanowski",0,LMA))
-    %>% mutate_at(c("LA","LtLeaf","LMA","LWC"), ~na_if(.,0))
+contexts: .na
 traits:
 - var_in: seed_mass_to_use
   unit_in: mg
-  trait_name: seed_mass
+  trait_name: seed_dry_mass
   value_type: expert_mean
   replicates: 1-9
   methods: Seed mass is here defined as the oven-dry mass of the seed including any
@@ -271,6 +266,8 @@ traits:
     collated from taxonomic treatments.  For 70 species without direct measurements
     of seed mass, measured seed dimensions were used to estimate dry mass values using
     regression equations of seed dry mass on seed volume.
+  collection_type: field
+  sample_age_class: adult
 - var_in: StemDensity_to_use
   unit_in: g/cm3
   trait_name: wood_density
@@ -301,6 +298,7 @@ traits:
     method for irregular-shaped samples (Heinrichs and Lassen, 1970), and oven dry
     mass determined after oven drying at 70degC (requiring 5-14 days to reach constant
     mass)."
+  collection_type: field
 - var_in: LA
   unit_in: cm2
   trait_name: leaf_area
@@ -310,6 +308,7 @@ traits:
     the natural point of abscission. This whole-leaf area includes the (small) area
     of petiole or rachis, and so would be very slightly larger than the 'lamina only'
     measurement of leaf size recommended by Cornelissen et al. (2003).
+  collection_type: field
 - var_in: LtLeaf
   unit_in: mm
   trait_name: leaf_thickness
@@ -323,6 +322,7 @@ traits:
     many distributed tissue types such as sclerenchyma (Poorter et al., 2009). However,
     individual leaf volume determinations were not made in this study, and so lamina
     thickness remains the only direct measure of leaf size other than projected area.
+  collection_type: field
 - var_in: LMA
   unit_in: g/m2
   trait_name: specific_leaf_area
@@ -337,6 +337,7 @@ traits:
     images of fresh, saturated leaves, using open-source software 'ImageJ' v1.3.4
     Image Processing and Analysis in Java (NIH, US Government, http://rsb.info.nih.gov/ij/index.html).  Dry
     weight was measured after drying at 60degC for >=48 hours (Garnier et al., 2001).
+  collection_type: field
 - var_in: LDM
   unit_in: g/g
   trait_name: leaf_dry_matter_content
@@ -351,6 +352,7 @@ traits:
     images of fresh, saturated leaves, using open-source software 'ImageJ' v1.3.4
     Image Processing and Analysis in Java (NIH, US Government, http://rsb.info.nih.gov/ij/index.html).  Dry
     weight was measured after drying at 60degC for >=48 hours (Garnier et al., 2001).
+  collection_type: field
 - var_in: LSleaf
   unit_in: 10^1*kN/m
   trait_name: leaf_work_to_punch
@@ -395,6 +397,7 @@ traits:
     per unit dry mass, quantified by the maximum force per unit fracture cross-sectional
     area, per unit tissue density (units, N g-1 m), and calculated as 0.1 * LSS /
     LDM.
+  collection_type: field
 - var_in: LSS
   unit_in: 10^1*MN/m2
   trait_name: leaf_work_to_punch_adjusted
@@ -439,6 +442,8 @@ traits:
     per unit dry mass, quantified by the maximum force per unit fracture cross-sectional
     area, per unit tissue density (units, N g-1 m), and calculated as 0.1 * LSS /
     LDM.
+  measurement_remarks: columnXX
+  collection_type: field
 - var_in: LSD
   unit_in: MN/mm2/mm
   trait_name: .na
@@ -483,6 +488,7 @@ traits:
     per unit dry mass, quantified by the maximum force per unit fracture cross-sectional
     area, per unit tissue density (units, N g-1 m), and calculated as 0.1 * LSS /
     LDM.
+  collection_type: field
 - var_in: HeightM
   unit_in: m
   trait_name: .na
@@ -497,12 +503,14 @@ traits:
     on canopy context, and so canopy-top species were randomly assigned a height sampled
     from the maximum canopy heights from the primary forest quadrats (10x10m); using
     species level values included below
+  collection_type: field
 - var_in: HeightPlant
   unit_in: m
   trait_name: .na
   value_type: raw_value
   replicates: 1
   methods: Individual plant height
+  collection_type: field
 - var_in: L1Lflt2
   unit_in: .na
   trait_name: .na
@@ -510,18 +518,21 @@ traits:
   replicates: .na
   methods: Binary variable indicating if measurement was made on a leaf (1) or leaflet
     (2)
+  collection_type: field
 - var_in: nLsample
   unit_in: count
   trait_name: .na
   value_type: raw_value
   replicates: 1
   methods: N leaves sampled from an individual plant
+  collection_type: field
 - var_in: LVleaf
   unit_in: cm3
   trait_name: .na
   value_type: raw_value
   replicates: 1
   methods: leaf volumne
+  collection_type: field
 - var_in: LFrLeaf
   unit_in: g
   trait_name: leaf_fresh_mass
@@ -532,6 +543,7 @@ traits:
     sunset, and transported in cool, moist papers.  Leaves were then be rehydrated
     to saturation by storing them in darkness for 6-24 hours with cut stems placed
     in water.  Full-saturation measurements were then made of weight.
+  collection_type: field
 - var_in: LDrLeaf
   unit_in: g
   trait_name: leaf_dry_mass
@@ -539,6 +551,7 @@ traits:
   replicates: 1
   methods: Dry weight was measured after drying at 60degC for >=48 hours (Garnier
     et al., 2001).
+  collection_type: field
 - var_in: LWC
   unit_in: g/g
   trait_name: leaf_water_content_per_fresh_mass
@@ -550,6 +563,7 @@ traits:
     to saturation by storing them in darkness for 6-24 hours with cut stems placed
     in water.  Full-saturation measurements were then made of weight. Dry weight was
     measured after drying at 60degC for >=48 hours (Garnier et al., 2001).
+  collection_type: field
 - var_in: LLA
   unit_in: g/m2
   trait_name: leaf_water_content_per_area
@@ -559,12 +573,15 @@ traits:
     the natural point of abscission. This whole-leaf area includes the (small) area
     of petiole or rachis, and so would be very slightly larger than the 'lamina only'
     measurement of leaf size recommended by Cornelissen et al. (2003).
+  collection_type: field
 - var_in: LF
   unit_in: .na
   trait_name: plant_growth_form
   value_type: expert_mean
   replicates: .na
   methods: Rainforest Key, CSIRO permanent plot data, Field observations
+  collection_type: field
+  sample_age_class: adult
 - var_in: HeightMax
   unit_in: m
   trait_name: plant_height
@@ -574,12 +591,16 @@ traits:
     (vines, lianas, scramblers) height depends on canopy context, and so canopy-top
     species were randomly assigned a height sampled from the maximum canopy heights
     from the primary forest quadrats (10x10m).
+  sample_age_class: adult
+  collection_type: field
 - var_in: ReproAge
   unit_in: .na
   trait_name: reproductive_maturity
   value_type: expert_mean
   replicates: .na
   methods: CSIRO TFRC arboretum records, and Botanist and Landholder interviews
+  collection_type: literature
+  sample_age_class: adult
 - var_in: ReproCLE
   unit_in: dimensionless
   trait_name: reproductive_light_environment_index
@@ -587,6 +608,8 @@ traits:
   replicates: .na
   methods: Light for reproduction,  Crown Light Environment CLE required for first
     reproduction, ordinal values 1-8; Botanist interviews, Field observations.
+  collection_type: field
+  sample_age_class: adult
 - var_in: Pollination_syndrome
   unit_in: .na
   trait_name: pollination_syndrome
@@ -594,9 +617,43 @@ traits:
   replicates: .na
   methods: Assigned by Dr. Dan Metcalfe, CSIRO, based on literature data and floral
     features.
+  collection_type: literature
+  sample_age_class: adult
 - var_in: Fruit_type
   unit_in: .na
   trait_name: fruit_type
+  value_type: expert_mean
+  replicates: .na
+  methods: Fruit types based on morphology. 5 classes (4 among Angiosperms), Fleshy
+    (berry, pome, pepo, etc.), Dry dehiscent with fleshy reward  (e.g. aril, funicle,
+    elaiosome, etc.), Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed
+    achene, etc.), Dry dehiscent or indehsicent without attractant or wing. Spore
+    (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
+  collection_type: literature
+  sample_age_class: adult (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
+- var_in: fruit_fleshiness
+  unit_in: .na
+  trait_name: fruit_fleshiness
+  value_type: expert_mean
+  replicates: .na
+  methods: Fruit types based on morphology. 5 classes (4 among Angiosperms), Fleshy
+    (berry, pome, pepo, etc.), Dry dehiscent with fleshy reward  (e.g. aril, funicle,
+    elaiosome, etc.), Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed
+    achene, etc.), Dry dehiscent or indehsicent without attractant or wing. Spore
+    (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
+- var_in: fruit_dehiscence
+  unit_in: .na
+  trait_name: fruit_dehiscence
+  value_type: expert_mean
+  replicates: .na
+  methods: Fruit types based on morphology. 5 classes (4 among Angiosperms), Fleshy
+    (berry, pome, pepo, etc.), Dry dehiscent with fleshy reward  (e.g. aril, funicle,
+    elaiosome, etc.), Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed
+    achene, etc.), Dry dehiscent or indehsicent without attractant or wing. Spore
+    (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
+- var_in: dispersal_appendage
+  unit_in: .na
+  trait_name: dispersal_appendage
   value_type: expert_mean
   replicates: .na
   methods: Fruit types based on morphology. 5 classes (4 among Angiosperms), Fleshy
@@ -612,6 +669,8 @@ traits:
   methods: Fruit functional group - 10 classes based on size, morphology, composition,
     attractiveness to frugivore groups. 9 classes are present in the Angiosperms dataset.
     Data from CSIRO Fruit-Frugivore Interactions database.
+  collection_type: literature
+  sample_age_class: adult
 - var_in: DispClass
   unit_in: .na
   trait_name: dispersers
@@ -634,6 +693,8 @@ traits:
     only; AusTraits ''wind'': 7 Ws Wind-dispersed small seeds with wing or plume;
     8 WL Wind-dispersed large seeds with wing; AusTraits ''passive'': 9 SmUn Small
     propagules with unassisted dispersal, including spores.'
+  collection_type: literature
+  sample_age_class: adult
 - var_in: DispSimple
   unit_in: .na
   trait_name: .na
@@ -641,6 +702,8 @@ traits:
   replicates: .na
   methods: Dispersal syndrome - 3 broad classes, flying animal, non-flying animal,
     wind
+  collection_type: literature
+  sample_age_class: adult
 - var_in: DispC3
   unit_in: .na
   trait_name: .na
@@ -648,12 +711,16 @@ traits:
   replicates: .na
   methods: Disperser Class - 5 classes, splits the ForAv class in DispC2 into AvianForest
     and DiverseAvian
+  collection_type: literature
+  sample_age_class: adult
 - var_in: cotsExp
   unit_in: .na
   trait_name: cotyledon_position
   value_type: expert_mean
   replicates: .na
   methods: based on Rainforest Key, Cooper & Cooper 2004.
+  sample_age_class: seedling
+  collection_type: literature
 - var_in: cotsEH
   unit_in: .na
   trait_name: seedling_germination_location
@@ -661,6 +728,8 @@ traits:
   replicates: .na
   methods: Seedling Germination Type  Epigeal or Hypogeal; based on Rainforest Key,
     Cooper & Cooper 2004.
+  sample_age_class: seedling
+  collection_type: literature
 - var_in: cotsFR
   unit_in: .na
   trait_name: cotyledon_function
@@ -668,6 +737,8 @@ traits:
   replicates: .na
   methods: Seedling Cotyledon function - Foliaceous or Reserve; based on Rainforest
     Key, Cooper & Cooper 2004.
+  sample_age_class: seedling
+  collection_type: literature
 - var_in: LEE
   unit_in: dimensionless
   trait_name: establishment_light_environment_index
@@ -675,6 +746,8 @@ traits:
   replicates: .na
   methods: Seedling Light Environment for Establishment, CLE required for seedling
     establishment, 1-8; Field surveys and additional observations, and Botanist interviews
+  sample_age_class: seedling
+  collection_type: field
 substitutions:
 - trait_name: plant_growth_form
   find: C
@@ -708,13 +781,13 @@ substitutions:
   replace: birds
 - trait_name: dispersers
   find: CLarFor
-  replace: cassowary
+  replace: cassowaries
 - trait_name: dispersers
   find: clfor
-  replace: birds cassowary
+  replace: birds cassowaries
 - trait_name: dispersers
   find: Chsr
-  replace: cassowary flying_foxes rodents
+  replace: cassowaries flying_foxes rodents
 - trait_name: dispersers
   find: Rod
   replace: rodents
@@ -735,7 +808,7 @@ substitutions:
   replace: passive
 - trait_name: dispersers
   find: chr
-  replace: bats birds cassowary mammals
+  replace: bats birds cassowaries mammals
 - trait_name: reproductive_maturity
   find: 1
   replace: 1-5
@@ -781,25 +854,54 @@ substitutions:
 - trait_name: pollination_syndrome
   find: butterflies
   replace: butterfly
-- trait_name: fruit_type
-  find: Fleshy (berry, pome, pepo, etc.)
-  replace: fleshy
-- trait_name: fruit_type
-  find: Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)
-  replace: dry_dehiscent_reward
-- trait_name: fruit_type
-  find: Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed
-    achene, etc.)
-  replace: dry_winged
-- trait_name: fruit_type
-  find: dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)
-  replace: dry_winged
-- trait_name: fruit_type
-  find: Dry dehiscent or indehsicent without attractant or wing
-  replace: dry_not_winged
 - trait_name: plant_height
   find: 0.4 - 53m
   replace: 53
+- trait_name: fruit_type
+  find: Fleshy (berry, pome, pepo, etc.)
+  replace: .na.character
+- trait_name: fruit_type
+  find: Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)
+  replace: .na.character
+- trait_name: fruit_type
+  find: Dry dehiscent or indehsicent without attractant or wing
+  replace: .na.character
+- trait_name: fruit_type
+  find: Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)
+  replace: .na.character
+- trait_name: fruit_type
+  find: Spore
+  replace: spore
+- trait_name: fruit_dehiscence
+  find: Fleshy (berry, pome, pepo, etc.)
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)
+  replace: dehiscent
+- trait_name: fruit_dehiscence
+  find: Dry dehiscent or indehsicent without attractant or wing
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)
+  replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: Spore
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: Fleshy (berry, pome, pepo, etc.)
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: Dry dehiscent or indehsicent without attractant or wing
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: Spore
+  replace: .na.character
 taxonomic_updates:
 - find: Alangium villosum ssp. polyosmoides
   replace: Alangium villosum subsp. polyosmoides
@@ -842,4 +944,3 @@ taxonomic_updates:
   reason: Automatic alignment with name in APC list (accepted) (2021-02-22)
 exclude_observations: .na
 questions: .na
-

@@ -11,30 +11,37 @@ source:
     number: 6
     pages: 741--747
     doi: 10.1093/treephys/tpq029
-people:
-- name: Ernst-Detlef Schulze
-  institution: Max-Planck Institute for Biogeochemistry
-  role: contact, collector
-- name: Neil C. Turner
-  institution: University of Western Australia
-  role: collector
-- name: Willi A. Brand
-  institution: Max-Planck Institute for Biogeochemistry
-  role: collector
-- name: Ian Kealley
-  institution: unknown
-  role: assistant
-- name: Christiane Ludwig
-  institution: unknown
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Schulze
+    given_name: Ernst-Detlef
+    ORCID: 0000-0001-6188-9219
+    affiliation: Max-Planck Institute for Biogeochemistry, Germany
+    additional_role: contact
+  - last_name: Turner
+    given_name: Neil C.
+    ORCID: 0000-0002-2982-0411
+    affiliation: University of Western Australia, Australia
+  - last_name: Brand
+    given_name: Willi A.
+    ORCID: .na.character
+    affiliation: Max-Planck Institute for Biogeochemistry, Germany
+    notes: no contact
+  assistants: Ian Kealley, Christiane Ludwig
+  austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(`average%C` = if_else(is.na(`av C% 2.Result`),`av C% 1.Result`,((`av C% 1.Result`+`av C% 2.Result`)/2)), N_percent = if_else(is.na(`N 2.Result`),`N 1.Result`,((`N 1.Result`+`N 2.Result`)/2))) %>% mutate(leaf_count = `Leaf area (cm2)`/`Leaf size [area/Leaf]`, leaf_dry_mass = `Dry matter (g)`/leaf_count) %>%  mutate(date = "2005-08-19") %>%  mutate(collection_type = ifelse(Species == "Eucalyptus leptopoda","field","common garden"))
+  taxon_name: Species
+  site_name: location
+  date: date
   year_collected_start: 2005
   year_collected_end: 2005
   description: To try and clarify whether leaf delta13C is inherently stable across
     environments or varies with environment, particularly rainfall, we measured the
     leaf delta13C of a number of Eucalyptus species in two common gardens varying
     in rainfall.
-  collection_type: field_experiment, field
+  collection_type: arboretum
   sample_age_class: adult
   sampling_strategy: At two common gardens, 10-25 leaves, depending on size, were
     collected from four replicate trees of each species. Leaves were around 1 year
@@ -45,9 +52,9 @@ dataset:
     located sites have been used.
 sites:
   Coolgardie arboretum:
-    Soil type: clay
+    soil type: clay
     elevation (m): 417
-    MAP (mm): 216
+    precipitation, MAP (mm): 216
     latitude (deg): -30.95
     longitude (deg): 121.15
     description: The trees at Coolgardie were planted between 1974 and 1980 in a 5-m
@@ -55,37 +62,26 @@ sites:
       (Table 1). Species were spaced such that the crowns of the individual trees
       did not touch.
   Kalgoorlie arboretum:
-    Soil type: clay
-    MAP (mm): .na
+    soil type: clay
+    precipitation, MAP (mm): .na
     latitude (deg): -30.744
     longitude (deg): 121.449
     description: .na
   Nr. Coolgardie arboretum:
-    Soil type: sand
+    soil type: sand
     elevation (m): 406
-    MAP (mm): 216
+    precipitation, MAP (mm): 216
     latitude (deg): -30.95
     longitude (deg): 121.15
     description: At Coolgardie, one species, Eucalyptus leptopoda, was collected from
       a bush site 1 km from the arboretum.
   Nr. Kalgoorlie arboretum:
-    Soil type: clay
-    MAP (mm): .na
+    soil type: clay
+    precipitation, MAP (mm): .na
     latitude (deg): -30.74
     longitude (deg): 121.45
     description: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: location
-    date: date
-  custom_R_code: data %>% mutate(`average%C` = if_else(is.na(`av C% 2.Result`),`av
-    C% 1.Result`,((`av C% 1.Result`+`av C% 2.Result`)/2)), N_percent = if_else(is.na(`N
-    2.Result`),`N 1.Result`,((`N 1.Result`+`N 2.Result`)/2))) %>% mutate(leaf_count
-    = `Leaf area (cm2)`/`Leaf size [area/Leaf]`,leaf_dry_mass = `Dry matter (g)`/leaf_count)
-    %>% mutate(date = "2005-08-19")
 traits:
 - var_in: Tree height [m]
   unit_in: m
@@ -195,4 +191,3 @@ taxonomic_updates:
   reason: Name corrected by C. Baxter (2020-02-10)
 exclude_observations: .na
 questions: .na
-
