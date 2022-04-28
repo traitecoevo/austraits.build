@@ -282,8 +282,10 @@ move_values_to_new_trait_long <-
 #' @return 
 #' @export
 #'
-#' @examples read_csv("export/dispersal_syndrome_substitutions.csv") %>% select(-extra) %>% filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
-#' @examples substitutions_from_csv(dataframe_of_substitutions,dataset_id,trait_name,find,replace)
+#' @examples \dontrun{
+#' read_csv("export/dispersal_syndrome_substitutions.csv") %>% select(-extra) %>% filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
+#' substitutions_from_csv(dataframe_of_substitutions,dataset_id,trait_name,find,replace)
+#' }
 
 substitutions_from_csv <- function(dataframe_of_substitutions,dataset_id,trait_name,find,replace) {
 

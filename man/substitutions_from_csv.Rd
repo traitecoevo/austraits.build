@@ -31,6 +31,8 @@ Function that simultaneously adds many trait value replacements, potentially acr
 This function will be used to quickly re-align/re-assign trait values across all AusTraits studies.
 }
 \examples{
+\dontrun{
 read_csv("export/dispersal_syndrome_substitutions.csv") \%>\% select(-extra) \%>\% filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
 substitutions_from_csv(dataframe_of_substitutions,dataset_id,trait_name,find,replace)
+}
 }
