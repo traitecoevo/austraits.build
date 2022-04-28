@@ -180,9 +180,9 @@ load_study <- function(filename_data_raw,
       metadata$dataset %>%
         list1_to_df() %>%
         spread(.data$key, .data$value) %>%
-        dplyr::select(tidyselect::any_of(names(metadata$dataset))) %>%
+        dplyr::select(dplyr::any_of(names(metadata$dataset))) %>%
           dplyr::mutate(dataset_id = dataset_id) %>%
-          dplyr::select(-tidyselect::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", "trait_name", "observation_id", "context_name", "site_name", "date", "custom_R_code", "taxon_name", "collection_type", "sample_age_class")))
+          dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", "trait_name", "observation_id", "context_name", "site_name", "date", "custom_R_code", "taxon_name", "collection_type", "sample_age_class")))
       )  %>%
       full_join( by = "dataset_id",
         #references
@@ -214,20 +214,10 @@ load_study <- function(filename_data_raw,
       traits_tmp <- traits %>%
         dplyr::left_join(by = "site_name",
                          sites %>% tidyr::pivot_wider(names_from = site_property, values_from = value) %>%
-                           dplyr::select(.data$site_name, col_tmp = tidyselect::any_of(v)))
+                           dplyr::select(.data$site_name, col_tmp = dplyr::any_of(v)))
      ## filling any missing values
      traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
-
-    # # merge in to traits (from dataset level) via methods
-    # if(v %in% colnames(methods)){
-    #   traits_tmp <- traits %>%
-    #     dplyr::left_join(by = "trait_name",
-    #                     methods %>%
-    #                       dplyr::select(.data$trait_name, col_tmp = tidyselect::all_of(v)) %>%
-    #                       distinct())
-    #  traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
-    # }
   }
 
   # Retrieve taxonomic details for known species
@@ -615,7 +605,7 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
       value = ifelse(.data$to_convert, f(.data$value, .data$ucn[1]), .data$value),
       unit = ifelse(.data$to_convert, .data$to, .data$unit)) %>%
     dplyr::ungroup() %>%
-    dplyr::select(tidyselect::any_of(vars))
+    dplyr::select(dplyr::any_of(vars))
 }
 
 #' Add or remove columns of data
@@ -628,7 +618,8 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
 #' @param add_error_column adds an extra column called error if TRUE
 #'
 #' @return tibble with the correct selection of columns including an error column
-#' @importFrom data.table :=
+#' @importFrom rlang :=
+#' @importFrom dplyr select mutate filter arrange distinct any_of
 #' @export
 add_all_columns <- function(data, vars, add_error_column = TRUE) {
 
@@ -639,12 +630,13 @@ add_all_columns <- function(data, vars, add_error_column = TRUE) {
       dplyr::mutate(!!v := NA_character_)
 
   data <- data %>%
-    dplyr::select(tidyselect::any_of(vars))
+    dplyr::select(dplyr::any_of(vars))
 
   if(add_error_column){
     data <- data %>%
       dplyr::mutate(error = NA_character_)
   }
+  
   data
 }
 
@@ -658,9 +650,9 @@ add_all_columns <- function(data, vars, add_error_column = TRUE) {
 #' @param data tibble or dataframe containing the study data
 #' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param metadata yaml file with metadata
-#'
 #' @return tibble in long format with AusTraits formatted trait names, trait
 #' substitutions and unique observation id added
+#' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of
 #' @export
 parse_data <- function(data, dataset_id, metadata) {
 
