@@ -266,7 +266,7 @@ metadata_add_sites <- function(dataset_id, site_data) {
   keep <- user_select_names(paste("Indicate all columns you wish to keep as distinct site_properties in ", dataset_id), names(site_sub))
 
   # Save and notify
-  metadata$sites <- dplyr::select(site_data, one_of(keep)) %>%
+  metadata$sites <- dplyr::select(site_data, tidyr::one_of(keep)) %>%
             split(site_data[[site_name]]) %>% lapply(as.list)
 
   cat(sprintf("Following sites added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$sites), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
@@ -306,7 +306,7 @@ metadata_add_contexts <- function(dataset_id, context_data) {
   keep <- user_select_names(paste("Indicate all columns you wish to keep as distinct context_properties in ", dataset_id), names(context_sub))
   
   # Save and notify
-  metadata$contexts <- dplyr::select(context_data, one_of(keep)) %>%
+  metadata$contexts <- dplyr::select(context_data, tidyr::one_of(keep)) %>%
     split(context_data[[context_name]]) %>% lapply(as.list)
   
   cat(sprintf("Following contexts added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$contexts), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))

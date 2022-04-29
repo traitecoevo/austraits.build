@@ -22,12 +22,12 @@ move_values_to_new_trait(
 
 \item{original_values}{values of the original trait that need to be remapped to a different (new) trait}
 
-\item{value_for_new_trait}{the appropriate value of the new trait; this may be identical to the original values, or may be a slightly different word/syntax}
+\item{values_for_new_trait}{the appropriate value of the new trait; this may be identical to the original values, or may be a slightly different word/syntax}
 
-\item{value_to_keep}{the appropriate value to retain for the old trait; this may be identical to the original values or may be NA}
+\item{values_to_keep}{the appropriate value to retain for the old trait; this may be identical to the original values or may be NA}
 }
 \value{
-
+data frame with a new column containing additional trait data
 }
 \description{
 Move select trait values from a pre-existing column (trait_name) to a new column (new trait_name)
@@ -35,6 +35,7 @@ Move select trait values from a pre-existing column (trait_name) to a new column
 \examples{
 \dontrun{
 data <- read_csv(data/"Hughes_1992/data.csv")
-data \%>\% move_values_to_new_trait(data, "growth form", "root_structure", "Saprophyte", "saprophyte") -> data
+data \%>\% move_values_to_new_trait(data, "growth form", "root_structure", 
+"Saprophyte", "saprophyte") -> data
 }
 }

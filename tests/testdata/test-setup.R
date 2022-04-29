@@ -105,7 +105,6 @@ for (dataset_id in test_dataset_ids) {
 
     for(v in names(metadata$contexts)) {
       test_list(metadata[["contexts"]][[v]], info=f)
-      expect_contains(names(metadata[["contexts"]][[v]]), c("type", "description"), info=paste0(f, " - context: ", v))
     }
   }
 

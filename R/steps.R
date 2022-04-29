@@ -213,7 +213,7 @@ load_study <- function(filename_data_raw,
     if(v %in% sites$site_property){
       traits_tmp <- traits %>%
         dplyr::left_join(by = "site_name",
-                         sites %>% tidyr::pivot_wider(names_from = site_property, values_from = value) %>%
+                         sites %>% tidyr::pivot_wider(names_from = .$site_property, values_from = .$value) %>%
                            dplyr::select(.data$site_name, col_tmp = dplyr::any_of(v)))
      ## filling any missing values
      traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
@@ -404,12 +404,12 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
     format.BibEntry(.sort = F) %>%
     # HACK: remove some of formatting introduced in line above
     # would be nicer if we could apply csl style
-    gsub("[] ", "", ., fixed = TRUE) %>%
-    gsub("\\n", " ", .) %>%
-    gsub("  ", " ", .) %>%
-    gsub("DOI:", " doi: ", ., fixed = TRUE) %>%
-    gsub("URL:", " url: ", ., fixed = TRUE) %>%
-    ifelse(tolower(bib$bibtype) == "article",  gsub("In:", " ", .), .)
+    gsub("[] ", "", .data, fixed = TRUE) %>%
+    gsub("\\n", " ", .data) %>%
+    gsub("  ", " ", .data) %>%
+    gsub("DOI:", " doi: ", .data, fixed = TRUE) %>%
+    gsub("URL:", " url: ", .data, fixed = TRUE) %>%
+    ifelse(tolower(bib$bibtype) == "article",  gsub("In:", " ", .data), .data)
 }
 
 #' Convert a list of elements into a BibEntry object
@@ -652,7 +652,7 @@ add_all_columns <- function(data, vars, add_error_column = TRUE) {
 #' @param metadata yaml file with metadata
 #' @return tibble in long format with AusTraits formatted trait names, trait
 #' substitutions and unique observation id added
-#' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of
+#' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of bind_cols
 #' @importFrom rlang .data
 #' @export
 parse_data <- function(data, dataset_id, metadata) {
