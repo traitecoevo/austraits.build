@@ -404,12 +404,12 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
     format.BibEntry(.sort = F) %>%
     # HACK: remove some of formatting introduced in line above
     # would be nicer if we could apply csl style
-    gsub("[] ", "", .data, fixed = TRUE) %>%
-    gsub("\\n", " ", .data) %>%
-    gsub("  ", " ", .data) %>%
-    gsub("DOI:", " doi: ", .data, fixed = TRUE) %>%
-    gsub("URL:", " url: ", .data, fixed = TRUE) %>%
-    ifelse(tolower(bib$bibtype) == "article",  gsub("In:", " ", .data), .data)
+    gsub("[] ", "", ., fixed = TRUE) %>%
+    gsub("\\n", " ", .) %>%
+    gsub("  ", " ", .) %>%
+    gsub("DOI:", " doi: ", ., fixed = TRUE) %>%
+    gsub("URL:", " url: ", ., fixed = TRUE) %>%
+    ifelse(tolower(bib$bibtype) == "article",  gsub("In:", " ", .), .)
 }
 
 #' Convert a list of elements into a BibEntry object
