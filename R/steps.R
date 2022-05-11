@@ -694,16 +694,8 @@ parse_data <- function(data, dataset_id, metadata) {
     }
     out <- dplyr::bind_rows(out)
   } else {
-    # filter the data to only contain trait names which are found in var_in
     out <- df %>% filter(.data$trait_name %in% cfgChar$var_in)
     out[["value"]] <- out[["value"]] %>%  as.character()
-    # if any of the replicate values in cfgChar is one of the column names in data, bind those columns to df
-    if(any(cfgChar$replicates %in% colnames(data))){
-      df <- df %>% bind_cols(
-        select(data, 
-               cfgChar$replicates[which(cfgChar$replicates %in% colnames(data))])) %>%
-        filter(.data$trait_name %in% cfgChar$var_in)
-    }
   }
 
   # Ensure all lower case
@@ -717,24 +709,6 @@ parse_data <- function(data, dataset_id, metadata) {
     for(v in vars) {
       out[[v]] <- NA
       out[[v]][j] <- cfgChar[[v]][i[j]]
-    }
-  }
-
-  # Replace replicate values in out with replicate values stored in columns in data
-  if(any(cfgChar$replicates %in% colnames(data))){
-    for(v in cfgChar$var_in){
-      v1 <- cfgChar$replicates[which(cfgChar$var_in == v)]
-      if(v1 %in% names(data)){
-        if(data_is_long_format == FALSE){
-          # Replace replicates  for wide datasets
-          out$replicates[which(out$trait_name == v)] = 
-            dplyr::pull(data[which(names(data) == v1)])
-          # Replace replicates for long datasets
-          } else {
-          out$replicates[which(out$trait_name == v)] = 
-            dplyr::pull(df[which(names(df) == v1)][which(df$trait_name == v),])
-        }
-      }
     }
   }
 
