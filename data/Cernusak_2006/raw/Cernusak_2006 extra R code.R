@@ -13,7 +13,8 @@ read_csv("data/Cernusak_2006/raw/leaf_respiration.csv") %>%
   select(species,Tree,sampling_period, position, `leaf respiraton at 30degC`) %>%
   group_by(species,Tree,sampling_period) %>%
   summarise(position = first(position),
-            `leaf respiraton at 30degC` = mean(`leaf respiraton at 30degC`)) %>% 
+            `leaf respiraton at 30degC` = mean(`leaf respiraton at 30degC`),
+            count_leaf_respiration = n()) %>% 
   subset(Tree != "saplings") %>%
   ungroup() -> leaf_respiration
   

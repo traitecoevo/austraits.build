@@ -4,20 +4,31 @@ source:
     bibtype: Report
     year: 2020
     author: Matthew White, Steven Sinclair, Doug Frood
-    title: 'Victorian Vital Attributes Database'
-    institution: 'Department of Environment, Land, Water and Planning, Victoria'
+    title: Victorian Vital Attributes Database
+    institution: Department of Environment, Land, Water and Planning, Victoria
     type: database
-people:
-- name: Matthew White
-  institution: Department of Environment, Land, Water and Planning, Victoria
-  role: collector, contact
-- name: Steven Sinclair
-  institution: Department of Environment, Land, Water and Planning, Victoria
-  role: collector
-- name: Doug Frood
-  institution: Pathways Bushland and Environment Consultancy
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: White
+    given_name: Matthew
+    ORCID: 0000-0003-2120-0071
+    affiliation: Department of Environment, Land, Water and Planning, Victoria, Australia
+    additional_role: contact
+  - last_name: Sinclair
+    given_name: Steven
+    ORCID: 0000-0002-4282-1021
+    affiliation: Department of Environment, Land, Water and Planning, Victoria, Australia
+  - last_name: Frood
+    given_name: Doug
+    ORCID: .na.character
+    affiliation: Pathways Bushland and Environment Consultancy, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% subset(NonIndigenous != 1) %>% mutate(flowering_season =
+    paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec)
+    %>% na_if("000000000000") %>% convert_01_ny) %>% mutate(dispersers = dispersal_syndrome)
+  taxon_name: Species_Name
   year_collected_start: unknown
   year_collected_end: 2020
   description: Compilation of trait data for Victorian plant species
@@ -38,15 +49,16 @@ dataset:
     studies
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species_Name
-  custom_R_code: data %>% subset(NonIndigenous != 1) %>% mutate(flowering_season = paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec) %>% na_if("000000000000") %>% convert_01_ny)
 traits:
 - var_in: dispersal_syndrome
   unit_in: .na
   trait_name: dispersal_syndrome
+  value_type: expert_mean
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
+- var_in: dispersers
+  unit_in: .na
+  trait_name: dispersers
   value_type: expert_mean
   replicates: .na
   methods: compilation from diverse sources and expert opinion
@@ -223,6 +235,132 @@ substitutions:
 - trait_name: parasitic
   find: 0
   replace: not_parasitic
+- trait_name: dispersal_syndrome
+  find: anemochory
+  replace: anemochory
+- trait_name: dispersal_syndrome
+  find: anemochory exozoochory_mammal
+  replace: anemochory epizoochory
+- trait_name: dispersal_syndrome
+  find: barochory
+  replace: barochory
+- trait_name: dispersal_syndrome
+  find: barochory exozoochory_mammal exozoochory_bird
+  replace: barochory epizoochory
+- trait_name: dispersal_syndrome
+  find: barochory hydrochory endozoochory_mammal endozoochory_bird
+  replace: barochory endozoochory
+- trait_name: dispersal_syndrome
+  find: barochory invertebrate_insect
+  replace: barochory zoochory
+- trait_name: dispersal_syndrome
+  find: dispersal_rare
+  replace: .na
+- trait_name: dispersal_syndrome
+  find: endozoochory_bird
+  replace: endozoochory
+- trait_name: dispersal_syndrome
+  find: endozoochory_bird exozoochory_bird
+  replace: endozoochory epizoochory
+- trait_name: dispersal_syndrome
+  find: endozoochory_bird invertebrate_insect
+  replace: endozoochory
+- trait_name: dispersal_syndrome
+  find: endozoochory_mammal
+  replace: endozoochory
+- trait_name: dispersal_syndrome
+  find: endozoochory_mammal endozoochory_bird
+  replace: endozoochory
+- trait_name: dispersal_syndrome
+  find: exozoochory_bird
+  replace: epizoochory
+- trait_name: dispersal_syndrome
+  find: exozoochory_mammal
+  replace: epizoochory
+- trait_name: dispersal_syndrome
+  find: exozoochory_mammal dispersal_rare
+  replace: epizoochory
+- trait_name: dispersal_syndrome
+  find: exozoochory_mammal exozoochory_bird
+  replace: epizoochory
+- trait_name: dispersal_syndrome
+  find: hydrochory
+  replace: hydrochory
+- trait_name: dispersal_syndrome
+  find: hydrochory anemochory exozoochory_mammal
+  replace: hydrochory anemochory epizoochory
+- trait_name: dispersal_syndrome
+  find: hydrochory exozoochory_bird
+  replace: hydrochory epizoochory
+- trait_name: dispersal_syndrome
+  find: hydrochory exozoochory_mammal
+  replace: hydrochory epizoochory
+- trait_name: dispersal_syndrome
+  find: invertebrate_insect
+  replace: zoochory
+- trait_name: dispersers
+  find: anemochory
+  replace: wind
+- trait_name: dispersers
+  find: anemochory exozoochory_mammal
+  replace: wind mammals
+- trait_name: dispersers
+  find: barochory
+  replace: .na
+- trait_name: dispersers
+  find: barochory exozoochory_mammal exozoochory_bird
+  replace: birds mammals
+- trait_name: dispersers
+  find: barochory hydrochory endozoochory_mammal endozoochory_bird
+  replace: water mammals birds
+- trait_name: dispersers
+  find: barochory invertebrate_insect
+  replace: invertebrates
+- trait_name: dispersers
+  find: dispersal_rare
+  replace: .na
+- trait_name: dispersers
+  find: endozoochory_bird
+  replace: birds
+- trait_name: dispersers
+  find: endozoochory_bird exozoochory_bird
+  replace: birds
+- trait_name: dispersers
+  find: endozoochory_bird invertebrate_insect
+  replace: birds invertebrates
+- trait_name: dispersers
+  find: endozoochory_mammal
+  replace: mammals
+- trait_name: dispersers
+  find: endozoochory_mammal endozoochory_bird
+  replace: birds mammals
+- trait_name: dispersers
+  find: exozoochory_bird
+  replace: birds
+- trait_name: dispersers
+  find: exozoochory_mammal
+  replace: mammals
+- trait_name: dispersers
+  find: exozoochory_mammal dispersal_rare
+  replace: mammals
+- trait_name: dispersers
+  find: exozoochory_mammal exozoochory_bird
+  replace: birds mammals
+- trait_name: dispersers
+  find: hydrochory
+  replace: water
+- trait_name: dispersers
+  find: hydrochory anemochory exozoochory_mammal
+  replace: mammals wind water
+- trait_name: dispersers
+  find: hydrochory exozoochory_bird
+  replace: birds water
+- trait_name: dispersers
+  find: hydrochory exozoochory_mammal
+  replace: mammals water
+- trait_name: dispersers
+  find: invertebrate_insect
+  replace: invertebrates
 taxonomic_updates:
 - find: Abutilon malvaefolium
   replace: Abutilon malvifolium
@@ -2882,4 +3020,3 @@ questions:
     drought, often intolerant of fire)); Mesic_GF\t(Ground ferns from damp shaded
     habitats); (Filmy_Fern\tFerns - with, all or most of fronds, no more than 1 cell
     thickness)"
-

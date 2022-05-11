@@ -38,29 +38,36 @@ source:
     number: '1'
     pages: 346--359
     doi: 10.1890/04-0920
-people:
-- name: Nick Williams
-  institution: University of Melbourne
-  role: collector, contact
-- name: Peter Vesk
-  institution: University of Melbourne
-  role: collector
-- name: Amy Hahs
-  institution: University of Melbourne
-  role: collector
-- name: Richard P. Duncan
-  institution: University of Canberra
-  role: collector
-- name: Catherine Tait
-  institution: University of Adelaide
-  role: assistant
-- name: Monique Hallet
-  institution: University of Adelaide
-  role: assistant
-- name: Steven Clemants
-  institution: Brooklyn Botanic Garden
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Williams
+    given_name: Nicholas
+    ORCID: 0000-0001-6291-9483
+    affiliation: University of Melbourne, Australia
+    additional_role: contact
+  - last_name: Vesk
+    given_name: Peter
+    ORCID: 0000-0003-2008-7062
+    affiliation: University of Melbourne, Australia
+  - last_name: Hahs
+    given_name: Amy
+    ORCID: 0000-0003-0163-6732
+    affiliation: School of Ecosystem and Forest Sciences, The University of Melbourne,
+      Australia
+  - last_name: Duncan
+    given_name: Richard P.
+    ORCID: 0000-0003-2295-449X
+    affiliation: Institute for Applied Ecology, University of Canberra, ACT 2617,
+      Australia
+  assistants: Catherine Tait, Monique Hallet, Steven Clemants
+  austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(Clonality = paste0(Clonality,Clonality_b)) %>% mutate(nitrogen_fixing
+    = ifelse(`Nutrient uptake strategy` == 1,1,0)) %>% subset(`Extant/Extinct` ==
+    1 & `Native/Exotic` == 0)
+  taxon_name: Species
+  site_name: context
   year_collected_start: 2011
   year_collected_end: 2013
   description: A collection of trait data on species growing in Adelaide and Melbourne
@@ -77,25 +84,14 @@ dataset:
     but also some datasets from John Morgan's lab, Trevor Meers data, and a few datasets
     from Macquarie University labs, Leishman_1992 and Hughes_1992 in particular) have
     been filtered out
-sites: .na
-contexts:
+sites:
   grows in Adelaide:
-    type: field
-    description: species occurs in Adelaide
+    locality: Adelaide
   grows in Melbourne:
-    type: field
-    description: species occurs in Melbourne
+    locality: Melbourne
   grows in Melbourne and Adelaide:
-    type: field
-    description: species occurs in Melbourne and Adelaide
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    context_name: context
-  custom_R_code: data %>% mutate(Clonality = paste0(Clonality,Clonality_b)) %>% mutate(nitrogen_fixing
-    = ifelse(`Nutrient uptake strategy` == 1,1,0)) %>% subset(`Extant/Extinct` ==
-    1 & `Native/Exotic` == 0)
+    locality: Melbourne and Adelaide
+contexts: .na
 traits:
 - var_in: Growth form
   unit_in: .na
@@ -166,7 +162,7 @@ traits:
   methods: information gathered from floras and online state data
 - var_in: Seed Mass_filtered
   unit_in: mg
-  trait_name: seed_mass
+  trait_name: seed_dry_mass
   value_type: site_mean
   replicates: unknown
   methods: information from Meers (2006), small amount data from Kew database. Note
@@ -242,7 +238,7 @@ substitutions:
   replace: endozoochory
 - trait_name: dispersal_syndrome
   find: 4
-  replace: exozoochory
+  replace: epizoochory
 - trait_name: dispersal_syndrome
   find: 6
   replace: myrmecochory
