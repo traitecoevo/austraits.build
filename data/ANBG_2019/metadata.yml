@@ -32,11 +32,69 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code: data %>% mutate(gathering_date = gathering_date %>% mdy()) %>% move_values_to_new_trait_long("Texture",
-    "seed_surface_hairs", "trait", "value", c("plumose", "tomentose", "hairs", "ciliate",
-    "stellate", "cilliate", "velutinous")) %>% add_values_to_additional_trait_long("seed_surface_hairs",
-    "trait", "value", c("stellate dimpled", "costate tomentose"), c("hairs_branched","hairs_simple")) %>% move_values_to_new_trait_long("Appendage",
-    "Texture", "trait", "value", c("scales")) %>% mutate(value = ifelse(trait == "Propagation",detailed_description,value))
+  custom_R_code: '
+  data %>% 
+    mutate(gathering_date = gathering_date %>% mdy()) %>%
+    move_values_to_new_trait_long("Texture", "seed_surface_hairs", "trait", "value", 
+      c("plumose", "tomentose", "hairs", "ciliate", "stellate", "cilliate", "velutinous")) %>% 
+    add_values_to_additional_trait_long("seed_surface_hairs", "trait", "value", 
+      c("stellate dimpled", "costate tomentose"), c("hairs_branched", "hairs_simple")) %>% 
+    move_values_to_new_trait_long("Appendage", "Texture", "trait", "value", c("scales")) %>% 
+    mutate(value = ifelse(trait == "Propagation", detailed_description, value)) %>%
+    dplyr::left_join(by = c("item_ID", "trait", "value_numeric"),
+      dplyr::bind_rows(
+        dplyr::left_join(
+          by = "item_ID",
+          data %>% filter(trait %in% c("Width")) %>% 
+            select(item_ID, trait, value_numeric) %>% 
+            distinct(),
+          data %>% 
+            filter(trait %in% c("Width", "WidthSample")) %>% 
+            select(item_ID, trait, value_numeric) %>% 
+            distinct() %>% 
+            mutate(column_numbers = row_number()) %>% 
+            filter(!(column_numbers %in% c(101, 323, 325, 517, 611, 1153, 1805, 1838))) %>% 
+            select(-column_numbers) %>% 
+            filter(trait == "WidthSample") %>% 
+            spread(key = trait, value = value_numeric)
+        ),
+        dplyr::left_join(by = "item_ID",
+          data %>% 
+            filter(trait %in% c("Length")) %>% 
+            select(item_ID, trait, value_numeric) %>% 
+            distinct(),
+          data %>% 
+            filter(trait %in% c("Length", "LengthSample")) %>% 
+            select(item_ID, trait, value_numeric) %>% 
+            distinct() %>% 
+            mutate(column_numbers = row_number()) %>% 
+            filter(!(column_numbers %in% c(36, 91, 94, 95, 571, 756, 1426, 1438))) %>% 
+            select(-column_numbers) %>% 
+            filter(trait == "LengthSample") %>% 
+            spread(key = trait, value = value_numeric)
+        ),
+        data %>% filter(trait == "Seed Sample") %>%
+          select(item_ID, trait, detailed_description, value_numeric) %>%
+          mutate(
+            seed_sample_replicates = detailed_description,
+            seed_sample_replicates = gsub("Thousand seed weight calculated from one sample. Loaded from Excel file. No in sample",
+            "",seed_sample_replicates),
+            seed_sample_replicates = word(seed_sample_replicates, 2),
+            seed_sample_replicates = gsub(",", "", seed_sample_replicates),
+            seed_sample_replicates = as.numeric(seed_sample_replicates)
+          ) %>%
+          select(-detailed_description) %>% 
+          distinct(item_ID, .keep_all = TRUE)
+      )
+    ) %>%  
+    mutate(
+      replicates = coalesce(
+        as.character(WidthSample),
+        as.character(LengthSample),
+        as.character(seed_sample_replicates)
+    )) %>% 
+    distinct(trait, value, species_name, site_name_shorter, .keep_all = TRUE)
+    '
   taxon_name: species_name
   trait_name: trait
   value: value
@@ -50,6 +108,7 @@ dataset:
     this collection.
   collection_type: botanical_collection
   sample_age_class: adult
+  replicates: replicates
   sampling_strategy: The Australian National Botanic Gardens' National Seed Bank is
     building a collection of native seed for conservation and research. The seed bank
     is home to a large and ever-increasing collection of Australian native seeds,
@@ -13266,7 +13325,6 @@ traits:
   unit_in: mg
   trait_name: seed_dry_mass
   value_type: site_mean
-  replicates: various; in raw data files
   methods: 'Thousand seed weight is a measure of the average mass of one thousand
     seeds. Two methods have been historically employed to obtain this data. Basic
     method: Exactly 1000 seeds are separated from the collection as a whole and then
@@ -13312,7 +13370,6 @@ traits:
   unit_in: um
   trait_name: seed_width
   value_type: site_mean
-  replicates: WidthSample
   methods: Calibrated group digital images of 20-30 seeds enable measurements of size
     with calculations of average size and variation among seeds (standard deviation).
     Measurements of seeddimensions width (at widest point) and length (longest point)
@@ -13375,7 +13432,6 @@ traits:
   unit_in: um
   trait_name: seed_length
   value_type: site_mean
-  replicates: LengthSample
   methods: Calibrated group digital images of 20-30 seeds enable measurements of size
     with calculations of average size and variation among seeds (standard deviation).
     Measurements of seeddimensions width (at widest point) and length (longest point)
@@ -13401,18 +13457,6 @@ traits:
     relate to the seed collection as stored (after drying), and therefore may differ
     from those of the dispersal unit as it is first released from the plant (especially
     in the case of fleshy fruits).
-- var_in: WidthSample
-  unit_in: .na
-  trait_name: .na
-  value_type: .na
-  replicates: .na
-  methods: number of seeds examined to determine mean seed width
-- var_in: LengthSample
-  unit_in: .na
-  trait_name: .na
-  value_type: .na
-  replicates: .na
-  methods: number of seeds examined to determine mean seed length
 substitutions:
 - trait_name: germination_treatment
   find: soak the seed for a time period.
