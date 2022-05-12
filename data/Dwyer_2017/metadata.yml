@@ -24,7 +24,7 @@ contributors:
   austraits_curators: Caitlan Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: data %>% group_by(species, remnant) %>% mutate(count_plants = sum(count), seed_mass = round(seed_mass,6), max_height = round(max_height,6), specific_leaf_area = round(specific_leaf_area,6)) %>% mutate_at(vars(count_plants,max_height, specific_leaf_area),funs(replace(.,duplicated(.),NA))) %>% ungroup() %>% group_by(species) %>% mutate_at(vars(seed_mass),funs(replace(.,duplicated(.),NA))) %>% ungroup()
   taxon_name: species
   site_name: remnant
   date: year
@@ -176,11 +176,11 @@ sites:
     soil pH: 5.82
 contexts: .na
 traits:
-- var_in: seed_mass_distinct
+- var_in: seed_mass
   unit_in: mg
   trait_name: seed_dry_mass
   value_type: multisite_mean
-  replicates: 1-200
+  replicates: 100
   methods: At the end of the growing season we revisited a number of remnants to collect
     bulk seed from as many species as possible. Due to the size of the study region
     and variation in reproductive phenology within and between species, it was not
@@ -195,18 +195,18 @@ traits:
     dried at 60 deg C for 72 hours and weighed using a microbalance (Sartorius AG,
     Goettingen, Germany). For almost all species seed mass is a multisite_mean; there
     are a few species with more than one distinct seed mass value.
-- var_in: max_height_distinct
+- var_in: max_height
   unit_in: cm
   trait_name: plant_height
   value_type: site_max
-  replicates: 1-200
+  replicates: count_plants
   methods: Height was measured on the tallest individual of each species in each quadrat
     as the distance between the base of the plant and the tallest leaf.
-- var_in: specific_leaf_area_distinct
+- var_in: specific_leaf_area
   unit_in: mm2/mg
   trait_name: specific_leaf_area
   value_type: site_mean
-  replicates: 1-200
+  replicates: unknown
   methods: SLA was measured in the laboratory on field-pressed specimens collected
     in each quadrat during the survey. Leaves were rehydrated following Perez-Harguindeguy
     et al. (2013) prior to digital area measurement. Each leaf was then oven dried
