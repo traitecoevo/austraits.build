@@ -32,6 +32,13 @@ contributors:
   assistants: Jessica L. Rigg
   austraits_curators: Caitlan Baxter
 dataset:
+  data_is_long_format: yes
+  custom_R_code: data %>% mutate(`trait.val` = ifelse(`trait`=="waterperc", 100 -`trait.val`,`trait.val`)) %>% mutate(measurement_remarks = ifelse(size == "large","large size class, including stems 5-9 cm in diameter; only includes some species, because not all species produce stems in this size range", NA), measurement_remarks = ifelse(size == "small","small size class, including stems 1-2 cm in diameter", measurement_remarks))
+  taxon_name: Binomial
+  trait_name: trait
+  value: trait.val
+  site_name: site
+  observation_id: unique
   year_collected_start: 2013
   year_collected_end: 2013
   description: data on stem traits as part of a study showing that across a diversity
@@ -67,24 +74,7 @@ sites:
     longitude (deg): 150.7378
     description: Remnant Cumberland Plain woodland on Western Sydney University Hawkesbury
       Campus, Richmond NSW
-contexts:
-  large:
-    description: large size class, including stems 5-9 cm in diameter; only includes
-      some species, because not all species produce stems in this size range
-    type: field
-  small:
-    description: small size class, including stems 1-2 cm in diameter
-    type: field
-config:
-  data_is_long_format: yes
-  variable_match:
-    taxon_name: Binomial
-    trait_name: trait
-    value: trait.val
-    site_name: site
-    observation_id: unique
-    context_name: size
-  custom_R_code: data %>% mutate(`trait.val` = ifelse(`trait`=="waterperc", 100 -`trait.val`,`trait.val`))
+contexts: .na
 traits:
 - var_in: waterperc
   unit_in: '%'

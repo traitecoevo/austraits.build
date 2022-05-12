@@ -25,6 +25,12 @@ contributors:
     additional_role: contact
   austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(site_name = "University of Queensland") %>% group_by(Species)
+    %>% mutate_at(vars(SeedMass), replace_duplicates_with_NA) %>% ungroup()
+  taxon_name: Species
+  site_name: site_name
+  context_name: Treatment
   year_collected_start: 2014
   year_collected_end: 2014
   description: A greenhouse experiment that examined nine drought resistance traits
@@ -85,22 +91,12 @@ sites:
     description: St Lucia campus glasshouse location
 contexts:
   Control:
-    type: treatment_control
-    description: Seedlings received their full transpiration requirements at similar
-      intervals until the conclusion of the experiment.
+    water treatment: control (Seedlings received their full transpiration requirements
+      at similar intervals until the conclusion of the experiment.) [manipulated]
   Drought:
-    type: treatment_harsh
-    description: Seedlings received half of their transpiration requirements every
-      second day, amounting to a quarter of their full requirements for the duration
-      of the experiment.
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-    context_name: Treatment
-  custom_R_code: data %>% mutate(site_name = "University of Queensland") %>% group_by(Species)
-    %>% mutate_at(vars(SeedMass), replace_duplicates_with_NA) %>% ungroup()
+    water treatment: drought (Seedlings received half of their transpiration requirements
+      every second day, amounting to a quarter of their full requirements for the
+      duration of the experiment.) [manipulated]
 traits:
 - var_in: LDMC
   unit_in: mg/g
@@ -255,9 +251,10 @@ traits:
   unit_in: g
   trait_name: seed_dry_mass
   value_type: experiment_mean
-  replicates: various
+  replicates: unknown
   methods: Species mean seed mass, sourced from local nuseries. The seed mass values
     are from a subsample of seeds that were supplied by local nurseries.
+  sample_age_class: adult
 - var_in: RWC
   unit_in: g/g
   trait_name: stem_water_content_per_saturated_mass

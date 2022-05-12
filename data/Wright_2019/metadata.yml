@@ -22,11 +22,20 @@ contributors:
     additional_role: contact
   austraits_curators: Elizabeth Wenk
 dataset:
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(site_name = "Howard_Springs") %>% mutate_at(c("Cu"),
+    ~na_if(.,0)) %>% mutate(season = date) %>% mutate(sample_date = sample_date %>%
+    mdy(quiet=TRUE)) %>% group_by(Species,Rep,context) %>% mutate_at(vars(7:49),replace_duplicates_with_NA)
+    %>% ungroup() %>% mutate(sample_age_class = age)
+  taxon_name: Species
+  site_name: site_name
+  context_name: date
+  date: sample_date
   year_collected_start: 2010
   year_collected_end: 2011
   description: traits of NT savannah species
   collection_type: field
-  sample_age_class: adult
+  sample_age_class: adult, sapling
   sampling_strategy: 'Deciduous, semi-deciduous and evergreen species are all present
     in this savanna. Hence, we sampled plant traits at two time points: at the end
     of one dry season (September 2010), when deciduous species are leafless and the
@@ -75,40 +84,10 @@ sites:
       samples (0-20 cm depth) collected in September 2010 were as follows: total C
       = 2.7% (1.8), total N = 0.093% (0.074), total P = 72.7 mg kg_1 (22.6).'
 contexts:
-  dry_season_measurement_on_adult:
-    type: field
-    description: Measurements made in September 2010, late in the dry season, on an
-      adult plant
-    season: Dry season (Septmeber 2010)
-    plant age: Adult
-  wet_season_measurement_on_adult:
-    type: field
-    description: Measurements made in May 2011, during the wet season, on an adult
-      plant
-    season: Wet season (May 2011)
-    plant age: Adult
-  dry_season_measurement_on_sapling:
-    type: field
-    description: Measurements made in September 2010, late in the dry season, on a
-      sapling
-    season: Dry season (Septmeber 2010)
-    plant age: Sapling
-  wet_season_measurement_on_sapling:
-    type: field
-    description: Measurements made in May 2011, during the wet season, on a sapling
-    season: Wet season (May 2011)
-    plant age: Sapling
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-    context_name: context
-    date: sample_date
-  custom_R_code: data %>% mutate(site_name = "Howard_Springs") %>% mutate_at(c("Cu"),
-    ~na_if(.,0)) %>% mutate(season = date) %>% mutate(sample_date = sample_date %>%
-    mdy(quiet=TRUE)) %>% group_by(Species,Rep,context) %>% mutate_at(vars(7:49),replace_duplicates_with_NA)
-    %>% ungroup()
+  dry season (Sep 2010):
+    sampling season: dry season (Septmeber 2010)
+  wet season (May 2011):
+    sampling season: wet season (May 2011)
 traits:
 - var_in: WD kg/m3
   unit_in: kg/m3

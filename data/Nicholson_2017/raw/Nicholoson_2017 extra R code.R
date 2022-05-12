@@ -8,3 +8,16 @@ read_csv("data/Nicholson_2017/raw/data_raw.csv") %>%
 
 #data.csv file then manually manipulated to add in data from the file 
 #"Species by severity_Nicholson et al 2017.xls" in the raw data folder.
+
+
+read_csv("data/Nicholson_2017/raw/indivdual_tree_data.csv")
+
+
+read_csv("data/Nicholson_2017/raw/individual_tree_data.csv") %>%
+  filter(species != "u") %>%
+  group_by(sev,species) %>%
+  rename(severity = sev, Species = species) %>%
+  summarise(individuals_sampled = n()) -> replicates
+
+
+read_csv("data/Nicholson_2017/data.csv") %>% left_join(replicates, by=c("Species","severity")) %>% write_csv("data/Nicholson_2017/data.csv")
