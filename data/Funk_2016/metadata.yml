@@ -26,16 +26,28 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>%  mutate(`Nut acq strat` = gsub("Nfixer/","",`Nut acq strat`))
-    %>%  mutate(`Nut acq strat` = gsub("MD",NA,`Nut acq strat`)) %>%  mutate(`Rt tp
-    cat` = gsub("MD",NA,`Rt tp cat`)) %>%  mutate(`Root depth (cm)` = gsub("MD",NA,`Root
-    depth (cm)`)) %>%  mutate(`Height (mm)` = gsub("MD",NA,`Height (mm)`)) %>%  mutate(`Aarea`
-    = gsub("MD",NA,`Aarea`)) %>%  mutate(`Amass` = gsub("MD",NA,`Amass`)) %>%  mutate(`PNUE`
-    = gsub("MD",NA,`PNUE`)) %>%  mutate(`PPUE` = gsub("MD",NA,`PPUE`)) %>%  mutate(`WUE`
-    = gsub("MD",NA,`WUE`))  %>%  mutate(`Root type` = gsub("MD",NA,`Root type`)) %>%
-    subset(Origin == "native")
-  collection_date: banksia woodland Spring 2011, coastal banksia woodland Spring 2012/banksia
-    woodland Spring 2011, coastal banksia woodland Spring 2012
+  custom_R_code: '
+    data %>%
+      mutate(
+        `Nut acq strat` = gsub("Nfixer/","",`Nut acq strat`),
+        `Nut acq strat` = gsub("MD",NA,`Nut acq strat`),
+        `Rt tp cat` = gsub("MD",NA,`Rt tp cat`),
+        `Root depth (cm)` = gsub("MD",NA,`Root depth (cm)`),
+        `Height (mm)` = gsub("MD",NA,`Height (mm)`),
+        `Aarea` = gsub("MD",NA,`Aarea`),
+        `Amass` = gsub("MD",NA,`Amass`),
+        `PNUE`= gsub("MD",NA,`PNUE`),
+        `PPUE` = gsub("MD",NA,`PPUE`),
+        `WUE`= gsub("MD",NA,`WUE`),
+        `Root type` = gsub("MD",NA,`Root type`)
+        ) %>%
+      subset(Origin == "native") %>%
+      mutate(
+        Date = ifelse(Site == "Banksia woodland","2011-09/2011-11",NA),
+        Date = ifelse(Site == "Coastal banksia woodland","2012-09/2012-11",Date)
+        )
+  '
+  collection_date: Date
   taxon_name: Species
   site_name: Site
   description: Australian subset of a worldwide comparison of functional traits in
