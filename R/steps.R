@@ -113,7 +113,7 @@ load_study <- function(filename_data_raw,
       value = ifelse(is.na(.data$error), split_then_sort(.data$value), .data$value),
       value_type = factor(.data$value_type, levels = names(definitions$value_type$values)),
       #ensure dates are converted back to character
-      date = as.character(.data$date)
+      collection_date = as.character(.data$collection_date)
       ) %>%
     dplyr::arrange(.data$observation_id, .data$trait_name, .data$value_type)
 
@@ -182,7 +182,10 @@ load_study <- function(filename_data_raw,
         spread(.data$key, .data$value) %>%
         dplyr::select(dplyr::any_of(names(metadata$dataset))) %>%
           dplyr::mutate(dataset_id = dataset_id) %>%
-          dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", "trait_name", "observation_id", "context_name", "site_name", "date", "custom_R_code", "taxon_name", "collection_type", "sample_age_class")))
+          dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", 
+                                         "trait_name", "observation_id", "context_name", "site_name", 
+                                         "date", "collection_date", "custom_R_code", 
+                                         "taxon_name", "collection_type", "sample_age_class")))
       )  %>%
       full_join( by = "dataset_id",
         #references
@@ -670,7 +673,7 @@ parse_data <- function(data, dataset_id, metadata) {
         dplyr::mutate(dataset_id = dataset_id)
 
   # Step 1b. import any values that aren't columns of data
-  vars <- c("value_type", "replicates", "year_collected_start","year_collected_end",
+  vars <- c("value_type", "replicates", "collection_date",
             "collection_type", "sample_age_class", "measurement_remarks")
 
   df <-
