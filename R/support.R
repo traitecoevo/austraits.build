@@ -6,6 +6,7 @@
 #' @rdname pipe
 #' @keywords internal
 #' @importFrom magrittr %>%
+#' @export
 #' @usage lhs \%>\% rhs
 NULL
 
@@ -30,8 +31,8 @@ read_csv_char <- function(...){
 #' @param x a vector containing null values
 #' @param val specify what the null value should be returned as, default is NA
 #'
+#' @export
 #' @return a vector with null values replaced
-#'
 #' @examples null_as(NULL)
 null_as <- function(x, val=NA){
   if(is.null(x)) return(val)
@@ -65,6 +66,7 @@ extract_list_element <- function(i, my_list, var) {
 #' @param from character string of the initial column name
 #' @param to  character string of the new column name
 #'
+#' @export
 #' @return a tibble with new column names
 rename_columns <- function(obj, from, to) {
   names(obj)[match(from, names(obj))] <- to
@@ -223,7 +225,7 @@ write_metadata <- function(data, path, style_code=FALSE) {
                   paste0("custom_R_code:", .), txt, fixed = TRUE)
   }
   
-  if(!str_sub(txt, nchar(txt)) == "\n")
+  if(!stringr::str_sub(txt, nchar(txt)) == "\n")
     txt <- c(txt, "\n")
   
   file <- file(path, "w", encoding = "UTF-8")
