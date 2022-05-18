@@ -54,8 +54,8 @@ testthat::test_that("test datasets", {
   expect_equal(Ex3$traits %>% filter(collection_type == "wild") %>% nrow(), 361)
   expect_equal(Ex3$traits$sample_age_class %>% unique, "seedling")
   expect_equal(Ex3$traits %>% filter(sample_age_class == "seedling") %>% nrow(), 406)
-  expect_equal(read_yaml(file.path(examples.dir, "test2.1-metadata.yml"))$dataset$collection_type, "collection_type")
-  expect_equal(read_yaml(file.path(examples.dir, "test2.1-metadata.yml"))$dataset$sample_age_class, "sample_age_class")
+  expect_equal(yaml::read_yaml(file.path(examples.dir, "test2.1-metadata.yml"))$dataset$collection_type, "collection_type")
+  expect_equal(yaml::read_yaml(file.path(examples.dir, "test2.1-metadata.yml"))$dataset$sample_age_class, "sample_age_class")
   
   
   # Example 4 - Test variables stored as a column in data.csv are replaced with trait level value,
