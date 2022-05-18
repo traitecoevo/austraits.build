@@ -213,12 +213,15 @@ load_study <- function(filename_data_raw,
     if(v %in% sites$site_property){
       traits_tmp <- traits %>%
         dplyr::left_join(by = "site_name",
-                         sites %>% tidyr::pivot_wider(names_from = site_property, values_from = value) %>%
+                         sites %>% tidyr::pivot_wider(names_from = "site_property", values_from = "value") %>%
                            dplyr::select(.data$site_name, col_tmp = dplyr::any_of(v)))
-     ## filling any missing values
-     traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
+     ## Use site level value if present
+     traits[[v]] <- ifelse(!is.na(traits_tmp[["col_tmp"]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
   }
+  
+  # Remove any values included to map into traits table
+  sites <- sites %>% dplyr::filter(!(site_property %in% vars))
 
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
@@ -652,7 +655,7 @@ add_all_columns <- function(data, vars, add_error_column = TRUE) {
 #' @param metadata yaml file with metadata
 #' @return tibble in long format with AusTraits formatted trait names, trait
 #' substitutions and unique observation id added
-#' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of
+#' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of bind_cols
 #' @importFrom rlang .data
 #' @export
 parse_data <- function(data, dataset_id, metadata) {
