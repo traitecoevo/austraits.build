@@ -216,7 +216,7 @@ load_study <- function(filename_data_raw,
                          sites %>% tidyr::pivot_wider(names_from = "site_property", values_from = "value") %>%
                            dplyr::select(.data$site_name, col_tmp = dplyr::any_of(v)))
      ## filling any missing values
-     traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
+     traits[[v]] <- ifelse(!is.na(traits_tmp[["col_tmp"]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
   }
   
