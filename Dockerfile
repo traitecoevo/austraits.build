@@ -1,4 +1,4 @@
-FROM rocker/verse:3.6.1
+FROM rocker/verse:4.1.2
 LABEL maintainer="Daniel Falster"
 LABEL email="daniel.falster@unsw.edu.au"
 
@@ -38,7 +38,7 @@ COPY ./DESCRIPTION ${HOME}
 
 RUN chown -R ${NB_USER} ${HOME}
 
-RUN R --quiet -e "options(repos = list(CRAN = 'http://mran.revolutionanalytics.com/snapshot/2020-01-01/')); devtools::install_deps(upgrade = 'never')"
+RUN R --quiet -e "options(repos = list(CRAN = 'http://mran.revolutionanalytics.com/snapshot/2022-05-01/')); devtools::install_deps(upgrade = 'never')"
 
 RUN echo "options(remake.verbose.noop=FALSE)" >> /usr/local/lib/R/etc/Rprofile.site
 

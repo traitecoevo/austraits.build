@@ -28,9 +28,9 @@ knitr::opts_chunk$set(
 
 As the R compute environment and packages change over time, we have created a Docker container to ensure all our builds are reproducible into the future. 
 
-If you have [Docker installed](https://hub.docker.com), you can recreate the compute environment as follows. For more instructions on running docker, see the info from the R docker project [rocker](https://hub.docker.com/r/rocker/rstudio). Our docker container is build off the [rocker/verse](https://hub.docker.com/r/rocker/verse) container, version 3.6.1. This includes
+If you have [Docker installed](https://hub.docker.com), you can recreate the compute environment as follows. For more instructions on running docker, see the info from the R docker project [rocker](https://hub.docker.com/r/rocker/rstudio). Our docker container is build off the [rocker/verse](https://hub.docker.com/r/rocker/verse) container. This includes
 
-- R version 3.6.1
+- R version
 - rstudio
 - tidyverse & devtools
 - tex & publishing-related packages
@@ -42,13 +42,15 @@ On top of that, we install everything needed to build AusTraits and the reports.
 First fetch the container:
 
 ```
-docker pull traitecoevo/austraits.build:3.6.1
+docker pull traitecoevo/austraits.build:latest
 ```
+
+(instead of latest, you can indicate a specific tag, .e.g. 3.6.1, or 4.1.2)
 
 Then launch it via:
 
 ```
-docker run --user root -v $(pwd):/home/rstudio/ -p 8787:8787 -e DISABLE_AUTH=true traitecoevo/austraits.build:3.6.1
+docker run --user root -v $(pwd):/home/rstudio/ -p 8787:8787 -e DISABLE_AUTH=true traitecoevo/austraits.build:latest
 ```
 
 Adding a `-d` into the command above will cause the image to run in the background. 
@@ -59,14 +61,14 @@ Note, this container does not contain the actual github repo, only the software 
 
 ## Building Docker container
 
-The recipe used to build the docker container is included in the Dockerfile in this repo. Our image builds off [`rocker/verse:3.6.1` container](https://hub.docker.com/r/rocker/verse) via the following command, in a terminal contained within the downloaded repo:
+The recipe used to build the docker container is included in the Dockerfile in this repo. Our image builds off [`rocker/verse` container](https://hub.docker.com/r/rocker/verse) via the following command, in a terminal contained within the downloaded repo:
 
 ```
-docker build -t traitecoevo/austraits.build:3.6.1 .
+docker build -t traitecoevo/austraits.build:4.1.2 .
 ```
 
 Images are pushed to dockerhub ([here](https://cloud.docker.com/u/traitecoevo/repository/docker/traitecoevo/austraits.build)):
 
 ```
-docker push traitecoevo/austraits.build:3.6.1
+docker push traitecoevo/austraits.build:4.1.2
 ```
