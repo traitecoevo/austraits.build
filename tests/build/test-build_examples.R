@@ -95,20 +95,20 @@ testthat::test_that("test datasets", {
   # column values should take precedence followed by traits values, followed by sites and then dataset values
   Ex5 <- test_build_study(file.path(examples.dir, "test3-metadata.yml"), file.path(examples.dir, "test3-data.csv"), "Example 5")
   
-  expect_equal(Ex5$traits$collection_type %>% unique, c("NA", "lab", "Cape_Tribulation", "wild"))
+  expect_equal(Ex5$traits$collection_type %>% unique, c("NA", "lab", "Cape_Tribulation"))
   expect_equal(Ex5$traits %>% filter(is.na(collection_type)) %>% nrow(), 81)
-  expect_equal(Ex5$traits %>% filter(collection_type == "Cape_Tribulation") %>% nrow(), 271)
-  expect_equal(Ex5$traits %>% filter(collection_type == "lab") %>% nrow(), 45)
-  expect_equal(Ex5$traits %>% filter(collection_type == "wild") %>% nrow(), 9)
+  expect_equal(Ex5$traits %>% filter(collection_type == "Cape_Tribulation") %>% nrow(), 315)
+  expect_equal(Ex5$traits %>% filter(collection_type == "lab") %>% nrow(), 10)
+  expect_equal(Ex5$traits %>% filter(collection_type == "wild") %>% nrow(), 0)
   
   expect_equal(Ex5$traits %>% select(taxon_name, collection_type) %>% 
-                 filter(taxon_name == "Trema aspera") %>% pull(collection_type) %>% unique, c("wild", "lab"))
+                 filter(taxon_name == "Trema aspera") %>% pull(collection_type) %>% unique, c("Cape_Tribulation"))
   expect_equal(Ex5$traits %>% select(taxon_name, collection_type) %>% 
                  filter(taxon_name == "Trema aspera") %>% pull(collection_type) %>% length, 10)
   
   expect_equal(Ex5$traits %>% select(trait_name, collection_type) %>% 
                  filter(trait_name == "leaf_N_per_dry_mass") %>%
-                 pull(collection_type) %>% grep(pattern ="lab") %>% length, 45)
+                 pull(collection_type) %>% grep(pattern ="lab") %>% length, 10)
   expect_equal(Ex5$traits %>% select(trait_name, collection_type) %>% 
                  filter(trait_name == "leaf_N_per_dry_mass") %>%
                  pull(collection_type) %>% grep(pattern ="wild") %>% length, 0)
@@ -123,14 +123,14 @@ testthat::test_that("test datasets", {
                  pull(collection_type) %>% grep(pattern = "lab") %>% length, 10)
   
   expect_equal(Ex5$traits %>% select(site_name, collection_type) %>% filter(site_name == "Cape Tribulation") %>%
-                 pull(collection_type) %>% unique, c("Cape_Tribulation", "lab", "wild"))
+                 pull(collection_type) %>% unique, c("Cape_Tribulation"))
   expect_equal(Ex5$traits %>% select(site_name, collection_type) %>% filter(site_name == "Cape Tribulation") %>%
                  pull(collection_type) %>% length, 315)
   expect_equal(Ex5$traits %>% select(site_name, collection_type) %>% filter(site_name == "Cape Tribulation") %>%
-                 pull(collection_type) %>% grep(pattern = "Cape_Tribulation") %>% length, 271)
+                 pull(collection_type) %>% grep(pattern = "Cape_Tribulation") %>% length, 315)
   expect_equal(Ex5$traits %>% select(site_name, collection_type) %>% filter(site_name == "Cape Tribulation") %>%
-                 pull(collection_type) %>% grep(pattern = "lab") %>% length, 35)
+                 pull(collection_type) %>% grep(pattern = "lab") %>% length, 0)
   expect_equal(Ex5$traits %>% select(site_name, collection_type) %>% filter(site_name == "Cape Tribulation") %>%
-                 pull(collection_type) %>% grep(pattern = "wild") %>% length, 9)
+                 pull(collection_type) %>% grep(pattern = "wild") %>% length, 0)
 })
 
