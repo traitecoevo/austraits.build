@@ -69,8 +69,11 @@ metadata_create_template <- function(dataset_id,
                            austraits_curators = "unknown",
                            assistants = "unknown"
                            ),
-       dataset = list(year_collected_start = "unknown",
-                      year_collected_end = "unknown",
+       dataset = list(custom_R_code = NA,
+                      collection_date = "unknown",
+                      taxon_name = NA,
+                      site_name = NA,
+                      context_name = NA,
                       description = "unknown",
                       collection_type = "unknown",
                       sample_age_class = "unknown",
@@ -79,7 +82,6 @@ metadata_create_template <- function(dataset_id,
                       notes = "unknown"),
        sites = NA,
        contexts = NA,
-       config = NA,
        traits = NA,
        substitutions = NA,
        taxonomic_updates = NA,
@@ -95,11 +97,11 @@ metadata_create_template <- function(dataset_id,
 
   # Setup config and select columns as appropriate
   config <- list(data_is_long_format = data_is_long_format, 
-                 variable_match = list(),
-                 custom_R_code = NA)
+                 custom_R_code = NA,
+                 variable_match = list())
 
   v1 <- c("taxon_name")
-  v2 <- c("site_name", "context_name", "observation_id",  "date")
+  v2 <- c("site_name", "context_name", "observation_id",  "collection_date")
   
   if(data_is_long_format) {
     v1 <- c("taxon_name", "trait_name", "value")
@@ -115,7 +117,13 @@ metadata_create_template <- function(dataset_id,
       config[["variable_match"]][[v]] <- tmp
   }
 
-  out[["config"]] <- config
+for(v in v1) {
+  out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
+  }
+
+for(v in v2) {
+  out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
+  }
 
   write_metadata(out, path)
 }

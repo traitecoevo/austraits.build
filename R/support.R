@@ -178,11 +178,11 @@ read_metadata <- function(path) {
     data2 <- readLines(path)
 
     code_start <- grep("  custom_R_code:", data2, fixed = TRUE)
-    code_end <- which(data2 == "traits:")-1
+    code_end <- grep("  collection_date:", data2, fixed=TRUE)-1
 
     data$dataset$custom_R_code <-
       data2[code_start:code_end] %>%
-      gsub("  custom_R_code:", "", ., fixed = TRUE) %>%
+      gsub("custom_R_code:", "", ., fixed = TRUE) %>%
       paste(collapse = "\n")
   }
 
@@ -233,28 +233,6 @@ write_metadata <- function(data, path, style_code=FALSE) {
   cat(txt, file=file)
 }
 
-read_metadata <- function(path) {
-  
-  data <- yaml::read_yaml(path)
-  
-  # We want to preserve formatting in custom R code
-  # but read_yaml looses it. So read in as text, if not empty
-  if(!is.na(data$dataset$custom_R_code)) {
-    # Read in again, extracting custom R code
-    
-    data2 <- readLines(path)
-    
-    code_start <- grep("  custom_R_code:", data2, fixed = TRUE)
-    code_end <- grep(" taxon_name:", data2, fixed = TRUE)-1
-    
-    data$dataset$custom_R_code <-
-      data2[code_start:code_end] %>%
-      gsub("  custom_R_code:", "", ., fixed = TRUE) %>%
-      paste(collapse = "\n")
-  }
-  
-  data
-}
 
 
 ##' Read yaml (from package yaml)
