@@ -752,10 +752,9 @@ parse_data <- function(data, dataset_id, metadata) {
       for(v in vars_to_check) {
         # get value
         value <- cfgChar[i,v, drop=TRUE]
-
         # Check if it is a column in data or not and process accordingly
         if(!is.na(value)) {
-          if(!is.null(data[[value]])) {
+          if(!is.null(data[[value]]) && !(v %in% c("entity_type", "value_type", "basis_of_value")) ) {
             out[[i]][[v]] <- data[[value]] %>% as.character()
           } else {
             out[[i]][[v]] <- value
@@ -769,7 +768,7 @@ parse_data <- function(data, dataset_id, metadata) {
     out[["value"]] <- out[["value"]] %>%  as.character()
 
     # Pull in additional information for each trait as specified in traits part of metadata, here represented as cfgChar
-    # Values in table can specify a column in the original data OR a value to use
+    # (column option not implemented) Values in table can specify a column in the original data OR a value to use
 
     vars_to_check <- vars[vars%in% names(cfgChar)]
     # For each column in cfgChar
