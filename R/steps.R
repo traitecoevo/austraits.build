@@ -208,9 +208,9 @@ load_study <- function(filename_data_raw,
                   )
 
   # Where missing, fill variables with values from sites
-  vars <- c("collection_type", "sample_age_class", "collection_date", "measurement_remarks",
-                  "value_type", "replicates")
-
+  vars <- c("collection_type", "sample_age_class", "collection_date", "measurement_remarks", "entity_type",
+                  "value_type", "basis_of_value", "replicates")
+  
   for(v in vars){
     # merge in to traits from site level
     if(v %in% sites$site_property){
@@ -676,7 +676,7 @@ parse_data <- function(data, dataset_id, metadata) {
         dplyr::mutate(dataset_id = dataset_id)
 
   # Step 1b. import any values that aren't columns of data
-  vars <- c("value_type", "replicates", "collection_date",
+  vars <- c( "entity_type", "value_type", "basis_of_value", "replicates", "collection_date",
             "collection_type", "sample_age_class", "measurement_remarks")
 
   df <-

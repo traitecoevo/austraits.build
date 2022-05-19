@@ -4198,29 +4198,40 @@ traits:
         herbaceous: Plant with non-lignified stems
         semi_woody: Plant with partially lignified stems
         woody: Plant that produces secondary xylem, have lignin
+
 #-------------------------------------------------------------
+
+entity_type:
+  description: &entity_type ???
+  type: categorical
+  values:
+    individual: Value comes from a single individual
+    population: Value represents a summary statsitic from multiple individuals at a single site
+    metapopulation: Value represents a summary statsitic from individuals of the taxon across multiple sites
+    species: Values the mean observed for a taxon across its range or, in this particular dataset, as estimated by an expert based on their knowledge of the taxon. Data fitting this category include estimates from floras that represent a taxon's entire range and values for categorical variables obtained from a reference book, or identified by an expert.
 
 value_type:
   description: &value_type A categorical variable describing the type of trait value recorded.
   type: categorical
   values:
-    raw_value: Value is a direct measurement.
-    site_min: Value is the minimum of measurements on multiple individuals of the taxon at a single site.
-    site_mean: Value is the mean or median of measurements on multiple individuals of the taxon at a single site.
-    site_max: Value is the maximum of measurements on multiple individuals of the taxon at a single site.
-    multisite_min: Value is the minimum of measurements on multiple individuals of the taxon across multiple sites.
-    multisite_mean: Value is the mean or median of measurements on multiple individuals of the taxon across multiple sites.
-    multisite_max: Value is the maximum of measurements on multiple individuals of the taxon across multiple sites.
-    expert_min: Value is the minimum observed for a taxon across its range or in this particular dataset, as estimated by an expert based on their knowledge of the taxon. Data fitting this category include estimates from floras that represent a taxon's entire range.
-    expert_mean: Value is the mean observed for a taxon across its range or, in this particular dataset, as estimated by an expert based on their knowledge of the taxon. Data fitting this category include estimates from floras that represent a taxon's entire range and values for categorical variables obtained from a reference book, or identified by an expert.
-    expert_max: Value is the maximum observed for a taxon across its range or, in this particular dataset, as estimated by an expert based on their knowledge of the taxon. Data fitting this category include estimates from floras that represent a taxon's entire range.
-    experiment_min: Value is the minimum of measurements on multiple individuals of the taxon from an experimental study (either in the field or a glasshouse).
-    experiment_mean: Value is the mean or median of measurements on multiple individuals of the taxon from an experimental study (either in the field or a glasshouse).
-    experiment_max: Value is the maximum of measurements on multiple individuals of the taxon from an experimental study (either in the field or a glasshouse).
-    individual_mean: Value is a mean of replicate measurements on an individual.
-    individual_max: Value is a maximum of replicate measurements on an individual.
-    literature_source: Value is a site_mean, multisite_mean, or expert_mean that has been sourced from an unknown literature source.
-    unknown: Value type is not currently known.
+    raw: Value recorded for an entity (individual).
+    min: Value is the minimum of values recorded for an entity.
+    mean: Value is the median of values recorded for an entity.
+    median: Value is the  median of values recorded for an entity.
+    maximum: Value is the maximum of values recorded for an entity.
+    mode: Value is the mode of values recorded for an entity.
+    range: Value is a range of values recorded for an entity.
+    bin: Value for an entity falls within specified limits.
+    unknown: Not currently known.
+
+basis_of_value: 
+  descritpion: *basis_of_value
+  type: categorical 
+  values:
+    measurement: Value is the minimum of measurements on multiple individuals of the taxon across multiple sites.
+    expert_score: Estimated by an expert based on their knowledge of the taxon.
+    model_derived: Value is dereived from a statsitcial mdoel, for example via gap-filling.
+    unknown: Not currently known.
 
 #-------------------------------------------------------------
 # A key describing the structure of the compiled `AusTraits` dataset
@@ -4242,8 +4253,10 @@ austraits:
         value: &value Measured value.
         unit: &units Units of the sampled trait value after aligning with AusTraits standards.
         collection_date: &collection_date Date sample was taken, in the format `yyyy-mm-dd`, `yyyy-mm` or `yyyy`, depending on the resoluton specified.
+        entity_type: *entity_type
         value_type: *value_type
-        replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each measurement. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be 1. If the value type is `expert_mean`, `expert_min`, or `expert_max` the replicate value should be `.na`.
+        basis_of_value: *basis_of_value
+        replicates: &replicates Number of replicate measurements that comprise the value provided for the entity. A numeric value (or range) is ideal and appropriate if the value_type is a `mean`, `median`, `mininimum` or  `maximum`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw` the replicate value should be 1. If the value type is `expert_mean`, `expert_min`, or `expert_max` the replicate value should be `.na`.
         collection_type: &collection_type A field to indicate where the majority of plants on which traits were measured were collected -  in the `field`, `lab`, `glasshouse`, `botanical collection`, or `literature`. The latter should only be used when the data were sourced from the literature and the collection type is unknown.
         sample_age_class: &sample_age_class A field to indicate if the study was completed on `adult` or `juvenile` plants.
         measurement_remarks: &measurement_remarks Comments or notes accompanying the trait measurement.
