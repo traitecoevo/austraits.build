@@ -45,49 +45,26 @@ metadata_create_template <- function(dataset_id,
                                      path = file.path("data", dataset_id, "metadata.yml")
                                      ) {
   
-  out <- list(
-       source = list(primary=list(key=dataset_id, 
-                                  bibtype = "Article",
-                                  year = "unknown", 
-                                  author = "unknown",
-                                  title = "unknown",
-                                  journal = "unknown",
-                                  volume = "unknown",
-                                  number = "unknown",
-                                  pages = "unknown",
-                                  doi = "unknown"
-                                  )
-                     ),
-       contributors = list(data_collectors = 
-                             list(
-                               last_name = "unknown", 
-                               given_name = "unknown",
-                               ORCID = "unknown", 
-                               affiliation = "unknown",
-                               additional_role = "unknown"
-                                ),
-                           austraits_curators = "unknown",
-                           assistants = "unknown"
-                           ),
-       dataset = list(custom_R_code = NA,
-                      collection_date = "unknown",
-                      taxon_name = NA,
-                      site_name = NA,
-                      context_name = NA,
-                      description = "unknown",
-                      collection_type = "unknown",
-                      sample_age_class = "unknown",
-                      sampling_strategy = "unknown",
-                      original_file = "unknown",
-                      notes = "unknown"),
-       sites = NA,
-       contexts = NA,
-       traits = NA,
-       substitutions = NA,
-       taxonomic_updates = NA,
-       exclude_observations = NA,
-       questions = NA
-       )
+  `%notin%` <- Negate(`%in%`)
+  fields <- c("source", "contributors", "dataset")
+  exclude <- c("description", "type")
+  articles <- c("key", "bibtype", "year", "author", "title", "journal", "volume", "number", "pages", "doi")
+  
+  out <- read_yaml("config/definitions.yml")$metadata$elements
+
+  out[names(out) %notin% fields] <- NA
+  out$source <- out$source$values["primary"]
+  out$source$primary <- out$source$primary$values[articles]
+  out$source$primary[] <- "unknown"
+  out$source$primary["key"] = dataset_id
+  out$source$primary["bibtype"] = "Article"
+  out$contributors <- out$contributors$elements
+  out$contributors[c("assistants", "austraits_curators")] <- "unknown"
+  out$contributors$data_collectors[] <- "unknown"
+  out$contributors$data_collectors <- 
+    out$contributors$data_collectors[names(out$contributors$data_collectors)%notin%c(exclude,"notes")]
+  out$dataset <- out$dataset$values[]
+  out$dataset[] <- "unknown"
 
   # Check format of data
   tmp <- menu(c("Long", "Wide"), title="Is the data long or wide format?")
@@ -106,25 +83,35 @@ metadata_create_template <- function(dataset_id,
   if(data_is_long_format) {
     v1 <- c("taxon_name", "trait_name", "value")
   }
+  if(!data_is_long_format)
+    out$dataset[c("trait_name", "value")] <- NULL
   
   for(v in v1) {      
     config[["variable_match"]][[v]] <- user_select_column(v, names(data))
-  }
+    }
 
   for(v in v2) {
     tmp <- user_select_column(v, c(names(data), NA))
-    if(!is.na(tmp)) 
+    if(!is.na(tmp)) {
       config[["variable_match"]][[v]] <- tmp
-  }
-
-for(v in v1) {
-  out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
-  }
-
-for(v in v2) {
-  out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
-  }
-
+      }
+    if(v == "collection_date" & is.na(tmp)){
+      collection_date <- readline(prompt="Enter collection_date range separated by a '/': ")
+      config[["variable_match"]][[v]] <- collection_date
+      }
+    }
+  
+  for(v in v1) {
+    out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
+    }
+  
+  for(v in v2) {
+    out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
+    }
+  
+  out[["dataset"]][["data_is_long_format"]] <- config[["data_is_long_format"]]
+  out[["dataset"]][["custom_R_code"]] <- config[["custom_R_code"]]
+  
   write_metadata(out, path)
 }
 
