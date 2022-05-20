@@ -517,17 +517,19 @@ flag_unsupported_values <- function(data, definitions) {
     if(definitions$traits[[trait]]$type == "numeric") {
 
       x <- suppressWarnings(as.numeric(data[["value"]]))
-      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & is.na(x)
+      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & is.na(x) &  !(data[["value_type"]] %in% c("range", "bin"))
+      
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Value does not convert to numeric", .data$error))
 
-      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait &
+      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait &  !(data[["value_type"]] %in% c("range", "bin")) &
         (x < definitions$traits[[trait]]$values$minimum | x > definitions$traits[[trait]]$values$maximum)
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Value out of allowable range", .data$error))
     }
   }
 
+  
   data
 }
 
