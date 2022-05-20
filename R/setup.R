@@ -363,7 +363,16 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 #' @export
 #'
 metadata_add_source_doi <- function(doi, ...) {
-
+  
+  if(!stringr::str_starts(doi, "https://doi.org") &
+     !stringr::str_starts(doi, "http://doi.org")){
+    if(stringr::str_starts(doi, "doi.org")) {
+      doi <- paste0("https://", doi)
+    } else {
+      doi <- paste0("https://doi.org/", doi)
+    }
+  }
+  
   bib <- suppressWarnings(rcrossref::cr_cn(doi))
 
   if(is.null(bib)) {
