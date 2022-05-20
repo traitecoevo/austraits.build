@@ -113,7 +113,7 @@ load_study <- function(filename_data_raw,
       value = ifelse(is.na(.data$error), split_then_sort(.data$value), .data$value),
       value_type = factor(.data$value_type, levels = names(definitions$value_type$values)),
       #ensure dates are converted back to character
-      date = as.character(.data$date)
+      collection_date = as.character(.data$collection_date)
       ) %>%
     dplyr::arrange(.data$observation_id, .data$trait_name, .data$value_type)
 
@@ -182,7 +182,10 @@ load_study <- function(filename_data_raw,
         spread(.data$key, .data$value) %>%
         dplyr::select(dplyr::any_of(names(metadata$dataset))) %>%
           dplyr::mutate(dataset_id = dataset_id) %>%
-          dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", "trait_name", "observation_id", "context_name", "site_name", "date", "custom_R_code", "taxon_name", "collection_type", "sample_age_class")))
+          dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", 
+                                         "trait_name", "observation_id", "context_name", "site_name", 
+                                         "date", "collection_date", "custom_R_code", 
+                                         "taxon_name", "collection_type", "sample_age_class")))
       )  %>%
       full_join( by = "dataset_id",
         #references
@@ -213,12 +216,15 @@ load_study <- function(filename_data_raw,
     if(v %in% sites$site_property){
       traits_tmp <- traits %>%
         dplyr::left_join(by = "site_name",
-                         sites %>% tidyr::pivot_wider(names_from = site_property, values_from = value) %>%
+                         sites %>% tidyr::pivot_wider(names_from = "site_property", values_from = "value") %>%
                            dplyr::select(.data$site_name, col_tmp = dplyr::any_of(v)))
-     ## filling any missing values
-     traits[[v]] <- ifelse(is.na(traits[[v]]), traits_tmp[["col_tmp"]], traits[[v]])
+     ## Use site level value if present
+     traits[[v]] <- ifelse(!is.na(traits_tmp[["col_tmp"]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
   }
+  
+  # Remove any values included to map into traits table
+  sites <- sites %>% dplyr::filter(!(site_property %in% vars))
 
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
@@ -652,7 +658,7 @@ add_all_columns <- function(data, vars, add_error_column = TRUE) {
 #' @param metadata yaml file with metadata
 #' @return tibble in long format with AusTraits formatted trait names, trait
 #' substitutions and unique observation id added
-#' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of
+#' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of bind_cols
 #' @importFrom rlang .data
 #' @export
 parse_data <- function(data, dataset_id, metadata) {
@@ -670,7 +676,7 @@ parse_data <- function(data, dataset_id, metadata) {
         dplyr::mutate(dataset_id = dataset_id)
 
   # Step 1b. import any values that aren't columns of data
-  vars <- c("value_type", "replicates", "year_collected_start","year_collected_end",
+  vars <- c("value_type", "replicates", "collection_date",
             "collection_type", "sample_age_class", "measurement_remarks")
 
   df <-

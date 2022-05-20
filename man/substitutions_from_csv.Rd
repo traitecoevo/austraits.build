@@ -24,7 +24,7 @@ substitutions_from_csv(
 \item{replace}{AusTraits aligned trait value}
 }
 \value{
-
+modified metadata files with trait value replacements
 }
 \description{
 Function that simultaneously adds many trait value replacements, potentially across many trait_names and dataset_ids, to the respective metadata.yml files.
@@ -32,7 +32,8 @@ This function will be used to quickly re-align/re-assign trait values across all
 }
 \examples{
 \dontrun{
-read_csv("export/dispersal_syndrome_substitutions.csv") \%>\% select(-extra) \%>\% filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
+read_csv("export/dispersal_syndrome_substitutions.csv") \%>\% select(-extra) \%>\%
+filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
 substitutions_from_csv(dataframe_of_substitutions,dataset_id,trait_name,find,replace)
 }
 }
