@@ -756,7 +756,7 @@ parse_data <- function(data, dataset_id, metadata) {
         value <- cfgChar[i,v, drop=TRUE]
         # Check if it is a column in data or not and process accordingly
         if(!is.na(value)) {
-          if(!is.null(data[[value]]) && !(v %in% c("entity_type", "value_type", "basis_of_value")) ) {
+          if(!is.null(data[[value]]) && !(v %in% c("entity_type", "basis_of_value")) ) {
             out[[i]][[v]] <- data[[value]] %>% as.character()
           } else {
             out[[i]][[v]] <- value

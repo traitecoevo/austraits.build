@@ -20,9 +20,15 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate( flowering_time =  ifelse(is.na(data$`flowering month
-    begin`), NA, sprintf("%s-%s",month.abb[`flowering month begin`], month.abb[`flowering
-    month end`]) %>% convert_month_range_vec_to_binary()))
+  custom_R_code: '
+    data %>%
+      mutate(
+        flowering_time =  ifelse(is.na(data$`flowering month begin`), NA, 
+                          sprintf("%s-%s",month.abb[`flowering month begin`], 
+                          month.abb[`flowering month end`]) %>% 
+                          convert_month_range_vec_to_binary())
+      )
+  ' 
   collection_date: unknown/2002
   taxon_name: binomial
   description: 'transposed from Chandler Monograph of Gastrolobium (Fabaceae: Mirbelieae)'
@@ -50,7 +56,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: Determined on herbarium specimens. Length is measured from base to apex
+  methods: &leaf_length_methods Determined on herbarium specimens. Length is measured from base to apex
     and is not necessarily the longest axis.
 - var_in: leaf length max (mm)
   unit_in: mm
@@ -59,8 +65,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: Determined on herbarium specimens. Length is measured from base to apex
-    and is not necessarily the longest axis.
+  methods: *leaf_length_methods
 - var_in: leaf width min (mm)
   unit_in: mm
   trait_name: leaf_width
@@ -68,7 +73,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: Determined on herbarium specimens and is the breadth perpendicular to the
+  methods: &leaf_width_methods Determined on herbarium specimens and is the breadth perpendicular to the
     length at the widest point.
 - var_in: leaf width max (mm)
   unit_in: mm
@@ -77,8 +82,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: Determined on herbarium specimens and is the breadth perpendicular to the
-    length at the widest point.
+  methods: *leaf_width_methods
 - var_in: flowering_time
   unit_in: .na
   trait_name: flowering_time
@@ -94,7 +98,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: Determined on herbarium specimens.
+  methods: &seed_length_methods Determined on herbarium specimens.
 - var_in: seed max length (mm)
   unit_in: mm
   trait_name: seed_length
@@ -102,7 +106,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: Determined on herbarium specimens.
+  methods: *seed_length_methods
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
@@ -134,7 +138,6 @@ traits:
   entity_type: .na
   value_type: .na
   basis_of_value: .na
-
   replicates: .na
   methods: .na
 - var_in: extreme min leaf length (mm)
@@ -143,7 +146,6 @@ traits:
   entity_type: .na
   value_type: .na
   basis_of_value: .na
-
   replicates: .na
   methods: .na
 - var_in: extreme max leaf length (mm)
@@ -152,7 +154,6 @@ traits:
   entity_type: .na
   value_type: .na
   basis_of_value: .na
-
   replicates: .na
   methods: .na
 - var_in: extreme min leaf width (mm)
@@ -161,7 +162,6 @@ traits:
   entity_type: .na
   value_type: .na
   basis_of_value: .na
-
   replicates: .na
   methods: .na
 - var_in: extreme max leaf width (mm)
@@ -170,27 +170,8 @@ traits:
   entity_type: .na
   value_type: .na
   basis_of_value: .na
-
   replicates: .na
   methods: .na
-- var_in: seed min width (mm)
-  unit_in: mm
-  trait_name: seed_width
-  entity_type: species
-  value_type: minimum
-  basis_of_value: measurement
-  replicates: .na
-  methods: Determined on herbarium specimens. Included pickled flowers for accurate
-    measurements of floral traits.
-- var_in: seed max width (mm)
-  unit_in: mm
-  trait_name: seed_width
-  entity_type: species
-  value_type: maximum
-  basis_of_value: measurement
-  replicates: .na
-  methods: Determined on herbarium specimens. Included pickled flowers for accurate
-    measurements of floral traits.
 substitutions:
 - trait_name: life_history
   find: p

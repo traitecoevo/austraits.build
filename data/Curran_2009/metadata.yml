@@ -30,11 +30,21 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(stomatal_conductance_per_area_ambient = `gs (stomatal
-    conductance, cm.s-1)`*10*38.97)
+  custom_R_code: '
+    data %>% 
+      mutate(
+        stomatal_conductance_per_area_ambient = `gs (stomatal conductance, cm.s-1)`*10*38.97,
+        individual_plant = paste(species,Site,`Tree #`, sep = "_")
+      ) %>%
+      arrange(`Sampling period`) %>%
+      group_by(individual_plant) %>%
+        mutate(observation = dplyr::row_number()) %>%
+      ungroup()
+  '
   collection_date: Sampling period
   taxon_name: Taxon
   site_name: site_name
+  observation_id: individual_plant
   description: Study to compare the ecophysiological traits of common trees and shrubs
     of semi-evergreen vine thicket (dry rainforest) on two copntrasting soils during
     the Millenial Drought and subsequent breaking of the drought.

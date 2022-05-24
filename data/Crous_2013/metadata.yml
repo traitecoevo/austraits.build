@@ -23,7 +23,15 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site_name = "Hawkesbury Forest Experiment site") %>% mutate(Date = Date %>% mdy())
+  custom_R_code: '
+    data %>% 
+      mutate(site_name = "Hawkesbury Forest Experiment site") %>% 
+      mutate(Date = Date %>% mdy()) %>%
+      arrange(Date) %>%
+      group_by(Chamber) %>%
+        mutate(observation = dplyr::row_number()) %>%
+      ungroup()
+  '
   collection_date: Date
   taxon_name: Species
   observation_id: Chamber
@@ -215,7 +223,6 @@ traits:
   entity_type: .na
   value_type: .na
   basis_of_value: .na
-
   replicates: .na
   methods: leaf temperature during gas exchange measurements
 - var_in: Rd
@@ -411,7 +418,8 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: 1
-  methods: Controlled photosynthetic CO2 response curve measurements were made using
+  measurement_remarks: Maximum electron transport rate in umol m-2 s-1, overall
+  methods: &Jmax_per_area_method Controlled photosynthetic CO2 response curve measurements were made using
     Li-Cor 6400 portable infrared gas analysers (LiCor Inc., Lincoln, NE, USA). CO2
     response curves of net CO2 assimilation (Anet) were developed at a constant temperature
     (termed 'Anet-Ci curves') for intact leaves within each tree chamber. These Anet-Ci
@@ -445,33 +453,8 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  methods: Controlled photosynthetic CO2 response curve measurements were made using
-    Li-Cor 6400 portable infrared gas analysers (LiCor Inc., Lincoln, NE, USA). CO2
-    response curves of net CO2 assimilation (Anet) were developed at a constant temperature
-    (termed 'Anet-Ci curves') for intact leaves within each tree chamber. These Anet-Ci
-    curve measurements progressed at four to five specified leaf temperatures for
-    the same leaf (i.e. one leaf per chamber) in each of three seasons (early summer,
-    December 2010; late summer, February 2011; and late winter, August 2011). Each
-    Anet-Ci response curve started with a steady-state measurement at the growth [CO2]
-    (henceforth called 'Anet at the growth [CO2]') and then consisted of 11 additional
-    steps all measured at a constant set leaf temperature while using light-saturating
-    photon flux density (PFD) of 1800 umol m-2 s-1. There were at least five [CO2]
-    levels used in the linear part of the curve, and at least three steps measured
-    in the saturating part of the curve. These Anet-Ci response curves were measured
-    on a leaf at the lowest set temperature (20 deg C) and then repeated fourmore
-    times on the same leaf, each time at an increased leaf temperature for each curve
-    following a progression of 25, 30, 35 and 41 deg C. From Anet-Ci response measurements
-    conducted at the set leaf temperatures, the photosynthetic parameters Jmax and
-    Vcmax from the biochemical model of Farquhar et al. (1980) can be extracted (e.g.
-    see (Bernacchi et al., 2002, 2001; Medlyn et al., 2002a). During the leaf-level
-    measurements, the entire tree was subjected to similar air temperatures in the
-    whole-tree chambers during the measurements. The entire tree was exposed to each
-    set temperature for at least 0.5 h before leaf gas exchange measurements started,
-    resulting in approximately 1.5 h duration set at each temperature level. At each
-    temperature, the curve was started with a measurement of Anet at the growth [CO2]
-    using the [CO2] appropriate for the long-term treatment for each chamber tree.
-    See manuscript for additional details on how humidity was controlled in the experimental
-    chambers to minimize stomatal closure.
+  measurement_remarks: Maximum electron transport rate in umol m-2 s-1 at 25 °C 
+  methods: *Jmax_per_area_method
 - var_in: Vcmax25
   unit_in: umol/m2/s
   trait_name: Vcmax_per_area
@@ -479,33 +462,8 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  methods: Controlled photosynthetic CO2 response curve measurements were made using
-    Li-Cor 6400 portable infrared gas analysers (LiCor Inc., Lincoln, NE, USA). CO2
-    response curves of net CO2 assimilation (Anet) were developed at a constant temperature
-    (termed 'Anet-Ci curves') for intact leaves within each tree chamber. These Anet-Ci
-    curve measurements progressed at four to five specified leaf temperatures for
-    the same leaf (i.e. one leaf per chamber) in each of three seasons (early summer,
-    December 2010; late summer, February 2011; and late winter, August 2011). Each
-    Anet-Ci response curve started with a steady-state measurement at the growth [CO2]
-    (henceforth called 'Anet at the growth [CO2]') and then consisted of 11 additional
-    steps all measured at a constant set leaf temperature while using light-saturating
-    photon flux density (PFD) of 1800 umol m-2 s-1. There were at least five [CO2]
-    levels used in the linear part of the curve, and at least three steps measured
-    in the saturating part of the curve. These Anet-Ci response curves were measured
-    on a leaf at the lowest set temperature (20 deg C) and then repeated fourmore
-    times on the same leaf, each time at an increased leaf temperature for each curve
-    following a progression of 25, 30, 35 and 41 deg C. From Anet-Ci response measurements
-    conducted at the set leaf temperatures, the photosynthetic parameters Jmax and
-    Vcmax from the biochemical model of Farquhar et al. (1980) can be extracted (e.g.
-    see (Bernacchi et al., 2002, 2001; Medlyn et al., 2002a). During the leaf-level
-    measurements, the entire tree was subjected to similar air temperatures in the
-    whole-tree chambers during the measurements. The entire tree was exposed to each
-    set temperature for at least 0.5 h before leaf gas exchange measurements started,
-    resulting in approximately 1.5 h duration set at each temperature level. At each
-    temperature, the curve was started with a measurement of Anet at the growth [CO2]
-    using the [CO2] appropriate for the long-term treatment for each chamber tree.
-    See manuscript for additional details on how humidity was controlled in the experimental
-    chambers to minimize stomatal closure.
+  measurement_remarks: Maximum carboxylation rate in umol m-2 s-1 at 25 °C 
+  methods: *Jmax_per_area_method
 - var_in: Rd25
   unit_in: neg_umolCO2/m2/s
   trait_name: leaf_light_respiration_per_area

@@ -23,13 +23,25 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site_name = "Howard River catchment") %>% group_by(species)
-    %>% mutate_at(vars(`specific leaf area (m2 kg-1)`), replace_duplicates_with_NA)
-    %>% ungroup() %>% mutate(date = date %>% mdy())
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site_name = "Howard River catchment",
+        date = date %>% mdy()
+      ) %>% 
+      arrange(date) %>%
+      group_by(Tree) %>%
+        mutate(observation = dplyr::row_number()) %>%
+      ungroup() %>% 
+      group_by(species) %>% 
+        mutate_at(vars(`specific leaf area (m2 kg-1)`), replace_duplicates_with_NA) %>% 
+      ungroup()
+  '
   collection_date: date
   taxon_name: species
   context_name: context
-  site_name: site_name
+  site_name: site_name  
+  observation_id: Tree
   description: Measurements of stem CO2 efflux and leaf gas exchange in a tropical
     savanna ecosystem in northern Australia, and assessed the impact of fire on these
     processes.
@@ -281,7 +293,7 @@ traits:
   trait_name: specific_leaf_area
   entity_type: population
   value_type: mean
-  basis_of_value: measurement
+  basis_of_value: literature
   replicates: .na
   methods: sourced from Chen 2002
 - var_in: SW area per leaf area (cm2 m-2)
