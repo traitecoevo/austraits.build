@@ -1,4 +1,5 @@
 library(testthat)
+library(bibtex)
 
 test_that("metadata_create_template is working",{
   expect_invisible(metadata_create_template(dataset_id = "Test_2022",
