@@ -33,12 +33,24 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site = "University of Western Sydney") %>% mutate_at(c("Cond
-    (mol m-2 s-1)"), ~na_if(.,0)) %>% subset(days_since_drought != "more_than_88") %>% mutate(Date = Date %>% dmy())
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site = "University of Western Sydney",
+        Date = Date %>% dmy()
+      ) %>% 
+      mutate_at(c("Cond (mol m-2 s-1)"), ~na_if(.,0)) %>% 
+      subset(days_since_drought != "more_than_88") %>% 
+      arrange(Date) %>%
+      group_by(Potnum) %>%
+        mutate(observation = dplyr::row_number()) %>%
+      ungroup()
+  '
   collection_date: Date
   taxon_name: Species
   site_name: site
   observation_id: Potnum
+  observation_number: observation
   context_name: context
   description: 'Water relations and carbon dynamics were examined in two species with
     contrasting stomatal regulation strategies: Pinus radiata D. Don (relatively isohydric

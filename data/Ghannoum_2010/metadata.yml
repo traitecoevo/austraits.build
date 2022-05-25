@@ -34,11 +34,22 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site = "University of Western Sydney") %>% mutate(Date = Date %>% dmy())
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site = "University of Western Sydney",
+        Date = Date %>% dmy(),
+        leaf_area_ratio = coalesce(`LAR (m2 kg-1)`,`LAR m2 kg-1)`)
+      ) %>%
+      group_by(Potnum) %>%
+        mutate(observation = dplyr::row_number()) %>%
+      ungroup()
+  '
   collection_date: Date
   taxon_name: Species
   site_name: site
   observation_id: Potnum
+  observation_number: observation
   context_name: context
   description: In this study, we investigated the growth and physiological responses
     of two Eucalyptus species, representing two different growth habits (i.e. slower-growing
@@ -412,7 +423,8 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  methods: Two destructive harvests were conducted 80 and 150 DAP; nine trees at 80
+  method_number: 1
+  methods: &leaf_harvest_method Two destructive harvests were conducted 80 and 150 DAP; nine trees at 80
     DAP and 18 trees at 150 DAP of each species were harvested within each [CO2] and
     temperature treatment combination. During each harvest, we measured the length
     of the main stem, diameter at stem base, and separated the seedling into stems
@@ -423,24 +435,14 @@ traits:
     at 80 deg C for 48 h, then weighed. For each plant, mean leaf mass per area (LMA)
     and leaf area ratio (LAR) were calculated as total leaf dry mass/total leaf area
     and total leaf area/total plant dry mass, respectively.
-- var_in: LAR (m2 kg-1)
+- var_in: leaf_area_ratio
   unit_in: mm2/mg
   trait_name: leaf_area_ratio
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  methods: Two destructive harvests were conducted 80 and 150 DAP; nine trees at 80
-    DAP and 18 trees at 150 DAP of each species were harvested within each [CO2] and
-    temperature treatment combination. During each harvest, we measured the length
-    of the main stem, diameter at stem base, and separated the seedling into stems
-    (including branches and petioles) and leaf blades; shoot tips were removed separately
-    and roots were washed free of soil. Total leaf area was determined using a portable
-    leaf area meter (LI-3100A, LI-COR, Lincoln, NE, USA). The number of leaves and
-    branches were counted at 150 DAP harvest only. Harvested samples were oven-dried
-    at 80 deg C for 48 h, then weighed. For each plant, mean leaf mass per area (LMA)
-    and leaf area ratio (LAR) were calculated as total leaf dry mass/total leaf area
-    and total leaf area/total plant dry mass, respectively.
+  methods: *leaf_harvest_method
 - var_in: RootShoot
   unit_in: mg_root/mg_shoot
   trait_name: root_shoot_ratio
@@ -448,35 +450,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  methods: Two destructive harvests were conducted 80 and 150 DAP; nine trees at 80
-    DAP and 18 trees at 150 DAP of each species were harvested within each [CO2] and
-    temperature treatment combination. During each harvest, we measured the length
-    of the main stem, diameter at stem base, and separated the seedling into stems
-    (including branches and petioles) and leaf blades; shoot tips were removed separately
-    and roots were washed free of soil. Total leaf area was determined using a portable
-    leaf area meter (LI-3100A, LI-COR, Lincoln, NE, USA). The number of leaves and
-    branches were counted at 150 DAP harvest only. Harvested samples were oven-dried
-    at 80 deg C for 48 h, then weighed. For each plant, mean leaf mass per area (LMA)
-    and leaf area ratio (LAR) were calculated as total leaf dry mass/total leaf area
-    and total leaf area/total plant dry mass, respectively.
-- var_in: LAR m2 kg-1)
-  unit_in: mm2/mg
-  trait_name: leaf_area_ratio
-  entity_type: individual
-  value_type: raw
-  basis_of_value: measurement
-  replicates: 1
-  methods: Two destructive harvests were conducted 80 and 150 DAP; nine trees at 80
-    DAP and 18 trees at 150 DAP of each species were harvested within each [CO2] and
-    temperature treatment combination. During each harvest, we measured the length
-    of the main stem, diameter at stem base, and separated the seedling into stems
-    (including branches and petioles) and leaf blades; shoot tips were removed separately
-    and roots were washed free of soil. Total leaf area was determined using a portable
-    leaf area meter (LI-3100A, LI-COR, Lincoln, NE, USA). The number of leaves and
-    branches were counted at 150 DAP harvest only. Harvested samples were oven-dried
-    at 80 deg C for 48 h, then weighed. For each plant, mean leaf mass per area (LMA)
-    and leaf area ratio (LAR) were calculated as total leaf dry mass/total leaf area
-    and total leaf area/total plant dry mass, respectively.
+  methods: *leaf_harvest_method
 - var_in: leaf_area_cm2_one_leaf
   unit_in: cm2
   trait_name: leaf_area
@@ -502,6 +476,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
+  method_number: 2
   methods: Measurement on samples collected for biochemical analyses. Leaf area was
     determined using a portable leaf area meter (LI-3100A, LI-COR, Lincoln, NE, USA).Harvested
     samples were oven-dried at 80 deg C for 48 h, then weighed.

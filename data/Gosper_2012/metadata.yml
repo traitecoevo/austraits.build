@@ -43,7 +43,13 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(ephemeral = if_else(GosperJVS2012_PFT == "Ephem","post_fire_ephemeral","na"))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        `Compeditive stratum` = ifelse(GosperJVS2012_PFT == "Ephem","post_fire_ephemeral",`Compeditive stratum`),
+        life_history = ifelse(GosperJVS2012_PFT == "Ephem","ephemeral",NA)
+      )
+  '
   collection_date: 2007/2007
   taxon_name: Species Name
   site_name: Location
@@ -118,9 +124,9 @@ traits:
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Plant functional type used in Gosper et al. 2012]
-- var_in: ephemeral
+- var_in: life_history
   unit_in: .na
-  trait_name: competitive_stratum
+  trait_name: life_history
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -130,7 +136,7 @@ traits:
 - var_in: Resprouter
   unit_in: .na
   trait_name: fire_response
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na

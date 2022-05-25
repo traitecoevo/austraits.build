@@ -24,7 +24,22 @@ contributors:
   austraits_curators: Caitlan Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% group_by(species, remnant) %>% mutate(count_plants = sum(count), seed_mass = round(seed_mass,6), max_height = round(max_height,6), specific_leaf_area = round(specific_leaf_area,6)) %>% mutate_at(vars(count_plants,max_height, specific_leaf_area),funs(replace(.,duplicated(.),NA))) %>% ungroup() %>% group_by(species) %>% mutate_at(vars(seed_mass),funs(replace(.,duplicated(.),NA))) %>% ungroup()
+  custom_R_code: '
+    data %>% 
+      group_by(species, remnant) %>% 
+        mutate(
+          count_plants = sum(count), 
+          seed_mass = round(seed_mass,6), 
+          max_height = round(max_height,6), 
+          specific_leaf_area = round(specific_leaf_area,6)
+        ) %>% 
+        mutate_at(vars(count_plants,max_height, specific_leaf_area),
+          funs(replace(.,duplicated(.),NA))) %>% 
+      ungroup() %>% 
+      group_by(species) %>% 
+        mutate_at(vars(seed_mass),funs(replace(.,duplicated(.),NA))) %>% 
+      ungroup()
+  '
   collection_date: year
   taxon_name: species
   site_name: remnant
@@ -177,7 +192,7 @@ traits:
 - var_in: seed_mass
   unit_in: mg
   trait_name: seed_dry_mass
-  entity_type: metapopulation
+  entity_type: population
   value_type: mean
   basis_of_value: measurement
   replicates: 100
@@ -193,8 +208,7 @@ traits:
     was measured as the average of 100 seeds from bulk collections, excluding seeds
     with obvious damage or deformities. Dispersules were removed, seeds were oven
     dried at 60 deg C for 72 hours and weighed using a microbalance (Sartorius AG,
-    Goettingen, Germany). For almost all species seed mass is a multisite_mean; there
-    are a few species with more than one distinct seed mass value.
+    Goettingen, Germany). 
 - var_in: max_height
   unit_in: cm
   trait_name: plant_height

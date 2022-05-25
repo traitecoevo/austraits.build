@@ -28,13 +28,19 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(specific_leaf_area = `Leaf area (cm2)`/`Leaf dry
-    mass (g)`) %>% group_by(Material,Taxon) %>% mutate_at(vars(`Leaf moisture (at
-    time of measuring) (%odw)`),~replace(.x,duplicated(.x),NA)) %>% ungroup() %>%
-    mutate(`FD (s)` = ifelse(Material == "BARK",NA,`FD (s)`)) %>% mutate(`TBT (s)`
-    = ifelse(Material == "BARK",NA,`TBT (s)`)) %>% mutate(`SD (s)` = ifelse(Material
-    == "BARK",NA,`SD (s)`)) %>% mutate(`TTI (s)` = ifelse(Material == "BARK",NA,`TTI
-    (s)`)) %>% mutate(measurement_remarks = ifelse(Material == "BARK","measurements made on bark", NA),measurement_remarks = ifelse(Material == "LEAVES","measurements made on leaves", measurement_remarks))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        specific_leaf_area = `Leaf area (cm2)`/`Leaf dry mass (g)`,
+        measurement_remarks = ifelse(Material == "BARK","measurements made on bark", NA),
+        measurement_remarks = ifelse(Material == "LEAVES","measurements made on leaves",
+                                      measurement_remarks)
+      ) %>% 
+      group_by(Material,Taxon) %>% 
+        mutate_at(vars(`Leaf moisture (at time of measuring) (%odw)`),
+                        ~replace(.x,duplicated(.x),NA)) %>% 
+      ungroup()
+  '
   collection_date: 2012-12/2015
   taxon_name: Taxon
   site_name: Site
@@ -122,11 +128,11 @@ traits:
 - var_in: Leaf C (wght %)
   unit_in: '%'
   trait_name: senesced_leaf_C_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
+  replicates: 10-40
+  methods: &senesced_leaf_method Bulked sample across multiple individuals. 0.25 g of sample was weighed
     out into a tin foil capsule which was placed into the induction furnace of a LECO
     Truspec CHN combustion analyser set at 1100 deg C and calibrated on EDTA. The
     carbon present was combusted to CO2 which was determined with an infrared detection
@@ -137,181 +143,114 @@ traits:
 - var_in: Leaf N (wght %)
   unit_in: '%'
   trait_name: senesced_leaf_N_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out into a tin foil capsule which was placed into the induction furnace of a LECO
-    Truspec CHN combustion analyser set at 1100 deg C and calibrated on EDTA. The
-    carbon present was combusted to CO2 which was determined with an infrared detection
-    cell. The nitrogen present was combusted to N2, NO2 and NO. The oxides were reduced
-    to N2 which was determined quantitatively using a thermal conductivity cell. (Rayment,
-    G.E. & Lyons, D.J. (2011) Soil Chemical Methods, Australasia. CSIRO Publishing.
-    Handbook section 6B2, p75.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf Al (mg/kg)
   unit_in: mg/kg
   trait_name: senesced_leaf_Al_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
-    was made up to a volume of 25 ml and the elemental concentrations were then determined
-    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
-    perchloric acid mixtures for various organic substances and the identities of
-    residual matter. Analytical Chemistry, 48, 70-74.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf B (mg/kg)
   unit_in: mg/kg
   trait_name: senesced_leaf_B_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
-    was made up to a volume of 25 ml and the elemental concentrations were then determined
-    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
-    perchloric acid mixtures for various organic substances and the identities of
-    residual matter. Analytical Chemistry, 48, 70-74.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf Ca (wght %)
   unit_in: '%'
   trait_name: senesced_leaf_Ca_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
-    was made up to a volume of 25 ml and the elemental concentrations were then determined
-    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
-    perchloric acid mixtures for various organic substances and the identities of
-    residual matter. Analytical Chemistry, 48, 70-74.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf Cu (mg/kg)
   unit_in: mg/kg
   trait_name: senesced_leaf_Cu_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
-    was made up to a volume of 25 ml and the elemental concentrations were then determined
-    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
-    perchloric acid mixtures for various organic substances and the identities of
-    residual matter. Analytical Chemistry, 48, 70-74.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf Fe (mg/kg)
   unit_in: mg/kg
   trait_name: senesced_leaf_Fe_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
-    was made up to a volume of 25 ml and the elemental concentrations were then determined
-    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
-    perchloric acid mixtures for various organic substances and the identities of
-    residual matter. Analytical Chemistry, 48, 70-74.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf K (wght %)
   unit_in: '%'
   trait_name: senesced_leaf_K_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
-    was made up to a volume of 25 ml and the elemental concentrations were then determined
-    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
-    perchloric acid mixtures for various organic substances and the identities of
-    residual matter. Analytical Chemistry, 48, 70-74.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf Mg (wght %)
   unit_in: '%'
   trait_name: senesced_leaf_Mg_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
-    was made up to a volume of 25 ml and the elemental concentrations were then determined
-    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
-    perchloric acid mixtures for various organic substances and the identities of
-    residual matter. Analytical Chemistry, 48, 70-74.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf Mn (mg/kg)
   unit_in: mg/kg
   trait_name: senesced_leaf_Mn_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
-    was made up to a volume of 25 ml and the elemental concentrations were then determined
-    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
-    perchloric acid mixtures for various organic substances and the identities of
-    residual matter. Analytical Chemistry, 48, 70-74.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf Na (mg/kg)
   unit_in: mg/kg
   trait_name: senesced_leaf_Na_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
-    was made up to a volume of 25 ml and the elemental concentrations were then determined
-    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
-    perchloric acid mixtures for various organic substances and the identities of
-    residual matter. Analytical Chemistry, 48, 70-74.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf P (mg/kg)
   unit_in: mg/kg
   trait_name: senesced_leaf_P_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
-    was made up to a volume of 25 ml and the elemental concentrations were then determined
-    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
-    perchloric acid mixtures for various organic substances and the identities of
-    residual matter. Analytical Chemistry, 48, 70-74.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf S (wght %)
   unit_in: '%'
   trait_name: senesced_leaf_S_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
-    was made up to a volume of 25 ml and the elemental concentrations were then determined
-    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
-    perchloric acid mixtures for various organic substances and the identities of
-    residual matter. Analytical Chemistry, 48, 70-74.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf Zn (mg/kg)
   unit_in: mg/kg
   trait_name: senesced_leaf_Zn_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
-  methods: Bulked sample across multiple individuals. 0.25 g of sample was weighed
-    out and digested with 15 ml of 5:1 nitric-perchloric acid. The digested sample
-    was made up to a volume of 25 ml and the elemental concentrations were then determined
-    by ICPAES. (Martinie, G.D. & Schilt, A.A. (1976) Wet oxidation efficiencies of
-    perchloric acid mixtures for various organic substances and the identities of
-    residual matter. Analytical Chemistry, 48, 70-74.)
+  replicates: 10-40
+  methods: *senesced_leaf_method 
 - var_in: Leaf Lignin (wght %)
   unit_in: '%'
   trait_name: leaf_lignin_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
+  replicates: 10-40
   methods: Bulked sample across multiple individuals. ADF analysis measures cellulose
     + lignin + ash content. ADF reagent was prepared from CTAB (cetyltrimethylammonium
     bromide) and H2SO4. 1.0 g of sample was extracted with 45 ml of ADF reagent at
@@ -324,10 +263,10 @@ traits:
 - var_in: Leaf Cellulose (wght %)
   unit_in: '%'
   trait_name: leaf_cellulose_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
+  replicates: 10-40
   methods: Bulked sample across multiple individuals. ADF analysis measures cellulose
     + lignin + ash content. ADF reagent was prepared from CTAB (cetyltrimethylammonium
     bromide) and H2SO4. 1.0 g of sample was extracted with 45 ml of ADF reagent at
@@ -340,10 +279,10 @@ traits:
 - var_in: Leaf Ash (wght %)
   unit_in: '%'
   trait_name: leaf_ash_content_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
+  replicates: 10-40
   methods: Bulked sample across multiple individuals. ADF analysis measures cellulose
     + lignin + ash content. ADF reagent was prepared from CTAB (cetyltrimethylammonium
     bromide) and H2SO4. 1.0 g of sample was extracted with 45 ml of ADF reagent at
@@ -356,10 +295,10 @@ traits:
 - var_in: Leaf TotalTannins (wght %)
   unit_in: '%'
   trait_name: leaf_tannin_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: '1'
+  replicates: 10-40
   methods: Bulked sample across multiple individuals. 0.2 g of sample was weighed
     out and extracted 3 times with 8 ml of 70% acetone for 45 minutes with the extracts
     made up to 25 mL volume. 1 ml of extract was heated with 5 ml of 19:1 butanol-HCl
@@ -417,6 +356,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: '1'
+  measurement_remarks: measurement_remarks
   methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
     horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
     NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
@@ -444,6 +384,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: '1'
+  measurement_remarks: measurement_remarks
   methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
     horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
     NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
@@ -471,6 +412,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: '1'
+  measurement_remarks: measurement_remarks
   methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
     horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
     NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
@@ -498,6 +440,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: '1'
+  measurement_remarks: measurement_remarks
   methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
     horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
     NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
@@ -525,6 +468,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: '1'
+  measurement_remarks: measurement_remarks
   methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
     horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
     NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
@@ -552,6 +496,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: '1'
+  measurement_remarks: measurement_remarks
   methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
     horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
     NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
@@ -579,6 +524,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: '1'
+  measurement_remarks: measurement_remarks
   methods: Leaves were burned as described by Grootemaat et al. (2015). Samples were
     horizontally inserted into an open-doored muffle furnace (Charles Moloney, Sydney,
     NSW, Australia) set at 400 deg C. The leaves were held by tongs on the petiole,
