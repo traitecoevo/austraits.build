@@ -3737,6 +3737,7 @@ traits:
       values:
         amphistomatic: Leaves with stomata on both leaf surfaces
         amphistomatic_uneven: Leaves with stomata on both leaf surfaces, but more stomata on the lower leaf surface
+        epistomatic: Leaves that only have stomata on the upper (adaxial) leaf surface
         hypostomatic: Leaves that only have stomata on the lower (abaxial) leaf surface
     stomatal_hairs:
       description: Binary variable describing whether or not stomata are covered by dense hairs
@@ -4232,6 +4233,7 @@ austraits:
         site_name: &site_name Name of the site where the individual was sampled. Cross-references between similar columns in `sites` and `traits`.
         context_name: &context_name Name of contextual senario where the individual was sampled. Cross-references between similar columns in `contexts` and `traits`.
         observation_id: &observation_id A unique identifier for the observation, useful for joining traits coming from the same `observation_id`. For wide datasets, these are assigned automatically based on the `dataset_id` and row number of the raw data.
+        observation_number: &observation_number Observation number defaults to 1, unless it is manually added as a column or to individual traits
         trait_name: &trait_name Name of the trait sampled. Allowable values specified in the table `definitions`.
         value: &value Measured value.
         unit: &units Units of the sampled trait value after aligning with AusTraits standards.
@@ -4243,6 +4245,7 @@ austraits:
         collection_type: &collection_type A field to indicate where the majority of plants on which traits were measured were collected -  in the `field`, `lab`, `glasshouse`, `botanical collection`, or `literature`. The latter should only be used when the data were sourced from the literature and the collection type is unknown.
         sample_age_class: &sample_age_class A field to indicate if the study was completed on `adult` or `juvenile` plants.
         measurement_remarks: &measurement_remarks Comments or notes accompanying the trait measurement.
+        method_number: &method_number Method number defaults to 1, unless it is manually added to individual traits. It is used to flag when a trait is read into AusTraits multiple times, with different methods used for each entry. 
         original_name: &orginal_name Name given to taxon in the original data supplied by the authors.
     sites:
       description: A table containing observations of site characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
@@ -4286,6 +4289,7 @@ austraits:
         site_name: *site_name
         context_name: *context_name
         observation_id: *observation_id
+        observation_number: *observation_number
         trait_name: *trait_name
         value: *value
         unit: *units
@@ -4297,6 +4301,7 @@ austraits:
         collection_type: *collection_type
         sample_age_class: *sample_age_class
         measurement_remarks: *measurement_remarks
+        method_number: *method_number
         original_name: *orginal_name
     taxonomic_updates:
       description: A table of all taxonomic changes implemented in the construction of AusTraits. Changes are determined by comparing the originally submitted taxon name against the APC (Australian Plant Census) and APNI (Australian Plant Names Index). Cross referencing with the `traits` table is possible using combinations of the variables `dataset_id` and `taxon_name`.

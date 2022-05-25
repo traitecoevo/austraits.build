@@ -209,7 +209,7 @@ load_study <- function(filename_data_raw,
 
   # Where missing, fill variables with values from sites
   vars <- c("collection_type", "sample_age_class", "collection_date", "measurement_remarks", "entity_type",
-                  "value_type", "basis_of_value", "replicates")
+                  "value_type", "basis_of_value", "replicates", "observation_number", "method_number")
   
   for(v in vars){
     # merge in to traits from site level
@@ -675,17 +675,27 @@ parse_data <- function(data, dataset_id, metadata) {
   df <- data %>%
         # next step selects and renames columns based on named vector
         dplyr::select(any_of(var_in[i])) %>%
-        dplyr::mutate(dataset_id = dataset_id)
+        dplyr::mutate(dataset_id = dataset_id) 
 
   # Step 1b. import any values that aren't columns of data
   vars <- c( "entity_type", "value_type", "basis_of_value", "replicates", "collection_date",
-            "collection_type", "sample_age_class", "measurement_remarks")
+            "collection_type", "sample_age_class", "measurement_remarks", "observation_number", "method_number")
 
   df <-
     df %>%
     bind_cols(
       metadata[["dataset"]][names(metadata[["dataset"]]) %in% vars[!vars %in% names(df)]] %>% tibble::as_tibble()
     )
+
+  if(is.null(df[["observation_number"]])) {
+      df <- 
+        df %>% dplyr::mutate(observation_number = as.character("1"))
+  }
+
+  if(is.null(df[["method_number"]])) {
+      df <-
+        df %>% dplyr::mutate(method_number = as.character("1"))
+  }
 
   # Add unique observation ids
   # function builds id -- determine number of 00s needed based on number of records
@@ -694,9 +704,24 @@ parse_data <- function(data, dataset_id, metadata) {
                               dataset_id, seq_len(n))
 
   if(!data_is_long_format) {
-    # For wide datasets rows are assumed to be natural grouping
-    df <- df %>%
-            dplyr::mutate(observation_id = make_id(nrow(.), dataset_id))
+    # For wide datasets rows are assumed to be natural grouping unless there is a specified observation_id column
+      if(!is.null(df[["observation_id"]])) {
+            df[["observation_id_tmp"]] <- df[["observation_id"]]
+            df[["observation_id"]] <- NULL
+
+        df <- df %>%
+                  dplyr::left_join(by = "observation_id_tmp",
+                            tibble::tibble(observation_id_tmp = df[["observation_id_tmp"]] %>% unique() %>% sort(),
+                                  observation_id = make_id(length(.data$observation_id_tmp), dataset_id))
+                            ) %>%
+                  dplyr::select(-observation_id_tmp)
+
+      } else {
+
+        df <- df %>%
+                  dplyr::mutate(observation_id = make_id(nrow(.), dataset_id))
+      }
+
   } else {
 
     # For long datasets, create unique identifier from taxon_name, site, and observation_id (if specified)
