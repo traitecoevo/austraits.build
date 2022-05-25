@@ -36,13 +36,15 @@ metadata_write_dataset_id <- function(metadata, dataset_id) {
 #' 
 #' @inheritParams metadata_path_dataset_id
 #' @param path location of file where output is saved
+#' @param skip_manual allows skipping of manual selection of variables, default = FALSE
 #' 
 #' @importFrom readr read_csv
 #' @importFrom utils menu
 #' @return a yml file template for metadata
 #' @export
 metadata_create_template <- function(dataset_id, 
-                                     path = file.path("data", dataset_id, "metadata.yml")
+                                     path = file.path("data", dataset_id),
+                                     skip_manual = FALSE
                                      ) {
   
   `%notin%` <- Negate(`%in%`)
@@ -64,55 +66,59 @@ metadata_create_template <- function(dataset_id,
   out$contributors$data_collectors <- 
     out$contributors$data_collectors[names(out$contributors$data_collectors)%notin%c(exclude,"notes")]
   out$dataset <- out$dataset$values[]
-  out$dataset[] <- "unknown"
-
-  # Check format of data
-  tmp <- menu(c("Long", "Wide"), title="Is the data long or wide format?")
-  data_is_long_format <- ifelse(tmp == 1, TRUE, FALSE)
-
-  data <- readr::read_csv(file.path("data", dataset_id, "data.csv"), col_types = cols())
-
-  # Setup config and select columns as appropriate
-  config <- list(data_is_long_format = data_is_long_format, 
-                 custom_R_code = NA,
-                 variable_match = list())
-
-  v1 <- c("taxon_name")
-  v2 <- c("site_name", "context_name", "observation_id",  "collection_date")
+  out$dataset[] <- 'unknown'
+  out$dataset$custom_R_code <- NA
   
-  if(data_is_long_format) {
-    v1 <- c("taxon_name", "trait_name", "value")
+  if(skip_manual == FALSE){
+    
+    # Check format of data
+    tmp <- menu(c("Long", "Wide"), title="Is the data long or wide format?")
+    data_is_long_format <- ifelse(tmp == 1, TRUE, FALSE)
+    
+    data <- readr::read_csv(paste0(path, "/data.csv"), col_types = cols())
+    
+    # Setup config and select columns as appropriate
+    config <- list(data_is_long_format = data_is_long_format, 
+                   custom_R_code = NA,
+                   variable_match = list())
+    
+    v1 <- c("taxon_name")
+    v2 <- c("site_name", "context_name", "observation_id",  "collection_date")
+    
+    if(data_is_long_format) {
+      v1 <- c("taxon_name", "trait_name", "value")
+    }
+    if(!data_is_long_format)
+      out$dataset[c("trait_name", "value")] <- NULL
+    
+    for(v in v1) {      
+      config[["variable_match"]][[v]] <- user_select_column(v, names(data))
+    }
+    
+    for(v in v2) {
+      tmp <- user_select_column(v, c(names(data), NA))
+      if(!is.na(tmp)) {
+        config[["variable_match"]][[v]] <- tmp
+      }
+      if(v == "collection_date" & is.na(tmp)){
+        collection_date <- readline(prompt="Enter collection_date range separated by a '/': ")
+        config[["variable_match"]][[v]] <- collection_date
+      }
+    }
+    
+    for(v in v1) {
+      out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
+    }
+    
+    for(v in v2) {
+      out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
+    }
+    
+    out[["dataset"]][["data_is_long_format"]] <- config[["data_is_long_format"]]
+    out[["dataset"]][["custom_R_code"]] <- config[["custom_R_code"]]
   }
-  if(!data_is_long_format)
-    out$dataset[c("trait_name", "value")] <- NULL
-  
-  for(v in v1) {      
-    config[["variable_match"]][[v]] <- user_select_column(v, names(data))
-    }
 
-  for(v in v2) {
-    tmp <- user_select_column(v, c(names(data), NA))
-    if(!is.na(tmp)) {
-      config[["variable_match"]][[v]] <- tmp
-      }
-    if(v == "collection_date" & is.na(tmp)){
-      collection_date <- readline(prompt="Enter collection_date range separated by a '/': ")
-      config[["variable_match"]][[v]] <- collection_date
-      }
-    }
-  
-  for(v in v1) {
-    out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
-    }
-  
-  for(v in v2) {
-    out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
-    }
-  
-  out[["dataset"]][["data_is_long_format"]] <- config[["data_is_long_format"]]
-  out[["dataset"]][["custom_R_code"]] <- config[["custom_R_code"]]
-  
-  write_metadata(out, path)
+  write_metadata(out, paste0(path, "/metadata.yml"))
 }
 
 #' Select column by user

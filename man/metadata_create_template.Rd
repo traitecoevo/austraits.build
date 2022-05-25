@@ -6,13 +6,16 @@
 \usage{
 metadata_create_template(
   dataset_id,
-  path = file.path("data", dataset_id, "metadata.yml")
+  path = file.path("data", dataset_id),
+  skip_manual = FALSE
 )
 }
 \arguments{
 \item{dataset_id}{identifier for a particular study in the AusTraits database}
 
 \item{path}{location of file where output is saved}
+
+\item{skip_manual}{allows skipping of manual selection of variables, default = FALSE}
 }
 \value{
 a yml file template for metadata
