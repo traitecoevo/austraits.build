@@ -3,36 +3,25 @@ source:
     key: Maslin_2012
     bibtype: Book
     author: Bruce Maslin
-    title: 'WATTLE, Interactive Identification of Australian Acacia. Version 2'
+    title: WATTLE, Interactive Identification of Australian Acacia. Version 2
     year: 2014
     publisher: Australian Biological Resources Study, Canberra
-people:
-- name: Bruce Maslin
-  institution: Macquarie University Sydney
-  role: collector, contact
-- name: Brendan Lepschi
-  institution: CSIRO
-  role: custodian
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Maslin
+    given_name: Bruce
+    ORCID: .na.character
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+    notes: acknowledge only
+    additional_role: contact
+  - last_name: Lepschi
+    given_name: Brendan
+    ORCID: 0000-0002-3281-2973
+    affiliation: Centre for Australian National Biodiversity Research (a joint venture
+      between Parks Australia and CSIRO), Canberra, ACT, Australia
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2012
-  year_collected_end: 2012
-  description: Wattle dataset from Bruce Maslin treatment 2012
-  collection_type: botanical_collection
-  sample_age_class: adult
-  sampling_strategy: unknown
-  original_file: STU
-  notes: none
-sites: .na
-contexts: .na
-config:
   data_is_long_format: yes
-  variable_match:
-    taxon_name: species_name
-    trait_name: trait
-    value: value
   custom_R_code: '
     traits <- c("leaf length maximum", "leaf length minimum", "leaf width maximum", "leaf width minimum", "plant height maximum", "plant height minimum"); a <- list(cm=10, m=1000); for(t in traits){ for(v in names(a)) { i <- which(data[["trait"]]==t & data[["units"]] == v); data[["value"]][i] <- as.character(as.numeric(data[["value"]][i]) * a[[v]]); data[["units"]][i] <- "mm"; }; };
     i <- data$trait == "flowering time start"; 
@@ -55,6 +44,18 @@ config:
     data[data$value %in% "articles",]$value <- c("article"); 
     data[data$value %in% "article",]$trait <- c("leaf_type");
     data'
+  collection_date: unknown/2012
+  taxon_name: species_name
+  trait_name: trait
+  value: value
+  description: Wattle dataset from Bruce Maslin treatment 2012
+  collection_type: botanical_collection
+  sample_age_class: adult
+  sampling_strategy: unknown
+  original_file: STU
+  notes: none
+sites: .na
+contexts: .na
 traits:
 - var_in: dispersal
   unit_in: .na
@@ -154,13 +155,13 @@ traits:
   methods: unknown
 - var_in: seed breadth minimum
   unit_in: mm
-  trait_name: seed_breadth
+  trait_name: seed_height
   value_type: expert_min
   replicates: .na
   methods: unknown
 - var_in: seed breadth maximum
   unit_in: mm
-  trait_name: seed_breadth
+  trait_name: seed_height
   value_type: expert_max
   replicates: .na
   methods: unknown
@@ -204,9 +205,15 @@ substitutions:
 - trait_name: plant_growth_form
   find: L
   replace: climber_liana
+- trait_name: dispersal_appendage
+  find: exarillate
+  replace: none
 - trait_name: seed_shape
   find: elliptical
   replace: ellipsoid
+- trait_name: seed_shape
+  find: orbicular
+  replace: orbicular
 taxonomic_updates:
 - find: Acacia affin ancistrophylla
   replace: Acacia ancistrophylla
@@ -270,4 +277,3 @@ taxonomic_updates:
   reason: Automatic alignment with name in APC list (2020-06-18)
 exclude_observations: .na
 questions: .na
-

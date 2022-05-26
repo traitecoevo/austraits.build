@@ -4,20 +4,33 @@ source:
     bibtype: Unpublished
     year: 2007
     author: Mark K. J. Ooi, Peter Myerscough, Tony Auld
-    title: 'Unpublished data: Longterm seed mass field campaign, University of New South Wales'
-people:
-- name: Mark Ooi
-  institution: University of New South Wales, Centre for Ecosystem Science
-  role: collector, contact
-- name: Peter Myerscough
-  institution: School of Biological Sciences, University of Sydney
-  role: collector
-- name: Tony Auld
-  institution: .na
-  role: collector
+    title: 'Unpublished data: Longterm seed mass field campaign, University of New
+      South Wales'
+contributors:
+  data_collectors:
+  - last_name: Ooi
+    given_name: Mark
+    ORCID: 0000-0002-3046-0417
+    affiliation: Centre for Ecosystem Science, School of Biological, Earth, and Environmental
+      Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Myerscough
+    given_name: Peter
+    ORCID: .na.character
+    affiliation: School of Life and Environmental Sciences, The University of Sydney,
+      Australia
+    notes: deceased
+  - last_name: Auld
+    given_name: Tony
+    ORCID: 0000-0002-8766-2829
+    affiliation: NSW Department of Planning Industry and Environment, Australia
+  austraits_curators: Elizabeth Wenk, Caitlan Baxter
 dataset:
-  year_collected_start: 1974
-  year_collected_end: 2007
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(`DATE OF COLLECTION` = `DATE OF COLLECTION` %>% dmy()) %>% group_by(SPECIES) %>% mutate_at(vars(DORM_TYPE), replace_duplicates_with_NA) %>% ungroup() %>% mutate(`SEED WEIGHT multiplier` = ifelse(row_number() %in% c(4603, 4673, 8936, 12050, 12283, 12576, 14503), NA, ""), `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(12981:13080), 0.001, `SEED WEIGHT multiplier`), `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(14527:14547), 0.01, `SEED WEIGHT multiplier`), `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(7175), 0.01, `SEED WEIGHT multiplier`), `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(9425,9479:9503,12664), 0.001, `SEED WEIGHT multiplier`), `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(14257), 0.0001, `SEED WEIGHT multiplier`), `notes for edited & omitted values` = ifelse(row_number() %in% c(4603, 4673, 8936, 12050, 12283, 12576, 14503), "outlier for species, removed by E. Wenk, 2021-10-27", ""), `notes for edited & omitted values` = ifelse(row_number() %in% c(12981:13080), "divide 1000 to fit within range of other AusTraits observations of species & other Leptospermum in this study", `notes for edited & omitted values`), `notes for edited & omitted values` = ifelse(row_number() %in% c(7175), "seed mass divided by 10^2, E. Wenk 2021-10-27", `notes for edited & omitted values`), `notes for edited & omitted values` = ifelse(row_number() %in% c(9425,9479:9503,12664), "seed mass divided by 10^3, E. Wenk 2021-10-27", `notes for edited & omitted values`), `notes for edited & omitted values` = ifelse(row_number() %in% c(14257), "seed mass divided by 10^4, E. Wenk 2021-10-27", `notes for edited & omitted values`)) %>% mutate(`SEED WEIGHT mg` = ifelse(as.character(`SEED WEIGHT multiplier`)=="outlier",NA,`SEED WEIGHT mg`), `SEED WEIGHT mg` = ifelse(is.na(`SEED WEIGHT multiplier`),`SEED WEIGHT mg`,`SEED WEIGHT mg`*as.numeric(`SEED WEIGHT multiplier`)))
+  collection_date: DATE OF COLLECTION
+  taxon_name: SPECIES
+  site_name: SITE
   description: Dataset was put together for a comparative study of dormancy type and
     germination.
   collection_type: field
@@ -324,19 +337,10 @@ sites:
     longitude (deg): .na.real
     latitude (deg): .na.real
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: SPECIES
-    site_name: SITE
-    date: DATE OF COLLECTION
-  custom_R_code: data %>% mutate(`DATE OF COLLECTION` = `DATE OF COLLECTION` %>% dmy())
-    %>% group_by("SPECIES") %>% mutate_at(vars(DORM_TYPE),replace_duplicates_with_NA)
-    %>% ungroup()
 traits:
 - var_in: SEED WEIGHT mg
   unit_in: mg
-  trait_name: seed_mass
+  trait_name: seed_dry_mass
   value_type: raw_value
   replicates: 1
   methods: Seeds were weighed individually (ie one seed per measurement as opposed
@@ -413,4 +417,3 @@ taxonomic_updates:
   reason: Aign to genus, because no obvious misspelling found (E. Wenk, 2020-05-26)
 exclude_observations: .na
 questions: .na
-

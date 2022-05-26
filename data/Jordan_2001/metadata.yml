@@ -9,15 +9,23 @@ source:
       both Tasmania and New Zealand
     volume: '49'
     number: '3'
-    pages: '333--340'
+    pages: 333--340
     doi: 10.1071/bt00024
-people:
-- name: Gregory Jordan
-  institution: University of Tasmania
-  role: collector, contact, lab_leader
+contributors:
+  data_collectors:
+  - last_name: Jordan
+    given_name: Gregory
+    ORCID: 0000-0002-6033-2766
+    affiliation: University of Tasmania, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2001
-  year_collected_end: 2001
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(woodiness = ifelse(`habit (s=woody, p=perennial herb,
+    a=annual herb)` == "s","woody","herbaceous")) %>% mutate(site_name = "Tasmania")
+  collection_date: 2001/2001
+  taxon_name: species_name
+  site_name: site_name
   description: Compilation of habitat and propagule trait data for Tasmanian species,
     that was used to compare dispersal syndromes of species that occur in both Tasmania
     and New Zealand.
@@ -37,13 +45,6 @@ sites:
   Tasmania:
     description: data for Tasmanian flora
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-    site_name: site_name
-  custom_R_code: data %>% mutate(woodiness = ifelse(`habit (s=woody, p=perennial herb,
-    a=annual herb)` == "s","woody","herbaceous")) %>% mutate(site_name = "Tasmania")
 traits:
 - var_in: habit (s=woody, p=perennial herb, a=annual herb)
   unit_in: .na
@@ -70,7 +71,7 @@ traits:
     are not available for many groups of plants
 - var_in: fleshy fruit (1=present)
   unit_in: .na
-  trait_name: fruit_type_botanical
+  trait_name: fruit_fleshiness
   value_type: expert_mean
   replicates: .na
   methods: Expert opinion determining presence or absence of a fleshy fruit
@@ -134,13 +135,13 @@ substitutions:
 - trait_name: sex_type
   find: h
   replace: hermaphrodite monoecious
-- trait_name: fruit_type_botanical
+- trait_name: fruit_fleshiness
   find: 1
   replace: fleshy
-- trait_name: fruit_type_botanical
+- trait_name: fruit_fleshiness
   find: 0
   replace: dry
-- trait_name: fruit_type_botanical
+- trait_name: fruit_fleshiness
   find: 0/1
   replace: dry fleshy
 - trait_name: dispersal_appendage
@@ -148,10 +149,16 @@ substitutions:
   replace: none
 - trait_name: dispersal_appendage
   find: awn
-  replace: awns
+  replace: bristles
+- trait_name: dispersal_appendage
+  find: awns
+  replace: bristles
+- trait_name: dispersal_appendage
+  find: feathery_style
+  replace: plumose
 - trait_name: dispersal_appendage
   find: feathery
-  replace: feathery_style
+  replace: plumose
 - trait_name: dispersal_appendage
   find: floating seed
   replace: floating_seed
@@ -168,20 +175,29 @@ substitutions:
   find: long silky hairs
   replace: hairs
 - trait_name: dispersal_appendage
+  find: barbs
+  replace: hooks
+- trait_name: dispersal_appendage
   find: hooked
-  replace: barbs
+  replace: hooks
 - trait_name: dispersal_appendage
   find: plumose petals
-  replace: floral_parts
+  replace: plumose
+- trait_name: dispersal_appendage
+  find: wings_small
+  replace: wings
 - trait_name: dispersal_appendage
   find: small wings
-  replace: wings_small
+  replace: wings
 - trait_name: dispersal_appendage
   find: stiff hairs
   replace: bristles
 - trait_name: dispersal_appendage
   find: winged
   replace: wings
+- trait_name: dispersal_appendage
+  find: pappus_deciduous
+  replace: none
 taxonomic_updates:
 - find: Actinotus suffocata
   replace: Actinotus suffocatus
@@ -466,4 +482,3 @@ taxonomic_updates:
   reason: Align to APNI name with known genus (E. Wenk, 2020-06-29)
 exclude_observations: .na
 questions: .na
-

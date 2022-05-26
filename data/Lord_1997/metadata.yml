@@ -12,22 +12,25 @@ source:
     pages: 205--211
     publisher: Wiley-Blackwell
     doi: 10.1046/j.1365-2699.1997.00126.x
-people:
-- name: Janice Lord
-  institution: University of Otago
-  role: collector, contact
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
-- name: Judy Egan
-  institution: Conservation Commission of the Northern Territory
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Lord
+    given_name: Janice
+    ORCID: 0000-0001-8314-0428
+    affiliation: University of Otago, Dunedin, New Zealand
+    additional_role: contact
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  assistants: Judy Egan
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 1995
-  year_collected_end: 1995
+  data_is_long_format: no
+  custom_R_code: 'data %>% mutate(dispersers = NA) %>% move_values_to_new_trait("dispersal mode: 1=unassisted, 2=ant, 3=vertebrate, 4=adhesion, 5=wind","dispersers",c("2","3","5"),c("ants","vertebrates","wind"),c("2","3","5"))'
+  collection_date: 1995/1995
+  taxon_name: name_original
+  site_name: site_text
   description: seed and growth form data for 229 species from Eucalyptus woodland
     in Northern Territory
   collection_type: field
@@ -48,12 +51,6 @@ sites:
       was compiled by J.E. and supplemented with species lists from Taylor & Dunlop
       (1985).
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-    site_name: site_text
-  custom_R_code: .na
 traits:
 - var_in: growth form 1=tree, 2=shrub, 3=subshrub, 4=forb, 5=graminoid, 10=vine
   unit_in: .na
@@ -74,9 +71,21 @@ traits:
     & Westoby (1994), very small diaspores that might, in effect, be wind-  dispersed,
     and seeds dispersed ballistically by structures associated with the parent plant
     were conservatively assigned to the 'unassisted' category.
+- var_in: dispersers
+  unit_in: .na
+  trait_name: dispersers
+  value_type: expert_mean
+  replicates: .na
+  methods: For all floras, dispersal modes were inferred from external morphological
+    features of the diaspore. All species were assigned to one of five dispersal categories
+    - unassisted, vertebrate, wind, ant and adhesion. As assignment to dispersal category
+    relied on morphological features of the diaspore, following the methods of Leishman
+    & Westoby (1994), very small diaspores that might, in effect, be wind-  dispersed,
+    and seeds dispersed ballistically by structures associated with the parent plant
+    were conservatively assigned to the 'unassisted' category.
 - var_in: seed mass (mg)
   unit_in: mg
-  trait_name: seed_mass
+  trait_name: seed_dry_mass
   value_type: multisite_mean
   replicates: 20
   methods: Seed mass was measured to an accuracy of 0.1mg on a Mettler balance, for
@@ -111,19 +120,19 @@ substitutions:
   replace: climber_vine
 - trait_name: dispersal_syndrome
   find: '1'
-  replace: unassisted
+  replace: barochory
 - trait_name: dispersal_syndrome
   find: '2'
   replace: myrmecochory
 - trait_name: dispersal_syndrome
   find: '3'
-  replace: vertebrate
+  replace: zoochory
 - trait_name: dispersal_syndrome
   find: '4'
-  replace: adhesion
+  replace: epizoochory
 - trait_name: dispersal_syndrome
   find: '5'
-  replace: wind
+  replace: anemochory
 taxonomic_updates:
 - find: Crotalaria novaehollandiae
   replace: Crotalaria novae-hollandiae
@@ -205,4 +214,3 @@ taxonomic_updates:
   reason: Confirm alignment with accepted phrase name on APC list (E. Wenk, 2020-05-24)
 exclude_observations: .na
 questions: .na
-

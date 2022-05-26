@@ -5,8 +5,8 @@
 #' @name %>%
 #' @rdname pipe
 #' @keywords internal
-#' @export
 #' @importFrom magrittr %>%
+#' @export
 #' @usage lhs \%>\% rhs
 NULL
 
@@ -31,9 +31,8 @@ read_csv_char <- function(...){
 #' @param x a vector containing null values
 #' @param val specify what the null value should be returned as, default is NA
 #'
-#' @return a vector with null values replaced
-#'
 #' @export
+#' @return a vector with null values replaced
 #' @examples null_as(NULL)
 null_as <- function(x, val=NA){
   if(is.null(x)) return(val)
@@ -57,13 +56,18 @@ extract_list_element <- function(i, my_list, var) {
   i %>% lapply(function(x) my_list[[x]][[var]]) %>% lapply(null_as) %>% unlist()
 }
 
-#' Rename columns
+#' Rename column names
+#' 
+#' `rename_columns` renames column names within a tibble or data frame by matching
+#' the names given by the argument `from`. The new column names are renamed using the 
+#' names given by the argument `to`.
 #'
-#' @param obj a  tibble with multiple columns
-#' @param from a vector of the initial column names
-#' @param to  a vector of the new column names
+#' @param obj tibble or data frame with 1 or more columns
+#' @param from character string of the initial column name
+#' @param to  character string of the new column name
 #'
-#' @return a  tibble with new column names
+#' @export
+#' @return a tibble with new column names
 rename_columns <- function(obj, from, to) {
   names(obj)[match(from, names(obj))] <- to
   obj
@@ -168,17 +172,17 @@ read_metadata <- function(path) {
 
   # We want to preserve formatting in custom R code
   # but read_yaml looses it. So read in as text, if not empty
-  if(!is.na(data$config$custom_R_code)) {
+  if(!is.na(data$dataset$custom_R_code)) {
     # Read in again, extracting custom R code
 
     data2 <- readLines(path)
 
     code_start <- grep("  custom_R_code:", data2, fixed = TRUE)
-    code_end <- which(data2 == "traits:")-1
+    code_end <- grep("  collection_date:", data2, fixed=TRUE)-1
 
-    data$config$custom_R_code <-
+    data$dataset$custom_R_code <-
       data2[code_start:code_end] %>%
-      gsub("  custom_R_code:", "", ., fixed = TRUE) %>%
+      gsub("custom_R_code:", "", ., fixed = TRUE) %>%
       paste(collapse = "\n")
   }
 
@@ -204,40 +208,43 @@ read_metadata <- function(path) {
 write_metadata <- function(data, path, style_code=FALSE) {
 
   y <- data
-  y$config$custom_R_code <- NA
-
+  y$dataset$custom_R_code <- NA
+  
   txt <- yaml::as.yaml(y, column.major = FALSE, indent=2) %>%
     gsub(": ~",":", ., fixed=TRUE)
-
+  
   #reinsert custom R code
-  if(!is.na(data$config$custom_R_code)) {
-
-    code <- data$config$custom_R_code
-
+  if(!is.na(data$dataset$custom_R_code)) {
+    
+    code <- data$dataset$custom_R_code
+    
     if(style_code)
       code <- code %>% suppressWarnings(styler::style_text(transformers = .data$tidyverse_style(strict = TRUE)))
-
+    
     txt <- gsub("custom_R_code: .na", code %>% paste(collapse = "\n") %>%
                   paste0("custom_R_code:", .), txt, fixed = TRUE)
   }
-
+  
+  if(!stringr::str_sub(txt, nchar(txt)) == "\n")
+    txt <- c(txt, "\n")
+  
   file <- file(path, "w", encoding = "UTF-8")
   on.exit(close(file))
   cat(txt, file=file)
 }
 
+
+
 ##' Read yaml (from package yaml)
 ##' @importFrom yaml read_yaml
 ##' @name read_yaml
 ##' @rdname read_yaml
-##' @export
 NULL
 
 ##' write yaml (from package yaml)
 ##' @importFrom yaml write_yaml
 ##' @name write_yaml
 ##' @rdname write_yaml
-##' @export
 NULL
 
 #' Check missing values from excluded data

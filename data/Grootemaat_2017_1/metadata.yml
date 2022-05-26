@@ -11,25 +11,39 @@ source:
     number: '4'
     pages: '327'
     doi: 10.1071/bt16258
-people:
-- name: Saskia Grootemaat
-  institution: University of New South Wales
-  role: collector, contact
-- name: Ian Wright
-  institution: Macquarie University
-  role: lab_leader
-- name: Veronica Shaw
-  institution: Macquarie University
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Grootemaat
+    given_name: Saskia
+    ORCID: .na.character
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Wright
+    given_name: Ian
+    ORCID: 0000-0001-8338-9143
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  assistants: Veronica Shaw
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: December 2012
-  year_collected_end: 2015
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(specific_leaf_area = `Leaf area (cm2)`/`Leaf dry
+    mass (g)`) %>% group_by(Material,Taxon) %>% mutate_at(vars(`Leaf moisture (at
+    time of measuring) (%odw)`),~replace(.x,duplicated(.x),NA)) %>% ungroup() %>%
+    mutate(`FD (s)` = ifelse(Material == "BARK",NA,`FD (s)`)) %>% mutate(`TBT (s)`
+    = ifelse(Material == "BARK",NA,`TBT (s)`)) %>% mutate(`SD (s)` = ifelse(Material
+    == "BARK",NA,`SD (s)`)) %>% mutate(`TTI (s)` = ifelse(Material == "BARK",NA,`TTI
+    (s)`)) %>% mutate(measurement_remarks = ifelse(Material == "BARK","measurements made on bark", NA),measurement_remarks = ifelse(Material == "LEAVES","measurements made on leaves", measurement_remarks))
+  collection_date: 2012-12/2015
+  taxon_name: Taxon
+  site_name: Site
   description: This study measured the decomposition rate and flammability (ignitibility,
     sustainability and combustibility) of bark from 10 common forest tree species,
     and quantified correlations with potentially important traits to understand the
     interspecific differences in bark decomposability and flammability, and what chemical
     or physical traits drive variation in these properties.
-  collection_type: field, experiment
+  collection_type: field
   sample_age_class: adult
   sampling_strategy: Ten tree species with characteristic bark features were selected
     in the dry sclerophyll forests of Ku-ring-gai Chase National Park (33deg37'25'S,
@@ -67,52 +81,33 @@ sites:
     latitude (deg): -33.5072222
     longitude (deg): 151.3333
     description: dry sclerophyll forest
-    soils: infertile sandy soil at the interface between Hawkesbury and Narrabeen
-      Sandstones
-    soil_P (mg/kg): 30-80
-    MAT (C): 17
-    MAP (mm): 1332
+    geology (parent material): infertile sandy soil at the interface between Hawkesbury
+      and Narrabeen Sandstones
+    soil P, total (mg/kg): 30-80
+    temperature, MAT (C): 17
+    precipitation, MAP (mm): 1332
     notes: .na
   Bobbin Head:
     latitude (deg): -33.661582
     longitude (deg): 151.149208
     description: dry sclerophyll forest
-    soils: sandy, derived from Hawkesbury sandstone
-    soil_P (mg/kg): 30-80
-    MAT (C): 17
-    MAP (mm): 1332
+    geology (parent material): sandy, derived from Hawkesbury sandstone
+    soil P, total (mg/kg): 30-80
+    temperature, MAT (C): 17
+    precipitation, MAP (mm): 1332
     notes: .na
   West Head:
     latitude (deg): -33.578781
     longitude (deg): 151.304784
     description: dry sclerophyll forest
-    soil_P (mg/kg): 30-80
-    MAT (C): 17
-    MAP (mm): 1332
-    notes: Note, lat/lon values is just one of the sites sampled in the West Head area; the
-      actual sampling occurred at three sites at, -33.578781, 151.304784; -33.619800,
-      151.267429; and -33.651660;, 151.255547.
-    soils: sandy, derived from Hawkesbury sandstone
-contexts:
-  BARK:
-    type: field
-    description: measurements made on bark
-  LEAVES:
-    type: field
-    description: measurements made on leaves
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Taxon
-    context_name: Material
-    site_name: Site
-  custom_R_code: data %>% mutate(specific_leaf_area = `Leaf area (cm2)`/`Leaf dry
-    mass (g)`) %>% group_by(Material,Taxon) %>% mutate_at(vars(`Leaf moisture (at
-    time of measuring) (%odw)`),~replace(.x,duplicated(.x),NA)) %>% ungroup() %>%
-    mutate(`FD (s)` = ifelse(Material == "BARK",NA,`FD (s)`)) %>% mutate(`TBT (s)`
-    = ifelse(Material == "BARK",NA,`TBT (s)`)) %>% mutate(`SD (s)` = ifelse(Material
-    == "BARK",NA,`SD (s)`)) %>% mutate(`TTI (s)` = ifelse(Material == "BARK",NA,`TTI
-    (s)`))
+    soil P, total (mg/kg): 30-80
+    temperature, MAT (C): 17
+    precipitation, MAP (mm): 1332
+    notes: Note, lat/lon values is just one of the sites sampled in the West Head
+      area; the actual sampling occurred at three sites at, -33.578781, 151.304784;
+      -33.619800, 151.267429; and -33.651660;, 151.255547.
+    geology (parent material): sandy, derived from Hawkesbury sandstone
+contexts: .na
 traits:
 - var_in: Leaf Energy (MJ/kg)
   unit_in: MJ/kg
@@ -835,13 +830,14 @@ traits:
   trait_name: .na
   value_type: raw_value
   replicates: '1'
-  methods: leaf_water_content_per_dry_mass - not included because the water content of senesced leaves; Standard protocols were followed for measuring leaf length (mm), effective
-    leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
-    Subsamples for fuel moisture content (FMC) were held apart; leaves were measured
-    at their actual weight and remeasured after 24 h of drying at 105 deg C, when
-    equilibrium was reached (Matthews 2010). Fuel moisture content, as a percentage
-    of oven dried weight, was then defined as follows, (leaf mass - leaf dry mass)/(leaf
-    dry mass)*100
+  methods: leaf_water_content_per_dry_mass - not included because the water content
+    of senesced leaves; Standard protocols were followed for measuring leaf length
+    (mm), effective leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy
+    et al. 2013). Subsamples for fuel moisture content (FMC) were held apart; leaves
+    were measured at their actual weight and remeasured after 24 h of drying at 105
+    deg C, when equilibrium was reached (Matthews 2010). Fuel moisture content, as
+    a percentage of oven dried weight, was then defined as follows, (leaf mass - leaf
+    dry mass)/(leaf dry mass)*100
 - var_in: Leaf dry mass (g)
   unit_in: g
   trait_name: leaf_dry_mass
@@ -970,4 +966,3 @@ questions:
     traits measuring bark strength (MaxFlexLoad and MFLperTHICKN), bark flammability,
     energy content (leaf and bark) and mass loss (decomposition data) that are not
     yet traits in AusTraits
-

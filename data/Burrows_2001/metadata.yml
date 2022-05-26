@@ -11,16 +11,21 @@ source:
     pages: 411--430
     publisher: University of Chicago Press
     doi: 10.1086/319579
-people:
-- name: Geoff Burrows
-  institution: Charles Sturt University
-  role: collector, contact
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Burrows
+    given_name: Geoff
+    ORCID: .na.character
+    affiliation: Charles Sturt University, Australia
+    additional_role: contact
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 2001
-  year_collected_end: 2001
+  data_is_long_format: no
+  custom_R_code: data %>% na_if(".na") %>% group_by("Genus_species","SITE_text") %>%
+    mutate_at(vars(leaf_type,leaf_shape), replace_duplicates_with_NA) %>% ungroup()
+  collection_date: unknown/2001
+  taxon_name: Genus_species
+  site_name: SITE_text
   description: Anatomy of photosynthetic organs of 39 xeromorphic species from subhumid
     NSW.
   collection_type: field
@@ -36,7 +41,7 @@ sites:
   The Rock:
     latitude (deg): -35.2666667
     longitude (deg): 147.0666667
-    rainfall (mm): 585
+    precipitation, MAP (mm): 585
     description: The Rock Nature Reserve (lat. 357169S, long. 1477049E), South Western
       Slopes, New South Wales, is a small (341 ha) island of remnant vegetation surrounded
       by an extensively modified agricultural landscape. A north-south ridge, the
@@ -51,13 +56,6 @@ sites:
       in leaf during summer. Thus, only ca. 25% of the recorded species remain in
       leaf, or equivalent, for the whole year.
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Genus_species
-    site_name: SITE_text
-  custom_R_code: data %>% na_if(".na") %>% group_by("Genus_species","SITE_text") %>%
-    mutate_at(vars(leaf_type,leaf_shape), replace_duplicates_with_NA) %>% ungroup()
 traits:
 - var_in: Leaf_area_cm2
   unit_in: cm2
@@ -85,7 +83,7 @@ traits:
   unit_in: um
   trait_name: leaf_thickness
   value_type: site_mean
-  replicates: 3-6
+  replicates: 2-6
   methods: Three to six leaves or the equivalent were collected from at least two
     plants of most species. Material was fixed in 50% formalin
 - var_in: leaf_type
@@ -153,4 +151,3 @@ taxonomic_updates:
 exclude_observations: .na
 questions:
   additional_traits: detailed anatomy of photosynthetic organs.
-
