@@ -16,7 +16,19 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(oilcontentval = oilcontentval/100) %>% group_by(taxa) %>% mutate_at(vars(oilcontentval),replace_duplicates_with_NA) %>% ungroup() %>% mutate(measurement_remarks = ifelse(oilmaterialdesc == "Embryo","oil content determined on an Embryo", NA), measurement_remarks = ifelse(oilmaterialdesc == "Embryo+endosperm","oil content determined on an Embryo+endosperm", measurement_remarks), measurement_remarks = ifelse(oilmaterialdesc == "Endosperm","oil content determined on an Endosperm", measurement_remarks), measurement_remarks = ifelse(oilmaterialdesc == "Entire seed/nut","oil content determined on an Entire seed/nut", measurement_remarks), measurement_remarks = ifelse(oilmaterialdesc == "Kernel","oil content determined on a Kernel", measurement_remarks))
+  custom_R_code: '
+    data %>%
+      group_by(taxa, oilcontentval, oilmaterialdesc) %>%
+        mutate(ref = paste0(refshort, collapse = "; ")) %>%
+      ungroup() %>%
+        distinct(taxa, oilcontentval, oilmaterialdesc, .keep_all = TRUE) %>%
+      mutate(
+        oilcontentval = oilcontentval/100,
+        measurement_remarks = paste0("oil material, ", oilmaterialdesc,"; ", 
+            "moisture status, ", moisturestatus, "; ", "oil notes, ", oilnotes,
+            "; ", "reference, ",ref)
+      )
+  '
   collection_date: unknown/2019
   taxon_name: taxa
   description: See oil content data on species from Kew seed databases
@@ -32,10 +44,11 @@ traits:
 - var_in: oilcontentval
   unit_in: g/g
   trait_name: seed_oil_content
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
   replicates: unknown
+  measurement_remarks: measurement_remarks
   methods: Data sourced from various primary literature. For a species, the identical
     value often appears repeatedly under consecutive columns with different references
     - it seems sources have quoted one another and these aren't independent values

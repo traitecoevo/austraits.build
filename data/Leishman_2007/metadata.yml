@@ -23,7 +23,15 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate_at(vars(`gs (molm-2s-1)`),~na_if(.,0))
+  custom_R_code: '
+    data %>% 
+      mutate_at(vars(`gs (molm-2s-1)`),~na_if(.,0)) %>%
+      mutate(
+        entity_to_use = ifelse(is.na(Replicate),"population","individual"),
+        value_type_to_use = ifelse(is.na(Replicate),"mean","raw"),
+        replicates_to_use = ifelse(is.na(Replicate),"3","1")
+      )
+  '
   collection_date: unknown/2007
   taxon_name: Species
   site_name: site
@@ -31,6 +39,7 @@ dataset:
     invasive species
   collection_type: field
   sample_age_class: adult
+  entity_type: entity_to_use
   sampling_strategy: 'All study sites were located in urban bushland remnants on Hawkesbury
     Sandstone-derived soils in the Sydney region. Average annual rainfall is 1220
     mm. These soils are quartz-rich with well-drained, acidic sandy surface textures,
@@ -45,8 +54,8 @@ dataset:
     catchments and discharges it at outlets that generally drain into previously dry
     areas of natural bushland at the edge of urban development, or directly into creeks.
     Earlier work has shown that soils receiving stormwater run-offhave average total
-    P concentrations of approximately 600 mg kg-1'' compared with background soil
-    P concentrations of 40-100 mg kg-'' and are heavily invaded by exotic plants such
+    P concentrations of approximately 600 mg kg-1 compared with background soil
+    P concentrations of 40-100 mg kg-1 and are heavily invaded by exotic plants such
     as Ligustrum sinense, Cardiospermum grandiflorum, Lantana camara and Protoasparagus
     aethiopicus (Leishman, 1990; Leishman et al., 2004).'
   original_file: Hawkesbury sandstone data.csv provided directly by Michelle Leishman
@@ -113,34 +122,30 @@ traits:
 - var_in: amass (nmol g-1 s-1)
   unit_in: nmolCO2/g/s
   trait_name: photosynthetic_rate_per_dry_mass_saturated
-  entity_type: population
-  value_type: mean
+  value_type: value_type_to_use
   basis_of_value: measurement
-  replicates: 3
+  replicates: replicates_to_use
   methods: unknown
 - var_in: aarea (umolm-2s-1)
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_saturated
-  entity_type: population
-  value_type: mean
+  value_type: value_type_to_use
   basis_of_value: measurement
-  replicates: 3
+  replicates: replicates_to_use
   methods: unknown
 - var_in: gs (molm-2s-1)
   unit_in: molH2O/m2/s
   trait_name: stomatal_conductance_per_area_at_Asat
-  entity_type: population
-  value_type: mean
+  value_type: value_type_to_use
   basis_of_value: measurement
-  replicates: 3
+  replicates: replicates_to_use
   methods: unknown
 - var_in: Rd (umol m-2 s-1)
   unit_in: umolCO2/m2/s
   trait_name: leaf_dark_respiration_per_area
-  entity_type: population
-  value_type: mean
+  value_type: value_type_to_use
   basis_of_value: measurement
-  replicates: 3
+  replicates: replicates_to_use
   methods: unknown
 - var_in: Gmass
   unit_in: molH2O/g/s

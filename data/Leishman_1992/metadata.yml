@@ -24,10 +24,15 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site_name = "Louth") %>% mutate_at(vars(`height (cm)_filtered`,`leaf
-    area (mm2)`,`seed mass (mg)`,`diaspore weight (mg)`),~na_if(.,0)) %>% mutate(parasitic
-    = ifelse(`growth form`=="stem parasite","stem_parasitic",NA),parasitic = ifelse(`growth
-    form`=="root parasite","root_parasitic",parasitic))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site_name = "Louth",
+        parasitic = ifelse(`growth form`=="stem parasite","stem_parasitic",NA),
+        parasitic = ifelse(`growth form`=="root parasite","root_parasitic",parasitic)
+      ) %>%
+      mutate_at(vars(`height (cm)_filtered`,`leaf area (mm2)`,`seed mass (mg)`,`diaspore weight (mg)`),~na_if(.,0))
+  '
   collection_date: 1996/1996
   taxon_name: SPECIES
   site_name: site_name
@@ -101,6 +106,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
+  collection_type: literature
   methods: Data from published flora. Data on some attributes such as growth form,
     leaf texture and hairiness, flowering characteristics, presence of spines and
     seed dispersal mode could be collected from observations of each species in the
@@ -128,7 +134,7 @@ traits:
   replicates: 10
   methods: Data on some attributes such as growth form, leaf texture and hairiness,
     flowering characteristics, presence of spines and seed dispersal mode could be
-    col- lected from observations of each species in the field. Where field specimens
+    collected from observations of each species in the field. Where field specimens
     were inadequate, herbarium specimens were used. Leaf area and diaspore weight
     were measured using specimens collected from the field wherever possible, or alternatively
     from herbarium specimens and seed collections. Leaf area is a continuous variable,
@@ -141,6 +147,7 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  collection_type: literature
   methods: Data from published flora. Data on some attributes such as growth form,
     leaf texture and hairiness, flowering characteristics, presence of spines and
     seed dispersal mode could be collected from observations of each species in the
@@ -152,10 +159,10 @@ traits:
 - var_in: diaspore weight (mg)
   unit_in: mg
   trait_name: diaspore_dry_mass
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 10
   methods: Data on some attributes such as growth form, leaf texture and hairiness,
     flowering characteristics, presence of spines and seed dispersal mode could be
     collected from observations of each species in the field. Where field specimens

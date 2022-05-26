@@ -16,7 +16,13 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(protcontentval = protcontentval/100) %>% mutate(measurement_remarks = ifelse(oilmaterialdesc == "Entire seed/nut","oil content determined on an Entire seed/nut", NA),measurement_remarks = ifelse(oilmaterialdesc == "Kernel","oil content determined on a Kernel", measurement_remarks))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        protcontentval = protcontentval/100,
+        measurement_remarks = paste(oilmaterialdesc, refdesc, sep = "; ")
+      )
+  '
   collection_date: unknown/2019
   taxon_name: SID taxa
   description: seed protein contents for Australian species from the Kew Botanic Gardens
@@ -38,8 +44,8 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: various. Each entry is carefully annotated with methods and references
-    in data.csv file. Additional information is available at data.kew.org/sid/ if
+  measurement_remarks: measurement_remarks
+  methods: Each entry is annotated with methods and references in data.csv file. Part of this information is included in the measurement remarks. Additional information is available at data.kew.org/sid/ if
     you look up the individual species.
 substitutions: .na
 taxonomic_updates: .na

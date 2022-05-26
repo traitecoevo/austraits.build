@@ -16,18 +16,32 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(`flowering time` = convert_month_range_vec_to_binary(`flowering
-    time`), `fruiting` = convert_month_range_vec_to_binary(`fruiting`), leaf_type   =
-    ifelse(`leaf type` == "articles", "article", NA), `leaf type` = ifelse(`leaf type`
-    == "articles", NA, `leaf type`), leaf_lobed   = ifelse(`leaf type` == "l", 1,
-    NA), `leaf type` = ifelse(`leaf type` == "l", NA, `leaf type`)) %>% separate_range("leaf
-    length (mm)", "leaf_length_min", "leaf_length_max") %>% separate_range("leaf width
-    (mm)", "leaf_width_min", "leaf_width_max") %>% separate_range("seed length (mm)",
-    "seed_length_min", "seed_length_max") %>% separate_range("seed diameter (mm)",
-    "seed_width_min", "seed_width_max") %>% separate_range("seed depth (mm)", "seed_depth_min",
-    "seed_depth_max") %>% mutate(GF = ifelse(aquatic %in% c("yes","y"),"aquatic_herb",
-    GF)) %>% mutate(parasitic = ifelse(GF=="parasite","parasitic",NA)) %>% mutate(fruit_type = NA) %>% move_values_to_new_trait("dispersal
-    appendage", "fruit_type", c("drupe", "samara"), c("drupe", "samara"), c(NA,"wings"))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        `flowering time` = convert_month_range_vec_to_binary(`flowering time`), 
+        `fruiting` = convert_month_range_vec_to_binary(`fruiting`), 
+        leaf_type = ifelse(`leaf type` == "articles", "article", NA), 
+        `leaf type` = ifelse(`leaf type` == "articles", NA, `leaf type`), 
+        leaf_lobed = ifelse(`leaf type` == "l", 1, NA), 
+        `leaf type` = ifelse(`leaf type` == "l", NA, `leaf type`),
+        GF = ifelse(aquatic %in% c("yes","y"),"aquatic_herb", GF),
+        GF = ifelse(succulent %in% c("yes","y"),"succulent_short herb", GF),
+        parasitic = ifelse(GF=="parasite","parasitic",NA),
+        fruit_type = NA,
+      ) %>%
+      move_values_to_new_trait(
+        "dispersal appendage", "fruit_type", 
+        c("drupe", "samara"),
+        c("drupe", "samara"),
+        c(" ","wings")
+      ) %>%
+      separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>% 
+      separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
+      separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>% 
+      separate_range("seed diameter (mm)", "seed_width_min", "seed_width_max") %>% 
+      separate_range("seed depth (mm)", "seed_depth_min", "seed_depth_max")
+  '    
   collection_date: unknown/2014
   taxon_name: species_name
   description: 'Transposed from species descriptions in Flora of the Darwin Region
@@ -119,7 +133,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &leaf_length_method unknown
 - var_in: leaf_length_max
   unit_in: mm
   trait_name: leaf_length
@@ -127,7 +141,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *leaf_length_method
 - var_in: leaf_width_min
   unit_in: mm
   trait_name: leaf_width
@@ -135,7 +149,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &leaf_width_method unknown
 - var_in: leaf_width_max
   unit_in: mm
   trait_name: leaf_width
@@ -143,7 +157,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *leaf_width_method
 - var_in: seed shape
   unit_in: .na
   trait_name: seed_shape
@@ -159,7 +173,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &seed_length_method unknown
 - var_in: seed_length_max
   unit_in: mm
   trait_name: seed_length
@@ -167,7 +181,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *seed_length_method
 - var_in: seed_width_min
   unit_in: mm
   trait_name: seed_width
@@ -175,7 +189,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &seed_width_method unknown
 - var_in: seed_width_max
   unit_in: mm
   trait_name: seed_width
@@ -183,7 +197,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *seed_width_method
 - var_in: seed_depth_min
   unit_in: mm
   trait_name: seed_height
@@ -191,7 +205,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &seed_height_method unknown
 - var_in: seed_depth_max
   unit_in: mm
   trait_name: seed_height
@@ -199,21 +213,21 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *seed_height_method
 - var_in: flowering time
   unit_in: .na
   trait_name: flowering_time
-  entity_type: .na
-  value_type: .na
-  basis_of_value: .na
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: unknown
   methods: unknown
 - var_in: fruiting
   unit_in: .na
   trait_name: fruiting_time
-  entity_type: .na
-  value_type: .na
-  basis_of_value: .na
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: unknown
   methods: unknown
 - var_in: fruit_type
@@ -232,29 +246,13 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: aquatic
-  unit_in: .na
-  trait_name: .na
-  entity_type: .na
-  value_type: .na
-  basis_of_value: .na
-  replicates: .na
-  methods: .na
 - var_in: leaf_lobed
   unit_in: .na
   trait_name: leaf_margin
-  entity_type: .na
-  value_type: .na
-  basis_of_value: .na
-  replicates: unknown
-  methods: unknown
-- var_in: succulent
-  unit_in: .na
-  trait_name: plant_growth_form
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
-  replicates: .na
+  replicates: unknown
   methods: unknown
 substitutions:
 - trait_name: glaucous

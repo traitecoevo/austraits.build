@@ -17,11 +17,19 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(planttype = ifelse(planttype=="-",NA,planttype))
-    %>% mutate(maxdsm = ifelse(maxdsm=="SW",80,maxdsm)) %>% mutate(maxdsm = ifelse(maxdsm=="sw?",80,maxdsm))
-    %>% group_by(taxa) %>% mutate_at(vars("planttype","maxdsm","phopath"),replace_duplicates_with_NA)
-    %>% ungroup() %>% mutate(salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"),
-    planttype, NA))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        planttype = ifelse(planttype=="-",NA,planttype),
+        maxdsm = ifelse(maxdsm=="SW",80,maxdsm),
+        maxdsm = ifelse(maxdsm=="sw?",80,maxdsm),
+        salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"), planttype, NA)
+      ) %>%
+      group_by(taxa) %>%
+        mutate(references = paste0(refdesc, collapse = "; ")) %>%
+      ungroup %>%
+      distinct(taxa, references, planttype, maxdsm, salt_tolerance, phopath)
+  '
   collection_date: unknown/2019
   taxon_name: taxa
   description: Salt and water tolerance data on species from Kew seed databases
@@ -41,9 +49,8 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
-    the same value has been reported in multiple sources included and so identical
-    values for a species have been filtered out
+  measurement_remarks: references
+  methods: Kew Gardens collections; for all species the same value is often reported multiple times with different references. These are collapsed into a single entry with the relevant references listed in measurement_remarks.
 - var_in: salt_tolerance
   unit_in: .na
   trait_name: salt_tolerance
@@ -51,10 +58,10 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
+  measurement_remarks: references
+  methods: Kew Gardens collections;
     subset of 'planttype' values referring to salt tolerance strategies have been
-    duplicates here; the same value has been reported in multiple sources included
-    and so identical values for a species have been filtered out
+    duplicates here; for all species the same value is often reported multiple times with different references. These are collapsed into a single entry with the relevant references listed in measurement_remarks.
 - var_in: maxdsm
   unit_in: dS/m
   trait_name: soil_salinity_tolerance
@@ -62,9 +69,8 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
-    the same value has been reported in multiple sources included and so identical
-    values for a species have been filtered out
+  measurement_remarks: references
+  methods: Kew Gardens collections; for all species the same value is often reported multiple times with different references. These are collapsed into a single entry with the relevant references listed in measurement_remarks.
 - var_in: phopath
   unit_in: .na
   trait_name: photosynthetic_pathway
@@ -72,9 +78,8 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
-    the same value has been reported in multiple sources included and so identical
-    values for a species have been filtered out
+  measurement_remarks: references
+  methods: Kew Gardens collections; for all species the same value is often reported multiple times with different references. These are collapsed into a single entry with the relevant references listed in measurement_remarks.
 substitutions:
 - trait_name: soil_salinity_tolerance
   find: '?'

@@ -29,15 +29,26 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(leaf_area = `Tot Lf area(mm)`/`No. lvs`, leaf_dry_mass
-    = `Tot Lf wt(g)`/`No. lvs`, A_mass = `Mean photo`/(10*`SLA(area/wt)`)) %>% mutate(site_name
-    = "Tidbinbilla koala enclosure") %>% mutate(Date = ifelse(Time == "flowering","2000-11","2000-12"),Date
-    = ifelse(Time == "post-fruit","2001-01",Date))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        leaf_area = `Tot Lf area(mm)`/`No. lvs`, 
+        leaf_dry_mass = `Tot Lf wt(g)`/`No. lvs`, 
+        A_mass = `Mean photo`/(10*`SLA(area/wt)`),
+        site_name = "Tidbinbilla koala enclosure",
+        Date = ifelse(Time == "flowering","2000-11","2000-12"),
+        Date = ifelse(Time == "post-fruit","2001-01",Date)
+      ) %>%
+      group_by(`Plant ID`) %>%
+        mutate(observation = dplyr::row_number()) %>%
+      ungroup()
+  '
   collection_date: Date
   taxon_name: species_name
   site_name: site_name
   context_name: context
   observation_id: Plant ID
+  observation_number: observation
   description: An investigation of reproductive allocation (RA) and other morphological
     and physiological characters in Gynatrix pulchella, a dimorphic species that we
     found ranges from dioecious to subdioecious or gynodioecious, depending on season

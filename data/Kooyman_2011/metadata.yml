@@ -21,10 +21,49 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% group_by(`Species_reconciled with updates and additions`)
-    %>% mutate_at(vars(`seed length maximum (mm)`,`seed length minimum (mm)`,`seed
-    width maximum (mm)`,`seed width minimum (mm)`,`leaves lobed`), list(~ replace(.,duplicated(.),NA)))
-    %>% ungroup() %>% mutate(`Height (m)` = ifelse(is.na(plant_height_duplicate),`Height (m)`,NA), `wood density species` = ifelse(is.na(wood_density_duplicate),`wood density species`,NA), `seed width minimum (mm)` = ifelse(is.na(seed_width_min_duplicate),`seed width minimum (mm)`,NA), `seed width maximum (mm)` = ifelse(is.na(seed_width_max_duplicate),`seed width maximum (mm)`,NA), `seed length minimum (mm)` = ifelse(is.na(seed_length_min_duplicate),`seed length minimum (mm)`,NA), `seed length maximum (mm)` = ifelse(is.na(seed_length_max_duplicate),`seed length maximum (mm)`,NA), `leaf width minimum (mm)` = ifelse(is.na(leaf_width_min_duplicate),`leaf width minimum (mm)`,NA), `leaf width maximum (mm)` = ifelse(is.na(leaf_width_max_duplicate),`leaf width maximum (mm)`,NA), `leaf length minimum (mm)` = ifelse(is.na(leaf_length_min_duplicate),`leaf length minimum (mm)`,NA), `leaf length maximum (mm)` = ifelse(is.na(leaf_length_max_duplicate),`leaf length maximum (mm)`,NA))
+  custom_R_code: '
+    data %>% 
+      group_by(`Species_reconciled with updates and additions`) %>%
+        mutate_at(vars(`seed length maximum (mm)`,`seed length minimum (mm)`,
+        `seed width maximum (mm)`,`seed width minimum (mm)`,`leaves lobed`), 
+        list(~ replace(.,duplicated(.),NA))) %>%
+      ungroup() %>%
+      mutate(
+        `Height (m)` = ifelse(is.na(plant_height_duplicate),`Height (m)`,NA), 
+        `wood density species` = ifelse(is.na(wood_density_duplicate),`wood density species`,NA), 
+        `seed width minimum (mm)` = ifelse(is.na(seed_width_min_duplicate),`seed width minimum (mm)`,NA), 
+        `seed width maximum (mm)` = ifelse(is.na(seed_width_max_duplicate),`seed width maximum (mm)`,NA), 
+        `seed length minimum (mm)` = ifelse(is.na(seed_length_min_duplicate),`seed length minimum (mm)`,NA), 
+        `seed length maximum (mm)` = ifelse(is.na(seed_length_max_duplicate),`seed length maximum (mm)`,NA), 
+        `leaf width minimum (mm)` = ifelse(is.na(leaf_width_min_duplicate),`leaf width minimum (mm)`,NA), 
+        `leaf width maximum (mm)` = ifelse(is.na(leaf_width_max_duplicate),`leaf width maximum (mm)`,NA), 
+        `leaf length minimum (mm)` = ifelse(is.na(leaf_length_min_duplicate),`leaf length minimum (mm)`,NA), 
+        `leaf length maximum (mm)` = ifelse(is.na(leaf_length_max_duplicate),`leaf length maximum (mm)`,NA)
+      ) %>%
+      select(-`seed size categorical: <10mm`,-`seed size categorical: >10mm`, 
+      `wood density genus`, `wood density family`, -seed_width_min_duplicate, - seed_width_max_duplicate,
+      -seed_length_min_duplicate, -seed_length_max_duplicate, -leaf_width_min_duplicate, 
+      -leaf_width_max_duplicate, -leaf_length_min_duplicate, -leaf_length_max_duplicate,
+      -plant_height_duplicate, -wood_density_duplicate) %>%
+      group_by(`Species_reconciled with updates and additions`) %>%
+        summarise(
+          `growth form` = paste0(`growth form`, collapse = " "),
+          `leaf type` = paste0(`leaf type`, collapse = " "),
+          `leaves lobed` = paste0(`leaves lobed`, collapse = " "),
+          `leaf longevity` = paste0(`leaf longevity`, collapse = " "),
+          `wood density species` = mean(`wood density species`),
+          `Height (m)` = max(`Height (m)`),
+          `leaf length minimum (mm)` = min(`leaf length minimum (mm)`),
+          `leaf length maximum (mm)` = max(`leaf length maximum (mm)`),
+          `leaf width minimum (mm)` = min(`leaf width minimum (mm)`),
+          `leaf width maximum (mm)` = max(`leaf width maximum (mm)`),
+          `seed length minimum (mm)` = min(`seed length minimum (mm)`),
+          `seed length maximum (mm)` = max(`seed length maximum (mm)`),
+          `seed width minimum (mm)` = min(`seed width minimum (mm)`),
+          `seed width maximum (mm)` = max(`seed width maximum (mm)`),
+          `seed breadth (mm)` = mean(`seed breadth (mm)`)
+          )
+  '
   collection_date: 2010/2010
   taxon_name: Species_reconciled with updates and additions
   description: Rainforest species traits
@@ -88,22 +127,6 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: from floras
-- var_in: 'seed size categorical: <10mm'
-  unit_in: .na
-  trait_name: .na
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: from floras
-- var_in: 'seed size categorical: >10mm'
-  unit_in: .na
-  trait_name: .na
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: from floras
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
@@ -132,8 +155,8 @@ traits:
   unit_in: kg/m3
   trait_name: wood_density
   entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: Wood density (WD) estimates for adults were extracted from published sources,
     and where necessary converted from dry weight (kg m-3) to basic density (Chave
@@ -143,36 +166,6 @@ traits:
     Where species-level data were missing for wood density we used genera and occasionally
     family level values (for some Qld species), so results for this trait should be
     viewed in that light. (AusTraits data processor filtered duplicate data from Ilic.)
-- var_in: wood density genus
-  unit_in: kg/m3
-  trait_name: .na
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: Wood density (WD) estimates for adults were extracted from published sources,
-    and where necessary converted from dry weight (kg m-3) to basic density (Chave
-    et al., 2009). In general Van Gelder et al., (2006) found that adult and juvenile
-    wood density were well correlated across species, r = 0.91, P<0.001, giving confidence
-    that trends are consistent across the range of variation in the size classes sampled.
-    Where species-level data were missing for wood density we used genera and occasionally
-    family level values (for some Qld species), so results for this trait should be
-    viewed in that light.
-- var_in: wood density family
-  unit_in: kg/m3
-  trait_name: .na
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: Wood density (WD) estimates for adults were extracted from published sources,
-    and where necessary converted from dry weight (kg m-3) to basic density (Chave
-    et al., 2009). In general Van Gelder et al., (2006) found that adult and juvenile
-    wood density were well correlated across species, r = 0.91, P<0.001, giving confidence
-    that trends are consistent across the range of variation in the size classes sampled.
-    Where species-level data were missing for wood density we used genera and occasionally
-    family level values (for some Qld species), so results for this trait should be
-    viewed in that light.
 - var_in: Height (m)
   unit_in: m
   trait_name: plant_height
@@ -194,7 +187,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: Species-level data for leaf size, wood traits (including density) and seed
+  methods: &leaf_length_method Species-level data for leaf size, wood traits (including density) and seed
     and fruit size were taken from published floras and other sources for all species
     in the sample (Cooper & Cooper, 2004; Hyland et al., 2003; Cornelissen et al.,
     2003). Minimum and maximum leaf sizes reported in the floras generally reflected
@@ -213,18 +206,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: Species-level data for leaf size, wood traits (including density) and seed
-    and fruit size were taken from published floras and other sources for all species
-    in the sample (Cooper & Cooper, 2004; Hyland et al., 2003; Cornelissen et al.,
-    2003). Minimum and maximum leaf sizes reported in the floras generally reflected
-    the range of variation in leaf size on mature plants, and juvenile leaf sizes
-    were excluded from consideration. Leaf size (as surface area) reported here is
-    for whole simple leaves (and phyllodes) and for lateral leaflets of compound leaves.
-    Leaf size (LA) was estimated using maximum leaf length and width, where Area =
-    length*Width*0.70 (cm2) which has been shown to correlate well with photographic
-    area estimates of rainforest tree leaves (e.g. Kraft et al., 2008). (AusTraits
-    data processor filtered out trait values that are duplicates of those in AusTraits
-    from herbarium collections and floras.)
+  methods: *leaf_length_method
 - var_in: leaf width minimum (mm)
   unit_in: mm
   trait_name: leaf_width
@@ -232,7 +214,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: Species-level data for leaf size, wood traits (including density) and seed
+  methods: &leaf_width_method Species-level data for leaf size, wood traits (including density) and seed
     and fruit size were taken from published floras and other sources for all species
     in the sample (Cooper & Cooper, 2004; Hyland et al., 2003; Cornelissen et al.,
     2003). Minimum and maximum leaf sizes reported in the floras generally reflected
@@ -251,18 +233,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: Species-level data for leaf size, wood traits (including density) and seed
-    and fruit size were taken from published floras and other sources for all species
-    in the sample (Cooper & Cooper, 2004; Hyland et al., 2003; Cornelissen et al.,
-    2003). Minimum and maximum leaf sizes reported in the floras generally reflected
-    the range of variation in leaf size on mature plants, and juvenile leaf sizes
-    were excluded from consideration. Leaf size (as surface area) reported here is
-    for whole simple leaves (and phyllodes) and for lateral leaflets of compound leaves.
-    Leaf size (LA) was estimated using maximum leaf length and width, where Area =
-    length*Width*0.70 (cm2) which has been shown to correlate well with photographic
-    area estimates of rainforest tree leaves (e.g. Kraft et al., 2008). (AusTraits
-    data processor filtered out trait values that are duplicates of those in AusTraits
-    from herbarium collections and floras.)
+  methods: *leaf_width_method
 - var_in: seed length minimum (mm)
   unit_in: mm
   trait_name: seed_length
@@ -270,7 +241,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: from floras; (AusTraits data processor filtered out trait values that are
+  methods: &seed_length_method from floras; (AusTraits data processor filtered out trait values that are
     duplicates of those in AusTraits from herbarium collections and floras.)
 - var_in: seed length maximum (mm)
   unit_in: mm
@@ -279,8 +250,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: from floras; (AusTraits data processor filtered out trait values that are
-    duplicates of those in AusTraits from herbarium collections and floras.)
+  methods: *seed_length_method
 - var_in: seed width minimum (mm)
   unit_in: mm
   trait_name: seed_width
@@ -288,7 +258,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: from floras; (AusTraits data processor filtered out trait values that are
+  methods: &seed_width_method from floras; (AusTraits data processor filtered out trait values that are
     duplicates of those in AusTraits from herbarium collections and floras.)
 - var_in: seed width maximum (mm)
   unit_in: mm
@@ -297,14 +267,13 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: from floras; (AusTraits data processor filtered out trait values that are
-    duplicates of those in AusTraits from herbarium collections and floras.)
+  methods: *seed_width_method
 - var_in: seed breadth (mm)
   unit_in: mm
   trait_name: seed_height
   entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: from floras
 substitutions:

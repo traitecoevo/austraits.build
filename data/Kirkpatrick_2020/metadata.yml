@@ -17,7 +17,22 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(dispersal_syndrome = if_else(Wind == "y", if_else(`Bird/mammal` == "y","anemochory zoochory","anemochory"), ifelse(`Bird/mammal` == "y","zoochory", "neither"))) %>% mutate(dispersers = if_else(Wind == "y", if_else(`Bird/mammal` == "y","wind birds mammals","wind"), if_else(`Bird/mammal` == "y","birds mammals","neither")))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        Wind = gsub("y", "xxx", Wind),
+        `Bird/mammal` = gsub("y", "birds mammals", `Bird/mammal`),
+        Wind = gsub("n", NA, Wind),
+        `Bird/mammal` = gsub("n", NA, `Bird/mammal`),
+        Wind = gsub("xxx", "wind", Wind),
+        dispersers = coalesce(
+          as.character(Wind),
+          as.character(`Bird/mammal`)),
+        dispersal_syndrome = NA) %>% 
+        move_values_to_new_trait("dispersers", "dispersal_syndrome", 
+                              c("wind", "birds mammals"), c("anemochory", "zoochory"),
+                              c("wind", "birds mammals"))
+  '
   collection_date: 2020/2020
   taxon_name: species_name
   description: Jamie Kirkpatrick's knowledge of fire response traits for woody Tasmanian
