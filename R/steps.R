@@ -705,13 +705,18 @@ parse_data <- function(data, dataset_id, metadata) {
 
   if(!data_is_long_format) {
     # For wide datasets rows are assumed to be natural grouping unless there is a specified observation_id column
+
       if(!is.null(df[["observation_id"]])) {
             df[["observation_id_tmp"]] <- df[["observation_id"]]
             df[["observation_id"]] <- NULL
 
         df <- df %>%
+                  dplyr::mutate(observation_id_tmp = ifelse(is.na(observation_id_tmp),
+                                paste("temp", row_number(), sep = "_"),observation_id_tmp),
+                                observation_id_tmp = as.character(observation_id_tmp)
+                                ) %>%
                   dplyr::left_join(by = "observation_id_tmp",
-                            tibble::tibble(observation_id_tmp = df[["observation_id_tmp"]] %>% unique() %>% sort(),
+                            tibble::tibble(observation_id_tmp = as.character(df[["observation_id_tmp"]]) %>% unique() %>% sort(),
                                   observation_id = make_id(length(.data$observation_id_tmp), dataset_id))
                             ) %>%
                   dplyr::select(-observation_id_tmp)
@@ -742,6 +747,12 @@ parse_data <- function(data, dataset_id, metadata) {
                         ) %>%
               dplyr::select(-.data$observation_id_tmp)
   }
+
+    df <- df %>%
+            mutate(
+              observation_number = as.character(observation_number),
+              method_number = as.character(method_number)
+            )
 
   # Step 2. Add trait information, with correct names
   cfgChar <-
@@ -784,7 +795,7 @@ parse_data <- function(data, dataset_id, metadata) {
           if(!is.null(data[[value]]) && !(v %in% c("entity_type", "basis_of_value")) ) {
             out[[i]][[v]] <- data[[value]] %>% as.character()
           } else {
-            out[[i]][[v]] <- value
+            out[[i]][[v]] <- value %>% as.character()
           }
         }
       }

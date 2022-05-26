@@ -27,10 +27,18 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate( n_fixer = grepl("Nitrogen fixer", strategy), roots
-    = gsub(", Nitrogen fixer", "", strategy) ) %>% mutate_at(c("Mo_mature"), ~na_if(.,0))
-    %>% group_by(species) %>% mutate_at(vars("growthform","n_fixer","roots"),replace_duplicates_with_NA)
-    %>% ungroup() %>% mutate(collection.date = collection.date %>% dmy())
+  custom_R_code: '
+    data %>% 
+      mutate(
+        n_fixer = grepl("Nitrogen fixer", strategy), 
+        roots = gsub(", Nitrogen fixer", "", strategy),
+        collection.date = collection.date %>% dmy()
+      ) %>% 
+      mutate_at(vars(`Mo_mature`), ~na_if(.,0)) %>%
+      group_by(species) %>%
+        mutate_at(vars(`growthform`,`n_fixer`,`roots`), replace_duplicates_with_NA) %>%
+      ungroup()
+  '
   collection_date: collection.date
   taxon_name: species
   site_name: plot.id
