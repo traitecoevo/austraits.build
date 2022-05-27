@@ -485,7 +485,7 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
   }
   
   # Check if find record already exists for that trait
-  data <-  list_to_df(metadata[[set_name]])  
+  data <- list_to_df(metadata[[set_name]])  
   if(!is.na(data) && nrow(data) > 0 && length(which(find %in% data$find)) > 0) {
     cat(sprintf("\tSubstitution already exists for %s\n", crayon::red(find)))
     return(invisible(TRUE))

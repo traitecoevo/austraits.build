@@ -124,8 +124,8 @@ load_study <- function(filename_data_raw,
     add_all_columns(definitions$columns_sites) %>%
     dplyr::select(-.data$error) %>%
     # reorder so type, description come first, if present
-    dplyr::mutate(i = case_when(site_property == "description" ~ 1, site_property == "latitude (deg)" ~ 2,
-                                site_property == "longitude (deg)" ~ 3, TRUE ~ 4)) %>%
+    dplyr::mutate(i = case_when(.data$site_property == "description" ~ 1, .data$site_property == "latitude (deg)" ~ 2,
+                                .data$site_property == "longitude (deg)" ~ 3, TRUE ~ 4)) %>%
     dplyr::arrange(.data$site_name, .data$i, .data$site_property) %>%
     dplyr::select(-.data$i)
 
@@ -224,7 +224,7 @@ load_study <- function(filename_data_raw,
   }
   
   # Remove any values included to map into traits table
-  sites <- sites %>% dplyr::filter(!(site_property %in% vars))
+  sites <- sites %>% dplyr::filter(!(.data$site_property %in% vars))
 
   # Retrieve taxonomic details for known species
   taxonomic_updates <-

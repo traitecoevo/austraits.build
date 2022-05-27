@@ -1,5 +1,4 @@
 library(testthat)
-library(bibtex)
 
 test_that("metadata_create_template is working",{
   expect_invisible(metadata_create_template(dataset_id = "Test_2022",
@@ -106,7 +105,6 @@ test_that("metadata_exclude_observations is working",{
 
 test_that("metadata_update_taxonomic_change is working",{
   expect_error(metadata_update_taxonomic_change("Test_2022", "grass", "bark", "soil"))
-  expect_output(suppressWarnings(metadata_add_taxonomic_change("Test_2022", "flower", "tree", "leaves")))
   expect_invisible(suppressMessages(metadata_update_taxonomic_change("Test_2022", "flower", "bark", "soil")))
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$taxonomic_updates[[1]]$find, "flower")
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$taxonomic_updates[[1]]$replace, "bark")
