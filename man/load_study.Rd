@@ -4,7 +4,7 @@
 \alias{load_study}
 \title{Load Study}
 \usage{
-load_study(filename_data_raw, config_for_dataset)
+load_study(filename_data_raw, config_for_dataset, filter_missing_values = TRUE)
 }
 \arguments{
 \item{filename_data_raw}{raw data.csv file for any given study}

@@ -89,8 +89,9 @@ subset_config <- function(
 #' load_study("data/Falster_2003/data.csv", subset_config("data/Falster_2003/metadata.yml",
 #' read_yaml("config/definitions.yml"), make_unit_conversion_functions("config/unit_conversions.csv"))
 #' }
-load_study <- function(filename_data_raw,
-                       config_for_dataset) {
+load_study <- function(filename_data_raw, 
+                       config_for_dataset, 
+                       filter_missing_values = TRUE){
 
   dataset_id <- config_for_dataset$dataset_id
   metadata <- config_for_dataset$metadata
@@ -238,8 +239,13 @@ load_study <- function(filename_data_raw,
        sites      = sites,
        contexts   = contexts,
        methods    = methods,
-       excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% dplyr::filter(error != "Missing value") %>%
-         dplyr::select(.data$error, everything()),
+       excluded_data = 
+         if(filter_missing_values == TRUE){
+           excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% dplyr::filter(error != "Missing value") %>%
+             dplyr::select(.data$error, everything())
+           } else {
+             excluded_data = traits %>% filter(!is.na(.data$error)) %>% dplyr::select(.data$error, everything())
+             },
        taxonomic_updates = taxonomic_updates,
        taxa       = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
        definitions = definitions,
