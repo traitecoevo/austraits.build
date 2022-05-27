@@ -76,6 +76,8 @@ subset_config <- function(
 #'
 #' @param filename_data_raw raw data.csv file for any given study
 #' @param config_for_dataset config settings generated from `subset_config()`
+#' @param filter_missing_values default filters missing values from the excluded data table. 
+#' Change to false to see the rows with missing values.
 #'
 #' @return list, AusTraits database object
 #' @export
