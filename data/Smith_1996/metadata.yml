@@ -9,18 +9,42 @@ source:
     type: PhD
     institution: University of Otago, Dunedin, New Zealand
     archived: http://web.nateko.lu.se/personal/benjamin.smith/thesis/thesis.html
-people:
-- name: Benjamin Smith
-  institution: Hawkesbury Institute for the Environment, Western Sydney University
-  role: collector, contact
-- name: J. Bastow Wilson
-  institution: Botany Department, University of Otago, Dunedin, NZ
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Smith
+    given_name: Benjamin
+    ORCID: 0000-0002-6987-5337
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  - last_name: Wilson
+    given_name: J. Bastow
+    ORCID: .na.character
+    affiliation: Botany Department, University of Otago, Dunedin, New Zealand
+    notes: deceased
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: Sep-Oct 1993 for mainland sites, summer 1992-93 for Tasmanian
-    sites
-  year_collected_end: Sep-Oct 1993 for mainland sites, summer 1992-93 for Tasmanian
-    sites
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        sample_age_class = ifelse(contextual == "juvenile","juvenile", NA), 
+        sample_age_class = ifelse(contextual == "seedling","seedling", sample_age_class), 
+        sample_age_class = ifelse(contextual == "canopy","adult", sample_age_class),
+        sample_age_class = ifelse(contextual == "subcanopy sapling","sapling", sample_age_class)
+      ) %>% 
+      mutate(
+        canopy_position = ifelse(contextual == "canopy", "canopy", NA), 
+        canopy_position = ifelse(contextual == "subcanopy sapling", "subcanopy", canopy_position)
+      ) %>%
+      mutate(
+        collection_date = ifelse(site2 %in% c("Cascades","Lumeah"),"1993-09/1993-10","1992-12/1993-02")
+    )
+  '
+  collection_date: collection_date
+  taxon_name: species
+  site_name: site2
+  context_name: canopy_position
   description: collection of trait data from Nothofagus forests across Australia,
     New Zealand and South America
   collection_type: field
@@ -106,70 +130,55 @@ dataset:
   notes: none
 sites:
   Anne:
-    Site code: SWT1
-    State, Locality, LGA: Tasmania, Mt Anne, Derwent Valley LGA
+    site code: SWT1
+    locality: Tasmania, Mt Anne, Derwent Valley LGA
     latitude (deg): -42.9166667
     longitude (deg): 146.4333333
-    altitude (m): 600.0
+    elevation (m): 600.0
     slope angle (degrees): 19.0
     slope aspect (degrees): 344.0
-    alternate site code: T2
+    site code, alternate: T2
   Balfour:
-    Site code: NWT1
-    State, Locality, LGA: Tasmania, Balfour Forest Reserve, Circular Head LGA
+    site code: NWT1
+    locality: Tasmania, Balfour Forest Reserve, Circular Head LGA
     latitude (deg): -41.15
     longitude (deg): 144.9833333
-    altitude (m): 190.0
+    elevation (m): 190.0
     slope angle (degrees): 7.0
     slope aspect (degrees): 183.0
-    alternate site code: T1
+    site code, alternate: T1
   Cascades:
-    Site code: NEG1
-    State, Locality, LGA: NSW, Point Lookout precinct, Armidale Regional Council LGA
+    site code: NEG1
+    locality: NSW, Point Lookout precinct, Armidale Regional Council LGA
     latitude (deg): -30.5
     longitude (deg): 152.4166667
-    altitude (m): 1300.0
+    elevation (m): 1300.0
     slope angle (degrees): 11.0
     slope aspect (degrees): 158.0
-    alternate site code: A2
+    site code, alternate: A2
   Lumeah:
-    Site code: BAT1
-    State, Locality, LGA: NSW, Lumeah Forest Road, Mid-Coast Council LGA
+    site code: BAT1
+    locality: NSW, Lumeah Forest Road, Mid-Coast Council LGA
     latitude (deg): -32.1166667
     longitude (deg): 151.4166667
-    altitude (m): 930.0
+    elevation (m): 930.0
     slope angle (degrees): 12.0
     slope aspect (degrees): 251.0
-    alternate site code: A1
+    site code, alternate: A1
   Mathinna:
-    Site code: NET1
-    State, Locality, LGA: Tasmania, Mathinna Plains, Dorset LGA
+    site code: NET1
+    locality: Tasmania, Mathinna Plains, Dorset LGA
     latitude (deg): -41.3333333
     longitude (deg): 147.75
-    altitude (m): 800.0
+    elevation (m): 800.0
     slope angle (degrees): 6.0
     slope aspect (degrees): 294.0
-    alternate site code: T3
+    site code, alternate: T3
 contexts:
   canopy:
-    description: Measurements made on canopy leaves
-    type: field
-  subcanopy sapling:
-    description: Measurements made on subcanopy sapling leaves
-    type: field
-  juvenile:
-    description: Measurements made on juvenile leaves
-    type: field
-  seedling:
-    description: Measurements made on seedling leaves
-    type: field
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    site_name: site2
-    context_name: contextual
-  custom_R_code: .na
+    canopy position: canopy
+  subcanopy:
+    canopy position: subcanopy
 traits:
 - var_in: LENGTH
   unit_in: mm
@@ -350,7 +359,7 @@ traits:
   unit_in: cm2/g
   trait_name: specific_leaf_area
   value_type: site_mean
-  replicates: various
+  replicates: 1
   methods: Drying was achieved in a drying oven at c. 45 deg C (Tasmania) or in a
     fan-forced oven specialised for the drying of herbarium specimens (Australia).
     Area was measured using a scanning leaf area meter (LiCor Model 3100) or, for
@@ -443,4 +452,3 @@ taxonomic_updates:
   reason: Align to genus (E. Wenk, 2020-05-24)
 exclude_observations: .na
 questions: .na
-

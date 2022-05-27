@@ -23,16 +23,26 @@ source:
     number: '5'
     pages: e0176959
     doi: 10.1371/journal.pone.0176959
-people:
-- name: Freya Thomas
-  institution: University of Melbourne
-  role: collector, contact
-- name: Peter Vesk
-  institution: University of Melbourne
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Thomas
+    given_name: Freya
+    ORCID: 0000-0001-9926-6295
+    affiliation: University of Melbourne, Australia
+    additional_role: contact
+  - last_name: Vesk
+    given_name: Peter
+    ORCID: 0000-0003-2008-7062
+    affiliation: University of Melbourne, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: April 2013
-  year_collected_end: October 2013
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(site = paste(site,"_",Yrs,sep="")) %>% mutate(context
+    = paste0(Yrs," years since last fire"))
+  collection_date: 2013-04/2013-10
+  taxon_name: species_binomial
+  site_name: site
+  context_name: context
   description: Freya's thesis data; study examines the height growth trajectories
     in 18 woody plant species in a light-saturated, fire-prone, semi-arid environment
     as well as the influence of functional traits on those trajectories.
@@ -72,71 +82,58 @@ sites:
     latitude (deg): -34.7282361
     longitude (deg): 141.5833444
     description: Triodia Mallee and shrubby understorey
-    elevation: 72.0
-    MAP (mm): 290.0
-    mean max temperature (C): 23.8
-    primary productivity (tCha-1 yr-1): 0.9
-    years since fire: 15.0
+    elevation (m): 72.0
+    precipitation, MAP (mm): 290.0
+    temperature, mean yearly max (C): 23.8
+    primary productivity (tons C/ha/year): 0.9
+    fire history (years since fire): 15.0
   MurraySunset_28:
     latitude (deg): -34.6561972
     longitude (deg): 141.7398306
     description: Triodia Mallee and shrubby understorey
-    elevation: 60.0
-    MAP (mm): 290.0
-    mean max temperature (C): 23.8
-    primary productivity (tCha-1 yr-1): 0.9
-    years since fire: 26.0
+    elevation (m): 60.0
+    precipitation, MAP (mm): 290.0
+    temperature, mean yearly max (C): 23.8
+    primary productivity (tons C/ha/year): 0.9
+    fire history (years since fire): 26.0
   MurraySunset_36:
     latitude (deg): -34.5873639
     longitude (deg): 141.7542389
     description: Triodia Mallee and shrubby understorey
-    elevation: 55.0
-    MAP (mm): 290.0
-    mean max temperature (C): 23.8
-    primary productivity (tCha-1 yr-1): 0.9
-    years since fire: 36.0
+    elevation (m): 55.0
+    precipitation, MAP (mm): 290.0
+    temperature, mean yearly max (C): 23.8
+    primary productivity (tons C/ha/year): 0.9
+    fire history (years since fire): 36.0
   MurraySunset_41:
     latitude (deg): -34.7112556
     longitude (deg): 141.488325
     description: Triodia Mallee and shrubby understorey
-    elevation: 84.0
-    MAP (mm): 290.0
-    mean max temperature (C): 23.8
-    primary productivity (tCha-1 yr-1): 0.9
-    years since fire: 41.0
+    elevation (m): 84.0
+    precipitation, MAP (mm): 290.0
+    temperature, mean yearly max (C): 23.8
+    primary productivity (tons C/ha/year): 0.9
+    fire history (years since fire): 41.0
   MurraySunset_86:
     latitude (deg): -34.7086611
     longitude (deg): 141.480425
     description: Triodia Mallee and shrubby understorey
-    elevation: 88.0
-    MAP (mm): 290.0
-    mean max temperature (C): 23.8
-    primary productivity (tCha-1 yr-1): 0.9
-    years since fire: 86.0
+    elevation (m): 88.0
+    precipitation, MAP (mm): 290.0
+    temperature, mean yearly max (C): 23.8
+    primary productivity (tons C/ha/year): 0.9
+    fire history (years since fire): 86.0
 contexts:
   15 years since last fire:
-    type: field
-    description: site last burnt 15 years ago
+    fire history: site last burnt 15 years ago
   28 years since last fire:
-    type: field
-    description: site last burnt 28 years ago
+    fire history: site last burnt 28 years ago
   36 years since last fire:
-    type: field
-    description: site last burnt 36 years ago
+    fire history: site last burnt 36 years ago
   41 years since last fire:
-    type: field
-    description: site last burnt 41 years ago
+    fire history: site last burnt 41 years ago
   86 years since last fire:
-    type: field
-    description: site last burnt 86 years ago
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_binomial
-    site_name: site
-    context_name: context
-  custom_R_code: data %>% mutate(site = paste(site,"_",Yrs,sep="")) %>% mutate(context
-    = paste0(Yrs," years since last fire"))
+    fire history: site last burnt 86 years ago
 traits:
 - var_in: SLA
   unit_in: mm2/mg
@@ -164,7 +161,7 @@ traits:
     from Cornelissen et al. (2003).
 - var_in: SD_MASS
   unit_in: mg
-  trait_name: seed_mass
+  trait_name: seed_dry_mass
   value_type: site_mean
   replicates: 5
   methods: Guidance on sample sizes for measuring plant traits were followed from
@@ -196,7 +193,7 @@ traits:
   unit_in: cm
   trait_name: plant_height
   value_type: site_max
-  replicates: various
+  replicates: count_plants
   methods: We measured heights of at least five (and up to 10) individuals per species
     in each time-since-fire area. Many species in this region resprout after fire,
     but for species with postfire seed regeneration, separate measurements were made
@@ -214,7 +211,7 @@ traits:
   unit_in: mm
   trait_name: basal_diameter
   value_type: site_max
-  replicates: various
+  replicates: count_plants
   methods: Canopy length, canopy width and basal diameter of the biggest stem were
     also measured for each individual of each species; we focussed our analysis on
     height-growth to complement the growing literature of height-growth, mainly from
@@ -223,7 +220,7 @@ traits:
   unit_in: mm
   trait_name: .na
   value_type: site_max
-  replicates: various
+  replicates: count_plants
   methods: Canopy length, canopy width and basal diameter of the biggest stem were
     also measured for each individual of each species; we focussed our analysis on
     height-growth to complement the growing literature of height-growth, mainly from
@@ -232,7 +229,7 @@ traits:
   unit_in: mm
   trait_name: plant_width
   value_type: site_max
-  replicates: various
+  replicates: count_plants
   methods: Canopy length, canopy width and basal diameter of the biggest stem were
     also measured for each individual of each species; we focussed our analysis on
     height-growth to complement the growing literature of height-growth, mainly from
@@ -247,4 +244,3 @@ taxonomic_updates:
   reason: Automatic alignment with name in APC list (accepted) (2020-06-25)
 exclude_observations: .na
 questions: .na
-

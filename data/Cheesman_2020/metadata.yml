@@ -12,21 +12,32 @@ source:
     volume: 107
     pages: 1165--1176
     doi: 10.1002/ajb2.1523
-people:
-- name: Alex Cheesman
-  institution: James Cook University
-  role: collector, contact
-- name: Lucas Cernusak
-  institution: James Cook University
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Cheesman
+    given_name: Alexander W.
+    ORCID: 0000-0003-3931-5766
+    affiliation: James Cook University, Australia
+    additional_role: contact
+  - last_name: Cernusak
+    given_name: Lucas
+    ORCID: 0000-0002-7575-5526
+    affiliation: College of Science and Engineering, James Cook University, Cairns,
+      QLD, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2014
-  year_collected_end: 2017
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(collection_type = ifelse(Treatment == "Drought","field_experiment","field"), collection_type = ifelse(is.na(collection_type),"field",collection_type)) %>% group_by(Species) %>% mutate_at(vars("Form"),replace_duplicates_with_NA) %>% ungroup() 
+  collection_date: Data_Set
+  taxon_name: Species
+  site_name: site
+  context_name: context
+  observation_id: Branch_ID
   description: Study to determine how isotopic, micro- and macro-morphological traits,
     in combination, reflect canopy position of leaves within a modern closed canopy
     forest, with the goal of understanding how these data could be applied to the
     fossil record.
-  collection_type: field
+  collection_type: field, field_experiment
   sample_age_class: adult
   sampling_strategy: All leaf samples were obtained from the Daintree Rainforest Observatory
     (DRO), located in Cape Tribulation (-16.117 N, 145.45 E), 140 kilometres north
@@ -90,69 +101,32 @@ sites:
       with a closed canopy; complex mesophyll vine forest
 contexts:
   measurements made at Reforestation site:
-    branch location: Reforestation
-    Treatment: .na.character
-    description: measurements made at different canopy locations in control and drought
-      plots
-    type: field
+    light environment: reforestation
+    water treatment: .na.character
   measurements made from on  CANOPY CROWN branches before drought infrastructure installed:
-    branch location: canopy crown
-    Treatment: .na.character
-    description: measurements made at different canopy locations in control and drought
-      plots
-    type: field
+    light environment: canopy crown
+    water treatment: .na.character
   measurements made in NOTABLE notable gap in CONTROL rainfall plot:
-    branch location: notable gap
-    Treatment: Control
-    description: measurements made at different canopy locations in control and drought
-      plots
-    type: field
+    light environment: notable gap
+    water treatment: control
   measurements made on CANOPY CROWN branches in CONTROL rainfall plot:
-    branch location: canopy crown
-    Treatment: Control
-    description: measurements made at different canopy locations in control and drought
-      plots
-    type: field
+    light environment: canopy crown
+    water treatment: control
   measurements made on INNER CANOPY branches in CONTROL rainfall plot:
-    branch location: inner canopy
-    Treatment: Control
-    description: measurements made at different canopy locations in control and drought
-      plots
-    type: field
+    light environment: inner canopy
+    water treatment: control
   measurements made on INNER CANOPY branches in DROUGHT  plot:
-    branch location: inner canopy
-    Treatment: Drought
-    description: measurements made at different canopy locations in control and drought
-      plots
-    type: treatment
+    light environment: inner canopy
+    water treatment: drought [manipulated]
   measurements made on INNER CANOPY branches in DROUGHT plot:
-    branch location: canopy crown
-    Treatment: Drought
-    description: measurements made at different canopy locations in control and drought
-      plots
-    type: treatment
+    light environment: canopy crown
+    water treatment: drought [manipulated]
   measurements made on UNDERSTOREY branches before drought infrastructure installed:
-    branch location: understorey
-    Treatment: .na.character
-    description: measurements made at different canopy locations in control and drought
-      plots
-    type: field
+    light environment: understorey
+    water treatment: .na.character
   measurements made on UNDERSTOREY branches in CONTROL rainfall plot:
-    branch location: understorey
-    Treatment: Control
-    description: measurements made at different canopy locations in control and drought
-      plots
-    type: field
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site
-    context_name: context
-    date: Data_Set
-    observation_id: Branch_ID
-  custom_R_code: data %>% group_by(Species) %>% mutate_at(vars("Form"),replace_duplicates_with_NA)
-    %>% ungroup()
+    light environment: understorey
+    water treatment: control
 traits:
 - var_in: Form
   unit_in: .na.character
@@ -351,4 +325,3 @@ exclude_observations: .na
 questions:
   additional_traits: epidermal cell area, undulation index, petiole length, petiole
     width, petiole matrix (in raw data files)
-

@@ -33,11 +33,11 @@ build_comparison_set <- function(root.dir = rprojroot::find_root("remake.yml")) 
   austraits_raw$excluded_data <- austraits_raw$excluded_data %>% group_by(dataset_id) %>% slice(1:2000) %>% ungroup
 
   # take a subset of components that make for meaningful comparison
-  austraits_raw[c("traits", "sites", "contexts", "methods", "excluded_data", "sources")]
+  austraits_raw
 }
 
 
-test_that("constancy of product", {
+test_that("constancy of with version 3.0.2", {
   
   # some datasets to compare against
   expect_no_error(austraits_raw <- build_comparison_set(root.dir), info = "Building comparison set")
@@ -46,11 +46,54 @@ test_that("constancy of product", {
   
   # Uncomment to update building of comparison set
   # saveRDS(austraits_raw, file.path(root.dir, file_comparison))
-  
   austraits_raw_comparison <- readRDS(file.path(root.dir, file_comparison))
   
-  for(v in names(austraits_raw)) {
-    expect_equal(austraits_raw[[v]], austraits_raw_comparison[[v]], info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
-  }
+  # change some names so comparison to new version still runs
+  austraits_raw_comparison$traits$trait_name <- austraits_raw_comparison$traits$trait_name %>%
+    gsub("seed_mass", "seed_dry_mass", . ) %>%
+    gsub("seed_breadth", "seed_height", .)
   
+  austraits_raw_comparison$methods$trait_name <- austraits_raw_comparison$methods$trait_name %>%
+    gsub("seed_mass", "seed_dry_mass", . ) %>%
+    gsub("seed_breadth", "seed_height", .)
+  
+  austraits_raw_comparison$traits$replicates <- austraits_raw_comparison$traits$replicates %>%
+    gsub("3 replicates on 1 individual per species or 1 replicate on each individual", "3",. )
+  
+
+  # Compare some select columns of select elements 
+  v <- "traits"
+  vv <- c("dataset_id", "taxon_name", "site_name", "context_name", "observation_id", "trait_name", "value", "unit", "value_type", "replicates", "original_name")
+  # these traits have known changes in names or values
+  not_to_check <-  c("seed_dry_mass", "seed_mass", "dispersal_syndrome", "dispersal_appendage")
+  v1 <- austraits_raw_comparison[[v]][,vv] %>% 
+    dplyr::arrange(observation_id, trait_name) %>% 
+    filter(!trait_name %in% not_to_check)
+  v2 <- austraits_raw[[v]][,vv] %>% 
+    dplyr::arrange(observation_id, trait_name) %>% 
+    filter(!trait_name %in% not_to_check)
+  expect_equal(v2, v1,
+    info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
+
+  v <- "sites"
+  vv <- c("dataset_id", "site_name", "site_property", "value")
+  to_check <-  c("desciption", "latitude (deg)", "logitude (deg)")
+  v1 <- austraits_raw_comparison[[v]][,vv] %>% 
+    dplyr::arrange(dataset_id, site_name) %>% 
+    filter(site_property %in% to_check)
+  v2 <- austraits_raw[[v]][,vv] %>% 
+    dplyr::arrange(dataset_id, site_name) %>% 
+    filter(site_property %in% to_check)
+  expect_equal(v2, v1,
+               info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
+  
+  v <- "methods"
+  vv <- c("dataset_id", "trait_name", "source_primary_key", "source_secondary_key")
+  v1 <- austraits_raw_comparison[[v]][,vv] %>% 
+    dplyr::arrange(dataset_id, trait_name)
+  v2 <- austraits_raw[[v]][,vv] %>% 
+    dplyr::arrange(dataset_id, trait_name)
+  expect_equal(v2, v1,
+               info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
+    
 })

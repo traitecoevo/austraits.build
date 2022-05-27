@@ -10,16 +10,24 @@ source:
     volume: 41
     pages: 125497
     doi: 10.1016/j.ppees.2019.125497
-people:
-- name: Peter Vesk
-  institution: University of Melbourne
-  role: collector, contact, lab_leader
-- name: Jian Yen
-  institution: University of Melbourne
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Vesk
+    given_name: Peter
+    ORCID: 0000-0003-2008-7062
+    affiliation: University of Melbourne, Australia
+    additional_role: contact
+  assistants: Jian Yen
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2000
-  year_collected_end: 2001
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(site_name = "Round Hill-Nombinnie Nature Reserve")
+    %>% mutate(context = ifelse(treat == "b","clip-and-burn",NA),context = ifelse(treat
+    == "c2","control",context),context = ifelse(treat == "c","clip",context))
+  collection_date: 2000/2001
+  taxon_name: SPECIES
+  site_name: site_name
+  context_name: context
   description: data on bud reprouting following disturbance in semi-arid NSW
   collection_type: field_experiment
   sample_age_class: adult
@@ -69,14 +77,14 @@ sites:
   Round Hill-Nombinnie Nature Reserve:
     latitude (deg): -32.965
     longitude (deg): 146.161
-    MAP (mm): 370
-    average summer temp (C): 32.5
-    average winter temp (C): 14.2
-    soil: loamy red sands light red clays and light red browns earths
-    vegetation types: predominantly open Callitris glaucophylla - Eucalyptus populnea
-      woodland and Eucalyptus dumosa - E. socialis shrub mallee woodland
-    fire frequency: 5-20 years
-    details: A clip-and-burn experiment was conducted in the field on 46 species of
+    precipitation, MAP (mm): 370
+    temperature, summer mean (C): 32.5
+    temperature, winter mean (C): 14.2
+    soil type: loamy red sands light red clays and light red browns earths
+    description: predominantly open Callitris glaucophylla - Eucalyptus populnea woodland
+      and Eucalyptus dumosa - E. socialis shrub mallee woodland
+    fire frequency (years): 5-20 years
+    notes: A clip-and-burn experiment was conducted in the field on 46 species of
       plants across 4 growth forms in order to score resprouting success (see Vesk
       et al., 2004 for details). We included 42 of these species in the present analysis.
       The experiment took place in Round Hill-Nombinnie Nature Reserve, central NSW,
@@ -94,24 +102,13 @@ sites:
       Grey kangaroos, Macropus fuliginosus, and feral goats, Capra hircus.
 contexts:
   clip:
-    type: treatment
-    description: plant clipped to approximately 5 mm above ground
+    disturbance treatment: plant clipped to approximately 5 mm above ground [manipulated]
   clip-and-burn:
-    type: treatment
-    description: plants burnt with butane torch, resulting in an average temperatures
-      of 71 deg C at 5 mm depth, and clipped to approximately 5 mm above ground
+    disturbance treatment: plants burnt with butane torch, resulting in an average
+      temperatures of 71 deg C at 5 mm depth, and clipped to approximately 5 mm above
+      ground [manipulated]
   control:
-    type: treatment
-    description: no burn or clip treatment applied
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: SPECIES
-    site_name: site_name
-    context_name: context
-  custom_R_code: data %>% mutate(site_name = "Round Hill-Nombinnie Nature Reserve")
-    %>% mutate(context = ifelse(treat == "b","clip-and-burn",NA),context = ifelse(treat
-    == "c2","control",context),context = ifelse(treat == "c","clip",context))
+    disturbance treatment: control; no burn or clip treatment applied
 traits:
 - var_in: bud_depth_mm
   unit_in: mm
@@ -181,4 +178,3 @@ substitutions:
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

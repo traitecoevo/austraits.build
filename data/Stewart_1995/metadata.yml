@@ -9,21 +9,35 @@ source:
       a biological integrator of water availability'
     volume: '22'
     number: '1'
-    pages: '51--55'
+    pages: 51--55
     doi: 10.1071/pp9950051
-people:
-- name: George Stewart
-  institution: University of Queensland
-  role: collector, lab_leader
-- name: Susanne Schmidt
-  institution: University of Queensland
-  role: collector
-- name: Ian Wright
-  institution: Macquarie University
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Stewart
+    given_name: George
+    ORCID: .na.character
+    affiliation: The University of Queensland, Australia
+    notes: no contact
+  - last_name: Schmidt
+    given_name: Susanne
+    ORCID: 0000-0001-8369-1238
+    affiliation: School of Agriculture and Food Science, The University of Queensland,
+      Australia
+  austraits_curators: Ian Wright, Elizabeth Wenk
 dataset:
-  year_collected_start: 1992
-  year_collected_end: 1993
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        date = ifelse(site == "Loganholme","1992-12",NA), 
+        date = ifelse(site == "Idalia","1992",date), 
+        date = ifelse(site == "Gambubal","1993-01",date), 
+        date = ifelse(site == "Coominya","1993",date)
+      )
+  '
+  collection_date: date
+  taxon_name: name_edited
+  site_name: site
   description: A collection of leaf d13C values for plant communities across Queensland
     to understand how rainfall affects carbon isotope discrimination
   collection_type: field
@@ -49,60 +63,50 @@ dataset:
     are in the file in the raw data folder
 sites:
   Coominya:
-    description: Coominya
-    vegetation: Open Forest
+    locality: Coominya
+    description: Open Forest
     latitude (deg): -27.2
     longitude (deg): 152.5
-    year collected: '1993'
-    MAP (mm): 822.0
-    5-yr-rainfall (mm): 979.0
-    rain day (per annum): 64.0
+    precipitation, MAP (mm): 822.0
+    precipitation, 5 year total (mm): 979.0
+    precipitation, rain days (per year): 64.0
     moisture balance (mm per annum): -778.0
-    Jan-Mar rain: .na.real
-    Oct-Mar rain: .na.real
+    precipitation, Jan-Mar (mm): .na.real
+    precipitation, Oct-Mar: .na.real
   Gambubal:
-    description: Gambubul State Forest
-    vegetation: Subtropical rainforest
+    locality: Gambubul State Forest
+    description: Subtropical rainforest
     latitude (deg): -28.03
     longitude (deg): 152.83
-    year collected: early 1993
-    MAP (mm): 1199.0
-    5-yr-rainfall (mm): 1199.0
-    rain day (per annum): 104.0
+    precipitation, MAP (mm): 1199.0
+    precipitation, 5 year total (mm): 1199.0
+    precipitation, rain days (per year): 104.0
     moisture balance (mm per annum): -361.0
-    Jan-Mar rain: .na.real
-    Oct-Mar rain: .na.real
+    precipitation, Jan-Mar (mm): .na.real
+    precipitation, Oct-Mar: .na.real
   Idalia:
-    description: Idalia National Park
-    vegetation: Brigalow, tropical woodland
+    locality: Idalia National Park
+    description: Brigalow, tropical woodland
     latitude (deg): -24.08
     longitude (deg): 145.0
-    year collected: '1992'
-    MAP (mm): 450.0
-    5-yr-rainfall (mm): 450.0
-    rain day (per annum): 51.0
+    precipitation, MAP (mm): 450.0
+    precipitation, 5 year total (mm): 450.0
+    precipitation, rain days (per year): 51.0
     moisture balance (mm per annum): -2090.0
-    Jan-Mar rain: .na.real
-    Oct-Mar rain: .na.real
+    precipitation, Jan-Mar (mm): .na.real
+    precipitation, Oct-Mar: .na.real
   Loganholme:
-    description: Loganholme
-    vegetation: Melaleuca Swamp
+    locality: Loganholme
+    description: Melaleuca Swamp
     latitude (deg): -27.8
     longitude (deg): 153.1
-    year collected: Dec-92
-    MAP (mm): 1244.0
-    5-yr-rainfall (mm): 1341.0
-    rain day (per annum): 124.0
+    precipitation, MAP (mm): 1244.0
+    precipitation, 5 year total (mm): 1341.0
+    precipitation, rain days (per year): 124.0
     moisture balance (mm per annum): -336.0
-    Jan-Mar rain: 391.0
-    Oct-Mar rain: 718.0
+    precipitation, Jan-Mar (mm): 391.0
+    precipitation, Oct-Mar: 718.0
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_edited
-    site_name: site
-  custom_R_code: .na
 traits:
 - var_in: leaf_type(B/N)
   unit_in: .na
@@ -313,4 +317,3 @@ exclude_observations:
   find: Khaya nyasica, Khaya nyastica
   reason: non-native (E Wenk, 2020.06.18)
 questions: .na
-

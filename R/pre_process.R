@@ -214,3 +214,127 @@ separate_range <- function(data, x, y1, y2, sep="-", remove=TRUE) {
 replace_duplicates_with_NA <- function(x) {
   base::replace(x, duplicated(x), NA)
 }
+
+
+#' Move select trait values from a pre-existing column (trait_name) to a new column (new trait_name)
+#'
+#' @param data data frame, representing a specific dataset_id
+#' @param original_trait name of the variable in the original data file, representing a trait in a wide dataset
+#' @param new_trait name of the new variable being created, representing an additional trait in a wide dataset
+#' @param original_values values of the original trait that need to be remapped to a different (new) trait
+#' @param values_for_new_trait the appropriate value of the new trait; this may be identical to the original values, or may be a slightly different word/syntax 
+#' @param values_to_keep the appropriate value to retain for the old trait; this may be identical to the original values or may be NA 
+#'
+#' @return data frame with a new column containing additional trait data
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data <- read_csv(data/"Hughes_1992/data.csv")
+#' data %>% move_values_to_new_trait(data, "growth form", "root_structure", 
+#' "Saprophyte", "saprophyte") -> data
+#' }
+move_values_to_new_trait <- function(data, original_trait, new_trait, original_values, values_for_new_trait, values_to_keep) {
+  
+       for (j in 1:length(original_values)) {
+            
+            i <- data[[original_trait]] == original_values[[j]]
+            
+            data[[new_trait]] = ifelse(i, values_for_new_trait[[j]], data[[new_trait]])
+            data[[original_trait]] = ifelse(i, values_to_keep[[j]], data[[original_trait]])
+            data
+       }
+       
+  return(data)
+}
+
+#' Add values to an additional trait for datasets in long format
+#'
+#' @param data data frame, representing a specific dataset_id
+#' @param new_trait name of the new variable being created, representing an additional trait in a long dataset
+#' @param traits_column column containing the trait names
+#' @param values_column column containing the trait values
+#' @param original_values values of the original trait that need to be remapped to a different (new) trait
+#' @param new_values values to be added to the new trait
+#'
+#' @return data frame containing additional rows of data for a new trait
+#' @export
+#'
+add_values_to_additional_trait_long <- 
+  function(data, new_trait, traits_column, values_column, original_values, new_values) {  
+    i <- filter(data,data[[values_column]] %in% original_values)
+    i[[traits_column]] <- new_trait
+    i[[values_column]] <- new_values
+    data <- dplyr::bind_rows(data,i)
+  }
+
+#' Move values in new trait in long format
+#'
+#' @param data data frame, representing a specific dataset_id
+#' @param original_trait name of the variable in the original data file, representing a trait in a long dataset
+#' @param new_trait name of the new variable being created, representing an additional trait in a long dataset
+#' @param traits_column column containing the trait names
+#' @param values_column column containing the trait values
+#' @param original_values values of the original trait that need to be remapped to a different (new) trait
+#'
+#' @return data frame containing additional trait names in the traits column 
+#' @export
+move_values_to_new_trait_long <- 
+  function(data, original_trait, new_trait, traits_column, values_column, original_values) {
+    
+    i <- data[[values_column]] %in% original_values
+    
+    data[[traits_column]] = ifelse(i, new_trait, data[[traits_column]])
+
+    data
+  } 
+
+
+
+#' Substitutions from csv
+#' @description Function that simultaneously adds many trait value replacements, potentially across many trait_names and dataset_ids, to the respective metadata.yml files.
+#' This function will be used to quickly re-align/re-assign trait values across all AusTraits studies.
+#'
+#' @param dataframe_of_substitutions dataframe with columns indicating dataset_id, trait_name, original trait values (find), and AusTraits aligned trait value (replace)
+#' @param dataset_id study's dataset_id in AusTraits
+#' @param trait_name trait name for which a trait value replacement needs to be made
+#' @param find trait value submitted by the contributor for a data observation
+#' @param replace AusTraits aligned trait value
+#' 
+#' @importFrom rlang .data
+#'
+#' @return modified metadata files with trait value replacements
+#' @export
+#'
+#' @examples \dontrun{
+#' read_csv("export/dispersal_syndrome_substitutions.csv") %>% select(-extra) %>%
+#' filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
+#' substitutions_from_csv(dataframe_of_substitutions,dataset_id,trait_name,find,replace)
+#' }
+
+substitutions_from_csv <- function(dataframe_of_substitutions,dataset_id,trait_name,find,replace) {
+
+  #split dataframe of substitutions by row  
+  dataframe_of_substitutions %>%
+    dplyr::mutate(rows = dplyr::row_number()) %>% 
+    dplyr::group_split(.$rows) -> dataframe_of_substitutions
+
+  set_name <- "substitutions"
+
+  #add substitutions to metadata files
+  for (i in 1:max(dataframe_of_substitutions)$rows) {
+    metadata <- metadata_read_dataset_id(dataframe_of_substitutions[[i]]$dataset_id)
+
+    to_add <- list(trait_name = dataframe_of_substitutions[[i]]$trait_name, find = dataframe_of_substitutions[[i]]$find, replace = dataframe_of_substitutions[[i]]$replace)
+
+    if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]])) {
+      metadata[[set_name]] <- list()
+    }
+
+    data <-  list_to_df(metadata[[set_name]])  
+
+    metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
+
+    metadata_write_dataset_id(metadata, dataframe_of_substitutions[[i]]$dataset_id)
+  }  
+}

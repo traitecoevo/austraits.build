@@ -44,9 +44,7 @@ metadata_write_dataset_id <- function(metadata, dataset_id) {
 metadata_create_template <- function(dataset_id, 
                                      path = file.path("data", dataset_id, "metadata.yml")
                                      ) {
-
-  people <- tibble::tibble(name = "unknown", institution = "unknown", role = "unknown") 
-
+  
   out <- list(
        source = list(primary=list(key=dataset_id, 
                                   bibtype = "Article",
@@ -60,18 +58,30 @@ metadata_create_template <- function(dataset_id,
                                   doi = "unknown"
                                   )
                      ),
-       people = people %>% df_to_list(),
-       dataset = list(year_collected_start= "unknown",
-                      year_collected_end= "unknown",
-                      description= "unknown",
-                      collection_type= "unknown",
-                      sample_age_class= "unknown",
-                      sampling_strategy= "unknown",
-                      original_file= "unknown",
-                      notes= "unknown"),
+       contributors = list(data_collectors = 
+                             list(
+                               last_name = "unknown", 
+                               given_name = "unknown",
+                               ORCID = "unknown", 
+                               affiliation = "unknown",
+                               additional_role = "unknown"
+                                ),
+                           austraits_curators = "unknown",
+                           assistants = "unknown"
+                           ),
+       dataset = list(custom_R_code = NA,
+                      collection_date = "unknown",
+                      taxon_name = NA,
+                      site_name = NA,
+                      context_name = NA,
+                      description = "unknown",
+                      collection_type = "unknown",
+                      sample_age_class = "unknown",
+                      sampling_strategy = "unknown",
+                      original_file = "unknown",
+                      notes = "unknown"),
        sites = NA,
        contexts = NA,
-       config = NA,
        traits = NA,
        substitutions = NA,
        taxonomic_updates = NA,
@@ -87,11 +97,11 @@ metadata_create_template <- function(dataset_id,
 
   # Setup config and select columns as appropriate
   config <- list(data_is_long_format = data_is_long_format, 
-                 variable_match = list(),
-                 custom_R_code = NA)
+                 custom_R_code = NA,
+                 variable_match = list())
 
   v1 <- c("taxon_name")
-    v2 <- c("site_name", "context_name", "observation_id",  "date")
+  v2 <- c("site_name", "context_name", "observation_id",  "collection_date")
   
   if(data_is_long_format) {
     v1 <- c("taxon_name", "trait_name", "value")
@@ -107,7 +117,13 @@ metadata_create_template <- function(dataset_id,
       config[["variable_match"]][[v]] <- tmp
   }
 
-  out[["config"]] <- config
+for(v in v1) {
+  out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
+  }
+
+for(v in v2) {
+  out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
+  }
 
   write_metadata(out, path)
 }
@@ -258,7 +274,7 @@ metadata_add_sites <- function(dataset_id, site_data) {
   keep <- user_select_names(paste("Indicate all columns you wish to keep as distinct site_properties in ", dataset_id), names(site_sub))
 
   # Save and notify
-  metadata$sites <- dplyr::select(site_data, one_of(keep)) %>%
+  metadata$sites <- dplyr::select(site_data, tidyr::one_of(keep)) %>%
             split(site_data[[site_name]]) %>% lapply(as.list)
 
   cat(sprintf("Following sites added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$sites), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
@@ -298,7 +314,7 @@ metadata_add_contexts <- function(dataset_id, context_data) {
   keep <- user_select_names(paste("Indicate all columns you wish to keep as distinct context_properties in ", dataset_id), names(context_sub))
   
   # Save and notify
-  metadata$contexts <- dplyr::select(context_data, one_of(keep)) %>%
+  metadata$contexts <- dplyr::select(context_data, tidyr::one_of(keep)) %>%
     split(context_data[[context_name]]) %>% lapply(as.list)
   
   cat(sprintf("Following contexts added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$contexts), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
@@ -944,6 +960,10 @@ austraits_rebuild_taxon_list <- function() {
   
   austraits <- remake::make("austraits_raw")
 
+  subset_accepted <- function(x) {
+    x[x!= "accepted"]
+  }
+  
   # First align to APC where possible 
   taxa <- 
     # build list of observed species names
@@ -988,7 +1008,7 @@ austraits_rebuild_taxon_list <- function() {
       alternativeTaxonomicStatusClean = ifelse(.data$taxonomicStatusClean[1] == "accepted", 
                                                .data$taxonomicStatusClean %>% 
           unique() %>% 
-          subset(.data, .data !="accepted") %>% 
+          subset_accepted() %>% 
           paste0(collapse = " | ") %>% 
           dplyr::na_if(""), NA)) %>% 
     dplyr::slice(1) %>%  

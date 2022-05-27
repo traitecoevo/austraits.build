@@ -7,28 +7,16 @@ source:
     title: Flora of Australia
     publisher: AGPS
     url: http://www.environment.gov.au/biodiversity/abrs/online-resources/flora/main/
-people:
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: collector, contributor
+contributors:
+  data_collectors:
+  - last_name: Gallagher
+    given_name: Rachael
+    ORCID: 0000-0002-4680-8115
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2015
-  year_collected_end: 2015
-  description: Flora of Australian online checked via trait corrections
-  collection_type: botanical_collection
-  sample_age_class: adult
-  sampling_strategy: herbarium specimens
-  original_file: STU
-  notes: Request ackowledgment "Data was sourced from the Flora of Australia with
-    permission from the Australian Biological Resources Study"
-sites: .na
-contexts: .na
-config:
   data_is_long_format: yes
-  variable_match:
-    taxon_name: species_name
-    trait_name: trait
-    value: value
   custom_R_code: ' data$i <- seq_len(nrow(data)); bind_rows( filter(data, !is.na(units))
     %>% mutate( value = as.numeric(value), value = ifelse(units == "cm", value * 10,
     value), value = ifelse(units == "m", value * 1000, value), units = ifelse(units
@@ -63,10 +51,23 @@ config:
     to use data to calculate a series of trait tables, which are bound together with
     bind_rows. The index i is used to sort data according to original order in the
     file'
+  collection_date: unknown/2015
+  taxon_name: species_name
+  trait_name: trait
+  value: value
+  description: Flora of Australian online checked via trait corrections
+  collection_type: botanical_collection
+  sample_age_class: adult
+  sampling_strategy: herbarium specimens
+  original_file: STU
+  notes: Request ackowledgment "Data was sourced from the Flora of Australia with
+    permission from the Australian Biological Resources Study"
+sites: .na
+contexts: .na
 traits:
 - var_in: dispersal
   unit_in: .na
-  trait_name: dispersal_syndrome
+  trait_name: dispersal_appendage
   value_type: expert_mean
   replicates: .na
   methods: unknown
@@ -162,13 +163,13 @@ traits:
   methods: unknown
 - var_in: seed breadth minimum
   unit_in: mm
-  trait_name: seed_breadth
+  trait_name: seed_height
   value_type: expert_min
   replicates: .na
   methods: unknown
 - var_in: seed breadth maximum
   unit_in: mm
-  trait_name: seed_breadth
+  trait_name: seed_height
   value_type: expert_max
   replicates: .na
   methods: unknown
@@ -287,6 +288,9 @@ substitutions:
 - trait_name: seed_shape
   find: elliptical
   replace: ellipsoid
+- trait_name: seed_shape
+  find: orbicular
+  replace: orbicular
 taxonomic_updates:
 - find: Epilobium billardierianum subsp. hydrophilum
   replace: Epilobium billardiereanum subsp. hydrophilum
@@ -381,4 +385,3 @@ taxonomic_updates:
   reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
 exclude_observations: .na
 questions: .na
-
