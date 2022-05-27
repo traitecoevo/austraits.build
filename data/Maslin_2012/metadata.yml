@@ -23,27 +23,60 @@ contributors:
 dataset:
   data_is_long_format: yes
   custom_R_code: '
-    traits <- c("leaf length maximum", "leaf length minimum", "leaf width maximum", "leaf width minimum", "plant height maximum", "plant height minimum"); a <- list(cm=10, m=1000); for(t in traits){ for(v in names(a)) { i <- which(data[["trait"]]==t & data[["units"]] == v); data[["value"]][i] <- as.character(as.numeric(data[["value"]][i]) * a[[v]]); data[["units"]][i] <- "mm"; }; };
-    i <- data$trait == "flowering time start"; 
-    data[i, "value"] <- format_flowering_months(data[i,]$value, data[data$trait == "flowering time end",]$value); 
-    data[i, "trait"] <- "flowering_time"; data <- data[!data$trait == "flowering time end",];
-    leaf_phenology <- data[data$trait == "longevity",]; life_history <- data[data$trait == "longevity",]; 
-    leaf_phenology[leaf_phenology$trait == "longevity",]$trait <- "leaf_phenology"; 
-    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EP", "E", "EAP", "EPB", "EAPB"),]$value <- "evergreen"; 
-    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("DP"),]$value <- "deciduous"; 
-    leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EDP", "EDPB", "P", "ED"),]$value <- NA; 
-    leaf_phenology <- leaf_phenology[!is.na(leaf_phenology$value),];
-    life_history[life_history$trait == "longevity",]$trait <- "life_history"; 
-    life_history[life_history$trait == "life_history" & life_history$value %in% c("EP", "EDP", "P", "DP"),]$value <- "perennial"; 
-    life_history[life_history$trait == "life_history" & life_history$value %in% c("EAP"),]$value <- "annual perennial"; 
-    life_history[life_history$trait == "life_history" & life_history$value %in% c("EPB", "EDPB"),]$value <- "biennial perennial"; 
-    life_history[life_history$trait == "life_history" & life_history$value %in% c("EAPB"),]$value <- "annual biennial perennial"; 
-    life_history[life_history$trait %in% "life_history" & life_history$value %in% c("E","ED"),]$value <- NA; 
-    life_history <- life_history[!is.na(life_history$value),];
-    data <- rbind(data[!data$trait %in% "longevity",], leaf_phenology, life_history); 
-    data[data$value %in% "articles",]$value <- c("article"); 
-    data[data$value %in% "article",]$trait <- c("leaf_type");
-    data'
+    traits_numeric <-
+      data %>%
+        filter(trait %in% c("leaf length maximum", "leaf length minimum", "leaf width maximum", 
+                            "leaf width minimum", "plant height maximum", "plant height minimum",
+                            "seed length minimum ", "seed length maximum", "seed width minimum",  
+                            "seed width maximum", "seed breadth minimum", "seed breadth maximum")) %>%
+        mutate(
+          units_numeric = units %>%
+            str_replace("mm","1") %>%
+            str_replace("cm","10") %>%
+            str_replace("m","1000"),
+          value = as.numeric(value) * as.numeric(units_numeric),
+          value = as.character(value)
+        );
+
+    flowering_time <- 
+      data %>%
+        filter(trait %in% c("flowering time start", "flowering time end")) %>%
+        filter(!is.na(value)) %>%
+        select(-units) %>%
+        pivot_wider(names_from = trait, values_from = value) %>%
+        mutate(flowering_time =  ifelse(is.na(`flowering time end`), `flowering time start`, 
+                              sprintf("%s-%s",`flowering time start`, 
+                                      `flowering time end`)) %>% 
+                                convert_month_range_vec_to_binary()) %>%
+        select(species_name, flowering_time) %>%
+        mutate(trait = "flowering_time") %>%
+        rename(value = flowering_time);           
+      
+    categorical_traits <-
+      data %>%
+      select(-units) %>%
+      filter(trait %in% c("longevity", "leaf type")) %>%
+      pivot_wider(names_from = trait, values_from = value) %>%
+      mutate(
+        life_history = ifelse(longevity %in% c("EP", "EDP", "P", "DP"), "perennial", NA),
+        life_history = ifelse(longevity %in% c("EAP"), "annual perennial", life_history),
+        life_history = ifelse(longevity %in% c("EPB", "EDPB"), "biennial perennial", life_history),
+        life_history = ifelse(longevity %in% c("EAPB"), "annual biennial perennial", life_history),
+        leaf_phenology = ifelse(longevity %in% c("EP", "E", "EAP", "EPB", "EAPB"), "evergreen", NA),
+        leaf_phenology = ifelse(longevity %in% c("DP"), "deciduous", leaf_phenology),
+        leaf_type = ifelse(`leaf type` == "articles","article", NA),
+        leaf_type = ifelse(`leaf type` %in% c("simple","compound"),"broadleaf", leaf_type)) %>%
+      select(-longevity, -`leaf type`) %>%
+      pivot_longer(cols = c("life_history", "leaf_phenology", "leaf_type"), names_to = "trait", values_to = "value");
+
+    data %>%
+      filter(trait %in% c("dispersal", "lifeform", "seed shape", "leaf type")) %>%
+      bind_rows(
+        traits_numeric,
+        categorical_traits,
+        flowering_time
+      )  
+  '
   collection_date: unknown/2012
   taxon_name: species_name
   trait_name: trait
@@ -100,9 +133,9 @@ traits:
 - var_in: flowering_time
   unit_in: .na
   trait_name: flowering_time
-  entity_type: .na
-  value_type: .na
-  basis_of_value: .na
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: unknown
   methods: unknown
 - var_in: leaf length minimum
@@ -112,7 +145,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &leaf_length_method unknown
 - var_in: leaf length maximum
   unit_in: mm
   trait_name: leaf_length
@@ -120,7 +153,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *leaf_length_method
 - var_in: leaf width minimum
   unit_in: mm
   trait_name: leaf_width
@@ -128,7 +161,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &leaf_width_method unknown
 - var_in: leaf width maximum
   unit_in: mm
   trait_name: leaf_width
@@ -136,7 +169,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *leaf_width_method
 - var_in: plant height minimum
   unit_in: mm
   trait_name: plant_height
@@ -144,7 +177,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &plant_height_method unknown
 - var_in: plant height maximum
   unit_in: mm
   trait_name: plant_height
@@ -152,7 +185,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *plant_height_method
 - var_in: seed length minimum
   unit_in: mm
   trait_name: seed_length
@@ -160,7 +193,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &seed_length_method unknown
 - var_in: seed length maximum
   unit_in: mm
   trait_name: seed_length
@@ -168,7 +201,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *seed_length_method
 - var_in: seed width minimum
   unit_in: mm
   trait_name: seed_width
@@ -176,7 +209,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &seed_width_method unknown
 - var_in: seed width maximum
   unit_in: mm
   trait_name: seed_width
@@ -184,7 +217,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *seed_width_method
 - var_in: seed breadth minimum
   unit_in: mm
   trait_name: seed_height
@@ -192,7 +225,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &seed_height_method unknown
 - var_in: seed breadth maximum
   unit_in: mm
   trait_name: seed_height
@@ -200,7 +233,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *seed_height_method
 - var_in: leaf_type
   unit_in: .na
   trait_name: leaf_type
