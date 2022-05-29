@@ -28,7 +28,48 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% select(Species, cotsExp, cotsEH, cotsFR, LEE) %>% filter(!is.na(LEE)) %>% group_by(Species) %>% distinct() %>% ungroup %>% mutate(sample_age_class = "seedling") -> seedling_traits; data %>% select(Species, LF, HeightMax, ReproAge, ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3) %>%    group_by(Species) %>% distinct(LF, HeightMax, ReproAge, ReproCLE, Pollination_syndrome, Fruit_type, FruitFG, DispClass, DispSimple, DispC3) %>% ungroup %>% mutate(sample_age_class = "adult") -> adult_traits; data %>% select(-cotsExp, -cotsEH, -cotsFR, -LEE, -LF, -HeightMax, -ReproAge, -ReproCLE, -Pollination_syndrome, -Fruit_type, -FruitFG, -DispClass, -DispSimple, -DispC3) %>% mutate(`LA` = if_else(omit=="Kanowski",0,`LA`),LtLeaf = if_else(omit=="Kanowski",0,LtLeaf), LWC = if_else(omit=="Kanowski",0,LWC), LMA = if_else(omit=="Kanowski",0,LMA)) %>% mutate_at(c("LA","LtLeaf","LMA","LWC"), ~na_if(.,0)) %>% mutate(sample_age_class = ifelse(StrataBinary == "Stratum_2_adult_plant","adult", NA), sample_age_class = ifelse(StrataBinary == "Stratum_1_seedling", "seedling", sample_age_class)) %>% bind_rows(seedling_traits) %>% bind_rows(adult_traits) %>% mutate(fruit_fleshiness = Fruit_type, fruit_dehiscence = Fruit_type, dispersal_appendage = NA) %>% mutate("dispersal_appendage" = ifelse(Fruit_type == "Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)", "fleshy_reward", NA))
+  custom_R_code: '
+  seedling_traits <-
+    data %>% 
+      select(Species, cotsExp, cotsEH, cotsFR, LEE) %>% 
+      filter(!is.na(LEE)) %>% 
+      group_by(Species) %>% 
+      distinct() %>% 
+      ungroup() %>% 
+      mutate(sample_age_class = "seedling"); 
+
+  adult_traits <-    
+    data %>% 
+      select(Species, LF, HeightMax, ReproAge, ReproCLE, Pollination_syndrome, 
+              Fruit_type, FruitFG, DispClass, DispSimple, DispC3) %>%
+      group_by(Species) %>%
+      distinct(LF, HeightMax, ReproAge, ReproCLE, Pollination_syndrome, Fruit_type,
+              FruitFG, DispClass, DispSimple, DispC3) %>%
+      ungroup %>%
+      mutate(sample_age_class = "adult");
+      
+  data %>%
+    select(-cotsExp, -cotsEH, -cotsFR, -LEE, -LF, -HeightMax, -ReproAge, -ReproCLE, 
+           -Pollination_syndrome, -Fruit_type, -FruitFG, -DispClass, -DispSimple, -DispC3) %>%
+            mutate(
+              `LA` = if_else(omit=="Kanowski",0,`LA`),
+              LtLeaf = if_else(omit=="Kanowski",0,LtLeaf),
+              LWC = if_else(omit=="Kanowski",0,LWC),
+              LMA = if_else(omit=="Kanowski",0,LMA),
+              sample_age_class = ifelse(StrataBinary == "Stratum_2_adult_plant","adult", NA),
+              sample_age_class = ifelse(StrataBinary == "Stratum_1_seedling",
+                                        "seedling", sample_age_class),
+            ) %>% 
+            mutate_at(vars(`LA`,`LtLeaf`,`LMA`,`LWC`), ~na_if(.,0)) %>%
+            bind_rows(seedling_traits) %>%
+            bind_rows(adult_traits) %>%
+            mutate(
+              fruit_fleshiness = Fruit_type,
+              fruit_dehiscence = Fruit_type,
+              dispersal_appendage = ifelse(Fruit_type == 
+                "Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
+                "fleshy_reward", NA))
+  '
   collection_date: 2004/2005
   taxon_name: Species
   site_name: Site
@@ -643,7 +684,7 @@ traits:
   collection_type: literature
   sample_age_class: adult
 - var_in: ReproCLE
-  unit_in: dimensionless
+  unit_in: .na
   trait_name: reproductive_light_environment_index
   entity_type: species
   value_type: mode
@@ -807,7 +848,7 @@ traits:
   sample_age_class: seedling
   collection_type: literature
 - var_in: LEE
-  unit_in: dimensionless
+  unit_in: .na
   trait_name: establishment_light_environment_index
   entity_type: species
   value_type: mode

@@ -16,8 +16,14 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(`flowering time` = convert_month_range_vec_to_binary(`flowering
-    time`))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        `flowering time` = ifelse(species_name == "Enneapogon cylindricus","mar-aug",`flowering time`),
+        `flowering time` = convert_month_range_vec_to_binary(`flowering time`),
+        ephemeral_flowering = str_detect(`flowering time`,"ephemeral","ephemeral")
+      )
+  '
   collection_date: unknown/2014
   taxon_name: species_name
   description: grass trait data from the Royal Botanic Gardens Sydney

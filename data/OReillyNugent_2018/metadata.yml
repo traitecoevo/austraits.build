@@ -23,14 +23,35 @@ contributors:
     ORCID: 0000-0003-2295-449X
     affiliation: Institute for Applied Ecology, University of Canberra, ACT 2617,
       Australia
-  austraits_curators: Elizabeth Wenk
+  austraits_curators: Caitlyn Baxter, Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(species_name = gsub("."," ",species_name, fixed=TRUE),
-    date = dmy(date))
+  custom_R_code: '
+    max_dimensions <- 
+      data %>%
+        mutate(replicate = 1) %>%
+        group_by(src, site_name, plotname, year, date, species_name) %>%
+        summarise(
+          max_height = max(`Max.height`, na.rm = TRUE),
+          max_canopy = max(`Canopy.width`, na.rm = TRUE),
+          replicate = sum(replicate)
+        ) %>%
+        ungroup() %>%
+      mutate_at(vars(max_height, max_canopy), ~na_if(.,-Inf));
+
+    data %>% 
+      mutate(row_count = row_number()) %>%
+      filter(row_count > 438) %>%
+      bind_rows(max_dimensions) %>%
+      mutate(
+        species_name = gsub("."," ",species_name, fixed=TRUE),
+        date = dmy(date)
+      )
+  '
   collection_date: date
   taxon_name: species_name
   site_name: site_name
+  individual_id: plotname
   description: Joint-species distribution models (JSDMs) can potentially untangle
     the environmental and competitive drivers of community composition. Extending
     JSDMs to include abundance data would allow them to be used to answer questions
@@ -80,24 +101,24 @@ sites:
       deeper soils occur on slopes and in depressions.
 contexts: .na
 traits:
-- var_in: Canopy.height
+- var_in: max_height
   unit_in: m
   trait_name: plant_height
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: maximum
   basis_of_value: measurement
-  replicates: 1
+  replicates: replicate
   methods: 5 - 10 of the tallest mature individuals were measured by holding the plant
     upright and measuring the distance between the ground and the highest point on
     the canopy using a two-meter, metal ruler. This measurement ignored infloresences
     and other protrusions if the main stem exceeded the canopy.
-- var_in: Canopy.width
+- var_in: max_canopy
   unit_in: m
   trait_name: plant_width
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: maximum
   basis_of_value: measurement
-  replicates: 1
+  replicates: replicate
   methods: 5 - 10 mature individuals were measured by holding a two-meter metal ruler
     level above the longest axis of the plant and recording furthest difference between
     two outer points on the canopy. A second measurement was taken on the orthogonal
@@ -106,10 +127,10 @@ traits:
 - var_in: SLA
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5-10
   methods: 5 - 10 full expanded green leaves were collected of the tallest mature
     individuals in each plot. Leaves were placed into plastic zip-lock bags and kept
     in an ice-box to reduce water loss. Leaves, excluding petioles, were scanned within

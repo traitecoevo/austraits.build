@@ -42,8 +42,15 @@ dataset:
     data %>% 
       mutate_at(vars(`TRAIT Leaf Dry Mass UNITS g`), ~na_if(.,0)) %>%
       group_by(name_original) %>%
-        mutate_at(vars(`TRAIT Growth Form CATEGORICAL EP epiphyte (mistletoe) F fern G grass H herb S shrub T tree V vine`), replace_duplicates_with_NA) %>%
-      ungroup()
+        mutate_at(vars(`TRAIT Growth Form CATEGORICAL EP epiphyte (mistletoe) F fern G grass H herb S shrub T tree V vine`), 
+        replace_duplicates_with_NA) %>%
+      ungroup() %>%
+      mutate(
+        leaflet_area = ifelse(name_original == "Acacia deanei", `TRAIT Leaf Size UNITS mm2`, NA),
+        `TRAIT Leaf Size UNITS mm2` = ifelse(name_original == "Acacia deanei", NA, `TRAIT Leaf Size UNITS mm2`),
+        leaflet_dry_mass = ifelse(name_original == "Acacia deanei", `TRAIT Leaf Dry Mass UNITS g`, NA),
+        `TRAIT Leaf Size UNITS mm2` = ifelse(name_original == "Acacia deanei", NA, `TRAIT Leaf Dry Mass UNITS g`)
+      )
   '
   collection_date: 1996/1997
   taxon_name: name_original
@@ -605,19 +612,35 @@ traits:
 - var_in: 'TRAIT Leaf Size UNITS mm2'
   unit_in: mm2
   trait_name: leaf_area
-  entity_type: individual
+  entity_type: population
   value_type: mean
   basis_of_value: measurement
   replicates: 5
-  methods: Five leaves were collected and pressed for measurements of width, area
+  methods: &Leaf_method Five leaves were collected and pressed for measurements of width, area
     and SLA. Leaves were taken from full-light situations and, where possible, from
     random branches on separate individuals (see Westoby 1998, appendix, for discussion
     of protocols for characterizing leaves and height). Leaf outline images were captured
     by HP DeskScan II scanner (Hewlett-Packard, Palo Alto, USA) and quantified by
     Delta-T SCAN image analysis software (Delta-T Devices, Cambridge, UK)
+- var_in: leaflet_area
+  unit_in: mm2
+  trait_name: leaflet_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: *Leaf_method
 - var_in: TRAIT Leaf Dry Mass UNITS g
   unit_in: g
   trait_name: leaf_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: unknown
+- var_in: leaflet_dry_mass
+  unit_in: g
+  trait_name: leaflet_dry_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement

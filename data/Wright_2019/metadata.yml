@@ -23,10 +23,19 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site_name = "Howard_Springs") %>% mutate_at(c("Cu"),
-    ~na_if(.,0)) %>% mutate(season = date) %>% mutate(sample_date = sample_date %>%
-    mdy(quiet=TRUE)) %>% group_by(Species,Rep,context) %>% mutate_at(vars(7:49),replace_duplicates_with_NA)
-    %>% ungroup() %>% mutate(sample_age_class = age)
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site_name = "Howard_Springs",
+        season = date,
+        sample_date = sample_date %>% mdy(quiet=TRUE),
+        sample_age_class = age
+      ) %>% 
+      mutate_at(vars(`Cu`), ~na_if(.,0)) %>%
+      group_by(Species,Rep,context) %>% 
+        mutate_at(vars(7:49),replace_duplicates_with_NA) %>%
+      ungroup()
+  '
   collection_date: sample_date
   taxon_name: Species
   site_name: site_name

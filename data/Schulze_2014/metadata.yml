@@ -22,9 +22,14 @@ contributors:
   austraits_curators: Elizabeth Wenk, Caitlan Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(Date_to_use_edited = Date_to_use_edited %>% mdy())
-    %>% group_by(`species_name`) %>% mutate_at(vars(physical_defence,`leaf type`,leaf_compoundness,Deciduous,`Life-form`,`N2
-    fixing`), replace_duplicates_with_NA) %>% ungroup() %>% ungroup()
+  custom_R_code: '
+    data %>%
+      mutate(Date_to_use_edited = Date_to_use_edited %>% mdy()) %>%
+      group_by(`species_name`) %>%
+        mutate_at(vars(physical_defence,`leaf type`,leaf_compoundness, Deciduous,
+        `Life-form`,`N2 fixing`), funs(replace(.,duplicated(.),NA))) %>%
+      ungroup()
+  '
   collection_date: Date_to_use_edited
   taxon_name: species_name
   site_name: site_name
