@@ -243,7 +243,7 @@ load_study <- function(filename_data_raw,
        methods    = methods,
        excluded_data = 
          if(filter_missing_values == TRUE){
-           excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% dplyr::filter(error != "Missing value") %>%
+           excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% dplyr::filter(.data$error != "Missing value") %>%
              dplyr::select(.data$error, everything())
            } else {
              excluded_data = traits %>% filter(!is.na(.data$error)) %>% dplyr::select(.data$error, everything())
