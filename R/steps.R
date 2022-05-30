@@ -76,6 +76,8 @@ subset_config <- function(
 #'
 #' @param filename_data_raw raw data.csv file for any given study
 #' @param config_for_dataset config settings generated from `subset_config()`
+#' @param filter_missing_values default filters missing values from the excluded data table. 
+#' Change to false to see the rows with missing values.
 #'
 #' @return list, AusTraits database object
 #' @export
@@ -89,8 +91,9 @@ subset_config <- function(
 #' load_study("data/Falster_2003/data.csv", subset_config("data/Falster_2003/metadata.yml",
 #' read_yaml("config/definitions.yml"), make_unit_conversion_functions("config/unit_conversions.csv"))
 #' }
-load_study <- function(filename_data_raw,
-                       config_for_dataset) {
+load_study <- function(filename_data_raw, 
+                       config_for_dataset, 
+                       filter_missing_values = TRUE){
 
   dataset_id <- config_for_dataset$dataset_id
   metadata <- config_for_dataset$metadata
@@ -182,9 +185,9 @@ load_study <- function(filename_data_raw,
         spread(.data$key, .data$value) %>%
         dplyr::select(dplyr::any_of(names(metadata$dataset))) %>%
           dplyr::mutate(dataset_id = dataset_id) %>%
-          dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", 
-                                         "trait_name", "observation_id", "context_name", "site_name", 
-                                         "date", "collection_date", "custom_R_code", 
+          dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name",
+                                         "trait_name", "observation_id", "context_name", "site_name",
+                                         "date", "collection_date", "custom_R_code",
                                          "taxon_name", "collection_type", "sample_age_class")))
       )  %>%
       full_join( by = "dataset_id",
@@ -222,7 +225,7 @@ load_study <- function(filename_data_raw,
      traits[[v]] <- ifelse(!is.na(traits_tmp[["col_tmp"]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
   }
-  
+
   # Remove any values included to map into traits table
   sites <- sites %>% dplyr::filter(!(site_property %in% vars))
 
@@ -234,16 +237,22 @@ load_study <- function(filename_data_raw,
     dplyr::arrange(.data$cleaned_name)
 
   list(dataset_id = dataset_id,
-       traits       = traits %>% filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
-       sites    = sites,
-       contexts    = contexts,
+       traits     = traits %>% filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
+       sites      = sites,
+       contexts   = contexts,
        methods    = methods,
-       excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% dplyr::select(.data$error, everything()),
+       excluded_data = 
+         if(filter_missing_values == TRUE){
+           excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% dplyr::filter(error != "Missing value") %>%
+             dplyr::select(.data$error, everything())
+           } else {
+             excluded_data = traits %>% filter(!is.na(.data$error)) %>% dplyr::select(.data$error, everything())
+             },
        taxonomic_updates = taxonomic_updates,
-       taxa = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
+       taxa       = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
        definitions = definitions,
        contributors = contributors,
-       sources =  sources
+       sources    = sources
        )
 }
 
@@ -642,7 +651,7 @@ add_all_columns <- function(data, vars, add_error_column = TRUE) {
     data <- data %>%
       dplyr::mutate(error = NA_character_)
   }
-  
+
   data
 }
 
@@ -889,7 +898,7 @@ apply_taxonomic_updates  <- function(data, metadata){
   # Now make any replacements specified in metadata yaml
   ## Read metadata table, quit if empty
   cfgLookup <-  list_to_df(metadata[["taxonomic_updates"]])
-  if(is.na(cfgLookup) || nrow(cfgLookup) == 0) {
+  if(any(is.na(cfgLookup)) || nrow(cfgLookup) == 0) {
     return(out)
   }
 
