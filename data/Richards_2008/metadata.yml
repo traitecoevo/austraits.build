@@ -227,13 +227,31 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% rename(measurement_remarks = context)
+  custom_R_code: '
+    data %>%
+      group_by(name_original, AusTraits_site_name) %>%
+        mutate(method_number = dplyr::row_number()) %>%
+      ungroup() %>%
+      mutate(
+        measurement_remarks = context,
+        method_number = ifelse(context == "reference_site", 1, method_number),
+        method_number = ifelse(stringr::str_detect(context,"adult"),2, method_number),
+        method_number = ifelse(stringr::str_detect(context,"epicormic"),3, method_number),
+        measurement_remarks = ifelse(context %in% c("roadside_adult_foliage","pasture_adult_foliage","remnant_woodland_adult_foliage"),"adult foliage", measurement_remarks),
+        measurement_remarks = ifelse(context %in% c("roadside_epicormic_foliage","pasture_epicormic_foliage","remnant_woodland_epicormic_foliage"),"epicormic foliage", measurement_remarks),
+        AusTraits_site_name = ifelse(context %in% c("roadside_adult_foliage","roadside_epicormic_foliage"),"Marsh_1995_Moormung_roadside", AusTraits_site_name),
+        AusTraits_site_name = ifelse(context %in% c("pasture_adult_foliage","pasture_epicormic_foliage"),"Marsh_1995_Moormung_pasture", AusTraits_site_name),
+        AusTraits_site_name = ifelse(context %in% c("remnant_woodland_adult_foliage","remnant_woodland_epicormic_foliage"),"Marsh_1995_Moormung_remnant_woodland", AusTraits_site_name)
+      )
+  '
   collection_date: unknown/2009
   taxon_name: name_original
+  measurement_remarks: measurement_remarks
   site_name: AusTraits_site_name
   description: Collection of trait data on Australian plants compiled by Anna Richards
     and Ian Wright from papers
   collection_type: field
+  method_number: method_number
   sample_age_class: adult
   sampling_strategy: See the individual 'additional references' for the individual
     study motivations.

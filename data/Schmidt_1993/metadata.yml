@@ -17,11 +17,14 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(nitrogen_fixing = `mycorrhizal status`) %>% mutate(nitrogen_fixing
-    = str_extract(nitrogen_fixing,"nod")) %>% mutate(`mycorrhizal status` = gsub(",
-    nod","",`mycorrhizal status`)) %>% mutate(`mycorrhizal status` = gsub("  nod","",`mycorrhizal
-    status`))  %>% mutate(life_history = str_extract(`growth form`,"annual")) %>%
-    mutate(`growth form` = gsub("annual",NA,`growth form`))
+  custom_R_code:     '
+    data %>%
+      mutate(
+        nitrogen_fixing =  str_extract(`mycorrhizal status`,"nod"),
+        life_history = str_extract(`growth form`,"annual"),
+        `growth form` = gsub("annual","herb",`growth form`)
+      )
+  '
   collection_date: 1993/1993
   taxon_name: species
   description: compilation of mycorrhizal status data for Australian species
@@ -48,6 +51,14 @@ traits:
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert knowledge
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -100,111 +111,6 @@ substitutions:
 - trait_name: nitrogen_fixing
   find: NA
   replace: '0'
-- trait_name: root_structure
-  find: vam
-  replace: arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: v
-  replace: arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: 'v '
-  replace: arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: V / nil
-  replace: arbuscular_mycorrhizal non_mycorrhizal
-- trait_name: root_structure
-  find: V/ nil
-  replace: arbuscular_mycorrhizal non_mycorrhizal
-- trait_name: root_structure
-  find: V + nil
-  replace: arbuscular_mycorrhizal non_mycorrhizal
-- trait_name: root_structure
-  find: VAM+nil
-  replace: arbuscular_mycorrhizal non_mycorrhizal
-- trait_name: root_structure
-  find: nil
-  replace: non_mycorrhizal
-- trait_name: root_structure
-  find: subepidermal M
-  replace: subepidermal_mycorrhizal
-- trait_name: root_structure
-  find: subepidermal
-  replace: subepidermal_mycorrhizal
-- trait_name: root_structure
-  find: ecm
-  replace: ectomycorrhizal
-- trait_name: root_structure
-  find: (ECM)/VAM
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: ECM/VAM
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: ecm/vam
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: ecm/vam nod
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: ECM/V
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: VAM/ECM
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: (ECM)VAM
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: VAM, ECM
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: vam,ecm
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: vam ecm
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: V nod/ECM
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: Ectendo
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: ecm/vam, cr
-  replace: ectomycorrhizal arbuscular_mycorrhizal proteoid_root
-- trait_name: root_structure
-  find: ecm/vam, cluster roots
-  replace: ectomycorrhizal arbuscular_mycorrhizal cluster_roots
-- trait_name: root_structure
-  find: Epacrid
-  replace: ericoid_mycorrhizal
-- trait_name: root_structure
-  find: ericoid
-  replace: ericoid_mycorrhizal
-- trait_name: root_structure
-  find: ORCH
-  replace: orchid_mycorrhizal
-- trait_name: root_structure
-  find: nil, cluster roots
-  replace: non_mycorrhizal cluster_roots
-- trait_name: root_structure
-  find: nil  cr
-  replace: non_mycorrhizal proteoid_root
-- trait_name: root_structure
-  find: nil, cr
-  replace: non_mycorrhizal proteoid_root
-- trait_name: root_structure
-  find: nil, sparse cr
-  replace: non_mycorrhizal proteoid_root
-- trait_name: root_structure
-  find: sparse CR
-  replace: proteoid_root
-- trait_name: root_structure
-  find: coil VAM
-  replace: coiling_vam
-- trait_name: root_structure
-  find: nil, root haustor.
-  replace: non_mycorrhizal haustorium
 - trait_name: plant_growth_form
   find: climbing
   replace: climber
@@ -214,6 +120,111 @@ substitutions:
 - trait_name: plant_growth_form
   find: small tree
   replace: treelet
+- trait_name: root_structure
+  find: (ECM)/VAM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: (ECM)VAM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: coil VAM
+  replace: coiling_vam
+- trait_name: root_structure
+  find: ECM
+  replace: ectomycorrhizal
+- trait_name: root_structure
+  find: ECM  nod
+  replace: ectomycorrhizal
+- trait_name: root_structure
+  find: ECM/V
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: ECM/VAM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: ECM/VAM nod
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: ECM/VAM, cluster roots
+  replace: ectomycorrhizal arbuscular_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: Ectendo
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: Epacrid
+  replace: ericoid_mycorrhizal
+- trait_name: root_structure
+  find: ericoid
+  replace: ericoid_mycorrhizal
+- trait_name: root_structure
+  find: nil
+  replace: non_mycorrhizal
+- trait_name: root_structure
+  find: nil, cluster roots
+  replace: non_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: nil, cluster roots, nod
+  replace: non_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: nil, CR
+  replace: non_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: nil, root haustor.
+  replace: non_mycorrhizal haustorium
+- trait_name: root_structure
+  find: nil, sparse CR
+  replace: non_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: ORCH
+  replace: orchid_mycorrhizal
+- trait_name: root_structure
+  find: sparse CR
+  replace: proteoid_root
+- trait_name: root_structure
+  find: subepidermal
+  replace: subepidermal_mycorrhizal
+- trait_name: root_structure
+  find: subepidermal M
+  replace: subepidermal_mycorrhizal
+- trait_name: root_structure
+  find: V
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: V  nod
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: V / nil
+  replace: arbuscular_mycorrhizal non_mycorrhizal
+- trait_name: root_structure
+  find: V + nil
+  replace: arbuscular_mycorrhizal non_mycorrhizal
+- trait_name: root_structure
+  find: V nod/ECM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: V/ nil
+  replace: arbuscular_mycorrhizal non_mycorrhizal
+- trait_name: root_structure
+  find: VAM
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: VAM  nod
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: VAM, nod
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: VAM,ECM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: VAM/ECM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: VAM+nil
+  replace: arbuscular_mycorrhizal non_mycorrhizal
+- trait_name: root_structure
+  find: .na.character
+  replace: non_mycorrhizal
 taxonomic_updates:
 - find: Acacia michellii
   replace: Acacia mitchellii
@@ -413,5 +424,8 @@ taxonomic_updates:
 - find: Trachymene pusillus
   replace: Trachymene pilosa
   reason: Aligned with APC accepted synonym (E. Wenk, 2020-05-25)
-exclude_observations: .na
+exclude_observations:
+- variable: taxon_name
+  find: Trachymene pusillus
+  reason: collapses to duplicate
 questions: .na

@@ -183,8 +183,9 @@ load_study <- function(filename_data_raw,
         dplyr::select(dplyr::any_of(names(metadata$dataset))) %>%
           dplyr::mutate(dataset_id = dataset_id) %>%
           dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", 
-                                         "trait_name", "observation_id", "context_name", "site_name", 
-                                         "date", "collection_date", "custom_R_code", 
+                                         "trait_name", "observation_id", "population_id", "individual_id",
+                                         "context_name", "site_name", 
+                                         "collection_date", "custom_R_code", 
                                          "taxon_name", "collection_type", "sample_age_class")))
       )  %>%
       full_join( by = "dataset_id",
@@ -209,7 +210,8 @@ load_study <- function(filename_data_raw,
 
   # Where missing, fill variables with values from sites
   vars <- c("collection_type", "sample_age_class", "collection_date", "measurement_remarks", "entity_type",
-                  "value_type", "basis_of_value", "replicates", "observation_number", "method_number")
+                  "value_type", "basis_of_value", "replicates", "observation_number", "method_number",
+                  "population_id", "individual_id")
   
   for(v in vars){
     # merge in to traits from site level
@@ -679,7 +681,8 @@ parse_data <- function(data, dataset_id, metadata) {
 
   # Step 1b. import any values that aren't columns of data
   vars <- c( "entity_type", "value_type", "basis_of_value", "replicates", "collection_date",
-            "collection_type", "sample_age_class", "measurement_remarks", "observation_number", "method_number")
+            "collection_type", "sample_age_class", "measurement_remarks", "observation_number", 
+            "method_number", "individual_id", "population_id")
 
   df <-
     df %>%
@@ -699,12 +702,62 @@ parse_data <- function(data, dataset_id, metadata) {
 
   # Add unique observation ids
   # function builds id -- determine number of 00s needed based on number of records
-  make_id <- function(n, dataset_id)
-              sprintf(paste0("%s_%0", ceiling(log10(n)), "d"),
-                              dataset_id, seq_len(n))
+  make_id <- function(n, dataset_id, entity)
+              sprintf(paste0("%s_%s%0", ceiling(log10(n)), "d"),
+                              dataset_id, entity, seq_len(n))
+  
+  make_id_segment <- function(n, entity)
+              sprintf(paste0("%s%0", ceiling(log10(n)), "d"), entity, seq_len(n))
 
   if(!data_is_long_format) {
-    # For wide datasets rows are assumed to be natural grouping unless there is a specified observation_id column
+    
+    # Create an entity ID that merges together information about species, population and individuals
+    # Create temporary species_id
+    df <- df %>%
+      dplyr::left_join(by = "taxon_name",
+                       tibble::tibble(taxon_name = df[["taxon_name"]] %>% unique() %>% sort(),
+                                      species_id_tmp = make_id(length(taxon_name), dataset_id, "sp"))
+      )
+    
+    # Create temporary population_id
+    
+    if(is.null(df[["population_id"]]) & (!is.null(df[["site_name"]])|!is.null(df[["context_name"]]))) {
+      df <- df %>%
+        dplyr::mutate(population_id = paste(df[["site_name"]], df[["context_name"]]))
+    }
+    
+    if(!is.null(df[["population_id"]])) {
+      df <- df %>%
+        dplyr::left_join(by = "population_id",
+                         tibble::tibble(population_id = df[["population_id"]] %>% unique() %>% sort(),
+                                        population_id_tmp = make_id_segment(length(population_id), "pop")))
+    }
+    
+    
+    browser() 
+    
+    # Create temporary individual_id
+    if(is.null(df[["individual_id"]])) {
+      df <- df %>%
+        group_by(species_id_tmp, population_id_tmp) %>%
+            mutate(individual_id_tmp = dplyr::row_number()) %>% ungroup() %>% 
+            mutate(individual_id_tmp = paste0("ind",individual_id_tmp))
+    } else {
+      test <- df %>%
+        mutate(individual_id_tmp = as.character(individual_id)) %>%
+        group_by(species_id_tmp, population_id_tmp) %>%
+        dplyr::left_join(by = "individual_id_tmp",
+                         tibble::tibble(individual_id_tmp = as.character(df[["individual_id_tmp"]]) %>% unique() %>% sort(),
+                                        individual_id = make_id_segment(length(individual_id_tmp), "ind"))
+        ) %>%
+        
+          group_by(individual_id) %>%
+        mutate(individual_id_tmp = dplyr::row_number()) %>% ungroup() %>% 
+        mutate(individual_id_tmp = paste("ind",individual_id_tmp,sep = "_"))
+    }
+    
+    
+  # For wide datasets rows are assumed to be natural grouping unless there is a specified observation_id column
 
       if(!is.null(df[["observation_id"]])) {
             df[["observation_id_tmp"]] <- df[["observation_id"]]
@@ -743,7 +796,7 @@ parse_data <- function(data, dataset_id, metadata) {
     df <- df %>%
               dplyr::left_join(by = "observation_id_tmp",
                         tibble::tibble(observation_id_tmp = df[["observation_id_tmp"]] %>% unique() %>% sort(),
-                               observation_id = make_id(length(.data$observation_id_tmp), dataset_id))
+                               observation_id = make_id(length(.data$observation_id_tmp), dataset_id, "x"))
                         ) %>%
               dplyr::select(-.data$observation_id_tmp)
   }
@@ -848,7 +901,7 @@ parse_data <- function(data, dataset_id, metadata) {
       }
     }
   }
-
+  
   out
 }
 
