@@ -53,11 +53,13 @@ test_that("metadata_write_dataset_id is working",{
 
 test_that("metadata_add_source_doi is working",{
   expect_invisible(metadata_add_source_doi(dataset_id = "Test_2022", doi = "https://doi.org/10.3389/fmars.2021.671145"))
-  expect_invisible(metadata_add_source_doi(dataset_id = "Test_2022", doi = "http://doi.org/10.3389/fmars.2021.671145"))
+  expect_equal(read_metadata("data/Test_2022/metadata.yml")$source$primary$year, "2021")
+  expect_invisible(metadata_add_source_doi(dataset_id = "Test_2022", doi = "http://doi.org/10.1111/j.0022-0477.2005.00992.x"))
+  expect_equal(read_metadata("data/Test_2022/metadata.yml")$source$primary$year, "2005")
   expect_invisible(metadata_add_source_doi(dataset_id = "Test_2022", doi = "doi.org/10.3389/fmars.2021.671145"))
+  expect_equal(read_metadata("data/Test_2022/metadata.yml")$source$primary$year, "2021")
   expect_invisible(metadata_add_source_doi(dataset_id = "Test_2022", doi = "10.3389/fmars.2021.671145"))
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$source$primary$journal, "Frontiers in Marine Science")
-  
   expect_silent(metadata_add_source_doi(dataset_id = "Test_2022", doi = "10.1111/j.0022-0477.2005.00992.x"))
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$source$primary$journal, "Journal of Ecology")
 })
