@@ -25,7 +25,7 @@ testthat::test_that("test datasets", {
   expect_equal(Ex1$traits$sample_age_class %>% unique, "adult")
   expect_equal(Ex1$traits %>% filter(collection_type == "field") %>% nrow(), 406)
   expect_equal(Ex1$traits %>% filter(sample_age_class == "adult") %>% nrow(), 406)
-  expect_equal(nrow(Ex1$excluded_data), 44)
+  expect_equal(nrow(Ex1$excluded_data), 0)
   
   # Example 2 - Test variables are read in at the trait level
   # test2-metadata collection_type for Leaf N trait changed  to lab, collection_type for every other trait

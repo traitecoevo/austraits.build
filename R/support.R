@@ -233,8 +233,6 @@ write_metadata <- function(data, path, style_code=FALSE) {
   cat(txt, file=file)
 }
 
-
-
 ##' Read yaml (from package yaml)
 ##' @importFrom yaml read_yaml
 ##' @name read_yaml
