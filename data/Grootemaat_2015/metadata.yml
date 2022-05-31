@@ -49,12 +49,21 @@ dataset:
         mutate_at(vars(`N (%mass)`,`P (%mass)`,`lignin (%mass)`,`tannin (%mass)`,
                 `FMC (% odw)`,senesced_leaf_N_per_dry_mass,senesced_leaf_P_per_dry_mass),
                 ~ replace(.x, duplicated(.x),NA)) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(
+        method_number = ifelse(material == "FRESH",1,NA),
+        method_number = ifelse(material == "DRIED",2,method_number),        
+        method_number = ifelse(material == "SENESCED",3,method_number),
+        measurement_remarks = ifelse(material == "FRESH","fresh leaves (indicating amount of leaf moisture)", NA),
+        measurement_remarks = ifelse(material == "DRIED","dry leaves (indicating amount of leaf moisture)", measurement_remarks),
+        measurement_remarks = ifelse(material == "SENESCED","senesced leaves (indicating amount of leaf moisture)", measurement_remarks)
+      )
   '
   collection_date: 2012/2012
   taxon_name: taxon
   site_name: site_name
-  context_name: material
+  measurement_remarks: measurement_remarks
+  method_number: method_number
   description: The aim of this study was twofold, (i) to determine which morphological
     and chemical leaf traits drive flammability and (ii) to determine whether different
     (combinations of) morphological and chemical leaf traits drive interspecific variation
@@ -149,13 +158,7 @@ sites:
     soil C, total (%): 0.67
     soil cation exchange capacity (meq/kg): 38.7
     geology (stratigraphic map unit): Loamy red sand (Quaternary dune systems)
-contexts:
-  DRIED:
-    leaf moisture: dry leaves [manipulated]
-  FRESH:
-    leaf moisture: fresh leaves
-  SENESCED:
-    leaf moisture: senesced leaves
+contexts: .na
 traits:
 - var_in: length (mm)
   unit_in: mm

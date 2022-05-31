@@ -30,7 +30,13 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      mutate(
+        leaflet_area = ifelse(name_original == "Acacia dealbata", `leaf area mm2`, NA),
+        `leaf area mm2` = ifelse(name_original == "Acacia dealbata", NA, `leaf area mm2`)  
+      )
+  '
   collection_date: 2012/2012
   taxon_name: name_original
   site_name: site_ID
@@ -113,7 +119,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 4-5
-  methods: For leaf area and leaf mass per area (LMA), two to 20 replicates per individual
+  methods: &leaf_method For leaf area and leaf mass per area (LMA), two to 20 replicates per individual
     of sun-exposed leaves were obtained from the tree or shrub mid-canopy. For species
     with compound leaves, leaflets were taken to be the functional unit equivalent
     to leaves. For shrubs and short trees, an extension cutter was used to obtain
@@ -121,6 +127,14 @@ traits:
     using a slingshot and weighted line. Only fully expanded leaves were used and
     these were scanned with a flatbed scanner and the leaf scans were processed by
     imaging software ImageJ to obtain leaf areas.
+- var_in: leaflet_area
+  unit_in: cm2
+  trait_name: leaflet_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 4-5
+  methods: *leaf_method
 - var_in: LMA gm2
   unit_in: g/m2
   trait_name: specific_leaf_area
@@ -178,7 +192,7 @@ traits:
     of the leaf length to leaf breadth.
 - var_in: bark thickness index
   unit_in: dimensionless
-  trait_name: .na
+  trait_name: bark_thickness_index
   entity_type: population
   value_type: mean
   basis_of_value: measurement

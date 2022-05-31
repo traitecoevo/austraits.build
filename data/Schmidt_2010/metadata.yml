@@ -22,8 +22,16 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(`%N` = na_if(`%N`, "no sample vial")) %>% mutate(date_sampled
-    = ifelse(Date == "Feb","1998-02","1998-11"))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        `%N` = na_if(`%N`, "no sample vial"),
+        date_sampled = ifelse(Date == "Feb","1998-02","1998-11")
+      ) %>%
+      group_by(name_matched) %>%
+        mutate_at(vars(`C3C4`, `Nfixer`, `growth form`, `leaf_type`, `deciduous/evergreen`), replace_duplicates_with_NA) %>%
+      ungroup()
+  '
   collection_date: date_sampled
   taxon_name: name_matched
   site_name: Property

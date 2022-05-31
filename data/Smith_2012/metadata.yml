@@ -27,11 +27,17 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site = "University of Western Sydney")
+  custom_R_code: '
+    data %>%
+      mutate(site = "University of Western Sydney") %>%
+      group_by(Species, Potnum, Temp, CO2, context, site) %>%
+        summarise_all(.funs = mean, na.rm = TRUE) %>%
+      ungroup()
+  '
   collection_date: 2007/2008
   taxon_name: Species
   site_name: site
-  observation_id: Potnum
+  individual_id: Potnum
   context_name: context
   description: We examined the interactive effects of [CO2] (290, 400 and 650 mLL-1)
     and temperature (ambient, ambient +4 deg C) on leaf structural and chemical traits
@@ -188,7 +194,7 @@ traits:
   entity_type: individual
   value_type: mean
   basis_of_value: measurement
-  replicates: 5
+  replicates: 10
   methods: Duplicate 1.0x0.5 cm sections were collected, after 7 months of growth,
     on opposite sides of the midvein in the mid region of the lamina; one leaf was
     used per pot. The leaf tissue was immediately fixed in double aldehyde fixative
@@ -210,7 +216,7 @@ traits:
   entity_type: individual
   value_type: mean
   basis_of_value: measurement
-  replicates: 6
+  replicates: 12
   methods: 'Two 1-cm2 sections per plant were taken from the mid-lamina region of
     recently fully expanded mature leaves after 7 months of growth. Epidermal peels
     were made using a method adapted from Jain (1976). The epidermal peels were stained
@@ -227,7 +233,7 @@ traits:
   entity_type: individual
   value_type: mean
   basis_of_value: measurement
-  replicates: 6
+  replicates: 12 
   methods: 'Two 1-cm2 sections per plant were taken from the mid-lamina region of
     recently fully expanded mature leaves after 7 months of growth. Epidermal peels
     were made using a method adapted from Jain (1976). The epidermal peels were stained

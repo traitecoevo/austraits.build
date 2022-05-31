@@ -20,12 +20,41 @@ contributors:
   austraits_curators: Anna Richards
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site_name = "North Stradbroke Island") %>% mutate(measurement_remarks = paste0("measurement made on ",tissue))
+  custom_R_code: '
+  root_data <- 
+      data %>%
+        filter(tissue %in% c("root crown", "tap root", "lateral root")) %>%
+        rename(`root_N_%` = `wood_N_%`, `root_P_%` = `wood_P_%`, `root_K_%` = `wood_K_%`, `root_Ca_%` = `wood_Ca_%`, 
+        `root_Mg_%` = `wood_Mg_%`, `root_Na_%` = `wood_Na_%`, `root_Fe_ppm` = `wood_Fe_ppm`, `root_Cu_ppm` = `wood_Cu_ppm`,
+        `root_Mn_ppm` = `wood_Mn_ppm`, `root_Zn_ppm` = `wood_Zn_ppm`, `root_Cl_ppm` = `wood_Cl_ppm`);
+
+    data %>%
+      filter(!tissue %in% c("root crown", "tap root", "lateral root")) %>%
+      bind_rows(root_data) %>%
+      mutate(
+        site_name = "North Stradbroke Island",
+        measurement_remarks = paste0("measurement made on ",tissue),
+        method_number = case_when(
+          tissue == "flowers" ~ "1",
+          tissue == "current leaves" ~ "1",
+          tissue == "older leaves" ~ "2",
+          tissue == "stem" ~ "3",
+          tissue == "primary branch" ~ "4",
+          tissue == "secondary branch" ~ "5",
+          tissue == "tertiary (terminal) branch" ~ "6",
+          tissue == "root crown" ~ "7",
+          tissue == "tap root" ~ "8",
+          tissue == "lateral root" ~ "9"
+        )
+      )
+  '
   collection_date: 1975/1975
   taxon_name: species
   site_name: site_name
   description: Nutrient concentrations of many plant parts from Eucalyptus signata
     forest on North Stradbroke Island
+  measurement_remarks: measurement_remarks
+  method_number: method_number
   collection_type: field
   sample_age_class: adult
   sampling_strategy: A 50 X 50 m study plot was established in a portion of forest
@@ -50,10 +79,10 @@ traits:
 - var_in: leaf_N_%
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Leaf samples for young and old leaves were analysed
@@ -61,10 +90,10 @@ traits:
 - var_in: leaf_P_%
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Leaf samples for young and old leaves were analysed
@@ -72,10 +101,10 @@ traits:
 - var_in: leaf_K_%
   unit_in: '%'
   trait_name: leaf_K_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Leaf samples for young and old leaves were analysed
@@ -83,10 +112,10 @@ traits:
 - var_in: leaf_S_%
   unit_in: '%'
   trait_name: leaf_S_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Leaf samples for young and old leaves were analysed
@@ -94,10 +123,10 @@ traits:
 - var_in: leaf_Ca_%
   unit_in: '%'
   trait_name: leaf_Ca_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Leaf samples for young and old leaves were analysed
@@ -105,10 +134,10 @@ traits:
 - var_in: leaf_Mg_%
   unit_in: '%'
   trait_name: leaf_Mg_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Leaf samples for young and old leaves were analysed
@@ -116,10 +145,10 @@ traits:
 - var_in: leaf_Na_%
   unit_in: '%'
   trait_name: leaf_Na_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Leaf samples for young and old leaves were analysed
@@ -127,10 +156,10 @@ traits:
 - var_in: leaf_Fe_ppm
   unit_in: ppm
   trait_name: leaf_Fe_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Leaf samples for young and old leaves were analysed
@@ -138,10 +167,10 @@ traits:
 - var_in: leaf_Cu_ppm
   unit_in: ppm
   trait_name: leaf_Cu_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Leaf samples for young and old leaves were analysed
@@ -149,10 +178,10 @@ traits:
 - var_in: leaf_Mn_ppm
   unit_in: ppm
   trait_name: leaf_Mn_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Leaf samples for young and old leaves were analysed
@@ -160,10 +189,10 @@ traits:
 - var_in: leaf_Zn_ppm
   unit_in: ppm
   trait_name: leaf_Zn_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Leaf samples for young and old leaves were analysed
@@ -171,10 +200,10 @@ traits:
 - var_in: leaf_Cl_ppm
   unit_in: ppm
   trait_name: leaf_Cl_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Leaf samples for young and old leaves were analysed
@@ -182,10 +211,10 @@ traits:
 - var_in: wood_N_%
   unit_in: '%'
   trait_name: wood_N_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -201,10 +230,10 @@ traits:
 - var_in: wood_P_%
   unit_in: '%'
   trait_name: wood_P_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -220,10 +249,10 @@ traits:
 - var_in: wood_K_%
   unit_in: '%'
   trait_name: wood_K_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -239,10 +268,10 @@ traits:
 - var_in: wood_Ca_%
   unit_in: '%'
   trait_name: wood_Ca_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -258,10 +287,10 @@ traits:
 - var_in: wood_Mg_%
   unit_in: '%'
   trait_name: wood_Mg_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -277,10 +306,124 @@ traits:
 - var_in: wood_Na_%
   unit_in: '%'
   trait_name: wood_Na_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
+  methods: Plant tissue samples were collected for analysis during mid-summer months.
+    Samples from five individuals were dried to 104 deg C, ground, and bulked for
+    analysis for each plant part. Woody tissue samples were analysed for organic and
+    ammonium nitrogen after digestion in concentrated sulphuric acid and selenium
+    catalyst by the Kjeldahl method. The same digest was analysed for phosphate ion
+    using vanadomolybdate reagent, and for potassium ion on an atomic absorption spectrophotometer
+    (A.A.). Woody tissues digested in a concentrated nitric-sulphuric-perchloric acid
+    mixture were analysed by the A.A. in the presence of lanthanum chloride for calcium,
+    magnesium and sodium ions, and in the absence of lanthanum chloride for iron,
+    copper, manganese and zinc ions. Chloride ion was analysed by A.A. on tissue boiled
+    slowly for 1 h in deionized water. Woody tissue analyses were performed by Consolidated
+    Fertilizers Pty. Ltd.
+- var_in: root_N_%
+  unit_in: '%'
+  trait_name: root_N_per_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: Plant tissue samples were collected for analysis during mid-summer months.
+    Samples from five individuals were dried to 104 deg C, ground, and bulked for
+    analysis for each plant part. Woody tissue samples were analysed for organic and
+    ammonium nitrogen after digestion in concentrated sulphuric acid and selenium
+    catalyst by the Kjeldahl method. The same digest was analysed for phosphate ion
+    using vanadomolybdate reagent, and for potassium ion on an atomic absorption spectrophotometer
+    (A.A.). Woody tissues digested in a concentrated nitric-sulphuric-perchloric acid
+    mixture were analysed by the A.A. in the presence of lanthanum chloride for calcium,
+    magnesium and sodium ions, and in the absence of lanthanum chloride for iron,
+    copper, manganese and zinc ions. Chloride ion was analysed by A.A. on tissue boiled
+    slowly for 1 h in deionized water. Woody tissue analyses were performed by Consolidated
+    Fertilizers Pty. Ltd.
+- var_in: root_P_%
+  unit_in: '%'
+  trait_name: root_P_per_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: Plant tissue samples were collected for analysis during mid-summer months.
+    Samples from five individuals were dried to 104 deg C, ground, and bulked for
+    analysis for each plant part. Woody tissue samples were analysed for organic and
+    ammonium nitrogen after digestion in concentrated sulphuric acid and selenium
+    catalyst by the Kjeldahl method. The same digest was analysed for phosphate ion
+    using vanadomolybdate reagent, and for potassium ion on an atomic absorption spectrophotometer
+    (A.A.). Woody tissues digested in a concentrated nitric-sulphuric-perchloric acid
+    mixture were analysed by the A.A. in the presence of lanthanum chloride for calcium,
+    magnesium and sodium ions, and in the absence of lanthanum chloride for iron,
+    copper, manganese and zinc ions. Chloride ion was analysed by A.A. on tissue boiled
+    slowly for 1 h in deionized water. Woody tissue analyses were performed by Consolidated
+    Fertilizers Pty. Ltd.
+- var_in: root_K_%
+  unit_in: '%'
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: Plant tissue samples were collected for analysis during mid-summer months.
+    Samples from five individuals were dried to 104 deg C, ground, and bulked for
+    analysis for each plant part. Woody tissue samples were analysed for organic and
+    ammonium nitrogen after digestion in concentrated sulphuric acid and selenium
+    catalyst by the Kjeldahl method. The same digest was analysed for phosphate ion
+    using vanadomolybdate reagent, and for potassium ion on an atomic absorption spectrophotometer
+    (A.A.). Woody tissues digested in a concentrated nitric-sulphuric-perchloric acid
+    mixture were analysed by the A.A. in the presence of lanthanum chloride for calcium,
+    magnesium and sodium ions, and in the absence of lanthanum chloride for iron,
+    copper, manganese and zinc ions. Chloride ion was analysed by A.A. on tissue boiled
+    slowly for 1 h in deionized water. Woody tissue analyses were performed by Consolidated
+    Fertilizers Pty. Ltd.
+- var_in: root_Ca_%
+  unit_in: '%'
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: Plant tissue samples were collected for analysis during mid-summer months.
+    Samples from five individuals were dried to 104 deg C, ground, and bulked for
+    analysis for each plant part. Woody tissue samples were analysed for organic and
+    ammonium nitrogen after digestion in concentrated sulphuric acid and selenium
+    catalyst by the Kjeldahl method. The same digest was analysed for phosphate ion
+    using vanadomolybdate reagent, and for potassium ion on an atomic absorption spectrophotometer
+    (A.A.). Woody tissues digested in a concentrated nitric-sulphuric-perchloric acid
+    mixture were analysed by the A.A. in the presence of lanthanum chloride for calcium,
+    magnesium and sodium ions, and in the absence of lanthanum chloride for iron,
+    copper, manganese and zinc ions. Chloride ion was analysed by A.A. on tissue boiled
+    slowly for 1 h in deionized water. Woody tissue analyses were performed by Consolidated
+    Fertilizers Pty. Ltd.
+- var_in: root_Mg_%
+  unit_in: '%'
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: Plant tissue samples were collected for analysis during mid-summer months.
+    Samples from five individuals were dried to 104 deg C, ground, and bulked for
+    analysis for each plant part. Woody tissue samples were analysed for organic and
+    ammonium nitrogen after digestion in concentrated sulphuric acid and selenium
+    catalyst by the Kjeldahl method. The same digest was analysed for phosphate ion
+    using vanadomolybdate reagent, and for potassium ion on an atomic absorption spectrophotometer
+    (A.A.). Woody tissues digested in a concentrated nitric-sulphuric-perchloric acid
+    mixture were analysed by the A.A. in the presence of lanthanum chloride for calcium,
+    magnesium and sodium ions, and in the absence of lanthanum chloride for iron,
+    copper, manganese and zinc ions. Chloride ion was analysed by A.A. on tissue boiled
+    slowly for 1 h in deionized water. Woody tissue analyses were performed by Consolidated
+    Fertilizers Pty. Ltd.
+- var_in: root_Na_%
+  unit_in: '%'
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -296,10 +439,10 @@ traits:
 - var_in: bark_N_%
   unit_in: '%'
   trait_name: bark_N_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -315,10 +458,10 @@ traits:
 - var_in: bark_P_%
   unit_in: '%'
   trait_name: bark_P_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -334,10 +477,10 @@ traits:
 - var_in: bark_K_%
   unit_in: '%'
   trait_name: bark_K_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -353,10 +496,10 @@ traits:
 - var_in: bark_Ca_%
   unit_in: '%'
   trait_name: bark_Ca_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -372,10 +515,10 @@ traits:
 - var_in: bark_Mg_%
   unit_in: '%'
   trait_name: bark_Mg_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -391,10 +534,10 @@ traits:
 - var_in: bark_Na_%
   unit_in: '%'
   trait_name: bark_Na_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -410,10 +553,10 @@ traits:
 - var_in: dead_wood_N_%
   unit_in: '%'
   trait_name: dead_wood_N_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -429,10 +572,10 @@ traits:
 - var_in: dead_wood_P_%
   unit_in: '%'
   trait_name: dead_wood_P_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -448,10 +591,10 @@ traits:
 - var_in: dead_wood_K_%
   unit_in: '%'
   trait_name: dead_wood_K_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -467,10 +610,10 @@ traits:
 - var_in: dead_wood_Ca_%
   unit_in: '%'
   trait_name: dead_wood_Ca_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -486,10 +629,10 @@ traits:
 - var_in: dead_wood_Mg_%
   unit_in: '%'
   trait_name: dead_wood_Mg_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -505,10 +648,10 @@ traits:
 - var_in: dead_wood_Na_%
   unit_in: '%'
   trait_name: dead_wood_Na_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 5
   methods: Plant tissue samples were collected for analysis during mid-summer months.
     Samples from five individuals were dried to 104 deg C, ground, and bulked for
     analysis for each plant part. Woody tissue samples were analysed for organic and
@@ -529,4 +672,4 @@ taxonomic_updates:
 exclude_observations: .na
 questions:
   additional_traits: flower nutrient concentrations; additional micronutrient concentrations
-    for wood, bark
+    for wood, root, bark
