@@ -3,7 +3,7 @@
 on:
   push:
     branches: [main, master, develop]
-  
+
   pull_request:
     branches: [main, master, develop]
 
@@ -39,7 +39,7 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
           extra-packages: rcmdcheck
-          
+
       - name: Run tests
         run: testthat::test_dir("tests/testthat")
         shell: Rscript {0}
@@ -57,3 +57,7 @@ jobs:
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
+
+      - name: Test coverage
+         run: covr::codecov(quiet=FALSE)
+         shell: Rscript {0}
