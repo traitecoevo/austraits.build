@@ -68,7 +68,7 @@ It may help to download one of the [existing datasets](https://github.com/traite
 Once you have prepared your `data.csv` and `metadata.yml` files within a folder in the `data` directory, you can incorporate the new data into AusTraits by running:
 
 ```{r, eval=FALSE, echo=TRUE}
-austraits_rebuild_remake_setup()
+setup_build_process()
 ```
 
 This step updates the file `remake.yml` with appropriate rules for the new dataset; similarly if you remove datasets, do the same. (At this stage, [remake](https://github.com/richfitz/remake) offers no looping constructs, so for now we generate the remake file using: [whisker](https://github.com/edwindj/whisker).)
@@ -340,7 +340,7 @@ For many studies there are changes we want to make to a dataset before the data.
 
 #### Background  
 
-In each case we want to make some custom modifications to a particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`load_study`](https://github.com/traitecoevo/austraits.build/blob/master/R/steps.R)) looks like this:  
+In each case we want to make some custom modifications to a particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`load_dataset`](https://github.com/traitecoevo/austraits.build/blob/master/R/steps.R)) looks like this:  
 
 ```{r, eval=FALSE, echo=TRUE}
 data <-
@@ -476,11 +476,11 @@ This automatically propagates each trait selected into `metadata.yml` as follows
 
 The trait details then need to be filled in manually. 
 
-- *units*: fill in the units specified by the author - such as mm2. If you're uncertain about the syntax/format used for some more complex units, look through the definitions file (`config/definitions.yml`) or the file showing unit conversions (`config/unit_conversions.csv`). For categorical variables, leave this as `.na`.  
+- *units*: fill in the units specified by the author - such as mm2. If you're uncertain about the syntax/format used for some more complex units, look through the definitions file (`system.file("support", "austraits.build_schema.yml", package = "austraits.build")`) or the file showing unit conversions (`system.file("support", "austraits.build_schema.yml", package = "austraits.build")`). For categorical variables, leave this as `.na`.  
 
-- *trait_name*: This is the appropriate trait name from `config/definitions.yml`. If no appropriate trait exists in AusTraits, a new trait can often be added - just ensure it is a `trait` where data will be comparable across studies and has been measured for a fair number (~>50) species. For currently unsupported traits, we leave this as `.na` but then fill in the rest of the data and flag this study as having a potential new trait. Then in the future, when this trait is added to the definitions file, the data can be read into AusTraits by simply replacing the `.na` with a trait name. 
+- *trait_name*: This is the appropriate trait name from `config/traits.yml`. If no appropriate trait exists in AusTraits, a new trait can often be added - just ensure it is a `trait` where data will be comparable across studies and has been measured for a fair number (~>50) species. For currently unsupported traits, we leave this as `.na` but then fill in the rest of the data and flag this study as having a potential new trait. Then in the future, when this trait is added to the definitions file, the data can be read into AusTraits by simply replacing the `.na` with a trait name. 
 
-- *value_type*: See the bottom of `config/definitions.yml` for a list of accepted value types.  
+- *value_type*: See the bottom of `system.file("support", "austraits.build_schema.yml", package = "austraits.build")` for a list of accepted value types.  
 
 - *replicates*: Fill in with the appropriate value. For categorical variables, leave this as `.na`.  
 
@@ -584,7 +584,7 @@ You are first prompted to identify the column with the context name and then to 
 
 ### Using substitutions  
 
-It is very unlikely that a contributor will use categorical trait values that are entirely identical to those in the `definitions.yml` file. You need to add substitutions for those that do not exactly align to match the wording and syntax supported by AusTraits. Combinations of multiple trait values are allowed - simply list them, space delimited (e.g. `shrub tree` for a species whose growth form includes both)
+It is very unlikely that a contributor will use categorical trait values that are entirely identical to those in the `traits.yml` file. You need to add substitutions for those that do not exactly align to match the wording and syntax supported by AusTraits. Combinations of multiple trait values are allowed - simply list them, space delimited (e.g. `shrub tree` for a species whose growth form includes both)
 
 Single substitutions can be added by running:
 ```{r, eval=FALSE, echo=TRUE}
@@ -709,7 +709,7 @@ See below for suggestions on how to implement large numbers of trait value subst
 
 Now incorporate the new study into AusTraits:  
 ```{r, eval=FALSE, echo=TRUE}
-austraits_rebuild_remake_setup()
+setup_build_process()
 austraits <- remake::make("austraits")
 ```
 
@@ -751,13 +751,13 @@ Possible reasons for excluding a trait value includes:
 
 - *Time contains non-number*: Indicates a problem with the value entered into the traits `flowering_time` and `fruiting_time`. (*Note to AusTraits custodians: This error should no longer appear - will retain for now as a placeholder.*)
 
-- *Unsupported trait*: `trait_name` not listed in `config/definitions.yml`, under `traits`. Double check you have used the correct spelling/exact syntax for the `trait_name`, adding a new `trait` to the `definitions` file if appropriate. If there is a trait that is currently unsupported by AusTraits, leave `trait_name: .na` - do not fill in an arbitrary name. (Note, if you have data in long format, all traits are automatically added to the list of traits in `metadata.yml` and even if you indicate `trait_name: .na` these appear as `unsupported trait` in the `excluded_data` table.)  
+- *Unsupported trait*: `trait_name` not listed in `config/traits.yml`, under `traits`. Double check you have used the correct spelling/exact syntax for the `trait_name`, adding a new `trait` to the `definitions` file if appropriate. If there is a trait that is currently unsupported by AusTraits, leave `trait_name: .na` - do not fill in an arbitrary name. (Note, if you have data in long format, all traits are automatically added to the list of traits in `metadata.yml` and even if you indicate `trait_name: .na` these appear as `unsupported trait` in the `excluded_data` table.)  
 
-- *Unsupported trait value*: This error, referencing categorical traits, means that the `value` for a trait is not included in the list of supported trait values for that trait in `config/definitions.yml`. See `Adding many substitutions` if there are many trait values requiring substitutions. If appropriate, add another trait value to the definitions file.  
+- *Unsupported trait value*: This error, referencing categorical traits, means that the `value` for a trait is not included in the list of supported trait values for that trait in `config/traits.yml`. See `Adding many substitutions` if there are many trait values requiring substitutions. If appropriate, add another trait value to the definitions file.  
 
 - *Value does not convert to numeric*: Is there a strange character in the file preventing easy conversion? This error is rare and generally justified.  
 
-- *Value out of allowable range*: This error, referencing numeric traits, means that the trait value, after unit conversions, falls outside of the allowable range specified for that trait in `config/definitions.yml`. Sometimes the AusTraits range is too narrow and other times the author’s value is truly an outlier that should be excluded. Look closely at these and adjust the range in `config/definitions.yml` if justified. Generally, don’t change the range until you’ve create a report for the study and confirmed that the general cloud of data aligns with other studies as excepted. Most frequently the units or unit conversion is what is incorrect.  
+- *Value out of allowable range*: This error, referencing numeric traits, means that the trait value, after unit conversions, falls outside of the allowable range specified for that trait in `config/traits.yml`. Sometimes the AusTraits range is too narrow and other times the author’s value is truly an outlier that should be excluded. Look closely at these and adjust the range in `config/traits.yml` if justified. Generally, don’t change the range until you’ve create a report for the study and confirmed that the general cloud of data aligns with other studies as excepted. Most frequently the units or unit conversion is what is incorrect.  
 
 You can also ask how many of each error type are present for a study:  
 ```{r, echo=TRUE, results="show"}
@@ -1106,7 +1106,7 @@ Rebuild the taxon list and AusTraits to ensure other changes made during the qua
 ```{r, eval=FALSE, echo=TRUE}
 austraits_rebuild_taxon_list()
 austraits <- remake::make("austraits")
-build_study_report(current_study)
+build_dataset_report(current_study)
 ```
 
 Check the study report to ensure:  
@@ -1129,17 +1129,17 @@ dataset_ids <- current_study
 austraits_run_tests()
 
 austraits <- remake::make("austraits")
-build_study_report(current_study, overwrite = TRUE)
+build_dataset_report(current_study, overwrite = TRUE)
 ```
 
 To generate a report for a collection of studies:  
 ```{r, eval=FALSE, echo=TRUE}
-build_study_reports(c("Falster_2005_1", "Wright_2002"), overwrite = TRUE)
+build_dataset_reports(c("Falster_2005_1", "Wright_2002"), overwrite = TRUE)
 ```
 
 Or for all studies:  
 ```{r, eval=FALSE, echo=TRUE}
-build_study_reports(overwrite = TRUE)
+build_dataset_reports(overwrite = TRUE)
 ```
 
 Add the argument `overwrite=TRUE` if you already have a copy of a specific report stored in your computer and want to replace it with a newer version.
@@ -1201,7 +1201,7 @@ Then in R
 dataset_ids <- "Smith_1995"
 
 # Update remake file
-austraits_rebuild_remake_setup()
+setup_build_process()
 
 # check data builds
 remake::make(dataset_ids)

@@ -6,11 +6,11 @@
 run_benchmark <- function( ) {
   f_build <- function(x, n_max=2000) {
 
-    definitions <- yaml::read_yaml("config/definitions.yml")
+    definitions <- load_schema()
     unit_conversions <- make_unit_conversion_functions("config/unit_conversions.csv")
     
     config <- subset_config(sprintf("data/%s/metadata.yml", x), definitions, unit_conversions)
-    data <- load_study(sprintf("data/%s/data.csv", x), config)
+    data <- load_dataset(sprintf("data/%s/data.csv", x), config)
     
     data
   }

@@ -1,16 +1,16 @@
 #' Build reports for all studies
 #' 
-#' Build reports for all studies using the `build_study_report()` function. This
+#' Build reports for all studies using the `build_dataset_report()` function. This
 #' function builds a study report for every study with a unique `dataset_id` that
-#' has been loaded into AusTraits using `build_study_report()`. The reports are 
+#' has been loaded into AusTraits using `build_dataset_report()`. The reports are 
 #' rendered as html files and saved in the "export/reports" folder.  
 #'
 #' @param dataset_ids names of studies/ datasets, default is NULL
-#' @param ... arguments passed to build_study_report()
+#' @param ... arguments passed to build_dataset_report()
 #'
 #' @return html files of the study report for all studies 
 #' @export
-build_study_reports <- function(dataset_ids=NULL, ...) {
+build_dataset_reports <- function(dataset_ids=NULL, ...) {
 
   # define if does not already exist, 
   # for all studies with suitable metadata file
@@ -18,7 +18,7 @@ build_study_reports <- function(dataset_ids=NULL, ...) {
     dataset_ids <- list.files("data")
   
   for(dataset_id in dataset_ids)
-    build_study_report(dataset_id, ...)
+    build_dataset_report(dataset_id, ...)
 }
 
 #' Build report for a specific study
@@ -36,7 +36,7 @@ build_study_reports <- function(dataset_ids=NULL, ...) {
 #'
 #' @return html file of the rendered report located in the "export/reports" folder
 #' @export
-build_study_report <- function(dataset_id, overwrite=FALSE, output_path = "export/reports", input_file = "scripts/report_study.Rmd") {
+build_dataset_report <- function(dataset_id, overwrite=FALSE, output_path = "export/reports", input_file = "scripts/report_study.Rmd") {
   
   if(!file.exists(output_path)) {
     dir.create(output_path, FALSE, TRUE)
