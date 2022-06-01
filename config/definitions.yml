@@ -4249,11 +4249,10 @@ austraits:
         taxon_name: &taxon_name Whenever possible, this field indicates the current accepted scientific name of a taxon, per the Australian Plant Census (APC). Alternatively, `taxon_name` can indicate an alignment with a name included in the comprehensive Australian Plant Names Index (APNI), but not currently marked as accepted in APC, or a name that cannot be aligned to available lists of Australian plant names.
         site_name: &site_name Name of the site where the individual was sampled. Cross-references between similar columns in `sites` and `traits`.
         context_name: &context_name Name of contextual senario where the individual was sampled. Cross-references between similar columns in `contexts` and `traits`.
-        observation_id: &observation_id A unique identifier for the observation, useful for joining traits coming from the same `observation_id`. For wide datasets, these are assigned automatically based on the `dataset_id` and row number of the raw data.
-        entity_id: &entity_id A unique identifier for the observation, that includes a species, population, and individual component.
-        species_id_tmp: &species_id_tmp A
-        population_id_tmp: &population_id_tmp A
-        individual_id_tmp: &individual_id_tmp A
+        individual_id: &individual_id A unique identifier for an individual plant. Often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time. 
+        population_id: &population_id A unique identifier for a population. As used in AusTraits, this is often a true biological population (that is, a site), but the term `population` is also used to capture a single experimental treatment.
+        entity_id: &entity_id A unique identifier that encodes the species, population, and/or individual that is connected to a trait value. A species-level trait value will have an entity_id that only includes a species component. A population-level trait value will have an entity_id that includes both species and population components. And an individual-level trait value will have an entity_id that includes species, population, and individual components.  
+        observation_id: &observation_id A unique identifier for the observation, important for joining traits coming from the same `observation_id` until `entity_id` is created later in the workflow. For wide datasets, unless a column is specified under `individual_id` , these are assigned automatically based on the `dataset_id` and row number of the raw data.
         observation_number: &observation_number Observation number defaults to 1, unless it is manually added as a column or to individual traits
         trait_name: &trait_name Name of the trait sampled. Allowable values specified in the table `definitions`.
         value: &value Measured value.
@@ -4309,11 +4308,10 @@ austraits:
         taxon_name: *taxon_name
         site_name: *site_name
         context_name: *context_name
-        observation_id: *observation_id
         entity_id: *entity_id
-        species_id_tmp: *species_id_tmp
-        population_id_tmp: *population_id_tmp
-        individual_id_tmp: *individual_id_tmp
+        population_id: *population_id
+        individual_id: *individual_id
+        observation_id: *observation_id
         observation_number: *observation_number
         trait_name: *trait_name
         value: *value
