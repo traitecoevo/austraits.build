@@ -10,6 +10,16 @@
 #' @usage lhs \%>\% rhs
 NULL
 
+#' Query the package version in DESCRIPTION
+#'
+#' See \code{desc::\link[desc:desc_get_version]{desc_get_version}} for details.
+#'
+#' @name desc_get_version
+#' @rdname desc_get_version
+#' @importFrom desc desc_get_version
+#' @export
+NULL
+
 #' Read in a csv as a tibble with column types as characters
 #'
 #' Reads in a csv file using the read_csv function from readr

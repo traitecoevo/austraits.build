@@ -1052,6 +1052,7 @@ update_taxonomy <- function(austraits_raw, taxa) {
 #' @param git_sha Git SHA
 #'
 #' @return AusTraits database object with version information added
+#' @export
 add_version_info <- function(austraits, version, git_sha) {
 
   austraits$build_info <- list(
@@ -1070,6 +1071,7 @@ add_version_info <- function(austraits, version, git_sha) {
 #'
 #' @return csv files of tibbles containing traits, sites, contexts, methods, excluded_data,
 #' taxonomic updates, taxa, contributors
+#' @export
 export_version_plaintext <- function(austraits, path) {
 
   unlink(path, TRUE)
@@ -1100,6 +1102,7 @@ export_version_plaintext <- function(austraits, path) {
 #'
 #' @param austraits AusTraits database object
 #' @param v_prev specify whether to update the NEWS.md file, default = NULL
+#' @export
 create_release <- function(austraits, v_prev= NULL) {
   version_number <- austraits$build_info$version
 
