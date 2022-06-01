@@ -13,6 +13,10 @@ setup_build_process(
 }
 \arguments{
 \item{template}{template used to build}
+
+\item{path}{path to folder with data}
+
+\item{dataset_ids}{dataset_ids to icnlude. By default includes all.}
 }
 \value{
 Updated remake.yml file

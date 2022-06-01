@@ -16,6 +16,8 @@ load_dataset(
 
 \item{config_for_dataset}{config settings generated from `subset_config()`}
 
+\item{schema}{schema for austraits.build}
+
 \item{filter_missing_values}{default filters missing values from the excluded data table. 
 Change to false to see the rows with missing values.}
 }

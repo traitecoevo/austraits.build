@@ -8,7 +8,8 @@ build_dataset_report(
   dataset_id,
   overwrite = FALSE,
   output_path = "export/reports",
-  input_file = "scripts/report_study.Rmd"
+  input_file = system.file("support", "report_dataset.Rmd", package =
+    "austraits.build")
 )
 }
 \arguments{

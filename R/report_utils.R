@@ -36,8 +36,9 @@ build_dataset_reports <- function(dataset_ids=NULL, ...) {
 #'
 #' @return html file of the rendered report located in the "export/reports" folder
 #' @export
-build_dataset_report <- function(dataset_id, overwrite=FALSE, output_path = "export/reports", input_file = "scripts/report_study.Rmd") {
-  
+build_dataset_report <- function(dataset_id, overwrite=FALSE, output_path = "export/reports", 
+                                 input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build")) {
+
   if(!file.exists(output_path)) {
     dir.create(output_path, FALSE, TRUE)
   }
@@ -102,33 +103,18 @@ get_SHA <- function(path = rprojroot::find_root("remake.yml")) {
 #' @importFrom rlang .data
 #' @export
 my_kable_styling_html <- function(...) {
-    kableExtra::kable(...) %>%
-    kableExtra::kable_styling(..., 
+    txt <- 
+      kableExtra::kable(...) %>%
+      kableExtra::kable_styling(..., 
                   bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
                   full_width = FALSE, 
                   position = "left"
-                  ) %>%
+                  ) 
+    
     # hack to add margin to plot
-    gsub('style="width: auto ', 'style="margin-left:30px; width: auto ', .)
+    gsub('style="width: auto ', 'style="margin-left:30px; width: auto ', txt)
 }
 
-#' Format table with kable and default styling for pdf 
-#'
-#' @param ... arguments passed to `kableExtra::kable()`
-#'
-#' @export
-my_kable_styling_pdf <- function(...) {
-    kableExtra::kable(...)
-}
-
-#' Format table with kable and default styling for markdown
-#'
-#' @param ... arguments passed to `kableExtra::kable()`
-#'
-#' @export
-my_kable_styling_markdown <- function(...) {
-  kableExtra::kable(...)
-}
 
 #' Generate hyperlink for markdown and html
 #' 

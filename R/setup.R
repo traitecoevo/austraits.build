@@ -1113,6 +1113,8 @@ test_data_setup <- function(dataset_ids = NULL) {
 #' studies
 #'
 #' @param template template used to build 
+#' @param path path to folder with data
+#' @param dataset_ids dataset_ids to icnlude. By default includes all.
 #'
 #' @return Updated remake.yml file 
 #' @export

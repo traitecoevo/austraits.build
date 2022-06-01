@@ -67,6 +67,7 @@ subset_config <- function(
 #'
 #' @param filename_data_raw raw data.csv file for any given study
 #' @param config_for_dataset config settings generated from `subset_config()`
+#' @param schema schema for austraits.build
 #' @param filter_missing_values default filters missing values from the excluded data table. 
 #' Change to false to see the rows with missing values.
 #'
@@ -235,7 +236,7 @@ load_dataset <- function(filename_data_raw,
        methods    = methods,
        excluded_data = 
          if(filter_missing_values == TRUE){
-           excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% dplyr::filter(error != "Missing value") %>%
+           excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% dplyr::filter(.data$error != "Missing value") %>%
              dplyr::select(.data$error, everything())
            } else {
              excluded_data = traits %>% filter(!is.na(.data$error)) %>% dplyr::select(.data$error, everything())
@@ -696,7 +697,7 @@ parse_data <- function(data, dataset_id, metadata) {
   if(!data_is_long_format) {
     # For wide datasets rows are assumed to be natural grouping
     df <- df %>%
-            dplyr::mutate(observation_id = make_id(nrow(.), dataset_id))
+            dplyr::mutate(observation_id = make_id(nrow(.data), dataset_id))
   } else {
 
     # For long datasets, create unique identifier from taxon_name, site, and observation_id (if specified)
