@@ -1,5 +1,5 @@
 
-build_comparison_set <- function(root.dir = rprojroot::find_root("remake.yml")) {
+build_comparison_set <- function(root.dir, trait_definitions, unit_conversions, schema) {
 
 # some datasets to compare against
 #  Baker_2019 - 1 excluded taxon, 1 taxonomic update, substitutions
@@ -9,19 +9,19 @@ build_comparison_set <- function(root.dir = rprojroot::find_root("remake.yml")) 
 #  Westoby_2014 -  big collection of numeric traits; but no "issues"; includes sites
 #  Tomlinson_2019 - complete taxonomic changes
   
-  f_build <- function(x, traits_definitions, unit_conversions, schema) {
-    config <-  austraits.build:::subset_config(file.path(root.dir, "data", x, "metadata.yml"), traits_definitions, unit_conversions)
+  f_build <- function(x, trait_definitions, unit_conversions, schema) {
+    config <-  austraits.build:::subset_config(file.path(root.dir, "data", x, "metadata.yml"), trait_definitions, unit_conversions)
     data <-  austraits.build:::load_dataset(file.path(root.dir, "data", x, "data.csv"), config, schema)
     data
   }
   
-  Baker_2019 <- f_build("Baker_2019", traits_definitions, unit_conversions, schema)
-  Bloomfield_2018 <- f_build("Bloomfield_2018", traits_definitions, unit_conversions, schema)
-  Catford_2014 <- f_build("Catford_2014", traits_definitions, unit_conversions, schema)
-  Duan_2015 <- f_build("Duan_2015", traits_definitions, unit_conversions, schema)
-  Maslin_2012 <- f_build("Maslin_2012", traits_definitions, unit_conversions, schema)
-  Tomlinson_2019 <- f_build("Tomlinson_2019", traits_definitions, unit_conversions, schema)
-  Westoby_2014 <- f_build("Westoby_2014", traits_definitions, unit_conversions, schema)
+  Baker_2019 <- f_build("Baker_2019", trait_definitions, unit_conversions, schema)
+  Bloomfield_2018 <- f_build("Bloomfield_2018", trait_definitions, unit_conversions, schema)
+  Catford_2014 <- f_build("Catford_2014", trait_definitions, unit_conversions, schema)
+  Duan_2015 <- f_build("Duan_2015", trait_definitions, unit_conversions, schema)
+  Maslin_2012 <- f_build("Maslin_2012", trait_definitions, unit_conversions, schema)
+  Tomlinson_2019 <- f_build("Tomlinson_2019", trait_definitions, unit_conversions, schema)
+  Westoby_2014 <- f_build("Westoby_2014", trait_definitions, unit_conversions, schema)
   
   austraits_raw <-  austraits.build:::combine_datasets(Baker_2019, Bloomfield_2018, Catford_2014, Duan_2015, Maslin_2012, Tomlinson_2019, Westoby_2014, NULL)
   
@@ -37,7 +37,9 @@ build_comparison_set <- function(root.dir = rprojroot::find_root("remake.yml")) 
 test_that("constancy of with version 3.0.2", {
   
   # some datasets to compare against
-  expect_no_error(austraits_raw <- build_comparison_set(root.dir), info = "Building comparison set")
+  expect_no_error(
+    austraits_raw <- build_comparison_set(root.dir, trait_definitions, unit_conversions, schema)
+    , info = "Building comparison set")
   
   file_comparison <- "tests/build/comparison_set_3.0.2.rds"
   

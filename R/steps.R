@@ -688,6 +688,7 @@ parse_data <- function(data, dataset_id, metadata) {
       metadata[["dataset"]][names(metadata[["dataset"]]) %in% vars[!vars %in% names(df)]] %>% tibble::as_tibble()
     )
 
+  
   # Add unique observation ids
   # function builds id -- determine number of 00s needed based on number of records
   make_id <- function(n, dataset_id)
@@ -697,7 +698,7 @@ parse_data <- function(data, dataset_id, metadata) {
   if(!data_is_long_format) {
     # For wide datasets rows are assumed to be natural grouping
     df <- df %>%
-            dplyr::mutate(observation_id = make_id(nrow(.data), dataset_id))
+            dplyr::mutate(observation_id = make_id(nrow(.), dataset_id))
   } else {
 
     # For long datasets, create unique identifier from taxon_name, site, and observation_id (if specified)
