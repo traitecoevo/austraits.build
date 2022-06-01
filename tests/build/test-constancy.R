@@ -9,24 +9,21 @@ build_comparison_set <- function(root.dir = rprojroot::find_root("remake.yml")) 
 #  Westoby_2014 -  big collection of numeric traits; but no "issues"; includes sites
 #  Tomlinson_2019 - complete taxonomic changes
   
-  definitions <- load_schema()
-  unit_conversions <- austraits.build:::make_unit_conversion_functions(file.path(root.dir, "config/unit_conversions.csv"))
-
-  f_build <- function(x, definitions, unit_conversions) {
-    config <-  austraits.build:::subset_config(file.path(root.dir, "data", x, "metadata.yml"), definitions, unit_conversions)
-    data <-  austraits.build:::load_dataset(file.path(root.dir, "data", x, "data.csv"), config)
+  f_build <- function(x, traits_definitions, unit_conversions, schema) {
+    config <-  austraits.build:::subset_config(file.path(root.dir, "data", x, "metadata.yml"), traits_definitions, unit_conversions)
+    data <-  austraits.build:::load_dataset(file.path(root.dir, "data", x, "data.csv"), config, schema)
     data
   }
   
-  Baker_2019 <- f_build("Baker_2019", definitions, unit_conversions)
-  Bloomfield_2018 <- f_build("Bloomfield_2018", definitions, unit_conversions)
-  Catford_2014 <- f_build("Catford_2014", definitions, unit_conversions)
-  Duan_2015 <- f_build("Duan_2015", definitions, unit_conversions)
-  Maslin_2012 <- f_build("Maslin_2012", definitions, unit_conversions)
-  Tomlinson_2019 <- f_build("Tomlinson_2019", definitions, unit_conversions)
-  Westoby_2014 <- f_build("Westoby_2014", definitions, unit_conversions)
+  Baker_2019 <- f_build("Baker_2019", traits_definitions, unit_conversions, schema)
+  Bloomfield_2018 <- f_build("Bloomfield_2018", traits_definitions, unit_conversions, schema)
+  Catford_2014 <- f_build("Catford_2014", traits_definitions, unit_conversions, schema)
+  Duan_2015 <- f_build("Duan_2015", traits_definitions, unit_conversions, schema)
+  Maslin_2012 <- f_build("Maslin_2012", traits_definitions, unit_conversions, schema)
+  Tomlinson_2019 <- f_build("Tomlinson_2019", traits_definitions, unit_conversions, schema)
+  Westoby_2014 <- f_build("Westoby_2014", traits_definitions, unit_conversions, schema)
   
-  austraits_raw <-  austraits.build:::combine_datasets(Baker_2019, Bloomfield_2018, Catford_2014, Duan_2015, Maslin_2012, Tomlinson_2019, Westoby_2014, definitions=definitions)
+  austraits_raw <-  austraits.build:::combine_datasets(Baker_2019, Bloomfield_2018, Catford_2014, Duan_2015, Maslin_2012, Tomlinson_2019, Westoby_2014, NULL)
   
   # take a subset to reduce size of saved output
   austraits_raw$traits <- austraits_raw$traits %>% group_by(dataset_id) %>% slice(1:2000) %>% ungroup
