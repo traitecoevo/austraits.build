@@ -50,16 +50,26 @@ dataset:
       
   data %>%
     select(-cotsExp, -cotsEH, -cotsFR, -LEE, -LF, -HeightMax, -ReproAge, -ReproCLE, 
-           -Pollination_syndrome, -Fruit_type, -FruitFG, -DispClass, -DispSimple, -DispC3) %>%
-            mutate(
-              `LA` = if_else(omit=="Kanowski",0,`LA`),
-              LtLeaf = if_else(omit=="Kanowski",0,LtLeaf),
-              LWC = if_else(omit=="Kanowski",0,LWC),
-              LMA = if_else(omit=="Kanowski",0,LMA),
-              sample_age_class = ifelse(StrataBinary == "Stratum_2_adult_plant","adult", NA),
-              sample_age_class = ifelse(StrataBinary == "Stratum_1_seedling",
-                                        "seedling", sample_age_class),
-            ) %>% 
+            -Pollination_syndrome, -Fruit_type, -FruitFG, -DispClass, -DispSimple, -DispC3) %>% 
+    rename(value_to_omit = omit) %>%
+    mutate(
+      `LA` = ifelse(is.na(value_to_omit),`LA`, NA),        ,
+      LtLeaf = ifelse(is.na(value_to_omit),LtLeaf, NA),
+      LWC = ifelse(is.na(value_to_omit),LWC, NA),
+      LMA = ifelse(is.na(value_to_omit),LMA, NA),
+      sample_age_class = ifelse(StrataBinary == "Stratum_2_adult_plant","adult", NA),
+      sample_age_class = ifelse(StrataBinary == "Stratum_1_seedling",
+                                "seedling", sample_age_class),
+      leaflet_area = `LA`,
+      leaflet_area = ifelse(`L1Lflt2` == "2", leaflet_area, NA),
+      leaf_area = ifelse(`L1Lflt2` == "1", `LA`, NA),
+      leaflet_dry_mass = ifelse(`L1Lflt2` == "2", `LDrLeaf`, NA),
+      leaf_dry_mass = ifelse(`L1Lflt2` == "1", `LDrLeaf`, NA),
+      leaf_vs_leaflet = case_when(
+        `L1Lflt2` == "1" ~ "measurements made on leaves",
+        `L1Lflt2` == "2" ~ "measurements made on leaflets"
+      )                       
+    ) %>% 
             mutate_at(vars(`LA`,`LtLeaf`,`LMA`,`LWC`), ~na_if(.,0)) %>%
             bind_rows(seedling_traits) %>%
             bind_rows(adult_traits) %>%
@@ -343,9 +353,21 @@ traits:
     mass determined after oven drying at 70degC (requiring 5-14 days to reach constant
     mass)."
   collection_type: field
-- var_in: LA
+- var_in: leaf_area
   unit_in: cm2
   trait_name: leaf_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaf Area is the mean projected area (in cm2) of a leaf or leaflet, to
+    the natural point of abscission. This whole-leaf area includes the (small) area
+    of petiole or rachis, and so would be very slightly larger than the 'lamina only'
+    measurement of leaf size recommended by Cornelissen et al. (2003).
+  collection_type: field
+- var_in: leaflet_area
+  unit_in: cm2
+  trait_name: leaflet_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -549,7 +571,7 @@ traits:
   collection_type: field
 - var_in: HeightM
   unit_in: m
-  trait_name: .na
+  trait_name: plant_height
   entity_type: species
   value_type: maximum
   basis_of_value: measurement
@@ -598,7 +620,8 @@ traits:
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
-  replicates: 1
+  replicates: 1    
+  measurement_remarks: leaf_vs_leaflet
   methods: leaf volumne
   collection_type: field
 - var_in: LFrLeaf
@@ -608,15 +631,26 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
+  measurement_remarks: leaf_vs_leaflet
   methods: Measured using standard protocols (Garnier et al., 2001, Cornelissen et
     al., 2003).  Samples were taken >= 2-3 hrs after sunrise, and >=3-4 hrs before
     sunset, and transported in cool, moist papers.  Leaves were then be rehydrated
     to saturation by storing them in darkness for 6-24 hours with cut stems placed
-    in water.  Full-saturation measurements were then made of weight.
+    in water.  Full-saturation measurements were then made of weight. 
   collection_type: field
-- var_in: LDrLeaf
+- var_in: leaf_dry_mass
   unit_in: g
   trait_name: leaf_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Dry weight was measured after drying at 60degC for >=48 hours (Garnier
+    et al., 2001).
+  collection_type: field
+- var_in: leaflet_dry_mass
+  unit_in: g
+  trait_name: leaflet_dry_mass
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -630,7 +664,8 @@ traits:
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
-  replicates: 1
+  replicates: 1  
+  measurement_remarks: leaf_vs_leaflet
   methods: Measured using standard protocols (Garnier et al., 2001, Cornelissen et
     al., 2003).  Samples were taken >= 2-3 hrs after sunrise, and >=3-4 hrs before
     sunset, and transported in cool, moist papers.  Leaves were then be rehydrated
@@ -674,22 +709,22 @@ traits:
   sample_age_class: adult
   collection_type: field
 - var_in: ReproAge
-  unit_in: .na
+  unit_in: years
   trait_name: reproductive_maturity
   entity_type: species
-  value_type: mode
+  value_type: bin
   basis_of_value: expert_score
   replicates: .na
   methods: CSIRO TFRC arboretum records, and Botanist and Landholder interviews
   collection_type: literature
   sample_age_class: adult
 - var_in: ReproCLE
-  unit_in: .na
+  unit_in: dimensionless
   trait_name: reproductive_light_environment_index
   entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
   methods: Light for reproduction,  Crown Light Environment CLE required for first
     reproduction, ordinal values 1-8; Botanist interviews, Field observations.
   collection_type: field
@@ -848,12 +883,12 @@ traits:
   sample_age_class: seedling
   collection_type: literature
 - var_in: LEE
-  unit_in: .na
+  unit_in: dimensionless
   trait_name: establishment_light_environment_index
   entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
   methods: Seedling Light Environment for Establishment, CLE required for seedling
     establishment, 1-8; Field surveys and additional observations, and Botanist interviews
   sample_age_class: seedling
