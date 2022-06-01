@@ -21,5 +21,5 @@ yaml file with a substitution added
 \description{
 `metadata_add_substitution` is used to align the categorical trait values used
 by a contributor to the categorical values supported by AusTraits. These values
-are defined in the `definitions.yml` file
+are defined in the `traits.yml` file
 }
