@@ -24,19 +24,24 @@ contributors:
 dataset:
   data_is_long_format: no
   custom_R_code: '
-    data %>% 
+    data %>%
+      rename(season = date) %>%
       mutate(
         site_name = "Howard_Springs",
-        season = date,
-        sample_date = sample_date %>% mdy(quiet=TRUE),
+        date_by_month = ifelse(sample_date %in% c("2011-05", "2010-09"), sample_date, NA),
+        date_by_month = ifelse(is.na(date_WD), date_by_month, NA),
+        new_date = ifelse(sample_date %in% c("2011-05", "2010-09"), NA, sample_date),
+        new_date = new_date %>% mdy(quiet=TRUE) %>% as.character(),
+        date_WD = date_WD %>% dmy(quiet=TRUE) %>% as.character(),
+        date_merged = coalesce(new_date, date_WD, as.character(date_by_month)),
         population_id = site_name,
-        observation_number = ifelse(date == "dry season (Sep 2010)", 1, NA),
-        observation_number = ifelse(date == "wet season (May 2011)", 2, observation_number)
-      ) %>% 
-      mutate_at(vars(`Cu`), ~na_if(.,0)) %>%
-      group_by(Species,Rep,context) %>% 
-        mutate_at(vars(7:49),replace_duplicates_with_NA) %>%
-      ungroup()
+        observation_number = ifelse(season == "dry season (Sep 2010)", 1, NA),
+        observation_number = ifelse(season == "wet season (May 2011)", 2, observation_number)
+      ) %>%
+        select(-date_by_month, -new_date, -date_WD, -sample_date, - notes, -spp) %>% 
+        group_by(date_merged, site_name, context, season, Species, age, Rep, observation_number) %>% 
+          summarise_at(vars(`WD kg/m3`:`gas_ d13C_leaf`), mean, na.rm = TRUE) %>% 
+        ungroup() 
   '
   collection_date: sample_date
   taxon_name: Species
@@ -122,7 +127,9 @@ traits:
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
-  replicates: 1
+  replicates: 1  
+  method_number: 1
+  measurement_remarks: Leaf samples collected for leaf morphology measurements
   methods: Five recently-matured, fully-expanded and undamaged leaves (including petioles)
     were collected from each individual for determination of one-sided projected leaf
     area (flatbed scanner), oven-dried mass (70 deg C for at least 48 h) and thus
@@ -406,6 +413,8 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
+  method_number: 2
+  measurement_remarks: Leaf samples from gas exchange measurements
   methods: Specific leaf area (SLA) measurements made on the leaves on which photosynthesis
     was measured. One-sided projected leaf area was determined (flatbed scanner),
     oven-dried mass (70 deg C for at least 48 h) and thus SLA (area per dry mass;
