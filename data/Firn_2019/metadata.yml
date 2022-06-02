@@ -34,7 +34,10 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>% 
-      mutate(trt = if_else(trt == "N", "nitrogen",trt)) %>% 
+      mutate(
+        trt = ifelse(trt == "N", "nitrogen",trt),
+        population_id = paste(site_name, trt, block, sep = "-")
+      ) %>% 
       group_by(Taxon) %>% 
         mutate_at(vars(functional_group), replace_duplicates_with_NA) %>% 
       ungroup()
@@ -43,6 +46,7 @@ dataset:
   taxon_name: Taxon
   site_name: site_name
   context_name: trt
+  population_id: population_id 
   description: In a global experimental test, we quantified how leaf traits in grasslands
     change in response to the addition of soil nutrients (that is, nitrogen, phosphorus
     and potassium) and the exclusion of vertebrate herbivores.

@@ -27,12 +27,26 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site_name = "Cape Tribulation")
-  collection_date: 2014/2014
+  custom_R_code: '
+    data %>%
+      mutate(
+        site_name = "Cape Tribulation",
+        collection_date = date_leaf %>% mdy(),
+        collection_date = ifelse(is.na(collection_date),"2014/2014", collection_date)
+        ) %>% 
+      group_by(Tree) %>%
+      mutate(observation_number = row_number()) %>%
+      ungroup() %>%
+      group_by(Species_name) %>%
+        mutate_at(vars(`Growth.Form`), replace_duplicates_with_NA) %>%
+      ungroup()
+  '
+  collection_date: collection_date
   taxon_name: Species_name
   site_name: site_name
   context_name: Sun/Shade
   individual_id: Tree
+  observation_number: observation_number
   description: This study investigated the functional traits of lianas and trees in
     a lowland tropical forest in northeast Queensland, Australia to understand and
     predict the effect of lianas on ecosystem processes in tropical forests.
