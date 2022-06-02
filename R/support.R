@@ -255,11 +255,3 @@ NULL
 ##' @rdname write_yaml
 NULL
 
-#' Build website
-#'
-#' Build website using the build_site() function from `pkgdown`
-#'
-build_website <- function() {
-  devtools::document()
-  pkgdown::build_site()
-}
