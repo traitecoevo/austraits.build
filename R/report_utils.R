@@ -67,21 +67,6 @@ build_dataset_report <- function(dataset_id, overwrite=FALSE, output_path = "exp
   cat(" -> done\n")
 }
 
-#' Get SHA link from Github
-#' 
-#' Get SHA link using the get_SHA() function. The link generated leads to the latest
-#' commit for the Github repository. SHA is the abbreviated SHA-1 40 digit
-#' hexadecimal number which Github uses to track commits and changes made to a repository. 
-#' 
-#' @param ... arguments passed to the get_SHA()
-#'
-#' @return SHA link to a github commit as a character string formatted using markdown syntax
-#' @export
-get_SHA_link <- function(...) {
-  sha <- get_SHA(...)
-  sprintf("[%s](https://github.com/traitecoevo/austraits/tree/%s)",   sha, sha)
-}
-
 #' Get SHA string from Github repository for latest commit
 #' 
 #' Get SHA string for the latest commit on Github for the repository. SHA is the
@@ -116,24 +101,7 @@ my_kable_styling_html <- function(...) {
 }
 
 
-#' Generate hyperlink for markdown and html
-#' 
-#' Generate hyperlink for markdown and html files
-#'
-#' @param link character string for the url link
-#' @param text character string for the text to display
-#' @param type file type, default is markdown "md" otherwise html
-#'
-#' @return character string with the text and link formatted for md and html
-#' @export
-#'
-#' @examples as_link("www.austraits.org", "austraits")
-as_link <- function(link, text, type="md") {
-  if(type=="md")
-    sprintf('[%s](%s)', text, link)
-  else
-    sprintf("<a href='%s'> %s </a>", link, text)
-}
+
 
 #' Format a tree structure from a vector 
 #' 
