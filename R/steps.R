@@ -376,7 +376,8 @@ create_entity_id <- function(data) {
     dplyr::mutate(
       entity_id = paste(dataset_id, spp_id_segment, pop_id_segment, ind_id_segment, sep="-"),
       entity_id = ifelse(entity_type == "species", paste(dataset_id, spp_id_segment, sep="-"), entity_id),
-      entity_id = ifelse(entity_type %in% c("population", "metapopulation"), paste(dataset_id, spp_id_segment, pop_id_segment, sep="-"), entity_id),  
+      entity_id = ifelse(entity_type %in% c("population", "metapopulation"), paste(dataset_id, spp_id_segment, pop_id_segment, sep="-"), entity_id),
+      individual_id = as.character(individual_id)
     ) %>%
     select(-spp_id_segment, -pop_id_segment, -ind_id_segment)
 }
