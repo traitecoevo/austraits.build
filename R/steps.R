@@ -1,14 +1,14 @@
 #' Configure AusTraits database object
 #'
 #' Creates the config object which gets passed onto `load_dataset`. The config list contains
-#' the subset of trait definitions and unit conversions for those traits for a each study.
+#' the subset of trait_definitions and unit conversions for those traits for a each study.
 #' `subset_config` is used in the remake::make process to configure individual studies mapping the
 #' individual traits found in that study along with any relevant unit conversions
-#' and trait definitions. `subset_config` and `load_dataset` are applied to every study
+#' and trait_definitions. `subset_config` and `load_dataset` are applied to every study
 #' in the remake.yml file
 #'
 #' @param filename_metadata metadata yaml file for a given study
-#' @param trait_definitions definitions read in from the traits.yml
+#' @param trait_definitions trait_definitions read in from the traits.yml
 #' @param unit_conversion_functions unit_conversion.csv file read in from the config folder
 #'
 #' @return list with dataset_id, metadata, trait_definitions and unit_conversion_functions
@@ -49,7 +49,7 @@ subset_config <- function(
     unit_conversion_functions[trait_mapping %>%
     filter(.data$unit_in!=.data$to) %>% dplyr::pull(.data$conversion) %>% unique()]
 
-  # subset of trait definitions
+  # subset of trait_definitions
   trait_definitions <-
     trait_definitions$elements[names(trait_definitions$elements) %in% trait_mapping$trait_name]
 
@@ -325,7 +325,7 @@ format_sites <- function(my_list, dataset_id, context = FALSE) {
 #' Flag any unrecognised traits, as defined in the traits.yml file
 #'
 #' @param data tibble or dataframe containing the study data
-#' @param trait_definitions definitions read in from the traits.yml file in the config folder
+#' @param trait_definitions trait_definitions read in from the traits.yml file in the config folder
 #'
 #' @importFrom rlang .data
 #' @return tibble with unrecognised traits flagged as "Unsupported trait" in the "error" column
@@ -336,7 +336,7 @@ flag_unsupported_traits <- function(data, trait_definitions) {
   if(is.null(data[["error"]]))
     data[["error"]] <- NA_character_
 
-  # exclude traits not in definitions
+  # exclude traits not in trait_definitions
   i <- data$trait_name %in% names(trait_definitions)
   data %>%
     dplyr::mutate(error = ifelse(!i, "Unsupported trait", .data$error))
@@ -468,7 +468,7 @@ convert_bib_to_list <- function(bib) {
 #' traits.yml file. NA values are flagged as errors.
 #'
 #' @param data tibble or dataframe containing the study data
-#' @param trait_definitions definitions read in from the traits.yml file in the config folder
+#' @param trait_definitions trait_definitions read in from the traits.yml file in the config folder
 #'
 #' @importFrom rlang .data
 #' @return tibble with flagged values outside of allowable range, unsupported categorical
@@ -575,7 +575,7 @@ unit_conversion_name <- function(from, to) {
 #' Convert units to desired type
 #'
 #' @param data tibble or dataframe containing the study data
-#' @param trait_definitions definitions read in from the traits.yml file in the config folder
+#' @param trait_definitions trait_definitions read in from the traits.yml file in the config folder
 #' @param unit_conversion_functions unit_conversions.csv file stored in the config folder
 #'
 #' @importFrom rlang .data
@@ -1081,7 +1081,7 @@ export_version_plaintext <- function(austraits, path) {
   build_info <- utils::capture.output(print(austraits$build_info))
   writeLines(build_info, sprintf("%s/build_info.md", path))
 
-  # Save definitions
+  # Save trait_definitions
   yaml::write_yaml(austraits[["trait_definitions"]], sprintf("%s/trait_definitions.yml", path))
   yaml::write_yaml(austraits[["schema"]], sprintf("%s/schema.yml", path))
 

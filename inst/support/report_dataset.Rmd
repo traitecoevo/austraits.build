@@ -83,7 +83,7 @@ new_question <- function(txt) {
   writeLines(sprintf("<font color='orange'>**Question:** %s</font>\n\n", paste0(x, collape="")))
 }
 
-# Variable to record when definitions have been specified
+# Variable to record when trait_definitions have been specified
 
 structures_already_defined <- c("names")
 
@@ -243,7 +243,7 @@ missing <- metadata$dataset %>%
 for(v in missing) {
   sprintf("(section `dataset`) Can you provide missing details for the variable `%s`?\n", v) %>%
     new_question()
-  sprintf("The variable `%s` captures *'%s'*\n", v, definitions$metadata$elements$dataset$values[[v]]) %>%
+  sprintf("The variable `%s` captures *'%s'*\n", v, schema$metadata$elements$dataset$values[[v]]) %>%
     writeLines()
 }
 ```
@@ -410,7 +410,7 @@ if(nrow(subset(data_study$excluded_data,error!="Missing value")) > 0 ) {
     writeLines()
 
   writeLines(ifelse(nrow(subset(data_study$excluded_data, error == "Unsupported trait value")) > 0,
-    "In particular, the following data points were excluded because the supplied trait value could not be aligned with the allowable values in AusTraits (error = `Unsupported trait value`). The allowable values for each trait are listed in the [definitions file](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) and lower in this report.",""))
+    "In particular, the following data points were excluded because the supplied trait value could not be aligned with the allowable values in AusTraits (error = `Unsupported trait value`). The allowable values for each trait are listed in the [trait_definitions file](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) and lower in this report.",""))
 
 
   if(nrow(subset(data_study$excluded_data,error == "Unsupported trait value")) > 0 ) {
@@ -458,7 +458,7 @@ question_x <- function(x, y = trait) {
 define_variable <- function(var, schema) {
 
   description <- switch(var,
-                        value_type = definitions$value_type$description,
+                        value_type = schema$value_type$description,
                         replicates = schema$austraits$elements$traits$elements$replicates,
                         methods = schema$austraits$elements$methods$elements$methods
                         )
@@ -601,7 +601,7 @@ for(trait in traits_categorical) {
   data_trait_all <- austraits$traits %>%
     filter(trait_name == trait)
 
-  trait_definitions <- austraits$definitions
+  trait_definitions <- austraits$trait_definitions
 
   elements <-trait_definitions$elements[[trait]]
 
@@ -625,7 +625,7 @@ for(trait in traits_categorical) {
     elements$values %>% unlist() %>% as.data.frame() %>% tibble::rownames_to_column() %>% rename(trait_value = "rowname", definition = ".") %>% arrange(trait_value) %>% my_kable_styling(),
     "",
     ifelse(nrow(substitutions_for_trait)>0,
-    "The following substitutions have been implemented to align categorical trait values in the submitted data table with allowable trait values specified in the AusTraits definitions file.",
+    "The following substitutions have been implemented to align categorical trait values in the submitted data table with allowable trait values specified in the AusTraits traits_definitions file.",
     "No substitutions were required to align the data for this trait with AusTraits allowed trait values."),
     ifelse(nrow(substitutions_for_trait)>0,
     substitutions_for_trait %>% rename("value in contributed data table"=find,"AusTraits aligned value"=replace)%>% my_kable_styling(),""),

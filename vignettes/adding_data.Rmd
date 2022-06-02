@@ -35,7 +35,8 @@ my_kable_styling <- my_kable_styling_html
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Loads austraits into global name space
 austraits <- austraits:::austraits_lite
-definitions <- austraits$definitions
+schema <- austraits$schema
+trait_definitions <- austraits$trait_definitions
 ```
 
 This vignette explains the protocol for adding a new study to AusTraits. Before starting this, you should read more about 
@@ -63,7 +64,7 @@ The main steps are:
 8. Return to step 6 if changes are made to the `data.csv` or `metadata.yml` files.
 9. Push the GitHub branch.
 
-It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) to use as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), particularly the `definitions` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html).
+It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) to use as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), particularly the `trait_definitions` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html).
 
 Once you have prepared your `data.csv` and `metadata.yml` files within a folder in the `data` directory, you can incorporate the new data into AusTraits by running:
 
@@ -476,9 +477,9 @@ This automatically propagates each trait selected into `metadata.yml` as follows
 
 The trait details then need to be filled in manually. 
 
-- *units*: fill in the units specified by the author - such as mm2. If you're uncertain about the syntax/format used for some more complex units, look through the definitions file (`system.file("support", "austraits.build_schema.yml", package = "austraits.build")`) or the file showing unit conversions (`system.file("support", "austraits.build_schema.yml", package = "austraits.build")`). For categorical variables, leave this as `.na`.  
+- *units*: fill in the units specified by the author - such as mm2. If you're uncertain about the syntax/format used for some more complex units, look through the schema file (`system.file("support", "austraits.build_schema.yml", package = "austraits.build")`) or the file showing unit conversions (`system.file("support", "austraits.build_schema.yml", package = "austraits.build")`). For categorical variables, leave this as `.na`.  
 
-- *trait_name*: This is the appropriate trait name from `config/traits.yml`. If no appropriate trait exists in AusTraits, a new trait can often be added - just ensure it is a `trait` where data will be comparable across studies and has been measured for a fair number (~>50) species. For currently unsupported traits, we leave this as `.na` but then fill in the rest of the data and flag this study as having a potential new trait. Then in the future, when this trait is added to the definitions file, the data can be read into AusTraits by simply replacing the `.na` with a trait name. 
+- *trait_name*: This is the appropriate trait name from `config/traits.yml`. If no appropriate trait exists in AusTraits, a new trait can often be added - just ensure it is a `trait` where data will be comparable across studies and has been measured for a fair number (~>50) species. For currently unsupported traits, we leave this as `.na` but then fill in the rest of the data and flag this study as having a potential new trait. Then in the future, when this trait is added to the `traits.yml` file, the data can be read into AusTraits by simply replacing the `.na` with a trait name. 
 
 - *value_type*: See the bottom of `system.file("support", "austraits.build_schema.yml", package = "austraits.build")` for a list of accepted value types.  
 
@@ -677,7 +678,7 @@ read_metadata(f) %>% write_metadata(f)
 
 ## Running tests {#running_tests}
 
-Begin by running some automated tests to ensure the dataset meets the required set up. The tests run through a collection of pre-specified checks on the files for each study. The output alerts you to possible issues needing to be fixed, by comparing the data in the files with the expected structure and allowed values, as specified in the definitions.   
+Begin by running some automated tests to ensure the dataset meets the required set up. The tests run through a collection of pre-specified checks on the files for each study. The output alerts you to possible issues needing to be fixed, by comparing the data in the files with the expected structure and allowed values, as specified in the schema and trait_definitions.   
 
 Certain special characters may show up as errors and need to be manually adjusted in the `metadata.yml` file 
 
@@ -751,9 +752,9 @@ Possible reasons for excluding a trait value includes:
 
 - *Time contains non-number*: Indicates a problem with the value entered into the traits `flowering_time` and `fruiting_time`. (*Note to AusTraits custodians: This error should no longer appear - will retain for now as a placeholder.*)
 
-- *Unsupported trait*: `trait_name` not listed in `config/traits.yml`, under `traits`. Double check you have used the correct spelling/exact syntax for the `trait_name`, adding a new `trait` to the `definitions` file if appropriate. If there is a trait that is currently unsupported by AusTraits, leave `trait_name: .na` - do not fill in an arbitrary name. (Note, if you have data in long format, all traits are automatically added to the list of traits in `metadata.yml` and even if you indicate `trait_name: .na` these appear as `unsupported trait` in the `excluded_data` table.)  
+- *Unsupported trait*: `trait_name` not listed in `config/traits.yml`, under `traits`. Double check you have used the correct spelling/exact syntax for the `trait_name`, adding a new `trait` to the `traits.yml` file if appropriate. If there is a trait that is currently unsupported by AusTraits, leave `trait_name: .na` - do not fill in an arbitrary name. (Note, if you have data in long format, all traits are automatically added to the list of traits in `metadata.yml` and even if you indicate `trait_name: .na` these appear as `unsupported trait` in the `excluded_data` table.)  
 
-- *Unsupported trait value*: This error, referencing categorical traits, means that the `value` for a trait is not included in the list of supported trait values for that trait in `config/traits.yml`. See `Adding many substitutions` if there are many trait values requiring substitutions. If appropriate, add another trait value to the definitions file.  
+- *Unsupported trait value*: This error, referencing categorical traits, means that the `value` for a trait is not included in the list of supported trait values for that trait in `config/traits.yml`. See `Adding many substitutions` if there are many trait values requiring substitutions. If appropriate, add another trait value to the `traits.yml` file.  
 
 - *Value does not convert to numeric*: Is there a strange character in the file preventing easy conversion? This error is rare and generally justified.  
 
