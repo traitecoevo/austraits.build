@@ -184,7 +184,7 @@ metadata_check_custom_R_code <- function(dataset_id) {
 
   # load and clean trait data
   readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols(), guess_max = 100000) %>%
-    custom_manipulation(metadata[["config"]][["custom_R_code"]])()
+    custom_manipulation(metadata[["dataset"]][["custom_R_code"]])()
 }
 
 #' For specified `dataset_id`, populate columns for traits into metadata
@@ -205,13 +205,13 @@ metadata_add_traits <- function(dataset_id) {
 
   # load and clean trait data
   data <- readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols()) %>%
-    custom_manipulation(metadata[["config"]][["custom_R_code"]])()
+    custom_manipulation(metadata[["dataset"]][["custom_R_code"]])()
 
   # Get list of potential traits
-  if(!metadata$config$data_is_long_format) {
+  if(!metadata$dataset$data_is_long_format) {
     v <- names(data)
   } else {
-    v <- unique(data[[metadata$config$variable_match$trait_name]])
+    v <- unique(data[[metadata$dataset$variable_match$trait_name]])
   }
 
   var_in <- user_select_names(paste("Indicate all columns you wish to keep as distinct traits in ", dataset_id), v)
