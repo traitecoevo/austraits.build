@@ -344,7 +344,7 @@ create_entity_id <- function(data) {
   
   # create population_id segment of entity_id
   data <- data %>% 
-    dplyr::mutate(pop_id_segment = create_id(population_id, "pop")) 
+    dplyr::mutate(pop_id_segment = create_id(population_id, "pop", sort = TRUE)) 
   
   ## Create individual_id segment of entity_id: ind_id_segment  
   
@@ -370,20 +370,18 @@ create_entity_id <- function(data) {
     group_by(spp_id_segment, pop_id_segment) %>%
     mutate(ind_id_segment = ifelse(!is.na(individual_id),create_id(individual_id,"ind"),NA)) %>%
     ungroup()
-  
-  
+
   data <- data %>%
     dplyr::mutate(
       entity_id = paste(dataset_id, spp_id_segment, pop_id_segment, ind_id_segment, sep="-"),
       entity_id = ifelse(entity_type == "species", paste(dataset_id, spp_id_segment, sep="-"), entity_id),
       entity_id = ifelse(entity_type %in% c("population", "metapopulation"), paste(dataset_id, spp_id_segment, pop_id_segment, sep="-"), entity_id),
-      individual_id = as.character(individual_id)
+      individual_id = as.character(individual_id),
+      check_for_ind = NA
     ) %>%
-    select(-spp_id_segment, -pop_id_segment, -ind_id_segment)
+    select(-spp_id_segment, -pop_id_segment, -ind_id_segment, -individual_id, -population_id, -check_for_ind)
+
 }
-
-
-
 
 #' Format site and context data from list to tibble
 #'
@@ -813,7 +811,7 @@ parse_data <- function(data, dataset_id, metadata) {
   # functions to build ids -- determine number of 00s needed based on number of records
 
   make_id_segment <- function(n, prefix)
-    sprintf(paste0("%s%0", max(2, ceiling(log10(n))), "d"), prefix, seq_len(n))
+    sprintf(paste0("%s_%0", max(2, ceiling(log10(n))), "d"), prefix, seq_len(n))
   
   create_id <- function(x, prefix, sort= FALSE) {
     d <- x %>% unique() %>% subset(., !is.na(.))
