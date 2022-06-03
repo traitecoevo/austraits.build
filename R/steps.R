@@ -1019,18 +1019,24 @@ update_taxonomy <- function(austraits_raw, taxa) {
     # extract genus as this is useful
     dplyr::mutate(
       genus = .data$taxon_name  %>% stringr::str_split(" ") %>% map_chr(1),
-      genus = ifelse(.data$genus %in% taxa$taxon_name, .data$genus, NA)
+      genus = ifelse(.data$genus %in% taxa$taxon_name, .data$genus, NA_character_)
     )  %>%
     dplyr::arrange(.data$taxon_name) %>%
     dplyr::mutate(
-      taxonomicStatus = ifelse(is.na(.data$taxonomicStatus) & !is.na(.data$genus), "genus_known", .data$taxonomicStatus),
+      taxonomicStatus = ifelse(is.na(.data$taxonomicStatus) & !is.na(.data$genus), "known", .data$taxonomicStatus),
       taxonomicStatus = ifelse(is.na(.data$taxonomicStatus) & is.na(.data$genus), "unknown", .data$taxonomicStatus),
     ) %>%
     split(.$taxonomicStatus)
 
+  # check after the split, both "known" and "unknown" exist. If missing, create with empty
+  if(is.null(species_tmp[["known"]]))
+    species_tmp[["known"]] <- species_tmp[["unknown"]] %>% filter(taxon_name=="dummy taxa")
+  if(is.null(species_tmp[["unknown"]]))
+    species_tmp[["unknown"]] <- species_tmp[["known"]] %>% filter(taxon_name=="dummy taxa")
+  
   # retrieve families from list of known genera - prioritise genera with accepted names
-   species_tmp[["genus_known"]] <-
-     species_tmp[["genus_known"]] %>%
+   species_tmp[["known"]] <-
+     species_tmp[["known"]] %>%
      dplyr::select(-.data$family) %>%
      dplyr::left_join(by="genus",
                taxa %>% dplyr::filter(.data$taxonRank == "Genus") %>%
