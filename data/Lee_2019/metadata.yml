@@ -36,6 +36,18 @@ dataset:
   custom_R_code: '
     data %>% 
       mutate(
+        entity_type = ifelse(is.na(codeStem),"population", "individual"),
+        method_number = ifelse(size == "large",1, 2),
+        replicate_count = 1
+      ) %>%
+      select(-Family, -compositeSample) %>%
+      group_by(code, codeStem, Binomial, site, size, trait, entity_type, method_number) %>%
+      summarise(
+        `trait.val` = mean(`trait.val`), 
+        replicate_count = sum(replicate_count)
+      ) %>%
+      ungroup() %>%
+      mutate(
         `trait.val` = ifelse(`trait`=="waterperc", 100 -`trait.val`,`trait.val`),
         measurement_remarks = ifelse(size == "large","large size class, including stems 5-9 cm in diameter; only includes some species, because not all species produce stems in this size range", NA), 
         measurement_remarks = ifelse(size == "small","small size class, including stems 1-2 cm in diameter", measurement_remarks)
@@ -46,7 +58,10 @@ dataset:
   trait_name: trait
   value: trait.val
   site_name: site
-  individual_id: unique
+  individual_id: codeStem
+  entity_type: entity_type 
+  method_number: method_number
+  replicates: replicate_count
   description: data on stem traits as part of a study showing that across a diversity
     of wood traits, fungal interactions are more often positive than negative
   measurement_remarks: measurement_remarks
@@ -86,10 +101,8 @@ traits:
 - var_in: waterperc
   unit_in: '%'
   trait_name: stem_dry_matter_content
-  entity_type: population
   value_type: mean
   basis_of_value: measurement
-  replicates: 7
   methods: 'Sawdust was generated from three replicate stems each for both small and
     large wood samples and stored at 20 deg C until processing for DNA extraction
     and chemical analysis (see below). Shavings from each of the three stems were
@@ -103,10 +116,8 @@ traits:
 - var_in: barkthick
   unit_in: mm
   trait_name: bark_thickness
-  entity_type: population
   value_type: mean
   basis_of_value: measurement
-  replicates: 3
   methods: 'Sawdust was generated from three replicate stems each for both small and
     large wood samples and stored at 20 deg C until processing for DNA extraction
     and chemical analysis (see below). Shavings from each of the three stems were
@@ -120,10 +131,8 @@ traits:
 - var_in: density
   unit_in: g/cm3
   trait_name: wood_density
-  entity_type: population
   value_type: mean
   basis_of_value: measurement
-  replicates: 3
   methods: 'Sawdust was generated from three replicate stems each for both small and
     large wood samples and stored at 20 deg C until processing for DNA extraction
     and chemical analysis (see below). Shavings from each of the three stems were
@@ -137,10 +146,8 @@ traits:
 - var_in: C
   unit_in: '%'
   trait_name: stem_C_per_dry_mass
-  entity_type: population
-  value_type: raw
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
   methods: 'Sawdust was generated from three replicate stems each for both small and
     large wood samples and stored at 20 deg C until processing for DNA extraction
     and chemical analysis (see below). Shavings from each of the three stems were
@@ -153,10 +160,8 @@ traits:
 - var_in: 'N'
   unit_in: '%'
   trait_name: stem_N_per_dry_mass
-  entity_type: population
-  value_type: raw
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
   methods: 'Sawdust was generated from three replicate stems each for both small and
     large wood samples and stored at 20 deg C until processing for DNA extraction
     and chemical analysis (see below). Shavings from each of the three stems were

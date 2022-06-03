@@ -34,20 +34,20 @@ dataset:
         new_date = new_date %>% mdy(quiet=TRUE) %>% as.character(),
         date_WD = date_WD %>% dmy(quiet=TRUE) %>% as.character(),
         date_merged = coalesce(new_date, date_WD, as.character(date_by_month)),
-        population_id = site_name,
+        pop_id = site_name,
         observation_number = ifelse(season == "dry season (Sep 2010)", 1, NA),
         observation_number = ifelse(season == "wet season (May 2011)", 2, observation_number)
       ) %>%
-        select(-date_by_month, -new_date, -date_WD, -sample_date, - notes, -spp) %>% 
-        group_by(date_merged, site_name, context, season, Species, age, Rep, observation_number) %>% 
+        select(-date_by_month, -new_date, -date_WD, -sample_date, - notes, -spp, -`Pith diam (mm)`, -context) %>% 
+        group_by(date_merged, site_name, season, pop_id, Species, age, Rep, observation_number) %>% 
           summarise_at(vars(`WD kg/m3`:`gas_ d13C_leaf`), mean, na.rm = TRUE) %>% 
         ungroup() 
   '
-  collection_date: sample_date
+  collection_date: date_merged
   taxon_name: Species
   site_name: site_name
-  context_name: date
-  population_id: population_id
+  context_name: season
+  population_id: pop_id
   observation_number: observation_number
   description: traits of NT savannah species
   collection_type: field
@@ -254,20 +254,6 @@ traits:
     displacement), and dry masses after oven-drying at 70 deg C for 7 days.
 - var_in: Bark area (cm2)
   unit_in: cm2
-  trait_name: .na
-  entity_type: individual
-  value_type: raw
-  basis_of_value: measurement
-  replicates: 1
-  methods: Measured on wet season samples collected for wood density; determined with
-    calipers. For wet season samples, the bark was first removed, allowing us to measure
-    relative dry mass allocation to bark versus sapwood. For these samples, stem density
-    refers to that of the sapwood only (plus any pith, if present). Hereafter we refer
-    to these quantities as 'WD' (wood density). At each date, five samples were taken
-    per species/age class. Sample volumes were measured using standard procedure (via
-    displacement), and dry masses after oven-drying at 70 deg C for 7 days.
-- var_in: Pith diam (mm)
-  unit_in: mm
   trait_name: .na
   entity_type: individual
   value_type: raw
