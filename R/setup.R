@@ -83,7 +83,7 @@ metadata_create_template <- function(dataset_id,
                    variable_match = list())
     
     v1 <- c("taxon_name")
-    v2 <- c("site_name", "context_name", "observation_id",  "collection_date")
+    v2 <- c("site_name", "context_name", "individual_id",  "collection_date")
     
     if(data_is_long_format) {
       v1 <- c("taxon_name", "trait_name", "value")
