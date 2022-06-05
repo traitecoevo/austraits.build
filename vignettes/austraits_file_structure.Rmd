@@ -69,6 +69,7 @@ dir() %>%
 ```
 ├── NAMESPACE             # functions being exported
 ├── DESCRIPTION           # R package description
+├── inst/schema             # Defines the overall austraits schema
 ├── man                   # XXXX-not in file structure
 ├── R                     # folder with functions and scripts to build AusTraits
 ├── tests                 # defines tests applied to datasets
@@ -84,6 +85,7 @@ dir() %>%
 └── scripts               # scripts for processing files before/after building austraits, including compiling reports
 ```
 
+
 ## Details on files used for data compilation:
   
 
@@ -93,12 +95,12 @@ The folder `config` contains three files which govern the building of the datase
 
 ```
 config
-├── definitions.yml
+├── traits.yml
 ├── taxon_list.csv
 └── unit_conversions.csv
 ```
 
-The file `definitions.yml` defines the structure of the database and all terms. There are three main sections to the `definitions.yml` file: the trait definitions used to compile AusTraits, allowable trait values, and definitions of all elements included in the tables that comprise AusTraits. The [trait definitions](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) and [definitions of all elements in AusTraits (and value types)](http://traitecoevo.github.io/austraits.build/articles/austraits_database_structure.html) are fully described in additional vignettes. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). 
+The file `traits.yml` provides the trait definitions used to compile AusTraits, allowable trait values, and definitions of all elements included in the tables that comprise AusTraits. The [trait definitions](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) is fully described in additional vignettes. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). 
 
 The file `taxon_list.csv` is our master list of known taxa. Each species is listed once, with links to species' identifiers provided by the Australian Plant Name Index (APNI). The file `taxon_list.csv` is added to if a study includes taxa not previously represented in AusTraits. These can be names included in either the APC/APNI, compilations of taxonomic concepts (APC) or names (APNI) for plants that are either native to or naturalised in Australia, or taxa without recognised names.  
 
@@ -300,7 +302,7 @@ for (value in names(values)) {
 }
 ```
 
-Values under `trait_name` must be allowable values, list in the `definitions` [file](https://github.com/traitecoevo/austraits.build/blob/master/config/definitions.yml) or [vignette](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html). Similarly, values under `value_type` must be allowable values, also listed in the definitions file.
+Values under `trait_name` must be allowable values, list in the `trait definitions` [file](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml) or [vignette](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html). Similarly, values under `value_type` must be allowable values, also listed in the definitions file.
 
 An example is as follows:
 
@@ -325,7 +327,7 @@ traits:
 
 This section provides `r tolower(definitions$metadata$elements$substitutions$description)`
 
-Substitutions are required whenever the exact word(s) used to describe a categorical trait value in AusTraits is different from the vocabulary used by the author in the `data.csv` file. It is preferable to align vocabulary using `substitutions` rather than changing the `data.csv` file. The [trait definitions file](https://github.com/traitecoevo/austraits.build/blob/master/config/definitions.yml) provides a list of supported values for each trait.
+Substitutions are required whenever the exact word(s) used to describe a categorical trait value in AusTraits is different from the vocabulary used by the author in the `data.csv` file. It is preferable to align vocabulary using `substitutions` rather than changing the `data.csv` file. The [trait definitions file](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml) provides a list of supported values for each trait.
 
 Each substitution is documented using the following elements:
 

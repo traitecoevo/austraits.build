@@ -61,7 +61,6 @@
 #' @param n numerical integer, default is 8 
 #'
 #' @return character string with 8 letters
-#' @export
 random_string <- function(n=8) {
   base::sample(LETTERS, n, TRUE) %>% paste0(collapse="")
 }
@@ -76,18 +75,16 @@ random_string <- function(n=8) {
 #' @param link character string, default is NA_character_ which generates a random string 
 #'
 #' @return a tibble with two columns named note and link
-#' @export
 as_note <- function(note, link=NA_character_) {
   tibble::tibble(note = note, link = ifelse(is.na(link), random_string(), link)) %>% dplyr::mutate_all(as.character)
 }
-tibble::tibble
+
 # start note recorder
 #' Start note recorder (needs review?)
 #' 
 #' Note recorder used in report_study.Rmd file to initiate note recorder
 #' 
 #' @return A tibble where notes are recorded
-#' @export
 start_notetaker <- function() {
   ret <- as_note(character(), character())
 
@@ -102,7 +99,6 @@ start_notetaker <- function() {
 #' @param new_note vector of character notes to be added to existing notes
 #'
 #' @return A tibble with additional notes added
-#' @export
 add_note <- function(notes, new_note) {
   dplyr::bind_rows(notes, new_note)
 }
@@ -115,7 +111,6 @@ add_note <- function(notes, new_note) {
 #' @param link_text character string, default is "link"
 #'
 #' @return character string containing the notes
-#' @export
 print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "link") {
   if(as_anchor)
     sprintf('%s <a name="%s"> %s </a>', note$note, note$link, anchor_text )
@@ -132,7 +127,6 @@ print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "lin
 #' @param ... arguments passed to print_note()
 #'
 #' @return character string containing the notes
-#' @export
 print_notes <- function(notes, i=nrow(notes), ...) {
   notes %>%
     get_note(i) %>%
@@ -146,7 +140,6 @@ print_notes <- function(notes, i=nrow(notes), ...) {
 #' @param numbered logical default is TRUE
 #'
 #' @return character string containing the notes
-#' @export
 print_all_notes <- function(notes, ..., numbered=TRUE) {
   i <- seq_len(nrow(notes))
   x <- print_notes(notes, i =i)
@@ -162,7 +155,6 @@ print_all_notes <- function(notes, ..., numbered=TRUE) {
 #' @param i numerical; row number for corresponding note, default is nrow(notes)
 #'
 #' @return a single row from a tibble
-#' @export
 get_note <- function(notes, i=nrow(notes)) {
   notes[i,]
 }
