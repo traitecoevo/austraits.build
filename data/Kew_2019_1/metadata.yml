@@ -18,7 +18,10 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>%
-      mutate(measurement_remarks = paste(materialweigheddesc,seedweightnotes,refdesc, sep = "; "))
+      mutate(measurement_remarks = paste(materialweigheddesc,seedweightnotes,refdesc, sep = "; ")) %>%
+      group_by(taxa) %>%
+        distinct(thousandseedweight, .keep_all = TRUE) %>%
+      ungroup()
   '
   collection_date: unknown/2019
   taxon_name: taxa
@@ -36,10 +39,11 @@ traits:
 - var_in: thousandseedweight
   unit_in: mg
   trait_name: seed_dry_mass
-  entity_type: population
+  entity_type: unknown
   value_type: mean
   basis_of_value: measurement
-  replicates: .na
+  replicates: unknown
+  observation_number: observation_number
   measurement_remarks: measurement_remarks
   methods: Kew Gardens collections, with details in data.csv file under columns "materialweigheddesc"
     and "seedweightnotes"

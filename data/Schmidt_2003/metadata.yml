@@ -50,7 +50,10 @@ dataset:
         life_history = ifelse(life_history=="o","p",life_history),
         regen_strategy= ifelse(plant_growth_form=="f","fern",""),
         life_history = ifelse(life_history=="f","",life_history),
-        context_name = if_else(TRIP == 1,"dry",""), context_name = if_else(TRIP == 2, "wet",context_name)
+        context_name = if_else(TRIP == 1,"dry",""), context_name = if_else(TRIP == 2, "wet",context_name),
+        population_id = site_name,
+        Nfixer = gsub("y","Y",Nfixer),
+        observation_number = ifelse(TRIP == 2,2,1)
       ) %>% 
       mutate_at(vars(`life_history`,`regen_strategy`), ~na_if(.,"")) %>%
       mutate_at(vars(`leaf_water_content`), ~na_if(.,0)) %>%
@@ -63,6 +66,7 @@ dataset:
   taxon_name: species_name
   site_name: site_name
   context_name: context_name
+  population_id: population_id
   description: Susanne Schmidt's Kakadu data, merged from several spreadsheets
   collection_type: field
   sample_age_class: adult

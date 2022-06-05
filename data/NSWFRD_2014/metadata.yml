@@ -45,13 +45,17 @@ dataset:
         `Maximum maturity` = str_extract(`Maximum maturity`,"[:digit:]"),
         `Lifespan > than` = str_extract(`Lifespan > than`,"[:digit:]"),
         `Lifespan < than` = str_extract(`Lifespan < than`,"[:digit:]")
-      )
+      ) %>%
+      group_by(`Current Scientific Name`) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup
   '
   collection_date: 2002/2014
   taxon_name: Current Scientific Name
   description: NSW Flora Fire Response Database version 2.1
   collection_type: field
   sample_age_class: adult
+  observation_number: observation_number
   sampling_strategy: unknown
   original_file: AULD-NSWFFRDv2.1.xls
   notes: unpubl. database held by NSW DPIE. The raw data file includes multiple worksheets

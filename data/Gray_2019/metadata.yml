@@ -32,12 +32,16 @@ dataset:
       group_by(Species) %>% 
         mutate_at(vars(`Nmass (%)`,`Narea (g/m2)`,`Pmass (%)`,`LeafP_mass`,`Parea (g/m2)`),
         replace_duplicates_with_NA) %>%
+      ungroup() %>%
+      group_by(ID) %>%
+        mutate(observation_number = row_number()) %>%
       ungroup()
   '
   collection_date: 2013-10/2013-10
   individual_id: ID
   taxon_name: Species
   site_name: site_name
+  observation_number: observation_number
   description: growth and functional trait measurements in tropical forest to understand
     relationshop between growth, allometry, and trait values
   collection_type: field

@@ -23,9 +23,11 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>% 
-      mutate(site_name = "Australian National University") %>%
-      subset(status=="Australian_species") %>%
-      mutate(replicate_count = 1) %>%
+      mutate(
+        site = "Australian National University",
+        measurement_remarks = ifelse(leaf_location == "tree", "sample measured in a tree", NA),
+        replicate_count = 1
+      ) %>%
       select(-`Leaf No.`) %>%
       group_by(ID, species, status, leaf_location) %>%
         summarise(
@@ -35,12 +37,13 @@ dataset:
           leaf_area_cm2 = mean(leaf_area_cm2),
           leaf_thickness_um = mean(leaf_thickness_um)
         ) %>%
-      ungroup()
+      ungroup() %>%      
+      subset(status=="Australian_species")
   '
   collection_date: 2000-12/2001-04
   taxon_name: species
-  site_name: site_name
-  context_name: leaf_location
+  site_name: site
+  measurement_remarks: measurement_remarks
   description: A dataset to test whether leaf area was proportional to leaf mass within
     a given species despite vaiations in leaf thickness and relative water content
     (mass fraction of liquid matter) across species
@@ -63,11 +66,7 @@ sites:
     latitude (deg): -35.28
     longitude (deg): 149.12
     description: species growing on the campus of the Australian National University
-contexts:
-  tree:
-    canopy position: in tree
-  ground:
-    canopy position: at ground level
+contexts: .na
 traits:
 - var_in: leaf_fresh_mass_g
   unit_in: g

@@ -28,11 +28,19 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(`species records` = gsub("_", " ", `species records`,
-    fixed=TRUE),woodiness ="woody")
+  custom_R_code: '
+    data %>%
+      mutate(`species records` = gsub("_", " ", `species records`, fixed=TRUE),
+      woodiness ="woody") %>%
+      group_by(`species records`) %>%
+        mutate_at(vars(`R+`,`S+`,`resp.type`, woodiness), replace_duplicates_with_NA) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup() 
+  '
   collection_date: unknown/2015
   taxon_name: species records
   site_name: Ecosystem
+  observation_number: observation_number
   description: Collection of resprouting data from across all Australian ecosystems
   collection_type: field
   sample_age_class: adult

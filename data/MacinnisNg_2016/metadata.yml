@@ -30,15 +30,22 @@ dataset:
     data %>% 
       mutate(
         site = "Crookwell",
-        stem_hydraulic_conductivity = 10*`Hydraulic condictivity`
+        stem_hydraulic_conductivity = 10*`Hydraulic condictivity`,
+        population_id = site,
+        individual_id = ifelse(is.na(tree),paste0("x",format(row_number(),000)),paste0("tree",format(tree,00))),
+        observation_number = ifelse(season == "winter", 1, 2),
+        collection_date = ifelse(season == "winter", "2003-07", "2004-01")
       ) %>%
       mutate_at(vars(`SLA`),replace_duplicates_with_NA) %>% 
       mutate_at(vars(`Hydraulic condictivity`,`HC per branch TA`,`HC per leaf area`,`HC per SW area`), ~na_if(.,0))
   '
-  collection_date: 2003-07/2004-01
+  collection_date: collection_date
   taxon_name: species
   site_name: site
   context_name: season
+  population_id: population_id
+  individual_id: individual_id
+  observation_number: observation_number
   description: An investigation of correlations between soil conditions and plant
     ecophysiological traits and function across seasons.
   collection_type: field
@@ -346,9 +353,9 @@ traits:
   unit_in: cm2/g
   trait_name: specific_leaf_area
   entity_type: individual
-  value_type: raw
+  value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 3
   methods: Specific leaf area was calculated for three leaves from each sample tree
     (18 leaves at each site). Samples were transported on ice in a cool box to the
     laboratory. Five 1 cm2 leaf discs were cut with a cork borer and dried at 70 deg

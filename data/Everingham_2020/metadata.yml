@@ -38,10 +38,8 @@ dataset:
         `Leaf area (cm2)` = ifelse(Leaf_or_leaflet == "Leaf",`Leaf area (cm2)`,NA),
         `Leaflet mass (g)` = ifelse(Leaf_or_leaflet == "Leaflet",`Leaf mass (g)`,NA),
         `Leaf mass (g)` = ifelse(Leaf_or_leaflet == "Leaf",`Leaf mass (g)`,NA),
-        plant_code = coalesce(
-          as.character(`Replicate`), 
-          as.character(`Plant label number`), 
-          as.character(`Plant ID`)),
+        plant_code = paste0(`Replicate`, `Plant label number`, `Plant ID`),
+        plant_code = gsub("NA","",plant_code),
         plant_code = ifelse(is.na(plant_code),"population",plant_code),
         individual_id = paste(`Species`, `site`, `Modern/Historic`, plant_code, sep = "_"),
         population_id = paste(`site`, `Modern/Historic`, sep = "_")
@@ -53,6 +51,7 @@ dataset:
   context_name: Modern/Historic
   individual_id: individual_id
   population_id: population_id
+  observation_number: observation_number
   description: Seed and seedling trait measurements from resurrected historic seeds
     and compared these with modern seed and seedling traits collected from the same
     species in the same geographic location to understand trait responses to climate

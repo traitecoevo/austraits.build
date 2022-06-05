@@ -37,18 +37,20 @@ dataset:
     data %>% 
       mutate(
         site = "University of Western Sydney",
-        Date = Date %>% dmy()
+        Date = Date %>% dmy(),
+        population_id = paste(Temp, CO2, Water, sep = "_")
       ) %>% 
       mutate_at(c("Cond (mol m-2 s-1)"), ~na_if(.,0)) %>% 
       subset(days_since_drought != "more_than_88") %>% 
       arrange(Date) %>%
-      group_by(Potnum) %>%
+      group_by(Potnum, Temp, CO2, Water) %>%
         mutate(observation = dplyr::row_number()) %>%
       ungroup()
   '
   collection_date: Date
   taxon_name: Species
   site_name: site
+  population_id: population_id
   individual_id: Potnum
   observation_number: observation
   context_name: context

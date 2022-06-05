@@ -14,11 +14,6 @@ dataset:
   custom_R_code:   '
     check_months <-  function(x){(1:12 %in% x %>% as.integer() %>% paste(collapse=""))};
 
-    parasitic <-
-      data %>%
-        subset(trait == "special life form" & lookup_data =="parasitic") %>%
-        mutate(trait = "parasitic");
-
     fruiting <- 
       data %>% 
         filter(trait == "fruiting", lookup_id <= 13) %>% 
@@ -40,13 +35,22 @@ dataset:
 
     collapsed <-
       data %>% 
-        filter(!trait %in% c("fruiting","flowering month")) %>% 
-           group_by(species, trait) %>% 
-           mutate(lookup_data = paste0(lookup_data, collapse = " ")) %>% 
-           distinct(species, trait, col_id, units, lookup_data);
+        filter(!trait %in% c("fruiting","flowering month")) %>%
+        mutate(
+          trait = ifelse(lookup_data == "prostrate", "growth_habit", trait),
+          trait = ifelse(lookup_data == "climbing", "growth_habit", trait),
+          trait = ifelse(lookup_data == "parasitic", "parasitic", trait),
+          trait = ifelse(lookup_data == "epiphytic", "growth_substrate", trait),
+          trait = ifelse(lookup_data == "aquatic", "growth_substrate", trait),
+          trait = ifelse(trait == "special growth form", "growth form", trait)   
+        ) %>%
+        select(species, trait, units, lookup_data) %>%
+        group_by(species, trait, units) %>% 
+        mutate(lookup_data = paste0(lookup_data, collapse = " ")) %>% 
+        ungroup() %>%
+        distinct(species, trait, units, lookup_data);
    
     bind_rows(
-      parasitic,
       collapsed,
       fruiting,
       flowering
@@ -203,31 +207,23 @@ traits:
   methods: unknown
 - var_in: growth form
   unit_in: .na
-  trait_name: .na
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
-- var_in: growth_form_collapsed
-  unit_in: .na
   trait_name: plant_growth_form
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: special growth form
+- var_in: growth_habit
   unit_in: .na
-  trait_name: plant_growth_form
+  trait_name: growth_habit
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: special life form
+- var_in: growth_substrate
   unit_in: .na
-  trait_name: plant_growth_form
+  trait_name: growth_substrate
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -258,6 +254,9 @@ traits:
   replicates: .na
   methods: .na
 substitutions:
+- trait_name: plant_growth_form
+  find: herb creeper rooting along stems
+  replace: herb creeper
 - trait_name: plant_growth_form
   find: creeper rooting along stems
   replace: creeper

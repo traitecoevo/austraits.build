@@ -27,7 +27,16 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      group_by(`gen spp`, site_text) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup() %>%
+      mutate(
+        observation_number = ifelse(!is.na(`15-N`),observation_number, NA),
+        observation_number = ifelse(observation_number > 2, 2, observation_number)
+      )
+  '
   collection_date: 1998/1998
   taxon_name: gen spp
   site_name: site_text
@@ -181,6 +190,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 15-N_sample_size
+  observation_number: observation_number
   methods: Healthy mature leaves were oven dried at 60 deg C on the day of collection
     and ground to a fine powder using a ball mill (Retsch MM-2, Haan, Germany). Lignotubers
     and roots from two to six specimens were used for d15N analysis. Cross-sections

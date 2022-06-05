@@ -27,7 +27,10 @@ dataset:
         measurement_remarks = paste0("oil material, ", oilmaterialdesc,"; ", 
             "moisture status, ", moisturestatus, "; ", "oil notes, ", oilnotes,
             "; ", "reference, ",ref)
-      )
+      ) %>%
+      group_by(taxa) %>%
+        mutate(method_number = row_number()) %>%
+      ungroup()
   '
   collection_date: unknown/2019
   taxon_name: taxa
@@ -48,6 +51,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
+  method_number: method_number
   measurement_remarks: measurement_remarks
   methods: Data sourced from various primary literature. For a species, the identical
     value often appears repeatedly under consecutive columns with different references

@@ -32,9 +32,17 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(fire_response_juvenile = `PERVEG V, U, W, N, X (F=inadequate
-    data)`, fire_response = `PERVEG V, U, W, N, X (F=inadequate data)`, seed_longevity
-    = `PERSEED D, S, G, C, Z (F=inadequate data)`)
+  custom_R_code: '
+    data %>%
+      mutate(
+        fire_response_juvenile = `PERVEG V, U, W, N, X (F=inadequate data)`,
+        fire_response = `PERVEG V, U, W, N, X (F=inadequate data)`,
+        seed_longevity = `PERSEED D, S, G, C, Z (F=inadequate data)`
+      ) %>%
+      group_by(Species) %>%
+        mutate_at(vars(`GEOPHYTE Y, N`), replace_duplicates_with_NA) %>%
+      ungroup()
+  '
   collection_date: unknown/2017
   taxon_name: Species
   description: Compilation of fire response and ecological attribute data for many

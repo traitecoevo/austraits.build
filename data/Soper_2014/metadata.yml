@@ -31,7 +31,9 @@ dataset:
   custom_R_code: '
     data %>%
       mutate(
-        context_name = ifelse(TRIP == 1, "Trip 1 (wet season)","Trip 2 (dry season)")
+        context_name = ifelse(TRIP == 1, "Trip 1 (wet season)","Trip 2 (dry season)"),
+        population_id = SITE,
+        observation_number = ifelse(TRIP == 1, 1, 2)
       ) %>%
       group_by(species_name_edited) %>%
         mutate_at(vars(`PLANT GROUP`), replace_duplicates_with_NA) %>%
@@ -41,6 +43,8 @@ dataset:
   taxon_name: species_name_edited
   site_name: SITE
   context_name: context_name
+  population_id: population_id
+  observation_number: observation_number
   description: Data for a study of indices of soil N availability and acquisition
     by woody plant taxa with distinct nutritional specialisations along a north Australian
     rainfall gradient

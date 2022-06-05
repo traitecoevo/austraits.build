@@ -37,22 +37,30 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>% 
+      group_by(Species, Plant) %>%
+      mutate(
+        rownum = paste0("x",row_number()),
+        Plant = as.character(Plant),
+        Plant = ifelse(is.na(Plant), rownum, Plant),
+        population_id = Site
+      ) %>%
+      ungroup() %>%
       mutate(
         Site = paste("Many Peaks site",Site), 
         Site = gsub("Many Peaks site NA","Many Peaks",Site),
-        individual_plant = paste(Species, Site, Plant, Season, sep ="_")
+        individual_plant = paste(Species, Plant, sep ="_"),
       ) %>% 
       mutate_at(vars(gs),~na_if(.,0)) %>%
-      arrange(Time) %>%
       group_by(individual_plant) %>%
-        mutate(observation = dplyr::row_number()) %>%
-      ungroup()
+      mutate(observation = dplyr::row_number()) %>%
+      ungroup() 
   '
   collection_date: 2000/2001
   taxon_name: Species
   site_name: Site
   context_name: context
   individual_id: individual_plant
+  population_id: population_id
   observation_number: observation
   description: Dataset of diurnal and seasonal patterns of leaf gas exchange and water
     relations in tree species of contrasting leaf phenology growing in a seasonally

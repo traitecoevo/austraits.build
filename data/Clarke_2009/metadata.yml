@@ -20,10 +20,28 @@ contributors:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(fire_response = ifelse(not_in_Clarke_2015 == "x",fire_response,NA), regen_strategy = ifelse(not_in_Clarke_2015 == "x",regen_strategy,NA))
+  custom_R_code: '
+    data %>%
+      mutate(
+        fire_response = ifelse(not_in_Clarke_2015 == "x",fire_response,NA),
+        regen_strategy = ifelse(not_in_Clarke_2015 == "x",regen_strategy,NA),
+        measurement_remarks = Habitats,
+        measurement_remarks = str_replace(measurement_remarks, "RO","rocky outcrops heaths"),
+        measurement_remarks = str_replace(measurement_remarks, "RF","rainforest"),
+        measurement_remarks = str_replace(measurement_remarks, "WH","wet heaths"),
+        measurement_remarks = str_replace(measurement_remarks, "GW","grassy woodlands"),
+        measurement_remarks = str_replace(measurement_remarks, "WSF","wet sclerophyll forest"),
+        measurement_remarks = str_replace(measurement_remarks, "DSF","dry sclerophyll forests")
+      ) %>%
+      group_by(Species) %>%
+      mutate(observation = row_number()) %>%
+      ungroup()
+  '
   collection_date: 1996/2008
   taxon_name: Species
   site_name: Site
+  measurement_remarks: measurement_remarks
+  observation_number: observation
   description: Study documenting the post-fire response (resprouting and maturation
     times) of woody species in six contrasting formations in the New England Tableland
     Bioregion of eastern Australia. The formations are rainforest, wet sclerophyll

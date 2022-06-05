@@ -46,6 +46,7 @@ dataset:
       -leaf_width_max_duplicate, -leaf_length_min_duplicate, -leaf_length_max_duplicate,
       -plant_height_duplicate, -wood_density_duplicate) %>%
       group_by(`Species_reconciled with updates and additions`) %>%
+        distinct() %>%
         summarise(
           `growth form` = paste0(`growth form`, collapse = " "),
           `leaf type` = paste0(`leaf type`, collapse = " "),
@@ -286,6 +287,24 @@ substitutions:
 - trait_name: plant_growth_form
   find: vine
   replace: climber_vine
+- trait_name: plant_growth_form
+  find: tree tree vine vine
+  replace: tree climber_vine
+- trait_name: plant_growth_form
+  find: tree tree vine
+  replace: tree climber_vine
+- trait_name: plant_growth_form
+  find: tree vine
+  replace: tree climber_vine
+- trait_name: plant_growth_form
+  find: shrub vine
+  replace: shrub climber_vine
+- trait_name: plant_growth_form
+  find: shrub shrub vine vine
+  replace: shrub climber_vine
+- trait_name: plant_growth_form
+  find: shrub shrub vine vine
+  replace: shrub climber_vine
 taxonomic_updates:
 - find: Abutilon aff. subviscosum
   replace: Abutilon subviscosum

@@ -39,7 +39,8 @@ dataset:
       mutate(
         site = "University of Western Sydney",
         Date = Date %>% dmy(),
-        leaf_area_ratio = coalesce(`LAR (m2 kg-1)`,`LAR m2 kg-1)`)
+        leaf_area_ratio = coalesce(`LAR (m2 kg-1)`,`LAR m2 kg-1)`),
+        Potnum = ifelse(is.na(Potnum),paste0("x", row_number()), Potnum)
       ) %>%
       group_by(Potnum) %>%
         mutate(observation = dplyr::row_number()) %>%

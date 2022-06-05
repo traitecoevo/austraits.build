@@ -47,7 +47,8 @@ dataset:
     data %>% 
       mutate(
         `Compeditive stratum` = ifelse(GosperJVS2012_PFT == "Ephem","post_fire_ephemeral",`Compeditive stratum`),
-        life_history = ifelse(GosperJVS2012_PFT == "Ephem","ephemeral",NA)
+        life_history = ifelse(GosperJVS2012_PFT == "Ephem","ephemeral",NA),
+        lifespan_value_type = ifelse(Longevity == "Long", "maximum", "minimum")
       )
   '
   collection_date: 2007/2007
@@ -174,10 +175,10 @@ traits:
     communities sampled. Upper = upper (canopy) stratum of trees or shrubs; Mid =
     mid-stratum of shrubs; Ground = ground layer]
 - var_in: Longevity
-  unit_in: .na
+  unit_in: years
   trait_name: lifespan
   entity_type: species
-  value_type: mode
+  value_type: lifespan_value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations. [Short = post-fire ephemeral with
@@ -189,10 +190,10 @@ substitutions:
   replace: .na
 - trait_name: lifespan
   find: Short
-  replace: <6
+  replace: 6
 - trait_name: lifespan
   find: Long
-  replace: '>6'
+  replace: 6
 - trait_name: soil_seedbank
   find: 'No'
   replace: 0

@@ -208,10 +208,10 @@ metadata_add_traits <- function(dataset_id) {
     custom_manipulation(metadata[["config"]][["custom_R_code"]])()
 
   # Get list of potential traits
-  if(!metadata$config$data_is_long_format) {
+  if(!metadata$dataset$data_is_long_format) {
     v <- names(data)
   } else {
-    v <- unique(data[[metadata$config$variable_match$trait_name]])
+    v <- unique(data[[metadata$dataset$variable_match$trait_name]])
   }
 
   var_in <- user_select_names(paste("Indicate all columns you wish to keep as distinct traits in ", dataset_id), v)

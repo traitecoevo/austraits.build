@@ -42,13 +42,14 @@ dataset:
     data %>% 
       mutate(site = "University of Western Sydney") %>%
       arrange(date_gas_exchange) %>%
+      mutate(individual_id = ifelse(is.na(Potnum),dplyr::row_number(),Potnum)) %>%
       group_by(Potnum) %>%
-        mutate(observation = ifelse(!is.na(Potnum),dplyr::row_number(),NA)) %>%
+        mutate(observation = row_number()) %>%
       ungroup()
   '
   collection_date: date_gas_exchange
   taxon_name: Species
-  individual_id: Potnum
+  individual_id: individual_id
   observation_number: observation
   site_name: site
   context_name: context

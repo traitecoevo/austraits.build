@@ -306,7 +306,7 @@ create_entity_id <- function(data) {
   create_id <- function(x, prefix, sort= FALSE) {
     d <- x %>% unique() %>% subset(., !is.na(.))
     
-    if(sort) d <- sort(d)
+    if(sort) d <- sort(d, na.last=TRUE)
     
     id <- make_id_segment(length(d), prefix)
     
@@ -347,13 +347,16 @@ create_entity_id <- function(data) {
   
   if(all(is.na(data[["population_id"]]))) {
     data <- data %>%
-      dplyr::mutate(population_id = "popX")
+      dplyr::mutate(population_id = NA)
   }
   
   
   # create population_id segment of entity_id
   data <- data %>% 
-    dplyr::mutate(pop_id_segment = create_id(population_id, "pop", sort = TRUE)) 
+    dplyr::mutate(
+              pop_id_segment = create_id(population_id, "pop", sort = TRUE),
+              pop_id_segment = ifelse(is.na(pop_id_segment),"pop_unk",pop_id_segment)
+            ) 
   
   ## Create individual_id segment of entity_id: ind_id_segment  
   
@@ -377,7 +380,11 @@ create_entity_id <- function(data) {
   
   data <- data %>% 
     group_by(spp_id_segment, pop_id_segment) %>%
-    mutate(ind_id_segment = ifelse(!is.na(individual_id),create_id(individual_id,"ind"),NA)) %>%
+    mutate(
+      ind_id_segment = ifelse(!is.na(individual_id),create_id(individual_id,"ind"),NA),
+      individual_id = row_number(),
+      ind_id_segment = ifelse(is.na(ind_id_segment),create_id(individual_id,"entity_unk"),ind_id_segment)
+           ) %>%
     ungroup()
 
   data <- data %>%

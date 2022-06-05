@@ -39,12 +39,15 @@ dataset:
         Date = Date %>% dmy(),
         individual_id = paste(`Forest location`, Species, replicate, sep = "_"),
         population_id = "Daintree Rainforest Observatory",
-        observation_number = case_when(
+        method_number = case_when(
           `Canopy location` == "upper" ~ "1",
           `Canopy location` == "lower" ~ "2",
           `Canopy location` == "understory" ~ "3"
         )
-      )
+      ) %>%
+      group_by(individual_id, site_name, `Canopy location`, method_number) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup
   '
   collection_date: Date
   taxon_name: Species
@@ -52,7 +55,8 @@ dataset:
   context_name: Canopy location
   individual_id: individual_id
   population_id: population_id 
-  observation_number: observation_number 
+  method_number: method_number
+  observation_number: observation_number
   description: A study exploring the impact of canopy position on leaf respiration
     (R) and associated traits in tree and shrub species growing in a lowland tropical
     rainforest in Far North Queensland, Australia.

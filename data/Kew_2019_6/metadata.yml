@@ -22,10 +22,14 @@ dataset:
       mutate(
         germination = germination_percent/100,
         remarks = paste0("presow treatment, ", presowtreat)
-      )
+      ) %>%
+      group_by(taxa) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup()
   '
   collection_date: unknown/2019
   taxon_name: taxa
+  observation_number: observation_number
   description: Germination data on species from Kew seed databases
   collection_type: botanical_collection
   sample_age_class: seedling

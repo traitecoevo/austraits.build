@@ -21,7 +21,10 @@ dataset:
       mutate(
         protcontentval = protcontentval/100,
         measurement_remarks = paste(oilmaterialdesc, refdesc, sep = "; ")
-      )
+      )  %>%
+      group_by(`SID taxa`) %>%
+        mutate(method_number = row_number()) %>%
+      ungroup()
   '
   collection_date: unknown/2019
   taxon_name: SID taxa
@@ -40,10 +43,11 @@ traits:
 - var_in: protcontentval
   unit_in: '%'
   trait_name: seed_protein_content
-  entity_type: species
+  entity_type: population
   value_type: mean
   basis_of_value: measurement
   replicates: .na
+  method_number: method_number
   measurement_remarks: measurement_remarks
   methods: Each entry is annotated with methods and references in data.csv file. Part of this information is included in the measurement remarks. Additional information is available at data.kew.org/sid/ if
     you look up the individual species.
