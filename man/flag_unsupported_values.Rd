@@ -4,18 +4,18 @@
 \alias{flag_unsupported_values}
 \title{Flag values outside of allowable range}
 \usage{
-flag_unsupported_values(data, definitions)
+flag_unsupported_values(data, trait_definitions)
 }
 \arguments{
 \item{data}{tibble or dataframe containing the study data}
 
-\item{definitions}{definitions read in from the definitions.yml file in the config folder}
+\item{trait_definitions}{definitions read in from the traits.yml file in the config folder}
 }
 \value{
 tibble with flagged values outside of allowable range, unsupported categorical
 trait values or missing values
 }
 \description{
-Flags any values that are outside the allowable range defined in the
-definitions.yml file. NA values are flagged as errors.
+Flags any values that are outside the allowable range defined in the 
+traits.yml file. NA values are flagged as errors.
 }

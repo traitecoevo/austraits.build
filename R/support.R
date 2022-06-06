@@ -10,6 +10,16 @@
 #' @usage lhs \%>\% rhs
 NULL
 
+#' Query the package version in DESCRIPTION
+#'
+#' See \code{desc::\link[desc:desc_get_version]{desc_get_version}} for details.
+#'
+#' @name desc_get_version
+#' @rdname desc_get_version
+#' @importFrom desc desc_get_version
+#' @export
+NULL
+
 #' Read in a csv as a tibble with column types as characters
 #'
 #' Reads in a csv file using the read_csv function from readr
@@ -39,10 +49,10 @@ null_as <- function(x, val=NA){
   x
 }
 
-#' Extract a trait element from the definitions$traits$elements
+#' Extract a trait element from the trait_definitions$traits$elements
 #'
-#' @param i a value within the definitions$traits$elements list which refers to types of traits
-#' @param my_list the list that contains the element we're interested in (i.e. definitions$traits$elements)
+#' @param i a value within the trait_definitions$traits$elements list which refers to types of traits
+#' @param my_list the list that contains the element we're interested in (i.e. trait_definitions$traits$elements)
 #' @param var the type of variable of a trait
 #'
 #' @return the element/properties of a trait
@@ -50,7 +60,7 @@ null_as <- function(x, val=NA){
 #' @export
 #' @examples
 #' \dontrun{
-#' extract_list_element(1, definitions$traits$elements, "units")
+#' extract_list_element(1, trait_definitions$traits$elements, "units")
 #' }
 extract_list_element <- function(i, my_list, var) {
   i %>% lapply(function(x) my_list[[x]][[var]]) %>% lapply(null_as) %>% unlist()
@@ -245,11 +255,3 @@ NULL
 ##' @rdname write_yaml
 NULL
 
-#' Build website
-#'
-#' Build website using the build_site() function from `pkgdown`
-#'
-build_website <- function() {
-  devtools::document()
-  pkgdown::build_site()
-}
