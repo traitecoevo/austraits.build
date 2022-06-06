@@ -61,9 +61,8 @@ convert_month_range_vec_to_binary <- function(vec) {
 #'
 #' @examples convert_01_ny(c(0,1,1,1,0))
 convert_01_ny <- function(txt) {
-  txt %>%   
-  gsub("1", "y", ., fixed=TRUE) %>%
-  gsub("0", "n", ., fixed=TRUE)
+  txt <-  gsub("1", "y", txt, fixed=TRUE)
+  gsub("0", "n", txt, fixed=TRUE)
 }
 
 #' Convert month range to 12 element binary string

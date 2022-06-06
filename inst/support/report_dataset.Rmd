@@ -48,17 +48,51 @@ options(dplyr.summarise.inform = FALSE)
 # - use kableExtra for styling: https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
 # - use knitr chunck options: https://rmarkdown.rstudio.com/lesson-3.html
 
+# Some useful functions
+
+
+#' Generate hyperlink for markdown and html
+#'
+#' Generate hyperlink for markdown and html files
+#'
+#' @param link character string for the url link
+#' @param text character string for the text to display
+#' @param type file type, default is markdown "md" otherwise html
+#'
+#' @return character string with the text and link formatted for md and html
+#' @export
+#'
+#' @examples as_link("www.austraits.org", "austraits")
+as_link <- function(link, text, type = "md") {
+  if (type == "md") {
+    sprintf("[%s](%s)", text, link)
+  } else {
+    sprintf("<a href='%s'> %s </a>", link, text)
+  }
+}
+
+
+#' Get SHA link from Github
+#'
+#' Get SHA link using the get_SHA() function. The link generated leads to the latest
+#' commit for the Github repository. SHA is the abbreviated SHA-1 40 digit
+#' hexadecimal number which Github uses to track commits and changes made to a repository.
+#'
+#' @param ... arguments passed to the get_SHA()
+#'
+#' @return SHA link to a github commit as a character string formatted using markdown syntax
+get_SHA_link <- function(...) {
+  sha <- get_SHA(...)
+  as_link(sprintf("https://github.com/traitecoevo/austraits/tree/%s", sha), sha)
+}
+
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
-library(tidyverse)
+library(austraits.build)
+library(austraits)
 library(knitr)
 library(kableExtra)
-library(austraits)
-
-source("R/support.R")
-source("R/report_utils.R")
-source("R/report_notetaker.R")
 
 my_kable_styling <- my_kable_styling_html 
 
@@ -72,24 +106,36 @@ if(!exists("dataset_id")) {
   #  stop("dataset_id must exist in global name space to knit a report")
 }
 
-definitions <- austraits$definitions
+trait_definitions <- austraits$trait_definitions
 data_study <- extract_dataset(austraits, dataset_id)
-metadata_study <- read_metadata(sprintf("data/%s/metadata.yml", dataset_id))
+metadata <- read_metadata(sprintf("data/%s/metadata.yml", dataset_id))
+schema <- austraits$schema
 
 knitr::opts_chunk$set(fig.cap='', fig.path = file.path(root.dir,"export/figures", paste0(dataset_id,"_")))
 
 # start notetaker device
-questions <- start_notetaker()
+questions <-  austraits.build:::start_notetaker()
 
 new_question <- function(txt) {
-  x <- questions(add_note, as_note(txt)) %>% print_notes(as_anchor=TRUE)
+  x <- questions( austraits.build:::add_note,  austraits.build:::as_note(txt)) %>%  austraits.build:::print_notes(as_anchor=TRUE)
   writeLines(sprintf("<font color='orange'>**Question:** %s</font>\n\n", paste0(x, collape="")))
 }
 
-# Variable to record when definitions have been specified
+# Variable to record when trait_definitions have been specified
 
 structures_already_defined <- c("names")
 
+trait_type <- function(trait_name, trait_definitions) {
+ extract_list_element(trait_name, trait_definitions, "type")
+}
+
+trait_is_numeric <- function(trait_name, trait_definitions) {
+ trait_type(trait_name, trait_definitions) == "numeric"
+}
+
+trait_is_categorical <- function(trait_name, trait_definitions) {
+ !trait_is_numeric(trait_name, trait_definitions)
+}
 ```
 
 # Introduction
@@ -100,7 +146,7 @@ structures_already_defined <- c("names")
 
 AusTraits combines all of these data fragments into a harmonised, error checked, publicly available compilation.
 
-AusTraits is built from many different sources, here referred to as `studies` (so called because the sources are most-often individual scientific papers), with each study denoted by a distinct `dataset_id`. Our data processing pipeline seeks to combine all of the different studies in a transparent and reproducible way. In addition, the AusTraits repository consists of configuration files defining the list of known species, the definitions for each trait and table, and appropriate unit conversions. Detailed descriptions of the `definitions`, `database structure`, and `file format` are all available on the [project homepage](http://traitecoevo.github.io/austraits.build/) under the `Details` tab.
+AusTraits is built from many different sources, here referred to as `studies` (so called because the sources are most-often individual scientific papers), with each study denoted by a distinct `dataset_id`. Our data processing pipeline seeks to combine all of the different studies in a transparent and reproducible way. In addition, the AusTraits repository consists of configuration files defining the list of known species, the definitions for each trait and table, and appropriate unit conversions. Detailed descriptions of the `trait_definitions`, `database structure`, and `file format` are all available on the [project homepage](http://traitecoevo.github.io/austraits.build/) under the `Details` tab.
 
 ## Purpose of this report
 
@@ -142,9 +188,9 @@ To aid your review, we have attached the following files:
 ```{r, results='asis', echo=FALSE}
 # Any additional questions from metadata
 
-if(!is.null(metadata_study$questions) & !is.na(metadata_study$questions)) {
+if(!is.null(metadata$questions) & !is.na(metadata$questions)) {
 
-  x <- names(metadata_study$questions)[ !(names(metadata_study$questions) %in% c(
+  x <- names(metadata$questions)[ !(names(metadata$questions) %in% c(
                                       "additional_traits", "austraits") 
                                 ) ]
   
@@ -152,7 +198,7 @@ if(!is.null(metadata_study$questions) & !is.na(metadata_study$questions)) {
     writeLines("# Major questions\n\n")
 
   for(i in seq_along(x))
-    new_question(sprintf("(section `general`) %s", metadata_study$questions[[i]]))
+    new_question(sprintf("(section `general`) %s", metadata$questions[[i]]))
 }
 ```
 
@@ -166,20 +212,14 @@ We collect information about the context of the trait measurements. This include
 The following people are listed as involved in this study:
 
 ```{r, results='asis', echo=FALSE}
-metadata_study$people %>%
+metadata$contributors$data_collectors %>%
   list_to_df() %>%
-  select(role, name, institution) %>%
   my_kable_styling()
 ```
 
 If a current affiliation isn't known, provide the last known institution. We also require an email address for all people. People involved in the study who cannot be tracked down, need to be designated as assistants.
 
-Roles are as follows:
-
-```{r, results='asis', echo=FALSE}
-definitions$metadata$elements$people$elements$role$values %>% list1_to_df() %>%
-  my_kable_styling()
-```
+`r `metadata$contributors$austraits_curators` entered the data into AusTraits.
 
 ```{r, results='asis', echo=FALSE}
 new_question("(section `people`) Are all appropriate people listed, with appropriate details?")
@@ -192,18 +232,18 @@ Data from this study is recorded as coming from the following sources:
 Primary citation:
 
 ```{r, results='asis', echo=FALSE}
-metadata_study$source$primary %>%
+metadata$source$primary %>%
   list1_to_df() %>%
   my_kable_styling()
 ```
 
 ```{r, results='asis', echo=FALSE}
-n <- length(metadata_study$source)
+n <- length(metadata$source)
 if(n > 1) {
   writeLines("Secondary citations:")
 
   for(i in 2:n) {
-    metadata_study$source[[i]] %>%
+    metadata$source[[i]] %>%
     list1_to_df() %>%
     my_kable_styling() %>% 
     cat()
@@ -222,7 +262,7 @@ new_question("(section `source`) Are the citation details for this study correct
 The description we have of the study is as follows:
 
 ```{r, results='asis', echo=FALSE}
-metadata_study$dataset %>%
+metadata$dataset %>%
   list1_to_df() %>%
   my_kable_styling()
 ```
@@ -232,7 +272,7 @@ new_question("(section `dataset`) Can you provide more detailed information for 
 ```
 
 ```{r, results='asis', echo=FALSE}
-missing <- metadata_study$dataset %>%
+missing <- metadata$dataset %>%
  list1_to_df() %>%
  filter(value == "unknown") %>%
  pull(key)
@@ -240,7 +280,7 @@ missing <- metadata_study$dataset %>%
 for(v in missing) {
   sprintf("(section `dataset`) Can you provide missing details for the variable `%s`?\n", v) %>%
     new_question()
-  sprintf("The variable `%s` captures *'%s'*\n", v, definitions$metadata$elements$dataset$values[[v]]) %>%
+  sprintf("The variable `%s` captures *'%s'*\n", v, schema$metadata$elements$dataset$values[[v]]) %>%
     writeLines()
 }
 ```
@@ -407,7 +447,7 @@ if(nrow(subset(data_study$excluded_data,error!="Missing value")) > 0 ) {
     writeLines()
 
   writeLines(ifelse(nrow(subset(data_study$excluded_data, error == "Unsupported trait value")) > 0,
-    "In particular, the following data points were excluded because the supplied trait value could not be aligned with the allowable values in AusTraits (error = `Unsupported trait value`). The allowable values for each trait are listed in the [definitions file](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) and lower in this report.",""))
+    "In particular, the following data points were excluded because the supplied trait value could not be aligned with the allowable values in AusTraits (error = `Unsupported trait value`). The allowable values for each trait are listed in the [trait_definitions file](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) and lower in this report.",""))
 
 
   if(nrow(subset(data_study$excluded_data,error == "Unsupported trait value")) > 0 ) {
@@ -426,7 +466,7 @@ if(nrow(subset(data_study$excluded_data,error!="Missing value")) > 0 ) {
 "  "
 
   if(nrow(subset(data_study$excluded_data,error == "Observation excluded in metadata")) > 0) { 
-    metadata_study$exclude_observations %>%
+    metadata$exclude_observations %>%
       list_to_df() %>%
       my_kable_styling() %>%
       writeLines()
@@ -443,7 +483,7 @@ if(nrow(subset(data_study$excluded_data,error!="Missing value")) > 0 ) {
 
 ```{r numerical, results='asis', echo=FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=10, eval=TRUE}
 traits <- data_study$traits$trait_name %>% unique() %>% sort()
-traits_numeric <- traits[trait_is_numeric(traits, definitions)]
+traits_numeric <- traits[trait_is_numeric(traits, trait_definitions)]
 
 
 
@@ -452,12 +492,12 @@ question_x <- function(x, y = trait) {
   new_question()
 }
 
-define_variable <- function(var, definitions) {
+define_variable <- function(var, schema) {
 
   description <- switch(var,
-                        value_type = definitions$value_type$description,
-                        replicates = definitions$austraits$elements$traits$elements$replicates,
-                        methods = definitions$austraits$elements$methods$elements$methods
+                        value_type = schema$value_type$description,
+                        replicates = schema$austraits$elements$traits$elements$replicates,
+                        methods = schema$austraits$elements$methods$elements$methods
                         )
 
   sprintf("The variable `%s` is *'%s'*.", v, description) %>%
@@ -466,7 +506,7 @@ define_variable <- function(var, definitions) {
   if(var == "value_type") {
     writeLines("Possible values are:")
 
-    definitions$value_type$values %>%
+    schema$value_type$values %>%
       list1_to_df()  %>%
       my_kable_styling() %>%
       writeLines()
@@ -490,9 +530,9 @@ for(trait in traits_numeric) {
     filter(trait_name == trait) %>%
     mutate(value = as.numeric(value))
 
-  transforms <- metadata_study$traits %>% list_to_df() %>% filter(trait_name == trait)
+  transforms <- metadata$traits %>% list_to_df() %>% filter(trait_name == trait)
 
-  elements <- austraits$definitions$traits$elements[[trait]]
+  elements <- trait_definitions[[trait]]
 
   units <- elements$units
 
@@ -520,20 +560,17 @@ for(trait in traits_numeric) {
 
   writeLines("  ")
 
-  writeLines(ifelse(nrow(subset(data_study$excluded_data, error == "Value out of allowable range" & trait_name == trait)) > 0,
+  writeLines(ifelse(nrow(filter(data_study$excluded_data, error == "Value out of allowable range" & trait_name == trait)) > 0,
     "The following data points were excluded because the values were outside the allowable range (error = `Value out of allowable range`). Our ranges of allowable values are sufficiently generous, that most excluded data are well outside the expected range for the trait, but if you believe these data are valid, accurate measurements that will be useful to future AusTraits users, let us know.",""))
 
-if(nrow(subset(data_study$excluded_data, error == "Value out of allowable range" & trait_name == trait)) > 0 ) {
+if(nrow(filter(data_study$excluded_data, error == "Value out of allowable range" & trait_name == trait)) > 0 ) {
   data_study$excluded_data %>% filter(error == "Value out of allowable range" & trait_name == trait) %>%
     select(observation_id, taxon_name, site_name, context_name, value, unit) %>%
     my_kable_styling() %>%
     writeLines()
 }
 
-  trait_distribution_plot_numerical(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
-
-  austraits::plot_trait_distribution_beeswarm(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
-
+ # austraits::plot_trait_distribution_beeswarm(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
 
   writeLines(c(""))
 
@@ -566,7 +603,7 @@ if(nrow(subset(data_study$excluded_data, error == "Value out of allowable range"
       question_x(v, trait)
 
       if(!(v %in% structures_already_defined)) {
-        define_variable(v, definitions)
+        define_variable(v, schema)
         structures_already_defined <- c(v, structures_already_defined)
       }
     }
@@ -581,7 +618,7 @@ if(nrow(subset(data_study$excluded_data, error == "Value out of allowable range"
 ```{r categorical, results='asis', echo=FALSE, eval=TRUE}
 
 traits <- data_study$traits$trait_name %>% unique() %>% sort()
-traits_categorical <- traits[!trait_is_numeric(traits, definitions)]
+traits_categorical <- traits[!trait_is_numeric(traits, trait_definitions)]
 
 writeLines(
   ifelse(length(traits_categorical) == 0,
@@ -590,8 +627,8 @@ writeLines(
 
 for(trait in traits_categorical) {
 
-  transforms <- metadata_study$traits %>% list_to_df() %>% filter(trait_name == trait)
-  substitutions_for_trait <- metadata_study$substitutions %>% list_to_df() %>% filter(trait_name == trait)
+  transforms <- metadata$traits %>% list_to_df() %>% filter(trait_name == trait)
+  substitutions_for_trait <- metadata$substitutions %>% list_to_df() %>% filter(trait_name == trait)
 
   data_trait_study <- data_study$traits %>%
     filter(trait_name == trait)
@@ -599,9 +636,9 @@ for(trait in traits_categorical) {
   data_trait_all <- austraits$traits %>%
     filter(trait_name == trait)
 
-  trait_definitions <- austraits$definitions
+  trait_definitions <- austraits$trait_definitions
 
-  elements <- austraits$definitions$traits$elements[[trait]]
+  elements <-trait_definitions$elements[[trait]]
 
   x <- c("", "",
     sprintf("### %s", trait),
@@ -609,7 +646,7 @@ for(trait in traits_categorical) {
     sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the AusTraits database.\n\nThe contributed data has the following properties:", transforms$var_in, trait),
     "",
     sprintf("- **standardised name**: %s", trait ),
-    sprintf("- **standardised description**: %s", definitions$traits$elements[[trait]]$description ),
+    sprintf("- **standardised description**: %s", trait_definitions$elements[[trait]]$description ),
     sprintf("- **label**: %s", elements$label ),
     sprintf("- **records**: %s in this study (of %s in AusTraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
     "", 
@@ -623,7 +660,7 @@ for(trait in traits_categorical) {
     elements$values %>% unlist() %>% as.data.frame() %>% tibble::rownames_to_column() %>% rename(trait_value = "rowname", definition = ".") %>% arrange(trait_value) %>% my_kable_styling(),
     "",
     ifelse(nrow(substitutions_for_trait)>0,
-    "The following substitutions have been implemented to align categorical trait values in the submitted data table with allowable trait values specified in the AusTraits definitions file.",
+    "The following substitutions have been implemented to align categorical trait values in the submitted data table with allowable trait values specified in the AusTraits traits_definitions file.",
     "No substitutions were required to align the data for this trait with AusTraits allowed trait values."),
     ifelse(nrow(substitutions_for_trait)>0,
     substitutions_for_trait %>% rename("value in contributed data table"=find,"AusTraits aligned value"=replace)%>% my_kable_styling(),""),
@@ -664,7 +701,7 @@ for(trait in traits_categorical) {
       question_x(v, trait)
 
       if(!(v %in% structures_already_defined)) {
-        define_variable(v, definitions)
+        define_variable(v, schema)
         structures_already_defined <- c(v, structures_already_defined)
       }
     }
@@ -682,7 +719,7 @@ We have records on the following taxa from your study. We have attempted to alig
 The table below shows the table of all taxa in this study, where possible using the name aligned with the APC. Columns are as follows:
 
 ```{r, results='asis', echo=FALSE}
-definitions$austraits$elements$taxa$elements %>%
+schema$austraits$elements$taxa$elements %>%
   list1_to_df() %>%
   my_kable_styling()
 ```
@@ -691,7 +728,7 @@ Clicking on the name will take you to the relevant taxonomic record in the APC o
 
 ```{r species_list2, results='asis', echo=FALSE}
 data_study$taxa %>%
-  select(one_of(names(definitions$austraits$elements$taxa$elements))) -> tmp
+  select(one_of(names(schema$austraits$elements$taxa$elements))) -> tmp
 
 if(nrow(tmp) < 10000 ){
   tmp %>%
@@ -721,8 +758,8 @@ Links on `cleaned_name` and `taxon_name` take you to the APC or APNI record for 
 data_study$taxonomic_updates %>% select(-dataset_id) %>% 
   filter(original_name !=taxon_name) %>% 
   mutate(
-    d1 = map2_dbl(original_name, cleaned_name, ~adist(.x, .y)) %>% as.character() %>% str_replace("0", ""),
-    d2 = map2_dbl(taxon_name, cleaned_name, ~adist(.x, .y)) %>% as.character() %>% str_replace("0", ""),
+    d1 = purrr::map2_dbl(original_name, cleaned_name, ~adist(.x, .y)) %>% as.character() %>% str_replace("0", ""),
+    d2 = purrr::map2_dbl(taxon_name, cleaned_name, ~adist(.x, .y)) %>% as.character() %>% str_replace("0", ""),
     cleaned_name = as_link(taxonIDClean, cleaned_name),
     taxon_name = as_link(acceptedNameUsageID, taxon_name),
     alternativeTaxonomicStatusClean = replace_na(alternativeTaxonomicStatusClean, ""),
@@ -740,7 +777,7 @@ We were unable to find taxonomic matches for the following species in the data. 
 ```{r species_list3, results='asis', echo=FALSE}
 data_study$taxa %>%
   filter(is.na(acceptedNameUsageID)) %>%
-  select(one_of(names(definitions$austraits$elements$taxa$elements))) %>%
+  select(one_of(names(schema$austraits$elements$taxa$elements))) %>%
   select(-acceptedNameUsageID, -ccAttributionIRI, -taxonDistribution) %>%
   mutate_all(replace_na, "") %>%
   my_kable_styling()
@@ -759,7 +796,7 @@ Here is a summary of the questions we would like answers to. Clicking on the lin
 
 
 ```{r, results='asis', echo=FALSE}
-questions() %>% print_all_notes() %>% writeLines()
+questions() %>% austraits.build:::print_all_notes() %>% writeLines()
 ```
 
 

@@ -52,7 +52,7 @@ metadata_create_template <- function(dataset_id,
   exclude <- c("description", "type")
   articles <- c("key", "bibtype", "year", "author", "title", "journal", "volume", "number", "pages", "doi")
   
-  out <- read_yaml("config/definitions.yml")$metadata$elements
+  out <- load_schema()$metadata$elements
 
   out[names(out) %notin% fields] <- NA
   out$source <- out$source$values["primary"]
@@ -184,7 +184,7 @@ metadata_check_custom_R_code <- function(dataset_id) {
 
   # load and clean trait data
   readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols(), guess_max = 100000) %>%
-    custom_manipulation(metadata[["config"]][["custom_R_code"]])()
+    custom_manipulation(metadata[["dataset"]][["custom_R_code"]])()
 }
 
 #' For specified `dataset_id`, populate columns for traits into metadata
@@ -205,7 +205,7 @@ metadata_add_traits <- function(dataset_id) {
 
   # load and clean trait data
   data <- readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols()) %>%
-    custom_manipulation(metadata[["config"]][["custom_R_code"]])()
+    custom_manipulation(metadata[["dataset"]][["custom_R_code"]])()
 
   # Get list of potential traits
   if(!metadata$dataset$data_is_long_format) {
@@ -395,7 +395,7 @@ metadata_add_source_doi <- function(doi, ...) {
 #' 
 #' `metadata_add_substitution` is used to align the categorical trait values used
 #' by a contributor to the categorical values supported by AusTraits. These values
-#' are defined in the `definitions.yml` file
+#' are defined in the `traits.yml` file
 #'
 #' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param trait_name the AusTraits defined name for a particular trait
@@ -1109,27 +1109,34 @@ test_data_setup <- function(dataset_ids = NULL) {
 
 #' Update the remake.yml file with new studies
 #' 
-#' `austraits_rebuild_remake_setup` rewrites the remake.yml file to include new
+#' `setup_build_process` rewrites the remake.yml file to include new
 #' studies
+#'
+#' @param template template used to build 
+#' @param path path to folder with data
+#' @param dataset_ids dataset_ids to icnlude. By default includes all.
 #'
 #' @return Updated remake.yml file 
 #' @export
-austraits_rebuild_remake_setup <- function( ) {
+setup_build_process <- function(
+  template = readLines(system.file("support", "remake.yml.whisker", package = "austraits.build")),
+  path="data",
+  dataset_ids = dir(path)) {
 
-  root.dir <- rprojroot::find_root("austraits.build.Rproj")
-
-  pwd <- setwd(root.dir)
-  on.exit(setwd(pwd))
-  dataset_ids <- dir("data")
+  if(!file.exists(path)) {
+    stop("cannot find data directory", path)
+  }
 
   # check directories have both files
-
-  has_both_files <- sapply(dataset_ids, function(id) sprintf("data/%s/%s", id, c("data.csv", "metadata.yml") ) %>% file.exists() %>% all())
+  has_both_files <- sapply(dataset_ids, function(id) sprintf("%s/%s/%s", path, id, c("data.csv", "metadata.yml") ) %>% file.exists() %>% all())
 
   dataset_ids <- dataset_ids[has_both_files]
 
-  vals <- list(dataset_ids = whisker::iteratelist(dataset_ids, value="dataset_id"))
+  vals <- list(
+    dataset_ids = whisker::iteratelist(dataset_ids, value="dataset_id"),
+    path=path
+    )
 
-  str <- whisker::whisker.render(readLines("scripts/remake.yml.whisker"), vals)
+  str <- whisker::whisker.render(template, vals)
   writeLines(str, "remake.yml")
 }
