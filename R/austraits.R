@@ -100,15 +100,6 @@ remove_suspected_duplicates <- function(austraits,
 }
 
 
-### function has been migrated to and modified in steps.R
-export_to_plain_text <- function(austraits, path) {
-  dir.create(path, FALSE, TRUE)
-  for(v in c("traits", "sites", "contexts", "methods", "excluded_data", "taxa", "taxonomic_updates"))
-    readr::write_csv(austraits[[v]], sprintf("%s/%s.csv", path, v))
-  write_yaml(austraits[["definitions"]],  sprintf("%s/definitions.yml", path))
-  RefManageR::WriteBib(austraits$sources, sprintf("%s/sources", path))
-}
-
 ### Doesnt appear to be migrated to austraits package nor is it used in austraits.build ###
 compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trait_name = NULL) {
   unlink(path, TRUE, TRUE)
@@ -128,10 +119,10 @@ compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trai
   }
 
 
-  v1 %>% export_to_plain_text(path)
+  v1 %>% export_version_plaintext(path)
   repo <- git2r::init(path)
   git2r::add(repo, "*")
-  v2 %>% export_to_plain_text(path)
+  v2 %>% export_version_plaintext(path)
 
   message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
 }
