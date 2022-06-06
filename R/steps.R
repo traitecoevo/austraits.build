@@ -887,7 +887,7 @@ parse_data <- function(data, dataset_id, metadata) {
               dplyr::select(-.data$observation_id_tmp)
   }
 
-    df <- df %>%
+  df <- df %>%
             mutate(
               observation_number = as.character(observation_number),
               method_number = as.character(method_number)
