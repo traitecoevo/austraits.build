@@ -112,7 +112,7 @@ load_dataset <- function(filename_data_raw,
       #ensure dates are converted back to character
       collection_date = as.character(.data$collection_date)
       ) %>%
-    dplyr::arrange(.data$observation_id, .data$entity_id, .data$trait_name, .data$value_type)
+    dplyr::arrange(.data$entity_id, .data$trait_name, .data$value_type)
 
   # extract site data from metadata
   sites <-
@@ -284,7 +284,7 @@ custom_manipulation <- function(txt) {
 #' 
 #' Creates 3-part entity id codes that combine a segment for species, population, 
 #' and, when applicable, individual
-#' This depends upon observation_id being estalished when the data.csv file is first read in
+#' This depends upon observation_id being established when the data.csv file is first read in
 #'
 #' @param data the traits table at the point where this function is called 
 #'
@@ -344,7 +344,7 @@ create_entity_id <- function(data) {
       dplyr::mutate(population_id = NA)
   }
   
-    browser()
+
   # create population_id segment of entity_id
   data <- data %>% 
     dplyr::mutate(
@@ -393,7 +393,7 @@ create_entity_id <- function(data) {
       replicates = as.character(replicates),
       check_for_ind = NA
     ) %>%
-    select(-spp_id_segment, -pop_id_segment, -ind_id_segment, -individual_id, -population_id, -check_for_ind)
+    select(-spp_id_segment, -pop_id_segment, -ind_id_segment, -individual_id, -population_id, -check_for_ind, -observation_id)
 
 }
 
