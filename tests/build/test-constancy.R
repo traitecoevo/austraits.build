@@ -12,7 +12,7 @@ build_comparison_set <- function(root.dir, trait_definitions, unit_conversions, 
   f_build <- function(x, trait_definitions, unit_conversions, schema) {
     config <-  subset_config(file.path(root.dir, "data", x, "metadata.yml"), trait_definitions, unit_conversions)
     data <-  load_dataset(file.path(root.dir, "data", x, "data.csv"), config, schema)
-    rlang_data
+    data
   }
   
   Baker_2019 <- f_build("Baker_2019", trait_definitions, unit_conversions, schema)
