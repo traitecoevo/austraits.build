@@ -354,11 +354,8 @@ create_entity_id <- function(data) {
   
   ## Create individual_id segment of entity_id: ind_id_segment  
 
-  if(is.null(data[["individual_id"]])) {
-    
-    data <- data %>% 
-        dplyr::mutate(individual_id = NA) 
-    
+  if(all(is.na(data[["individual_id"]]))) {
+
     # check which rows from the data.csv file don't contain individual level values
     has_ind_value <-
       data %>%
@@ -366,24 +363,46 @@ create_entity_id <- function(data) {
       group_by(observation_id) %>%
       summarise(check_for_ind = any(str_detect(entity_type,"individual")))
     
-    # create individual_id if not read in from metadata$dataset  
+    # take the `observation_id` values that were created in the `parse_data` function
+    # in parse_data, `observation_id` is built in two stages:
+    # 1. If there is a `individual_id` column read in through metadata$data, 
+    # `observation_id` uniquely identifies each individual
+    # 2. If there is not an `individual_id` column, `observation_id` is linked to row number
+    # This next segment of code, checks whether a given `observation_id` is linked to any data with 
+    # `entity_type: individual`.
+    # If yes, `individual_id` is copied from `observation_id`
+    # If no, `individual_id` is set to NA
+    # This step is required so that when the `ind_id_segment` is made (in the next step) 
+    # only rows of data with some individual-level data are numbered, 
+    # to avoid missing numbers in the `ind_id_segement`sequence
+    
     data <- data %>% 
       left_join(has_ind_value, by = "observation_id") %>%
       dplyr::mutate(individual_id = ifelse(check_for_ind == TRUE, observation_id,NA))
-    
   }
   
-  # create individual_id segment of entity_id  
+  # create individual_id segment of entity_id
+  # within each species and population (as identified by their segment numbers),
+  # create sequential `ind_id_segment values`
+  # The function `create_id` ensures that values with the same observation_id/individual_id are
+  # given the same value.
   
   data <- data %>% 
     group_by(spp_id_segment, pop_id_segment) %>%
     mutate(
       ind_id_segment = ifelse(!is.na(individual_id),create_id(individual_id,"ind"),NA),
       individual_id = row_number(),
-      ind_id_segment = ifelse(is.na(ind_id_segment),create_id(individual_id,"entity_unk"),ind_id_segment)
+      ind_id_segment = ifelse(is.na(ind_id_segment),create_id(individual_id,"entity_unk"),
+                              ind_id_segment)
            ) %>%
     ungroup()
 
+  
+  # take the species, population, and individual identifier segments and merge together the appropriate segments
+  # based on entity_type
+  # as a default all 3 segments are merged, such that "unknown" entity_types have as their final name segment "entity_unk"
+  # metapopulation values, which exist only rarely, will be assigned "population level" names
+  
   data <- data %>%
     dplyr::mutate(
       entity_id = paste(dataset_id, spp_id_segment, pop_id_segment, ind_id_segment, sep="-"),
@@ -845,6 +864,12 @@ parse_data <- function(data, dataset_id, metadata) {
   # however it is required to correctly connect the proper rows of data until the entity_id can be made as part of the `load_study` function
   
   if(!data_is_long_format) {
+    
+    
+      # If an `individual_id` column  IS read in through metadata$dataset, it is used to correctly cluster and identify individuals
+      # If there are rows of data within the file where `individual_id` is `NA`, these are filled in with the row_number() as a placeholder,
+      # just as would occur if no `individual_id` is specified.
+    
       if(!is.null(df[["individual_id"]])) {
           df[["observation_id_tmp"]] <- df[["individual_id"]]
         
@@ -857,7 +882,10 @@ parse_data <- function(data, dataset_id, metadata) {
                                 ) %>% 
                   dplyr::mutate(observation_id = create_id(observation_id_tmp, prefix))
         
-        
+      
+      # If an `individual_id` column  IS NOT read in through metadata$dataset, row_numbers are assumed to represent unique `entities`
+      # and `observation_id` values are based on row numbers
+                
       } else {
 
         df <- df %>%
@@ -866,15 +894,15 @@ parse_data <- function(data, dataset_id, metadata) {
 
   } else {
 
-    # For long datasets, create unique identifier from taxon_name, site, and observation_id (if specified)
+    # For long datasets, create unique identifier from taxon_name, site, and individual_id (if specified)
+    
     df[["observation_id_tmp"]] <- gsub(" ", "-", df[["taxon_name"]])
 
     if(!is.null(df[["site_name"]][1]))
       df[["observation_id_tmp"]] <- paste0(df[["observation_id_tmp"]],"_", df[["site_name"]])
 
-    if(!is.null(df[["observation_id"]])) {
-      df[["observation_id_tmp"]] <- paste0(df[["observation_id_tmp"]],"_", df[["observation_id"]])
-      df[["observation_id"]] <- NULL
+    if(!is.null(df[["individual_id"]])) {
+      df[["observation_id_tmp"]] <- paste0(df[["observation_id_tmp"]],"_", df[["individual_id"]])
     }
     
     prefix <- dataset_id
@@ -882,7 +910,7 @@ parse_data <- function(data, dataset_id, metadata) {
     df <- df %>%
       dplyr::mutate(
                 observation_id_tmp = as.character(observation_id_tmp),
-                observation_id2 = create_id(observation_id_tmp, prefix)
+                observation_id = create_id(observation_id_tmp, prefix)
                     ) %>%
               dplyr::select(-.data$observation_id_tmp)
   }
