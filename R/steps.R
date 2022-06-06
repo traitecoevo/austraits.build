@@ -762,7 +762,7 @@ add_all_columns <- function(data, vars, add_error_column = TRUE) {
       dplyr::mutate(!!v := NA_character_)
 
   data <- data %>%
-    dplyr::select(dplyr::any_of(vars))
+    dplyr::select(dplyr::any_of(c(vars, "observation_id", "population_id", "individual_id")))
 
   if(add_error_column){
     data <- data %>%

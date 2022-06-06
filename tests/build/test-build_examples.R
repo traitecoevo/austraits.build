@@ -13,7 +13,7 @@ testthat::test_that("test datasets", {
                   info = "Updating taxonomy")
   
   
-  test_structure(austraits, "Check structure", single_dataset = FALSE)
+  test_structure(austraits, "Check structure", schema, single_dataset = FALSE)
   
   # Build example -- this runs a bunch of tests already
   
