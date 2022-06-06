@@ -344,7 +344,7 @@ create_entity_id <- function(data) {
       dplyr::mutate(population_id = NA)
   }
   
-  
+    browser()
   # create population_id segment of entity_id
   data <- data %>% 
     dplyr::mutate(
@@ -353,8 +353,11 @@ create_entity_id <- function(data) {
             ) 
   
   ## Create individual_id segment of entity_id: ind_id_segment  
-  
-  if(all(is.na(data[["individual_id"]]))) {
+
+  if(is.null(data[["individual_id"]])) {
+    
+    data <- data %>% 
+        dplyr::mutate(individual_id = NA) 
     
     # check which rows from the data.csv file don't contain individual level values
     has_ind_value <-
