@@ -22,9 +22,12 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate_at(c("leaf_area (mm2)","specific_leaf_area (mm2/mg)"),
-    ~na_if(.,0)) %>% mutate(date = ifelse(date == "2005-2006","2005/2006", date %>% mdy(quiet=TRUE)
-    %>% as.character))
+  custom_R_code: '
+    data %>% 
+      mutate_at(vars(`leaf_area (mm2)`,`specific_leaf_area (mm2/mg)`), ~na_if(.,0)) %>%
+      mutate(date = ifelse(date == "2005-2006","2005/2006", date %>%
+                mdy(quiet=TRUE) %>% as.character))
+  '
   collection_date: date
   taxon_name: taxon
   site_name: site_name_new
@@ -799,8 +802,10 @@ traits:
 - var_in: leaf_N_per_dry_mass (%DM)
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
-  replicates: 2
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Nitrogen content was predicted from a near infrared spectroscopy (NIRS)
     calibration, based upon duplicate nitrogen determinations made using a semi-micro
     Kjeldahl technique. NIR spectra were collected between 400 and 2500 nm using an
@@ -811,29 +816,37 @@ traits:
 - var_in: leaf_area (mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Reported values of leaf area, dry mass and perimeter are means from 5 leaves
     from an individual plant.
 - var_in: leaf_perimeter_mm
   unit_in: mm
   trait_name: .na
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Reported values of leaf area, dry mass and perimeter are means from 5 leaves
     from an individual plant.
 - var_in: leaf_dry_mass (g)
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Reported values of leaf area, dry mass and perimeter are means from 5 leaves
     from an individual plant.
 - var_in: leaf_N_per_area (mg N/mm2)
   unit_in: mg/mm2
   trait_name: leaf_N_per_area
-  value_type: site_mean
-  replicates: 2
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Nitrogen content was predicted from a near infrared spectroscopy (NIRS)
     calibration, based upon duplicate nitrogen determinations made using a semi-micro
     Kjeldahl technique. NIR spectra were collected between 400 and 2500 nm using an
@@ -846,23 +859,29 @@ traits:
 - var_in: leaf_thickness (um)
   unit_in: um
   trait_name: leaf_thickness
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 10
   methods: Reported values for thickness are means of values measured with a manual
     micrometer from 2 locations on the lamina of each of 5 leaves (i.e. 10 measurements
     in total) from an individual plant.
 - var_in: specific_leaf_area (mm2/mg)
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Measured following Cornelissen et al. Values are the mean of 5 measurements
     from a single tree.
 - var_in: leaf_density (ug/mm3)
   unit_in: ug/mm3
-  trait_name: .na
-  value_type: raw_value
-  replicates: 1
+  trait_name: leaf_density
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Measured following Cornelissen et al. Values are the mean of 5 measurements
     from a single tree.
 substitutions: .na
@@ -877,4 +896,5 @@ taxonomic_updates:
   replace: Eucalyptus exilipes
   reason: Aign to first of two names given (E. Wenk, 2020-05-26)
 exclude_observations: .na
-questions: .na
+questions:
+  additional_traits: leaf perimeter

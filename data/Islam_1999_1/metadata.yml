@@ -26,11 +26,18 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      mutate(sample_date = sample_date %>% ym() %>% format.Date("%Y-%m") %>% sort()) %>%
+      group_by(name_original, site_text, treatment) %>% 
+        mutate(observation_number = row_number()) %>%
+      ungroup()
+  '
   collection_date: sample_date
   taxon_name: name_original
   site_name: site_text
   context_name: treatment
+  observation_number: observation_number
   description: A glasshouse experiment investigated the response to phosphorus of
     2 common and abundant ephemeral forbs and several additional species.
   collection_type: field
@@ -92,7 +99,9 @@ traits:
 - var_in: Nmass
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -110,7 +119,9 @@ traits:
 - var_in: Pmass
   unit_in: mg/g
   trait_name: leaf_P_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -128,7 +139,9 @@ traits:
 - var_in: K_%
   unit_in: '%'
   trait_name: leaf_K_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -146,7 +159,9 @@ traits:
 - var_in: Ca_%
   unit_in: '%'
   trait_name: leaf_Ca_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -164,7 +179,9 @@ traits:
 - var_in: Mg_%
   unit_in: '%'
   trait_name: leaf_Mg_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed

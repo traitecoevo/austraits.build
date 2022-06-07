@@ -24,10 +24,15 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site_name = "Louth") %>% mutate_at(vars(`height (cm)_filtered`,`leaf
-    area (mm2)`,`seed mass (mg)`,`diaspore weight (mg)`),~na_if(.,0)) %>% mutate(parasitic
-    = ifelse(`growth form`=="stem parasite","stem_parasitic",NA),parasitic = ifelse(`growth
-    form`=="root parasite","root_parasitic",parasitic))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site_name = "Louth",
+        parasitic = ifelse(`growth form`=="stem parasite","stem_parasitic",NA),
+        parasitic = ifelse(`growth form`=="root parasite","root_parasitic",parasitic)
+      ) %>%
+      mutate_at(vars(`height (cm)_filtered`,`leaf area (mm2)`,`seed mass (mg)`,`diaspore weight (mg)`),~na_if(.,0))
+  '
   collection_date: 1996/1996
   taxon_name: SPECIES
   site_name: site_name
@@ -75,7 +80,9 @@ traits:
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Data on some attributes such as growth form, leaf texture and hairiness,
     flowering characteristics, presence of spines and seed dispersal mode could be
@@ -87,14 +94,19 @@ traits:
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: height (cm)_filtered
   unit_in: cm
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
+  collection_type: literature
   methods: Data from published flora. Data on some attributes such as growth form,
     leaf texture and hairiness, flowering characteristics, presence of spines and
     seed dispersal mode could be collected from observations of each species in the
@@ -106,7 +118,9 @@ traits:
 - var_in: plant longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Species divided into annual, biennial/ 300 short-lived perennial, long-lived
     perennial (<20 years), long-lived perennial (>20 years); Assume a combination
@@ -114,11 +128,13 @@ traits:
 - var_in: leaf area (mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Data on some attributes such as growth form, leaf texture and hairiness,
     flowering characteristics, presence of spines and seed dispersal mode could be
-    col- lected from observations of each species in the field. Where field specimens
+    collected from observations of each species in the field. Where field specimens
     were inadequate, herbarium specimens were used. Leaf area and diaspore weight
     were measured using specimens collected from the field wherever possible, or alternatively
     from herbarium specimens and seed collections. Leaf area is a continuous variable,
@@ -127,8 +143,11 @@ traits:
 - var_in: storage organ present
   unit_in: .na
   trait_name: regen_strategy
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
+  collection_type: literature
   methods: Data from published flora. Data on some attributes such as growth form,
     leaf texture and hairiness, flowering characteristics, presence of spines and
     seed dispersal mode could be collected from observations of each species in the
@@ -140,8 +159,10 @@ traits:
 - var_in: diaspore weight (mg)
   unit_in: mg
   trait_name: diaspore_dry_mass
-  value_type: expert_mean
-  replicates: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 10
   methods: Data on some attributes such as growth form, leaf texture and hairiness,
     flowering characteristics, presence of spines and seed dispersal mode could be
     collected from observations of each species in the field. Where field specimens
@@ -152,7 +173,9 @@ traits:
 - var_in: seed mass (mg)
   unit_in: mg
   trait_name: seed_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Mean of at least 10 collected seeds. Data on some attributes such as growth
     form, leaf texture and hairiness, flowering characteristics, presence of spines

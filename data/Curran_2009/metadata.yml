@@ -30,13 +30,24 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(stomatal_conductance_per_area_ambient = `gs (stomatal
-    conductance, cm.s-1)`*10*38.97)
+  custom_R_code: '
+    data %>% 
+      mutate(
+        stomatal_conductance_per_area_ambient = `gs (stomatal conductance, cm.s-1)`*10*38.97,
+        individual_plant = paste(species,Site,`Tree #`, sep = "_")
+      ) %>%
+      arrange(`Sampling period`) %>%
+      group_by(individual_plant) %>%
+        mutate(observation = dplyr::row_number()) %>%
+      ungroup()
+  '
   collection_date: Sampling period
   taxon_name: Taxon
   site_name: site_name
+  individual_id: individual_plant
+  observation_number: observation
   description: Study to compare the ecophysiological traits of common trees and shrubs
-    of semi-evergreen vine thicket (dry rainforest) on two copntrasting soils during
+    of semi-evergreen vine thicket (dry rainforest) on two contrasting soils during
     the Millenial Drought and subsequent breaking of the drought.
   collection_type: field
   sample_age_class: adult
@@ -144,7 +155,9 @@ traits:
 - var_in: pre-dawn WP (Mpa)
   unit_in: MPa
   trait_name: water_potential_predawn
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Water stress was determined from xylem water potentials measured on excised
     twigs collected predawn (yPD) using a Scholander pressure chamber (Soil Moisture
@@ -162,7 +175,9 @@ traits:
 - var_in: midday WP (Mpa)
   unit_in: MPa
   trait_name: water_potential_midday
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Water stress was determined from xylem water potentials measured on excised
     twigs collected predawn (yPD) using a Scholander pressure chamber (Soil Moisture
@@ -180,7 +195,9 @@ traits:
 - var_in: gs (stomatal conductance, cm.s-1)
   unit_in: cm/s
   trait_name: stomatal_resistance_conductance_ambient
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 2-3
   methods: Stomatal conductance was measured using a Delta-T Porometer type AP4 (Delta-T
     Devices LTD Cambridge, UK). Stomatal conductance of the abaxial and adaxial leaf
@@ -193,7 +210,9 @@ traits:
 - var_in: stomatal_conductance_per_area_ambient
   unit_in: mmolH2O/m2/s
   trait_name: stomatal_conductance_per_area_ambient
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 2-3
   methods: Stomatal conductance was measured using a Delta-T Porometer type AP4 (Delta-T
     Devices LTD Cambridge, UK). Stomatal conductance of the abaxial and adaxial leaf
@@ -217,7 +236,9 @@ traits:
 - var_in: leaf area (cm2)
   unit_in: cm2
   trait_name: leaf_area
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 2-3
   methods: Measurements of specific leaf area (SLA) were carried out according to
     the protocols outlined by Westoby (1998) and Cornelissen et al. (2003). In December
@@ -229,7 +250,9 @@ traits:
 - var_in: SLA (mm2 mg-1)
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 2-3
   methods: Measurements of specific leaf area (SLA) were carried out according to
     the protocols outlined by Westoby (1998) and Cornelissen et al. (2003). In December
@@ -242,7 +265,9 @@ traits:
 - var_in: leaf angle to horizontal (deg)
   unit_in: degrees
   trait_name: leaf_angle
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 6-9
   methods: Leaf angle to the horizontal was estimated for randomly chosen leaves using
     a protractor and a plum level (fishing line and sinker). Measurements were made
@@ -251,19 +276,25 @@ traits:
 - var_in: woodiness
   unit_in: .na
   trait_name: woodiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert opinion; literature
 - var_in: leaf_phenology
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert opinion; literature
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert opinion; literature
 substitutions: .na

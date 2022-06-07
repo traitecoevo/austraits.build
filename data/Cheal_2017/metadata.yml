@@ -32,9 +32,17 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(fire_response_juvenile = `PERVEG V, U, W, N, X (F=inadequate
-    data)`, fire_response = `PERVEG V, U, W, N, X (F=inadequate data)`, seed_longevity
-    = `PERSEED D, S, G, C, Z (F=inadequate data)`)
+  custom_R_code: '
+    data %>%
+      mutate(
+        fire_response_juvenile = `PERVEG V, U, W, N, X (F=inadequate data)`,
+        fire_response = `PERVEG V, U, W, N, X (F=inadequate data)`,
+        seed_longevity = `PERSEED D, S, G, C, Z (F=inadequate data)`
+      ) %>%
+      group_by(Species) %>%
+        mutate_at(vars(`GEOPHYTE Y, N`), replace_duplicates_with_NA) %>%
+      ungroup()
+  '
   collection_date: unknown/2017
   taxon_name: Species
   description: Compilation of fire response and ecological attribute data for many
@@ -52,7 +60,9 @@ traits:
 - var_in: PERSEED D, S, G, C, Z (F=inadequate data)
   unit_in: .na
   trait_name: fire_cued_seeding
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Compilation from diverse sources and expert opinion; This trait includes
     the component of "PERSEED" (perennial seed) capturing whether or not germination
@@ -86,7 +96,9 @@ traits:
 - var_in: seed_longevity
   unit_in: .na
   trait_name: seed_longevity
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Compilation from diverse sources and expert opinion; This trait includes
     the component of "PERSEED" (perennial seed) capturing whether or not seeds are
@@ -121,7 +133,9 @@ traits:
 - var_in: PERVEG V, U, W, N, X (F=inadequate data)
   unit_in: .na
   trait_name: fire_response_on_maturity
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion; this trait included
     information on how species' maturity shifts in response to fire; this is one component
@@ -129,7 +143,9 @@ traits:
 - var_in: fire_response_juvenile
   unit_in: .na
   trait_name: fire_response_juvenile
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion; this trait extracts
     the response of juvenile vegetation that is recorded in the trait values for "PERVEG"
@@ -137,7 +153,9 @@ traits:
 - var_in: fire_response
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion; this trait collapses
     the data recorded under "PERVEG" (perennial vegetation) into the binary "fire-killed"
@@ -146,7 +164,9 @@ traits:
 - var_in: T, I, R, M, K (F=inadequate data)
   unit_in: .na
   trait_name: fire_and_establishing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion; This trait captures
     how fire establishment patterns contribute to the species' age structure in the
@@ -178,9 +198,11 @@ traits:
     and reproductive maturity (mostly > 2 years), can establish in long-unburnt vegetation,
     but can also establish immediately after fire.
 - var_in: JUVEN 1, 2, 5, 10, 20, 40 (F=inadequate data)
-  unit_in: .na
+  unit_in: years
   trait_name: reproductive_maturity
-  value_type: expert_mean
+  entity_type: species
+  value_type: bin
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion; This trait captures
     the time from fire event to onset of reproductive maturity (ie. a seed load or
@@ -188,9 +210,11 @@ traits:
     specific to the management objectives for each EVC and refers to maintenance of
     the typical densities therein
 - var_in: SPP LIFE 3, 10, 20, 50, 100 (F=inadequate data)
-  unit_in: .na
+  unit_in: years
   trait_name: lifespan
-  value_type: expert_mean
+  entity_type: species
+  value_type: bin
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion; This trait captures
     time to local extinction of the species within the community.  Extinction occurs
@@ -202,13 +226,17 @@ traits:
 - var_in: INDIV LIFE A, ASP, B, SP, MP, LP (F = inadequate data)
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: GEOPHYTE Y, N
   unit_in: .na
   trait_name: life_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 substitutions:
@@ -235,19 +263,19 @@ substitutions:
   replace: .na
 - trait_name: lifespan
   find: 3
-  replace: <3
+  replace: 0--3
 - trait_name: lifespan
   find: 10
-  replace: <10
+  replace: 3--10
 - trait_name: lifespan
   find: 20
-  replace: <20
+  replace: 10--20
 - trait_name: lifespan
   find: 50
-  replace: <50
+  replace: 20--50
 - trait_name: lifespan
   find: 100
-  replace: <100
+  replace: 50--100
 - trait_name: lifespan
   find: F
   replace: .na
@@ -259,25 +287,25 @@ substitutions:
   replace: .na
 - trait_name: reproductive_maturity
   find: 1
-  replace: <1
+  replace: 0--1
 - trait_name: reproductive_maturity
   find: F
   replace: .na
 - trait_name: reproductive_maturity
   find: 2
-  replace: 1-2
+  replace: 1--2
 - trait_name: reproductive_maturity
   find: 5
-  replace: 3-5
+  replace: 3--5
 - trait_name: reproductive_maturity
   find: 10
-  replace: 5-10
+  replace: 5--10
 - trait_name: reproductive_maturity
   find: 20
-  replace: 10-20
+  replace: 10--20
 - trait_name: reproductive_maturity
   find: 40
-  replace: 20-40
+  replace: 20--40
 - trait_name: fire_response_on_maturity
   find: V
   replace: mature_to_juvenile

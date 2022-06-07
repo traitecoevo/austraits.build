@@ -49,7 +49,8 @@ dataset:
   data_is_long_format: no
   custom_R_code: data %>% 
     mutate (`Dbh @ 0.5 m (mm)` = (`Dbh @ 0.5 m (mm)`/10)) %>% 
-    unite(col = `diameter1`, `Dbh @ 0.5 m (mm)`, `DBH @ 1.3 m (cm)`, remove = FALSE, sep = "")
+    unite(col = `diameter1`, `Dbh @ 0.5 m (mm)`, `DBH @ 1.3 m (cm)`, remove = FALSE, sep = "") %>%
+    mutate(remarks = paste0("diameter at breast height, ", diameter, " cm"))
   collection_date: 2009/2009
   taxon_name: Species
   site_name: site
@@ -115,13 +116,17 @@ traits:
 - var_in: Prefire ht
   unit_in: m
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The tree's pre-fire height; not a 'maximum' value, so excluded from AusTraits
 - var_in: diameter
   unit_in: cm
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The diameter at breast height of each tree was also measured. For trees
     less than ~3 meters tall, the diameter at 50 cm was measured. The data.csv file
@@ -130,8 +135,11 @@ traits:
 - var_in: BTMean
   unit_in: mm
   trait_name: bark_thickness
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
+  measurement_remarks: remarks
   methods: Bark thickness was measured using a standard thickness gauge (Haglof, Barktax,
     Sweden) or where bark was not penetrable using the gauge, we used a needle punch
     (diam. = 3 mm). In both cases, the gauge was inserted to the point of resistance

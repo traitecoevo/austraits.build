@@ -17,13 +17,24 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: ' traits <- c("leaf_length_max", "leaf_length_min", "leaf_width_max",
-    "leaf_width_min", "plant_height_max", "plant_height_min"); units <- c("leaf_length_unit",
-    "leaf_length_unit", "leaf_width_unit", "leaf_width_unit", "plant_height_unit",
-    "plant_height_unit"); a <- list(cm=10, m=1000); for(i in 1:length(traits)) { trait
-    <- traits[i]   ; unit <- units[i]; for(v in names(a)) { x <- which(data[[unit]]
-    == v); data[[trait]][x] <- as.character(as.numeric(data[[trait]][x]) * a[[v]]);
-    data[[unit]][x] <- "mm"; }; }; data'
+  custom_R_code: '
+    data %>%
+      mutate(
+        leaf_length_unit_numeric = ifelse(leaf_length_unit == "cm", 10, NA),
+        leaf_length_unit_numeric = ifelse(leaf_length_unit == "mm", 1, leaf_length_unit_numeric),
+        leaf_length_max = leaf_length_max * leaf_length_unit_numeric,
+        leaf_length_min = leaf_length_min * leaf_length_unit_numeric,
+        leaf_width_unit_numeric = ifelse(leaf_width_unit == "cm", 10, NA),
+        leaf_width_unit_numeric = ifelse(leaf_width_unit == "mm", 1, leaf_width_unit_numeric),
+        leaf_width_max = leaf_width_max * leaf_width_unit_numeric,
+        leaf_width_min = leaf_width_min * leaf_width_unit_numeric,
+        plant_height_unit_numeric = ifelse(plant_height_unit == "cm", 10, NA),
+        plant_height_unit_numeric = ifelse(plant_height_unit == "mm", 1, plant_height_unit_numeric),
+        plant_height_unit_numeric = ifelse(plant_height_unit == "m", 1000, plant_height_unit_numeric),
+        plant_height_max = plant_height_max * plant_height_unit_numeric,
+        plant_height_min = plant_height_min * plant_height_unit_numeric
+      )
+  '
   collection_date: unknown/1986
   taxon_name: species
   description: Taxonomic treatment - Flora of South Australia
@@ -39,39 +50,51 @@ traits:
 - var_in: plant_height_min
   unit_in: mm
   trait_name: plant_height
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &plant_height_method unknown
 - var_in: plant_height_max
   unit_in: mm
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *plant_height_method
 - var_in: leaf_length_min
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &leaf_length_method unknown
 - var_in: leaf_length_max
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *leaf_length_method
 - var_in: leaf_width_min
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &leaf_width_method unknown
 - var_in: leaf_width_max
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *leaf_width_method
 substitutions:
 - trait_name: leaf_length
   find: '6000'

@@ -182,6 +182,14 @@ traits:
       values:
         minimum: 0.01
         maximum: 50.0
+    bark_thickness_index:
+      description: Thickness of the bark (2 times a single thickness measure) of the stem divided by stem diameter, adjust for increasing bark thickness with increasing stem diameter. (based on Lawes)
+      type: numeric
+      units: dimensionless
+      label: Scaled bark thickness
+      values:
+        minimum: 0.001
+        maximum: 1
     bark_ash_content_per_dry_mass:
       description: Bark ash content per dry mass, where bark ash is the component of the bark remaining after combustion.
       type: numeric
@@ -1139,7 +1147,7 @@ traits:
         minimum: 0
         maximum: 1
     fluorescence_Jmax_over_Vcmax:
-      description: Ratio of photosynthetic electron transport capacity to maximum Rubisco activity, measured through chlorophyll fluorescence
+      description: Ratio of photosynthetic electron transport capacity to maximum Rubisco activity, measured through chlorophyll fluorescence; this is  the maximum quantum yield of PSII (Maxwell & Johnson 2000, doi.org/10.1093/jexbot/51.345.659)
       type: numeric
       units: dimensionless
       label: Ratio of photosynthetic electron transport capacity to maximum Rubisco activity, measured through chlorophyll fluorescence
@@ -1384,12 +1392,20 @@ traits:
     growth_habit:
       description: Variable that defines a combination of growth habit and plant vegetative reproductive potential
       type: categorical
-      label: Growth habit (data actually describes plant vegetative reproduction capacity)
+      label: Growth habit
       values:
+        climbing: Plant that climbs
         prostrate: Plants that lie flat on the ground
         rhizomatous: Plants having modified underground stems
         stoloniferous: Plants having horizontal branches from the base of the plant that produce new plants from buds at its tip or nodes
         tufted: A dense clump attached at the base or growing close together; can refer to grasses, shrubs, or trees
+    growth_substrate:
+      description: Trait indicating the substrate on which a plant grows or its growth medium
+      type: categorical
+      label: Growth substrate
+      values:
+        aquatic: Plant grows in water
+        epiphytic: Plant grows on another plant
     guard_cell_length:
       description: Length of guard cells
       type: numeric
@@ -2029,11 +2045,11 @@ traits:
     leaf_phenol_content_per_dry_mass:
       description: Leaf phenol content, measured as gallic acid equivalents (GAE), per unit leaf dry mass
       type: numeric
-      units: g/kg
-      label: Leaf phenol (P) content per unit leaf dry mass
+      units: mg/g
+      label: Leaf phenol content per unit leaf dry mass
       values:
         minimum: 1
-        maximum: 100
+        maximum: 500
     leaf_phenology:
       description: Variable indicating whether a plant has deciduous versus evergreen leaves; different types of deciduousness included as trait values
       type: categorical
@@ -2427,23 +2443,12 @@ traits:
         short_lived: Unclear term that only suggests a plant is not long-lived - could be ephemeral, annual or biennial
     lifespan:
       description: Broad categories of plant life span, in years
-      type: categorical
+      type: numeric
+      units: years
       label: Life span (years)
       values:
-        post_fire_ephemeral: Plant that is short-lived following fires
-        '<1': Plant that lives less than 1 year
-        '<3': Plant that lives less than 3 years
-        '<5': Plant that lives less than 5 years
-        '<6': Plant that lives less than 6 years
-        '>6': Plant that lives more than 6 years
-        '<10': Plant that lives less than 10 years
-        '<20': Plant that lives less than 20 years
-        '<50': Plant that lives less than 50 years
-        '<100': Plant that lives less than 100 years
-        '>100': Plant that lives more than 100 years
-        '50-500': Plant that lives between 50-500
-        '>500': Plant that lives more than 500 years
-        '?': Plant with unknown lifespan
+        minimum: 0.1
+        maximum: 10000
     sex_type:
       description: Plant sex type
       type: categorical
@@ -2828,6 +2833,7 @@ traits:
         stem_buds: Plant resprouts from stem buds (separate to epicormic buds)
         stem_tuber: Below ground storage organ derived from stem tissue.
         stolon: Plants having horizontal branches (stems) from the base of the plant that produce new plants from buds at its tip or nodes
+        viviparous: Parent plant produces plantlets that are dispersed.
         woody_rootstock: Plant that regenerate by resprouting from wood rootstock.
         woody_rootstock_or_lignotuber: Plant that regenerates by resprouting from either a woody rootstock or lignotuber.
         no_storage_organ: No storage organ present
@@ -2837,18 +2843,12 @@ traits:
         unknown: Assume this trait value means it is unknown if a storage organ is present or a plant can regenerate, not that the type is unknown
     reproductive_maturity:
       description: Age of plants at reproductive maturity, by category. In most studies, 'reproductive maturity' refers to the time to first flowering or to first seedset. However, for several big compilations with fire response data, the term 'reproductive maturity' instead refers to a seed load or a group of suckers sufficient to replace the adult population. This trait encompasses all records referring to 'reproductive maturity.'
-      type: categorical
+      type: numeric
+      units: years
       label: Age of plants at reproductive maturity
       values:
-        '<1': Plants reach reproductive maturity before age 1
-        '1-2': Plants reach reproductive maturity between ages 1-2
-        '3-5': Plants reach reproductive maturity between ages 3-5
-        '1-5': Plants reach reproductive maturity between ages 1-5
-        '5-10': Plants reach reproductive maturity between ages 5-10
-        '5-20': Plants reach reproductive maturity between ages 5-20
-        '10-20': Plants reach reproductive maturity between ages 10-20
-        '>20': Plants reach reproductive maturity after age 20
-        '20-40': Plants reach reproductive maturity between ages 20-40
+        minimum: 0
+        maximum: 1000
     reproductive_maturity_numeric:
       description: Age of plants at reproductive maturity, numeric
       type: numeric
@@ -2912,6 +2912,14 @@ traits:
       label: Root nitrogen (N) content per unit root dry mass
       values:
         minimum: 0.1
+        maximum: 100.0
+    root_P_per_dry_mass:
+      description: Root phosphorus (P) content per unit root dry mass
+      type: numeric
+      units: mg/g
+      label: Root phosphorus (P) content per unit root dry mass
+      values:
+        minimum: 0.01
         maximum: 100.0
     root_delta13C:
       description: Root carbon stable isotope signature
@@ -3753,6 +3761,7 @@ traits:
       values:
         amphistomatic: Leaves with stomata on both leaf surfaces
         amphistomatic_uneven: Leaves with stomata on both leaf surfaces, but more stomata on the lower leaf surface
+        epistomatic: Leaves that only have stomata on the upper (adaxial) leaf surface
         hypostomatic: Leaves that only have stomata on the lower (abaxial) leaf surface
     stomatal_hairs:
       description: Binary variable describing whether or not stomata are covered by dense hairs

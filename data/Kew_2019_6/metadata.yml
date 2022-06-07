@@ -17,9 +17,19 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(germination = germination_percent/100)
+  custom_R_code: '
+    data %>% 
+      mutate(
+        germination = germination_percent/100,
+        remarks = paste0("presow treatment, ", presowtreat)
+      ) %>%
+      group_by(taxa) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup()
+  '
   collection_date: unknown/2019
   taxon_name: taxa
+  observation_number: observation_number
   description: Germination data on species from Kew seed databases
   collection_type: botanical_collection
   sample_age_class: seedling
@@ -33,13 +43,18 @@ traits:
 - var_in: germination
   unit_in: n/n
   trait_name: germination
-  value_type: raw_value
-  replicates: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: seeds_sown
+  measurement_remarks: remarks
   methods: details given in additional columns in data file
 - var_in: germination_treatment
   unit_in: .na
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: .na
   methods: details given in additional columns in data file, including more detailed
     description of the germination treatment; removing for now, since these may be

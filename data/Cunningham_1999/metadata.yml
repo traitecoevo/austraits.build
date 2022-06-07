@@ -25,8 +25,13 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(leaf_dry_matter_content = (1-`Potential hydration
-    (proportion)`))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        leaf_dry_matter_content = (1-`Potential hydration (proportion)`),
+        replicates = ifelse(taxon == "Myoporum acuminatum", 1, 5)
+      )
+  '
   collection_date: 1996/1996
   taxon_name: taxon
   site_name: site
@@ -223,26 +228,34 @@ traits:
 - var_in: leaf longevity
   unit_in: .na.character
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: unknown
 - var_in: photosynthetic pathway
   unit_in: .na.character
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert opinion
 - var_in: Nitrogen fixing
   unit_in: .na.character
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert opinion
 - var_in: SLA (cm2g)
   unit_in: cm2/g
   trait_name: specific_leaf_area
-  value_type: site_mean
-  replicates: '5'
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
   methods: For determining leaf area and saturated and dry mass, we collected two
     fully mature leaves from the outside of the canopy of each of five plants (except
     for Myoporum acuminatum, for which only one plant was found at the site). These
@@ -252,8 +265,10 @@ traits:
 - var_in: Nmass
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
-  replicates: '5'
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
   methods: This sample was frozen in liquid nitrogen within 1 h of field collection
     and was vacuum-dried before chemical analyses (in the laboratory of I. D. Hume,
     University of Sydney, for all but alkaloids).Total nitrogen concentration of leaves
@@ -262,8 +277,10 @@ traits:
 - var_in: leaf_dry_matter_content
   unit_in: g/g
   trait_name: leaf_dry_matter_content
-  value_type: site_mean
-  replicates: '5'
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
   methods: Before measuring the saturated mass of leaves (abbreviated in results as
     fm, for fresh mass), we allowed them to become turgid by resting them between
     wet paper towels for 10 min (Hendry and Grime 1993). Saturated mass is the hydrated
@@ -278,8 +295,10 @@ traits:
 - var_in: leaf width (mm)
   unit_in: mm
   trait_name: leaf_width
-  value_type: site_mean
-  replicates: '5'
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
   methods: Leaf width was measured as the diameter of the largest circle that could
     be placed within the boundary of the leaf blade (the longest path across a continuous
     leaf surface). Thus, lobed or dissected leaves have relatively low leaf widths,
@@ -288,8 +307,10 @@ traits:
 - var_in: total lamina thickness (um)
   unit_in: um
   trait_name: leaf_thickness
-  value_type: site_mean
-  replicates: '5'
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
   methods: For each species, we measured total lamina depth and the depth of each
     tissue layer by taking linear measurements at five different places, spread approximately
     evenly from near the midrib to the leaf edge; the average was calculated from
@@ -297,7 +318,9 @@ traits:
 - var_in: upper cuticle thickness (um)
   unit_in: um
   trait_name: upper_cuticle_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -314,7 +337,9 @@ traits:
 - var_in: upper epidermis thickness (um)
   unit_in: um
   trait_name: epidermis_thickness_upper_leaf_surface
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -331,7 +356,9 @@ traits:
 - var_in: upper hypodermis thickness (um)
   unit_in: um
   trait_name: upper_hypodermis_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -348,7 +375,9 @@ traits:
 - var_in: upper palisade thickness (um)
   unit_in: um
   trait_name: upper_palisade_cell_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -365,7 +394,9 @@ traits:
 - var_in: spongy mesophyll thickness (um)
   unit_in: um
   trait_name: spongy_mesophyll_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -382,7 +413,9 @@ traits:
 - var_in: lower palisade thickness (um)
   unit_in: um
   trait_name: lower_palisade_cell_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -399,7 +432,9 @@ traits:
 - var_in: lower hypodermis thickness (um)
   unit_in: um
   trait_name: lower_hypodermis_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -416,7 +451,9 @@ traits:
 - var_in: lower epidermis thickness (um)
   unit_in: um
   trait_name: epidermis_thickness_lower_leaf_surface
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -433,7 +470,9 @@ traits:
 - var_in: lower cuticle thickness (um)
   unit_in: um
   trait_name: lower_cuticle_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -450,7 +489,9 @@ traits:
 - var_in: upper epidermis cell cross-sectional area (um2)
   unit_in: um2
   trait_name: .na
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -467,7 +508,9 @@ traits:
 - var_in: upper hypodermis cell cross-sectional area (um2)
   unit_in: um2
   trait_name: .na
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -484,7 +527,9 @@ traits:
 - var_in: upper palisade cell cross-sectional area (um2)
   unit_in: um2
   trait_name: .na
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -501,7 +546,9 @@ traits:
 - var_in: spongy mesophyll cell cross-sectional area (um2)
   unit_in: um2
   trait_name: .na
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -518,7 +565,9 @@ traits:
 - var_in: lower palisade cell cross-sectional area (um2)
   unit_in: um2
   trait_name: .na
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -535,7 +584,9 @@ traits:
 - var_in: lower hypodermis cell cross-sectional area (um2)
   unit_in: um2
   trait_name: .na
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -552,7 +603,9 @@ traits:
 - var_in: lower epidermis cell cross-sectional area (um2)
   unit_in: um2
   trait_name: .na
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -569,7 +622,9 @@ traits:
 - var_in: weighted mean cell cross-sectional area (um2)
   unit_in: um2
   trait_name: cell_cross-sectional_area
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf structure was described from transverse sections, taken from the broadest
     part of the lamina of one leaf for each species. Fresh leaves were sectioned in
@@ -586,31 +641,46 @@ traits:
 - var_in: essential oil (mL/dry kg)
   unit_in: mL/kg
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
+
   replicates: .na
   methods: see manuscript
 - var_in: Phenolics (relative index)
   unit_in: dimensionless
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
+
   replicates: .na
   methods: see manuscript
 - var_in: Tannins (relative index)
   unit_in: dimensionless
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
+
   replicates: .na
   methods: see manuscript
 - var_in: neutral detergent fiber (% of dry mass)
   unit_in: '%'
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
+
   replicates: .na
   methods: see manuscript
 - var_in: Alkaloids present (Y/N)
   unit_in: .na
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
+
   replicates: .na
   methods: see manuscript
 substitutions:

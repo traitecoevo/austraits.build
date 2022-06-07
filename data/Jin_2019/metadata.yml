@@ -22,10 +22,21 @@ contributors:
   austraits_curators: Caitlan Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(species_name = "Pittosporum undulatum") %>% select(`latitude
-    (deg)` = Latitude, `longitude (deg)` = Longitude, `Height (m)`, `DBH (cm)`, `Average
-    leaf area (cm2)`, species_name) %>% mutate(site_name = paste("site_at",`latitude
-    (deg)`,"degS_and",`longitude (deg)`,"degE",sep = "_"))
+  custom_R_code: '
+    data_max_height <-
+      data %>%
+        summarise(max_height = max(as.numeric(`Height (m)`)));
+
+    data %>% 
+      rename(`latitude (deg)` = Latitude, `longitude (deg)` = Longitude) %>%
+      bind_rows(data_max_height) %>%
+      mutate(
+        species_name = "Pittosporum undulatum",
+        site_name = paste("site_at",`latitude (deg)`,"degS_and",
+                          `longitude (deg)`,"degE",sep = "_"),
+        site_name = gsub("site_at_NA_degS_and_NA_degE",NA,site_name)
+      )
+  '
   collection_date: 2017/2019
   taxon_name: species_name
   site_name: site_name
@@ -600,8 +611,21 @@ traits:
 - var_in: Height (m)
   unit_in: m
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
+  methods: Height was measured by standing some distance away from the base of the
+    plant (a longer distance was used for taller plants) and using a smartphone app
+    to measure the angle from my eye height to the top of the plant. I then calculated
+    height using the angle and distance.
+- var_in: max_height
+  unit_in: m
+  trait_name: plant_height
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: 184
   methods: Height was measured by standing some distance away from the base of the
     plant (a longer distance was used for taller plants) and using a smartphone app
     to measure the angle from my eye height to the top of the plant. I then calculated
@@ -609,13 +633,17 @@ traits:
 - var_in: DBH (cm)
   unit_in: cm
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: .na
 - var_in: Average leaf area (cm2)
   unit_in: cm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Each individual measurement is the average of 20-40 leaves. When measuring
     average leaf area, many leaves had lost some area due to herbivory, in which case

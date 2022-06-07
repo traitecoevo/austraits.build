@@ -33,7 +33,22 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      mutate(
+        remarks = ifelse(`Photosynthetic.pathway (confirmed using data from literature or TERN stable isotope analysis)`
+        %in% c("C3","C4","C3-C4","CAM","C3-CAM","C4-CAM"),
+          paste0("Photosynthetic pathway confirmed using data from literature or TERN stable isotope analysis; source, ", 
+          Source),NA),
+        remarks = ifelse(`Photosyntehtic.pathway (inferred from lineage)` 
+        %in% c("C3","C4","C3-C4","CAM","C3-CAM","C4-CAM"),
+          paste0("Photosynthetic pathway inferred from lineage; source, ", 
+          `Justification for inference based on lineage`), remarks)
+      ) %>%
+      group_by(Species) %>%
+        distinct(`Photosynthetic pathway (combined)`, .keep_all = TRUE) %>%
+      ungroup()
+  '
   collection_date: 2019/2019
   taxon_name: Species
   site_name: site_name
@@ -675,8 +690,11 @@ traits:
 - var_in: Photosynthetic pathway (combined)
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
+  measurement_remarks: remarks
   methods: Species recorded at each plot were assigned a photosynthetic pathway using
     a combination of information from existing plant trait databases, published literature,
     and carbon stable isotope analysis performed by TERN using TERN tissue samples.

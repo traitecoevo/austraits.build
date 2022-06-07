@@ -103,6 +103,7 @@ load_dataset <- function(filename_data_raw,
     flag_excluded_observations(metadata) %>%
     convert_units(trait_definitions, unit_conversion_functions) %>%
     flag_unsupported_values(trait_definitions) %>%
+    create_entity_id() %>% 
     apply_taxonomic_updates(metadata) %>%
     dplyr::mutate(
       # For cells with multiple values (separated by a space), sort these alphabetically
@@ -111,7 +112,7 @@ load_dataset <- function(filename_data_raw,
       #ensure dates are converted back to character
       collection_date = as.character(.data$collection_date)
       ) %>%
-    dplyr::arrange(.data$observation_id, .data$trait_name, .data$value_type)
+    dplyr::arrange(.data$entity_id, .data$trait_name, .data$value_type)
 
   # extract site data from metadata
   sites <-
@@ -178,9 +179,10 @@ load_dataset <- function(filename_data_raw,
         spread(.data$key, .data$value) %>%
         dplyr::select(dplyr::any_of(names(metadata$dataset))) %>%
           dplyr::mutate(dataset_id = dataset_id) %>%
-          dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name",
-                                         "trait_name", "observation_id", "context_name", "site_name",
-                                         "date", "collection_date", "custom_R_code",
+          dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", 
+                                         "trait_name", "observation_id", "population_id", "individual_id",
+                                         "context_name", "site_name", 
+                                         "collection_date", "custom_R_code", 
                                          "taxon_name", "collection_type", "sample_age_class")))
       )  %>%
       full_join( by = "dataset_id",
@@ -204,9 +206,10 @@ load_dataset <- function(filename_data_raw,
                   )
 
   # Where missing, fill variables with values from sites
-  vars <- c("collection_type", "sample_age_class", "collection_date", "measurement_remarks",
-                  "value_type", "replicates")
-
+  vars <- c("collection_type", "sample_age_class", "collection_date", "measurement_remarks", "entity_type",
+                  "value_type", "basis_of_value", "replicates", "observation_number", "method_number",
+                  "population_id", "individual_id")
+  
   for(v in vars){
     # merge in to traits from site level
     if(v %in% sites$site_property){
@@ -275,6 +278,142 @@ custom_manipulation <- function(txt) {
   } else {
     identity
   }
+}
+
+#' Create entity id
+#' 
+#' Creates 3-part entity id codes that combine a segment for species, population, 
+#' and, when applicable, individual
+#' This depends upon observation_id being established when the data.csv file is first read in
+#'
+#' @param data the traits table at the point where this function is called 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_entity_id <- function(data) {
+  
+  make_id_segment <- function(n, entity)
+    sprintf(paste0("%s%0", max(2, ceiling(log10(n))), "d"), entity, seq_len(n))
+  
+  create_id <- function(x, prefix, sort= FALSE) {
+    d <- x %>% unique() %>% subset(., !is.na(.))
+    
+    if(sort) d <- sort(d, na.last=TRUE)
+    
+    id <- make_id_segment(length(d), prefix)
+    
+    id[match(x, d)]
+  }  
+  
+  # Create three segments for entity ID: spp_id_segment, pop_id_segment, and ind_id_segment
+  
+  # Create species_id segment of entity_id: spp_id_segment
+  data <- data %>% 
+    mutate(spp_id_segment = create_id(taxon_name, "spp", sort = TRUE))
+  
+  # Create population_id segment of entity_id: pop_id_segment  
+  
+  # create population_id if not read in from metadata$dataset
+  
+  if(all(is.na(data[["population_id"]])) & (!all(is.na(data[["site_name"]]))|!all(is.na(data[["context_name"]])))) {
+    
+    # use site_name if only site_name exists
+    if(!all(is.na(data[["site_name"]])) & all(is.na(data[["context_name"]]))) {
+      data <- data %>%
+        dplyr::mutate(population_id = site_name)
+    }
+    
+    # use context_name if only site_name exists
+    if(all(is.na(data[["site_name"]])) & !all(is.na(data[["context_name"]]))) {
+      data <- data %>%
+        dplyr::mutate(population_id = context_name)
+    }
+    
+    # use site_name x context_name combinations if both exist
+    if(!all(is.na(data[["site_name"]])) & !all(is.na(data[["context_name"]]))) {
+      data <- data %>%
+        dplyr::mutate(population_id = paste(data[["site_name"]], data[["context_name"]], sep = "-"))
+    } 
+    
+  }
+  
+  if(all(is.na(data[["population_id"]]))) {
+    data <- data %>%
+      dplyr::mutate(population_id = NA)
+  }
+  
+
+  # create population_id segment of entity_id
+  data <- data %>% 
+    dplyr::mutate(
+              pop_id_segment = create_id(population_id, "pop", sort = TRUE),
+              pop_id_segment = ifelse(is.na(pop_id_segment),"pop_unk",pop_id_segment)
+            ) 
+  
+  ## Create individual_id segment of entity_id: ind_id_segment  
+
+  if(all(is.na(data[["individual_id"]]))) {
+
+    # check which rows from the data.csv file don't contain individual level values
+    has_ind_value <-
+      data %>%
+      filter(!is.na(value)) %>%
+      group_by(observation_id) %>%
+      summarise(check_for_ind = any(str_detect(entity_type,"individual")))
+    
+    # take the `observation_id` values that were created in the `parse_data` function
+    # in parse_data, `observation_id` is built in two stages:
+    # 1. If there is a `individual_id` column read in through metadata$data, 
+    # `observation_id` uniquely identifies each individual
+    # 2. If there is not an `individual_id` column, `observation_id` is linked to row number
+    # This next segment of code, checks whether a given `observation_id` is linked to any data with 
+    # `entity_type: individual`.
+    # If yes, `individual_id` is copied from `observation_id`
+    # If no, `individual_id` is set to NA
+    # This step is required so that when the `ind_id_segment` is made (in the next step) 
+    # only rows of data with some individual-level data are numbered, 
+    # to avoid missing numbers in the `ind_id_segement`sequence
+    
+    data <- data %>% 
+      left_join(has_ind_value, by = "observation_id") %>%
+      dplyr::mutate(individual_id = ifelse(check_for_ind == TRUE, observation_id,NA))
+  }
+  
+  # create individual_id segment of entity_id
+  # within each species and population (as identified by their segment numbers),
+  # create sequential `ind_id_segment values`
+  # The function `create_id` ensures that values with the same observation_id/individual_id are
+  # given the same value.
+  
+  data <- data %>% 
+    group_by(spp_id_segment, pop_id_segment) %>%
+    mutate(
+      ind_id_segment = ifelse(!is.na(individual_id),create_id(individual_id,"ind"),NA),
+      individual_id = row_number(),
+      ind_id_segment = ifelse(is.na(ind_id_segment),create_id(individual_id,"entity_unk"),
+                              ind_id_segment)
+           ) %>%
+    ungroup()
+
+  
+  # take the species, population, and individual identifier segments and merge together the appropriate segments
+  # based on entity_type
+  # as a default all 3 segments are merged, such that "unknown" entity_types have as their final name segment "entity_unk"
+  # metapopulation values, which exist only rarely, will be assigned "population level" names
+  
+  data <- data %>%
+    dplyr::mutate(
+      entity_id = paste(dataset_id, spp_id_segment, pop_id_segment, ind_id_segment, sep="-"),
+      entity_id = ifelse(entity_type == "species", paste(dataset_id, spp_id_segment, sep="-"), entity_id),
+      entity_id = ifelse(entity_type %in% c("population", "metapopulation"), paste(dataset_id, spp_id_segment, pop_id_segment, sep="-"), entity_id),
+      individual_id = as.character(individual_id),
+      replicates = as.character(replicates),
+      check_for_ind = NA
+    ) %>%
+    select(-spp_id_segment, -pop_id_segment, -ind_id_segment, -individual_id, -population_id, -check_for_ind, -observation_id)
+
 }
 
 #' Format site and context data from list to tibble
@@ -520,17 +659,20 @@ flag_unsupported_values <- function(data, trait_definitions) {
     if(trait_definitions[[trait]]$type == "numeric") {
 
       x <- suppressWarnings(as.numeric(data[["value"]]))
-      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & is.na(x)
+      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & is.na(x) &  !(data[["value_type"]] %in% c("range", "bin"))
+      
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Value does not convert to numeric", .data$error))
 
-      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait &
+      i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & !(data[["value_type"]] %in% c("range", "bin")) &
         (x < trait_definitions[[trait]]$values$minimum | x > trait_definitions[[trait]]$values$maximum)
+
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Value out of allowable range", .data$error))
     }
   }
 
+  
   data
 }
 
@@ -639,7 +781,7 @@ add_all_columns <- function(data, vars, add_error_column = TRUE) {
       dplyr::mutate(!!v := NA_character_)
 
   data <- data %>%
-    dplyr::select(dplyr::any_of(vars))
+    dplyr::select(dplyr::any_of(c(vars, "observation_id", "population_id", "individual_id")))
 
   if(add_error_column){
     data <- data %>%
@@ -676,11 +818,12 @@ parse_data <- function(data, dataset_id, metadata) {
   df <- data %>%
         # next step selects and renames columns based on named vector
         dplyr::select(any_of(var_in[i])) %>%
-        dplyr::mutate(dataset_id = dataset_id)
+        dplyr::mutate(dataset_id = dataset_id) 
 
   # Step 1b. import any values that aren't columns of data
-  vars <- c("value_type", "replicates", "collection_date",
-            "collection_type", "sample_age_class", "measurement_remarks")
+  vars <- c( "entity_type", "value_type", "basis_of_value", "replicates", "collection_date",
+            "collection_type", "sample_age_class", "measurement_remarks", "observation_number", 
+            "method_number", "individual_id", "population_id")
 
   df <-
     df %>%
@@ -688,37 +831,95 @@ parse_data <- function(data, dataset_id, metadata) {
       metadata[["dataset"]][names(metadata[["dataset"]]) %in% vars[!vars %in% names(df)]] %>% tibble::as_tibble()
     )
 
-  
-  # Add unique observation ids
-  # function builds id -- determine number of 00s needed based on number of records
-  make_id <- function(n, dataset_id)
-              sprintf(paste0("%s_%0", ceiling(log10(n)), "d"),
-                              dataset_id, seq_len(n))
+  if(is.null(df[["observation_number"]])) {
+      df <- 
+        df %>% dplyr::mutate(observation_number = as.character("1"))
+  }
 
+  if(is.null(df[["method_number"]])) {
+      df <-
+        df %>% dplyr::mutate(method_number = as.character("1"))
+  }
+
+  # Add unique observation ids
+  # functions to build ids -- determine number of 00s needed based on number of records
+
+  make_id_segment <- function(n, prefix)
+    sprintf(paste0("%s_%0", max(2, ceiling(log10(n))), "d"), prefix, seq_len(n))
+  
+  create_id <- function(x, prefix, sort= FALSE) {
+    d <- x %>% unique() %>% subset(., !is.na(.))
+    
+    if(sort) d <- sort(d)
+    
+    id <- make_id_segment(length(d), prefix)
+    
+    id[match(x, d)]
+  }
+  
+
+  #MAKE OBSERVATION_ID
+  # For wide datasets rows are assumed to be natural grouping unless there is a specified observation_id column
+  # this section makes an observation_id that will be replaced with entity_id in the final traits table
+  # however it is required to correctly connect the proper rows of data until the entity_id can be made as part of the `load_study` function
+  
   if(!data_is_long_format) {
-    # For wide datasets rows are assumed to be natural grouping
-    df <- df %>%
-            dplyr::mutate(observation_id = make_id(nrow(.), dataset_id))
+    
+    
+      # If an `individual_id` column  IS read in through metadata$dataset, it is used to correctly cluster and identify individuals
+      # If there are rows of data within the file where `individual_id` is `NA`, these are filled in with the row_number() as a placeholder,
+      # just as would occur if no `individual_id` is specified.
+    
+      if(!is.null(df[["individual_id"]])) {
+          df[["observation_id_tmp"]] <- df[["individual_id"]]
+        
+        prefix <- dataset_id
+
+        df <- df %>%
+                  dplyr::mutate(observation_id_tmp = ifelse(is.na(observation_id_tmp),
+                                paste("temp", row_number(), sep = "_"),observation_id_tmp),
+                                observation_id_tmp = as.character(observation_id_tmp)
+                                ) %>% 
+                  dplyr::mutate(observation_id = create_id(observation_id_tmp, prefix))
+        
+      
+      # If an `individual_id` column  IS NOT read in through metadata$dataset, row_numbers are assumed to represent unique `entities`
+      # and `observation_id` values are based on row numbers
+                
+      } else {
+
+        df <- df %>%
+                  dplyr::mutate(observation_id = make_id_segment(nrow(.), dataset_id))
+      }
+
   } else {
 
-    # For long datasets, create unique identifier from taxon_name, site, and observation_id (if specified)
+    # For long datasets, create unique identifier from taxon_name, site, and individual_id (if specified)
+    
     df[["observation_id_tmp"]] <- gsub(" ", "-", df[["taxon_name"]])
 
     if(!is.null(df[["site_name"]][1]))
       df[["observation_id_tmp"]] <- paste0(df[["observation_id_tmp"]],"_", df[["site_name"]])
 
-    if(!is.null(df[["observation_id"]])) {
-      df[["observation_id_tmp"]] <- paste0(df[["observation_id_tmp"]],"_", df[["observation_id"]])
-      df[["observation_id"]] <- NULL
+    if(!is.null(df[["individual_id"]])) {
+      df[["observation_id_tmp"]] <- paste0(df[["observation_id_tmp"]],"_", df[["individual_id"]])
     }
-
+    
+    prefix <- dataset_id
+    
     df <- df %>%
-              dplyr::left_join(by = "observation_id_tmp",
-                        tibble::tibble(observation_id_tmp = df[["observation_id_tmp"]] %>% unique() %>% sort(),
-                               observation_id = make_id(length(.data$observation_id_tmp), dataset_id))
-                        ) %>%
+      dplyr::mutate(
+                observation_id_tmp = as.character(observation_id_tmp),
+                observation_id = create_id(observation_id_tmp, prefix)
+                    ) %>%
               dplyr::select(-.data$observation_id_tmp)
   }
+
+  df <- df %>%
+            mutate(
+              observation_number = as.character(observation_number),
+              method_number = as.character(method_number)
+            )
 
   # Step 2. Add trait information, with correct names
   cfgChar <-
@@ -756,13 +957,12 @@ parse_data <- function(data, dataset_id, metadata) {
       for(v in vars_to_check) {
         # get value
         value <- cfgChar[i,v, drop=TRUE]
-
         # Check if it is a column in data or not and process accordingly
         if(!is.na(value)) {
-          if(!is.null(data[[value]])) {
+          if(!is.null(data[[value]]) && !(v %in% c("entity_type", "basis_of_value")) ) {
             out[[i]][[v]] <- data[[value]] %>% as.character()
           } else {
-            out[[i]][[v]] <- value
+            out[[i]][[v]] <- value %>% as.character()
           }
         }
       }
@@ -773,7 +973,7 @@ parse_data <- function(data, dataset_id, metadata) {
     out[["value"]] <- out[["value"]] %>%  as.character()
 
     # Pull in additional information for each trait as specified in traits part of metadata, here represented as cfgChar
-    # Values in table can specify a column in the original data OR a value to use
+    # (column option not implemented) Values in table can specify a column in the original data OR a value to use
 
     vars_to_check <- vars[vars%in% names(cfgChar)]
     # For each column in cfgChar
@@ -815,7 +1015,7 @@ parse_data <- function(data, dataset_id, metadata) {
       }
     }
   }
-
+  
   out
 }
 

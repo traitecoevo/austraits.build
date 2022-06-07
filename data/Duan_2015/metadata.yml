@@ -33,12 +33,26 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site = "University of Western Sydney") %>% mutate_at(c("Cond
-    (mol m-2 s-1)"), ~na_if(.,0)) %>% subset(days_since_drought != "more_than_88") %>% mutate(Date = Date %>% dmy())
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site = "University of Western Sydney",
+        Date = Date %>% dmy(),
+        population_id = paste(Temp, CO2, Water, sep = "_")
+      ) %>% 
+      mutate_at(c("Cond (mol m-2 s-1)"), ~na_if(.,0)) %>% 
+      subset(days_since_drought != "more_than_88") %>% 
+      arrange(Date) %>%
+      group_by(Potnum, Temp, CO2, Water) %>%
+        mutate(observation = dplyr::row_number()) %>%
+      ungroup()
+  '
   collection_date: Date
   taxon_name: Species
   site_name: site
-  observation_id: Potnum
+  population_id: population_id
+  individual_id: Potnum
+  observation_number: observation
   context_name: context
   description: 'Water relations and carbon dynamics were examined in two species with
     contrasting stomatal regulation strategies: Pinus radiata D. Don (relatively isohydric
@@ -48,7 +62,7 @@ dataset:
     to assess response to drought as a function of [CO2] and temperature.'
   collection_type: glasshouse
   sample_age_class: seedling
-  sampling_strategy: 'Experimental design Three-month-old seedlings of P. radiata
+  sampling_strategy: "Experimental design Three-month-old seedlings of P. radiata
     (Pinaceae family) and C. rhomboidea (Cupressaceae family) raised in forestry tube
     stock were obtained from Greening Australia (Sydney) on 13 January 2012. Thereafter,
     seedlings of each species were transplanted from tube stocks into 80 PVC pots
@@ -57,8 +71,8 @@ dataset:
     bottom to prevent soil waterlogging. Twenty seedlings of each species were then
     randomly placed in each of the four adjacent, naturally sun-lit and C/T-controlled
     glasshouse compartments (each 3 m (width) x 5 m (length) x 3.5 m (height)), located
-    at the University of Western Sydney (Richmond, NSW, Australia (33deg 36''40''''S,
-    150deg 44''26.5''''E)). Prior to the drought treatment, seedlings were watered
+    at the University of Western Sydney (Richmond, NSW, Australia (33deg 36'40''S,
+    150deg 44'26.5''E)). Prior to the drought treatment, seedlings were watered
     daily to field capacity and fertilized on two occasions (17 February and 19 March)
     with a commercial fertilizer (N:P:K- 27:2:10; All Purpose, Brunnings, Oakleigh
     South, VIC, Australia). Seedlings were rotated regularly within and between glasshouse
@@ -106,7 +120,7 @@ dataset:
     pot weight from seedlings with TDRs, we obtained a linear regression between changes
     in pot weight (i.e., pot weight during drought progression compared with pots
     that were well-watered) and soil VWC for each species. We used this relationship
-    to estimate soil VWC for each pot using pot weight.'
+    to estimate soil VWC for each pot using pot weight."
   original_file: GHS30_Pines-TxCxW_biomass_20120327-20121016_L1.csv, GHS30_Pines-TxCxW_carbohydrates_20120327-20121016_L1.csv,
     and GHS30_Pines-TxCxW_GasExchange_20120326-20120808_L1.csv
   notes: none
@@ -264,7 +278,9 @@ traits:
 - var_in: Photo (umol m-2 s-1)
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_saturated
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf gas exchange measurements were taken on small branches (C. rhomboidea)
     of seedlings using a portable open path gas exchange system (Licor-6400, Li-Cor,
@@ -280,7 +296,9 @@ traits:
 - var_in: Cond (mol m-2 s-1)
   unit_in: molH2O/m2/s
   trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf gas exchange measurements were taken on small branches (C. rhomboidea)
     of seedlings using a portable open path gas exchange system (Licor-6400, Li-Cor,
@@ -296,7 +314,9 @@ traits:
 - var_in: Ci (umol mol-1)
   unit_in: umolCO2/mol
   trait_name: ci_at_Asat
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf gas exchange measurements were taken on small branches (C. rhomboidea)
     of seedlings using a portable open path gas exchange system (Licor-6400, Li-Cor,
@@ -312,7 +332,9 @@ traits:
 - var_in: Trmmol (mmol m-2 s-1)
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Asat
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf gas exchange measurements were taken on small branches (C. rhomboidea)
     of seedlings using a portable open path gas exchange system (Licor-6400, Li-Cor,
@@ -328,7 +350,9 @@ traits:
 - var_in: CiCa
   unit_in: umolCO2 internal/umolCO2 ambient
   trait_name: ci_over_ca
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf gas exchange measurements were taken on small branches (C. rhomboidea)
     of seedlings using a portable open path gas exchange system (Licor-6400, Li-Cor,
@@ -344,7 +368,9 @@ traits:
 - var_in: Rdark (umol m-2 s-1)
   unit_in: umolCO2/m2/s
   trait_name: leaf_dark_respiration_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf gas exchange measurements were taken on small branches (C. rhomboidea)
     of seedlings using a portable open path gas exchange system (Licor-6400, Li-Cor,
@@ -363,7 +389,9 @@ traits:
 - var_in: leaf_soluble_sugar_mg_per_g
   unit_in: mg/g
   trait_name: leaf_soluable_sugars_per_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Oven-dried plant organ samples from Days 1 to 206 were ground to fine powder
     in a ball mill. NSC concentration (mg g-1) (as the sum of starch concentration
@@ -382,7 +410,9 @@ traits:
 - var_in: leaf_soluble_starch_mg_per_g
   unit_in: mg/g
   trait_name: leaf_soluable_starch_per_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Oven-dried plant organ samples from Days 1 to 206 were ground to fine powder
     in a ball mill. NSC concentration (mg g-1) (as the sum of starch concentration
@@ -401,7 +431,9 @@ traits:
 - var_in: stem_soluble_sugar_mg_per_g
   unit_in: mg/g
   trait_name: stem_soluable_sugars_per_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Oven-dried plant organ samples from Days 1 to 206 were ground to fine powder
     in a ball mill. NSC concentration (mg g-1) (as the sum of starch concentration
@@ -420,7 +452,9 @@ traits:
 - var_in: stem_soluble_starch_mg_per_g
   unit_in: mg/g
   trait_name: stem_soluable_starch_per_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Oven-dried plant organ samples from Days 1 to 206 were ground to fine powder
     in a ball mill. NSC concentration (mg g-1) (as the sum of starch concentration
@@ -439,7 +473,9 @@ traits:
 - var_in: root_soluble_sugar_mg_per_g
   unit_in: mg/g
   trait_name: root_soluable_sugars_per_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Oven-dried plant organ samples from Days 1 to 206 were ground to fine powder
     in a ball mill. NSC concentration (mg g-1) (as the sum of starch concentration
@@ -458,7 +494,9 @@ traits:
 - var_in: root_soluble_starch_mg_per_g
   unit_in: mg/g
   trait_name: root_soluable_starch_per_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Oven-dried plant organ samples from Days 1 to 206 were ground to fine powder
     in a ball mill. NSC concentration (mg g-1) (as the sum of starch concentration
@@ -477,7 +515,9 @@ traits:
 - var_in: root_shoot_ratio
   unit_in: mg_root/mg_shoot
   trait_name: root_shoot_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three seedlings within each species assigned to well-watered treatment
     (n = 3) in each of the four C and T treatments were randomly selected for destructive
@@ -494,7 +534,9 @@ traits:
 - var_in: leaf_area_ratio_cm2_g
   unit_in: cm2/g
   trait_name: leaf_area_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three seedlings within each species assigned to well-watered treatment
     (n = 3) in each of the four C and T treatments were randomly selected for destructive
@@ -510,7 +552,9 @@ traits:
 - var_in: specific_leaf_area_cm2_g
   unit_in: cm2/g
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three seedlings within each species assigned to well-watered treatment
     (n = 3) in each of the four C and T treatments were randomly selected for destructive

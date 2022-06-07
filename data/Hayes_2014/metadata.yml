@@ -30,11 +30,15 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(nitrogen_fixing = str_detect(specific.uptake.strategy,
-    "/n fixing", negate = FALSE)) %>% mutate(senesced_leaf_Zn = ifelse(senesced_leaf_Zn<0,0,senesced_leaf_Zn),
-    senesced_leaf_Mo = ifelse(senesced_leaf_Mo<0,0,senesced_leaf_Mo),Mo_ug.g.DW =
-    ifelse(Mo_ug.g.DW<0,0,Mo_ug.g.DW)) %>% mutate(collection.date = collection.date
-    %>% dmy())
+  custom_R_code: '
+    data %>% 
+      mutate(
+        nitrogen_fixing = str_detect(specific.uptake.strategy, "/n fixing", negate = FALSE),
+        senesced_leaf_Zn = ifelse(senesced_leaf_Zn<0,0,senesced_leaf_Zn),
+        senesced_leaf_Mo = ifelse(senesced_leaf_Mo<0,0,senesced_leaf_Mo),
+        Mo_ug.g.DW = ifelse(Mo_ug.g.DW<0,0,Mo_ug.g.DW),
+        collection.date = collection.date %>% dmy())
+  '
   collection_date: collection.date
   taxon_name: species
   site_name: plot.id
@@ -1874,13 +1878,17 @@ traits:
 - var_in: uptake.strategy
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Only the trait 'specific.uptake.strategy' is mapped into AusTraits.
 - var_in: specific.uptake.strategy
   unit_in: .na
   trait_name: root_structure
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: The four main types of plant nutrient-acquisition strategies were further
     divided into seven specific nutrient-acquisition strategies to differentiate among
@@ -1891,7 +1899,9 @@ traits:
 - var_in: nitrogen_fixing
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: The four main types of plant nutrient-acquisition strategies were further
     divided into seven specific nutrient-acquisition strategies to differentiate among
@@ -1902,7 +1912,9 @@ traits:
 - var_in: Ca_ug.g.DW
   unit_in: ug/g
   trait_name: leaf_Ca_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -1930,7 +1942,9 @@ traits:
 - var_in: Cu_ug.g.DW
   unit_in: ug/g
   trait_name: leaf_Cu_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -1967,7 +1981,9 @@ traits:
 - var_in: Fe_ug.g.DW
   unit_in: ug/g
   trait_name: leaf_Fe_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2004,7 +2020,9 @@ traits:
 - var_in: K_ug.g.DW
   unit_in: ug/g
   trait_name: leaf_K_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2041,7 +2059,9 @@ traits:
 - var_in: Mg_ug.g.DW
   unit_in: ug/g
   trait_name: leaf_Mg_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2078,7 +2098,9 @@ traits:
 - var_in: Mn_ug.g.DW
   unit_in: ug/g
   trait_name: leaf_Mn_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2115,7 +2137,9 @@ traits:
 - var_in: Mo_ug.g.DW
   unit_in: ug/g
   trait_name: leaf_Mo_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2152,7 +2176,9 @@ traits:
 - var_in: P_ug.g.DW
   unit_in: ug/g
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2189,7 +2215,9 @@ traits:
 - var_in: S_ug.g.DW
   unit_in: ug/g
   trait_name: leaf_S_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2226,7 +2254,9 @@ traits:
 - var_in: Zn_ug.g.DW
   unit_in: ug/g
   trait_name: leaf_Zn_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2263,7 +2293,9 @@ traits:
 - var_in: N_ug.g.DW
   unit_in: ug/g
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2285,7 +2317,9 @@ traits:
 - var_in: C_%
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2307,7 +2341,9 @@ traits:
 - var_in: CN
   unit_in: g/g
   trait_name: leaf_CN_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2329,7 +2365,9 @@ traits:
 - var_in: senesced_leaf_Ca
   unit_in: ug/g
   trait_name: senesced_leaf_Ca_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2366,7 +2404,9 @@ traits:
 - var_in: senesced_leaf_Cu
   unit_in: ug/g
   trait_name: senesced_leaf_Cu_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2403,7 +2443,9 @@ traits:
 - var_in: senesced_leaf_Fe
   unit_in: ug/g
   trait_name: senesced_leaf_Fe_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2440,7 +2482,9 @@ traits:
 - var_in: senesced_leaf_K
   unit_in: ug/g
   trait_name: senesced_leaf_K_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2477,7 +2521,9 @@ traits:
 - var_in: senesced_leaf_Mg
   unit_in: ug/g
   trait_name: senesced_leaf_Mg_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2514,13 +2560,17 @@ traits:
 - var_in: senesced_leaf_Mn
   unit_in: ug/g
   trait_name: senesced_leaf_Mn_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: unknown
 - var_in: senesced_leaf_Mo
   unit_in: ug/g
   trait_name: senesced_leaf_Mo_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2557,7 +2607,9 @@ traits:
 - var_in: senesced_leaf_P
   unit_in: ug/g
   trait_name: senesced_leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2594,7 +2646,9 @@ traits:
 - var_in: senesced_leaf_S
   unit_in: ug/g
   trait_name: senesced_leaf_S_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2631,7 +2685,9 @@ traits:
 - var_in: senesced_leaf_Zn
   unit_in: ug/g
   trait_name: senesced_leaf_Zn_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.
@@ -2668,7 +2724,9 @@ traits:
 - var_in: senesced_leaf_N
   unit_in: ug/g
   trait_name: senesced_leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LEAF SAMPLING  All leaf material was collected over a two-month period
     between late March and early May 2012, near the end of the dry summer season.

@@ -27,7 +27,35 @@ contributors:
   austraits_curators: Elizabeth Wenk, Caitlan Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(`DATE OF COLLECTION` = `DATE OF COLLECTION` %>% dmy()) %>% group_by(SPECIES) %>% mutate_at(vars(DORM_TYPE), replace_duplicates_with_NA) %>% ungroup() %>% mutate(`SEED WEIGHT multiplier` = ifelse(row_number() %in% c(4603, 4673, 8936, 12050, 12283, 12576, 14503), NA, ""), `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(12981:13080), 0.001, `SEED WEIGHT multiplier`), `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(14527:14547), 0.01, `SEED WEIGHT multiplier`), `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(7175), 0.01, `SEED WEIGHT multiplier`), `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(9425,9479:9503,12664), 0.001, `SEED WEIGHT multiplier`), `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(14257), 0.0001, `SEED WEIGHT multiplier`), `notes for edited & omitted values` = ifelse(row_number() %in% c(4603, 4673, 8936, 12050, 12283, 12576, 14503), "outlier for species, removed by E. Wenk, 2021-10-27", ""), `notes for edited & omitted values` = ifelse(row_number() %in% c(12981:13080), "divide 1000 to fit within range of other AusTraits observations of species & other Leptospermum in this study", `notes for edited & omitted values`), `notes for edited & omitted values` = ifelse(row_number() %in% c(7175), "seed mass divided by 10^2, E. Wenk 2021-10-27", `notes for edited & omitted values`), `notes for edited & omitted values` = ifelse(row_number() %in% c(9425,9479:9503,12664), "seed mass divided by 10^3, E. Wenk 2021-10-27", `notes for edited & omitted values`), `notes for edited & omitted values` = ifelse(row_number() %in% c(14257), "seed mass divided by 10^4, E. Wenk 2021-10-27", `notes for edited & omitted values`)) %>% mutate(`SEED WEIGHT mg` = ifelse(as.character(`SEED WEIGHT multiplier`)=="outlier",NA,`SEED WEIGHT mg`), `SEED WEIGHT mg` = ifelse(is.na(`SEED WEIGHT multiplier`),`SEED WEIGHT mg`,`SEED WEIGHT mg`*as.numeric(`SEED WEIGHT multiplier`)))
+  custom_R_code: '
+    data %>% 
+      mutate(`DATE OF COLLECTION` = `DATE OF COLLECTION` %>% dmy()) %>% 
+      group_by(SPECIES) %>%
+        mutate_at(vars(DORM_TYPE), replace_duplicates_with_NA) %>%
+      ungroup() %>%
+      mutate(
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(4603, 4673, 8936, 12050, 12283, 12576, 14503), NA, 1),
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(12981:13080), 0.001, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(14527:14547), 0.01, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(7175), 0.01, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(9425,9479:9503,12664), 0.001, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(14257), 0.0001, `SEED WEIGHT multiplier`),
+        `notes for edited & omitted values` = ifelse(row_number() %in% c(4603, 4673, 8936, 12050, 12283, 12576, 14503),
+        "outlier for species, removed by E. Wenk, 2021-10-27", ""), `notes for edited & omitted values` =
+        ifelse(row_number() %in% c(12981:13080),
+        "divide 1000 to fit within range of other AusTraits observations of species & other Leptospermum in this study",
+        `notes for edited & omitted values`), `notes for edited & omitted values` = ifelse(row_number() %in% c(7175),
+        "seed mass divided by 10^2, E. Wenk 2021-10-27", `notes for edited & omitted values`),
+        `notes for edited & omitted values` = ifelse(row_number() %in% c(9425,9479:9503,12664),
+        "seed mass divided by 10^3, E. Wenk 2021-10-27", `notes for edited & omitted values`),
+        `notes for edited & omitted values` = ifelse(row_number() %in% c(14257),
+        "seed mass divided by 10^4, E. Wenk 2021-10-27", `notes for edited & omitted values`)) %>% 
+      mutate(
+        `SEED WEIGHT mg` = ifelse(as.character(`SEED WEIGHT multiplier`) == "outlier",NA,`SEED WEIGHT mg`),
+        `SEED WEIGHT mg` = ifelse(is.na(`SEED WEIGHT multiplier`),
+            `SEED WEIGHT mg`,`SEED WEIGHT mg`*as.numeric(`SEED WEIGHT multiplier`))
+        )
+  '
   collection_date: DATE OF COLLECTION
   taxon_name: SPECIES
   site_name: SITE
@@ -341,14 +369,18 @@ traits:
 - var_in: SEED WEIGHT mg
   unit_in: mg
   trait_name: seed_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Seeds were weighed individually (ie one seed per measurement as opposed
     to bulking seeds). A fine resolution balance was used.
 - var_in: DORM_TYPE
   unit_in: .na
   trait_name: dormancy_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Determined by expert opinion. Dormancy type is based on a classification
     scheme developed by Baskin and Baskin (2014).

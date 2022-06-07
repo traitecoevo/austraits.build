@@ -30,7 +30,13 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      mutate(
+        leaflet_area = ifelse(name_original == "Acacia dealbata", `leaf area mm2`, NA),
+        `leaf area mm2` = ifelse(name_original == "Acacia dealbata", NA, `leaf area mm2`)  
+      )
+  '
   collection_date: 2012/2012
   taxon_name: name_original
   site_name: site_ID
@@ -99,7 +105,9 @@ traits:
 - var_in: 13C %
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1
   methods: For leaf carbon isotope ratio (d13C) determination, the leaves of four
     to five individuals were bulked, ground finely and d13C assessed by the School
@@ -107,9 +115,11 @@ traits:
 - var_in: leaf area mm2
   unit_in: cm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
-  methods: For leaf area and leaf mass per area (LMA), two to 20 replicates per individual
+  methods: &leaf_method For leaf area and leaf mass per area (LMA), two to 20 replicates per individual
     of sun-exposed leaves were obtained from the tree or shrub mid-canopy. For species
     with compound leaves, leaflets were taken to be the functional unit equivalent
     to leaves. For shrubs and short trees, an extension cutter was used to obtain
@@ -117,10 +127,20 @@ traits:
     using a slingshot and weighted line. Only fully expanded leaves were used and
     these were scanned with a flatbed scanner and the leaf scans were processed by
     imaging software ImageJ to obtain leaf areas.
+- var_in: leaflet_area
+  unit_in: cm2
+  trait_name: leaflet_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 4-5
+  methods: *leaf_method
 - var_in: LMA gm2
   unit_in: g/m2
   trait_name: specific_leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: For leaf area and leaf mass per area (LMA), two to 20 replicates per individual
     of sun-exposed leaves were obtained from the tree or shrub mid-canopy. For species
@@ -135,7 +155,9 @@ traits:
 - var_in: WD g cm3
   unit_in: mg/mm3
   trait_name: wood_density
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: For wood density, we followed a protocol similar to Falster & Westoby [51].
     For trees, we collected branches and obtained two to five 5cm segments of the
@@ -148,7 +170,9 @@ traits:
 - var_in: Height (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Maximum height (Htmax) was obtained from literature sources [52-56]. (Only
     15 of the records are duplicates with current AusTraits values and across many
@@ -156,7 +180,9 @@ traits:
 - var_in: leaf slenderness
   unit_in: dimensionless
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: For shrubs and short trees, an extension cutter was used to obtain the
     leaves but for trees taller than 10 meters, canopy branches were collected using
@@ -166,8 +192,10 @@ traits:
     of the leaf length to leaf breadth.
 - var_in: bark thickness index
   unit_in: dimensionless
-  trait_name: .na
-  value_type: site_mean
+  trait_name: bark_thickness_index
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: Bark thickness was only measured on trees, and was obtained using a bark
     gauge at a height of 1.3m above the ground. In trees with fissured bark, we took

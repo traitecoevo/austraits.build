@@ -39,11 +39,20 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(stem_hydraulic_conductivity = `Hydraulic condictivity`/10)
+  custom_R_code: '
+    data %>% 
+      mutate(
+        stem_hydraulic_conductivity = `Hydraulic condictivity`/10,
+        population_id = `Site name expanded`,
+        observation_number = ifelse(context == "summer", 1, 2)
+      )
+  '
   collection_date: 2003-01/2003-01
   taxon_name: Species
   site_name: Site name expanded
   context: context
+  population_id: population_id
+  observation_number: observation_number
   description: Study to investigate convergence in hydraulic architecture, water relations
     traits, and gas exchange across the Sydney region.
   collection_type: field
@@ -118,7 +127,9 @@ traits:
 - var_in: Hv sapwood
   unit_in: mm2_sapwood/mm2_leaf
   trait_name: huber_value
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Huber values were calculated as the branch transverse area per leaf area.
     The diameter of the basal end of each branch was measured using a micrometer and
@@ -130,7 +141,9 @@ traits:
 - var_in: stem_hydraulic_conductivity
   unit_in: 10^6 x kg*m/s/MPa
   trait_name: stem_hydraulic_conductivity
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Hydraulic conductance was determined by the method described by Prior and
     Eamus (2000). Branches were collected before 0900 hours to avoid the diurnal period
@@ -157,7 +170,9 @@ traits:
 - var_in: HC per leaf area
   unit_in: 10^3 x kg/m/s/MPa
   trait_name: leaf_specific_conductivity
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Hydraulic conductance was determined by the method described by Prior and
     Eamus (2000). Branches were collected before 0900 hours to avoid the diurnal period
@@ -184,7 +199,9 @@ traits:
 - var_in: HC per branch TA
   unit_in: 10^1 x kg/m/s/MPa
   trait_name: transverse_branch_area_specific_conductivity
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Hydraulic conductivity per branch transverse area; Hydraulic conductance
     was determined by the method described by Prior and Eamus (2000). Branches were
@@ -211,7 +228,9 @@ traits:
 - var_in: HC per SW area
   unit_in: 10^1 x kg/m/s/MPa
   trait_name: sapwood_specific_conductivity
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Hydraulic conductivity per sapwood area; Hydraulic conductance was determined
     by the method described by Prior and Eamus (2000). Branches were collected before
@@ -238,7 +257,9 @@ traits:
 - var_in: Predawn water potential
   unit_in: MPa
   trait_name: water_potential_predawn
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Pre-dawn and diurnal leaf water potentials were determined for each species
     in each habitat using a pressure bomb (Model 3000, Soil Moisture Equipment Corp.
@@ -251,7 +272,9 @@ traits:
 - var_in: minimum water potential
   unit_in: MPa
   trait_name: water_potential_midday
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Pre-dawn and diurnal leaf water potentials were determined for each species
     in each habitat using a pressure bomb (Model 3000, Soil Moisture Equipment Corp.
@@ -264,7 +287,9 @@ traits:
 - var_in: Amass
   unit_in: nmolCO2/g/s
   trait_name: photosynthetic_rate_per_dry_mass_saturated
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Measurements made in summer; Light-saturated photosynthesis (Amax) was
     measured with an HCM-1000 portable infrared gas analyser (IRGA; Walz, portable

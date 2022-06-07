@@ -1,25 +1,35 @@
 
-value_type:
-  description: &value_type A categorical variable describing the type of trait value recorded.
+entity_type:
+  description: &entity_type A categorical variable describing the entity for which values represent.
   type: categorical
   values:
-    raw_value: Value is a direct measurement.
-    site_min: Value is the minimum of measurements on multiple individuals of the taxon at a single site.
-    site_mean: Value is the mean or median of measurements on multiple individuals of the taxon at a single site.
-    site_max: Value is the maximum of measurements on multiple individuals of the taxon at a single site.
-    multisite_min: Value is the minimum of measurements on multiple individuals of the taxon across multiple sites.
-    multisite_mean: Value is the mean or median of measurements on multiple individuals of the taxon across multiple sites.
-    multisite_max: Value is the maximum of measurements on multiple individuals of the taxon across multiple sites.
-    expert_min: Value is the minimum observed for a taxon across its range or in this particular dataset, as estimated by an expert based on their knowledge of the taxon. Data fitting this category include estimates from floras that represent a taxon's entire range.
-    expert_mean: Value is the mean observed for a taxon across its range or, in this particular dataset, as estimated by an expert based on their knowledge of the taxon. Data fitting this category include estimates from floras that represent a taxon's entire range and values for categorical variables obtained from a reference book, or identified by an expert.
-    expert_max: Value is the maximum observed for a taxon across its range or, in this particular dataset, as estimated by an expert based on their knowledge of the taxon. Data fitting this category include estimates from floras that represent a taxon's entire range.
-    experiment_min: Value is the minimum of measurements on multiple individuals of the taxon from an experimental study (either in the field or a glasshouse).
-    experiment_mean: Value is the mean or median of measurements on multiple individuals of the taxon from an experimental study (either in the field or a glasshouse).
-    experiment_max: Value is the maximum of measurements on multiple individuals of the taxon from an experimental study (either in the field or a glasshouse).
-    individual_mean: Value is a mean of replicate measurements on an individual.
-    individual_max: Value is a maximum of replicate measurements on an individual.
-    literature_source: Value is a site_mean, multisite_mean, or expert_mean that has been sourced from an unknown literature source.
-    unknown: Value type is not currently known.
+    individual: Value comes from a single individual
+    population: Value represents a summary statsitic from multiple individuals at a single site
+    metapopulation: Value represents a summary statsitic from individuals of the taxon across multiple sites
+    species: Values the mean observed for a taxon across its range or, in this particular dataset, as estimated by an expert based on their knowledge of the taxon. Data fitting this category include estimates from floras that represent a taxon's entire range and values for categorical variables obtained from a reference book, or identified by an expert.
+  
+value_type:
+  description: &value_type A categorical variable describing the type of value recorded.
+  type: categorical
+  values:
+    raw: Value recorded for an entity (individual).
+    minimum: Value is the minimum of values recorded for an entity.
+    mean: Value is the median of values recorded for an entity.
+    median: Value is the  median of values recorded for an entity.
+    maximum: Value is the maximum of values recorded for an entity.
+    mode: Value is the mode of values recorded for an entity.
+    range: Value is a range of values recorded for an entity.
+    bin: Value for an entity falls within specified limits.
+    unknown: Not currently known.
+  
+basis_of_value: 
+  description: &basis_of_value A categorical value describinb the basis of the recorded value.
+  type: categorical 
+  values:
+    measurement: Value is the minimum of measurements on multiple individuals of the taxon across multiple sites.
+    expert_score: Estimated by an expert based on their knowledge of the taxon.
+    model_derived: Value is dereived from a statsitcial mdoel, for example via gap-filling.
+    unknown: Not currently known.
 
 #-------------------------------------------------------------
 # A key describing the structure of the compiled `AusTraits` dataset
@@ -36,16 +46,20 @@ austraits:
         taxon_name: &taxon_name Whenever possible, this field indicates the current accepted scientific name of a taxon, per the Australian Plant Census (APC). Alternatively, `taxon_name` can indicate an alignment with a name included in the comprehensive Australian Plant Names Index (APNI), but not currently marked as accepted in APC, or a name that cannot be aligned to available lists of Australian plant names.
         site_name: &site_name Name of the site where the individual was sampled. Cross-references between similar columns in `sites` and `traits`.
         context_name: &context_name Name of contextual senario where the individual was sampled. Cross-references between similar columns in `contexts` and `traits`.
-        observation_id: &observation_id A unique identifier for the observation, useful for joining traits coming from the same `observation_id`. For wide datasets, these are assigned automatically based on the `dataset_id` and row number of the raw data.
+        entity_id: &entity_id A unique identifier that encodes the species, population, and/or individual that is connected to a trait value. A species-level trait value will have an entity_id that only includes a species component. A population-level trait value will have an entity_id that includes both species and population components. And an individual-level trait value will have an entity_id that includes species, population, and individual components.  
+        observation_number: &observation_number Observation number defaults to 1, unless it is manually added as a column or to individual traits
         trait_name: &trait_name Name of the trait sampled. Allowable values specified in the table `definitions`.
         value: &value Measured value.
         unit: &units Units of the sampled trait value after aligning with AusTraits standards.
         collection_date: &collection_date Date sample was taken, in the format `yyyy-mm-dd`, `yyyy-mm` or `yyyy`, depending on the resoluton specified.
+        entity_type: *entity_type
         value_type: *value_type
+        basis_of_value: *basis_of_value
         replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each measurement. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be 1. If the value type is `expert_mean`, `expert_min`, or `expert_max` the replicate value should be `.na`.
         collection_type: &collection_type A field to indicate where the majority of plants on which traits were measured were collected -  in the `field`, `lab`, `glasshouse`, `botanical collection`, or `literature`. The latter should only be used when the data were sourced from the literature and the collection type is unknown.
         sample_age_class: &sample_age_class A field to indicate if the study was completed on `adult` or `juvenile` plants.
         measurement_remarks: &measurement_remarks Comments or notes accompanying the trait measurement.
+        method_number: &method_number Method number defaults to 1, unless it is manually added to individual traits. It is used to flag when a trait is read into AusTraits multiple times, with different methods used for each entry. 
         original_name: &orginal_name Name given to taxon in the original data supplied by the authors.
     sites:
       description: A table containing observations of site characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
@@ -88,16 +102,20 @@ austraits:
         taxon_name: *taxon_name
         site_name: *site_name
         context_name: *context_name
-        observation_id: *observation_id
+        entity_id: *entity_id
+        observation_number: *observation_number
         trait_name: *trait_name
         value: *value
         unit: *units
         collection_date: *collection_date
+        entity_type: *entity_type
         value_type: *value_type
+        basis_of_value: *basis_of_value
         replicates: *replicates
         collection_type: *collection_type
         sample_age_class: *sample_age_class
         measurement_remarks: *measurement_remarks
+        method_number: *method_number
         original_name: *orginal_name
     taxonomic_updates:
       description: A table of all taxonomic changes implemented in the construction of AusTraits. Changes are determined by comparing the originally submitted taxon name against the APC (Australian Plant Census) and APNI (Australian Plant Names Index). Cross referencing with the `traits` table is possible using combinations of the variables `dataset_id` and `taxon_name`.
@@ -239,7 +257,10 @@ metadata:
         taxon_name: *taxon_name
         site_name: *site_name
         context_name: *context_name
-        observation_id: *observation_id
+        entity_id: *entity_id
+        population_id: &population_id A unique identifier for a population. As used in AusTraits, this is often a true biological population (that is, a site), but the term `population` is also used to capture a single experimental treatment.
+        individual_id: &individual_id A unique identifier for an individual plant. Often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time. 
+        observation_id: &observation_id A unique identifier for the observation, important for joining traits coming from the same `observation_id` until `entity_id` is created later in the workflow. For wide datasets, unless a column is specified under `individual_id` , these are assigned automatically based on the `dataset_id` and row number of the raw data.
         trait_name: *trait_name
         value: *value
         description: *description
@@ -259,8 +280,13 @@ metadata:
         var_in: Name of trait in the original data submitted
         unit_in: Units of trait in the original data submitted
         trait_name: *trait_name
+        entity_type: *entity_type
         value_type: *value_type
+        basis_of_value: *basis_of_value
         replicates: *replicates
+        measurement_remarks: *measurement_remarks
+        method_number: *method_number
+        observation_number: *observation_number
         methods: *methods
     substitutions:
       description: A list of any "find and replace" substitutions needed to get the data into the right format.

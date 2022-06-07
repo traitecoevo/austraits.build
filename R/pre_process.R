@@ -214,6 +214,43 @@ replace_duplicates_with_NA <- function(x) {
   base::replace(x, duplicated(x), NA)
 }
 
+#' Merge minimum and maximum trait values into a single range column.
+#'
+#' This is an appropriate function to use for recombining range values extracted from floras and taxonomic treatments that were previously separated in AusTraits
+#'
+#' @param data name of the dataset being mutated
+#' @param min_column name of the variable with the minimum trait values in the wide datas file
+#' @param max_column name of the variable with the maximum trait values in the wide datas file
+#' @param range_column name of a variable being created that combines the minimum and maximum values
+#' @param column_value_type name of a variable being created that indicates the value type of the associated column
+#'
+#' @return data frame with a two new columns containing manipulated trait data
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data <- read_csv("data/Chinnock_2007/data.csv")
+#' data %>%
+#'  format_min_max_as_range("min leaf length (mm)", "max leaf length (mm)", "leaf_length_range", "leaf_length_value_type") %>%
+#'  format_min_max_as_range("min leaf width (mm)", "max leaf width (mm)", "leaf_width_range", "leaf_width_value_type") %>%
+#'  format_min_max_as_range("seed length min (mm)", "seed length max (mm)", "seed_length_range", "seed_length_value_type")
+#' }
+
+format_min_max_as_range <- function(data, min_column, max_column, range_column, column_value_type) {
+  
+  data[[range_column]] = ifelse((!is.na(data[[min_column]])),
+                                paste(data[[min_column]], data[[max_column]], sep = "--"),
+                                data[[max_column]])
+  data[[range_column]] = ifelse((is.na(data[[max_column]])),
+                                data[[min_column]],
+                                data[[range_column]])
+  data[[range_column]] = ifelse(data[[min_column]] == data[[max_column]],
+                                data[[max_column]],
+                                data[[range_column]])
+  data[[column_value_type]] = ifelse(str_detect(data[[range_column]],"--"),"range","mean")
+  
+  return(data)
+}
 
 #' Move select trait values from a pre-existing column (trait_name) to a new column (new trait_name)
 #'

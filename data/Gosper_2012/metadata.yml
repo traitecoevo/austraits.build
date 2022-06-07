@@ -43,7 +43,14 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(ephemeral = if_else(GosperJVS2012_PFT == "Ephem","post_fire_ephemeral","na"))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        `Compeditive stratum` = ifelse(GosperJVS2012_PFT == "Ephem","post_fire_ephemeral",`Compeditive stratum`),
+        life_history = ifelse(GosperJVS2012_PFT == "Ephem","ephemeral",NA),
+        lifespan_value_type = ifelse(Longevity == "Long", "maximum", "minimum")
+      )
+  '
   collection_date: 2007/2007
   taxon_name: Species Name
   site_name: Location
@@ -103,28 +110,36 @@ traits:
 - var_in: Months Until First Fruiting
   unit_in: months
   trait_name: time_from_fire_to_fruit
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Gosper et al. 2013 field observations.  [Number of months since fire until
     first fruiting recorded.]
 - var_in: GosperJVS2012_PFT
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Plant functional type used in Gosper et al. 2012]
-- var_in: ephemeral
+- var_in: life_history
   unit_in: .na
-  trait_name: competitive_stratum
-  value_type: expert_mean
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Plant functional type used in Gosper et al. 2012]
 - var_in: Resprouter
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Yes = most of population resprouts after fire from fire-resistant organs; No
@@ -133,14 +148,18 @@ traits:
 - var_in: Persistent canopy seedbank
   unit_in: .na
   trait_name: serotiny
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Yes = serotinous; No = non-serotinous]
 - var_in: Persistent soil seedbank
   unit_in: .na
   trait_name: soil_seedbank
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Yes = persistent soil seed bank that enables post-fire recruitment; No = does
@@ -148,15 +167,19 @@ traits:
 - var_in: Compeditive stratum
   unit_in: .na
   trait_name: competitive_stratum
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations. [Defined relative to vegetation
     communities sampled. Upper = upper (canopy) stratum of trees or shrubs; Mid =
     mid-stratum of shrubs; Ground = ground layer]
 - var_in: Longevity
-  unit_in: .na
+  unit_in: years
   trait_name: lifespan
-  value_type: expert_mean
+  entity_type: species
+  value_type: lifespan_value_type
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations. [Short = post-fire ephemeral with
     post-fire individual longeivity 6 years or less; Long = individual longevity typically
@@ -167,10 +190,10 @@ substitutions:
   replace: .na
 - trait_name: lifespan
   find: Short
-  replace: <6
+  replace: 6
 - trait_name: lifespan
   find: Long
-  replace: '>6'
+  replace: 6
 - trait_name: soil_seedbank
   find: 'No'
   replace: 0

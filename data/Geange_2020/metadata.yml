@@ -26,9 +26,16 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(root_mass_fraction = Root_Weight / (ABG_Weight +
-    Root_Weight), leaf_area_ratio = Total_Leaf_Area / (ABG_Weight + Root_Weight))
-    %>% mutate_at(vars(SLA),~na_if(.,0)) %>% mutate(Trip_Date = Trip_Date %>% my() %>% format.Date("%Y-%m"))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        root_mass_fraction = Root_Weight / (ABG_Weight + Root_Weight), 
+        root_shoot_ratio = Root_Weight / ABG_Weight,
+        leaf_area_ratio = Total_Leaf_Area / (ABG_Weight + Root_Weight),
+        Trip_Date = Trip_Date %>% my() %>% format.Date("%Y-%m") 
+      ) %>% 
+      mutate_at(vars(SLA),~na_if(.,0))
+  '
   collection_date: Trip_Date
   taxon_name: species
   site_name: site
@@ -144,9 +151,11 @@ traits:
 - var_in: root_mass_fraction
   unit_in: g/g
   trait_name: root_mass_fraction
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: In late April 2016 all surviving seedlings were harvested to assess biomass
+  methods: &biomass_method In late April 2016 all surviving seedlings were harvested to assess biomass
     allocation and specific leaf area (SLA). Seedlings were carefully excavated and
     all loose dirt shaken from root systems. Plants were stored in resealable plastic
     bags with damp paper towel and transported back to the laboratory in Canberra.
@@ -158,29 +167,32 @@ traits:
     balance (Mettler-Toledo, Greifensee, Switzerland). SLA was calculated as the total
     leaf area (cm2)/mass (g) for the three scanned leaves (Perez-Harguindeguy et al.
     2013).
+- var_in: root_shoot_ratio
+  unit_in: mg_root/mg_shoot
+  trait_name: root_shoot_ratio
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: *biomass_method
 - var_in: leaf_area_ratio
   unit_in: cm2/g
   trait_name: leaf_area_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: In late April 2016 all surviving seedlings were harvested to assess biomass
-    allocation and specific leaf area (SLA). Seedlings were carefully excavated and
-    all loose dirt shaken from root systems. Plants were stored in resealable plastic
-    bags with damp paper towel and transported back to the laboratory in Canberra.
-    Seedlings were separated into above- and belowground components. Roots were washed
-    to remove any fine soil particles. Leaf size (cm2) of the three largest leaves
-    for each individual was determined using a flatbed scanner and analysed using
-    ImageJ (Schneider et al. 2012). Above- and below-ground biomass and leaf area
-    samples were then ovendried for 72 h at 60 deg C and then weighed using an analytical
-    balance (Mettler-Toledo, Greifensee, Switzerland). SLA was calculated as the total
-    leaf area (cm2)/mass (g) for the three scanned leaves (Perez-Harguindeguy et al.
-    2013).
+  methods: *biomass_method
 - var_in: Fv.Fm
   unit_in: x/x
   trait_name: fv_over_fm
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: The maximum quantum efficiency of photosystem II (PSII) (Fv/Fm) was used
+  observation_number: 1
+  measurement_remarks: A Fv/Fm measure before the ice nucelation experiment
+  methods: &fluorescence_method The maximum quantum efficiency of photosystem II (PSII) (Fv/Fm) was used
     as an indicator of photosynthetic health of the seedlings throughout the experiment
     (Murchie and Lawson 2013). Fv/Fm was measured using a photosynthetic efficiency
     analyser (PEA Meter, Hansatech Instruments, King's Lynn, UK). Measurements were
@@ -188,63 +200,45 @@ traits:
 - var_in: LA_per_leaf
   unit_in: cm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: In late April 2016 all surviving seedlings were harvested to assess biomass
-    allocation and specific leaf area (SLA). Seedlings were carefully excavated and
-    all loose dirt shaken from root systems. Plants were stored in resealable plastic
-    bags with damp paper towel and transported back to the laboratory in Canberra.
-    Seedlings were separated into above- and belowground components. Roots were washed
-    to remove any fine soil particles. Leaf size (cm2) of the three largest leaves
-    for each individual was determined using a flatbed scanner and analysed using
-    ImageJ (Schneider et al. 2012). Above- and below-ground biomass and leaf area
-    samples were then ovendried for 72 h at 60 deg C and then weighed using an analytical
-    balance (Mettler-Toledo, Greifensee, Switzerland). SLA was calculated as the total
-    leaf area (cm2)/mass (g) for the three scanned leaves (Perez-Harguindeguy et al.
-    2013).
+  methods: *biomass_method
 - var_in: SLA
   unit_in: cm2/g
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: In late April 2016 all surviving seedlings were harvested to assess biomass
-    allocation and specific leaf area (SLA). Seedlings were carefully excavated and
-    all loose dirt shaken from root systems. Plants were stored in resealable plastic
-    bags with damp paper towel and transported back to the laboratory in Canberra.
-    Seedlings were separated into above- and belowground components. Roots were washed
-    to remove any fine soil particles. Leaf size (cm2) of the three largest leaves
-    for each individual was determined using a flatbed scanner and analysed using
-    ImageJ (Schneider et al. 2012). Above- and below-ground biomass and leaf area
-    samples were then ovendried for 72 h at 60 deg C and then weighed using an analytical
-    balance (Mettler-Toledo, Greifensee, Switzerland). SLA was calculated as the total
-    leaf area (cm2)/mass (g) for the three scanned leaves (Perez-Harguindeguy et al.
-    2013).
+  methods: *biomass_method
 - var_in: FvFm_Pre_IN
   unit_in: x/x
   trait_name: fv_over_fm
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Fv/Fm measurements made at the start of the ice nucleation experiment;
-    The maximum quantum efficiency of photosystem II (PSII) (Fv/Fm) was used as an
-    indicator of photosynthetic health of the seedlings throughout the experiment
-    (Murchie and Lawson 2013). Fv/Fm was measured using a photosynthetic efficiency
-    analyser (PEA Meter, Hansatech Instruments, King's Lynn, UK). Measurements were
-    taken after 20 min of dark adaptation on a single leaf per seedling.
+  observation_number: 2
+  measurement_remarks: The Fv/Fm measure of the sample prior to ice nucleation  
+  methods: *fluorescence_method
 - var_in: FvFm_Post_IN
   unit_in: x/x
-  trait_name: .na
-  value_type: raw_value
+  trait_name: fv_over_fm
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Fv/Fm measured at the end of the ice nucleation experiment; The maximum
-    quantum efficiency of photosystem II (PSII) (Fv/Fm) was used as an indicator of
-    photosynthetic health of the seedlings throughout the experiment (Murchie and
-    Lawson 2013). Fv/Fm was measured using a photosynthetic efficiency analyser (PEA
-    Meter, Hansatech Instruments, King's Lynn, UK). Measurements were taken after
-    20 min of dark adaptation on a single leaf per seedling.
+  observation_number: 3
+  measurement_remarks: The Fv/Fm measure of the sample after ice nucleation
+  methods: *fluorescence_method
 - var_in: NT_Temp
   unit_in: C
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: ice_nucleation_temperature; Freezing resistance was assessed as the temperature
     at which intra-cellular ice formation occurs in leaves (Taschler and Neuner 2004).

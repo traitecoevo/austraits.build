@@ -21,12 +21,29 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site_name = "Australian National University") %>%
-    subset(status=="Australian_species")
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site = "Australian National University",
+        measurement_remarks = ifelse(leaf_location == "tree", "sample measured in a tree", NA),
+        replicate_count = 1
+      ) %>%
+      select(-`Leaf No.`) %>%
+      group_by(ID, species, status, leaf_location) %>%
+        summarise(
+          replicate_count = sum(replicate_count),
+          leaf_fresh_mass_g = mean(leaf_fresh_mass_g),
+          leaf_dry_mass_g = mean(leaf_dry_mass_g),
+          leaf_area_cm2 = mean(leaf_area_cm2),
+          leaf_thickness_um = mean(leaf_thickness_um)
+        ) %>%
+      ungroup() %>%      
+      subset(status=="Australian_species")
+  '
   collection_date: 2000-12/2001-04
   taxon_name: species
-  site_name: site_name
-  context_name: leaf_location
+  site_name: site
+  measurement_remarks: measurement_remarks
   description: A dataset to test whether leaf area was proportional to leaf mass within
     a given species despite vaiations in leaf thickness and relative water content
     (mass fraction of liquid matter) across species
@@ -49,17 +66,15 @@ sites:
     latitude (deg): -35.28
     longitude (deg): 149.12
     description: species growing on the campus of the Australian National University
-contexts:
-  tree:
-    canopy position: in tree
-  ground:
-    canopy position: at ground level
+contexts: .na
 traits:
 - var_in: leaf_fresh_mass_g
   unit_in: g
   trait_name: leaf_fresh_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicate_count
   methods: Once thickness measurements were complete, the leaves were removed from
     the plant and taken immediately to the laboratory where the mass and projected
     area of each was measured. Within each group of ten leaves, we visually selected
@@ -72,8 +87,10 @@ traits:
 - var_in: leaf_dry_mass_g
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicate_count
   methods: For each species, we recorded the mass, area, thickness and dry mass of
     ten individual leaves in three separate groups, giving a total of 30 leaves per
     species. The leaves were oven-dried at 80 deg C for at least 48 hours after which
@@ -81,8 +98,10 @@ traits:
 - var_in: leaf_area_cm2
   unit_in: cm2
   trait_name: leaf_area
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicate_count
   methods: For each species, we recorded the mass, area, thickness and dry mass of
     ten individual leaves in three separate groups, giving a total of 30 leaves per
     species. Once thickness measurements were complete, the leaves were removed from
@@ -91,8 +110,10 @@ traits:
 - var_in: leaf_thickness_um
   unit_in: um
   trait_name: leaf_thickness
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicate_count
   methods: Leaf thickness was measured in three places on each leaf using a dial thickness
     gauge while the leaves were still attached to the plant. An average of these measurements
     was used as an estimate of leaf thickness. Note that the thickness of some of

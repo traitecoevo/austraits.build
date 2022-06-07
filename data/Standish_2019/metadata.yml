@@ -19,7 +19,14 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site_name = "Jarrah_forest")
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site_name = "Jarrah_forest",
+        seed_mass_collection_type = ifelse(`SM data source` %in% c("Weighed", "Standish et al, unpub data"), 
+          "field","literature")
+      )
+  '
   collection_date: unknown/2019
   taxon_name: Species Name
   site_name: site_name
@@ -42,36 +49,50 @@ traits:
 - var_in: Fire Response
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: data from various literature sources; see unmapped column "FR data source"
-    in data.csv file. Excel spreadsheet "AusTraits_jarrah forest" archived in google
+  collection_type: literature
+  measurement_remarks: FR data source
+  methods: Excel spreadsheet "AusTraits_jarrah forest" archived in google
     drive provides full reference details in worksheet 3.
 - var_in: Seed storage
   unit_in: .na
   trait_name: seed_storage_location
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: data from various literature sources; see unmapped column "SS data source"
-    in data.csv file. Excel spreadsheet "AusTraits_jarrah forest" archived in google
+  collection_type: literature
+  measurement_remarks: SS data source
+  methods: Excel spreadsheet "AusTraits_jarrah forest" archived in google
     drive provides full reference details in worksheet 3.
 - var_in: Life Form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert opinion and reference books
 - var_in: life_history
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert opinion and reference books
 - var_in: Seed mass (mg)
   unit_in: mg
   trait_name: seed_dry_mass
-  value_type: expert_mean
-  replicates: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na  
+  collection_type: seed_mass_collection_type
+  measurement_remarks: SM data source
   methods: data from various literature sources or weighed as part of the study; see
     unmapped column "SM data source" in data.csv file; values that are marked as being
     sourced from Kew have been removed, since we have this data set independently.
@@ -80,29 +101,39 @@ traits:
 - var_in: Nutrient-acquisition strategy
   unit_in: .na
   trait_name: root_structure
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
+  collection_type: literature
+  measurement_remarks: NAS data source
   methods: data from various literature sources; see unmapped column "NAS data source"
     in data.csv file. Excel spreadsheet "AusTraits_jarrah forest" archived in google
     drive provides full reference details in worksheet 3.
 - var_in: Leaf P
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Leaf samples were analysed for N and P by CSBP Plant and Soil Laboratory,
     Bibra Lake Perth.
 - var_in: Leaf N
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Leaf samples were analysed for N and P by CSBP Plant and Soil Laboratory,
     Bibra Lake Perth.
 - var_in: nitrogen_fixing
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: data from various literature sources; see unmapped column "NAS data source"
     in data.csv file. Excel spreadsheet "AusTraits_jarrah forest" archived in google

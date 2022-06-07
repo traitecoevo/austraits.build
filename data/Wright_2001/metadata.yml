@@ -26,10 +26,17 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate_at(c("reserve_M (mg)"), ~na_if(.,0))
+  custom_R_code: '
+    data %>% 
+      mutate_at(vars(`reserve_M (mg)`), ~na_if(.,0)) %>%
+      group_by(spp, Site) %>%
+        mutate(observation_number = dplyr::row_number()) %>%
+      ungroup()
+  '
   collection_date: 1998/1999
   taxon_name: spp
   site_name: Site
+  observation_number: observation_number
   description: seed mass reserve data for various species in NSW
   collection_type: field
   sample_age_class: adult
@@ -76,7 +83,9 @@ traits:
 - var_in: whole_M (mg)
   unit_in: mg
   trait_name: seed_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: n (wholeM)
   methods: Seeds were assumed to be ellipsoids and the volumes calculated for 302
     species from measurements of seed length (l), breadth (b) and width (w) (volume
@@ -86,7 +95,9 @@ traits:
 - var_in: reserve_M (mg)
   unit_in: mg
   trait_name: seed_dry_mass_reserve
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: n (wholeM)
   methods: Data for seed reserve mass (dry mass of embryo plus endosperm if present)
     were drawn from previous studies in similar vegetation (Leishman et al. 1995;

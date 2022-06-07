@@ -25,11 +25,23 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      mutate(
+        measurement_remarks = ifelse(!is.na(Notes), 
+                  paste0("Notes, ", Notes, "; Source, ", dataset_id),
+                  paste0("Source, ", dataset_id))
+      ) %>%
+      group_by(taxon_name) %>%
+        mutate(observation_number = dplyr::row_number()) %>%
+      ungroup()
+  '
   collection_date: 2020/2021
   taxon_name: taxon_name
   trait_name: trait_name
-  value: value
+  value: value  
+  observation_number: observation_number  
+  measurement_remarks: measurement_remarks
   description: trait data on flowering time, measured as the months in a year in which
     a species has been recorded flowering, for TERN AusPlots taxa without matching
     AusTraits data.
@@ -47,7 +59,9 @@ traits:
 - var_in: flowering_time
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Assembled by Ruby Stephens from state online floras, the Flora of Australia
     and any accessible original species descriptions. More comments on each data record,

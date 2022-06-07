@@ -24,7 +24,7 @@ test_that("metadata_create_template is working",{
   expect_equal(length(test_metadata$contributors$austraits_curators), 1)
   expect_equal(length(test_metadata$contributors$austraits_curators), 1)
 
-  expect_equal(length(test_metadata$dataset), 15)
+  expect_equal(length(test_metadata$dataset), 18)
 })
 
 test_that("metadata_path_dataset_id is working",{

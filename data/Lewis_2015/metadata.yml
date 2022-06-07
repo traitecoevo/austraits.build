@@ -38,10 +38,19 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site = "University of Western Sydney")
+  custom_R_code: '
+    data %>% 
+      mutate(site = "University of Western Sydney") %>%
+      arrange(date_gas_exchange) %>%
+      mutate(individual_id = ifelse(is.na(Potnum),dplyr::row_number(),Potnum)) %>%
+      group_by(Potnum) %>%
+        mutate(observation = row_number()) %>%
+      ungroup()
+  '
   collection_date: date_gas_exchange
   taxon_name: Species
-  observation_id: Potnum
+  individual_id: individual_id
+  observation_number: observation
   site_name: site
   context_name: context
   description: Wollemi pine (Wollemia nobilis W.G.Jones, K.D.Hill, & J.M.Allen), formerly
@@ -307,7 +316,9 @@ traits:
 - var_in: Amax
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_maximum
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: ACi response curves were measured 15 months (February 2010) after treatments
     were initiated. Curves were measured on 9-10 plants in each treatment using a
@@ -322,7 +333,9 @@ traits:
 - var_in: gs_at_Amax
   unit_in: molH2O/m2/s
   trait_name: stomatal_conductance_per_area_at_Amax
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: ACi response curves were measured 15 months (February 2010) after treatments
     were initiated. Curves were measured on 9-10 plants in each treatment using a
@@ -337,7 +350,9 @@ traits:
 - var_in: Photo (umol m-2 s-1)
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_saturated
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Light-saturated net photosynthetic rates (Asat) and stomatal conductance
     (gs) were measured in November 2008, February, March and June 2009, and January
@@ -358,7 +373,9 @@ traits:
 - var_in: Cond (mol m-2 s-1)
   unit_in: molH2O/m2/s
   trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Light-saturated net photosynthetic rates (Asat) and stomatal conductance
     (gs) were measured in November 2008, February, March and June 2009, and January
@@ -379,7 +396,9 @@ traits:
 - var_in: Ci (umol mol-1)
   unit_in: umolCO2/mol
   trait_name: ci_at_Asat
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Light-saturated net photosynthetic rates (Asat) and stomatal conductance
     (gs) were measured in November 2008, February, March and June 2009, and January
@@ -400,7 +419,9 @@ traits:
 - var_in: CiCa
   unit_in: umolCO2 internal/umolCO2 ambient
   trait_name: ci_over_ca
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Light-saturated net photosynthetic rates (Asat) and stomatal conductance
     (gs) were measured in November 2008, February, March and June 2009, and January
@@ -421,7 +442,9 @@ traits:
 - var_in: Trmmol (mmol m-2 s-1)
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Asat
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Light-saturated net photosynthetic rates (Asat) and stomatal conductance
     (gs) were measured in November 2008, February, March and June 2009, and January
@@ -442,7 +465,9 @@ traits:
 - var_in: leaf_percentN
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: N and C content were determined on leaf, shoot and root samples collected
     from three plants in each treatment. After drying at 60 deg C for 48 h, samples
@@ -452,7 +477,9 @@ traits:
 - var_in: leaf_d15N
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Subsamples of leaf, shoot and root tissue were collected at the end of
     the experiment (April 2010). Samples were dried at 60 deg C for 48 h before analysis.
@@ -463,7 +490,9 @@ traits:
 - var_in: leaf_CN
   unit_in: g/g
   trait_name: leaf_CN_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: N and C content were determined on leaf, shoot and root samples collected
     from three plants in each treatment. After drying at 60 deg C for 48 h, samples
@@ -473,7 +502,9 @@ traits:
 - var_in: leaf_percentC
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: N and C content were determined on leaf, shoot and root samples collected
     from three plants in each treatment. After drying at 60 deg C for 48 h, samples
@@ -483,7 +514,9 @@ traits:
 - var_in: leaf_d13C
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Subsamples of leaf, shoot and root tissue were collected at the end of
     the experiment (April 2010). Samples were dried at 60 deg C for 48 h before analysis.
@@ -494,7 +527,9 @@ traits:
 - var_in: stem_percentN
   unit_in: '%'
   trait_name: wood_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: N and C content were determined on leaf, shoot and root samples collected
     from three plants in each treatment. After drying at 60 deg C for 48 h, samples
@@ -504,7 +539,9 @@ traits:
 - var_in: stem_d15N
   unit_in: per mille
   trait_name: wood_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Subsamples of leaf, shoot and root tissue were collected at the end of
     the experiment (April 2010). Samples were dried at 60 deg C for 48 h before analysis.
@@ -515,7 +552,9 @@ traits:
 - var_in: stem_CN
   unit_in: g/g
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: N and C content were determined on leaf, shoot and root samples collected
     from three plants in each treatment. After drying at 60 deg C for 48 h, samples
@@ -525,7 +564,9 @@ traits:
 - var_in: stem_percentC
   unit_in: '%'
   trait_name: wood_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: N and C content were determined on leaf, shoot and root samples collected
     from three plants in each treatment. After drying at 60 deg C for 48 h, samples
@@ -535,7 +576,9 @@ traits:
 - var_in: stem_d13C
   unit_in: per mille
   trait_name: wood_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Subsamples of leaf, shoot and root tissue were collected at the end of
     the experiment (April 2010). Samples were dried at 60 deg C for 48 h before analysis.
@@ -546,7 +589,9 @@ traits:
 - var_in: root_percentN
   unit_in: '%'
   trait_name: root_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: N and C content were determined on leaf, shoot and root samples collected
     from three plants in each treatment. After drying at 60 deg C for 48 h, samples
@@ -556,7 +601,9 @@ traits:
 - var_in: root_d15N
   unit_in: per mille
   trait_name: root_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Subsamples of leaf, shoot and root tissue were collected at the end of
     the experiment (April 2010). Samples were dried at 60 deg C for 48 h before analysis.
@@ -567,7 +614,9 @@ traits:
 - var_in: root_CN
   unit_in: g/g
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: N and C content were determined on leaf, shoot and root samples collected
     from three plants in each treatment. After drying at 60 deg C for 48 h, samples
@@ -577,7 +626,9 @@ traits:
 - var_in: root_percentC
   unit_in: '%'
   trait_name: root_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: N and C content were determined on leaf, shoot and root samples collected
     from three plants in each treatment. After drying at 60 deg C for 48 h, samples
@@ -587,7 +638,9 @@ traits:
 - var_in: root_d13C
   unit_in: per mille
   trait_name: root_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Subsamples of leaf, shoot and root tissue were collected at the end of
     the experiment (April 2010). Samples were dried at 60 deg C for 48 h before analysis.
@@ -598,7 +651,9 @@ traits:
 - var_in: LMA (g m-2)
   unit_in: g/m2
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Seventeen months (April 2010) after the initiation of [CO2] and temperature
     treatments, six plants from each of the treatment combinations were harvested
@@ -615,7 +670,9 @@ traits:
 - var_in: leaf_area_ratio
   unit_in: cm2/g
   trait_name: leaf_area_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Seventeen months (April 2010) after the initiation of [CO2] and temperature
     treatments, six plants from each of the treatment combinations were harvested
@@ -632,7 +689,9 @@ traits:
 - var_in: LaminaT (um)
   unit_in: um
   trait_name: leaf_thickness
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: leaf lamina thickness; Leaves were cut into 1cm lengths, placed into 1
     cm long plastic straws with Optimal Cutting Temperature (O. C. T.) embedding medium
@@ -650,7 +709,9 @@ traits:
 - var_in: abaxialEpiT (um)
   unit_in: um
   trait_name: epidermis_thickness_lower_leaf_surface
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: epidermal layer thickness of the needle's lower side; Leaves were cut into
     1cm lengths, placed into 1 cm long plastic straws with Optimal Cutting Temperature
@@ -669,7 +730,9 @@ traits:
 - var_in: adaxialEpiT (um)
   unit_in: um
   trait_name: epidermis_thickness_upper_leaf_surface
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: epidermal layer thickness of the needle's upper side; Leaves were cut into
     1cm lengths, placed into 1 cm long plastic straws with Optimal Cutting Temperature
@@ -688,7 +751,9 @@ traits:
 - var_in: abaxialEpiDen (mm-2)
   unit_in: count/mm2
   trait_name: epidermal_cell_density_abaxial
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: epidermal cell density of the lower side; Individual leaves were cut into
     1cm2 segments taken from the middle of each leaf, with one side of the leaf uncut
@@ -721,7 +786,9 @@ traits:
 - var_in: abaxialStomDen (mm-2)
   unit_in: count/mm2
   trait_name: stomatal_density_abaxial
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: stomatal density of the lower side; Individual leaves were cut into 1cm2
     segments taken from the middle of each leaf, with one side of the leaf uncut to
@@ -754,7 +821,9 @@ traits:
 - var_in: adaxialEpiDen (mm-2)
   unit_in: count/mm2
   trait_name: epidermal_cell_density_adaxial
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: epidermal cell density of the upper side; Individual leaves were cut into
     1cm2 segments taken from the middle of each leaf, with one side of the leaf uncut
@@ -787,7 +856,9 @@ traits:
 - var_in: adaxialStomDen (mm-2)
   unit_in: count/mm2
   trait_name: stomatal_density_adaxial
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: stomatal density of the upper side; Individual leaves were cut into 1cm2
     segments taken from the middle of each leaf, with one side of the leaf uncut to

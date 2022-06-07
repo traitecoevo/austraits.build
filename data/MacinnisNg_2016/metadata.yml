@@ -26,12 +26,26 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site = "Crookwell") %>% mutate_at(vars("SLA"),replace_duplicates_with_NA) %>% mutate(stem_hydraulic_conductivity = 10*`Hydraulic condictivity`) %>% mutate_at(vars("Hydraulic condictivity","HC per branch TA","HC per leaf area","HC
-    per SW area"),~na_if(.,0))
-  collection_date: 2003-07/2004-01
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site = "Crookwell",
+        stem_hydraulic_conductivity = 10*`Hydraulic condictivity`,
+        population_id = site,
+        individual_id = ifelse(is.na(tree),paste0("x",format(row_number(),000)),paste0("tree",format(tree,00))),
+        observation_number = ifelse(season == "winter", 1, 2),
+        collection_date = ifelse(season == "winter", "2003-07", "2004-01")
+      ) %>%
+      mutate_at(vars(`SLA`),replace_duplicates_with_NA) %>% 
+      mutate_at(vars(`Hydraulic condictivity`,`HC per branch TA`,`HC per leaf area`,`HC per SW area`), ~na_if(.,0))
+  '
+  collection_date: collection_date
   taxon_name: species
   site_name: site
   context_name: season
+  population_id: population_id
+  individual_id: individual_id
+  observation_number: observation_number
   description: An investigation of correlations between soil conditions and plant
     ecophysiological traits and function across seasons.
   collection_type: field
@@ -104,7 +118,9 @@ traits:
 - var_in: Hv sapwood
   unit_in: mm2_sapwood/mm2_leaf
   trait_name: huber_value
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Huber values (Hv) were calculated as the branch transverse area per leaf
     area distal to the cut such that Hv = SA/LA where SA is the cross-sectional area
@@ -118,7 +134,9 @@ traits:
 - var_in: stem_hydraulic_conductivity
   unit_in: 10^6 x kg*m/s/MPa
   trait_name: stem_hydraulic_conductivity
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Hydraulic conductance was determined by the method described by Prior and
     Eamus (2000). Branches were collected before 0900 hours to avoid the diurnal period
@@ -145,7 +163,9 @@ traits:
 - var_in: HC per leaf area
   unit_in: kg/m/s/MPa
   trait_name: leaf_specific_conductivity
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Hydraulic conductance was determined by the method described by Prior and
     Eamus (2000). Branches were collected before 0900 hours to avoid the diurnal period
@@ -172,7 +192,9 @@ traits:
 - var_in: HC per branch TA
   unit_in: kg/m/s/MPa
   trait_name: transverse_branch_area_specific_conductivity
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Hydraulic conductance was determined by the method described by Prior and
     Eamus (2000). Branches were collected before 0900 hours to avoid the diurnal period
@@ -199,7 +221,9 @@ traits:
 - var_in: HC per SW area
   unit_in: kg/m/s/MPa
   trait_name: sapwood_specific_conductivity
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Hydraulic conductance was determined by the method described by Prior and
     Eamus (2000). Branches were collected before 0900 hours to avoid the diurnal period
@@ -226,7 +250,9 @@ traits:
 - var_in: Aarea
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_saturated
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Photosynthesis was measured as maximum (light saturated) assimilation (Amax)
     with a HCM-1000 Portable Photosynthesis System (PPS) (Walz, Germany). Measurements
@@ -249,7 +275,9 @@ traits:
 - var_in: Amass
   unit_in: nmolCO2/g/s
   trait_name: photosynthetic_rate_per_dry_mass_saturated
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Photosynthesis was measured as maximum (light saturated) assimilation (Amax)
     with a HCM-1000 Portable Photosynthesis System (PPS) (Walz, Germany). Measurements
@@ -271,8 +299,10 @@ traits:
     at each site (a total of 18 samples per site).
 - var_in: ETRmax
   unit_in: umol/m2/s
-  trait_name: .na
-  value_type: individual_mean
+  trait_name: Jmax_per_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: ETRmax is derived from a 'rapid light curve' routine using the fluorescence
     data. Photosynthesis was measured as maximum (light saturated) assimilation (Amax)
@@ -296,7 +326,9 @@ traits:
 - var_in: Cmass % (w/w)
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaves used in photosynthetic determination were collected for nitrogen
     analysis. Samples were placed in moistened snap-lock bags and placed on ice for
@@ -307,7 +339,9 @@ traits:
 - var_in: Nmass % (w/w)
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaves used in photosynthetic determination were collected for nitrogen
     analysis. Samples were placed in moistened snap-lock bags and placed on ice for
@@ -318,8 +352,10 @@ traits:
 - var_in: SLA
   unit_in: cm2/g
   trait_name: specific_leaf_area
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 3
   methods: Specific leaf area was calculated for three leaves from each sample tree
     (18 leaves at each site). Samples were transported on ice in a cool box to the
     laboratory. Five 1 cm2 leaf discs were cut with a cork borer and dried at 70 deg
@@ -329,7 +365,9 @@ traits:
 - var_in: N g m-2
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaves used in photosynthetic determination were collected for nitrogen
     analysis. Samples were placed in moistened snap-lock bags and placed on ice for
@@ -343,4 +381,3 @@ exclude_observations: .na
 questions:
   contributor: You'll notice that the values for leaf_specific_conductivity seem about
     10x higher than other studies. Does this ring true?
-  additional_traits: ETRmax, calculated from fluorescence data (Jmax per area)

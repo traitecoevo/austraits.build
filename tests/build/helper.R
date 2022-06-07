@@ -110,12 +110,12 @@ test_build_dataset <- function(path_metadata, path_data, info, trait_definitions
     build_dataset <- load_dataset(path_data, build_config, schema)
   }, info = paste(info, " load_dataset"))
   
-  test_structure(build_dataset, info, single_dataset = TRUE)
+  test_structure(build_dataset, info, schema, single_dataset = TRUE)
   
   build_dataset
 }
 
-test_structure <- function(data, info, single_dataset = TRUE) {
+test_structure <- function(data, info, schema, single_dataset = TRUE) {
   
   # test lists have the right objects
   comparison <- vars_austraits

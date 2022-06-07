@@ -27,12 +27,26 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site_name = "Cape Tribulation")
-  collection_date: 2014/2014
+  custom_R_code: '
+    data %>%
+      mutate(
+        site_name = "Cape Tribulation",
+        collection_date = date_leaf %>% mdy(),
+        collection_date = ifelse(is.na(collection_date),"2014/2014", collection_date)
+        ) %>% 
+      group_by(Tree) %>%
+      mutate(observation_number = row_number()) %>%
+      ungroup() %>%
+      group_by(Species_name) %>%
+        mutate_at(vars(`Growth.Form`), replace_duplicates_with_NA) %>%
+      ungroup()
+  '
+  collection_date: collection_date
   taxon_name: Species_name
   site_name: site_name
   context_name: Sun/Shade
-  observation_id: Tree
+  individual_id: Tree
+  observation_number: observation_number
   description: This study investigated the functional traits of lianas and trees in
     a lowland tropical forest in northeast Queensland, Australia to understand and
     predict the effect of lianas on ecosystem processes in tropical forests.
@@ -96,14 +110,18 @@ traits:
 - var_in: Growth.Form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge and literature
 - var_in: Aa
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_saturated
-  value_type: individual_mean
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: number
   methods: For each individual, gas exchange measurements were made on three, newly
     formed, fully expanded leaves between 8:00am and 11:30am using a portable photosynthesis
     system (Li-6400; Li-Cor, Lincoln, NE, USA). Maximum photosynthesis per unit leaf
@@ -118,8 +136,10 @@ traits:
 - var_in: gs
   unit_in: molH2O/m2/s
   trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: individual_mean
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: number
   methods: For each individual, gas exchange measurements were made on three, newly
     formed, fully expanded leaves between 8:00am and 11:30am using a portable photosynthesis
     system (Li-6400; Li-Cor, Lincoln, NE, USA). Maximum photosynthesis per unit leaf
@@ -134,8 +154,10 @@ traits:
 - var_in: WUEi
   unit_in: umolCO2/molH2O
   trait_name: water_use_efficiency_intrinsic
-  value_type: individual_mean
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: number
   methods: For each individual, gas exchange measurements were made on three, newly
     formed, fully expanded leaves between 8:00am and 11:30am using a portable photosynthesis
     system (Li-6400; Li-Cor, Lincoln, NE, USA). Maximum photosynthesis per unit leaf
@@ -150,8 +172,10 @@ traits:
 - var_in: CiCa
   unit_in: umolCO2 internal/umolCO2 ambient
   trait_name: ci_over_ca
-  value_type: individual_mean
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: number
   methods: For each individual, gas exchange measurements were made on three, newly
     formed, fully expanded leaves between 8:00am and 11:30am using a portable photosynthesis
     system (Li-6400; Li-Cor, Lincoln, NE, USA). Maximum photosynthesis per unit leaf
@@ -166,8 +190,10 @@ traits:
 - var_in: Amass
   unit_in: nmolCO2/g/s
   trait_name: photosynthetic_rate_per_dry_mass_saturated
-  value_type: individual_mean
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: number
   methods: For each individual, gas exchange measurements were made on three, newly
     formed, fully expanded leaves between 8:00am and 11:30am using a portable photosynthesis
     system (Li-6400; Li-Cor, Lincoln, NE, USA). Maximum photosynthesis per unit leaf
@@ -182,8 +208,10 @@ traits:
 - var_in: PNUE
   unit_in: umolCO2/molN/s
   trait_name: leaf_photosynthetic_nitrogen_use_efficiency_saturated
-  value_type: individual_mean
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: number
   methods: For each individual, gas exchange measurements were made on three, newly
     formed, fully expanded leaves between 8:00am and 11:30am using a portable photosynthesis
     system (Li-6400; Li-Cor, Lincoln, NE, USA). Maximum photosynthesis per unit leaf
@@ -198,8 +226,10 @@ traits:
 - var_in: Ci
   unit_in: umolCO2/mol
   trait_name: ci_at_Asat
-  value_type: individual_mean
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: number
   methods: For each individual, gas exchange measurements were made on three, newly
     formed, fully expanded leaves between 8:00am and 11:30am using a portable photosynthesis
     system (Li-6400; Li-Cor, Lincoln, NE, USA). Maximum photosynthesis per unit leaf
@@ -214,8 +244,10 @@ traits:
 - var_in: WUE
   unit_in: umolCO2/mmolH2O
   trait_name: water_use_efficiency_photosynthetic
-  value_type: individual_mean
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: number
   methods: For each individual, gas exchange measurements were made on three, newly
     formed, fully expanded leaves between 8:00am and 11:30am using a portable photosynthesis
     system (Li-6400; Li-Cor, Lincoln, NE, USA). Maximum photosynthesis per unit leaf
@@ -230,7 +262,9 @@ traits:
 - var_in: Fresh Weight
   unit_in: g
   trait_name: leaf_fresh_mass
-  value_type: individual_mean
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to five selected leaves (or leaflets in the case of the palm species
     in the family Arecaceae) from each individual were placed into snap-lock sandwich
@@ -243,7 +277,9 @@ traits:
 - var_in: Dry Weight
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: individual_mean
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to five selected leaves (or leaflets in the case of the palm species
     in the family Arecaceae) from each individual were placed into snap-lock sandwich
@@ -256,7 +292,9 @@ traits:
 - var_in: LDMC
   unit_in: g/g
   trait_name: leaf_dry_matter_content
-  value_type: individual_mean
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to five selected leaves (or leaflets in the case of the palm species
     in the family Arecaceae) from each individual were placed into snap-lock sandwich
@@ -269,7 +307,9 @@ traits:
 - var_in: AreaTotal
   unit_in: cm2
   trait_name: leaf_area
-  value_type: individual_mean
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to five selected leaves (or leaflets in the case of the palm species
     in the family Arecaceae) from each individual were placed into snap-lock sandwich
@@ -281,7 +321,9 @@ traits:
 - var_in: SLA
   unit_in: cm2/g
   trait_name: specific_leaf_area
-  value_type: individual_mean
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to five selected leaves (or leaflets in the case of the palm species
     in the family Arecaceae) from each individual were placed into snap-lock sandwich
@@ -297,7 +339,9 @@ traits:
 - var_in: Petiole Width
   unit_in: mm
   trait_name: .na
-  value_type: individual_mean
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to five selected leaves (or leaflets in the case of the palm species
     in the family Arecaceae) from each individual were placed into snap-lock sandwich
@@ -309,7 +353,9 @@ traits:
 - var_in: Petiole Height
   unit_in: mm
   trait_name: .na
-  value_type: individual_mean
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to five selected leaves (or leaflets in the case of the palm species
     in the family Arecaceae) from each individual were placed into snap-lock sandwich
@@ -321,7 +367,9 @@ traits:
 - var_in: Lamina
   unit_in: mm
   trait_name: leaf_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to five selected leaves (or leaflets in the case of the palm species
     in the family Arecaceae) from each individual were placed into snap-lock sandwich
@@ -333,7 +381,9 @@ traits:
 - var_in: Density
   unit_in: g/cm3
   trait_name: wood_density
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: For all individuals, wood density (WD; g cm_3), defined as the dry mass
     per fresh volume, was calculated on a small stem segment (~1 cm diameter and ~4
@@ -351,7 +401,9 @@ traits:
 - var_in: S_true15N
   unit_in: per mille
   trait_name: wood_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All dried leaves and stems were ground to a fine powder for elemental and
     isotopic analyses. The d13C and d15N, carbon and nitrogen mass fractions (Cmass
@@ -364,7 +416,9 @@ traits:
 - var_in: S_per.N
   unit_in: '%'
   trait_name: wood_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All dried leaves and stems were ground to a fine powder for elemental and
     isotopic analyses. The d13C and d15N, carbon and nitrogen mass fractions (Cmass
@@ -377,7 +431,9 @@ traits:
 - var_in: S_true13C
   unit_in: per mille
   trait_name: wood_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All dried leaves and stems were ground to a fine powder for elemental and
     isotopic analyses. The d13C and d15N, carbon and nitrogen mass fractions (Cmass
@@ -390,7 +446,9 @@ traits:
 - var_in: S_per.C
   unit_in: '%'
   trait_name: wood_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All dried leaves and stems were ground to a fine powder for elemental and
     isotopic analyses. The d13C and d15N, carbon and nitrogen mass fractions (Cmass
@@ -403,7 +461,9 @@ traits:
 - var_in: L_true13C
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All dried leaves and stems were ground to a fine powder for elemental and
     isotopic analyses. The d13C and d15N, carbon and nitrogen mass fractions (Cmass
@@ -416,7 +476,9 @@ traits:
 - var_in: L_true15N
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All dried leaves and stems were ground to a fine powder for elemental and
     isotopic analyses. The d13C and d15N, carbon and nitrogen mass fractions (Cmass
@@ -429,7 +491,9 @@ traits:
 - var_in: L_per.C
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All dried leaves and stems were ground to a fine powder for elemental and
     isotopic analyses. The d13C and d15N, carbon and nitrogen mass fractions (Cmass
@@ -442,7 +506,9 @@ traits:
 - var_in: L_per.N
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All dried leaves and stems were ground to a fine powder for elemental and
     isotopic analyses. The d13C and d15N, carbon and nitrogen mass fractions (Cmass
@@ -455,7 +521,9 @@ traits:
 - var_in: L_C.N
   unit_in: g/g
   trait_name: leaf_CN_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All dried leaves and stems were ground to a fine powder for elemental and
     isotopic analyses. The d13C and d15N, carbon and nitrogen mass fractions (Cmass
@@ -468,7 +536,9 @@ traits:
 - var_in: Outer Phloem
   unit_in: .na
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: For all individuals, wood density (WD; g cm_3), defined as the dry mass
     per fresh volume, was calculated on a small stem segment (~1 cm diameter and ~4
@@ -486,7 +556,9 @@ traits:
 - var_in: Outer Xylem
   unit_in: .na
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: For all individuals, wood density (WD; g cm_3), defined as the dry mass
     per fresh volume, was calculated on a small stem segment (~1 cm diameter and ~4
@@ -504,7 +576,9 @@ traits:
 - var_in: Outer Heartood
   unit_in: .na
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: For all individuals, wood density (WD; g cm_3), defined as the dry mass
     per fresh volume, was calculated on a small stem segment (~1 cm diameter and ~4
@@ -522,7 +596,9 @@ traits:
 - var_in: Xylem
   unit_in: .na
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: For all individuals, wood density (WD; g cm_3), defined as the dry mass
     per fresh volume, was calculated on a small stem segment (~1 cm diameter and ~4
@@ -540,7 +616,9 @@ traits:
 - var_in: X_Tot_Ratio
   unit_in: dimensionless
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: For all individuals, wood density (WD; g cm_3), defined as the dry mass
     per fresh volume, was calculated on a small stem segment (~1 cm diameter and ~4
@@ -558,7 +636,9 @@ traits:
 - var_in: d18O
   unit_in: per mille
   trait_name: stem_water_delta18O
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Xylem water was obtained by collecting stem segments (~1 cm diameter and
     ~8 cm length) from all tree and liana species. Stem segments were cut with secateurs,

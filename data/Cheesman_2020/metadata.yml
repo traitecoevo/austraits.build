@@ -27,12 +27,39 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(collection_type = ifelse(Treatment == "Drought","field_experiment","field"), collection_type = ifelse(is.na(collection_type),"field",collection_type)) %>% group_by(Species) %>% mutate_at(vars("Form"),replace_duplicates_with_NA) %>% ungroup() 
+  custom_R_code: '
+    data %>% 
+      mutate(
+        collection_type = ifelse(Treatment == "Drought","field_experiment","field"), 
+        collection_type = ifelse(is.na(collection_type),"field",collection_type),
+        population_id = paste(site, Treatment, sep = "_"),
+        method_number = case_when(
+         `branch location` == "canopy crown" ~ 1,
+         `branch location` == "inner canopy" ~ 2,
+         `branch location` == "understorey" ~ 3,
+         `branch location` == "notable gap" ~ 4,
+         `branch location` == "Reforestation" ~ 5
+        ),
+        measurement_remarks = case_when(
+         `branch location` == "canopy crown" ~ "measurement made on canopy crown",
+         `branch location` == "inner canopy" ~ "measurement made on inner canopy",
+         `branch location` == "understorey" ~ "measurement made on understorey",
+         `branch location` == "notable gap" ~ "measurement made in notable gap",
+         `branch location` == "Reforestation" ~ "measurement made at reforested location"
+        )
+      ) %>% 
+      group_by(Species) %>% 
+        mutate_at(vars("Form"),replace_duplicates_with_NA) %>% 
+      ungroup()
+  ' 
   collection_date: Data_Set
   taxon_name: Species
   site_name: site
   context_name: context
-  observation_id: Branch_ID
+  individual_id: Branch_ID
+  population_id: population_id
+  method_number: method_number
+  measurement_remarks: measurement_remarks
   description: Study to determine how isotopic, micro- and macro-morphological traits,
     in combination, reflect canopy position of leaves within a modern closed canopy
     forest, with the goal of understanding how these data could be applied to the
@@ -101,50 +128,56 @@ sites:
       with a closed canopy; complex mesophyll vine forest
 contexts:
   measurements made at Reforestation site:
-    light environment: reforestation
+    canopy layer: reforestation
     water treatment: .na.character
   measurements made from on  CANOPY CROWN branches before drought infrastructure installed:
-    light environment: canopy crown
+    canopy layer: canopy crown
     water treatment: .na.character
   measurements made in NOTABLE notable gap in CONTROL rainfall plot:
-    light environment: notable gap
+    canopy layer: notable gap
     water treatment: control
   measurements made on CANOPY CROWN branches in CONTROL rainfall plot:
-    light environment: canopy crown
+    canopy layer: canopy crown
     water treatment: control
   measurements made on INNER CANOPY branches in CONTROL rainfall plot:
-    light environment: inner canopy
+    canopy layer: inner canopy
     water treatment: control
   measurements made on INNER CANOPY branches in DROUGHT  plot:
-    light environment: inner canopy
+    canopy layer: inner canopy
     water treatment: drought [manipulated]
   measurements made on INNER CANOPY branches in DROUGHT plot:
-    light environment: canopy crown
+    canopy layer: canopy crown
     water treatment: drought [manipulated]
   measurements made on UNDERSTOREY branches before drought infrastructure installed:
-    light environment: understorey
+    canopy layer: understorey
     water treatment: .na.character
   measurements made on UNDERSTOREY branches in CONTROL rainfall plot:
-    light environment: understorey
+    canopy layer: understorey
     water treatment: control
 traits:
 - var_in: Form
   unit_in: .na.character
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert knowledge and reference books
 - var_in: Lam
   unit_in: mm
   trait_name: leaf_thickness
-  value_type: site_mean
-  replicates: '3'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Measurements made using a micrometer
 - var_in: LMA
   unit_in: g/m2
   trait_name: specific_leaf_area
-  value_type: site_mean
-  replicates: '3'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Leaf area of fresh leaves was measured using a flatbed scanner (Canon CanoScan
     Flatbed Scanner LiDE120, Sydney, NSW, Australia), with area determined against
     a scaled calibration using Image-J 1.52a Software. Dry mass of individual leaf
@@ -152,16 +185,20 @@ traits:
 - var_in: Area
   unit_in: cm2
   trait_name: leaf_area
-  value_type: site_mean
-  replicates: '3'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Leaf area of fresh leaves was measured using a flatbed scanner (Canon CanoScan
     Flatbed Scanner LiDE120, Sydney, NSW, Australia), with area determined against
     a scaled calibration using Image-J 1.52a Software.
 - var_in: TC
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: site_mean
-  replicates: '3'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Samples collected in 2014 were ground and analyzed for total C and N as
     well as d15N, and d13C, using a Costech Elemental Analyser coupled via a ConFloIV
     to a ThermoFinnigan Delta V PLUS Continuous-Flow Isotope Ratio Mass Spectrometer
@@ -172,8 +209,10 @@ traits:
 - var_in: TN
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
-  replicates: '3'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Samples collected in 2014 were ground and analyzed for total C and N as
     well as d15N, and d13C, using a Costech Elemental Analyser coupled via a ConFloIV
     to a ThermoFinnigan Delta V PLUS Continuous-Flow Isotope Ratio Mass Spectrometer
@@ -184,8 +223,10 @@ traits:
 - var_in: d15N
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: site_mean
-  replicates: '3'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Samples collected in 2014 were ground and analyzed for total C and N as
     well as d15N, and d13C, using a Costech Elemental Analyser coupled via a ConFloIV
     to a ThermoFinnigan Delta V PLUS Continuous-Flow Isotope Ratio Mass Spectrometer
@@ -196,8 +237,10 @@ traits:
 - var_in: d13C
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: site_mean
-  replicates: '3'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Samples collected in 2014 were ground and analyzed for total C and N as
     well as d15N, and d13C, using a Costech Elemental Analyser coupled via a ConFloIV
     to a ThermoFinnigan Delta V PLUS Continuous-Flow Isotope Ratio Mass Spectrometer
@@ -208,8 +251,10 @@ traits:
 - var_in: Photo
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_saturated
-  value_type: site_mean
-  replicates: '2'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: During the 2014 initial sampling, in-situ leaf physiological measurements
     (e.g. light saturated photosynthesis (Asat), and responses to [CO2] (A-Ci) , and
     irradiance (A-I) curves) were made on at least two leaves of 71 species collected,
@@ -217,8 +262,10 @@ traits:
 - var_in: Vcmax
   unit_in: umol/m2/s
   trait_name: Vcmax_per_area
-  value_type: site_mean
-  replicates: '2'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: During the 2014 initial sampling, in-situ leaf physiological measurements
     (e.g. light saturated photosynthesis (Asat), and responses to [CO2] (A-Ci) , and
     irradiance (A-I) curves) were made on at least two leaves of 71 species collected,
@@ -226,8 +273,10 @@ traits:
 - var_in: jmax
   unit_in: umol/m2/s
   trait_name: Jmax_per_area
-  value_type: site_mean
-  replicates: '2'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: During the 2014 initial sampling, in-situ leaf physiological measurements
     (e.g. light saturated photosynthesis (Asat), and responses to [CO2] (A-Ci) , and
     irradiance (A-I) curves) were made on at least two leaves of 71 species collected,
@@ -235,8 +284,10 @@ traits:
 - var_in: Cond
   unit_in: molH2O/m2/s
   trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: site_mean
-  replicates: '2'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: During the 2014 initial sampling, in-situ leaf physiological measurements
     (e.g. light saturated photosynthesis (Asat), and responses to [CO2] (A-Ci) , and
     irradiance (A-I) curves) were made on at least two leaves of 71 species collected,
@@ -244,24 +295,30 @@ traits:
 - var_in: P.width
   unit_in: mm
   trait_name: .na
-  value_type: site_mean
-  replicates: '3'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Leaf petiole dimensions including width (parallel to plane of lamina) and
     depth (perpendicular to plane of leaf lamina) were measured on individual leaves
     using a micrometer before removal and drying at 60 deg C for 72h; petiole width
 - var_in: P.height
   unit_in: mm
   trait_name: .na
-  value_type: site_mean
-  replicates: '3'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Leaf petiole dimensions including width (parallel to plane of lamina) and
     depth (perpendicular to plane of leaf lamina) were measured on individual leaves
     using a micrometer before removal and drying at 60 deg C for 72h; petiole height
 - var_in: UI_Av
   unit_in: dimensionless
   trait_name: .na
-  value_type: site_mean
-  replicates: '3'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: undulation index; Parallel canopy and understory leaves of 15 dicotyledonous
     species collected in 2014, as well as all samples collected in 2017 were shipped
     frozen to the University of Adelaide for clearing, staining and determination
@@ -285,8 +342,10 @@ traits:
 - var_in: CA_Av
   unit_in: dimensionless
   trait_name: .na
-  value_type: site_mean
-  replicates: '3'
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: epidermal cell area; Parallel canopy and understory leaves of 15 dicotyledonous
     species collected in 2014, as well as all samples collected in 2017 were shipped
     frozen to the University of Adelaide for clearing, staining and determination

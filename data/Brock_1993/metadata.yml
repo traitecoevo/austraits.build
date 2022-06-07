@@ -18,11 +18,15 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate( `flowering time` = convert_month_range_vec_to_binary(`flowering
-    time`), leaf_type = ifelse(`leaf type` == "articles", "article", NA), `leaf type`
-    = ifelse(`leaf type` %in% c("articles", "palmate"), NA, `leaf type`) ) %>% mutate_at(c("leaf
-    length min (cm)","leaf length max (cm)","leaf width min (cm)","leaf width max
-    (cm)"), ~na_if(.,0)) %>% mutate(parasitic = ifelse(`growth form`=="parasite","parasitic",NA))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        parasitic = ifelse(`growth form`=="parasite","parasitic",NA),
+        `flowering time` = convert_month_range_vec_to_binary(`flowering time`), 
+        leaf_type = ifelse(`leaf type` == "articles", "article", NA), 
+        `leaf type`= ifelse(`leaf type` %in% c("articles", "palmate"), NA, `leaf type`)
+      )
+  '
   collection_date: unknown/1993
   taxon_name: binomial
   description: traits of NT flora from John Brocks book Flora of Northern Australia
@@ -34,124 +38,148 @@ dataset:
 sites: .na
 contexts: .na
 traits:
-- var_in: genus
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: species
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: height min (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &plant_height_methods unknown
 - var_in: height (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *plant_height_methods
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf_type
   unit_in: .na
   trait_name: leaf_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf shape
   unit_in: .na
   trait_name: leaf_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf length min (cm)
   unit_in: cm
   trait_name: leaf_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &leaf_length_methods unknown
 - var_in: leaf length max (cm)
   unit_in: cm
   trait_name: leaf_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *leaf_length_methods
 - var_in: leaf width min (cm)
   unit_in: cm
   trait_name: leaf_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &leaf_width_methods unknown
 - var_in: leaf width max (cm)
   unit_in: cm
   trait_name: leaf_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *leaf_width_methods
 - var_in: flowering time
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf longevity
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: seed length (mm)
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_mean
+  entity_type: species
+  value_type: median
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed width (mm)
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_mean
+  entity_type: species
+  value_type: median
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed breadth (mm)
   unit_in: mm
   trait_name: seed_height
-  value_type: expert_mean
+  entity_type: species
+  value_type: median
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed shape
   unit_in: .na
   trait_name: seed_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 substitutions:

@@ -38,12 +38,23 @@ contributors:
   austraits_curators: Elizabeth Wenk, Caitlan Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>%  mutate(fruit_fleshiness = Fruit_Type_2, fruit_dehiscence
-    = Fruit_Type_2, dispersal_appendage = NA) %>% move_values_to_new_trait("Fruit_Type_2", "dispersal_appendage",
-    c("Pod_R", "Capsule_W", "Capsule_R", "Achene(plumed)", "Follicle_W", "Follicle_R"),
-    c("fleshy_reward", "wing_or_plume", "fleshy_reward", "plumose", "wing_or_plume",
-    "fleshy_reward"), c("Pod_R", "Capsule_W", "Capsule_R", "Achene(plumed)", "Follicle_W",
-    "Follicle_R"))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        method_number = ifelse(!is.na(`sla.mean.site`),1,NA),
+        method_number = ifelse(!is.na(`sla.mean.multisite`),2,NA),
+        `sla.mean.site` = coalesce(as.character(`sla.mean.site`), as.character(SLA_no_site)),
+        fruit_fleshiness = Fruit_Type_2,
+        fruit_dehiscence = Fruit_Type_2,
+        dispersal_appendage = NA
+      ) %>% 
+      move_values_to_new_trait(
+        "Fruit_Type_2", "dispersal_appendage",
+        c("Pod_R", "Capsule_W", "Capsule_R", "Achene(plumed)", "Follicle_W", "Follicle_R"),
+        c("fleshy_reward", "wing_or_plume", "fleshy_reward", "plumose", "wing_or_plume", "fleshy_reward"),
+        c("Pod_R", "Capsule_W", "Capsule_R", "Achene(plumed)", "Follicle_W", "Follicle_R") 
+      )
+  '
   collection_date: 2012/2014
   taxon_name: species_name
   site_name: SLA_collection_Location Name_to_match_including_sites_for_literature_sourced_values
@@ -178,7 +189,9 @@ traits:
 - var_in: plant_height_unique
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: 'Species maximum height. Austraits notes: filtered out values that are
     identical to those in Kooyman_2011, Metcalfe_2020_2 or Cooper_2013; see plant_height_comparison.csv
@@ -186,7 +199,9 @@ traits:
 - var_in: wood_density_unique
   unit_in: mg/mm3
   trait_name: wood_density
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: 'Austraits notes: filtered out values that are identical to those in Kooyman_2011,
     Metcalfe_2009, Ilic_2000 (from Zanne_2009) or Zanne_2009; see wood_density_comparison.csv
@@ -206,8 +221,11 @@ traits:
 - var_in: sla.mean.site
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: site_mean
-  replicates: individual.n
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: individual.n  
+  method_number: method_number
   methods: SLA for most species were measured by Hoa Ran Lai from leaves collected
     by Michael Sams. Mean surface leaf area based on measurements of LLA and LM by
     Hao Ran Lai; samples vary per species. For species we could not obtain leaves
@@ -215,53 +233,58 @@ traits:
 - var_in: sla.mean.multisite
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: multisite_mean
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
   replicates: individual.n
+  method_number: method_number
   methods: SLA for most species were measured by Hoa Ran Lai from leaves collected
     by Michael Sams. Mean surface leaf area based on measurements of LLA and LM by
     Hao Ran Lai; samples vary per species. These samples were colelcted at multiple
     sites, but they are assigned to the lat/lon of a single site; the data.csv file
     records the names of the multiple sites.
-- var_in: SLA_no_site
-  unit_in: mm2/mg
-  trait_name: specific_leaf_area
-  value_type: literature_source
-  replicates: .na
-  methods: SLA values sourced from the literature
 - var_in: seed_length_min_unique
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: 'sourced from other studies; Austraits notes: filtered out values that
+  methods: &seed_length_method 'sourced from other studies; Austraits notes: filtered out values that
     are identical to those in Cooper_2013 or Kooyman_2011; see seed_length_max_comparison.csv
     in the raw data folder for the pre-filter comparison.'
 - var_in: seed_length_max_unique
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: 'sourced from other studies; Austraits notes: filtered out values that
-    are identical to those in Cooper_2013 or Kooyman_2011; see seed_length_max_comparison.csv
-    in the raw data folder for the pre-filter comparison.'
+  methods: *seed_length_method
 - var_in: fruit size(min).mm2
   unit_in: mm2
   trait_name: .na
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: fruit length x width from Cooper & Cooper; not included in AusTraits because
     we have Cooper & Cooper
 - var_in: fruit size(max).mm2
   unit_in: mm2
   trait_name: .na
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: fruit length x width from Cooper & Cooper; not included in AusTraits because
     we have Cooper & Cooper
 - var_in: Fruit_Type_2
   unit_in: .na
   trait_name: fruit_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Details of trait categories used to calculate diversity for fruit type
     and dispersal mode. Species level information on fruit type and dispersal modes
@@ -270,7 +293,9 @@ traits:
 - var_in: fruit_fleshiness
   unit_in: .na
   trait_name: fruit_fleshiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Details of trait categories used to calculate diversity for fruit type
     and dispersal mode. Species level information on fruit type and dispersal modes
@@ -279,7 +304,9 @@ traits:
 - var_in: fruit_dehiscence
   unit_in: .na
   trait_name: fruit_dehiscence
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Details of trait categories used to calculate diversity for fruit type
     and dispersal mode. Species level information on fruit type and dispersal modes
@@ -288,7 +315,9 @@ traits:
 - var_in: dispersal_appendage
   unit_in: .na
   trait_name: dispersal_appendage
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Details of trait categories used to calculate diversity for fruit type
     and dispersal mode. Species level information on fruit type and dispersal modes
@@ -297,7 +326,9 @@ traits:
 - var_in: dispersalmode
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Details of trait categories used to calculate diversity for fruit type
     and dispersal mode. Species level information on fruit type and dispersal modes
@@ -306,7 +337,9 @@ traits:
 - var_in: dispersal2
   unit_in: .na
   trait_name: dispersers
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: 'Details of trait categories used to calculate diversity for fruit type
     and dispersal mode. Species level information on fruit type and dispersal modes

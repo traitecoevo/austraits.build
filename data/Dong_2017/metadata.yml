@@ -39,11 +39,19 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% group_by(Genus_species) %>% mutate_at(vars(Nfixer), replace_duplicates_with_NA)
-    %>% ungroup()
+  custom_R_code: '
+    data %>% 
+      group_by(Genus_species) %>% 
+        mutate_at(vars(Nfixer), replace_duplicates_with_NA)
+      %>% ungroup() %>%
+      group_by(Genus_species, site) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup()
+  '
   collection_date: 2011/2012
   taxon_name: Genus_species
   site_name: site
+  observation_number: observation_number
   description: Using LMA, leaf Delta13C, and leaf N measurements on complete species
     assemblages sampled at sites on a north-south transect from tropical to temperate
     Australia, we tested the prediction that Rubisco capacity should be directly proportional
@@ -366,7 +374,9 @@ traits:
 - var_in: dry.mg
   unit_in: mg
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Mature outer-canopy leaves of each species were sampled during the growing
     season using the AusPlots methodology (White et al., 2012). (Note that in denser
@@ -378,7 +388,9 @@ traits:
 - var_in: leafarea(m2)
   unit_in: m2
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Mature outer-canopy leaves of each species were sampled during the growing
     season using the AusPlots methodology (White et al., 2012). (Note that in denser
@@ -390,8 +402,10 @@ traits:
 - var_in: d13c
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5-6
   methods: Mature outer-canopy leaves of each species were sampled during the growing
     season using the AusPlots methodology (White et al., 2012). (Note that in denser
     vegetation many species sampled are in the understorey, so their "outcanopy" leaves
@@ -404,8 +418,10 @@ traits:
 - var_in: C(%)
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5-6
   methods: Mature outer-canopy leaves of each species were sampled during the growing
     season using the AusPlots methodology (White et al., 2012). (Note that in denser
     vegetation many species sampled are in the understorey, so their "outcanopy" leaves
@@ -416,8 +432,10 @@ traits:
 - var_in: d15N
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5-6
   methods: Mature outer-canopy leaves of each species were sampled during the growing
     season using the AusPlots methodology (White et al., 2012). (Note that in denser
     vegetation many species sampled are in the understorey, so their "outcanopy" leaves
@@ -430,8 +448,10 @@ traits:
 - var_in: N(%)
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5-6
   methods: Mature outer-canopy leaves of each species were sampled during the growing
     season using the AusPlots methodology (White et al., 2012). (Note that in denser
     vegetation many species sampled are in the understorey, so their "outcanopy" leaves
@@ -442,8 +462,10 @@ traits:
 - var_in: SLA
   unit_in: m2/g
   trait_name: specific_leaf_area
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5-6
   methods: Mature outer-canopy leaves of each species were sampled during the growing
     season using the AusPlots methodology (White et al., 2012). (Note that in denser
     vegetation many species sampled are in the understorey, so their "outcanopy" leaves
@@ -453,8 +475,10 @@ traits:
 - var_in: Narea_g_m2
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5-6
   methods: Mature outer-canopy leaves of each species were sampled during the growing
     season using the AusPlots methodology (White et al., 2012). (Note that in denser
     vegetation many species sampled are in the understorey, so their "outcanopy" leaves
@@ -467,8 +491,10 @@ traits:
 - var_in: ci_ca
   unit_in: umolCO2 internal/umolCO2 ambient
   trait_name: ci_over_ca
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5-6
   methods: ci/ca was determined from the delta13C values using the following equation,
     ci/ca = (a + delta13C)/(b-a) where a = 4.4 per mille and b = 27 per mille (e.g.
     Cernusak et al. 2013). The value is a bulked value based on collections from 5-6
@@ -476,7 +502,9 @@ traits:
 - var_in: Nfixer
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation on each species at each field site
 substitutions:

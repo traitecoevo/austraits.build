@@ -103,12 +103,32 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      mutate(
+        site_name_complete = paste(site_name_complete, `soil type`, sep = "_"),
+        site_name_complete = gsub("NA_NA","unknown site", site_name_complete),
+        site_name_complete = gsub("_NA","", site_name_complete),
+        method_number = case_when(
+          veg_stratum == "emergent stratum" ~ 1,
+          veg_stratum == "upper stratum" ~ 2,
+          veg_stratum == "mid-stratum" ~ 3,
+          veg_stratum == "lower stratum" ~ 4,
+          veg_stratum == "ground stratum" ~ 5
+        ),
+        entity_type = ifelse(AusTraits_key == "Landsberg_1990"|AusTraits_key == "Specht_1988"|((AusTraits_key == "Specht_1990") & (Species == "Eucalyptus incrassata")|(AusTraits_key == "Schulze_1994")& (Species == "Triticum aestivum")), "individual", "population"),
+        value_type = ifelse(AusTraits_key == "Landsberg_1990"|AusTraits_key == "Specht_1988"|((AusTraits_key == "Specht_1990") & (Species == "Eucalyptus incrassata")|(AusTraits_key == "Schulze_1994")& (Species == "Triticum aestivum")), "raw", "mean"),
+        replicate_count = ifelse(AusTraits_key == "Landsberg_1990"|AusTraits_key == "Specht_1988"|((AusTraits_key == "Specht_1990") & (Species == "Eucalyptus incrassata")|(AusTraits_key == "Schulze_1994")& (Species == "Triticum aestivum")), 1, "unknown")
+      ) 
+  '
   collection_date: 1997/2002
   taxon_name: Species
   site_name: site_name_complete
+  context_name: veg_stratum
   description: compilation of specific leaf area values from the literature
   collection_type: literature
+  method_number: method_number
+  entity_type: entity_type
   sample_age_class: adult
   sampling_strategy: search of literature on Australian plant species from the 1970's,
     1980's and 1990's for specific leaf area values
@@ -251,7 +271,7 @@ sites:
     precipitation, MAP (mm): 400.0
     elevation (m): .na.real
     description: mallee
-  Schulze_1994 NA:
+  Schulze_1994 unknown site:
     longitude (deg): .na.real
     latitude (deg): .na.real
     soil type: .na.character
@@ -368,62 +388,80 @@ sites:
     precipitation, MAP (mm): .na.real
     elevation (m): .na.real
     description: .na.character
-contexts: .na
+contexts:
+  upper stratum:
+    canopy layer: upper stratum
+  lower stratum:
+    canopy layer: lower stratum
+  emergent stratum:
+    canopy layer: emergent stratum
+  mid-stratum:
+    canopy layer: mid-stratum
+  ground stratum:
+    canopy layer: ground stratum
 traits:
 - var_in: leaf_area_m2
   unit_in: m2
   trait_name: leaf_area
-  value_type: site_mean
-  replicates: unknown
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicate_count
   methods: compiled from values in Koerner_1985, Landsberg_1995, and Mooney_1978;
     see individual references for exact methods
 - var_in: dry_mass_g
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: site_mean
-  replicates: unknown
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicate_count
   methods: compiled from values in Mooney_1978; see reference for exact methods
 - var_in: LMA_g/m2
   unit_in: g/m2
   trait_name: specific_leaf_area
-  value_type: site_mean
-  replicates: unknown
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicate_count
   methods: compiled from values in Koerner_1985, Landsberg_1990, Landsberg_1995, Mooney_1978,
     Schulze_1994, Specht_1988, and Specht_1990; see individual references for exact
     methods
 - var_in: N_per_area_g/m2
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: site_mean
-  replicates: unknown
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicate_count
   methods: compiled from values in Koerner_1985, Landsberg_1995, Mooney_1978, and
     Specht_1990; see individual references for exact methods
 - var_in: N_per_dry_mass_g/g
   unit_in: g/g
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
-  replicates: unknown
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicate_count
   methods: compiled from values in Koerner_1985, Landsberg_1990, Landsberg_1995, Mooney_1978,
     Schulze_1994, Specht_1988, and Specht_1990; see individual references for exact
     methods
 - var_in: thickness_m
   unit_in: m
   trait_name: leaf_thickness
-  value_type: site_mean
-  replicates: unknown
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicate_count
   methods: compiled from values in Koerner_1985, Specht_1988, and Specht_1990; see
     individual references for exact methods
 - var_in: water_per_leaf_area_g/m2
   unit_in: g/m2
   trait_name: .na
-  value_type: site_mean
-  replicates: unknown
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicate_count
   methods: compiled from values in Landsberg_1995,; see reference for exact methods
 - var_in: liquid_content_%
   unit_in: '%'
   trait_name: leaf_water_content_per_dry_mass
-  value_type: site_mean
-  replicates: unknown
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicate_count
   methods: compiled from values in Landsberg_1990 and Landsberg_1995; see individual
     references for exact methods
 substitutions: .na

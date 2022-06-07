@@ -20,8 +20,12 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% group_by(`genus spp (ian)`) %>% mutate_at(vars(ps_path),
-    replace_duplicates_with_NA) %>% ungroup()
+  custom_R_code: '
+    data %>% 
+      group_by(`genus spp (ian)`) %>% 
+      mutate_at(vars(ps_path, stom_dis), replace_duplicates_with_NA) %>% 
+      ungroup()
+  '
   collection_date: 1998/1998
   taxon_name: genus spp (ian)
   site_name: site_IJW
@@ -164,7 +168,9 @@ traits:
 - var_in: LfSize(mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: For each individual plant sampled, five sun leaves were collected, refrigerated
     and taken back to the laboratory for analysis.  The projected surface area of
@@ -174,7 +180,9 @@ traits:
 - var_in: DryMass(mg)
   unit_in: mg
   trait_name: leaf_dry_mass
-  value_type: site_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: For each individual plant sampled, five sun leaves were collected, refrigerated
     and taken back to the laboratory for analysis.  The projected surface area of
@@ -184,7 +192,21 @@ traits:
 - var_in: SLA(mm2/mg)
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: site_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: '5'
+  methods: For each individual plant sampled, five sun leaves were collected, refrigerated
+    and taken back to the laboratory for analysis.  The projected surface area of
+    two leaves per individual was captured on a flatbed scanner and measured using
+    Delta T Scan.  Dry mass was recorded after the leaves were oven-dried at 60o C
+    for 48 hours.
+- var_in: dmc_var
+  unit_in: mg/mg
+  trait_name: leaf_dry_matter_content
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: For each individual plant sampled, five sun leaves were collected, refrigerated
     and taken back to the laboratory for analysis.  The projected surface area of
@@ -194,13 +216,17 @@ traits:
 - var_in: ps_path
   unit_in: .na.character
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: reference book or expert observation
 - var_in: LaminaT(um)
   unit_in: um
   trait_name: leaf_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: 'Transverse sections (TS) of one leaf per individual sampled were taken
     for recording detailed anatomical information.  Sections were taken from the widest
@@ -224,7 +250,9 @@ traits:
 - var_in: upPalisT(um)
   unit_in: um
   trait_name: upper_palisade_cell_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: 'Transverse sections (TS) of one leaf per individual sampled were taken
     for recording detailed anatomical information.  Sections were taken from the widest
@@ -248,7 +276,9 @@ traits:
 - var_in: SpongyT(um)
   unit_in: um
   trait_name: spongy_mesophyll_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: 'Transverse sections (TS) of one leaf per individual sampled were taken
     for recording detailed anatomical information.  Sections were taken from the widest
@@ -272,7 +302,9 @@ traits:
 - var_in: loPalisT(um)
   unit_in: um
   trait_name: lower_palisade_cell_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: 'Transverse sections (TS) of one leaf per individual sampled were taken
     for recording detailed anatomical information.  Sections were taken from the widest
@@ -296,13 +328,17 @@ traits:
 - var_in: Sclerified%
   unit_in: '%'
   trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
+  entity_type: .na
+  value_type: .na
+  basis_of_value: .na
+  replicates: .na
+  methods: .na
 - var_in: upCuticT(um)
   unit_in: um
   trait_name: upper_cuticle_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: 'Transverse sections (TS) of one leaf per individual sampled were taken
     for recording detailed anatomical information.  Sections were taken from the widest
@@ -326,7 +362,9 @@ traits:
 - var_in: loCuticT(um)
   unit_in: um
   trait_name: lower_cuticle_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: 'Transverse sections (TS) of one leaf per individual sampled were taken
     for recording detailed anatomical information.  Sections were taken from the widest
@@ -350,7 +388,9 @@ traits:
 - var_in: upEpiderm(um)
   unit_in: um
   trait_name: epidermis_thickness_upper_leaf_surface
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: 'Transverse sections (TS) of one leaf per individual sampled were taken
     for recording detailed anatomical information.  Sections were taken from the widest
@@ -374,7 +414,9 @@ traits:
 - var_in: loEpiderm(um)
   unit_in: um
   trait_name: epidermis_thickness_lower_leaf_surface
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: 'Transverse sections (TS) of one leaf per individual sampled were taken
     for recording detailed anatomical information.  Sections were taken from the widest
@@ -398,7 +440,9 @@ traits:
 - var_in: upHypo(um)
   unit_in: um
   trait_name: upper_hypodermis_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: 'Transverse sections (TS) of one leaf per individual sampled were taken
     for recording detailed anatomical information.  Sections were taken from the widest
@@ -422,7 +466,9 @@ traits:
 - var_in: loHypo(um)
   unit_in: um
   trait_name: lower_hypodermis_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: 'Transverse sections (TS) of one leaf per individual sampled were taken
     for recording detailed anatomical information.  Sections were taken from the widest
@@ -443,7 +489,24 @@ traits:
     lamina depth was calculated as the area of TS divided by the length of cross-section.  Spongy
     mesophyll was estimated by subtracting all other tissue layer depths from the
     average lamina depth.'
-substitutions: .na
+- var_in: stom_dis
+  unit_in: .na
+  trait_name: stomatal_distribution
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+substitutions:
+- trait_name: stomatal_distribution
+  find: hypostomatous
+  replace: hypostomatic
+- trait_name: stomatal_distribution
+  find: amphistomatous
+  replace: amphistomatic
+- trait_name: stomatal_distribution
+  find: epistomatous
+  replace: epistomatic
 taxonomic_updates:
 - find: Eucalyptus eugenoides
   replace: Eucalyptus eugenioides

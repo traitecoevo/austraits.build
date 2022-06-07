@@ -21,8 +21,13 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(woodiness = ifelse(`habit (s=woody, p=perennial herb,
-    a=annual herb)` == "s","woody","herbaceous")) %>% mutate(site_name = "Tasmania")
+  custom_R_code: '
+    data %>% 
+      mutate(
+        woodiness = `habit (s=woody, p=perennial herb, a=annual herb)`,
+        site_name = "Tasmania"
+      )
+  '
   collection_date: 2001/2001
   taxon_name: species_name
   site_name: site_name
@@ -49,21 +54,27 @@ traits:
 - var_in: habit (s=woody, p=perennial herb, a=annual herb)
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Species designated as woody perennial, annual monocot, perennial monocot,
     annual dicot, or perennial dicot herb.
 - var_in: woodiness
   unit_in: .na
   trait_name: woodiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Species designated as woody perennial, annual monocot, perennial monocot,
     annual dicot, or perennial dicot herb.
 - var_in: dioecious (d=dioecious; h=hermaphrodite or monoecious)
   unit_in: .na
   trait_name: sex_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Dioecious or not. The degree to which self-fertilisation is possible will
     affect a species' capacity to establish new populations through long-distance
@@ -72,13 +83,17 @@ traits:
 - var_in: fleshy fruit (1=present)
   unit_in: .na
   trait_name: fruit_fleshiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Expert opinion determining presence or absence of a fleshy fruit
 - var_in: seed length (cm)
   unit_in: cm
   trait_name: seed_length
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: This was scored by placing the species' disseminules into categories, on
     the basis of the log of the product of the longest and shortest dimensions of
@@ -94,7 +109,9 @@ traits:
 - var_in: seed width (cm)
   unit_in: cm
   trait_name: seed_width
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: This was scored by placing the species' disseminules into categories, on
     the basis of the log of the product of the longest and shortest dimensions of
@@ -110,7 +127,9 @@ traits:
 - var_in: propagule traits
   unit_in: .na
   trait_name: dispersal_appendage
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: This reflects features involved in epizoochory (transport externally on
     animals; van der Pijl 1982). The awns of grasses were not included, although they
@@ -129,6 +148,15 @@ substitutions:
 - trait_name: life_history
   find: a
   replace: annual
+- trait_name: woodiness
+  find: s
+  replace: woody
+- trait_name: woodiness
+  find: p
+  replace: herbaceous
+- trait_name: woodiness
+  find: a
+  replace: herbaceous
 - trait_name: sex_type
   find: d
   replace: dioecious

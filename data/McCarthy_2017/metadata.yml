@@ -30,17 +30,30 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code: data %>% mutate_at(c("Value"), ~na_if(.,0)) %>% mutate(individual_replicate
-    = paste0(Individual, "-", Replicate))
+  custom_R_code: '
+    data %>% 
+      mutate_at(c("Value"), ~na_if(.,0)) %>% 
+      mutate(
+        replicates = 1,
+        individual_identifier = paste(Species, site_name, Individual,sep="_")
+      ) %>%
+      group_by(Species, site_name, Trait, Individual,`trip identifier`, Unit, `latitude (deg)`,
+      `longitude (deg)`, `Coordinate uncertainty (m)`, `individual_identifier`) %>%
+      summarise(
+        Value = mean(Value),
+        replicates = sum(replicates)
+      ) %>% ungroup()     
+  '
   collection_date: 2015/2017
   taxon_name: Species
   trait_name: Trait
   value: Value
   site_name: site_name
-  observation_id: individual_replicate
+  individual_id: individual_identifier
   description: A regional-scale assessment of using metabolic scaling theory to predict
     ecosystem properties
-  collection_type: field
+  collection_type: field  
+  replicates: replicates
   sample_age_class: adult
   sampling_strategy: Australia has been classified into 89 distinct bioregions based
     on climate, substrate and biological diversity (Thackway & Cresswell, 1995); for
@@ -426,7 +439,9 @@ traits:
 - var_in: wood.density
   unit_in: mg/mm3
   trait_name: wood_density
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Stem-specific density (SSD,mgmm-3 or kg dm-3) is the oven-dry mass (at
     70C for 72 h, but see Special cases or extras in the present Section) of a section
@@ -435,8 +450,9 @@ traits:
 - var_in: SLA
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   methods: Specific leaf area (SLA) is the one-sided area of a fresh leaf, divided
     by its oven-dry mass. (Note that leaf mass per area (LMA), specific leaf mass
     (SLM) and specific leaf weight (SLW), are simply 1/SLA). (From Perez-Harguindeguy
@@ -444,15 +460,17 @@ traits:
 - var_in: seed.mass
   unit_in: g
   trait_name: seed_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   methods: Seed mass, also called seed size, is the oven-dry mass of an average seed
     of a species, expressed in mg. (From Perez-Harguindeguy et. al 2016)
 - var_in: leaf.area
   unit_in: mm2
   trait_name: leaf_area
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   methods: The area of a leaf (also called leaf area, LA) is the most common metric
     for leaf size and is defined as the one-sided or projected area of an individual
     leaf, expressed in mm2 (From Perez-Harguindeguy et. al 2016). Some leaves are

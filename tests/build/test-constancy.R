@@ -10,8 +10,8 @@ build_comparison_set <- function(root.dir, trait_definitions, unit_conversions, 
 #  Tomlinson_2019 - complete taxonomic changes
   
   f_build <- function(x, trait_definitions, unit_conversions, schema) {
-    config <-  austraits.build:::subset_config(file.path(root.dir, "data", x, "metadata.yml"), trait_definitions, unit_conversions)
-    data <-  austraits.build:::load_dataset(file.path(root.dir, "data", x, "data.csv"), config, schema)
+    config <-  subset_config(file.path(root.dir, "data", x, "metadata.yml"), trait_definitions, unit_conversions)
+    data <-  load_dataset(file.path(root.dir, "data", x, "data.csv"), config, schema)
     data
   }
   
@@ -23,7 +23,7 @@ build_comparison_set <- function(root.dir, trait_definitions, unit_conversions, 
   Tomlinson_2019 <- f_build("Tomlinson_2019", trait_definitions, unit_conversions, schema)
   Westoby_2014 <- f_build("Westoby_2014", trait_definitions, unit_conversions, schema)
   
-  austraits_raw <-  austraits.build:::combine_datasets(Baker_2019, Bloomfield_2018, Catford_2014, Duan_2015, Maslin_2012, Tomlinson_2019, Westoby_2014, NULL)
+  austraits_raw <-  austraits.build:::combine_datasets(Baker_2019, Bloomfield_2018, Catford_2014, Duan_2015, Maslin_2012, Tomlinson_2019, Westoby_2014)
   
   # take a subset to reduce size of saved output
   austraits_raw$traits <- austraits_raw$traits %>% group_by(dataset_id) %>% slice(1:2000) %>% ungroup
@@ -62,14 +62,14 @@ test_that("constancy of with version 3.0.2", {
 
   # Compare some select columns of select elements 
   v <- "traits"
-  vv <- c("dataset_id", "taxon_name", "site_name", "context_name", "observation_id", "trait_name", "value", "unit", "value_type", "replicates", "original_name")
+  vv <- c("dataset_id", "taxon_name", "site_name", "context_name", "trait_name", "value", "unit", "replicates", "original_name")
   # these traits have known changes in names or values
   not_to_check <-  c("seed_dry_mass", "seed_mass", "dispersal_syndrome", "dispersal_appendage")
   v1 <- austraits_raw_comparison[[v]][,vv] %>% 
-    dplyr::arrange(observation_id, trait_name) %>% 
+    dplyr::arrange(dataset_id, taxon_name, trait_name, value) %>% 
     filter(!trait_name %in% not_to_check)
   v2 <- austraits_raw[[v]][,vv] %>% 
-    dplyr::arrange(observation_id, trait_name) %>% 
+    dplyr::arrange(dataset_id, taxon_name, trait_name, value) %>% 
     filter(!trait_name %in% not_to_check)
   expect_equal(v2, v1,
     info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)

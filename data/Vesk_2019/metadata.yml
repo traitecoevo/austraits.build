@@ -21,13 +21,25 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site_name = "Round Hill-Nombinnie Nature Reserve")
-    %>% mutate(context = ifelse(treat == "b","clip-and-burn",NA),context = ifelse(treat
-    == "c2","control",context),context = ifelse(treat == "c","clip",context))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site_name = "Round Hill-Nombinnie Nature Reserve",
+        context = ifelse(treat == "b","clip-and-burn",NA),
+        context = ifelse(treat == "c2","control",context),
+        context = ifelse(treat == "c","clip",context),
+        method_number = ifelse(treat == "b",2,NA),
+        method_number = ifelse(treat == "c2",1,method_number),
+        method_number = ifelse(treat == "c",3,method_number),
+        population_id = site_name
+      )
+  '
   collection_date: 2000/2001
   taxon_name: SPECIES
   site_name: site_name
   context_name: context
+  population_id: population_id
+  method_number: method_number
   description: data on bud reprouting following disturbance in semi-arid NSW
   collection_type: field_experiment
   sample_age_class: adult
@@ -113,7 +125,9 @@ traits:
 - var_in: bud_depth_mm
   unit_in: mm
   trait_name: sprout_depth
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: These are sprouts that were observed on successfully resprouting individuals
     that had experienced experimental clipping and burning treatments. PA Vesk dug
@@ -132,7 +146,9 @@ traits:
 - var_in: MAXHT_cm
   unit_in: cm
   trait_name: .na
-  value_type: site_max
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: various
   methods: Not mapped into AusTraits, because these are the same measurements that
     are in Vesk_2004. But left as part of the dataset to show their relation to this
@@ -140,13 +156,17 @@ traits:
 - var_in: GFORM
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation
 - var_in: STEMCATS
   unit_in: count
   trait_name: stem_count_categorical
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 30
   methods: field observation; back-calculated species level means; providing means,
     rather than individual observations, since the stem numbers plants are, by necessity,
@@ -154,7 +174,9 @@ traits:
 - var_in: specific_leaf_area_mm2/mg
   unit_in: mm2/mg
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Not mapped into AusTraits, because these are the same measurements that
     are in Vesk_2004. But left as part of the dataset to show their relation to this

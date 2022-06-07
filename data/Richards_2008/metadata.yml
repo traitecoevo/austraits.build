@@ -227,13 +227,31 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% rename(measurement_remarks = context)
+  custom_R_code: '
+    data %>%
+      group_by(name_original, AusTraits_site_name) %>%
+        mutate(method_number = dplyr::row_number()) %>%
+      ungroup() %>%
+      mutate(
+        measurement_remarks = context,
+        method_number = ifelse(context == "reference_site", 1, method_number),
+        method_number = ifelse(stringr::str_detect(context,"adult"),2, method_number),
+        method_number = ifelse(stringr::str_detect(context,"epicormic"),3, method_number),
+        measurement_remarks = ifelse(context %in% c("roadside_adult_foliage","pasture_adult_foliage","remnant_woodland_adult_foliage"),"adult foliage", measurement_remarks),
+        measurement_remarks = ifelse(context %in% c("roadside_epicormic_foliage","pasture_epicormic_foliage","remnant_woodland_epicormic_foliage"),"epicormic foliage", measurement_remarks),
+        AusTraits_site_name = ifelse(context %in% c("roadside_adult_foliage","roadside_epicormic_foliage"),"Marsh_1995_Moormung_roadside", AusTraits_site_name),
+        AusTraits_site_name = ifelse(context %in% c("pasture_adult_foliage","pasture_epicormic_foliage"),"Marsh_1995_Moormung_pasture", AusTraits_site_name),
+        AusTraits_site_name = ifelse(context %in% c("remnant_woodland_adult_foliage","remnant_woodland_epicormic_foliage"),"Marsh_1995_Moormung_remnant_woodland", AusTraits_site_name)
+      )
+  '
   collection_date: unknown/2009
   taxon_name: name_original
+  measurement_remarks: measurement_remarks
   site_name: AusTraits_site_name
   description: Collection of trait data on Australian plants compiled by Anna Richards
     and Ian Wright from papers
   collection_type: field
+  method_number: method_number
   sample_age_class: adult
   sampling_strategy: See the individual 'additional references' for the individual
     study motivations.
@@ -732,7 +750,9 @@ traits:
 - var_in: photosynthetic pathway
   unit_in: .na.character
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: From Cromer_1975, Feller_1980, Hatch_1955, Hopmans_1993, Leigh_2003, Leunig_1991,
     Pearcy_1987, Richards_2008_2 (unpublished) and Turner_1983; See original references,
@@ -740,7 +760,9 @@ traits:
 - var_in: Nfixer
   unit_in: .na.character
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: From Cromer_1975, Feller_1980, Hatch_1955, Hopmans_1993, Leigh_2003, Leunig_1991,
     Pearcy_1987, Richards_2008_2 (unpublished), Turner_1983, and Schortemeyer_0000;
@@ -748,7 +770,9 @@ traits:
 - var_in: GF
   unit_in: .na.character
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: Cromer_1975, Feller_1980, Hatch_1955, Hopmans_1993, Leigh_2003, Leigh_2006,
     Leunig_1991, Pearcy_1987, Richards_2008_2 (unpublished) and Turner_1983; See original
@@ -756,7 +780,9 @@ traits:
 - var_in: DecEv
   unit_in: .na.character
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: Cromer_1975, Feller_1980, Hatch_1955, Hopmans_1993, Leigh_2006, Leunig_1991,
     Pearcy_1987, Richards_2008_2 (unpublished) and Turner_1983; See original references,
@@ -764,7 +790,9 @@ traits:
 - var_in: LfType
   unit_in: .na.character
   trait_name: leaf_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: Cromer_1975, Feller_1980, Hatch_1955, Hopmans_1993, Leunig_1991, Pearcy_1987,
     Richards_2008_2 (unpublished) and Turner_1983; See original references, listed
@@ -772,7 +800,9 @@ traits:
 - var_in: LfForm
   unit_in: .na.character
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: Cromer_1975, Feller_1980, Hatch_1955, Hopmans_1993, Leunig_1991, Pearcy_1987,
     Richards_2008_2 (unpublished) and Turner_1983; See original references, listed
@@ -780,7 +810,9 @@ traits:
 - var_in: SLA (cm2/g)
   unit_in: cm2/g
   trait_name: specific_leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: From Leigh_2003, Leigh_2006, Leunig_1991, Richards_2008_2 (unpublished),
     and Schortemeyer_0000; See original references, listed alphabetically under 'additional
@@ -788,21 +820,27 @@ traits:
 - var_in: LMA (g/m2)
   unit_in: g/m2
   trait_name: specific_leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: From Pearcy 1987; See original references, listed alphabetically under
     'additional references'
 - var_in: leaf longevity
   unit_in: month
   trait_name: leaf_lifespan
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: From Richards_2008_2 (unpublished); See original references, listed alphabetically
     under 'additional references'
 - var_in: n_mass_%
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: From Adams_1984, Ashton_1975, Bell_1985, Bennett_1996, Bevege_1978, Birk_1992,
     Cromer_1975, Feller_1980, Hatch_1955, Hopmans_1993, Lambert_1979, Leigh_2003,
@@ -812,7 +850,9 @@ traits:
 - var_in: n_area
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: From Leigh_2003, Leigh_2006, Leunig_1991, Pearcy_1987, and Ricards_2008_2
     (unpublished); See original references, listed alphabetically under 'additional
@@ -820,7 +860,9 @@ traits:
 - var_in: p_mass_%
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: From Adams_1984, Ashton_1975, Ashton_1976, Attiwill_1980, Bell_1985, Bennett_1996,
     Bevege_1978, Birk_1992, Cromer_1975, Feller_1980, Hatch_1955, Hopman_1993, Lambert_1979,
@@ -830,14 +872,18 @@ traits:
 - var_in: p_area
   unit_in: g/m2
   trait_name: leaf_P_per_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: From Leunig_1991; See original reference, listed alphabetically under 'additional
     references'
 - var_in: k_mass_%
   unit_in: '%'
   trait_name: leaf_K_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: From Feller_1980, Hopsman_1993, Meakin_0000 (unpublished), Moore_1967,
     and Turner_1983; See original references, listed alphabetically under 'additional
@@ -845,234 +891,310 @@ traits:
 - var_in: amass (nmol g-1 s-1)
   unit_in: nmolCO2/g/s
   trait_name: photosynthetic_rate_per_dry_mass_saturated
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: From Leigh_2006 and Schortemeyer_0000 (unpublished); See original references,
     listed alphabetically under 'additional references'
 - var_in: aarea (umolm-2s-1)
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_saturated
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: From Leigh_2006, Pearcy_1987 and Richards_2008_2 (unpublished); See original
     references, listed alphabetically under 'additional references'
 - var_in: gs (molm-2s-1)
   unit_in: mmolH2O/m2/s
   trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: From Pearcy_1987 and Richards_2008_2 (unpublished); See original references,
     listed alphabetically under 'additional references'
 - var_in: 13-C
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: From Leigh_2003 and Richards_2008_2 (unpublished); See original references,
     listed alphabetically under 'additional references'
 - var_in: height_max
   unit_in: m
   trait_name: plant_height
-  value_type: site_max
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: unknown
   methods: From Feller_1980; See original reference, listed alphabetically under 'additional
     references'
 - var_in: leaf_chlorophyll_umol_per_m2
   unit_in: umol/m2
   trait_name: chlorophyll_per_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Ca_mass_g_per_kg
   unit_in: g/kg
   trait_name: leaf_Ca_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Mg_mass_g_per_kg
   unit_in: g/kg
   trait_name: leaf_Mg_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Na_mass_g_per_kg
   unit_in: g/kg
   trait_name: leaf_Na_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: S_mass_g_per_kg
   unit_in: g/kg
   trait_name: leaf_S_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Fe_mass_ppm
   unit_in: ppm
   trait_name: leaf_Fe_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Mn_mass_ppm
   unit_in: ppm
   trait_name: leaf_Mn_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Zn_mass_ppm
   unit_in: ppm
   trait_name: leaf_Zn_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Cu_mass_ppm
   unit_in: ppm
   trait_name: leaf_Cu_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: B_mass_ppm
   unit_in: ppm
   trait_name: leaf_B_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: N_mass_wood_g_per_kg
   unit_in: g/kg
   trait_name: wood_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: P_mass_wood_g_per_kg
   unit_in: g/kg
   trait_name: wood_P_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: K_mass_wood_g_per_kg
   unit_in: g/kg
   trait_name: wood_K_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Ca_mass_wood_g_per_kg
   unit_in: g/kg
   trait_name: wood_Ca_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Mg_mass_wood_g_per_kg
   unit_in: g/kg
   trait_name: wood_Mg_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Na_mass_wood_g_per_kg
   unit_in: g/kg
   trait_name: wood_Na_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: N_mass_bark_g_per_kg
   unit_in: g/kg
   trait_name: bark_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: P_mass_bark_g_per_kg
   unit_in: g/kg
   trait_name: bark_P_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: K_mass_bark_g_per_kg
   unit_in: g/kg
   trait_name: bark_K_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Ca_mass_bark_g_per_kg
   unit_in: g/kg
   trait_name: bark_Ca_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Mg_mass_bark_g_per_kg
   unit_in: g/kg
   trait_name: bark_Mg_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Na_mass_bark_g_per_kg
   unit_in: g/kg
   trait_name: bark_Na_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: N_mass_senesced_leaves_%
   unit_in: '%'
   trait_name: senesced_leaf_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: P_mass_senesced_leaves_%
   unit_in: '%'
   trait_name: senesced_leaf_P_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: K_mass_senesced_leaves_%
   unit_in: '%'
   trait_name: senesced_leaf_K_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Ca_mass_senesced_leaves_%
   unit_in: '%'
   trait_name: senesced_leaf_Ca_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Mg_mass_senesced_leaves_%
   unit_in: '%'
   trait_name: senesced_leaf_Mg_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: N_mass_dead_wood_g_per_kg
   unit_in: g/kg
   trait_name: dead_wood_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: P_mass_dead_wood_g_per_kg
   unit_in: g/kg
   trait_name: dead_wood_P_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: K_mass_dead_wood_g_per_kg
   unit_in: g/kg
   trait_name: dead_wood_K_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Ca_mass_dead_wood_g_per_kg
   unit_in: g/kg
   trait_name: dead_wood_Ca_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Mg_mass_dead_wood_g_per_kg
   unit_in: g/kg
   trait_name: dead_wood_Mg_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Na_mass_dead_wood_g_per_kg
   unit_in: g/kg
   trait_name: dead_wood_Na_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 substitutions:

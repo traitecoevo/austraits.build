@@ -25,7 +25,30 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(fruit_dehiscence = NA, fruit_fleshiness = NA, fruit_type = NA, dispersal_syndrome = NA, ) %>% move_values_to_new_trait("dispersal appendage/syndrome", "fruit_type", c("drupe", "berry","fleshy syncarp"), c("drupe", "berry","syconium"), c(NA,NA,"fleshy syncarp")) %>% move_values_to_new_trait("dispersal appendage/syndrome", "fruit_fleshiness", c("fleshy syncarp", "fleshy"), c("fleshy", "fleshy"), c("fleshy syncarp", NA)) %>% move_values_to_new_trait("dispersal appendage/syndrome", "fruit_dehiscence", "fleshy syncarp", "indehiscent", NA)  %>% move_values_to_new_trait("dispersal appendage/syndrome", "dispersal_syndrome", c("unassisted", "wind","water","animal"), c("unassisted", "wind","water","animal"), c(NA,NA,NA,NA))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        remarks_for_SLA = ifelse(!(is.na(`SLA (mm2/mg)`)),
+          "data from Gallagher littoral rainforest survey (data source 15)",NA),
+        remarks_for_SLA = ifelse(!(is.na(SLA_from_TRY)),
+          "data downloaded from TRY (data source 57)",remarks_for_SLA),
+        SLA_merged = coalesce(as.character(`SLA (mm2/mg)`), as.character(SLA_from_TRY)),
+        fruit_dehiscence = NA, 
+        fruit_fleshiness = NA, 
+        fruit_type = NA, 
+        dispersal_syndrome = NA
+      ) %>% 
+      move_values_to_new_trait("dispersal appendage/syndrome", "fruit_type", 
+        c("drupe", "berry","fleshy syncarp"), c("drupe", "berry","syconium"), 
+        c("drupe", "berry","fleshy syncarp")) %>% 
+      move_values_to_new_trait("dispersal appendage/syndrome", "fruit_fleshiness", 
+      c("fleshy syncarp", "fleshy"), c("fleshy", "fleshy"), c("fleshy syncarp", "fleshy")) %>%
+      move_values_to_new_trait("dispersal appendage/syndrome", "fruit_dehiscence", 
+        c("fleshy syncarp"), c("indehiscent"), c("fleshy syncarp"))  %>% 
+      move_values_to_new_trait("dispersal appendage/syndrome", "dispersal_syndrome", 
+        c("unassisted", "wing","water","animal"), c("unassisted", "wind","water","animal"), 
+        c("unassisted", "wing","water","animal"))
+  '
   collection_date: 2012/2012
   taxon_name: species_name
   description: A collection of trait data on climbing plants (lianas, vines, scramblers)
@@ -52,24 +75,22 @@ dataset:
 sites: .na
 contexts: .na
 traits:
-- var_in: SLA (mm2/mg)
+- var_in: SLA_merged
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: unknown
+  entity_type: population
+  value_type: mean
+  basis_of_value: literature
   replicates: unknown
-  methods: data from Gallagher littoral rainforest survey (data source 15)
-  collection_type: field
-- var_in: SLA_from_TRY
-  unit_in: mm2/mg
-  trait_name: specific_leaf_area
-  value_type: unknown
-  replicates: unknown
-  methods: data downloaded from TRY (data source 57)
+  measurement_remarks: remarks_for_SLA
+  methods: unknown
   collection_type: field
 - var_in: seed mass (mg)
   unit_in: mg
   trait_name: seed_dry_mass
-  value_type: unknown
+  entity_type: population
+  value_type: mean
+  basis_of_value: literature
   replicates: unknown
   methods: field collections Garreth Kyle (data source 48), Janet Lake (data source
     49), and Michelle Leishman (data source 50) at Macquarie University; and from
@@ -78,14 +99,18 @@ traits:
 - var_in: leaf size (cm2)
   unit_in: cm2
   trait_name: leaf_area
-  value_type: unknown
+  entity_type: population
+  value_type: mean
+  basis_of_value: literature
   replicates: unknown
   methods: data from Gallagher littoral rainforest survey (data source 15)
   collection_type: field
 - var_in: fruit_type
   unit_in: .na
   trait_name: fruit_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Component of dispersal data, that are fruit types; We defined abiotic dispersal
     as the movement of propagules by wind or water, and biotic dispersal as the movement
@@ -95,7 +120,9 @@ traits:
 - var_in: fruit_fleshiness
   unit_in: .na
   trait_name: fruit_fleshiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Component of dispersal data, that are fruit types; We defined abiotic dispersal
     as the movement of propagules by wind or water, and biotic dispersal as the movement
@@ -105,7 +132,9 @@ traits:
 - var_in: fruit_dehiscence
   unit_in: .na
   trait_name: fruit_dehiscence
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Component of dispersal data, that are fruit types; We defined abiotic dispersal
     as the movement of propagules by wind or water, and biotic dispersal as the movement
@@ -115,7 +144,9 @@ traits:
 - var_in: dispersal appendage/syndrome
   unit_in: .na
   trait_name: dispersal_appendage
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: We defined abiotic dispersal as the movement of propagules by wind or water,
     and biotic dispersal as the movement of propagules by animals, either through
@@ -126,7 +157,9 @@ traits:
 - var_in: dispersal_syndrome
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: We defined abiotic dispersal as the movement of propagules by wind or water,
     and biotic dispersal as the movement of propagules by animals, either through
@@ -137,14 +170,18 @@ traits:
 - var_in: growth habit
   unit_in: .na
   trait_name: woodiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Plants identified as woody or herbaceous.
   collection_type: literature
 - var_in: climbing type
   unit_in: .na
   trait_name: vine_climbing_mechanism
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Plants identified by the climbing mechanism they use.
   collection_type: literature

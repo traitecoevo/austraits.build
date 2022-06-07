@@ -28,10 +28,17 @@ contributors:
   austraits_curators: Elizabeth Wenk, Caitlan Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(N_area_young_mg_per_m2 = (`N [mg/g]_young`*1000/SLA_young),
-    N_area_expanding_mg_per_m2 = (`N(mg/g)_expanding`*1000/`SLA_exp.`), N_area_old_mg_per_m2
-    = (`N [mg/g]_0ld`*1000/`SLA_old_m2/kg`)) %>% group_by("Species") %>% mutate_at(vars(`dec/ev`,`plant_growth_form`,`Type`),replace_duplicates_with_NA)
-    %>% ungroup()
+  custom_R_code: '
+    data %>% 
+      mutate(
+        N_area_young_mg_per_m2 = `N [mg/g]_young`*1000/SLA_young,
+        N_area_expanding_mg_per_m2 = `N(mg/g)_expanding`*1000/`SLA_exp.`,
+        N_area_old_mg_per_m2 = `N [mg/g]_0ld`*1000/`SLA_old_m2/kg`
+      ) %>% 
+      group_by(Species) %>% 
+        mutate_at(vars(`dec/ev`,`plant_growth_form`,`Type`),replace_duplicates_with_NA) %>%
+      ungroup()
+  '
   collection_date: 1993/1993
   taxon_name: Species
   site_name: Site
@@ -212,39 +219,53 @@ traits:
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: .na
 - var_in: Type
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: dec/ev
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: taxonomic literature
 - var_in: tree circumfrance_cm
   unit_in: cm
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: .na
 - var_in: Tree height_m
   unit_in: m
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: unknown
 - var_in: SLA_young
   unit_in: m2/kg
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on young leaves. Leaves were sun-dried in the field, and oven
+  method_number: 1
+  measurement_remarks: Measured on young leaves. 
+  methods: &leaf_method Leaves were sun-dried in the field, and oven
     dried again in the laboratory (80 deg C). Leaf area was determined by a leaf area
     meter (Licor Area meter) and specific leaf area (SLA, m2 kg-1) of leaves was calculated
     from oven dried leaf weights and projected leaf areas. It is possible that drying
@@ -252,29 +273,33 @@ traits:
 - var_in: SLA_exp.
   unit_in: m2/kg
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on expanding leaves. Leaves were sun-dried in the field, and oven
-    dried again in the laboratory (80 deg C). Leaf area was determined by a leaf area
-    meter (Licor Area meter) and specific leaf area (SLA, m2 kg-1) of leaves was calculated
-    from oven dried leaf weights and projected leaf areas. It is possible that drying
-    may underestimate leaf area by 5-10% in the deciduous species.
+  method_number: 2
+  measurement_remarks: Measured on expanding leaves. 
+  methods: *leaf_method 
 - var_in: SLA_old_m2/kg
   unit_in: m2/kg
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on old leaves. Leaves were sun-dried in the field, and oven dried
-    again in the laboratory (80 deg C). Leaf area was determined by a leaf area meter
-    (Licor Area meter) and specific leaf area (SLA, m2 kg-1) of leaves was calculated
-    from oven dried leaf weights and projected leaf areas. It is possible that drying
-    may underestimate leaf area by 5-10% in the deciduous species.
+  method_number: 3
+  measurement_remarks: Measured on old leaves. 
+  methods: *leaf_method 
 - var_in: N [mg/g]_young
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on young leaves. Nitrogen isotope ratios and nitrogen contents
+  method_number: 1
+  measurement_remarks: Measured on young leaves. 
+  methods: &nitrogen_method Nitrogen isotope ratios and nitrogen contents
     of samples were measured using a system combining an elemental analyzer (Heraeus
     CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping box
     HT for automatic cryo-purification of the combustion products, and a Finnigan
@@ -284,69 +309,63 @@ traits:
 - var_in: N(mg/g)_expanding
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on expanding leaves. Nitrogen isotope ratios and nitrogen contents
-    of samples were measured using a system combining an elemental analyzer (Heraeus
-    CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping box
-    HT for automatic cryo-purification of the combustion products, and a Finnigan
-    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 per mille
-    (Gebauer and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
-    on a leaf dry weight basis (mgN g-1).
+  method_number: 2
+  measurement_remarks: Measured on expanding leaves. 
+  methods: *nitrogen_method
 - var_in: N [mg/g]_0ld
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on old leaves. Nitrogen isotope ratios and nitrogen contents of
-    samples were measured using a system combining an elemental analyzer (Heraeus
-    CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping box
-    HT for automatic cryo-purification of the combustion products, and a Finnigan
-    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 per mille
-    (Gebauer and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
-    on a leaf dry weight basis (mgN g-1).
+  method_number: 3
+  measurement_remarks: Measured on old leaves. 
+  methods: *nitrogen_method
 - var_in: N_area_young_mg_per_m2
   unit_in: mg/m2
   trait_name: leaf_N_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on young leaves. Nitrogen isotope ratios and nitrogen contents
-    of samples were measured using a system combining an elemental analyzer (Heraeus
-    CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping box
-    HT for automatic cryo-purification of the combustion products, and a Finnigan
-    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 per mille
-    (Gebauer and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
-    on a leaf dry weight basis (mgN g-1).
+  method_number: 1
+  measurement_remarks: Measured on young leaves. 
+  methods: *nitrogen_method
 - var_in: N_area_expanding_mg_per_m2
   unit_in: mg/m2
   trait_name: leaf_N_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on expanding leaves. Nitrogen isotope ratios and nitrogen contents
-    of samples were measured using a system combining an elemental analyzer (Heraeus
-    CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping box
-    HT for automatic cryo-purification of the combustion products, and a Finnigan
-    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 per mille
-    (Gebauer and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
-    on a leaf dry weight basis (mgN g-1).
+  method_number: 2
+  measurement_remarks: Measured on expanding leaves. 
+  methods: *nitrogen_method
 - var_in: N_area_old_mg_per_m2
   unit_in: mg/m2
   trait_name: leaf_N_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on old leaves. Nitrogen isotope ratios and nitrogen contents of
-    samples were measured using a system combining an elemental analyzer (Heraeus
-    CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping box
-    HT for automatic cryo-purification of the combustion products, and a Finnigan
-    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 per mille
-    (Gebauer and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
-    on a leaf dry weight basis (mgN g-1).
+  method_number: 3
+  measurement_remarks: Measured on old leaves. 
+  methods: *nitrogen_method
 - var_in: d13C_young
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on young leaves. Carbon isotope ratios of leaf samples of 250
+  method_number: 1
+  measurement_remarks: Measured on young leaves. 
+  methods: &isotope_method Carbon isotope ratios of leaf samples of 250
     tree samples were measured by an on-line mass spectrometer (Isomass, VG; precision
     0.1 per mille ) after combustion in an elemental analyser (Carlo Erba, Milano).
     Carbon isotope ratios were expressed as carbon isotope discrimination by taking
@@ -355,62 +374,53 @@ traits:
 - var_in: d13C_expanding
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  method_number: 2
+  measurement_remarks: Measured on expanding leaves. 
   replicates: 1
-  methods: Measured on expanding leaves. Carbon isotope ratios of leaf samples of
-    250 tree samples were measured by an on-line mass spectrometer (Isomass, VG; precision
-    0.1 per mille ) after combustion in an elemental analyser (Carlo Erba, Milano).
-    Carbon isotope ratios were expressed as carbon isotope discrimination by taking
-    into account an assumed value for the isotope composition of the air (-8 per mille
-    ) relative to the PeeDee Belemnite standard (Farquhar and Richards 1984).
+  methods: *isotope_method
 - var_in: d13C_old
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on old leaves. Nitrogen isotope ratios and nitrogen contents of
-    samples were measured using a system combining an elemental analyzer (Heraeus
-    CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping box
-    HT for automatic cryo-purification of the combustion products, and a Finnigan
-    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 per mille  (Gebauer
-    and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
-    on a leaf dry weight basis (mgN g-1)
+  method_number: 3
+  measurement_remarks: Measured on old leaves. 
+  methods: *isotope_method
 - var_in: 15N_young
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on young leaves. Nitrogen isotope ratios and nitrogen contents
-    of samples were measured using a system combining an elemental analyzer (Heraeus
-    CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping box
-    HT for automatic cryo-purification of the combustion products, and a Finnigan
-    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 per mille
-    (Gebauer and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
-    on a leaf dry weight basis (mgN g-1)
+  method_number: 1
+  measurement_remarks: Measured on young leaves. 
+  methods: *isotope_method
 - var_in: 15N_expanding
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on expanding leaves. Nitrogen isotope ratios and nitrogen contents
-    of samples were measured using a system combining an elemental analyzer (Heraeus
-    CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping box
-    HT for automatic cryo-purification of the combustion products, and a Finnigan
-    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 per mille
-    (Gebauer and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
-    on a leaf dry weight basis (mgN g-1)
+  method_number: 2
+  measurement_remarks: Measured on expanding leaves. 
+  methods: *isotope_method
 - var_in: 15N_old
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
-  methods: Measured on old leaves. Nitrogen isotope ratios and nitrogen contents of
-    samples were measured using a system combining an elemental analyzer (Heraeus
-    CHN-O Rapid) for Dumas combustion of the samples, a Finnigan MAT Trapping box
-    HT for automatic cryo-purification of the combustion products, and a Finnigan
-    MAT mass spectrometer (delta D) with a dual inlet at a precision of 0.1 per mille
-    (Gebauer and Schulze 1991). Nitrogen contents were expressed as nitrogen concentrations
-    on a leaf dry weight basis (mgN g-1)
+  method_number: 3
+  measurement_remarks: Measured on old leaves. 
+  methods: *isotope_method
 substitutions:
 - trait_name: plant_growth_form
   find: T

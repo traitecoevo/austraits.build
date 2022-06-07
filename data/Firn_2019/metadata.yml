@@ -32,12 +32,21 @@ contributors:
   austraits_curators: Elizabeth Wenk, Caitlan Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(trt = if_else(trt == 'N', "nitrogen",trt)) %>% group_by(Taxon)
-    %>% mutate_at(vars(functional_group), replace_duplicates_with_NA) %>% ungroup()
+  custom_R_code: '
+    data %>% 
+      mutate(
+        trt = ifelse(trt == "N", "nitrogen",trt),
+        population_id = paste(site_name, trt, block, sep = "-")
+      ) %>% 
+      group_by(Taxon) %>% 
+        mutate_at(vars(functional_group), replace_duplicates_with_NA) %>% 
+      ungroup()
+  '
   collection_date: year
   taxon_name: Taxon
   site_name: site_name
   context_name: trt
+  population_id: population_id 
   description: In a global experimental test, we quantified how leaf traits in grasslands
     change in response to the addition of soil nutrients (that is, nitrogen, phosphorus
     and potassium) and the exclusion of vertebrate herbivores.
@@ -161,14 +170,18 @@ traits:
 - var_in: functional_group
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: categorical vegetation type - sedges, forbes, grass.
 - var_in: leaf_pct_N
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Leaf percent by mass nitrogen. Dried leaves were then ground, bulked per
     plot and per species, and analysed for leaf nutrient concentrations. The leaf
     nitrogen content was determined using a LECO TruMac, which is based on a combustion
@@ -177,31 +190,39 @@ traits:
 - var_in: leaf_pct_C
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Leaf percent by mass carbon. The leaf potassium and phosphorus concentrations
     were determined using laser ablation inductively coupled plasma mass spectrometry
     after Duodu et al. with some exceptions (see paper)
 - var_in: leaf_pct_P
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Leaf phosphorus concentration. The leaf potassium and phosphorus concentrations
     were determined using laser ablation inductively coupled plasma mass spectrometry
     after Duodu et al. with some exceptions(see paper)
 - var_in: leaf_pct_K
   unit_in: '%'
   trait_name: leaf_K_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Leaf percent by mass potassium. The leaf potassium and phosphorus concentrations
     were determined using laser ablation inductively coupled plasma mass spectrometry
     after Duodu et al. with some exceptios (see paper)
 - var_in: SLA_v2
   unit_in: mm2/g
   trait_name: specific_leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: SLA calculated by dividing leaf area/ leaf dry mass. For each species selected
     for leaf trait analysis in each plot, we randomly selected five fully developed
