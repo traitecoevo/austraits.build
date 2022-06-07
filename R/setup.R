@@ -684,11 +684,11 @@ metadata_find_taxonomic_change <- function(find, replace=NULL, studies = NULL){
 
 strip_names <- function(x) {
   x %>% 
-    str_remove_all(" subsp.") %>% str_remove_all(" aff.")  %>% 
-    str_remove_all(" var.") %>% str_remove_all(" ser.") %>% str_remove_all(" f.") %>%
-    str_remove_all(" s.l.") %>% str_remove_all(" s.s.") %>%
+    str_replace_all(" subsp. ", " ") %>% str_replace_all(" var. ", " ") %>% 
+    str_replace_all(" ser. ", " ") %>% str_replace_all(" f. ", " ") %>%
+    str_replace_all(" s.l. ", " ") %>% str_replace_all(" s.s. ", " ") %>%
     str_replace_all("[-._()]", " ") %>% 
-    stringr::str_squish() %>% tolower() 
+    str_squish() %>% tolower() 
 }
 
 #' Check taxa against list of known species
