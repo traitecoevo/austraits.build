@@ -714,12 +714,14 @@ metadata_check_taxa <- function(dataset_id,
   
   x <- remake::make(dataset_id)
   taxa <- remake::make("taxon_list") %>% 
-    dplyr::mutate(stripped_name = strip_names(cleaned_name))
+    mutate(stripped_name = strip_names(cleaned_name),
+           genus_species_infraspecific = word(stripped_name, start = 1, end = 3),
+           genus_species = word(stripped_name, start = 1, end = 2))
 
   species <- 
-    x$traits %>% dplyr::select(.data$original_name, .data$taxon_name) %>% dplyr::distinct() %>% 
-    dplyr::mutate(
-      known = .data$taxon_name %in% taxa$cleaned_name
+    x$traits %>% select(original_name, taxon_name) %>% distinct() %>% 
+    mutate(
+      known = taxon_name %in% taxa$cleaned_name
     )
 
   if(all(species$known)){
@@ -731,10 +733,11 @@ metadata_check_taxa <- function(dataset_id,
   cat(crayon::red(sum(species$known)), " names already matched; ")
   
   if(sum(!species$known) == 0 )
+    break;
   
   cat(crayon::red(sum(!species$known)), " taxa are not yet matched\n")
   
-  species <- species %>% dplyr::filter(!.data$known)
+  species <- species %>% filter(!known)
   
   # Check if existing substitution in metadata
   metadata <- metadata_read_dataset_id(dataset_id)
@@ -743,19 +746,19 @@ metadata_check_taxa <- function(dataset_id,
       metadata$taxonomic_updates %>% list_to_df() 
     
     species <- species %>% 
-        dplyr::mutate(
-          known = .data$original_name %in% metata_changes$find
+        mutate(
+          known = original_name %in% metata_changes$find
         )
     
     if(any(species$known)) {
       cat(crayon::red(sum(species$known)), " of these already have substitutions in metadata:\n")
-      tmp <- metata_changes %>% dplyr::filter(.data$find %in% (species %>% dplyr::filter(.data$known) %>% dplyr::pull(.data$original_name)))
+      tmp <- metata_changes %>% filter(find %in% (species %>% filter(known) %>% pull(original_name)))
       for(i in seq_along(tmp$find))
         cat(sprintf("\t%s -> %s (%s)\n", crayon::blue(tmp$find[i]), crayon::green(tmp$replace[i]), tmp$reason[i]))
-      species <- species %>% dplyr::filter(!.data$known)
+      species <- species %>% filter(!known)
     }
   }
-
+  
   species <- species$original_name[!species$known]
   
   if(length(species)==0) return(invisible());
@@ -764,51 +767,89 @@ metadata_check_taxa <- function(dataset_id,
   
   taxonomic_resources <- load_taxonomic_resources()
   
-  genera_accepted <-  taxonomic_resources$APC %>% dplyr::filter(.data$taxonRank %in% c('Genus'), .data$taxonomicStatus == "accepted") 
+  genera_accepted <-  taxonomic_resources$APC %>% filter(taxonRank %in% c('Genus'), taxonomicStatus == "accepted") 
+  families_accepted <-  taxonomic_resources$APC %>% filter(taxonRank %in% c('Familia'), taxonomicStatus == "accepted") 
     
   to_check <- list()
-  to_review <- tibble::tibble(dataset_id = character(), taxon_name = character())
+  to_review <- tibble(dataset_id = character(), taxon_name =  character())
 
   APC_tmp <- 
     taxonomic_resources$APC %>% 
-    dplyr::filter(.data$taxonRank %in% c('Series', 'Subspecies', 'Species', 'Forma', 'Varietas')) %>% 
-    dplyr::select(.data$canonicalName, .data$scientificName, .data$taxonomicStatus, ID = .data$taxonID) %>% 
-    dplyr::mutate(
-      stripped_canonical = strip_names(.data$canonicalName),
-      stripped_scientific = strip_names(.data$scientificName)
+    filter(taxonRank %in% c('Series', 'Subspecies', 'Species', 'Forma', 'Varietas')) %>% 
+    select(canonicalName, scientificName, taxonomicStatus, ID = taxonID) %>% 
+    mutate(
+      stripped_canonical = strip_names(canonicalName),
+      stripped_scientific = strip_names(scientificName),
+      genus_species_infraspecific = word(stripped_canonical, start = 1, end = 3),
+      Genus_species_infraspecific = stringr::str_to_sentence(genus_species_infraspecific),
+      genus_species = word(stripped_canonical, start = 1, end = 2),
+      Genus_species = stringr::str_to_sentence(genus_species)
       ) %>%
-    dplyr::distinct()
-
-  to_check[["APC list (accepted)"]] <- APC_tmp %>% dplyr::filter(.data$taxonomicStatus == "accepted")
-  to_check[["APC list (known names)"]] <- APC_tmp %>% dplyr::filter(.data$taxonomicStatus != "accepted")
+    distinct()
   
-  to_check[["APNI names"]] <- 
-    taxonomic_resources$APNI %>% dplyr::filter(.data$nameElement != "sp.") %>% 
-    dplyr::select(.data$canonicalName, .data$scientificName, ID = .data$scientificNameID) %>% 
-    dplyr::mutate(taxonomicStatus = "unplaced", 
-            stripped_canonical = strip_names(.data$canonicalName),
-            stripped_scientific = strip_names(.data$scientificName)
+  to_check[["APC (accepted)"]] <- APC_tmp %>% filter(taxonomicStatus == "accepted") 
+  to_check[["APC (known names)"]] <- APC_tmp %>% filter(taxonomicStatus != "accepted")
+  
+  to_check[["APNI"]] <- 
+    taxonomic_resources$APNI %>% filter(nameElement != "sp.") %>% 
+    select(canonicalName, scientificName, ID = scientificNameID) %>% 
+    mutate( taxonomicStatus = "unplaced for APC", 
+            stripped_canonical = strip_names(canonicalName),
+            stripped_scientific = strip_names(scientificName)
             ) %>%
-    dplyr::distinct() %>% dplyr::arrange(.data$canonicalName)
+    distinct() %>% arrange(canonicalName)
 
   for(s in species) {
-    
+      
       cleaned_name <- standardise_names(s)
       stripped_name <- strip_names(cleaned_name)
       genus <-stringr::str_split(s, " ")[[1]][1]
+      genus_species_infraspecific <- word(stripped_name, start = 1, end = 3)
+      Genus_species_infraspecific <- stringr::str_to_sentence(genus_species_infraspecific)
+      genus_species <- word(stripped_name, start = 1, end = 2)
+      Genus_species <- stringr::str_to_sentence(genus_species)
       found <- FALSE
       
-      if(grepl("sp\\.$", cleaned_name)) {
-        cat(sprintf("\tSkipping %s - not assessing anything ending in `sp.` Note, genus %s is %s in APC\n", 
+      # First, indicate genera not being matched and omit these names from further searches; this would be the place to specifically match to genera if we want to, using a list of genus rank names from APC/APNI
+      # Matching to genus rank names has the advantage that if genera change, it will automatically align with synonymous name
+      # As part of this, should also be automatically rewording naming patterns that automatically indicate a genus-level alignment - although need to include hybrids later, since many hybrids will be recognised taxa
+
+      if(grepl(" sp\\.$", cleaned_name)) {
+        cat(sprintf("\tSkipping %s - not assessing anything ending in `sp.` Note, genus %s %s in APC\n", 
                     crayon::blue(s), crayon::green(genus), 
                     ifelse(genus %in% genera_accepted$canonicalName, crayon::green("IS"), crayon::red("IS NOT"))))
-        found <- TRUE
+        found <- TRUE  #shift found to TRUE to omit these species for further searching
         }
+
+      # Reword record where pattern is `genus aff. species` to `genus sp. [original name]` to clarify this taxon is only aligned to genus
+      if(stringr::str_detect(cleaned_name, " aff")|stringr::str_detect(cleaned_name, " affinis")) {
+        cat(sprintf("\tTaxon %s with `affinis` preceding species name and will be aligned to genus %s in APC\n", 
+                    crayon::blue(s), crayon::green(genus)))
+        found <- metadata_add_taxonomic_change(dataset_id, s, paste0(genus, " sp. [", cleaned_name, "]"),
+                                                  sprintf("Rewording taxon with `affinis` preceding species to align with genus (%s)", v, Sys.Date()))  
+        }
+
+      # Reword record where pattern is `genus species\species` to `genus sp. [original name]` to clarify this taxon is only aligned to genus
+      if(stringr::str_detect(cleaned_name, "/")) {
+        cat(sprintf("\tSpecies identifical uncertain and taxon %s will be aligned to genus %s in APC\n", 
+                    crayon::blue(s), crayon::green(genus)))
+        found <- metadata_add_taxonomic_change(dataset_id, s, paste0(genus, " sp. [", cleaned_name, "]"),
+                                                  sprintf("Rewording taxon where `/` indicates uncertain species identification to align with genus (%s)", v, Sys.Date()))  
+        }
+
+      # XXXX reword family names so they match - should be after fuzzy matching; and the problem here is that these names have an "sp" at the end, so they are being ignored and never run through this part of the function; also the problem that there are a few phrase names with the pattern "aceae sp"
+      if(stringr::str_detect(word(cleaned_name, 1), "aceae$")) {
+          cat(sprintf("\t%s is a family rank name and will only be aligned to family \n", 
+                      crayon::blue(s)))
+          found <- metadata_add_taxonomic_change(dataset_id, s, word(cleaned_name,1),
+                                                  sprintf("Rewording name to be recognised as family rank by APC, %s (%s)", v, Sys.Date())) 
+        } 
       
       for(v in names(to_check))  {
         
         if(found) break;
         
+        # Second, indicate full names that match perfectly as submitted
         if(s %in% to_check[[v]]$canonicalName) {
           message(sprintf("%s found in %s", crayon::green(s), v))
           found <- TRUE
@@ -818,28 +859,47 @@ metadata_check_taxa <- function(dataset_id,
                                                 to_check[[v]]$canonicalName[match(s, to_check[[v]]$scientificName)], 
                                                 sprintf("Automatic alignment with name in %s (%s)", v, Sys.Date())
           )
-          break;
+          break; # Third, match synonymous terms (taxonomic synonyms, isonyms, etc) among canonical names (no authorities)
         } else if(stripped_name %in% to_check[[v]]$stripped_canonical) {
           found <- metadata_add_taxonomic_change(dataset_id, s,
             to_check[[v]]$canonicalName[match(stripped_name, to_check[[v]]$stripped_canonical)], 
             sprintf("Automatic alignment with name in %s (%s)", v, Sys.Date())
             )
-          break;
+          break; # Fourth, match synonymous terms (taxonomic synonyms, isonyms, etc) among scientific names (with authorities) - does this actually result in matches?
         } else if(stripped_name %in% to_check[[v]]$stripped_scientific) {
           found <- metadata_add_taxonomic_change(dataset_id, s,
                                                 to_check[[v]]$canonicalName[match(stripped_name, to_check[[v]]$stripped_scientific)], 
                                                 sprintf("Automatic alignment with name in %s (%s)", v, Sys.Date())
           )
+          break; #XXXX new section that searches for matches with `genus_species`, but not clear if we want to do an actual replacement with the two part name, because this is a one-way road; maybe it is good enough to keep details under `original name`; this section should come after fuzzy matching, but then my code stopped working
+        } else if(genus_species_infraspecific %in% to_check[[v]]$stripped_canonical) {
+          found <- metadata_add_taxonomic_change(dataset_id, s,
+                                                to_check[[v]]$Genus_species_infraspecific[match(genus_species_infraspecific, to_check[[v]]$genus_species_infraspecific)], 
+                                                sprintf("Automatic alignment when notes ignored, %s (%s)", v, Sys.Date())
+          )
           break;
+        } else if(genus_species %in% to_check[[v]]$stripped_canonical) {
+          found <- metadata_add_taxonomic_change(dataset_id, s,
+                                                to_check[[v]]$Genus_species[match(genus_species, to_check[[v]]$genus_species)], 
+                                                sprintf("Automatic alignment when infraspecific information ignored, %s (%s)", v, Sys.Date())
+          )
+          break; #XXXX align hybrid species to genus - again should be after fuzzy matching
+        } else if(stringr::str_detect(cleaned_name," x ")|stringr::str_detect(cleaned_name," X ")) {
+          cat(sprintf("\t%s is a hybrid species not in APC/APNI and has been aligned with to its genus %s \n", 
+                      crayon::blue(s), crayon::green(genus)))
+          found <- metadata_add_taxonomic_change(dataset_id, s, paste0(genus, " sp. [",cleaned_name,"]"),
+                                                  sprintf("Rewording hybrid species name to align with genus, %s (%s)", v, Sys.Date())
+          )
+          break; #Fifth, fuzzy matching based on perfect difference
         } else {
-          distance_c <- utils::adist(stripped_name, to_check[[v]]$stripped_canonical, fixed=TRUE)[1,]
+          distance_c <- adist(stripped_name, to_check[[v]]$stripped_canonical, fixed=TRUE)[1,]
           min_dist_abs_c <-  min(distance_c)
-          min_dist_per_c <-  min(distance_c) / stringr::str_length(stripped_name)
+          min_dist_per_c <-  min(distance_c) / str_length(stripped_name)
 
-          distance_s <- utils::adist(stripped_name, to_check[[v]]$stripped_scientific, fixed=TRUE)[1,]
+          distance_s <- adist(stripped_name, to_check[[v]]$stripped_scientific, fixed=TRUE)[1,]
           min_dist_abs_s <-  min(distance_s)
-          min_dist_per_s <-  min(distance_s) / stringr::str_length(stripped_name)
-     
+          min_dist_per_s <-  min(distance_s) / str_length(stripped_name)
+          
           if(
             ## Within allowable number of characters (absolute)
             min_dist_abs_c <= max_distance_abs & 
@@ -881,14 +941,14 @@ metadata_check_taxa <- function(dataset_id,
             j <- which(distance_c %in% (sort(distance_c)[1:5]))
             
             to_review <- 
-              dplyr::bind_rows(to_review, 
-                      tibble::tibble(dataset_id = dataset_id, source = v,
+              bind_rows(to_review, 
+                      tibble(dataset_id = dataset_id, source = v,
                              taxon_name = s, closest_names = to_check[[v]]$canonicalName[j], status = to_check[[v]]$taxonomicStatus[j], ID = to_check[[v]]$ID[j], 
                              genus_known = genus %in% genera_accepted$canonicalName,
                              keep = 0, reason = sprintf("Alignment with known name in %s (%s, %s)", v, author, Sys.Date()))
                       )
             
-            if(v == dplyr::last(names(to_check))){
+            if(v == last(names(to_check))){
               cat(sprintf("\tTaxa not found: %s. Note, genus %s is %s in APC\n", 
                         crayon::blue(s), crayon::green(genus), 
                     ifelse(genus %in% genera_accepted$canonicalName, crayon::green("IS"), crayon::red("IS NOT"))))
@@ -897,11 +957,11 @@ metadata_check_taxa <- function(dataset_id,
         }
     }
   }
-
+  
   if(!try_outside_guesses & nrow(to_review) > 0 ) {
     filename <- sprintf("export/taxa_review/%s.csv", dataset_id)
     dir.create(dirname(filename), FALSE, TRUE)
-    readr::write_csv(to_review, filename)
+    write_csv(to_review, filename)
     cat(sprintf("Review further suggestions for these taxa in %s\n", 
                 crayon::green(filename)))
   }
