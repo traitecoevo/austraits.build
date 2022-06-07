@@ -80,16 +80,18 @@ dataset:
         data %>% filter(trait == "Seed Sample") %>%
           select(item_ID, trait, detailed_description, value_numeric) %>%
           mutate(
-            seed_sample_replicates = detailed_description,
-            seed_sample_replicates = gsub("Thousand seed weight calculated from one sample. Loaded from Excel file. No in sample",
-            "",seed_sample_replicates),
-            seed_sample_replicates = word(seed_sample_replicates, 2),
-            seed_sample_replicates = gsub(",", "", seed_sample_replicates)
+            seed_sample_replicates = ifelse(str_detect(detailed_description, "No in sample"),
+              str_extract(detailed_description, "(\\d)+(?=, Wt)"), NA),
+            seed_sample_replicates = ifelse(str_detect(detailed_description,
+              "(\\d)+ seed"), str_extract(detailed_description, "(\\d)+(?= seed)"),
+              seed_sample_replicates),
+            seed_sample_replicates = ifelse(str_detect(detailed_description, "4x 100 seed|4x 100seed"),
+             "400", seed_sample_replicates)
           ) %>%
           select(-detailed_description) %>%
           distinct(item_ID, .keep_all = TRUE)
-      )
-    ) %>%
+        )
+      ) %>%
     mutate(
       replicates = coalesce(
         as.character(WidthSample),

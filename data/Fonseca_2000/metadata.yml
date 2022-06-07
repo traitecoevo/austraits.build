@@ -39,17 +39,29 @@ contributors:
 dataset:
   data_is_long_format: no
   custom_R_code: '
-    data %>% 
+    data %>%
       mutate_at(vars(`TRAIT Leaf Dry Mass UNITS g`), ~na_if(.,0)) %>%
       group_by(name_original) %>%
-        mutate_at(vars(`TRAIT Growth Form CATEGORICAL EP epiphyte (mistletoe) F fern G grass H herb S shrub T tree V vine`), 
+        mutate_at(vars(`TRAIT Growth Form CATEGORICAL EP epiphyte (mistletoe) F fern G grass H herb S shrub T tree V vine`),
         replace_duplicates_with_NA) %>%
       ungroup() %>%
       mutate(
-        leaflet_area = ifelse(name_original == "Acacia deanei", `TRAIT Leaf Size UNITS mm2`, NA),
-        `TRAIT Leaf Size UNITS mm2` = ifelse(name_original == "Acacia deanei", NA, `TRAIT Leaf Size UNITS mm2`),
-        leaflet_dry_mass = ifelse(name_original == "Acacia deanei", `TRAIT Leaf Dry Mass UNITS g`, NA),
-        `TRAIT Leaf Size UNITS mm2` = ifelse(name_original == "Acacia deanei", NA, `TRAIT Leaf Dry Mass UNITS g`)
+        leaflet_area = ifelse(name_original %in% c("Acacia deanei",
+          "Livistona australis", "Kennedia rubicunda", "Alpinia caerulea",
+          "Ripogonum fawcettianum", "Brachychiton acerifolius",
+          "Blechnum cartilagineum"), `TRAIT Leaf Size UNITS mm2`, NA),
+        `TRAIT Leaf Size UNITS mm2` = ifelse(name_original %in% c("Acacia deanei", 
+          "Livistona australis", "Kennedia rubicunda", "Alpinia caerulea",
+          "Ripogonum fawcettianum", "Brachychiton acerifolius",
+          "Blechnum cartilagineum"), NA, `TRAIT Leaf Size UNITS mm2`),
+        leaflet_dry_mass = ifelse(name_original %in% c("Acacia deanei", 
+          "Livistona australis", "Kennedia rubicunda", "Alpinia caerulea", 
+          "Ripogonum fawcettianum", "Brachychiton acerifolius", 
+          "Blechnum cartilagineum"), `TRAIT Leaf Dry Mass UNITS g`, NA),
+        `TRAIT Leaf Dry Mass UNITS g` = ifelse(name_original %in% c("Acacia deanei", 
+          "Livistona australis", "Kennedia rubicunda", "Alpinia caerulea", 
+          "Ripogonum fawcettianum", "Brachychiton acerifolius", 
+          "Blechnum cartilagineum"), NA, `TRAIT Leaf Dry Mass UNITS g`)
       )
   '
   collection_date: 1996/1997
