@@ -221,7 +221,9 @@ metadata_add_traits <- function(dataset_id) {
   traits <- tibble::tibble(var_in = var_in,
                             unit_in = "unknown",
                             trait_name = "unknown",
+                            entity_type = "unknown",
                             value_type = "unknown",
+                            basis_of_value = "unknown",
                             replicates = "unknown",
                             methods = "unknown") 
 
