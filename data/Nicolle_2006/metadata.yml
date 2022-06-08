@@ -53,7 +53,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: data %>% mutate(storage_organ = ifelse(regen_strategy %in% c("lignotuber","epicormic lignotuber"),"lignotuber",NA))
   collection_date: 1992/2005
   taxon_name: taxon
   description: A survey of regenerative strategies in the eucalypts, including lignotuber
@@ -115,7 +115,18 @@ traits:
     species that can resprout. Based on field observations.
 - var_in: regen_strategy
   unit_in: .na
-  trait_name: regen_strategy
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Epicormic = Vegetative regrowth occurs via epicormic shoots beneath the
+    bark on the trunk(s) and also sometimes on the branches; Lignotuber = presence/absence
+    of a lignotuber (or more strictly, the ability to produce a lignotuber), based
+    on field observations
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -145,9 +156,21 @@ substitutions:
 - trait_name: serotiny
   find: 'no'
   replace: not_serotinous
-- trait_name: regen_strategy
+- trait_name: bud_bank_location
   find: 'No'
-  replace: .na
+  replace: none
+- trait_name: bud_bank_location
+  find: lignotuber
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
+  find: fire_killed
+  replace: none
+- trait_name: bud_bank_location
+  find: epicormic lignotuber
+  replace: epicormic_buds basal_stem_buds
+- trait_name: bud_bank_location
+  find: epicormic
+  replace: epicormic_buds
 taxonomic_updates:
 - find: Eucalyptus balanopelex
   replace: Eucalyptus x balanopelex

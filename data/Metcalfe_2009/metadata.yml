@@ -24,15 +24,31 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(fruit_fleshiness = Fruit_type, fruit_dehiscence =
-    Fruit_type, dispersal_appendage = NA, dispersers = NA) %>% move_values_to_new_trait("Fruit_type", "dispersal_appendage",
-    c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)", "Dry
-    dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene,
-    etc.)", "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene,
-    etc.)"), c("fleshy_reward", "wing_or_plume", "wing_or_plume"), c("Dry dehiscent with fleshy reward  (e.g.
-    aril, funicle, elaiosome, etc.)", "Dry dehiscent or indehiscent with wing or plume
-    (e.g. cypsela, samara, plumed achene, etc.)", "Dry indehiscent with wing or plume
-    (e.g. cypsela, samara, plumed achene, etc.)")) %>% move_values_to_new_trait("Dispersal_mode","dispersers",c("Insect","Water","Wind"),c("insects","water","wind"),c("Insect","water","wind"))
+  custom_R_code: '
+    data %>%
+      mutate(
+        fruit_fleshiness = Fruit_type,
+        fruit_dehiscence = Fruit_type,
+        dispersal_appendage = NA,
+        dispersers = NA,
+        seed_storage_location = ifelse(stringr::str_detect(Maximum_propagule_longevity,"soil"),"soil",NA),
+        seed_longevity_numeric = Maximum_propagule_longevity
+      ) %>%
+      move_values_to_new_trait(
+        "Fruit_type", "dispersal_appendage",
+        c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
+        "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)", "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)"), 
+        c("fleshy_reward", "wing_or_plume", "wing_or_plume"),
+        c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
+          "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)", "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)")
+      ) %>%
+      move_values_to_new_trait(
+        "Dispersal_mode","dispersers",
+        c("Insect","Water","Wind"),
+        c("insects","water","wind"),
+        c("Insect","water","wind")
+      )
+'
   collection_date: 2005/2005
   taxon_name: species_name
   site_name: site_name
@@ -293,7 +309,7 @@ traits:
     by the author.
 - var_in: Clonality
   unit_in: .na
-  trait_name: regen_strategy
+  trait_name: clonal_spread_mechanism
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -441,7 +457,47 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
+- var_in: seed_longevity_numeric
+  unit_in: .na
+  trait_name: seed_longevity_numeric
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: seed_storage_location
+  unit_in: .na
+  trait_name: seed_storage_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
 substitutions:
+- trait_name: seed_longevity
+  find: Short persistent soil (1 to 5 years)
+  replace: short_persistent
+- trait_name: seed_longevity_numeric
+  find: Short persistent soil (1 to 5 years)
+  replace: 1--5
+- trait_name: seed_longevity
+  find: Short-lived (weeks)
+  replace: transient
+- trait_name: seed_longevity_numeric
+  find: Short-lived (weeks)
+  replace: 0--0.2
+- trait_name: seed_longevity
+  find: Long persistent in soil (more than 5 years)
+  replace: long_persistent
+- trait_name: seed_longevity_numeric
+  find: Long persistent in soil (more than 5 years)
+  replace: 5--
+- trait_name: seed_longevity
+  find: Intermediate (months to less than a year)
+  replace: intermediate_longevity
+- trait_name: seed_longevity_numeric
+  find: Intermediate (months to less than a year)
+  replace: 0.2--1
 - trait_name: life_form
   find: other
   replace: .na
@@ -523,24 +579,30 @@ substitutions:
 - trait_name: pollination_syndrome
   find: hymenoptera (bees)
   replace: bee
-- trait_name: propagule_longevity
+- trait_name: seed_longevity
   find: short-lived (weeks)
-  replace: short-lived
-- trait_name: propagule_longevity
+  replace: transient
+- trait_name: seed_longevity
   find: intermediate (months to less than a year)
-  replace: intermediate
-- trait_name: propagule_longevity
+  replace: intermediate_longevity
+- trait_name: seed_longevity
   find: short persistent soil (1 to 5 years)
-  replace: short_persistent_in_soil
-- trait_name: propagule_longevity
+  replace: persistent
+- trait_name: seed_longevity
   find: long persistent in soil (more than 5 years)
-  replace: long_persistent_in_soil
-- trait_name: regen_strategy
+  replace: long_persistent
+- trait_name: clonal_spread_mechanism
   find: clonal aboveground
-  replace: aboveground
-- trait_name: regen_strategy
+  replace: aboveground_clonal
+- trait_name: clonal_spread_mechanism
   find: clonal belowground
   replace: belowground
+- trait_name: clonal_spread_mechanism
+  find: none
+  replace: non_clonal
+- trait_name: clonal_spread_mechanism
+  find: belowground
+  replace: belowground_clonal
 - trait_name: nitrogen_fixing
   find: 'yes'
   replace: '1'

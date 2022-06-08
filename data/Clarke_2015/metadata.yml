@@ -30,8 +30,11 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>%
-      mutate(`species records` = gsub("_", " ", `species records`, fixed=TRUE),
-      woodiness ="woody") %>%
+      mutate(
+        `species records` = gsub("_", " ", `species records`, fixed=TRUE),
+        storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA),
+        woodiness ="woody"
+      ) %>%
       group_by(`species records`) %>%
         mutate_at(vars(`R+`,`S+`,`resp.type`, woodiness), replace_duplicates_with_NA) %>%
         mutate(observation_number = row_number()) %>%
@@ -100,7 +103,20 @@ contexts: .na
 traits:
 - var_in: resp.type
   unit_in: .na
-  trait_name: regen_strategy
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Expert field observations:  The position of resprouts was identified as
+    apical, basal, epicormic, or underground. Basal and underground resprouting were
+    distinguished by basal resprouting being from the base of the stem while underground
+    resprouting was from the root stock (P.J. Clarke et al., 2013). If more than one
+    resprouting type was observed for a taxon then the most common resprouting type
+    was recorded.'
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ 
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -118,12 +134,12 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: Taxawere classified as resprouters (R+; 70-100% of individuals in the population
+  methods: Taxa were classified as resprouters (R+; 70-100% of individuals in the population
     resprouted) or non-resprouters (R-; less than 30% of individuals in a population
     resprouted) (Gill and Bradstock, 1992), although a third resprouting class (variable,
-    V)where 31-69% of individuals in a population resprouted,was also noted (Clarke
-    et al., 2005). A taxonwas scored as a non-resprouter if all of its records were
-    R-, or ifmost records were R- and the remaining were variable. Taxa that experienced
+    V)where 31-69% of individuals in a population resprouted, was also noted (Clarke
+    et al., 2005). A taxon was scored as a non-resprouter if all of its records were
+    R-, or if most records were R- and the remaining were variable. Taxa that experienced
     complete canopy scorch and died were classified as R-. Conversely, a taxon was
     scored as a resprouter if all of its records were R+, most were R+ and the remaining
     were V, or if all records of population response were V. In the rare instance
@@ -131,7 +147,7 @@ traits:
     scored as a resprouter (R+).
 - var_in: S+
   unit_in: .na
-  trait_name: fire_cued_seeding
+  trait_name: post_fire_recruitment
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -144,36 +160,28 @@ traits:
     immediate postfire recruitment from seed (Pausas et al., 2004; Pausas and Keeley,
     2014). Accordingly, we classified the flora as resprouters (R+) or non-resprouters
     (R-), and seeders (S+) or non-seeders (S-).
-- var_in: woodiness
-  unit_in: .na
-  trait_name: woodiness
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: trait added by AusTraits, as study exclusively on woody taxa
 substitutions:
-- trait_name: regen_strategy
+- trait_name: bud_bank_location
   find: Killed
-  replace: fire_killed
-- trait_name: regen_strategy
+  replace: none
+- trait_name: bud_bank_location
   find: Underground
-  replace: underground
-- trait_name: regen_strategy
+  replace: underground_buds
+- trait_name: bud_bank_location
   find: Epicormic
-  replace: epicormic
-- trait_name: regen_strategy
+  replace: epicormic_buds
+- trait_name: bud_bank_location
   find: Apical
-  replace: aboveground_caudex
-- trait_name: regen_strategy
+  replace: apical_buds
+- trait_name: bud_bank_location
   find: Basal
-  replace: basal
-- trait_name: regen_strategy
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
   find: X
   replace: .na
-- trait_name: regen_strategy
+- trait_name: bud_bank_location
   find: Lignotuber
-  replace: lignotuber
+  replace: basal_buds
 - trait_name: fire_response
   find: 'no'
   replace: fire_killed
@@ -183,13 +191,13 @@ substitutions:
 - trait_name: fire_response
   find: X
   replace: .na
-- trait_name: fire_cued_seeding
+- trait_name: post_fire_recruitment
   find: 'no'
-  replace: no_fire_cued_seeding
-- trait_name: fire_cued_seeding
+  replace: no_post_fire_recruitment
+- trait_name: post_fire_recruitment
   find: 'yes'
-  replace: fire_cued_seeding
-- trait_name: fire_cued_seeding
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
   find: X
   replace: .na
 taxonomic_updates:
