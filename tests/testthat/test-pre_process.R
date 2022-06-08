@@ -111,7 +111,7 @@ testthat::test_that("test separate_range",{
   
   expect_equal(class(austraits.build:::separate_range(data,"range","min","max")), c("tbl_df","tbl","data.frame"))
   expect_equal(ncol(data), 1)
-  expect_equal(ncol(austraits.buiild:::separate_range(data,"range","min","max")), 2)
+  expect_equal(ncol(austraits.build:::separate_range(data,"range","min","max")), 2)
   expect_equal(unique(austraits.build:::separate_range(data,"range","min","max")$min), "1")
   expect_equal(unique(austraits.build:::separate_range(data,"range","min","max")$max), "10")
 })
