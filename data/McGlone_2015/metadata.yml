@@ -12,13 +12,24 @@ source:
     number: '1'
     pages: 4--5
     doi: 10.1016/j.tree.2014.09.007
-people:
-- name: Gregory Jordan
-  institution: University of Tasmania
-  role: collector, contact
+contributors:
+  data_collectors:
+  - last_name: Jordan
+    given_name: Gregory
+    ORCID: 0000-0002-6033-2766
+    affiliation: University of Tasmania, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2014
-  year_collected_end: 2014
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(woodiness = "woody") %>% 
+      distinct(`species name`, `ht (m)`, `ll (mm)`, `lw (mm)`, `leaf form`, `habit`, .keep_all = TRUE)
+  '
+  collection_date: 2014/2014
+  taxon_name: species name
+  site_name: sites
   description: compilation of plant trait data from Victoria and Tasmania reference
     books
   collection_type: literature
@@ -53,47 +64,53 @@ sites:
     longitude (deg): .na.real
     description: species native to Victoria
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species name
-    site_name: sites
-  custom_R_code: data %>% mutate(woodiness = "woody")
 traits:
 - var_in: ht (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: data sourced from reference books listed as secondary references
 - var_in: ll (mm)
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: data sourced from reference books listed as secondary references
 - var_in: lw (mm)
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: data sourced from reference books listed as secondary references
 - var_in: leaf form
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: data sourced from reference books listed as secondary references
 - var_in: habit
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: data sourced from reference books listed as secondary references
 - var_in: woodiness
   unit_in: .na
   trait_name: woodiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: all species in study designated as woody, as study specifies it sampled
     all Victorian and Tasmanian woody plant taxa
@@ -344,4 +361,3 @@ taxonomic_updates:
   reason: Automatic alignment with name in APC list (known names) (2020-06-24)
 exclude_observations: .na
 questions: .na
-

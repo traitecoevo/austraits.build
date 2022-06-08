@@ -36,80 +36,89 @@ metadata_write_dataset_id <- function(metadata, dataset_id) {
 #' 
 #' @inheritParams metadata_path_dataset_id
 #' @param path location of file where output is saved
+#' @param skip_manual allows skipping of manual selection of variables, default = FALSE
 #' 
 #' @importFrom readr read_csv
 #' @importFrom utils menu
 #' @return a yml file template for metadata
 #' @export
 metadata_create_template <- function(dataset_id, 
-                                     path = file.path("data", dataset_id, "metadata.yml")
+                                     path = file.path("data", dataset_id),
+                                     skip_manual = FALSE
                                      ) {
-
-  people <- tibble::tibble(name = "unknown", institution = "unknown", role = "unknown") 
-
-  out <- list(
-       source = list(primary=list(key=dataset_id, 
-                                  bibtype = "Article",
-                                  year = "unknown", 
-                                  author = "unknown",
-                                  title = "unknown",
-                                  journal = "unknown",
-                                  volume = "unknown",
-                                  number = "unknown",
-                                  pages = "unknown",
-                                  doi = "unknown"
-                                  )
-                     ),
-       people = people %>% df_to_list(),
-       dataset = list(year_collected_start= "unknown",
-                      year_collected_end= "unknown",
-                      description= "unknown",
-                      collection_type= "unknown",
-                      sample_age_class= "unknown",
-                      sampling_strategy= "unknown",
-                      original_file= "unknown",
-                      notes= "unknown"),
-       sites = NA,
-       contexts = NA,
-       config = NA,
-       traits = NA,
-       substitutions = NA,
-       taxonomic_updates = NA,
-       exclude_observations = NA,
-       questions = NA
-       )
-
-  # Check format of data
-  tmp <- menu(c("Long", "Wide"), title="Is the data long or wide format?")
-  data_is_long_format <- ifelse(tmp == 1, TRUE, FALSE)
-
-  data <- readr::read_csv(file.path("data", dataset_id, "data.csv"), col_types = cols())
-
-  # Setup config and select columns as appropriate
-  config <- list(data_is_long_format = data_is_long_format, 
-                 variable_match = list(),
-                 custom_R_code = NA)
-
-  v1 <- c("taxon_name")
-    v2 <- c("site_name", "context_name", "observation_id",  "date")
   
-  if(data_is_long_format) {
-    v1 <- c("taxon_name", "trait_name", "value")
-  }
+  `%notin%` <- Negate(`%in%`)
+  fields <- c("source", "contributors", "dataset")
+  exclude <- c("description", "type")
+  articles <- c("key", "bibtype", "year", "author", "title", "journal", "volume", "number", "pages", "doi")
   
-  for(v in v1) {      
-    config[["variable_match"]][[v]] <- user_select_column(v, names(data))
+  out <- load_schema()$metadata$elements
+
+  out[names(out) %notin% fields] <- NA
+  out$source <- out$source$values["primary"]
+  out$source$primary <- out$source$primary$values[articles]
+  out$source$primary[] <- "unknown"
+  out$source$primary["key"] = dataset_id
+  out$source$primary["bibtype"] = "Article"
+  out$contributors <- out$contributors$elements
+  out$contributors[c("assistants", "austraits_curators")] <- "unknown"
+  out$contributors$data_collectors[] <- "unknown"
+  out$contributors$data_collectors <- 
+    out$contributors$data_collectors[names(out$contributors$data_collectors)%notin%c(exclude,"notes")]
+  out$dataset <- out$dataset$values[]
+  out$dataset[] <- 'unknown'
+  out$dataset$custom_R_code <- NA
+  
+  if(skip_manual == FALSE){
+    
+    # Check format of data
+    tmp <- menu(c("Long", "Wide"), title="Is the data long or wide format?")
+    data_is_long_format <- ifelse(tmp == 1, TRUE, FALSE)
+    
+    data <- readr::read_csv(paste0(path, "/data.csv"), col_types = cols())
+    
+    # Setup config and select columns as appropriate
+    config <- list(data_is_long_format = data_is_long_format, 
+                   custom_R_code = NA,
+                   variable_match = list())
+    
+    v1 <- c("taxon_name")
+    v2 <- c("site_name", "context_name", "individual_id",  "collection_date")
+    
+    if(data_is_long_format) {
+      v1 <- c("taxon_name", "trait_name", "value")
+    }
+    if(!data_is_long_format)
+      out$dataset[c("trait_name", "value")] <- NULL
+    
+    for(v in v1) {      
+      config[["variable_match"]][[v]] <- user_select_column(v, names(data))
+    }
+    
+    for(v in v2) {
+      tmp <- user_select_column(v, c(names(data), NA))
+      if(!is.na(tmp)) {
+        config[["variable_match"]][[v]] <- tmp
+      }
+      if(v == "collection_date" & is.na(tmp)){
+        collection_date <- readline(prompt="Enter collection_date range separated by a '/': ")
+        config[["variable_match"]][[v]] <- collection_date
+      }
+    }
+    
+    for(v in v1) {
+      out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
+    }
+    
+    for(v in v2) {
+      out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
+    }
+    
+    out[["dataset"]][["data_is_long_format"]] <- config[["data_is_long_format"]]
+    out[["dataset"]][["custom_R_code"]] <- config[["custom_R_code"]]
   }
 
-  for(v in v2) {
-    tmp <- user_select_column(v, c(names(data), NA))
-    if(!is.na(tmp)) 
-      config[["variable_match"]][[v]] <- tmp
-  }
-
-  out[["config"]] <- config
-
-  write_metadata(out, path)
+  write_metadata(out, paste0(path, "/metadata.yml"))
 }
 
 #' Select column by user
@@ -175,7 +184,7 @@ metadata_check_custom_R_code <- function(dataset_id) {
 
   # load and clean trait data
   readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols(), guess_max = 100000) %>%
-    custom_manipulation(metadata[["config"]][["custom_R_code"]])()
+    custom_manipulation(metadata[["dataset"]][["custom_R_code"]])()
 }
 
 #' For specified `dataset_id`, populate columns for traits into metadata
@@ -196,13 +205,13 @@ metadata_add_traits <- function(dataset_id) {
 
   # load and clean trait data
   data <- readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols()) %>%
-    custom_manipulation(metadata[["config"]][["custom_R_code"]])()
+    custom_manipulation(metadata[["dataset"]][["custom_R_code"]])()
 
   # Get list of potential traits
-  if(!metadata$config$data_is_long_format) {
+  if(!metadata$dataset$data_is_long_format) {
     v <- names(data)
   } else {
-    v <- unique(data[[metadata$config$variable_match$trait_name]])
+    v <- unique(data[[metadata$dataset$variable_match$trait_name]])
   }
 
   var_in <- user_select_names(paste("Indicate all columns you wish to keep as distinct traits in ", dataset_id), v)
@@ -258,7 +267,7 @@ metadata_add_sites <- function(dataset_id, site_data) {
   keep <- user_select_names(paste("Indicate all columns you wish to keep as distinct site_properties in ", dataset_id), names(site_sub))
 
   # Save and notify
-  metadata$sites <- dplyr::select(site_data, one_of(keep)) %>%
+  metadata$sites <- dplyr::select(site_data, tidyr::one_of(keep)) %>%
             split(site_data[[site_name]]) %>% lapply(as.list)
 
   cat(sprintf("Following sites added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$sites), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
@@ -298,7 +307,7 @@ metadata_add_contexts <- function(dataset_id, context_data) {
   keep <- user_select_names(paste("Indicate all columns you wish to keep as distinct context_properties in ", dataset_id), names(context_sub))
   
   # Save and notify
-  metadata$contexts <- dplyr::select(context_data, one_of(keep)) %>%
+  metadata$contexts <- dplyr::select(context_data, tidyr::one_of(keep)) %>%
     split(context_data[[context_name]]) %>% lapply(as.list)
   
   cat(sprintf("Following contexts added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$contexts), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
@@ -360,7 +369,16 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 #' @export
 #'
 metadata_add_source_doi <- function(doi, ...) {
-
+  
+  if(!stringr::str_starts(doi, "https://doi.org") &
+     !stringr::str_starts(doi, "http://doi.org")){
+    if(stringr::str_starts(doi, "doi.org")) {
+      doi <- paste0("https://", doi)
+    } else {
+      doi <- paste0("https://doi.org/", doi)
+    }
+  }
+  
   bib <- suppressWarnings(rcrossref::cr_cn(doi))
 
   if(is.null(bib)) {
@@ -377,7 +395,7 @@ metadata_add_source_doi <- function(doi, ...) {
 #' 
 #' `metadata_add_substitution` is used to align the categorical trait values used
 #' by a contributor to the categorical values supported by AusTraits. These values
-#' are defined in the `definitions.yml` file
+#' are defined in the `traits.yml` file
 #'
 #' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param trait_name the AusTraits defined name for a particular trait
@@ -467,7 +485,7 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
   }
   
   # Check if find record already exists for that trait
-  data <-  list_to_df(metadata[[set_name]])  
+  data <- list_to_df(metadata[[set_name]])  
   if(!is.na(data) && nrow(data) > 0 && length(which(find %in% data$find)) > 0) {
     cat(sprintf("\tSubstitution already exists for %s\n", crayon::red(find)))
     return(invisible(TRUE))
@@ -944,6 +962,10 @@ austraits_rebuild_taxon_list <- function() {
   
   austraits <- remake::make("austraits_raw")
 
+  subset_accepted <- function(x) {
+    x[x!= "accepted"]
+  }
+  
   # First align to APC where possible 
   taxa <- 
     # build list of observed species names
@@ -988,7 +1010,7 @@ austraits_rebuild_taxon_list <- function() {
       alternativeTaxonomicStatusClean = ifelse(.data$taxonomicStatusClean[1] == "accepted", 
                                                .data$taxonomicStatusClean %>% 
           unique() %>% 
-          subset(.data, .data !="accepted") %>% 
+          subset_accepted() %>% 
           paste0(collapse = " | ") %>% 
           dplyr::na_if(""), NA)) %>% 
     dplyr::slice(1) %>%  
@@ -1087,27 +1109,34 @@ test_data_setup <- function(dataset_ids = NULL) {
 
 #' Update the remake.yml file with new studies
 #' 
-#' `austraits_rebuild_remake_setup` rewrites the remake.yml file to include new
+#' `setup_build_process` rewrites the remake.yml file to include new
 #' studies
+#'
+#' @param template template used to build 
+#' @param path path to folder with data
+#' @param dataset_ids dataset_ids to icnlude. By default includes all.
 #'
 #' @return Updated remake.yml file 
 #' @export
-austraits_rebuild_remake_setup <- function( ) {
+setup_build_process <- function(
+  template = readLines(system.file("support", "remake.yml.whisker", package = "austraits.build")),
+  path="data",
+  dataset_ids = dir(path)) {
 
-  root.dir <- rprojroot::find_root("austraits.build.Rproj")
-
-  pwd <- setwd(root.dir)
-  on.exit(setwd(pwd))
-  dataset_ids <- dir("data")
+  if(!file.exists(path)) {
+    stop("cannot find data directory", path)
+  }
 
   # check directories have both files
-
-  has_both_files <- sapply(dataset_ids, function(id) sprintf("data/%s/%s", id, c("data.csv", "metadata.yml") ) %>% file.exists() %>% all())
+  has_both_files <- sapply(dataset_ids, function(id) sprintf("%s/%s/%s", path, id, c("data.csv", "metadata.yml") ) %>% file.exists() %>% all())
 
   dataset_ids <- dataset_ids[has_both_files]
 
-  vals <- list(dataset_ids = whisker::iteratelist(dataset_ids, value="dataset_id"))
+  vals <- list(
+    dataset_ids = whisker::iteratelist(dataset_ids, value="dataset_id"),
+    path=path
+    )
 
-  str <- whisker::whisker.render(readLines("scripts/remake.yml.whisker"), vals)
+  str <- whisker::whisker.render(template, vals)
   writeLines(str, "remake.yml")
 }

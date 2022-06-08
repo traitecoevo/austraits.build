@@ -12,19 +12,29 @@ source:
     number: 1-2
     pages: 177--193
     doi: 10.1007/s11104-013-1725-x
-people:
-- name: Claire Farrell
-  institution: University of Melbourne
-  role: collector, contact
-- name: Christopher Szota
-  institution: University of Melbourne
-  role: collector
-- name: Stefan Arndt
-  institution: University of Melbourne
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Farrell
+    given_name: Claire
+    ORCID: 0000-0002-5822-7529
+    affiliation: University of Melbourne, Australia
+    additional_role: contact
+  - last_name: Szota
+    given_name: Christopher
+    ORCID: 0000-0002-8837-591X
+    affiliation: University of Melbourne, Australia
+  - last_name: Arndt
+    given_name: Stefan
+    ORCID: 0000-0001-7086-9375
+    affiliation: University of Melbourne, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: February 2011
-  year_collected_end: March 2011
+  data_is_long_format: no
+  custom_R_code: 'data %>% mutate_all(~ gsub("*", NA, .x, fixed=TRUE))'
+  collection_date: 2011-02/2011-03
+  taxon_name: Species
+  site_name: site
+  context_name: Treatment
   description: A study to determine whether granite outcrop species could improve
     green roof performance by evaluating water use strategies under contrasting water
     availability.
@@ -71,30 +81,27 @@ sites:
     description: temperature controlled glasshouse
 contexts:
   Watered:
-    type: treatment
-    description: plants were watered to pot capacity (2 L per pot)
+    water treatment: well-watered (plants were watered to pot capacity (2 L per pot))
+      [manipulated]
   Drought:
-    type: treatment
-    description: plant watered with 20% of the water used by well watered plants (determined
-      gravimetrically) in the 3-4 days preceding each watering event
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site
-    context_name: Treatment
-  custom_R_code: 'data %>% mutate_all(~ gsub("*", NA, .x, fixed=TRUE))'
+    water treatment: drought (plant watered with 20% of the water used by well watered
+      plants (determined gravimetrically) in the 3-4 days preceding each watering
+      event) [manipulated]
 traits:
 - var_in: life_form
   unit_in: .na
   trait_name: life_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: literature sourced and expert opinion
 - var_in: WP leaf (Mpa) predawn
   unit_in: neg_MPa
   trait_name: water_potential_predawn
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Plants received their final watering event mid-morning on day 50. Pre-dawn
     (PD) andmidday (MD) leaf water potential were determined the following day (Day
@@ -115,7 +122,9 @@ traits:
 - var_in: leaf RWC at predawn
   unit_in: '%'
   trait_name: leaf_relative_water_content_predawn
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf pre-dawn relative water contents (RWC) were also determined at the
     end of the experiment (Day 51) on five replicates of each species from WW and
@@ -129,7 +138,9 @@ traits:
 - var_in: WP leaf (Mpa) midday
   unit_in: neg_MPa
   trait_name: water_potential_midday
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Plants received their final watering event mid-morning on day 50. Pre-dawn
     (PD) andmidday (MD) leaf water potential were determined the following day (Day
@@ -150,7 +161,9 @@ traits:
 - var_in: Shoot:Root
   unit_in: mg_shoot/mg_root
   trait_name: root_shoot_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At the start of the experiment, 5 plants of each species were harvested
     to determine initial biomass (root, stem and leaf mass) and leaf area. At the
@@ -164,7 +177,9 @@ traits:
 - var_in: Stem mass fraction (SMF) g/g
   unit_in: g/g
   trait_name: stem_mass_fraction
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At the start of the experiment, 5 plants of each species were harvested
     to determine initial biomass (root, stem and leaf mass) and leaf area. At the
@@ -178,7 +193,9 @@ traits:
 - var_in: Root mass fraction (RMF) g/g
   unit_in: g/g
   trait_name: root_mass_fraction
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At the start of the experiment, 5 plants of each species were harvested
     to determine initial biomass (root, stem and leaf mass) and leaf area. At the
@@ -192,7 +209,9 @@ traits:
 - var_in: WUE
   unit_in: g H2O/g biomass
   trait_name: water_use_efficiency_integrated
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Transpiration (E) was determined by weighing pots before and after each
     watering event. Transpiration was calculated by subtracting evaporation (determined
@@ -205,7 +224,9 @@ traits:
 - var_in: RGR mg g/day
   unit_in: mg*g/day
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At the start of the experiment, 5 plants of each species were harvested
     to determine initial biomass (root, stem and leaf mass) and leaf area. At the
@@ -219,7 +240,9 @@ traits:
 - var_in: Daily transpiration g H20/leaf area cm2
   unit_in: g/day/cm2
   trait_name: whole_plant_transpiration
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Transpiration (E) was determined by weighing pots before and after each
     watering event. Transpiration was calculated by subtracting evaporation (determined
@@ -232,7 +255,9 @@ traits:
 - var_in: LMA kg/m2
   unit_in: kg/m2
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At the start of the experiment, 5 plants of each species were harvested
     to determine initial biomass (root, stem and leaf mass) and leaf area. At the
@@ -246,7 +271,9 @@ traits:
 - var_in: LAR m2/kg whole plant
   unit_in: m2/kg
   trait_name: leaf_area_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At the start of the experiment, 5 plants of each species were harvested
     to determine initial biomass (root, stem and leaf mass) and leaf area. At the
@@ -260,7 +287,9 @@ traits:
 - var_in: SLA m2/kg whole plant
   unit_in: m2/kg
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At the start of the experiment, 5 plants of each species were harvested
     to determine initial biomass (root, stem and leaf mass) and leaf area. At the
@@ -274,7 +303,9 @@ traits:
 - var_in: LMF total g/g
   unit_in: g/g
   trait_name: leaf_mass_fraction
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At the start of the experiment, 5 plants of each species were harvested
     to determine initial biomass (root, stem and leaf mass) and leaf area. At the
@@ -288,7 +319,9 @@ traits:
 - var_in: Stomatal density Upper surface
   unit_in: count/mm2
   trait_name: stomatal_density_adaxial
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Methods are a modification of Galmes et al 2007 (Plant and Soil) where
     fully exposed mature leaves were measured from each plant by taking nail polish
@@ -299,7 +332,9 @@ traits:
 - var_in: Stomatal density Lower surface
   unit_in: count/mm2
   trait_name: stomatal_density_abaxial
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Methods are a modification of Galmes et al 2007 (Plant and Soil) where
     fully exposed mature leaves were measured from each plant by taking nail polish
@@ -310,7 +345,9 @@ traits:
 - var_in: Mean Stomatal density (upper and lower surfaces)
   unit_in: count/mm2
   trait_name: stomatal_density_average
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Methods are a modification of Galmes et al 2007 (Plant and Soil) where
     fully exposed mature leaves were measured from each plant by taking nail polish
@@ -322,4 +359,3 @@ substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

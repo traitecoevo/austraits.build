@@ -11,13 +11,46 @@ source:
     volume: '10'
     pages: art664
     doi: 10.3389/fpls.2019.00664
-people:
-- name: Kristine Crous
-  institution: Hawkesbury Institute for the Environment, Western Sydney University
-  role: collector, contact
+contributors:
+  data_collectors:
+  - last_name: Crous
+    given_name: Kristine
+    ORCID: 0000-0001-9478-7593
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2013
-  year_collected_end: 2018
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        Date = Date %>% dmy(),
+        leaf_C_g_mg = `CN (g C g-1 N)` * `Nm (mg g-1)`,
+        method_number = ifelse(Age == "new", 1, NA),
+        method_number = ifelse(Age == "old", 2, method_number),
+        population_id = paste(Ring,CO2.treat, sep = "_"),
+        population_id = gsub("_NA","",population_id)
+      ) %>%
+      arrange(Date) %>%
+      group_by(Tree, population_id, method_number) %>%
+        mutate(
+          observation = ifelse(!(is.na(Tree)) & !(is.na(context)),
+                              dplyr::row_number(), NA)
+        ) %>%
+      ungroup() %>%
+      group_by(Ring, Age) %>%
+        mutate(litter_observation = ifelse(!is.na(P_litter),dplyr::row_number(), NA)) %>%
+      ungroup()
+  '
+  collection_date: Date
+  taxon_name: species_name
+  site_name: site_name
+  context_name: context
+  individual_id: Tree
+  population_id: population_id
+  method_number: method_number
+  observation_number: observation
   description: Live leaf, senesced leaf, and wood nutrient measurements to determine
     if their stoichiometry in leaves and wood was maintained or altered in a long-term
     elevated CO2 experiment in a mature Eucalyptus forest on a low P soil
@@ -50,55 +83,33 @@ sites:
       stipoides (a C3 grass) and some shrubs
 contexts:
   new _leaves_measured_on_plants_in_ Amb _CO2_treatment:
-    type: treatment
-    description: Different aged plant leaves measured on plants growth at ambient
-      and elevated CO2
-    leaf age: new (leaves aged 35-88 days; see data.csv file for exact age)
-    CO2 treatment: ambient (400 ppm; Rings 2, 3 and 6 in the EucFACE experiment)
+    CO2 treatment: 400 ppm (ambient; Rings 2, 3 and 6 in the EucFACE experiment) [manipulated]
+    leaf age: new (leaves aged 35-88 days; see data.csv file for exact age) [manipulated]
   new _leaves_measured_on_plants_in_ Elev _CO2_treatment:
-    type: treatment
-    description: Different aged plant leaves measured on plants growth at ambient
-      and elevated CO2
-    leaf age: new (leaves aged 35-88 days; see data.csv file for exact age)
-    CO2 treatment: elevated (150 ppm above ambient; Rings 1, 4 and 5 in the EucFACE
-      experiment)
+    CO2 treatment: 550 ppm (elevated; 150 ppm above ambient; Rings 1, 4 and 5 in the
+      EucFACE experiment) [manipulated]
+    leaf age: new (leaves aged 35-88 days; see data.csv file for exact age) [manipulated]
   old _leaves_measured_on_plants_in_ Amb _CO2_treatment:
-    type: treatment
-    description: Different aged plant leaves measured on plants growth at ambient
-      and elevated CO2
-    leaf age: old (leaves aged 93-404 days; see data.csv file for exact age)
-    CO2 treatment: ambient (400 ppm; Rings 2, 3 and 6 in the EucFACE experiment)
+    CO2 treatment: 400 ppm (ambient; Rings 2, 3 and 6 in the EucFACE experiment) [manipulated]
+    leaf age: old (leaves aged 93-404 days; see data.csv file for exact age) [manipulated]
   old _leaves_measured_on_plants_in_ Elev _CO2_treatment:
-    type: treatment
-    description: Different aged plant leaves measured on plants growth at ambient
-      and elevated CO2
-    leaf age: old (leaves aged 93-404 days; see data.csv file for exact age)
-    CO2 treatment: elevated (150 ppm above ambient; Rings 1, 4 and 5 in the EucFACE
-      experiment)
+    CO2 treatment: 550 ppm (elevated; 150 ppm above ambient; Rings 1, 4 and 5 in the
+      EucFACE experiment) [manipulated]
+    leaf age: old (leaves aged 93-404 days; see data.csv file for exact age) [manipulated]
   measured_on_plants_in_ Amb _CO2_treatment:
-    type: treatment
-    description: Samples collected from plants growth at ambient versus elevated CO2
-    CO2 treatment: ambient (400 ppm; Rings 2, 3 and 6 in the EucFACE experiment)
+    CO2 treatment: 400 ppm (ambient; Rings 2, 3 and 6 in the EucFACE experiment) [manipulated]
+    leaf age: .na
   measured_on_plants_in_ Elev _CO2_treatment:
-    type: treatment
-    description: Samples collected from plants growth at ambient versus elevated CO2
-    CO2 treatment: elevated (150 ppm above ambient; Rings 1, 4 and 5 in the EucFACE
-      experiment)
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-    site_name: site_name
-    context_name: context
-    observation_id: Tree
-    date: Date
-  custom_R_code: data %>% mutate(Date = Date %>% dmy()) %>% mutate(leaf_C_g_mg = `CN
-    (g C g-1 N)` * `Nm (mg g-1)`)
+    CO2 treatment: 550 ppm (elevated; 150 ppm above ambient; Rings 1, 4 and 5 in the
+      EucFACE experiment) [manipulated]
+    leaf age: .na
 traits:
 - var_in: LMA (g m-2)
   unit_in: g/m2
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Green fully expanded mature leaves were collected from three (co-)dominant
     trees in each plot using multiple 36 m tall canopy-access cranes (Jaso crane J-4010,
@@ -125,7 +136,9 @@ traits:
 - var_in: leaf_C_g_mg
   unit_in: mg/g
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Green fully expanded mature leaves were collected from three (co-)dominant
     trees in each plot using multiple 36 m tall canopy-access cranes (Jaso crane J-4010,
@@ -152,7 +165,9 @@ traits:
 - var_in: NP (g N g-1 P)
   unit_in: g/g
   trait_name: N_to_P_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Green fully expanded mature leaves were collected from three (co-)dominant
     trees in each plot using multiple 36 m tall canopy-access cranes (Jaso crane J-4010,
@@ -179,7 +194,9 @@ traits:
 - var_in: CN (g C g-1 N)
   unit_in: g/g
   trait_name: leaf_CN_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Green fully expanded mature leaves were collected from three (co-)dominant
     trees in each plot using multiple 36 m tall canopy-access cranes (Jaso crane J-4010,
@@ -206,7 +223,9 @@ traits:
 - var_in: Nm (mg g-1)
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Green fully expanded mature leaves were collected from three (co-)dominant
     trees in each plot using multiple 36 m tall canopy-access cranes (Jaso crane J-4010,
@@ -233,7 +252,9 @@ traits:
 - var_in: Pm (mg g-1)
   unit_in: mg/g
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Green fully expanded mature leaves were collected from three (co-)dominant
     trees in each plot using multiple 36 m tall canopy-access cranes (Jaso crane J-4010,
@@ -260,7 +281,9 @@ traits:
 - var_in: Na ( g m-2)
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Green fully expanded mature leaves were collected from three (co-)dominant
     trees in each plot using multiple 36 m tall canopy-access cranes (Jaso crane J-4010,
@@ -287,7 +310,9 @@ traits:
 - var_in: Pa (g m-2)
   unit_in: g/m2
   trait_name: leaf_P_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Green fully expanded mature leaves were collected from three (co-)dominant
     trees in each plot using multiple 36 m tall canopy-access cranes (Jaso crane J-4010,
@@ -314,8 +339,11 @@ traits:
 - var_in: P_litter
   unit_in: '%'
   trait_name: senesced_leaf_P_per_dry_mass
-  value_type: experiment_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 8
+  observation_number: litter_observation
   methods: Leaf litter was collected monthly in ~0.2m2 circular fine-mesh traps at
     eight random locations per ring (Duursma et al., 2016). Litter was sorted into
     leaf, twigs, bark, and other material, then oven-dried at 40 deg C and weighed.
@@ -328,8 +356,11 @@ traits:
 - var_in: N_litter
   unit_in: '%'
   trait_name: senesced_leaf_N_per_dry_mass
-  value_type: experiment_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 8
+  observation_number: litter_observation
   methods: Leaf litter was collected monthly in ~0.2m2 circular fine-mesh traps at
     eight random locations per ring (Duursma et al., 2016). Litter was sorted into
     leaf, twigs, bark, and other material, then oven-dried at 40 deg C and weighed.
@@ -342,7 +373,9 @@ traits:
 - var_in: P_wood
   unit_in: '%'
   trait_name: wood_P_per_dry_mass
-  value_type: experiment_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Wood was sampled in November 2015 at the base of the stem (about breast
     height) in three (co-) dominant trees per ring. Sapwood was defined as the outer
@@ -356,7 +389,9 @@ traits:
 - var_in: N_wood
   unit_in: '%'
   trait_name: wood_N_per_dry_mass
-  value_type: experiment_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Wood was sampled in November 2015 at the base of the stem (about breast
     height) in three (co-) dominant trees per ring. Sapwood was defined as the outer
@@ -370,7 +405,9 @@ traits:
 - var_in: C_wood
   unit_in: '%'
   trait_name: wood_C_per_dry_mass
-  value_type: experiment_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Wood was sampled in November 2015 at the base of the stem (about breast
     height) in three (co-) dominant trees per ring. Sapwood was defined as the outer

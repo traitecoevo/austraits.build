@@ -11,16 +11,21 @@ source:
     pages: 411--430
     publisher: University of Chicago Press
     doi: 10.1086/319579
-people:
-- name: Geoff Burrows
-  institution: Charles Sturt University
-  role: collector, contact
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Burrows
+    given_name: Geoff
+    ORCID: .na.character
+    affiliation: Charles Sturt University, Australia
+    additional_role: contact
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 2001
-  year_collected_end: 2001
+  data_is_long_format: no
+  custom_R_code: data %>% na_if(".na") %>% group_by("Genus_species","SITE_text") %>%
+    mutate_at(vars(leaf_type,leaf_shape), replace_duplicates_with_NA) %>% ungroup()
+  collection_date: unknown/2001
+  taxon_name: Genus_species
+  site_name: SITE_text
   description: Anatomy of photosynthetic organs of 39 xeromorphic species from subhumid
     NSW.
   collection_type: field
@@ -51,32 +56,31 @@ sites:
       in leaf during summer. Thus, only ca. 25% of the recorded species remain in
       leaf, or equivalent, for the whole year.
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Genus_species
-    site_name: SITE_text
-  custom_R_code: data %>% na_if(".na") %>% group_by("Genus_species","SITE_text") %>%
-    mutate_at(vars(leaf_type,leaf_shape), replace_duplicates_with_NA) %>% ungroup()
 traits:
 - var_in: Leaf_area_cm2
   unit_in: cm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to six leaves or the equivalent were collected from at least two
     plants of most species. Measured with a Licor leaf area meter.
 - var_in: Leaf_weight_g
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to six leaves or the equivalent were collected from at least two
     plants of most species. Oven dried and weighed.
 - var_in: LMA_g_m2
   unit_in: g/m2
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to six leaves or the equivalent were collected from at least two
     plants of most species. Leaf area measured with a Licor leaf area meter. Leaves
@@ -84,20 +88,26 @@ traits:
 - var_in: lamina_depth_um
   unit_in: um
   trait_name: leaf_thickness
-  value_type: site_mean
-  replicates: 3-6
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 2-6
   methods: Three to six leaves or the equivalent were collected from at least two
     plants of most species. Material was fixed in 50% formalin
 - var_in: leaf_type
   unit_in: .na
   trait_name: leaf_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert identification
 - var_in: leaf_shape
   unit_in: .na
   trait_name: leaf_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert identification
 substitutions:

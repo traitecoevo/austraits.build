@@ -12,35 +12,69 @@ source:
     number: '9'
     pages: e02790
     doi: 10.1002/ecy.2790
-people:
-- name: Brad Oberle
-  institution: Division of Natural Sciences, New College of Florida
-  role: collector
-- name: Amy Zanne
-  institution: George Washington University
-  role: collector
-- name: Jeff R. Powell
-  institution: Hawkesbury Institute for the Environment, Western Sydney University
-  role: contact, contributor, assistant
-- name: Jessica L. Rigg
-  institution: NSW Department of Primary Industries, Elizabeth Macarthur Agricultural
-    Institute
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Oberle
+    given_name: Brad
+    ORCID: 0000-0002-4227-3352
+    affiliation: Division of Natural Sciences, New College of Florida, USA
+  - last_name: Zanne
+    given_name: Amy
+    ORCID: 0000-0001-6379-9452
+    affiliation: Department of Biology, University of Miami, Coral Gables, Florida
+      33146, USA
+  - last_name: Powell
+    given_name: Jeff R.
+    ORCID: 0000-0003-1091-2452
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  assistants: Jessica L. Rigg
+  austraits_curators: Caitlan Baxter
 dataset:
-  year_collected_start: 2013
-  year_collected_end: 2013
+  data_is_long_format: yes
+  custom_R_code: '
+    data %>% 
+      mutate(
+        entity_type = ifelse(is.na(codeStem),"population", "individual"),
+        method_number = ifelse(size == "large",1, 2),
+        replicate_count = 1
+      ) %>%
+      select(-Family, -compositeSample) %>%
+      group_by(code, codeStem, Binomial, site, size, trait, entity_type, method_number) %>%
+      summarise(
+        `trait.val` = mean(`trait.val`), 
+        replicate_count = sum(replicate_count)
+      ) %>%
+      ungroup() %>%
+      mutate(
+        `trait.val` = ifelse(`trait`=="waterperc", 100 -`trait.val`,`trait.val`),
+        measurement_remarks = ifelse(size == "large","large size class, including stems 5-9 cm in diameter; only includes some species, because not all species produce stems in this size range", NA), 
+        measurement_remarks = ifelse(size == "small","small size class, including stems 1-2 cm in diameter", measurement_remarks)
+      )
+  '
+  collection_date: 2013/2013
+  taxon_name: Binomial
+  trait_name: trait
+  value: trait.val
+  site_name: site
+  individual_id: codeStem
+  entity_type: entity_type 
+  method_number: method_number
+  replicates: replicate_count
   description: data on stem traits as part of a study showing that across a diversity
     of wood traits, fungal interactions are more often positive than negative
+  measurement_remarks: measurement_remarks
   collection_type: field
   sample_age_class: adult
   sampling_strategy: 'Stems of 22 tree species were collected in 2013 from Agnes Banks
     Nature Reserve, Castlereagh Nature Reserve, and the Cumberland Plain SuperSite
     of the Terrestrial Ecosystem Research Network, all located in the Hawkesbury region
     of Sydney, NSW, Australia. Live stems from at least three individuals of eachspecies
-    were collected and divided into two stem-diameter classes: 1-2 cm (small size
+    were collected and divided into two stem-diameter classes, 1-2 cm (small size
     class; all species except Eucalyptus sclerophylla) and 5-9 cm (large sizeclass;
     12 species). Species that were not represented in the large size class do not
-    naturally produce stems of that diameter size (Appendix S1: Fig. S1).'
+    naturally produce stems of that diameter size (Appendix S1, Fig. S1).'
   original_file: woodTraits_LeeEtAl_2019.csv in raw folder in dataset folder
   notes: .na
 sites:
@@ -62,30 +96,13 @@ sites:
     longitude (deg): 150.7378
     description: Remnant Cumberland Plain woodland on Western Sydney University Hawkesbury
       Campus, Richmond NSW
-contexts:
-  large:
-    description: large size class, including stems 5-9 cm in diameter; only includes
-      some species, because not all species produce stems in this size range
-    type: field
-  small:
-    description: small size class, including stems 1-2 cm in diameter
-    type: field
-config:
-  data_is_long_format: yes
-  variable_match:
-    taxon_name: Binomial
-    trait_name: trait
-    value: trait.val
-    site_name: site
-    observation_id: unique
-    context_name: size
-  custom_R_code: data %>% mutate(`trait.val` = ifelse(`trait`=="waterperc", 100 -`trait.val`,`trait.val`))
+contexts: .na
 traits:
 - var_in: waterperc
   unit_in: '%'
   trait_name: stem_dry_matter_content
-  value_type: site_mean
-  replicates: 7
+  value_type: mean
+  basis_of_value: measurement
   methods: 'Sawdust was generated from three replicate stems each for both small and
     large wood samples and stored at 20 deg C until processing for DNA extraction
     and chemical analysis (see below). Shavings from each of the three stems were
@@ -99,8 +116,8 @@ traits:
 - var_in: barkthick
   unit_in: mm
   trait_name: bark_thickness
-  value_type: site_mean
-  replicates: 3
+  value_type: mean
+  basis_of_value: measurement
   methods: 'Sawdust was generated from three replicate stems each for both small and
     large wood samples and stored at 20 deg C until processing for DNA extraction
     and chemical analysis (see below). Shavings from each of the three stems were
@@ -114,8 +131,8 @@ traits:
 - var_in: density
   unit_in: g/cm3
   trait_name: wood_density
-  value_type: site_mean
-  replicates: 3
+  value_type: mean
+  basis_of_value: measurement
   methods: 'Sawdust was generated from three replicate stems each for both small and
     large wood samples and stored at 20 deg C until processing for DNA extraction
     and chemical analysis (see below). Shavings from each of the three stems were
@@ -129,8 +146,8 @@ traits:
 - var_in: C
   unit_in: '%'
   trait_name: stem_C_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  value_type: mean
+  basis_of_value: measurement
   methods: 'Sawdust was generated from three replicate stems each for both small and
     large wood samples and stored at 20 deg C until processing for DNA extraction
     and chemical analysis (see below). Shavings from each of the three stems were
@@ -143,8 +160,8 @@ traits:
 - var_in: 'N'
   unit_in: '%'
   trait_name: stem_N_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  value_type: mean
+  basis_of_value: measurement
   methods: 'Sawdust was generated from three replicate stems each for both small and
     large wood samples and stored at 20 deg C until processing for DNA extraction
     and chemical analysis (see below). Shavings from each of the three stems were
@@ -159,4 +176,3 @@ taxonomic_updates: .na
 exclude_observations: .na
 questions:
   additional_traits: author also have leaf P and K data he may contribute in the future
-

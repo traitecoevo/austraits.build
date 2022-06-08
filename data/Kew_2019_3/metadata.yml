@@ -7,13 +7,31 @@ source:
     title: Salt and water tolerance data from the Seed Information Database (SID)
       and Seed Bank Database
     url: http://data.kew.org/sid/
-people:
-- name: Udayangani Liu
-  institution: Kew Botanic Gardens
-  role: contact
+contributors:
+  data_collectors:
+  - last_name: Liu
+    given_name: Udayangani
+    ORCID: 0000-0002-6192-1319
+    affiliation: Royal Botanic Gardens, Kew, United Kingdom
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: unknown
-  year_collected_end: 2019
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        planttype = ifelse(planttype=="-",NA,planttype),
+        maxdsm = ifelse(maxdsm=="SW",80,maxdsm),
+        maxdsm = ifelse(maxdsm=="sw?",80,maxdsm),
+        salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"), planttype, NA)
+      ) %>%
+      group_by(taxa) %>%
+        mutate(references = paste0(refdesc, collapse = "; ")) %>%
+      ungroup %>%
+      distinct(taxa, references, planttype, maxdsm, salt_tolerance, phopath)
+  '
+  collection_date: unknown/2019
+  taxon_name: taxa
   description: Salt and water tolerance data on species from Kew seed databases
   collection_type: literature
   sample_age_class: adult
@@ -23,49 +41,45 @@ dataset:
     Commons licesne. Data not to be used for Commercial Purposes.
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: taxa
-  custom_R_code: data %>% mutate(planttype = ifelse(planttype=="-",NA,planttype))
-    %>% mutate(maxdsm = ifelse(maxdsm=="SW",80,maxdsm)) %>% mutate(maxdsm = ifelse(maxdsm=="sw?",80,maxdsm))
-    %>% group_by(taxa) %>% mutate_at(vars("planttype","maxdsm","phopath"),replace_duplicates_with_NA)
-    %>% ungroup() %>% mutate(salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"),
-    planttype, NA))
 traits:
 - var_in: planttype
   unit_in: .na
   trait_name: plant_type_by_resource_use
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
-    the same value has been reported in multiple sources included and so identical
-    values for a species have been filtered out
+  measurement_remarks: references
+  methods: Kew Gardens collections; for all species the same value is often reported multiple times with different references. These are collapsed into a single entry with the relevant references listed in measurement_remarks.
 - var_in: salt_tolerance
   unit_in: .na
   trait_name: salt_tolerance
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
+  measurement_remarks: references
+  methods: Kew Gardens collections;
     subset of 'planttype' values referring to salt tolerance strategies have been
-    duplicates here; the same value has been reported in multiple sources included
-    and so identical values for a species have been filtered out
+    duplicates here; for all species the same value is often reported multiple times with different references. These are collapsed into a single entry with the relevant references listed in measurement_remarks.
 - var_in: maxdsm
   unit_in: dS/m
   trait_name: soil_salinity_tolerance
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
-    the same value has been reported in multiple sources included and so identical
-    values for a species have been filtered out
+  measurement_remarks: references
+  methods: Kew Gardens collections; for all species the same value is often reported multiple times with different references. These are collapsed into a single entry with the relevant references listed in measurement_remarks.
 - var_in: phopath
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
-    the same value has been reported in multiple sources included and so identical
-    values for a species have been filtered out
+  measurement_remarks: references
+  methods: Kew Gardens collections; for all species the same value is often reported multiple times with different references. These are collapsed into a single entry with the relevant references listed in measurement_remarks.
 substitutions:
 - trait_name: soil_salinity_tolerance
   find: '?'
@@ -115,4 +129,3 @@ substitutions:
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

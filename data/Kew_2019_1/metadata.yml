@@ -6,13 +6,25 @@ source:
     year: 2019
     title: Seed Information Database (SID) and Seed Bank Database
     url: http://data.kew.org/sid/
-people:
-- name: Udayangani Liu
-  institution: Kew Botanic Gardens
-  role: contact
+contributors:
+  data_collectors:
+  - last_name: Liu
+    given_name: Udayangani
+    ORCID: 0000-0002-6192-1319
+    affiliation: Royal Botanic Gardens, Kew, United Kingdom
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: .na
-  year_collected_end: 2019
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(measurement_remarks = paste(materialweigheddesc,seedweightnotes,refdesc, sep = "; ")) %>%
+      group_by(taxa) %>%
+        distinct(thousandseedweight, .keep_all = TRUE) %>%
+      ungroup()
+  '
+  collection_date: unknown/2019
+  taxon_name: taxa
   description: all seed weights for Australian species from the Kew Botanic Gardens
     database
   collection_type: botanical_collection
@@ -20,21 +32,19 @@ dataset:
   sampling_strategy: information in data.csv file
   original_file: in raw data folder
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
-    Commons licesne. Data not to be used for Commercial Purposes. data %>% subset(refshort
-    !%in% c("(Milberg et al., 1998)"))
+    Commons licesne. Data not to be used for Commercial Purposes.
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: taxa
-  custom_R_code: .na
 traits:
 - var_in: thousandseedweight
   unit_in: mg
   trait_name: seed_dry_mass
-  value_type: expert_mean
-  replicates: .na
+  entity_type: unknown
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
+  observation_number: observation_number
+  measurement_remarks: measurement_remarks
   methods: Kew Gardens collections, with details in data.csv file under columns "materialweigheddesc"
     and "seedweightnotes"
 substitutions: .na
@@ -92,4 +102,3 @@ taxonomic_updates:
   reason: Automatic alignment with name in APNI names (2020-06-18)
 exclude_observations: .na
 questions: .na
-

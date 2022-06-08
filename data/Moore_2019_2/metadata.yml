@@ -11,19 +11,38 @@ source:
     number: '3'
     pages: 1424--1433
     doi: 10.1111/nph.15480
-people:
-- name: Nicholas Moore
-  institution: La Trobe University
-  role: collector, contact
-- name: John Morgan
-  institution: La Trobe University
-  role: lab_leader
-- name: James Camac
-  institution: La Trobe University
-  role: collector, contributor
+contributors:
+  data_collectors:
+  - last_name: Moore
+    given_name: Nicholas
+    ORCID: 0000-0002-9087-7580
+    affiliation: La Trobe University, Australia
+    additional_role: contact
+  - last_name: Morgan
+    given_name: John
+    ORCID: 0000-0003-2003-5983
+    affiliation: La Trobe University, Australia
+  - last_name: Camac
+    given_name: James
+    ORCID: 0000-0003-4785-0742
+    affiliation: Centre of Excellence for Biosecurity Risk Analysis, The University
+      of Melbourne, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: June 2014
-  year_collected_end: March 2015
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site_name = "La Trobe University (Bundoora) Glasshouse",
+        fire_response = ifelse(resprouting_proportion_individuals > 0.7,"resprouts", NA),
+        fire_response = ifelse(resprouting_proportion_individuals < 0.3,"fire_killed", fire_response), 
+        fire_response = ifelse(is.na(fire_response),"partial_resprouting",fire_response)
+      )
+  '
+  collection_date: 2014-06/2015-03
+  taxon_name: Species
+  site_name: site_name
+  context_name: Water_treatment
   description: Study investigating how grasses species differed in their post-fire
     resprouting response as a result of drought treatments.
   collection_type: glasshouse
@@ -81,27 +100,21 @@ sites:
     longitude (deg): 145.047
 contexts:
   4 Days:
-    description: Plants subjected to 4 day drought before fire treatment.
-    type: treatment
+    drought treatment duration: 4 days (Plants subjected to 4 day drought before fire
+      treatment.) [manipulated]
   8 Days:
-    description: Plants subjected to 8 day drought before fire treatment.
-    type: treatment
+    drought treatment duration: 8 days (Plants subjected to 8 day drought before fire
+      treatment.) [manipulated]
   11 Days:
-    description: Plants subjected to 11 day drought before fire treatment.
-    type: treatment
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-    context_name: Water_treatment
-  custom_R_code: data %>% mutate(site_name = "La Trobe University (Bundoora) Glasshouse") %>%
-    mutate(fire_response = ifelse(resprouting_proportion_individuals > 0.7,"resprouts",(ifelse(resprouting_proportion_individuals < 0.3,"fire_killed","partial_resprouting"))))
+    drought treatment duration: 11 days (Plants subjected to 11 day drought before
+      fire treatment.) [manipulated]
 traits:
 - var_in: Wet_weight_mg
   unit_in: mg
   trait_name: leaf_fresh_mass
-  value_type: raw_value
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1
   methods: A bulked mean; Pre-fire tiller density and LDMC were measured in the final
     week of drought treatment (35 d) before plants were burned. LDMC was measured
@@ -111,7 +124,9 @@ traits:
 - var_in: LA_mm2
   unit_in: mm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1
   methods: A bulked mean; Pre-fire tiller density and LDMC were measured in the final
     week of drought treatment (35 d) before plants were burned. LDMC was measured
@@ -121,7 +136,9 @@ traits:
 - var_in: Dry_weight_mg
   unit_in: mg
   trait_name: leaf_dry_mass
-  value_type: raw_value
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1
   methods: A bulked mean; Pre-fire tiller density and LDMC were measured in the final
     week of drought treatment (35 d) before plants were burned. LDMC was measured
@@ -131,7 +148,9 @@ traits:
 - var_in: SLA
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1
   methods: A bulked mean; Pre-fire tiller density and LDMC were measured in the final
     week of drought treatment (35 d) before plants were burned. LDMC was measured
@@ -141,7 +160,9 @@ traits:
 - var_in: LDMC
   unit_in: mg/g
   trait_name: leaf_dry_matter_content
-  value_type: raw_value
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1
   methods: A bulked mean; Pre-fire tiller density and LDMC were measured in the final
     week of drought treatment (35 d) before plants were burned. LDMC was measured
@@ -151,38 +172,50 @@ traits:
 - var_in: Photosynthetic_pathway
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Growth_habit
   unit_in: .na
   trait_name: growth_habit
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Life_cycle
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: bud_location
   unit_in: .na
   trait_name: bud_bank_location
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: resprout_prop
   unit_in: dimensionless
   trait_name: fire_response_stem_ratio
-  value_type: experiment_mean
-  replicates: 5
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 1
   methods: Tillers were counted before the fire treatment. After 10 wk, plant survival
     and the number of post-fire tillers per plant were recorded.
 - var_in: resprouting_proportion_individuals
   unit_in: dimensionless
   trait_name: fire_response_numeric
-  value_type: experiment_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1
   methods: Tillers were counted before the fire treatment. After 10 wk, plant survival
     and the number of post-fire tillers per plant were recorded. This variable is
@@ -190,7 +223,9 @@ traits:
 - var_in: fire_response
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Assigned the value 'resprouts' if the trait 'fire_response_numeric'
     is non-zero; else 'fire_killed'
@@ -234,4 +269,3 @@ taxonomic_updates:
   reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
 exclude_observations: .na
 questions: .na
-

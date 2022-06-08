@@ -61,9 +61,8 @@ convert_month_range_vec_to_binary <- function(vec) {
 #'
 #' @examples convert_01_ny(c(0,1,1,1,0))
 convert_01_ny <- function(txt) {
-  txt %>%   
-  gsub("1", "y", ., fixed=TRUE) %>%
-  gsub("0", "n", ., fixed=TRUE)
+  txt <-  gsub("1", "y", txt, fixed=TRUE)
+  gsub("0", "n", txt, fixed=TRUE)
 }
 
 #' Convert month range to 12 element binary string
@@ -215,6 +214,43 @@ replace_duplicates_with_NA <- function(x) {
   base::replace(x, duplicated(x), NA)
 }
 
+#' Merge minimum and maximum trait values into a single range column.
+#'
+#' This is an appropriate function to use for recombining range values extracted from floras and taxonomic treatments that were previously separated in AusTraits
+#'
+#' @param data name of the dataset being mutated
+#' @param min_column name of the variable with the minimum trait values in the wide datas file
+#' @param max_column name of the variable with the maximum trait values in the wide datas file
+#' @param range_column name of a variable being created that combines the minimum and maximum values
+#' @param column_value_type name of a variable being created that indicates the value type of the associated column
+#'
+#' @return data frame with a two new columns containing manipulated trait data
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data <- read_csv("data/Chinnock_2007/data.csv")
+#' data %>%
+#'  format_min_max_as_range("min leaf length (mm)", "max leaf length (mm)", "leaf_length_range", "leaf_length_value_type") %>%
+#'  format_min_max_as_range("min leaf width (mm)", "max leaf width (mm)", "leaf_width_range", "leaf_width_value_type") %>%
+#'  format_min_max_as_range("seed length min (mm)", "seed length max (mm)", "seed_length_range", "seed_length_value_type")
+#' }
+
+format_min_max_as_range <- function(data, min_column, max_column, range_column, column_value_type) {
+  
+  data[[range_column]] = ifelse((!is.na(data[[min_column]])),
+                                paste(data[[min_column]], data[[max_column]], sep = "--"),
+                                data[[max_column]])
+  data[[range_column]] = ifelse((is.na(data[[max_column]])),
+                                data[[min_column]],
+                                data[[range_column]])
+  data[[range_column]] = ifelse(data[[min_column]] == data[[max_column]],
+                                data[[max_column]],
+                                data[[range_column]])
+  data[[column_value_type]] = ifelse(str_detect(data[[range_column]],"--"),"range","mean")
+  
+  return(data)
+}
 
 #' Move select trait values from a pre-existing column (trait_name) to a new column (new trait_name)
 #'
@@ -222,15 +258,18 @@ replace_duplicates_with_NA <- function(x) {
 #' @param original_trait name of the variable in the original data file, representing a trait in a wide dataset
 #' @param new_trait name of the new variable being created, representing an additional trait in a wide dataset
 #' @param original_values values of the original trait that need to be remapped to a different (new) trait
-#' @param value_for_new_trait the appropriate value of the new trait; this may be identical to the original values, or may be a slightly different word/syntax 
-#' @param value_to_keep the appropriate value to retain for the old trait; this may be identical to the original values or may be NA 
+#' @param values_for_new_trait the appropriate value of the new trait; this may be identical to the original values, or may be a slightly different word/syntax 
+#' @param values_to_keep the appropriate value to retain for the old trait; this may be identical to the original values or may be NA 
 #'
-#' @return
+#' @return data frame with a new column containing additional trait data
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data <- read_csv(data/"Hughes_1992/data.csv")
-#' data %>% move_values_to_new_trait(data, "growth form", "root_structure", "Saprophyte", "saprophyte") -> data
+#' data %>% move_values_to_new_trait(data, "growth form", "root_structure", 
+#' "Saprophyte", "saprophyte") -> data
+#' }
 move_values_to_new_trait <- function(data, original_trait, new_trait, original_values, values_for_new_trait, values_to_keep) {
   
        for (j in 1:length(original_values)) {
@@ -245,16 +284,37 @@ move_values_to_new_trait <- function(data, original_trait, new_trait, original_v
   return(data)
 }
 
-
+#' Add values to an additional trait for datasets in long format
+#'
+#' @param data data frame, representing a specific dataset_id
+#' @param new_trait name of the new variable being created, representing an additional trait in a long dataset
+#' @param traits_column column containing the trait names
+#' @param values_column column containing the trait values
+#' @param original_values values of the original trait that need to be remapped to a different (new) trait
+#' @param new_values values to be added to the new trait
+#'
+#' @return data frame containing additional rows of data for a new trait
+#' @export
+#'
 add_values_to_additional_trait_long <- 
   function(data, new_trait, traits_column, values_column, original_values, new_values) {  
     i <- filter(data,data[[values_column]] %in% original_values)
     i[[traits_column]] <- new_trait
     i[[values_column]] <- new_values
-    data <- bind_rows(data,i)
+    data <- dplyr::bind_rows(data,i)
   }
 
-
+#' Move values in new trait in long format
+#'
+#' @param data data frame, representing a specific dataset_id
+#' @param original_trait name of the variable in the original data file, representing a trait in a long dataset
+#' @param new_trait name of the new variable being created, representing an additional trait in a long dataset
+#' @param traits_column column containing the trait names
+#' @param values_column column containing the trait values
+#' @param original_values values of the original trait that need to be remapped to a different (new) trait
+#'
+#' @return data frame containing additional trait names in the traits column 
+#' @export
 move_values_to_new_trait_long <- 
   function(data, original_trait, new_trait, traits_column, values_column, original_values) {
     
@@ -276,19 +336,24 @@ move_values_to_new_trait_long <-
 #' @param trait_name trait name for which a trait value replacement needs to be made
 #' @param find trait value submitted by the contributor for a data observation
 #' @param replace AusTraits aligned trait value
+#' 
+#' @importFrom rlang .data
 #'
-#' @return 
+#' @return modified metadata files with trait value replacements
 #' @export
 #'
-#' @examples read_csv("export/dispersal_syndrome_substitutions.csv") %>% select(-extra) %>% filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
-#' @examples substitutions_from_csv(dataframe_of_substitutions,dataset_id,trait_name,find,replace)
+#' @examples \dontrun{
+#' read_csv("export/dispersal_syndrome_substitutions.csv") %>% select(-extra) %>%
+#' filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
+#' substitutions_from_csv(dataframe_of_substitutions,dataset_id,trait_name,find,replace)
+#' }
 
 substitutions_from_csv <- function(dataframe_of_substitutions,dataset_id,trait_name,find,replace) {
 
   #split dataframe of substitutions by row  
   dataframe_of_substitutions %>%
-    dplyr::mutate(rows = row_number()) %>% 
-    dplyr::group_split(rows) -> dataframe_of_substitutions
+    dplyr::mutate(rows = dplyr::row_number()) %>% 
+    dplyr::group_split(.$rows) -> dataframe_of_substitutions
 
   set_name <- "substitutions"
 

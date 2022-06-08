@@ -6,16 +6,26 @@ source:
     title: PLantNET
     year: 2014
     url: http://plantnet.rbgsyd.nsw.gov.au/search/simple.htm
-people:
-- name: Marco Duretto
-  institution: National Herbarium of NSW
-  role: curator
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor, contact
+contributors:
+  data_collectors:
+  - last_name: Duretto
+    given_name: Marco
+    ORCID: 0000-0003-1013-4291
+    affiliation: National Herbarium of New South Wales, Australian Institute of Botanical
+      Science, Royal Botanic Gardens and Domain Trust, Sydney, Australia
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2014
-  year_collected_end: 2014
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        `flowering time` = ifelse(species_name == "Enneapogon cylindricus","mar-aug",`flowering time`),
+        `flowering time` = convert_month_range_vec_to_binary(`flowering time`),
+        ephemeral_flowering = ifelse(stringr::str_detect(`flowering time`,"ephemeral"),"ephemeral",NA)
+      )
+  '
+  collection_date: unknown/2014
+  taxon_name: species_name
   description: grass trait data from the Royal Botanic Gardens Sydney
   collection_type: botanical_collection
   sample_age_class: adult
@@ -25,23 +35,21 @@ dataset:
   notes: Request acknowledgement of "National Herbarium of NSW and PLantNET"
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-  custom_R_code: data %>% mutate(`flowering time` = convert_month_range_vec_to_binary(`flowering
-    time`))
 traits:
 - var_in: growth habit
   unit_in: .na
   trait_name: growth_habit
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections and database
 - var_in: flowering time
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections and database; NB Flowering time data came from a
     file of taxon descriptions associated with species displayed on AusGrass2 created
@@ -49,7 +57,9 @@ traits:
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections and database
 substitutions:
@@ -96,4 +106,3 @@ taxonomic_updates:
   reason: Automatic alignment with name in APC list (accepted) (2020-06-25)
 exclude_observations: .na
 questions: .na
-

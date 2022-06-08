@@ -10,16 +10,40 @@ source:
     volume: 40
     pages: 531--538
     doi: abs/10.1111/ecog.02010
-people:
-- name: Si-Chong Chen
-  institution: University of New South Wales
-  role: collector, contact, contributor
-- name: Angela Moles
-  institution: University of New South Wales
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Chen
+    given_name: Si-Chong
+    ORCID: 0000-0002-6855-2595
+    affiliation: Royal Botanic Gardens, Kew, United Kingdom
+    additional_role: contact
+  - last_name: Moles
+    given_name: Angela
+    ORCID: 0000-0003-2041-7762
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2014
-  year_collected_end: 2014
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        flowering_time = format_flowering_months(flowering_time_start, 
+                                                flowering_time_end),
+        fruit_dehiscence = `Fruit.Type.Specific`) %>%
+      move_values_to_new_trait("Fruit.Type.Specific", "fruit_dehiscence", 
+          c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle", 
+            "berry", "utricle", "syncarp", "syconium", "schizocarp"), 
+          c("dehiscent", "dehiscent", "indehiscent", "indehiscent", 
+            "indehiscent", "indehiscent", "dehiscent", "indehiscent", 
+            "indehiscent", "indehiscent", "indehiscent", NA), 
+          c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle",
+            "berry", "utricle", "syncarp", "syconium", "schizocarp")) %>% 
+      mutate(fruit_dehiscence = if_else(`Adaptive.Trait` %in% 
+        c("indehiscent", "indehiscent, woody"), "indehiscent",fruit_dehiscence))
+  '
+  collection_date: 2014/2014
+  taxon_name: species
   description: angiosperm and gymnosperm dispersal data from Si-Chong Chen PhD
   collection_type: literature
   sample_age_class: adult
@@ -41,24 +65,13 @@ dataset:
     of Australia Online.
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-  custom_R_code: data %>% mutate(`flowering_time`= format_flowering_months(flowering_time_start,
-    flowering_time_end)) %>% mutate(fruit_dehiscence = `Fruit.Type.Specific`) %>%
-    move_values_to_new_trait("Fruit.Type.Specific", "fruit_dehiscence", c("pod", "capsule",
-    "drupe", "achene", "nut", "samara", "follicle", "berry", "utricle", "syncarp",
-    "syconium", "schizocarp"), c("dehiscent", "dehiscent", "indehiscent", "indehiscent",
-    "indehiscent", "indehiscent", "dehiscent", "indehiscent", "indehiscent", "indehiscent",
-    "indehiscent", NA), c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle",
-    "berry", "utricle", "syncarp", "syconium", "schizocarp")) %>% mutate(fruit_dehiscence
-    = if_else(`Adaptive.Trait` %in% c("indehiscent", "indehiscent, woody"),"indehiscent",fruit_dehiscence))
 traits:
 - var_in: Fruit.Type.Botany
   unit_in: .na
   trait_name: fruit_fleshiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: We categorized the fruit of each species as either fleshy or non-fleshy
     according to species descriptions in the 'Flora of Australia online database'
@@ -70,7 +83,9 @@ traits:
 - var_in: Fruit.Type.Specific
   unit_in: .na
   trait_name: fruit_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: We categorized the fruit of each species as either fleshy or non-fleshy
     according to species descriptions in the 'Flora of Australia online database'
@@ -90,7 +105,9 @@ traits:
 - var_in: fruit_dehiscence
   unit_in: .na
   trait_name: fruit_dehiscence
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: We categorized the fruit of each species as either fleshy or non-fleshy
     according to species descriptions in the 'Flora of Australia online database'
@@ -110,7 +127,9 @@ traits:
 - var_in: Fruit.Type.Function
   unit_in: .na
   trait_name: diaspore_fleshiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Fruits were defined in a functional manner, as dispersal units, including
     true fruits (e.g. Beilschmiedia recurva), accessory fruits (such as the receptacle
@@ -123,7 +142,9 @@ traits:
 - var_in: Adaptive.Trait
   unit_in: .na
   trait_name: dispersal_appendage
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Fruits were defined in a functional manner, as dispersal units, including
     true fruits (e.g. Beilschmiedia recurva), accessory fruits (such as the receptacle
@@ -136,31 +157,41 @@ traits:
 - var_in: Fruit.Length (mm)
   unit_in: mm
   trait_name: fruit_length
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: literature search
 - var_in: Fruit.Diameter (mm)
   unit_in: mm
   trait_name: fruit_width
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: literature search
 - var_in: Seed.Length (mm)
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: literature search
 - var_in: Seed.Diameter (mm)
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: literature search
 - var_in: flowering_time
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: literature search
 substitutions:
@@ -289,4 +320,3 @@ exclude_observations: .na
 questions:
   contributor: Proteaceae have among the shortest fruit lengths in this study - that
     surprises us - is this data correct?
-

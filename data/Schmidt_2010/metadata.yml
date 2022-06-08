@@ -11,16 +11,31 @@ source:
     number: 1-2
     pages: 79--90
     doi: 10.1007/s11104-009-0233-5
-people:
-- name: Susanne Schmidt
-  institution: University of Queensland
-  role: collector, contact
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Schmidt
+    given_name: Susanne
+    ORCID: 0000-0001-8369-1238
+    affiliation: School of Agriculture and Food Science, The University of Queensland,
+      Australia
+    additional_role: contact
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 1998
-  year_collected_end: 1998
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        `%N` = na_if(`%N`, "no sample vial"),
+        date_sampled = ifelse(Date == "Feb","1998-02","1998-11")
+      ) %>%
+      group_by(name_matched) %>%
+        mutate_at(vars(`C3C4`, `Nfixer`, `growth form`, `leaf_type`, `deciduous/evergreen`), replace_duplicates_with_NA) %>%
+      ungroup()
+  '
+  collection_date: date_sampled
+  taxon_name: name_matched
+  site_name: Property
+  context_name: Cleared/Remnant
   description: subset of Susanne Schmidt's data from Queensland Monksland and Summerdell
     savanna sites
   collection_type: field
@@ -85,49 +100,48 @@ sites:
     precipitation, MAP (mm): 516
 contexts:
   Cleared:
-    description: Measurements made in previously cleared sites
-    type: field
+    vegetation history: Measurements made in previously cleared sites
   Remnant:
-    description: Measurements made in remnant native forest
-    type: field
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_matched
-    site_name: Property
-    context_name: Cleared/Remnant
-    date: date_sampled
-  custom_R_code: data %>% mutate(`%N` = na_if(`%N`, "no sample vial")) %>% mutate(date_sampled
-    = ifelse(Date == "Feb","1998-02","1998-11"))
+    vegetation history: Measurements made in remnant native forest
 traits:
 - var_in: C3C4
   unit_in: .na.character
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation or opinion
 - var_in: Nfixer
   unit_in: .na.character
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation or opinion
 - var_in: growth form
   unit_in: .na.character
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation or opinion
 - var_in: deciduous/evergreen
   unit_in: .na.character
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation or opinion
 - var_in: 13C
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: Healthy mature leaves, twigs and roots were oven-dried at 60 deg C on the
     day of collection. Woody plant samples were treated as described by Schmidt and
@@ -139,7 +153,9 @@ traits:
 - var_in: 15N
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: Healthy mature leaves, twigs and roots were oven-dried at 60 deg C on the
     day of collection. Woody plant samples were treated as described by Schmidt and
@@ -151,7 +167,9 @@ traits:
 - var_in: Al mg/kg
   unit_in: mg/kg
   trait_name: leaf_Al_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ground leaves (0.25 g dry weight) were digested in 15 ml nitric perchloric
     acid for element analysis and diluted with distilled water to 25 ml (Rayment and
@@ -161,7 +179,9 @@ traits:
 - var_in: B mg/kg
   unit_in: mg/kg
   trait_name: leaf_B_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ground leaves (0.25 g dry weight) were digested in 15 ml nitric perchloric
     acid for element analysis and diluted with distilled water to 25 ml (Rayment and
@@ -171,7 +191,9 @@ traits:
 - var_in: Ca mg/kg
   unit_in: mg/kg
   trait_name: leaf_Ca_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ground leaves (0.25 g dry weight) were digested in 15 ml nitric perchloric
     acid for element analysis and diluted with distilled water to 25 ml (Rayment and
@@ -181,7 +203,9 @@ traits:
 - var_in: Cu mg/kg
   unit_in: mg/kg
   trait_name: leaf_Cu_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ground leaves (0.25 g dry weight) were digested in 15 ml nitric perchloric
     acid for element analysis and diluted with distilled water to 25 ml (Rayment and
@@ -191,7 +215,9 @@ traits:
 - var_in: Fe mg/kg
   unit_in: mg/kg
   trait_name: leaf_Fe_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ground leaves (0.25 g dry weight) were digested in 15 ml nitric perchloric
     acid for element analysis and diluted with distilled water to 25 ml (Rayment and
@@ -201,7 +227,9 @@ traits:
 - var_in: K mg/kg
   unit_in: mg/kg
   trait_name: leaf_K_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ground leaves (0.25 g dry weight) were digested in 15 ml nitric perchloric
     acid for element analysis and diluted with distilled water to 25 ml (Rayment and
@@ -211,7 +239,9 @@ traits:
 - var_in: Mg mg/kg
   unit_in: mg/kg
   trait_name: leaf_Mg_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ground leaves (0.25 g dry weight) were digested in 15 ml nitric perchloric
     acid for element analysis and diluted with distilled water to 25 ml (Rayment and
@@ -221,7 +251,9 @@ traits:
 - var_in: Mn mg/kg
   unit_in: mg/kg
   trait_name: leaf_Mn_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ground leaves (0.25 g dry weight) were digested in 15 ml nitric perchloric
     acid for element analysis and diluted with distilled water to 25 ml (Rayment and
@@ -231,7 +263,9 @@ traits:
 - var_in: Na mg/kg
   unit_in: mg/kg
   trait_name: leaf_Na_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ground leaves (0.25 g dry weight) were digested in 15 ml nitric perchloric
     acid for element analysis and diluted with distilled water to 25 ml (Rayment and
@@ -241,7 +275,9 @@ traits:
 - var_in: P mg/kg
   unit_in: mg/kg
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ground leaves (0.25 g dry weight) were digested in 15 ml nitric perchloric
     acid for element analysis and diluted with distilled water to 25 ml (Rayment and
@@ -251,7 +287,9 @@ traits:
 - var_in: S mg/kg
   unit_in: mg/kg
   trait_name: leaf_S_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ground leaves (0.25 g dry weight) were digested in 15 ml nitric perchloric
     acid for element analysis and diluted with distilled water to 25 ml (Rayment and
@@ -261,7 +299,9 @@ traits:
 - var_in: Zn mg/kg
   unit_in: mg/kg
   trait_name: leaf_Zn_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ground leaves (0.25 g dry weight) were digested in 15 ml nitric perchloric
     acid for element analysis and diluted with distilled water to 25 ml (Rayment and
@@ -271,7 +311,9 @@ traits:
 - var_in: '%N'
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: Healthy mature leaves, twigs and roots were oven-dried at 60 deg C on the
     day of collection. Woody plant samples were treated as described by Schmidt and
@@ -283,7 +325,9 @@ traits:
 - var_in: '%C'
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Healthy mature leaves, twigs and roots were oven-dried at 60 deg C on the
     day of collection. Woody plant samples were treated as described by Schmidt and

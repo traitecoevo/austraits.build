@@ -7,13 +7,78 @@ source:
     title: Flora of Australia
     publisher: AGPS
     url: http://www.environment.gov.au/biodiversity/abrs/online-resources/flora/main/
-people:
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: collector, contributor
+contributors:
+  data_collectors:
+  - last_name: Gallagher
+    given_name: Rachael
+    ORCID: 0000-0002-4680-8115
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2015
-  year_collected_end: 2015
+  data_is_long_format: yes
+  custom_R_code: '
+    data$i <- seq_len(nrow(data));
+
+    data_numeric <- data %>%
+      filter(!is.na(units)) %>%
+      mutate(value = as.numeric(value),
+            value = ifelse(units == "cm", value * 10, value),
+            value = ifelse(units == "m", value * 1000, value),
+            units = ifelse(units %in% c("m", "cm"), "mm", units),
+            value = as.character(value)
+      );
+      
+    data_categorical_other <- data %>%
+      filter(is.na(units) & !(trait %in% c("longevity", "flowering time start", "flowering time end"))
+            ) %>%
+        mutate(trait = ifelse(value %in% "articles", "leaf_type", trait),
+              value = ifelse(value %in% "articles", "article", value));
+
+    data_flowering <- data %>%
+        filter( trait %in% c("flowering time start", "flowering time end")) %>%
+        select(-i, -units) %>%
+        spread(trait, value) %>%
+        transmute(species_name, trait = "flowering_time",
+                  value = convert_month_range_vec_to_binary(sprintf("%s-%s", `flowering time start`,`flowering time end`))) %>%
+        left_join(filter(data, trait == "flowering time start") %>%
+                    select(species_name, i), by = "species_name");
+
+    data_longevity <- data %>% 
+      filter( !is.na(value) & trait == "longevity") %>%
+      mutate(trait = "leaf_phenology",
+              value = ifelse(value %in% c("EP", "E", "EAP", "EPB", "EB", "EAB", "EA"), "evergreen", value),
+              value = ifelse(value %in% c("DP", "D", "DPB"), "deciduous", value)) %>%
+      filter(value %in% c("evergreen", "deciduous"));
+    
+    data_lifehistory <- data %>%   
+      filter( !is.na(value) & trait == "longevity" &
+              value %in% c("EP", "P", "DP", "EDP", "A", "EA", "EB", "B","AB", "EAB", "AP", "EAP", "EPB", "DPB", "PB")) %>%
+        mutate(trait = "life_history", value = ifelse(value %in% c("EP", "P", "DP", "EDP"), "perennial", value),
+              value = ifelse(value %in% c("A", "EA"), "annual", value),
+              value = ifelse(value %in% c("EB", "B"), "biennial", value),
+              value = ifelse(value %in% c("AB", "EAB"), "annual biennial", value),
+              value = ifelse(value %in% c("AP", "EAP"), "annual perennial", value),
+              value = ifelse(value %in% c("EPB", "DPB", "PB"), "biennial perennial", value));
+
+    bind_rows(data_numeric, data_categorical_other, data_flowering, 
+      data_longevity, data_lifehistory) %>%
+      arrange(i) %>%
+      select(-i) %>%
+      mutate(value = ifelse(species_name %in%
+                              c("Grevillea robusta","Garuga floribunda var. floribunda", "Myristica globosa subsp. muelleri",
+                                "Pararchidendron pruinosum var. pruinosum") & trait == "lifeform","tree", value),
+            value = ifelse(species_name %in% c("Corynocarpus rupestris subsp. arborescens","Mitrephora diversifolia") &
+                              trait == "lifeform","shrub treelet",value),
+            value = ifelse(species_name %in% c("Piper hederaceum var. hederaceum") & trait == "lifeform","climber_vine_woody",value),
+            value = ifelse(species_name %in% c("Stephania japonica var. discolor") &  trait == "lifeform","vine",value),
+            value = ifelse(species_name %in% c("Caesalpinia subtropica") & trait == "lifeform","climber_woody",value)
+      )
+  ' 
+  collection_date: unknown/2015
+  taxon_name: species_name
+  trait_name: trait
+  value: value
   description: Flora of Australian online checked via trait corrections
   collection_type: botanical_collection
   sample_age_class: adult
@@ -23,165 +88,165 @@ dataset:
     permission from the Australian Biological Resources Study"
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: yes
-  variable_match:
-    taxon_name: species_name
-    trait_name: trait
-    value: value
-  custom_R_code: ' data$i <- seq_len(nrow(data)); bind_rows( filter(data, !is.na(units))
-    %>% mutate( value = as.numeric(value), value = ifelse(units == "cm", value * 10,
-    value), value = ifelse(units == "m", value * 1000, value), units = ifelse(units
-    %in% c("m", "cm"), "mm", units), value = as.character(value) ), filter(data, is.na(units)
-    & !(trait %in% c("longevity", "flowering time start", "flowering time end")))
-    %>% mutate( trait = ifelse(value %in% "articles", "leaf_type", trait), value =
-    ifelse(value %in% "articles", "article", value) ), filter(data, trait %in% c("flowering
-    time start", "flowering time end")) %>% select(-i, -units) %>% spread(trait, value)
-    %>% transmute(species_name, trait = "flowering_time", value = convert_month_range_vec_to_binary(
-    sprintf("%s-%s", `flowering time start`,`flowering time end`)))%>% left_join(filter(data,
-    trait == "flowering time start") %>% select(species_name, i), by = "species_name"),
-    filter(data, !is.na(value) & trait == "longevity") %>% mutate( trait = "leaf_phenology",
-    value = ifelse(value %in% c("EP", "E", "EAP", "EPB", "EB", "EAB", "EA"), "evergreen",
-    value), value = ifelse(value %in% c("DP", "D", "DPB"), "deciduous", value) ) %>%
-    filter(value %in% c("evergreen", "deciduous")), filter(data, !is.na(value) & trait
-    == "longevity" & value %in% c("EP", "P", "DP", "EDP", "A", "EA", "EB", "B","AB",
-    "EAB", "AP", "EAP", "EPB", "DPB", "PB")) %>% mutate( trait = "life_history", value
-    = ifelse(value %in% c("EP", "P", "DP", "EDP"), "perennial", value), value = ifelse(value
-    %in% c("A", "EA"), "annual", value), value = ifelse(value %in% c("EB", "B"), "biennial",
-    value), value = ifelse(value %in% c("AB", "EAB"), "annual biennial", value), value
-    = ifelse(value %in% c("AP", "EAP"), "annual perennial", value), value = ifelse(value
-    %in% c("EPB", "DPB", "PB"), "biennial perennial", value) ) ) %>% arrange(i) %>%
-    select(-i) %>% mutate(value = ifelse(species_name %in% c("Grevillea robusta","Garuga
-    floribunda var. floribunda","Myristica globosa subsp. muelleri","Pararchidendron
-    pruinosum var. pruinosum") &  trait == "lifeform","tree",value),value = ifelse(species_name
-    %in% c("Corynocarpus rupestris subsp. arborescens","Mitrephora diversifolia")
-    &  trait == "lifeform","shrub treelet",value), value = ifelse(species_name %in%
-    c("Piper hederaceum var. hederaceum") &  trait == "lifeform","climber_vine_woody",value),
-    value = ifelse(species_name %in% c("Stephania japonica var. discolor") &  trait
-    == "lifeform","vine",value), value = ifelse(species_name %in% c("Caesalpinia subtropica")
-    &  trait == "lifeform","climber_woody",value)) # approach taken in the above is
-    to use data to calculate a series of trait tables, which are bound together with
-    bind_rows. The index i is used to sort data according to original order in the
-    file'
 traits:
 - var_in: dispersal
   unit_in: .na
   trait_name: dispersal_appendage
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: lifeform
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf_phenology
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: seed shape
   unit_in: .na
   trait_name: seed_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: flowering_time
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf length minimum
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &leaf_length_method unknown
 - var_in: leaf length maximum
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *leaf_length_method
 - var_in: leaf width minimum
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &leaf_width_method unknown
 - var_in: leaf width maximum
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *leaf_width_method
 - var_in: plant height minimum
   unit_in: mm
   trait_name: plant_height
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &plant_height_method unknown
 - var_in: plant height maximum
   unit_in: mm
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *plant_height_method
 - var_in: seed length minimum
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &seed_length_method unknown
 - var_in: seed length maximum
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *seed_length_method
 - var_in: seed width minimum
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &leaf_width_method unknown
 - var_in: seed width maximum
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *leaf_width_method
 - var_in: seed breadth minimum
   unit_in: mm
   trait_name: seed_height
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: &seed_height_method unknown
 - var_in: seed breadth maximum
   unit_in: mm
   trait_name: seed_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: *seed_height_method
 - var_in: leaf_type
   unit_in: .na
   trait_name: leaf_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: life_history
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 substitutions:
@@ -384,4 +449,3 @@ taxonomic_updates:
   reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
 exclude_observations: .na
 questions: .na
-

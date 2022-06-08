@@ -22,25 +22,51 @@ source:
     number: '1'
     pages: 50--57
     doi: 10.1046/j.1365-2435.2003.00698.x
-people:
-- name: Carlos Fonseca
-  institution: Universidade Federal do Rio Grande do Norte
-  role: collector, contact
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
-- name: Jacob McC. Overton
-  institution: Landcare Research, New Zealand
-  role: assistant
-- name: Bronwyn Collins
-  institution: unknown
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Fonseca
+    given_name: Carlos
+    ORCID: 0000-0003-0292-0399
+    affiliation: Departamento de Ecologia, Universidade Federal do Rio Grande do Norte,
+      Natal, Brazil
+    additional_role: contact
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  assistants: Jacob McC. Overton, Bronwyn Collins
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 1996-1997
-  year_collected_end: 1996-1997
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate_at(vars(`TRAIT Leaf Dry Mass UNITS g`), ~na_if(.,0)) %>%
+      group_by(name_original) %>%
+        mutate_at(vars(`TRAIT Growth Form CATEGORICAL EP epiphyte (mistletoe) F fern G grass H herb S shrub T tree V vine`),
+        replace_duplicates_with_NA) %>%
+      ungroup() %>%
+      mutate(
+        leaflet_area = ifelse(name_original %in% c("Acacia deanei",
+          "Livistona australis", "Kennedia rubicunda", "Alpinia caerulea",
+          "Ripogonum fawcettianum", "Brachychiton acerifolius",
+          "Blechnum cartilagineum"), `TRAIT Leaf Size UNITS mm2`, NA),
+        `TRAIT Leaf Size UNITS mm2` = ifelse(name_original %in% c("Acacia deanei", 
+          "Livistona australis", "Kennedia rubicunda", "Alpinia caerulea",
+          "Ripogonum fawcettianum", "Brachychiton acerifolius",
+          "Blechnum cartilagineum"), NA, `TRAIT Leaf Size UNITS mm2`),
+        leaflet_dry_mass = ifelse(name_original %in% c("Acacia deanei", 
+          "Livistona australis", "Kennedia rubicunda", "Alpinia caerulea", 
+          "Ripogonum fawcettianum", "Brachychiton acerifolius", 
+          "Blechnum cartilagineum"), `TRAIT Leaf Dry Mass UNITS g`, NA),
+        `TRAIT Leaf Dry Mass UNITS g` = ifelse(name_original %in% c("Acacia deanei", 
+          "Livistona australis", "Kennedia rubicunda", "Alpinia caerulea", 
+          "Ripogonum fawcettianum", "Brachychiton acerifolius", 
+          "Blechnum cartilagineum"), NA, `TRAIT Leaf Dry Mass UNITS g`)
+      )
+  '
+  collection_date: 1996/1997
+  taxon_name: name_original
+  site_name: site_TEXT
   description: Leaf traits for NSW environmental gradient studies. Looking at how
     trait combinations shift along rainfall and phosphorus gradients.
   collection_type: field
@@ -563,30 +589,30 @@ sites:
       of red and brown clayed sand, loam and lateritic soils; largely aeolian (Qd)
     precipitation, MAP (mm): 320
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-    site_name: site_TEXT
-  custom_R_code: data %>% mutate_at(vars(`TRAIT Leaf Dry Mass UNITS g`), ~na_if(.,0))
 traits:
 - var_in: site_id
   unit_in: .na
   trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: 'TRAIT: Growth Form CATEGORICAL: EP epiphyte (mistletoe) F fern G grass
+  entity_type: .na
+  value_type: .na
+  basis_of_value: .na
+  replicates: .na
+  methods: .na
+- var_in: 'TRAIT Growth Form CATEGORICAL EP epiphyte (mistletoe) F fern G grass
     H herb S shrub T tree V vine'
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: 'TRAIT: SLA UNITS: mm2/g'
+- var_in: 'TRAIT SLA UNITS mm2/g'
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Five leaves were collected and pressed for measurements of width, area
     and SLA. Leaves were taken from full-light situations and, where possible, from
@@ -595,27 +621,49 @@ traits:
     by HP DeskScan II scanner (Hewlett-Packard, Palo Alto, USA) and quantified by
     Delta-T SCAN image analysis software (Delta-T Devices, Cambridge, UK). No information
     given on protocol for determining mass.
-- var_in: 'TRAIT: Leaf Size UNITS: mm2'
+- var_in: 'TRAIT Leaf Size UNITS mm2'
   unit_in: mm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
-  methods: Five leaves were collected and pressed for measurements of width, area
+  methods: &Leaf_method Five leaves were collected and pressed for measurements of width, area
     and SLA. Leaves were taken from full-light situations and, where possible, from
     random branches on separate individuals (see Westoby 1998, appendix, for discussion
     of protocols for characterizing leaves and height). Leaf outline images were captured
     by HP DeskScan II scanner (Hewlett-Packard, Palo Alto, USA) and quantified by
     Delta-T SCAN image analysis software (Delta-T Devices, Cambridge, UK)
+- var_in: leaflet_area
+  unit_in: mm2
+  trait_name: leaflet_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: *Leaf_method
 - var_in: TRAIT Leaf Dry Mass UNITS g
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: unknown
-- var_in: 'TRAIT: LeafWidth UNITS: mm'
+- var_in: leaflet_dry_mass
+  unit_in: g
+  trait_name: leaflet_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: unknown
+- var_in: 'TRAIT LeafWidth UNITS mm'
   unit_in: mm
   trait_name: leaf_width
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Five leaves were collected and pressed for measurements of width, area
     and SLA. Leaves were taken from full-light situations and, where possible, from
@@ -623,10 +671,12 @@ traits:
     of protocols for characterizing leaves and height). Leaf outline images were captured
     by HP DeskScan II scanner (Hewlett-Packard, Palo Alto, USA) and quantified by
     Delta-T SCAN image analysis software (Delta-T Devices, Cambridge, UK)
-- var_in: 'TRAIT: Height UNITS: m'
+- var_in: 'TRAIT Height UNITS m'
   unit_in: m
   trait_name: .na
-  value_type: site_max
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: 1
   methods: The height of uppermost leaves was recorded for mature individuals of each
     species. If only seedlings were present within the quadrat, full-grown individuals

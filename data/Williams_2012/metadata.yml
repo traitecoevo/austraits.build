@@ -8,17 +8,22 @@ source:
     title: Mechanisms of rainforest persistence and recruitment in frequently burnt
       wet tropical eucalypt forests
     doi: 10.1111/j.1442-9993.2011.02271.x
-people:
-- name: Paul R. Williams
-  institution: School of Tropical Biology, James Cook University, Townsville, Vegetation
-    Management Science, Queensland
-  role: collector
-- name: Sophie Yang
-  institution: University New South Wales
-  role: contributor
+contributors:
+  assistants: Paul Williams
+  austraits_curators: Sophie Yang
 dataset:
-  year_collected_start: 1996
-  year_collected_end: 2009
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        fire_response = ifelse(`Post-fire regeneration` %in% c("Fire killed, abundant seedlings", 
+        "Fire killed, abundant seedlings; very occasional coppice from base of stem", 
+        "Only seedlings observed"), "fire_killed", "resprouts")
+      )
+  collection_date: 1996/2009
+  taxon_name: Species
+  site_name: Site
+  context_name: Fire intensity
   description: Study investigating persistence and recruitment of rainforest species
     in wet tropical eucalypt forests under frequent fire regimes.
   collection_type: field
@@ -84,21 +89,14 @@ contexts:
       of a moderate intensity, in comparison to wet tropical eucalypt forest fires
       witnessed by the authors over the years, being less severe than the wildfires
       during the 2002/3 drought, but of sufficient intensity to travel at walking
-      speed through the forest understorey. [field]
-    type: field
-    description: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: Site
-    context_name: Fire intensity
-  custom_R_code: data %>% mutate(fire_response = ifelse(`Post-fire regeneration` %in% c("Fire killed, abundant seedlings", "Fire killed, abundant seedlings; very occasional coppice from base of stem", "Only seedlings observed"), "fire_killed", "resprouts"))
+      speed through the forest understorey.
 traits:
 - var_in: Vegetation type
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: A total of 85 surveys were undertaken across 13 permanent 100-m2 plots
     over 14 years. Each plot was surveyed 2 to 10 times over 5 to 14 years during
@@ -108,7 +106,9 @@ traits:
 - var_in: Post-fire regeneration
   unit_in: .na
   trait_name: bud_bank_location
-  value_type: site_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: A total of 85 surveys were undertaken across 13 permanent 100-m2 plots
     over 14 years. Each plot was burnt between 0 to 5 times, and surveyed 2 to 10
@@ -120,7 +120,9 @@ traits:
 - var_in: fire_response
   unit_in: .na
   trait_name: fire_response
-  value_type: site_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: A total of 85 surveys were undertaken across 13 permanent 100-m2 plots
     over 14 years. Each plot was burnt between 0 to 5 times, and surveyed 2 to 10
@@ -129,30 +131,39 @@ traits:
     seedlings from existing plants and whether post-fire resprouting originated from
     along sub-soil roots, at the base of stems or epicormically from branches and
     trunks above ground level.
+  sample_age_class: adult
 - var_in: Fire cued seeding
   unit_in: .na
   trait_name: post_fire_recruitment
-  value_type: site_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: A total of 85 surveys were undertaken across 13 permanent 100-m2 plots
     over 14 years. Each plot was burnt between 0 to 5 times, and surveyed 2 to 10
     times over 5 to 14 years during the period 1996 to 2009 (see Appendix S1). During
     each survey, all individuals of shrubs and tree species, both sclerophyll and
     rainforest, were counted, including the presence of newly emerged post-fire seedlings.
+  sample_age_class: seedling
 - var_in: Juvenile fire response
   unit_in: .na
   trait_name: fire_response_juvenile
-  value_type: site_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: A total of 85 surveys were undertaken across 13 permanent 100-m2 plots
     over 14 years. Each plot was burnt between 0 to 5 times, and surveyed 2 to 10
     times over 5 to 14 years during the period 1996 to 2009 (see Appendix S1). Seedling
     survival of the most abundantly germinating sclerophyll (Acacia cincinnata) and
     rainforest species (Alphitonia petrei) were recorded.
+  sample_age_class: seedling
 - var_in: Reproductive maturity
   unit_in: years
-  trait_name: reproductive_maturity_primary
-  value_type: site_min
+  trait_name: reproductive_maturity_numeric
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: A total of 85 surveys were undertaken across 13 permanent 100-m2 plots
     over 14 years. Each plot was burnt between 0 to 5 times, and surveyed 2 to 10
@@ -163,10 +174,13 @@ traits:
     the timing of seedling recruitment with respect to years since fire. The numbers
     of newly emerged seedlings per plot, documented during each of the 85 plot surveys,
     were used as replicates in the analysis.
+  sample_age_class: adult
 - var_in: Fire and establishing
   unit_in: .na
   trait_name: fire_and_establishing
-  value_type: site_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: A total of 85 surveys were undertaken across 13 permanent 100-m2 plots
     over 14 years. Each plot was burnt between 0 to 5 times, and surveyed 2 to 10
@@ -177,6 +191,7 @@ traits:
     the timing of seedling recruitment with respect to years since fire. The numbers
     of newly emerged seedlings per plot, documented during each of the 85 plot surveys,
     were used as replicates in the analysis.
+  sample_age_class: seedling
 substitutions:
 - trait_name: bud_bank_location
   find: Fire killed, abundant seedlings

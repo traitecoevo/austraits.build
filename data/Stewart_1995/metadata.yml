@@ -11,19 +11,35 @@ source:
     number: '1'
     pages: 51--55
     doi: 10.1071/pp9950051
-people:
-- name: George Stewart
-  institution: University of Queensland
-  role: collector, lab_leader
-- name: Susanne Schmidt
-  institution: University of Queensland
-  role: collector
-- name: Ian Wright
-  institution: Macquarie University
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Stewart
+    given_name: George
+    ORCID: .na.character
+    affiliation: The University of Queensland, Australia
+    notes: no contact
+  - last_name: Schmidt
+    given_name: Susanne
+    ORCID: 0000-0001-8369-1238
+    affiliation: School of Agriculture and Food Science, The University of Queensland,
+      Australia
+  austraits_curators: Ian Wright, Elizabeth Wenk
 dataset:
-  year_collected_start: 1992
-  year_collected_end: 1993
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        date = ifelse(site == "Loganholme","1992-12",NA), 
+        date = ifelse(site == "Idalia","1992",date), 
+        date = ifelse(site == "Gambubal","1993-01",date), 
+        date = ifelse(site == "Coominya","1993",date),
+        rownumber = row_number(),
+        plant_growth_form = ifelse(rownumber > 94, NA, plant_growth_form)
+      )
+  '
+  collection_date: date
+  taxon_name: name_edited
+  site_name: site
   description: A collection of leaf d13C values for plant communities across Queensland
     to understand how rainfall affects carbon isotope discrimination
   collection_type: field
@@ -46,7 +62,7 @@ dataset:
     manipulated in Excel to craete a single row of data.
   notes: This dataset does not include data for all the sites listed in the manuscript.
     AusTraits has been unable to obtain a complete dataset; the additional site data
-    are in the file in the raw data folder
+    are in the file in the raw data folder. Also, the plant growth form column starts to contain a number of nonsensical values beyond row 94 and these have been filtered out (E. Wenk, 2022-05-31)
 sites:
   Coominya:
     locality: Coominya
@@ -93,54 +109,61 @@ sites:
     precipitation, Jan-Mar (mm): 391.0
     precipitation, Oct-Mar: 718.0
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_edited
-    site_name: site
-    date: date
-  custom_R_code: data %>% mutate(date = ifelse(site == "Loganholme","1992-12",NA), date = ifelse(site == "Idalia","1992",NA), date = ifelse(site == "Gambubal","1993-01",NA), date = ifelse(site == "Coominya","1993",NA))
 traits:
 - var_in: leaf_type(B/N)
   unit_in: .na
   trait_name: leaf_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: evergreen/deciduous(E/D)
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: photosynthetic_pathway
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: GrowthForm2 (woody/herbaceuous)
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: N-fixer (Y/N)
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: delta_13C
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf samples for each species (n = 3-12) were oven-dried at 70deg C and
     ground to a fine powder in a vibratory ball mill (Retsch MM - 2, Haan, Germany).

@@ -12,37 +12,41 @@ source:
     number: '6'
     pages: 513--525
     doi: 10.1071/bt16087
-people:
-- name: Ben French
-  institution: University of Tasmania
-  role: collector
-- name: Lynda Prior
-  institution: University of Tasmania
-  role: contributor, contact
-- name: David Bowman
-  institution: University of Tasmania
-  role: lab_leader
-- name: Tony French
-  institution: University of Tasmania
-  role: assistant
-- name: Kathryn Willis
-  institution: University of Tasmania
-  role: assistant
-- name: Chris Guinane
-  institution: University of Tasmania
-  role: assistant
-- name: Alessandro Conti
-  institution: University of Tasmania
-  role: assistant
-- name: Chris Fahey
-  institution: University of Tasmania
-  role: assistant
-- name: Aine Nicholson
-  institution: University of Tasmania
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: French
+    given_name: Ben
+    ORCID: 0000-0001-5046-4047
+    affiliation: University of Tasmania, Australia
+  - last_name: Prior
+    given_name: Lynda
+    ORCID: 0000-0002-5511-2320
+    affiliation: University of Tasmania, Australia
+    additional_role: contact
+  - last_name: Bowman
+    given_name: David
+    ORCID: 0000-0001-8075-124X
+    affiliation: University of Tasmania, Australia
+  - last_name: Nicholson
+    given_name: Áine
+    ORCID: .na.character
+    affiliation: University of Tasmania, Australia
+  assistants: Tony French, Kathryn Willis, Chris Guinane, Alessandro Conti, Chris
+    Fahey
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2013
-  year_collected_end: 2013
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+        mutate(
+          fire_response = 
+            ifelse(`percent_burnt_stems_resprouting` < 30, "fire_killed",
+              ifelse(`percent_burnt_stems_resprouting` > 70, "resprouts",
+                "partial_resprouting")))
+  '
+  collection_date: 2013/2013
+  taxon_name: Species
+  site_name: site_name
   description: A study of the effect of past fire history on fire severity and the
     proportion of plants that resprout following a natural fire.
   collection_type: field
@@ -141,18 +145,14 @@ sites:
       quartz gravels. The soils are highly acidic (pH 4.1-4.5) and most of their small
       nutrient capital is derived from cyclic salts (Bowman et al. 1986; Brown 2005).
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-  custom_R_code: data %>% mutate(fire_response = ifelse(`percent_burnt_stems_resprouting` < 30, "fire_killed",ifelse(`percent_burnt_stems_resprouting` > 70, "resprouts","partial_resprouting")))
 traits:
 - var_in: percent_burnt_stems_resprouting
   unit_in: '%'
   trait_name: fire_response_numeric
-  value_type: multisite_mean
-  replicates: various
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
+  replicates: number
   methods: To assess resprouting, a 1 x 1 m quadrat was positioned at each observation
     point and the number of living resprouts of all woody taxa was recorded. Seedling
     recruitment was assessed by haphazardly dropping, at each observation point, a
@@ -161,7 +161,9 @@ traits:
 - var_in: fire_response
   unit_in: .na
   trait_name: fire_response
-  value_type: multisite_mean
+  entity_type: metapopulation
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: To assess resprouting, a 1 x 1 m quadrat was positioned at each observation
     point and the number of living resprouts of all woody taxa was recorded. Seedling
@@ -171,7 +173,9 @@ traits:
 - var_in: regen_strategy
   unit_in: .na
   trait_name: bud_bank_location
-  value_type: multisite_mean
+  entity_type: metapopulation
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: To assess resprouting, a 1 x 1 m quadrat was positioned at each observation
     point and the number of living resprouts of all woody taxa was recorded. Seedling

@@ -6,29 +6,115 @@ source:
     year: 2018
     title: The National Seed Bank
     url: http://www.anbg.gov.au/gardens/living/seedbank/
-people:
-- name: Lydia Guja
-  institution: Australian National Botanic Gardens
-  role: lab_leader
-- name: Brook Clinton
-  institution: National Collections and Marine Infrastructure, CSIRO
-  role: collector
-- name: Tom North
-  institution: National Seed Bank, Biodiversity Science Section, Australian National
-    Botanic Gardens
-  role: collector
-- name: Anne Fuchs
-  institution: Botanical Information, Biodiversity Science Section, Australian National
-    Botanic Gardens
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Guja
+    given_name: Lydia
+    ORCID: 0000-0001-5945-438X
+    affiliation: Centre for Australian National Biodiversity Research (a joint venture
+      between Parks Australia and CSIRO), Canberra, ACT, Australia
+    additional_role: contact
+  - last_name: Clinton
+    given_name: Brook
+    ORCID: .na.character
+    affiliation: Centre for Australian National Biodiversity Research (a joint venture
+      between Parks Australia and CSIRO), Canberra, ACT, Australia
+  - last_name: North
+    given_name: Tom
+    ORCID: .na.character
+    affiliation: Centre for Australian National Biodiversity Research (a joint venture
+      between Parks Australia and CSIRO), Canberra, ACT, Australia
+  - last_name: Fuchs
+    given_name: Anne
+    ORCID: 0000-0001-5737-8803
+    affiliation: Centre for Australian National Biodiversity Research (a joint venture
+      between Parks Australia and CSIRO), Canberra, ACT, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 1974
-  year_collected_end: 2019
+  data_is_long_format: yes
+  custom_R_code: '
+    data %>%
+    mutate(
+    weird_date = ifelse(str_detect(gathering_date, "^[0-9]{4}"), gathering_date, NA),
+    gathering_date = gathering_date %>% mdy(quiet = T) %>% as.character(),
+    gathering_date = coalesce(gathering_date, weird_date)) %>% 
+    select(-weird_date) %>%
+    move_values_to_new_trait_long("Texture", "seed_surface_hairs", "trait", "value",
+      c("plumose", "tomentose", "hairs", "ciliate", "stellate", "cilliate", "velutinous")) %>%
+    add_values_to_additional_trait_long("seed_surface_hairs", "trait", "value",
+      c("stellate dimpled", "costate tomentose"), c("hairs_branched", "hairs_simple")) %>%
+    move_values_to_new_trait_long("Appendage", "Texture", "trait", "value", c("scales")) %>%
+    mutate(value = ifelse(trait == "Propagation", detailed_description, value)) %>%
+    dplyr::left_join(by = c("item_ID", "trait", "value_numeric"),
+      dplyr::bind_rows(
+        dplyr::left_join(
+          by = "item_ID",
+          data %>% filter(trait %in% c("Width")) %>%
+            select(item_ID, trait, value_numeric) %>%
+            distinct(),
+          data %>%
+            filter(trait %in% c("Width", "WidthSample")) %>%
+            select(item_ID, trait, value_numeric) %>%
+            distinct() %>%
+            mutate(column_numbers = row_number()) %>%
+            filter(!(column_numbers %in% c(101, 323, 325, 517, 611, 1153, 1805, 1838))) %>%
+            select(-column_numbers) %>%
+            filter(trait == "WidthSample") %>%
+            spread(key = trait, value = value_numeric)
+        ),
+        dplyr::left_join(by = "item_ID",
+          data %>%
+            filter(trait %in% c("Length")) %>%
+            select(item_ID, trait, value_numeric) %>%
+            distinct(),
+          data %>%
+            filter(trait %in% c("Length", "LengthSample")) %>%
+            select(item_ID, trait, value_numeric) %>%
+            distinct() %>%
+            mutate(column_numbers = row_number()) %>%
+            filter(!(column_numbers %in% c(36, 91, 94, 95, 571, 756, 1426, 1438))) %>%
+            select(-column_numbers) %>%
+            filter(trait == "LengthSample") %>%
+            spread(key = trait, value = value_numeric)
+        ),
+        data %>% filter(trait == "Seed Sample") %>%
+          select(item_ID, trait, detailed_description, value_numeric) %>%
+          mutate(
+            seed_sample_replicates = ifelse(str_detect(detailed_description, "No in sample"),
+              str_extract(detailed_description, "(\\d)+(?=, Wt)"), NA),
+            seed_sample_replicates = ifelse(str_detect(detailed_description,
+              "(\\d)+ seed"), str_extract(detailed_description, "(\\d)+(?= seed)"),
+              seed_sample_replicates),
+            seed_sample_replicates = ifelse(str_detect(detailed_description, "4x 100 seed|4x 100seed"),
+             "400", seed_sample_replicates)
+          ) %>%
+          select(-detailed_description) %>%
+          distinct(item_ID, .keep_all = TRUE)
+        )
+      ) %>%
+    mutate(
+      replicates = coalesce(
+        as.character(WidthSample),
+        as.character(LengthSample),
+        as.character(seed_sample_replicates)
+    )) %>%
+    distinct(trait, value, species_name, site_name_shorter, .keep_all = TRUE)%>%
+    group_by(species_name, site_name, trait, item_ID) %>% mutate(observation_number = dplyr::row_number()) %>% ungroup() %>%
+    mutate(value = ifelse(row_number() %in% c(303), 0.4340, value))
+  '
+  collection_date: gathering_date
+  taxon_name: species_name
+  trait_name: trait
+  value: value
+  site_name: site_name_shorter
+  individual_id: item_ID
+  observation_number: observation_number
   description: All seed data from Australian National Botanic Gardens collections.
     See www.anbg.gov.au/gardens/living/seedbank/index.html for more information about
     this collection.
   collection_type: botanical_collection
   sample_age_class: adult
+  replicates: replicates
   sampling_strategy: The Australian National Botanic Gardens' National Seed Bank is
     building a collection of native seed for conservation and research. The seed bank
     is home to a large and ever-increasing collection of Australian native seeds,
@@ -51,7 +137,9 @@ dataset:
     comprehensively recorded and voucher specimens of the species are catalogued in
     the Australian National Herbarium.
   original_file: 4 files in raw data folder
-  notes: There are a few species whose seed masses are almost certainly incorrect. They've been compared to other AusTraits entries. These values have been manually adjusted in AusTraits, 15-02-2022, E Wenk
+  notes: There are a few species whose seed masses are almost certainly incorrect.
+    They've been compared to other AusTraits entries. These values have been manually
+    adjusted in AusTraits, 15-02-2022, E Wenk
 sites:
   Adelaide Botanic Gardens.:
     latitude (deg): .na.real
@@ -13238,26 +13326,13 @@ sites:
     locality: without locality
     recorded by: Unspecified collector of live material
 contexts: .na
-config:
-  data_is_long_format: yes
-  variable_match:
-    taxon_name: species_name
-    trait_name: trait
-    value: value
-    site_name: site_name_shorter
-    observation_id: item_ID
-    date: gathering_date
-  custom_R_code: data %>% mutate(gathering_date = gathering_date %>% dmy()) %>% move_values_to_new_trait_long("Texture",
-    "seed_surface_hairs", "trait", "value", c("plumose", "tomentose", "hairs", "ciliate",
-    "stellate", "cilliate", "velutinous")) %>% add_values_to_additional_trait_long("seed_surface_hairs",
-    "trait", "value", c("stellate dimpled", "costate tomentose"), c("hairs_branched","hairs_simple")) %>% move_values_to_new_trait_long("Appendage",
-    "Texture", "trait", "value", c("scales")) %>% mutate(value = ifelse(trait == "Propagation",detailed_description,value))
 traits:
 - var_in: Seed Sample
   unit_in: mg
   trait_name: seed_dry_mass
-  value_type: site_mean
-  replicates: various; in raw data files
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   methods: 'Thousand seed weight is a measure of the average mass of one thousand
     seeds. Two methods have been historically employed to obtain this data. Basic
     method: Exactly 1000 seeds are separated from the collection as a whole and then
@@ -13269,14 +13344,19 @@ traits:
 - var_in: Propagation
   unit_in: .na
   trait_name: germination_treatment
-  value_type: expert_mean
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: experimental treatments trialled to germinate seed; additional data in
     raw data files
+  sample_age_class: seedling
 - var_in: Texture
   unit_in: .na
   trait_name: seed_surface_texture
-  value_type: expert_mean
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: 'expert observation; Texture terms used: rugose (wrinkled); finely textured;
     pitted; smooth (at high magnification); reticulate (net-like); tuberculate (covered
@@ -13286,14 +13366,18 @@ traits:
 - var_in: seed_surface_hairs
   unit_in: .na
   trait_name: seed_surface_hairs
-  value_type: expert_mean
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation; Subset of texture terms used that refer to seed surface
     hairiness, plumose (feathery); ciliate; tomentose (covered in cottony hairs)
 - var_in: Appendage
   unit_in: .na
   trait_name: dispersal_appendage
-  value_type: expert_mean
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: 'expert observation; Appendage terms used: hairs, spine(s), wing, aril,
     pappus, plug, bristle(s), awn(s), elaiosome, hook(s), aerenchyma (spongy tissue
@@ -13301,8 +13385,9 @@ traits:
 - var_in: Width
   unit_in: um
   trait_name: seed_width
-  value_type: site_mean
-  replicates: WidthSample
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   methods: Calibrated group digital images of 20-30 seeds enable measurements of size
     with calculations of average size and variation among seeds (standard deviation).
     Measurements of seeddimensions width (at widest point) and length (longest point)
@@ -13331,7 +13416,9 @@ traits:
 - var_in: Shape
   unit_in: .na
   trait_name: seed_shape
-  value_type: expert_mean
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: 'Shape terms used: rectangular; ovoid; reniform (kidney-shaped); globose;
     fusiform; irregular; lanceolate; cylindrical/terete; sectoroid (like an orange
@@ -13364,8 +13451,9 @@ traits:
 - var_in: Length
   unit_in: um
   trait_name: seed_length
-  value_type: site_mean
-  replicates: LengthSample
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   methods: Calibrated group digital images of 20-30 seeds enable measurements of size
     with calculations of average size and variation among seeds (standard deviation).
     Measurements of seeddimensions width (at widest point) and length (longest point)
@@ -13391,18 +13479,6 @@ traits:
     relate to the seed collection as stored (after drying), and therefore may differ
     from those of the dispersal unit as it is first released from the plant (especially
     in the case of fleshy fruits).
-- var_in: WidthSample
-  unit_in: .na
-  trait_name: .na
-  value_type: .na
-  replicates: .na
-  methods: number of seeds examined to determine mean seed width
-- var_in: LengthSample
-  unit_in: .na
-  trait_name: .na
-  value_type: .na
-  replicates: .na
-  methods: number of seeds examined to determine mean seed length
 substitutions:
 - trait_name: germination_treatment
   find: soak the seed for a time period.

@@ -25,19 +25,31 @@ source:
     number: '5'
     pages: 1187-1196
     doi: 10.1111/1365-2664.12120
-people:
-- name: Carl Gosper
-  institution: Department of Biodiversity, Conservation and Attractions, Western Australia
-  role: contact, collector
-- name: Suzanne Prober
-  institution: CSIRO Land and Water
-  role: collector
-- name: Colin Yates
-  institution: Department of Biodiversity, Conservation and Attractions, Western Australia
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Gosper
+    given_name: Carl
+    ORCID: 0000-0002-0962-5117
+    affiliation: Biodiversity and Conservation Science, Department of Biodiversity,
+      Conservation and Attractions, WA, Australia
+    additional_role: contact
+  - last_name: Prober
+    given_name: Suzanne
+    ORCID: 0000-0002-6518-239X
+    affiliation: CSIRO Land and Water, Australia
+  - last_name: Yates
+    given_name: Colin
+    ORCID: 0000-0003-2286-8700
+    affiliation: Biodiversity and Conservation Science, Department of Biodiversity,
+      Conservation and Attractions, WA, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2010
-  year_collected_end: 2011
+  data_is_long_format: no
+  custom_R_code: data %>% mutate(life_history = ifelse(`Growth form`=="Annual","annual","perennial"),
+    life_form = `Growth form`,parasitic = ifelse(`Growth form`=="Aerial parasite","stem_parasitic",NA))
+  collection_date: 2010/2011
+  taxon_name: Species Name
+  site_name: Location
   description: Dataset of plant functional traits from an obligate reseeder Eucalypt
     woodland to build a conceptual model that incorporates four critical ecological
     processes that also distinguish obligate-seeder woodlands from temperate woodlands
@@ -100,25 +112,22 @@ sites:
     description: semi-arid Mediterranean climate with a dominant crown layer of Eucalyptus
       salubris, sometimes in association with other Eucalyptus spp.
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species Name
-    site_name: Location
-  custom_R_code: data %>% mutate(life_history = ifelse(`Growth form`=="Annual","annual","perennial"),
-    life_form = `Growth form`,parasitic = ifelse(`Growth form`=="Aerial parasite","stem_parasitic",NA))
 traits:
 - var_in: Months Until First Fruiting
   unit_in: months
   trait_name: time_from_fire_to_fruit
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: Gosper et al. 2013 field observations.  [Number of months since fire until
     first fruiting recorded.]
 - var_in: Resprouter
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Literature sources (Flora of Australia 1999; Western Australian Herbarium
     [see footnote 5]) and field observations classified species recorded surveys into
@@ -130,7 +139,9 @@ traits:
 - var_in: Persistent canopy seedbank
   unit_in: .na
   trait_name: serotiny
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Literature sources (Flora of Australia 1999; Western Australian Herbarium
     [see footnote 5]) and field observations classified species recorded surveys into
@@ -142,7 +153,9 @@ traits:
 - var_in: Persistent soil seedbank
   unit_in: .na
   trait_name: soil_seedbank
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Literature sources (Flora of Australia 1999; Western Australian Herbarium
     [see footnote 5]) and field observations classified species recorded surveys into
@@ -154,7 +167,9 @@ traits:
 - var_in: Growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper_2013_b field observations; We defined plant functional types on
     the basis of life-form and plant height(seven categories) and seed dispersal potential
@@ -165,7 +180,9 @@ traits:
 - var_in: life_history
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper_2013_b field observations; We defined plant functional types on
     the basis of life-form and plant height(seven categories) and seed dispersal potential
@@ -176,7 +193,9 @@ traits:
 - var_in: life_form
   unit_in: .na
   trait_name: life_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper_2013_b field observations; We defined plant functional types on
     the basis of life-form and plant height(seven categories) and seed dispersal potential
@@ -187,7 +206,9 @@ traits:
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper_2013_b field observations; We defined plant functional types on
     the basis of life-form and plant height(seven categories) and seed dispersal potential
@@ -256,4 +277,3 @@ questions:
     got this wrong - so feel free to tell me that data were "collected" (from the
     literature, herbaria or field) for a different collection of papers than I've
     represented.
-

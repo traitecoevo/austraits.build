@@ -10,21 +10,23 @@ source:
     volume: 204
     pages: 441--446
     doi: 10.1111/nph.12942
-people:
-- name: Colin P. Osborne
-  institution: University of Sheffield, Department of Animal and Plant Sciences
-  role: collector, contact, lab_leader
-- name: Anna Salomaa
-  institution: University of Helsinki, Helsinki Institute of Sustainability Science
-  role: assistant
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Osborne
+    given_name: Colin P.
+    ORCID: 0000-0002-7423-3718
+    affiliation: University of Sheffield, Department of Animal and Plant Sciences,
+      United Kingdom
+    additional_role: contact
+  assistants: Anna Salomaa
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2014
-  year_collected_end: 2014
+  data_is_long_format: no
+  custom_R_code: data %>% subset(is.na(excluded_names)) %>% mutate(collection_type = ifelse(species_name_current %in% c("Panicum incomtum", "Panicum bombycinum", "Panicum latzii", "Panicum chillagoanum", "Walwhalleya pungens"),"field","literature"))
+  collection_date: unknown/2014
+  taxon_name: species_name_current
   description: grass trait data from various sources
-  collection_type: literature, botanical_collection
+  collection_type: literature, field
   sample_age_class: adult
   sampling_strategy: Our database of C3 and C4 photosynthetic types in grasses is
     based principally on published anatomical and stable carbon isotope evidence.
@@ -76,16 +78,13 @@ dataset:
     (E. Wenk Oct 2019)
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name_current
-  custom_R_code: data %>% subset(is.na(excluded_names))
 traits:
 - var_in: photosynthetic pathway
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Our database of C3 and C4 photosynthetic types in grasses is based principally
     on published anatomical and stable carbon isotope evidence. The underlying evidence
@@ -99,7 +98,9 @@ traits:
 - var_in: k=Kranz n=non-Kranz
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Our database of C3 and C4 photosynthetic types in grasses is based principally
     on published anatomical and stable carbon isotope evidence. We followed previous
@@ -108,15 +109,17 @@ traits:
 - var_in: d13C value
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: site_mean
-  replicates: 1 for Panicum incomtum, Panicum bombycinum, Panicum latzii, Panicum
-    chillagoanum, and Walwhalleya pungens; species means sourced from elsewhere for
-    other observations
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: d13C_replicates
   methods: Our database of C3 and C4 photosynthetic types in grasses is based principally
     on published anatomical and stable carbon isotope evidence. We measured d13C for
     5 Australian species, Panicum incomtum, Panicum bombycinum, Panicum latzii, Panicum
     chillagoanum, and Walwhalleya pungens ourselves. For 15 other species we sourced
-    d13C values from other sources, which are cited in the data file.
+    d13C values from other sources, which are cited in the data file. Replicates,
+    1 for Panicum incomtum, Panicum bombycinum, Panicum latzii, Panicum chillagoanum,
+    and Walwhalleya pungens; species means sourced from elsewhere for other observations
 substitutions:
 - trait_name: photosynthetic_pathway
   find: C4 (& C3-C4?) & C3
@@ -149,4 +152,3 @@ taxonomic_updates:
   reason: Automatic alignment with name in APC list (accepted) (2020-06-25)
 exclude_observations: .na
 questions: .na
-

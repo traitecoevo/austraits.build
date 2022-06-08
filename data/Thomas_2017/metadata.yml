@@ -23,16 +23,33 @@ source:
     number: '5'
     pages: e0176959
     doi: 10.1371/journal.pone.0176959
-people:
-- name: Freya Thomas
-  institution: University of Melbourne
-  role: collector, contact
-- name: Peter Vesk
-  institution: University of Melbourne
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Thomas
+    given_name: Freya
+    ORCID: 0000-0001-9926-6295
+    affiliation: University of Melbourne, Australia
+    additional_role: contact
+  - last_name: Vesk
+    given_name: Peter
+    ORCID: 0000-0003-2008-7062
+    affiliation: University of Melbourne, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: April 2013
-  year_collected_end: October 2013
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        site = paste(site,"_",Yrs,sep=""),
+        context = paste0(Yrs," years since last fire"),
+        site = gsub("_NA", "", site),
+        context = gsub("NA years since last fire", NA, context)
+      )
+  '
+  collection_date: 2013-04/2013-10
+  taxon_name: species_binomial
+  site_name: site
+  context_name: context
   description: Freya's thesis data; study examines the height growth trajectories
     in 18 woody plant species in a light-saturated, fire-prone, semi-arid environment
     as well as the influence of functional traits on those trajectories.
@@ -68,6 +85,15 @@ dataset:
   original_file: FT_species_traits.csv within raw folder in Thomas_2017 folder
   notes: .na
 sites:
+  MurraySunset:
+    latitude (deg): -34.6
+    longitude (deg): 141.6
+    description: Murray Sunset, generic location
+    elevation (m): .na
+    precipitation, MAP (mm): .na
+    temperature, mean yearly max (C): .na
+    primary productivity (tons C/ha/year): .na
+    fire history (years since fire): .na
   MurraySunset_15:
     latitude (deg): -34.7282361
     longitude (deg): 141.5833444
@@ -115,33 +141,24 @@ sites:
     fire history (years since fire): 86.0
 contexts:
   15 years since last fire:
-    type: field
-    description: site last burnt 15 years ago
+    fire history: site last burnt 15 years ago
   28 years since last fire:
-    type: field
-    description: site last burnt 28 years ago
+    fire history: site last burnt 28 years ago
   36 years since last fire:
-    type: field
-    description: site last burnt 36 years ago
+    fire history: site last burnt 36 years ago
   41 years since last fire:
-    type: field
-    description: site last burnt 41 years ago
+    fire history: site last burnt 41 years ago
   86 years since last fire:
-    type: field
-    description: site last burnt 86 years ago
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_binomial
-    site_name: site
-    context_name: context
-  custom_R_code: data %>% mutate(site = paste(site,"_",Yrs,sep="")) %>% mutate(context
-    = paste0(Yrs," years since last fire"))
+    fire history: site last burnt 86 years ago
+  NA:
+    fire history: .na
 traits:
 - var_in: SLA
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: site_mean
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Guidance on sample sizes for measuring plant traits were followed from
     Cornelissen et al. (2003), and we took five samples (ie five leaves or five stem
@@ -152,7 +169,9 @@ traits:
 - var_in: SD
   unit_in: mg/mm3
   trait_name: wood_density
-  value_type: site_mean
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Guidance on sample sizes for measuring plant traits were followed from
     Cornelissen et al. (2003), and we took five samples (ie five leaves or five stem
@@ -165,7 +184,9 @@ traits:
 - var_in: SD_MASS
   unit_in: mg
   trait_name: seed_dry_mass
-  value_type: site_mean
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Guidance on sample sizes for measuring plant traits were followed from
     Cornelissen et al. (2003), and we took five samples (ie five leaves or five stem
@@ -176,7 +197,9 @@ traits:
 - var_in: 'N'
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Guidance on sample sizes for measuring plant traits were followed from
     Cornelissen et al. (2003), and we took five samples (ie five leaves or five stem
@@ -189,14 +212,18 @@ traits:
 - var_in: Yrs
   unit_in: years
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: time in years since last fire (contextual variable)
 - var_in: Ht
   unit_in: cm
   trait_name: plant_height
-  value_type: site_max
-  replicates: various
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: count_plants
   methods: We measured heights of at least five (and up to 10) individuals per species
     in each time-since-fire area. Many species in this region resprout after fire,
     but for species with postfire seed regeneration, separate measurements were made
@@ -213,8 +240,10 @@ traits:
 - var_in: Diam
   unit_in: mm
   trait_name: basal_diameter
-  value_type: site_max
-  replicates: various
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: count_plants
   methods: Canopy length, canopy width and basal diameter of the biggest stem were
     also measured for each individual of each species; we focussed our analysis on
     height-growth to complement the growing literature of height-growth, mainly from
@@ -222,8 +251,10 @@ traits:
 - var_in: Length
   unit_in: mm
   trait_name: .na
-  value_type: site_max
-  replicates: various
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: count_plants
   methods: Canopy length, canopy width and basal diameter of the biggest stem were
     also measured for each individual of each species; we focussed our analysis on
     height-growth to complement the growing literature of height-growth, mainly from
@@ -231,8 +262,10 @@ traits:
 - var_in: Width
   unit_in: mm
   trait_name: plant_width
-  value_type: site_max
-  replicates: various
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: count_plants
   methods: Canopy length, canopy width and basal diameter of the biggest stem were
     also measured for each individual of each species; we focussed our analysis on
     height-growth to complement the growing literature of height-growth, mainly from

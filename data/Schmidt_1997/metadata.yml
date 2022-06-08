@@ -11,19 +11,35 @@ source:
     number: '10'
     pages: 1231--1241
     doi: 10.1046/j.1365-3040.1997.d01-20.x
-people:
-- name: Susanne Schmidt
-  institution: University of Queensland
-  role: collector, contact
-- name: George Stewart
-  institution: University of Queensland
-  role: collector
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Schmidt
+    given_name: Susanne
+    ORCID: 0000-0001-8369-1238
+    affiliation: School of Agriculture and Food Science, The University of Queensland,
+      Australia
+    additional_role: contact
+  - last_name: Stewart
+    given_name: George
+    ORCID: .na.character
+    affiliation: The University of Queensland, Australia
+    notes: no contact
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 1998
-  year_collected_end: 1998
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      group_by(`gen spp`, site_text) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup() %>%
+      mutate(
+        observation_number = ifelse(!is.na(`15-N`),observation_number, NA),
+        observation_number = ifelse(observation_number > 2, 2, observation_number)
+      )
+  '
+  collection_date: 1998/1998
+  taxon_name: gen spp
+  site_name: site_text
   description: Compilation of data from Susanne Schmidt
   collection_type: field
   sample_age_class: adult
@@ -70,66 +86,78 @@ sites:
       are burnt at intervals of 6-7 years with alternating 'hot' fires *burning during
       periods of prolonged dry conditions) and 'cold' fires (burning after rain).
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: gen spp
-    site_name: site_text
-  custom_R_code: .na
 traits:
 - var_in: fire_response
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion
 - var_in: regeneration
   unit_in: .na
   trait_name: storage_organ
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion
 - var_in: C3C4
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion
 - var_in: Nfixer
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion
 - var_in: woodiness
   unit_in: .na
   trait_name: woodiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion
 - var_in: mycorrhizal
   unit_in: .na
   trait_name: root_structure
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion
 - var_in: deciduous/evergreen
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion
 - var_in: leaf Nmass
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 15-N_sample_size
   methods: Healthy mature leaves were oven dried at 60 deg C on the day of collection
     and ground to a fine powder using a ball mill (Retsch MM-2, Haan, Germany). Lignotubers
     and roots from two to six specimens were used for d15N analysis. Cross-sections
@@ -142,7 +170,9 @@ traits:
 - var_in: delta 13C
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Healthy mature leaves were oven dried at 60 deg C on the day of collection
     and ground to a fine powder using a ball mill (Retsch MM-2, Haan, Germany). Lignotubers
@@ -156,8 +186,11 @@ traits:
 - var_in: 15-N
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: site_mean
-  replicates: 1-10
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 15-N_sample_size
+  observation_number: observation_number
   methods: Healthy mature leaves were oven dried at 60 deg C on the day of collection
     and ground to a fine powder using a ball mill (Retsch MM-2, Haan, Germany). Lignotubers
     and roots from two to six specimens were used for d15N analysis. Cross-sections

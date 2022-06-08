@@ -1,24 +1,24 @@
 #' Build reports for all studies
 #' 
-#' Build reports for all studies using the `build_study_report()` function. This
+#' Build reports for all studies using the `build_dataset_report()` function. This
 #' function builds a study report for every study with a unique `dataset_id` that
-#' has been loaded into AusTraits using `build_study_report()`. The reports are 
+#' has been loaded into AusTraits using `build_dataset_report()`. The reports are 
 #' rendered as html files and saved in the "export/reports" folder.  
 #'
 #' @param dataset_ids names of studies/ datasets, default is NULL
-#' @param ... arguments passed to build_study_report()
+#' @param ... arguments passed to build_dataset_report()
 #'
 #' @return html files of the study report for all studies 
 #' @export
-build_study_reports <- function(dataset_ids=NULL, ...) {
+build_dataset_reports <- function(dataset_ids=NULL, ...) {
 
   # define if does not already exist, 
   # for all studies with suitable metadata file
   if(length(dataset_ids) ==0 | is.null(dataset_ids) | any(is.na(dataset_ids)))
-    dataset_ids <- austraits$trait$dataset_id %>% unique()
+    dataset_ids <- list.files("data")
   
   for(dataset_id in dataset_ids)
-    build_study_report(dataset_id, ...)
+    build_dataset_report(dataset_id, ...)
 }
 
 #' Build report for a specific study
@@ -36,8 +36,9 @@ build_study_reports <- function(dataset_ids=NULL, ...) {
 #'
 #' @return html file of the rendered report located in the "export/reports" folder
 #' @export
-build_study_report <- function(dataset_id, overwrite=FALSE, output_path = "export/reports", input_file = "scripts/report_study.Rmd") {
-  
+build_dataset_report <- function(dataset_id, overwrite=FALSE, output_path = "export/reports", 
+                                 input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build")) {
+
   if(!file.exists(output_path)) {
     dir.create(output_path, FALSE, TRUE)
   }
@@ -66,21 +67,6 @@ build_study_report <- function(dataset_id, overwrite=FALSE, output_path = "expor
   cat(" -> done\n")
 }
 
-#' Get SHA link from Github
-#' 
-#' Get SHA link using the get_SHA() function. The link generated leads to the latest
-#' commit for the Github repository. SHA is the abbreviated SHA-1 40 digit
-#' hexadecimal number which Github uses to track commits and changes made to a repository. 
-#' 
-#' @param ... arguments passed to the get_SHA()
-#'
-#' @return SHA link to a github commit as a character string formatted using markdown syntax
-#' @export
-get_SHA_link <- function(...) {
-  sha <- get_SHA(...)
-  sprintf("[%s](https://github.com/traitecoevo/austraits/tree/%s)",   sha, sha)
-}
-
 #' Get SHA string from Github repository for latest commit
 #' 
 #' Get SHA string for the latest commit on Github for the repository. SHA is the
@@ -102,52 +88,20 @@ get_SHA <- function(path = rprojroot::find_root("remake.yml")) {
 #' @importFrom rlang .data
 #' @export
 my_kable_styling_html <- function(...) {
-    kableExtra::kable(...) %>%
-    kableExtra::kable_styling(..., 
+    txt <- 
+      kableExtra::kable(...) %>%
+      kableExtra::kable_styling(..., 
                   bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
                   full_width = FALSE, 
                   position = "left"
-                  ) %>%
+                  ) 
+    
     # hack to add margin to plot
-    gsub('style="width: auto ', 'style="margin-left:30px; width: auto ', .)
+    gsub('style="width: auto ', 'style="margin-left:30px; width: auto ', txt)
 }
 
-#' Format table with kable and default styling for pdf 
-#'
-#' @param ... arguments passed to `kableExtra::kable()`
-#'
-#' @export
-my_kable_styling_pdf <- function(...) {
-    kableExtra::kable(...)
-}
 
-#' Format table with kable and default styling for markdown
-#'
-#' @param ... arguments passed to `kableExtra::kable()`
-#'
-#' @export
-my_kable_styling_markdown <- function(...) {
-  kableExtra::kable(...)
-}
 
-#' Generate hyperlink for markdown and html
-#' 
-#' Generate hyperlink for markdown and html files
-#'
-#' @param link character string for the url link
-#' @param text character string for the text to display
-#' @param type file type, default is markdown "md" otherwise html
-#'
-#' @return character string with the text and link formatted for md and html
-#' @export
-#'
-#' @examples as_link("www.austraits.org", "austraits")
-as_link <- function(link, text, type="md") {
-  if(type=="md")
-    sprintf('[%s](%s)', text, link)
-  else
-    sprintf("<a href='%s'> %s </a>", link, text)
-}
 
 #' Format a tree structure from a vector 
 #' 

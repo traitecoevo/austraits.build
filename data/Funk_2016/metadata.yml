@@ -12,18 +12,43 @@ source:
     number: '1'
     pages: 75--83
     doi: 10.1890/15-0974.1
-people:
-- name: Jennifer Funk
-  institution: Schmid College of Science and Technology, Chapman University
-  role: collector, lab_leader
-- name: Rachel Standish
-  institution: School of Veterinary and Life Sciences, Murdoch University
-  role: collector, lab_leader, contact
+contributors:
+  data_collectors:
+  - last_name: Funk
+    given_name: Jennifer
+    ORCID: 0000-0002-1916-5513
+    affiliation: Department of Plant Sciences, University of California, Davis, USA
+  - last_name: Standish
+    given_name: Rachel
+    ORCID: 0000-0001-8118-1904
+    affiliation: Environmental and Conservation Sciences, Murdoch University, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: banksia woodland Spring 2011, coastal banksia woodland Spring
-    2012
-  year_collected_end: banksia woodland Spring 2011, coastal banksia woodland Spring
-    2012
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        `Nut acq strat` = gsub("Nfixer/","",`Nut acq strat`),
+        `Nut acq strat` = gsub("MD",NA,`Nut acq strat`),
+        `Rt tp cat` = gsub("MD",NA,`Rt tp cat`),
+        `Root depth (cm)` = gsub("MD",NA,`Root depth (cm)`),
+        `Height (mm)` = gsub("MD",NA,`Height (mm)`),
+        `Aarea` = gsub("MD",NA,`Aarea`),
+        `Amass` = gsub("MD",NA,`Amass`),
+        `PNUE`= gsub("MD",NA,`PNUE`),
+        `PPUE` = gsub("MD",NA,`PPUE`),
+        `WUE`= gsub("MD",NA,`WUE`),
+        `Root type` = gsub("MD",NA,`Root type`)
+        ) %>%
+      mutate(
+        Date = ifelse(Site == "Banksia woodland","2011-09/2011-11",NA),
+        Date = ifelse(Site == "Coastal banksia woodland","2012-09/2012-11",Date)
+        )
+  '
+  collection_date: Date
+  taxon_name: Species
+  site_name: Site
   description: Australian subset of a worldwide comparison of functional traits in
     invasive versus native species in mediterranean-climate ecosystems
   collection_type: field
@@ -63,24 +88,13 @@ sites:
     soil pH: 5.74
     soil P, total (mg/kg): 150.9
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: Site
-  custom_R_code: data %>%  mutate(`Nut acq strat` = gsub("Nfixer/","",`Nut acq strat`))
-    %>%  mutate(`Nut acq strat` = gsub("MD",NA,`Nut acq strat`)) %>%  mutate(`Rt tp
-    cat` = gsub("MD",NA,`Rt tp cat`)) %>%  mutate(`Root depth (cm)` = gsub("MD",NA,`Root
-    depth (cm)`)) %>%  mutate(`Height (mm)` = gsub("MD",NA,`Height (mm)`)) %>%  mutate(`Aarea`
-    = gsub("MD",NA,`Aarea`)) %>%  mutate(`Amass` = gsub("MD",NA,`Amass`)) %>%  mutate(`PNUE`
-    = gsub("MD",NA,`PNUE`)) %>%  mutate(`PPUE` = gsub("MD",NA,`PPUE`)) %>%  mutate(`WUE`
-    = gsub("MD",NA,`WUE`))  %>%  mutate(`Root type` = gsub("MD",NA,`Root type`)) %>%
-    subset(Origin == "native")
 traits:
 - var_in: Life form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: We used the following six life form categories, petaloid monocot perennials,
     non- petaloid monocot annuals, non- petaloid monocot perennials, annual forbs,
@@ -90,32 +104,42 @@ traits:
 - var_in: Raunkiaer life form
   unit_in: .na
   trait_name: life_form
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Legume
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: LMA (g/m2)
   unit_in: g/m2
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: After photosynthetic measures, leaves were collected, scanned to determine
     leaf area, dried at 65 deg C for 3 d, and weighed to determine LMA.
 - var_in: SRL (cm/mg)
   unit_in: cm/mg
   trait_name: specific_root_length
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Specific root length (SRL) was sampled for species with rooting depth less
     than 100 cm. Roots were either subsampled from excavated root systems or taken
@@ -125,13 +149,17 @@ traits:
 - var_in: Root type
   unit_in: .na
   trait_name: root_morphology
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Root depth (cm)
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: 5
   methods: We used three categories of root depth (0-30 cm, 30-100 cm, or >100 cm).
     For annuals, perennial forbs, and small- statured woody species, we excavated
@@ -140,7 +168,9 @@ traits:
 - var_in: Nut acq strat
   unit_in: .na
   trait_name: root_structure
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: 'Nutrient acquisition strategy was assigned using information gathered
     from the literature (Appendix S2). We grouped species into four NAS categories:
@@ -151,7 +181,9 @@ traits:
 - var_in: Seed mass (g)
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: literature
   replicates: .na
   methods: for various published sources, in particular the Kew botanic garden seed
     database; not mapped into AusTraits, since we have the Kew seed database as its
@@ -159,7 +191,9 @@ traits:
 - var_in: Height (mm)
   unit_in: mm
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Plant height was measured between the base of the stem and the apical shoot
     or tallest leaf (i.e., grasses). Flowering stalks were excluded from height measurements.
@@ -167,7 +201,9 @@ traits:
 - var_in: Nmass
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: After photosynthetic measures, leaves were collected and dried at 65 deg
     C for 3 d. Ground leaves were analyzed for total plant N with an elemental analyzer
@@ -175,7 +211,9 @@ traits:
 - var_in: Pmass
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: After photosynthetic measures, leaves were collected and dried at 65 deg
     C for 3 d. Phosphorus content was determined colorimetrically using a discrete
@@ -184,7 +222,9 @@ traits:
 - var_in: Narea
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: After photosynthetic measures, leaves were collected and dried at 65 deg
     C for 3 d. Ground leaves were analyzed for total plant N with an elemental analyzer
@@ -192,7 +232,9 @@ traits:
 - var_in: Parea
   unit_in: mg/m2
   trait_name: leaf_P_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: After photosynthetic measures, leaves were collected and dried at 65 deg
     C for 3 d. Phosphorus content was determined colorimetrically using a discrete
@@ -201,7 +243,9 @@ traits:
 - var_in: Aarea
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_saturated
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Photosynthetic and transpiration rates were measured with a LI- 6400 portable
     photosynthesis system (LICOR, Lincoln, Nebraska, USA). All measurements were conducted
@@ -211,7 +255,9 @@ traits:
 - var_in: WUE
   unit_in: mmolCO2/molH2O
   trait_name: water_use_efficiency_photosynthetic
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Photosynthetic and transpiration rates were measured with a LI- 6400 portable
     photosynthesis system (LICOR, Lincoln, Nebraska, USA). All measurements were conducted
@@ -222,7 +268,9 @@ traits:
 - var_in: Amass
   unit_in: nmolCO2/g/s
   trait_name: photosynthetic_rate_per_dry_mass_saturated
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Photosynthetic and transpiration rates were measured with a LI- 6400 portable
     photosynthesis system (LICOR, Lincoln, Nebraska, USA). All measurements were conducted
@@ -232,14 +280,18 @@ traits:
 - var_in: PNUE
   unit_in: umolCO2/molN/s
   trait_name: leaf_photosynthetic_nitrogen_use_efficiency_saturated
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Photosynthetic nitrogen-use efficiency (PNUE) was calculated as the ratio
     of photosynthesis to leaf N.
 - var_in: PPUE
   unit_in: mmolCO2/molP/s
   trait_name: leaf_photosynthetic_phosphorus_use_efficiency_saturated
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Photosynthetic phosphorus-use efficiency (PPUE) was calculated as the ratio
     of photosynthesis to leaf P.

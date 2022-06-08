@@ -6,19 +6,27 @@ source:
     year: 2004
     title: 'Unpublished data: Trait data for plant species at Mt Wellington and Sea
       Acres, Macquarie University'
-people:
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader, contact
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
-- name: Erica Williams
-  institution: Macquarie University Sydney
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+    additional_role: contact
+  assistants: Erica Williams
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 2003
-  year_collected_end: 2003
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(`leaf type`= ifelse(str_detect(name_original,"Synoum"),"simple compound",`leaf type`)) %>%
+      group_by(name_original) %>%
+        mutate_at(vars(`leaf type`),replace_duplicates_with_NA) %>%
+      ungroup()
+  '
+  collection_date: 2003/2003
+  taxon_name: name_original
+  site_name: site
   description: trait data from field campaigns by Erica Williams in Westoby lab from
     Mt Wellington and Sea Acres NP
   collection_type: field
@@ -74,24 +82,21 @@ sites:
     crown height, max (m): .na.character
     mean relative humidity, 0900 h (%): 77
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-    site_name: site
-  custom_R_code: data %>% group_by(name_original) %>% mutate_at(vars(`leaf type`),replace_duplicates_with_NA)
-    %>% ungroup()
 traits:
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation
 - var_in: SLA_m2kg
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: From each branching sequence, 6 sun leaves were collected and stored in
     plastic bags, following Cornelissen manual. The adaxial surface of the leaves
@@ -101,7 +106,9 @@ traits:
 - var_in: WoodD_gcm3
   unit_in: mg/mm3
   trait_name: wood_density
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: From each branching sequence, a 4-6 cm segment of wood was cut at 1m. Samples
     were placed in plastic bags and were refrigerated until processed. After removing
@@ -112,7 +119,9 @@ traits:
 - var_in: leafsize_mm2
   unit_in: mm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: From each branching sequence, 6 sun leaves were collected and stored in
     plastic bags, following Cornelissen manual. The adaxial surface of the leaves
@@ -122,7 +131,9 @@ traits:
 - var_in: stem area mm
   unit_in: mm2
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: From each branching sequence, a 4-6 cm segment of wood was cut at 1m. Samples
     were placed in plastic bags and were refrigerated until processed. After removing
@@ -132,8 +143,10 @@ traits:
     Stem density was calculated as dry mass/fresh volume conductive tissue (bark excluded).
 - var_in: stem density g/m3
   unit_in: mg/mm3
-  trait_name: .na
-  value_type: raw_value
+  trait_name: stem_density
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: From each branching sequence, a 4-6 cm segment of wood was cut at 1m. Samples
     were placed in plastic bags and were refrigerated until processed. After removing
@@ -144,7 +157,9 @@ traits:
 - var_in: stem_area_mm_no_bark
   unit_in: mm2
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: From each branching sequence, a 4-6 cm segment of wood was cut at 1m. Samples
     were placed in plastic bags and were refrigerated until processed. After removing

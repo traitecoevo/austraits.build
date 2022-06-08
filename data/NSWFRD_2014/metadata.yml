@@ -8,47 +8,69 @@ source:
     title: NSW Flora Fire Response Database, v2.1
     institution: NSW Department of Planning Industry and Environment
     type: database
-people:
-- name: Elizabeth Tasker
-  institution: NSW Department of Planning Industry and Environment
-  role: collector, contact
-- name: Belinda Kenny
-  institution: NSW Rural Fire Service
-  role: collector
-- name: Ross Bradstock
-  institution: University of Wollongong
-  role: assistant
-- name: Malcolm Gill
-  institution: The Australian National University
-  role: assistant
-- name: Corinna Orscheg
-  institution: NSW Department of Planning Industry and Environment
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Tasker
+    given_name: Elizabeth
+    ORCID: .na.character
+    affiliation: NSW Department of Planning Industry and Environment, Australia
+    additional_role: contact
+  - last_name: Kenny
+    given_name: Belinda
+    ORCID: .na.character
+    affiliation: NSW Rural Fire Service, Australia
+  - last_name: Bradstock
+    given_name: Ross
+    ORCID: 0000-0002-6904-2394
+    affiliation: University of Wollongong
+    notes: acknowledge only
+  - last_name: Gill
+    given_name: Malcolm
+    ORCID: .na.character
+    affiliation: The Australian National University, Australia
+    notes: acknowledge only
+  assistants: Corinna Orscheg
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2002
-  year_collected_end: 2014
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        seed_longevity = `Seed storage`,
+        fire_response_detailed = Fireresponse,
+        flowering_time_edited = convert_month_range_vec_to_binary(flowering_time_edited),
+        fruiting_time_edited = convert_month_range_vec_to_binary(fruiting_time_edited),
+        dispersers = `Seed dispersal mechanism`,
+        `Minimum maturity` = str_extract(`Minimum maturity`,"[:digit:]"),
+        `Maximum maturity` = str_extract(`Maximum maturity`,"[:digit:]"),
+        `Lifespan > than` = str_extract(`Lifespan > than`,"[:digit:]"),
+        `Lifespan < than` = str_extract(`Lifespan < than`,"[:digit:]"),
+        storage_organ = ifelse(stringr::str_detect(`Resprout location`, "lignotuber"), "lignotuber", NA),
+        serotiny = ifelse(stringr::str_detect(`Seed storage`, "serotinous"), "serotinous", NA)
+      ) %>%
+      group_by(`Current Scientific Name`) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup
+  '
+  collection_date: 2002/2014
+  taxon_name: Current Scientific Name
   description: NSW Flora Fire Response Database version 2.1
   collection_type: field
   sample_age_class: adult
+  observation_number: observation_number
   sampling_strategy: unknown
   original_file: AULD-NSWFFRDv2.1.xls
   notes: unpubl. database held by NSW DPIE. The raw data file includes multiple worksheets
     with references and notes.
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Current Scientific Name
-  custom_R_code: data %>% mutate(seed_longevity = `Seed storage`) %>% mutate(fire_response_detailed
-    = Fireresponse) %>% mutate(flowering_time_edited = convert_month_range_vec_to_binary(flowering_time_edited),fruiting_time_edited
-    = convert_month_range_vec_to_binary(fruiting_time_edited)) %>% mutate(dispersers
-    = `Seed dispersal mechanism`) %>% mutate(storage_organ = ifelse(stringr::str_detect(`Resprout location`, "lignotuber"), "lignotuber", NA)) %>% mutate(serotiny = ifelse(stringr::str_detect(`Seed storage`, "serotinous"), "serotinous", NA))  
 traits:
 - var_in: Life form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: H=herb S=shrub T=tree P=prostarte C=climber V=vine F=fern TF=tree fern
     FF=forkfern CM=clubmoss; See original file in raw data folder for extensive reference
@@ -56,7 +78,9 @@ traits:
 - var_in: Fireresponse
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: S=seeder, R=resprouter. r=usually killed but sometimes resprouts, s=usually
     resprouts but sometimes killed; these may indicate a variable response seen by
@@ -73,7 +97,9 @@ traits:
 - var_in: fire_response_detailed
   unit_in: .na
   trait_name: fire_response_detailed
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: S=seeder, R=resprouter. r=usually killed but sometimes resprouts, s=usually
     resprouts but sometimes killed; these may indicate a variable response seen by
@@ -90,7 +116,9 @@ traits:
 - var_in: Resprout location
   unit_in: .na
   trait_name: bud_bank_location
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Source of buds for vegetative regenerators. Plum text indicates that the
     source of this information is from the fire response category given by one or
@@ -103,7 +131,9 @@ traits:
 - var_in: storage_organ
   unit_in: .na
   trait_name: storage_organ
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Source of buds for vegetative regenerators. Plum text indicates that the
     source of this information is from the fire response category given by one or
@@ -116,7 +146,9 @@ traits:
 - var_in: Seed storage
   unit_in: .na
   trait_name: seed_storage_location
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: The following definitions have been used for seed-bank type. Soil seedbank,
     persistent=some carry over of viable seeds from year to year, transient=no viable
@@ -130,7 +162,9 @@ traits:
 - var_in: seed_longevity
   unit_in: .na
   trait_name: seed_longevity
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: The following definitions have been used for seed-bank type. Soil seedbank,
     persistent=some carry over of viable seeds from year to year, transient=no viable
@@ -158,7 +192,9 @@ traits:
 - var_in: Seed dispersal mechanism
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Known vector for dispersal (wind, bird, ants, mammal, adhesion, etc); a-
     indicates seed is adapted for dispersal by the given vector (but not necessarily
@@ -167,7 +203,9 @@ traits:
 - var_in: dispersers
   unit_in: .na
   trait_name: dispersers
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Known vector for dispersal (wind, bird, ants, mammal, adhesion, etc); a-
     indicates seed is adapted for dispersal by the given vector (but not necessarily
@@ -176,36 +214,85 @@ traits:
 - var_in: Germination cue
   unit_in: .na
   trait_name: germination_treatment
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Germination is stimulated by a fire-related (e.g. heat, smoke) or other
     (e.g. stratification, leaching) cue; a- indicates seed is adapted for given cue
     (ie hard seed coat adapted for heat cue). See original file in raw data folder
     for extensive reference list.
+  sample_age_class: seedling
 - var_in: flowering_time_edited
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Main flowering time. From Flora of NSW or Ecology of Sydney Plant Species
     or other source (eg other reference book, recovery plan).
 - var_in: fruiting_time_edited
   unit_in: .na
   trait_name: fruiting_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Main fruiting time. See original file in raw data folder for extensive
     reference list.
 - var_in: Post-fire recruitment
   unit_in: .na
   trait_name: post_fire_recruitment
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Indicates whether seedlings have been observed post-fire, may give quantity
     of seedlings seen. 'no' indicates that a reference has categorised this species
     as an 'obligate resprouter'; if one source implies this but another implies that
     seedlings were seen then 'no / yes' is given. See original file in raw data folder
     for extensive reference list.
+- var_in: Minimum maturity
+  unit_in: years
+  trait_name: reproductive_maturity_numeric
+  entity_type: species
+  value_type: minimum
+  basis_of_value: expert_score
+  replicates: .na
+  methods: &maturity Waiting to map in later; Summary of life history categories. Minimum value from primary juvenile period, seed set, secondary juvenile period, fire tolerance, and 'maturity'. Secondary juvenile and fire tolerance values are not included for species that are predominately seeders.
+- var_in: Maximum maturity
+  unit_in: years
+  trait_name: reproductive_maturity_numeric
+  entity_type: species
+  value_type: maximum
+  basis_of_value: expert_score
+  replicates: .na
+  methods: *maturity
+- var_in: Lifespan > than
+  unit_in: years
+  trait_name: lifespan
+  entity_type: species
+  value_type: minimum
+  basis_of_value: expert_score
+  replicates: .na
+  methods: &longevity Plant age at which senescence is expected to occur. In many cases this is a fairly broad range, based on plant life form & structure. May be post-fire age at which a species is no longer found in a community where it was known or assumed to occur in.
+- var_in: Lifespan < than
+  unit_in: years
+  trait_name: lifespan
+  entity_type: species
+  value_type: maximum
+  basis_of_value: expert_score
+  replicates: .na
+  methods: *longevity
+- var_in: Secondary juvenile period
+  unit_in: years
+  trait_name: reproductive_maturity_secondary
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which flowering first occurs from resprouting material
 substitutions:
 - trait_name: fire_response
   find: R
@@ -1952,5 +2039,5 @@ taxonomic_updates:
   replace: Kunzea bracteolata
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2021-04-28)
 exclude_observations: .na
-questions: .na
-
+questions:
+  additional_traits: post-fire flowering

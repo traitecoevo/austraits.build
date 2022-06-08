@@ -10,16 +10,36 @@ source:
     volume: 41
     pages: 125497
     doi: 10.1016/j.ppees.2019.125497
-people:
-- name: Peter Vesk
-  institution: University of Melbourne
-  role: collector, contact, lab_leader
-- name: Jian Yen
-  institution: University of Melbourne
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Vesk
+    given_name: Peter
+    ORCID: 0000-0003-2008-7062
+    affiliation: University of Melbourne, Australia
+    additional_role: contact
+  assistants: Jian Yen
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2000
-  year_collected_end: 2001
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site_name = "Round Hill-Nombinnie Nature Reserve",
+        context = ifelse(treat == "b","clip-and-burn",NA),
+        context = ifelse(treat == "c2","control",context),
+        context = ifelse(treat == "c","clip",context),
+        method_number = ifelse(treat == "b",2,NA),
+        method_number = ifelse(treat == "c2",1,method_number),
+        method_number = ifelse(treat == "c",3,method_number),
+        population_id = site_name
+      )
+  '
+  collection_date: 2000/2001
+  taxon_name: SPECIES
+  site_name: site_name
+  context_name: context
+  population_id: population_id
+  method_number: method_number
   description: data on bud reprouting following disturbance in semi-arid NSW
   collection_type: field_experiment
   sample_age_class: adult
@@ -94,29 +114,20 @@ sites:
       Grey kangaroos, Macropus fuliginosus, and feral goats, Capra hircus.
 contexts:
   clip:
-    type: treatment
-    description: plant clipped to approximately 5 mm above ground
+    disturbance treatment: plant clipped to approximately 5 mm above ground [manipulated]
   clip-and-burn:
-    type: treatment
-    description: plants burnt with butane torch, resulting in an average temperatures
-      of 71 deg C at 5 mm depth, and clipped to approximately 5 mm above ground
+    disturbance treatment: plants burnt with butane torch, resulting in an average
+      temperatures of 71 deg C at 5 mm depth, and clipped to approximately 5 mm above
+      ground [manipulated]
   control:
-    type: treatment
-    description: no burn or clip treatment applied
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: SPECIES
-    site_name: site_name
-    context_name: context
-  custom_R_code: data %>% mutate(site_name = "Round Hill-Nombinnie Nature Reserve")
-    %>% mutate(context = ifelse(treat == "b","clip-and-burn",NA),context = ifelse(treat
-    == "c2","control",context),context = ifelse(treat == "c","clip",context))
+    disturbance treatment: control; no burn or clip treatment applied
 traits:
 - var_in: bud_depth_mm
   unit_in: mm
   trait_name: sprout_depth
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: These are sprouts that were observed on successfully resprouting individuals
     that had experienced experimental clipping and burning treatments. PA Vesk dug
@@ -135,7 +146,9 @@ traits:
 - var_in: MAXHT_cm
   unit_in: cm
   trait_name: .na
-  value_type: site_max
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: various
   methods: Not mapped into AusTraits, because these are the same measurements that
     are in Vesk_2004. But left as part of the dataset to show their relation to this
@@ -143,13 +156,17 @@ traits:
 - var_in: GFORM
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation
 - var_in: STEMCATS
   unit_in: count
   trait_name: stem_count_categorical
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 30
   methods: field observation; back-calculated species level means; providing means,
     rather than individual observations, since the stem numbers plants are, by necessity,
@@ -157,7 +174,9 @@ traits:
 - var_in: specific_leaf_area_mm2/mg
   unit_in: mm2/mg
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Not mapped into AusTraits, because these are the same measurements that
     are in Vesk_2004. But left as part of the dataset to show their relation to this

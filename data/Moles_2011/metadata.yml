@@ -23,13 +23,49 @@ source:
     number: '3'
     pages: 777--788
     doi: 10.1111/j.1469-8137.2011.03732.x
-people:
-- name: Angela Moles
-  institution: University of New South Wales
-  role: contact, collector, lab_leader
+contributors:
+  data_collectors:
+  - last_name: Moles
+    given_name: Angela
+    ORCID: 0000-0003-2041-7762
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  austraits_curators: Caitlan Baxter
 dataset:
-  year_collected_start: July 2004
-  year_collected_end: June 2006
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site_name = case_when(
+          longitude == 151.2762778 ~ "Sydney - Kuringai heath",
+          longitude == 151.2917222 ~ "Sydney - Kuringai diatreme", 
+          longitude == 130.8200833 ~ "Darwin - East Point",
+          longitude == 131.1080278 ~ "Darwin - Howard Springs",
+          longitude == 133.5619 ~ "Alice Springs - Kunoth Paddock",
+          longitude == 133.8628333 ~ "Alice Springs - The Gap",
+          longitude == 145.4461667 ~ "Cairns - Daintree canopy crane",
+          longitude == 146.75485 ~ "Townsville - Savanna",
+          longitude == 146.7726 ~ "Townsville - vine thicket",
+          longitude == 144.92245 ~ "Melbourne - Greens Bush",
+          longitude == 145.6197167 ~ "Melbourne - Bunyip",
+          longitude == 153.1272 ~ "Brisbane - Lamington",
+          longitude == 151.1209667 ~ "Inverell - Goonoowigal",
+          longitude == 151.72905 ~ "Toowoomba",
+          longitude == 116.0435667 ~ "Perth - Darling Scarp",
+          longitude == 115.8855167 ~ "Perth - Melaleuca Park",
+          longitude == 155.6333333 ~ "Tasmania - Mt Wellington",
+          longitude == 146.6689833 ~ "Tasmania - Mt Field",
+          longitude == 139.1322333 ~ "Adelaide - Ferries",
+          longitude == 139.5173667 ~ "Adelaide - Brookfield chenopod",
+          longitude == 139.5025833 ~ "Adelaide - Brookfield mallee", 
+          longitude == 138.7398333 ~ "Adelaide - Coxs Scrub"
+        )
+      )
+  '
+  collection_date: 2004-07/2006-06
+  taxon_name: species
+  site_name: site_name
   description: Our aim was to determine whether plants from low latitudes have higher
     levels of resistance traits than do plants from high latitudes.
   collection_type: field
@@ -57,7 +93,7 @@ sites:
     latitude (deg): -34.3196333
     longitude (deg): 139.5025833
     description: Mallee
-  Adelaide - Cox's Scrub:
+  Adelaide - Coxs Scrub:
     latitude (deg): -35.34095
     longitude (deg): 138.7398333
     description: Sclerophyll shrubland
@@ -93,7 +129,7 @@ sites:
     latitude (deg): -29.8151833
     longitude (deg): 151.1209667
     description: Callitris woodland
-  Melbourne - Green's Bush:
+  Melbourne - Greens Bush:
     latitude (deg): -38.4297833
     longitude (deg): 144.92245
     description: Grassy woodland
@@ -138,37 +174,21 @@ sites:
     longitude (deg): 146.7726
     description: Vine thicket
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    site_name: site_name
-  custom_R_code: data %>% mutate(site_name = case_when(longitude == 151.2762778 ~
-    "Sydney - Kuringai heath", longitude == 151.2917222 ~ "Sydney - Kuringai diatreme",
-    longitude == 130.8200833 ~ "Darwin - East Point", longitude == 131.1080278 ~ "Darwin
-    - Howard Springs", longitude == 133.5619 ~ "Alice Springs - Kunoth Paddock", longitude
-    == 133.8628333 ~ "Alice Springs - The Gap", longitude == 145.4461667 ~ "Cairns
-    - Daintree canopy crane", longitude == 146.75485 ~ "Townsville - Savanna", longitude
-    == 146.7726 ~ "Townsville - vine thicket", longitude == 144.92245 ~ "Melbourne
-    - Green's Bush", longitude == 145.6197167 ~ "Melbourne - Bunyip", longitude ==
-    153.1272 ~ "Brisbane - Lamington", longitude == 151.1209667 ~ "Inverell - Goonoowigal",
-    longitude == 151.72905 ~ "Toowoomba", longitude == 116.0435667 ~ "Perth - Darling
-    Scarp", longitude == 115.8855167 ~ "Perth - Melaleuca Park", longitude == 155.6333333
-    ~ "Tasmania - Mt Wellington", longitude == 146.6689833 ~ "Tasmania - Mt Field",
-    longitude == 139.1322333 ~ "Adelaide - Ferries", longitude == 139.5173667 ~ "Adelaide
-    - Brookfield chenopod", longitude == 139.5025833 ~ "Adelaide - Brookfield mallee",
-    longitude == 138.7398333 ~ "Adelaide - Cox's Scrub"))
 traits:
 - var_in: Growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: mean leaf area (cm2)
   unit_in: cm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Three fresh leaves from each of five plants of each species were placed
     in plastic bags with damp tissue, and stored in a cooler or refrigerator until
@@ -178,14 +198,18 @@ traits:
 - var_in: dry matter content (%)
   unit_in: '%'
   trait_name: leaf_dry_matter_content
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: These leaves were dried at 55-65 deg C (the vast majority at 55 deg C),
     for 24-48 h, and weighed for dry mass.
 - var_in: SLA (mm2/mg)
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Three fresh leaves from each of five plants of each species were placed
     in plastic bags with damp tissue, and stored in a cooler or refrigerator until
@@ -198,20 +222,26 @@ traits:
 - var_in: presence of hair on adult leaves
   unit_in: .na
   trait_name: leaf_hairs_adult
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: 1 = hairs on mature leaves visible to the naked eye, 0 = no hair visible
 - var_in: presence of hair on juvenile leaves
   unit_in: .na
   trait_name: leaf_hairs_juvenile
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: 1 = hairs on leaves that are still expanding visible to the naked eye,
     0 = no hair visible
 - var_in: presence of spines on vegetative parts of plant
   unit_in: .na
   trait_name: spinescence
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: 1 = spines present on vegetative parts of the plant, 0 = no spines on vegetative
     parts of plant
@@ -274,4 +304,3 @@ taxonomic_updates:
   reason: Confirm alignment with accepted on APC list (E. Wenk, 2020-05-25)
 exclude_observations: .na
 questions: .na
-

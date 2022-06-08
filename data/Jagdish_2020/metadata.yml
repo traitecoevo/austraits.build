@@ -6,21 +6,47 @@ source:
     author: Ashika Jagdish
     title: 'Unpublished data: Germination photoperiod sensitivity of Australian Plants,
       University of New South Wales'
-people:
-- name: Ashika Jagdish
-  institution: University of New South Wales
-  role: contact, collector
-- name: Angela Moles
-  institution: University of New South Wales
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Jagdish
+    given_name: Ashika
+    ORCID: .na.character
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Moles
+    given_name: Angela
+    ORCID: 0000-0003-2041-7762
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: February 2020
-  year_collected_end: April 2020
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      group_by(Species) %>%
+        mutate_at(vars(`Seed mass (g)`),replace_duplicates_with_NA) %>%
+      ungroup() %>%
+      mutate(
+        population_id = Site,
+        method_number = case_when(
+          `Light Treatment (Categorical)` == "control" ~ 1,
+          `Light Treatment (Categorical)` == "long" ~ 2,
+          `Light Treatment (Categorical)` == "short" ~ 3
+        )
+      )
+
+  '
+  collection_date: 2020-02/2020-04
+  taxon_name: Species
+  site_name: Site
+  context_name: Light Treatment (Categorical)
+  population_id: population_id
   description: To determine photoperiod sensitivity in Australian plants and whether
     there are trends in latitude, seed size, growth form, and across phylogeny and
     ecosystems.
-  collection_type: glasshouse
-  sample_age_class: seedling
+  collection_type: glasshouse, field
+  sample_age_class: seedling, adult
   sampling_strategy: To quantify photoperiod sensitivity of seed germination in a
     range of species, I collected fresh seeds from 97 native species from eastern
     Australia. Each species was collected at a single site, but sites ranged from
@@ -297,12 +323,14 @@ sites:
     leaf area index: 1.466652
     site code: A.B.G
     description: Cumberland Plain Woodland
+    collection_type: arboretum
   The Australian Botanic Garden (site_at_-34.0659_S_and_150.7691_E):
     latitude (deg): -34.0659
     longitude (deg): 150.7691
     leaf area index: 1.466652
     site code: A.B.G
     description: Cumberland Plain Woodland
+    collection_type: arboretum
   Thungutti Swamp (site_at_-28.5207_S_and_152.7479_E):
     latitude (deg): -28.5207
     longitude (deg): 152.7479
@@ -329,43 +357,40 @@ sites:
     description: .na.character
 contexts:
   control:
-    Light Treatment: 12/12
-    type: treatment
-    description: control light treatment with 12 hours light, 12 hours dark
+    daylength treatment: 12/12 (12 hours light/12 hours dark) [manipulated]
   long:
-    Light Treatment: 18/6
-    type: treatment
-    description: long light treatment with 18 hours light, 6 hours dark
+    daylength treatment: 18/6 (18 hours light/6 hours dark) [manipulated]
   short:
-    Light Treatment: 6/18
-    type: treatment
-    description: short light treatment with 6 hours light, 18 hours dark
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: Site
-    context_name: Light Treatment (Categorical)
-  custom_R_code: data %>% group_by(Species) %>% mutate_at(vars(`Seed mass (g)`),replace_duplicates_with_NA) %>% ungroup()
+    daylength treatment: 6/18 (6 hours light/18 hours dark) [manipulated]
 traits:
 - var_in: Seed mass (g)
   unit_in: g
   trait_name: seed_dry_mass
-  value_type: experiment_mean
-  replicates: 3-47
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 50
   methods: To determine average fresh seed mass, I weighed, in grams, 50 fresh seeds
     from each species using a micro-balance (Mettler Toledo PTY LTD, accuracy, 1 x
     10-4). This value was then divided by 50 to obtain the average.
+  collection_type: field
+  sample_age_class: adult
 - var_in: Proportion Germinated
   unit_in: n/n
   trait_name: germination
-  value_type: experiment_mean
-  replicates: 3-47
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: Total Seeds
+  method_number: method_number
+  observation_number: Replicate
   methods: Species were left in incubators until all seeds germinated. Any non-germinated
     seeds were tested for viability at the end of the 90-day period. I tested viability
     using a microscopic cut test analysis and staining with 1% 2,3,5-triphenyltetrazolium
     chloride (TTC) following the Millennium Seed Bank (MSB) procedure, which stained
     the embryo red if it was respiring.
+  collection_type: glasshouse
+  sample_age_class: seedling
 substitutions: .na
 taxonomic_updates:
 - find: Alphitonia petrei

@@ -12,16 +12,32 @@ source:
     pages: 512--520
     publisher: JSTOR
     doi: 10.2307/2389944
-people:
-- name: Daniel Metcalfe
-  institution: CSIRO
-  role: collector
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor, contact
+contributors:
+  data_collectors:
+  - last_name: Metcalfe
+    given_name: Daniel
+    ORCID: 0000-0001-6853-7072
+    affiliation: CSIRO Land and Water, Australia
+    additional_role: contact
+  - last_name: Grubb
+    given_name: Peter
+    ORCID: .na.character
+    affiliation: Cambridge University, United Kingdom
+    notes: acknowledge only
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 1992
-  year_collected_end: 1995
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(site_name = "northeastern Queensland") %>%
+      group_by(name_original) %>%
+        mutate_at(vars(growth_form, dispersal_syndrome), replace_duplicates_with_NA) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup()
+  '
+  collection_date: 1992/1995
+  taxon_name: name_original
+  site_name: site_name
   description: dispersal appendage data for tropical  species
   collection_type: field
   sample_age_class: adult
@@ -40,19 +56,21 @@ dataset:
     a variety of soils derived from basalt, granite or nutri- ent-poor metamorphics.
   original_file: FD_CC_traits.xls
   notes: none
-sites: unspecified in north-eastern Queensland
+sites: 
+  northeastern Queensland:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: tropical lowland rain forest
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-  custom_R_code: .na
 traits:
 - var_in: seed_mass (mg)
   unit_in: mg
   trait_name: seed_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
+  observation_number: observation_number
   methods: A 'seed' is defined as a single mature fertilized ovule including the testa
     plus the fibrous inner part of the fruit wall where present. Any fleshy part of
     the fruit wall was removed, as was any aril or sarcotesta except where the latter
@@ -85,19 +103,25 @@ traits:
 - var_in: growth_form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Expect observtion and reference materials
 - var_in: shade_tolerance
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Expect observtion and reference materials
 - var_in: dispersal_syndrome
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Expect observtion and reference materials
 substitutions:
@@ -174,4 +198,3 @@ taxonomic_updates:
 exclude_observations: .na
 questions:
   additional_traits: shade tolerance.
-

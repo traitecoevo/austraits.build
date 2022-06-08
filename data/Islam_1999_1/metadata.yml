@@ -11,19 +11,33 @@ source:
     volume: 39
     pages: 149--159
     doi: 10.1071/EA98133
-people:
-- name: Muhammad Islam
-  institution: unknown
-  role: collector
-- name: Mark Adams
-  institution: University of Western Australia
-  role: lab_leader, contact
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Islam
+    given_name: Muhammad
+    ORCID: .na.character
+    affiliation: unknown
+    notes: no contact
+  - last_name: Adams
+    given_name: Mark
+    ORCID: 0000-0002-8154-0097
+    affiliation: Swinburne University of Technology, Australia
+    additional_role: contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 1996
-  year_collected_end: 1997
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(sample_date = sample_date %>% ym() %>% format.Date("%Y-%m") %>% sort()) %>%
+      group_by(name_original, site_text, treatment) %>% 
+        mutate(observation_number = row_number()) %>%
+      ungroup()
+  '
+  collection_date: sample_date
+  taxon_name: name_original
+  site_name: site_text
+  context_name: treatment
+  observation_number: observation_number
   description: A glasshouse experiment investigated the response to phosphorus of
     2 common and abundant ephemeral forbs and several additional species.
   collection_type: field
@@ -75,28 +89,19 @@ sites:
       the mean monthly minimum temperature fell to 6 deg C
 contexts:
   control (=same as +P):
-    type: control
-    description: Natural soil and 200 kg P/ha addition treatment combined, as no difference
-      in outcome
+    nutrient treatment: control (=same as +P) (Natural soil and 200 kg P/ha addition
+      treatment combined, as no difference in outcome)
   control:
-    type: control
-    description: Natural soil
+    nutrient treatment: control (Natural soil)
   P added:
-    type: treatment_favourable
-    description: phosphorus equivalent to 200 kg P/ha applied
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-    site_name: site_text
-    context_name: treatment
-    date: sample_date
-  custom_R_code: .na
+    nutrient treatment: P added (phosphorus equivalent to 200 kg P/ha applied) [manipulated]
 traits:
 - var_in: Nmass
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -114,7 +119,9 @@ traits:
 - var_in: Pmass
   unit_in: mg/g
   trait_name: leaf_P_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -132,7 +139,9 @@ traits:
 - var_in: K_%
   unit_in: '%'
   trait_name: leaf_K_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -150,7 +159,9 @@ traits:
 - var_in: Ca_%
   unit_in: '%'
   trait_name: leaf_Ca_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -168,7 +179,9 @@ traits:
 - var_in: Mg_%
   unit_in: '%'
   trait_name: leaf_Mg_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed

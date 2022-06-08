@@ -12,13 +12,38 @@ source:
     number: '4'
     pages: 632--646
     doi: 10.1111/j.1365-3040.2005.01442.x
-people:
-- name: Lucas Cernusak
-  institution: James Cook University
-  role: collector, contact
+contributors:
+  data_collectors:
+  - last_name: Cernusak
+    given_name: Lucas
+    ORCID: 0000-0002-7575-5526
+    affiliation: College of Science and Engineering, James Cook University, Cairns,
+      QLD, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2004
-  year_collected_end: 2004
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        site_name = "Howard River catchment",
+        date = date %>% mdy()
+      ) %>% 
+      arrange(date) %>%
+      group_by(Tree) %>%
+        mutate(observation_number = dplyr::row_number()) %>%
+      ungroup() %>% 
+      group_by(species) %>% 
+        mutate_at(vars(`specific leaf area (m2 kg-1)`), replace_duplicates_with_NA) %>% 
+      ungroup()
+  '
+  collection_date: date
+  taxon_name: species
+  context_name: context
+  site_name: site_name
+  individual_id: Tree
+  population_id: burn_status
+  observation_number: observation_number
   description: Measurements of stem CO2 efflux and leaf gas exchange in a tropical
     savanna ecosystem in northern Australia, and assessed the impact of fire on these
     processes.
@@ -56,80 +81,42 @@ sites:
     precipitation, MAP (mm): 1700
 contexts:
   burn tree sampled in January:
-    burn_status: burn
-    sampling_period: January
-    type: field
-    description: measurements made on burnt and unburned trees at different times
-      in the growing season
+    burn status: burnt
+    sampling season: January
   burn tree sampled in July:
-    burn_status: burn
-    sampling_period: July
-    type: field
-    description: measurements made on burnt and unburned trees at different times
-      in the growing season
+    burn status: burnt
+    sampling season: July
   burn tree sampled in October:
-    burn_status: burn
-    sampling_period: October
-    type: field
-    description: measurements made on burnt and unburned trees at different times
-      in the growing season
+    burn status: burnt
+    sampling season: October
   burn tree sampled in September:
-    burn_status: burn
-    sampling_period: September
-    type: field
-    description: measurements made on burnt and unburned trees at different times
-      in the growing season
+    burn status: burnt
+    sampling season: September
   tree sampled in October:
-    burn_status: .na.character
-    sampling_period: October
-    type: field
-    description: measurements made on burnt and unburned trees at different times
-      in the growing season
+    burn status: .na.character
+    sampling season: October
   unburnt tree sampled in January:
-    burn_status: unburnt
-    sampling_period: January
-    type: field
-    description: measurements made on burnt and unburned trees at different times
-      in the growing season
+    burn status: unburnt
+    sampling season: January
   unburnt tree sampled in July:
-    burn_status: unburnt
-    sampling_period: July
-    type: field
-    description: measurements made on burnt and unburned trees at different times
-      in the growing season
+    burn status: unburnt
+    sampling season: July
   unburnt tree sampled in June:
-    burn_status: unburnt
-    sampling_period: June
-    type: field
-    description: measurements made on burnt and unburned trees at different times
-      in the growing season
+    burn status: unburnt
+    sampling season: June
   unburnt tree sampled in October:
-    burn_status: unburnt
-    sampling_period: October
-    type: field
-    description: measurements made on burnt and unburned trees at different times
-      in the growing season
+    burn status: unburnt
+    sampling season: October
   unburnt tree sampled in September:
-    burn_status: unburnt
-    sampling_period: September
-    type: field
-    description: measurements made on burnt and unburned trees at different times
-      in the growing season
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    context_name: context
-    date: date
-    site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "Howard River catchment") %>% group_by(species)
-    %>% mutate_at(vars(`specific leaf area (m2 kg-1)`), replace_duplicates_with_NA)
-    %>% ungroup() %>% mutate(date = date %>% mdy())
+    burn status: unburnt
+    sampling season: September
 traits:
 - var_in: R25_stem
   unit_in: umolCO2/g/s
   trait_name: stem_respiration_per_dry_mass
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 6-9
   methods: Stem CO2 efflux chambers were constructed from 1 L plastic food-storage
     containers (Klip It, Sistema Plastics, Auckland, New Zealand). The bottom of each
@@ -175,8 +162,10 @@ traits:
 - var_in: Photosynthesis (umol m-2 s-1)
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_saturated
-  value_type: individual_mean
-  replicates: 4-12
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: count_photo
   methods: Photosynthesis was measured on 12-15 October 2004 on what had been called
     previously the control plot, which burned approximately 9 weeks earlier on 6 August
     2004. This fire resulted in a nearly comprehensive scorch of the overstory canopy,
@@ -199,8 +188,10 @@ traits:
 - var_in: Stomatal conductance (mol m-2 s-1)
   unit_in: molH2O/m2/s
   trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: individual_mean
-  replicates: 4-12
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: count_photo
   methods: Photosynthesis was measured on 12-15 October 2004 on what had been called
     previously the control plot, which burned approximately 9 weeks earlier on 6 August
     2004. This fire resulted in a nearly comprehensive scorch of the overstory canopy,
@@ -223,8 +214,10 @@ traits:
 - var_in: Ci (umol mol-1)
   unit_in: umolCO2/mol
   trait_name: ci_at_Asat
-  value_type: individual_mean
-  replicates: 4-12
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: count_photo
   methods: Photosynthesis was measured on 12-15 October 2004 on what had been called
     previously the control plot, which burned approximately 9 weeks earlier on 6 August
     2004. This fire resulted in a nearly comprehensive scorch of the overstory canopy,
@@ -247,8 +240,10 @@ traits:
 - var_in: Transpiration (mmol m-2 s-1)
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Asat
-  value_type: individual_mean
-  replicates: 4-12
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: count_photo
   methods: Photosynthesis was measured on 12-15 October 2004 on what had been called
     previously the control plot, which burned approximately 9 weeks earlier on 6 August
     2004. This fire resulted in a nearly comprehensive scorch of the overstory canopy,
@@ -271,8 +266,10 @@ traits:
 - var_in: leaf respiraton at 30degC
   unit_in: neg_umolCO2/m2/s
   trait_name: leaf_dark_respiration_per_area
-  value_type: individual_mean
-  replicates: 6-8
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: count_leaf_respiration
   methods: Dark respiration was measured on the leaves from one E. miniata and one
     E. tetrodonta tree at both the burned and unburned locations. The branches were
     excised, lowered to the ground and darkened for at least 30 min prior to measurement.
@@ -281,7 +278,9 @@ traits:
 - var_in: dry weight to fresh weight ratio
   unit_in: g/g
   trait_name: leaf_dry_matter_content
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The leaves were stripped from each branch and the fresh weight (FW) was
     determined. A subsample was then dried to constant weight at 75 deg C to determine
@@ -294,13 +293,17 @@ traits:
 - var_in: specific leaf area (m2 kg-1)
   unit_in: m2/kg
   trait_name: specific_leaf_area
-  value_type: literature_source
+  entity_type: population
+  value_type: mean
+  basis_of_value: literature
   replicates: .na
   methods: sourced from Chen 2002
 - var_in: SW area per leaf area (cm2 m-2)
   unit_in: cm2_sapwood/m2_leaf
   trait_name: huber_value
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: In order to gain insight into the distribution of sapwood in the branches
     of E. miniata and E. tetrodonta, we made measurements of the ratio of sapwood
@@ -319,7 +322,9 @@ traits:
 - var_in: bark_thickness
   unit_in: cm
   trait_name: bark_thickness
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Calculated as half the difference in diameter between the stem with and
     without bark. These measurements were made on the same samples used to calculate

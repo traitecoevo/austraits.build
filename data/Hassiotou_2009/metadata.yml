@@ -11,19 +11,27 @@ source:
     pages: 1596--1611
     publisher: Wiley-Blackwell
     doi: 10.1111/j.1365-3040.2009.02024.x
-people:
-- name: Foteini Hassiotou
-  institution: Unknown
-  role: collector, contact
-- name: Erik Veneklaas
-  institution: University of Western Australia
-  role: lab_leader
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Hassiotou
+    given_name: Foteini
+    ORCID: .na.character
+    affiliation: unknown
+    notes: no contact
+  - last_name: Veneklaas
+    given_name: Erik
+    ORCID: 0000-0002-7030-4056
+    affiliation: University of Western Australia, Australia
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2009
-  year_collected_end: 2009
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(site_name = "Perth")
+  '
+  collection_date: 2009/2009
+  taxon_name: name_original
+  site_name: site_name 
   description: LMA for 6 banksia species
   collection_type: glasshouse
   sample_age_class: sapling
@@ -43,18 +51,19 @@ dataset:
   original_file: Hassitou_2009.pdf
   notes: Erik Veneklaas has the complete dataset that he will contribute to AusTraits
     at some point.
-sites: .na
+sites:
+  Perth:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: glasshouse in Perth, Western Australia
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-  custom_R_code: .na
 traits:
 - var_in: LMA (g m2)
   unit_in: g/m2
   trait_name: specific_leaf_area
-  value_type: experiment_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Three leaves per species, each leaf originating from a different plant,
     were sampled early in the morning. Leaf area (using a leaf area meter, LI-300A,
@@ -64,9 +73,11 @@ traits:
 - var_in: stomatal number per leaf area (mm-2)
   unit_in: count/mm2
   trait_name: stomatal_density_average
-  value_type: experiment_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
-  methods: Two leaves per species, each leaf originating from a different plant, were
+  methods: &stomatal_methods Two leaves per species, each leaf originating from a different plant, were
     collected early in the morning, and immediately analysed with variable pressure
     scanning electron microscopy (VPSEM) and/or cryo-scanning electron microscopy
     (CSEM). Leaves of B. serrata that were used for ESEM were initially frozen in
@@ -103,6 +114,14 @@ traits:
     (B. attenuata, B. elderiana, B. ilicifolia, B. prionotes, B. quercifolia and B.
     serrata). These analyses were carried out using Image J (Abramoff, Magelhaes &
     Ram 2004).
+- var_in: stomatal length (um)
+  unit_in: um
+  trait_name: guard_cell_length
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 3
+  methods: *stomatal_methods 
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
@@ -110,4 +129,3 @@ questions:
   additional_traits: more stomatal data, including length, crypt conductance; paper
     also has plots of photosynthetic rates, conductance and lamina thickness, but
     no actual values
-

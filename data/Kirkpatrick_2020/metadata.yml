@@ -4,14 +4,37 @@ source:
     bibtype: Unpublished
     year: 2020
     author: James Kirkpatrick
-    title: "Unpublished data: Fire response traits for woody Tasmanian endemic species, University of Tasmania"
-people:
-- name: James Kirkpatrick
-  institution: University of Tasmania
-  role: collector, contact
+    title: 'Unpublished data: Fire response traits for woody Tasmanian endemic species,
+      University of Tasmania'
+contributors:
+  data_collectors:
+  - last_name: Kirkpatrick
+    given_name: James
+    ORCID: .na.character
+    affiliation: University of Tasmania, Australia
+    notes: acknowledge only
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2020
-  year_collected_end: 2020
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        Wind = gsub("y", "xxx", Wind),
+        `Bird/mammal` = gsub("y", "birds mammals", `Bird/mammal`),
+        Wind = gsub("n", NA, Wind),
+        `Bird/mammal` = gsub("n", NA, `Bird/mammal`),
+        Wind = gsub("xxx", "wind", Wind),
+        dispersers = coalesce(
+          as.character(Wind),
+          as.character(`Bird/mammal`)),
+        dispersal_syndrome = NA) %>% 
+        move_values_to_new_trait("dispersers", "dispersal_syndrome", 
+                              c("wind", "birds mammals"), c("anemochory", "zoochory"),
+                              c("wind", "birds mammals"))
+  '
+  collection_date: 2020/2020
+  taxon_name: species_name
   description: Jamie Kirkpatrick's knowledge of fire response traits for woody Tasmanian
     endemics
   collection_type: field
@@ -22,40 +45,45 @@ dataset:
   notes: none
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-  custom_R_code: data %>% mutate(dispersal_syndrome = if_else(Wind == "y", if_else(`Bird/mammal` == "y","anemochory zoochory","anemochory"), ifelse(`Bird/mammal` == "y","zoochory", "neither"))) %>% mutate(dispersers = if_else(Wind == "y", if_else(`Bird/mammal` == "y","wind birds mammals","wind"), if_else(`Bird/mammal` == "y","birds mammals","neither")))
 traits:
 - var_in: Resprout
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: author knowledge
 - var_in: Soil seed bank
   unit_in: .na
   trait_name: soil_seedbank
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: author knowledge
 - var_in: dispersal_syndrome
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: author knowledge
 - var_in: dispersers
   unit_in: .na
   trait_name: dispersers
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: author knowledge
 - var_in: Canopy seed storage
   unit_in: .na
   trait_name: serotiny
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: author knowledge
 substitutions:
@@ -86,4 +114,3 @@ substitutions:
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

@@ -19,22 +19,61 @@ source:
     volume: 71
     pages: 1307--1315
     doi: 10.2307/1938268
-people:
-- name: Michelle Leishman
-  institution: Macquarie University Sydney
-  role: collector, contact
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
-- name: Barbara Rice
-  institution: Macquarie University Sydney
-  role: collector
-- name: Jocelyn Howell
-  institution: Macquarie University Sydney
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Leishman
+    given_name: Michelle
+    ORCID: 0000-0003-4830-5797
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+    additional_role: contact
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  - last_name: Rice
+    given_name: Barbara
+    ORCID: .na.character
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+    notes: deceased
+  - last_name: Howell
+    given_name: Jocelyn
+    ORCID: .na.character
+    affiliation: Berowa NSW, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 1996
-  year_collected_end: 1996
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate_at(vars(`Height (cm)_filtered`,`Seed mass (mg)_filtered`),~na_if(.,0)) %>% 
+      mutate(
+        dispersal_appendage = NA,
+        dispersers = NA,
+        fruit_fleshiness = NA,
+        site_name = "Sydney"
+      ) %>% 
+      move_values_to_new_trait(
+          "Seed Dispersal syndrome 1=unassisted; 2=ant (elaiosome); 3=vertebrate ingestion (fleshy); 4=adhesion (hooks etc); 5=wind (wing, pappus); 6=ballistic+ant; 7=ba llistic; 8=vertebrate.", 
+          "dispersal_appendage", 
+          c("2"), c("elaiosome"), c("2")
+      ) %>% 
+      move_values_to_new_trait(
+        "Seed Dispersal syndrome 1=unassisted; 2=ant (elaiosome); 3=vertebrate ingestion (fleshy); 4=adhesion (hooks etc); 5=wind (wing, pappus); 6=ballistic+ant; 7=ba llistic; 8=vertebrate.", 
+        "dispersers", 
+        c("3","8","vertebrate ingestion (fleshy)","5"),
+        c("vertebrates","vertebrates","vertebrates","wind"),
+        c("3","8","vertebrate ingestion (fleshy)","5")
+      ) %>% 
+      move_values_to_new_trait(
+        "Seed Dispersal syndrome 1=unassisted; 2=ant (elaiosome); 3=vertebrate ingestion (fleshy); 4=adhesion (hooks etc); 5=wind (wing, pappus); 6=ballistic+ant; 7=ba llistic; 8=vertebrate.",
+        "fruit_fleshiness", 
+        c("3","fleshy fruit","vertebrate ingestion (fleshy)"),
+        c("fleshy","fleshy","fleshy"),
+        c("3",NA,"vertebrate ingestion (fleshy)")
+      )
+  '
+  collection_date: 1996/1996
+  taxon_name: species
+  site_name: site_name
   description: trait data for Sydney sites from Michelle Leishman
   collection_type: field
   sample_age_class: adult
@@ -55,32 +94,29 @@ dataset:
     and Fairlie & Moore (1989).
   original_file: Leishman syd LHS (ian version for Tom Jan 2008).xls
   notes: none
-sites: The floras of western New South Wales and Central Australia are typical semiarid/arid
-  communities, consisting of a perennial grass understorey with a mix of annual and
-  perennial forbs, and an overstorey of scattered shrubs and trees. The western New
-  South Wales flora included communities of three soil types (see Leishman & Westoby
-  (1992) for further detail), while the Central Australian flora included a number
-  of habitats such as Acacia woodland, open woodland and floodplain. The Sydney flora
-  consisted of two distinct communities, those of fertile soils (wet sclerophyll forest
-  to rainforest) and those of infertile soils (dry sclerophyll forest and shrubland).
+sites: 
+  Sydney:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: The floras of western New South Wales and Central Australia are typical semiarid/arid communities, consisting of a perennial grass understorey with a mix of annual and perennial forbs, and an overstorey of scattered shrubs and trees. The western New South Wales flora included communities of three soil types (see Leishman & Westoby (1992) for further detail), while the Central Australian flora included a number of habitats such as Acacia woodland, open woodland and floodplain. The Sydney flora consisted of two distinct communities, those of fertile soils (wet sclerophyll forest to rainforest) and those of infertile soils (dry sclerophyll forest and shrubland).
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-  custom_R_code: data %>% mutate_at(vars(`Height (cm)_filtered`,`Seed mass (mg)_filtered`),~na_if(.,0)) %>% mutate(dispersal_appendage = NA, dispersers = NA, fruit_fleshiness = NA) %>% move_values_to_new_trait("Seed Dispersal syndrome 1=unassisted; 2=ant (elaiosome); 3=vertebrate ingestion (fleshy); 4=adhesion (hooks etc); 5=wind (wing, pappus); 6=ballistic+ant; 7=ba llistic; 8=vertebrate.", "dispersal_appendage", "2", "elaiosome", "2") %>% move_values_to_new_trait("Seed Dispersal syndrome 1=unassisted; 2=ant (elaiosome); 3=vertebrate ingestion (fleshy); 4=adhesion (hooks etc); 5=wind (wing, pappus); 6=ballistic+ant; 7=ba llistic; 8=vertebrate.", "dispersers", c("3","8","vertebrate ingestion (fleshy)","5"), c("vertebrates","vertebrates","vertebrates","wind"), c("3","8","vertebrate ingestion (fleshy)","5")) %>% move_values_to_new_trait("Seed Dispersal syndrome 1=unassisted; 2=ant (elaiosome); 3=vertebrate ingestion (fleshy); 4=adhesion (hooks etc); 5=wind (wing, pappus); 6=ballistic+ant; 7=ba llistic; 8=vertebrate.", "fruit_fleshiness", c("3","fleshy fruit","vertebrate ingestion (fleshy)"), c("fleshy","fleshy","fleshy"), c("3",NA,"vertebrate ingestion (fleshy)"))
 traits:
 - var_in: SLA(mm2/mg)
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: multisite_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Leaf area from leaf area meter, mass from weighing dried leaves
 - var_in: Height (cm)_filtered
   unit_in: cm
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
+  collection_type: literature
   methods: Values are published maximum heights from published Floras. Plant height
     divided into the following categories, < 0.10 m, 0.11-0.50 m, 0.51-1.0 m, 1.1-5.0
     m, 5.1-10 m, > 10 m. analysis. For Central Australia, infor- mation on plant height
@@ -91,14 +127,18 @@ traits:
 - var_in: Leaf Size (mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Leaf area is a mean value form measured herbarium or field specimens. Leaf
     Area measured using leaf area meter. Minimum of 5 replicates.
 - var_in: Seed mass (mg)_filtered
   unit_in: mg
   trait_name: seed_dry_mass
-  value_type: multisite_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Seed mass was defined as the weight of the embryo and endosperm, plus the
     seed coat. Structures having the function of contributing to dispersal were not
@@ -110,7 +150,9 @@ traits:
     11=orchid, epiphyte.
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Species with secondary thickening were assigned to the growth form category
     'woody plants'. Herbaceous species without secondary thickening were defined as
@@ -127,9 +169,11 @@ traits:
     llistic; 8=vertebrate.
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: Divided into the following classes, unassisted, ant-adapted, vertebrate-adapted,
+  methods: &dispersal_method Divided into the following classes, unassisted, ant-adapted, vertebrate-adapted,
     adhesion-adapted, wind-adapted and scatterhoarded. Dispersal modes were attributed
     to species on the basis of the morphological features of the seed. Ant-adapted
     seeds were defined as those with an elaiosome, vertebrate-adapted seeds were defined
@@ -152,78 +196,27 @@ traits:
 - var_in: dispersal_appendage
   unit_in: .na
   trait_name: dispersal_appendage
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: Divided into the following classes, unassisted, ant-adapted, vertebrate-adapted,
-    adhesion-adapted, wind-adapted and scatterhoarded. Dispersal modes were attributed
-    to species on the basis of the morphological features of the seed. Ant-adapted
-    seeds were defined as those with an elaiosome, vertebrate-adapted seeds were defined
-    as having an aril or flesh. Adhesion-adapted seeds had hooks, spines or barbs
-    to assist attachment, while wind-adapted had wings, hairs or a pappus to provide
-    air-resistance. Unassisted seeds were defined as having no obvious morphological
-    structure which would assist dispersal. Seeds which float, or are dispersed in
-    mud or by ingestion with foliage (see Janzen 1984) are thus classified as unassisted.
-    The exception to this was the category of scatterhoarded. In the two northern
-    hemisphere floras there were 12 species whose seeds are known to be scatterhoarded
-    by mammals. Although these species have no morphological structures which can
-    be used to define 'scatterhoarding', we felt that their natural history was sufficiently
-    well-known to justify the use of this dispersal category. The Sydney and Sheffield
-    databases contained a few species that had ballistic dispersal. Ballistic dispersal
-    is difficult to determine when herbarium seed material has been used, as the ballistic
-    mechanism is part of the parent plant. Thus ballistically dispersed seeds were
-    classified as unassisted in order to standardize the databases. Some ballistically
-    dispersed seeds also have an elaiosome for dispersal by ants. These species were
-    classified as ant-adapted only, for the purpose of this analysis.
+  methods: *dispersal_method
 - var_in: dispersers
   unit_in: .na
   trait_name: dispersers
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: Divided into the following classes, unassisted, ant-adapted, vertebrate-adapted,
-    adhesion-adapted, wind-adapted and scatterhoarded. Dispersal modes were attributed
-    to species on the basis of the morphological features of the seed. Ant-adapted
-    seeds were defined as those with an elaiosome, vertebrate-adapted seeds were defined
-    as having an aril or flesh. Adhesion-adapted seeds had hooks, spines or barbs
-    to assist attachment, while wind-adapted had wings, hairs or a pappus to provide
-    air-resistance. Unassisted seeds were defined as having no obvious morphological
-    structure which would assist dispersal. Seeds which float, or are dispersed in
-    mud or by ingestion with foliage (see Janzen 1984) are thus classified as unassisted.
-    The exception to this was the category of scatterhoarded. In the two northern
-    hemisphere floras there were 12 species whose seeds are known to be scatterhoarded
-    by mammals. Although these species have no morphological structures which can
-    be used to define 'scatterhoarding', we felt that their natural history was sufficiently
-    well-known to justify the use of this dispersal category. The Sydney and Sheffield
-    databases contained a few species that had ballistic dispersal. Ballistic dispersal
-    is difficult to determine when herbarium seed material has been used, as the ballistic
-    mechanism is part of the parent plant. Thus ballistically dispersed seeds were
-    classified as unassisted in order to standardize the databases. Some ballistically
-    dispersed seeds also have an elaiosome for dispersal by ants. These species were
-    classified as ant-adapted only, for the purpose of this analysis.
+  methods: *dispersal_method
 - var_in: fruit_fleshiness
   unit_in: .na
   trait_name: fruit_fleshiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: Divided into the following classes, unassisted, ant-adapted, vertebrate-adapted,
-    adhesion-adapted, wind-adapted and scatterhoarded. Dispersal modes were attributed
-    to species on the basis of the morphological features of the seed. Ant-adapted
-    seeds were defined as those with an elaiosome, vertebrate-adapted seeds were defined
-    as having an aril or flesh. Adhesion-adapted seeds had hooks, spines or barbs
-    to assist attachment, while wind-adapted had wings, hairs or a pappus to provide
-    air-resistance. Unassisted seeds were defined as having no obvious morphological
-    structure which would assist dispersal. Seeds which float, or are dispersed in
-    mud or by ingestion with foliage (see Janzen 1984) are thus classified as unassisted.
-    The exception to this was the category of scatterhoarded. In the two northern
-    hemisphere floras there were 12 species whose seeds are known to be scatterhoarded
-    by mammals. Although these species have no morphological structures which can
-    be used to define 'scatterhoarding', we felt that their natural history was sufficiently
-    well-known to justify the use of this dispersal category. The Sydney and Sheffield
-    databases contained a few species that had ballistic dispersal. Ballistic dispersal
-    is difficult to determine when herbarium seed material has been used, as the ballistic
-    mechanism is part of the parent plant. Thus ballistically dispersed seeds were
-    classified as unassisted in order to standardize the databases. Some ballistically
-    dispersed seeds also have an elaiosome for dispersal by ants. These species were
-    classified as ant-adapted only, for the purpose of this analysis.
+  methods: *dispersal_method
 substitutions:
 - trait_name: plant_growth_form
   find: 10
@@ -331,4 +324,3 @@ taxonomic_updates:
   reason: Automatic alignment with name in APNI names (2020-06-18)
 exclude_observations: .na
 questions: .na
-

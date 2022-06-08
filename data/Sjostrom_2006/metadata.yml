@@ -3,7 +3,7 @@ source:
     key: Sjostrom_2006
     bibtype: Article
     year: '2006'
-    author: A. Sjostrom and C. L. Gross
+    author: A. Sjöström and C. L. Gross
     journal: Journal of Biogeography
     title: Life-history characters and phylogeny are correlated with extinction risk
       in the Australian angiosperms
@@ -11,21 +11,36 @@ source:
     number: '2'
     pages: 271--290
     doi: 10.1111/j.1365-2699.2005.01393.x
-people:
-- name: Caroline Gross
-  institution: University of New England
-  role: collector, contact
-- name: Anne Sjostrom
-  institution: University of New England
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Gross
+    given_name: Caroline
+    ORCID: 0000-0001-8014-1548
+    affiliation: University of New England, Australia
+    additional_role: contact
+  - last_name: Sjöström
+    given_name: Anne
+    ORCID: .na.character
+    affiliation: unknown
+    notes: no contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 1996
-  year_collected_end: 2005
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(clonal_spread_mechanism = NA) %>%
+      move_values_to_new_trait("fruit_to_use", "clonal_spread_mechanism", "27", "viviparous", NA) %>% mutate(
+        fruit_fleshiness = fruit_to_use,
+        fruit_dehiscence = fruit_to_use
+      )
+  '
+  collection_date: 1996/2005
+  taxon_name: taxon_name
   description: A dataset compiled to determine whether life-history characters that
     affect population persistence (e.g. habit and life span) and those that influence
     reproductive success (e.g. sexual system and fruit type) are non-randomly correlated
     with extinction risk (i.e. threat category) in the Australian flora.
-  collection_type: literature compilation
+  collection_type: literature
   sample_age_class: adult
   sampling_strategy: EXTANT FLORA To begin we compiled a list of the flowering plant
     families for Australia (n = 222 families) and determined the number of species
@@ -88,30 +103,31 @@ dataset:
   notes: none
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: taxon_name
-  custom_R_code: data %>% mutate(clonal_spread_mechanism = NA) %>% move_values_to_new_trait("fruit_to_use", "clonal_spread_mechanism", "27", "viviparous", NA) %>% mutate(fruit_fleshiness = fruit_to_use, fruit_dehiscence = fruit_to_use)
 traits:
 - var_in: habit_to_use
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Literature searches. Habit (i.e. life form) was categorized as herb, vine,
     liane, shrub, or tree.
 - var_in: lifespan_to_use
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Literature searches. Life span was categorized as either short-lived (i.e.
     annuals or biennials) or long-lived (perennials).
 - var_in: sex_type_to_use
   unit_in: .na
   trait_name: sex_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Literature searches. Sex system was categorized as hermaphroditic (i.e.
     all flowers bisexual on a plant), dioecious (i.e. female and male flowers found
@@ -121,7 +137,9 @@ traits:
 - var_in: fruit_to_use
   unit_in: .na
   trait_name: fruit_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Literature searches. Fruit type was categorized as dry-indehiscent (including
     achene, caryopsis, nut, nutlet, samara, some schizocarps, utricle, and some capsules),
@@ -132,7 +150,9 @@ traits:
 - var_in: fruit_fleshiness
   unit_in: .na
   trait_name: fruit_fleshiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Literature searches. Fruit type was categorized as dry-indehiscent (including
     achene, caryopsis, nut, nutlet, samara, some schizocarps, utricle, and some capsules),
@@ -143,7 +163,9 @@ traits:
 - var_in: fruit_dehiscence
   unit_in: .na
   trait_name: fruit_dehiscence
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Literature searches. Fruit type was categorized as dry-indehiscent (including
     achene, caryopsis, nut, nutlet, samara, some schizocarps, utricle, and some capsules),
@@ -154,10 +176,16 @@ traits:
 - var_in: clonal_spread_mechanism
   unit_in: .na
   trait_name: clonal_spread_mechanism
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: Literature searches. Fruit type identified as "viviparous seedlings" moved to regen_strategy.
+  methods: Literature searches. Fruit type identified as "viviparous seedlings" moved
+    to regen_strategy.
 substitutions:
+- trait_name: regen_strategy
+  find: viviparous
+  replace: herb
 - trait_name: plant_growth_form
   find: 1
   replace: herb
@@ -1823,4 +1851,3 @@ taxonomic_updates:
   reason: Alignment with accepted genus (Elizabeth Wenk, 2020-06-30)
 exclude_observations: .na
 questions: .na
-

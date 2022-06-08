@@ -3,30 +3,55 @@ source:
     key: Munroe_2019
     bibtype: Article
     year: '2021'
-    author: Samantha E. M. Munroe, Francesca A. McInerney, Jake Andrae, Nina
-      Welti, Greg R. Guerin, Emrys Leitch, Tony Hall, Steve Szarvas,
-      Rachel Atkins, Stefan Caddy-Retalic, Ben Sparrow
+    author: Samantha E. M. Munroe, Francesca A. McInerney, Jake Andrae, Nina Welti,
+      Greg R. Guerin, Emrys Leitch, Tony Hall, Steve Szarvas, Rachel Atkins, Stefan
+      Caddy-Retalic, Ben Sparrow
     journal: Scientific Data
-    title: The Photosynthetic Pathways of Plant Species Surveyed in {{Australia}}'s National Terrestrial Monitoring Network
+    title: The Photosynthetic Pathways of Plant Species Surveyed in {{Australia}}'s
+      National Terrestrial Monitoring Network
     volume: '8'
     pages: '97'
     doi: 10.1038/s41597-021-00877-z
-people:
-- name: Samantha Munroe
-  institution: Terrestrial Ecosystem Research Network, The School of Biological Sciences,
-    The University of Adelaide, Adelaide, SA, 5005, Australia.
-  role: contact, collector
-- name: Greg Guerin
-  institution: Terrestrial Ecosystem Research Network, The School of Biological Sciences,
-    The University of Adelaide, Adelaide, SA, 5005, Australia.
-  role: collector
-- name: Ben Sparrow
-  institution: Terrestrial Ecosystem Research Network, The School of Biological Sciences,
-    The University of Adelaide, Adelaide, SA, 5005, Australia.
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Munroe
+    given_name: Samantha
+    ORCID: 0000-0001-7827-1028
+    affiliation: Terrestrial Ecosystem Research Network, The School of Biological
+      Sciences, The University of Adelaide, Adelaide, SA, 5005, Australia
+    additional_role: contact
+  - last_name: Guerin
+    given_name: Greg
+    ORCID: 0000-0002-2104-6695
+    affiliation: Terrestrial Ecosystem Research Network, The School of Biological
+      Sciences, The University of Adelaide, Adelaide, SA, 5005, Australia
+  - last_name: Sparrow
+    given_name: Ben
+    ORCID: 0000-0003-2566-1895
+    affiliation: Terrestrial Ecosystem Research Network, The School of Biological
+      Sciences, The University of Adelaide, Adelaide, SA, 5005, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2019
-  year_collected_end: 2019
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        remarks = ifelse(`Photosynthetic.pathway (confirmed using data from literature or TERN stable isotope analysis)`
+        %in% c("C3","C4","C3-C4","CAM","C3-CAM","C4-CAM"),
+          paste0("Photosynthetic pathway confirmed using data from literature or TERN stable isotope analysis; source, ", 
+          Source),NA),
+        remarks = ifelse(`Photosyntehtic.pathway (inferred from lineage)` 
+        %in% c("C3","C4","C3-C4","CAM","C3-CAM","C4-CAM"),
+          paste0("Photosynthetic pathway inferred from lineage; source, ", 
+          `Justification for inference based on lineage`), remarks)
+      ) %>%
+      group_by(Species) %>%
+        distinct(`Photosynthetic pathway (combined)`, .keep_all = TRUE) %>%
+      ungroup()
+  '
+  collection_date: 2019/2019
+  taxon_name: Species
+  site_name: site_name
   description: TERN Plant Photosynthetic Pathway Trait Dataset
   collection_type: literature
   sample_age_class: adult
@@ -661,18 +686,15 @@ sites:
     longitude (deg): .na
     latitude (deg): .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-  custom_R_code: .na
 traits:
 - var_in: Photosynthetic pathway (combined)
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
+  measurement_remarks: remarks
   methods: Species recorded at each plot were assigned a photosynthetic pathway using
     a combination of information from existing plant trait databases, published literature,
     and carbon stable isotope analysis performed by TERN using TERN tissue samples.
@@ -730,7 +752,7 @@ taxonomic_updates:
   reason: Algin to genus, as only reference to species from 1927 (E. Wenk, 2020-05-25)
 - find: Tephrosia procera cowie
   replace: Tephrosia procera
-  reason: "Change spelling to Align to APC accepted name (E. Wenk, 2020-05-25)"
+  reason: Change spelling to Align to APC accepted name (E. Wenk, 2020-05-25)
 exclude_observations:
 - variable: taxon_name
   find: Campylopus introflexus, Dicranoloma menziesii, Philonotis tenuis, Polytrichastrum
@@ -740,4 +762,3 @@ exclude_observations:
   find: Xanthoparmelia semiviridis
   reason: lichen (E Wenk, 2020.06.18)
 questions: .na
-

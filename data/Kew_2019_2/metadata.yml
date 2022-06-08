@@ -6,13 +6,28 @@ source:
     year: 2019
     title: Seed Information Database (SID) and Seed Bank Database
     url: http://data.kew.org/sid/
-people:
-- name: Udayangani Liu
-  institution: Kew Botanic Gardens
-  role: contact
+contributors:
+  data_collectors:
+  - last_name: Liu
+    given_name: Udayangani
+    ORCID: 0000-0002-6192-1319
+    affiliation: Royal Botanic Gardens, Kew, United Kingdom
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: unknown
-  year_collected_end: 2019
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        protcontentval = protcontentval/100,
+        measurement_remarks = paste(oilmaterialdesc, refdesc, sep = "; ")
+      )  %>%
+      group_by(`SID taxa`) %>%
+        mutate(method_number = row_number()) %>%
+      ungroup()
+  '
+  collection_date: unknown/2019
+  taxon_name: SID taxa
   description: seed protein contents for Australian species from the Kew Botanic Gardens
     database
   collection_type: literature
@@ -23,30 +38,20 @@ dataset:
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons licesne. Data not to be used for Commercial Purposes.
 sites: .na
-contexts:
-  Entire seed/nut:
-    type: field
-    description: oil content determined on an Entire seed/nut
-  Kernel:
-    type: field
-    description: oil content determined on a Kernel
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: SID taxa
-    context_name: oilmaterialdesc
-  custom_R_code: data %>% mutate(protcontentval = protcontentval/100)
+contexts: .na
 traits:
 - var_in: protcontentval
   unit_in: '%'
   trait_name: seed_protein_content
-  value_type: expert_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
-  methods: various. Each entry is carefully annotated with methods and references
-    in data.csv file. Additional information is available at data.kew.org/sid/ if
+  method_number: method_number
+  measurement_remarks: measurement_remarks
+  methods: Each entry is annotated with methods and references in data.csv file. Part of this information is included in the measurement remarks. Additional information is available at data.kew.org/sid/ if
     you look up the individual species.
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

@@ -5,9 +5,19 @@
 #' @name %>%
 #' @rdname pipe
 #' @keywords internal
-#' @export
 #' @importFrom magrittr %>%
+#' @export
 #' @usage lhs \%>\% rhs
+NULL
+
+#' Query the package version in DESCRIPTION
+#'
+#' See \code{desc::\link[desc:desc_get_version]{desc_get_version}} for details.
+#'
+#' @name desc_get_version
+#' @rdname desc_get_version
+#' @importFrom desc desc_get_version
+#' @export
 NULL
 
 #' Read in a csv as a tibble with column types as characters
@@ -31,19 +41,18 @@ read_csv_char <- function(...){
 #' @param x a vector containing null values
 #' @param val specify what the null value should be returned as, default is NA
 #'
-#' @return a vector with null values replaced
-#'
 #' @export
+#' @return a vector with null values replaced
 #' @examples null_as(NULL)
 null_as <- function(x, val=NA){
   if(is.null(x)) return(val)
   x
 }
 
-#' Extract a trait element from the definitions$traits$elements
+#' Extract a trait element from the trait_definitions$traits$elements
 #'
-#' @param i a value within the definitions$traits$elements list which refers to types of traits
-#' @param my_list the list that contains the element we're interested in (i.e. definitions$traits$elements)
+#' @param i a value within the trait_definitions$traits$elements list which refers to types of traits
+#' @param my_list the list that contains the element we're interested in (i.e. trait_definitions$traits$elements)
 #' @param var the type of variable of a trait
 #'
 #' @return the element/properties of a trait
@@ -51,19 +60,24 @@ null_as <- function(x, val=NA){
 #' @export
 #' @examples
 #' \dontrun{
-#' extract_list_element(1, definitions$traits$elements, "units")
+#' extract_list_element(1, trait_definitions$traits$elements, "units")
 #' }
 extract_list_element <- function(i, my_list, var) {
   i %>% lapply(function(x) my_list[[x]][[var]]) %>% lapply(null_as) %>% unlist()
 }
 
-#' Rename columns
+#' Rename column names
+#' 
+#' `rename_columns` renames column names within a tibble or data frame by matching
+#' the names given by the argument `from`. The new column names are renamed using the 
+#' names given by the argument `to`.
 #'
-#' @param obj a  tibble with multiple columns
-#' @param from a vector of the initial column names
-#' @param to  a vector of the new column names
+#' @param obj tibble or data frame with 1 or more columns
+#' @param from character string of the initial column name
+#' @param to  character string of the new column name
 #'
-#' @return a  tibble with new column names
+#' @export
+#' @return a tibble with new column names
 rename_columns <- function(obj, from, to) {
   names(obj)[match(from, names(obj))] <- to
   obj
@@ -168,17 +182,17 @@ read_metadata <- function(path) {
 
   # We want to preserve formatting in custom R code
   # but read_yaml looses it. So read in as text, if not empty
-  if(!is.na(data$config$custom_R_code)) {
+  if(!is.na(data$dataset$custom_R_code)) {
     # Read in again, extracting custom R code
 
     data2 <- readLines(path)
 
     code_start <- grep("  custom_R_code:", data2, fixed = TRUE)
-    code_end <- which(data2 == "traits:")-1
+    code_end <- grep("  collection_date:", data2, fixed=TRUE)-1
 
-    data$config$custom_R_code <-
+    data$dataset$custom_R_code <-
       data2[code_start:code_end] %>%
-      gsub("  custom_R_code:", "", ., fixed = TRUE) %>%
+      gsub("custom_R_code:", "", ., fixed = TRUE) %>%
       paste(collapse = "\n")
   }
 
@@ -204,23 +218,26 @@ read_metadata <- function(path) {
 write_metadata <- function(data, path, style_code=FALSE) {
 
   y <- data
-  y$config$custom_R_code <- NA
-
+  y$dataset$custom_R_code <- NA
+  
   txt <- yaml::as.yaml(y, column.major = FALSE, indent=2) %>%
     gsub(": ~",":", ., fixed=TRUE)
-
+  
   #reinsert custom R code
-  if(!is.na(data$config$custom_R_code)) {
-
-    code <- data$config$custom_R_code
-
+  if(!is.na(data$dataset$custom_R_code)) {
+    
+    code <- data$dataset$custom_R_code
+    
     if(style_code)
       code <- code %>% suppressWarnings(styler::style_text(transformers = .data$tidyverse_style(strict = TRUE)))
-
+    
     txt <- gsub("custom_R_code: .na", code %>% paste(collapse = "\n") %>%
                   paste0("custom_R_code:", .), txt, fixed = TRUE)
   }
-
+  
+  if(!stringr::str_sub(txt, nchar(txt)) == "\n")
+    txt <- c(txt, "\n")
+  
   file <- file(path, "w", encoding = "UTF-8")
   on.exit(close(file))
   cat(txt, file=file)
@@ -230,21 +247,11 @@ write_metadata <- function(data, path, style_code=FALSE) {
 ##' @importFrom yaml read_yaml
 ##' @name read_yaml
 ##' @rdname read_yaml
-##' @export
 NULL
 
 ##' write yaml (from package yaml)
 ##' @importFrom yaml write_yaml
 ##' @name write_yaml
 ##' @rdname write_yaml
-##' @export
 NULL
 
-#' Build website
-#'
-#' Build website using the build_site() function from `pkgdown`
-#'
-build_website <- function() {
-  devtools::document()
-  pkgdown::build_site()
-}

@@ -7,22 +7,48 @@ source:
     title: Victorian Vital Attributes Database
     institution: Department of Environment, Land, Water and Planning, Victoria
     type: database
-people:
-- name: Matthew White
-  institution: Department of Environment, Land, Water and Planning, Victoria
-  role: collector, contact
-- name: Steven Sinclair
-  institution: Department of Environment, Land, Water and Planning, Victoria
-  role: collector
-- name: Doug Frood
-  institution: Pathways Bushland and Environment Consultancy
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: White
+    given_name: Matthew
+    ORCID: 0000-0003-2120-0071
+    affiliation: Department of Environment, Land, Water and Planning, Victoria, Australia
+    additional_role: contact
+  - last_name: Sinclair
+    given_name: Steven
+    ORCID: 0000-0002-4282-1021
+    affiliation: Department of Environment, Land, Water and Planning, Victoria, Australia
+  - last_name: Frood
+    given_name: Doug
+    ORCID: .na.character
+    affiliation: Pathways Bushland and Environment Consultancy, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: unknown
-  year_collected_end: 2020
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      subset(NonIndigenous != 1) %>%
+      mutate(flowering_season = paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,
+                            Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec) %>%
+                            na_if("000000000000") %>% convert_01_ny) %>%
+      mutate(
+        dispersers = dispersal_syndrome,
+        fire_exposure_level = 
+          ifelse(fire_response %in% c("fire_not_relevant", "fire_not_relevant fire_killed",
+          "fire_killed fire_not_relevant", "fire_not_relevant resprouts","
+          fire_not_relevant not_fire_killed_does_not_resprout"),
+          "fire_not_relevant", NA)
+      ) %>%
+      group_by(Species_Name) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup()
+  '
+  collection_date: unknown/2020
+  taxon_name: Species_Name
   description: Compilation of trait data for Victorian plant species
   collection_type: literature, field
   sample_age_class: adult
+  observation_number: observation_number
   sampling_strategy: Compilation of trait data for Victorian plant species from diverse
     sources. Data are generally linked to specific plot data. As a result, there are
     some species names not recognised by APC/APNI, because when the phrase names or
@@ -38,40 +64,45 @@ dataset:
     studies
 sites: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species_Name
-  custom_R_code: data %>% subset(NonIndigenous != 1) %>% mutate(flowering_season = paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec)%>% na_if("000000000000") %>% convert_01_ny) %>% mutate(dispersers = dispersal_syndrome) %>% mutate(reproductive_maturity_max = ifelse(reproductive_maturity == "<1",1, NA), reproductive_maturity_max = ifelse(reproductive_maturity == "1-5",5, reproductive_maturity_max),reproductive_maturity_max = ifelse(reproductive_maturity == "5-20",20, reproductive_maturity_max)) %>% mutate(reproductive_maturity_min = ifelse(reproductive_maturity == ">20",20, NA), reproductive_maturity_min = ifelse(reproductive_maturity == "1-5",1, reproductive_maturity_min),reproductive_maturity_min = ifelse(reproductive_maturity == "5-20",5, reproductive_maturity_min)) %>% mutate(fire_exposure_level = ifelse(fire_response %in% c("fire_not_relevant", "fire_not_relevant fire_killed","fire_killed fire_not_relevant", "fire_not_relevant resprouts","fire_not_relevant not_fire_killed_does_not_resprout"), "fire_not_relevant", NA))
 traits:
 - var_in: dispersal_syndrome
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: dispersers
   unit_in: .na
   trait_name: dispersers
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: flowering_season
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: fire_response
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion; with rare exceptions,
     this dataset has marked species as either "fire-killed" or "resprouts", rather
@@ -91,61 +122,81 @@ traits:
 - var_in: Prickly_Plant
   unit_in: .na
   trait_name: spinescence
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: photosynthetic_pathway
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: N_Fixer
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: salt_tolerance
   unit_in: .na
   trait_name: salt_tolerance
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: pollination_syndrome
   unit_in: .na
   trait_name: pollination_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: propagule_longevity
   unit_in: .na
   trait_name: seed_longevity
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: life_form
   unit_in: .na
   trait_name: life_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: lifespan
-  unit_in: .na
+  unit_in: years
   trait_name: lifespan
-  value_type: expert_mean
+  entity_type: species
+  value_type: bin
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: Proliferate
   unit_in: .na
-  trait_name: vegetative_reproduction_ability
-  value_type: expert_mean
+  trait_name: vegetative_regeneration_ability
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: seed_release
   unit_in: .na
   trait_name: seed_release
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: regen_strategy
@@ -157,55 +208,57 @@ traits:
 - var_in: calcicole_status
   unit_in: .na
   trait_name: calcicole_status
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: reproductive_maturity
-  unit_in: .na
+  unit_in: years
   trait_name: reproductive_maturity
-  value_type: expert_mean
-  replicates: .na
-  methods: compilation from diverse sources and expert opinion
-- var_in: reproductive_maturity_min
-  unit_in: years
-  trait_name: reproductive_maturity_primary
-  value_type: expert_min
-  replicates: .na
-  methods: compilation from diverse sources and expert opinion
-- var_in: reproductive_maturity_max
-  unit_in: years
-  trait_name: reproductive_maturity_primary
-  value_type: expert_max
+  entity_type: species
+  value_type: bin
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: Parasite
   unit_in: .na
   trait_name: parasitic
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: snow_tolerance
   unit_in: .na
   trait_name: snow_tolerance
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: water_logging_tolerance
   unit_in: .na
   trait_name: water_logging_tolerance
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: inundation_tolerance
   unit_in: .na
   trait_name: inundation_tolerance
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: bark_morphology
   unit_in: .na
   trait_name: bark_morphology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 substitutions:
@@ -262,16 +315,16 @@ substitutions:
   replace: .na
 - trait_name: reproductive_maturity
   find: '<1'
-  replace: "<1_year"
+  replace: 0--1
 - trait_name: reproductive_maturity
   find: '1-5'
-  replace: 1-5_years
+  replace: 1--5
 - trait_name: reproductive_maturity
   find: '5-20'
-  replace: 5-20_years
+  replace: 5--20
 - trait_name: reproductive_maturity
   find: '>20'
-  replace: '>20_years'
+  replace: 20--
 - trait_name: vegetative_reproduction_ability
   find: 1
   replace: vegetative
@@ -512,7 +565,7 @@ taxonomic_updates:
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
 - find: Agrostis hiemalis
   replace: Agrostis aff. hiemalis
-  reason: Automatic alignment with name in APC list (known names) (2020-06-22)
+  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Agrostis parviflora s.l.
   replace: Agrostis parviflora
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -541,8 +594,8 @@ taxonomic_updates:
   replace: Apium prostratum
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Arthropodium aff. minus
-  replace: Arthropodium minus
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Arthropodium sp. [Arthropodium aff. minus]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Arthropodium strictum s.l.
   replace: Arthropodium strictum
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -550,14 +603,14 @@ taxonomic_updates:
   replace: Arthropodium strictum
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Asperula aff. euryphylla
-  replace: Asperula euryphylla
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Asperula sp. [Asperula aff. euryphylla]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Asperula scoparia subsp. scoparia
   replace: Asperula scoparia var. scoparia
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
 - find: Asplenium aff. bulbiferum
-  replace: Asplenium bulbiferum
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Asplenium sp. [Asplenium aff. bulbiferum]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Asplenium appendiculatum subsp. appendiculatum
   replace: Asplenium appendiculatum var. appendiculatum
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
@@ -598,11 +651,11 @@ taxonomic_updates:
   replace: Atriplex vesicaria subsp. vesicaria
   reason: Automatic alignment with name in APNI names (2020-06-22)
 - find: Australopyrum aff. velutinum
-  replace: Australopyrum velutinum
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Australopyrum sp. [Australopyrum aff. velutinum]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Austrostipa aff. scabra subsp. falcata
-  replace: Austrostipa scabra subsp. falcata
-  reason: Automatic alignment with name in APNI names (2020-06-22)
+  replace: Austrostipa sp. [Austrostipa aff. scabra subsp. falcata]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Avicennia marina subsp. marina
   replace: Avicennia marina var. marina
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
@@ -610,8 +663,8 @@ taxonomic_updates:
   replace: Hakea denticulata
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Baeckea sp. aff. virgata
-  replace: Baeckea virgata
-  reason: Automatic alignment with name in APNI names (2020-06-22)
+  replace: Baeckea sp. [Baeckea sp. aff. virgata]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Banksia integrifolia subsp. A
   replace: Banksia integrifolia
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -742,8 +795,8 @@ taxonomic_updates:
   replace: Brachyscome lineariloba
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Brachyscome sp. aff. readeri
-  replace: Brachyscome readeri
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Brachyscome sp. [Brachyscome aff. readeri]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Brassica sp. 1
   replace: Brassica sp. A
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
@@ -811,8 +864,8 @@ taxonomic_updates:
   replace: Calostemma purpureum
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Calotis aff. hispidula
-  replace: Calotis hispidula
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Calotis sp. [Calotis aff. hispidula]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Cardamine gunnii variant Type variant
   replace: Cardamine gunnii, type variant
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
@@ -838,8 +891,8 @@ taxonomic_updates:
   replace: Cassinia x adunca
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Cassinia sp. aff. uncata
-  replace: Cassinia uncata
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Cassinia sp. [Cassinia sp. aff. uncata]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Cassytha peninsularis var.
   replace: Cassytha peninsularis
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -889,8 +942,8 @@ taxonomic_updates:
   replace: Comesperma ericinum
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Convolvulus sp. aff. erubescens
-  replace: Convolvulus erubescens
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Convolvulus sp. [Convolvulus sp. aff. erubescens]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Coprosma miphophila
   replace: Coprosma niphophila
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -898,8 +951,8 @@ taxonomic_updates:
   replace: Coprosma xtadgelii
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Correa aff. aemula
-  replace: Correa aemula
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Correa sp. [Correa aff. aemula]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Correa lawrenciana var. macrocalyx
   replace: Correa lawrenceana var. macrocalyx
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1001,10 +1054,10 @@ taxonomic_updates:
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Dianella sp. aff. longifolia (Riverina)
   replace: Dianella sp. aff longifolia (Riverina)
-  reason: Automatic alignment with name in APC list (known names) (2020-06-22)
-- find: Dianella sp. aff. revoluta
-  replace: Dianella revoluta
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+- find: Dianella sp. aff. revoluta
+  replace: Dianella sp. [Dianella sp. aff. revoluta] 
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Dillwynia cinerascens s.l.
   replace: Dillwynia cinerascens
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1081,8 +1134,8 @@ taxonomic_updates:
   replace: Eriostemon myoporoides var. myoporoides
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
 - find: Eucalyptus aff. goniocalyx (Wimmera)
-  replace: Eucalyptus goniocalyx (Wimmera)
-  reason: Automatic alignment with name in APC list (known names) (2020-06-22)
+  replace: Eucalyptus sp. [Eucalyptus aff. goniocalyx (Wimmera)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus bauerana
   replace: Eucalyptus baueriana
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1111,17 +1164,17 @@ taxonomic_updates:
   replace: Eucalyptus sideroxylon subsp. Waaje (N.B.Byrnes 3955)
   reason: Automatic alignment with name in APNI names (2020-06-22)
 - find: Eucalyptus sp. aff. aromaphloia
-  replace: Eucalyptus aromaphloia
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Eucalyptus sp. [Eucalyptus sp. aff. aromaphloia]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus sp. aff. blakelyi (Strathbogie & Warby Ras)
   replace: Eucalyptus sp. aff. blakelyi (Strathbogie & Warby Ranges)
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
 - find: Eucalyptus sp. aff. cinerea
-  replace: Eucalyptus cinerea
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Eucalyptus sp. [Eucalyptus sp. aff. cinerea]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus sp. aff. stricta
-  replace: Eucalyptus stricta
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Eucalyptus sp. [Eucalyptus sp. aff. stricta]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus tereticornis subsp. (Bunya Mountains P.V.Holzworth AQ397993)
   replace: Eucalyptus tereticornis subsp. Bunya Mountains (P.V.Holzworth AQ397993)
   reason: Automatic alignment with name in APNI names (2020-06-22)
@@ -1132,8 +1185,8 @@ taxonomic_updates:
   replace: Euphrasia collina
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Euphrasia sp. aff. caudata
-  replace: Euphrasia caudata
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Euphrasia sp. [Euphrasia sp. aff. caudata]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Frankenia pauciflora var.
   replace: Frankenia pauciflora
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1153,8 +1206,8 @@ taxonomic_updates:
   replace: Gastrodia sesamoides
   reason: Automatic alignment with name in APNI names (2020-06-22)
 - find: Geranium aff. sp. 3
-  replace: Geranium sp. 3
-  reason: Automatic alignment with name in APC list (known names) (2020-06-22)
+  replace: Geranium sp. [Geranium aff. sp. 3]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Geranium potentilloides var. 1
   replace: Geranium potentilloides
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1165,8 +1218,8 @@ taxonomic_updates:
   replace: Glycine tabacina subsp. B
   reason: Automatic alignment with name in APNI names (2020-06-22)
 - find: Gnaphalium aff. sphaericum
-  replace: Gnaphalium sphaericum
-  reason: Automatic alignment with name in APC list (known names) (2020-06-22)
+  replace: Gnaphalium sp. [Gnaphalium aff. sphaericum]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Gnaphalium luteo-album
   replace: Gnaphalium luteoalbum
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
@@ -1177,8 +1230,8 @@ taxonomic_updates:
   replace: Gonocarpus teucrioides
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Goodenia aff. geniculata
-  replace: Goodenia geniculata
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Goodenia sp. [Goodenia aff. geniculata]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Goodia lotifolia var.
   replace: Goodia lotifolia
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1267,14 +1320,14 @@ taxonomic_updates:
   replace: Hibbertia stricta
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
 - find: Hydrocotyle aff. algida
-  replace: Hydrocotyle algida
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Hydrocotyle sp. [Hydrocotyle aff. algida]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Hydrocotyle sp. aff. acutiloba
-  replace: Hydrocotyle acutiloba
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Hydrocotyle sp. [Hydrocotyle sp. aff. acutiloba]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Hydrocotyle sp. aff. tripartita
-  replace: Hydrocotyle tripartita
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Hydrocotyle sp. [Hydrocotyle sp. aff. tripartita]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Hypoxis hygrometrica var.
   replace: Hypoxis hygrometrica
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1294,14 +1347,14 @@ taxonomic_updates:
   replace: Juncus prismatocarpus var. prismatocarpus
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
 - find: Juncus sp. aff. pallidus
-  replace: Juncus pallidus
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Juncus sp. [Juncus sp. aff. pallidus]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Juncus subsecundus subsp. congregatus
   replace: Juncus subsecundus subsp. congregatus MS
   reason: Automatic alignment with name in APNI names (2020-06-22)
 - find: Lachnagrostis sp. aff. adamsonii
-  replace: Lachnagrostis adamsonii
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Lachnagrostis sp. [Lachnagrostis sp. aff. adamsonii]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Lemna minor s.l.
   replace: Lemna minor
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1309,8 +1362,8 @@ taxonomic_updates:
   replace: Lepidium muelleri-ferdinandi
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Lepidosperma aff. laterale
-  replace: Lepidosperma laterale
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Lepidosperma sp. [Lepidosperma aff. laterale]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Leptomeria acida s.l.
   replace: Leptomeria acida
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1324,8 +1377,8 @@ taxonomic_updates:
   replace: Leptorhynchos squamatus
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Leptospermum aff. continentale
-  replace: Leptospermum continentale
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Leptospermum sp. [Leptospermum aff. continentale]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Leucopogon sp. (Coolmunda D.Halford Q1635)
   replace: Leucopogon sp. Coolmunda (D.Halford Q1635)
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1372,8 +1425,8 @@ taxonomic_updates:
   replace: Melichrus sp. Isla Gorge (P.Sharpe+ 601)
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Melicytus sp. aff. dentatus
-  replace: Melicytus dentatus
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Melicytus sp. [Melicytus sp. aff. dentatus]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Microcybe multiflora var. bacharoides
   replace: Microcybe multiflora var. baccharoides
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
@@ -1408,11 +1461,11 @@ taxonomic_updates:
   replace: Olearia ramulosa
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Olearia sp. aff. elliptica
-  replace: Olearia elliptica
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Olearia esp. [Olearia sp. aff. elliptica]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Olearia sp. aff. teretifolia
-  replace: Olearia teretifolia
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Olearia sp. [Olearia sp. aff. teretifolia]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Olearia tomentosa subsp. A
   replace: Olearia tomentosa
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1480,8 +1533,8 @@ taxonomic_updates:
   replace: Pimelea curviflora
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Pimelea curviflora var. aff. subglabrata
-  replace: Pimelea curviflora var. subglabrata
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Pimelea curviflora [Pimelea curviflora var. aff. subglabrata]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Pittosporum undulatum subsp. X emmettii
   replace: Pittosporum undulatum var. emmettii
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
@@ -1492,17 +1545,17 @@ taxonomic_updates:
   replace: Platycerium bifurcatum var. bifurcatum
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
 - find: Platysace sp. aff. linearifolia
-  replace: Platysace linearifolia
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Platysace sp. [Platysace sp. aff. linearifolia]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Poa aff. hothamensis
-  replace: Poa hothamensis
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Poa sp. [Poa aff. hothamensis]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Poa labillardierei var. (Volcanic Plains)
   replace: Poa labillardierei var. Volcanic Plains
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
 - find: Poa sp. aff. sieberiana
-  replace: Poa sieberiana
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Poa sp. [Poa sp. aff. sieberiana]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Podocarpus aff. lawrencei (Goonmirk Rocks)
   replace: Podocarpus sp. aff. lawrencei (Goonmirk Rocks)
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
@@ -1537,32 +1590,32 @@ taxonomic_updates:
   replace: Potamogeton perfoliatus
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Prasophyllum aff. occidentale A
-  replace: Prasophyllum occidentale
-  reason: Automatic alignment with name in APNI names (2020-06-22)
+  replace: Prasophyllum sp. [Prasophyllum aff. occidentale A]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. occidentale D
-  replace: Prasophyllum occidentale
-  reason: Automatic alignment with name in APNI names (2020-06-22)
+  replace: Prasophyllum sp. [Prasophyllum aff. occidentale D]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. odoratum E
-  replace: Prasophyllum odoratum
-  reason: Automatic alignment with name in APNI names (2020-06-22)
+  replace: Prasophyllum sp. [Prasophyllum aff. odoratum E]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. odoratum F
-  replace: Prasophyllum odoratum
-  reason: Automatic alignment with name in APNI names (2020-06-22)
+  replace: Prasophyllum sp. [Prasophyllum aff. odoratum F]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. odoratum H
-  replace: Prasophyllum odoratum
-  reason: Automatic alignment with name in APNI names (2020-06-22)
+  replace: Prasophyllum sp. [Prasophyllum aff. odoratum H]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. odoratum I
-  replace: Prasophyllum odoratum
-  reason: Automatic alignment with name in APNI names (2020-06-22)
+  replace: Prasophyllum sp. [Prasophyllum aff. odoratum I]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. odoratum L
-  replace: Prasophyllum odoratum
-  reason: Automatic alignment with name in APNI names (2020-06-22)
+  replace: Prasophyllum sp. [Prasophyllum aff. odoratum L]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. pyriforme B
-  replace: Prasophyllum pyriforme
-  reason: Automatic alignment with name in APNI names (2020-06-22)
+  replace: Prasophyllum sp. [Prasophyllum aff. pyriforme B]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. validum B
-  replace: Prasophyllum validum
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Prasophyllum sp. [Prasophyllum aff. validum B]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum alpinum s.l.
   replace: Prasophyllum alpinum
   reason: Automatic alignment with name in APNI names (2020-06-22)
@@ -1690,8 +1743,8 @@ taxonomic_updates:
   replace: Ruppia maritima
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Rytidosperma aff. setaceum (SA)
-  replace: Rytidosperma setaceum
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Rytidosperma sp. [Rytidosperma aff. setaceum (SA)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Rytidosperma auriculata
   replace: Rytidosperma auriculatum
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1744,8 +1797,8 @@ taxonomic_updates:
   replace: Rytidosperma setaceum
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Rytidosperma sp. aff. setaceum
-  replace: Rytidosperma setaceum
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Rytidosperma sp. [Rytidosperma sp. aff. setaceum]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Rytidosperma tenuior
   replace: Rytidosperma tenuius
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1771,11 +1824,11 @@ taxonomic_updates:
   replace: Senecio anethifolius subsp. anethifolius
   reason: Automatic alignment with name in APNI names (2020-06-22)
 - find: Senecio sp. aff. apargiifolius
-  replace: Senecio apargiifolius
-  reason: Automatic alignment with name in APC list (known names) (2020-06-22)
+  replace: Senecio sp. [Senecio sp. aff. apargiifolius]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Senecio sp. aff. minimus
-  replace: Senecio minimus
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Senecio sp. [Senecio sp. aff. minimus]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Senecio vagus subsp. elgandulosus
   replace: Senecio vagus subsp. eglandulosus
   reason: Automatic alignment with name in APNI names (2020-06-22)
@@ -1810,8 +1863,8 @@ taxonomic_updates:
   replace: Solanum jucundum
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Speculantha sp. aff. parviflora
-  replace: Speculantha parviflora
-  reason: Automatic alignment with name in APNI names (2020-06-22)
+  replace: Speculantha sp. [Speculantha sp. aff. parviflora]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Sphaerolobium vimineum s.l.
   replace: Sphaerolobium vimineum
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -1935,8 +1988,8 @@ taxonomic_updates:
   replace: Utricularia foveolata
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Utricularia sp. aff. dichotoma
-  replace: Utricularia dichotoma
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Utricularia sp. [Utricularia sp. aff. dichotoma]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Verbena officinalis s.l.
   replace: Verbena officinalis
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
@@ -2019,14 +2072,14 @@ taxonomic_updates:
   replace: Zieria smithii var. tomentosa
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
 - find: Zieria sp. aff. smithii
-  replace: Zieria smithii
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
+  replace: Zieria sp. [Zieria sp. aff. smithii]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Zostera muelleri estuarine variety
   replace: Zostera muelleri Estuarine variety
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
 - find: Zygophyllum aff. ammophilum
-  replace: Zygophyllum ammophilum
-  reason: Automatic alignment with name in APC list (known names) (2020-06-22)
+  replace: Zygophyllum sp. [Zygophyllum aff. ammophilum]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Zygophyllum aurantiacum subsp. aurantiacum
   replace: Zygophyllum aurantiacum var. aurantiacum
   reason: Automatic alignment with name in APC list (known names) (2020-06-22)
@@ -2073,11 +2126,11 @@ taxonomic_updates:
   replace: Arthropodium sp. A
   reason: Alignment with known name in APC list (known names) (Elizabeth Wenk, 2020-06-22)
 - find: Arthropodium aff. minus (jointed pedicels)
-  replace: Arthropodium minus
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-22)
+  replace: Arthropodium sp. [Arthropodium aff. minus (jointed pedicels)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Arthropodium aff. strictum (Goldfields)
-  replace: Arthropodium strictum
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-22)
+  replace: Arthropodium sp. [Arthropodium aff. strictum (Goldfields)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Arthropodium milleflorum s.l.
   replace: Arthropodium milleflorum
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-22)
@@ -2106,11 +2159,11 @@ taxonomic_updates:
   replace: Austrostipa mollis
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-22)
 - find: Austrostipa sp. aff. variabilis
-  replace: Austrostipa variabilis
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-22)
+  replace: Austrostipa sp. [Austrostipa sp. aff. variabilis]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Babingtonia sp. aff. pluriflora (Upper Snowy)
-  replace: Babingtonia pluriflora
-  reason: Alignment with known name in APC list (known names) (Elizabeth Wenk, 2020-06-22)
+  replace: Babingtonia sp. [Babingtonia sp. aff. pluriflora (Upper Snowy)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Baeckea utilis s.l.
   replace: Baeckea utilis
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-22)
@@ -2592,8 +2645,8 @@ taxonomic_updates:
   replace: Helichrysum bracteatum var. bracteatum
   reason: Alignment with known name in APC list (known names) (Elizabeth Wenk, 2020-06-25)
 - find: Zygophyllum sp. aff. ammophilum
-  replace: Zygophyllum ammophilum
-  reason: Alignment with known name in APC list (known names) (Elizabeth Wenk, 2020-06-25)
+  replace: Zygophyllum sp. [Zygophyllum sp. aff. ammophilum]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Acmena sp.
   replace: Syzygium sp.
   reason: Alignment with current genus (Elizabeth Wenk, 2020-06-25)
@@ -2721,11 +2774,11 @@ taxonomic_updates:
   replace: Persoonia sericea x Persoonia terminalis
   reason: Change wording for hybrid species (Elizabeth Wenk, 2020-06-30)
 - find: Plantago aff. gaudichaudii (Lowland Swamps)
-  replace: Plantago gaudichaudii
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Plantago sp. [Plantago aff. gaudichaudii (Lowland Swamps)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Poa aff. morrisii (Silurian)
-  replace: Poa morrisii
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Poa sp. [Poa aff. morrisii (Silurian)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Poa sp. (Licola)
   replace: Poa orthoclada
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
@@ -2733,32 +2786,32 @@ taxonomic_updates:
   replace: Pomaderris aspera x Pomaderris cinerea
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
 - find: Prasophyllum aff. diversiflorum (North-east)
-  replace: Prasophyllum diversiflorum
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Prasophyllum sp. [Prasophyllum aff. diversiflorum (North-east)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. frenchii (Wilsons Promontory)
-  replace: Prasophyllum frenchii
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Prasophyllum sp. [Prasophyllum aff. frenchii (Wilsons Promontory)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. odoratum (Chewton)
-  replace: Prasophyllum odoratum
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Prasophyllum sp. [Prasophyllum aff. odoratum (Chewton)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. parviflorum (SW Victoria)
-  replace: Prasophyllum parviflorum
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Prasophyllum sp. [Prasophyllum aff. parviflorum (SW Victoria)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. petilum (Wangaratta)
-  replace: Prasophyllum petilum
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Prasophyllum sp. [Prasophyllum aff. petilum (Wangaratta)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. pyriforme (Inglewood)
-  replace: Prasophyllum pyriforme
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Prasophyllum sp. [Prasophyllum aff. pyriforme (Inglewood)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum aff. sphacelatum (Cobberas)
-  replace: Prasophyllum sphacelatum
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Prasophyllum sp. [Prasophyllum aff. sphacelatum (Cobberas)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Prasophyllum sp. Moama
   replace: Prasophyllum sp. Moama (D.L. Jones 19276)
   reason: Alignment with ALA phrase name (Elizabeth Wenk, 2020-06-30)
 - find: Pterostylis aff. despectans (Terrick Terrick)
-  replace: Pterostylis despectans
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Pterostylis sp. [Pterostylis aff. despectans (Terrick Terrick)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Pterostylis concinna x obtusa
   replace: Pterostylis concinna x Pterostylis obtusa
   reason: Change wording for hybrid species (Elizabeth Wenk, 2020-06-30)
@@ -2795,8 +2848,8 @@ taxonomic_updates:
   replace: Veronica grosseserrata
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
 - find: Villarsia aff. reniformis (non-stoloniferous)
-  replace: Ornduffia reniformis
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Ornduffia sp. [Villarsia aff. reniformis (non-stoloniferous)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: X Calassodia sp. nov. (Cyanicula caerulea hybrid)
   replace: x Calassodia
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
@@ -2849,8 +2902,8 @@ taxonomic_updates:
   replace: Cardamine paucijuga
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
 - find: Carex aff. tereticaulis (Lake Omeo)
-  replace: Carex tereticaulis
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Carex sp. [Carex aff. tereticaulis (Lake Omeo)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Carpobrotus aff. rossii (N.W. Victoria)
   replace: Carpobrotus sp. Short Calyx (S.T.Blake 20451) Toelken
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
@@ -2870,8 +2923,8 @@ taxonomic_updates:
   replace: Coprosma nitida
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
 - find: Correa lawrenceana aff. var. latrobeana (Licola)
-  replace: Correa lawrenceana var. latrobeana
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Correa lawrenceana [Correa lawrenceana aff. var. latrobeana (Licola)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Corybas aff. diemenicus (Portland)
   replace: Corybas dentatus
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
@@ -2885,8 +2938,8 @@ taxonomic_updates:
   replace: Cyperus gymnocaulos x Cyperus vaginatus
   reason: Change wording for hybrid species (Elizabeth Wenk, 2020-06-30)
 - find: Dianella aff. caerulea (Lake Tyers)
-  replace: Dianella caerulea
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Dianella sp. [Dianella aff. caerulea (Lake Tyers)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Dianella aff. caerulea (Mallacoota)
   replace: Dianella sp. aff. laevis (Mallacoota)
   reason: Alignment with current phrase name, sourced through ALA (Elizabeth Wenk,
@@ -2909,32 +2962,32 @@ taxonomic_updates:
   reason: Alignment with current genus, but varieties unofficial (Elizabeth Wenk,
     2020-06-30)
 - find: Eucalyptus aff. aromaphloia (Brisbane Ranges)
-  replace: Eucalyptus aromaphloia
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Eucalyptus sp. [Eucalyptus aff. aromaphloia (Brisbane Ranges)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus aff. baxteri (Avoca)
-  replace: Eucalyptus baxteri
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Eucalyptus sp. [Eucalyptus aff. baxteri (Avoca)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus aff. camphora (Upper Yarra)
-  replace: Eucalyptus camphora
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Eucalyptus sp. [Eucalyptus aff. camphora (Upper Yarra)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus aff. crenulata (Yering)
-  replace: Eucalyptus crenulata
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Eucalyptus sp. [Eucalyptus aff. crenulata (Yering)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus aff. cyanophylla (Antwerp)
-  replace: Eucalyptus cyanophylla
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Eucalyptus sp. [Eucalyptus aff. cyanophylla (Antwerp)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus aff. ignorabilis (Lerderderg)
-  replace: Eucalyptus ignorabilis
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Eucalyptus sp. [Eucalyptus aff. ignorabilis (Lerderderg)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus aff. phenax (Jeparit)
-  replace: Eucalyptus phenax
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Eucalyptus sp. [Eucalyptus aff. phenax (Jeparit)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus aff. sabulosa (Mt Zero)
-  replace: Eucalyptus sabulosa
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Eucalyptus sp. [Eucalyptus aff. sabulosa (Mt Zero)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus aff. verrucata (Mirranatwa)
-  replace: Eucalyptus verrucata
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Eucalyptus sp. [Eucalyptus aff. verrucata (Mirranatwa)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Eucalyptus albens X crebra
   replace: Eucalyptus albens x Eucalyptus crebra
   reason: Change wording for hybrid species (Elizabeth Wenk, 2020-06-30)
@@ -2972,8 +3025,8 @@ taxonomic_updates:
   replace: Grevillea linearifolia x Grevillea parviflora
   reason: Change wording for hybrid species (Elizabeth Wenk, 2020-06-30)
 - find: Hakea aff. eriantha (Genoa River)
-  replace: Hakea eriantha
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Hakea sp. [Hakea aff. eriantha (Genoa River)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Helichrysum apiculatum f. 'A'
   replace: Chrysocephalum apiculatum subsp. apiculatum
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
@@ -2987,8 +3040,8 @@ taxonomic_updates:
   replace: Kunzea peduncularis x Kunzea phylicoides
   reason: Change wording for hybrid species (Elizabeth Wenk, 2020-06-30)
 - find: Lepidosperma aff. laterale (Licola)
-  replace: Lepidosperma laterale
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Lepidosperma sp. [Lepidosperma aff. laterale (Licola)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Leucopogon lanceolatus subsp. group A
   replace: Leucopogon affinis
   reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
@@ -3029,11 +3082,11 @@ taxonomic_updates:
   replace: Olearia magniflora x Olearia muelleri
   reason: Change wording for hybrid species (Elizabeth Wenk, 2020-06-30)
 - find: Oxalis aff. rubens (Mornington Peninsula)
-  replace: Oxalis rubens
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Oxalis sp. [Oxalis aff. rubens (Mornington Peninsula)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Pellaea aff. paradoxa (Floating Islands)
-  replace: Pellaea paradoxa
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)
+  replace: Pellaea sp. [Pellaea aff. paradoxa (Floating Islands)]
+  reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Persoonia chamaepeuce x confertiflora
   replace: Persoonia chamaepeuce x Persoonia confertiflora
   reason: Change wording for hybrid species (Elizabeth Wenk, 2020-06-30)
@@ -3072,4 +3125,3 @@ questions:
     drought, often intolerant of fire)); Mesic_GF\t(Ground ferns from damp shaded
     habitats); (Filmy_Fern\tFerns - with, all or most of fronds, no more than 1 cell
     thickness)"
-

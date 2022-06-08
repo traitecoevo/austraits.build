@@ -11,28 +11,49 @@ source:
     number: '1915'
     pages: '20192221'
     doi: 10.1098/rspb.2019.2221
-people:
-- name: James McCarthy
-  institution: University of Queensland
-  role: collector, contact
-- name: John M. Dwyer
-  institution: University of Queensland
-  role: lab_leader
-- name: Karel Mokany
-  institution: CSIRO Land and Water Canberra, Australia
-  role: lab_leader
-- name: Mike Olsen
-  institution: unaffiliated
-  role: assistant
-- name: Timothy Staples
-  institution: University of Queensland
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: McCarthy
+    given_name: James
+    ORCID: 0000-0003-3060-1678
+    affiliation: Manaaki Whenua - Landcare Research, Lincoln 7640, New Zealand
+    additional_role: contact
+  - last_name: Dwyer
+    given_name: John M.
+    ORCID: 0000-0001-7389-5528
+    affiliation: School of Biological Sciences, The University of Queensland, Australia
+  - last_name: Mokany
+    given_name: Karel
+    ORCID: 0000-0003-4199-3697
+    affiliation: CSIRO Land and Water, Australia
+  assistants: Mike Olsen, Timothy Staples
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2015
-  year_collected_end: 2017
+  data_is_long_format: yes
+  custom_R_code: '
+    data %>% 
+      mutate_at(c("Value"), ~na_if(.,0)) %>% 
+      mutate(
+        replicates = 1,
+        individual_identifier = paste(Species, site_name, Individual,sep="_")
+      ) %>%
+      group_by(Species, site_name, Trait, Individual,`trip identifier`, Unit, `latitude (deg)`,
+      `longitude (deg)`, `Coordinate uncertainty (m)`, `individual_identifier`) %>%
+      summarise(
+        Value = mean(Value),
+        replicates = sum(replicates)
+      ) %>% ungroup()     
+  '
+  collection_date: 2015/2017
+  taxon_name: Species
+  trait_name: Trait
+  value: Value
+  site_name: site_name
+  individual_id: individual_identifier
   description: A regional-scale assessment of using metabolic scaling theory to predict
     ecosystem properties
-  collection_type: field
+  collection_type: field  
+  replicates: replicates
   sample_age_class: adult
   sampling_strategy: Australia has been classified into 89 distinct bioregions based
     on climate, substrate and biological diversity (Thackway & Cresswell, 1995); for
@@ -414,21 +435,13 @@ sites:
     coordinate uncertainty (m): .na.real
     locality: Woroon
 contexts: .na
-config:
-  data_is_long_format: yes
-  variable_match:
-    taxon_name: Species
-    trait_name: Trait
-    value: Value
-    site_name: site_name
-    observation_id: individual_replicate
-  custom_R_code: data %>% mutate_at(c("Value"), ~na_if(.,0)) %>% mutate(individual_replicate
-    = paste0(Individual, "-", Replicate))
 traits:
 - var_in: wood.density
   unit_in: mg/mm3
   trait_name: wood_density
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Stem-specific density (SSD,mgmm-3 or kg dm-3) is the oven-dry mass (at
     70C for 72 h, but see Special cases or extras in the present Section) of a section
@@ -437,8 +450,9 @@ traits:
 - var_in: SLA
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   methods: Specific leaf area (SLA) is the one-sided area of a fresh leaf, divided
     by its oven-dry mass. (Note that leaf mass per area (LMA), specific leaf mass
     (SLM) and specific leaf weight (SLW), are simply 1/SLA). (From Perez-Harguindeguy
@@ -446,15 +460,17 @@ traits:
 - var_in: seed.mass
   unit_in: g
   trait_name: seed_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   methods: Seed mass, also called seed size, is the oven-dry mass of an average seed
     of a species, expressed in mg. (From Perez-Harguindeguy et. al 2016)
 - var_in: leaf.area
   unit_in: mm2
   trait_name: leaf_area
-  value_type: raw_value
-  replicates: 1
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   methods: The area of a leaf (also called leaf area, LA) is the most common metric
     for leaf size and is defined as the one-sided or projected area of an individual
     leaf, expressed in mm2 (From Perez-Harguindeguy et. al 2016). Some leaves are

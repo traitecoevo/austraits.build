@@ -14,13 +14,48 @@ source:
     number: '1'
     pages: 76--86
     doi: 10.1111/j.1461-0248.2009.01403.x
-people:
-- name: Daniel Metcalfe
-  institution: CSIRO
-  role: collector, contributor
+contributors:
+  data_collectors:
+  - last_name: Metcalfe
+    given_name: Daniel
+    ORCID: 0000-0001-6853-7072
+    affiliation: CSIRO Land and Water, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2005
-  year_collected_end: 2005
+  data_is_long_format: no
+
+
+ %>% 
+
+  custom_R_code: '
+    data %>%
+      mutate(
+        fruit_fleshiness = Fruit_type,
+        fruit_dehiscence = Fruit_type,
+        dispersal_appendage = NA,
+        dispersers = NA,
+        seed_storage_location = ifelse(stringr::str_detect(Maximum_propagule_longevity,"soil"),"soil",NA),
+        seed_longevity_numeric = Maximum_propagule_longevity
+      ) %>%
+      move_values_to_new_trait(
+        "Fruit_type", "dispersal_appendage",
+        c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
+        "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)", "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)"), 
+        c("fleshy_reward", "wing_or_plume", "wing_or_plume"),
+        c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
+          "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)", "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)")
+      ) %>%
+      move_values_to_new_trait(
+        "Dispersal_mode","dispersers",
+        c("Insect","Water","Wind"),
+        c("insects","water","wind"),
+        c("Insect","water","wind")
+      )
+'
+  collection_date: 2005/2005
+  taxon_name: species_name
+  site_name: site_name
   description: Part of a worldwide dataset that explores how land-use change impacts
     these attributes in plant communities, using data from 18 land-use intensity gradients
     that represent five biomes and > 2800 species. We identify functional groups using
@@ -248,37 +283,29 @@ sites:
     no. stems >10 cm/0.1 ha: 188.0
     fragment size: '>100 ha'
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-    site_name: site_name
-  custom_R_code: data %>% mutate(fruit_fleshiness = Fruit_type, fruit_dehiscence =
-    Fruit_type, dispersal_appendage = NA, dispersers = NA) %>% move_values_to_new_trait("Fruit_type", "dispersal_appendage",
-    c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)", "Dry
-    dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene,
-    etc.)", "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene,
-    etc.)"), c("fleshy_reward", "wing_or_plume", "wing_or_plume"), c("Dry dehiscent with fleshy reward  (e.g.
-    aril, funicle, elaiosome, etc.)", "Dry dehiscent or indehiscent with wing or plume
-    (e.g. cypsela, samara, plumed achene, etc.)", "Dry indehiscent with wing or plume
-    (e.g. cypsela, samara, plumed achene, etc.)")) %>% move_values_to_new_trait("Dispersal_mode","dispersers",c("Insect","Water","Wind"),c("insects","water","wind"),c("Insect","water","wind")) %>% mutate(seed_storage_location = ifelse(stringr::str_detect(Maximum_propagule_longevity,"soil"),"soil", NA)) %>% mutate(seed_longevity_numeric_min = ifelse(Maximum_propagule_longevity == "Short persistent soil (1 to 5 years)",1, NA), seed_longevity_numeric_min = ifelse(Maximum_propagule_longevity == "Long persistent in soil (more than 5 years)",5, seed_longevity_numeric_min), seed_longevity_numeric_min = ifelse(Maximum_propagule_longevity == "Intermediate (months to less than a year)",.2, seed_longevity_numeric_min), seed_longevity_numeric_min = ifelse(Maximum_propagule_longevity == "Short-lived (weeks)",.02, seed_longevity_numeric_min)) %>% mutate(seed_longevity_numeric_max = ifelse(Maximum_propagule_longevity == "Short persistent soil (1 to 5 years)",5, NA), seed_longevity_numeric_max = ifelse(Maximum_propagule_longevity == "Intermediate (months to less than a year)",1, seed_longevity_numeric_max), seed_longevity_numeric_max = ifelse(Maximum_propagule_longevity == "Short-lived (weeks)",.2, seed_longevity_numeric_max))
 traits:
 - var_in: Growth_form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Raunkiaer_life_form
   unit_in: .na
   trait_name: life_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Height
   unit_in: m
   trait_name: plant_height
-  value_type: multisite_max
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Maximum recorded height, as the distance from the highest photosynthetic
     tissues to the ground surface, following Cornelissen et al 2003; some duplicates
@@ -287,32 +314,42 @@ traits:
 - var_in: Clonality
   unit_in: .na
   trait_name: clonal_spread_mechanism
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Physical_defence
   unit_in: .na
   trait_name: physical_defence
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Photosynthetic pathway
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Laminar_unit_area
   unit_in: mm2
   trait_name: leaf_area
-  value_type: multisite_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Laminar Unit Area = area of one leaf (if simple-leaved) or one leaflet
     (if compound-leaved), following Cornelissen et al 2003
 - var_in: Wood_density
   unit_in: kg/m3
   trait_name: wood_density
-  value_type: multisite_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Oven-dry Mass per unit fresh Volume, for wood (xylem) tissue alone sometimes
     called 'Stem Specific Density' or 'Specific Gravity'; using the conversion equation
@@ -320,37 +357,49 @@ traits:
 - var_in: Nutrient_uptake_strategy
   unit_in: .na
   trait_name: root_structure
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: nitrogen_fixing
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Dispersal_mode
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: dispersers
   unit_in: .na
   trait_name: dispersers
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: dispersal_appendage
   unit_in: .na
   trait_name: dispersal_appendage
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Seed_mass_filtered
   unit_in: mg
   trait_name: seed_dry_mass
-  value_type: multisite_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Oven-dry mass of the seed, including seed wall, following Cornelissen et
     al 2003; values sourced from Grubb_1996 and Grubb_1998 have been fitered out (note,
@@ -359,43 +408,65 @@ traits:
 - var_in: Resprouting_capacity
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Pollination_syndrome
   unit_in: .na
   trait_name: pollination_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Fruit_type
   unit_in: .na
   trait_name: fruit_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: fruit_fleshiness
   unit_in: .na
   trait_name: fruit_fleshiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: fruit_dehiscence
   unit_in: .na
   trait_name: fruit_dehiscence
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Lifespan
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Maximum_propagule_longevity
   unit_in: .na
   trait_name: seed_longevity
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: seed_longevity_numeric
+  unit_in: .na
+  trait_name: seed_longevity_numeric
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: seed_longevity_numeric_min
@@ -411,6 +482,30 @@ traits:
   replicates: .na
   methods: expert observation or reference book
 substitutions:
+- trait_name: seed_longevity
+  find: Short persistent soil (1 to 5 years)
+  replace: short_persistent
+- trait_name: seed_longevity_numeric
+  find: Short persistent soil (1 to 5 years)
+  replace: 1--5
+- trait_name: seed_longevity
+  find: Short-lived (weeks)
+  replace: transient
+- trait_name: seed_longevity_numeric
+  find: Short-lived (weeks)
+  replace: 0--0.2
+- trait_name: seed_longevity
+  find: Long persistent in soil (more than 5 years)
+  replace: long_persistent
+- trait_name: seed_longevity_numeric
+  find: Long persistent in soil (more than 5 years)
+  replace: 5--
+- trait_name: seed_longevity
+  find: Intermediate (months to less than a year)
+  replace: intermediate_longevity
+- trait_name: seed_longevity_numeric
+  find: Intermediate (months to less than a year)
+  replace: 0.2--1
 - trait_name: life_form
   find: other
   replace: .na

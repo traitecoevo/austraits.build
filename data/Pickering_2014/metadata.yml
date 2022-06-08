@@ -23,22 +23,29 @@ source:
     volume: '6'
     pages: plu008
     doi: 10.1093/aobpla/plu008
-people:
-- name: Catherine Pickering
-  institution: School of Environment, Griffith University
-  role: collector
-- name: John Morgan
-  institution: La Trobe University
-  role: collector
-- name: Susanna Venn
-  institution: Deakin University
-  role: collector, contact
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Pickering
+    given_name: Catherine
+    ORCID: 0000-0002-3731-5407
+    affiliation: School of Environment and Science, Griffith University, Australia
+  - last_name: Morgan
+    given_name: John
+    ORCID: 0000-0003-2003-5983
+    affiliation: La Trobe University, Australia
+  - last_name: Venn
+    given_name: Susanna
+    ORCID: 0000-0002-7433-0120
+    affiliation: Centre for Integrative Ecology, School of Life and Environmental
+      Sciences, Deakin University, Burwood, Australia
+    additional_role: contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2007
-  year_collected_end: 2013
+  data_is_long_format: no
+  custom_R_code: data %>% mutate_at(c("LDMC (mg/g-1)"),~na_if(.,0))
+  collection_date: 2007/2013
+  taxon_name: Species
+  site_name: site
   description: Study in Kosciuszko National Park to investigate how vegetation composition
     in snowpatches changed over six years. Differences in functional composition between
     survey periods were determined using functional traits (plant height, percent
@@ -384,23 +391,21 @@ sites:
     description: unknown
     biome: alpine
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site
-  custom_R_code: data %>% mutate_at(c("LDMC (mg/g-1)"),~na_if(.,0))
 traits:
 - var_in: GF
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation and reference books
 - var_in: leaf area (mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: multisite_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: One-sided projected surface area of an average leaf; Traits were measured
     in the field and laboratory based on protocols outlined by Cornelissen et al.
@@ -411,7 +416,9 @@ traits:
 - var_in: SLA  mm2/mg-1
   unit_in: mm2/mg
   trait_name: specific_leaf_area
-  value_type: multisite_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Ratio of one sided area of a water saturated leaf to its oven dry mass;
     Traits were measured in the field and laboratory based on protocols outlined by
@@ -422,7 +429,9 @@ traits:
 - var_in: LDMC (mg/g-1)
   unit_in: mg/g
   trait_name: leaf_dry_matter_content
-  value_type: multisite_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: The oven-dry mass of a leaf divided by the water-saturated fresh weight
     of the leaf * 100; Traits were measured in the field and laboratory based on protocols

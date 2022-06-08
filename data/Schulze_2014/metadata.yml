@@ -12,13 +12,64 @@ source:
     number: '4'
     pages: 1125--1135
     doi: 10.1007/s00468-014-1023-0
-people:
-- name: Ernst-Detlef Schulze
-  institution: Max-Planck Institute for Biogeochemistry
-  role: collector, contact, lab_leader
+contributors:
+  data_collectors:
+  - last_name: Schulze
+    given_name: Ernst-Detlef
+    ORCID: 0000-0001-6188-9219
+    affiliation: Max-Planck Institute for Biogeochemistry, Germany
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk, Caitlan Baxter
 dataset:
-  year_collected_start: July 2010
-  year_collected_end: August 2010
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        Date_to_use_edited = Date_to_use_edited %>% mdy(),
+        row_number = row_number(),
+        species_name_new = case_when(
+          row_number == 293 ~ "Acacia sp. [Acacia sp. 1 minniritchi bark (Schulze_2014)]",
+          row_number == 303 ~ "Acacia sp. [Acacia sp. 2 minniritchi bark (Schulze_2014)]",
+          row_number == 319 ~ "Acacia sp. [Acacia sp. 3 minniritchi bark (Schulze_2014)]",
+          row_number == 389 ~ "Acacia sp. [Acacia sp. 4 minniritchi bark (Schulze_2014)]",
+          row_number == 376 ~ "Bossiaea sp. [Bossiaea sp. 1 (Schulze_2014)]",
+          row_number == 399 ~ "Bossiaea sp. [Bossiaea sp. 2 (Schulze_2014)]",
+          row_number == 394 ~ "Acacia sp. [Acacia dwarf shrub sp. 1 (Schulze_2014)]",
+          row_number == 407 ~ "Acacia sp. [Acacia dwarf shrub sp. 2 (Schulze_2014)]",
+          row_number == 90 ~ "Acacia sp. [Acacia sp. 1 at Spinifex grassland site (Schulze_2014)]",
+          row_number == 94 ~ "Acacia sp. [Acacia sp. 2 at Spinifex grassland site (Schulze_2014)]",
+          row_number == 107 ~ "Acacia sp. [Acacia sp. 1 at Sand after Lake Barlee, 1-2 yrs after burn site (Schulze_2014)]",
+          row_number == 108 ~ "Acacia sp. [Acacia sp. 2 at Sand after Lake Barlee, 1-2 yrs after burn site (Schulze_2014)]",
+          row_number == 64 ~ "Acacia sp. [Acacia sp. 1 at Sand with Casuarina site (Schulze_2014)]",
+          row_number == 65 ~ "Acacia sp. [Acacia sp. 2 at Sand with Casuarina site (Schulze_2014)]",
+          row_number == 66 ~ "Acacia sp. [Acacia sp. 3 at Sand with Casuarina site, phylloclade (Schulze_2014)]",
+          row_number == 146 ~ "Acacia sp. [Acacia sp. 2 at Kalbarri NP Ranger track site (Schulze_2014)]",
+          row_number == 42 ~ "Acacia sp. [Acacia sp. 1 at Lancelin coastal heathland site (Schulze_2014)]",
+          row_number == 70 ~ "Acacia sp. [Acacia sp. 4 at Sand with Casuarina site (Schulze_2014)]",
+          row_number == 181 ~ "Acacia sp. [Acacia sp. 4, site unknown (Schulze_2014)]",
+          row_number == 284 ~ "Acacia sp. [Acacia sp. 1 at Southern Cross site (Schulze_2014)]",
+          row_number == 285 ~ "Acacia sp. [Acacia sp. 2 at Southern Cross site (Schulze_2014)]",
+          row_number == 492 ~ "Acacia sp. [Acacia sp. 5, site unknown  (Schulze_2014)]",
+          row_number == 99 ~ "Acacia sp. [Acacia grey mulga sp. 1 at Mulga site (Schulze_2014)]",
+          row_number == 503 ~ "Acacia sp. [Acacia grey mulga sp. 2 (Schulze_2014)]",
+          row_number == 86 ~ "Senna sp. [Senna sp. 1 at Road intersect, laterite site (Schulze_2014)]",
+          row_number == 251 ~ "Senna sp. [Senna sp. 1 at Mt.  Nameless, 1120m site (Schulze_2014)]",
+          row_number == 218 ~ "Senna sp. [Senna sp. 1 at Plateau on quartzite site (Schulze_2014)]",          
+          row_number == 219 ~ "Senna sp. [Senna sp. 2 at Plateau on quartzite site (Schulze_2014)]",
+          row_number == 238 ~ "Senna sp. [Senna sp. 3 at Plateau on quartzite site (Schulze_2014)]",
+          row_number == 247 ~ "Senna sp. [Senna sp. 3 at North of Paraburdoo site (Schulze_2014)]",
+          row_number == 41 ~ "Mimosa sp. [Mimosa sp. 1 at Lancelin coastal heathland site (Schulze_2014)]"
+        ),  
+        species_name = ifelse(!is.na(species_name_new),species_name_new,species_name)
+      ) %>%
+      group_by(species_name) %>%
+        mutate_at(vars(`physical_defence`,`leaf type`,`leaf_compoundness`, `Deciduous`,
+        `Life-form`,`N2 fixing`), replace_duplicates_with_NA) %>%
+      ungroup()
+  '
+  collection_date: Date_to_use_edited
+  taxon_name: species_name
+  site_name: site_name
   description: In this study, Eucalyptus and Acacia were collected along a south-north
     gradient from winter- to summer-dominated rainfall to investigate whether trait
     values indicate why these genera dominate across different parts of Australia
@@ -56,6 +107,7 @@ sites:
     surface/groundwater access: 'no'
     fire history: unburnt
     precipitation, MAP (mm): .na.real
+    collection_type: arboretum
   site_1:
     locality: Lancelin coastal heathland
     latitude (deg): -31.014
@@ -718,38 +770,37 @@ sites:
     fire history: '?'
     precipitation, MAP (mm): 300.0
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-    site_name: site_name
-    date: Date_to_use_edited
-  custom_R_code: data %>% mutate(Date_to_use_edited = Date_to_use_edited %>% mdy())
-    %>% group_by(`species_name`) %>% mutate_at(vars(physical_defence,`leaf type`,leaf_compoundness,Deciduous,`Life-form`,`N2
-    fixing`), replace_duplicates_with_NA) %>% ungroup() %>% ungroup()
 traits:
 - var_in: leaf type
   unit_in: .na.character
   trait_name: leaf_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation
 - var_in: leaf_compoundness
   unit_in: .na.character
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation
 - var_in: physical_defence
   unit_in: .na.character
   trait_name: physical_defence
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation
 - var_in: leaf_area_cm2
   unit_in: cm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -762,19 +813,25 @@ traits:
 - var_in: Life-form
   unit_in: .na
   trait_name: woodiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert field observation
 - var_in: Deciduous
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert field observation
 - var_in: N2 fixing
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: The genus Acacia has been shown to be capable of fixing N2, but the rates
     depend on the environmental conditions (Brockwell et al. 2005). It may also be
@@ -785,7 +842,9 @@ traits:
 - var_in: Specific Leaf Area (m2 kg-1)
   unit_in: m2/kg
   trait_name: specific_leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -798,7 +857,9 @@ traits:
 - var_in: Delta vs. PDB-corr. 13/12 C
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -816,7 +877,9 @@ traits:
 - var_in: Delta vs. air-corr 29/28 N
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -834,7 +897,9 @@ traits:
 - var_in: C (g/kg)
   unit_in: g/kg
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -852,7 +917,9 @@ traits:
 - var_in: N (g/kg)
   unit_in: g/kg
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -870,7 +937,9 @@ traits:
 - var_in: P (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.

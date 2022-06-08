@@ -12,19 +12,51 @@ source:
     number: '6'
     pages: 564--584
     doi: 10.1093/treephys/tpu016
-people:
-- name: Lasantha K. Weerasinghe
-  institution: Research School of Biology, Australian National University
-  role: collector
-- name: Owen Atkin
-  institution: Research School of Biology, Australian National University
-  role: lab_leader
-- name: Kristine Crous
-  institution: Hawkesbury Institute for the Environment, Western Sydney University
-  role: collector, contact, contributor
+contributors:
+  data_collectors:
+  - last_name: Weerasinghe
+    given_name: Lasantha K.
+    ORCID: 0000-0002-5173-8000
+    affiliation: Faculty of Agriculture, University of Peradeniya, Peradeniya 20400,
+      Sri Lanka
+  - last_name: Atkin
+    given_name: Owen
+    ORCID: 0000-0003-1041-5202
+    affiliation: The Australian National University, Australia
+  - last_name: Crous
+    given_name: Kristine
+    ORCID: 0000-0001-9478-7593
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2010
-  year_collected_end: 2010
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate_at(c("Photo","Cond","Ci","Trmmol","Rdark"), ~na_if(.,"-")) %>%
+      mutate(
+        Date = Date %>% dmy(),
+        individual_id = paste(`Forest location`, Species, replicate, sep = "_"),
+        population_id = "Daintree Rainforest Observatory",
+        method_number = case_when(
+          `Canopy location` == "upper" ~ "1",
+          `Canopy location` == "lower" ~ "2",
+          `Canopy location` == "understory" ~ "3"
+        )
+      ) %>%
+      group_by(individual_id, site_name, `Canopy location`, method_number) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup
+  '
+  collection_date: Date
+  taxon_name: Species
+  site_name: site_name
+  context_name: Canopy location
+  individual_id: individual_id
+  population_id: population_id 
+  method_number: method_number
+  observation_number: observation_number
   description: A study exploring the impact of canopy position on leaf respiration
     (R) and associated traits in tree and shrub species growing in a lowland tropical
     rainforest in Far North Queensland, Australia.
@@ -409,31 +441,18 @@ sites:
     description: lowland tropical wet forest
 contexts:
   upper:
-    type: field
-    description: north-facing, sun-exposed leaves at the top of the canopy collected
-    natural irradiance (umol photons m-2 s-1): 2400
+    irradiance (umol photons m-2 s-1): 2400 PAR (upper canopy location)
   lower:
-    type: field
-    description: south-facing leaves from deep in the canopy collected
-    natural irradiance (umol photons m-2 s-1): 117
+    irradiance (umol photons m-2 s-1): 117 PAR (lower canopy location)
   understory:
-    type: field
-    description: leaves collected from understory species
-    natural irradiance (umol photons m-2 s-1): 11
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-    context_name: Canopy location
-    date: Date
-  custom_R_code: data %>% mutate_at(c("Photo","Cond","Ci","Trmmol","Rdark"), ~na_if(.,"-"))
-    %>% mutate(Date = Date %>% dmy())
+    irradiance (umol photons m-2 s-1): 11 PAR (understory)
 traits:
 - var_in: Photo
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_saturated
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: 'To assess canopy leaf gas exchange characteristics, a combination of in
     situ (using the canopy crane) and ex situ (using a laboratory at the base of the
@@ -459,7 +478,9 @@ traits:
 - var_in: Cond
   unit_in: molH2O/m2/s
   trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: 'To assess canopy leaf gas exchange characteristics, a combination of in
     situ (using the canopy crane) and ex situ (using a laboratory at the base of the
@@ -485,7 +506,9 @@ traits:
 - var_in: Ci
   unit_in: umolCO2/mol
   trait_name: ci_at_Asat
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: 'To assess canopy leaf gas exchange characteristics, a combination of in
     situ (using the canopy crane) and ex situ (using a laboratory at the base of the
@@ -511,7 +534,9 @@ traits:
 - var_in: Trmmol
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Asat
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: 'To assess canopy leaf gas exchange characteristics, a combination of in
     situ (using the canopy crane) and ex situ (using a laboratory at the base of the
@@ -537,7 +562,9 @@ traits:
 - var_in: Rdark
   unit_in: neg_umolCO2/m2/s
   trait_name: leaf_dark_respiration_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: 'To assess canopy leaf gas exchange characteristics, a combination of in
     situ (using the canopy crane) and ex situ (using a laboratory at the base of the
@@ -563,8 +590,10 @@ traits:
 - var_in: LMA_g_m-2
   unit_in: g/m2
   trait_name: specific_leaf_area
-  value_type: site_mean
-  replicates: 1-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Initially, the fresh
     mass was measured (Mettler-Toledo Ltd, Port Melbourne, Victoria, Australia); thereafter,
@@ -575,8 +604,10 @@ traits:
 - var_in: DMC_g_g-1
   unit_in: g/g
   trait_name: leaf_dry_matter_content
-  value_type: site_mean
-  replicates: 1-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Initially, the fresh
     mass was measured (Mettler-Toledo Ltd, Port Melbourne, Victoria, Australia); thereafter,
@@ -587,8 +618,10 @@ traits:
 - var_in: Nmass_mg_g-1
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
-  replicates: 1-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
     (LI-3100 leaf area meter, LI-COR, Inc.). Subsequently, leaves were oven dried
@@ -598,8 +631,10 @@ traits:
 - var_in: Narea_g_m-2
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: site_mean
-  replicates: 1-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
     (LI-3100 leaf area meter, LI-COR, Inc.). Subsequently, leaves were oven dried
@@ -609,8 +644,10 @@ traits:
 - var_in: Pmass_mg_g-1
   unit_in: mg/g
   trait_name: leaf_P_per_dry_mass
-  value_type: site_mean
-  replicates: 1-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
     (LI-3100 leaf area meter, LI-COR, Inc.). Subsequently, leaves were oven dried
@@ -620,8 +657,10 @@ traits:
 - var_in: Parea_g_m-2
   unit_in: g/m2
   trait_name: leaf_P_per_area
-  value_type: site_mean
-  replicates: 1-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
     (LI-3100 leaf area meter, LI-COR, Inc.). Subsequently, leaves were oven dried
@@ -631,8 +670,10 @@ traits:
 - var_in: N_P_ratio
   unit_in: g/g
   trait_name: N_to_P_ratio
-  value_type: site_mean
-  replicates: 1-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
     (LI-3100 leaf area meter, LI-COR, Inc.). Subsequently, leaves were oven dried
@@ -641,8 +682,10 @@ traits:
     WI, USA) using Kjeldahl acid digests (Allen 1974).
 - var_in: soluble_sugars_mg_g-1
   unit_in: mg/g
-  trait_name: leaf_soluable_starch_per_mass
-  value_type: site_mean
+  trait_name: leaf_soluable_sugars_per_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3-4
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
@@ -653,7 +696,9 @@ traits:
 - var_in: soluble_sugars_g_m-2
   unit_in: g/m2
   trait_name: soluable_sugars_per_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3-4
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
@@ -664,7 +709,9 @@ traits:
 - var_in: starch_mg_g-1
   unit_in: mg/g
   trait_name: leaf_soluable_starch_per_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3-4
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
@@ -675,7 +722,9 @@ traits:
 - var_in: starch_g_m-2
   unit_in: g/m2
   trait_name: soluable_starch_per_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3-4
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
@@ -686,7 +735,9 @@ traits:
 - var_in: TNC_mg_g-1
   unit_in: mg/g
   trait_name: leaf_total_non-structural_carbohydrates_per_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3-4
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
@@ -697,7 +748,9 @@ traits:
 - var_in: TNC_g_m-2
   unit_in: g/m2
   trait_name: leaf_total_non-structural_carbohydrates_per_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3-4
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined

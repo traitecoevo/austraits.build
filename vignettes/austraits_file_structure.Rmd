@@ -34,7 +34,7 @@ my_kable_styling <- my_kable_styling_html
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Loads austraits into global name space
-austraits <- austraits::load_austraits_lite()
+austraits <- austraits:::austraits_lite
 definitions <- austraits$definitions
 ```
 
@@ -69,6 +69,7 @@ dir() %>%
 ```
 ├── NAMESPACE             # functions being exported
 ├── DESCRIPTION           # R package description
+├── inst/schema             # Defines the overall austraits schema
 ├── man                   # XXXX-not in file structure
 ├── R                     # folder with functions and scripts to build AusTraits
 ├── tests                 # defines tests applied to datasets
@@ -84,6 +85,7 @@ dir() %>%
 └── scripts               # scripts for processing files before/after building austraits, including compiling reports
 ```
 
+
 ## Details on files used for data compilation:
   
 
@@ -93,12 +95,12 @@ The folder `config` contains three files which govern the building of the datase
 
 ```
 config
-├── definitions.yml
+├── traits.yml
 ├── taxon_list.csv
 └── unit_conversions.csv
 ```
 
-The file `definitions.yml` defines the structure of the database and all terms. There are three main sections to the `definitions.yml` file, the trait definitions used to compile AusTraits, allowable trait values, and definitions of all elements included in the tables that comprise AusTraits. The [trait definitions](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) and [definitions of all elements in AusTraits (and value types)](http://traitecoevo.github.io/austraits.build/articles/austraits_database_structure.html) are fully described in additional vignettes. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). 
+The file `traits.yml` provides the trait definitions used to compile AusTraits, allowable trait values, and definitions of all elements included in the tables that comprise AusTraits. The [trait definitions](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) is fully described in additional vignettes. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). 
 
 The file `taxon_list.csv` is our master list of known taxa. Each species is listed once, with links to species' identifiers provided by the Australian Plant Name Index (APNI). The file `taxon_list.csv` is added to if a study includes taxa not previously represented in AusTraits. These can be names included in either the APC/APNI, compilations of taxonomic concepts (APC) or names (APNI) for plants that are either native to or naturalised in Australia, or taxa without recognised names.  
 
@@ -153,27 +155,27 @@ Required columns include the taxon name, the trait name (column in long format, 
 
 It is important that all trait measurements made on the same individual or that are the mean of a species' measurements from the same site are kept linked. 
 
-- If the data are in wide format, each row should include measurements made on a single individual or a single species-by-site mean, with different trait values as consecutive columns. 
+- If the data is in wide format, each row should include measurements made on a single individual or a single species-by-site mean, with different trait values as consecutive columns. 
 
-- If the data are in long format, an additional column is required to ensure multiple trait measurements made on the same individual or are the mean of a species' measurements from the same site are linked: `observation_ID` (or other identifier) must be assigned to identify which rows of measurements (for different traits) are linked to a unique individual or site.
+- If the data is in long format, an additional column is required to ensure multiple trait measurements made on the same individual, or the mean of a species' measurements from the same site, are linked: `observation_ID` (or another identifier) must be assigned to identify which rows of measurements (for different traits) are linked to a unique individual or site.
 
-We aim to keep the data file in rawest form possible (i.e. as few changes as possible) but it must be a single csv file. Additional custom R code may be required to make the file exactly compatible with the AusTraits format, but these changes should be executed as AusTraits is compiled and should be in the `metadata.yml` file under `config/custom_R_code` (see below). Any files used to create the submitted `data.csv` file (e.g. Excel ...) should be archived in a sub-folder within the study folder named `raw`.
+We aim to keep the data file in the rawest form possible (i.e. with as few changes as possible) but it must be a single csv file. Additional custom R code may be required to make the file exactly compatible with the AusTraits format, but these changes should be executed as AusTraits is compiled and should be in the `metadata.yml` file under `config/custom_R_code` (see below). Any files used to create the submitted `data.csv` file (e.g. Excel ...) should be archived in a sub-folder within the study folder named `raw`.
 
 ### Metadata.yml
 
 The metadata is compiled in a `.yml` file, a structured data file where information is presented in a hierarchical format (see [Appendix for details](#yaml)).  There are `r length(definitions$metadata$elements)` values at the top hierarchical level: `r sprintf("%s", definitions$metadata$elements %>% names()) %>% paste(collapse = ", ")`. These are each described below.
 
-As a start, you may want to checkout some examples from [existing studies in Austraits](https://github.com/traitecoevo/austraits.build/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits.build/blob/master/data/Angevin_2011/metadata.yml) or [Wright_2009](https://github.com/traitecoevo/austraits.build/blob/master/data/Wright_2009/metadata.yml).
+As a start, you may want to check out some examples from [existing studies in Austraits](https://github.com/traitecoevo/austraits.build/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits.build/blob/master/data/Angevin_2011/metadata.yml) or [Wright_2009](https://github.com/traitecoevo/austraits.build/blob/master/data/Wright_2009/metadata.yml).
 
 #### Source
 
-This section provides `r tolower(definitions$metadata$elements$source$description)` In general we aim to reference the primary source. References are written in structured yml format, under the category `source` and then sub-groupings `primary` and `secondary`. General guidelines for describing a source
+This section provides `r tolower(definitions$metadata$elements$source$description)` In general we aim to reference the primary source. References are written in structured yml format, under the category `source` and then under sub-groupings `primary` and `secondary`. General guidelines for describing a source include:
 
-- maximum of one primary source allowed.
-- elements are names as in [bibtex format](https://en.wikipedia.org/wiki/BibTeX).
-- keys should be named in the format `Surname_year` and should be identical to the name given to the dataset folder. A second instance of the identical Surname_year should have  the key Surname_year_2.
-- one or more secondary source may be included if traits from a single dataset were presented in two different manuscripts. Multiple sources are also appropriate if an author has compiled data from a number of sources, that are not individually in AusTraits, for a published or unpublished compilation.
-- if your data are from an unpublished study, only include the elements that are applicable.
+- A maximum of one primary source allowed.
+- Elements are names as in [bibtex format](https://en.wikipedia.org/wiki/BibTeX).
+- Keys should be named in the format `Surname_year` and should be identical to the name given to the dataset folder. A second instance of the identical Surname_year should have  the key Surname_year_2.
+- One or more secondary source may be included if traits from a single dataset were presented in two different manuscripts. Multiple sources are also appropriate if an author has compiled data from a number of sources, which are not individually in AusTraits, for a published or unpublished compilation.
+- If your data is from an unpublished study, only include the elements that are applicable.
 - If someone has transcribed a published source, the primary source will be the published work and the person who has completed the transcription will be acknowledged as the `contributor` of the dataset.
 
 An example of a primary source that is a journal article is:
@@ -226,7 +228,7 @@ If a secondary source is included it may look like:
 
 #### People
 
-This section provides `r tolower(definitions$metadata$elements$people$description)` Roles are defined as follows:
+This section provides `r tolower(definitions$metadata$elements$people$description)`. Roles are defined as follows:
 
 ```{r, echo=FALSE, results="show"}
 austraits$definitions$metadata$elements$people$elements$role$values %>%
@@ -247,7 +249,7 @@ people:
 
 ```
 
-Note that only the AusTraits custodians have the contributors e-mail addresses on file. This information will not be directly available to AusTraits users or new contributors via Github.
+Note that only the AusTraits custodians have the contributors' e-mail addresses on file. This information will not be directly available to AusTraits users or new contributors via Github.
 
 #### Dataset
 
@@ -265,6 +267,16 @@ for (value in names(values)) {
 An example is as follows:
 
 ```
+  data_is_long_format: yes
+  species_name: Taxon
+  value: trait value
+  trait_name: trait
+  custom_R_code: ' 
+    data %>% 
+    mutate(`trait value` = ifelse(trait == 'flowering time', 
+      convert_month_range_vec_to_binary(`trait value`), `trait value`)
+      )
+    '
   year_collected_start: 2004
   year_collected_end: 2004
   description: Trait values for species with faster versus slower height growth following disturbance for Myall Lakes species.
@@ -273,36 +285,6 @@ An example is as follows:
   sampling_strategy: Fire is a recurrent disturbance in the park (interval – 0–30 years; Fox and Fox 1986). A mosaic of fire histories has facilitated previous use of space-for-time substitutions in studies of small mammal succession (Fox and McKay 1981). Here we employ the same methodology to reconstruct species height-growth trajectories (Enright and Goldblum 1999). Sites were identified at a range of times since fire with the use of NSW national parks GIS fire history records and personal observations of Karen Ross (Ross et al. 2002). Patches of vegetation 1, 2, 4, 8, 10, 12, 15, 27 and 28 years since fire were identified. Where possible several patches within a given age class were surveyed to determine species presence or absence. Nineteen species recorded in a majority of patches were selected for further study. This included eight resprouting species and 11 obligate seeders (full list in Appendix 1).
   original_file: Falster & Westoby 2005 Oikos appendix.doc
   notes: none
-```
-
-#### Config
-
-This section includes `r tolower(definitions$metadata$elements$config$description)`
-
-Values are as follows:
-
-
-```{r}
-values <- definitions$metadata$elements$config$elements
-for (value in names(values)) {
-  sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
-}
-```
-
-An example is
-```
-config:
-  data_is_long_format: yes
-  variable_match:
-    species_name: Taxon
-    value: trait value
-    trait_name: trait
-  custom_R_code: ' 
-    data %>% 
-    mutate(`trait value` = ifelse(trait == 'flowering time', 
-      convert_month_range_vec_to_binary(`trait value`), `trait value`)
-      )
-    '
 ```
 
 A common use of the `custom_R_code` is to automate the conversion of a verbal description of flowering or fruiting periods into the supported trait values, as occurs in  this example. It might also be used if values for a single trait are expressed across multiple columns and need to be merged. See `Catford_2014` as an example of this. The [adding data](http://traitecoevo.github.io/austraits.build/articles/adding_data.html) vignette provides additional examples of code regularly implemented in `custom_R_code`, including functions specifically developed for AusTraits data manipulations. 
@@ -320,7 +302,7 @@ for (value in names(values)) {
 }
 ```
 
-Values under `trait_name` must be allowable values, list in the `definitions` [file](https://github.com/traitecoevo/austraits.build/blob/master/config/definitions.yml) or [vignette](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html). Similarly, values under `value_type` must be allowable values, also listed in the definitions file.
+Values under `trait_name` must be allowable values, list in the `trait definitions` [file](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml) or [vignette](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html). Similarly, values under `value_type` must be allowable values, also listed in the definitions file.
 
 An example is as follows:
 
@@ -345,7 +327,7 @@ traits:
 
 This section provides `r tolower(definitions$metadata$elements$substitutions$description)`
 
-Substitutions are required whenever the exact word(s) used to describe a categorical trait value in AusTraits is different from the vocabulary used by the author in the `data.csv` file. It is preferable to align vocabulary using `substitutions` rather than changing the `data.csv` file. The [trait definitions file](https://github.com/traitecoevo/austraits.build/blob/master/config/definitions.yml) provides a list of supported values for each trait.
+Substitutions are required whenever the exact word(s) used to describe a categorical trait value in AusTraits is different from the vocabulary used by the author in the `data.csv` file. It is preferable to align vocabulary using `substitutions` rather than changing the `data.csv` file. The [trait definitions file](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml) provides a list of supported values for each trait.
 
 Each substitution is documented using the following elements:
 
@@ -414,16 +396,16 @@ questions:
 
 ### CSV 
 
-A comma-separated values (CSV) file is a delimited text file that uses a comma to separate values. Each line of the file is a data record. Each record consists of one or more fields, separated by commas. This is a comma format for storing tables of data in a simple text file. You can edit it an Excel or in a text editor. For more, see [here](https://en.wikipedia.org/wiki/Comma-separated_values).
+A comma-separated values (CSV) file is a delimited text file that uses a comma to separate values. Each line of the file is a data record. Each record consists of one or more fields, separated by commas. This is a comma format for storing tables of data in a simple text file. You can edit it in Excel or in a text editor. For more, see [here](https://en.wikipedia.org/wiki/Comma-separated_values).
 
 ### YAML files {#yaml}
 
-The `yml` file extension (pronounced "YAML") [is a type structured data file](https://en.wikipedia.org/wiki/YAML), that is both human and machine readable. You can edit it any text editor, or also in Rstudio. Generally, yml is used in situations where a table does not suit because of variable lengths and or nested structures. It has the advantage over a spreadsheet in that the nested “headers” can have variable numbers of categories. The data under each of the hierarchical headings are easily extracted by R.
+The `yml` file extension (pronounced "YAML") [is a type structured data file](https://en.wikipedia.org/wiki/YAML), that is both human and machine readable. You can edit it in any text editor, or also in Rstudio. Generally, yml is used in situations where a table is not suitable because of variable lengths and or nested structures. It has the advantage over a spreadsheet in that the nested “headers” can have variable numbers of categories. The data under each of the hierarchical headings are easily extracted by R.
 
 
 ## Adding custom R code into metadata.yml {#custom_R_code}
 
-Occasionally all the changes we want to make to dataset may not fit into the prescribed workflow used in AusTraits. For example, we assume each trait has a single unit. But there are a few datasets where data on different rows have different units. So we want to make to make some custom modifications to this particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`read_data_study`](https://github.com/traitecoevo/austraits/blob/master/R/steps.R#L59)) looks like:
+Occasionally all the changes we want to make to dataset may not fit into the prescribed workflow used in AusTraits. For example, we assume that each trait has a single unit. But there are a few datasets where data on different rows have different units. So we want to make to make some custom modifications to this particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`read_data_study`](https://github.com/traitecoevo/austraits/blob/master/R/steps.R#L59)) looks like:
 
 ```{r, eval=FALSE, echo=TRUE}
 data <-
@@ -446,14 +428,14 @@ data %>% mutate(
 )
 ```
 
-This is the finished solution, but to get there we did as follows. 
+This is the finished solution, but to get there we did as follows: 
 
 Generally, this code should 
 
 - assume a single object called `data`, and apply whatever fixes are needed
 - use [dplyr](https://dplyr.tidyverse.org) functions like `mutate`, `rename`, etc 
-- use pipes to weave together a single statement, possible. (Otherwise you'll need a semi colons `;` at the end of each statement).
-- be fully self contained (we're not going to use any of the other remake machinery here)
+- use pipes to weave together a single statement, if possible. (Otherwise you'll need a semi colon `;` at the end of each statement).
+- be fully self-contained (we're not going to use any of the other remake machinery here)
 
 First, load an object called `data`:
 
@@ -465,7 +447,7 @@ data <- read_csv(file.path("data", "Blackman_2010", "data.csv"), col_types = col
 data
 ```
 
-Second, write your code to manipulate data, like the example above/
+Second, write your code to manipulate data, like the example above
 
 
 Third, once you have some working code, you then want to add it into your yml file under a group `config` -> `custom_R_code`. 
