@@ -109,25 +109,25 @@ testthat::test_that("convert_month_range_string_to_binary_worker",{
 testthat::test_that("test separate_range",{
   data <- tibble::tibble(range = rep("1-10",10))
   
-  expect_equal(class(separate_range(data,"range","min","max")), c("tbl_df","tbl","data.frame"))
+  expect_equal(class(austraits.build:::separate_range(data,"range","min","max")), c("tbl_df","tbl","data.frame"))
   expect_equal(ncol(data), 1)
-  expect_equal(ncol(separate_range(data,"range","min","max")), 2)
-  expect_equal(unique(separate_range(data,"range","min","max")$min), "1")
-  expect_equal(unique(separate_range(data,"range","min","max")$max), "10")
+  expect_equal(ncol(austraits.buiild:::separate_range(data,"range","min","max")), 2)
+  expect_equal(unique(austraits.build:::separate_range(data,"range","min","max")$min), "1")
+  expect_equal(unique(austraits.build:::separate_range(data,"range","min","max")$max), "10")
 })
 
 testthat::test_that("test replace_duplicates_with_NA",{
-  expect_equal(replace_duplicates_with_NA(1:10), 1:10)
-  expect_equal(replace_duplicates_with_NA(c(1,1,1)), c(1, NA, NA))
-  expect_equal(replace_duplicates_with_NA(c("1","1","1")), c("1", NA, NA))
-  expect_equal(replace_duplicates_with_NA(c("1",1,"1")), c("1", NA, NA))
-  expect_equal(replace_duplicates_with_NA(c("A",1,"A")), c("A", 1, NA))
+  expect_equal(austraits.build:::replace_duplicates_with_NA(1:10), 1:10)
+  expect_equal(austraits.build:::replace_duplicates_with_NA(c(1,1,1)), c(1, NA, NA))
+  expect_equal(austraits.build:::replace_duplicates_with_NA(c("1","1","1")), c("1", NA, NA))
+  expect_equal(austraits.build:::replace_duplicates_with_NA(c("1",1,"1")), c("1", NA, NA))
+  expect_equal(austraits.build:::replace_duplicates_with_NA(c("A",1,"A")), c("A", 1, NA))
 })
 
 testthat::test_that("test move_values_to_new_trait",{
   data <- tibble::tibble(Root = rep("Soil",10))
   
-  expect_equal(ncol(data), 2)
+  expect_equal(ncol(data), 1)
   
   expect_equal(ncol(move_values_to_new_trait(data, "Root", "Branch", "Soil", "Leaves", "Soil")), 2)
   expect_equal(nrow(move_values_to_new_trait(data, "Root", "Branch", "Soil", "Leaves", "Soil")), 10)
@@ -162,7 +162,7 @@ testthat::test_that("test move_values_to_new_trait_long",{
                                                     "trait", "value", c("plumose", "tomentose"))), 10)
 })  
 
-testthat::test_that("test substitutions_from_csv",{
-
-})  
+# testthat::test_that("test substitutions_from_csv",{
+# 
+# })  
   
