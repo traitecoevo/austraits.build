@@ -1,3 +1,4 @@
+library(austraits.build)
 
 testthat::test_that("get_month returns correct month",{
   expect_match(class(get_month(1)), "character")
@@ -183,6 +184,10 @@ testthat::test_that("test substitutions_from_csv",{
                                      trait_name = "Tree",
                                      find = "Root",
                                      replace = "Branch")
+  
+  metadata_create_template(dataset_id = "Test_2022",
+                           path = file.path("data", "Test_2022"),
+                           skip_manual = TRUE)
   
   metadata <- read_metadata("data/Test_2022/metadata.yml")
   metadata$substitutions <- NA
