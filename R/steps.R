@@ -288,10 +288,8 @@ custom_manipulation <- function(txt) {
 #'
 #' @param data the traits table at the point where this function is called 
 #'
-#' @return
+#' @return character string 
 #' @export
-#'
-#' @examples
 create_entity_id <- function(data) {
   
   make_id_segment <- function(n, entity)

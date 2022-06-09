@@ -9,7 +9,7 @@ convert_units(data, trait_definitions, unit_conversion_functions)
 \arguments{
 \item{data}{tibble or dataframe containing the study data}
 
-\item{trait_definitions}{definitions read in from the traits.yml file in the config folder}
+\item{trait_definitions}{trait_definitions read in from the traits.yml file in the config folder}
 
 \item{unit_conversion_functions}{unit_conversions.csv file stored in the config folder}
 }
