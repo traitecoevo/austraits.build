@@ -311,7 +311,7 @@ create_entity_id <- function(data) {
   
   # Create species_id segment of entity_id: spp_id_segment
   data <- data %>% 
-    mutate(spp_id_segment = create_id(taxon_name, "spp", sort = TRUE))
+    mutate(spp_id_segment = create_id(taxon_name, "tax", sort = TRUE))
   
   # Create population_id segment of entity_id: pop_id_segment  
   
@@ -406,7 +406,7 @@ create_entity_id <- function(data) {
   data <- data %>%
     dplyr::mutate(
       entity_id = paste(dataset_id, spp_id_segment, pop_id_segment, ind_id_segment, sep="-"),
-      entity_id = ifelse(entity_type == "species", paste(dataset_id, spp_id_segment, sep="-"), entity_id),
+      entity_id = ifelse(entity_type %in% c("species","genus","family","order"), paste(dataset_id, spp_id_segment, sep="-"), entity_id),
       entity_id = ifelse(entity_type %in% c("population", "metapopulation"), paste(dataset_id, spp_id_segment, pop_id_segment, sep="-"), entity_id),
       individual_id = as.character(individual_id),
       replicates = as.character(replicates),
