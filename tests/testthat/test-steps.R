@@ -34,6 +34,9 @@ test_that("test load_dataset is working",{
 })
 
 test_that("test custom_manipulation is working",{
+  Test_config <- subset_config("data/Test_2022/test-metadata.yml",
+                               traits_definitions,
+                               unit_conversions)
   metadata <- Test_config$metadata
   data <- readr::read_csv(Test_data, col_types = cols(), guess_max = 100000, progress=FALSE)
   
