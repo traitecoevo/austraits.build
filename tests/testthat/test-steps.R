@@ -1,5 +1,13 @@
 library(testthat)
   
+Test_data <- "data/Test_2022/data.csv"
+schema <- load_schema()
+traits_definitions <- load_schema("config/traits.yml", I("traits"))
+unit_conversions <- make_unit_conversion_functions("config/unit_conversions.csv")
+Test_config <- subset_config("data/Test_2022/test-metadata.yml",
+                             traits_definitions,
+                             unit_conversions)
+
 test_that("test subset_config is working",{
   expect_equal(class(subset_config("data/Test_2022/test-metadata.yml",
                 yaml::read_yaml("config/traits.yml"),
@@ -14,13 +22,6 @@ test_that("test subset_config is working",{
 })
 
 test_that("test load_dataset is working",{
-  Test_data <- "data/Test_2022/data.csv"
-  schema <- load_schema()
-  traits_definitions <- load_schema("config/traits.yml", I("traits"))
-  unit_conversions <- make_unit_conversion_functions("config/unit_conversions.csv")
-  Test_config <- subset_config("data/Test_2022/test-metadata.yml",
-                               traits_definitions,
-                               unit_conversions)
   austraits_names <- c("dataset_id", "traits", "sites", "contexts", "methods", "excluded_data", 
                        "taxonomic_updates", "taxa", "contributors", "sources", "trait_definitions", "schema")
   
@@ -34,9 +35,6 @@ test_that("test load_dataset is working",{
 })
 
 test_that("test custom_manipulation is working",{
-  Test_config <- subset_config("data/Test_2022/test-metadata.yml",
-                               traits_definitions,
-                               unit_conversions)
   metadata <- Test_config$metadata
   data <- readr::read_csv(Test_data, col_types = cols(), guess_max = 100000, progress=FALSE)
   
