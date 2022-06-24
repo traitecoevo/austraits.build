@@ -960,7 +960,7 @@ austraits_rebuild_taxon_list <- function() {
 
   taxonomic_resources <- load_taxonomic_resources()
   
-  austraits <- remake::make("austraits_raw")
+  austraits <- suppressMessages(remake::make("austraits_raw"))
 
   subset_accepted <- function(x) {
     x[x!= "accepted"]
@@ -986,7 +986,7 @@ austraits_rebuild_taxon_list <- function() {
         dplyr::select(cleaned_name = .data$canonicalName, taxonIDClean = .data$taxonID, 
                       taxonomicStatusClean = .data$taxonomicStatus, .data$acceptedNameUsageID)) %>%
     dplyr::distinct() %>%
-    dplyr::mutate(source = ifelse(!is.na(.data$taxonIDClean), "APC", NA)) %>% 
+    dplyr::mutate(source = ifelse(!is.na(.data$taxonIDClean), "APC", NA_character_)) %>% 
     # Now find accepted names for each name in the list (sometimes they are the same)
     dplyr::left_join(
       by = "acceptedNameUsageID", taxonomic_resources$APC %>% 
@@ -997,11 +997,11 @@ austraits_rebuild_taxon_list <- function() {
     # Some species have multiple matches. We will prefer the accepted usage, but record others if they exists
     # To do this we define the order we want variables to sort by,m with accepted at the top
     dplyr::mutate(my_order = .data$taxonomicStatusClean %>% 
-             forcats::fct_relevel( c("accepted", "taxonomic synonym", "basionym", "nomenclatural synonym", "isonym", 
-                                     "orthographic variant", "common name", "doubtful taxonomic synonym", "replaced synonym", 
-                                     "misapplied", "doubtful pro parte taxonomic synonym", "pro parte nomenclatural synonym", 
-                                     "pro parte taxonomic synonym", "pro parte misapplied", "excluded", "doubtful misapplied", 
-                                     "doubtful pro parte misapplied"))) %>%
+             forcats::fct_relevel(c("accepted", "taxonomic synonym", "basionym", "nomenclatural synonym", "isonym", 
+                                    "orthographic variant", "common name", "doubtful taxonomic synonym", "replaced synonym", 
+                                    "misapplied", "doubtful pro parte taxonomic synonym", "pro parte nomenclatural synonym", 
+                                    "pro parte taxonomic synonym", "pro parte misapplied", "excluded", "doubtful misapplied", 
+                                    "doubtful pro parte misapplied"))) %>%
     arrange(.data$cleaned_name, .data$my_order) %>%
     # For each species, keep the first record (accepted if present) and 
     # record any alternative status to indicate where there was ambiguity
@@ -1012,7 +1012,7 @@ austraits_rebuild_taxon_list <- function() {
           unique() %>% 
           subset_accepted() %>% 
           paste0(collapse = " | ") %>% 
-          dplyr::na_if(""), NA)) %>% 
+          dplyr::na_if(""), NA_character_)) %>% 
     dplyr::slice(1) %>%  
     dplyr::ungroup() %>% 
     dplyr::select(-.data$my_order) %>% 
@@ -1039,13 +1039,13 @@ austraits_rebuild_taxon_list <- function() {
     dplyr::group_by(.data$cleaned_name) %>%
     dplyr::mutate(
       taxonIDClean = paste(.data$taxonIDClean, collapse = " ") %>% 
-        dplyr::na_if("NA"), family = ifelse(dplyr::n_distinct(.data$family) > 1, NA, .data$family[1])) %>%
+        dplyr::na_if("NA"), family = ifelse(dplyr::n_distinct(.data$family) > 1, NA_character_, .data$family[1])) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(
-      source = ifelse(is.na(.data$taxonIDClean), NA, "APNI"),
-      taxon_name = ifelse(is.na(.data$taxonIDClean), NA, .data$cleaned_name),
-      taxonomicStatusClean = ifelse(is.na(.data$taxonIDClean), "unknown", "unplaced"),
-      taxonomicStatus = .data$taxonomicStatusClean)
+      source = as.character(ifelse(is.na(.data$taxonIDClean), NA_character_, "APNI")),
+      taxon_name = as.character(ifelse(is.na(.data$taxonIDClean), NA_character_, .data$cleaned_name)),
+      taxonomicStatusClean = as.character(ifelse(is.na(.data$taxonIDClean), "unknown", "unplaced")),
+      taxonomicStatus = as.character(.data$taxonomicStatusClean))
 
   taxa_all <- taxa1 %>% 
     dplyr::bind_rows(taxa2 %>% 

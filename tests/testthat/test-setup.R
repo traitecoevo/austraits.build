@@ -1,5 +1,12 @@
 library(testthat)
 
+test_that("test austraits_rebuild_taxon_list is working",{
+  setup_build_process()
+  expect_false(file.exists("config/taxon_list.csv"))
+  expect_length(suppressWarnings(austraits_rebuild_taxon_list()), 13)
+  expect_true(file.exists("config/taxon_list.csv"))
+})
+
 test_that("metadata_create_template is working",{
   expect_invisible(metadata_create_template(dataset_id = "Test_2022",
                                             path = file.path("data", "Test_2022"),
@@ -115,4 +122,20 @@ test_that("metadata_update_taxonomic_change is working",{
 
 test_that("metadata_remove_taxonomic_change is working",{
   expect_invisible(metadata_remove_taxonomic_change("Test_2022", "flower"))
+})
+
+test_that("test load_taxonomic_resources is working",{
+  expect_error(load_taxonomic_resources(path_apc = "config/NSL/APC-taxon-2022-05-14-1332.csv"))
+  expect_named(load_taxonomic_resources())
+  expect_equal(length(load_taxonomic_resources()), 2)
+})
+
+test_that("test test_data_setup is working",{
+  expect_error(test_data_setup())
+})  
+
+test_that("test setup_build_process is working",{
+  expect_error(setup_build_process(path = "Datas"))
+  expect_silent(setup_build_process())
+  expect_silent(yaml::read_yaml("remake.yml"))
 })

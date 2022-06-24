@@ -59,7 +59,7 @@ subset_config <- function(
        unit_conversion_functions = unit_conversion_functions_sub)
 }
 
-#' Load Study
+#' Load Dataset
 #'
 #' load_dataset is used to load individual studies using the config file generated
 #' from `subset_config()`. `subset_config` and `load_dataset` are applied to every
@@ -81,7 +81,8 @@ subset_config <- function(
 #' @examples
 #' \dontrun{
 #' load_dataset("data/Falster_2003/data.csv", subset_config("data/Falster_2003/metadata.yml",
-#' read_yaml("config/traits.yml"), make_unit_conversion_functions("config/unit_conversions.csv"))
+#' read_yaml("config/traits.yml"), make_unit_conversion_functions("config/unit_conversions.csv")),
+#' load_schema())
 #' }
 load_dataset <- function(filename_data_raw, 
                        config_for_dataset, 
