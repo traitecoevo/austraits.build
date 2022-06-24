@@ -1,9 +1,14 @@
 library(testthat)
 
 test_that("test austraits_rebuild_taxon_list is working",{
+  yaml::read_yaml("data/Test_2022/test-metadata.yml") %>% 
+    yaml::write_yaml("data/Test_2022/metadata.yml")
   setup_build_process()
+  if(file.exists("config/taxon_list.csv")) unlink("config/taxon_list.csv")
+  
   expect_false(file.exists("config/taxon_list.csv"))
   expect_length(suppressWarnings(austraits_rebuild_taxon_list()), 13)
+  expect_named(suppressWarnings(austraits_rebuild_taxon_list()))
   expect_true(file.exists("config/taxon_list.csv"))
 })
 
