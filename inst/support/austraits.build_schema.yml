@@ -23,12 +23,12 @@ value_type:
     unknown: Not currently known.
   
 basis_of_value: 
-  description: &basis_of_value A categorical value describinb the basis of the recorded value.
+  description: &basis_of_value A categorical value describing the basis of the recorded value.
   type: categorical 
   values:
-    measurement: Value is the minimum of measurements on multiple individuals of the taxon across multiple sites.
+    measurement: Value is the result of a measurement made.
     expert_score: Estimated by an expert based on their knowledge of the taxon.
-    model_derived: Value is dereived from a statsitcial mdoel, for example via gap-filling.
+    model_derived: Value is derived from a statistical model, for example via gap-filling.
     unknown: Not currently known.
 
 #-------------------------------------------------------------
@@ -46,20 +46,20 @@ austraits:
         taxon_name: &taxon_name Whenever possible, this field indicates the current accepted scientific name of a taxon, per the Australian Plant Census (APC). Alternatively, `taxon_name` can indicate an alignment with a name included in the comprehensive Australian Plant Names Index (APNI), but not currently marked as accepted in APC, or a name that cannot be aligned to available lists of Australian plant names.
         site_name: &site_name Name of the site where the individual was sampled. Cross-references between similar columns in `sites` and `traits`.
         context_name: &context_name Name of contextual senario where the individual was sampled. Cross-references between similar columns in `contexts` and `traits`.
-        entity_id: &entity_id A unique identifier that encodes the species, population, and/or individual that is connected to a trait value. A species-level trait value will have an entity_id that only includes a species component. A population-level trait value will have an entity_id that includes both species and population components. And an individual-level trait value will have an entity_id that includes species, population, and individual components.  
-        observation_number: &observation_number Observation number defaults to 1, unless it is manually added as a column or to individual traits
+        entity_id: &entity_id A unique identifier that encodes the taxon, population, and/or individual that is connected to a trait value. A taxon-level trait value will have an entity_id that only includes a taxon component. A population-level trait value will have an entity_id that includes both taxon and population components. And an individual-level trait value will have an entity_id that includes taxon, population, and individual components.  
+        observation_number: &observation_number A field to indicate that multiple measurements have been made on the same entity over time. Observation number defaults to 1, unless it is manually added as a column or to individual traits
+        method_number: &method_number A field to indicate when a trait is measured multiple times on the same entity, with different methods used for each entry. Method number defaults to 1, unless it is manually added as a column or to individual traits.
         trait_name: &trait_name Name of the trait sampled. Allowable values specified in the table `definitions`.
         value: &value Measured value.
         unit: &units Units of the sampled trait value after aligning with AusTraits standards.
-        collection_date: &collection_date Date sample was taken, in the format `yyyy-mm-dd`, `yyyy-mm` or `yyyy`, depending on the resoluton specified.
+        collection_date: &collection_date Date sample was taken, in the format `yyyy-mm-dd`, `yyyy-mm` or `yyyy`, depending on the resoluton specified. Alternatively an overall range for the study can be indicating, with the starting and ending sample date sepatated by a `/`, as in 2010-10/2011-03
         entity_type: *entity_type
         value_type: *value_type
         basis_of_value: *basis_of_value
-        replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each measurement. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be 1. If the value type is `expert_mean`, `expert_min`, or `expert_max` the replicate value should be `.na`.
-        collection_type: &collection_type A field to indicate where the majority of plants on which traits were measured were collected -  in the `field`, `lab`, `glasshouse`, `botanical collection`, or `literature`. The latter should only be used when the data were sourced from the literature and the collection type is unknown.
-        sample_age_class: &sample_age_class A field to indicate if the study was completed on `adult` or `juvenile` plants.
+        replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each measurement. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be 1. If the trait is categorical or the value indicates a measurement for an entire species (or other taxon) replicate value should be `.na`.
+        collection_type: &collection_type A field to indicate where the plants on which traits were measured were collected -  in the `field`, `lab`, `glasshouse`, `botanical collection`, or `literature`. The latter should only be used when the data were sourced from the literature and the collection type is unknown.
+        sample_age_class: &sample_age_class A field to indicate the life stage or age class of the entity measured. Standard values are `adult`, `sapling`, `seedling` and `juvenile`.         
         measurement_remarks: &measurement_remarks Comments or notes accompanying the trait measurement.
-        method_number: &method_number Method number defaults to 1, unless it is manually added to individual traits. It is used to flag when a trait is read into AusTraits multiple times, with different methods used for each entry. 
         original_name: &orginal_name Name given to taxon in the original data supplied by the authors.
     sites:
       description: A table containing observations of site characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
@@ -75,7 +75,7 @@ austraits:
       elements:
         dataset_id: *dataset_id
         context_name: *context_name
-        context_property: The contextual characteristic being recorded. Name should include units of measurement, e.g. `CO2 concentration (ppm)`.
+        context_property: The contextual characteristic being recorded. If applicable, name should include units of measurement, e.g. `CO2 concentration (ppm)`.
         value: *value
     methods:
       description: A table containing details on methods with which data were collected, including time frame and source. Cross referencing with the `traits` table is possible using combinations of the variables `dataset_id`, `trait_name`.
@@ -104,6 +104,7 @@ austraits:
         context_name: *context_name
         entity_id: *entity_id
         observation_number: *observation_number
+        method_number: *method_number
         trait_name: *trait_name
         value: *value
         unit: *units
@@ -115,7 +116,6 @@ austraits:
         collection_type: *collection_type
         sample_age_class: *sample_age_class
         measurement_remarks: *measurement_remarks
-        method_number: *method_number
         original_name: *orginal_name
     taxonomic_updates:
       description: A table of all taxonomic changes implemented in the construction of AusTraits. Changes are determined by comparing the originally submitted taxon name against the APC (Australian Plant Census) and APNI (Australian Plant Names Index). Cross referencing with the `traits` table is possible using combinations of the variables `dataset_id` and `taxon_name`.
