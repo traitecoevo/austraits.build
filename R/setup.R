@@ -60,11 +60,13 @@ metadata_create_template <- function(dataset_id,
   out$source$primary[] <- "unknown"
   out$source$primary["key"] = dataset_id
   out$source$primary["bibtype"] = "Article"
+  
   out$contributors <- out$contributors$elements
-  out$contributors[c("assistants", "austraits_curators")] <- "unknown"
+  out$contributors$data_collectors[c(exclude, "notes")] <- NULL
   out$contributors$data_collectors[] <- "unknown"
-  out$contributors$data_collectors <- 
-    out$contributors$data_collectors[names(out$contributors$data_collectors)%notin%c(exclude,"notes")]
+  out$contributors$data_collectors <- list(out$contributors$data_collectors)
+  out$contributors[c("assistants", "austraits_curators")] <- "unknown"
+
   out$dataset <- out$dataset$values[]
   out$dataset[] <- 'unknown'
   out$dataset$custom_R_code <- NA
