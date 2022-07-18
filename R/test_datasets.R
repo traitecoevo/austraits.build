@@ -16,7 +16,7 @@ dataset_test_setup <-
            path_data = "data",
            reporter = testthat::default_reporter()) {
     
-    requireNamespace("testthat", quietly = TRUE)
+    require("testthat", quietly = TRUE)
     
     # clean up when done
     Sys.setenv('TESTTHAT_MAX_FAILS' = Inf)
