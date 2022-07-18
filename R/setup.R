@@ -1104,7 +1104,7 @@ test_data_setup <- function(dataset_ids = NULL) {
   pwd <- setwd(root.dir)
   on.exit({
     setwd(pwd)
-    rm(.env$test_dataset_ids, envir = globalenv())
+    rm("test_dataset_ids", envir = globalenv())
     })
 
   requireNamespace("testthat", quietly = TRUE)
