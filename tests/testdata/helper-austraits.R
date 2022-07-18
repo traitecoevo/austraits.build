@@ -1,3 +1,5 @@
+requireNamespace("testthat", quietly = TRUE)
+library(austraits.build)
 
 library(stringr)
 library(readr)
@@ -5,6 +7,7 @@ library(dplyr, warn.conflicts=FALSE)
 
 root.dir <- rprojroot::find_root("remake.yml")
 definitions <- load_schema()
+trait_definitions <- load_schema(file.path(root.dir, "config/traits.yml"), I("traits"))
 
 ## New expect_that helper functions; test that a number is in a range,
 ## or that a range contains a number.
@@ -134,6 +137,14 @@ expect_list_elements_contain <- function(object, expected, info) {
   invisible(NULL)
 }
 
+expect_list_elements_allowed <- function(object, allowed, info) {
+  
+  for(i in seq_along(object)) expect_contains(allowed, names(object[[i]]),  info = paste(info, i))
+  
+  invisible(NULL)
+}
+
+
 
 test_dataframe_valid <- function(data, info) {
   expect_not_NA(colnames(data), info = info)
@@ -164,9 +175,21 @@ test_list_names_valid <- function(data, info) {
 }
 
 
-test_list_named <- function(data, expected_names, info) {
+test_list_named_exact <- function(data, expected_names, info) {
   test_list_names_valid(data, info)
   expect_named(data, expected_names, info= info)
+}
+
+test_list_named_allowed <- function(data, expected_names, info) {
+  test_list_names_valid(data, info)
+  expect_named(data)
+  expect_contains(expected_names, names(data), info= info)
+}
+
+test_list_named_contains <- function(data, expected_names, info) {
+  test_list_names_valid(data, info)
+  expect_named(data)
+  expect_contains(names(data), expected_names, info= info)
 }
 
 test_list_named_contains <- function(data, expected_names, info) {
