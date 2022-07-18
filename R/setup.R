@@ -1083,34 +1083,6 @@ find_names_distance_to_neighbours <- function(taxon_name, dist=5) {
   unlist(lapply(n, function(i) min(utils::adist(taxon_name[i], taxon_name[ii[[i]]]))))
 }
 
-#' Test AusTraits studies have the correct format
-#' 
-#' Run the tests to ensure that all compiled studies have the correct format
-#'
-#' @param dataset_ids unique study identifier for austraits
-#' 
-#' @importFrom rlang .data .env
-#' @export
-test_data_setup <- function(dataset_ids = NULL) {
-
-  if(is.null(dataset_ids)) {
-    stop("The variable `dataset_ids` must be specified for the test suite to work")
-  }
-
-  # Save dataset_ids in global environment, needed to get tests running
-  assign("test_dataset_ids", dataset_ids, envir = globalenv())
-  
-  root.dir <- rprojroot::find_root("remake.yml")
-  pwd <- setwd(root.dir)
-  on.exit({
-    setwd(pwd)
-    rm("test_dataset_ids", envir = globalenv())
-    })
-
-  requireNamespace("testthat", quietly = TRUE)
-  testthat::test_dir("tests/testdata", reporter = testthat::default_reporter())
-}
-
 #' Update the remake.yml file with new studies
 #' 
 #' `setup_build_process` rewrites the remake.yml file to include new
