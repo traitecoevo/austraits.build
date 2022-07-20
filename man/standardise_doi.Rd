@@ -6,6 +6,9 @@
 \usage{
 standardise_doi(doi)
 }
+\arguments{
+\item{doi}{doi of reference to add}
+}
 \description{
 Standarise doi into form https://doi.org/XXX
 }

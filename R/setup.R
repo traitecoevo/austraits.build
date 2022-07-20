@@ -358,7 +358,7 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 
 #' Standarise doi into form https://doi.org/XXX
 #' 
-#' @param doi doi of reference
+#' @param doi doi of reference to add
 standardise_doi <- function(doi) {
 
   if (stringr::str_starts(doi, "https://doi.org"))
@@ -378,8 +378,9 @@ standardise_doi <- function(doi) {
 #' Uses rcrossref package to access publication details from the crossref 
 #' database
 #'
-#' @param doi doi of reference to add
 #' @param bib (Only use for testing purposes). Result of calling `bib rcrossref::cr_cn(doi)`
+#' @inheritParams metadata_path_dataset_id 
+#' @inheritParams standardise_doi
 #' @param ... arguments passed from metadata_add_source_bibtex()
 #'
 #' @return metadata.yml file has citation details added
