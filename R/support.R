@@ -174,6 +174,7 @@ append_to_list <- function(my_list, to_append) {
 #' Read in a metadata.yml file for a study
 #'
 #' @param path location of the metadata file
+#' @importFrom rlang .data
 #'
 #' @export
 read_metadata <- function(path) {
@@ -208,6 +209,7 @@ read_metadata <- function(path) {
 #' @param style_code  should the R code be styled?
 #'
 #' @rdname write_metadata
+#' @importFrom rlang .data
 #' @export
 #' @examples
 #' \dontrun{

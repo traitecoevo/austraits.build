@@ -85,8 +85,8 @@ test_that("metadata_add_source_doi is working",{
   bib <- readLines("data/test.bib") %>% paste(collapse = "\n")
   bib2 <- readLines("data/test2.bib") %>% paste(collapse="\n")
 
-  expect_silent(metadata_add_source_doi(dataset_id = "Test_2022", doi=doi, bib=bib))
-  expect_silent(metadata_add_source_doi(dataset_id = "Test_2022", doi = doi2, bib = bib2, type="secondary"))
+  expect_invisible(metadata_add_source_doi(dataset_id = "Test_2022", doi=doi, bib=bib))
+  expect_invisible(metadata_add_source_doi(dataset_id = "Test_2022", doi = doi2, bib = bib2, type = "secondary"))
 
   ret <- read_metadata("data/Test_2022/metadata.yml")
   expect_equal(ret$source$primary$journal, "Frontiers in Marine Science")

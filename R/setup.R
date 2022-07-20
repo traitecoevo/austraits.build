@@ -358,6 +358,7 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 
 #' Standarise doi into form https://doi.org/XXX
 #' 
+#' @param doi doi of reference
 standardise_doi <- function(doi) {
 
   if (stringr::str_starts(doi, "https://doi.org"))
