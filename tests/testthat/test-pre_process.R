@@ -1,4 +1,4 @@
-library(austraits.build)
+convert_month_range_string_to_binary_worker <- austraits.build:::convert_month_range_string_to_binary_worker
 
 testthat::test_that("get_month returns correct month",{
   expect_match(class(get_month(1)), "character")
@@ -195,4 +195,3 @@ testthat::test_that("test substitutions_from_csv",{
   expect_invisible(substitutions_from_csv(substitutions_df, "Test_2022", "trait_name", "find", "replace"))
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions %>% sapply(`%in%`, x = "Tree") %>% any(), TRUE)
 })
-  

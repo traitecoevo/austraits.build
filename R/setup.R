@@ -356,6 +356,21 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
     metadata_write_dataset_id(metadata, dataset_id)
 }
 
+#' Standarise doi into form https://doi.org/XXX
+#' 
+standardise_doi <- function(doi) {
+
+  if (stringr::str_starts(doi, "https://doi.org"))
+    return(doi)
+
+  if (stringr::str_starts(doi, "http:"))
+    return(gsub("http:", "https:", doi, fixed=TRUE))
+ 
+  if (stringr::str_starts(doi, "doi.org"))
+    return(paste0("https://", doi))
+
+  return(paste0("https://doi.org/", doi))
+}
 
 #' Adds citation details from a doi to a metadata file for a dataset_id. 
 #'
@@ -363,28 +378,24 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 #' database
 #'
 #' @param doi doi of reference to add
+#' @param bib (Only use for testing purposes). Result of calling `bib rcrossref::cr_cn(doi)`
 #' @param ... arguments passed from metadata_add_source_bibtex()
 #'
-#' @return yml file with citation details added
+#' @return metadata.yml file has citation details added
 #' @export
 #'
-metadata_add_source_doi <- function(doi, ...) {
+metadata_add_source_doi <- function(..., doi, bib=NULL) {
   
-  if(!stringr::str_starts(doi, "https://doi.org") &
-     !stringr::str_starts(doi, "http://doi.org")){
-    if(stringr::str_starts(doi, "doi.org")) {
-      doi <- paste0("https://", doi)
-    } else {
-      doi <- paste0("https://doi.org/", doi)
-    }
-  }
-  
-  bib <- suppressWarnings(rcrossref::cr_cn(doi))
+  doi <- standardise_doi(doi)
+
+  if(is.null(bib)) 
+    bib <- suppressWarnings(rcrossref::cr_cn(doi))
 
   if(is.null(bib)) {
     message("DOI not available in Crossref database, please fill record manually") 
     return(invisible(FALSE))
   }
+
   file <- tempfile()
   writeLines(bib, file)
 

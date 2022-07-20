@@ -1,6 +1,6 @@
-library(testthat)
-  
+
 Test_data <- "data/Test_2022/data.csv"
+
 schema <- load_schema()
 traits_definitions <- load_schema("config/traits.yml", I("traits"))
 unit_conversions <- make_unit_conversion_functions("config/unit_conversions.csv")
@@ -50,6 +50,3 @@ test_that("test custom_manipulation is working",{
 # test_that("test flag_excluded_observations is working",{
 #   flag_excluded_observations
 # })
-
-
-

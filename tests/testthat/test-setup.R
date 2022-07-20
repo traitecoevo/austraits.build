@@ -1,4 +1,3 @@
-library(testthat)
 
 test_that("test austraits_rebuild_taxon_list is working",{
   yaml::read_yaml("data/Test_2022/test-metadata.yml") %>% 
@@ -63,17 +62,40 @@ test_that("metadata_write_dataset_id is working",{
   expect_equal(class(metadata_read_dataset_id("Test_2022")), "list")
 })
 
+
 test_that("metadata_add_source_doi is working",{
-  expect_invisible(metadata_add_source_doi(dataset_id = "Test_2022", doi = "https://doi.org/10.3389/fmars.2021.671145"))
-  expect_equal(read_metadata("data/Test_2022/metadata.yml")$source$primary$year, "2021")
-  expect_invisible(metadata_add_source_doi(dataset_id = "Test_2022", doi = "http://doi.org/10.1111/j.0022-0477.2005.00992.x"))
-  expect_equal(read_metadata("data/Test_2022/metadata.yml")$source$primary$year, "2005")
-  expect_invisible(metadata_add_source_doi(dataset_id = "Test_2022", doi = "doi.org/10.3389/fmars.2021.671145"))
-  expect_equal(read_metadata("data/Test_2022/metadata.yml")$source$primary$year, "2021")
-  expect_invisible(metadata_add_source_doi(dataset_id = "Test_2022", doi = "10.3389/fmars.2021.671145"))
-  expect_equal(read_metadata("data/Test_2022/metadata.yml")$source$primary$journal, "Frontiers in Marine Science")
-  expect_silent(metadata_add_source_doi(dataset_id = "Test_2022", doi = "10.1111/j.0022-0477.2005.00992.x"))
-  expect_equal(read_metadata("data/Test_2022/metadata.yml")$source$primary$journal, "Journal of Ecology")
+
+  doi <- "https://doi.org/10.3389/fmars.2021.671145"
+  doi2 <- "https://doi.org/10.1111/j.0022-0477.2005.00992.x"
+
+  expect_equal(doi, standardise_doi(doi))
+  expect_equal(doi, standardise_doi("https://doi.org/10.3389/fmars.2021.671145"))
+  expect_equal(doi, standardise_doi("http://doi.org/10.3389/fmars.2021.671145"))
+  expect_equal(doi, standardise_doi("doi.org/10.3389/fmars.2021.671145"))
+  expect_equal(doi, standardise_doi("10.3389/fmars.2021.671145"))
+
+  # We won't actually test querying of rcrossref, to avoid unnecessary fails
+  # passing in bib avoids calling corssref
+
+  # Create and load test data
+  # bib <- rcrossref::cr_cn(doi)
+  # writeLines(bib, "tests/testthat/data/test.bib")
+  # bib2 <- rcrossref::cr_cn(doi2)
+  # writeLines(bib2, "tests/testthat/data/test2.bib")
+  bib <- readLines("data/test.bib") %>% paste(collapse = "\n")
+  bib2 <- readLines("data/test2.bib") %>% paste(collapse="\n")
+
+  expect_silent(metadata_add_source_doi(dataset_id = "Test_2022", doi=doi, bib=bib))
+  expect_silent(metadata_add_source_doi(dataset_id = "Test_2022", doi = doi2, bib = bib2, type="secondary"))
+
+  ret <- read_metadata("data/Test_2022/metadata.yml")
+  expect_equal(ret$source$primary$journal, "Frontiers in Marine Science")
+  expect_equal(ret$source$primary$year, "2021")
+  expect_equal(paste0("https://doi.org/", ret$source$primary$doi), doi)
+
+  expect_equal(ret$source$secondary$journal, "Journal of Ecology")
+  expect_equal(ret$source$secondary$year, "2005")
+  expect_equal(paste0("https://doi.org/", ret$source$secondary$doi), doi2)
 })
 
 
@@ -86,12 +108,8 @@ test_that("metadata_check_custom_R_code is working",{
 })
 
 test_that("metadata_add_source_bibtex is working",{
-  doi = "https://doi.org/10.3389/fmars.2021.671145"
-  bib <- suppressWarnings(rcrossref::cr_cn(doi))
-  file <- tempfile()
-  writeLines(bib, file)
-  expect_silent(metadata_add_source_bibtex(dataset_id = "Test_2022", file = file))
-  expect_equal(read_metadata("data/Test_2022/metadata.yml")$source$primary$journal, "Frontiers in Marine Science")
+  expect_silent(metadata_add_source_bibtex(dataset_id = "Test_2022", file = "data/test2.bib"))
+  expect_equal(read_metadata("data/Test_2022/metadata.yml")$source$primary$journal, "Journal of Ecology")
 })
 
 test_that("metadata_add_substitution is working",{
@@ -130,9 +148,11 @@ test_that("metadata_remove_taxonomic_change is working",{
 })
 
 test_that("test load_taxonomic_resources is working",{
-  expect_error(load_taxonomic_resources(path_apc = "config/NSL/APC-taxon-2022-05-14-1332.csv"))
-  expect_named(load_taxonomic_resources())
-  expect_equal(length(load_taxonomic_resources()), 2)
+  expect_silent(x <- load_taxonomic_resources())
+  expect_named(x, c("APC", "APNI"))
+  expect_equal(length(x), 2)
+  expect_type(x$APC, "list")
+  expect_type(x$APNI, "list")
 })
 
 test_that("test test_data_setup is working",{
