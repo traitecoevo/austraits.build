@@ -1,16 +1,16 @@
 #' Build reports for all studies
 #' 
-#' Build reports for all studies using the `build_dataset_report()` function. This
+#' Build reports for all studies using the `dataset_generate_report()` function. This
 #' function builds a study report for every study with a unique `dataset_id` that
-#' has been loaded into AusTraits using `build_dataset_report()`. The reports are 
+#' has been loaded into AusTraits using `dataset_generate_report()`. The reports are 
 #' rendered as html files and saved in the "export/reports" folder.  
 #'
 #' @param dataset_ids names of studies/ datasets, default is NULL
-#' @param ... arguments passed to build_dataset_report()
+#' @param ... arguments passed to dataset_generate_report()
 #'
 #' @return html files of the study report for all studies 
 #' @export
-build_dataset_reports <- function(dataset_ids=NULL, ...) {
+dataset_generate_reports <- function(dataset_ids=NULL, ...) {
 
   # define if does not already exist, 
   # for all studies with suitable metadata file
@@ -18,7 +18,7 @@ build_dataset_reports <- function(dataset_ids=NULL, ...) {
     dataset_ids <- list.files("data")
   
   for(dataset_id in dataset_ids)
-    build_dataset_report(dataset_id, ...)
+    dataset_generate_report(dataset_id, ...)
 }
 
 #' Build report for a specific study
@@ -36,14 +36,14 @@ build_dataset_reports <- function(dataset_ids=NULL, ...) {
 #'
 #' @return html file of the rendered report located in the "export/reports" folder
 #' @export
-build_dataset_report <- function(dataset_id, overwrite=FALSE, output_path = "export/reports", 
+dataset_generate_report <- function(dataset_id, overwrite=FALSE, output_path = "export/reports", 
                                  input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build")) {
 
   if(!file.exists(output_path)) {
     dir.create(output_path, FALSE, TRUE)
   }
   
-  cat(sprintf("Building report for %s: ", dataset_id))
+  cat(sprintf("Building report for %s ", dataset_id))
   
   # filenames
   input_Rmd <- sprintf("%s/%s.Rmd", output_path, dataset_id)
@@ -64,7 +64,7 @@ build_dataset_report <- function(dataset_id, overwrite=FALSE, output_path = "exp
     # remove temporary Rmd
     unlink(input_Rmd)
   }
-  cat(" -> done\n")
+  cat(" -> ", output_html, "\n")
 }
 
 #' Get SHA string from Github repository for latest commit

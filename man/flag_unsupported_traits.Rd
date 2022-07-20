@@ -4,12 +4,12 @@
 \alias{flag_unsupported_traits}
 \title{Flag any unrecognised traits}
 \usage{
-flag_unsupported_traits(data, trait_definitions)
+flag_unsupported_traits(data, definitions)
 }
 \arguments{
 \item{data}{tibble or dataframe containing the study data}
 
-\item{trait_definitions}{definitions read in from the traits.yml file in the config folder}
+\item{definitions}{definitions read in from the traits.yml file in the config folder}
 }
 \value{
 tibble with unrecognised traits flagged as "Unsupported trait" in the "error" column

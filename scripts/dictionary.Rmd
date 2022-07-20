@@ -50,7 +50,7 @@ library(kableExtra)
 
 my_kable_styling <- my_kable_styling_html
 
-trait_definitions <- austraits$trait_definitions
+definitions <- austraits$definitions
 schema <- austraits$schema
 ```
 
@@ -74,7 +74,7 @@ austraits
 ├── taxa
 ├── contributors
 ├── sources
-├── trait_definitions
+├── definitions
 ├── schema
 └── build_info
 ```
@@ -140,15 +140,15 @@ As well as `dataset_id`, `observation_id`, and `site_name`, where appropriate, t
 
 Each record in the table of trait data has an associated `value` and `value_type`. 
 
-Traits are either `numeric` or `categorical`. For traits with numerical values, the recorded value has been converted into standardised units and we have check that the value can be converted into a number and lies within the allowable range.  For categorical variables, we only include records that are defined in the trait_definitions. Moreover, we use a format whereby
+Traits are either `numeric` or `categorical`. For traits with numerical values, the recorded value has been converted into standardised units and we have check that the value can be converted into a number and lies within the allowable range.  For categorical variables, we only include records that are defined in the definitions. Moreover, we use a format whereby
 
 - we use `_` for multi-word terms, e.g. `semi_deciduous`
 - use a space for situations where there are two possible values for that trait, e.g. `annual biennial` for something which is either annual or biennial 
 
-Each trait measurement also an associated `value_type`, which gives ``r austraits$trait_definitions$value_type$description``. Possible values are:
+Each trait measurement also an associated `value_type`, which gives ``r austraits$definitions$value_type$description``. Possible values are:
 
 ```{r value_type}
-austraits$trait_definitions$value_type$values %>% 
+austraits$definitions$value_type$values %>% 
   list1_to_df()  %>% 
   my_kable_styling() %>% 
   writeLines()
@@ -173,14 +173,14 @@ For each dataset in the compilation there is the option to list primary and seco
 1. Within the table [methods](#methods), where we provide a formatted version of each.
 2. In the element [sources](#sources), where we provided bibtex versions of all sources which can be imported into your reference library. The keys for these references are listed within the [methods]{#methods}. 
 
-# Trait_definitions {#traitdefs}
+# definitions {#traitdefs}
 
 Followign is a list of traits included in this version.
 
 ```{r, traits}
 traits <- austraits$traits$trait_name %>% unique()
 for(trait in traits) {
-  elements <- austraits$trait_definitions$traits$elements[[trait]]
+  elements <- austraits$definitions$traits$elements[[trait]]
   
   data_trait <- austraits$traits %>% filter(trait_name == trait)
   

@@ -106,7 +106,7 @@ if(!exists("dataset_id")) {
   #  stop("dataset_id must exist in global name space to knit a report")
 }
 
-trait_definitions <- austraits$trait_definitions
+definitions <- austraits$definitions
 data_study <- extract_dataset(austraits, dataset_id)
 metadata <- read_metadata(sprintf("data/%s/metadata.yml", dataset_id))
 schema <- austraits$schema
@@ -121,7 +121,7 @@ new_question <- function(txt) {
   writeLines(sprintf("<font color='orange'>**Question:** %s</font>\n\n", paste0(x, collape="")))
 }
 
-# Variable to record when trait_definitions have been specified
+# Variable to record when definitions have been specified
 
 structures_already_defined <- c("names")
 
@@ -136,7 +136,7 @@ structures_already_defined <- c("names")
 
 AusTraits combines all of these data fragments into a harmonised, error checked, publicly available compilation.
 
-AusTraits is built from many different sources, here referred to as `studies` (so called because the sources are most-often individual scientific papers), with each study denoted by a distinct `dataset_id`. Our data processing pipeline seeks to combine all of the different studies in a transparent and reproducible way. In addition, the AusTraits repository consists of configuration files defining the list of known species, the definitions for each trait and table, and appropriate unit conversions. Detailed descriptions of the `trait_definitions`, `database structure`, and `file format` are all available on the [project homepage](http://traitecoevo.github.io/austraits.build/) under the `Details` tab.
+AusTraits is built from many different sources, here referred to as `studies` (so called because the sources are most-often individual scientific papers), with each study denoted by a distinct `dataset_id`. Our data processing pipeline seeks to combine all of the different studies in a transparent and reproducible way. In addition, the AusTraits repository consists of configuration files defining the list of known species, the definitions for each trait and table, and appropriate unit conversions. Detailed descriptions of the `definitions`, `database structure`, and `file format` are all available on the [project homepage](http://traitecoevo.github.io/austraits.build/) under the `Details` tab.
 
 ## Purpose of this report
 
@@ -444,7 +444,7 @@ if(nrow(subset(data_study$excluded_data,error!="Missing value")) > 0 ) {
     writeLines()
 
   writeLines(ifelse(nrow(subset(data_study$excluded_data, error == "Unsupported trait value")) > 0,
-    "In particular, the following data points were excluded because the supplied trait value could not be aligned with the allowable values in AusTraits (error = `Unsupported trait value`). The allowable values for each trait are listed in the [trait_definitions file](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html) and lower in this report.",""))
+    "In particular, the following data points were excluded because the supplied trait value could not be aligned with the allowable values in AusTraits (error = `Unsupported trait value`). The allowable values for each trait are listed in the [definitions file](http://traitecoevo.github.io/austraits.build/articles/definitions.html) and lower in this report.",""))
 
 
   if(nrow(subset(data_study$excluded_data,error == "Unsupported trait value")) > 0 ) {
@@ -477,8 +477,8 @@ if(nrow(subset(data_study$excluded_data,error!="Missing value")) > 0 ) {
 
 ```{r, echo=FALSE, message=FALSE}
 traits <- data_study$traits$trait_name %>% unique() %>% sort()
-traits_numeric <- traits[extract_list_element(traits, trait_definitions, "type") == "numeric"]
-traits_categorical <- traits[extract_list_element(traits, trait_definitions, "type") != "numeric"]
+traits_numeric <- traits[extract_list_element(traits, definitions, "type") == "numeric"]
+traits_categorical <- traits[extract_list_element(traits, definitions, "type") != "numeric"]
 ```
 
 ## Numerical traits
@@ -529,7 +529,7 @@ for(trait in traits_numeric) {
 
   transforms <- metadata$traits %>% list_to_df() %>% filter(trait_name == trait)
 
-  elements <- trait_definitions[[trait]]
+  elements <- definitions[[trait]]
 
   units <- elements$units
 
@@ -619,8 +619,7 @@ writeLines(
     "We have recorded the following traits with categorical values in this dataset. Tables are shown comparing the distribution of values in your study to others in the dataset"))
 
 for(trait in traits_categorical) {
-
-  
+ 
   transforms <- metadata$traits %>% list_to_df() %>% filter(trait_name == trait)
   substitutions_for_trait <- metadata$substitutions %>% list_to_df() %>% filter(trait_name == trait)
 
@@ -630,9 +629,9 @@ for(trait in traits_categorical) {
   data_trait_all <- austraits$traits %>%
     filter(trait_name == trait)
 
-  trait_definitions <- austraits$trait_definitions
+  definitions <- austraits$definitions
 
-  elements <-trait_definitions$elements[[trait]]
+  elements <- definitions[[trait]]
 
   x <- c("", "",
     sprintf("### %s", trait),
@@ -640,7 +639,7 @@ for(trait in traits_categorical) {
     sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the AusTraits database.\n\nThe contributed data has the following properties:", transforms$var_in, trait),
     "",
     sprintf("- **standardised name**: %s", trait ),
-    sprintf("- **standardised description**: %s", trait_definitions$elements[[trait]]$description ),
+    sprintf("- **standardised description**: %s", definitions$elements[[trait]]$description ),
     sprintf("- **label**: %s", elements$label ),
     sprintf("- **records**: %s in this study (of %s in AusTraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
     "", 
