@@ -125,17 +125,7 @@ new_question <- function(txt) {
 
 structures_already_defined <- c("names")
 
-trait_type <- function(trait_name, trait_definitions) {
- extract_list_element(trait_name, trait_definitions, "type")
-}
 
-trait_is_numeric <- function(trait_name, trait_definitions) {
- trait_type(trait_name, trait_definitions) == "numeric"
-}
-
-trait_is_categorical <- function(trait_name, trait_definitions) {
- !trait_is_numeric(trait_name, trait_definitions)
-}
 ```
 
 # Introduction
@@ -222,11 +212,11 @@ If a current affiliation isn't known, provide the last known institution. We als
 `r `metadata$contributors$austraits_curators` entered the data into AusTraits.
 
 ```{r, results='asis', echo=FALSE}
-#ifelse(is.null(metadata_study$contributors$assistants), NA , writeLines("In addition, the following people are included as assistants: ", metadata_study$contributors$assistants))
+#ifelse(is.null(metadata$contributors$assistants), NA , writeLines("In addition, the following people are included as assistants: ", metadata$contributors$assistants))
 ```
 
 
-The AusTraits data curator(s) for this dataset is:  `r metadata_study$contributors$austraits_curators`
+The AusTraits data curator(s) for this dataset is:  `r metadata$contributors$austraits_curators`
 
 ```{r, results='asis', echo=FALSE}
 new_question("(section `people`) Are all appropriate people listed, with appropriate details?")
@@ -485,15 +475,15 @@ if(nrow(subset(data_study$excluded_data,error!="Missing value")) > 0 ) {
 }
 ```
 
+```{r, echo=FALSE, message=FALSE}
+traits <- data_study$traits$trait_name %>% unique() %>% sort()
+traits_numeric <- traits[extract_list_element(traits, trait_definitions, "type") == "numeric"]
+traits_categorical <- traits[extract_list_element(traits, trait_definitions, "type") != "numeric"]
+```
 
 ## Numerical traits
 
 ```{r numerical, results='asis', echo=FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=10, eval=TRUE}
-traits <- data_study$traits$trait_name %>% unique() %>% sort()
-traits_numeric <- traits[trait_is_numeric(traits, trait_definitions)]
-
-
-
 question_x <- function(x, y = trait) {
   sprintf("(section `traits`) Can you provide missing details `%s` for trait `%s`?\n", x, y) %>%
   new_question()
@@ -577,7 +567,7 @@ if(nrow(filter(data_study$excluded_data, error == "Value out of allowable range"
     writeLines()
 }
 
- # austraits::plot_trait_distribution_beeswarm(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
+ austraits::plot_trait_distribution_beeswarm(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
 
   writeLines(c(""))
 
@@ -623,10 +613,6 @@ if(nrow(filter(data_study$excluded_data, error == "Value out of allowable range"
 ## Categorical traits
 
 ```{r categorical, results='asis', echo=FALSE, eval=TRUE}
-
-traits <- data_study$traits$trait_name %>% unique() %>% sort()
-traits_categorical <- traits[!trait_is_numeric(traits, trait_definitions)]
-
 writeLines(
   ifelse(length(traits_categorical) == 0,
     "No categorical traits data are currently available in this dataset.",
@@ -634,6 +620,7 @@ writeLines(
 
 for(trait in traits_categorical) {
 
+  
   transforms <- metadata$traits %>% list_to_df() %>% filter(trait_name == trait)
   substitutions_for_trait <- metadata$substitutions %>% list_to_df() %>% filter(trait_name == trait)
 
