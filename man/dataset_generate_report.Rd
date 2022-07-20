@@ -2,32 +2,35 @@
 % Please edit documentation in R/report_utils.R
 \name{dataset_generate_report}
 \alias{dataset_generate_report}
-\title{Build report for a specific study}
+\title{Build reports for listed datasets}
 \usage{
 dataset_generate_report(
   dataset_id,
+  austraits,
   overwrite = FALSE,
   output_path = "export/reports",
   input_file = system.file("support", "report_dataset.Rmd", package =
-    "austraits.build")
+    "austraits.build"),
+  quiet = TRUE
 )
 }
 \arguments{
 \item{dataset_id}{name of specific study/dataset}
 
-\item{overwrite}{logical value to determine whether to overwrite existing report,
-default = FALSE, if report exists already set to TRUE to overwrite}
+\item{austraits}{compiled austraits database}
+
+\item{overwrite}{logical value to determine whether to overwrite existing report,}
 
 \item{output_path}{location where rendered report will be saved}
 
 \item{input_file}{report script (.Rmd) file to build study report}
+
+\item{quiet}{An option to suppress printing during rendering from knitr, pandoc command line and others.}
 }
 \value{
-html file of the rendered report located in the "export/reports" folder
+html file of the rendered report located in the specified output folder.
 }
 \description{
-Builds a report for a specified study using `dataset_id`. The information for 
-the report is stored in an Rmd file and the final report is rendered as an html.  
-The report is generated from the `report_study.Rmd` file in the scripts folder. 
-Existing reports can be overwritten by setting overwrite = TRUE
+Builds a detailed report for every dataset with a unique `dataset_id`, based on the template Rmd file provided.  The reports are
+rendered as html files and saved in the specified output folder.
 }
