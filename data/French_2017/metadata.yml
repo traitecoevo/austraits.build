@@ -36,7 +36,14 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+        mutate(
+          fire_response = 
+            ifelse(`percent_burnt_stems_resprouting` < 30, "fire_killed",
+              ifelse(`percent_burnt_stems_resprouting` > 70, "resprouts",
+                "partial_resprouting")))
+  '
   collection_date: 2013/2013
   taxon_name: Species
   site_name: site_name
@@ -139,9 +146,9 @@ sites:
       nutrient capital is derived from cyclic salts (Bowman et al. 1986; Brown 2005).
 contexts: .na
 traits:
-- var_in: '% burnt stems resprouting'
+- var_in: percent_burnt_stems_resprouting
   unit_in: '%'
-  trait_name: resprouting_proportion_individuals
+  trait_name: fire_response_numeric
   entity_type: metapopulation
   value_type: mean
   basis_of_value: measurement
@@ -165,7 +172,7 @@ traits:
     seedlings of all woody taxa.
 - var_in: regen_strategy
   unit_in: .na
-  trait_name: regen_strategy
+  trait_name: bud_bank_location
   entity_type: metapopulation
   value_type: mode
   basis_of_value: expert_score
@@ -175,7 +182,16 @@ traits:
     recruitment was assessed by haphazardly dropping, at each observation point, a
     25 x 25 cm quadrat within the transect, and counting the total number of live
     seedlings of all woody taxa.
-substitutions: .na
+substitutions:
+- trait_name: bud_bank_location
+  find: basal
+  replace: basal_buds
+- trait_name: bud_bank_location
+  find: basal epicormic
+  replace: basal_buds epicormic_buds
+- trait_name: bud_bank_location
+  find: fire_killed
+  replace: none
 taxonomic_updates:
 - find: Baekia leptocaulis
   replace: Baeckea leptocaulis
