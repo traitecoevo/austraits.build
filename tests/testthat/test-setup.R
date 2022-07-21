@@ -149,8 +149,10 @@ test_that("metadata_remove_taxonomic_change is working",{
   expect_invisible(metadata_remove_taxonomic_change("Test_2022", "flower"))
 })
 
+suppressWarnings(rm(taxonomic_resources))
+
 test_that("test load_taxonomic_resources is working",{
-  expect_silent(x <- load_taxonomic_resources())
+  expect_message(x <- load_taxonomic_resources())
   expect_named(x, c("APC", "APNI"))
   expect_equal(length(x), 2)
   expect_type(x$APC, "list")
