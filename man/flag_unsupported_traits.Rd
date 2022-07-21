@@ -9,7 +9,7 @@ flag_unsupported_traits(data, trait_definitions)
 \arguments{
 \item{data}{tibble or dataframe containing the study data}
 
-\item{trait_definitions}{definitions read in from the traits.yml file in the config folder}
+\item{trait_definitions}{trait_definitions read in from the traits.yml file in the config folder}
 }
 \value{
 tibble with unrecognised traits flagged as "Unsupported trait" in the "error" column

@@ -9,7 +9,7 @@ subset_config(filename_metadata, trait_definitions, unit_conversion_functions)
 \arguments{
 \item{filename_metadata}{metadata yaml file for a given study}
 
-\item{trait_definitions}{definitions read in from the traits.yml}
+\item{trait_definitions}{trait_definitions read in from the traits.yml}
 
 \item{unit_conversion_functions}{unit_conversion.csv file read in from the config folder}
 }
@@ -18,10 +18,10 @@ list with dataset_id, metadata, trait_definitions and unit_conversion_functions
 }
 \description{
 Creates the config object which gets passed onto `load_dataset`. The config list contains
-the subset of trait definitions and unit conversions for those traits for a each study.
+the subset of trait_definitions and unit conversions for those traits for a each study.
 `subset_config` is used in the remake::make process to configure individual studies mapping the
 individual traits found in that study along with any relevant unit conversions
-and trait definitions. `subset_config` and `load_dataset` are applied to every study
+and trait_definitions. `subset_config` and `load_dataset` are applied to every study
 in the remake.yml file
 }
 \examples{

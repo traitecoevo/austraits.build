@@ -9,7 +9,7 @@ flag_unsupported_values(data, trait_definitions)
 \arguments{
 \item{data}{tibble or dataframe containing the study data}
 
-\item{trait_definitions}{definitions read in from the traits.yml file in the config folder}
+\item{trait_definitions}{trait_definitions read in from the traits.yml file in the config folder}
 }
 \value{
 tibble with flagged values outside of allowable range, unsupported categorical
