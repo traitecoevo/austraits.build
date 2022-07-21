@@ -1019,7 +1019,7 @@ austraits_rebuild_taxon_list <- function() {
                                     "misapplied", "doubtful pro parte taxonomic synonym", "pro parte nomenclatural synonym", 
                                     "pro parte taxonomic synonym", "pro parte misapplied", "excluded", "doubtful misapplied", 
                                     "doubtful pro parte misapplied"))) %>%
-    arrange(.data$cleaned_name, .data$my_order) %>%
+    dplyr::arrange(.data$cleaned_name, .data$my_order) %>%
     # For each species, keep the first record (accepted if present) and 
     # record any alternative status to indicate where there was ambiguity
     dplyr::group_by(.data$cleaned_name) %>% 
