@@ -38,7 +38,7 @@ dataset_generate_report_worker <- function(dataset_id, austraits, overwrite=FALS
   }
   
   # filenames
-  input_Rmd <- sprintf("%s/%s.Rmd", output_path, dataset_id)
+  input_Rmd <- sprintf("tmp_%s_report.Rmd", dataset_id)
   output_html <- sprintf("%s/%s.html", output_path, dataset_id)
   
   if(overwrite | !file.exists(output_html)) {
@@ -56,6 +56,7 @@ dataset_generate_report_worker <- function(dataset_id, austraits, overwrite=FALS
     result <- try(
       rmarkdown::render(
         input_Rmd, 
+        output_file = output_html, 
         quiet = quiet,
         params= list(
                   dataset_id = dataset_id,
