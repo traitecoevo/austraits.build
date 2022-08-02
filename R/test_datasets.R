@@ -37,8 +37,8 @@ dataset_test_setup_worker <-
   function(test_dataset_ids,
            path_config = "config",
            path_data = "data",
-           definitions = load_schema(),
-           trait_definitions =
+           schema = load_schema(),
+           trait_definis =
              load_schema(file.path(path_config, "traits.yml"), I("traits"))
            ) {
     
@@ -324,7 +324,7 @@ dataset_test_setup_worker <-
         expect_allowed_text(readLines(f), info = f)
         expect_silent(metadata <- yaml::read_yaml(f))
         test_list_named_exact(metadata,
-                              definitions$metadata$elements %>% names(),
+                              schema$metadata$elements %>% names(),
                               info = f)
         
         # custom R code
@@ -378,12 +378,12 @@ dataset_test_setup_worker <-
         # people
         test_list(metadata[["contributors"]], info = f)
         expect_list_elements_contains_names(metadata[["contributors"]],
-                                     definitions$metadata$elements$people$elements %>% names(),
+                                     schema$metadata$elements$people$elements %>% names(),
                                      info = f)
         
         # dataset
         test_list_named_allowed(metadata[["dataset"]],
-                                definitions$metadata$elements$dataset$values %>% names(),
+                                schema$metadata$elements$dataset$values %>% names(),
                                 info = paste0(f,"-dataset"))
         expect_type(metadata[["dataset"]][["data_is_long_format"]], "logical")
         expect_type(metadata[["dataset"]], "list")
@@ -396,7 +396,7 @@ dataset_test_setup_worker <-
             sites <-
               metadata$sites %>%
               format_sites(dataset_id) %>%
-              add_all_columns(names(definitions[["austraits"]][["elements"]][["sites"]][["elements"]]))
+              add_all_columns(names(schema[["austraits"]][["elements"]][["sites"]][["elements"]]))
           )
           
           test_dataframe_names_contain(
@@ -423,7 +423,7 @@ dataset_test_setup_worker <-
             contexts <-
               metadata$contexts %>%
               format_sites(dataset_id, context = TRUE) %>%
-              add_all_columns(names(definitions[["austraits"]][["elements"]][["contexts"]][["elements"]]))
+              add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))
           )
           
           test_dataframe_names_contain(
@@ -444,17 +444,17 @@ dataset_test_setup_worker <-
         
         # Traits
         expect_list_elements_contains_names(metadata[["traits"]],
-                                     definitions$metadata$elements$traits$elements[1:3] %>% names(),
+                                     schema$metadata$elements$traits$elements[1:3] %>% names(),
                                      info = paste0(f, "-traits"))
         expect_list_elements_allowed_names(metadata[["traits"]],
-                                     definitions$metadata$elements$traits$elements %>% names(),
+                                     schema$metadata$elements$traits$elements %>% names(),
                                      info = paste0(f, "-traits"))
         expect_silent(traits <-
                         austraits.build::list_to_df(metadata[["traits"]]))
         expect_true(is.data.frame(traits))
         
         expect_isin(traits$trait_name,
-                    trait_definitions$elements %>% names(),
+                    trait_definis$elements %>% names(),
                     info = paste0(f, "-traits"))
         
         # Check value types in metadata and any columns of data
@@ -468,14 +468,14 @@ dataset_test_setup_worker <-
 
         expect_isin(
           value_type_fixed,
-          definitions$value_type$values %>% names,
+          schema$value_type$values %>% names,
           info = paste0(f, "-value types")
         )
         
         if(length(value_type_cols) > 0)
         expect_isin(
           data[[value_type_cols]] %>% unique(),
-          definitions$value_type$values %>% names,
+          schema$value_type$values %>% names,
           info = paste0(f, "-value types columns")
         )
         
@@ -483,13 +483,13 @@ dataset_test_setup_worker <-
         if (!is.na(metadata[["substitutions"]][1])) {
           expect_list_elements_contains_names(
             metadata[["substitutions"]],
-            definitions$metadata$elements$substitutions$values %>% names(),
+            schema$metadata$elements$substitutions$values %>% names(),
             "metadata - substitution #"
           )
           trait_names <-
             sapply(metadata[["substitutions"]], "[[", "trait_name")
           expect_isin(unique(trait_names),
-                      trait_definitions$elements %>% names(),
+                      trait_definis$elements %>% names(),
                       info = paste0(f, "-substitutions-trait_name"))
           expect_isin(
             unique(trait_names),
@@ -502,11 +502,11 @@ dataset_test_setup_worker <-
                             metadata[["substitutions"]] %>% list_to_df() %>% split(.$trait_name))
           
           for (trait in names(x)) {
-            if (!is.null(trait_definitions$elements[[trait]]) &&
-                trait_definitions$elements[[trait]]$type == "categorical") {
+            if (!is.null(trait_definis$elements[[trait]]) &&
+                trait_definis$elements[[trait]]$type == "categorical") {
               to_check <- x[[trait]]$replace %>% unique()
               allowable <-
-                c(trait_definitions$elements[[trait]]$values %>% names(),
+                c(trait_definis$elements[[trait]]$values %>% names(),
                   NA)
               failing <- to_check[!(
                 is.na(to_check) |

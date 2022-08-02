@@ -1,7 +1,7 @@
 
 testthat::test_that("test datasets", {
   
-  examples.dir <- file.path(root.dir, "tests/build/examples/")
+  examples.dir <- file.path(root.dir, "tests/testthat/examples/")
   
   Catford_2014 <- test_build_dataset(file.path(root.dir, "data/Catford_2014/metadata.yml"), file.path(root.dir, "data/Catford_2014/data.csv"), "Catford_2014", definitions, unit_conversions, schema)
   Falster_2005_1 <- test_build_dataset(file.path(root.dir, "data/Falster_2005_1/metadata.yml"), file.path(root.dir, "data/Falster_2005_1/data.csv"), "Falster_2005_1", definitions, unit_conversions, schema)
