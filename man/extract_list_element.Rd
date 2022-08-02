@@ -2,14 +2,14 @@
 % Please edit documentation in R/support.R
 \name{extract_list_element}
 \alias{extract_list_element}
-\title{Extract a trait element from the definitions$traits$elements}
+\title{Extract a trait element from the trait_definitions$traits$elements}
 \usage{
 extract_list_element(i, my_list, var)
 }
 \arguments{
-\item{i}{a value within the definitions$traits$elements list which refers to types of traits}
+\item{i}{a value within the trait_definitions$traits$elements list which refers to types of traits}
 
-\item{my_list}{the list that contains the element we're interested in (i.e. definitions$traits$elements)}
+\item{my_list}{the list that contains the element we're interested in (i.e. trait_definitions$traits$elements)}
 
 \item{var}{the type of variable of a trait}
 }
@@ -17,10 +17,10 @@ extract_list_element(i, my_list, var)
 the element/properties of a trait
 }
 \description{
-Extract a trait element from the definitions$traits$elements
+Extract a trait element from the trait_definitions$traits$elements
 }
 \examples{
 \dontrun{
-extract_list_element(1, definitions$traits$elements, "units")
+extract_list_element(1, trait_definitions$traits$elements, "units")
 }
 }

@@ -59,7 +59,7 @@ subset_config <- function(
        unit_conversion_functions = unit_conversion_functions_sub)
 }
 
-#' Load Study
+#' Load Dataset
 #'
 #' load_dataset is used to load individual studies using the config file generated
 #' from `subset_config()`. `subset_config` and `load_dataset` are applied to every
@@ -81,7 +81,8 @@ subset_config <- function(
 #' @examples
 #' \dontrun{
 #' load_dataset("data/Falster_2003/data.csv", subset_config("data/Falster_2003/metadata.yml",
-#' read_yaml("config/traits.yml"), make_unit_conversion_functions("config/unit_conversions.csv"))
+#' read_yaml("config/traits.yml"), make_unit_conversion_functions("config/unit_conversions.csv")),
+#' load_schema())
 #' }
 load_dataset <- function(filename_data_raw, 
                        config_for_dataset, 
@@ -288,10 +289,8 @@ custom_manipulation <- function(txt) {
 #'
 #' @param data the traits table at the point where this function is called 
 #'
-#' @return
+#' @return character string 
 #' @export
-#'
-#' @examples
 create_entity_id <- function(data) {
   
   make_id_segment <- function(n, entity)
@@ -827,7 +826,7 @@ parse_data <- function(data, dataset_id, metadata) {
 
   df <-
     df %>%
-    bind_cols(
+    dplyr::bind_cols(
       metadata[["dataset"]][names(metadata[["dataset"]]) %in% vars[!vars %in% names(df)]] %>% tibble::as_tibble()
     )
 
@@ -1205,7 +1204,7 @@ update_taxonomy <- function(austraits_raw, taxa) {
     dplyr::left_join(by = "cleaned_name",
               taxa %>% dplyr::select(.data$cleaned_name, .data$taxon_name)
               ) %>%
-    dplyr::select(.data$dataset_id, .data$taxon_name, everything()) %>%
+    dplyr::select(.data$dataset_id, .data$taxon_name, dplyr::everything()) %>%
     dplyr::mutate(taxon_name = ifelse(is.na(.data$taxon_name), .data$cleaned_name, .data$taxon_name)) %>%
     dplyr::select(-.data$cleaned_name)
 
@@ -1214,7 +1213,7 @@ update_taxonomy <- function(austraits_raw, taxa) {
     dplyr::select(.data$taxon_name) %>%
     dplyr::distinct() %>%
     dplyr::left_join(by = "taxon_name",
-      taxa %>% dplyr::select(-contains("clean")) %>% dplyr::distinct()
+      taxa %>% dplyr::select(-dplyr::contains("clean")) %>% dplyr::distinct()
     ) %>%
     # extract genus as this is useful
     dplyr::mutate(

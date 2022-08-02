@@ -9,6 +9,9 @@ create_entity_id(data)
 \arguments{
 \item{data}{the traits table at the point where this function is called}
 }
+\value{
+character string
+}
 \description{
 Creates 3-part entity id codes that combine a segment for species, population, 
 and, when applicable, individual
