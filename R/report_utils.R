@@ -1,70 +1,77 @@
-#' Build reports for all studies
-#' 
-#' Build reports for all studies using the `build_dataset_report()` function. This
-#' function builds a study report for every study with a unique `dataset_id` that
-#' has been loaded into AusTraits using `build_dataset_report()`. The reports are 
-#' rendered as html files and saved in the "export/reports" folder.  
-#'
-#' @param dataset_ids names of studies/ datasets, default is NULL
-#' @param ... arguments passed to build_dataset_report()
-#'
-#' @return html files of the study report for all studies 
-#' @export
-build_dataset_reports <- function(dataset_ids=NULL, ...) {
 
-  # define if does not already exist, 
-  # for all studies with suitable metadata file
-  if(length(dataset_ids) ==0 | is.null(dataset_ids) | any(is.na(dataset_ids)))
-    dataset_ids <- list.files("data")
-  
-  for(dataset_id in dataset_ids)
-    build_dataset_report(dataset_id, ...)
-}
-
-#' Build report for a specific study
-#' 
-#' Builds a report for a specified study using `dataset_id`. The information for 
-#' the report is stored in an Rmd file and the final report is rendered as an html.  
-#' The report is generated from the `report_study.Rmd` file in the scripts folder. 
-#' Existing reports can be overwritten by setting overwrite = TRUE
+#' Build reports for listed datasets
+#'
+#' Builds a detailed report for every dataset with a unique `dataset_id`, based on the template Rmd file provided.  The reports are
+#' rendered as html files and saved in the specified output folder.
 #'
 #' @param dataset_id name of specific study/dataset
+#' @param austraits compiled austraits database
 #' @param overwrite logical value to determine whether to overwrite existing report,
-#' default = FALSE, if report exists already set to TRUE to overwrite
 #' @param output_path location where rendered report will be saved
 #' @param input_file report script (.Rmd) file to build study report
+#' @param quiet An option to suppress printing during rendering from knitr, pandoc command line and others.
 #'
-#' @return html file of the rendered report located in the "export/reports" folder
+#' @rdname dataset_generate_report
+#' @return html file of the rendered report located in the specified output folder.
 #' @export
-build_dataset_report <- function(dataset_id, overwrite=FALSE, output_path = "export/reports", 
-                                 input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build")) {
+dataset_generate_report <- function(dataset_id, austraits, overwrite=FALSE, 
+                                 output_path = "export/reports", 
+                                 input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build"),
+                                 quiet=TRUE) {
+
+  for(d in dataset_id)
+    dataset_generate_report_worker(d, austraits,
+      overwrite = overwrite,
+      output_path = output_path,
+      input_file = input_file,
+      quiet = quiet
+    )
+}
+
+dataset_generate_report_worker <- function(dataset_id, austraits, overwrite=FALSE, 
+                                 output_path = "export/reports", 
+                                 input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build"),
+                                 quiet=TRUE) {
 
   if(!file.exists(output_path)) {
     dir.create(output_path, FALSE, TRUE)
   }
   
-  cat(sprintf("Building report for %s: ", dataset_id))
-  
   # filenames
-  input_Rmd <- sprintf("%s/%s.Rmd", output_path, dataset_id)
+  input_Rmd <- sprintf("tmp_%s_report.Rmd", dataset_id)
   output_html <- sprintf("%s/%s.html", output_path, dataset_id)
   
   if(overwrite | !file.exists(output_html)) {
     
+    cat(sprintf("Building report for %s ", dataset_id))
+
     # Create a new Rmd file with name embedded in title
     x <- readLines(input_file)
-    x <- gsub("title: Report on study from",  sprintf("title: Report on study `%s` from", dataset_id), x)
+    x[2] <- sprintf("title: Report on study `%s` from", dataset_id)
     writeLines(x, input_Rmd)
     
     # knit and render. Note, call render directly
     # in preference to knit, then render, as leaflet widget 
     # requires this to work
-    try(rmarkdown::render(input_Rmd, quiet=TRUE))
-    
+    result <- try(
+      rmarkdown::render(
+        input_Rmd, 
+        output_file = output_html, 
+        quiet = quiet,
+        params= list(
+                  dataset_id = dataset_id,
+                  austraits = austraits
+          )
+      )
+    )
+
     # remove temporary Rmd
     unlink(input_Rmd)
+    cat(" -> ", output_html, "\n")
+  } else{
+    cat(sprintf("Report for %s already exists -> %s\n", dataset_id, output_html))
   }
-  cat(" -> done\n")
+  
 }
 
 #' Get SHA string from Github repository for latest commit

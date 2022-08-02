@@ -4,12 +4,12 @@
 \alias{convert_units}
 \title{Convert units to desired type}
 \usage{
-convert_units(data, trait_definitions, unit_conversion_functions)
+convert_units(data, definitions, unit_conversion_functions)
 }
 \arguments{
 \item{data}{tibble or dataframe containing the study data}
 
-\item{trait_definitions}{trait_definitions read in from the traits.yml file in the config folder}
+\item{definitions}{definitions read in from the traits.yml file in the config folder}
 
 \item{unit_conversion_functions}{unit_conversions.csv file stored in the config folder}
 }
