@@ -268,11 +268,6 @@ dataset_test_setup_worker <-
       expect_contains(names(data), expected_names, info = info)
     }
     
-    test_list_named_contains <- function(data, expected_names, info) {
-      test_list_names_valid(data, info)
-      expect_isin(names(data), expected_names)
-    }
-    
     # Now run tests for each dataset
     
     for (dataset_id in test_dataset_ids) {
