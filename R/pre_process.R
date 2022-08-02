@@ -247,7 +247,7 @@ format_min_max_as_range <- function(data, min_column, max_column, range_column, 
   data[[range_column]] = ifelse(data[[min_column]] == data[[max_column]],
                                 data[[max_column]],
                                 data[[range_column]])
-  data[[column_value_type]] = ifelse(str_detect(data[[range_column]],"--"),"range","mean")
+  data[[column_value_type]] = ifelse(stringr::str_detect(data[[range_column]],"--"),"range","mean")
   
   return(data)
 }

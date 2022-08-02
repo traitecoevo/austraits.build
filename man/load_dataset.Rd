@@ -2,7 +2,7 @@
 % Please edit documentation in R/steps.R
 \name{load_dataset}
 \alias{load_dataset}
-\title{Load Study}
+\title{Load Dataset}
 \usage{
 load_dataset(
   filename_data_raw,
@@ -32,6 +32,7 @@ study in the remake.yml file
 \examples{
 \dontrun{
 load_dataset("data/Falster_2003/data.csv", subset_config("data/Falster_2003/metadata.yml",
-read_yaml("config/traits.yml"), make_unit_conversion_functions("config/unit_conversions.csv"))
+read_yaml("config/traits.yml"), make_unit_conversion_functions("config/unit_conversions.csv")),
+load_schema())
 }
 }

@@ -3,7 +3,7 @@ library(austraits.build)
 
 root.dir <- rprojroot::find_root("remake.yml")
 schema <- load_schema()
-trait_definitions <- load_schema(file.path(root.dir, "config/traits.yml"), I("traits"))
+definitions <- load_schema(file.path(root.dir, "config/traits.yml"), I("traits"))
 
 unit_conversions <- austraits.build:::make_unit_conversion_functions(file.path(root.dir, "config/unit_conversions.csv"))
 taxon_list <- read_csv_char(file.path(root.dir, "config/taxon_list.csv"))
@@ -15,7 +15,7 @@ vars_dataset <-
   vars_austraits %>% c("dataset_id", .) %>% 
   subset(., !grepl("build",.))
 
-vars_tables <- vars_austraits %>% subset(., !(. %in% c("dataset_id", "trait_definitions", "schema", "sources", "build_info")))
+vars_tables <- vars_austraits %>% subset(., !(. %in% c("dataset_id", "definitions", "schema", "sources", "build_info")))
 
 # Better than expect_silent as contains `info` and allows for complete failures
 expect_no_error <- function (object, regexp = NULL, ..., info = NULL, label = NULL)
@@ -99,11 +99,11 @@ test_dataframe_named <- function(data, expected_colnames, info) {
 }
 
 
-test_build_dataset <- function(path_metadata, path_data, info, trait_definitions, unit_conversions, schema) {
+test_build_dataset <- function(path_metadata, path_data, info, definitions, unit_conversions, schema) {
   
   # test it builds with no errors
   expect_no_error({
-    build_config <- subset_config(path_metadata, trait_definitions, unit_conversions)
+    build_config <- subset_config(path_metadata, definitions, unit_conversions)
   }, info = paste(info, " config"))
   
   expect_no_error({
@@ -140,5 +140,5 @@ test_structure <- function(data, info, schema, single_dataset = TRUE) {
   }
   
   # contains allowed traits
-  expect_isin(data$traits$trait_name %>% unique(), trait_definitions$elements %>% names(), info = paste("traits ", v))
+  expect_isin(data$traits$trait_name %>% unique(), definitions$elements %>% names(), info = paste("traits ", v))
 }
