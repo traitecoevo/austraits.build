@@ -971,18 +971,17 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
 #' the downloaded files, it saves us keeping copies of the entire 
 #' lists (~8 vs 230Mb)
 #' 
+#' @param austraits austraits data object
 #' @importFrom rlang .data
 #' @export
-austraits_rebuild_taxon_list <- function() {
+austraits_rebuild_taxon_list <- function(austraits) {
 
   taxonomic_resources <- load_taxonomic_resources()
   
-  austraits <- suppressMessages(remake::make("austraits_raw"))
-
   subset_accepted <- function(x) {
     x[x!= "accepted"]
   }
-  
+
   # First align to APC where possible 
   taxa <- 
     # build list of observed species names
@@ -1128,4 +1127,25 @@ setup_build_process <- function(
 
   str <- whisker::whisker.render(template, vals)
   writeLines(str, "remake.yml")
+
+  # Check taxon list exists
+  filename <- "config/taxon_list.csv"
+
+  if(!file.exists(filename)) {
+    dplyr::tibble(
+      cleaned_name = character(), 
+      source = character(), 
+      taxonIDClean = character(), 
+      taxonomicStatusClean = character(), 
+      alternativeTaxonomicStatusClean = character(), 
+      acceptedNameUsageID = character(), 
+      taxon_name = character(), 
+      scientificNameAuthorship = character(), 
+      taxonRank = character(), 
+      taxonomicStatus = character(), 
+      family = character(), 
+      taxonDistribution = character(), 
+      ccAttributionIRI = character()
+    ) %>%  write_csv(filename)
+  }
 }
