@@ -14,7 +14,8 @@ contributors:
   data_collectors:
   - last_name: Morgan
     given_name: Rhys
-    affiliation: The University of Adelaide, Australia
+    ORCID: .na.character
+    affiliation: School of Biological Sciences, The University of Adelaide, Australia
   - last_name: Martín-Forés
     given_name: Irene
     affiliation: School of Biological Sciences, The University of Adelaide, Australia
@@ -31,14 +32,18 @@ contributors:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: no
-  custom_R_code:   data %>% mutate(taxon_name = str_c(genus, " ", species), collection_date = parse_date_time(collection_date, orders = "dmy") %>% format.Date("%Y-%m-%d"))
+  custom_R_code: '
+    data %>%
+      mutate(
+        taxon_name = str_c(genus, " ", species),
+        collection_date = parse_date_time(collection_date, orders = "dmy") %>%
+            format.Date("%Y-%m-%d")
+      )
+  '
   collection_date: collection_date
   taxon_name: taxon_name
   site_name: site_location_name
-  entity_id: unknown
-  population_id: unknown
   individual_id: tree_id
-  observation_id: unknown
   description: This pilot study investigated the feasibility of using TERN (Australia's
     national land ecosystem observatory) data to measure a single morphological trait,
     specific leaf area. The study was restricted to Eucalyptus spp. and aimed to inform
@@ -144,6 +149,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 5
+  measurement_remarks: dry leaf measurement
   methods: This is the one-sided area of the dry leaf. The first component of the
     study was the measurement of leaves from voucher specimens. We located 30 Eucalyptus
     vouchers exclusively from South Australian plots (figure 1) and took 5 leaves
@@ -155,7 +161,7 @@ traits:
     hours at 70C and scanned and measured as before.
 - var_in: mean_dry_mass
   unit_in: mg
-  trait_name: unknown
+  trait_name: leaf_dry_mass
   entity_type: individual
   value_type: mean
   basis_of_value: measurement
@@ -177,6 +183,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 5
+  measurement_remarks: dry leaf measurement
   methods: SLA here is measured with the dry area and dry mass of the leaf. The first
     component of the study was the measurement of leaves from voucher specimens. We
     located 30 Eucalyptus vouchers exclusively from South Australian plots (figure
@@ -196,6 +203,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 5
+  measurement_remarks: fresh leaf measurement
   methods: This is fresh leaf area. The second component of the study was the collection
     and measurement of fresh leaf samples. We collected 5 leaves from 15 individuals
     for 3 species growing at Waite Conservation Reserve in Adelaide, South Australia.
@@ -207,7 +215,8 @@ traits:
   entity_type: individual
   value_type: mean
   basis_of_value: measurement
-  replicates: 5
+  replicates: 5  
+  measurement_remarks: fresh leaf measurement
   methods: SLA here is calculated with fresh leaf area and dry leaf mass. The second
     component of the study was the collection and measurement of fresh leaf samples.
     We collected 5 leaves from 15 individuals for 3 species growing at Waite Conservation
@@ -216,8 +225,8 @@ traits:
     dried in an oven for 72 hours at 70C and weighed with the same microbalance. Fresh
     SLA was obtained for each leaf using the formula... fresh area / dry mass.
 - var_in: mean_shrinkage
-  unit_in: unknown
-  trait_name: unknown
+  unit_in: '%'
+  trait_name: .na
   entity_type: individual
   value_type: mean
   basis_of_value: measurement
@@ -233,4 +242,6 @@ traits:
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
-questions: .na
+questions:
+  question_1: Is it possible that you mistyped 15 trees as 5 trees in the methods for the second component of the study, because the data adds up to 45 individuals, not 35 individuals. I've corrected it in the metadata file but wanted to confirm this edit with you.
+  additional_traits: Fresh to dry leaf shrinkage
