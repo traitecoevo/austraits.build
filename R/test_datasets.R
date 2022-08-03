@@ -178,7 +178,7 @@ dataset_test_setup_worker <-
       # allow some utf8 characters, those with accents over letters for foreign names
       # list of codes is here: http://www.utf8-chartable.de/
       # note c3 is needed because this is prefix for allowed UTF8 chars
-      exceptions <- c("âíåæäãàáíčóöøéłńl°êÜüùúû±µµ“”‘’-–—≈˜×")
+      exceptions <- c("ÁÅÀÂÄÆÃĀâíåæäãàáíčóöøéłńl°êÜüùúû±µµ“”‘’-–—≈˜×")
       
       is_allowed <- i %in% charToRaw(exceptions)
       ! (is_ascii | is_allowed)
@@ -306,18 +306,6 @@ dataset_test_setup_worker <-
         )
         
         test_dataframe_valid(data, info = f)
-        
-        # check variables names do not contain double spaces
-        i <- grepl("  ", names(data))
-        expect_false(
-          any(i),
-          info = sprintf(
-            "Remove double spaces from variables names in %s and metadata: %s",
-            f,
-            paste0("`", names(data)[i], "`", collapse = ",")
-          )
-        )
-        
       
         # Metadata
         f <- files[2]
