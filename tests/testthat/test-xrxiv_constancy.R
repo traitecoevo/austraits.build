@@ -41,11 +41,11 @@ test_that("constancy of with version 3.0.2", {
     austraits_raw <- build_comparison_set(root.dir, definitions, unit_conversions, schema)
     , info = "Building comparison set")
   
-  file_comparison <- "tests/testthat/comparison_set_3.0.2.rds"
+  file_comparison <- "comparison_set_3.0.2.rds"
   
   # Uncomment to update building of comparison set
   # saveRDS(austraits_raw, file.path(root.dir, file_comparison))
-  austraits_raw_comparison <- readRDS(file.path(root.dir, file_comparison))
+  austraits_raw_comparison <- readRDS(file_comparison)
   
   # change some names so comparison to new version still runs
   austraits_raw_comparison$traits$trait_name <- austraits_raw_comparison$traits$trait_name %>%

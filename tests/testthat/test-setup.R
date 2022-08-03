@@ -1,18 +1,9 @@
 
-unlink("data/Test_2022/metadata.yml")
 
-test_that("test austraits_rebuild_taxon_list is working",{
-
-#  expect_silent(setup_build_process())
-#  if(file.exists("config/taxon_list.csv")) unlink("config/taxon_list.csv")
-  
-#  expect_false(file.exists("config/taxon_list.csv"))
-#  expect_length(suppressWarnings(austraits_rebuild_taxon_list()), 13)
-#  expect_named(suppressWarnings(austraits_rebuild_taxon_list()))
-#  expect_true(file.exists("config/taxon_list.csv"))
-})
 
 test_that("metadata_create_template is working",{
+  unlink("data/Test_2022/metadata.yml")
+
   expect_invisible(metadata_create_template(dataset_id = "Test_2022",
                                             path = file.path("data", "Test_2022"),
                                             skip_manual = TRUE))
@@ -37,7 +28,10 @@ test_that("metadata_create_template is working",{
   expect_equal(length(test_metadata$contributors$austraits_curators), 1)
   expect_equal(length(test_metadata$contributors$austraits_curators), 1)
 
-  expect_equal(length(test_metadata$dataset), 18)
+  expect_isin(names(test_metadata$dataset), schema$metadata$elements$dataset$values %>% names())
+ 
+ # Todo: discuss with L:izzy what correct default is (currently all values included)
+ expect_equal(length(test_metadata$dataset), 23)
 })
 
 test_that("metadata_path_dataset_id is working",{
@@ -149,10 +143,11 @@ test_that("metadata_remove_taxonomic_change is working",{
   expect_invisible(metadata_remove_taxonomic_change("Test_2022", "flower"))
 })
 
-suppressWarnings(rm(taxonomic_resources))
 
 test_that("test load_taxonomic_resources is working",{
-  expect_message(x <- load_taxonomic_resources())
+  suppressWarnings(rm(taxonomic_resources))
+  expect_no_error(x <- load_taxonomic_resources())
+  expect_equal(taxonomic_resources, x)
   expect_named(x, c("APC", "APNI"))
   expect_equal(length(x), 2)
   expect_type(x$APC, "list")
@@ -164,7 +159,29 @@ test_that("test test_data_setup is working",{
 })  
 
 test_that("test setup_build_process is working",{
-#  expect_error(setup_build_process(path = "Datas"))
-#  expect_silent(setup_build_process())
-#  expect_silent(yaml::read_yaml("remake.yml"))
+
+  unlink(".remake")
+  unlink("remake.yml")
+  unlink("config/taxon_list.csv")
+  file.copy("data/Test_2022/test-metadata.yml", "data/Test_2022/metadata.yml", overwrite = TRUE)
+
+  expect_false(file.exists("remake.yml"))
+  expect_false(file.exists("config/taxon_list.csv"))
+  expect_error(setup_build_process(path = "Datas"))
+  expect_silent(setup_build_process())
+  expect_true(file.exists("remake.yml"))
+  expect_silent(yaml::read_yaml("remake.yml"))
+  expect_true(file.exists("config/taxon_list.csv"))
+  expect_no_error(austraits_raw <- remake::make("austraits_raw"))
+  expect_silent(taxa1 <- read_csv_char("config/taxon_list.csv"))
+  vars <- c("cleaned_name", "source", "taxonIDClean", "taxonomicStatusClean", "alternativeTaxonomicStatusClean", "acceptedNameUsageID", "taxon_name", "scientificNameAuthorship", "taxonRank", "taxonomicStatus", "family", "taxonDistribution", "ccAttributionIRI")
+  expect_named(taxa1, vars)
+ expect_length(taxa1, 13)
+  expect_true(nrow(taxa1) == 0)
+  expect_no_error(suppressWarnings(austraits_rebuild_taxon_list(austraits_raw) ))
+  expect_true(file.exists("config/taxon_list.csv"))
+  expect_silent(taxa2 <- read_csv_char("config/taxon_list.csv"))
+  expect_named(taxa2, vars)
+  expect_length(taxa2, 13)
+  expect_true(nrow(taxa2) == 5)
 })
