@@ -4,10 +4,10 @@
 \alias{get_version}
 \title{Retrieve version for compilation from definitions}
 \usage{
-get_version(path)
+get_version(path = "config/traits.yml")
 }
 \arguments{
-\item{path}{path to schema file.}
+\item{path}{path to traits definitions}
 }
 \value{
 a string
