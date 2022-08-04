@@ -1,5 +1,7 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/master/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# https://github.com/r-lib/actions/tree/v2-branch/check-r-package
+
 on:
   push:
     branches: [main, master, develop]
@@ -39,8 +41,13 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck, any::covr, local::.
+          needs: check
 
       - uses: r-lib/actions/check-r-package@v2
+          with:
+            args: 'c("--no-manual", "--as-cran")'
+            error-on: '"error"'
+            check-dir: '"check"'
 
       - name: Show testthat output
         if: always()
