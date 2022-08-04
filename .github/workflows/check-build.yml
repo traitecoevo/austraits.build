@@ -45,15 +45,11 @@ jobs:
       - name: Install package
         run: R CMD INSTALL .
 
-      - name: build austraits
-        run: remake::make()
+      - name: check sources
+        run: |
+          library(austraits.build)
+          dataset_test_setup(dir("data"))
         shell: Rscript {0}
-      
-      - name: Archive artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: austraits
-          path: export/data/curr/austraits.rds
 
       - name: Benchmark
         run: |
@@ -61,3 +57,14 @@ jobs:
           run_benchmark()
         shell: Rscript {0}
 
+      - name: build austraits
+        run: |
+          source("config/custom.R")
+          remake::make()
+        shell: Rscript {0}
+      
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: austraits
+          path: export/data/curr/austraits.rds
