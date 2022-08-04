@@ -2,6 +2,8 @@ requireNamespace("testthat", quietly = TRUE)
 library(austraits.build)
 
 root.dir <- "../.."
+
+source(file.path(root.dir, "config/custom.R"))
 schema <- load_schema()
 definitions <- load_schema(file.path(root.dir, "config/traits.yml"), I("traits"))
 
