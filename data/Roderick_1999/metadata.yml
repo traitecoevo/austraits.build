@@ -109,12 +109,13 @@ dataset:
         site_name_complete = paste(site_name_complete, `soil type`, sep = "_"),
         site_name_complete = gsub("NA_NA","unknown site", site_name_complete),
         site_name_complete = gsub("_NA","", site_name_complete),
+        veg_stratum = gsub("ground-stratum","ground stratum",  veg_stratum),
         method_number = case_when(
           veg_stratum == "emergent stratum" ~ 1,
           veg_stratum == "upper stratum" ~ 2,
           veg_stratum == "mid-stratum" ~ 3,
-          veg_stratum == "lower stratum" ~ 4,
-          veg_stratum == "ground-stratum" ~ 5
+          veg_stratum == "lower stratum" ~ 4,         
+          veg_stratum == "ground stratum" ~ 5
         ),
         entity_type = ifelse(AusTraits_key == "Landsberg_1990"|AusTraits_key == "Specht_1988"|((AusTraits_key == "Specht_1990") & (Species == "Eucalyptus incrassata")|(AusTraits_key == "Schulze_1994")& (Species == "Triticum aestivum")), "individual", "population"),
         value_type = ifelse(AusTraits_key == "Landsberg_1990"|AusTraits_key == "Specht_1988"|((AusTraits_key == "Specht_1990") & (Species == "Eucalyptus incrassata")|(AusTraits_key == "Schulze_1994")& (Species == "Triticum aestivum")), "raw", "mean"),
@@ -461,7 +462,7 @@ contexts:
   mid-stratum:
     canopy layer: mid-stratum
   ground stratum:
-    canopy layer: ground-stratum
+    canopy layer: ground stratum
 traits:
 - var_in: leaf_area_m2
   unit_in: m2

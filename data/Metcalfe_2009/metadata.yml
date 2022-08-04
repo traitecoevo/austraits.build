@@ -29,8 +29,9 @@ dataset:
       mutate(
         fruit_fleshiness = Fruit_type,
         fruit_dehiscence = Fruit_type,
-        dispersal_appendage = NA,
-        dispersers = NA,
+        dispersal_appendage = NA_character_,
+        dispersers = NA_character_,
+        dispersal_unit = NA_character_,
         seed_storage_location = ifelse(stringr::str_detect(Maximum_propagule_longevity,"soil"),"soil",NA),
         seed_longevity_numeric = Maximum_propagule_longevity
       ) %>%
@@ -47,6 +48,9 @@ dataset:
         c("Insect","Water","Wind"),
         c("insects","water","wind"),
         c("Insect","water","wind")
+      ) %>%
+      move_values_to_new_trait(
+        "Fruit_type", "dispersal_unit", "Spore", "spore", "Spore"
       )
 '
   collection_date: 2005/2005
@@ -425,6 +429,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
+- var_in: dispersal_unit
+  unit_in: .na
+  trait_name: dispersal_unit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
 - var_in: fruit_fleshiness
   unit_in: .na
   trait_name: fruit_fleshiness
@@ -630,7 +642,7 @@ substitutions:
   replace: .na.character
 - trait_name: fruit_type
   find: Spore
-  replace: spore
+  replace: .na
 - trait_name: fruit_type
   find: fleshy (berry, pome, pepo, etc.)
   replace: .na.character

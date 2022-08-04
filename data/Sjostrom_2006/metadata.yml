@@ -28,8 +28,12 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>% 
-      mutate(clonal_spread_mechanism = NA) %>%
-      move_values_to_new_trait("fruit_to_use", "clonal_spread_mechanism", 27, "viviparous", 27) %>% 
+      mutate(
+        clonal_spread_mechanism = NA,   
+        dispersal_unit = NA_character_
+      ) %>%
+      move_values_to_new_trait("fruit_to_use", "clonal_spread_mechanism", 27, "viviparous", 27) %>%
+      move_values_to_new_trait("fruit_to_use", "dispersal_unit", 24, "spore", 24) %>% 
       mutate(
         fruit_fleshiness = fruit_to_use,
         fruit_dehiscence = fruit_to_use
@@ -138,6 +142,19 @@ traits:
 - var_in: fruit_to_use
   unit_in: .na
   trait_name: fruit_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Literature searches. Fruit type was categorized as dry-indehiscent (including
+    achene, caryopsis, nut, nutlet, samara, some schizocarps, utricle, and some capsules),
+    drydehiscent (including most capsules, stroboli, follicles, legume, mericarp,
+    saliqua, most schizocarps, and loments), or fleshy (including berry, drupe, gyconium,
+    pome, pseudocarp, spathe, synangium, syncarp, viviparous seedlings, pipo, and
+    pyrene).
+- var_in: dispersal_unit
+  unit_in: .na
+  trait_name: dispersal_unit
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -309,7 +326,7 @@ substitutions:
   replace: schizocarp
 - trait_name: fruit_type
   find: 24
-  replace: spore
+  replace: .na
 - trait_name: fruit_type
   find: 25
   replace: multiple_fruit
