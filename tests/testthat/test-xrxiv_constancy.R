@@ -26,8 +26,8 @@ build_comparison_set <- function(root.dir, definitions, unit_conversions, schema
   austraits_raw <-  austraits.build:::combine_datasets(Baker_2019, Bloomfield_2018, Catford_2014, Duan_2015, Maslin_2012, Tomlinson_2019, Westoby_2014)
   
   # take a subset to reduce size of saved output
-  austraits_raw$traits <- austraits_raw$traits %>% group_by(dataset_id) %>% slice(1:2000) %>% ungroup
-  austraits_raw$excluded_data <- austraits_raw$excluded_data %>% group_by(dataset_id) %>% slice(1:2000) %>% ungroup
+  austraits_raw$traits <- austraits_raw$traits %>% group_by(dataset_id) %>% ungroup
+  austraits_raw$excluded_data <- austraits_raw$excluded_data %>% group_by(dataset_id) %>% ungroup
 
   # take a subset of components that make for meaningful comparison
   austraits_raw
@@ -59,40 +59,50 @@ test_that("constancy of with version 3.0.2", {
   austraits_raw_comparison$traits$replicates <- austraits_raw_comparison$traits$replicates %>%
     gsub("3 replicates on 1 individual per species or 1 replicate on each individual", "3",. )
   
-
   # Compare some select columns of select elements 
   v <- "traits"
-  vv <- c("dataset_id", "taxon_name", "site_name", "context_name", "trait_name", "value", "unit", "replicates", "original_name")
+  vv <- c("dataset_id", "taxon_name", "trait_name", "value", "unit", "original_name")
   # these traits have known changes in names or values
-  not_to_check <-  c("seed_dry_mass", "seed_mass", "dispersal_syndrome", "dispersal_appendage")
-  v1 <- austraits_raw_comparison[[v]][,vv] %>% 
-    dplyr::arrange(dataset_id, taxon_name, trait_name, value) %>% 
-    filter(!trait_name %in% not_to_check)
-  v2 <- austraits_raw[[v]][,vv] %>% 
-    dplyr::arrange(dataset_id, taxon_name, trait_name, value) %>% 
-    filter(!trait_name %in% not_to_check)
-##  expect_equal(v2, v1,
-##    info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
+  trait_to_check <- c("flood_regime_classification", "life_history", "plant_growth_form", "plant_height", "growth_habit", "leaf_area", "leaf_dry_mass", "root_shoot_ratio", "leaf_compoundness", "leaf_length", "leaf_width", "seed_shape", "seed_width", "leaf_phenology", "huber_value", "leaf_B_per_dry_mass", "water_potential_predawn", "vessel_density_leaves", "vessel_diameter_leaves", "wood_density", "leaf_hydraulic_conductivity", "water_potential_50percent_lost_conductivity", "water_potential_88percent_lost_conductivity")
+
+
+  v_curr <- austraits_raw[[v]][,vv] %>% 
+    filter(trait_name %in% trait_to_check) %>%
+    mutate(in_current = "in_current")
+
+  v_old <- austraits_raw_comparison[[v]][, vv] %>%
+    filter(trait_name %in% trait_to_check) %>%
+    mutate(in_old = "old_version") %>%
+    left_join(v_curr)
+
+  # Check data from previous compilation is contained within new compilation
+  # The datasets won't be the same, as the comparison set only includes a subset of each dataset and ordering will have changed between versions
+  
+  expect_equal(sum(is.na(v_old$in_current)), 0, info = paste("comparing", v, "to ", file_comparison))
 
   v <- "sites"
   vv <- c("dataset_id", "site_name", "site_property", "value")
   to_check <-  c("desciption", "latitude (deg)", "logitude (deg)")
   v1 <- austraits_raw_comparison[[v]][,vv] %>% 
-    dplyr::arrange(dataset_id, site_name) %>% 
-    filter(site_property %in% to_check)
+    dplyr::arrange(dataset_id, site_name, site_property) %>%
+    filter(site_property %in% to_check, dataset_id != "Bloomfield_2018") 
   v2 <- austraits_raw[[v]][,vv] %>% 
-    dplyr::arrange(dataset_id, site_name) %>% 
-    filter(site_property %in% to_check)
-##  expect_equal(v2, v1,
-##               info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
+    dplyr::arrange(dataset_id, site_name, site_property) %>%
+    filter(site_property %in% to_check, dataset_id != "Bloomfield_2018")
+
+ expect_equal(v2, v1,
+               info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
   
   v <- "methods"
   vv <- c("dataset_id", "trait_name", "source_primary_key", "source_secondary_key")
   v1 <- austraits_raw_comparison[[v]][,vv] %>% 
-    dplyr::arrange(dataset_id, trait_name)
+    dplyr::arrange(dataset_id, trait_name) %>%
+    filter(trait_name %in% trait_to_check)
+
   v2 <- austraits_raw[[v]][,vv] %>% 
-    dplyr::arrange(dataset_id, trait_name)
-##  expect_equal(v2, v1,
-##               info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
+    dplyr::arrange(dataset_id, trait_name) %>%
+      filter(trait_name %in% trait_to_check)
+  expect_equal(v2, v1,
+               info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)
     
 })
