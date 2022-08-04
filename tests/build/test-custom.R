@@ -178,19 +178,3 @@ testthat::test_that("test move_values_to_new_trait_long",{
                                                     "trait", "value", c("plumose", "tomentose"))), 10)
 })  
 
-testthat::test_that("test substitutions_from_csv",{
-  substitutions_df <- tibble::tibble(dataset_id = "Test_2022",
-                                     trait_name = "Tree",
-                                     find = "Root",
-                                     replace = "Branch")
-  
-  metadata_create_template(dataset_id = "Test_2022",
-                           path = file.path("data", "Test_2022"),
-                           skip_manual = TRUE)
-  
-  metadata <- read_metadata("data/Test_2022/metadata.yml")
-  metadata$substitutions <- NA
-  write_metadata(metadata, "data/Test_2022/metadata.yml")
-  expect_invisible(substitutions_from_csv(substitutions_df, "Test_2022", "trait_name", "find", "replace"))
-  expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions %>% sapply(`%in%`, x = "Tree") %>% any(), TRUE)
-})

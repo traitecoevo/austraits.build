@@ -3,9 +3,9 @@
 #' Run tests to ensure that specified dataset_id has the correct setup
 #'
 #' @param dataset_ids vector of dataset_id for sources to be tested
-#' @param path_config 
-#' @param path_data 
-#' @param reporter 
+#' @param path_config path to folder containing configuration files
+#' @param path_data path to folder containing data files
+#' @param reporter testthat reporter to use to summarise output
 #'
 #' @importFrom rlang .data .env
 #' @export
@@ -16,7 +16,7 @@ dataset_test_setup <-
            path_data = "data",
            reporter = testthat::default_reporter()) {
     
-    require("testthat", quietly = TRUE)
+    requireNamespace("testthat", quietly = TRUE)
     
     # clean up when done
     Sys.setenv('TESTTHAT_MAX_FAILS' = Inf)
@@ -33,6 +33,16 @@ dataset_test_setup <-
   }
 
 
+#' Test whether specified dataset_id has the correct setup
+#'
+#' Run tests to ensure that specified dataset_id has the correct setup
+#'
+#' @param test_dataset_ids vector of dataset_id for sources to be tested
+#' @inheritParams dataset_test_setup
+#' @param schema data schema
+#' @param definitions trait defininitons
+#' @importFrom testthat local_edition compare expect expect_true expect_named test_that context expect_silent expect_type
+#' @importFrom rlang .data
 dataset_test_setup_worker <-
   function(test_dataset_ids,
            path_config = "config",
@@ -298,7 +308,7 @@ dataset_test_setup_worker <-
                         ))
         # check no issues flagged when parsing file
         expect_no_error(
-          stop_for_problems(data),
+          readr::stop_for_problems(data),
           info = sprintf(
             "problems present when reading data, run `read_csv(%s)` to investigate",
             f
@@ -559,7 +569,7 @@ dataset_test_setup_worker <-
           )
           
           v <-
-            (data[[metadata[["dataset"]][["site_name"]]]] %>% unique %>% na.omit)
+            (data[[metadata[["dataset"]][["site_name"]]]] %>% unique %>% stats::na.omit)
           i <- v %in% names(metadata$sites)
           expect_true(all(i),
                       info = paste0(f,  "- site names from data file not present in metadata: ", v[!i]))
@@ -587,7 +597,7 @@ dataset_test_setup_worker <-
           )
           
           v <-
-            (data[[metadata[["dataset"]][["context_name"]]]] %>% unique %>% na.omit)
+            (data[[metadata[["dataset"]][["context_name"]]]] %>% unique %>% stats::na.omit)
           i <- v %in% names(metadata$contexts)
           expect_true(all(i),
                       info = paste0(

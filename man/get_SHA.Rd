@@ -4,7 +4,7 @@
 \alias{get_SHA}
 \title{Get SHA string from Github repository for latest commit}
 \usage{
-get_SHA(path = rprojroot::find_root("remake.yml"))
+get_SHA(path = ".")
 }
 \arguments{
 \item{path}{root directory where a specified file is located, default file name

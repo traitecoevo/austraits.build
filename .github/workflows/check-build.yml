@@ -42,13 +42,15 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v1
 
-      - name: Install package
-        run: R CMD INSTALL .
-
       - name: Load packages and functions
         run: |
           library(austraits.build)
           source("config/custom.R")
+        shell: Rscript {0}
+
+      - name: Test build infrastructure
+        run: testthat::test_dir("tests/build/")
+        shell: Rscript {0}
 
       - name: check sources
         run: dataset_test_setup(dir("data"))

@@ -85,7 +85,7 @@ dataset_generate_report_worker <- function(dataset_id, austraits, overwrite=FALS
 #'
 #' @return 40-digit SHA character string for the latest commit to the repository 
 #' @export
-get_SHA <- function(path = rprojroot::find_root("remake.yml")) {
+get_SHA <- function(path = ".") {
   git2r::sha(git2r::last_commit(git2r::repository(path)))
 }
 

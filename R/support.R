@@ -201,6 +201,7 @@ read_metadata <- function(path) {
 #'
 #' @rdname write_metadata
 #' @importFrom rlang .data
+#' @importFrom styler style_text
 #' @export
 #' @examples
 #' \dontrun{
