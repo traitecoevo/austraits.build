@@ -38,7 +38,7 @@ dataset_test_setup_worker <-
            path_config = "config",
            path_data = "data",
            schema = load_schema(),
-           trait_definis =
+           definitions =
              load_schema(file.path(path_config, "traits.yml"), I("traits"))
            ) {
     
@@ -442,7 +442,7 @@ dataset_test_setup_worker <-
         expect_true(is.data.frame(traits))
         
         expect_isin(traits$trait_name,
-                    trait_definis$elements %>% names(),
+                    definitions$elements %>% names(),
                     info = paste0(f, "-traits"))
         
         # Check value types in metadata and any columns of data
@@ -477,7 +477,7 @@ dataset_test_setup_worker <-
           trait_names <-
             sapply(metadata[["substitutions"]], "[[", "trait_name")
           expect_isin(unique(trait_names),
-                      trait_definis$elements %>% names(),
+                      definitions$elements %>% names(),
                       info = paste0(f, "-substitutions-trait_name"))
           expect_isin(
             unique(trait_names),
@@ -490,11 +490,11 @@ dataset_test_setup_worker <-
                             metadata[["substitutions"]] %>% list_to_df() %>% split(.$trait_name))
           
           for (trait in names(x)) {
-            if (!is.null(trait_definis$elements[[trait]]) &&
-                trait_definis$elements[[trait]]$type == "categorical") {
+            if (!is.null(definitions$elements[[trait]]) &&
+                definitions$elements[[trait]]$type == "categorical") {
               to_check <- x[[trait]]$replace %>% unique()
               allowable <-
-                c(trait_definis$elements[[trait]]$values %>% names(),
+                c(definitions$elements[[trait]]$values %>% names(),
                   NA)
               failing <- to_check[!(
                 is.na(to_check) |
