@@ -45,22 +45,21 @@ jobs:
       - name: Install package
         run: R CMD INSTALL .
 
-      - name: check sources
+      - name: Load packages and functions
         run: |
           library(austraits.build)
-          dataset_test_setup(dir("data"))
+          source("config/custom.R")
+
+      - name: check sources
+        run: dataset_test_setup(dir("data"))
         shell: Rscript {0}
 
       - name: Benchmark
-        run: |
-          library(austraits.build)
-          run_benchmark()
+        run: run_benchmark()
         shell: Rscript {0}
 
       - name: build austraits
-        run: |
-          source("config/custom.R")
-          remake::make()
+        run: remake::make()
         shell: Rscript {0}
       
       - name: Archive artifacts
