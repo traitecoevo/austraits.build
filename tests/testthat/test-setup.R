@@ -203,12 +203,6 @@ test_that("test setup_build_process is working",{
   expect_length(austraits_versioned$taxa, 10)
   expect_equal(nrow(austraits_versioned$taxa), nrow(austraits_raw$taxa))
 
-})
-
-testthat::test_that("test reprot generation", {
-
-  expect_no_error(austraits_versioned <- remake::make("austraits_versioned"))
-
   expect_no_error(
     dataset_generate_report("Test_2022", austraits_versioned, overwrite = TRUE)
   )
@@ -236,13 +230,3 @@ testthat::test_that("test substitutions_from_csv", {
   expect_invisible(substitutions_from_csv(substitutions_df, "Test_2022", "trait_name", "find", "replace"))
   expect_equal(read_metadata(path_metadata)$substitutions %>% sapply(`%in%`, x = "Tree") %>% any(), TRUE)
 })
-
-# testthat::test_that("test check data", {
-
-#   dataset_test_setup_worker (test_dataset_ids,
-#            path_config = "config",
-#            path_data = "data",
-#            definitions =
-#              load_schema(file.path(path_config, "traits.yml"), I("traits"))
-#            )
-# })
