@@ -10,6 +10,18 @@
 #' @usage lhs \%>\% rhs
 NULL
 
+#' Read yaml (from package yaml)
+#' @importFrom yaml read_yaml
+#' @name read_yaml
+#' @rdname read_yaml
+NULL
+
+#' write yaml (from package yaml)
+#' @importFrom yaml write_yaml
+#' @name write_yaml
+#' @rdname write_yaml
+NULL
+
 
 #' Read in a csv as a tibble with column types as characters
 #'
@@ -58,20 +70,20 @@ util_extract_list_element <- function(i, my_list, var) {
   i %>% lapply(function(x) my_list[[x]][[var]]) %>% lapply(util_replace_null) %>% unlist()
 }
 
-#' Rename column names
-#' 
-#' `process_rename_columns` renames column names within a tibble or data frame by matching
-#' the names given by the argument `from`. The new column names are renamed using the 
-#' names given by the argument `to`.
+
+#' Get SHA string from Github repository for latest commit
 #'
-#' @param obj tibble or data frame with 1 or more columns
-#' @param from character string of the initial column name
-#' @param to  character string of the new column name
+#' Get SHA string for the latest commit on Github for the repository. SHA is the
+#' abbreviated SHA-1 40 digit hexadecimal number which Github uses as the
+#' Commit ID to track changes made to a repo
 #'
-#' @return a tibble with new column names
-process_rename_columns <- function(obj, from, to) {
-  names(obj)[match(from, names(obj))] <- to
-  obj
+#' @param path root directory where a specified file is located, default file name
+#' is the remake.yml file
+#'
+#' @return 40-digit SHA character string for the latest commit to the repository
+#' @export
+util_get_SHA <- function(path = ".") {
+  git2r::sha(git2r::last_commit(git2r::repository(path)))
 }
 
 #'  Split and sort cells with multiple values
@@ -284,15 +296,26 @@ write_metadata_dataset <- function(metadata, dataset_id) {
   write_metadata(metadata, dataset_id %>% metadata_path_dataset_id())
 }
 
-##' Read yaml (from package yaml)
-##' @importFrom yaml read_yaml
-##' @name read_yaml
-##' @rdname read_yaml
-NULL
 
-##' write yaml (from package yaml)
-##' @importFrom yaml write_yaml
-##' @name write_yaml
-##' @rdname write_yaml
-NULL
-
+#' Format a tree structure from a vector
+#'
+#' `create_tree_branch()` is used to create a tree structure to show how things
+#' are related. In AusTraits, this is used in the vignettes to show the file
+#' structure of the repository and also to show the different components of the
+#' AusTraits database
+#'
+#' @param x vector of terms
+#' @param title name of branch
+#' @param prefix specifies the amount of indentation
+#'
+#' @return vector of character strings for the tree structure
+create_tree_branch <- function(x, title, prefix = "") {
+  c(
+    sprintf("%s%s", prefix, title),
+    sprintf(
+      "%s%s %s", prefix,
+      c(rep("\u251c\u2500\u2500", length(x) - 1), "\u2514\u2500\u2500"),
+      x
+    )
+  )
+}

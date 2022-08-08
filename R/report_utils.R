@@ -79,21 +79,6 @@ dataset_report_worker <- function(dataset_id, austraits, overwrite=FALSE,
   
 }
 
-#' Get SHA string from Github repository for latest commit
-#' 
-#' Get SHA string for the latest commit on Github for the repository. SHA is the
-#' abbreviated SHA-1 40 digit hexadecimal number which Github uses as the 
-#' Commit ID to track changes made to a repo
-#'
-#' @param path root directory where a specified file is located, default file name
-#' is the remake.yml file
-#'
-#' @return 40-digit SHA character string for the latest commit to the repository 
-#' @export
-util_get_SHA <- function(path = ".") {
-  git2r::sha(git2r::last_commit(git2r::repository(path)))
-}
-
 #' Format table with kable and default styling for html
 #'
 #' @param ... arguments passed to `kableExtra::kable()`
@@ -110,28 +95,4 @@ util_kable_styling_html <- function(...) {
     
     # hack to add margin to plot
     gsub('style="width: auto ', 'style="margin-left:30px; width: auto ', txt)
-}
-
-
-
-
-#' Format a tree structure from a vector 
-#' 
-#' `create_tree_branch()` is used to create a tree structure to show how things
-#' are related. In AusTraits, this is used in the vignettes to show the file 
-#' structure of the repository and also to show the different components of the 
-#' AusTraits database 
-#'
-#' @param x vector of terms
-#' @param title name of branch
-#' @param prefix specifies the amount of indentation
-#'
-#' @return vector of character strings for the tree structure
-create_tree_branch <- function(x, title, prefix="") {
-  c(
-    sprintf("%s%s", prefix,title), 
-    sprintf("%s%s %s", prefix,
-            c(rep("\u251c\u2500\u2500", length(x) -1), "\u2514\u2500\u2500"),
-            x)
-  )
 }
