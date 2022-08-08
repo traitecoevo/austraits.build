@@ -18,12 +18,12 @@ test_that("test subset_config is working",{
   expect_named(subset_config("data/Test_2022/test-metadata.yml",
                              yaml::read_yaml("config/traits.yml"),
                              make_unit_conversion_functions("config/unit_conversions.csv")),
-               c("dataset_id", "metadata", "trait_definitions", "unit_conversion_functions"))
+               c("dataset_id", "metadata", "definitions", "unit_conversion_functions"))
 })
 
 test_that("test load_dataset is working",{
   austraits_names <- c("dataset_id", "traits", "sites", "contexts", "methods", "excluded_data", 
-                       "taxonomic_updates", "taxa", "contributors", "sources", "trait_definitions", "schema")
+                       "taxonomic_updates", "taxa", "contributors", "sources", "definitions", "schema")
   
   expect_equal(class(load_dataset(Test_data, Test_config, schema)), "list")
   expect_length(load_dataset(Test_data, Test_config, schema), 12)
@@ -44,7 +44,7 @@ test_that("test custom_manipulation is working",{
 })
 
 # test_that("test flag_unsupported_traits is working",{
-#   flag_unsupported_traits(data, trait_definitions)
+#   flag_unsupported_traits(data, definitions)
 # })
 # 
 # test_that("test flag_excluded_observations is working",{

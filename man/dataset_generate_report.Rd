@@ -11,7 +11,8 @@ dataset_generate_report(
   output_path = "export/reports",
   input_file = system.file("support", "report_dataset.Rmd", package =
     "austraits.build"),
-  quiet = TRUE
+  quiet = TRUE,
+  keep = FALSE
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ dataset_generate_report(
 \item{input_file}{report script (.Rmd) file to build study report}
 
 \item{quiet}{An option to suppress printing during rendering from knitr, pandoc command line and others.}
+
+\item{keep}{keep intermediate Rmd file used?}
 }
 \value{
 html file of the rendered report located in the specified output folder.

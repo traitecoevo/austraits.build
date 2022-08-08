@@ -21,3 +21,13 @@ load_schema <- function(path=system.file("support", "austraits.build_schema.yml"
   
   schema
 }
+
+#' Retrieve version for compilation from definitions
+#'
+#' @param path path to traits definitions
+#'
+#' @return a string
+#' @export
+get_version <- function(path =  "config/traits.yml") {
+  load_schema(path)$build$version
+}

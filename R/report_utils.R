@@ -10,29 +10,33 @@
 #' @param output_path location where rendered report will be saved
 #' @param input_file report script (.Rmd) file to build study report
 #' @param quiet An option to suppress printing during rendering from knitr, pandoc command line and others.
+#' @param keep keep intermediate Rmd file used?
 #'
 #' @rdname dataset_generate_report
 #' @return html file of the rendered report located in the specified output folder.
 #' @export
 dataset_generate_report <- function(dataset_id, austraits, overwrite=FALSE, 
-                                 output_path = "export/reports", 
-                                 input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build"),
-                                 quiet=TRUE) {
-
+                                    output_path = "export/reports", 
+                                    input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build"),
+                                    quiet=TRUE, keep =FALSE) {
+  
   for(d in dataset_id)
-    dataset_generate_report_worker(d, austraits,
+    dataset_generate_report_worker(
+      dataset_id = d, 
+      austraits = austraits,
       overwrite = overwrite,
       output_path = output_path,
       input_file = input_file,
-      quiet = quiet
+      quiet = quiet, 
+      keep=keep
     )
 }
 
 dataset_generate_report_worker <- function(dataset_id, austraits, overwrite=FALSE, 
-                                 output_path = "export/reports", 
-                                 input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build"),
-                                 quiet=TRUE) {
-
+                                           output_path = "export/reports", 
+                                           input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build"),
+                                           quiet=TRUE, keep=FALSE) {
+  
   if(!file.exists(output_path)) {
     dir.create(output_path, FALSE, TRUE)
   }
@@ -44,7 +48,7 @@ dataset_generate_report_worker <- function(dataset_id, austraits, overwrite=FALS
   if(overwrite | !file.exists(output_html)) {
     
     cat(sprintf("Building report for %s ", dataset_id))
-
+    
     # Create a new Rmd file with name embedded in title
     x <- readLines(input_file)
     x[2] <- sprintf("title: Report on study `%s` from", dataset_id)
@@ -66,7 +70,8 @@ dataset_generate_report_worker <- function(dataset_id, austraits, overwrite=FALS
     )
 
     # remove temporary Rmd
-    unlink(input_Rmd)
+    if(!keep)
+      unlink(input_Rmd)
     cat(" -> ", output_html, "\n")
   } else{
     cat(sprintf("Report for %s already exists -> %s\n", dataset_id, output_html))
@@ -85,7 +90,7 @@ dataset_generate_report_worker <- function(dataset_id, austraits, overwrite=FALS
 #'
 #' @return 40-digit SHA character string for the latest commit to the repository 
 #' @export
-get_SHA <- function(path = rprojroot::find_root("remake.yml")) {
+get_SHA <- function(path = ".") {
   git2r::sha(git2r::last_commit(git2r::repository(path)))
 }
 

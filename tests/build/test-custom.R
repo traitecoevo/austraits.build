@@ -1,4 +1,3 @@
-convert_month_range_string_to_binary_worker <- austraits.build:::convert_month_range_string_to_binary_worker
 
 testthat::test_that("get_month returns correct month",{
   expect_match(class(get_month(1)), "character")
@@ -111,19 +110,19 @@ testthat::test_that("convert_month_range_string_to_binary_worker",{
 testthat::test_that("test separate_range",{
   data <- tibble::tibble(range = rep("1-10",10))
   
-  expect_equal(class(austraits.build:::separate_range(data,"range","min","max")), c("tbl_df","tbl","data.frame"))
+  expect_equal(class(separate_range(data,"range","min","max")), c("tbl_df","tbl","data.frame"))
   expect_equal(ncol(data), 1)
-  expect_equal(ncol(austraits.build:::separate_range(data,"range","min","max")), 2)
-  expect_equal(unique(austraits.build:::separate_range(data,"range","min","max")$min), "1")
-  expect_equal(unique(austraits.build:::separate_range(data,"range","min","max")$max), "10")
+  expect_equal(ncol(separate_range(data,"range","min","max")), 2)
+  expect_equal(unique(separate_range(data,"range","min","max")$min), "1")
+  expect_equal(unique(separate_range(data,"range","min","max")$max), "10")
 })
 
 testthat::test_that("test replace_duplicates_with_NA",{
-  expect_equal(austraits.build:::replace_duplicates_with_NA(1:10), 1:10)
-  expect_equal(austraits.build:::replace_duplicates_with_NA(c(1,1,1)), c(1, NA, NA))
-  expect_equal(austraits.build:::replace_duplicates_with_NA(c("1","1","1")), c("1", NA, NA))
-  expect_equal(austraits.build:::replace_duplicates_with_NA(c("1",1,"1")), c("1", NA, NA))
-  expect_equal(austraits.build:::replace_duplicates_with_NA(c("A",1,"A")), c("A", 1, NA))
+  expect_equal(replace_duplicates_with_NA(1:10), 1:10)
+  expect_equal(replace_duplicates_with_NA(c(1,1,1)), c(1, NA, NA))
+  expect_equal(replace_duplicates_with_NA(c("1","1","1")), c("1", NA, NA))
+  expect_equal(replace_duplicates_with_NA(c("1",1,"1")), c("1", NA, NA))
+  expect_equal(replace_duplicates_with_NA(c("A",1,"A")), c("A", 1, NA))
 })
 
 testthat::test_that("test format_min_max_as_range",{
@@ -179,19 +178,3 @@ testthat::test_that("test move_values_to_new_trait_long",{
                                                     "trait", "value", c("plumose", "tomentose"))), 10)
 })  
 
-testthat::test_that("test substitutions_from_csv",{
-  substitutions_df <- tibble::tibble(dataset_id = "Test_2022",
-                                     trait_name = "Tree",
-                                     find = "Root",
-                                     replace = "Branch")
-  
-  metadata_create_template(dataset_id = "Test_2022",
-                           path = file.path("data", "Test_2022"),
-                           skip_manual = TRUE)
-  
-  metadata <- read_metadata("data/Test_2022/metadata.yml")
-  metadata$substitutions <- NA
-  write_metadata(metadata, "data/Test_2022/metadata.yml")
-  expect_invisible(substitutions_from_csv(substitutions_df, "Test_2022", "trait_name", "find", "replace"))
-  expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions %>% sapply(`%in%`, x = "Tree") %>% any(), TRUE)
-})

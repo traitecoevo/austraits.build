@@ -10,15 +10,6 @@
 #' @usage lhs \%>\% rhs
 NULL
 
-#' Query the package version in DESCRIPTION
-#'
-#' See \code{desc::\link[desc:desc_get_version]{desc_get_version}} for details.
-#'
-#' @name desc_get_version
-#' @rdname desc_get_version
-#' @importFrom desc desc_get_version
-#' @export
-NULL
 
 #' Read in a csv as a tibble with column types as characters
 #'
@@ -210,6 +201,7 @@ read_metadata <- function(path) {
 #'
 #' @rdname write_metadata
 #' @importFrom rlang .data
+#' @importFrom styler style_text
 #' @export
 #' @examples
 #' \dontrun{

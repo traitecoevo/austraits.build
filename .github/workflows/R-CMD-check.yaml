@@ -1,5 +1,7 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/master/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# https://github.com/r-lib/actions/tree/v2-branch/check-r-package
+
 on:
   push:
     branches: [main, master, develop]
@@ -38,9 +40,14 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck, any::covr, local::.
+          extra-packages: local::., any::rcmdcheck, any::covr
+          needs: check
 
       - uses: r-lib/actions/check-r-package@v2
+        with:
+          args: 'c("--no-manual", "--as-cran")'
+          error-on: '"error"'
+          check-dir: '"check"'
 
       - name: Show testthat output
         if: always()
@@ -53,7 +60,24 @@ jobs:
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
+      
+      - name: Test build infrastructure
+        run: |
+          library(austraits.build)
+          source("config/custom.R")
+          testthat::test_dir("tests/build/")
+        shell: Rscript {0}
 
+      - name: Benchmark
+        run: |
+          library(austraits.build)
+          source("config/custom.R")
+          source("scripts/benchmark.R")
+          run_benchmark()
+        shell: Rscript {0}
+        
       - name: Test coverage
-        run: covr::codecov()
+        run: |
+          source("config/custom.R")
+          covr::codecov(quiet=FALSE, type = "all", code = "testthat::test_file('tests/build/test-custom.R'); testthat::test_dir('tests/build')")
         shell: Rscript {0}

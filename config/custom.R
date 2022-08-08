@@ -8,7 +8,6 @@
 #'
 #' @return vector containing abbreviated months
 #'
-#' @export
 #' @examples get_month(c(1,1,2,3,3,3,4,5,6))
 get_month <- function(i) {
   month.abb[suppressWarnings(as.integer(i))]
@@ -23,7 +22,6 @@ get_month <- function(i) {
 #' @param start numeric value between 1 and 12 representing earliest flowering month
 #' @param end numeric value between 1 and 12 representing latest flowering month
 #'
-#' @export
 #' @return a 12 element character string consisting of y & n, e.g. "yyyynnnnnnnn"  
 format_flowering_months <- function(start, end){
   x <- rep(NA_character_, length(start))
@@ -40,7 +38,6 @@ format_flowering_months <- function(start, end){
 #'
 #' @param vec vector of month range using abbreviated month names (e.g. "Jan-Apr")
 #'
-#' @export
 #' @return character string of length 12 consisting of y & n, e.g. "yyyynnnnnnnn"
 convert_month_range_vec_to_binary <- function(vec) {
   out <- 
@@ -57,7 +54,6 @@ convert_month_range_vec_to_binary <- function(vec) {
 #' @param txt vector of character strings
 #'
 #' @return vector of character strings
-#' @export
 #'
 #' @examples convert_01_ny(c(0,1,1,1,0))
 convert_01_ny <- function(txt) {
@@ -72,7 +68,6 @@ convert_01_ny <- function(txt) {
 #'
 #' @param str character string of month range using abbreviated month names. e.g. "Oct- Mar"
 #'
-#' @export
 #' @return a character string  length-12, e.g. "111000000111"
 convert_month_range_string_to_binary <- function(str) {
   convert_month_range_string_to_binary_worker(str) %>% 
@@ -225,7 +220,6 @@ replace_duplicates_with_NA <- function(x) {
 #' @param column_value_type name of a variable being created that indicates the value type of the associated column
 #'
 #' @return data frame with a two new columns containing manipulated trait data
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -262,7 +256,6 @@ format_min_max_as_range <- function(data, min_column, max_column, range_column, 
 #' @param values_to_keep the appropriate value to retain for the old trait; this may be identical to the original values or may be NA 
 #'
 #' @return data frame with a new column containing additional trait data
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -294,7 +287,6 @@ move_values_to_new_trait <- function(data, original_trait, new_trait, original_v
 #' @param new_values values to be added to the new trait
 #'
 #' @return data frame containing additional rows of data for a new trait
-#' @export
 #'
 add_values_to_additional_trait_long <- 
   function(data, new_trait, traits_column, values_column, original_values, new_values) {  
@@ -314,7 +306,6 @@ add_values_to_additional_trait_long <-
 #' @param original_values values of the original trait that need to be remapped to a different (new) trait
 #'
 #' @return data frame containing additional trait names in the traits column 
-#' @export
 move_values_to_new_trait_long <- 
   function(data, original_trait, new_trait, traits_column, values_column, original_values) {
     
@@ -326,51 +317,3 @@ move_values_to_new_trait_long <-
   } 
 
 
-
-#' Substitutions from csv
-#' @description Function that simultaneously adds many trait value replacements, potentially across many trait_names and dataset_ids, to the respective metadata.yml files.
-#' This function will be used to quickly re-align/re-assign trait values across all AusTraits studies.
-#'
-#' @param dataframe_of_substitutions dataframe with columns indicating dataset_id, trait_name, original trait values (find), and AusTraits aligned trait value (replace)
-#' @param dataset_id study's dataset_id in AusTraits
-#' @param trait_name trait name for which a trait value replacement needs to be made
-#' @param find trait value submitted by the contributor for a data observation
-#' @param replace AusTraits aligned trait value
-#' 
-#' @importFrom rlang .data
-#'
-#' @return modified metadata files with trait value replacements
-#' @export
-#'
-#' @examples \dontrun{
-#' read_csv("export/dispersal_syndrome_substitutions.csv") %>% select(-extra) %>%
-#' filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
-#' substitutions_from_csv(dataframe_of_substitutions,dataset_id,trait_name,find,replace)
-#' }
-
-substitutions_from_csv <- function(dataframe_of_substitutions,dataset_id,trait_name,find,replace) {
-
-  #split dataframe of substitutions by row  
-  dataframe_of_substitutions %>%
-    dplyr::mutate(rows = dplyr::row_number()) %>% 
-    dplyr::group_split(.$rows) -> dataframe_of_substitutions
-
-  set_name <- "substitutions"
-
-  #add substitutions to metadata files
-  for (i in 1:max(dataframe_of_substitutions)$rows) {
-    metadata <- metadata_read_dataset_id(dataframe_of_substitutions[[i]]$dataset_id)
-
-    to_add <- list(trait_name = dataframe_of_substitutions[[i]]$trait_name, find = dataframe_of_substitutions[[i]]$find, replace = dataframe_of_substitutions[[i]]$replace)
-
-    if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]])) {
-      metadata[[set_name]] <- list()
-    }
-
-    data <-  list_to_df(metadata[[set_name]])  
-
-    metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
-
-    metadata_write_dataset_id(metadata, dataframe_of_substitutions[[i]]$dataset_id)
-  }  
-}

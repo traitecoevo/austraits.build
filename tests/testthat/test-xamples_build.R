@@ -1,19 +1,16 @@
 
 testthat::test_that("test datasets", {
   
-  examples.dir <- file.path(root.dir, "tests/build/examples/")
-  
-  Catford_2014 <- test_build_dataset(file.path(root.dir, "data/Catford_2014/metadata.yml"), file.path(root.dir, "data/Catford_2014/data.csv"), "Catford_2014", definitions, unit_conversions, schema)
-  Falster_2005_1 <- test_build_dataset(file.path(root.dir, "data/Falster_2005_1/metadata.yml"), file.path(root.dir, "data/Falster_2005_1/data.csv"), "Falster_2005_1", definitions, unit_conversions, schema)
-  
-  expect_no_error({austraits1 <- austraits.build:::combine_datasets(Catford_2014, Falster_2005_1)}, 
-                  info = "Combining sources")
-  
-  expect_no_error({austraits <- austraits.build:::update_taxonomy(austraits1, taxon_list)}, 
-                  info = "Updating taxonomy")
-  
-  
-  test_structure(austraits, "Check structure", schema, single_dataset = FALSE)
+
+
+  schema <- load_schema()
+
+  definitions <- load_schema("config/traits.yml", "traits")
+  unit_conversions <- austraits.build:::make_unit_conversion_functions("config/unit_conversions.csv")
+  #taxon_list <- read_csv_char("config/taxon_list.csv")
+
+
+  examples.dir <- "examples"
   
   # Build example -- this runs a bunch of tests already
   
