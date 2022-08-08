@@ -9,9 +9,9 @@
 #'
 #' @examples{
 #' 
-#' schema <- load_schema()
+#' schema <- get_schema()
 #' }
-load_schema <- function(path=system.file("support", "austraits.build_schema.yml", package = "austraits.build"), subsection=NULL){
+get_schema <- function(path=system.file("support", "austraits.build_schema.yml", package = "austraits.build"), subsection=NULL){
   
   schema <- yaml::read_yaml(path)
   
@@ -28,6 +28,6 @@ load_schema <- function(path=system.file("support", "austraits.build_schema.yml"
 #'
 #' @return a string
 #' @export
-get_version <- function(path =  "config/traits.yml") {
-  load_schema(path)$build$version
+util_get_version <- function(path =  "config/traits.yml") {
+  get_schema(path)$build$version
 }

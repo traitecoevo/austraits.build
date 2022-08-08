@@ -12,16 +12,16 @@
 #' @param quiet An option to suppress printing during rendering from knitr, pandoc command line and others.
 #' @param keep keep intermediate Rmd file used?
 #'
-#' @rdname dataset_generate_report
+#' @rdname dataset_report
 #' @return html file of the rendered report located in the specified output folder.
 #' @export
-dataset_generate_report <- function(dataset_id, austraits, overwrite=FALSE, 
+dataset_report <- function(dataset_id, austraits, overwrite=FALSE, 
                                     output_path = "export/reports", 
                                     input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build"),
                                     quiet=TRUE, keep =FALSE) {
   
   for(d in dataset_id)
-    dataset_generate_report_worker(
+    dataset_report_worker(
       dataset_id = d, 
       austraits = austraits,
       overwrite = overwrite,
@@ -32,7 +32,7 @@ dataset_generate_report <- function(dataset_id, austraits, overwrite=FALSE,
     )
 }
 
-dataset_generate_report_worker <- function(dataset_id, austraits, overwrite=FALSE, 
+dataset_report_worker <- function(dataset_id, austraits, overwrite=FALSE, 
                                            output_path = "export/reports", 
                                            input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build"),
                                            quiet=TRUE, keep=FALSE) {
@@ -90,7 +90,7 @@ dataset_generate_report_worker <- function(dataset_id, austraits, overwrite=FALS
 #'
 #' @return 40-digit SHA character string for the latest commit to the repository 
 #' @export
-get_SHA <- function(path = ".") {
+util_get_SHA <- function(path = ".") {
   git2r::sha(git2r::last_commit(git2r::repository(path)))
 }
 

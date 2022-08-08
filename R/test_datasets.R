@@ -10,7 +10,7 @@
 #' @importFrom rlang .data .env
 #' @export
 
-dataset_test_setup <-
+dataset_test <-
   function(dataset_ids,
            path_config = "config",
            path_data = "data",
@@ -23,7 +23,7 @@ dataset_test_setup <-
     
     testthat::with_reporter(
       reporter,
-      dataset_test_setup_worker(
+      dataset_test_worker(
         test_dataset_ids = dataset_ids,
         path_config = path_config,
         path_data = path_data
@@ -38,19 +38,19 @@ dataset_test_setup <-
 #' Run tests to ensure that specified dataset_id has the correct setup
 #'
 #' @param test_dataset_ids vector of dataset_id for sources to be tested
-#' @inheritParams dataset_test_setup
+#' @inheritParams dataset_test
 #' @param schema data schema
 #' @param definitions trait defininitons
 #' @importFrom testthat local_edition compare expect expect_true expect_named test_that context expect_silent expect_type
 #' @importFrom rlang .data
 #' @importFrom stats na.omit
-dataset_test_setup_worker <-
+dataset_test_worker <-
   function(test_dataset_ids,
            path_config = "config",
            path_data = "data",
-           schema = load_schema(),
+           schema = get_schema(),
            definitions =
-             load_schema(file.path(path_config, "traits.yml"), I("traits"))
+             get_schema(file.path(path_config, "traits.yml"), I("traits"))
            ) {
     
     # We're using 2nd edition of test that, which has "context" field

@@ -1,9 +1,9 @@
 
 Test_data <- "data/Test_2022/data.csv"
 
-schema <- load_schema()
-traits_definitions <- load_schema("config/traits.yml", I("traits"))
-unit_conversions <- make_unit_conversion_functions("config/unit_conversions.csv")
+schema <- get_schema()
+traits_definitions <- get_schema("config/traits.yml", I("traits"))
+unit_conversions <- get_unit_conversions("config/unit_conversions.csv")
 Test_config <- dataset_configure("data/Test_2022/test-metadata.yml",
                              traits_definitions,
                              unit_conversions)
@@ -11,13 +11,13 @@ Test_config <- dataset_configure("data/Test_2022/test-metadata.yml",
 test_that("test dataset_configure is working",{
   expect_equal(class(dataset_configure("data/Test_2022/test-metadata.yml",
                 yaml::read_yaml("config/traits.yml"),
-                make_unit_conversion_functions("config/unit_conversions.csv"))), "list")
+                get_unit_conversions("config/unit_conversions.csv"))), "list")
   expect_length(dataset_configure("data/Test_2022/test-metadata.yml",
                 yaml::read_yaml("config/traits.yml"),
-                make_unit_conversion_functions("config/unit_conversions.csv")), 4)
+                get_unit_conversions("config/unit_conversions.csv")), 4)
   expect_named(dataset_configure("data/Test_2022/test-metadata.yml",
                              yaml::read_yaml("config/traits.yml"),
-                             make_unit_conversion_functions("config/unit_conversions.csv")),
+                             get_unit_conversions("config/unit_conversions.csv")),
                c("dataset_id", "metadata", "definitions", "unit_conversion_functions"))
 })
 

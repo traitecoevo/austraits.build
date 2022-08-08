@@ -23,7 +23,7 @@ build_comparison_set <- function(root.dir, definitions, unit_conversions, schema
   Tomlinson_2019 <- f_build("Tomlinson_2019", definitions, unit_conversions, schema)
   Westoby_2014 <- f_build("Westoby_2014", definitions, unit_conversions, schema)
   
-  austraits_raw <-  austraits.build:::process_combine_datasets(Baker_2019, Bloomfield_2018, Catford_2014, Duan_2015, Maslin_2012, Tomlinson_2019, Westoby_2014)
+  austraits_raw <-  austraits.build:::build_combine(Baker_2019, Bloomfield_2018, Catford_2014, Duan_2015, Maslin_2012, Tomlinson_2019, Westoby_2014)
   
   # take a subset to reduce size of saved output
   austraits_raw$traits <- austraits_raw$traits %>% group_by(dataset_id) %>% ungroup

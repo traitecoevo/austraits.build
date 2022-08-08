@@ -21,7 +21,7 @@
 #' @examples
 #' \dontrun{
 #' dataset_configure("data/Falster_2003/metadata.yml", read_yaml("config/traits.yml"),
-#' make_unit_conversion_functions("config/unit_conversions.csv"))
+#' get_unit_conversions("config/unit_conversions.csv"))
 #' }
 dataset_configure <- function(
   filename_metadata,
@@ -81,8 +81,8 @@ dataset_configure <- function(
 #' @examples
 #' \dontrun{
 #' dataset_process("data/Falster_2003/data.csv", dataset_configure("data/Falster_2003/metadata.yml",
-#' read_yaml("config/traits.yml"), make_unit_conversion_functions("config/unit_conversions.csv")),
-#' load_schema())
+#' read_yaml("config/traits.yml"), get_unit_conversions("config/unit_conversions.csv")),
+#' get_schema())
 #' }
 dataset_process <- function(filename_data_raw, 
                        config_for_dataset, 
@@ -264,7 +264,6 @@ dataset_process <- function(filename_data_raw,
 #'
 #' @return character text containing custom_R_code if custom_R_code is not empty,
 #' otherwise no changes are made
-#' @export
 process_custom_code <- function(txt) {
   if (!is.null(txt) && !is.na(txt)  && nchar(txt) > 0) {
 
@@ -290,7 +289,6 @@ process_custom_code <- function(txt) {
 #' @param data the traits table at the point where this function is called 
 #'
 #' @return character string 
-#' @export
 process_create_entity_id <- function(data) {
   
   make_id_segment <- function(n, entity)
@@ -426,7 +424,6 @@ process_create_entity_id <- function(data) {
 #'
 #' @return tibble with site and context details if available
 #' @importFrom rlang .data
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -467,7 +464,6 @@ process_format_sites <- function(my_list, dataset_id, context = FALSE) {
 #'
 #' @importFrom rlang .data
 #' @return tibble with unrecognised traits flagged as "Unsupported trait" in the "error" column
-#' @export
 process_flag_unsupported_traits <- function(data, definitions) {
 
   # create error column if not already present
@@ -494,7 +490,6 @@ process_flag_unsupported_traits <- function(data, definitions) {
 #' @importFrom stringr str_squish
 #' @importFrom rlang .data
 #' @return dataframe with flagged excluded observations if there are any
-#' @export
 process_flag_excluded_observations <- function(data, metadata) {
 
   if(length(metadata$exclude_observations)==1 && is.na(metadata$exclude_observations)) return(data)
@@ -526,7 +521,6 @@ process_flag_excluded_observations <- function(data, metadata) {
 #' @param sep amount of space separating values to be split, default = " " (a single space)
 #'
 #' @return vector of logical values
-#' @export
 util_check_all_values_in <- function(x, y, sep=" "){
   x %>% stringr::str_split(sep) %>% sapply(function(xi) all(xi %in% y))
 }
@@ -564,7 +558,6 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
 #' @param ref list of elements for a reference
 #'
 #' @return BibEntry object
-#' @export
 util_list_to_bib <- function(ref) {
   if(is.null(ref)) return(NULL)
 
@@ -581,25 +574,6 @@ util_list_to_bib <- function(ref) {
   RefManageR::as.BibEntry(ref)
 }
 
-#' Convert BibEntry object to a list
-#'
-#' @param bib BibEntry object
-#'
-#' @return list
-#' @export
-util_bib_to_list <- function(bib) {
-
-  # Read in file, convert to list, set key
-    bib <- bib %>% unlist()
-
-    if(!is.null(bib$author))
-      bib$author <- paste(bib$author, collapse=" and ")
-    if(!is.null(bib$editor))
-      bib$editor <- paste(bib$editor, collapse=" and ")
-
-    bib
-}
-
 #' Flag values outside of allowable range
 #'
 #' Flags any values that are outside the allowable range defined in the 
@@ -611,7 +585,6 @@ util_bib_to_list <- function(bib) {
 #' @importFrom rlang .data
 #' @return tibble with flagged values outside of allowable range, unsupported categorical
 #' trait values or missing values
-#' @export
 process_flag_unsupported_values <- function(data, definitions) {
 
   # NA values
@@ -685,9 +658,9 @@ process_flag_unsupported_values <- function(data, definitions) {
 #'
 #' @examples
 #' \dontrun{
-#' make_unit_conversion_functions("config/unit_conversions.csv")
+#' get_unit_conversions("config/unit_conversions.csv")
 #' }
-make_unit_conversion_functions <- function(filename) {
+get_unit_conversions <- function(filename) {
   x <- read_csv(filename, col_types = cols(), progress=FALSE)
 
   # make functions from text
@@ -708,7 +681,6 @@ make_unit_conversion_functions <- function(filename) {
 #' @param to character of units to be converted to
 #'
 #' @return character string containing the name what units are being converted to
-#' @export
 process_unit_conversion_name <- function(from, to) {
   sprintf("%s-%s", from, to)
 }
@@ -721,7 +693,6 @@ process_unit_conversion_name <- function(from, to) {
 #'
 #' @importFrom rlang .data
 #' @return tibble with converted units
-#' @export
 process_convert_units <- function(data, definitions, unit_conversion_functions) {
 
   # List of original variable names
@@ -770,7 +741,6 @@ process_convert_units <- function(data, definitions, unit_conversion_functions) 
 #' @return tibble with the correct selection of columns including an error column
 #' @importFrom rlang :=
 #' @importFrom dplyr select mutate filter arrange distinct any_of
-#' @export
 process_add_all_columns <- function(data, vars, add_error_column = TRUE) {
 
   missing <- setdiff(vars, names(data))
@@ -804,7 +774,6 @@ process_add_all_columns <- function(data, vars, add_error_column = TRUE) {
 #' substitutions and unique observation id added
 #' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of bind_cols
 #' @importFrom rlang .data
-#' @export
 process_parse_data <- function(data, dataset_id, metadata) {
 
   # get config data for dataset
@@ -1116,7 +1085,7 @@ apply_taxonomic_updates  <- function(data, metadata){
 
 #' Combine all the AusTraits studies into the compiled AusTraits database
 #'
-#' `process_combine_datasets` compiles all the loaded studies into a single AusTraits
+#' `build_combine` compiles all the loaded studies into a single AusTraits
 #' database object as a large list
 #'
 #' @param ... arguments passed to other functions
@@ -1125,7 +1094,7 @@ apply_taxonomic_updates  <- function(data, metadata){
 #' @return AusTraits compilation database as a large list
 #' @importFrom rlang .data
 #' @export
-process_combine_datasets <- function(..., d=list(...)) {
+build_combine <- function(..., d=list(...)) {
 
   combine <- function(name, d) {
     dplyr::bind_rows(lapply(d, "[[", name))
@@ -1187,7 +1156,7 @@ process_combine_datasets <- function(..., d=list(...)) {
 #' @importFrom rlang .data
 #'
 #' @export
-process_rupdate_taxonomy <- function(austraits_raw, taxa) {
+build_update_taxonomy <- function(austraits_raw, taxa) {
 
   austraits_raw$taxonomic_updates <-
     austraits_raw$taxonomic_updates %>%
@@ -1258,7 +1227,7 @@ process_rupdate_taxonomy <- function(austraits_raw, taxa) {
 #'
 #' @return AusTraits database object with version information added
 #' @export
-process_add_version_info <- function(austraits, version, git_sha) {
+build_add_version <- function(austraits, version, git_sha) {
 
   austraits$build_info <- list(
     version=version,
@@ -1277,7 +1246,7 @@ process_add_version_info <- function(austraits, version, git_sha) {
 #' @return csv files of tibbles containing traits, sites, contexts, methods, excluded_data,
 #' taxonomic updates, taxa, contributors
 #' @export
-export_version_plaintext <- function(austraits, path) {
+write_plaintext <- function(austraits, path) {
 
   unlink(path, TRUE)
   dir.create(path, FALSE, TRUE)
@@ -1308,7 +1277,7 @@ export_version_plaintext <- function(austraits, path) {
 #' @param austraits AusTraits database object
 #' @param v_prev specify whether to update the NEWS.md file, default = NULL
 #' @export
-create_release <- function(austraits, v_prev= NULL) {
+build_release <- function(austraits, v_prev= NULL) {
   version_number <- austraits$build_info$version
 
   export_dir <- sprintf("export/data/austraits-%s", version_number)
@@ -1327,7 +1296,7 @@ create_release <- function(austraits, v_prev= NULL) {
 
   # plaintext_target:
   path <- sprintf("%s/austraits-%s", export_dir, version_number)
-  export_version_plaintext(austraits, path)
+  write_plaintext(austraits, path)
 
   # News
   if (!is.null(v_prev)) {

@@ -45,7 +45,8 @@ metadata_check_taxa <- function(dataset_id,
   species <- species %>% dplyr::filter(!.data$known)
   
   # Check if existing substitution in metadata
-  metadata <- metadata_read_dataset_id(dataset_id)
+  metadata <- read_metadata(file.path("data", dataset_id, "metadata.yml"))
+
   if(!all(is.null(metadata$taxonomic_updates)) && !is.na(metadata$taxonomic_updates)) {
     metata_changes <- 
       metadata$taxonomic_updates %>% util_list_to_df2() 

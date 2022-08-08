@@ -2,32 +2,9 @@
 #'
 #' @param dataset_id identifier for a particular study in the AusTraits database
 #'
-#' @export 
 #' @return A string
 metadata_path_dataset_id <- function(dataset_id) {
   file.path("data", dataset_id, "metadata.yml")
-}
-
-#' Read the `metadata.yml` file for specified `dataset_id`
-#'
-#' @inheritParams metadata_path_dataset_id
-#'
-#' @export 
-#' @return A list with contents of metadata for specified `dataset_id`
-metadata_read_dataset_id <- function(dataset_id) {
-  dataset_id %>% metadata_path_dataset_id() %>% read_metadata()
-}
-
-#' Write the YAML representation of metadata.yml for specified `dataset_id` to
-#' file \code{data/dataset_id/metadata.yml}
-#'
-#' @inheritParams metadata_path_dataset_id
-#' @param metadata metadata file
-#'
-#' @return a yml file
-#' @export 
-metadata_write_dataset_id <- function(metadata, dataset_id) {
-  write_metadata(metadata, dataset_id %>% metadata_path_dataset_id())
 }
 
 #' Create a template of file `metadata.yml` for specified `dataset_id`
@@ -52,7 +29,7 @@ metadata_create_template <- function(dataset_id,
   exclude <- c("description", "type")
   articles <- c("key", "bibtype", "year", "author", "title", "journal", "volume", "number", "pages", "doi")
   
-  out <- load_schema()$metadata$elements
+  out <- get_schema()$metadata$elements
 
   out[names(out) %notin% fields] <- NA
   out$source <- out$source$values["primary"]
@@ -133,7 +110,6 @@ metadata_create_template <- function(dataset_id,
 #' @param column name of the variable of interest
 #' @param choices the options that can be selected from
 #'
-#' @export
 metadata_user_select_column <- function(column, choices) {
   tmp <- menu(choices, title= sprintf("Select column for `%s`", column))
   choices[tmp]
@@ -148,7 +124,6 @@ metadata_user_select_column <- function(column, choices) {
 #' @param title character string providing the instruction for the user
 #' @param vars variable names
 #'
-#' @export
 metadata_user_select_names <- function(title, vars){
 
   txt <- sprintf("%s (by number separated by space; e.g. '1 2 4'):\n%s\n", title, paste(sprintf("%d: %s", seq_len(length(vars)), vars), collapse="\n"))
@@ -182,7 +157,7 @@ metadata_user_select_names <- function(title, vars){
 metadata_check_custom_R_code <- function(dataset_id) {
 
   # read metadata
-  metadata <- metadata_read_dataset_id(dataset_id)
+  metadata <- read_metadata_dataset(dataset_id)
 
   # load and clean trait data
   readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols(), guess_max = 100000) %>%
@@ -203,7 +178,7 @@ metadata_check_custom_R_code <- function(dataset_id) {
 metadata_add_traits <- function(dataset_id) {
 
   # read metadata
-  metadata <- metadata_read_dataset_id(dataset_id)
+  metadata <- read_metadata_dataset(dataset_id)
 
   # load and clean trait data
   data <- readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols()) %>%
@@ -237,7 +212,7 @@ metadata_add_traits <- function(dataset_id) {
 
   metadata$traits <- traits %>% util_df_to_list()
 
-  metadata_write_dataset_id(metadata, dataset_id)
+  write_metadata_dataset(metadata, dataset_id)
 }
 
 #' For specified `dataset_id` import site data from a dataframe
@@ -261,7 +236,7 @@ metadata_add_traits <- function(dataset_id) {
 metadata_add_sites <- function(dataset_id, site_data) {
 
   # read metadata
-  metadata <- metadata_read_dataset_id(dataset_id)
+  metadata <- read_metadata_dataset(dataset_id)
 
   # Choose column for site_name
   site_name <- metadata_user_select_column("site_name", names(site_data))
@@ -276,7 +251,7 @@ metadata_add_sites <- function(dataset_id, site_data) {
 
   cat(sprintf("Following sites added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$sites), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
   
-  metadata_write_dataset_id(metadata, dataset_id)
+  write_metadata_dataset(metadata, dataset_id)
 }
 
 
@@ -301,7 +276,7 @@ metadata_add_sites <- function(dataset_id, site_data) {
 metadata_add_contexts <- function(dataset_id, context_data) {
   
   # read metadata
-  metadata <- metadata_read_dataset_id(dataset_id)
+  metadata <- read_metadata_dataset(dataset_id)
   
   # Choose column for context_name
   context_name <- metadata_user_select_column("context_name", names(context_data))
@@ -316,7 +291,7 @@ metadata_add_contexts <- function(dataset_id, context_data) {
   
   cat(sprintf("Following contexts added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$contexts), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
   
-  metadata_write_dataset_id(metadata, dataset_id)
+  write_metadata_dataset(metadata, dataset_id)
 }
 
 
@@ -355,9 +330,9 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
     v <- v[v %in% names(bib)]
 
     # save to metadata
-    metadata <- metadata_read_dataset_id(dataset_id)
+    metadata <- read_metadata_dataset(dataset_id)
     metadata$source[[type]] <- bib[v]
-    metadata_write_dataset_id(metadata, dataset_id)
+    write_metadata_dataset(metadata, dataset_id)
 }
 
 #' Standarise doi into form https://doi.org/XXX
@@ -425,7 +400,7 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
 
   set_name <- "substitutions"
 
-  metadata <- metadata_read_dataset_id(dataset_id)
+  metadata <- read_metadata_dataset(dataset_id)
 
   to_add <- list(trait_name = trait_name, find = find, replace = replace) 
 
@@ -449,7 +424,7 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
   metadata[[set_name]] <- util_append_to_list(metadata[[set_name]], to_add)
 
   message(sprintf("%s %s for trait %s : %s -> %s", crayon::red("Adding substitution in"), crayon::red(dataset_id), trait_name, find, replace))
-  metadata_write_dataset_id(metadata, dataset_id)
+  write_metadata_dataset(metadata, dataset_id)
 }
 
 #' Add a dataframe of trait value substitutions into a metadata file for a dataset_id
@@ -464,7 +439,7 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
 metadata_add_substitutions_list <- function(dataset_id, substitutions) {
   
   #read metadata
-  metadata <- metadata_read_dataset_id(dataset_id)
+  metadata <- read_metadata_dataset(dataset_id)
   
   #read in dataframe of substitutions, split into single-row lists, and add to metadata file
   metadata$substitutions <- 
@@ -472,7 +447,7 @@ metadata_add_substitutions_list <- function(dataset_id, substitutions) {
     dplyr::group_split(.data$trait_name, .data$find) %>% lapply(as.list)
   
   #write metadata
-  metadata_write_dataset_id(metadata, dataset_id)
+  write_metadata_dataset(metadata, dataset_id)
 }  
 
 
@@ -496,9 +471,9 @@ metadata_add_substitutions_list <- function(dataset_id, substitutions) {
 #' read_csv("export/dispersal_syndrome_substitutions.csv") %>%
 #'   select(-extra) %>%
 #'   filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
-#' metadata_import_substituitons(dataframe_of_substitutions, dataset_id, trait_name, find, replace)
+#' metadata_add_substitutions_table(dataframe_of_substitutions, dataset_id, trait_name, find, replace)
 #' }
-metadata_import_substituitons <- function(dataframe_of_substitutions, dataset_id, trait_name, find, replace) {
+metadata_add_substitutions_table <- function(dataframe_of_substitutions, dataset_id, trait_name, find, replace) {
 
   # split dataframe of substitutions by row
   dataframe_of_substitutions %>%
@@ -509,7 +484,7 @@ metadata_import_substituitons <- function(dataframe_of_substitutions, dataset_id
 
   # add substitutions to metadata files
   for (i in 1:max(dataframe_of_substitutions)$rows) {
-    metadata <- metadata_read_dataset_id(dataframe_of_substitutions[[i]]$dataset_id)
+    metadata <- read_metadata_dataset(dataframe_of_substitutions[[i]]$dataset_id)
 
     to_add <- list(trait_name = dataframe_of_substitutions[[i]]$trait_name, find = dataframe_of_substitutions[[i]]$find, replace = dataframe_of_substitutions[[i]]$replace)
 
@@ -521,7 +496,7 @@ metadata_import_substituitons <- function(dataframe_of_substitutions, dataset_id
 
     metadata[[set_name]] <- util_append_to_list(metadata[[set_name]], to_add)
 
-    metadata_write_dataset_id(metadata, dataframe_of_substitutions[[i]]$dataset_id)
+    write_metadata_dataset(metadata, dataframe_of_substitutions[[i]]$dataset_id)
   }
 }
 
@@ -543,7 +518,7 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
     stop(sprintf("Cannot replace with two names!! (for %s -> %s)\n", crayon::red(find), crayon::red(replace)))
   }
   set_name <- "taxonomic_updates"
-  metadata <- metadata_read_dataset_id(dataset_id)
+  metadata <- read_metadata_dataset(dataset_id)
 
   to_add <- list(find = find, replace = replace, reason = reason) 
     
@@ -562,7 +537,7 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
   metadata[[set_name]] <- util_append_to_list(metadata[[set_name]], to_add)
 
   cat(sprintf("%s %s: %s -> %s (%s)\n", "\tAdding taxonomic change in", dataset_id, crayon::blue(find), crayon::green(replace), reason))
-  metadata_write_dataset_id(metadata, dataset_id)
+  write_metadata_dataset(metadata, dataset_id)
   
   return(invisible(TRUE))
 }
@@ -581,7 +556,7 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
 metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
   
   # read metadata
-  metadata <- metadata_read_dataset_id(dataset_id)
+  metadata <- read_metadata_dataset(dataset_id)
   
   #read in dataframe of taxonomic changes, split into single-row lists, and add to metadata file
   metadata$taxonomic_updates <- 
@@ -589,7 +564,7 @@ metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
     dplyr::group_split(.data$find) %>% lapply(as.list)
   
   # write metadata
-  metadata_write_dataset_id(metadata, dataset_id)
+  write_metadata_dataset(metadata, dataset_id)
 }
 
 #' Exclude observations in a yaml file for a dataset_id
@@ -604,7 +579,7 @@ metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
 metadata_exclude_observations <- function(dataset_id, variable, find, reason) {
 
   set_name <- "exclude_observations"
-  metadata <- metadata_read_dataset_id(dataset_id)
+  metadata <- read_metadata_dataset(dataset_id)
 
   to_add <- list(variable = variable, find = find, reason = reason) 
     
@@ -623,7 +598,7 @@ metadata_exclude_observations <- function(dataset_id, variable, find, reason) {
   metadata[[set_name]] <- util_append_to_list(metadata[[set_name]], to_add)
 
   cat(sprintf("%s - excluding %s: %s (%s)\n", dataset_id, crayon::blue(variable), crayon::blue(find), reason))
-  metadata_write_dataset_id(metadata, dataset_id)
+  write_metadata_dataset(metadata, dataset_id)
   
   return(invisible(TRUE))
 }
@@ -641,7 +616,7 @@ metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) 
 
   set_name <- "taxonomic_updates"
 
-  metadata <- metadata_read_dataset_id(dataset_id)
+  metadata <- read_metadata_dataset(dataset_id)
 
   to_add <- list(find = find, replace = replace, reason = reason) 
 
@@ -656,7 +631,7 @@ metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) 
   metadata[[set_name]][[i]][["reason"]] <- reason
   message(sprintf("%s %s: %s -> %s (%s)", crayon::red("Updating taxonomic change in"),crayon::red(dataset_id), crayon::blue(find), crayon::green(replace), reason))
 
-  metadata_write_dataset_id(metadata, dataset_id)
+  write_metadata_dataset(metadata, dataset_id)
 }
 
 #' Remove a taxonomic change from a yaml file for a dataset_id
@@ -670,7 +645,7 @@ metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) 
 metadata_remove_taxonomic_change <- function(dataset_id, find, replace=NULL) {
 
   set_name <- "taxonomic_updates"
-  metadata <- metadata_read_dataset_id(dataset_id)
+  metadata <- read_metadata_dataset(dataset_id)
 
   # if it doesn't yet exist - > done
   if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]])) {
@@ -696,7 +671,7 @@ metadata_remove_taxonomic_change <- function(dataset_id, find, replace=NULL) {
     message(sprintf("Taxonomic change in %s: %s -> %s %s", dataset_id, find, replace, crayon::red("removed")))
   }
 
-  metadata_write_dataset_id(metadata, dataset_id)
+  write_metadata_dataset(metadata, dataset_id)
 }
 
 #' Find list of all unique species within AusTraits
@@ -762,7 +737,7 @@ strip_names <- function(x) {
 
 #' Update the remake.yml file with new studies
 #' 
-#' `setup_build_process` rewrites the remake.yml file to include new
+#' `build_setup_pipeline` rewrites the remake.yml file to include new
 #' studies
 #'
 #' @param template template used to build 
@@ -771,13 +746,13 @@ strip_names <- function(x) {
 #'
 #' @return Updated remake.yml file 
 #' @export
-setup_build_process <- function(
+build_setup_pipeline <- function(
   template = readLines(system.file("support", "remake.yml.whisker", package = "austraits.build")),
   path="data",
   dataset_ids = dir(path)) {
 
   if(!file.exists(path)) {
-    stop("cannot find data directory", path)
+    stop("cannot find data directory: ", path)
   }
 
   # check directories have both files

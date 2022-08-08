@@ -10,7 +10,7 @@ suppressWarnings({
 test_that("metadata_create_template is working",{
   unlink("data/Test_2022/metadata.yml")
 
-  expect_silent(schema <- load_schema())
+  expect_silent(schema <- get_schema())
 
   expect_invisible(metadata_create_template(dataset_id = "Test_2022",
                                             path = file.path("data", "Test_2022"),
@@ -48,22 +48,22 @@ test_that("metadata_path_dataset_id is working",{
   expect_equal(class(metadata_path_dataset_id("Test_2022")), "character")
 })
 
-test_that("metadata_read_dataset_id is working",{
-  expect_silent(metadata_read_dataset_id("Test_2022"))
-  expect_equal(class(metadata_read_dataset_id("Test_2022")), "list")
+test_that("read_metadata_dataset is working",{
+  expect_silent(read_metadata_dataset("Test_2022"))
+  expect_equal(class(read_metadata_dataset("Test_2022")), "list")
 })
 
-test_that("metadata_write_dataset_id is working",{
-  metadata <- metadata_read_dataset_id("Test_2022")
+test_that("write_metadata_dataset is working",{
+  metadata <- read_metadata_dataset("Test_2022")
 
   unlink("data/Test_2022/metadata.yml")
   expect_false(file.exists("data/Test_2022/metadata.yml"))
 
-  expect_silent(metadata_write_dataset_id(metadata, "Test_2022"))
+  expect_silent(write_metadata_dataset(metadata, "Test_2022"))
   expect_true(file.exists("data/Test_2022/metadata.yml"))
 
-  expect_silent(metadata_read_dataset_id("Test_2022"))
-  expect_equal(class(metadata_read_dataset_id("Test_2022")), "list")
+  expect_silent(read_metadata_dataset("Test_2022"))
+  expect_equal(class(read_metadata_dataset("Test_2022")), "list")
 })
 
 
@@ -151,11 +151,11 @@ test_that("metadata_remove_taxonomic_change is working",{
   expect_invisible(metadata_remove_taxonomic_change("Test_2022", "flower"))
 })
 
-test_that("test dataset_test_setup is working",{
-  expect_error(dataset_test_setup())
+test_that("test dataset_test is working",{
+  expect_error(dataset_test())
 })  
 
-test_that("test setup_build_process is working",{
+test_that("test build_setup_pipeline is working",{
 
   
   unlink(".remake", recursive = TRUE)
@@ -169,9 +169,9 @@ test_that("test setup_build_process is working",{
   
   expect_no_error(zip::unzip("testgit.zip"))
   expect_no_error(sha <- git2r::sha(git2r::last_commit()))
-  expect_error(setup_build_process(path = "Datas"))
+  expect_error(build_setup_pipeline(path = "Datas"))
   
-  expect_silent(setup_build_process())
+  expect_silent(build_setup_pipeline())
   expect_true(file.exists("remake.yml"))
   expect_silent(yaml::read_yaml("remake.yml"))
   expect_true(file.exists("config/taxon_list.csv"))
@@ -196,11 +196,11 @@ test_that("test setup_build_process is working",{
   expect_equal(nrow(austraits_versioned$taxa), nrow(austraits_raw$taxa))
   
   expect_no_error(
-    dataset_generate_report(dataset_id = "Test_2022", austraits = austraits_versioned, overwrite = TRUE)
+    dataset_report(dataset_id = "Test_2022", austraits = austraits_versioned, overwrite = TRUE)
   )
 })
 
-testthat::test_that("test metadata_import_substituitons", {
+testthat::test_that("test metadata_add_substitutions_table", {
   substitutions_df <- tibble::tibble(
     dataset_id = "Test_2022",
     trait_name = "Tree",
@@ -219,6 +219,6 @@ testthat::test_that("test metadata_import_substituitons", {
   metadata <- read_metadata(path_metadata)
   metadata$substitutions <- NA
   write_metadata(metadata, path_metadata)
-  expect_invisible(metadata_import_substituitons(substitutions_df, "Test_2022", "trait_name", "find", "replace"))
+  expect_invisible(metadata_add_substitutions_table(substitutions_df, "Test_2022", "trait_name", "find", "replace"))
   expect_equal(read_metadata(path_metadata)$substitutions %>% sapply(`%in%`, x = "Tree") %>% any(), TRUE)
 })

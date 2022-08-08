@@ -3,10 +3,10 @@ testthat::test_that("test datasets", {
   
 
 
-  schema <- load_schema()
+  schema <- get_schema()
 
-  definitions <- load_schema("config/traits.yml", "traits")
-  unit_conversions <- austraits.build:::make_unit_conversion_functions("config/unit_conversions.csv")
+  definitions <- get_schema("config/traits.yml", "traits")
+  unit_conversions <- austraits.build:::get_unit_conversions("config/unit_conversions.csv")
   #taxon_list <- read_csv_char("config/taxon_list.csv")
 
 

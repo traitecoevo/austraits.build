@@ -32,7 +32,6 @@ read_csv_char <- function(...){
 #' @param x a vector containing null values
 #' @param val specify what the null value should be returned as, default is NA
 #'
-#' @export
 #' @return a vector with null values replaced
 #' @examples util_replace_null(NULL)
 util_replace_null <- function(x, val=NA){
@@ -67,7 +66,6 @@ util_extract_list_element <- function(i, my_list, var) {
 #' @param from character string of the initial column name
 #' @param to  character string of the new column name
 #'
-#' @export
 #' @return a tibble with new column names
 process_rename_columns <- function(obj, from, to) {
   names(obj)[match(from, names(obj))] <- to
@@ -84,7 +82,6 @@ process_rename_columns <- function(obj, from, to) {
 #'
 #' @return a vector of alphabetically sorted records
 #'
-#' @export
 #' @examples util_seperate_and_sort("z y x")
 util_seperate_and_sort <- function(x, sep=" ") {
 
@@ -105,7 +102,6 @@ util_seperate_and_sort <- function(x, sep=" ") {
 #' @param df a dataframe
 #' @return a (yaml) list
 #'
-#' @export
 #' @examples util_df_to_list(iris)
 util_df_to_list <- function(df) {
   attr(df, "out.attrs") <- NULL
@@ -149,13 +145,33 @@ util_list_to_df1 <- function(my_list) {
   tibble::tibble(key = names(my_list), value = unlist(my_list))
 }
 
+
+#' Convert BibEntry object to a list
+#'
+#' @param bib BibEntry object
+#'
+#' @return list
+util_bib_to_list <- function(bib) {
+
+  # Read in file, convert to list, set key
+  bib <- bib %>% unlist()
+
+  if (!is.null(bib$author)) {
+    bib$author <- paste(bib$author, collapse = " and ")
+  }
+  if (!is.null(bib$editor)) {
+    bib$editor <- paste(bib$editor, collapse = " and ")
+  }
+
+  bib
+}
+
 #' Add an item to the end of a list
 #'
 #' @param my_list a list
 #' @param to_append a list
 #'
 #' @return a list merged with an added item at the end
-#' @export
 #' @examples  util_append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3,4)])
 util_append_to_list <- function(my_list, to_append) {
   my_list[[length(my_list)+1]] <-  to_append
@@ -190,6 +206,19 @@ read_metadata <- function(path) {
 
   data
 }
+
+
+#' Read the `metadata.yml` file for specified `dataset_id`
+#'
+#' @inheritParams metadata_path_dataset_id
+#'
+#' @return A list with contents of metadata for specified `dataset_id`
+read_metadata_dataset <- function(dataset_id) {
+  dataset_id %>%
+    metadata_path_dataset_id() %>%
+    read_metadata()
+}
+
 
 #' Write metadata.yml for a study
 #' 
@@ -235,6 +264,18 @@ write_metadata <- function(data, path, style_code=FALSE) {
   file <- file(path, "w", encoding = "UTF-8")
   on.exit(close(file))
   cat(txt, file=file)
+}
+
+
+#' Write the YAML representation of metadata.yml for specified `dataset_id` to
+#' file \code{data/dataset_id/metadata.yml}
+#'
+#' @inheritParams metadata_path_dataset_id
+#' @param metadata metadata file
+#'
+#' @return a yml file
+write_metadata_dataset <- function(metadata, dataset_id) {
+  write_metadata(metadata, dataset_id %>% metadata_path_dataset_id())
 }
 
 ##' Read yaml (from package yaml)

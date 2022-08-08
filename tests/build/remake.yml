@@ -34,28 +34,24 @@ targets:
   taxon_list:
     command: read_csv_char("config/taxon_list.csv")
 
-{{#dataset_ids}}
-  {{dataset_id}}_config:
+  Test_2022_config:
     command: >
-      dataset_configure("{{path}}/{{dataset_id}}/metadata.yml",
+      dataset_configure("data/Test_2022/metadata.yml",
                  definitions,
                  unit_conversions
                  )
-  {{dataset_id}}:
+  Test_2022:
     command: >
-      dataset_process("{{path}}/{{dataset_id}}/data.csv",
-                  {{dataset_id}}_config,
+      dataset_process("data/Test_2022/data.csv",
+                  Test_2022_config,
                   schema
                  )
 
-{{/dataset_ids}}
 
   austraits_raw:
     command: >
       build_combine(
-{{#dataset_ids}}
-        {{dataset_id}},
-{{/dataset_ids}}
+        Test_2022,
         NULL)
 
   austraits:

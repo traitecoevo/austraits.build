@@ -29,7 +29,7 @@ my_kable_styling <- util_kable_styling_html
 ## Loads austraits into global name space
 austraits <- austraits:::austraits_lite
 
-schema <- load_schema()
+schema <- get_schema()
 definitions <- austraits$definitions
 ```
 
@@ -63,7 +63,7 @@ It may help to download one of the [existing datasets](https://github.com/traite
 Once you have prepared your `data.csv` and `metadata.yml` files within a folder in the `data` directory, you can incorporate the new data into AusTraits by running:
 
 ```{r, eval=FALSE, echo=TRUE}
-setup_build_process()
+build_setup_pipeline()
 ```
 
 This step updates the file `remake.yml` with appropriate rules for the new dataset; similarly if you remove datasets, do the same. (At this stage, [remake](https://github.com/richfitz/remake) offers no looping constructs, so for now we generate the remake file using: [whisker](https://github.com/edwindj/whisker).)
@@ -809,13 +809,13 @@ library(austraits.build)
 
 # Tests run test on one study
 dataset_ids <- "Bragg_2002"
-dataset_test_setup(dataset_ids)
+dataset_test(dataset_ids)
 
 # Tests run test on all studies
 dataset_ids <- dir("data")
-dataset_test_setup(dataset_ids)
+dataset_test(dataset_ids)
 ```
-Fix as many errors as you can and then rerun `dataset_test_setup()` repeatedly until no errors remain. 
+Fix as many errors as you can and then rerun `dataset_test()` repeatedly until no errors remain. 
 
 See below for suggestions on how to implement large numbers of trait value substitutions.
 
@@ -823,7 +823,7 @@ See below for suggestions on how to implement large numbers of trait value subst
 
 Now incorporate the new study into AusTraits:  
 ```{r, eval=FALSE, echo=TRUE}
-setup_build_process()
+build_setup_pipeline()
 austraits <- remake::make("austraits")
 ```
 
@@ -1221,7 +1221,7 @@ Rebuild the taxon list and AusTraits to ensure other changes made during the qua
 ```{r, eval=FALSE, echo=TRUE}
 austraits_rebuild_taxon_list()
 austraits <- remake::make("austraits")
-dataset_generate_report(current_study)
+dataset_report(current_study)
 ```
 
 Check the study report to ensure:  
@@ -1244,17 +1244,17 @@ dataset_ids <- current_study
 austraits_run_tests()
 
 austraits <- remake::make("austraits")
-dataset_generate_report(current_study, overwrite = TRUE)
+dataset_report(current_study, overwrite = TRUE)
 ```
 
 To generate a report for a collection of studies:  
 ```{r, eval=FALSE, echo=TRUE}
-dataset_generate_reports(c("Falster_2005_1", "Wright_2002"), overwrite = TRUE)
+dataset_reports(c("Falster_2005_1", "Wright_2002"), overwrite = TRUE)
 ```
 
 Or for all studies:  
 ```{r, eval=FALSE, echo=TRUE}
-dataset_generate_reports(overwrite = TRUE)
+dataset_reports(overwrite = TRUE)
 ```
 
 Add the argument `overwrite=TRUE` if you already have a copy of a specific report stored in your computer and want to replace it with a newer version.
@@ -1316,7 +1316,7 @@ Then in R
 dataset_ids <- "Smith_1995"
 
 # Update remake file
-setup_build_process()
+build_setup_pipeline()
 
 # check data builds
 remake::make(dataset_ids)

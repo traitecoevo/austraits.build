@@ -15,21 +15,21 @@ targets:
     command: saveRDS(austraits_versioned, target_name)
 
   version_number: 
-    command: get_version("config/traits.yml")
+    command: util_get_version("config/traits.yml")
     
   git_SHA:
-    command: get_SHA()
+    command: util_get_SHA()
     depends:
       - .git/index  
 
   schema:
-    command: load_schema()
+    command: get_schema()
 
   definitions:
-    command: load_schema("config/traits.yml", I("traits"))
+    command: get_schema("config/traits.yml", I("traits"))
 
   unit_conversions:
-    command: make_unit_conversion_functions("config/unit_conversions.csv")
+    command: get_unit_conversions("config/unit_conversions.csv")
 
   taxon_list:
     command: read_csv_char("config/taxon_list.csv")
@@ -3768,7 +3768,7 @@ targets:
 
   austraits_raw:
     command: >
-      process_combine_datasets(
+      build_combine(
         Ahrens_2019,
         ANBG_2019,
         Angevin_2011,
@@ -4059,7 +4059,7 @@ targets:
         NULL)
 
   austraits:
-    command: process_rupdate_taxonomy(austraits_raw, taxon_list)
+    command: build_update_taxonomy(austraits_raw, taxon_list)
     
   austraits_versioned:
-    command: process_add_version_info(austraits, version_number, git_SHA)
+    command: build_add_version(austraits, version_number, git_SHA)

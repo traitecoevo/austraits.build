@@ -119,10 +119,10 @@ compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trai
   }
 
 
-  v1 %>% export_version_plaintext(path)
+  v1 %>% write_plaintext(path)
   repo <- git2r::init(path)
   git2r::add(repo, "*")
-  v2 %>% export_version_plaintext(path)
+  v2 %>% write_plaintext(path)
 
   message(paste0("Comparison saved in ", path, ". Run ` git -C ", path, " diff --word-diff-regex='[^[:space:],]+' ` in terminal to view differences"))
 }
