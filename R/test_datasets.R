@@ -569,7 +569,7 @@ dataset_test_setup_worker <-
           )
           
           v <-
-            (data[[metadata[["dataset"]][["site_name"]]]] %>% unique %>% stats::na.omit)
+            (data[[metadata[["dataset"]][["site_name"]]]] %>% unique %>% na.omit)
           i <- v %in% names(metadata$sites)
           expect_true(all(i),
                       info = paste0(f,  "- site names from data file not present in metadata: ", v[!i]))
@@ -597,7 +597,7 @@ dataset_test_setup_worker <-
           )
           
           v <-
-            (data[[metadata[["dataset"]][["context_name"]]]] %>% unique %>% stats::na.omit)
+            (data[[metadata[["dataset"]][["context_name"]]]] %>% unique %>% na.omit)
           i <- v %in% names(metadata$contexts)
           expect_true(all(i),
                       info = paste0(
