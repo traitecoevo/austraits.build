@@ -33,7 +33,9 @@ read_csv_char <- function(...){
 #' @param val specify what the null value should be returned as, default is NA
 #'
 #' @return a vector with null values replaced
-#' @examples util_replace_null(NULL)
+#' @examples \dontrun{
+#' util_replace_null(NULL)
+#' }
 util_replace_null <- function(x, val=NA){
   if(is.null(x)) return(val)
   x
@@ -82,7 +84,7 @@ process_rename_columns <- function(obj, from, to) {
 #'
 #' @return a vector of alphabetically sorted records
 #'
-#' @examples util_seperate_and_sort("z y x")
+#' @examples \dontrun{util_seperate_and_sort("z y x")}
 util_seperate_and_sort <- function(x, sep=" ") {
 
   # find cells with multiple values, indicated by presence of sep
@@ -101,7 +103,7 @@ util_seperate_and_sort <- function(x, sep=" ") {
 #'
 #' @param df a dataframe
 #' @return a (yaml) list
-#'
+#' @export 
 #' @examples util_df_to_list(iris)
 util_df_to_list <- function(df) {
   attr(df, "out.attrs") <- NULL
@@ -134,7 +136,9 @@ util_list_to_df2 <- function(my_list, as_character= TRUE, on_empty=NA) {
 #' @param my_list a list with single entries
 #' @return a tibble with two columns
 #' @export
-#' @examples util_list_to_df1(as.list(iris)[2])
+#' @examples \dontrun{
+#' util_list_to_df1(as.list(iris)[2])
+#' }
 util_list_to_df1 <- function(my_list) {
 
   for(f in names(my_list)) {
@@ -172,7 +176,9 @@ util_bib_to_list <- function(bib) {
 #' @param to_append a list
 #'
 #' @return a list merged with an added item at the end
-#' @examples  util_append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3,4)])
+#' @examples  \dontrun{
+#' util_append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3,4)])
+#' }
 util_append_to_list <- function(my_list, to_append) {
   my_list[[length(my_list)+1]] <-  to_append
   my_list

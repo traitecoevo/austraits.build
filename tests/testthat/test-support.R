@@ -22,17 +22,17 @@ test_that("process_rename_columns renames a column",{
 })
 
 test_that("util_seperate_and_sort returns alphabetically sorted characters",{
-  expect_type(austraits.build:::util_seperate_and_sort("z y x"), "character")
-  expect_match(austraits.build:::util_seperate_and_sort("z y x"), "x y z")
-  expect_match(austraits.build:::util_seperate_and_sort("300 200 100 1 2 3"), "1 100 2 200 3 300")
+  expect_type(util_seperate_and_sort("z y x"), "character")
+  expect_match(util_seperate_and_sort("z y x"), "x y z")
+  expect_match(util_seperate_and_sort("300 200 100 1 2 3"), "1 100 2 200 3 300")
 })
 
 test_that("util_df_to_list",{
   expect_match(class(util_df_to_list(iris)), "list")
   expect_type(util_df_to_list(iris), "list")
   
-  expect_match(class(austraits.build:::util_append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3)])), "list")
-  expect_equal(length( austraits.build:::util_append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3)])), 3)
+  expect_match(class(util_append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3)])), "list")
+  expect_equal(length(util_append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3)])), 3)
 })
 
 test_that("util_list_to_df2",{
