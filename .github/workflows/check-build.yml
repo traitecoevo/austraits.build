@@ -58,13 +58,16 @@ jobs:
           dataset_test_setup(dir("data"))
         shell: Rscript {0}
 
-      - name: Benchmark
-        run: austraits.build::run_benchmark()
-        shell: Rscript {0}
-
       - name: build austraits
         run: |
+          library(austraits.build)
           source("config/custom.R")
           remake::make()
         shell: Rscript {0}
       
+      - name: Benchmark
+        run: |
+          library(austraits.build)
+          source("config/custom.R")
+          austraits.build::run_benchmark()
+        shell: Rscript {0}
