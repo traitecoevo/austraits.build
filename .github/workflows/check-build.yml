@@ -42,28 +42,27 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: local::., any::ggbeeswarm, any::leaflet, any::gridExtra, any::ggplot2
+          extra-packages: local::.
 
-      - name: Load packages and functions
+      - name: Test build infrastructure
         run: |
           library(austraits.build)
           source("config/custom.R")
-        shell: Rscript {0}
-
-      - name: Test build infrastructure
-        run: testthat::test_dir("tests/build/")
+          testthat::test_dir("tests/build/")
         shell: Rscript {0}
 
       - name: check sources
-        run: dataset_test_setup(dir("data"))
+        run: austraits.build::dataset_test_setup(dir("data"))
         shell: Rscript {0}
 
       - name: Benchmark
-        run: run_benchmark()
+        run: austraits.build::run_benchmark()
         shell: Rscript {0}
 
       - name: build austraits
-        run: remake::make()
+        run: |
+          source("config/custom.R")
+          remake::make()
         shell: Rscript {0}
       
       - name: Archive artifacts

@@ -163,15 +163,17 @@ test_that("test test_data_setup is working",{
 
 test_that("test setup_build_process is working",{
 
+  
   unlink(".remake", recursive = TRUE)
   unlink("remake.yml")
-  unlink(".git")
-  unlink("config/taxon_list.csv")
-  file.copy("data/Test_2022/test-metadata.yml", "data/Test_2022/metadata.yml", overwrite = TRUE)
   unlink(".git", recursive = TRUE)
-  dir.create(".git")
-  writeLines("  ", ".git/index")
-
+  unlink("config/taxon_list.csv")
+  expect_true(file.copy("data/Test_2022/test-metadata.yml", "data/Test_2022/metadata.yml", overwrite = TRUE))
+  expect_no_error(repo <- git2r::init())
+  expect_no_error(git2r::add(repo, path = "functions.R"))
+  expect_no_error(git2r::commit(repo, "tmp"))
+  expect_no_error(sha <- git2r::sha(git2r::last_commit(repo)))
+  
   expect_false(file.exists("remake.yml"))
   expect_false(file.exists("config/taxon_list.csv"))
   expect_error(setup_build_process(path = "Datas"))
@@ -183,7 +185,7 @@ test_that("test setup_build_process is working",{
   expect_silent(taxa1 <- read_csv_char("config/taxon_list.csv"))
   vars <- c("cleaned_name", "source", "taxonIDClean", "taxonomicStatusClean", "alternativeTaxonomicStatusClean", "acceptedNameUsageID", "taxon_name", "scientificNameAuthorship", "taxonRank", "taxonomicStatus", "family", "taxonDistribution", "ccAttributionIRI")
   expect_named(taxa1, vars)
- expect_length(taxa1, 13)
+  expect_length(taxa1, 13)
   expect_true(nrow(taxa1) == 0)
   expect_no_error(suppressWarnings(austraits_rebuild_taxon_list(austraits_raw) ))
   expect_true(file.exists("config/taxon_list.csv"))
@@ -191,18 +193,19 @@ test_that("test setup_build_process is working",{
   expect_named(taxa2, vars)
   expect_length(taxa2, 13)
   expect_true(nrow(taxa2) == 5)
-
+  
   expect_no_error(austraits_versioned <- remake::make("austraits_versioned"))
-
+  
   expect_null(austraits_raw$build_info$version)
   expect_null(austraits_raw$build_info$git_SHA)
   expect_equal(austraits_versioned$build_info$version, "3.0.2.9000")
   expect_true(is.character(austraits_versioned$build_info$git_SHA))
-
+  expect_equal(austraits_versioned$build_info$git_SHA, sha)
+  
   expect_length(austraits_raw$taxa, 1)
   expect_length(austraits_versioned$taxa, 10)
   expect_equal(nrow(austraits_versioned$taxa), nrow(austraits_raw$taxa))
-
+  
   expect_no_error(
     dataset_generate_report("Test_2022", austraits_versioned, overwrite = TRUE)
   )

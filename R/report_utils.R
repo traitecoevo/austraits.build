@@ -10,6 +10,7 @@
 #' @param output_path location where rendered report will be saved
 #' @param input_file report script (.Rmd) file to build study report
 #' @param quiet An option to suppress printing during rendering from knitr, pandoc command line and others.
+#' @param keep keep intermediate Rmd file used?
 #'
 #' @rdname dataset_generate_report
 #' @return html file of the rendered report located in the specified output folder.
@@ -17,21 +18,22 @@
 dataset_generate_report <- function(dataset_id, austraits, overwrite=FALSE, 
                                  output_path = "export/reports", 
                                  input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build"),
-                                 quiet=TRUE) {
+                                 quiet=TRUE, keep =FALSE) {
 
   for(d in dataset_id)
     dataset_generate_report_worker(d, austraits,
       overwrite = overwrite,
       output_path = output_path,
       input_file = input_file,
-      quiet = quiet
+      quiet = quiet, 
+      keep=keep
     )
 }
 
 dataset_generate_report_worker <- function(dataset_id, austraits, overwrite=FALSE, 
                                  output_path = "export/reports", 
                                  input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build"),
-                                 quiet=TRUE) {
+                                 quiet=TRUE, keep=FALSE) {
 
   if(!file.exists(output_path)) {
     dir.create(output_path, FALSE, TRUE)
@@ -66,7 +68,8 @@ dataset_generate_report_worker <- function(dataset_id, austraits, overwrite=FALS
     )
 
     # remove temporary Rmd
-    unlink(input_Rmd)
+    if(!keep)
+      unlink(input_Rmd)
     cat(" -> ", output_html, "\n")
   } else{
     cat(sprintf("Report for %s already exists -> %s\n", dataset_id, output_html))
