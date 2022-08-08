@@ -40,9 +40,8 @@ dataset:
   custom_R_code: '
     data %>%
       mutate(
-        site = paste(site,"_",Yrs,sep=""),
+        site = ifelse(Yrs %in% c(15, 28, 36, 41, 86), paste(site,"_",Yrs,sep=""), site),
         context = paste0(Yrs," years since last fire"),
-        site = gsub("_NA", "", site),
         context = gsub("NA years since last fire", NA, context)
       )
   '
@@ -140,6 +139,26 @@ sites:
     primary productivity (tons C/ha/year): 0.9
     fire history (years since fire): 86.0
 contexts:
+  0 years since last fire:
+    fire history: site last burnt 0 years ago
+  1 years since last fire:
+    fire history: site last burnt 1 years ago
+  2 years since last fire:
+    fire history: site last burnt 2 years ago
+  3 years since last fire:
+    fire history: site last burnt 3 years ago
+  4 years since last fire:
+    fire history: site last burnt 4 years ago
+  6 years since last fire:
+    fire history: site last burnt 6 years ago
+  8 years since last fire:
+    fire history: site last burnt 8 years ago
+  13 years since last fire:
+    fire history: site last burnt 13 years ago
+  26 years since last fire:
+    fire history: site last burnt 26 years ago
+  33 years since last fire:
+    fire history: site last burnt 33 years ago
   15 years since last fire:
     fire history: site last burnt 15 years ago
   28 years since last fire:
@@ -150,8 +169,6 @@ contexts:
     fire history: site last burnt 41 years ago
   86 years since last fire:
     fire history: site last burnt 86 years ago
-  NA:
-    fire history: .na
 traits:
 - var_in: SLA
   unit_in: mm2/mg

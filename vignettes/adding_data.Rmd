@@ -38,7 +38,7 @@ my_kable_styling <- my_kable_styling_html
 
 austraits <- read_rds("export/austraits.rds")
 schema <- austraits$schema
-trait_definitions <- austraits$trait_definitions
+definitions <- austraits$definitions
 ```
 
 This vignette explains the protocol for adding a new study to AusTraits. Before starting this, you should read more about 
@@ -66,7 +66,11 @@ The main steps are:
 8. Return to step 6 if changes are made to the `data.csv` or `metadata.yml` files.
 9. Push the GitHub branch.
 
+<<<<<<< HEAD
 It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) to use as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), particularly the `traits` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html).
+=======
+It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) to use as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), particularly the `definitions` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/definitions.html).
+>>>>>>> develop
 
 Once you have prepared your `data.csv` and `metadata.yml` files within a folder in the `data` directory, you can incorporate the new data into AusTraits by running:
 
@@ -808,7 +812,7 @@ austraits$traits %>%
 
 ## Running tests {#running_tests}
 
-Begin by running some automated tests to ensure the dataset meets the required set up. The tests run through a collection of pre-specified checks on the files for each study. The output alerts you to possible issues needing to be fixed, by comparing the data in the files with the expected structure and allowed values, as specified in the schema and trait_definitions.   
+Begin by running some automated tests to ensure the dataset meets the required set up. The tests run through a collection of pre-specified checks on the files for each study. The output alerts you to possible issues needing to be fixed, by comparing the data in the files with the expected structure and allowed values, as specified in the schema and definitions.   
 
 Certain special characters may show up as errors and need to be manually adjusted in the `metadata.yml` file 
 
@@ -1238,7 +1242,7 @@ Rebuild the taxon list and AusTraits to ensure other changes made during the qua
 ```{r, eval=FALSE, echo=TRUE}
 austraits_rebuild_taxon_list()
 austraits <- remake::make("austraits")
-build_dataset_report(current_study)
+dataset_generate_report(current_study)
 ```
 
 Check the study report to ensure:  
@@ -1261,17 +1265,17 @@ dataset_ids <- current_study
 austraits_run_tests()
 
 austraits <- remake::make("austraits")
-build_dataset_report(current_study, overwrite = TRUE)
+dataset_generate_report(current_study, overwrite = TRUE)
 ```
 
 To generate a report for a collection of studies:  
 ```{r, eval=FALSE, echo=TRUE}
-build_dataset_reports(c("Falster_2005_1", "Wright_2002"), overwrite = TRUE)
+dataset_generate_reports(c("Falster_2005_1", "Wright_2002"), overwrite = TRUE)
 ```
 
 Or for all studies:  
 ```{r, eval=FALSE, echo=TRUE}
-build_dataset_reports(overwrite = TRUE)
+dataset_generate_reports(overwrite = TRUE)
 ```
 
 Add the argument `overwrite=TRUE` if you already have a copy of a specific report stored in your computer and want to replace it with a newer version.

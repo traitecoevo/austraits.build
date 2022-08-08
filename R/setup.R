@@ -60,11 +60,13 @@ metadata_create_template <- function(dataset_id,
   out$source$primary[] <- "unknown"
   out$source$primary["key"] = dataset_id
   out$source$primary["bibtype"] = "Article"
+  
   out$contributors <- out$contributors$elements
-  out$contributors[c("assistants", "austraits_curators")] <- "unknown"
+  out$contributors$data_collectors[c(exclude, "notes")] <- NULL
   out$contributors$data_collectors[] <- "unknown"
-  out$contributors$data_collectors <- 
-    out$contributors$data_collectors[names(out$contributors$data_collectors)%notin%c(exclude,"notes")]
+  out$contributors$data_collectors <- list(out$contributors$data_collectors)
+  out$contributors[c("assistants", "austraits_curators")] <- "unknown"
+
   out$dataset <- out$dataset$values[]
   out$dataset[] <- 'unknown'
   out$dataset$custom_R_code <- NA
@@ -221,7 +223,9 @@ metadata_add_traits <- function(dataset_id) {
   traits <- tibble::tibble(var_in = var_in,
                             unit_in = "unknown",
                             trait_name = "unknown",
+                            entity_type = "unknown",
                             value_type = "unknown",
+                            basis_of_value = "unknown",
                             replicates = "unknown",
                             methods = "unknown") 
 
@@ -356,35 +360,48 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
     metadata_write_dataset_id(metadata, dataset_id)
 }
 
+#' Standarise doi into form https://doi.org/XXX
+#' 
+#' @param doi doi of reference to add
+standardise_doi <- function(doi) {
+
+  if (stringr::str_starts(doi, "https://doi.org"))
+    return(doi)
+
+  if (stringr::str_starts(doi, "http:"))
+    return(gsub("http:", "https:", doi, fixed=TRUE))
+ 
+  if (stringr::str_starts(doi, "doi.org"))
+    return(paste0("https://", doi))
+
+  return(paste0("https://doi.org/", doi))
+}
 
 #' Adds citation details from a doi to a metadata file for a dataset_id. 
 #'
 #' Uses rcrossref package to access publication details from the crossref 
 #' database
 #'
-#' @param doi doi of reference to add
+#' @param bib (Only use for testing purposes). Result of calling `bib rcrossref::cr_cn(doi)`
+#' @inheritParams metadata_path_dataset_id 
+#' @inheritParams standardise_doi
 #' @param ... arguments passed from metadata_add_source_bibtex()
 #'
-#' @return yml file with citation details added
+#' @return metadata.yml file has citation details added
 #' @export
 #'
-metadata_add_source_doi <- function(doi, ...) {
+metadata_add_source_doi <- function(..., doi, bib=NULL) {
   
-  if(!stringr::str_starts(doi, "https://doi.org") &
-     !stringr::str_starts(doi, "http://doi.org")){
-    if(stringr::str_starts(doi, "doi.org")) {
-      doi <- paste0("https://", doi)
-    } else {
-      doi <- paste0("https://doi.org/", doi)
-    }
-  }
-  
-  bib <- suppressWarnings(rcrossref::cr_cn(doi))
+  doi <- standardise_doi(doi)
+
+  if(is.null(bib)) 
+    bib <- suppressWarnings(rcrossref::cr_cn(doi))
 
   if(is.null(bib)) {
     message("DOI not available in Crossref database, please fill record manually") 
     return(invisible(FALSE))
   }
+
   file <- tempfile()
   writeLines(bib, file)
 
@@ -457,6 +474,57 @@ metadata_add_substitutions_list <- function(dataset_id, substitutions) {
   #write metadata
   metadata_write_dataset_id(metadata, dataset_id)
 }  
+
+
+
+#' Substitutions from csv
+#' @description Function that simultaneously adds many trait value replacements, potentially across many trait_names and dataset_ids, to the respective metadata.yml files.
+#' This function will be used to quickly re-align/re-assign trait values across all AusTraits studies.
+#'
+#' @param dataframe_of_substitutions dataframe with columns indicating dataset_id, trait_name, original trait values (find), and AusTraits aligned trait value (replace)
+#' @param dataset_id study's dataset_id in AusTraits
+#' @param trait_name trait name for which a trait value replacement needs to be made
+#' @param find trait value submitted by the contributor for a data observation
+#' @param replace AusTraits aligned trait value
+#'
+#' @importFrom rlang .data
+#'
+#' @return modified metadata files with trait value replacements
+#' @export
+#'
+#' @examples \dontrun{
+#' read_csv("export/dispersal_syndrome_substitutions.csv") %>%
+#'   select(-extra) %>%
+#'   filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
+#' substitutions_from_csv(dataframe_of_substitutions, dataset_id, trait_name, find, replace)
+#' }
+substitutions_from_csv <- function(dataframe_of_substitutions, dataset_id, trait_name, find, replace) {
+
+  # split dataframe of substitutions by row
+  dataframe_of_substitutions %>%
+    dplyr::mutate(rows = dplyr::row_number()) %>%
+    dplyr::group_split(.$rows) -> dataframe_of_substitutions
+
+  set_name <- "substitutions"
+
+  # add substitutions to metadata files
+  for (i in 1:max(dataframe_of_substitutions)$rows) {
+    metadata <- metadata_read_dataset_id(dataframe_of_substitutions[[i]]$dataset_id)
+
+    to_add <- list(trait_name = dataframe_of_substitutions[[i]]$trait_name, find = dataframe_of_substitutions[[i]]$find, replace = dataframe_of_substitutions[[i]]$replace)
+
+    if (is.null(metadata[[set_name]]) || is.na(metadata[[set_name]])) {
+      metadata[[set_name]] <- list()
+    }
+
+    data <- list_to_df(metadata[[set_name]])
+
+    metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
+
+    metadata_write_dataset_id(metadata, dataframe_of_substitutions[[i]]$dataset_id)
+  }
+}
+
 
 #' Add a taxonomic change into the metadata yaml file for a dataset_id
 #' 
@@ -954,18 +1022,17 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
 #' the downloaded files, it saves us keeping copies of the entire 
 #' lists (~8 vs 230Mb)
 #' 
+#' @param austraits austraits data object
 #' @importFrom rlang .data
 #' @export
-austraits_rebuild_taxon_list <- function() {
+austraits_rebuild_taxon_list <- function(austraits) {
 
   taxonomic_resources <- load_taxonomic_resources()
   
-  austraits <- remake::make("austraits_raw")
-
   subset_accepted <- function(x) {
     x[x!= "accepted"]
   }
-  
+
   # First align to APC where possible 
   taxa <- 
     # build list of observed species names
@@ -986,7 +1053,7 @@ austraits_rebuild_taxon_list <- function() {
         dplyr::select(cleaned_name = .data$canonicalName, taxonIDClean = .data$taxonID, 
                       taxonomicStatusClean = .data$taxonomicStatus, .data$acceptedNameUsageID)) %>%
     dplyr::distinct() %>%
-    dplyr::mutate(source = ifelse(!is.na(.data$taxonIDClean), "APC", NA)) %>% 
+    dplyr::mutate(source = ifelse(!is.na(.data$taxonIDClean), "APC", NA_character_)) %>% 
     # Now find accepted names for each name in the list (sometimes they are the same)
     dplyr::left_join(
       by = "acceptedNameUsageID", taxonomic_resources$APC %>% 
@@ -997,12 +1064,12 @@ austraits_rebuild_taxon_list <- function() {
     # Some species have multiple matches. We will prefer the accepted usage, but record others if they exists
     # To do this we define the order we want variables to sort by,m with accepted at the top
     dplyr::mutate(my_order = .data$taxonomicStatusClean %>% 
-             forcats::fct_relevel( c("accepted", "taxonomic synonym", "basionym", "nomenclatural synonym", "isonym", 
-                                     "orthographic variant", "common name", "doubtful taxonomic synonym", "replaced synonym", 
-                                     "misapplied", "doubtful pro parte taxonomic synonym", "pro parte nomenclatural synonym", 
-                                     "pro parte taxonomic synonym", "pro parte misapplied", "excluded", "doubtful misapplied", 
-                                     "doubtful pro parte misapplied"))) %>%
-    arrange(.data$cleaned_name, .data$my_order) %>%
+             forcats::fct_relevel(c("accepted", "taxonomic synonym", "basionym", "nomenclatural synonym", "isonym", 
+                                    "orthographic variant", "common name", "doubtful taxonomic synonym", "replaced synonym", 
+                                    "misapplied", "doubtful pro parte taxonomic synonym", "pro parte nomenclatural synonym", 
+                                    "pro parte taxonomic synonym", "pro parte misapplied", "excluded", "doubtful misapplied", 
+                                    "doubtful pro parte misapplied"))) %>%
+    dplyr::arrange(.data$cleaned_name, .data$my_order) %>%
     # For each species, keep the first record (accepted if present) and 
     # record any alternative status to indicate where there was ambiguity
     dplyr::group_by(.data$cleaned_name) %>% 
@@ -1012,7 +1079,7 @@ austraits_rebuild_taxon_list <- function() {
           unique() %>% 
           subset_accepted() %>% 
           paste0(collapse = " | ") %>% 
-          dplyr::na_if(""), NA)) %>% 
+          dplyr::na_if(""), NA_character_)) %>% 
     dplyr::slice(1) %>%  
     dplyr::ungroup() %>% 
     dplyr::select(-.data$my_order) %>% 
@@ -1039,13 +1106,13 @@ austraits_rebuild_taxon_list <- function() {
     dplyr::group_by(.data$cleaned_name) %>%
     dplyr::mutate(
       taxonIDClean = paste(.data$taxonIDClean, collapse = " ") %>% 
-        dplyr::na_if("NA"), family = ifelse(dplyr::n_distinct(.data$family) > 1, NA, .data$family[1])) %>%
+        dplyr::na_if("NA"), family = ifelse(dplyr::n_distinct(.data$family) > 1, NA_character_, .data$family[1])) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(
-      source = ifelse(is.na(.data$taxonIDClean), NA, "APNI"),
-      taxon_name = ifelse(is.na(.data$taxonIDClean), NA, .data$cleaned_name),
-      taxonomicStatusClean = ifelse(is.na(.data$taxonIDClean), "unknown", "unplaced"),
-      taxonomicStatus = .data$taxonomicStatusClean)
+      source = as.character(ifelse(is.na(.data$taxonIDClean), NA_character_, "APNI")),
+      taxon_name = as.character(ifelse(is.na(.data$taxonIDClean), NA_character_, .data$cleaned_name)),
+      taxonomicStatusClean = as.character(ifelse(is.na(.data$taxonIDClean), "unknown", "unplaced")),
+      taxonomicStatus = as.character(.data$taxonomicStatusClean))
 
   taxa_all <- taxa1 %>% 
     dplyr::bind_rows(taxa2 %>% 
@@ -1056,56 +1123,6 @@ austraits_rebuild_taxon_list <- function() {
     readr::write_csv("config/taxon_list.csv")
 }
 
-#' Find the distance for nearby species (needs review)
-#'
-#' @param taxon_name vector of species names
-#' @param dist numerical value for distance, default = 5
-#'
-#' @return a vector of distances between species
-#' @export
-find_names_distance_to_neighbours <- function(taxon_name, dist=5) {
-
-  # index of species to check
-  n <- seq_len(length(taxon_name))
-  
-  # for each value in n, build an index of i-dist, i+dist, but not <=0, or > length(n)
-  ii <- lapply(n, function(i) i + c(-dist:-1, 1:dist))
-  for(i  in 1:dist)
-    ii[[i]] <- ii[[i]][ii[[i]] > 0 & ii[[i]] !=i ] 
-  for(i in (length(n) - 0:dist))
-    ii[[i]] <- ii[[i]][ii[[i]] <= length(n) & ii[[i]] !=i ] 
-
-  # now check every species against nearby species, get distance in chars
-  unlist(lapply(n, function(i) min(utils::adist(taxon_name[i], taxon_name[ii[[i]]]))))
-}
-
-#' Test AusTraits studies have the correct format
-#' 
-#' Run the tests to ensure that all compiled studies have the correct format
-#'
-#' @param dataset_ids unique study identifier for austraits
-#' 
-#' @importFrom rlang .data .env
-#' @export
-test_data_setup <- function(dataset_ids = NULL) {
-
-  if(is.null(dataset_ids)) {
-    stop("The variable `dataset_ids` must be specified for the test suite to work")
-  }
-
-  # Save dataset_ids in global environment, needed to get tests running
-  assign("test_dataset_ids", dataset_ids, envir = globalenv())
-  
-  root.dir <- rprojroot::find_root("remake.yml")
-  pwd <- setwd(root.dir)
-  on.exit({
-    setwd(pwd)
-    rm(.env$test_dataset_ids, envir = globalenv())
-    })
-
-  requireNamespace("testthat", quietly = TRUE)
-  testthat::test_dir("tests/testdata", reporter = testthat::default_reporter())
-}
 
 #' Update the remake.yml file with new studies
 #' 
@@ -1139,4 +1156,25 @@ setup_build_process <- function(
 
   str <- whisker::whisker.render(template, vals)
   writeLines(str, "remake.yml")
+
+  # Check taxon list exists
+  filename <- "config/taxon_list.csv"
+
+  if(!file.exists(filename)) {
+    dplyr::tibble(
+      cleaned_name = character(), 
+      source = character(), 
+      taxonIDClean = character(), 
+      taxonomicStatusClean = character(), 
+      alternativeTaxonomicStatusClean = character(), 
+      acceptedNameUsageID = character(), 
+      taxon_name = character(), 
+      scientificNameAuthorship = character(), 
+      taxonRank = character(), 
+      taxonomicStatus = character(), 
+      family = character(), 
+      taxonDistribution = character(), 
+      ccAttributionIRI = character()
+    ) %>%  readr::write_csv(filename)
+  }
 }

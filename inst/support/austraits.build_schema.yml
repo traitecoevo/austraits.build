@@ -4,10 +4,13 @@ entity_type:
   type: categorical
   values:
     individual: Value comes from a single individual
-    population: Value represents a summary statsitic from multiple individuals at a single site
-    metapopulation: Value represents a summary statsitic from individuals of the taxon across multiple sites
-    species: Values the mean observed for a taxon across its range or, in this particular dataset, as estimated by an expert based on their knowledge of the taxon. Data fitting this category include estimates from floras that represent a taxon's entire range and values for categorical variables obtained from a reference book, or identified by an expert.
-  
+    population: Value represents a summary statistic from multiple individuals at a single site
+    metapopulation: Value represents a summary statistic from individuals of the taxon across multiple sites
+    species: Value represents a summary statistic for a species or infraspecific taxon across its range or as estimated by an expert based on their knowledge of the taxon. Data fitting this category include estimates from reference books that represent a taxon's entire range and values for categorical variables obtained from a reference book or identified by an expert.
+    genus: Value represents a summary statistic or expert score for an entire genus.
+    family: Value represents a summary statistic or expert score for an entire family.
+    order: Value represents a summary statistic or expert score for an entire order.
+
 value_type:
   description: &value_type A categorical variable describing the type of value recorded.
   type: categorical
@@ -156,7 +159,7 @@ austraits:
     sources:
       description: Bibtex entries for all primary and secondary sources in the compilation.
       type: list
-    trait_definitions:
+    definitions:
       description: A copy of the definitions for all tables and terms. Information included here was used to process data and generate any documentation for the study.
       type: categorical
       value: A structured yaml file, represented as a list in R. See file `config/traits.yaml` for more details.
@@ -257,16 +260,21 @@ metadata:
         taxon_name: *taxon_name
         site_name: *site_name
         context_name: *context_name
+        entity_type: *entity_type
         entity_id: *entity_id
         population_id: &population_id A unique identifier for a population. As used in AusTraits, this is often a true biological population (that is, a site), but the term `population` is also used to capture a single experimental treatment.
         individual_id: &individual_id A unique identifier for an individual plant. Often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time. 
         observation_id: &observation_id A unique identifier for the observation, important for joining traits coming from the same `observation_id` until `entity_id` is created later in the workflow. For wide datasets, unless a column is specified under `individual_id` , these are assigned automatically based on the `dataset_id` and row number of the raw data.
+        observation_number: *observation_number
+        method_number: *method_number 
         trait_name: *trait_name
         value: *value
         description: *description
         collection_type: *collection_type
         sample_age_class: *sample_age_class
+        replicates: *replicates
         sampling_strategy: *sampling_strategy
+        measurement_remarks: *measurement_remarks
         original_file: The name of the file initially submitted to AusTraits
         notes: Generic notes about the study and processing of data
     sites:
@@ -282,12 +290,19 @@ metadata:
         trait_name: *trait_name
         entity_type: *entity_type
         value_type: *value_type
+        collection_type: *collection_type
         basis_of_value: *basis_of_value
         replicates: *replicates
         measurement_remarks: *measurement_remarks
         method_number: *method_number
         observation_number: *observation_number
         methods: *methods
+        entity_id: *entity_id
+        population_id: *population_id
+        individual_id: *individual_id
+        observation_id: *observation_id
+        sample_age_class: *sample_age_class
+
     substitutions:
       description: A list of any "find and replace" substitutions needed to get the data into the right format.
       type: array

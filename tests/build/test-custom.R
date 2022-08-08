@@ -90,6 +90,12 @@ testthat::test_that("convert_month_range_string_to_binary_worker",{
   expect_equal(convert_month_range_string_to_binary_worker("Jan-Mar,Jul-Aug"), c(1,1,1,0,0,0,1,1,0,0,0,0))
   expect_equal(convert_month_range_string_to_binary_worker("Jan-Mar;Jul-Aug"), c(1,1,1,0,0,0,1,1,0,0,0,0))
   expect_equal(convert_month_range_string_to_binary_worker("Jan-Mar:Jul-Aug"), c(1,1,1,0,0,0,1,1,0,0,0,0))
+  expect_equal(convert_month_range_string_to_binary_worker("Mar-Jan"), c(1,0,1,1,1,1,1,1,1,1,1,1))
+  expect_equal(convert_month_range_string_to_binary_worker("Mar-Mar"), c(0,0,1,0,0,0,0,0,0,0,0,0))
+  expect_equal(convert_month_range_string_to_binary_worker("summer-summer"), c(1,1,0,0,0,0,0,0,0,0,0,1))
+  expect_equal(convert_month_range_string_to_binary_worker("Summer-spring"), c(1,1,1,1,1,1,1,1,1,1,1,1))
+  expect_equal(convert_month_range_string_to_binary_worker("spring-summer"), c(1,1,0,0,0,0,0,0,1,1,1,1))
+  expect_equal(convert_month_range_string_to_binary_worker("SPRING-SPRING"), c(0,0,0,0,0,0,0,0,1,1,1,0))
   
   expect_equal(convert_month_range_string_to_binary_worker(NA), NA)
   expect_equal(convert_month_range_string_to_binary_worker("January"), NA)
@@ -100,4 +106,75 @@ testthat::test_that("convert_month_range_string_to_binary_worker",{
   expect_equal(convert_month_range_string_to_binary_worker("After fire"), NA)
   expect_equal(convert_month_range_string_to_binary_worker("Doesnt flower"), NA)
 })
+
+testthat::test_that("test separate_range",{
+  data <- tibble::tibble(range = rep("1-10",10))
+  
+  expect_equal(class(separate_range(data,"range","min","max")), c("tbl_df","tbl","data.frame"))
+  expect_equal(ncol(data), 1)
+  expect_equal(ncol(separate_range(data,"range","min","max")), 2)
+  expect_equal(unique(separate_range(data,"range","min","max")$min), "1")
+  expect_equal(unique(separate_range(data,"range","min","max")$max), "10")
+})
+
+testthat::test_that("test replace_duplicates_with_NA",{
+  expect_equal(replace_duplicates_with_NA(1:10), 1:10)
+  expect_equal(replace_duplicates_with_NA(c(1,1,1)), c(1, NA, NA))
+  expect_equal(replace_duplicates_with_NA(c("1","1","1")), c("1", NA, NA))
+  expect_equal(replace_duplicates_with_NA(c("1",1,"1")), c("1", NA, NA))
+  expect_equal(replace_duplicates_with_NA(c("A",1,"A")), c("A", 1, NA))
+})
+
+testthat::test_that("test format_min_max_as_range",{
+  data <- tibble::tibble(min = rep(1,10),
+                         max = rep(c(1,2),5))
+  
+  expect_equal(class(format_min_max_as_range(data, "min", "max", "range", "type")), c("tbl_df","tbl","data.frame"))
+  expect_equal(format_min_max_as_range(data, "min", "max", "range", "type") %>% pull(type) %>% unique(), c("mean","range"))
+  expect_equal(names(format_min_max_as_range(data, "min", "max", "range", "type")), c("min", "max", "range", "type"))
+  expect_equal(
+    format_min_max_as_range(data, "min", "max", "range", "type") %>% filter(range == 1) %>% pull(type) %>% unique(), "mean"
+  )
+  expect_equal(
+    format_min_max_as_range(data, "min", "max", "range", "type") %>% filter(grepl("--", range)) %>% pull(type) %>% unique(), "range"
+  )
+}) 
+
+testthat::test_that("test move_values_to_new_trait",{
+  data <- tibble::tibble(Root = rep("Soil",10))
+  
+  expect_equal(ncol(data), 1)
+  
+  expect_equal(ncol(move_values_to_new_trait(data, "Root", "Branch", "Soil", "Leaves", "Soil")), 2)
+  expect_equal(nrow(move_values_to_new_trait(data, "Root", "Branch", "Soil", "Leaves", "Soil")), 10)
+})  
+  
+testthat::test_that("test add_values_to_additional_trait_long",{
+  data <- tibble::tibble(trait = rep("Texture",10),
+                         value = rep(c("plumose", "tomentose", "smooth", "rough", "spiky"),2))
+  
+  expect_equal(unique(data$trait), "Texture")
+  expect_equal(nrow(data), 10)
+  
+  expect_equal(unique(add_values_to_additional_trait_long(
+    data, "Root", "trait", "value", c("plumose", "tomentose"), c("Soil"))$trait),  c("Texture", "Root"))
+  expect_equal(nrow(add_values_to_additional_trait_long(
+    data, "Root", "trait", "value", c("plumose", "tomentose"), c("Soil"))), 14)
+})  
+
+testthat::test_that("test move_values_to_new_trait_long",{
+  data <- tibble::tibble(trait = rep("Texture",10),
+                         value = rep(c("plumose", "tomentose", "smooth", "rough", "spiky"),2))
+  
+  expect_equal(unique(data$trait), "Texture")
+  expect_equal(nrow(data), 10)
+  
+  expect_equal(unique(move_values_to_new_trait_long(data, "Texture", "seed_surface_hairs", 
+                                                    "trait", "value", c("plumose", "tomentose"))$trait), 
+               c("seed_surface_hairs", "Texture"))
+  expect_equal(ncol(move_values_to_new_trait_long(data, "Texture", "seed_surface_hairs", 
+                                                    "trait", "value", c("plumose", "tomentose"))), 2)
+  expect_equal(nrow(move_values_to_new_trait_long(data, "Texture", "seed_surface_hairs", 
+                                                    "trait", "value", c("plumose", "tomentose"))), 10)
+})  
 

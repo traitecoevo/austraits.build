@@ -5,7 +5,10 @@
 \title{Builds list of potential species from the Australian Plant Census (APC) and 
 Australian Plant Names Index (APNI)}
 \usage{
-austraits_rebuild_taxon_list()
+austraits_rebuild_taxon_list(austraits)
+}
+\arguments{
+\item{austraits}{austraits data object}
 }
 \description{
 Compiled list is saved at "config/taxon_list.csv". While this list is 

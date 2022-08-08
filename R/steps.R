@@ -1,17 +1,17 @@
 #' Configure AusTraits database object
 #'
 #' Creates the config object which gets passed onto `load_dataset`. The config list contains
-#' the subset of trait_definitions and unit conversions for those traits for a each study.
+#' the subset of definitions and unit conversions for those traits for a each study.
 #' `subset_config` is used in the remake::make process to configure individual studies mapping the
 #' individual traits found in that study along with any relevant unit conversions
-#' and trait_definitions. `subset_config` and `load_dataset` are applied to every study
+#' and definitions. `subset_config` and `load_dataset` are applied to every study
 #' in the remake.yml file
 #'
 #' @param filename_metadata metadata yaml file for a given study
-#' @param trait_definitions trait_definitions read in from the traits.yml
+#' @param definitions definitions read in from the traits.yml
 #' @param unit_conversion_functions unit_conversion.csv file read in from the config folder
 #'
-#' @return list with dataset_id, metadata, trait_definitions and unit_conversion_functions
+#' @return list with dataset_id, metadata, definitions and unit_conversion_functions
 #' @importFrom purrr map_chr
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
@@ -25,7 +25,7 @@
 #' }
 subset_config <- function(
   filename_metadata,
-  trait_definitions,
+  definitions,
   unit_conversion_functions) {
 
   dataset_id <- basename(dirname(filename_metadata))
@@ -40,8 +40,8 @@ subset_config <- function(
     filter(!is.na(.data$trait_name)) %>%
     # determine unit conversions
     dplyr::mutate(
-      i = match(.data$trait_name, names(trait_definitions$elements)),
-      to = map_chr(.data$i, ~extract_list_element(.x, trait_definitions$elements, "units")),
+      i = match(.data$trait_name, names(definitions$elements)),
+      to = map_chr(.data$i, ~extract_list_element(.x, definitions$elements, "units")),
       conversion = unit_conversion_name(.data$unit_in, .data$to)
     )
 
@@ -49,17 +49,17 @@ subset_config <- function(
     unit_conversion_functions[trait_mapping %>%
     filter(.data$unit_in!=.data$to) %>% dplyr::pull(.data$conversion) %>% unique()]
 
-  # subset of trait_definitions
-  trait_definitions <-
-    trait_definitions$elements[names(trait_definitions$elements) %in% trait_mapping$trait_name]
+  # subset of definitions
+  definitions <-
+    definitions$elements[names(definitions$elements) %in% trait_mapping$trait_name]
 
   list(dataset_id = dataset_id,
        metadata = metadata,
-       trait_definitions = trait_definitions,
+       definitions = definitions,
        unit_conversion_functions = unit_conversion_functions_sub)
 }
 
-#' Load Study
+#' Load Dataset
 #'
 #' load_dataset is used to load individual studies using the config file generated
 #' from `subset_config()`. `subset_config` and `load_dataset` are applied to every
@@ -81,7 +81,8 @@ subset_config <- function(
 #' @examples
 #' \dontrun{
 #' load_dataset("data/Falster_2003/data.csv", subset_config("data/Falster_2003/metadata.yml",
-#' read_yaml("config/traits.yml"), make_unit_conversion_functions("config/unit_conversions.csv"))
+#' read_yaml("config/traits.yml"), make_unit_conversion_functions("config/unit_conversions.csv")),
+#' load_schema())
 #' }
 load_dataset <- function(filename_data_raw, 
                        config_for_dataset, 
@@ -90,7 +91,7 @@ load_dataset <- function(filename_data_raw,
 
   dataset_id <- config_for_dataset$dataset_id
   metadata <- config_for_dataset$metadata
-  trait_definitions <- config_for_dataset$trait_definitions
+  definitions <- config_for_dataset$definitions
 
   unit_conversion_functions <- config_for_dataset$unit_conversion_functions
 
@@ -99,10 +100,10 @@ load_dataset <- function(filename_data_raw,
     custom_manipulation(metadata[["dataset"]][["custom_R_code"]])() %>%
     parse_data(dataset_id, metadata) %>%
     add_all_columns(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]])) %>%
-    flag_unsupported_traits(trait_definitions) %>%
+    flag_unsupported_traits(definitions) %>%
     flag_excluded_observations(metadata) %>%
-    convert_units(trait_definitions, unit_conversion_functions) %>%
-    flag_unsupported_values(trait_definitions) %>%
+    convert_units(definitions, unit_conversion_functions) %>%
+    flag_unsupported_values(definitions) %>%
     create_entity_id() %>% 
     apply_taxonomic_updates(metadata) %>%
     dplyr::mutate(
@@ -248,7 +249,7 @@ load_dataset <- function(filename_data_raw,
        taxa       = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
        contributors = contributors,
        sources    = sources,
-       trait_definitions = trait_definitions,
+       definitions = definitions,
        schema=schema
   )
 }
@@ -288,10 +289,8 @@ custom_manipulation <- function(txt) {
 #'
 #' @param data the traits table at the point where this function is called 
 #'
-#' @return
+#' @return character string 
 #' @export
-#'
-#' @examples
 create_entity_id <- function(data) {
   
   make_id_segment <- function(n, entity)
@@ -311,7 +310,7 @@ create_entity_id <- function(data) {
   
   # Create species_id segment of entity_id: spp_id_segment
   data <- data %>% 
-    mutate(spp_id_segment = create_id(taxon_name, "spp", sort = TRUE))
+    mutate(spp_id_segment = create_id(taxon_name, "tax", sort = TRUE))
   
   # Create population_id segment of entity_id: pop_id_segment  
   
@@ -406,7 +405,7 @@ create_entity_id <- function(data) {
   data <- data %>%
     dplyr::mutate(
       entity_id = paste(dataset_id, spp_id_segment, pop_id_segment, ind_id_segment, sep="-"),
-      entity_id = ifelse(entity_type == "species", paste(dataset_id, spp_id_segment, sep="-"), entity_id),
+      entity_id = ifelse(entity_type %in% c("species","genus","family","order"), paste(dataset_id, spp_id_segment, sep="-"), entity_id),
       entity_id = ifelse(entity_type %in% c("population", "metapopulation"), paste(dataset_id, spp_id_segment, pop_id_segment, sep="-"), entity_id),
       individual_id = as.character(individual_id),
       replicates = as.character(replicates),
@@ -464,19 +463,19 @@ format_sites <- function(my_list, dataset_id, context = FALSE) {
 #' Flag any unrecognised traits, as defined in the traits.yml file
 #'
 #' @param data tibble or dataframe containing the study data
-#' @param trait_definitions trait_definitions read in from the traits.yml file in the config folder
+#' @param definitions definitions read in from the traits.yml file in the config folder
 #'
 #' @importFrom rlang .data
 #' @return tibble with unrecognised traits flagged as "Unsupported trait" in the "error" column
 #' @export
-flag_unsupported_traits <- function(data, trait_definitions) {
+flag_unsupported_traits <- function(data, definitions) {
 
   # create error column if not already present
   if(is.null(data[["error"]]))
     data[["error"]] <- NA_character_
 
-  # exclude traits not in trait_definitions
-  i <- data$trait_name %in% names(trait_definitions)
+  # exclude traits not in definitions
+  i <- data$trait_name %in% names(definitions)
   data %>%
     dplyr::mutate(error = ifelse(!i, "Unsupported trait", .data$error))
 
@@ -607,13 +606,13 @@ convert_bib_to_list <- function(bib) {
 #' traits.yml file. NA values are flagged as errors.
 #'
 #' @param data tibble or dataframe containing the study data
-#' @param trait_definitions trait_definitions read in from the traits.yml file in the config folder
+#' @param definitions definitions read in from the traits.yml file in the config folder
 #'
 #' @importFrom rlang .data
 #' @return tibble with flagged values outside of allowable range, unsupported categorical
 #' trait values or missing values
 #' @export
-flag_unsupported_values <- function(data, trait_definitions) {
+flag_unsupported_values <- function(data, definitions) {
 
   # NA values
   data <- data %>%
@@ -629,12 +628,12 @@ flag_unsupported_values <- function(data, trait_definitions) {
   for(trait in traits ) {
 
     # General categorical traits
-    if(trait_definitions[[trait]]$type == "categorical") {
+    if(definitions[[trait]]$type == "categorical") {
 
       i <-  is.na(data[["error"]]) &
             data[["trait_name"]] == trait &
-            !is.null(trait_definitions[[trait]]$values) &
-            !check_all_values_in(data$value, names(trait_definitions[[trait]]$values))
+            !is.null(definitions[[trait]]$values) &
+            !check_all_values_in(data$value, names(definitions[[trait]]$values))
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Unsupported trait value", .data$error))
     }
@@ -656,7 +655,7 @@ flag_unsupported_values <- function(data, trait_definitions) {
     }
 
     # Numerical traits out of range
-    if(trait_definitions[[trait]]$type == "numeric") {
+    if(definitions[[trait]]$type == "numeric") {
 
       x <- suppressWarnings(as.numeric(data[["value"]]))
       i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & is.na(x) &  !(data[["value_type"]] %in% c("range", "bin"))
@@ -665,7 +664,7 @@ flag_unsupported_values <- function(data, trait_definitions) {
         dplyr::mutate(error = ifelse(i, "Value does not convert to numeric", .data$error))
 
       i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & !(data[["value_type"]] %in% c("range", "bin")) &
-        (x < trait_definitions[[trait]]$values$minimum | x > trait_definitions[[trait]]$values$maximum)
+        (x < definitions[[trait]]$values$minimum | x > definitions[[trait]]$values$maximum)
 
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Value out of allowable range", .data$error))
@@ -717,13 +716,13 @@ unit_conversion_name <- function(from, to) {
 #' Convert units to desired type
 #'
 #' @param data tibble or dataframe containing the study data
-#' @param trait_definitions trait_definitions read in from the traits.yml file in the config folder
+#' @param definitions definitions read in from the traits.yml file in the config folder
 #' @param unit_conversion_functions unit_conversions.csv file stored in the config folder
 #'
 #' @importFrom rlang .data
 #' @return tibble with converted units
 #' @export
-convert_units <- function(data, trait_definitions, unit_conversion_functions) {
+convert_units <- function(data, definitions, unit_conversion_functions) {
 
   # List of original variable names
   vars <- names(data)
@@ -731,10 +730,10 @@ convert_units <- function(data, trait_definitions, unit_conversion_functions) {
   # Look up ideal units, determine whether to convert
   data <- data %>%
     dplyr::mutate(
-      i = match(.data$trait_name, names(trait_definitions)),
-      to = extract_list_element(.data$i, trait_definitions, "units"),
+      i = match(.data$trait_name, names(definitions)),
+      to = extract_list_element(.data$i, definitions, "units"),
       ucn = unit_conversion_name(.data$unit, .data$to),
-      type = extract_list_element(.data$i, trait_definitions, "type"),
+      type = extract_list_element(.data$i, definitions, "type"),
       to_convert =  ifelse(is.na(.data$error), (.data$type == "numeric" & .data$unit != .data$to), FALSE))
 
   # Identify anything problematic in conversions and drop
@@ -827,7 +826,7 @@ parse_data <- function(data, dataset_id, metadata) {
 
   df <-
     df %>%
-    bind_cols(
+    dplyr::bind_cols(
       metadata[["dataset"]][names(metadata[["dataset"]]) %in% vars[!vars %in% names(df)]] %>% tibble::as_tibble()
     )
 
@@ -1138,9 +1137,9 @@ combine_datasets <- function(..., d=list(...)) {
   sources <- sources %>% purrr::reduce(c)
   sources <- sources[keys]
 
-  trait_definitions <- d %>% lapply("[[", "trait_definitions") %>% purrr::reduce(c)
-  trait_definitions <- trait_definitions[!duplicated(names(trait_definitions))]
-  trait_definitions <- trait_definitions[sort(names(trait_definitions))]
+  definitions <- d %>% lapply("[[", "definitions") %>% purrr::reduce(c)
+  definitions <- definitions[!duplicated(names(definitions))]
+  definitions <- definitions[sort(names(definitions))]
   
   # drop null datasets
   d[sapply(d, is.null)] <- NULL
@@ -1167,7 +1166,7 @@ combine_datasets <- function(..., d=list(...)) {
               taxa = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
               contributors = combine("contributors", d),
               sources = sources,
-              trait_definitions = trait_definitions,
+              definitions = definitions,
               schema = d[[1]][["schema"]],
               build_info = list(
                       session_info = utils::sessionInfo()
@@ -1205,7 +1204,7 @@ update_taxonomy <- function(austraits_raw, taxa) {
     dplyr::left_join(by = "cleaned_name",
               taxa %>% dplyr::select(.data$cleaned_name, .data$taxon_name)
               ) %>%
-    dplyr::select(.data$dataset_id, .data$taxon_name, everything()) %>%
+    dplyr::select(.data$dataset_id, .data$taxon_name, dplyr::everything()) %>%
     dplyr::mutate(taxon_name = ifelse(is.na(.data$taxon_name), .data$cleaned_name, .data$taxon_name)) %>%
     dplyr::select(-.data$cleaned_name)
 
@@ -1214,7 +1213,7 @@ update_taxonomy <- function(austraits_raw, taxa) {
     dplyr::select(.data$taxon_name) %>%
     dplyr::distinct() %>%
     dplyr::left_join(by = "taxon_name",
-      taxa %>% dplyr::select(-contains("clean")) %>% dplyr::distinct()
+      taxa %>% dplyr::select(-dplyr::contains("clean")) %>% dplyr::distinct()
     ) %>%
     # extract genus as this is useful
     dplyr::mutate(
@@ -1287,8 +1286,8 @@ export_version_plaintext <- function(austraits, path) {
   build_info <- utils::capture.output(print(austraits$build_info))
   writeLines(build_info, sprintf("%s/build_info.md", path))
 
-  # Save trait_definitions
-  yaml::write_yaml(austraits[["trait_definitions"]], sprintf("%s/trait_definitions.yml", path))
+  # Save definitions
+  yaml::write_yaml(austraits[["definitions"]], sprintf("%s/definitions.yml", path))
   yaml::write_yaml(austraits[["schema"]], sprintf("%s/schema.yml", path))
 
   # Save references
