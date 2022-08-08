@@ -151,17 +151,6 @@ test_that("metadata_remove_taxonomic_change is working",{
   expect_invisible(metadata_remove_taxonomic_change("Test_2022", "flower"))
 })
 
-
-test_that("test load_taxonomic_resources is working",{
-  suppressWarnings(rm(taxonomic_resources))
-  expect_no_error(x <- load_taxonomic_resources())
-  expect_equal(taxonomic_resources, x)
-  expect_named(x, c("APC", "APNI"))
-  expect_equal(length(x), 2)
-  expect_type(x$APC, "list")
-  expect_type(x$APNI, "list")
-})
-
 test_that("test dataset_test_setup is working",{
   expect_error(dataset_test_setup())
 })  
@@ -172,11 +161,6 @@ test_that("test setup_build_process is working",{
   unlink(".remake", recursive = TRUE)
   unlink("remake.yml")
   unlink("config/taxon_list.csv")
-
-  #expect_no_error(repo <- git2r::init())
-  #expect_no_error(git2r::add(repo, path = "functions.R"))
-  #expect_no_error(git2r::commit(repo, "test commit"))
-#  
 
   unlink(".git", recursive = TRUE)
   expect_false(file.exists("remake.yml"))
@@ -197,12 +181,6 @@ test_that("test setup_build_process is working",{
   expect_named(taxa1, vars)
   expect_length(taxa1, 13)
   expect_true(nrow(taxa1) == 0)
-  expect_no_error(suppressWarnings(austraits_rebuild_taxon_list(austraits_raw) ))
-  expect_true(file.exists("config/taxon_list.csv"))
-  expect_silent(taxa2 <- read_csv_char("config/taxon_list.csv"))
-  expect_named(taxa2, vars)
-  expect_length(taxa2, 13)
-  expect_true(nrow(taxa2) == 5)
   
   expect_no_error(austraits_versioned <- remake::make("austraits_versioned"))
   
