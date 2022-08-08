@@ -2,10 +2,10 @@
 ## Inspired from https://github.com/cran/rmngb/blob/master/R/counter.R
 
 # ## Example usage
-# qu(add_note, as_note("yo")) %>% print_notes(as_anchor=TRUE)
+# qu(notetaker_add_note, notetaker_as_note("yo")) %>% notetaker_print_notes(as_anchor=TRUE)
 
 # # start recording
-# qu <- start_notetaker()
+# qu <- notetaker_start()
 
 # # Running this function on its own does doting
 # qu()
@@ -15,42 +15,42 @@
 # qu() %>% print()
 
 # # Create a note -- see that a random string is added as a poential link
-# as_note("my_note")
+# notetaker_as_note("my_note")
 
 # # Create a note -- with specified name of link
-# as_note("my_note", "abbba"))
+# notetaker_as_note("my_note", "abbba"))
 
 # # Create a note and add to record
-# qu(add_note, as_note("my_note1"))
-# qu(add_note, as_note("my_note2"))
-# qu(add_note, as_note("my_note3"))
-# qu(add_note, as_note("my_note4"))
+# qu(notetaker_add_note, notetaker_as_note("my_note1"))
+# qu(notetaker_add_note, notetaker_as_note("my_note2"))
+# qu(notetaker_add_note, notetaker_as_note("my_note3"))
+# qu(notetaker_add_note, notetaker_as_note("my_note4"))
 
 # (qu())
 
 # # get first note
 #  qu() %>%
-#     get_note(1)
+#     notetaker_get_note(1)
 
 # # get first two notes
 #  qu() %>%
-#     get_note(1:2)
+#     notetaker_get_note(1:2)
 
 # # get last note
 #  qu() %>%
-#     get_note()
+#     notetaker_get_note()
 
 # # print first note as anchor text
-# qu() %>% print_notes(1, as_anchor=TRUE)
+# qu() %>% notetaker_print_notes(1, as_anchor=TRUE)
 
 # # print first and link back to anchor text
-# qu() %>% print_notes(1)
+# qu() %>% notetaker_print_notes(1)
 
 # # print last note and link back to anchor text
-# qu() %>% print_notes()
+# qu() %>% notetaker_print_notes()
 
 # # create note and print it as anchor
-# qu(add_note, as_note("new_note")) %>% print_notes(as_anchor=TRUE)
+# qu(notetaker_add_note, notetaker_as_note("new_note")) %>% notetaker_print_notes(as_anchor=TRUE)
 
 # A random string of letters -- useful for defining unique hyperlinks
 #' Create a string of random letters
@@ -61,7 +61,7 @@
 #' @param n numerical integer, default is 8 
 #'
 #' @return character string with 8 letters
-random_string <- function(n=8) {
+notes_random_string <- function(n=8) {
   base::sample(LETTERS, n, TRUE) %>% paste0(collapse="")
 }
 
@@ -75,8 +75,8 @@ random_string <- function(n=8) {
 #' @param link character string, default is NA_character_ which generates a random string 
 #'
 #' @return a tibble with two columns named note and link
-as_note <- function(note, link=NA_character_) {
-  tibble::tibble(note = note, link = ifelse(is.na(link), random_string(), link)) %>% dplyr::mutate_all(as.character)
+notetaker_as_note <- function(note, link=NA_character_) {
+  tibble::tibble(note = note, link = ifelse(is.na(link), notes_random_string(), link)) %>% dplyr::mutate_all(as.character)
 }
 
 # start note recorder
@@ -85,8 +85,8 @@ as_note <- function(note, link=NA_character_) {
 #' Note recorder used in report_study.Rmd file to initiate note recorder
 #' 
 #' @return A tibble where notes are recorded
-start_notetaker <- function() {
-  ret <- as_note(character(), character())
+notetaker_start <- function() {
+  ret <- notetaker_as_note(character(), character())
 
   function(f = function(x) x, ...){
     ret <<- f(ret, ...)
@@ -99,7 +99,7 @@ start_notetaker <- function() {
 #' @param new_note vector of character notes to be added to existing notes
 #'
 #' @return A tibble with additional notes added
-add_note <- function(notes, new_note) {
+notetaker_add_note <- function(notes, new_note) {
   dplyr::bind_rows(notes, new_note)
 }
 
@@ -111,7 +111,7 @@ add_note <- function(notes, new_note) {
 #' @param link_text character string, default is "link"
 #'
 #' @return character string containing the notes
-print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "link") {
+notetaker_print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "link") {
   if(as_anchor)
     sprintf('%s <a name="%s"> %s </a>', note$note, note$link, anchor_text )
   else
@@ -124,13 +124,13 @@ print_note <- function(note, as_anchor=FALSE, anchor_text = "", link_text = "lin
 #'
 #' @param notes object containing the report notes
 #' @param i specify the row which contains the note to be returned
-#' @param ... arguments passed to print_note()
+#' @param ... arguments passed to notetaker_print_note()
 #'
 #' @return character string containing the notes
-print_notes <- function(notes, i=nrow(notes), ...) {
+notetaker_print_notes <- function(notes, i=nrow(notes), ...) {
   notes %>%
-    get_note(i) %>%
-    print_note(...)
+    notetaker_get_note(i) %>%
+    notetaker_print_note(...)
 }
 
 #' Print all notes
@@ -140,9 +140,9 @@ print_notes <- function(notes, i=nrow(notes), ...) {
 #' @param numbered logical default is TRUE
 #'
 #' @return character string containing the notes
-print_all_notes <- function(notes, ..., numbered=TRUE) {
+notetaker_print_all <- function(notes, ..., numbered=TRUE) {
   i <- seq_len(nrow(notes))
-  x <- print_notes(notes, i =i)
+  x <- notetaker_print_notes(notes, i =i)
   sprintf("%d. %s", i, x)
 }
 
@@ -155,6 +155,6 @@ print_all_notes <- function(notes, ..., numbered=TRUE) {
 #' @param i numerical; row number for corresponding note, default is nrow(notes)
 #'
 #' @return a single row from a tibble
-get_note <- function(notes, i=nrow(notes)) {
+notetaker_get_note <- function(notes, i=nrow(notes)) {
   notes[i,]
 }
