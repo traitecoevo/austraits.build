@@ -59,7 +59,7 @@ util_extract_list_element <- function(i, my_list, var) {
 
 #' Rename column names
 #' 
-#' `rename_columns` renames column names within a tibble or data frame by matching
+#' `process_rename_columns` renames column names within a tibble or data frame by matching
 #' the names given by the argument `from`. The new column names are renamed using the 
 #' names given by the argument `to`.
 #'
@@ -69,7 +69,7 @@ util_extract_list_element <- function(i, my_list, var) {
 #'
 #' @export
 #' @return a tibble with new column names
-rename_columns <- function(obj, from, to) {
+process_rename_columns <- function(obj, from, to) {
   names(obj)[match(from, names(obj))] <- to
   obj
 }

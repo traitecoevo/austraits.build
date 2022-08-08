@@ -86,12 +86,12 @@ test_build_dataset <- function(path_metadata, path_data, info, definitions, unit
 #  browser()
   # test it builds with no errors
   expect_no_error({
-    build_config <- subset_config(path_metadata, definitions, unit_conversions)
+    build_config <- dataset_configure(path_metadata, definitions, unit_conversions)
   }, info = paste(info, " config"))
   
   expect_no_error({
-    build_dataset <- load_dataset(path_data, build_config, schema)
-  }, info = paste(info, " load_dataset"))
+    build_dataset <- dataset_process(path_data, build_config, schema)
+  }, info = paste(info, " dataset_process"))
   
   test_structure(build_dataset, info, schema, definitions, single_dataset = TRUE)
   

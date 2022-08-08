@@ -222,7 +222,7 @@ test_that("test setup_build_process is working",{
   )
 })
 
-testthat::test_that("test substitutions_from_csv", {
+testthat::test_that("test metadata_import_substituitons", {
   substitutions_df <- tibble::tibble(
     dataset_id = "Test_2022",
     trait_name = "Tree",
@@ -241,6 +241,6 @@ testthat::test_that("test substitutions_from_csv", {
   metadata <- read_metadata(path_metadata)
   metadata$substitutions <- NA
   write_metadata(metadata, path_metadata)
-  expect_invisible(substitutions_from_csv(substitutions_df, "Test_2022", "trait_name", "find", "replace"))
+  expect_invisible(metadata_import_substituitons(substitutions_df, "Test_2022", "trait_name", "find", "replace"))
   expect_equal(read_metadata(path_metadata)$substitutions %>% sapply(`%in%`, x = "Tree") %>% any(), TRUE)
 })

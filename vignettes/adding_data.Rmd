@@ -336,13 +336,13 @@ For many studies there are changes we want to make to a dataset before the data.
 
 #### Background  
 
-In each case we want to make some custom modifications to a particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`load_dataset`](https://github.com/traitecoevo/austraits.build/blob/master/R/steps.R)) looks like this:  
+In each case we want to make some custom modifications to a particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`dataset_process`](https://github.com/traitecoevo/austraits.build/blob/master/R/steps.R)) looks like this:  
 
 ```{r, eval=FALSE, echo=TRUE}
 data <-
   read_csv(filename_data_raw, col_types = cols(), guess_max = 1e5) %>%
-  custom_manipulation(metadata[["dataset"]][["custom_R_code"]])() %>%
-  parse_data(dataset_id, metadata)
+  process_custom_code(metadata[["dataset"]][["custom_R_code"]])() %>%
+  process_parse_data(dataset_id, metadata)
 ```
 
 Note the second line. This is where the custom code gets applied, right after the file is loaded.  

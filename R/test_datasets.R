@@ -329,11 +329,11 @@ dataset_test_setup_worker <-
         # custom R code
         txt <- metadata[["dataset"]][["custom_R_code"]]
         #expect_false(grepl("#", txt), label=paste0(files[3], "-custom_R_code cannot contain comments, except on last line"))
-        expect_no_error(custom_manipulation(txt)(data),
+        expect_no_error(process_custom_code(txt)(data),
                         label = paste0(files[3], "-custom_R_code"))
         
         # Apply custom manipulations
-        data <- custom_manipulation(txt)(data)
+        data <- process_custom_code(txt)(data)
         
         # source
         test_list(metadata[["source"]], info = f)
@@ -394,8 +394,8 @@ dataset_test_setup_worker <-
           expect_silent(
             sites <-
               metadata$sites %>%
-              format_sites(dataset_id) %>%
-              add_all_columns(names(schema[["austraits"]][["elements"]][["sites"]][["elements"]]))
+              process_format_sites(dataset_id) %>%
+              process_add_all_columns(names(schema[["austraits"]][["elements"]][["sites"]][["elements"]]))
           )
           
           test_dataframe_names_contain(
@@ -421,8 +421,8 @@ dataset_test_setup_worker <-
           expect_silent(
             contexts <-
               metadata$contexts %>%
-              format_sites(dataset_id, context = TRUE) %>%
-              add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))
+              process_format_sites(dataset_id, context = TRUE) %>%
+              process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))
           )
           
           test_dataframe_names_contain(

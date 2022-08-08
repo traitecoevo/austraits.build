@@ -1,10 +1,10 @@
 #' Configure AusTraits database object
 #'
-#' Creates the config object which gets passed onto `load_dataset`. The config list contains
+#' Creates the config object which gets passed onto `dataset_process`. The config list contains
 #' the subset of definitions and unit conversions for those traits for a each study.
-#' `subset_config` is used in the remake::make process to configure individual studies mapping the
+#' `dataset_configure` is used in the remake::make process to configure individual studies mapping the
 #' individual traits found in that study along with any relevant unit conversions
-#' and definitions. `subset_config` and `load_dataset` are applied to every study
+#' and definitions. `dataset_configure` and `dataset_process` are applied to every study
 #' in the remake.yml file
 #'
 #' @param filename_metadata metadata yaml file for a given study
@@ -20,10 +20,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' subset_config("data/Falster_2003/metadata.yml", read_yaml("config/traits.yml"),
+#' dataset_configure("data/Falster_2003/metadata.yml", read_yaml("config/traits.yml"),
 #' make_unit_conversion_functions("config/unit_conversions.csv"))
 #' }
-subset_config <- function(
+dataset_configure <- function(
   filename_metadata,
   definitions,
   unit_conversion_functions) {
@@ -42,7 +42,7 @@ subset_config <- function(
     dplyr::mutate(
       i = match(.data$trait_name, names(definitions$elements)),
       to = map_chr(.data$i, ~util_extract_list_element(.x, definitions$elements, "units")),
-      conversion = unit_conversion_name(.data$unit_in, .data$to)
+      conversion = process_unit_conversion_name(.data$unit_in, .data$to)
     )
 
   unit_conversion_functions_sub <-
@@ -61,12 +61,12 @@ subset_config <- function(
 
 #' Load Dataset
 #'
-#' load_dataset is used to load individual studies using the config file generated
-#' from `subset_config()`. `subset_config` and `load_dataset` are applied to every
+#' dataset_process is used to load individual studies using the config file generated
+#' from `dataset_configure()`. `dataset_configure` and `dataset_process` are applied to every
 #' study in the remake.yml file
 #'
 #' @param filename_data_raw raw data.csv file for any given study
-#' @param config_for_dataset config settings generated from `subset_config()`
+#' @param config_for_dataset config settings generated from `dataset_configure()`
 #' @param schema schema for austraits.build
 #' @param filter_missing_values default filters missing values from the excluded data table. 
 #' Change to false to see the rows with missing values.
@@ -80,11 +80,11 @@ subset_config <- function(
 #'
 #' @examples
 #' \dontrun{
-#' load_dataset("data/Falster_2003/data.csv", subset_config("data/Falster_2003/metadata.yml",
+#' dataset_process("data/Falster_2003/data.csv", dataset_configure("data/Falster_2003/metadata.yml",
 #' read_yaml("config/traits.yml"), make_unit_conversion_functions("config/unit_conversions.csv")),
 #' load_schema())
 #' }
-load_dataset <- function(filename_data_raw, 
+dataset_process <- function(filename_data_raw, 
                        config_for_dataset, 
                        schema,
                        filter_missing_values = TRUE){
@@ -97,14 +97,14 @@ load_dataset <- function(filename_data_raw,
 
   # load and clean trait data
   traits <- readr::read_csv(filename_data_raw, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
-    custom_manipulation(metadata[["dataset"]][["custom_R_code"]])() %>%
-    parse_data(dataset_id, metadata) %>%
-    add_all_columns(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]])) %>%
-    flag_unsupported_traits(definitions) %>%
-    flag_excluded_observations(metadata) %>%
-    convert_units(definitions, unit_conversion_functions) %>%
-    flag_unsupported_values(definitions) %>%
-    create_entity_id() %>% 
+    process_custom_code(metadata[["dataset"]][["custom_R_code"]])() %>%
+    process_parse_data(dataset_id, metadata) %>%
+    process_add_all_columns(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]])) %>%
+    process_flag_unsupported_traits(definitions) %>%
+    process_flag_excluded_observations(metadata) %>%
+    process_convert_units(definitions, unit_conversion_functions) %>%
+    process_flag_unsupported_values(definitions) %>%
+    process_create_entity_id() %>% 
     apply_taxonomic_updates(metadata) %>%
     dplyr::mutate(
       # For cells with multiple values (separated by a space), sort these alphabetically
@@ -118,8 +118,8 @@ load_dataset <- function(filename_data_raw,
   # extract site data from metadata
   sites <-
     metadata$sites %>%
-    format_sites(dataset_id) %>%
-    add_all_columns(names(schema[["austraits"]][["elements"]][["sites"]][["elements"]])) %>%
+    process_format_sites(dataset_id) %>%
+    process_add_all_columns(names(schema[["austraits"]][["elements"]][["sites"]][["elements"]])) %>%
     dplyr::select(-.data$error) %>%
     # reorder so type, description come first, if present
     dplyr::mutate(i = case_when(.data$site_property == "description" ~ 1, .data$site_property == "latitude (deg)" ~ 2,
@@ -130,8 +130,8 @@ load_dataset <- function(filename_data_raw,
   # read contextual data
   contexts <-
     metadata$contexts %>%
-    format_sites(dataset_id, context = TRUE) %>%
-    add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]])) %>%
+    process_format_sites(dataset_id, context = TRUE) %>%
+    process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]])) %>%
     dplyr::select(-.data$error) %>%
     # reorder so type, description come first, if present
     dplyr::arrange(.data$context_name, .data$context_property)
@@ -149,7 +149,7 @@ load_dataset <- function(filename_data_raw,
 
   contributors <-
     contributors %>%
-    add_all_columns(names(schema[["austraits"]][["elements"]][["contributors"]][["elements"]]), add_error_column = FALSE)
+    process_add_all_columns(names(schema[["austraits"]][["elements"]][["contributors"]][["elements"]]), add_error_column = FALSE)
 
   # record methods on study from metadata
   sources <- metadata$source %>%
@@ -265,7 +265,7 @@ load_dataset <- function(filename_data_raw,
 #' @return character text containing custom_R_code if custom_R_code is not empty,
 #' otherwise no changes are made
 #' @export
-custom_manipulation <- function(txt) {
+process_custom_code <- function(txt) {
   if (!is.null(txt) && !is.na(txt)  && nchar(txt) > 0) {
 
     txt2 <-
@@ -291,7 +291,7 @@ custom_manipulation <- function(txt) {
 #'
 #' @return character string 
 #' @export
-create_entity_id <- function(data) {
+process_create_entity_id <- function(data) {
   
   make_id_segment <- function(n, entity)
     sprintf(paste0("%s%0", max(2, ceiling(log10(n))), "d"), entity, seq_len(n))
@@ -362,8 +362,8 @@ create_entity_id <- function(data) {
       group_by(observation_id) %>%
       summarise(check_for_ind = any(str_detect(entity_type,"individual")))
     
-    # take the `observation_id` values that were created in the `parse_data` function
-    # in parse_data, `observation_id` is built in two stages:
+    # take the `observation_id` values that were created in the `process_parse_data` function
+    # in process_parse_data, `observation_id` is built in two stages:
     # 1. If there is a `individual_id` column read in through metadata$data, 
     # `observation_id` uniquely identifies each individual
     # 2. If there is not an `individual_id` column, `observation_id` is linked to row number
@@ -430,11 +430,11 @@ create_entity_id <- function(data) {
 #'
 #' @examples
 #' \dontrun{
-#' format_sites(yaml::read_yaml("data/Falster_2003/metadata.yml")$sites, "Falster_2003")
-#' format_sites(yaml::read_yaml("data/Apgaua_2017/metadata.yml")$context,
+#' process_format_sites(yaml::read_yaml("data/Falster_2003/metadata.yml")$sites, "Falster_2003")
+#' process_format_sites(yaml::read_yaml("data/Apgaua_2017/metadata.yml")$context,
 #' "Apgaua_2017", context = TRUE)
 #' }
-format_sites <- function(my_list, dataset_id, context = FALSE) {
+process_format_sites <- function(my_list, dataset_id, context = FALSE) {
 
   # default, if length 1 then it's an "na"
   if (length(unlist(my_list)) == 1) {
@@ -468,7 +468,7 @@ format_sites <- function(my_list, dataset_id, context = FALSE) {
 #' @importFrom rlang .data
 #' @return tibble with unrecognised traits flagged as "Unsupported trait" in the "error" column
 #' @export
-flag_unsupported_traits <- function(data, definitions) {
+process_flag_unsupported_traits <- function(data, definitions) {
 
   # create error column if not already present
   if(is.null(data[["error"]]))
@@ -495,7 +495,7 @@ flag_unsupported_traits <- function(data, definitions) {
 #' @importFrom rlang .data
 #' @return dataframe with flagged excluded observations if there are any
 #' @export
-flag_excluded_observations <- function(data, metadata) {
+process_flag_excluded_observations <- function(data, metadata) {
 
   if(length(metadata$exclude_observations)==1 && is.na(metadata$exclude_observations)) return(data)
 
@@ -612,7 +612,7 @@ util_bib_to_list <- function(bib) {
 #' @return tibble with flagged values outside of allowable range, unsupported categorical
 #' trait values or missing values
 #' @export
-flag_unsupported_values <- function(data, definitions) {
+process_flag_unsupported_values <- function(data, definitions) {
 
   # NA values
   data <- data %>%
@@ -695,7 +695,7 @@ make_unit_conversion_functions <- function(filename) {
                                   my_f <- function(x) {}
                                   body(my_f) <- parse(text = x)
                                   my_f})
-  names(fs) <- unit_conversion_name(x[["unit_from"]], x[["unit_to"]])
+  names(fs) <- process_unit_conversion_name(x[["unit_from"]], x[["unit_to"]])
   fs
 }
 
@@ -709,7 +709,7 @@ make_unit_conversion_functions <- function(filename) {
 #'
 #' @return character string containing the name what units are being converted to
 #' @export
-unit_conversion_name <- function(from, to) {
+process_unit_conversion_name <- function(from, to) {
   sprintf("%s-%s", from, to)
 }
 
@@ -722,7 +722,7 @@ unit_conversion_name <- function(from, to) {
 #' @importFrom rlang .data
 #' @return tibble with converted units
 #' @export
-convert_units <- function(data, definitions, unit_conversion_functions) {
+process_convert_units <- function(data, definitions, unit_conversion_functions) {
 
   # List of original variable names
   vars <- names(data)
@@ -732,7 +732,7 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
     dplyr::mutate(
       i = match(.data$trait_name, names(definitions)),
       to = util_extract_list_element(.data$i, definitions, "units"),
-      ucn = unit_conversion_name(.data$unit, .data$to),
+      ucn = process_unit_conversion_name(.data$unit, .data$to),
       type = util_extract_list_element(.data$i, definitions, "type"),
       to_convert =  ifelse(is.na(.data$error), (.data$type == "numeric" & .data$unit != .data$to), FALSE))
 
@@ -771,7 +771,7 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
 #' @importFrom rlang :=
 #' @importFrom dplyr select mutate filter arrange distinct any_of
 #' @export
-add_all_columns <- function(data, vars, add_error_column = TRUE) {
+process_add_all_columns <- function(data, vars, add_error_column = TRUE) {
 
   missing <- setdiff(vars, names(data))
 
@@ -805,7 +805,7 @@ add_all_columns <- function(data, vars, add_error_column = TRUE) {
 #' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of bind_cols
 #' @importFrom rlang .data
 #' @export
-parse_data <- function(data, dataset_id, metadata) {
+process_parse_data <- function(data, dataset_id, metadata) {
 
   # get config data for dataset
   data_is_long_format <- metadata[["dataset"]][["data_is_long_format"]]
@@ -1116,7 +1116,7 @@ apply_taxonomic_updates  <- function(data, metadata){
 
 #' Combine all the AusTraits studies into the compiled AusTraits database
 #'
-#' `combine_datasets` compiles all the loaded studies into a single AusTraits
+#' `process_combine_datasets` compiles all the loaded studies into a single AusTraits
 #' database object as a large list
 #'
 #' @param ... arguments passed to other functions
@@ -1125,7 +1125,7 @@ apply_taxonomic_updates  <- function(data, metadata){
 #' @return AusTraits compilation database as a large list
 #' @importFrom rlang .data
 #' @export
-combine_datasets <- function(..., d=list(...)) {
+process_combine_datasets <- function(..., d=list(...)) {
 
   combine <- function(name, d) {
     dplyr::bind_rows(lapply(d, "[[", name))
@@ -1187,7 +1187,7 @@ combine_datasets <- function(..., d=list(...)) {
 #' @importFrom rlang .data
 #'
 #' @export
-update_taxonomy <- function(austraits_raw, taxa) {
+process_rupdate_taxonomy <- function(austraits_raw, taxa) {
 
   austraits_raw$taxonomic_updates <-
     austraits_raw$taxonomic_updates %>%
@@ -1258,7 +1258,7 @@ update_taxonomy <- function(austraits_raw, taxa) {
 #'
 #' @return AusTraits database object with version information added
 #' @export
-add_version_info <- function(austraits, version, git_sha) {
+process_add_version_info <- function(austraits, version, git_sha) {
 
   austraits$build_info <- list(
     version=version,

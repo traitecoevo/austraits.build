@@ -94,11 +94,11 @@ metadata_create_template <- function(dataset_id,
       out$dataset[c("trait_name", "value")] <- NULL
     
     for(v in v1) {      
-      config[["variable_match"]][[v]] <- user_select_column(v, names(data))
+      config[["variable_match"]][[v]] <- metadata_user_select_column(v, names(data))
     }
     
     for(v in v2) {
-      tmp <- user_select_column(v, c(names(data), NA))
+      tmp <- metadata_user_select_column(v, c(names(data), NA))
       if(!is.na(tmp)) {
         config[["variable_match"]][[v]] <- tmp
       }
@@ -125,7 +125,7 @@ metadata_create_template <- function(dataset_id,
 
 #' Select column by user
 #' 
-#' `user_select_column` is used to select which columns in a dataframe/ tibble 
+#' `metadata_user_select_column` is used to select which columns in a dataframe/ tibble 
 #' corresponds to the variable of interest. It is used compile the metadata yaml
 #' file by prompting the user to choose the relevant columns. It is used in 
 #' `metadata_add_sites` and `metadata_add_contexts` and `metadata_create_template`
@@ -134,7 +134,7 @@ metadata_create_template <- function(dataset_id,
 #' @param choices the options that can be selected from
 #'
 #' @export
-user_select_column <- function(column, choices) {
+metadata_user_select_column <- function(column, choices) {
   tmp <- menu(choices, title= sprintf("Select column for `%s`", column))
   choices[tmp]
 }
@@ -149,7 +149,7 @@ user_select_column <- function(column, choices) {
 #' @param vars variable names
 #'
 #' @export
-user_select_names <- function(title, vars){
+metadata_user_select_names <- function(title, vars){
 
   txt <- sprintf("%s (by number separated by space; e.g. '1 2 4'):\n%s\n", title, paste(sprintf("%d: %s", seq_len(length(vars)), vars), collapse="\n"))
 
@@ -186,7 +186,7 @@ metadata_check_custom_R_code <- function(dataset_id) {
 
   # load and clean trait data
   readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols(), guess_max = 100000) %>%
-    custom_manipulation(metadata[["dataset"]][["custom_R_code"]])()
+    process_custom_code(metadata[["dataset"]][["custom_R_code"]])()
 }
 
 #' For specified `dataset_id`, populate columns for traits into metadata
@@ -207,7 +207,7 @@ metadata_add_traits <- function(dataset_id) {
 
   # load and clean trait data
   data <- readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols()) %>%
-    custom_manipulation(metadata[["dataset"]][["custom_R_code"]])()
+    process_custom_code(metadata[["dataset"]][["custom_R_code"]])()
 
   # Get list of potential traits
   if(!metadata$dataset$data_is_long_format) {
@@ -216,7 +216,7 @@ metadata_add_traits <- function(dataset_id) {
     v <- unique(data[[metadata$dataset$variable_match$trait_name]])
   }
 
-  var_in <- user_select_names(paste("Indicate all columns you wish to keep as distinct traits in ", dataset_id), v)
+  var_in <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct traits in ", dataset_id), v)
 
   cat(sprintf("Following traits added to metadata for %s: %s.\n \tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(var_in, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
   
@@ -264,11 +264,11 @@ metadata_add_sites <- function(dataset_id, site_data) {
   metadata <- metadata_read_dataset_id(dataset_id)
 
   # Choose column for site_name
-  site_name <- user_select_column("site_name", names(site_data))
+  site_name <- metadata_user_select_column("site_name", names(site_data))
 
   # From remaining variables, choose those to keep
   site_sub <- dplyr::select(site_data, -!!site_name)
-  keep <- user_select_names(paste("Indicate all columns you wish to keep as distinct site_properties in ", dataset_id), names(site_sub))
+  keep <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct site_properties in ", dataset_id), names(site_sub))
 
   # Save and notify
   metadata$sites <- dplyr::select(site_data, tidyr::one_of(keep)) %>%
@@ -304,11 +304,11 @@ metadata_add_contexts <- function(dataset_id, context_data) {
   metadata <- metadata_read_dataset_id(dataset_id)
   
   # Choose column for context_name
-  context_name <- user_select_column("context_name", names(context_data))
+  context_name <- metadata_user_select_column("context_name", names(context_data))
   
   # From remaining variables, choose those to keep
   context_sub <- dplyr::select(context_data, -!!context_name)
-  keep <- user_select_names(paste("Indicate all columns you wish to keep as distinct context_properties in ", dataset_id), names(context_sub))
+  keep <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct context_properties in ", dataset_id), names(context_sub))
   
   # Save and notify
   metadata$contexts <- dplyr::select(context_data, tidyr::one_of(keep)) %>%
@@ -496,9 +496,9 @@ metadata_add_substitutions_list <- function(dataset_id, substitutions) {
 #' read_csv("export/dispersal_syndrome_substitutions.csv") %>%
 #'   select(-extra) %>%
 #'   filter(dataset_id == "Angevin_2011") -> dataframe_of_substitutions
-#' substitutions_from_csv(dataframe_of_substitutions, dataset_id, trait_name, find, replace)
+#' metadata_import_substituitons(dataframe_of_substitutions, dataset_id, trait_name, find, replace)
 #' }
-substitutions_from_csv <- function(dataframe_of_substitutions, dataset_id, trait_name, find, replace) {
+metadata_import_substituitons <- function(dataframe_of_substitutions, dataset_id, trait_name, find, replace) {
 
   # split dataframe of substitutions by row
   dataframe_of_substitutions %>%

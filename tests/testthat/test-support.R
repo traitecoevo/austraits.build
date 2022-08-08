@@ -13,12 +13,12 @@ test_that("util_extract_list_element returns an element in character",{
   expect_error(util_extract_list_element((length(test_list)+1), test_list, "units"), "subscript out of bounds")
 })
 
-test_that("rename_columns renames a column",{
+test_that("process_rename_columns renames a column",{
   test_column <- iris[1:5,1:2]
-  expect_equal(rename_columns(test_column, "", ""), test_column)
-  expect_equal(names(rename_columns(test_column, "Sepal.Length", "SepalLength")[1]), "SepalLength")
-  expect_warning(rename_columns(test_column, "Sepal.Length", c("SepalLength", "SepalWidth")))
-  expect_error(rename_columns(test_column, Sepal.Length, "SepalLength"))
+  expect_equal(process_rename_columns(test_column, "", ""), test_column)
+  expect_equal(names(process_rename_columns(test_column, "Sepal.Length", "SepalLength")[1]), "SepalLength")
+  expect_warning(process_rename_columns(test_column, "Sepal.Length", c("SepalLength", "SepalWidth")))
+  expect_error(process_rename_columns(test_column, Sepal.Length, "SepalLength"))
 })
 
 test_that("util_seperate_and_sort returns alphabetically sorted characters",{

@@ -10,8 +10,8 @@ run_benchmark <- function( ) {
     definitions <- load_schema("config/traits.yml", "traits")
     unit_conversions <- make_unit_conversion_functions("config/unit_conversions.csv")
     
-    config <- subset_config(sprintf("data/%s/metadata.yml", x), definitions, unit_conversions)
-    data <- load_dataset(sprintf("data/%s/data.csv", x), config, schema)
+    config <- dataset_configure(sprintf("data/%s/metadata.yml", x), definitions, unit_conversions)
+    data <- dataset_process(sprintf("data/%s/data.csv", x), config, schema)
     
     data
   }

@@ -37,13 +37,13 @@ targets:
 {{#dataset_ids}}
   {{dataset_id}}_config:
     command: >
-      subset_config("{{path}}/{{dataset_id}}/metadata.yml",
+      dataset_configure("{{path}}/{{dataset_id}}/metadata.yml",
                  definitions,
                  unit_conversions
                  )
   {{dataset_id}}:
     command: >
-      load_dataset("{{path}}/{{dataset_id}}/data.csv",
+      dataset_process("{{path}}/{{dataset_id}}/data.csv",
                   {{dataset_id}}_config,
                   schema
                  )
@@ -52,14 +52,14 @@ targets:
 
   austraits_raw:
     command: >
-      combine_datasets(
+      process_combine_datasets(
 {{#dataset_ids}}
         {{dataset_id}},
 {{/dataset_ids}}
         NULL)
 
   austraits:
-    command: update_taxonomy(austraits_raw, taxon_list)
+    command: process_rupdate_taxonomy(austraits_raw, taxon_list)
     
   austraits_versioned:
-    command: add_version_info(austraits, version_number, git_SHA)
+    command: process_add_version_info(austraits, version_number, git_SHA)
