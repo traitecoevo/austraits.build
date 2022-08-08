@@ -24,7 +24,8 @@ dataset:
         parasitic = ifelse(`growth form`=="parasite","parasitic",NA),
         `flowering time` = convert_month_range_vec_to_binary(`flowering time`), 
         leaf_type = ifelse(`leaf type` == "articles", "article", NA), 
-        `leaf type`= ifelse(`leaf type` %in% c("articles", "palmate"), NA, `leaf type`)
+        `leaf type`= ifelse(`leaf type` %in% c("articles", "palmate", "palm"), NA, `leaf type`),
+        leaf_division = ifelse(`leaf type` %in% c("palmate", "palm"), "palmately_compound", NA)
       )
   '
   collection_date: unknown/1993
@@ -89,6 +90,14 @@ traits:
 - var_in: leaf_type
   unit_in: .na
   trait_name: leaf_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_division
+  unit_in: .na
+  trait_name: leaf_division
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -186,12 +195,6 @@ substitutions:
 - trait_name: leaf_type
   find: articles
   replace: article
-- trait_name: leaf_compoundness
-  find: palm
-  replace: palmate
-- trait_name: leaf_compoundness
-  find: palmate
-  replace: palmate
 - trait_name: plant_growth_form
   find: liana
   replace: climber_liana

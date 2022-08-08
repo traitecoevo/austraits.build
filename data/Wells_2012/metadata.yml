@@ -70,15 +70,17 @@ dataset:
         `L1Lflt2` == "2" ~ "measurements made on leaflets"
       )                       
     ) %>% 
-            mutate_at(vars(`LA`,`LtLeaf`,`LMA`,`LWC`), ~na_if(.,0)) %>%
-            bind_rows(seedling_traits) %>%
-            bind_rows(adult_traits) %>%
-            mutate(
-              fruit_fleshiness = Fruit_type,
-              fruit_dehiscence = Fruit_type,
-              dispersal_appendage = ifelse(Fruit_type == 
-                "Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
-                "fleshy_reward", NA))
+        mutate_at(vars(`LA`,`LtLeaf`,`LMA`,`LWC`), ~na_if(.,0)) %>%
+        bind_rows(seedling_traits) %>%
+        bind_rows(adult_traits) %>%
+        mutate(
+          fruit_fleshiness = Fruit_type,
+          fruit_dehiscence = Fruit_type,  
+          dispersal_unit = NA_character_,
+          dispersal_appendage = ifelse(Fruit_type == 
+            "Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
+            "fleshy_reward", NA)) %>%
+        move_values_to_new_trait("Fruit_type","dispersal_unit",c("spore"),c("spore"),NA)
   '
   collection_date: 2004/2005
   taxon_name: Species
@@ -754,6 +756,20 @@ traits:
     (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
   collection_type: literature
   sample_age_class: adult (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
+- var_in: dispersal_unit
+  unit_in: .na
+  trait_name: dispersal_unit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Fruit types based on morphology. 5 classes (4 among Angiosperms), Fleshy
+    (berry, pome, pepo, etc.), Dry dehiscent with fleshy reward  (e.g. aril, funicle,
+    elaiosome, etc.), Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed
+    achene, etc.), Dry dehiscent or indehsicent without attractant or wing. Spore
+    (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
+  collection_type: literature
+  sample_age_class: adult (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
 - var_in: fruit_fleshiness
   unit_in: .na
   trait_name: fruit_fleshiness
@@ -1016,7 +1032,7 @@ substitutions:
   replace: .na.character
 - trait_name: fruit_type
   find: Spore
-  replace: spore
+  replace: .na.character
 - trait_name: fruit_dehiscence
   find: Fleshy (berry, pome, pepo, etc.)
   replace: .na.character
