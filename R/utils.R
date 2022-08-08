@@ -71,20 +71,6 @@ util_extract_list_element <- function(i, my_list, var) {
 }
 
 
-#' Get SHA string from Github repository for latest commit
-#'
-#' Get SHA string for the latest commit on Github for the repository. SHA is the
-#' abbreviated SHA-1 40 digit hexadecimal number which Github uses as the
-#' Commit ID to track changes made to a repo
-#'
-#' @param path root directory where a specified file is located, default file name
-#' is the remake.yml file
-#'
-#' @return 40-digit SHA character string for the latest commit to the repository
-#' @export
-util_get_SHA <- function(path = ".") {
-  git2r::sha(git2r::last_commit(git2r::repository(path)))
-}
 
 #'  Split and sort cells with multiple values
 #'
