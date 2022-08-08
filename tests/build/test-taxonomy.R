@@ -15,7 +15,7 @@ test_that("test taxonomic resources are working",{
   expect_true(file.copy("../testthat/data", ".", recursive = TRUE, overwrite = TRUE))
   expect_true(file.copy("data/Test_2022/test-metadata.yml", "data/Test_2022/metadata.yml", overwrite = TRUE))
   unlink(".git", recursive = TRUE)
-  expect_no_error(zip::unzip("../testthat/testgit.zip"))
+  expect_no_error(zip::unzip("config/testgit.zip"))
   unlink("config/taxon_list.csv")
   expect_false(file.exists("config/taxon_list.csv"))
   

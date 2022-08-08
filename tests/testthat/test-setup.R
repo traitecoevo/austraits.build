@@ -167,7 +167,7 @@ test_that("test build_setup_pipeline is working",{
   expect_false(file.exists("config/taxon_list.csv"))
   expect_true(file.copy("data/Test_2022/test-metadata.yml", "data/Test_2022/metadata.yml", overwrite = TRUE))
   
-  expect_no_error(zip::unzip("testgit.zip"))
+  expect_no_error(zip::unzip("config/testgit.zip"))
   expect_no_error(sha <- git2r::sha(git2r::last_commit()))
   expect_error(build_setup_pipeline(path = "Datas"))
   
