@@ -20,23 +20,14 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-library(dplyr)
-library(readr)
-library(tidyr)
-library(austraits)
 library(austraits.build)
-
-root.dir <- rprojroot::find_root("remake.yml")
-knitr::opts_knit$set(root.dir = root.dir)
 
 my_kable_styling <- my_kable_styling_html
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
-## Loads austraits into global name space
-#austraits <- austraits:::austraits_lite
-austraits <- read_rds("export/austraits.rds")
-definitions <- austraits$definitions
+austraits <- austraits:::austraits_lite
+schema <- load_schema()
 ```
 
 ## File structure
@@ -164,13 +155,13 @@ We aim to keep the data file in the rawest form possible (i.e. with as few chang
 
 ### Metadata.yml
 
-The metadata is compiled in a `.yml` file, a structured data file where information is presented in a hierarchical format (see [Appendix for details](#yaml)).  There are `r length(austraits$schema$metadata$elements)` values at the top hierarchical level: `r sprintf("%s", austraits$schema$metadata$elements %>% names()) %>% paste(collapse = ", ")`. These are each described below.
+The metadata is compiled in a `.yml` file, a structured data file where information is presented in a hierarchical format (see [Appendix for details](#yaml)).  There are `r length(schema$metadata$elements)` values at the top hierarchical level: `r sprintf("%s", schema$metadata$elements %>% names()) %>% paste(collapse = ", ")`. These are each described below.
 
 As a start, you may want to check out some examples from [existing studies in Austraits](https://github.com/traitecoevo/austraits.build/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits.build/blob/master/data/Angevin_2011/metadata.yml) or [Wright_2009](https://github.com/traitecoevo/austraits.build/blob/master/data/Wright_2009/metadata.yml).
 
 #### Source
 
-This section provides `r tolower(austraits$schema$metadata$elements$source$description)` In general we aim to reference the primary source. References are written in structured yml format, under the category `source` and then under sub-groupings `primary` and `secondary`. General guidelines for describing a source include:
+This section provides `r tolower(schema$metadata$elements$source$description)` In general we aim to reference the primary source. References are written in structured yml format, under the category `source` and then under sub-groupings `primary` and `secondary`. General guidelines for describing a source include:
 
 - A maximum of one primary source allowed.
 - Elements are names as in [bibtex format](https://en.wikipedia.org/wiki/BibTeX).
@@ -229,10 +220,10 @@ If a secondary source is included it may look like:
 
 #### Contributors
 
-This section provides `r tolower(austraits$schema$metadata$elements$contributors$description)`. The following information is recorded for each data contributor:
+This section provides `r tolower(schema$metadata$elements$contributors$description)`. The following information is recorded for each data contributor:
 
 ```{r, echo=FALSE, results="show"}
-austraits$schema$metadata$elements$contributors$elements$data_collectors %>%
+schema$metadata$elements$contributors$elements$data_collectors %>%
   list1_to_df() %>%
   filter(!key %in% c("type","description")) %>%
   my_kable_styling()
@@ -258,15 +249,12 @@ Note that only the AusTraits custodians have the contributors' e-mail addresses 
 
 Additional fields within contributors are:
 
-??Daniel why won't the descriptions show up in the next 2 lines?
-
-- Assistants, `r tolower(austraits$schema$metadata$elements$assistants$description)`
- 
-- AusTraits dataset curators, `r tolower(austraits$schema$metadata$elements$austraits_curators$description)`
+- Assistants, `r tolower(schema$metadata$elements$contributors$elements$assistants$description)`
+- AusTraits dataset curators, `r tolower(schema$metadata$elements$contributors$austraits_curators$description)`
 
 #### Dataset
 
-This section includes `r tolower(austraits$schema$metadata$elements$dataset$description)`
+This section includes `r tolower(schema$metadata$elements$dataset$description)`
 
 The following elements are included under the element `dataset`:
 
@@ -274,7 +262,7 @@ The following elements are included under the element `dataset`:
 ??Daniel how do I filter out values I don't want in this table (observation_id). And trait_name, value are odd, because they are indicating the column for these traits in long datasets, but the definitions in the table below are for the output in the traits table??
 
 ```{r}
-values <- austraits$schema$metadata$elements$dataset$values
+values <- schema$metadata$elements$dataset$values
 for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
@@ -316,12 +304,12 @@ A common use of the `custom_R_code` is to automate the conversion of a verbal de
 
 #### Traits
 
-This section provides `r stringr::str_replace(austraits$schema$metadata$elements$traits$description,"A","a")`
+This section provides `r stringr::str_replace(schema$metadata$elements$traits$description,"A","a")`
 
 For each trait submitted to AusTraits, there is the following information:
 
 ```{r}
-values <- austraits$schema$metadata$elements$traits$elements
+values <- schema$metadata$elements$traits$elements
 for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
@@ -360,14 +348,14 @@ traits:
 #### Substitutions
 
 
-This section provides `r tolower(austraits$schema$metadata$elements$substitutions$description)`
+This section provides `r tolower(schema$metadata$elements$substitutions$description)`
 
 Substitutions are required whenever the exact word(s) used to describe a categorical trait value in AusTraits is different from the vocabulary used by the author in the `data.csv` file. It is preferable to align vocabulary using `substitutions` rather than changing the `data.csv` file. The [trait definitions file](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml) provides a list of supported values for each trait.
 
 Each substitution is documented using the following elements:
 
 ```{r}
-values <- austraits$schema$metadata$elements$substitutions$values
+values <- schema$metadata$elements$substitutions$values
 for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
@@ -388,12 +376,12 @@ substitutions:
 
 #### Taxonomic updates
 
-This section provides `r tolower(austraits$schema$metadata$elements$taxonomic_updates$description)`
+This section provides `r tolower(schema$metadata$elements$taxonomic_updates$description)`
 
 Each substitution is documented using the following elements:
 
 ```{r}
-values <- austraits$schema$metadata$elements$taxonomic_updates$values
+values <- schema$metadata$elements$taxonomic_updates$values
 for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
@@ -415,7 +403,7 @@ taxonomic_updates:
 
 #### Questions
 
-This section provides `r tolower(austraits$schema$metadata$elements$questions)`
+This section provides `r tolower(schema$metadata$elements$questions)`
 
 An example is as follows:
 

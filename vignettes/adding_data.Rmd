@@ -20,24 +20,16 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-# Load austraits.build file
-library(dplyr)
-library(readr)
-library(austraits)
 library(austraits.build)
-
-root.dir <- rprojroot::find_root("remake.yml")
-knitr::opts_knit$set(root.dir = root.dir)
 
 my_kable_styling <- my_kable_styling_html
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Loads austraits into global name space
-#austraits <- austraits:::austraits_lite
+austraits <- austraits:::austraits_lite
 
-austraits <- read_rds("export/austraits.rds")
-schema <- austraits$schema
+schema <- load_schema()
 definitions <- austraits$definitions
 ```
 
@@ -66,11 +58,7 @@ The main steps are:
 8. Return to step 6 if changes are made to the `data.csv` or `metadata.yml` files.
 9. Push the GitHub branch.
 
-<<<<<<< HEAD
-It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) to use as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), particularly the `traits` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html).
-=======
 It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) to use as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), particularly the `definitions` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/definitions.html).
->>>>>>> develop
 
 Once you have prepared your `data.csv` and `metadata.yml` files within a folder in the `data` directory, you can incorporate the new data into AusTraits by running:
 
@@ -87,11 +75,6 @@ You can then rebuild AusTraits, including your dataset.
 The `austraits.build` repository includes a selection of functions that help build the repository. To use these, you'll need to make them available. 
 
 The easiest way to load the functions into your workspace is to run the following (from within the repository)
-
-```{r, echo=TRUE, eval=FALSE}
-devtools::load_all()
-```
-or
 
 ```{r, echo=TRUE, eval=FALSE}
 library(austraits.build)
@@ -211,7 +194,7 @@ To assist you in constructing the `metadata.yml` file, we have developed functio
 First run the following to make the functions available
 
 ```{r, eval=FALSE, echo=TRUE}
-devtools::load_all()
+library(austraits.build)
 ```
 
 ### Creating a template
@@ -368,7 +351,7 @@ Note the second line. This is where the custom code gets applied, right after th
 
 - assume a single object called `data`, and apply whatever fixes are needed  
 - use functions from the packages [dplyr](https://dplyr.tidyverse.org) or [tiydr](https://tidyr.tidyverse.org), like `mutate`, `rename`, etc, and otherwise avoid external packages  
-- alternatively, use functions we've created explicitly for pre-processing data, found in [pre_process.R](https://github.com/traitecoevo/austraits.build/blob/master/R/pre_process.R) and loaded through `devtools::load_all()`
+- alternatively, use functions we've created explicitly for pre-processing data, found in [pre_process.R](https://github.com/traitecoevo/austraits.build/blob/master/R/pre_process.R) and loaded through `library(austraits.build)`
 - be fully self-contained (we're not going to use any of the other remake machinery here)  
 - use pipes to weave together a single statement, where possible. (Otherwise you'll need a semi colons `;` at the end of each statement).  
 - place a single apostrophe (') at the start and end of your custom R code; this allows you to add line breaks between pipes.  
@@ -822,21 +805,17 @@ To run the tests, the variable `dataset_ids` must be defined in the global names
 
 ```{r, eval=FALSE, echo=TRUE}
 # load relevant functions
-devtools::load_all()
+library(austraits.build)
 
 # Tests run test on one study
 dataset_ids <- "Bragg_2002"
-test_data_setup(dataset_ids)
-
-# Tests run test on one study using `current_study` variable
-dataset_ids <- current_study
-test_data_setup(dataset_ids = current_study)
+dataset_test_setup(dataset_ids)
 
 # Tests run test on all studies
 dataset_ids <- dir("data")
-test_data_setup()
+dataset_test_setup(dataset_ids)
 ```
-Fix as many errors as you can and then rerun `test_data_setup()` repeatedly until no errors remain. 
+Fix as many errors as you can and then rerun `dataset_test_setup()` repeatedly until no errors remain. 
 
 See below for suggestions on how to implement large numbers of trait value substitutions.
 

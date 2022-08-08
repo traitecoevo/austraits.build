@@ -162,8 +162,8 @@ test_that("test load_taxonomic_resources is working",{
   expect_type(x$APNI, "list")
 })
 
-test_that("test test_data_setup is working",{
-  expect_error(test_data_setup())
+test_that("test dataset_test_setup is working",{
+  expect_error(dataset_test_setup())
 })  
 
 test_that("test setup_build_process is working",{
