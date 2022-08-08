@@ -26,7 +26,7 @@ read_csv_char <- function(...){
 
 #' Convert NULL values to a different value
 #'
-#' null_as converts NULL values in a vector to a different value. Default is
+#' util_replace_null converts NULL values in a vector to a different value. Default is
 #' converting NuLL to NA
 #'
 #' @param x a vector containing null values
@@ -34,8 +34,8 @@ read_csv_char <- function(...){
 #'
 #' @export
 #' @return a vector with null values replaced
-#' @examples null_as(NULL)
-null_as <- function(x, val=NA){
+#' @examples util_replace_null(NULL)
+util_replace_null <- function(x, val=NA){
   if(is.null(x)) return(val)
   x
 }
@@ -51,10 +51,10 @@ null_as <- function(x, val=NA){
 #' @export
 #' @examples
 #' \dontrun{
-#' extract_list_element(1, definitions$traits$elements, "units")
+#' util_extract_list_element(1, definitions$traits$elements, "units")
 #' }
-extract_list_element <- function(i, my_list, var) {
-  i %>% lapply(function(x) my_list[[x]][[var]]) %>% lapply(null_as) %>% unlist()
+util_extract_list_element <- function(i, my_list, var) {
+  i %>% lapply(function(x) my_list[[x]][[var]]) %>% lapply(util_replace_null) %>% unlist()
 }
 
 #' Rename column names
@@ -76,7 +76,7 @@ rename_columns <- function(obj, from, to) {
 
 #'  Split and sort cells with multiple values
 #'
-#'  split_then_sort: For a vector x in which individual cell may have
+#'  util_seperate_and_sort: For a vector x in which individual cell may have
 #'  multiple values (separated by 'sep'), sort records within each cell alphabetically
 #'
 #' @param x an individual cell with multiple values
@@ -85,8 +85,8 @@ rename_columns <- function(obj, from, to) {
 #' @return a vector of alphabetically sorted records
 #'
 #' @export
-#' @examples split_then_sort("z y x")
-split_then_sort <- function(x, sep=" ") {
+#' @examples util_seperate_and_sort("z y x")
+util_seperate_and_sort <- function(x, sep=" ") {
 
   # find cells with multiple values, indicated by presence of sep
   i <- grep(sep, x)
@@ -106,8 +106,8 @@ split_then_sort <- function(x, sep=" ") {
 #' @return a (yaml) list
 #'
 #' @export
-#' @examples df_to_list(iris)
-df_to_list <- function(df) {
+#' @examples util_df_to_list(iris)
+util_df_to_list <- function(df) {
   attr(df, "out.attrs") <- NULL
   unname(lapply(split(df, seq_len(nrow(df))), as.list))
 }
@@ -121,8 +121,8 @@ df_to_list <- function(df) {
 #' @param on_empty value to return if my_list is NULL, NA or is length == 0, default = NA
 #'
 #' @export
-#' @examples list_to_df(df_to_list(iris))
-list_to_df <- function(my_list, as_character= TRUE, on_empty=NA) {
+#' @examples util_list_to_df2(util_df_to_list(iris))
+util_list_to_df2 <- function(my_list, as_character= TRUE, on_empty=NA) {
 
   if(is.null(my_list) || any(is.na(my_list)) || length(my_list) ==0)
     return(on_empty)
@@ -138,8 +138,8 @@ list_to_df <- function(my_list, as_character= TRUE, on_empty=NA) {
 #' @param my_list a list with single entries
 #' @return a tibble with two columns
 #' @export
-#' @examples list1_to_df(as.list(iris)[2])
-list1_to_df <- function(my_list) {
+#' @examples util_list_to_df1(as.list(iris)[2])
+util_list_to_df1 <- function(my_list) {
 
   for(f in names(my_list)) {
     if(is.null(my_list[[f]]))
@@ -156,8 +156,8 @@ list1_to_df <- function(my_list) {
 #'
 #' @return a list merged with an added item at the end
 #' @export
-#' @examples  append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3,4)])
-append_to_list <- function(my_list, to_append) {
+#' @examples  util_append_to_list(as.list(iris)[c(1,2)], as.list(iris)[c(3,4)])
+util_append_to_list <- function(my_list, to_append) {
   my_list[[length(my_list)+1]] <-  to_append
   my_list
 }

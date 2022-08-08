@@ -231,11 +231,11 @@ metadata_add_traits <- function(dataset_id) {
 
   # check if existing content, if so append
   if(!all(is.null(metadata$traits)) && !is.na(metadata$traits)) {
-    traits <- dplyr::bind_rows(metadata$traits %>% list_to_df(), traits) %>%
+    traits <- dplyr::bind_rows(metadata$traits %>% util_list_to_df2(), traits) %>%
       dplyr::filter(!duplicated(var_in))
   }
 
-  metadata$traits <- traits %>% df_to_list()
+  metadata$traits <- traits %>% util_df_to_list()
 
   metadata_write_dataset_id(metadata, dataset_id)
 }
@@ -336,7 +336,7 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 
     # Read in file, convert to list, set key
     bib <- RefManageR::ReadBib(file) %>% 
-      convert_bib_to_list()
+      util_bib_to_list()
 
     bib$key <- key
 
@@ -435,7 +435,7 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
   }
 
   # Check if find record already exists for that trait
-  data <-  list_to_df(metadata[[set_name]])  
+  data <-  util_list_to_df2(metadata[[set_name]])  
   if(length(metadata[[set_name]]) > 0)
     if(length(which(trait_name %in% data$trait_name & find %in% data$find)) > 0) {
     message(paste(
@@ -446,7 +446,7 @@ metadata_add_substitution <- function(dataset_id, trait_name, find, replace) {
     return(invisible())
   }
 
-  metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
+  metadata[[set_name]] <- util_append_to_list(metadata[[set_name]], to_add)
 
   message(sprintf("%s %s for trait %s : %s -> %s", crayon::red("Adding substitution in"), crayon::red(dataset_id), trait_name, find, replace))
   metadata_write_dataset_id(metadata, dataset_id)
@@ -517,9 +517,9 @@ substitutions_from_csv <- function(dataframe_of_substitutions, dataset_id, trait
       metadata[[set_name]] <- list()
     }
 
-    data <- list_to_df(metadata[[set_name]])
+    data <- util_list_to_df2(metadata[[set_name]])
 
-    metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
+    metadata[[set_name]] <- util_append_to_list(metadata[[set_name]], to_add)
 
     metadata_write_dataset_id(metadata, dataframe_of_substitutions[[i]]$dataset_id)
   }
@@ -553,13 +553,13 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
   }
   
   # Check if find record already exists for that trait
-  data <- list_to_df(metadata[[set_name]])  
+  data <- util_list_to_df2(metadata[[set_name]])  
   if(!is.na(data) && nrow(data) > 0 && length(which(find %in% data$find)) > 0) {
     cat(sprintf("\tSubstitution already exists for %s\n", crayon::red(find)))
     return(invisible(TRUE))
   }
 
-  metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
+  metadata[[set_name]] <- util_append_to_list(metadata[[set_name]], to_add)
 
   cat(sprintf("%s %s: %s -> %s (%s)\n", "\tAdding taxonomic change in", dataset_id, crayon::blue(find), crayon::green(replace), reason))
   metadata_write_dataset_id(metadata, dataset_id)
@@ -614,13 +614,13 @@ metadata_exclude_observations <- function(dataset_id, variable, find, reason) {
   }
   
   # Check if find record already exists for that trait
-  data <-  list_to_df(metadata[[set_name]])  
+  data <-  util_list_to_df2(metadata[[set_name]])  
   if(!is.na(data) && nrow(data) > 0 && length(which(find == data$find & variable == data$variable & reason == data$reason)) > 0) {
     cat(sprintf("Exclusion already exists for %s\n", crayon::red(find)))
     return(invisible(TRUE))
   }
 
-  metadata[[set_name]] <- append_to_list(metadata[[set_name]], to_add)
+  metadata[[set_name]] <- util_append_to_list(metadata[[set_name]], to_add)
 
   cat(sprintf("%s - excluding %s: %s (%s)\n", dataset_id, crayon::blue(variable), crayon::blue(find), reason))
   metadata_write_dataset_id(metadata, dataset_id)
@@ -645,7 +645,7 @@ metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) 
 
   to_add <- list(find = find, replace = replace, reason = reason) 
 
-  data <-  list_to_df(metadata[[set_name]]) 
+  data <-  util_list_to_df2(metadata[[set_name]]) 
   i <- match(find, data$find)
   # add `set_name` category if it doesn't yet exist
   if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]]) || nrow(data) == 0 || length(i) == 0) {
@@ -679,7 +679,7 @@ metadata_remove_taxonomic_change <- function(dataset_id, find, replace=NULL) {
   }
 
   # Check if find record already exists for that trait
-  data <-  list_to_df(metadata[[set_name]])  
+  data <-  util_list_to_df2(metadata[[set_name]])  
   if(nrow(data) == 0) {
     message(sprintf("Taxonomic change in %s: %s -> %s %s", dataset_id, find, replace, crayon::green("does not exist")))
     return()
@@ -808,7 +808,7 @@ metadata_check_taxa <- function(dataset_id,
   metadata <- metadata_read_dataset_id(dataset_id)
   if(!all(is.null(metadata$taxonomic_updates)) && !is.na(metadata$taxonomic_updates)) {
     metata_changes <- 
-      metadata$taxonomic_updates %>% list_to_df() 
+      metadata$taxonomic_updates %>% util_list_to_df2() 
     
     species <- species %>% 
         dplyr::mutate(

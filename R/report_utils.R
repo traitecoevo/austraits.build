@@ -99,7 +99,7 @@ get_SHA <- function(path = ".") {
 #' @param ... arguments passed to `kableExtra::kable()`
 #' @importFrom rlang .data
 #' @export
-my_kable_styling_html <- function(...) {
+util_kable_styling_html <- function(...) {
     txt <- 
       kableExtra::kable(...) %>%
       kableExtra::kable_styling(..., 

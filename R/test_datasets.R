@@ -449,7 +449,7 @@ dataset_test_setup_worker <-
                                      schema$metadata$elements$traits$elements %>% names(),
                                      info = paste0(f, "-traits"))
         expect_silent(traits <-
-                        austraits.build::list_to_df(metadata[["traits"]]))
+                        austraits.build::util_list_to_df2(metadata[["traits"]]))
         expect_true(is.data.frame(traits))
         
         expect_isin(traits$trait_name,
@@ -498,7 +498,7 @@ dataset_test_setup_worker <-
           
           # check for allowable values of categorical variables
           expect_no_error(x <-
-                            metadata[["substitutions"]] %>% list_to_df() %>% split(.$trait_name))
+                            metadata[["substitutions"]] %>% util_list_to_df2() %>% split(.$trait_name))
           
           for (trait in names(x)) {
             if (!is.null(definitions$elements[[trait]]) &&
@@ -510,7 +510,7 @@ dataset_test_setup_worker <-
               failing <- to_check[!(
                 is.na(to_check) |
                   to_check %in% allowable |
-                  to_check %>% sapply(check_all_values_in, allowable)
+                  to_check %>% sapply(util_check_all_values_in, allowable)
               )]
               expect_length_zero(
                 failing,

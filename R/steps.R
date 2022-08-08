@@ -36,12 +36,12 @@ subset_config <- function(
   # table of trait_mapping
   trait_mapping <-
     metadata[["traits"]] %>%
-    list_to_df() %>%
+    util_list_to_df2() %>%
     filter(!is.na(.data$trait_name)) %>%
     # determine unit conversions
     dplyr::mutate(
       i = match(.data$trait_name, names(definitions$elements)),
-      to = map_chr(.data$i, ~extract_list_element(.x, definitions$elements, "units")),
+      to = map_chr(.data$i, ~util_extract_list_element(.x, definitions$elements, "units")),
       conversion = unit_conversion_name(.data$unit_in, .data$to)
     )
 
@@ -108,7 +108,7 @@ load_dataset <- function(filename_data_raw,
     apply_taxonomic_updates(metadata) %>%
     dplyr::mutate(
       # For cells with multiple values (separated by a space), sort these alphabetically
-      value = ifelse(is.na(.data$error), split_then_sort(.data$value), .data$value),
+      value = ifelse(is.na(.data$error), util_seperate_and_sort(.data$value), .data$value),
       value_type = factor(.data$value_type, levels = names(schema$value_type$values)),
       #ensure dates are converted back to character
       collection_date = as.character(.data$collection_date)
@@ -140,7 +140,7 @@ load_dataset <- function(filename_data_raw,
   if (length(unlist(metadata$contributors$data_collectors)) >1 ){
   contributors <-
     metadata$contributors$data_collectors %>%
-    list_to_df() %>%
+    util_list_to_df2() %>%
     dplyr::mutate(dataset_id = dataset_id) %>%
     filter(!is.na(.data$last_name))
   } else {
@@ -153,7 +153,7 @@ load_dataset <- function(filename_data_raw,
 
   # record methods on study from metadata
   sources <- metadata$source %>%
-            lapply(convert_list_to_bib) %>% reduce(c)
+            lapply(util_list_to_bib) %>% reduce(c)
   source_primary_key <- metadata$source$primary$key
   source_secondary_keys <- setdiff(names(sources), source_primary_key)
 
@@ -169,14 +169,14 @@ load_dataset <- function(filename_data_raw,
     full_join( by = "dataset_id",
       # methods used to collect each trait
       metadata[["traits"]] %>%
-        list_to_df() %>%
+        util_list_to_df2() %>%
         filter(!is.na(.data$trait_name)) %>%
         dplyr::mutate(dataset_id = dataset_id) %>%
         dplyr::select(dataset_id, .data$trait_name, .data$methods)
       ,
       # study methods
       metadata$dataset %>%
-        list1_to_df() %>%
+        util_list_to_df1() %>%
         spread(.data$key, .data$value) %>%
         dplyr::select(dplyr::any_of(names(metadata$dataset))) %>%
           dplyr::mutate(dataset_id = dataset_id) %>%
@@ -444,7 +444,7 @@ format_sites <- function(my_list, dataset_id, context = FALSE) {
   out <-
     my_list %>%
     lapply(lapply, as.character) %>%
-    purrr::map_df(list1_to_df, .id = "name") %>%
+    purrr::map_df(util_list_to_df1, .id = "name") %>%
     dplyr::mutate(dataset_id = dataset_id)
 
   if (!context) {
@@ -501,7 +501,7 @@ flag_excluded_observations <- function(data, metadata) {
 
   fix <-
     metadata$exclude_observations %>%
-    list_to_df() %>%
+    util_list_to_df2() %>%
     tidyr::separate_rows(.data$find, sep=", ") %>%
     dplyr::mutate(find = str_squish(.data$find))
 
@@ -518,7 +518,7 @@ flag_excluded_observations <- function(data, metadata) {
 
 #' Check values in one vector against values in another vector
 #'
-#' `check_all_values_in` checks if values in vector x are in y. Values in x may
+#' `util_check_all_values_in` checks if values in vector x are in y. Values in x may
 #' contain multiple values separated by `sep` so these are split first using `str_split`.
 #'
 #' @param x vector
@@ -527,7 +527,7 @@ flag_excluded_observations <- function(data, metadata) {
 #'
 #' @return vector of logical values
 #' @export
-check_all_values_in <- function(x, y, sep=" "){
+util_check_all_values_in <- function(x, y, sep=" "){
   x %>% stringr::str_split(sep) %>% sapply(function(xi) all(xi %in% y))
 }
 
@@ -565,7 +565,7 @@ bib_print <- function(bib, .opts = list(first.inits = TRUE, max.names = 1000, st
 #'
 #' @return BibEntry object
 #' @export
-convert_list_to_bib <- function(ref) {
+util_list_to_bib <- function(ref) {
   if(is.null(ref)) return(NULL)
 
   if(is.na(ref[1])) return(NULL)
@@ -587,7 +587,7 @@ convert_list_to_bib <- function(ref) {
 #'
 #' @return list
 #' @export
-convert_bib_to_list <- function(bib) {
+util_bib_to_list <- function(bib) {
 
   # Read in file, convert to list, set key
     bib <- bib %>% unlist()
@@ -633,7 +633,7 @@ flag_unsupported_values <- function(data, definitions) {
       i <-  is.na(data[["error"]]) &
             data[["trait_name"]] == trait &
             !is.null(definitions[[trait]]$values) &
-            !check_all_values_in(data$value, names(definitions[[trait]]$values))
+            !util_check_all_values_in(data$value, names(definitions[[trait]]$values))
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Unsupported trait value", .data$error))
     }
@@ -731,9 +731,9 @@ convert_units <- function(data, definitions, unit_conversion_functions) {
   data <- data %>%
     dplyr::mutate(
       i = match(.data$trait_name, names(definitions)),
-      to = extract_list_element(.data$i, definitions, "units"),
+      to = util_extract_list_element(.data$i, definitions, "units"),
       ucn = unit_conversion_name(.data$unit, .data$to),
-      type = extract_list_element(.data$i, definitions, "type"),
+      type = util_extract_list_element(.data$i, definitions, "type"),
       to_convert =  ifelse(is.na(.data$error), (.data$type == "numeric" & .data$unit != .data$to), FALSE))
 
   # Identify anything problematic in conversions and drop
@@ -923,7 +923,7 @@ parse_data <- function(data, dataset_id, metadata) {
   # Step 2. Add trait information, with correct names
   cfgChar <-
     metadata[["traits"]] %>%
-    list_to_df() %>%
+    util_list_to_df2() %>%
     dplyr::filter(!is.na(.data$trait_name))  # remove any rows without a matching trait record
 
   # check that the trait names as specified in config actually exist in data
@@ -1000,7 +1000,7 @@ parse_data <- function(data, dataset_id, metadata) {
 
   # Implement any value changes as per substitutions
   if(!is.na(metadata[["substitutions"]][1])) {
-    cfgLookup <-  list_to_df(metadata[["substitutions"]]) %>%
+    cfgLookup <-  util_list_to_df2(metadata[["substitutions"]]) %>%
       dplyr::mutate(
              find = tolower(.data$find),
              replace = tolower(.data$replace)
@@ -1091,7 +1091,7 @@ apply_taxonomic_updates  <- function(data, metadata){
 
   # Now make any replacements specified in metadata yaml
   ## Read metadata table, quit if empty
-  cfgLookup <-  list_to_df(metadata[["taxonomic_updates"]])
+  cfgLookup <-  util_list_to_df2(metadata[["taxonomic_updates"]])
   if(any(is.na(cfgLookup)) || nrow(cfgLookup) == 0) {
     return(out)
   }
