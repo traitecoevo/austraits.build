@@ -102,7 +102,7 @@ metadata_check_taxa <- function(dataset_id,
 
   for(s in species) {
     
-      cleaned_name <- standardise_names(s)
+      cleaned_name <- process_standardise_names(s)
       stripped_name <- strip_names(cleaned_name)
       genus <-stringr::str_split(s, " ")[[1]][1]
       found <- FALSE

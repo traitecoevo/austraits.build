@@ -111,7 +111,7 @@ metadata_create_template <- function(dataset_id,
 #' @param choices the options that can be selected from
 #'
 metadata_user_select_column <- function(column, choices) {
-  tmp <- menu(choices, title= sprintf("Select column for `%s`", column))
+  tmp <- utils::menu(choices, title= sprintf("Select column for `%s`", column))
   choices[tmp]
 }
 
@@ -338,7 +338,7 @@ metadata_add_source_bibtex <- function(dataset_id, file, type="primary", key=dat
 #' Standarise doi into form https://doi.org/XXX
 #' 
 #' @param doi doi of reference to add
-standardise_doi <- function(doi) {
+util_standardise_doi <- function(doi) {
 
   if (stringr::str_starts(doi, "https://doi.org"))
     return(doi)
@@ -359,7 +359,7 @@ standardise_doi <- function(doi) {
 #'
 #' @param bib (Only use for testing purposes). Result of calling `bib rcrossref::cr_cn(doi)`
 #' @inheritParams metadata_path_dataset_id 
-#' @inheritParams standardise_doi
+#' @inheritParams util_standardise_doi
 #' @param ... arguments passed from metadata_add_source_bibtex()
 #'
 #' @return metadata.yml file has citation details added
@@ -367,7 +367,7 @@ standardise_doi <- function(doi) {
 #'
 metadata_add_source_doi <- function(..., doi, bib=NULL) {
   
-  doi <- standardise_doi(doi)
+  doi <- util_standardise_doi(doi)
 
   if(is.null(bib)) 
     bib <- suppressWarnings(rcrossref::cr_cn(doi))
@@ -661,7 +661,7 @@ metadata_remove_taxonomic_change <- function(dataset_id, find, replace=NULL) {
   }
 
   if(is.null(replace))
-    i <-data$find == find
+    i <- data$find == find
   else
     i <- data$find == find & data$replace == replace
 
@@ -674,30 +674,6 @@ metadata_remove_taxonomic_change <- function(dataset_id, find, replace=NULL) {
   write_metadata_dataset(metadata, dataset_id)
 }
 
-#' Find list of all unique species within AusTraits
-#'
-#' @param taxon_name name of column which contains the cleaned species names
-#' @param original_name name of column which contains original species names, default = FALSE
-#'
-#' @importFrom rlang .data
-#' @return list of all unique and distinct species names
-austraits_find_species <- function(taxon_name, original_name = FALSE){
-
-  austraits <- remake::make("austraits")
-  data <- austraits$traits
-
-  if(!original_name)
-    data <- data %>% dplyr::select(name =  taxon_name, .data$dataset_id) %>% dplyr::distinct()
-  else
-    data <- data %>% dplyr::select(name =  original_name, .data$dataset_id) %>% dplyr::distinct()
-
-  f <- function(sp)  dplyr::filter(data, .data$name == sp) %>%  dplyr::pull(.data$dataset_id) %>% unique()
-
-  if(length(taxon_name) == 1) 
-    f(taxon_name)
-  else
-    lapply(taxon_name, f) 
-}
 
 #' Find taxonomic changes within the metadata yml files
 #'
@@ -724,16 +700,6 @@ metadata_find_taxonomic_change <- function(find, replace=NULL, studies = NULL){
   
   studies[i]
 }
-
-strip_names <- function(x) {
-  x %>% 
-    str_remove_all(" subsp.") %>% str_remove_all(" aff.")  %>% 
-    str_remove_all(" var.") %>% str_remove_all(" ser.") %>% str_remove_all(" f.") %>%
-    str_remove_all(" s.l.") %>% str_remove_all(" s.s.") %>%
-    str_replace_all("[-._()]", " ") %>% 
-    stringr::str_squish() %>% tolower() 
-}
-
 
 #' Update the remake.yml file with new studies
 #' 
@@ -787,5 +753,41 @@ build_setup_pipeline <- function(
       taxonDistribution = character(), 
       ccAttributionIRI = character()
     ) %>%  readr::write_csv(filename)
+  }
+}
+
+#' Find list of all unique taxa within compilation
+#'
+#' @param taxon_name name of column which contains the cleaned species names
+#' @param austraits austraits compilation
+#' @param original_name name of column which contains original species names, default = FALSE
+#'
+#' @importFrom rlang .data
+#' @return list of all unique and distinct species names
+#' @export
+build_find_taxon <- function(taxon_name, austraits, original_name = FALSE) {
+  
+  data <- austraits$traits
+
+  if (!original_name) {
+    data <- data %>%
+      dplyr::select(name = taxon_name, .data$dataset_id) %>%
+      dplyr::distinct()
+  } else {
+    data <- data %>%
+      dplyr::select(name = original_name, .data$dataset_id) %>%
+      dplyr::distinct()
+  }
+
+  f <- function(sp) {
+    dplyr::filter(data, .data$name == sp) %>%
+      dplyr::pull(.data$dataset_id) %>%
+      unique()
+  }
+
+  if (length(taxon_name) == 1) {
+    f(taxon_name)
+  } else {
+    lapply(taxon_name, f)
   }
 }

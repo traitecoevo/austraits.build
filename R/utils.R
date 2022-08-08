@@ -305,3 +305,26 @@ create_tree_branch <- function(x, title, prefix = "") {
     )
   )
 }
+
+#' Strip scientific names of formatting and abbreviations
+#' 
+#' Enables better fuzzy matching of scientific names by 
+#' reducing the number of characters that could differ
+#' 
+#' @param x vector of names to clean
+#' @return vector of cleaned names
+#' @export 
+#' @examples c("Bankisa_serrata", "bankisa  serrata", "Banksia Seratta") %>% util_strip_taxon_names()
+util_strip_taxon_names <- function(x) {
+  x %>%
+    stringr::str_remove_all(fixed(" subsp."))  %>%
+    stringr::str_remove_all(fixed(" aff.")) %>%
+    stringr::str_remove_all(fixed(" var.")) %>%
+    stringr::str_remove_all(fixed(" ser.")) %>%
+    stringr::str_remove_all(fixed(" f.")) %>%
+    stringr::str_remove_all(fixed(" s.l.")) %>%
+    stringr::str_remove_all(fixed(" s.s.")) %>%
+    stringr::str_replace_all("[-._()]", " ") %>%
+    stringr::str_squish() %>%
+    tolower()
+}

@@ -46,3 +46,17 @@ test_that("util_append_to_list",{
   expect_error(util_append_to_list(my_list), 'argument "to_append" is missing, with no default')
 })
 
+test_that("util_strip_taxon_names",{
+  v1 <-  c("banksia serrata", "Banksia_serrata", "banksia  serrata", "Banksia Serrata") 
+  v2 <- util_strip_taxon_names(v1)
+
+  expect_true(all(v2 == v1[1]))
+  expect_equal(length(v1), length(v2))
+
+  v1 <- c("banksia serrata spinulosa", "Banksia_serrata var. SpinUlosa", "banksia  serrata s.l. spinulosa", "Banksia Serrata aff. spinulosa")
+  v2 <- util_strip_taxon_names(v1)
+
+  expect_true(all(v2 == v1[1]))
+  expect_equal(length(v1), length(v2))
+})
+

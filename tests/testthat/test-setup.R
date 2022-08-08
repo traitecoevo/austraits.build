@@ -72,11 +72,11 @@ test_that("metadata_add_source_doi is working",{
   doi <- "https://doi.org/10.3389/fmars.2021.671145"
   doi2 <- "https://doi.org/10.1111/j.0022-0477.2005.00992.x"
 
-  expect_equal(doi, standardise_doi(doi))
-  expect_equal(doi, standardise_doi("https://doi.org/10.3389/fmars.2021.671145"))
-  expect_equal(doi, standardise_doi("http://doi.org/10.3389/fmars.2021.671145"))
-  expect_equal(doi, standardise_doi("doi.org/10.3389/fmars.2021.671145"))
-  expect_equal(doi, standardise_doi("10.3389/fmars.2021.671145"))
+  expect_equal(doi, util_standardise_doi(doi))
+  expect_equal(doi, util_standardise_doi("https://doi.org/10.3389/fmars.2021.671145"))
+  expect_equal(doi, util_standardise_doi("http://doi.org/10.3389/fmars.2021.671145"))
+  expect_equal(doi, util_standardise_doi("doi.org/10.3389/fmars.2021.671145"))
+  expect_equal(doi, util_standardise_doi("10.3389/fmars.2021.671145"))
 
   # We won't actually test querying of rcrossref, to avoid unnecessary fails
   # passing in bib avoids calling corssref
@@ -182,21 +182,21 @@ test_that("test build_setup_pipeline is working",{
   expect_length(taxa1, 13)
   expect_true(nrow(taxa1) == 0)
   
-  expect_no_error(austraits_versioned <- remake::make("austraits_versioned"))
+  expect_no_error(austraits <- remake::make("austraits"))
   
   expect_null(austraits_raw$build_info$version)
   expect_null(austraits_raw$build_info$git_SHA)
-  expect_equal(austraits_versioned$build_info$version, "3.0.2.9000")
-  expect_true(is.character(austraits_versioned$build_info$git_SHA))
-  expect_equal(austraits_versioned$build_info$git_SHA, sha)
-  expect_equal(austraits_versioned$build_info$git_SHA, "6c73238d8d048781d9a4f5239a03813be313f0dd")
+  expect_equal(austraits$build_info$version, "3.0.2.9000")
+  expect_true(is.character(austraits$build_info$git_SHA))
+  expect_equal(austraits$build_info$git_SHA, sha)
+  expect_equal(austraits$build_info$git_SHA, "6c73238d8d048781d9a4f5239a03813be313f0dd")
   
   expect_length(austraits_raw$taxa, 1)
-  expect_length(austraits_versioned$taxa, 10)
-  expect_equal(nrow(austraits_versioned$taxa), nrow(austraits_raw$taxa))
+  expect_length(austraits$taxa, 10)
+  expect_equal(nrow(austraits$taxa), nrow(austraits_raw$taxa))
   
   expect_no_error(
-    dataset_report(dataset_id = "Test_2022", austraits = austraits_versioned, overwrite = TRUE)
+    dataset_report(dataset_id = "Test_2022", austraits = austraits, overwrite = TRUE)
   )
 })
 

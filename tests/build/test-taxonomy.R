@@ -41,11 +41,11 @@ test_that("test taxonomic resources are working",{
   expect_named(taxa2, vars)
   expect_length(taxa2, 13)
   expect_true(nrow(taxa2) == 5)
-  expect_no_error(austraits_versioned <- remake::make("austraits_versioned"))
+  expect_no_error(austraits <- remake::make("austraits"))
   
   expect_length(austraits_raw$taxa, 1)
-  expect_length(austraits_versioned$taxa, 10)
-  expect_equal(nrow(austraits_versioned$taxa), nrow(austraits_raw$taxa))
+  expect_length(austraits$taxa, 10)
+  expect_equal(nrow(austraits$taxa), nrow(austraits_raw$taxa))
   
   unlink("data")
   unlink("config")

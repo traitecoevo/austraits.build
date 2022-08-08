@@ -105,7 +105,7 @@ dataset_process <- function(filename_data_raw,
     process_convert_units(definitions, unit_conversion_functions) %>%
     process_flag_unsupported_values(definitions) %>%
     process_create_entity_id() %>% 
-    apply_taxonomic_updates(metadata) %>%
+    process_taxonomic_updates(metadata) %>%
     dplyr::mutate(
       # For cells with multiple values (separated by a space), sort these alphabetically
       value = ifelse(is.na(.data$error), util_seperate_and_sort(.data$value), .data$value),
@@ -153,7 +153,7 @@ dataset_process <- function(filename_data_raw,
 
   # record methods on study from metadata
   sources <- metadata$source %>%
-            lapply(util_list_to_bib) %>% reduce(c)
+            lapply(util_list_to_bib) %>% purrr::reduce(c)
   source_primary_key <- metadata$source$primary$key
   source_secondary_keys <- setdiff(names(sources), source_primary_key)
 
@@ -166,18 +166,18 @@ dataset_process <- function(filename_data_raw,
                           ""))  %>% paste(collapse = ", ")
 
   methods <-
-    full_join( by = "dataset_id",
+    dplyr::full_join( by = "dataset_id",
       # methods used to collect each trait
       metadata[["traits"]] %>%
         util_list_to_df2() %>%
-        filter(!is.na(.data$trait_name)) %>%
+        dplyr::filter(!is.na(.data$trait_name)) %>%
         dplyr::mutate(dataset_id = dataset_id) %>%
         dplyr::select(dataset_id, .data$trait_name, .data$methods)
       ,
       # study methods
       metadata$dataset %>%
         util_list_to_df1() %>%
-        spread(.data$key, .data$value) %>%
+        tidyr::spread(.data$key, .data$value) %>%
         dplyr::select(dplyr::any_of(names(metadata$dataset))) %>%
           dplyr::mutate(dataset_id = dataset_id) %>%
           dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", 
@@ -356,9 +356,9 @@ process_create_entity_id <- function(data) {
     # check which rows from the data.csv file don't contain individual level values
     has_ind_value <-
       data %>%
-      filter(!is.na(value)) %>%
-      group_by(observation_id) %>%
-      summarise(check_for_ind = any(str_detect(entity_type,"individual")))
+      dplyr::filter(!is.na(value)) %>%
+      dplyr::group_by(observation_id) %>%
+      dplyr::summarise(check_for_ind = any(str_detect(entity_type, "individual")))
     
     # take the `observation_id` values that were created in the `process_parse_data` function
     # in process_parse_data, `observation_id` is built in two stages:
@@ -374,7 +374,7 @@ process_create_entity_id <- function(data) {
     # to avoid missing numbers in the `ind_id_segement`sequence
     
     data <- data %>% 
-      left_join(has_ind_value, by = "observation_id") %>%
+      dplyr::left_join(has_ind_value, by = "observation_id") %>%
       dplyr::mutate(individual_id = ifelse(check_for_ind == TRUE, observation_id,NA))
   }
   
@@ -385,14 +385,14 @@ process_create_entity_id <- function(data) {
   # given the same value.
   
   data <- data %>% 
-    group_by(spp_id_segment, pop_id_segment) %>%
-    mutate(
+    dplyr::group_by(spp_id_segment, pop_id_segment) %>%
+    dplyr::mutate(
       ind_id_segment = ifelse(!is.na(individual_id),create_id(individual_id,"ind"),NA),
       individual_id = row_number(),
       ind_id_segment = ifelse(is.na(ind_id_segment),create_id(individual_id,"entity_unk"),
                               ind_id_segment)
            ) %>%
-    ungroup()
+    dplyr::ungroup()
 
   
   # take the species, population, and individual identifier segments and merge together the appropriate segments
@@ -409,7 +409,7 @@ process_create_entity_id <- function(data) {
       replicates = as.character(replicates),
       check_for_ind = NA
     ) %>%
-    select(-spp_id_segment, -pop_id_segment, -ind_id_segment, -individual_id, -population_id, -check_for_ind, -observation_id)
+    dplyr::select(-spp_id_segment, -pop_id_segment, -ind_id_segment, -individual_id, -population_id, -check_for_ind, -observation_id)
 
 }
 
@@ -845,7 +845,7 @@ process_parse_data <- function(data, dataset_id, metadata) {
 
         df <- df %>%
                   dplyr::mutate(observation_id_tmp = ifelse(is.na(observation_id_tmp),
-                                paste("temp", row_number(), sep = "_"),observation_id_tmp),
+                                paste("temp", dplyr::row_number(), sep = "_"),observation_id_tmp),
                                 observation_id_tmp = as.character(observation_id_tmp)
                                 ) %>% 
                   dplyr::mutate(observation_id = create_id(observation_id_tmp, prefix))
@@ -890,7 +890,7 @@ process_parse_data <- function(data, dataset_id, metadata) {
             )
 
   # Step 2. Add trait information, with correct names
-  cfgChar <-
+  traits_table <-
     metadata[["traits"]] %>%
     util_list_to_df2() %>%
     dplyr::filter(!is.na(.data$trait_name))  # remove any rows without a matching trait record
@@ -898,8 +898,8 @@ process_parse_data <- function(data, dataset_id, metadata) {
   # check that the trait names as specified in config actually exist in data
   # if not then we need to stop and fix this problem
   # NOTE - only need to do this step for wide (non-vertical) data
-  if (data_is_long_format == FALSE & any(! cfgChar[["var_in"]] %in% colnames(data))) {
-    stop(paste(dataset_id, ": missing traits: ", setdiff(cfgChar[["var_in"]], colnames(data))))
+  if (data_is_long_format == FALSE & any(! traits_table[["var_in"]] %in% colnames(data))) {
+    stop(paste(dataset_id, ": missing traits: ", setdiff(traits_table[["var_in"]], colnames(data))))
   }
 
 
@@ -909,22 +909,22 @@ process_parse_data <- function(data, dataset_id, metadata) {
     # if the dataset is "wide" then process each variable in turn, to create the "long" dataset -
     # say the original dataset has 20 rows of data and 5 traits, then we will end up with 100 rows
     out <- list()
-    for (i in seq_len(nrow(cfgChar))) {
+    for (i in seq_len(nrow(traits_table))) {
       # create a temporary dataframe which is a copy of df
       # df is our data frame containing all the columns we want EXCEPT for the trait data itself
       out[[i]] <- df
       # to x we append columns of data for trait_name, unit and value (the latter is retrieved from the data)
-      out[[i]][["trait_name"]] <- cfgChar[["var_in"]][i]
-      out[[i]][["value"]] <- data[[cfgChar[["var_in"]][i]]] %>% as.character()
+      out[[i]][["trait_name"]] <- traits_table[["var_in"]][i]
+      out[[i]][["value"]] <- data[[traits_table[["var_in"]][i]]] %>% as.character()
 
-      # Pull in additional information for each trait as specified in traits part of metadata, here represented as cfgChar
+      # Pull in additional information for each trait as specified in traits part of metadata, here represented as traits_table
       # Values in table can specify a column in the original data OR a value to use
 
-      vars_to_check <- vars[vars%in% names(cfgChar)]
-      # For each column in cfgChar
+      vars_to_check <- vars[vars%in% names(traits_table)]
+      # For each column in traits_table
       for(v in vars_to_check) {
         # get value
-        value <- cfgChar[i,v, drop=TRUE]
+        value <- traits_table[i,v, drop=TRUE]
         # Check if it is a column in data or not and process accordingly
         if(!is.na(value)) {
           if(!is.null(data[[value]]) && !(v %in% c("entity_type", "basis_of_value")) ) {
@@ -937,19 +937,19 @@ process_parse_data <- function(data, dataset_id, metadata) {
     }
     out <- dplyr::bind_rows(out)
   } else {
-    out <- df %>% filter(.data$trait_name %in% cfgChar$var_in)
+    out <- df %>% filter(.data$trait_name %in% traits_table$var_in)
     out[["value"]] <- out[["value"]] %>%  as.character()
 
-    # Pull in additional information for each trait as specified in traits part of metadata, here represented as cfgChar
+    # Pull in additional information for each trait as specified in traits part of metadata, here represented as traits_table
     # (column option not implemented) Values in table can specify a column in the original data OR a value to use
 
-    vars_to_check <- vars[vars%in% names(cfgChar)]
-    # For each column in cfgChar
-    for (i in seq_len(nrow(cfgChar))) {
+    vars_to_check <- vars[vars%in% names(traits_table)]
+    # For each column in traits_table
+    for (i in seq_len(nrow(traits_table))) {
       for(v in vars_to_check) {
-        value <- cfgChar[i,v, drop=TRUE]
+        value <- traits_table[i,v, drop=TRUE]
         if(!is.na(value)) {
-          out[[v]][out$trait_name == cfgChar[["var_in"]][i]] <- value
+          out[[v]][out$trait_name == traits_table[["var_in"]][i]] <- value
         }
       }
     }
@@ -960,26 +960,26 @@ process_parse_data <- function(data, dataset_id, metadata) {
 
   # Now process any name changes as per metadata[["traits"]]
   out[["unit"]] <- NA_character_
-  i <- match(out[["trait_name"]], cfgChar[["var_in"]])
+  i <- match(out[["trait_name"]], traits_table[["var_in"]])
   if(length(i) >0 ) {
     j <- !is.na(i)
-    out[["unit"]][j] <- cfgChar[["unit_in"]][i[j]]
-    out[["trait_name"]][j] <- cfgChar[["trait_name"]][i[j]]
+    out[["unit"]][j] <- traits_table[["unit_in"]][i[j]]
+    out[["trait_name"]][j] <- traits_table[["trait_name"]][i[j]]
   }
 
   # Implement any value changes as per substitutions
   if(!is.na(metadata[["substitutions"]][1])) {
-    cfgLookup <-  util_list_to_df2(metadata[["substitutions"]]) %>%
+    substitutions_table <-  util_list_to_df2(metadata[["substitutions"]]) %>%
       dplyr::mutate(
              find = tolower(.data$find),
              replace = tolower(.data$replace)
              )
 
-    for(i in seq_len(nrow(cfgLookup))) {
-      j <- which(out[["trait_name"]] == cfgLookup[["trait_name"]][i] &
-                  out[["value"]] == cfgLookup[["find"]][i])
+    for(i in seq_len(nrow(substitutions_table))) {
+      j <- which(out[["trait_name"]] == substitutions_table[["trait_name"]][i] &
+                  out[["value"]] == substitutions_table[["find"]][i])
       if( length(j) > 0 ) {
-        out[["value"]][j] <- cfgLookup[["replace"]][i]
+        out[["value"]][j] <- substitutions_table[["replace"]][i]
       }
     }
   }
@@ -995,7 +995,7 @@ process_parse_data <- function(data, dataset_id, metadata) {
 #'
 #' @importFrom stringr str_squish
 #' @return vector with standardised species names
-standardise_names <- function(x) {
+process_standardise_names <- function(x) {
 
   f <- function(x, find, replace) {
     gsub(find, replace, x, perl=TRUE)
@@ -1039,7 +1039,7 @@ standardise_names <- function(x) {
 
     ## clean white space
     #f("[\\s]+", " ") %>%
-    str_squish()
+    stringr::str_squish()
 
 }
 
@@ -1051,7 +1051,7 @@ standardise_names <- function(x) {
 #' @param metadata yaml file containing the metadata
 #'
 #' @return tibble with the taxonomic updates applied
-apply_taxonomic_updates  <- function(data, metadata){
+process_taxonomic_updates  <- function(data, metadata){
 
   out <- data
 
@@ -1060,24 +1060,25 @@ apply_taxonomic_updates  <- function(data, metadata){
 
   # Now make any replacements specified in metadata yaml
   ## Read metadata table, quit if empty
-  cfgLookup <-  util_list_to_df2(metadata[["taxonomic_updates"]])
-  if(any(is.na(cfgLookup)) || nrow(cfgLookup) == 0) {
+  substitutions_table <-  util_list_to_df2(metadata[["taxonomic_updates"]])
+
+  if(any(is.na(substitutions_table)) || nrow(substitutions_table) == 0) {
     return(out)
   }
 
   to_update <- rep(TRUE, nrow(out))
 
   ## Makes replacements, row by row
-  for(i in seq_len(nrow(cfgLookup))) {
-    j <- which(out[["taxon_name"]] == cfgLookup[["find"]][i])
+  for(i in seq_len(nrow(substitutions_table))) {
+    j <- which(out[["taxon_name"]] == substitutions_table[["find"]][i])
     if( length(j) > 0 ){
-      out[["taxon_name"]][j] <- cfgLookup[["replace"]][i]
+      out[["taxon_name"]][j] <- substitutions_table[["replace"]][i]
       to_update[j] <- FALSE
     }
   }
 
   # for any that haven't been updated, run script to standardize names
-  out[["taxon_name"]][to_update] <- standardise_names(out[["taxon_name"]][to_update])
+  out[["taxon_name"]][to_update] <- process_standardise_names(out[["taxon_name"]][to_update])
 
   ## Return updated table
   out

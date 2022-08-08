@@ -62,7 +62,7 @@ dataset_report_worker <- function(dataset_id, austraits, overwrite=FALSE,
         input_Rmd, 
         output_file = output_html, 
         quiet = quiet,
-        params= list(
+        params = list(
                   dataset_id = dataset_id,
                   austraits = austraits
           )
