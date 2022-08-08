@@ -26,30 +26,9 @@ jobs:
       
       - uses: r-lib/actions/setup-pandoc@v2
 
-      # - name: Query dependencies
-      #   run: |
-      #     install.packages('remotes')
-      #     saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-      #     writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
-      #   shell: Rscript {0}
-
-      # - name: Restore R package cache
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: ${{ env.R_LIBS_USER }}
-      #     key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-      #     restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: local::.
-
-      - name: Test build infrastructure
-        run: |
-          library(austraits.build)
-          source("config/custom.R")
-          testthat::test_dir("tests/build/")
-        shell: Rscript {0}
 
       - name: check sources
         run: |
@@ -64,10 +43,4 @@ jobs:
           source("config/custom.R")
           remake::make()
         shell: Rscript {0}
-      
-      - name: Benchmark
-        run: |
-          library(austraits.build)
-          source("config/custom.R")
-          austraits.build::run_benchmark()
-        shell: Rscript {0}
+
