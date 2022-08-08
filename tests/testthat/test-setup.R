@@ -1,6 +1,11 @@
 
 
-
+# load packages needed for generating reports
+suppressWarnings({
+  library(austraits)
+  library(knitr)
+  library(kableExtra)
+})
 
 test_that("metadata_create_template is working",{
   unlink("data/Test_2022/metadata.yml")
@@ -166,17 +171,22 @@ test_that("test setup_build_process is working",{
   
   unlink(".remake", recursive = TRUE)
   unlink("remake.yml")
-  unlink(".git", recursive = TRUE)
   unlink("config/taxon_list.csv")
-  expect_true(file.copy("data/Test_2022/test-metadata.yml", "data/Test_2022/metadata.yml", overwrite = TRUE))
-  expect_no_error(repo <- git2r::init())
-  expect_no_error(git2r::add(repo, path = "functions.R"))
-  expect_no_error(git2r::commit(repo, "tmp"))
-  expect_no_error(sha <- git2r::sha(git2r::last_commit(repo)))
-  
+
+  #expect_no_error(repo <- git2r::init())
+  #expect_no_error(git2r::add(repo, path = "functions.R"))
+  #expect_no_error(git2r::commit(repo, "test commit"))
+#  
+
+  unlink(".git", recursive = TRUE)
   expect_false(file.exists("remake.yml"))
   expect_false(file.exists("config/taxon_list.csv"))
+  expect_true(file.copy("data/Test_2022/test-metadata.yml", "data/Test_2022/metadata.yml", overwrite = TRUE))
+  
+  expect_no_error(zip::unzip("testgit.zip"))
+  expect_no_error(sha <- git2r::sha(git2r::last_commit()))
   expect_error(setup_build_process(path = "Datas"))
+  
   expect_silent(setup_build_process())
   expect_true(file.exists("remake.yml"))
   expect_silent(yaml::read_yaml("remake.yml"))
@@ -201,13 +211,14 @@ test_that("test setup_build_process is working",{
   expect_equal(austraits_versioned$build_info$version, "3.0.2.9000")
   expect_true(is.character(austraits_versioned$build_info$git_SHA))
   expect_equal(austraits_versioned$build_info$git_SHA, sha)
+  expect_equal(austraits_versioned$build_info$git_SHA, "6c73238d8d048781d9a4f5239a03813be313f0dd")
   
   expect_length(austraits_raw$taxa, 1)
   expect_length(austraits_versioned$taxa, 10)
   expect_equal(nrow(austraits_versioned$taxa), nrow(austraits_raw$taxa))
   
   expect_no_error(
-    dataset_generate_report("Test_2022", austraits_versioned, overwrite = TRUE)
+    dataset_generate_report(dataset_id = "Test_2022", austraits = austraits_versioned, overwrite = TRUE)
   )
 })
 
