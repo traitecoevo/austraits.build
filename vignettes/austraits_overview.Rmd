@@ -21,16 +21,11 @@ knitr::opts_chunk$set(
 )
 
 library(austraits.build)
-library(dplyr)
-library(readr)
-
-# root.dir <- rprojroot::find_root("remake.yml")
-# knitr::opts_knit$set(root.dir = root.dir)
 
 my_kable_styling <- my_kable_styling_html
 ```
 
-AusTraits is an open-source, harmonised database of Australian plant trait data. Traits vary in scope, from physiological measures of performance (e.g. photosynthetic gas exchange, water-use efficiency) to morphological attributes (e.g. leaf area, seed mass, plant height).
+AusTraits is an open-source, harmonised database of Australian plant trait data. Traits vary in scope, including morphological attributes (e.g. leaf area, seed mass, plant height), physiological measures of performance (e.g. photosynthetic gas exchange, water-use efficiency), tissue biochemical composition (e.g. leaf nitrogen content, leaf chlorophyll content), and life history traits (e.g. seed bank location, plant growth form, salinity tolerance).
 
 This vignette provides an overview of our workflow, to demonstrate our commitment to creating a reliable, reproducible resource for anyone interested in plant traits. 
 
@@ -40,7 +35,7 @@ This vignette provides an overview of our workflow, to demonstrate our commitmen
 
 The data in AusTraits is derived from nearly 300 distinct sources, each contributed by an individual researcher, government entity (e.g. herbaria), or NGO. Each reflects the research agenda of the individual/organisation who contributed the data - the species selected, traits measured, manipulative treatments performed, and locations sampled encompass the diversity of research interests present in Australia throughout past decades. To attain data, the AusTraits data curators have reached out to as many researchers as time permitted. This was done without explicitly soliciting datasets with specific traits; therefore, the spotty data coverage by trait or location simply represents what has been merged into AusTraits at this time.   
 
-These datasets use different variable names, data structures, units and sometimes methods.
+These datasets use different variable trait names, units and methods and have different data structures. 
 
 ### Standardising and harmonising data
 
@@ -48,9 +43,9 @@ To create a single database for distribution to the research community, we devel
 
 * **taxonomic nomenclature** follows the Australian Plant Census (APC), with a pipeline to update outdated taxonomy, correct minor spelling mistakes, and align with a known genus when a full species names isn't provided.  
 * **trait names** are defined in our `traits.yml` file and only data for traits included in this file can be merged into AusTraits. The trait names used in the incoming dataset are mapped onto the appropriate AusTraits trait name. 
-* For **numeric traits** the `traits.yml` file includes `units` and the allowable `range` of values. All incoming data are converted to the appropriate units.
-* For **categorical traits** the `traits.yml` file includes a list of allowable `values`, allowed terms for the trait. Each categorical trait value is defined in the `traits.yml` file. Lists of substitutions translate the exact syntax and terms in the spreadsheet submitted into the values allowed by AusTraits. This ensures that for a certain trait the same `value` has an identical meaning throughout the AusTraits database.
-* Site locations are recorded in decimal degrees
+* For **numeric traits** the `traits.yml` file includes `units` and the allowable `range` of values. All incoming data are converted to the appropriate units and data outside the range of allowable values are removed from the main AusTraits data table.
+* For **categorical traits** the `traits.yml` file includes a list of allowable `values`, allowed terms for the trait. Each categorical trait value is defined in the `traits.yml` file. Lists of substitutions translate the exact syntax and terms in a submitted dataset into the values allowed by AusTraits. This ensures that for a certain trait the same `value` has an identical meaning throughout the AusTraits database.
+* Site locations are recorded in decimal degrees.
 
 ### Referencing sources and recording methods
 
@@ -58,11 +53,13 @@ The `metadata` file also includes all metadata associated with the study:
 
 * The source information for each dataset is recorded. Most frequently, these are the primary publications derived from the dataset.
 * People associated with the collection of the data are listed, including their role in the project.
-* Collection methods, including value type (raw value, site mean, species mean) and replicate number are recorded.  
-* Sampling date is recorded.  
-* Sampling age class and collection type are recorded.  
+* Collection methods are included.
+* Fields capture value type (mean, min, max, mode, range, bin) and associated replicate numbers, basis of value (measurement, expert_score, literature), entity type (species, population, individual), life stage (adult, juvenile,sapling, seedling), collection type (field, experiment, museum collection), and any additional measurement remarks. 
+* A field, observation number, indicates if repeat measures were made on the samw individual over time.
+* A field, method number, indicates if the same trait was measured using multiple methods.
 * Available data on site properties are recorded. 
-* Available data on contextual properties are recorded.  
+* Available data on contextual properties are recorded. 
+* Collection date is recorded.
 
 ### Error checking
 

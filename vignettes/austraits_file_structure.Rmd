@@ -20,22 +20,14 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-library(dplyr)
-library(readr)
-library(tidyr)
-library(austraits)
 library(austraits.build)
-
-# root.dir <- rprojroot::find_root("remake.yml")
-# knitr::opts_knit$set(root.dir = root.dir)
 
 my_kable_styling <- my_kable_styling_html
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
-## Loads austraits into global name space
 austraits <- austraits:::austraits_lite
-definitions <- austraits$definitions
+schema <- load_schema()
 ```
 
 ## File structure
@@ -69,7 +61,7 @@ dir() %>%
 ```
 ├── NAMESPACE             # functions being exported
 ├── DESCRIPTION           # R package description
-├── inst/schema             # Defines the overall austraits schema
+├── inst/schema           # Defines the overall austraits schema
 ├── man                   # XXXX-not in file structure
 ├── R                     # folder with functions and scripts to build AusTraits
 ├── tests                 # defines tests applied to datasets
@@ -157,19 +149,19 @@ It is important that all trait measurements made on the same individual or that 
 
 - If the data is in wide format, each row should include measurements made on a single individual or a single species-by-site mean, with different trait values as consecutive columns. 
 
-- If the data is in long format, an additional column is required to ensure multiple trait measurements made on the same individual, or the mean of a species' measurements from the same site, are linked: `observation_ID` (or another identifier) must be assigned to identify which rows of measurements (for different traits) are linked to a unique individual or site.
+- If the data is in long format, an additional column, `individual_id`, is required to ensure multiple trait measurements made on the same individual, or the mean of a species' measurements from the same site, are linked. If the data is in wide format and there are multiple rows of data for the same individual, an `individual_id` column should be included. These `individual_id` columns ensure that related data values remain linked.
 
-We aim to keep the data file in the rawest form possible (i.e. with as few changes as possible) but it must be a single csv file. Additional custom R code may be required to make the file exactly compatible with the AusTraits format, but these changes should be executed as AusTraits is compiled and should be in the `metadata.yml` file under `config/custom_R_code` (see below). Any files used to create the submitted `data.csv` file (e.g. Excel ...) should be archived in a sub-folder within the study folder named `raw`.
+We aim to keep the data file in the rawest form possible (i.e. with as few changes as possible) but it must be a single csv file. Additional custom R code may be required to make the file exactly compatible with the AusTraits format, but these changes should be executed as AusTraits is compiled and should be in the `metadata.yml` file under `dataset/custom_R_code` (see below). Any files used to create the submitted `data.csv` file (e.g. Excel ...) should be archived in a sub-folder within the study folder named `raw`.
 
 ### Metadata.yml
 
-The metadata is compiled in a `.yml` file, a structured data file where information is presented in a hierarchical format (see [Appendix for details](#yaml)).  There are `r length(definitions$metadata$elements)` values at the top hierarchical level: `r sprintf("%s", definitions$metadata$elements %>% names()) %>% paste(collapse = ", ")`. These are each described below.
+The metadata is compiled in a `.yml` file, a structured data file where information is presented in a hierarchical format (see [Appendix for details](#yaml)).  There are `r length(schema$metadata$elements)` values at the top hierarchical level: `r sprintf("%s", schema$metadata$elements %>% names()) %>% paste(collapse = ", ")`. These are each described below.
 
 As a start, you may want to check out some examples from [existing studies in Austraits](https://github.com/traitecoevo/austraits.build/tree/master/data), e.g. [Angevin_2010](https://github.com/traitecoevo/austraits.build/blob/master/data/Angevin_2011/metadata.yml) or [Wright_2009](https://github.com/traitecoevo/austraits.build/blob/master/data/Wright_2009/metadata.yml).
 
 #### Source
 
-This section provides `r tolower(definitions$metadata$elements$source$description)` In general we aim to reference the primary source. References are written in structured yml format, under the category `source` and then under sub-groupings `primary` and `secondary`. General guidelines for describing a source include:
+This section provides `r tolower(schema$metadata$elements$source$description)` In general we aim to reference the primary source. References are written in structured yml format, under the category `source` and then under sub-groupings `primary` and `secondary`. General guidelines for describing a source include:
 
 - A maximum of one primary source allowed.
 - Elements are names as in [bibtex format](https://en.wikipedia.org/wiki/BibTeX).
@@ -226,43 +218,64 @@ If a secondary source is included it may look like:
     doi: 10.1007/s00468-004-0392-1
 ```
 
-#### People
+#### Contributors
 
-This section provides `r tolower(definitions$metadata$elements$people$description)`. Roles are defined as follows:
+This section provides `r tolower(schema$metadata$elements$contributors$description)`. The following information is recorded for each data contributor:
 
 ```{r, echo=FALSE, results="show"}
-austraits$definitions$metadata$elements$people$elements$role$values %>%
+schema$metadata$elements$contributors$elements$data_collectors %>%
   list1_to_df() %>%
+  filter(!key %in% c("type","description")) %>%
   my_kable_styling()
 ```
 
 An example is as follows:
 
 ```
-people:
-- name: Daniel Falster
-  institution: Macquarie University
-  role: collector, contact, contributor
-- name: Mark Westoby
-  institution: Macquarie University
-  role: lab_leader
-
+ data_collectors:
+  - last_name: Falster
+    given_name: Daniel
+    ORCID: 0000-0002-9814-092X
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
 ```
 
 Note that only the AusTraits custodians have the contributors' e-mail addresses on file. This information will not be directly available to AusTraits users or new contributors via Github.
 
+Additional fields within contributors are:
+
+- Assistants, `r tolower(schema$metadata$elements$contributors$elements$assistants$description)`
+- AusTraits dataset curators, `r tolower(schema$metadata$elements$contributors$austraits_curators$description)`
+
 #### Dataset
 
-This section includes `r tolower(definitions$metadata$elements$dataset$description)`
+This section includes `r tolower(schema$metadata$elements$dataset$description)`
 
 The following elements are included under the element `dataset`:
 
+
+??Daniel how do I filter out values I don't want in this table (observation_id). And trait_name, value are odd, because they are indicating the column for these traits in long datasets, but the definitions in the table below are for the output in the traits table??
+
 ```{r}
-values <- definitions$metadata$elements$dataset$values
+values <- schema$metadata$elements$dataset$values
 for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
 ```
+
+
+The fields `collection_date`, `replicates`, `basis_of_value`, `value_type`, `sample_age_class`, `collection_type`, `measurement_remarks`, `observation_number`, and `method_number` can all be specified at the dataset level or the traits level (which overrides a dataset-level entry) or sites level (which also overrides a dataset-level entry). In each case, they can be a fixed text value or indicate a column within the data.csv file (or generated through `custom_R_code`) that includes the relevant information. 
+
+- `sample_age_class`, `collection_type`, and `collection_date` are usually included under `metadata$dataset` unless they vary by trait.
+
+- `replicates`, `basis_of_value`, and `value_type` are usually different across traits and are usually mapped under the `metadata$traits` section; see below
+
+- `measurement_remarks`, `observation_number`, and `method_number` are only included if required. They are absent from the majority of datasets.
 
 An example is as follows:
 
@@ -291,12 +304,12 @@ A common use of the `custom_R_code` is to automate the conversion of a verbal de
 
 #### Traits
 
-This section provides `r stringr::str_replace(definitions$metadata$elements$traits$description,"A","a")`
+This section provides `r stringr::str_replace(schema$metadata$elements$traits$description,"A","a")`
 
 For each trait submitted to AusTraits, there is the following information:
 
 ```{r}
-values <- definitions$metadata$elements$traits$elements
+values <- schema$metadata$elements$traits$elements
 for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
@@ -304,35 +317,45 @@ for (value in names(values)) {
 
 Values under `trait_name` must be allowable values, list in the `trait definitions` [file](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml) or [vignette](http://traitecoevo.github.io/austraits.build/articles/definitions.html). Similarly, values under `value_type` must be allowable values, also listed in the definitions file.
 
+The fields `replicates`, `basis_of_value`, `value_type`, `sample_age_class`, `collection_type`, `measurement_remarks`, `observation_number`, and `method_number` can all be specified at the dataset level or the traits level (which overrides a dataset-level entry). In each case, they can be a fixed text value or indicate a column within the data.csv file (or generated through `custom_R_code`) that includes the relevant information. 
+
 An example is as follows:
 
 ```
 traits:
+
 - var_in: LMA (mg mm-2)
   unit_in: mg/mm2
   trait_name: specific_leaf_area
-  value_type: site_mean
-  replicates: 3
-  methods: LMA was calculated as the leaf dry mass (oven-dried for 48 hours at 65 °C) divided by leaf size. It was measured on the first five fully expanded leaves at the tip of each individual.
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: '3'
+  methods: LMA was calculated as the leaf dry mass (oven-dried for 48 hours at 65
+    deg C) divided by leaf size. It was measured on the first five fully expanded
+    leaves at the tip of each individual.
 - var_in: leaf size (mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: site_mean
-  replicates: 3
-  methods: Leaf size was calculated as the one-sided leaf area (flat bed scanner). It was measured on the first five fully expanded leaves at the tip of each individual.
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: '3'
+  methods: Leaf size was calculated as the one-sided leaf area (flat bed scanner).
+    It was measured on the first five fully expanded leaves at the tip of each individual.
 ```
 
 #### Substitutions
 
 
-This section provides `r tolower(definitions$metadata$elements$substitutions$description)`
+This section provides `r tolower(schema$metadata$elements$substitutions$description)`
 
 Substitutions are required whenever the exact word(s) used to describe a categorical trait value in AusTraits is different from the vocabulary used by the author in the `data.csv` file. It is preferable to align vocabulary using `substitutions` rather than changing the `data.csv` file. The [trait definitions file](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml) provides a list of supported values for each trait.
 
 Each substitution is documented using the following elements:
 
 ```{r}
-values <- definitions$metadata$elements$substitutions$values
+values <- schema$metadata$elements$substitutions$values
 for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
@@ -353,12 +376,12 @@ substitutions:
 
 #### Taxonomic updates
 
-This section provides `r tolower(definitions$metadata$elements$taxonomic_updates$description)`
+This section provides `r tolower(schema$metadata$elements$taxonomic_updates$description)`
 
 Each substitution is documented using the following elements:
 
 ```{r}
-values <- definitions$metadata$elements$taxonomic_updates$values
+values <- schema$metadata$elements$taxonomic_updates$values
 for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
 }
@@ -380,7 +403,7 @@ taxonomic_updates:
 
 #### Questions
 
-This section provides `r tolower(definitions$metadata$elements$questions)`
+This section provides `r tolower(schema$metadata$elements$questions)`
 
 An example is as follows:
 
@@ -410,7 +433,7 @@ Occasionally all the changes we want to make to dataset may not fit into the pre
 ```{r, eval=FALSE, echo=TRUE}
 data <-
   read_csv(filename_data_raw, col_types = cols()) %>%
-  custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
+  custom_manipulation(metadata[["dataset"]][["custom_R_code"]])() %>%
   parse_data(dataset_id, metadata) %>%
   ...()
 ```
