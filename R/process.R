@@ -108,7 +108,7 @@ dataset_process <- function(filename_data_raw,
     process_taxonomic_updates(metadata) %>%
     dplyr::mutate(
       # For cells with multiple values (separated by a space), sort these alphabetically
-      value = ifelse(is.na(.data$error), util_seperate_and_sort(.data$value), .data$value),
+      value = ifelse(is.na(.data$error), util_separate_and_sort(.data$value), .data$value),
       value_type = factor(.data$value_type, levels = names(schema$value_type$values)),
       #ensure dates are converted back to character
       collection_date = as.character(.data$collection_date)

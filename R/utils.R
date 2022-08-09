@@ -74,7 +74,7 @@ util_extract_list_element <- function(i, my_list, var) {
 
 #'  Split and sort cells with multiple values
 #'
-#'  util_seperate_and_sort: For a vector x in which individual cell may have
+#'  util_separate_and_sort: For a vector x in which individual cell may have
 #'  multiple values (separated by 'sep'), sort records within each cell alphabetically
 #'
 #' @param x an individual cell with multiple values
@@ -82,8 +82,8 @@ util_extract_list_element <- function(i, my_list, var) {
 #'
 #' @return a vector of alphabetically sorted records
 #'
-#' @examples \dontrun{util_seperate_and_sort("z y x")}
-util_seperate_and_sort <- function(x, sep=" ") {
+#' @examples \dontrun{util_separate_and_sort("z y x")}
+util_separate_and_sort <- function(x, sep=" ") {
 
   # find cells with multiple values, indicated by presence of sep
   i <- grep(sep, x)
