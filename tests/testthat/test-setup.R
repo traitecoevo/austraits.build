@@ -200,6 +200,21 @@ test_that("test build_setup_pipeline is working",{
   )
 })
 
+testthat::test_that("Is test_data working", {
+  
+  expect_silent(
+    out <- dataset_test("Test_2022", reporter = testthat::SilentReporter)
+  )
+
+  expect_true(
+    all(c("SilentReporter", "Reporter", "R6") %in% class(out))
+  )
+
+  expect_invisible(
+    out2 <- dataset_test("Test_2022")
+  )
+})
+
 testthat::test_that("test metadata_add_substitutions_table", {
   substitutions_df <- tibble::tibble(
     dataset_id = "Test_2022",
