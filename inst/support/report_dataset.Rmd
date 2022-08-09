@@ -75,15 +75,15 @@ as_link <- function(link, text, type = "md") {
 
 #' Get SHA link from Github
 #'
-#' Get SHA link using the get_SHA() function. The link generated leads to the latest
+#' Get SHA link using the util_get_SHA() function. The link generated leads to the latest
 #' commit for the Github repository. SHA is the abbreviated SHA-1 40 digit
 #' hexadecimal number which Github uses to track commits and changes made to a repository.
 #'
-#' @param ... arguments passed to the get_SHA()
+#' @param ... arguments passed to the util_get_SHA()
 #'
 #' @return SHA link to a github commit as a character string formatted using markdown syntax
-get_SHA_link <- function(...) {
-  sha <- get_SHA(...)
+util_get_SHA_link <- function(...) {
+  sha <- util_get_SHA(...)
   as_link(sprintf("https://github.com/traitecoevo/austraits/tree/%s", sha), sha)
 }
 
@@ -96,7 +96,7 @@ library(knitr)
 library(kableExtra)
 
 
-my_kable_styling <- my_kable_styling_html
+my_kable_styling <- util_kable_styling_html
 
 definitions <- austraits$definitions
 data_study <- extract_dataset(austraits, dataset_id)
@@ -104,10 +104,10 @@ metadata <- read_metadata(file.path("data", dataset_id, "metadata.yml"))
 schema <- austraits$schema
 
 # start notetaker device
-questions <-  austraits.build:::start_notetaker()
+questions <-  austraits.build:::notetaker_start()
 
 new_question <- function(txt) {
-  x <- questions( austraits.build:::add_note,  austraits.build:::as_note(txt)) %>%  austraits.build:::print_notes(as_anchor=TRUE)
+  x <- questions( austraits.build:::notetaker_add_note,  austraits.build:::notetaker_as_note(txt)) %>%  austraits.build:::notetaker_print_notes(as_anchor=TRUE)
   writeLines(sprintf("<font color='orange'>**Question:** %s</font>\n\n", paste0(x, collape="")))
 }
 
@@ -193,7 +193,7 @@ The following people are listed as data collectors in this study:
 
 ```{r, results='asis', echo=FALSE}
 metadata$contributors$data_collectors %>%
-  list_to_df() %>%
+  util_list_to_df2() %>%
   my_kable_styling()
 ```
 
@@ -215,7 +215,7 @@ Primary citation:
 
 ```{r, results='asis', echo=FALSE}
 metadata$source$primary %>%
-  list1_to_df() %>%
+  util_list_to_df1() %>%
   my_kable_styling()
 ```
 
@@ -226,7 +226,7 @@ if(n > 1) {
 
   for(i in 2:n) {
     metadata$source[[i]] %>%
-    list1_to_df() %>%
+    util_list_to_df1() %>%
     my_kable_styling() %>% 
     cat()
     writeLines("\n\n")
@@ -245,7 +245,7 @@ The description we have of the study is as follows:
 
 ```{r, results='asis', echo=FALSE}
 metadata$dataset %>%
-  list1_to_df() %>%
+  util_list_to_df1() %>%
   my_kable_styling()
 ```
 
@@ -255,7 +255,7 @@ new_question("(section `dataset`) Can you provide more detailed information for 
 
 ```{r, results='asis', echo=FALSE}
 missing <- metadata$dataset %>%
- list1_to_df() %>%
+ util_list_to_df1() %>%
  filter(value == "unknown") %>%
  pull(key)
 
@@ -449,7 +449,7 @@ if(nrow(subset(data_study$excluded_data,error!="Missing value")) > 0 ) {
 
   if(nrow(subset(data_study$excluded_data,error == "Observation excluded in metadata")) > 0) { 
     metadata$exclude_observations %>%
-      list_to_df() %>%
+      util_list_to_df2() %>%
       my_kable_styling() %>%
       writeLines()
   }
@@ -462,8 +462,8 @@ if(nrow(subset(data_study$excluded_data,error!="Missing value")) > 0 ) {
 
 ```{r, echo=FALSE, message=FALSE}
 traits <- data_study$traits$trait_name %>% unique() %>% sort()
-traits_numeric <- traits[extract_list_element(traits, definitions, "type") == "numeric"]
-traits_categorical <- traits[extract_list_element(traits, definitions, "type") != "numeric"]
+traits_numeric <- traits[util_extract_list_element(traits, definitions, "type") == "numeric"]
+traits_categorical <- traits[util_extract_list_element(traits, definitions, "type") != "numeric"]
 ```
 
 ## Numerical traits
@@ -489,7 +489,7 @@ define_variable <- function(var, schema) {
     writeLines("Possible values are:")
 
     schema$value_type$values %>%
-      list1_to_df()  %>%
+      util_list_to_df1()  %>%
       my_kable_styling() %>%
       writeLines()
     }
@@ -512,7 +512,7 @@ for(trait in traits_numeric) {
     filter(trait_name == trait) %>%
     mutate(value = as.numeric(value))
 
-  transforms <- metadata$traits %>% list_to_df() %>% filter(trait_name == trait)
+  transforms <- metadata$traits %>% util_list_to_df2() %>% filter(trait_name == trait)
 
   elements <- definitions[[trait]]
 
@@ -605,8 +605,8 @@ writeLines(
 
 for(trait in traits_categorical) {
  
-  transforms <- metadata$traits %>% list_to_df() %>% filter(trait_name == trait)
-  substitutions_for_trait <- metadata$substitutions %>% list_to_df() %>% filter(trait_name == trait)
+  transforms <- metadata$traits %>% util_list_to_df2() %>% filter(trait_name == trait)
+  substitutions_for_trait <- metadata$substitutions %>% util_list_to_df2() %>% filter(trait_name == trait)
 
   data_trait_study <- data_study$traits %>%
     filter(trait_name == trait)
@@ -698,7 +698,7 @@ The table below shows the table of all taxa in this study, where possible using 
 
 ```{r, results='asis', echo=FALSE}
 schema$austraits$elements$taxa$elements %>%
-  list1_to_df() %>%
+  util_list_to_df1() %>%
   my_kable_styling()
 ```
 
@@ -774,7 +774,7 @@ Here is a summary of the questions we would like answers to. Clicking on the lin
 
 
 ```{r, results='asis', echo=FALSE}
-questions() %>% austraits.build:::print_all_notes() %>% writeLines()
+questions() %>% austraits.build:::notetaker_print_all() %>% writeLines()
 ```
 
 
@@ -786,7 +786,7 @@ questions() %>% austraits.build:::print_all_notes() %>% writeLines()
 The technical information below may useful for us for the sake of reproducibility, but you don't need to worry about it!
 
 <font color='grey'>
-This report was generated using the data from the commit `r get_SHA_link()`
+This report was generated using the data from the commit `r util_get_SHA_link()`
 
 And the following R environment
 

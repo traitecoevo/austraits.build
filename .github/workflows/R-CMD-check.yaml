@@ -64,20 +64,21 @@ jobs:
       - name: Test build infrastructure
         run: |
           library(austraits.build)
-          source("config/custom.R")
+          source("scripts/custom.R")
+          source("scripts/taxonomy.R")
           testthat::test_dir("tests/build/")
         shell: Rscript {0}
 
       - name: Benchmark
         run: |
           library(austraits.build)
-          source("config/custom.R")
+          source("scripts/custom.R")
           source("scripts/benchmark.R")
           run_benchmark()
         shell: Rscript {0}
         
       - name: Test coverage
         run: |
-          source("config/custom.R")
-          covr::codecov(quiet=FALSE, type = "all", code = "testthat::test_file('tests/build/test-custom.R'); testthat::test_dir('tests/build')")
+          library(austraits.build)
+          covr::codecov(quiet=FALSE, type = "all")
         shell: Rscript {0}

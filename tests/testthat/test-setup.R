@@ -10,7 +10,7 @@ suppressWarnings({
 test_that("metadata_create_template is working",{
   unlink("data/Test_2022/metadata.yml")
 
-  expect_silent(schema <- load_schema())
+  expect_silent(schema <- get_schema())
 
   expect_invisible(metadata_create_template(dataset_id = "Test_2022",
                                             path = file.path("data", "Test_2022"),
@@ -48,22 +48,22 @@ test_that("metadata_path_dataset_id is working",{
   expect_equal(class(metadata_path_dataset_id("Test_2022")), "character")
 })
 
-test_that("metadata_read_dataset_id is working",{
-  expect_silent(metadata_read_dataset_id("Test_2022"))
-  expect_equal(class(metadata_read_dataset_id("Test_2022")), "list")
+test_that("read_metadata_dataset is working",{
+  expect_silent(read_metadata_dataset("Test_2022"))
+  expect_equal(class(read_metadata_dataset("Test_2022")), "list")
 })
 
-test_that("metadata_write_dataset_id is working",{
-  metadata <- metadata_read_dataset_id("Test_2022")
+test_that("write_metadata_dataset is working",{
+  metadata <- read_metadata_dataset("Test_2022")
 
   unlink("data/Test_2022/metadata.yml")
   expect_false(file.exists("data/Test_2022/metadata.yml"))
 
-  expect_silent(metadata_write_dataset_id(metadata, "Test_2022"))
+  expect_silent(write_metadata_dataset(metadata, "Test_2022"))
   expect_true(file.exists("data/Test_2022/metadata.yml"))
 
-  expect_silent(metadata_read_dataset_id("Test_2022"))
-  expect_equal(class(metadata_read_dataset_id("Test_2022")), "list")
+  expect_silent(read_metadata_dataset("Test_2022"))
+  expect_equal(class(read_metadata_dataset("Test_2022")), "list")
 })
 
 
@@ -72,11 +72,11 @@ test_that("metadata_add_source_doi is working",{
   doi <- "https://doi.org/10.3389/fmars.2021.671145"
   doi2 <- "https://doi.org/10.1111/j.0022-0477.2005.00992.x"
 
-  expect_equal(doi, standardise_doi(doi))
-  expect_equal(doi, standardise_doi("https://doi.org/10.3389/fmars.2021.671145"))
-  expect_equal(doi, standardise_doi("http://doi.org/10.3389/fmars.2021.671145"))
-  expect_equal(doi, standardise_doi("doi.org/10.3389/fmars.2021.671145"))
-  expect_equal(doi, standardise_doi("10.3389/fmars.2021.671145"))
+  expect_equal(doi, util_standardise_doi(doi))
+  expect_equal(doi, util_standardise_doi("https://doi.org/10.3389/fmars.2021.671145"))
+  expect_equal(doi, util_standardise_doi("http://doi.org/10.3389/fmars.2021.671145"))
+  expect_equal(doi, util_standardise_doi("doi.org/10.3389/fmars.2021.671145"))
+  expect_equal(doi, util_standardise_doi("10.3389/fmars.2021.671145"))
 
   # We won't actually test querying of rcrossref, to avoid unnecessary fails
   # passing in bib avoids calling corssref
@@ -151,43 +151,27 @@ test_that("metadata_remove_taxonomic_change is working",{
   expect_invisible(metadata_remove_taxonomic_change("Test_2022", "flower"))
 })
 
-
-test_that("test load_taxonomic_resources is working",{
-  suppressWarnings(rm(taxonomic_resources))
-  expect_no_error(x <- load_taxonomic_resources())
-  expect_equal(taxonomic_resources, x)
-  expect_named(x, c("APC", "APNI"))
-  expect_equal(length(x), 2)
-  expect_type(x$APC, "list")
-  expect_type(x$APNI, "list")
-})
-
-test_that("test dataset_test_setup is working",{
-  expect_error(dataset_test_setup())
+test_that("test dataset_test is working",{
+  expect_error(dataset_test())
 })  
 
-test_that("test setup_build_process is working",{
+test_that("test build_setup_pipeline is working",{
 
   
   unlink(".remake", recursive = TRUE)
   unlink("remake.yml")
   unlink("config/taxon_list.csv")
 
-  #expect_no_error(repo <- git2r::init())
-  #expect_no_error(git2r::add(repo, path = "functions.R"))
-  #expect_no_error(git2r::commit(repo, "test commit"))
-#  
-
   unlink(".git", recursive = TRUE)
   expect_false(file.exists("remake.yml"))
   expect_false(file.exists("config/taxon_list.csv"))
   expect_true(file.copy("data/Test_2022/test-metadata.yml", "data/Test_2022/metadata.yml", overwrite = TRUE))
   
-  expect_no_error(zip::unzip("testgit.zip"))
+  expect_no_error(zip::unzip("config/testgit.zip"))
   expect_no_error(sha <- git2r::sha(git2r::last_commit()))
-  expect_error(setup_build_process(path = "Datas"))
+  expect_error(build_setup_pipeline(path = "Datas"))
   
-  expect_silent(setup_build_process())
+  expect_silent(build_setup_pipeline())
   expect_true(file.exists("remake.yml"))
   expect_silent(yaml::read_yaml("remake.yml"))
   expect_true(file.exists("config/taxon_list.csv"))
@@ -197,32 +181,26 @@ test_that("test setup_build_process is working",{
   expect_named(taxa1, vars)
   expect_length(taxa1, 13)
   expect_true(nrow(taxa1) == 0)
-  expect_no_error(suppressWarnings(austraits_rebuild_taxon_list(austraits_raw) ))
-  expect_true(file.exists("config/taxon_list.csv"))
-  expect_silent(taxa2 <- read_csv_char("config/taxon_list.csv"))
-  expect_named(taxa2, vars)
-  expect_length(taxa2, 13)
-  expect_true(nrow(taxa2) == 5)
   
-  expect_no_error(austraits_versioned <- remake::make("austraits_versioned"))
+  expect_no_error(austraits <- remake::make("austraits"))
   
   expect_null(austraits_raw$build_info$version)
   expect_null(austraits_raw$build_info$git_SHA)
-  expect_equal(austraits_versioned$build_info$version, "3.0.2.9000")
-  expect_true(is.character(austraits_versioned$build_info$git_SHA))
-  expect_equal(austraits_versioned$build_info$git_SHA, sha)
-  expect_equal(austraits_versioned$build_info$git_SHA, "6c73238d8d048781d9a4f5239a03813be313f0dd")
+  expect_equal(austraits$build_info$version, "3.0.2.9000")
+  expect_true(is.character(austraits$build_info$git_SHA))
+  expect_equal(austraits$build_info$git_SHA, sha)
+  expect_equal(austraits$build_info$git_SHA, "6c73238d8d048781d9a4f5239a03813be313f0dd")
   
   expect_length(austraits_raw$taxa, 1)
-  expect_length(austraits_versioned$taxa, 10)
-  expect_equal(nrow(austraits_versioned$taxa), nrow(austraits_raw$taxa))
+  expect_length(austraits$taxa, 10)
+  expect_equal(nrow(austraits$taxa), nrow(austraits_raw$taxa))
   
   expect_no_error(
-    dataset_generate_report(dataset_id = "Test_2022", austraits = austraits_versioned, overwrite = TRUE)
+    dataset_report(dataset_id = "Test_2022", austraits = austraits, overwrite = TRUE)
   )
 })
 
-testthat::test_that("test substitutions_from_csv", {
+testthat::test_that("test metadata_add_substitutions_table", {
   substitutions_df <- tibble::tibble(
     dataset_id = "Test_2022",
     trait_name = "Tree",
@@ -241,6 +219,6 @@ testthat::test_that("test substitutions_from_csv", {
   metadata <- read_metadata(path_metadata)
   metadata$substitutions <- NA
   write_metadata(metadata, path_metadata)
-  expect_invisible(substitutions_from_csv(substitutions_df, "Test_2022", "trait_name", "find", "replace"))
+  expect_invisible(metadata_add_substitutions_table(substitutions_df, "Test_2022", "trait_name", "find", "replace"))
   expect_equal(read_metadata(path_metadata)$substitutions %>% sapply(`%in%`, x = "Tree") %>% any(), TRUE)
 })

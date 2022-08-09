@@ -22,12 +22,12 @@ knitr::opts_chunk$set(
 
 library(austraits.build)
 
-my_kable_styling <- my_kable_styling_html
+my_kable_styling <- util_kable_styling_html
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
 austraits <- austraits:::austraits_lite
-schema <- load_schema()
+schema <- get_schema()
 ```
 
 ## File structure
@@ -224,7 +224,7 @@ This section provides `r tolower(schema$metadata$elements$contributors$descripti
 
 ```{r, echo=FALSE, results="show"}
 schema$metadata$elements$contributors$elements$data_collectors %>%
-  list1_to_df() %>%
+  util_list_to_df1() %>%
   filter(!key %in% c("type","description")) %>%
   my_kable_styling()
 ```
@@ -433,8 +433,8 @@ Occasionally all the changes we want to make to dataset may not fit into the pre
 ```{r, eval=FALSE, echo=TRUE}
 data <-
   read_csv(filename_data_raw, col_types = cols()) %>%
-  custom_manipulation(metadata[["dataset"]][["custom_R_code"]])() %>%
-  parse_data(dataset_id, metadata) %>%
+  process_custom_code(metadata[["dataset"]][["custom_R_code"]])() %>%
+  process_parse_data(dataset_id, metadata) %>%
   ...()
 ```
 

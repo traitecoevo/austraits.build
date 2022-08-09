@@ -22,19 +22,19 @@ knitr::opts_chunk$set(
 
 library(austraits.build)
 
-my_kable_styling <- my_kable_styling_html
+my_kable_styling <- util_kable_styling_html
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Loads austraits into global name space
 austraits <- austraits:::austraits_lite
-schema <- load_schema()
+schema <- get_schema()
 ```
 
 
 This document describes the structure of the AusTraits compilation, corresponding to **Version `r austraits$build_info$version`** of the dataset. 
 
-Note that the information provided below is based on the information provided within the file `austraits.build_schema.yml`, which can be accessed by running `load_schema` or `system.file("support", "austraits.build_schema.yml", package = "austraits.build")`. 
+Note that the information provided below is based on the information provided within the file `austraits.build_schema.yml`, which can be accessed by running `get_schema` or `system.file("support", "austraits.build_schema.yml", package = "austraits.build")`. 
 
 AusTraits is essentially a series of linked components, which cross link against each other::
 
@@ -78,7 +78,7 @@ print_schema_element <- function(elements) {
       writeLines()
 
     elements$elements %>%
-      list1_to_df() %>%
+      util_list_to_df1() %>%
       my_kable_styling() %>%
       writeLines()
   }
@@ -135,7 +135,7 @@ Each trait measurement has an associated `value_type`, which is ``r austraits$sc
 
 ```{r value_type}
 austraits$schema$value_type$values %>%
-  list1_to_df() %>%
+  util_list_to_df1() %>%
   my_kable_styling() %>%
   writeLines()
 ```
@@ -144,7 +144,7 @@ Each trait measurement also has an associated `basis_of_value`, which is ``r aus
 
 ```{r basis_of_value}
 austraits$schema$basis_of_value$values %>%
-  list1_to_df() %>%
+  util_list_to_df1() %>%
   my_kable_styling() %>%
   writeLines()
 ```
