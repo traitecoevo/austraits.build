@@ -1,6 +1,6 @@
 
 entity_type:
-  description: &entity_type A categorical variable describing the entity for which values represent.
+  description: &entity_type A categorical variable indicating the type of entity linked to a value.
   type: categorical
   values:
     individual: Value comes from a single individual
@@ -50,19 +50,19 @@ austraits:
         site_name: &site_name Name of the site where the individual was sampled. Cross-references between similar columns in `sites` and `traits`.
         context_name: &context_name Name of contextual senario where the individual was sampled. Cross-references between similar columns in `contexts` and `traits`.
         entity_id: &entity_id A unique identifier that encodes the taxon, population, and/or individual that is connected to a trait value. A taxon-level trait value will have an entity_id that only includes a taxon component. A population-level trait value will have an entity_id that includes both taxon and population components. And an individual-level trait value will have an entity_id that includes taxon, population, and individual components.  
-        observation_number: &observation_number A field to indicate that multiple measurements have been made on the same entity over time. Observation number defaults to 1, unless it is manually added as a column or to individual traits
+        observation_number: &observation_number A field to indicate that multiple measurements have been made on the same entity over time. Observation number defaults to 1, unless it is manually added as a column at the dataset level or to individual trait entries.
         method_number: &method_number A field to indicate when a trait is measured multiple times on the same entity, with different methods used for each entry. Method number defaults to 1, unless it is manually added as a column or to individual traits.
         trait_name: &trait_name Name of the trait sampled. Allowable values specified in the table `definitions`.
-        value: &value Measured value.
+        value: &value The measured value of a trait, site property or context property.
         unit: &units Units of the sampled trait value after aligning with AusTraits standards.
         collection_date: &collection_date Date sample was taken, in the format `yyyy-mm-dd`, `yyyy-mm` or `yyyy`, depending on the resoluton specified. Alternatively an overall range for the study can be indicating, with the starting and ending sample date sepatated by a `/`, as in 2010-10/2011-03
         entity_type: *entity_type
         value_type: *value_type
         basis_of_value: *basis_of_value
-        replicates: &replicates Number of replicate measurements that comprise the data points for the trait for each measurement. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be 1. If the trait is categorical or the value indicates a measurement for an entire species (or other taxon) replicate value should be `.na`.
+        replicates: &replicates Number of replicate measurements that comprise a recorded trait measurement. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be 1. If the trait is categorical or the value indicates a measurement for an entire species (or other taxon) replicate value should be `.na`.
         collection_type: &collection_type A field to indicate where the plants on which traits were measured were collected -  in the `field`, `lab`, `glasshouse`, `botanical collection`, or `literature`. The latter should only be used when the data were sourced from the literature and the collection type is unknown.
         sample_age_class: &sample_age_class A field to indicate the life stage or age class of the entity measured. Standard values are `adult`, `sapling`, `seedling` and `juvenile`.         
-        measurement_remarks: &measurement_remarks Comments or notes accompanying the trait measurement.
+        measurement_remarks: &measurement_remarks Brief comments or notes accompanying the trait measurement, often used to indicate why multiple method numbers have been assigned or to document original sources for data compilations.
         original_name: &orginal_name Name given to taxon in the original data supplied by the authors.
     sites:
       description: A table containing observations of site characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
@@ -71,7 +71,7 @@ austraits:
         dataset_id: *dataset_id
         site_name: *site_name
         site_property: The site characteristic being recorded. The name should include units of measurement, e.g. `MAT (C)`. Ideally we have at least the following variables for each site, `longitude (deg)`, `latitude (deg)`, `description`.
-        value: *value
+        value: The measured value of a site property.
     contexts:
       description: A table containing observations of contextual characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `context_name`.
       type: table
@@ -79,7 +79,7 @@ austraits:
         dataset_id: *dataset_id
         context_name: *context_name
         context_property: The contextual characteristic being recorded. If applicable, name should include units of measurement, e.g. `CO2 concentration (ppm)`.
-        value: *value
+        value: The measured value of a context property.
     methods:
       description: A table containing details on methods with which data were collected, including time frame and source. Cross referencing with the `traits` table is possible using combinations of the variables `dataset_id`, `trait_name`.
       type: table
@@ -109,7 +109,7 @@ austraits:
         observation_number: *observation_number
         method_number: *method_number
         trait_name: *trait_name
-        value: *value
+        value: The measured value of a trait.
         unit: *units
         collection_date: *collection_date
         entity_type: *entity_type
@@ -251,7 +251,7 @@ metadata:
         austraits_curators:
           description: *austraits_curators
     dataset:
-      description: Study details, including format of the data, custom R code applied to data, and various descriptors. Each can a header for a column of the data, or actual value to be used.
+      description: Study details, including format of the data, custom R code applied to data, and various descriptors. The value entered for each element can be either a header for a column within the data.csv file or the actual value to be used.
       type: categorical
       values:
         data_is_long_format: Indicates if the data spreadsheet has a vertical (long) or  horizontal (wide) configuration with `yes` or `no` terminology
@@ -262,13 +262,13 @@ metadata:
         context_name: *context_name
         entity_type: *entity_type
         entity_id: *entity_id
-        population_id: &population_id A unique identifier for a population. As used in AusTraits, this is often a true biological population (that is, a site), but the term `population` is also used to capture a single experimental treatment.
-        individual_id: &individual_id A unique identifier for an individual plant. Often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time. 
+        population_id: &population_id A unique identifier for a population. As used in AusTraits, this is often a true biological population (that is, a site), but the term `population` is also used to distinguish between experimental treatments.
+        individual_id: &individual_id A unique identifier for an individual plant. Most often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time. 
         observation_id: &observation_id A unique identifier for the observation, important for joining traits coming from the same `observation_id` until `entity_id` is created later in the workflow. For wide datasets, unless a column is specified under `individual_id` , these are assigned automatically based on the `dataset_id` and row number of the raw data.
         observation_number: *observation_number
         method_number: *method_number 
-        trait_name: *trait_name
-        value: *value
+        trait_name: Element required for long datasets to specify the column indicating the trait name associated with each row of data.
+        value: The measured value of a trait.
         description: *description
         collection_type: *collection_type
         sample_age_class: *sample_age_class
