@@ -33,13 +33,16 @@ dataset:
           max_height = round(max_height,6), 
           specific_leaf_area = round(specific_leaf_area,6)
         ) %>% 
-        mutate_at(vars(count_plants,max_height, specific_leaf_area),
-          funs(replace(.,duplicated(.),NA))) %>% 
-      ungroup() %>% 
-      group_by(species) %>% 
-        mutate_at(vars(seed_mass),funs(replace(.,duplicated(.),NA))) %>% 
-      ungroup()
-  '
+        mutate(
+          across(c(count_plants, max_height, specific_leaf_area), replace_duplicates_with_NA)
+          ) %>%
+        ungroup() %>%
+        group_by(species) %>%
+        mutate(
+          across(c(seed_mass), replace_duplicates_with_NA)
+          ) %>%
+        ungroup()
+        '
   collection_date: year
   taxon_name: species
   site_name: remnant
