@@ -258,11 +258,10 @@ This section includes `r tolower(schema$metadata$elements$dataset$description)`
 
 The following elements are included under the element `dataset`:
 
-
-XXXXDaniel how do I filter out values I don't want in this table (observation_id). And trait_name, value are odd, because they are indicating the column for these traits in long datasets, but the definitions in the table below are for the output in the traits table??
-
 ```{r}
 values <- schema$metadata$elements$dataset$values
+
+values <- values[!(names(values) %in% c("observation_id"))]
 
 for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
@@ -331,13 +330,6 @@ for (value in names(values)) {
 ```
 
 The elements `trait_name`, `entity_type`, `value_type`, `collection_type`, and `basis of value` are controlled vocabularies; the values for these elements must be from the list of allowable values. Those for traits are listed in the `traits.yml` [file](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml) or [vignette](http://traitecoevo.github.io/austraits.build/articles/definitions.html). For the other elements, see
-
-XXXXDaniel We should probably include tables for the other elements with controlled vocabularies here.
-schema$entity_type$values
-schema$value_type$values
-schema$basis_of_value$values
-
-
 
 The fields `replicates`, `basis_of_value`, `value_type`, `sample_age_class`, `collection_type`, `measurement_remarks`, `observation_number`, and `method_number` can all be specified at the dataset level or the traits level (which overrides a dataset-level entry). In each case, they can be a fixed text value or indicate a column (within the `data.csv` file or generated through `custom_R_code`) that includes the relevant information. 
 

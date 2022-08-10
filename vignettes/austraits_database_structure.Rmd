@@ -122,6 +122,16 @@ In detail:
 - `method_number` is used to indicate that multiple observations were made on the same entity for the same trait at a given time, using multiple methods. The difference between methods is indicated under `measurement_remarks`. In literature compilations, `method_number` can be used to distiguish between trait values for the same entity recorded from different sources. 
 
 
+Each trait measurement has an associated `entity_type`, which is `r tolower(schema$metadata$elements$traits$elements$entity_type)` Possible values are: 
+
+```{r entity_type}
+schema$entity_type$values %>%
+  util_list_to_df1() %>%
+  my_kable_styling() %>%
+  writeLines()
+```
+
+
 #### Values, Value types, and basis of value {#value_types}
 
 Each record in the table of trait data has an associated `value`,  `value_type`, and `basis_of_value`. 
@@ -151,6 +161,9 @@ schema$basis_of_value$values %>%
 
 
 AusTraits does not include intra-individual observations made at a single point in time. When multiple measurements per individual are submitted to AusTraits, we take the mean of the values and record the value_type as `mean` and indicate under replicates the number of measurements made.  
+
+
+
 
 ## sites
 ```{r}
