@@ -184,7 +184,7 @@ dataset_process <- function(filename_data_raw,
                                          "trait_name", "observation_id", "population_id", "individual_id",
                                          "context_name", "site_name", 
                                          "collection_date", "custom_R_code", 
-                                         "taxon_name", "basis_of_record", "life_stage")))
+                                         "taxon_name", "basis_of_value", "basis_of_record", "life_stage")))
       )  %>%
       full_join( by = "dataset_id",
         #references
@@ -212,12 +212,14 @@ dataset_process <- function(filename_data_raw,
                   "population_id", "individual_id")
   
   for(v in vars){
-    # merge in to traits from site level
-    if(v %in% sites$site_property){
+    # merge into traits from site level
+    if(v %in% unique(sites$site_property)) {
       traits_tmp <- traits %>%
         dplyr::left_join(by = "site_name",
                          sites %>% tidyr::pivot_wider(names_from = "site_property", values_from = "value") %>%
-                           dplyr::select(.data$site_name, col_tmp = dplyr::any_of(v)))
+                           dplyr::select(.data$site_name, col_tmp = dplyr::any_of(v)) %>%
+                           stats::na.omit()
+                           )
      ## Use site level value if present
      traits[[v]] <- ifelse(!is.na(traits_tmp[["col_tmp"]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
@@ -901,7 +903,6 @@ process_parse_data <- function(data, dataset_id, metadata) {
   if (data_is_long_format == FALSE & any(! traits_table[["var_in"]] %in% colnames(data))) {
     stop(paste(dataset_id, ": missing traits: ", setdiff(traits_table[["var_in"]], colnames(data))))
   }
-
 
   ## if needed, change from wide to long format
   if (!data_is_long_format) {
