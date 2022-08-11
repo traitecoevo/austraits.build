@@ -184,7 +184,7 @@ dataset_process <- function(filename_data_raw,
                                          "trait_name", "observation_id", "population_id", "individual_id",
                                          "context_name", "site_name", 
                                          "collection_date", "custom_R_code", 
-                                         "taxon_name", "collection_type", "sample_age_class")))
+                                         "taxon_name", "basis_of_record", "life_stage")))
       )  %>%
       full_join( by = "dataset_id",
         #references
@@ -207,7 +207,7 @@ dataset_process <- function(filename_data_raw,
                   )
 
   # Where missing, fill variables with values from sites
-  vars <- c("collection_type", "sample_age_class", "collection_date", "measurement_remarks", "entity_type",
+  vars <- c("basis_of_record", "life_stage", "collection_date", "measurement_remarks", "entity_type",
                   "value_type", "basis_of_value", "replicates", "observation_number", "method_number",
                   "population_id", "individual_id")
   
@@ -790,7 +790,7 @@ process_parse_data <- function(data, dataset_id, metadata) {
 
   # Step 1b. import any values that aren't columns of data
   vars <- c( "entity_type", "value_type", "basis_of_value", "replicates", "collection_date",
-            "collection_type", "sample_age_class", "measurement_remarks", "observation_number", 
+            "basis_of_record", "life_stage", "measurement_remarks", "observation_number", 
             "method_number", "individual_id", "population_id")
 
   df <-

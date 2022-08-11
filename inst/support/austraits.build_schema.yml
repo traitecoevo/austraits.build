@@ -1,6 +1,6 @@
 
 entity_type:
-  description: &entity_type A categorical variable indicating the type of entity linked to a value.
+  description: &entity_type A categorical variable specifying the entity corresponding to the trait values recorded.
   type: categorical
   values:
     individual: Value comes from a single individual.
@@ -12,7 +12,7 @@ entity_type:
     order: Value represents a summary statistic or expert score for an entire order.
 
 value_type:
-  description: &value_type A categorical variable describing the type of value recorded.
+  description: &value_type A categorical variable describing the statistical nature of the trait value recorded.
   type: categorical
   values:
     raw: Value recorded for an entity (individual).
@@ -26,13 +26,24 @@ value_type:
     unknown: Not currently known.
   
 basis_of_value: 
-  description: &basis_of_value A categorical value describing the basis of the recorded value.
+  description: &basis_of_value A categorical variable describing how the trait value was obtained.
   type: categorical 
   values:
-    measurement: Value is the result of a measurement made.
-    expert_score: Estimated by an expert based on their knowledge of the taxon.
+    measurement: Value is the result of a measurement(s) made on a specimen(s).
+    expert_score: Value has been estimated by an expert based on their knowledge of the entity.
     model_derived: Value is derived from a statistical model, for example via gap-filling.
     unknown: Not currently known.
+
+basis_of_record: 
+  description: &basis_of_record A categorical variable specifying from which kind of specimen traits were recorded.
+  type: categorical 
+  values:
+     field: Traits were recorded on entities living naturally in the field.
+     field_experiment: Traits were recorded on entities living under experimentally manipulated conditions in the field.
+     captive_cultivated: Traits were recorded on entities living in a common garden, arboretum, or botanical or zoological garden.
+     lab: Traits were recorded on entities growing in a lab, glasshouse or growth chamber.
+     preserved_specimen: Traits were recorded from specimens preserved in a collection, eg. herbarium or museum
+     literature: Traits were sourced from values reported in the literature, and where the basis of record is not otherwise known.
 
 #-------------------------------------------------------------
 # A key describing the structure of the compiled `AusTraits` dataset
@@ -60,8 +71,8 @@ austraits:
         value_type: *value_type
         basis_of_value: *basis_of_value
         replicates: &replicates Number of replicate measurements that comprise a recorded trait measurement. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be 1. If the trait is categorical or the value indicates a measurement for an entire species (or other taxon) replicate value should be `.na`.
-        collection_type: &collection_type A field to indicate where the plants on which traits were measured were collected -  in the `field`, `lab`, `glasshouse`, `botanical collection`, or `literature`. The latter should only be used when the data were sourced from the literature and the collection type is unknown.
-        sample_age_class: &sample_age_class A field to indicate the life stage or age class of the entity measured. Standard values are `adult`, `sapling`, `seedling` and `juvenile`.         
+        basis_of_record: *basis_of_record 
+        life_stage: &life_stage A field to indicate the life stage or age class of the entity measured. Standard values are `adult`, `sapling`, `seedling` and `juvenile`.         
         measurement_remarks: &measurement_remarks Brief comments or notes accompanying the trait measurement, often used to indicate why multiple method numbers have been assigned or to document original sources for data compilations.
         original_name: &orginal_name Name given to taxon in the original data supplied by the authors.
     sites:
@@ -88,7 +99,7 @@ austraits:
         trait_name: *trait_name
         methods: &methods A textual description of the methods used to collect the trait data. Whenever available, methods are taken near-verbatim from the referenced source. Methods can include descriptions such as 'measured on botanical collections', 'data from the literature', or a detailed description of the field or lab methods used to collect the data.
         description: &description A 1-2 sentence description of the purpose of the study.
-        sampling_strategy: &sampling_strategy A written description of how study sites were selected and how study individuals were selected. When available, this information is lifted verbatim from a published manuscript. For botanical collections, this field ideally indicates which records were 'sampled' to measure a specific trait.
+        sampling_strategy: &sampling_strategy A written description of how study sites were selected and how study individuals were selected. When available, this information is lifted verbatim from a published manuscript. For preserved specimens, this field ideally indicates which records were 'sampled' to measure a specific trait.
         source_primary_key: Citation key for the primary source in `sources`. The key is typically formatted as `Surname_year`.
         source_primary_citation: Citation for the primary source. This detail is generated from the primary source in the metadata.
         source_secondary_key: Citation key for the secondary source in `sources`.  The key is typically formatted as `Surname_year`.
@@ -116,8 +127,8 @@ austraits:
         value_type: *value_type
         basis_of_value: *basis_of_value
         replicates: *replicates
-        collection_type: *collection_type
-        sample_age_class: *sample_age_class
+        basis_of_record: *basis_of_record
+        life_stage: *life_stage
         measurement_remarks: *measurement_remarks
         original_name: *orginal_name
     taxonomic_updates:
@@ -270,8 +281,8 @@ metadata:
         trait_name: Element required for long datasets to specify the column indicating the trait name associated with each row of data.
         value: The measured value of a trait.
         description: *description
-        collection_type: *collection_type
-        sample_age_class: *sample_age_class
+        basis_of_record: *basis_of_record
+        life_stage: *life_stage
         replicates: *replicates
         sampling_strategy: *sampling_strategy
         measurement_remarks: *measurement_remarks
@@ -290,7 +301,7 @@ metadata:
         trait_name: *trait_name
         entity_type: *entity_type
         value_type: *value_type
-        collection_type: *collection_type
+        basis_of_record: *basis_of_record
         basis_of_value: *basis_of_value
         replicates: *replicates
         measurement_remarks: *measurement_remarks
@@ -301,7 +312,7 @@ metadata:
         population_id: *population_id
         individual_id: *individual_id
         observation_id: *observation_id
-        sample_age_class: *sample_age_class
+        life_stage: *life_stage
 
     substitutions:
       description: A list of any "find and replace" substitutions needed to get the data into the right format.

@@ -36,7 +36,7 @@ dataset:
       group_by(Species) %>% 
       distinct() %>% 
       ungroup() %>% 
-      mutate(sample_age_class = "seedling"); 
+      mutate(life_stage = "seedling"); 
 
   adult_traits <-    
     data %>% 
@@ -46,7 +46,7 @@ dataset:
       distinct(LF, HeightMax, ReproAge, ReproCLE, Pollination_syndrome, Fruit_type,
               FruitFG, DispClass, DispSimple, DispC3) %>%
       ungroup %>%
-      mutate(sample_age_class = "adult");
+      mutate(life_stage = "adult");
       
   data %>%
     select(-cotsExp, -cotsEH, -cotsFR, -LEE, -LF, -HeightMax, -ReproAge, -ReproCLE, 
@@ -57,9 +57,9 @@ dataset:
       LtLeaf = ifelse(is.na(value_to_omit),LtLeaf, NA),
       LWC = ifelse(is.na(value_to_omit),LWC, NA),
       LMA = ifelse(is.na(value_to_omit),LMA, NA),
-      sample_age_class = ifelse(StrataBinary == "Stratum_2_adult_plant","adult", NA),
-      sample_age_class = ifelse(StrataBinary == "Stratum_1_seedling",
-                                "seedling", sample_age_class),
+      life_stage = ifelse(StrataBinary == "Stratum_2_adult_plant","adult", NA),
+      life_stage = ifelse(StrataBinary == "Stratum_1_seedling",
+                                "seedling", life_stage),
       leaflet_area = `LA`,
       leaflet_area = ifelse(`L1Lflt2` == "2", leaflet_area, NA),
       leaf_area = ifelse(`L1Lflt2` == "1", `LA`, NA),
@@ -92,7 +92,7 @@ dataset:
     by a spectrum of correlated traits of plant life-history and ecophysiology, and
     highlights the importance of seed dispersal in shaping the distribution and ecological
     diversity of regeneration in secondary rainforests in Australia's Wet Tropics.
-  collection_type: field
+  basis_of_record: field
   sampling_strategy: Field studies of the spatial distributions of species and plant
     functional traits were located in Brooks Valley, Mungalli, on the south-eastern
     edge of Atherton Tablelands. Plants of all species, from 4th-leaf seedlings to
@@ -180,7 +180,7 @@ sites:
   Lit:
     latitude (deg): .na.real
     longitude (deg): .na.real
-    collection_type: literature
+    basis_of_record: literature
   Longlands Gap Rd Wondecla:
     latitude (deg): -17.453
     longitude (deg): 145.449
@@ -199,7 +199,7 @@ sites:
   QRS:
     latitude (deg): .na.real
     longitude (deg): .na.real
-    collection_type: botanical_collection
+    basis_of_record: preserved_specimen
   Robson Creek primary CSIRO SNVF 2200mm metamorphic:
     latitude (deg): -17.121
     longitude (deg): 145.634
@@ -209,7 +209,7 @@ sites:
   TFRC Arboretum:
     latitude (deg): -17.258
     longitude (deg): 145.485
-    collection_type: arboretum
+    basis_of_record: captive_cultivated
   Tolga Scrub:
     latitude (deg): -17.235
     longitude (deg): 145.48
@@ -320,8 +320,8 @@ traits:
     collated from taxonomic treatments.  For 70 species without direct measurements
     of seed mass, measured seed dimensions were used to estimate dry mass values using
     regression equations of seed dry mass on seed volume.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
 - var_in: StemDensity_to_use
   unit_in: g/cm3
   trait_name: wood_density
@@ -354,7 +354,7 @@ traits:
     method for irregular-shaped samples (Heinrichs and Lassen, 1970), and oven dry
     mass determined after oven drying at 70degC (requiring 5-14 days to reach constant
     mass)."
-  collection_type: field
+  basis_of_record: field
 - var_in: leaf_area
   unit_in: cm2
   trait_name: leaf_area
@@ -366,7 +366,7 @@ traits:
     the natural point of abscission. This whole-leaf area includes the (small) area
     of petiole or rachis, and so would be very slightly larger than the 'lamina only'
     measurement of leaf size recommended by Cornelissen et al. (2003).
-  collection_type: field
+  basis_of_record: field
 - var_in: leaflet_area
   unit_in: cm2
   trait_name: leaflet_area
@@ -378,7 +378,7 @@ traits:
     the natural point of abscission. This whole-leaf area includes the (small) area
     of petiole or rachis, and so would be very slightly larger than the 'lamina only'
     measurement of leaf size recommended by Cornelissen et al. (2003).
-  collection_type: field
+  basis_of_record: field
 - var_in: LtLeaf
   unit_in: mm
   trait_name: leaf_thickness
@@ -394,7 +394,7 @@ traits:
     many distributed tissue types such as sclerenchyma (Poorter et al., 2009). However,
     individual leaf volume determinations were not made in this study, and so lamina
     thickness remains the only direct measure of leaf size other than projected area.
-  collection_type: field
+  basis_of_record: field
 - var_in: LMA
   unit_in: g/m2
   trait_name: specific_leaf_area
@@ -411,7 +411,7 @@ traits:
     images of fresh, saturated leaves, using open-source software 'ImageJ' v1.3.4
     Image Processing and Analysis in Java (NIH, US Government, http://rsb.info.nih.gov/ij/index.html).  Dry
     weight was measured after drying at 60degC for >=48 hours (Garnier et al., 2001).
-  collection_type: field
+  basis_of_record: field
 - var_in: LDM
   unit_in: g/g
   trait_name: leaf_dry_matter_content
@@ -428,7 +428,7 @@ traits:
     images of fresh, saturated leaves, using open-source software 'ImageJ' v1.3.4
     Image Processing and Analysis in Java (NIH, US Government, http://rsb.info.nih.gov/ij/index.html).  Dry
     weight was measured after drying at 60degC for >=48 hours (Garnier et al., 2001).
-  collection_type: field
+  basis_of_record: field
 - var_in: LSleaf
   unit_in: 10^1*kN/m
   trait_name: leaf_work_to_punch
@@ -475,7 +475,7 @@ traits:
     per unit dry mass, quantified by the maximum force per unit fracture cross-sectional
     area, per unit tissue density (units, N g-1 m), and calculated as 0.1 * LSS /
     LDM.
-  collection_type: field
+  basis_of_record: field
 - var_in: LSS
   unit_in: 10^1*MN/m2
   trait_name: leaf_work_to_punch_adjusted
@@ -523,7 +523,7 @@ traits:
     area, per unit tissue density (units, N g-1 m), and calculated as 0.1 * LSS /
     LDM.
   measurement_remarks: columnXX
-  collection_type: field
+  basis_of_record: field
 - var_in: LSD
   unit_in: MN/mm2/mm
   trait_name: .na
@@ -570,7 +570,7 @@ traits:
     per unit dry mass, quantified by the maximum force per unit fracture cross-sectional
     area, per unit tissue density (units, N g-1 m), and calculated as 0.1 * LSS /
     LDM.
-  collection_type: field
+  basis_of_record: field
 - var_in: HeightM
   unit_in: m
   trait_name: .na
@@ -587,7 +587,7 @@ traits:
     on canopy context, and so canopy-top species were randomly assigned a height sampled
     from the maximum canopy heights from the primary forest quadrats (10x10m); using
     species level values included below
-  collection_type: field
+  basis_of_record: field
 - var_in: HeightPlant
   unit_in: m
   trait_name: .na
@@ -596,7 +596,7 @@ traits:
   basis_of_value: measurement
   replicates: 1
   methods: Individual plant height
-  collection_type: field
+  basis_of_record: field
 - var_in: L1Lflt2
   unit_in: .na
   trait_name: .na
@@ -606,7 +606,7 @@ traits:
   replicates: .na
   methods: Binary variable indicating if measurement was made on a leaf (1) or leaflet
     (2)
-  collection_type: field
+  basis_of_record: field
 - var_in: nLsample
   unit_in: count
   trait_name: .na
@@ -615,7 +615,7 @@ traits:
   basis_of_value: measurement
   replicates: 1
   methods: N leaves sampled from an individual plant
-  collection_type: field
+  basis_of_record: field
 - var_in: LVleaf
   unit_in: cm3
   trait_name: .na
@@ -625,7 +625,7 @@ traits:
   replicates: 1    
   measurement_remarks: leaf_vs_leaflet
   methods: leaf volumne
-  collection_type: field
+  basis_of_record: field
 - var_in: LFrLeaf
   unit_in: g
   trait_name: leaf_fresh_mass
@@ -639,7 +639,7 @@ traits:
     sunset, and transported in cool, moist papers.  Leaves were then be rehydrated
     to saturation by storing them in darkness for 6-24 hours with cut stems placed
     in water.  Full-saturation measurements were then made of weight. 
-  collection_type: field
+  basis_of_record: field
 - var_in: leaf_dry_mass
   unit_in: g
   trait_name: leaf_dry_mass
@@ -649,7 +649,7 @@ traits:
   replicates: 1
   methods: Dry weight was measured after drying at 60degC for >=48 hours (Garnier
     et al., 2001).
-  collection_type: field
+  basis_of_record: field
 - var_in: leaflet_dry_mass
   unit_in: g
   trait_name: leaflet_dry_mass
@@ -659,7 +659,7 @@ traits:
   replicates: 1
   methods: Dry weight was measured after drying at 60degC for >=48 hours (Garnier
     et al., 2001).
-  collection_type: field
+  basis_of_record: field
 - var_in: LWC
   unit_in: g/g
   trait_name: leaf_water_content_per_fresh_mass
@@ -674,7 +674,7 @@ traits:
     to saturation by storing them in darkness for 6-24 hours with cut stems placed
     in water.  Full-saturation measurements were then made of weight. Dry weight was
     measured after drying at 60degC for >=48 hours (Garnier et al., 2001).
-  collection_type: field
+  basis_of_record: field
 - var_in: LLA
   unit_in: g/m2
   trait_name: leaf_water_content_per_area
@@ -686,7 +686,7 @@ traits:
     the natural point of abscission. This whole-leaf area includes the (small) area
     of petiole or rachis, and so would be very slightly larger than the 'lamina only'
     measurement of leaf size recommended by Cornelissen et al. (2003).
-  collection_type: field
+  basis_of_record: field
 - var_in: LF
   unit_in: .na
   trait_name: plant_growth_form
@@ -695,8 +695,8 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Rainforest Key, CSIRO permanent plot data, Field observations
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
 - var_in: HeightMax
   unit_in: m
   trait_name: plant_height
@@ -708,8 +708,8 @@ traits:
     (vines, lianas, scramblers) height depends on canopy context, and so canopy-top
     species were randomly assigned a height sampled from the maximum canopy heights
     from the primary forest quadrats (10x10m).
-  sample_age_class: adult
-  collection_type: field
+  life_stage: adult
+  basis_of_record: field
 - var_in: ReproAge
   unit_in: years
   trait_name: reproductive_maturity
@@ -718,8 +718,8 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: CSIRO TFRC arboretum records, and Botanist and Landholder interviews
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
 - var_in: ReproCLE
   unit_in: dimensionless
   trait_name: reproductive_light_environment_index
@@ -729,8 +729,8 @@ traits:
   replicates: unknown
   methods: Light for reproduction,  Crown Light Environment CLE required for first
     reproduction, ordinal values 1-8; Botanist interviews, Field observations.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
 - var_in: Pollination_syndrome
   unit_in: .na
   trait_name: pollination_syndrome
@@ -740,8 +740,8 @@ traits:
   replicates: .na
   methods: Assigned by Dr. Dan Metcalfe, CSIRO, based on literature data and floral
     features.
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
 - var_in: Fruit_type
   unit_in: .na
   trait_name: fruit_type
@@ -754,8 +754,8 @@ traits:
     elaiosome, etc.), Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed
     achene, etc.), Dry dehiscent or indehsicent without attractant or wing. Spore
     (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
-  collection_type: literature
-  sample_age_class: adult (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
+  basis_of_record: literature
+  life_stage: adult (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
 - var_in: dispersal_unit
   unit_in: .na
   trait_name: dispersal_unit
@@ -768,8 +768,8 @@ traits:
     elaiosome, etc.), Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed
     achene, etc.), Dry dehiscent or indehsicent without attractant or wing. Spore
     (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
-  collection_type: literature
-  sample_age_class: adult (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
+  basis_of_record: literature
+  life_stage: adult (ferns). Based on Rainforest Key, Cooper & Cooper 2004.
 - var_in: fruit_fleshiness
   unit_in: .na
   trait_name: fruit_fleshiness
@@ -816,8 +816,8 @@ traits:
   methods: Fruit functional group - 10 classes based on size, morphology, composition,
     attractiveness to frugivore groups. 9 classes are present in the Angiosperms dataset.
     Data from CSIRO Fruit-Frugivore Interactions database.
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
 - var_in: DispClass
   unit_in: .na
   trait_name: dispersers
@@ -842,8 +842,8 @@ traits:
     only; AusTraits ''wind'': 7 Ws Wind-dispersed small seeds with wing or plume;
     8 WL Wind-dispersed large seeds with wing; AusTraits ''passive'': 9 SmUn Small
     propagules with unassisted dispersal, including spores.'
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
 - var_in: DispSimple
   unit_in: .na
   trait_name: .na
@@ -853,8 +853,8 @@ traits:
   replicates: .na
   methods: Dispersal syndrome - 3 broad classes, flying animal, non-flying animal,
     wind
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
 - var_in: DispC3
   unit_in: .na
   trait_name: .na
@@ -864,8 +864,8 @@ traits:
   replicates: .na
   methods: Disperser Class - 5 classes, splits the ForAv class in DispC2 into AvianForest
     and DiverseAvian
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
 - var_in: cotsExp
   unit_in: .na
   trait_name: cotyledon_position
@@ -874,8 +874,8 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: based on Rainforest Key, Cooper & Cooper 2004.
-  sample_age_class: seedling
-  collection_type: literature
+  life_stage: seedling
+  basis_of_record: literature
 - var_in: cotsEH
   unit_in: .na
   trait_name: seedling_germination_location
@@ -885,8 +885,8 @@ traits:
   replicates: .na
   methods: Seedling Germination Type  Epigeal or Hypogeal; based on Rainforest Key,
     Cooper & Cooper 2004.
-  sample_age_class: seedling
-  collection_type: literature
+  life_stage: seedling
+  basis_of_record: literature
 - var_in: cotsFR
   unit_in: .na
   trait_name: cotyledon_function
@@ -896,8 +896,8 @@ traits:
   replicates: .na
   methods: Seedling Cotyledon function - Foliaceous or Reserve; based on Rainforest
     Key, Cooper & Cooper 2004.
-  sample_age_class: seedling
-  collection_type: literature
+  life_stage: seedling
+  basis_of_record: literature
 - var_in: LEE
   unit_in: dimensionless
   trait_name: establishment_light_environment_index
@@ -907,8 +907,8 @@ traits:
   replicates: unknown
   methods: Seedling Light Environment for Establishment, CLE required for seedling
     establishment, 1-8; Field surveys and additional observations, and Botanist interviews
-  sample_age_class: seedling
-  collection_type: field
+  life_stage: seedling
+  basis_of_record: field
 substitutions:
 - trait_name: plant_growth_form
   find: C
