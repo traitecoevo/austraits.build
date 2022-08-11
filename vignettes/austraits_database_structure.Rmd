@@ -101,13 +101,20 @@ elements <- schema$austraits$elements$traits
 
 **Details:**  
 
-#### Entity IDs, entity type, observation number and method number
+#### Entity IDs, entity type, observation number, method number, and measurement remarks
 
 Each trait measurement has an associated `entity_id` and `entity_type`.  Entity IDs bind together measurements within a dataset made on the same entity, and thereby allow transformation between long format (e.g. with variables `trait_name` and `value`) and wide format (e.g. with traits as columns). This is possible, because when multiple traits were collected on the same entity, they all share the same entity_id.
 
 In detail:
 
-- `entity_type` indicates whether the entity being measured is an individual, population, species, or higher order taxa. 
+- `entity_type` is `r tolower(schema$metadata$elements$traits$elements$entity_type)` Possible values are: 
+
+```{r entity_type}
+schema$entity_type$values %>%
+  util_list_to_df1() %>%
+  my_kable_styling() %>%
+  writeLines()
+```
 
 - `entity_id` is built from up to three segments, a taxon_id segment (for all entity types), a population_id segment (when `entity_type` is `population` or `individual`), and a individual_id segment (when `entity_type` is `individual`).
 
@@ -119,20 +126,24 @@ In detail:
     
 - `observation_number` is used to indicate that multiple observations were made on the same entity for the same trait, representing repeated measures over time.
 
-- `method_number` is used to indicate that multiple observations were made on the same entity for the same trait at a given time, using multiple methods. The difference between methods is indicated under `measurement_remarks`. In literature compilations, `method_number` can be used to distiguish between trait values for the same entity recorded from different sources. 
+- `method_number` is used to indicate that multiple observations were made on the same entity for the same trait at a given time, using multiple methods. The difference between methods is indicated under `measurement_remarks`. In literature compilations, `method_number` can be used to distiguish between trait values for the same entity recorded from different sources.
 
+- `measurement_remarks` is used to document `r tolower(schema$metadata$elements$traits$elements$measurement_remarks)`
 
-Each trait measurement has an associated `entity_type`, which is `r tolower(schema$metadata$elements$traits$elements$entity_type)` Possible values are: 
+#### Life stage, basis of record 
 
-```{r entity_type}
-schema$entity_type$values %>%
+- `life_stage` is `r tolower(schema$metadata$elements$traits$elements$life_stage)`.
+
+- `basis_of_record` is `r tolower(schema$metadata$elements$traits$elements$basis_of_record)` Possible values are:
+
+```{r basis_of_record}
+schema$basis_of_record$values %>%
   util_list_to_df1() %>%
   my_kable_styling() %>%
   writeLines()
 ```
 
-
-#### Values, Value types, basis of value, basis of record {#value_types}
+#### Values, Value types, basis of value {#value_types}
 
 Each record in the table of trait data has an associated `value`,  `value_type`, and `basis_of_value`. 
 

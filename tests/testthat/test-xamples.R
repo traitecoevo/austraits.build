@@ -87,7 +87,7 @@ testthat::test_that("test datasets", {
                  pull(basis_of_record) %>% grep(pattern = "wild") %>% length , 1)
   
   # Example 5 - Test a combination of trait, site and dataset level values
-  # Collection type has been specified for dataset level ~ field, site level ~ Cape_Tribulation
+  # Basis of record has been specified for dataset level ~ field, site level ~ Cape_Tribulation
   # trait level ~ leaf_N and column ~ wild
   # column values should take precedence followed by traits values, followed by sites and then dataset values
   Ex5 <- test_build_dataset(file.path(examples.dir, "test3-metadata.yml"), file.path(examples.dir, "test3-data.csv"), "Example 5", definitions, unit_conversions, schema)
