@@ -57,7 +57,7 @@ austraits:
       type: table
       elements:
         dataset_id: &dataset_id Primary identifier for each study contributed to AusTraits; most often these are scientific papers, books, or online resources. By default this should be the name of the first author and year of publication, e.g. `Falster_2005`.
-        taxon_name: &taxon_name Scientific name of the taxon on which traits were sampled. When possible, this is the currently accepted (botanical) or valid (zoological) scientific name.
+        taxon_name: &taxon_name Scientific name of the taxon on which traits were sampled, without authorship. When possible, this is the currently accepted (botanical) or valid (zoological) scientific name, but might also be a higher taxonomic level. [biodiversity.org.au:canonical_name]
         site_name: &site_name Name of the site where the individual was sampled. Cross-references between similar columns in `sites` and `traits`.
         context_name: &context_name Name of contextual scenario where the individual was sampled. Cross-references between similar columns in `contexts` and `traits`.
         entity_id: &entity_id A unique identifier that encodes the taxon, population, and/or individual that is connected to a trait value. A taxon-level trait value will have an entity_id that only includes a taxon component. A population-level trait value will have an entity_id that includes both taxon and population components. And an individual-level trait value will have an entity_id that includes taxon, population, and individual components.  
@@ -137,27 +137,29 @@ austraits:
       elements:
         dataset_id: *dataset_id
         original_name: *orginal_name
-        canonical_name: The taxon name without authorship [biodiversity.org.au:canonical_name]. In AusTraits compilations this is the name after implementing automated syntax standardisation and spelling changes as well as manually encoded syntax alignments for this taxon in the metadata file for the corresponding `dataset_id`. XXXX_cleaned_name_XXXX
-        taxonID: An identifier for the set of taxon information (data associated with the taxon class). May be a global unique identifier or an identifier specific to the data set. Must be resolvable within this dataset. [biodiversity.org.au:taxonID | dwc:taxonID]  XXXX_taxonIDClean_XXXX
-        taxonomicStatus: The status of the use of the taxon name (`scientificName`) as a label for a taxon.     Requires taxonomic opinion to define the scope of a taxon. Rules of priority then are used to define the taxonomic status of the nomenclature contained in that scope, combined with the experts opinion. It must be linked to a specific taxonomic reference that defines the concept. [biodiversity.org.au:taxonomicStatus | dwc:taxonomicStatus] XXXX_taxonomicStatusClean_XXXX
-        alternativeTaxonomicStatus: The taxonomic status of alternative taxonomic records with the name `canonical_name` as the accepted (botanical) or valid (zoological) taxon name. XXXX_alternativeTaxonomicStatusClean_XXXX
-        acceptedNameUsageID: &acceptedNameUsageID The taxonID associated with the accepted (botanical) or valid (zoological) concept for this taxon according to the classification being exported. eg. APC for Australian Plants. [biodiversity.org.au:acceptedNameUsageID | dwc:acceptedNameUsageID]
+        cleaned_name: The taxon name without authorship after implementing automated syntax standardisation and spelling changes as well as manually encoded syntax alignments for this taxon in the metadata file for the corresponding `dataset_id`. This name has not yet been matched to the currently accepted (botanical) or valid (zoological) taxon name in cases where there are taxonomic synonyms, isonyms, orthographic variants, etc.
+        cleaned_name_ID: An identifier for the cleaned name before it is updated to the currently accepted name usage. This may be a global unique identifier or an identifier specific to the data set. Must be resolvable within this dataset. XXXX_taxon_ID_clean_XXXX XXXX_for APC/APNI at least this should be the [biodiversity.org.au:scientificNameID] because that way it applies to both APC/APNI, while we'd been matching to taxon_ID, which meant there were no identifiers for APNI names not in APC.
+        taxonomic_status_cleaned_name: The status of the use of the `cleaned_name` as a label for a taxon.     Requires taxonomic opinion to define the scope of a taxon. Rules of priority then are used to define the taxonomic status of the nomenclature contained in that scope, combined with the experts opinion. It must be linked to a specific taxonomic reference that defines the concept. [biodiversity.org.au:taxonomicStatus | dwc:taxonomicStatus] XXXX_taxonomic_status_clean_XXXX
+        alternative_taxonomic_status_cleaned_name: The taxonomic status of alternative taxonomic records with `cleaned_name` as the accepted (botanical) or valid (zoological) taxon name. XXXX_alternativeTaxonomicStatusClean_XXXX
+        accepted_name_usage_ID: &accepted_name_usage_ID The taxonID associated with the accepted (botanical) or valid (zoological) concept for this taxon according to the classification being exported. eg. APC for Australian Plants. [biodiversity.org.au:acceptedNameUsageID | dwc:acceptedNameUsageID] XXXX_leaving for now, but suggest we switch to taxon_ID since we are aligning with taxon_name not accepted_name_usage. We will still have accepted_name_usage in the taxa table._XXXX XXXX_acceptedNameUsageID_XXXX        
         taxon_name: *taxon_name
+        taxon_ID: &taxon_ID An identifier for the set of taxon information (data associated with the taxon class). May be a global unique identifier or an identifier specific to the data set. Must be resolvable within this dataset. [biodiversity.org.au:taxonID | dwc:taxonID]
     taxa:
       description: A table containing details on taxa associated with information in `traits`. Whenever possible, this information is sourced from curated taxon lists that include identifiers for each taxon. The information compiled in this table is released under a CC-BY3 license. Cross referencing between the two dataframes is possible using combinations of the variable `taxon_name`.
       type: table
       elements:
         taxon_name: *taxon_name
         taxonomic_reference: Name of the taxonomy (tree) that contains this concept. ie. APC, AusMoss etc. [biodiversity.org.au:datasetName]  XXXX_source_XXXX
-        acceptedNameUsageID: *acceptedNameUsageID
-        scientificName: The full scientific name, with authorship and date information if known. [biodiversity.org.au:scientificName | dwc:scientificName] XXXX we haven't had this, since it is just the merging of the taxon name and authorship, but it feels like it should be a mapped field in the database structure, since it is referenced in other fields XXXX
-        scientificNameAuthorship: The authorship information for the scientific name formatted according to the conventions of the applicable nomenclaturalCode. [biodiversity.org.au:scientificNameAuthorship | dwc:scientificNameAuthorship].
-        taxonRank: The taxonomic rank of the most specific name in the scientificName. [biodiversity.org.au:taxonRank | dwc:taxonRank]
-        taxonomicStatus: The status of the use of the scientificName as a label for the taxon in regard to the 'accepted (or valid) taxonomy'. The assigned taxonomic status must be linked to a specific taxonomic reference that defines the concept. [biodiversity.org.au:taxonomicStatus | dwc:taxonomicStatus] 
-        taxonDistribution: Known distribution of the taxon, by Australian state. [biodiversity.org.au:taxonDistribution]
-        ccAttributionIRI: The attribution to be used when citing this name. [biodiversity.org.au:ccAttributionIRI]
-        genus: Genus of the taxon. [biodiversity.org.au:genericName | dwc:genus]
+        scientific_name: The full scientific name, with authorship and date information if known. [biodiversity.org.au:scientificName | dwc:scientificName]
+        scientific_name_authorship: The authorship information for the scientific name formatted according to the conventions of the applicable nomenclaturalCode. [biodiversity.org.au:scientificNameAuthorship | dwc:scientificNameAuthorship]. XXXX_scientificNameAuthorship_XXXX
+        taxon_rank: The taxonomic rank of the most specific name in the scientificName. [biodiversity.org.au:taxonRank | dwc:taxonRank] XXXX_taxonRank_XXXX
+        taxonomic_status: The status of the use of the scientificName as a label for the taxon in regard to the 'accepted (or valid) taxonomy'. The assigned taxonomic status must be linked to a specific taxonomic reference that defines the concept. [biodiversity.org.au:taxonomicStatus | dwc:taxonomicStatus]  XXXX_taxonomicStatus_XXXX
+        taxon_distribution: Known distribution of the taxon, by Australian state. [biodiversity.org.au:taxonDistribution] XXXX_taxonDistribution_XXXX        
+        genus: Genus of the taxon without authorship. [biodiversity.org.au:genericName | dwc:genericName] XXXX_in DarwinCore, APC, genus is used for with authorship. Since this column is simply listing the genus of a fully aligned taxon name (which could be genus with authorship), I think without authorship is appropriate. I'd also rather still call it genus, but wanted to alert you_XXXX
         family: Family of the taxon. [biodiversity.org.au:family | dwc:family]
+        accepted_name_usage_ID: *accepted_name_usage_ID        
+        taxon_id: *taxon_ID
+        scientific_name_ID: An identifier for the nomenclatural (not taxonomic) details of a scientific name. [biodiversity.org.au:scientificNameID  | dwc:scientificNameID]
     contributors:
       description: A table of people contributing to each study.
       type: table
