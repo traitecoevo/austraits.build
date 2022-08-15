@@ -607,8 +607,8 @@ process_flag_unsupported_values <- function(data, definitions) {
 
       i <-  is.na(data[["error"]]) &
             data[["trait_name"]] == trait &
-            !is.null(definitions[[trait]]$values) &
-            !util_check_all_values_in(data$value, names(definitions[[trait]]$values))
+            !is.null(definitions[[trait]]$allowed_values_levels) &
+            !util_check_all_values_in(data$value, names(definitions[[trait]]$allowed_values_levels))
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Unsupported trait value", .data$error))
     }
@@ -637,9 +637,9 @@ process_flag_unsupported_values <- function(data, definitions) {
       
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Value does not convert to numeric", .data$error))
-
+     
       i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & !(data[["value_type"]] %in% c("range", "bin")) &
-        (x < definitions[[trait]]$values$minimum | x > definitions[[trait]]$values$maximum)
+        (x < definitions[[trait]]$allowed_values_min | x > definitions[[trait]]$allowed_values_max)
 
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Value out of allowable range", .data$error))

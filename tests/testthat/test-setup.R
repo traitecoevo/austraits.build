@@ -196,6 +196,10 @@ test_that("test build_setup_pipeline is working",{
   expect_equal(nrow(austraits$taxa), nrow(austraits_raw$taxa))
   
   expect_no_error(
+   p <- austraits::plot_trait_distribution_beeswarm(austraits, "huber_value", "dataset_id", highlight = "Test_2022", hide_ids = TRUE)
+  )
+
+  expect_no_error(
     dataset_report(dataset_id = "Test_2022", austraits = austraits, overwrite = TRUE)
   )
 })
@@ -210,9 +214,6 @@ testthat::test_that("Is test_data working", {
     all(c("SilentReporter", "Reporter", "R6") %in% class(out))
   )
 
-  expect_invisible(
-    out2 <- dataset_test("Test_2022")
-  )
 })
 
 testthat::test_that("test metadata_add_substitutions_table", {
