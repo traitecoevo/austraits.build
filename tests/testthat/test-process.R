@@ -25,11 +25,11 @@ test_that("test dataset_process is working",{
   austraits_names <- c("dataset_id", "traits", "sites", "contexts", "methods", "excluded_data", 
                        "taxonomic_updates", "taxa", "contributors", "sources", "definitions", "schema")
   
-  expect_equal(class(dataset_process(Test_data, Test_config, schema)), "list")
-  expect_length(dataset_process(Test_data, Test_config, schema), 12)
-  expect_named(dataset_process(Test_data, Test_config, schema), austraits_names)
-  
-  expect_equal(nrow(dataset_process(Test_data, Test_config, schema)$excluded_data), 0)
+  expect_no_error(  x <- dataset_process(Test_data, Test_config, schema))
+  expect_equal(class(x), "list")
+  expect_length(x, 12)
+  expect_named(x, austraits_names)
+    expect_equal(nrow(x$excluded_data), 0)
   expect_equal(nrow(dataset_process(Test_data, Test_config, schema, filter_missing_values = TRUE)$excluded_data), 0)
   expect_equal(nrow(dataset_process(Test_data, Test_config, schema, filter_missing_values = FALSE)$excluded_data), 44)
 })

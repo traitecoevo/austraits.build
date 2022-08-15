@@ -108,7 +108,7 @@ dataset_process <- function(filename_data_raw,
     process_taxonomic_updates(metadata) %>%
     dplyr::mutate(
       # For cells with multiple values (separated by a space), sort these alphabetically
-      value = ifelse(is.na(.data$error), util_seperate_and_sort(.data$value), .data$value),
+      value = ifelse(is.na(.data$error), util_separate_and_sort(.data$value), .data$value),
       value_type = factor(.data$value_type, levels = names(schema$value_type$values)),
       #ensure dates are converted back to character
       collection_date = as.character(.data$collection_date)
@@ -184,7 +184,7 @@ dataset_process <- function(filename_data_raw,
                                          "trait_name", "observation_id", "population_id", "individual_id",
                                          "context_name", "site_name", 
                                          "collection_date", "custom_R_code", 
-                                         "taxon_name", "collection_type", "sample_age_class")))
+                                         "taxon_name", "basis_of_value", "basis_of_record", "life_stage")))
       )  %>%
       full_join( by = "dataset_id",
         #references
@@ -207,17 +207,19 @@ dataset_process <- function(filename_data_raw,
                   )
 
   # Where missing, fill variables with values from sites
-  vars <- c("collection_type", "sample_age_class", "collection_date", "measurement_remarks", "entity_type",
+  vars <- c("basis_of_record", "life_stage", "collection_date", "measurement_remarks", "entity_type",
                   "value_type", "basis_of_value", "replicates", "observation_number", "method_number",
                   "population_id", "individual_id")
   
   for(v in vars){
-    # merge in to traits from site level
-    if(v %in% sites$site_property){
+    # merge into traits from site level
+    if(v %in% unique(sites$site_property)) {
       traits_tmp <- traits %>%
         dplyr::left_join(by = "site_name",
                          sites %>% tidyr::pivot_wider(names_from = "site_property", values_from = "value") %>%
-                           dplyr::select(.data$site_name, col_tmp = dplyr::any_of(v)))
+                           dplyr::select(.data$site_name, col_tmp = dplyr::any_of(v)) %>%
+                           stats::na.omit()
+                           )
      ## Use site level value if present
      traits[[v]] <- ifelse(!is.na(traits_tmp[["col_tmp"]]), traits_tmp[["col_tmp"]], traits[[v]])
     }
@@ -605,8 +607,8 @@ process_flag_unsupported_values <- function(data, definitions) {
 
       i <-  is.na(data[["error"]]) &
             data[["trait_name"]] == trait &
-            !is.null(definitions[[trait]]$values) &
-            !util_check_all_values_in(data$value, names(definitions[[trait]]$values))
+            !is.null(definitions[[trait]]$allowed_values_levels) &
+            !util_check_all_values_in(data$value, names(definitions[[trait]]$allowed_values_levels))
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Unsupported trait value", .data$error))
     }
@@ -635,9 +637,9 @@ process_flag_unsupported_values <- function(data, definitions) {
       
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Value does not convert to numeric", .data$error))
-
+     
       i <-  is.na(data[["error"]]) & data[["trait_name"]] == trait & !(data[["value_type"]] %in% c("range", "bin")) &
-        (x < definitions[[trait]]$values$minimum | x > definitions[[trait]]$values$maximum)
+        (x < definitions[[trait]]$allowed_values_min | x > definitions[[trait]]$allowed_values_max)
 
       data <- data %>%
         dplyr::mutate(error = ifelse(i, "Value out of allowable range", .data$error))
@@ -790,7 +792,7 @@ process_parse_data <- function(data, dataset_id, metadata) {
 
   # Step 1b. import any values that aren't columns of data
   vars <- c( "entity_type", "value_type", "basis_of_value", "replicates", "collection_date",
-            "collection_type", "sample_age_class", "measurement_remarks", "observation_number", 
+            "basis_of_record", "life_stage", "measurement_remarks", "observation_number", 
             "method_number", "individual_id", "population_id")
 
   df <-
@@ -901,7 +903,6 @@ process_parse_data <- function(data, dataset_id, metadata) {
   if (data_is_long_format == FALSE & any(! traits_table[["var_in"]] %in% colnames(data))) {
     stop(paste(dataset_id, ": missing traits: ", setdiff(traits_table[["var_in"]], colnames(data))))
   }
-
 
   ## if needed, change from wide to long format
   if (!data_is_long_format) {
