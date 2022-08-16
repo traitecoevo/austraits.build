@@ -601,7 +601,6 @@ process_flag_unsupported_values <- function(data, definitions) {
     dplyr::filter(is.na(.data$error)) %>% dplyr::pull(.data$trait_name) %>% unique()
 
   for(trait in traits ) {
-
     # General categorical traits
     if(definitions[[trait]]$type == "categorical") {
 
