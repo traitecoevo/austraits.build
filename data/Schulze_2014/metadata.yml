@@ -65,7 +65,12 @@ dataset:
       group_by(species_name) %>%
         mutate_at(vars(`physical_defence`,`leaf type`,`leaf_compoundness`, `Deciduous`,
         `Life-form`,`N2 fixing`), replace_duplicates_with_NA) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(leaf_form_general = NA) %>%
+      move_values_to_new_trait(
+        "leaf type", "leaf_form_general",
+        c("needle like", "scale like"),c("needle","scale"),c("needle like", "scale like")
+      )
   '
   collection_date: Date_to_use_edited
   taxon_name: species_name
@@ -773,7 +778,15 @@ contexts: .na
 traits:
 - var_in: leaf type
   unit_in: .na.character
-  trait_name: leaf_type
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na.character
+  methods: expert observation
+- var_in: leaf_form_general
+  unit_in: .na.character
+  trait_name: leaf_form_general
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -955,51 +968,57 @@ traits:
     and phosphorous was measured using ICP-AES Optima 3300DV, Perkin-Elmer, Waltham,
     Mass., USA.
 substitutions:
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: phylloids
   replace: phyllode
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: phyloclades
-  replace: phyllode
-- trait_name: leaf_type
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
   find: small phyllods
   replace: phyllode
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: phylloclades
-  replace: phyllode
-- trait_name: leaf_type
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
   find: phylloid
   replace: phyllode
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: phylloclad
-  replace: phyllode
-- trait_name: leaf_type
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
   find: small phylloids
   replace: phyllode
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: scale like
-  replace: scale_leaf
-- trait_name: leaf_type
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
   find: leaf scales
-  replace: scale_leaf
-- trait_name: leaf_type
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
   find: thorny scale
-  replace: scale_leaf
-- trait_name: leaf_type
+  replace: .na
+- trait_name: plant_photosynthetic_organ
   find: lancelat
-  replace: broadleaf
-- trait_name: leaf_type
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
+  find: broadleaf
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
   find: lanceolat
-  replace: broadleaf
-- trait_name: leaf_type
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
+  find: linearly
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
   find: thorny
   replace: .na
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: leaflet
-  replace: broadleaf
-- trait_name: leaf_type
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
   find: needle like
-  replace: needle
+  replace: leaf
 - trait_name: nitrogen_fixing
   find: N2 fixing
   replace: 1

@@ -21,8 +21,20 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% na_if(".na") %>% group_by("Genus_species","SITE_text") %>%
-    mutate_at(vars(leaf_type,leaf_shape), replace_duplicates_with_NA) %>% ungroup()
+  custom_R_code: '
+    data %>%
+      na_if(".na") %>%
+      group_by("Genus_species","SITE_text") %>%
+        mutate(across(c(leaf_type,leaf_shape), replace_duplicates_with_NA)) %>%
+      ungroup() %>%
+      mutate(leaf_division = NA, leaf_form_general = NA) %>%
+      move_values_to_new_trait(
+        "leaf_type", "leaf_division",
+        "trifoliate_leaves","trifoliate_leaves","trifoliate_leaves") %>%
+      move_values_to_new_trait(
+        "leaf_type", "leaf_form_general",
+        "scale_leaf","scale",NA)
+  '
   collection_date: unknown/2001
   taxon_name: Genus_species
   site_name: SITE_text
@@ -96,7 +108,23 @@ traits:
     plants of most species. Material was fixed in 50% formalin
 - var_in: leaf_type
   unit_in: .na
-  trait_name: leaf_type
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert identification
+- var_in: leaf_division
+  unit_in: .na
+  trait_name: leaf_division
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert identification
+- var_in: leaf_form_general
+  unit_in: .na
+  trait_name: leaf_form_general
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -111,12 +139,15 @@ traits:
   replicates: .na
   methods: expert identification
 substitutions:
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: decurrent leaf base
-  replace: scale_leaf
-- trait_name: leaf_type
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
   find: trifoliolate leaves
-  replace: broadleaf
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
+  find: broadleaf
+  replace: leaf
 - trait_name: leaf_shape
   find: elliptic
   replace: elliptical
