@@ -15,8 +15,18 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>%  mutate(fruit_fleshiness = Fruit_type, fruit_dehiscence
-    = Fruit_type)
+  custom_R_code: '
+    data %>%
+      mutate(
+        fruit_fleshiness = Fruit_type, 
+        fruit_dehiscence = Fruit_type
+      )  %>%
+      mutate(leaf_form_general = NA) %>%
+      move_values_to_new_trait(
+        "Leaf_type", "leaf_form_general",
+        "no leaves", "leafless", NA
+      )
+  '
   collection_date: 2020/2020
   taxon_name: current full name without authority
   description: data on Cyperaceae transcribed from a variety of sources
@@ -141,6 +151,14 @@ traits:
 - var_in: Leaf_type
   unit_in: .na
   trait_name: leaf_compoundness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: from reference book
+- var_in: leaf_form_general
+  unit_in: .na
+  trait_name: leaf_form_general
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -299,9 +317,6 @@ substitutions:
 - trait_name: clonal_spread_mechanism
   find: Clonal below ground
   replace: belowground_clonal
-- trait_name: leaf_compoundness
-  find: no leaves
-  replace: leafless
 - trait_name: root_structure
   find: arbuscular mycorrhiza
   replace: arbuscular_mycorrhizal

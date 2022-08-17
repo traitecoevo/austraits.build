@@ -47,6 +47,7 @@ dataset:
       -plant_height_duplicate, -wood_density_duplicate) %>%
       group_by(`Species_reconciled with updates and additions`) %>%
         distinct() %>%
+        mutate(across(c(`growth form`, `leaf type`, `leaves lobed`, `leaf longevity`), replace_duplicates_with_NA)) %>%
         summarise(
           `growth form` = paste0(`growth form`, collapse = " "),
           `leaf type` = paste0(`leaf type`, collapse = " "),
@@ -278,6 +279,9 @@ traits:
   replicates: .na
   methods: from floras
 substitutions:
+- trait_name: leaf_compoundness
+  find: 'NA'
+  replace: .na
 - trait_name: leaf_margin
   find: 'yes'
   replace: lobed

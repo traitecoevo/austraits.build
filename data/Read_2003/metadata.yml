@@ -25,8 +25,17 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% group_by(`APC species`) %>% mutate_at(vars("N-fixer","leaf"),replace_duplicates_with_NA)
-    %>% ungroup()
+  custom_R_code: '
+    data %>%
+      group_by(`APC species`) %>%
+        mutate(across(c("N-fixer","leaf"),replace_duplicates_with_NA)) %>%
+      ungroup() %>%
+      mutate(plant_photosynthetic_organ = NA) %>%
+      move_values_to_new_trait(
+        "leaf", "plant_photosynthetic_organ",
+        "phyllode", "phyllode", NA
+      )
+  '
   collection_date: 2000-10/2000-11
   taxon_name: APC species
   site_name: vegetation
@@ -97,6 +106,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge
+- var_in: plant_photosynthetic_organ
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation
 - var_in: leaf area (mm2)
   unit_in: mm2
   trait_name: leaf_area
