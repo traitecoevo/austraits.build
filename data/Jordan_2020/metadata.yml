@@ -70,7 +70,8 @@ dataset:
         leaf_margin = str_replace_all(leaf_margin,"lobed| lobed|lobed ", ""),
         leaf_margin2 = NA,
         leaf_compoundness2 = NA,
-        leaf_lobation2 = NA
+        leaf_lobation2 = NA,
+        leaf_base_shape = NA
       ) %>%
       move_values_to_new_trait(
         "leaf_division", "leaf_margin2",
@@ -89,6 +90,12 @@ dataset:
         c("lobed", "shallowly_lobed", "deeply_segmented"),
         c("lobed", "lobed_shallow", "lobed_deep"),
         c("NA", "NA", "NA")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_shape", "leaf_base_shape",
+        c("cuneate", "auriculate"),
+        c("cuneate", "auriculate"),
+        c("NA", "NA")
       ) %>%
       mutate(
         leaf_margin = ifelse(is.na(leaf_margin2), leaf_margin, leaf_margin2),
@@ -1454,6 +1461,17 @@ traits:
     that referred to leaf_shape terms in AusTraits (versus leaf_margin or leaf_division
     terms) have been applied to this variable; there are therefore only a few species
     included here
+- var_in: leaf_base_shape
+  unit_in: .na
+  trait_name: leaf_base_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation and reference books. The values under 'adult leaf type'
+    that referred to leaf_shape terms in AusTraits (versus leaf_margin or leaf_division
+    terms) have been applied to this variable; there are therefore only a few species
+    included here
 - var_in: leaf_division
   unit_in: .na.character
   trait_name: leaf_division_technical
@@ -1715,6 +1733,21 @@ traits:
   replicates: 1-5
   methods: scanned leaf area
 substitutions:
+- trait_name: leaf_shape
+  find: 'NA'
+  replace: .na
+- trait_name: leaf_shape
+  find: flat
+  replace: .na
+- trait_name: leaf_shape
+  find: flat terete
+  replace: terete
+- trait_name: leaf_shape
+  find: terete flat
+  replace: terete
+- trait_name: leaf_shape
+  find: flabelliform
+  replace: obtriangular
 - trait_name: leaf_division_technical
   find: entire
   replace: .na

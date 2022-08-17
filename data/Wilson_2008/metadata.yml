@@ -23,8 +23,14 @@ dataset:
   custom_R_code: '
     data %>% 
       mutate(
-        leaf_division = ifelse(stringr::str_detect(`leaf type`,"trifoliate"),"trifoliate",NA),
-        `leaf type` = gsub("trifoliate","compound",`leaf type`))
+        leaf_division_technical = ifelse(stringr::str_detect(`leaf type`,"trifoliate"),"trifoliate",NA),
+        `leaf type` = gsub("trifoliate","compound",`leaf type`),
+        leaf_base_shape = NA
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_shape", "leaf_base_shape",
+        "cuneate obovate", "cuneate", "obovate"
+      )
   '
   collection_date: unknown/2008
   taxon_name: binomial
@@ -63,9 +69,9 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
-- var_in: leaf_division
+- var_in: leaf_division_technical
   unit_in: .na
-  trait_name: leaf_division
+  trait_name: leaf_division_technical
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -170,6 +176,14 @@ traits:
 - var_in: leaf_shape
   unit_in: .na
   trait_name: leaf_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or opinion, from herbarium specimens
+- var_in: leaf_base_shape
+  unit_in: .na
+  trait_name: leaf_base_shape
   entity_type: species
   value_type: mode
   basis_of_value: expert_score

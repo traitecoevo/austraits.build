@@ -27,7 +27,8 @@ dataset:
                       "lobed", "entire"), 
         `leaf shape` = ifelse(`leaf shape` == "lobed", NA, `leaf shape`),
         `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf type`),
-        parasitic = ifelse(`growth form`=="parasitic","parasitic",NA)
+        parasitic = ifelse(`growth form`=="parasitic","parasitic", NA),
+        plant_photosynthetic_organ = ifelse(`leaf shape`=="articles","cladode", NA)
       )
     %>% mutate_at(vars(`min leaf length (mm)`,`max leaf length (mm)`,
                       `min leaf width (mm)`,`max leaf width (mm)`), ~na_if(.,0)) %>% 
@@ -44,6 +45,14 @@ dataset:
 sites: .na
 contexts: .na
 traits:
+- var_in: plant_photosynthetic_organ
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
@@ -155,7 +164,7 @@ substitutions:
   replace: '0'
 - trait_name: leaf_shape
   find: articles
-  replace: article
+  replace: .na
 - trait_name: leaf_shape
   find: elliptic
   replace: elliptical
@@ -165,6 +174,9 @@ substitutions:
 - trait_name: leaf_lobation
   find: '1'
   replace: lobed
+- trait_name: leaf_shape
+  find: circular
+  replace: orbicular
 taxonomic_updates:
 - find: Pterostylis aspera
   replace: Pterostylis aff. aspera

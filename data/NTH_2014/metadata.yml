@@ -28,12 +28,38 @@ dataset:
         GF = ifelse(succulent %in% c("yes","y"),"succulent_short herb", GF),
         parasitic = ifelse(GF=="parasite","parasitic",NA),
         fruit_type = NA,
+        leaf_lobation = NA,
+        leaf_lobation_pattern = NA,
+        plant_photosynthetic_organ2 = NA,
+        plant_photosynthetic_organ3 = NA
       ) %>%
       move_values_to_new_trait(
         "dispersal appendage", "fruit_type", 
         c("drupe", "samara"),
         c("drupe", "samara"),
         c("NA","wings")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "leaf_lobation", 
+        c("lobed"), c("lobed"), c("omit")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "leaf_lobation_pattern", 
+        "palmately lobed", "palmately_lobed", "omit"
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "plant_photosynthetic_organ2",
+        c("cladode"), c("cladode"), c("omit")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "plant_photosynthetic_organ3",
+        c("article","branchlets with articles","articles"),
+        c("cladode","cladode","cladode"),
+        c("omit","omit","omit")
+      ) %>%
+      mutate(
+        leaf_type = ifelse(is.na(plant_photosynthetic_organ2),leaf_type,plant_photosynthetic_organ2),
+        leaf_type = ifelse(is.na(plant_photosynthetic_organ3),leaf_type,plant_photosynthetic_organ3)
       ) %>%
       separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>% 
       separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
@@ -120,6 +146,22 @@ traits:
 - var_in: leaf shape
   unit_in: .na
   trait_name: leaf_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lobation
+  unit_in: .na
+  trait_name: leaf_lobation
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lobation_pattern
+  unit_in: .na
+  trait_name: leaf_lobation_pattern
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -297,11 +339,29 @@ substitutions:
   find: 'y'
   replace: succulent_short
 - trait_name: leaf_shape
-  find: articles
-  replace: article
+  find: omit
+  replace: .na
+- trait_name: leaf_shape
+  find: palmately_lobed
+  replace: .na
 - trait_name: leaf_shape
   find: elliptic
   replace: elliptical
+- trait_name: leaf_shape
+  find: obovoid
+  replace: obovate
+- trait_name: leaf_shape
+  find: deltoid
+  replace: deltate
+- trait_name: leaf_shape
+  find: circular
+  replace: orbicular
+- trait_name: leaf_shape
+  find: linear-oblanceolate
+  replace: narrowly_oblanceolate
+- trait_name: leaf_shape
+  find: dimidate
+  replace: .na
 - trait_name: seed_width
   find: 5.5.
   replace: '5.5'
@@ -321,14 +381,11 @@ substitutions:
   find: winged seed
   replace: wings
 - trait_name: leaf_shape
-  find: branchlets with articles
-  replace: branchlets_articles
-- trait_name: leaf_shape
   find: linear-oblanceolate
   replace: linear_oblanceolate
 - trait_name: leaf_shape
   find: palmately lobed
-  replace: palmately_lobed
+  replace: .na
 - trait_name: seed_shape
   find: comma shaped
   replace: comma-shaped

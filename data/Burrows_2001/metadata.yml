@@ -27,7 +27,11 @@ dataset:
       group_by("Genus_species","SITE_text") %>%
         mutate(across(c(leaf_type,leaf_shape), replace_duplicates_with_NA)) %>%
       ungroup() %>%
-      mutate(leaf_division = NA, leaf_form_general = NA) %>%
+      mutate(
+        leaf_base_shape = ifelse(leaf_shape %in% c("cuneate", "narrow cuneate"),"cuneate",NA),
+        leaf_division = NA,
+        leaf_form_general = NA
+      ) %>%
       move_values_to_new_trait(
         "leaf_type", "leaf_division",
         "trifoliate_leaves","trifoliate_leaves","trifoliate_leaves") %>%
@@ -130,6 +134,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: expert identification
+- var_in: leaf_base_shape
+  unit_in: .na
+  trait_name: leaf_base_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert identification
 - var_in: leaf_shape
   unit_in: .na
   trait_name: leaf_shape
@@ -168,7 +180,7 @@ substitutions:
   replace: ovate elliptical
 - trait_name: leaf_shape
   find: broad lanceolate
-  replace: broadly_lanceolate
+  replace: narrowly_ovate
 - trait_name: leaf_shape
   find: oblong elliptic
   replace: elliptical oblong
@@ -180,7 +192,10 @@ substitutions:
   replace: elliptical oblong
 - trait_name: leaf_shape
   find: narrow cuneate
-  replace: narrowly_cuneate
+  replace: triangular
+- trait_name: leaf_shape
+  find: cuneate
+  replace: .na
 - trait_name: leaf_shape
   find: obovate-elliptic
   replace: obovate elliptical
