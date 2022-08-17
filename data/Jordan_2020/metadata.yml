@@ -62,7 +62,40 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      mutate(
+        leaf_lobation = leaf_margin,
+        leaf_lobation = str_replace_all(leaf_lobation,"toothed|toothed | toothed", ""),
+        leaf_margin = str_replace_all(leaf_margin,"lobed| lobed|lobed ", ""),
+        leaf_margin2 = NA,
+        leaf_compoundness2 = NA,
+        leaf_lobation2 = NA
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_division", "leaf_margin2",
+        c("dentate", "crenate", "toothed", "deeply_toothed", "coarsely_toothed"),
+        c("dentate", "crenate", "toothed", "toothed", "toothed"),
+        c("NA", "NA", "NA", "NA", "NA")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_division", "leaf_compoundness2",
+        c("compound"),
+        c("compound"),
+        c("NA")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_division", "leaf_lobation2",
+        c("lobed", "shallowly_lobed", "deeply_segmented"),
+        c("lobed", "lobed_shallow", "lobed_deep"),
+        c("NA", "NA", "NA")
+      ) %>%
+      mutate(
+        leaf_margin = ifelse(is.na(leaf_margin2), leaf_margin, leaf_margin2),
+        leaf_compoundness = ifelse(is.na(leaf_compoundness2), leaf_compoundness, leaf_compoundness2),        
+        leaf_lobation = ifelse(is.na(leaf_lobation2), leaf_lobation, leaf_lobation2)
+      )
+  '
   collection_date: unknown/2020
   taxon_name: species
   site_name: site_name
@@ -1402,6 +1435,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation and reference books
+- var_in: leaf_lobation
+  unit_in: .na.character
+  trait_name: leaf_lobation
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na.character
+  methods: expert observation and reference books
 - var_in: leaf_shape
   unit_in: .na.character
   trait_name: leaf_shape
@@ -1415,7 +1456,7 @@ traits:
     included here
 - var_in: leaf_division
   unit_in: .na.character
-  trait_name: leaf_division
+  trait_name: leaf_division_technical
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -1674,9 +1715,36 @@ traits:
   replicates: 1-5
   methods: scanned leaf area
 substitutions:
+- trait_name: leaf_division_technical
+  find: entire
+  replace: .na
+- trait_name: leaf_division_technical
+  find: lobed_to_midvein
+  replace: pinnatisect
+- trait_name: leaf_division_technical
+  find: deeply_bipinnatifid
+  replace: bipinnatifid
+- trait_name: leaf_division_technical
+  find: deeply_pinnatifid
+  replace: pinnatifid
+- trait_name: leaf_division_technical
+  find: deeply_pinnatipartite
+  replace: pinnatipartite
 - trait_name: upper_cuticle_thickness
   find: '?'
   replace: .na
+- trait_name: leaf_margin
+  find: ''
+  replace: .na
+- trait_name: leaf_margin
+  find: ' toothed'
+  replace: toothed
+- trait_name: leaf_lobation
+  find: ''
+  replace: .na
+- trait_name: leaf_lobation
+  find: ' lobed'
+  replace: lobed
 - trait_name: lower_cuticle_thickness
   find: '?'
   replace: .na

@@ -1736,48 +1736,96 @@ traits:
       allowed_values_min: 0.001
       allowed_values_max: 1.0
     leaf_margin:
-      description: Description of leaf margin as lobed, toothed or entire.
+      description: Shape of the leaf margin, referencing incisions or projections in the outermost ⅛ of the leaf lamina.
+      notes: For leaf lamina projections and incisions that are greater than ⅛ of the distance to the midrib, see the trait `leaf_lobation`.
       type: categorical
-      label: Leaf margin
+      label: Leaf margin shape
       allowed_values_levels:
-        entire: Leaf margin without lobes or toothed
-        lobed: Leaf margin that is either lobed
-        toothed: Leaf margin that is toothed
-    leaf_division:
-      description: Detailed description of leaf divisions, beyond what is captured in leaf_compoundness (simple versus compound) and leaf_margin (entire, toothed, lobed). Includes pinnation
+        entire: Leaf margin lacks projections or indentations that extend less than ⅛ of the distance to the midrib.
+        toothed: Leaf margin has small projections or lobes along the edge of the leaf lamina. Broad term that includes serrate, dentate, and crenulate.
+        serrate: Leaf margin with sharp teeth that are angled toward the tip of the leaf. (synonym, saw-toothed)
+        dentate: Leaf margin with sharp teeth that point outwards at right angles to the leaf margin.
+        crenate: Leaf margin has rounded teeth that are rounded or obtuse, rather than with a sharp apex.
+        toothed_or_lobed: A temporary trait value, for data where lobed and toothed leaves are combined under a single value.
+    leaf_margin_posture:
+      description: Posture of the leaf margin, where posture refers to the placement of different parts of the leaf’s margin relative to a flat plane.
+      type: categorical
+      label: Leaf margin posture
+      allowed_values_levels:
+        revolute: Leaf margins along the side of the leaf are rolled under or downward.
+        recurved: Leaf tip is curved outward or downward.
+    leaf_lobation:
+      description: A binary trait which indicates whether or not a leaf lamina displays any divisions extending greater than ⅛ of the distance to the midrib. 
+      notes: For leaf lamina projections and incisions that are less than ⅛ of the distance to the midrib, see the trait `leaf_margin`.
+      type: categorical
+      label: Leaf lobation
+      allowed_values_levels:
+        entire: Leaf margin lacks projections or indentations that extend more than ⅛ of the distance to the midrib.
+        lobed: Leaf margin has incisions, either rounded or sharp-tipped, that extend more than ⅛ of the distance to the midrib.         
+        lobed_deep: Leaf margin with lobes that extend more than half way to the midrib. (synonym, parted, divided)
+        lobed_shallow: Leaf margin with lobes that extend less than half way to the midrib. (synonym, cleft)
+    leaf_lobation_pattern:
+      description: The broad pattern of leaf division, distinguishing between pinnately and palmately lobed leaves.
+      type: categorical
+      label: Leaf division series
+      allowed_values_levels:
+        palmately_lobed: Leaf with divisions that radiate from a single point, usually the basal junction of major veins.
+        pinnately_lobed: Leaf with divisions that are symmetrical across a central axis, usually the midvein.
+    leaf_lobation_detailed:
+      description: Technical terms describing how a leaf a divided (lobed). 
+      type: categorical
+      label: Leaf division series
+      allowed_values_levels:
+        palmately_lobed: Leaf with divisions that radiate from a single point, usually the basal junction of major veins.
+        pinnately_lobed: Leaf with divisions that are symmetrical across a central axis, usually the midvein.
+        pinnatifid: Leaf with lobes that extend less than half-way to the midrib.
+        pinnatipartite: Leaf with lobes that extend more than half-way to the midrib.
+        pinnatisect: Leaf with lobes that extend nearly to the midrib, but the divisions are not separated into distinct leaflets.
+        bipinnatipartite: Leaf that is twice pinnatipartite, with two series of lobes that extend more than half-way to the midrib.
+        bipinnatisect: Leaf that is twice pinnatisect, with two series of lobes that extend nearly to the midrib, but the divisions are not separated into distinct leaflets.
+        trichotomously_divided: Leaf divided repeatedly into three lobes.
+        dichotomously_divided: Leaf divided repeatedly into two lobes.
+        bipartite: Leaf divided into two lobes.
+        tripartite: Leaf divided into three lobes.    
+    leaf_compoundness_pattern:
+      description: The broad pattern of leaf compoundness, distinguishing between pinnate and palmate leaves.
+      type: categorical
+      label: Leaf division series
+      allowed_values_levels:
+        palmate: Leaf divided into leaflets that attach to a central point.  
+        pinnate: Leaf divided into leaflets that attach along a central axis.
+    leaf_compoundness_detailed:
+      description: Technical terms describing the arrangement of the leaflets of a compound leaf. 
+      type: categorical
+      label: Leaf division series
+      allowed_values_levels:
+        palmate: Leaf divided into leaflets that attach to a central point.
+        pinnate: Leaf divided into leaflets that attach along a central axis.
+        bipinnate: Leaf that is twice pinnate, having pinnate leaflets are themselves pinnately divided.
+        tripinnate: Leaf that is three times pinnate, with pinnate leaflets that are twice more pinnately divided.
+        trifoliate: Leaf divided into three leaflets. (synonym, ternate, trifoliolate) 
+    leaf_division_technical:
+      description: Detailed description of leaf divisions and leaf compoundness, beyond what is captured in `leaf_compoundness` (simple, compound) and `leaf_lobation` (entire, lobed). 
+      notes: A decision will be made as to whether to maintain a single complicated 
       type: categorical
       label: Leaf divisions
       allowed_values_levels:
-        bipartite: Divided into 2 lobes
-        bipinnate: Twofold pinnate; a leaf with two levels of pinnae (leaflets)
-        bipinnatisect: Twofold pinnatisect, with lobes upon lobes that extend nearly to the midrib in narrow divisions, but divisions are not separated into distinct leaflets
-        bipinnatipartite: Twofold pinnatipartite, with lobes upon lobes that extend more than half way to the midrid
-        coarsely_toothed: coarsely toothed
-        compound: Compound leaf, type unspecified
-        crenate: Having a round-toothed or scalloped edge
-        deeply_bipinnatifid: Lobes upon lobes that extend about half-way toward the midrib
-        deeply_pinnatifid: Lobes that extend about half-way toward the midrib
-        deeply_pinnatipartite: Lobes that extend nearly all the way toward the midrib
-        deeply_segmented: Deeply segmented
-        deeply_toothed: Deeply toothed
-        dentate: Sharply toothed
-        dichotomously_divided: Divided into two lobes
-        entire: Leaf margin without lobes or toothed; includes "simple" leaves where no lobing or divisions specified
-        lobed: Leaf margin that is lobed
-        lobed_to_midvein: same as pinnatisect
-        pinnate: Leaf divided into leaflets
-        pinnatifid: Lobes that extend less than half-way toward the midrib
-        pinnatipartite: Lobes that extend more than half-way toward the midrib
-        pinnatisect: Lobes that extend nearly to the midrib in narrow divisions, but divisions are not separated into distinct leaflets
-        pinnately_lobed: Shallow lobes in a pinnate pattern
-        palmately_compound: Palmately compound
-        palmately_lobed: Palmately lobed
-        shallowly_lobed: With shallow lobes
-        toothed: Leaf margin that is toothed
-        trichotomously_divided: Divided repeatedly into three lobes
-        trifoliate: Divided into 3 leaflets
-        tripartite: Divided into 3 lobes
-        tripinnate: Threefold pinnate; a leaf with three levels of pinnae (leaflets)
+        palmate: Leaf divided into leaflets that attach to a central point.
+        pinnate: Leaf divided into leaflets that attach along a central axis.
+        bipinnate: Leaf that is twice pinnate, having pinnate leaflets are themselves pinnately divided.
+        tripinnate: Leaf that is three times pinnate, with pinnate leaflets that are twice more pinnately divided.
+        trifoliate: Leaf divided into three leaflets (synonym, ternate, trifoliolate)	
+        palmately_lobed: Leaf with divisions that radiate from a single point, usually the basal junction of major veins.
+        pinnately_lobed: Leaf with divisions that are symmetrical across a central axis, usually the midvein.
+        pinnatifid: Leaf with lobes that extend less than half-way to the midrib.
+        pinnatipartite: Leaf with lobes that extend more than half-way to the midrib.
+        pinnatisect: Leaf with lobes that extend nearly to the midrib, but the divisions are not separated into distinct leaflets.
+        bipinnatipartite: Leaf that is twice pinnatipartite, with two series of lobes that extend more than half-way to the midrib.
+        bipinnatisect: Leaf that is twice pinnatisect, with two series of lobes that extend nearly to the midrib, but the divisions are not separated into distinct leaflets.
+        trichotomously_divided: Leaf divided repeatedly into three lobes.
+        dichotomously_divided: Leaf divided repeatedly into two lobes.
+        bipartite: Leaf divided into two lobes.
+        tripartite: Leaf divided into three lobes.
     leaf_mass_fraction:
       description: Ratio of leaf dry mass to total plant dry mass
       type: numeric

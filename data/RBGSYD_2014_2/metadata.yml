@@ -42,11 +42,14 @@ dataset:
           trait = ifelse(lookup_data == "parasitic", "parasitic", trait),
           trait = ifelse(lookup_data == "epiphytic", "growth_substrate", trait),
           trait = ifelse(lookup_data == "aquatic", "growth_substrate", trait),
-          trait = ifelse(trait == "special growth form", "growth form", trait)   
+          trait = ifelse(trait == "special growth form", "growth form", trait),
+          lookup_data = str_replace(lookup_data,"toothed or lobed","toothed_or_lobed")    
         ) %>%
         select(species, trait, units, lookup_data) %>%
         group_by(species, trait, units) %>% 
-        mutate(lookup_data = paste0(lookup_data, collapse = " ")) %>% 
+          summarise(
+            lookup_data = paste0(lookup_data, collapse = " ")
+          ) %>% 
         ungroup() %>%
         distinct(species, trait, units, lookup_data);
    
@@ -271,7 +274,10 @@ substitutions:
   replace: parasite
 - trait_name: leaf_margin
   find: toothed or lobed
-  replace: lobed
+  replace: lobed_or_toothed
+- trait_name: leaf_margin
+  find: entire toothed lobed
+  replace: entire lobed_or_toothed
 - trait_name: life_history
   find: short-lived
   replace: short_lived
