@@ -265,6 +265,8 @@ format_min_max_as_range <- function(data, min_column, max_column, range_column, 
 #' }
 move_values_to_new_trait <- function(data, original_trait, new_trait, original_values, values_for_new_trait, values_to_keep) {
   
+#  data[[original_trait]] = NA_character_
+
        for (j in 1:length(original_values)) {
             
             i <- data[[original_trait]] == original_values[[j]]
@@ -273,8 +275,11 @@ move_values_to_new_trait <- function(data, original_trait, new_trait, original_v
             data[[original_trait]] = ifelse(i, values_to_keep[[j]], data[[original_trait]])
             data
        }
-       
+         
+  data[[original_trait]] = ifelse(data[[original_trait]] == "", NA, data[[original_trait]])
+  
   return(data)
+
 }
 
 #' Add values to an additional trait for datasets in long format
