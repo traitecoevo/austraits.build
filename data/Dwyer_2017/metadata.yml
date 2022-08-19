@@ -33,13 +33,16 @@ dataset:
           max_height = round(max_height,6), 
           specific_leaf_area = round(specific_leaf_area,6)
         ) %>% 
-        mutate_at(vars(count_plants,max_height, specific_leaf_area),
-          funs(replace(.,duplicated(.),NA))) %>% 
-      ungroup() %>% 
-      group_by(species) %>% 
-        mutate_at(vars(seed_mass),funs(replace(.,duplicated(.),NA))) %>% 
-      ungroup()
-  '
+        mutate(
+          across(c(count_plants, max_height, specific_leaf_area), replace_duplicates_with_NA)
+          ) %>%
+        ungroup() %>%
+        group_by(species) %>%
+        mutate(
+          across(c(seed_mass), replace_duplicates_with_NA)
+          ) %>%
+        ungroup()
+        '
   collection_date: year
   taxon_name: species
   site_name: remnant
@@ -58,8 +61,8 @@ dataset:
     present clear empirical evidence that declines in species richness along gradients
     of environmental stress can be due to increasing constraints on multidimensional
     phenotypes.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: We selected 12 bushland remnants that spanned > 3 deg latitude
     across the wheatbelt. Average daily temperatures during the winter-spring growing
     season (June-October) vary from 16 deg C in the south to 19 deg C in the north.

@@ -20,23 +20,17 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-# Load austraits.build file
-library(dplyr)
-library(readr)
-library(austraits)
 library(austraits.build)
 
-# root.dir <- rprojroot::find_root("remake.yml")
-# knitr::opts_knit$set(root.dir = root.dir)
-
-my_kable_styling <- my_kable_styling_html
+my_kable_styling <- util_kable_styling_html
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Loads austraits into global name space
 austraits <- austraits:::austraits_lite
-schema <- austraits$schema
-trait_definitions <- austraits$trait_definitions
+
+schema <- get_schema()
+definitions <- austraits$definitions
 ```
 
 This vignette explains the protocol for adding a new study to AusTraits. Before starting this, you should read more about 
@@ -54,41 +48,41 @@ It is important that all steps are followed so that our automated workflow proce
 
 The main steps are:
 
-1. Clone the `austraits.build` repository from github and create a new branch in the repo with the name `dataset_id`, e.g. `Gallagher_2014`. 
-2. Create a new folder within the folder `data` with the name `dataset_id`, e.g. `Gallagher_2014`.
-3. Prepare the file `data.csv` and place it within the new folder ([details](#csv_file) here).
-4. Prepare the file `metadata.yml` and place it within the new folder ([details](#metadata_file) here).
-5. Add the new study into the build framework and rebuild AusTraits.
-6. Run tests and quality checks on the newly added dataset and correct the `data.csv` and `metadata.yml` files as necessary ([details](#quality_checks) here).
-7. Generate and proofread a report on the data. In particular, check that numeric trait values fall within a logical range relative to other studies, and that individual trait observations are not unnecessarily excluded because their trait values are unsupported.
-8. Return to step 6 if changes are made to the `data.csv` or `metadata.yml` files.
-9. Push the GitHub branch.
+1. Clone the `austraits.build` repository from github
+2. Create a new branch in the repo, named for the new `dataset_id` in `author_year` format, e.g. `Gallagher_2014`. 
+3. Create a new folder within the folder `data` with the name `dataset_id`, e.g. `Gallagher_2014`.
+4. Prepare the file `data.csv` and place it within the new folder ([details](#csv_file) here).
+5. Prepare the file `metadata.yml` and place it within the new folder ([details](#metadata_file) here).
+6. Add the new study into the build framework and rebuild AusTraits.
+7. Run tests and quality checks on the newly added dataset and correct the `data.csv` and `metadata.yml` files as necessary ([details](#quality_checks) here).
+8. Generate and proofread a report on the data. In particular, check that numeric trait values fall within a logical range relative to other studies, and that individual trait observations are not unnecessarily excluded because their trait values are unsupported.
+9. Return to step 6 if changes are made to the `data.csv` or `metadata.yml` files.
+10. Push the GitHub branch.
 
-It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) to use as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), particularly the `trait_definitions` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html).
+It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) to use as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), particularly the `definitions` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/definitions.html).
 
 Once you have prepared your `data.csv` and `metadata.yml` files within a folder in the `data` directory, you can incorporate the new data into AusTraits by running:
 
 ```{r, eval=FALSE, echo=TRUE}
-setup_build_process()
+build_setup_pipeline()
 ```
 
 This step updates the file `remake.yml` with appropriate rules for the new dataset; similarly if you remove datasets, do the same. (At this stage, [remake](https://github.com/richfitz/remake) offers no looping constructs, so for now we generate the remake file using: [whisker](https://github.com/edwindj/whisker).)
 
 You can then rebuild AusTraits, including your dataset.
 
+The remainder of this vignette provides incredibly detailed instructions for steps 4-8 above. It is intended for anyone wishing to add datasets to either AusTraits itself or to use the austraits.build workflow to create a separate database.  
+
 # Getting started 
 
-The `austraits.build` repository includes a bunch of functions that help build the repository. To use these, you'll need to make them available. 
+The `austraits.build` repository includes a selection of functions that help build the repository. To use these, you'll need to make them available. 
 
 The easiest way to load the functions into your workspace is to run the following (from within the repository)
 
 ```{r, echo=TRUE, eval=FALSE}
-devtools::load_all()
-```
-or
-
-```{r, echo=TRUE, eval=FALSE}
-library(austraits.build)
+source("scripts/custom.R")            # source functions written for use within custom_R_code
+source("scripts/taxonomy.R")          # source functions required to use our taxonomy matching workflow 
+library(austraits.build)              # open the austraits.build package that provides the pipeline to build AusTraits
 ```
 
 # Inputting data
@@ -101,22 +95,15 @@ Our preferred format for `dataset_id` is the surname of the first author of any 
 
 ## Constructing the `data.csv` file {#csv_file} 
 
-All data for a study (`dataset_id`) must be merged into a single spreadsheet: `data.csv`.
+All data for a study (`dataset_id`) must be merged into a single spreadsheet: `data.csv`. All accompanying metadata is read in through the `metadata.yml` file. Some information must be input explicitly through the `data.csv` or `metdata.yml` file, while other information can be entered via either file; this is explicitly indicated for each element.
 
-1. Columns must include `taxon name`, `site_name` (if appropriate), `contexts` (if appropriate), and `sample_date` (if appropriate). Trait data can either be in a wide format (1 column for each trait, with `trait name` as the column header) or long format (1 column for all `trait values` and additional columns for `trait name` and `units`) See sections [adding sites](#adding_sites) and [adding contexts](#adding_contexts) below for more information on compiling site and context data.
+1. Columns within the `data.csv` file must include `taxon name`, `site_name` (if appropriate), `contexts` (if appropriate), and `collection_date` (if appropriate). The `data.csv` file can either be in a wide format (1 column for each trait, with `trait name` as the column header) or long format (a single column for all `trait values` and additional columns for `trait name` and `units`) 
 
-  a.   For all field studies, ensure there is a column for `site name`, even if all measurements were made at a single site.
+  a.   For all field studies, ensure there is a column for `site name`. If all measurements were made at a single site, a site column can easily be mutated using [custom_R_code](#custom_R) within the metadata.yml file. See sections [adding sites](#adding_sites) and [adding contexts](#adding_contexts) below for more information on compiling site and context data.
 
-```{r, eval=FALSE, echo=TRUE}
-read_csv("data/dataset_id/data.csv") %>%
-  mutate(site_name = "Daintree National Park")
-```
-
-  b.   A column should be added for `sampling date` if the information is provided in the manuscript or separately by the contributor. Whenever possible, add dates in `yyyy-mm-dd` (e.g. 2020-03-05) format or, if the day of the month isn't known, as `yyyy-mm` (e.g. 2020-03)  
-  c.   [Creating context names]{#creating_context_name}   
+  b.   If available, be sure to include a column with `collection date`. If possible, provide \dates in `yyyy-mm-dd` (e.g. 2020-03-05) format or, if the day of the month isn't known, as `yyyy-mm` (e.g. 2020-03). However, any format is allowed and the column can be parsed to the  proper yyyy-mm-dd format using custom_R_code. If the same `collection date` applies to the entire study it can be added directly into the metadata.yml file.
   
-  (Note: Development is in progress to allow AusTraits to recognise and include multiple contextual columns.)  
-  Variation in contextual values must be summarised in a single column. This is easy in most circumstances, where context values will be a single column of values, distinguishing, for instance, between `wet_season` vs. `dry_season` or `sun_leaves` vs. `shade_leaves`. It can become much more difficult for experimental studies with multiple manipulations applied factorially to the study plants. For instance, measurements may have been made under `high` vs. `low` light, `high` vs. `low` CO2 concentration, and `well-watered` vs. `drought` conditions. A contributor will likely have three columns, labeled, `light_levels`, `CO2_concentration` and `water_treatment`, which need to be merged into a single column, `context`. The values in context need to merge the contributor's three context columns to create unique values for each factorial treatment. For instance:  
+  c. [Creating context names]{#creating_context_name}: there must be a single column of context names. If there is a single `context_property` such as `growing season` or `leaf position`, the context names are general the various values for the context_property, such as `wet_season` and `dry_season` or `sun_leaves` and `shade_leaves`. If a study records two or more context properties, a context name column must be generated that is effectively unique factorial combinations of the various context properties. For instance, in an experimental study, measurements may have been made under `high` vs. `low` light, `high` vs. `low` CO2 concentration, and `well-watered` vs. `drought` conditions. A contributor will likely have three columns, labeled, `light_levels`, `CO2_concentration` and `water_treatment`, which need to be merged into a single column, `context`. The contributor's three context columns can be merged to create unique values for each factorial treatment as follows. The protocol for adding contextual properties to the metadata file is under [adding contexts](#adding_contexts)   
 
 ```{r, eval=FALSE, echo=TRUE}
 read_csv("data/dataset_id/data.csv") %>%
@@ -129,14 +116,18 @@ read_csv("data/dataset_id/data.csv") %>%
   )
 ```
 
-2. Data submitted by a contributor should be in the rawest form possible; always request data with individual measurements over site/species means. Some studies make replicate measurements on an individual. For these studies, individual means need to be calculated. `austraits$traits` does not include multiple measurements per individual, although the data is preserved in the contributor's raw data files.
+2. Data submitted by a contributor should be in the rawest form possible; always request data with individual measurements over site/species means. Some studies make replicate measurements on an individual. For these studies, individual means need to be calculated. AusTraits does not include multiple measurements per individual, although the data is preserved in the contributor's raw data files. Be sure to calculate the number of replicates that contributed to each mean value.
 
 When there is just a single row of values to summarise, use: 
 
 ```{r, eval=FALSE, echo=TRUE} 
 read_csv("data/dataset_id/raw/raw_data.csv") %>%
+  mutate(leaf_area_replicates = 1) %>%
   group_by(individual, `species name`, site, context, etc) %>%
-  summarise(individual_mean = mean(replicate)) %>%
+  summarise(
+    leaf_area_mean = mean(leaf_area),
+    leaf_area_replicates = sum(leaf_area_replicates)
+    ) %>%
   ungroup()
 ```
 (Make sure you `group_by` all categorical variables you want to retain, for only columns that are grouping variables will be kept)
@@ -145,24 +136,22 @@ When you want to take the mean of a series of continuous variables, use:
     
 ```{r, eval=FALSE, echo=TRUE} 
 read_csv("data/dataset_id/raw/raw_data.csv") %>%
-  group_by(individual, `species name`, site, context, etc) %>%
-  summarise(.funs = mean) %>%
-  ungroup()
-```
-(Categorical variables not included as grouping variables will return `NA`)
-
-When you want to choose a different function for each variable, use:
-
-```{r, eval=FALSE, echo=TRUE} 
-read_csv("data/dataset_id/raw/raw_data.csv") %>%
+  mutate(replicates = 1) %>%
   group_by(individual, `species name`, site, context, etc) %>%
   summarise(
-    mean_buds = mean(buds_per_branch), max_height = max(`plant height`),
-    fire_response = first(`killed or alive`)
+    across(
+      c(leaf_area, `leaf N`), .fns = mean,
+      c(replicates), .fns = sum,
+      c(growth_form, `photosynthetic pathway`), .fns = first
+    )
   ) %>%
   ungroup()
 ```
-(This allows you to retain character variables, but can be tedious with many columns. Generally use the function `first` for categorical variables - it simply retains the trait value in the first column. In the rare case when rows in a particular grouping have different categorical values, more complex manipulations are required.)
+- Categorical variables not included as grouping variables will return `NA`
+
+- This allows you to retain character variables, but can be tedious with many columns. Generally use the function `first` for categorical variables - it simply retains the trait value in the first column. In the rare case when rows in a particular grouping have different categorical values, more complex manipulations are required.
+
+- You can identify runs of columns by column number/position. For instance `c(5:25), .fns = mean` or `c(` leaf area`:`leaf N`), .fns = mean`
 
 3. If multiple spreadsheets of data are submitted these must be merged together.
     
@@ -182,15 +171,7 @@ read_csv("data/dataset_id/raw/data_file_2.csv") -> data_2
 data_1 %>% bind_rows(data_2)
 ```
 
-  c. As an exception to the above, if one spreadsheet contains individual-level trait values for continuous (numeric) traits, but a second spreadsheet contains overall species means for categorical values (i.e. growth_form = tree, photosynthetic_pathway = C3), you'll want to merge the categorical trait value for all rows with data for that species:  
-
-```{r, eval=FALSE, echo=TRUE} 
-read_csv("data/dataset_id/raw/continuous_data.csv") -> continuous_data
-read_csv("data/dataset_id/raw/categorical_data.csv") -> categorical_data
-continuous_data %>% full_join(data_2, by = c("Taxon"))
-```
-
-4. Taxon names need to be complete names. If the main data file includes code names, with a key as a separate file, they need to be merged:  
+4. Taxon names need to be complete names. If the main data file includes code names, with a key as a separate file, they need to be merged: 
 
 ```{r, eval=FALSE, echo=TRUE}
 read_csv("data/dataset_id/raw/species_key.csv") -> species_key
@@ -199,7 +180,7 @@ read_csv("data/dataset_id/raw/data_file.csv") %>%
 ```
 
 ### Unexpected hangups  
-* When Excel saves an `.xls` file as a `.csv` file it only preserves the number of significant figures that are displayed on the screen. This means that if, for some reason, a column has been set to show values a very low number of significant figures or a column is very narrow, data quality is lost.   
+* When Excel saves an `.xls` file as a `.csv` file it only preserves the number of significant figures that are displayed on the screen. This means that if, for some reason, a column has been set to display a very low number of significant figures or a column is very narrow, data quality is lost.   
 * If you're reading a file into R where there are lots of blanks at the beginning of a column of numeric data, the defaults for `read_csv` fail to register the column as numeric. It is fixed by adding the argument `guess_max`:  
 
 ```{r, eval=FALSE, echo=TRUE}
@@ -214,13 +195,15 @@ One way to construct the `metadata.yml` file is to use one of the existing files
 
 Note, when editing the `metadata.yml`, edits should be made in a proper text editor (Microsoft word tends to mess up the formatting). For example, Rstudio, textmate, sublime text, and Visual Studio Code are all good editors.  
 
-To assist you in constructing the `metadata.yml` file, we have developed functions to help fill in the different sections of the file. You cqn then manually edit the file further to fill in missing details.  
+To assist you in constructing the `metadata.yml` file, we have developed functions to help fill in the different sections of the file. You can then manually edit the file further to fill in missing details.  
 
 First run the following to make the functions available
 
 ```{r, eval=FALSE, echo=TRUE}
-devtools::load_all()
+library(austraits.build)
 ```
+
+The functions for populating the metadata file all begin with `metadata_`. A list of the available functions is automatically generated within the `man/` folder within the `austraits.build` directory.
 
 ### Creating a template
 
@@ -232,6 +215,10 @@ Let's imagine you're entering a study called `Yang_2028`
 current_study <- "Yang_2028"
 
 metadata_create_template(current_study)
+
+# or simply
+
+metadata_create_template("Yang_2028")
 ```
 
 The function will ask a series of questions and then create a relatively empty file `data/your_dataset_id/metadata.yml`. The key questions are:  
@@ -239,7 +226,9 @@ The function will ask a series of questions and then create a relatively empty f
 * Is the data long vs wide? A wide dataset has each variable (i.e. trait ) as a column. A long dataset has a single row containing all trait values and additional columns specifying `units` and `trait_name`.   
 * Select column for `species_name`  
 * Select column for `site_name`  
-* Select column for `context_name`  
+* Select column for `context_name`
+* Select column for `individual_id` (a column that links measurements on the same individual)
+* Select column for `collection_date`
 
 If your `data.csv` file does not yet have `site` or `context` columns, this information can later be added manually.
 
@@ -322,44 +311,63 @@ For an unpublished dataset, the proper format is:
 ```
 source:
   primary:
-      key: Ooi_2018  
-      bibtype: Unpublished  
-      year: 2018  
-      author: Mark K. J. Ooi  
-      title: "Unpublished data: Herbivory survey within Royal National Park"  
+    key: Ooi_2018
+    bibtype: Unpublished
+    year: 2018
+    author: Mark K. J. Ooi
+    title: 'Unpublished data: Herbivory survey within Royal National Park, University
+      of New South Wales'
 ```
 
 If you manually add information, note that if there is a colon (:) or apostrophe (') in a reference, the text for that line must be in quotes (").
 
-### Adding people  
+### Adding contributors 
 
-The skeletal `metadata.yml` file created by the function `metadata_create_template` includes a template for entering details about people. Edit this manually, duplicating if details for multiple people are required.
+The skeletal `metadata.yml` file created by the function `metadata_create_template` includes a template for entering details about data contributors. Edit this manually, duplicating if details for multiple people are required. 
 
-### Custom R code  
+- Authorship is extended to anyone who played a key intellectual role in the experimental design and data collection. Most studies have 1-3 authors. For each author, please provide a **last_name**, **given_name**, **institutional affiliation**, **email address**, and their **ORCID** (if available). Nominate a single contributor to be the dataset's point of contact; this person's email will not be listed in the metadata file, but is the person future AusTraits users are likely to seek out if they have questions.
+- Additional field assistants can be listed under `assistants:`
+- The AusTraits data entry person is listed under `austraits_curators:`
+
+For example, in Roderick_2002
+```
+contributors:
+  data_collectors:
+  - last_name: Roderick
+    given_name: Michael
+    ORCID: 0000-0002-3630-7739
+    affiliation: The Australian National University, Australia
+    additional_role: contact
+  assistants: Michelle Cochrane
+  austraits_curators: Elizabeth Wenk
+```
+
+### Custom R code  {#custom_R}
 
 For many studies there are changes we want to make to a dataset before the data.csv file is read into AusTraits. These most often include applying a function to transform data, a function to filter data, or a function to replace a contributor's "measurement missing" placeholder symbol with `NA`. In each case it is appropriate to leave the rawer data in `data.csv`.
 
 #### Background  
 
-In each case we want to make some custom modifications to a particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`load_dataset`](https://github.com/traitecoevo/austraits.build/blob/master/R/steps.R)) looks like this:  
+In each case we want to make some custom modifications to a particular dataset before the common pipeline of operations gets applied. To make this possible, the workflow allows for some custom R code to be run as a first step in the processing pipeline. That pipeline (in the function [`dataset_process`](https://github.com/traitecoevo/austraits.build/blob/master/R/steps.R)) looks like this:  
 
 ```{r, eval=FALSE, echo=TRUE}
 data <-
   read_csv(filename_data_raw, col_types = cols(), guess_max = 1e5) %>%
-  custom_manipulation(metadata[["config"]][["custom_R_code"]])() %>%
-  parse_data(dataset_id, metadata)
+  process_custom_code(metadata[["dataset"]][["custom_R_code"]])() %>%
+  process_parse_data(dataset_id, metadata)
 ```
 
 Note the second line. This is where the custom code gets applied, right after the file is loaded.  
 
 #### Summary  
 
+- source the file containing functions the AusTraits team have explicitly developed to use within the custom_R_code field: `source("scripts/custom.R")`
 - assume a single object called `data`, and apply whatever fixes are needed  
 - use functions from the packages [dplyr](https://dplyr.tidyverse.org) or [tiydr](https://tidyr.tidyverse.org), like `mutate`, `rename`, etc, and otherwise avoid external packages  
-- alternatively, use functions we've created explicitly for pre-processing data, found in [pre_process.R](https://github.com/traitecoevo/austraits.build/blob/master/R/pre_process.R) and loaded through `devtools::load_all()`
+- alternatively, use the functions we've created explicitly for pre-processing data that were sourced through the file `custom.R`. In consultation with AusTraits team leaders you can add functions to this file.
 - be fully self-contained (we're not going to use any of the other remake machinery here)  
 - use pipes to weave together a single statement, where possible. (Otherwise you'll need a semi colons `;` at the end of each statement).  
-- you can't add line breaks between pipes  
+- place a single apostrophe (') at the start and end of your custom R code; this allows you to add line breaks between pipes.  
 
 #### Examples of appropriate use of custom R code 
 
@@ -370,7 +378,7 @@ Note the second line. This is where the custom code gets applied, right after th
     - '`convert_month_range_vec_to_binary`' (Convert vectors of month range to 12 element character strings of binary data)  
     - '`collapse_multirow_phenology_data_to_binary_vec`' (Converts multirow phenology data to a 12 digit binary string)  
 
-2. Many datasets from herbaria record traits like `leaf_length`, `leaf_width`, `seed_length`, etc. as a range (e.g. `2-8`). The function `separate_range` separates this data into a pair of columns with `minimum` and `maximum` values.  
+2. Many datasets from herbaria record traits like `leaf_length`, `leaf_width`, `seed_length`, etc. as a range (e.g. `2-8`). The function `separate_range` separates this data into a pair of columns with `minimum` and `maximum` values, required to properly align units  
 
 3. Duplicate values within a study need to be filtered out. 
 
@@ -379,9 +387,10 @@ If a species-level measurement has been entered for all within-site replicates, 
 ```{r, eval=FALSE, echo=TRUE}
 data %>%
   group_by(Species) %>%
-  mutate_at(
-    vars(leaf_percentN, `plant growth form`),
-    ~ replace(.x, duplicated(.x), NA)
+  mutate(
+    across(
+      c(leaf_percentN, `plant growth form`), replace_duplicates_with_NA)
+    )
   ) %>%
   ungroup()
 ```
@@ -392,7 +401,7 @@ Note: You would use `group_by(Species, Site)` if there are unique values at the 
 5. Author has represented missing data values with a symbol, such as `0` :  
 
 ```{r, eval=FALSE, echo=TRUE}
-data %>% mutate_at(vars(`height (cm)`, `leaf area (mm2)`), ~ na_if(., 0))
+data %>% mutate(across(c(`height (cm)`, `leaf area (mm2)`), ~ na_if(., 0)))
 ```
 
 6. If a subset of data in a column are also `values` for a second trait in AusTraits, some data values can be duplicated in a second temporary column. In the example below, some data in the contributor's `growth_form` column **also** apply to the trait `parasitic` in AusTraits:  
@@ -401,18 +410,40 @@ data %>% mutate_at(vars(`height (cm)`, `leaf area (mm2)`), ~ na_if(., 0))
 data %>% mutate(parasitic = ifelse(`growth form` == "parasitic herb", "parasitic", NA))
 ```
 
-7. If a subset of data in a column are *instead* `values` for a second trait in AusTraits, some data values can be moved to a second column (second trait), using the function '`move_values_to_new_trait`'. In the example below, some data in the contributor's `growth_form` column **only** apply to the trait `parasitic` in AusTraits:  
+7. If a subset of data in a column are *instead* `values` for a second trait in AusTraits, some data values can be moved to a second column (second trait), using the function '`move_values_to_new_trait`'. In the example below, some data in the contributor's `growth_form` column **only** apply to the trait `parasitic` in AusTraits. Note you need to create a blank variable to move the trait values to.  
 
 ```{r, eval=FALSE, echo=TRUE}
-data %>% move_values_to_new_trait(original_trait_name = "growth form", new_trait_name = "parasitic", original_values = "parasitic", value_to_use = "parasitic")
+data %>% 
+  mutate(new_trait = NA.char) %>%
+  move_values_to_new_trait(
+    original_trait= "growth form", 
+    new_trait = "parasitic",
+    original_values = "parasitic",
+    values_for_new_trait = "parasitic",
+    values_to_keep = NA)
+```
+ 
+ or
+ 
+```{r, eval=FALSE, echo=TRUE}
+data %>% 
+  mutate(dispersal_appendage = NA.char) %>%
+  move_values_to_new_trait(
+    "fruits", "dispersal_appendage",
+    c("dry & winged", "enclosed in aril"), 
+    c("wings", "aril"),
+    c(NA, "enclosed")
+  )
 ```
 
 8. If the `data.csv` file includes raw data that you want to manipulate into a `trait`, or the contributor presents the data in a different formulation than AusTraits:  
+
 ```{r, eval=FALSE, echo=TRUE}
 data %>% mutate(root_mass_fraction = `root mass` / (`root mass` + `shoot mass`))
 ```
 
-9. You can do manipulations, such as adding a column with `sites` or manipulating `site names`. This is only recommended for studies with a single (or few) site, where manually adding the site data to the `metadata.yml` file is fast, since in precludes automatically propagating site data into metadata (see [Adding site details](#Adding site details)). As an example (Blackman_2010 dataset):  
+9. You can do manipulations, such as adding a column with `sites` or manipulating `site names`. This is only recommended for studies with a single (or few) site, where manually adding the site data to the `metadata.yml` file is fast, since in precludes automatically propagating site data into metadata (see [Adding site details](#Adding site details)). As an example, see `Blackman_2010`: 
+
 ```{r, eval=FALSE, echo=TRUE}
 data %>%
   mutate(
@@ -421,7 +452,30 @@ data %>%
   )
 ```
 
-10. You can reformat `sampling dates` supplied into the `yyyy-mm-dd` format, or add a date column
+10. You can generate `observation_numbers` for sequential measurements on the same individual
+
+```{r, eval=FALSE, echo=TRUE}
+data %>%
+  group_by(Tree) %>%
+    mutate(observation_number = row_number()) %>%
+  ungroup() 
+```
+
+11. You can generate `method_numbers` and corresponding `measurement_remarks` if rows of data were collected using different methods
+
+```{r, eval=FALSE, echo=TRUE}
+data %>%
+  mutate(
+        method_number = ifelse(material == "FRESH",1,NA),
+        method_number = ifelse(material == "DRIED",2,method_number),        
+        method_number = ifelse(material == "SENESCED",3,method_number),
+        measurement_remarks = ifelse(material == "FRESH","fresh leaves (indicating amount of leaf moisture)", NA),
+        measurement_remarks = ifelse(material == "DRIED","dry leaves (indicating amount of leaf moisture)", measurement_remarks),
+        measurement_remarks = ifelse(material == "SENESCED","senesced leaves (indicating amount of leaf moisture)", measurement_remarks),
+  )
+```
+
+12. You can reformat `collection_dates` supplied into the `yyyy-mm-dd` format, or add a date column
 
 Converting from any `mdy` format to `yyyy-mm-dd` (e.g. `Dec 3 2015` to `2015-12-03`)  
 ```{r, eval=FALSE, echo=TRUE}
@@ -443,9 +497,15 @@ Converting from a `mdy` format to `yyyy-mm` (e.g. Excel has reinterpreted the da
 data %>% mutate(Date = parse_date_time(Date, orders = "mdy") %>% format.Date("%Y-%m"))
 ```
 
-Add a single date in a `yyyy-mm` format to an entire dataset
+A particularly complicated example where some dates are presented as `yyyy-mm` and others as `yyyy-mm-dd`
 ```{r, eval=FALSE, echo=TRUE}
-data %>% mutate(Date = "2015-12")
+data %>%
+    mutate(
+      weird_date = ifelse(str_detect(gathering_date, "^[0-9]{4}"), gathering_date, NA),
+      gathering_date = gathering_date %>% mdy(quiet = T) %>% as.character(),
+      gathering_date = coalesce(gathering_date, weird_date)
+    ) %>% 
+    select(-weird_date)
 ```
 
 
@@ -457,8 +517,53 @@ After you've added the custom R code to a file, check that it has completed the 
 metadata_check_custom_R_code("Blackman_2010")
 ```
 
+You could alternatively read the data.csv file into R and run the code line by line.
 
-### Add traits  
+### Fill in metadata$dataset {#metadata_dataset}
+
+The `dataset` section is a mix of fields that are filled in automatically during `metadata_create_template()` and fields that need to be manually filled in.
+
+- **population_id** Population_id must be specified if the unique combinations of site and context do not properly specify the groupings that should be assigned to the `pop` component of `entity_id`. For instance, in some cases the `context_property` is actually repeat measurements (wet vs dry season); in these cases population_id should be based only on the site name and needs to be assigned.
+  
+  **WARNING** population_id must be omitted if it isn't used; `population_id: unknown` will overwrite all the actually population information
+  
+  **WARNING** The same column name cannot be assigned to two fields within `metadata$dataset`. Since the column header with site names is already assigned to `metadata$dataset$site_name`, it can not be reused under population_id. Instead you have to mutate an identical column in custom R code to assign to population_id. For instance ```data %>% mutate(population_id = site_name)```
+
+- **individual_id** Individual_id is one of the fields that can be read in during `metadata_create_template`. However, you may instead mutate your own `individual_id` using `custom_R_code` and add it in manually. For a wide dataset individual_id is required anytime there are multiple rows of data for the same individual and you want to keep these linked. As with `population_id` this field should only be included if it is required. 
+
+- **collection_date** If this is not read in as a specified column, it needs to be filled in manually as `start date/end date` in yyyy-mm-dd, yyyy-mm, or yyyy format, depending on the relevant resolution. If the collection dates are unknown, write `unknown/publication year`
+
+- **description:** 1-2 sentence description of the study's goals. The abstract of a manuscript usually includes some good sentences/phrases to borrow.  
+
+- **basis_of_record:**  Allowable values include: field, field_experiment, captive_cultivated, lab, preserved_specimen, and literature. See the top of `system.file("support", "austraits.build_schema.yml", package = "austraits.build")` for definitions of these accepted basis_of_record values. This field can also be read in from a column or can be specified at the site or trait level, as described below. Entries under `metadata$sites` or `metadata$traits` (which apply to only that specific site or trait) override the global value entered under `metadata$dataset`.
+
+- **life_stage:**   Allowable values include: adult, sapling, seedling, juvenile. This field can also be read in from a column or can be specified at the site or trait level, as described below. Entries under `metadata$sites` or `metadata$traits` (which apply to only that specific site or trait) override the global value entered under `metadata$dataset`.
+
+- **sampling_strategy:**  Often a quite long description of the sampling strategy, extracted verbatim from a manuscript.
+
+- **original_file:** The name of the file initially submitted to AusTraits and archived in a Google Drive folder and usually in the dataset folder, in a subfolder named `raw`. 
+
+- **notes:** Notes about the study and processing of data, especially if there were complications or if some data is suspected duplicates with another study and were filtered out.
+
+There are also fields that will only be used for a subset of datasets:
+
+- **measurement_remarks**: Measurement remarks is a field to indicate either (1) notes that accompany method numbers; or (2) a notes or references column within the spreadsheet that is explicitly linked to a specific trait (or all traits) and therefore is not captured by "methods" (which is fixed to a single value for a trait). It can be read in for the whole dataset, or entered under [dataset$traits](#add_traits) 
+
+- **observation_number** If the same entity is measured repeatedly across time, the repeat measurements need to be assigned sequential observation numbers. These numbers will usually be generated through [custom R code](#custom_R), and the field `observation_number` will be added under either `dataset$metadata` or [dataset$traits](#add_traits) as appropriate.
+
+- **method_number** If different columns (wide format) or rows (usually long format) of data represent measurements made on the same trait using different methods, the different methods need to be assigned sequential method numbers. These numbers will usually be generated through [custom R code](#custom_R), and the field `method_number` will be added under either `dataset$metadata` or [dataset$traits](#add_traits) as appropriate. If you use method_number, also include some brief notes under `measurement_remarks` to indicate what differs between the methods. (e.g. `method_number: 1`, matches with `measurement_remarks: fully expanded leaves` versus `method_number: 2` matches with `measurement_remarks: leaves still expanding`). 
+
+- **entity_id** As background, `population_id` and `individual_id` are used during the build process to create an `entity_id`. Also required is `entity_type` which is usually input in the [traits](#add_traits) section. Overall, `entity_id` is built from up to three segments, a taxon_id segment (for all entity types), a population_id segment (when `entity_type` is `population` or `individual`), and a individual_id segment (when `entity_type` is `individual`).
+
+  - The taxon_id segment numbers an alphabetised list of taxa within the study sequentially, producing segments `tax001`, `tax002`, etc.
+  
+  - The population_id segments numbers an alphabetised list of sites or, in some cases, site by context combinations, sequentially, producing segments `pop01`, `pop02`, etc. For experimental and manipulative studies, "population" is defined as a group of individuals subjected to the same treatment conditions. 
+  
+  - The individual_id segments number individuals within a taxon by population combination sequentially, producing segments `ind001`, `ind002`, etc. For datasets submitted to AusTraits in long format, if a column specifying `individual_id` does not exist, it is assumed that `species_name` is the appropriate grouping variable. For datasets submitted to AusTraits in long format, if a column specifying `individual_id` does not exist, it is assumed that each row of data represents a unique entity.
+
+
+
+### Add traits {#add_traits} 
 
 Begin by automatically adding all traits to your skeletal `metadata.yml` file:  
 ```{r, eval=FALSE, echo=TRUE}
@@ -470,24 +575,50 @@ This automatically propagates each trait selected into `metadata.yml` as follows
 
     - var_in: leaf area (mm2)  
       unit_in: .na  
-      trait_name: .na  
-      value_type: .na  
+      trait_name: .na
+      entity_type: .na
+      value_type: .na 
+      basis_of_value: .na
       replicates: .na  
       methods: .na  
 
 The trait details then need to be filled in manually. 
 
-- *units*: fill in the units specified by the author - such as mm2. If you're uncertain about the syntax/format used for some more complex units, look through the schema file (`system.file("support", "austraits.build_schema.yml", package = "austraits.build")`) or the file showing unit conversions (`system.file("support", "austraits.build_schema.yml", package = "austraits.build")`). For categorical variables, leave this as `.na`.  
+- **units**: fill in the units specified by the author - such as mm2. If you're uncertain about the syntax/format used for some more complex units, look through the traits definition file (`config/traits.yml`) or the file showing unit conversions (`config/unit_conversions.csv`). For categorical variables, leave this as `.na`.  
 
-- *trait_name*: This is the appropriate trait name from `config/traits.yml`. If no appropriate trait exists in AusTraits, a new trait can often be added - just ensure it is a `trait` where data will be comparable across studies and has been measured for a fair number (~>50) species. For currently unsupported traits, we leave this as `.na` but then fill in the rest of the data and flag this study as having a potential new trait. Then in the future, when this trait is added to the `traits.yml` file, the data can be read into AusTraits by simply replacing the `.na` with a trait name. 
+- **trait_name**: This is the appropriate trait name from `config/traits.yml`. If no appropriate trait exists in AusTraits, a new trait can often be added - just ensure it is a `trait` where data will be comparable across studies and has been measured for a fair number (~>50) species. For currently unsupported traits, we leave this as `.na` but then fill in the rest of the data and flag this study as having a potential new trait. Then in the future, when this trait is added to the `traits.yml` file, the data can be read into AusTraits by simply replacing the `.na` with a trait name. 
 
-- *value_type*: See the bottom of `system.file("support", "austraits.build_schema.yml", package = "austraits.build")` for a list of accepted value types.  
+- **entity_type**: Entity types indicate the taxonomic/ecological hierarchical level corresponding to the trait value. Entity types can be individual, population, species, genus, family or order. Metapopulation-level measurements are coded as `population` and infraspecific taxon-level measurements are coded as `species`. See the top of `system.file("support", "austraits.build_schema.yml", package = "austraits.build")` for definitions of these accepted entity types.  
 
-- *replicates*: Fill in with the appropriate value. For categorical variables, leave this as `.na`.  
+- **value_type**: Allowable value types are mean, minimum, maximum, mode, range, raw, and bin. See the top of `system.file("support", "austraits.build_schema.yml", package = "austraits.build")` for definitions of these accepted value types.  
 
-- *methods*: This information can usually be copied verbatim from a manuscript. 
+- **basis_of_value**: Basis of value indicates how a value was determined. Allowable terms are measurement, expert_score, model_derived, and literature. See the top of `system.file("support", "austraits.build_schema.yml", package = "austraits.build")` for definitions of these accepted value types.  
+
+- **replicates**: Fill in with the appropriate value. For categorical variables, leave this as `.na`. If there is a column that specifies replicate number, you can list the column name in the field.
+
+- **methods**: This information can usually be copied verbatim from a manuscript. 
 In general, methods sections extracted from pdfs include "special characters" (non-UTF-8 characters). Non-English alphabet characters are recognised (e.g. é, ö) and should remain unchanged. Other characters will be re-formatted during the study input process, so double check that degree symbols (º), en-dashes (–), em-dashes (—), and curly quotes (‘,’,“,”) have been maintained or reformatted with a suitable alternative. Greek letters and some other characters are replaced with their Unicode equivalent (e.g. <U+03A8> replaces Psi (Ψ)); for these it is best to replace the symbol with an interpretable English-character equivalent.
 
+  - Note with methods, if the identical methods apply to a string of traits, for the first trait use the following syntax, where the `&leaf_length_method` notation assigns the remaining text in the field as the `leaf_length_method`. 
+  ```
+    methods: &leaf_length_method All measurements were from dry herbarium collections, with leaf and bracteole measurements taken from the largest of these structures on each specimen.
+  ```
+    Then for the next trait that uses this method you can just include. For paragraph-long methods sections this keeps the metadata file much shorter.
+  ```
+    methods: *leaf_length_method
+  ```
+
+In addition to the automatically propogated fields, there are a number of optional fields you can add if appropriate.
+
+- **life_stage** If all measurements in a dataset were made on plants of the same `life stage` a global value should be entered under [metadata$dataset](#metadata_dataset). However if different traits were measured at different life stages or different rows of data represent measurements at different life stages you can specify a unique life stage for each trait or indicate a column where this information is stored.
+
+- **basis_of_record** If all measurements in a dataset represent the same `basis_of_record` a global value should be entered under [metadata$dataset](#metadata_dataset). However if different traits have different basis_of_record values or different rows of data represent different basis_of_record values you can specify a unique basis_of_record value for each trait or indicate a column where this information is stored.
+
+- **measurement_remarks**: Measurement remarks is a field to indicate either (1) notes that accompany method numbers; or (2) a notes or references column within the spreadsheet that is explicitly linked to a specific trait (or all traits) and therefore is not captured by "methods" (which is fixed to a single value for a trait).
+
+- **observation_number** Occasionally repeat measurements on the same trait might be presented in separate columns in the `data.csv` file. In this case, for the trait in the column that captures the first measurement, add `observation_number: 1` and for the trait in the column that captures the second measurement, add `observation_number: 2`
+
+- **method_number** If different columns in a wide data.csv file indicate measurements on the same trait using different methods, they need to be sequentially assigned, `method_number: 1`; `method_number: 2`, etc. If you use method_number, also include some brief notes under `measurement_remarks` to indicate what differs between the methods. (e.g. `method_number: 1`, matches with `measurement_remarks: fully expanded leaves` versus `method_number: 2` matches with `measurement_remarks: leaves still expanding`)
 
 ### Adding site details {#adding_sites}  
 
@@ -502,7 +633,11 @@ Site data includes site names, latitude/longitude coordinates, verbal site descr
  
 4. If there is a column with a general vegetation description (i.e. `rainforest`, `coastal heath` it should be titled `description`)  
 
-5. There are no rules for the column headers for other site data, but in general have headers that include a general description of the measurement, with the units in parentheses (e.g. `MAP (mm)` or `total soil N (%)`)
+5. Although site properties are not restricted to a controlled vocabulary, newly added studies should use the same site property syntax as others whenever possible, to allow future discoverability. To generate a list of already used under `site_property`, use: 
+
+```
+austraits$sites %>% distinct(site_property)
+```
 
 A few contributors provide a standalone file of all site data. Otherwise, the following sequence works well:
 
@@ -539,48 +674,64 @@ metadata_add_sites(current_study, site_data)
 ```
 You are first prompted to identify the column with the site name and then to list all columns that contain site data. This automatically fills in the site component on the metadata file.  
 
+It is possible that you will want to specify `life_stage` or `basis_of_record` at the site_level. You can later add these fields to some or all sites.
+
 
 ### Context details {#adding_contexts}  
 
-Context data includes the context name (see above), type (usually `experiment` or `field`), description, and additional variables (columns) for some studies. This data needs to be compiled into a table (or manually added into metadata for simple studies). 
+Context properties are formatted much like site properties, where the context name (generated above) is simply a container for a unique combination of contextual property values.
 
-1. Under [creating context names](#creating_context_name) above was the example of an experimental study where measurements were made under `high` vs. `low` light, `high` vs. `low` CO2 concentration, and `well-watered` vs. `drought` conditions. To create a single column with context name, we merged the contributor's three columns, `light_levels`, `CO2_concentration` and `water_treatment` into a single column, `context` with unique values for each factorial treatment.  
+As with site information, this data needs to be compiled into a table (or manually added into metadata for simple studies). 
 
-  Next, the meaning of the overall `context names` and their various components need to be defined. For instance:  
+1. Under [creating context names](#creating_context_name) above was the example of an experimental study where measurements were made under `high` vs. `low` light, `high` vs. `low` CO2 concentration, and `well-watered` vs. `drought` conditions. To create a single column with context name, we merged the contributor's three columns, `light_levels`, `CO2_concentration` and `water_treatment` into a single column, `context` creating unique values for each factorial treatment.  
+
+2. As with site data, extract a list of unique contextual property combinations from the data.csv file
+
 ```{r, eval=FALSE, echo=TRUE}
 read_csv("data/dataset_id/data.csv") %>%
-  distinct(context, .keep_all = TRUE) %>%
-  select(context, light_levels, CO2_concentration, water_treatment) %>%
-  mutate(
-    light_levels = gsub("high", "1800 PAR", light_levels),
-    light_levels = gsub("low", "1200 PAR", light_levels)
-  ) %>%
-  # add lines for other contexts
-  mutate(type = "experiment") %>%
+  distinct(context, .keep_all = TRUE) %>% # the argument `.keep_all` ensures columns aren't dropped
+  select(context, light, CO2, water) %>% # list of relevant columns to keep
+  rename(`water treatment` = water, `light treatment` = light, `CO2 treatment` = CO2 %>% 
+      # rename columns to how you want them to appear in the metadata file. Faster to do it once here than repeatedly in the metadata file
   write_csv("data/dataset_id/raw/context_data.csv")
 ```
 
-2. Then, in Excel, add a column named `description` and write out a description for each factorial context, such as `Plants were growth at high light (1800 PAR), low CO2 (300 ppm), and were well-watered`. Save as a .csv file.  
+3. Although contextual properties are not restricted to a controlled vocabulary, newly added studies should use the same contextual property syntax as others whenever possible, to allow future discoverability. To generate a list of terms already used under `context_property`, use: 
 
-3. At the end, reopen in R  
-```{r, eval=FALSE, echo=TRUE}
-read_csv("data/dataset_id/raw/context_data.csv") -> context_data
+```
+austraits$contexts %>% distinct(context_property)
 ```
 
-As an example of what the context table should look like:  
-```{r, echo=FALSE, results="markup"}
-austraits$contexts %>%
-  filter(dataset_id == "Hall_1981") %>%
-  select(-dataset_id) %>%
-  spread(context_property, value) %>%
-  type_convert()
-```
-4. This context data can then be read into `metadata.yml`:  
+4. As with site data, you could open it in Excel at this point to make manual edits.
+
+5. This context data can then be read into `metadata.yml`:  
 ```{r, eval=FALSE, echo=TRUE}
 metadata_add_contexts(current_study, context_data)
 ```
 
-You are first prompted to identify the column with the context name and then to list all columns that contain context data. This automatically fills in the context component on the metadata file.  
+You are first prompted to identify the column with the context name and then to list all columns that contain context properties. This automatically fills in the context component on the metadata file.  
+
+There will be some follow-up editing in the metadata$context section.
+
+1. Add `[manipulated]` to contextual properties that represent experimental manipulations.
+
+2. Ensure that the value of each contextual property is clear. 
+
+as an example,
+
+```{r, eval=FALSE, echo=TRUE}
+  grown_at_Elv_temp_and_280_ppm_CO2_and_harvested_at_80_days:
+    age at harvest (days): 80
+    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
+    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
+    measurement temperature (C): .na.character
+  grown_at_Elv_temp_and_280_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days:
+    age at harvest (days): 150
+    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
+    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
+    measurement temperature (C): ambient (28 deg C; current growing season temperature)
+      [manipulated]
+```
 
 
 ### Using substitutions  
@@ -598,30 +749,11 @@ If you have many substitutions to add, the following may be more efficient:
 
 - Add a single substitution via the function and then copy and paste the lines many times in the metadata.yml file, changing the relevant fields  
 
-- Create a spreadsheet with a list of all `trait_name` by `trait_value` combinations requiring substitutions. The spreadsheet would have four columns with headers `dataset_id`, `trait_name`, `find` and `replace`. This spreadsheet can be read directly into the `metadata.yml` file. This is described below under [Adding many substitutions](#adding_many_substitutions).   
-
-### Other metadata fields  
-
-There are a few additional metadata fields that need to be filled in manually:
-
-#### Sampling date  
-Under `config` > `variable_match` you can add another subheading `date:` where you'd report the column in the data.csv file (or the column defined through custom R code) containing sampling dates.
-
-#### Dataset  
-
-Toward the top of the metadata is a section titled `dataset:`. This needs to be filled in manually.  
-  - *year_collected_start:*   Year data sampling began.  
-  - *year_collected_end:*    Year data sampling was completed.  
-  - *description:* 1-2 sentence description of the study's goals. The abstract of a manuscript usually includes some good sentences/phrases to borrow.  
-  - *collection_type:*   Possible values include: Field, botanical collection, field_experiment, glasshouse, literature  
-  - *sample_age_class:*   Possible values include: Adult, sapling, seedling, unknown  
-  - *sampling_strategy:*  Often a quite long description of the sampling strategy, extracted verbatim from a manuscript.  
-  - *original_file:* The name of the file initially submitted to AusTraits and archived in a Google Drive folder and usually in the studies folder, in a subfolder named `raw`.  
-  - *notes:* Notes about the study and processing of data, especially if there were complications or if some data is suspected duplicates with another study and was filtered out.  
+- Create a spreadsheet with a list of all `trait_name` by `trait_value` combinations requiring substitutions. The spreadsheet would have four columns with headers `dataset_id`, `trait_name`, `find` and `replace`. This table can be read directly into the `metadata.yml` file using the function `metadata_add_substitutions_table`. This is described below under [Adding many substitutions](#adding_many_substitutions).   
 
 #### Excluded data  
 
-This section is to list specific trait values or taxon names that are in the `data.csv` file but should be excluded from AusTraits.  
+This section of the `metadata.yml` file provides the capacity to explicitly exclude specific trait values or taxon names. These are values that are in the `data.csv` file but should be excluded from AusTraits.  
 
 It includes three elements:  
 - *variable*: A variable from the traits table, typically `taxon_name`, `site_name` or `context_name`  
@@ -644,14 +776,15 @@ exclude_observations:
 
 #### Questions  
 
-At the very bottom of the `metadata.yml` file is a section titled `questions`. This is a location to:  
+The final section of the `metadata.yml` file is titled `questions`. This is a location to:  
 
 1. Ask the data contributor targeted questions about their study. When you generate a report (described below) these questions will appear at the top of the report.  
     - Preface the first question you have with `contributor:` (indented once), and additional questions with `question2:`, etc.  
     - Ask contributors about missing metadata   
-    - Point contributors attention to odd data distributions, to make sure they look at those traits extra carefully  
-    - Let contributors know if you're uncertain about their units or transformed the data in a fairly major way.  
+    - Point contributors attention to odd data distributions, to make sure they look at those traits extra carefully.
+    - Let contributors know if you're uncertain about their units or if you transformed the data in a fairly major way.  
     - Ask the contributors if you're uncertain you aligned their trait names correctly.   
+
 
 2. This is a place to list any trait data that are not yet `traits` supported by AusTraits. Use the following syntax, indented once: `additional_traits: `, followed by a list of traits.  
 
@@ -676,9 +809,22 @@ f <- file.path("data", current_study, "metadata.yml")
 read_metadata(f) %>% write_metadata(f)
 ```
 
+## Check if AusTraits pivots wider
+AusTraits users want to be able to "pivot" between long and wide formats. 
+Each row of data should have a unique combination of the following fields:
+  taxon_name, site_name, context_name, entity_id, observation_number, method_number, value_type, original_name
+
+Therefore, the dataset should be able to pivot wider and the following code should have a `1` in every cell. (Note that as of June 2022, a small bug in the taxon matching algorithm means that trait values for many orchids are being duplicated in AusTraits and this isn't working for the entire dataset combined, but does work if you make a single dataset.)
+
+```{r, eval=FALSE, echo=TRUE}
+austraits$traits %>%
+  select(trait_name, value, taxon_name, site_name, context_name, entity_id, observation_number, method_number, value_type, original_name) %>%
+  pivot_wider(names_from = trait_name, values_from = value, values_fn = length) %>% View()
+```
+
 ## Running tests {#running_tests}
 
-Begin by running some automated tests to ensure the dataset meets the required set up. The tests run through a collection of pre-specified checks on the files for each study. The output alerts you to possible issues needing to be fixed, by comparing the data in the files with the expected structure and allowed values, as specified in the schema and trait_definitions.   
+Begin by running some automated tests to ensure the dataset meets the required set up. The tests run through a collection of pre-specified checks on the files for each study. The output alerts you to possible issues needing to be fixed, by comparing the data in the files with the expected structure and allowed values, as specified in the schema and definitions.   
 
 Certain special characters may show up as errors and need to be manually adjusted in the `metadata.yml` file 
 
@@ -688,29 +834,25 @@ To run the tests, the variable `dataset_ids` must be defined in the global names
 
 ```{r, eval=FALSE, echo=TRUE}
 # load relevant functions
-devtools::load_all()
+library(austraits.build)
 
 # Tests run test on one study
 dataset_ids <- "Bragg_2002"
-austraits_run_tests()
-
-# Tests run test on one study using `current_study` variable
-dataset_ids <- current_study
-austraits_run_tests()
+dataset_test(dataset_ids)
 
 # Tests run test on all studies
 dataset_ids <- dir("data")
-austraits_run_tests()
+dataset_test(dataset_ids)
 ```
-Fix as many errors as you can and then rerun `austraits_run_tests()` repeatedly until no errors remain. 
+Fix as many errors as you can and then rerun `dataset_test()` repeatedly until no errors remain. 
 
-See below for suggestions on how to implement large numbers of trait value substitutions.
+See below for suggestions on how to implement large numbers of [trait value substitutions](#adding_many_substitutions).
 
 ## Rebuild AusTraits  
 
 Now incorporate the new study into AusTraits:  
 ```{r, eval=FALSE, echo=TRUE}
-setup_build_process()
+build_setup_pipeline()
 austraits <- remake::make("austraits")
 ```
 
@@ -726,39 +868,48 @@ The best way to view excluded data for a study is:
 austraits$excluded_data %>%
   filter(
     dataset_id == current_study,
-    error != "Missing value",
     error != "Observation excluded in metadata"
   ) %>%
   View()
 ```
 
-Or, if you want to check missing values and intentionally excluded metadata:  
+Missing values (blank cells, cells with NA) are not included in the `excluded_data` table, because they are assumed to be legitimate blanks. If you want to confirm this, you need to temporarily change the default arguments for the internal function `dataset_process` where it is called within the `remake.yml` file. For instance, the default,
 ```{r, eval=FALSE, echo=TRUE}
-austraits$excluded_data %>%
-  filter(dataset_id == current_study) %>%
-  View()
+      dataset_process("data/Ahrens_2019/data.csv",
+                  Ahrens_2019_config,
+                  schema
+                 )
+```
+
+needs to be changed to:
+
+```{r, eval=FALSE, echo=TRUE}
+      dataset_process("data/Ahrens_2019/data.csv",
+                  Ahrens_2019_config,
+                  schema,
+                  filter_missing_values = FALSE
+                 )
 ```
 
 ### Reasons for data to be excluded  
 
 Possible reasons for excluding a trait value includes:  
 
-- *Missing species name*: Species name is missing from data.csv file for a given row of data. This usually occurs when there are stray characters in the data.csv file below the data – delete these rows. 
+- **Missing species name**: Species name is missing from data.csv file for a given row of data. This usually occurs when there are stray characters in the data.csv file below the data – delete these rows. 
 
-- *Missing value*: Value was missing. Do nothing – these almost always represent honestly missing data. Large numbers of missing values are often present if two data frames with values for different traits are connected together with `bind_rows()` or if duplicate values have been omitted using custom R code.  
-- *Missing unit conversion*: Value was present but appropriate unit conversion was missing -> you need to add it to the file `config/unit_conversions.csv`. Add additional conversions near similar unit conversions already in the file for easier searching in the future.  
+- **Missing unit conversion**: Value was present but appropriate unit conversion was missing. This requires that you add a new unit conversion to the file `config/unit_conversions.csv`. Add additional conversions near similar unit conversions already in the file for easier searching in the future.  
 
-- *Observation excluded in metadata*: Specific values, usually certain taxon names can be excluded in the metadata. This is generally used when a study includes a number of non-native and non-naturalised species that need to be excluded. These should be intentional exclusions, as they have been added by you. 
+- **Observation excluded in metadata**: Specific values, usually certain taxon names can be excluded in the metadata. This is generally used when a study includes a number of non-native and non-naturalised species that need to be excluded. These should be intentional exclusions, as they have been added by you. 
 
-- *Time contains non-number*: Indicates a problem with the value entered into the traits `flowering_time` and `fruiting_time`. (*Note to AusTraits custodians: This error should no longer appear - will retain for now as a placeholder.*)
+- **Time contains non-number**: Indicates a problem with the value entered into the traits `flowering_time` and `fruiting_time`. (*Note to AusTraits custodians: This error should no longer appear - will retain for now as a placeholder.*)
 
-- *Unsupported trait*: `trait_name` not listed in `config/traits.yml`, under `traits`. Double check you have used the correct spelling/exact syntax for the `trait_name`, adding a new `trait` to the `traits.yml` file if appropriate. If there is a trait that is currently unsupported by AusTraits, leave `trait_name: .na` - do not fill in an arbitrary name. (Note, if you have data in long format, all traits are automatically added to the list of traits in `metadata.yml` and even if you indicate `trait_name: .na` these appear as `unsupported trait` in the `excluded_data` table.)  
+- **Unsupported trait**: `trait_name` not listed in `config/traits.yml`, under `traits`. Double check you have used the correct spelling/exact syntax for the `trait_name`, adding a new `trait` to the `traits.yml` file if appropriate. If there is a trait that is currently unsupported by AusTraits, leave `trait_name: .na`. Do not fill in an arbitrary name. (Note, if you have data in long format, all traits are automatically added to the list of traits in `metadata.yml` and must remain in `metadata.yml` to avoid errors. Simply fill in `trait_name: .na`
 
-- *Unsupported trait value*: This error, referencing categorical traits, means that the `value` for a trait is not included in the list of supported trait values for that trait in `config/traits.yml`. See `Adding many substitutions` if there are many trait values requiring substitutions. If appropriate, add another trait value to the `traits.yml` file.  
+- **Unsupported trait value**: This error, referencing categorical traits, means that the `value` for a trait is not included in the list of supported trait values for that trait in `config/traits.yml`. See [adding many substitutions](#adding_many_substitutions) if there are many trait values requiring substitutions. If appropriate, add another trait value to the `traits.yml` file.  
 
-- *Value does not convert to numeric*: Is there a strange character in the file preventing easy conversion? This error is rare and generally justified.  
+- **Value does not convert to numeric**: Is there a strange character in the file preventing easy conversion? This error is rare and generally justified.  
 
-- *Value out of allowable range*: This error, referencing numeric traits, means that the trait value, after unit conversions, falls outside of the allowable range specified for that trait in `config/traits.yml`. Sometimes the AusTraits range is too narrow and other times the author’s value is truly an outlier that should be excluded. Look closely at these and adjust the range in `config/traits.yml` if justified. Generally, don’t change the range until you’ve create a report for the study and confirmed that the general cloud of data aligns with other studies as excepted. Most frequently the units or unit conversion is what is incorrect.  
+- **Value out of allowable range**: This error, referencing numeric traits, means that the trait value, after unit conversions, falls outside of the allowable range specified for that trait in `config/traits.yml`. Sometimes the AusTraits range is too narrow and other times the author’s value is truly an outlier that should be excluded. Look closely at these and adjust the range in `config/traits.yml` if justified. Generally, don’t change the range until you’ve create a report for the study and confirmed that the general cloud of data aligns with other studies as excepted. Most frequently the units or unit conversion is what is incorrect.  
 
 You can also ask how many of each error type are present for a study:  
 ```{r, echo=TRUE, results="show"}
@@ -773,7 +924,6 @@ Or produce a table of error type by trait:
 austraits$excluded_data %>%
   filter(
     dataset_id == "Cheal_2017",
-    error != "Missing value"
   ) %>%
   select(trait_name, error) %>%
   table()
@@ -844,31 +994,33 @@ metadata_check_taxa(dataset_id, max_distance_abs = 2, max_distance_rel = 0.2, tr
 
 -  *Taxa not found. Note, genus is in APC*: The algorithm has successfully matched the genus of the submitted name, but cannot find a suitable match at the species level.  
     
-2. Taxon alignments made by `metadata_check_taxa` are added to the `taxonomic_updates:` section of the `metadata.yml` file
+2. Taxon alignments made by `metadata_check_taxa` are added under `metadata$taxonomic_updates` 
     Check all substitutions added to the metadata file, to confirm they make sense.
+        
+```{r, eval=FALSE, echo=TRUE}
+- find: Byrsonima crassifolia
+  replace: Boronia crassifolia
+  reason: Automatic alignment with name in APC list (accepted) (2021-09-16)
+- find: Hydrocotyle vulgaris
+  replace: Hydrocotyle rivularis
+  reason: Automatic alignment with name in APC list (accepted) (2021-09-16)
+```
+
+    a. On occasion there are nonsensical realignments due to fuzzy matching. 
     
-    a. On occasion there are nonsensical realignments due to fuzzy matching. These most often occur when measurements were made on non-naturalised horticultural plants, whose names do not appear on the APNI/APC lists. If this is the case, add these taxa to the excluded_data list. For instance, in eFLOWER_2021, the inclusion of many non-native species in the submitted dataset led to the following two incorrect substitutions. These need to be manually deleted, with the species added to the excluded data section.
+    -   If the species is obviously a misspelled Australian species, but was mismatched, manually correct the alignment.
     
-    ```{r, eval=FALSE, echo=TRUE}
-    - find: Byrsonima crassifolia
-      replace: Boronia crassifolia
-      reason: Automatic alignment with name in APC list (accepted) (2021-09-16)
-    - find: Hydrocotyle vulgaris
-      replace: Hydrocotyle rivularis
-      reason: Automatic alignment with name in APC list (accepted) (2021-09-16)
-    ```
-    
-    If the species is obviously a misspelled Australian species, but was mismatched, manually correct the alignment.
-    
+    -   Incorrect realignments most often occur when measurements were made on non-naturalised horticultural plants, whose names do not appear on the APNI/APC lists. If this is the case, add these taxa to the excluded_data list. For instance, in eFLOWER_2021, the inclusion of many non-native species in the submitted dataset led to the following two incorrect substitutions. These need to be manually deleted, with the species added to the excluded data section.
  
 
 4.	Run the function a second time to see the (hopefully) short list of names that couldn’t be easily matched and require manual matches or substitutions.
     a. If you don't expect more than 10-20 unmatched taxa, set `try_outside_guesses` to TRUE:
+
 ```{r, eval=FALSE, echo=TRUE}
 metadata_check_taxa(dataset_id, max_distance_abs = 3, max_distance_rel = 0.2, try_outside_guesses = TRUE)
 ```    
  
-  b. If there are unrecognised names that you know are either non-naturalised horticultural plants (or measurements made outside Australia on a non-native, naturalised species), exclude them in the metadata. In addition, exclude mosses, liverworts, etc. - these are not (yet) in AusTraits. For instance, from the `excluded_data` section of eFLOWER_2021:  
+  b. If there are unrecognised names that you know are either non-naturalised horticultural plants (or measurements made outside Australia on a non-native, naturalised species), exclude them in the metadata. In addition, exclude mosses, liverworts, etc. as these are not (yet) included in AusTraits. For instance, from the `excluded_data` section of eFLOWER_2021:  
 
 ```{r, eval=FALSE, echo=TRUE}
 excluded_data:  
@@ -918,9 +1070,7 @@ austraits$traits %>%
   filter(dataset_id == current_study) %>%
   distinct(taxon_name) %>%
   anti_join(recognised_taxa) %>%
-  mutate(dataset_id = current_study) %>%
   rename(find = taxon_name) %>%
-  select(-dataset_id) %>%
   write_csv("data/dataset_id/raw/unmatched_taxa.csv")
 ```
 
@@ -941,40 +1091,38 @@ austraits_rebuild_taxon_list()
 
 ## Check for duplicates  
 
-AusTraits strives to have no duplicate entries for numeric (continuous) trait measurements. 
+AusTraits strives to have no duplicate entries for numeric (continuous) trait measurements. That is, each value in AusTraits should represent a unique measurement, rather than a measurement sourced from another study.
 
 When you receive/solicit a dataset, ask the data contributor if all data submitted was collected for the specific study and if they suspect other studies from their lab/colleagues may also have contributed any of this data.  
 
 In addition, there are tests to check for duplicates within and across dataset_ids.  
 
-[To check for duplicates:]{#dataframe_of_duplicates}  
+[To check for duplicates:](#dataframe_of_duplicates)  
 
 ```{r, eval=FALSE, echo=TRUE}
 austraits_deduped <- remove_suspected_duplicates(austraits)
 duplicates_for_dataset_id <-
   austraits_deduped$excluded_data %>%
   filter(
-    dataset_id == current_study,
-    error != "Missing value"
+    dataset_id == current_study
   )
-
-View(duplicates_for_dataset_id)
 ```
 
 ### Duplicates within the study {#duplicates_within_study}  
 
 1.	First sort `duplicates_for_dataset_id` by the column `error` and scan for duplicates within the study (these will be entries under error that begin with the same `dataset_id` as the dataset being processed)  
 
-2.	For legitimate duplicates, do nothing. For instance, if %N has been measured on 50 replicates of a species and is reported to the nearest 0.01% it is quite likely there will be a few duplicate values within the study.  
+2.	For legitimately identical measurements, do nothing. For instance, if %N has been measured on 50 replicates of a species and is reported to the nearest 0.01% it is quite likely there will be a few identical values within the study.  
 
 3.	If a species-level measurement has been entered for all within-site replicates, you need to filter out the duplicates. This is true for both numeric and categorical values. Enter the following code as `custom_R_code` in the dataset's metadata file:  
 
 ```{r, eval=FALSE, echo=TRUE}
 data %>%
   group_by(Species) %>%
-  mutate_at(
-    vars(leaf_percentN, `plant growth form`),
-    ~ replace(.x, duplicated(.x), NA)
+  mutate(
+    across(
+      c(leaf_percentN, `plant growth form`), replace_duplicates_with_NA)
+    )
   ) %>%
   ungroup()
 ```
@@ -994,7 +1142,7 @@ Identifying duplicates in numeric traits between studies can be difficult, but i
  3. The following datasets are flagged in AusTraits as `reference` studies and are the source of most duplicates for the variables listed above:
  `Kew_2019_1`, `Kew_2019_2`, `Kew_2019_3`, `Kew_2019_4`, `Kew_2019_5`, `Kew_2019_6`, `ANBG_2019`, `GrassBase_2014`, `CPBR_2002`, `NTH_2014`,`RBGK_2014`, `NHNSW_2016`, `RBGSYD__2014_2`, `RBGSYD_2014`, `TMAG_2009`, `WAH_1998`, `WAH_2016`,`Brock_1993`, `Barlow_1981`, `Hyland_2003`, `Cooper_2013`  
  
-  Data from these studies are assumed to be the source, and the other study with the value is assumed to have sourced it from the above study. We recognise this is not always accurate, especially for compilations within `Kew_2019_1`, Kew's seed mass database, and have filtered certain contributors data from `Kew_2019_1` already.
+  Data from these studies are assumed to be the source, and the other study with the value is assumed to have sourced it from the above study. We recognise this is not always accurate, especially for compilations within `Kew_2019_1`, Kew's seed mass database. Whenever we input a raw dataset that is also part of the Kew compilation, we filter that contributors data from `Kew_2019_1`.
  
  4. Data for `wood_density` is also often sourced from other studies, most commonly `Ilic_2000` or `Zanne_2009`.  
  
@@ -1095,7 +1243,7 @@ data %>%
 Difficulties:  
 
 - This method only identifies values as duplicates if they have the same number of significant figures. 
-- More complex matching may reveal further duplicates. For seed mass in particular, some studies likely source values from the Kew database and then round these values. They may similarly source several values from Kew and then include the mean in their dataset. If their methods or correspondence with the contributor suggests the values were sourced from Kew (or another lab, papers, etc.) I generally filter out all values, EXCEPT species that are not yet represented in AusTraits for the trait in question. 
+- More complex matching may reveal further duplicates. For seed mass in particular, some studies likely source values from the Kew database and then round these values. They may similarly source several values from Kew and then include the mean in their dataset. If their methods or correspondence with the contributor suggests the values were sourced from Kew (or another lab, papers, etc.) it is best to filter out all values, EXCEPT species that are not yet represented in AusTraits for the trait in question. 
 
 
 ## Build study report  
@@ -1107,8 +1255,10 @@ Rebuild the taxon list and AusTraits to ensure other changes made during the qua
 ```{r, eval=FALSE, echo=TRUE}
 austraits_rebuild_taxon_list()
 austraits <- remake::make("austraits")
-build_dataset_report(current_study)
+dataset_report(current_study)
 ```
+
+The report is located in the `export` folder.
 
 Check the study report to ensure:  
 
@@ -1130,22 +1280,23 @@ dataset_ids <- current_study
 austraits_run_tests()
 
 austraits <- remake::make("austraits")
-build_dataset_report(current_study, overwrite = TRUE)
+dataset_report(current_study, overwrite = TRUE)
 ```
 
 To generate a report for a collection of studies:  
 ```{r, eval=FALSE, echo=TRUE}
-build_dataset_reports(c("Falster_2005_1", "Wright_2002"), overwrite = TRUE)
+dataset_reports(c("Falster_2005_1", "Wright_2002"), overwrite = TRUE)
 ```
 
 Or for all studies:  
 ```{r, eval=FALSE, echo=TRUE}
-build_dataset_reports(overwrite = TRUE)
+dataset_reports(overwrite = TRUE)
 ```
 
 Add the argument `overwrite=TRUE` if you already have a copy of a specific report stored in your computer and want to replace it with a newer version.
 
 (Reports are written in [Rmarkdown](https://rstudio.github.io/rmarkdown/) and generated via the [knitr](https://cran.r-project.org/web/packages/knitr/) package. The template is stored in `scripts/report_study.html`).
+
 
 # Working with our GitHub repository
 
@@ -1202,7 +1353,7 @@ Then in R
 dataset_ids <- "Smith_1995"
 
 # Update remake file
-setup_build_process()
+build_setup_pipeline()
 
 # check data builds
 remake::make(dataset_ids)

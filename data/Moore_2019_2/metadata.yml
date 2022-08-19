@@ -34,7 +34,9 @@ dataset:
     data %>% 
       mutate(
         site_name = "La Trobe University (Bundoora) Glasshouse",
-        fire_response = ifelse(resprouting_proportion_individuals > 0,"resprouts","fire_killed")
+        fire_response = ifelse(resprouting_proportion_individuals > 0.7,"resprouts", NA),
+        fire_response = ifelse(resprouting_proportion_individuals < 0.3,"fire_killed", fire_response), 
+        fire_response = ifelse(is.na(fire_response),"partial_resprouting",fire_response)
       )
   '
   collection_date: 2014-06/2015-03
@@ -43,8 +45,8 @@ dataset:
   context_name: Water_treatment
   description: Study investigating how grasses species differed in their post-fire
     resprouting response as a result of drought treatments.
-  collection_type: glasshouse
-  sample_age_class: adult
+  basis_of_record: lab
+  life_stage: adult
   sampling_strategy: 'We selected 37 genera and 52 species, comprising 34 C3 and 18
     C4 perennial species, spanning 13 grass tribes (Soreng et al., 2017) that inhabit
     temperate grassland, woodland and forest habitats of southern Australia (Table
@@ -193,7 +195,7 @@ traits:
   methods: expert observation or reference book
 - var_in: bud_location
   unit_in: .na
-  trait_name: regen_strategy
+  trait_name: bud_bank_location
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -201,7 +203,7 @@ traits:
   methods: expert observation or reference book
 - var_in: resprout_prop
   unit_in: dimensionless
-  trait_name: resprouting_strength
+  trait_name: fire_response_stem_ratio
   entity_type: individual
   value_type: mean
   basis_of_value: measurement
@@ -210,7 +212,7 @@ traits:
     and the number of post-fire tillers per plant were recorded.
 - var_in: resprouting_proportion_individuals
   unit_in: dimensionless
-  trait_name: resprouting_proportion_individuals
+  trait_name: fire_response_numeric
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -225,13 +227,13 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: Assigned the value 'resprouts' if the trait 'resprouting_proportion_individuals'
+  methods: Assigned the value 'resprouts' if the trait 'fire_response_numeric'
     is non-zero; else 'fire_killed'
 substitutions:
-- trait_name: regen_strategy
+- trait_name: bud_bank_location
   find: crown
-  replace: root_crown
-- trait_name: regen_strategy
+  replace: bud-bearing_root
+- trait_name: bud_bank_location
   find: stolon
   replace: stolon
 - trait_name: life_history

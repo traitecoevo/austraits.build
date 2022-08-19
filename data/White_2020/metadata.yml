@@ -31,7 +31,14 @@ dataset:
       mutate(flowering_season = paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,
                             Flower_Jul,Flower_Aug,Flower_Sep,Flower_Oct,Flower_Nov,Flower_Dec) %>%
                             na_if("000000000000") %>% convert_01_ny) %>%
-      mutate(dispersers = dispersal_syndrome) %>%
+      mutate(
+        dispersers = dispersal_syndrome,
+        fire_exposure_level = 
+          ifelse(fire_response %in% c("fire_not_relevant", "fire_not_relevant fire_killed",
+          "fire_killed fire_not_relevant", "fire_not_relevant resprouts","
+          fire_not_relevant not_fire_killed_does_not_resprout"),
+          "fire_not_relevant", NA)
+      ) %>%
       group_by(Species_Name) %>%
         mutate(observation_number = row_number()) %>%
       ungroup()
@@ -39,8 +46,8 @@ dataset:
   collection_date: unknown/2020
   taxon_name: Species_Name
   description: Compilation of trait data for Victorian plant species
-  collection_type: literature, field
-  sample_age_class: adult
+  basis_of_record: literature, field
+  life_stage: adult
   observation_number: observation_number
   sampling_strategy: Compilation of trait data for Victorian plant species from diverse
     sources. Data are generally linked to specific plot data. As a result, there are
@@ -93,6 +100,18 @@ traits:
 - var_in: fire_response
   unit_in: .na
   trait_name: fire_response
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion; with rare exceptions,
+    this dataset has marked species as either "fire-killed" or "resprouts", rather
+    than including mixed-strategies. These are based on the most common outcome for
+    a moderate-intensity fire, acknowledging that for a high intensity fire even many
+    resprouters will die.
+- var_in: fire_exposure_level
+  unit_in: .na
+  trait_name: fire_exposure_level
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -168,7 +187,7 @@ traits:
   methods: compilation from diverse sources and expert opinion
 - var_in: Proliferate
   unit_in: .na
-  trait_name: vegetative_regeneration
+  trait_name: vegetative_reproduction_ability
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -184,7 +203,7 @@ traits:
   methods: compilation from diverse sources and expert opinion
 - var_in: regen_strategy
   unit_in: .na
-  trait_name: regen_strategy
+  trait_name: regeneration_non_fire_disturbance
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -247,33 +266,27 @@ traits:
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 substitutions:
-- trait_name: lifespan
-  find: <1
-  replace: 0--1
-- trait_name: lifespan
-  find: <10
-  replace: 1--10
-- trait_name: lifespan
-  find: <50
-  replace: 10--50
-- trait_name: lifespan
-  find: 50-500
-  replace: 50--500
-- trait_name: lifespan
-  find: '>500'
-  replace: 500--
-- trait_name: reproductive_maturity
-  find: <1
-  replace: 0--1
-- trait_name: reproductive_maturity
-  find: 1-5
-  replace: 1--5
-- trait_name: reproductive_maturity
-  find: 5-20
-  replace: 5--20
-- trait_name: reproductive_maturity
-  find: '>20'
-  replace: 20--
+- trait_name: fire_response
+  find: fire_killed resprouts
+  replace: partial_resprouting
+- trait_name: fire_response
+  find: fire_not_relevant
+  replace: .na
+- trait_name: fire_response
+  find: fire_not_relevant fire_killed 
+  replace: fire_killed
+- trait_name: fire_response
+  find: fire_killed fire_not_relevant
+  replace: fire_killed
+- trait_name: fire_response
+  find: fire_not_relevant resprouts
+  replace: resprouts
+- trait_name: fire_response
+  find: fire_not_relevant not_fire_killed_does_not_resprout
+  replace: no_significant_fire_response
+- trait_name: fire_response
+  find: not_fire_killed_does_not_resprout
+  replace: no_significant_fire_response
 - trait_name: spinescence
   find: 0
   replace: 0_no_spines
@@ -282,10 +295,10 @@ substitutions:
   replace: spines_present
 - trait_name: seed_longevity
   find: 10
-  replace: short_persistent_in_soil_b
+  replace: short_persistent
 - trait_name: seed_longevity
   find: '01'
-  replace: long_persistent_in_soil_b
+  replace: long_persistent
 - trait_name: seed_longevity
   find: '00'
   replace: .na
@@ -304,12 +317,27 @@ substitutions:
 - trait_name: life_form
   find: 0
   replace: .na
-- trait_name: vegetative_regeneration
+- trait_name: reproductive_maturity
+  find: '<1'
+  replace: 0--1
+- trait_name: reproductive_maturity
+  find: '1-5'
+  replace: 1--5
+- trait_name: reproductive_maturity
+  find: '5-20'
+  replace: 5--20
+- trait_name: reproductive_maturity
+  find: '>20'
+  replace: 20--
+- trait_name: vegetative_reproduction_ability
   find: 1
   replace: vegetative
-- trait_name: vegetative_regeneration
+- trait_name: vegetative_reproduction_ability
   find: 0
   replace: not_vegetative
+- trait_name: regeneration_non_fire_disturbance
+  find: resprouts
+  replace: resprouts_non_fire_disturbance
 - trait_name: parasitic
   find: 1
   replace: parasitic

@@ -31,11 +31,11 @@ dataset:
     data %>%
       mutate(
         site_name = "Cape Tribulation",
-        collection_date = date_leaf %>% mdy(),
+        collection_date = date_leaf %>% dmy() %>% as.character(),
         collection_date = ifelse(is.na(collection_date),"2014/2014", collection_date)
-        ) %>% 
+      ) %>%
       group_by(Tree) %>%
-      mutate(observation_number = row_number()) %>%
+        mutate(observation_number = row_number()) %>%
       ungroup() %>%
       group_by(Species_name) %>%
         mutate_at(vars(`Growth.Form`), replace_duplicates_with_NA) %>%
@@ -50,8 +50,8 @@ dataset:
   description: This study investigated the functional traits of lianas and trees in
     a lowland tropical forest in northeast Queensland, Australia to understand and
     predict the effect of lianas on ecosystem processes in tropical forests.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: The study took place in a lowland tropical rainforest in Cape
     Tribulation, Queensland, Australia (16.1 deg S, 145.4 deg E). Multiple individuals
     of liana and tree species were accessed in an established 1-ha study plot (Laidlaw

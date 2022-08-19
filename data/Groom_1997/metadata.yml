@@ -40,7 +40,8 @@ dataset:
       na_if(".na") %>% 
       mutate(
         site_name = "southwest Australia",
-        fire_response = if_else(regeneration_mode == "NS", "fire_killed", "resprouts")
+        fire_response = ifelse(regeneration_mode == "NS", "fire_killed", "resprouts"),
+        storage_organ = ifelse(regeneration_mode %in% c("RS","RS/EP","RS?"),"lignotuber", NA)
       )
   '
   collection_date: unknown/1997
@@ -48,8 +49,8 @@ dataset:
   site_name: site_name
   description: data on reproductive traits of non-sprouting and re-sprouting Hakea
     species in southwestern Australia
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Twenty follicles of 94 Hakea species (out of a possible 100)
     were collected from natural populations within southwestern Australia. Fruit and
     seed attributes and germination parameters of 50 species of Hakea - 24 non-sprouters
@@ -82,7 +83,7 @@ traits:
     as seeds were to be germinated.
 - var_in: regeneration_mode
   unit_in: .na
-  trait_name: regen_strategy
+  trait_name: bud_bank_location
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -183,7 +184,7 @@ traits:
     seeds, expressed as a percentage of the original number of seeds used. The number
     of days to first germinations, 50% germination (of germinated seeds) and between
     first and last germination were also recorded.
-  sample_age_class: seedling
+  life_stage: seedling
 substitutions:
 - trait_name: serotiny
   find: 1
@@ -197,27 +198,27 @@ substitutions:
 - trait_name: serotiny
   find: '4'
   replace: not_serotinous
-- trait_name: regen_strategy
+- trait_name: bud_bank_location
   find: NS
-  replace: fire_killed
-- trait_name: regen_strategy
+  replace: none
+- trait_name: bud_bank_location
   find: RTS
   replace: bud-bearing_root
-- trait_name: regen_strategy
+- trait_name: bud_bank_location
   find: RS
-  replace: lignotuber
-- trait_name: regen_strategy
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
   find: RS?
-  replace: lignotuber
-- trait_name: regen_strategy
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
   find: EP
-  replace: epicormic
-- trait_name: regen_strategy
+  replace: epicormic_buds
+- trait_name: bud_bank_location
   find: RS/EP
-  replace: lignotuber epicormic
-- trait_name: regen_strategy
+  replace: basal_stem_buds epicormic_buds
+- trait_name: bud_bank_location
   find: RTS/EP
-  replace: bud-bearing_root epicormic
+  replace: bud-bearing_root epicormic_buds
 - trait_name: pollination_syndrome
   find: i
   replace: insect

@@ -28,7 +28,10 @@ dataset:
     data %>% 
       mutate(
         site_name = "Epping Forest",
-        fire_response = if_else(`%topkilled stems resprouting`==0,"fire_killed","resprouts")
+        fire_response = ifelse(`%topkilled stems resprouting`<30,"fire_killed",NA), 
+        fire_response = ifelse(`%topkilled stems resprouting`>70,"resprouts",fire_response), 
+        fire_response = ifelse(`%topkilled stems resprouting`>30 & `%topkilled stems resprouting`<70, 
+          "partial_resprouting",fire_response)
       )
   '
   collection_date: 2013/2013
@@ -40,8 +43,8 @@ dataset:
     the extent of seedling establishment and resprouting in eucalypts and acacias,
     the most dominant tree genera in the region; and (3) compare fuel loads in burnt
     and nearby unburnt transects.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: A series of canopy-defoliating fires in February 2009, February
     2011, February 2012 and January 2013 afforded the opportunity to document fire
     effects in remnant dry eucalypt forest in the northern part of the Midlands. We
@@ -74,33 +77,40 @@ traits:
     included those with live epicormic or basal resprouts.
 - var_in: '%topkilled stems resprouting'
   unit_in: '%'
-  trait_name: resprouting_proportion_individuals
+  trait_name: fire_response_numeric
   entity_type: population
   value_type: mean
   basis_of_value: measurement
   replicates: TOTAL
-  methods: We recorded the status of each individual as "alive" no epicormics (if
-    the main stem had live foliage), "epicormically resprouting" (main stem with live
-    epicormic resprouts), "basally resprouting" (main stem dead but live basal resprouts
-    present) or "dead" (main stem dead and no live resprouts). For analyses of survival,
-    "live stems" included those with live epicormic resprouts, and "live whole plants"
-    included those with live epicormic or basal resprouts. The methods used could
-    overestimate the proportion of eucalypts resprouting, because many dead stems
-    could not be identified to species level.
+  methods: "We recorded the status of each individual as 'alive' no epicormics (if
+    the main stem had live foliage), 'epicormically resprouting' (main stem with live
+    epicormic resprouts), 'basally resprouting' (main stem dead but live basal resprouts
+    present) or 'dead' (main stem dead and no live resprouts). For analyses of survival,
+    'live stems' included those with live epicormic resprouts, and 'live whole plants'
+    included those with live epicormic or basal resprouts."
 - var_in: regen_strategy
   unit_in: .na
-  trait_name: regen_strategy
+  trait_name: bud_bank_location
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: We recorded the status of each individual as "alive" no epicormics (if
-    the main stem had live foliage), "epicormically resprouting" (main stem with live
-    epicormic resprouts), "basally resprouting" (main stem dead but live basal resprouts
-    present) or "dead" (main stem dead and no live resprouts). For analyses of survival,
-    "live stems" included those with live epicormic resprouts, and "live whole plants"
-    included those with live epicormic or basal resprouts.
-substitutions: .na
+  methods: "We recorded the status of each individual as 'alive' no epicormics (if
+    the main stem had live foliage), 'epicormically resprouting' (main stem with live
+    epicormic resprouts), 'basally resprouting' (main stem dead but live basal resprouts
+    present) or 'dead' (main stem dead and no live resprouts). For analyses of survival,
+    'live stems' included those with live epicormic resprouts, and 'live whole plants'
+    included those with live epicormic or basal resprouts."
+substitutions:
+- trait_name: bud_bank_location
+  find: basal epicormic
+  replace: basal_buds epicormic_buds
+- trait_name: bud_bank_location
+  find: basal
+  replace: basal_buds
+- trait_name: bud_bank_location
+  find: fire_killed
+  replace: none
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na

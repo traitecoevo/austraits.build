@@ -43,8 +43,9 @@ dataset:
   custom_R_code: '
     data %>% 
       mutate(
+        fire_response = ifelse(life_history == "r", "resprouts", NA),
+        fire_response = ifelse(life_history == "o", "fire_killed", fire_response),
         leaf_water_content = (100 - leaf_water_content),
-        regen_strategy = ifelse(life_history=="r","resprouts",""),
         life_history = ifelse(life_history=="r","p",life_history),
         regen_strategy = ifelse(life_history=="o","seed",""),
         life_history = ifelse(life_history=="o","p",life_history),
@@ -68,8 +69,8 @@ dataset:
   context_name: context_name
   population_id: population_id
   description: Susanne Schmidt's Kakadu data, merged from several spreadsheets
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Eucalyptus tetrodonta and E. miniata dominate the most distinctive
     savanna community in northern Australia. Acacia species are prominent understorey
     species in this open forest community. Other genera of tree and shrub species
@@ -379,11 +380,10 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  methods: Healthy mature leaves, twigs and roots were oven-dried at 60degC on the
-      day of collection.
-- var_in: regen_strategy
+  methods: Healthy mature leaves, twigs and roots were oven-dried at 60degC on the day of collection.
+- var_in: fire_response
   unit_in: .na
-  trait_name: regen_strategy
+  trait_name: fire_response
   entity_type: species
   value_type: mode
   basis_of_value: expert_score

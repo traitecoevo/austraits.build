@@ -4,15 +4,17 @@
 \alias{metadata_add_source_doi}
 \title{Adds citation details from a doi to a metadata file for a dataset_id.}
 \usage{
-metadata_add_source_doi(doi, ...)
+metadata_add_source_doi(..., doi, bib = NULL)
 }
 \arguments{
+\item{...}{arguments passed from metadata_add_source_bibtex()}
+
 \item{doi}{doi of reference to add}
 
-\item{...}{arguments passed from metadata_add_source_bibtex()}
+\item{bib}{(Only use for testing purposes). Result of calling `bib rcrossref::cr_cn(doi)`}
 }
 \value{
-yml file with citation details added
+metadata.yml file has citation details added
 }
 \description{
 Uses rcrossref package to access publication details from the crossref 
