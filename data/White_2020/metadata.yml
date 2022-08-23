@@ -37,7 +37,17 @@ dataset:
           ifelse(fire_response %in% c("fire_not_relevant", "fire_not_relevant fire_killed",
           "fire_killed fire_not_relevant", "fire_not_relevant resprouts","
           fire_not_relevant not_fire_killed_does_not_resprout"),
-          "fire_not_relevant", NA)
+          "fire_not_relevant", NA),
+        stem_growth_habit = NA,
+        plant_growth_substrate = ifelse(str_detect(plant_growth_form, "epiphyte"), "epiphyte", NA),
+        plant_growth_form = str_replace(plant_growth_form, "epiphyte_", ""),
+        plant_growth_form = str_replace(plant_growth_form, "epiphyte", "")  %>% str_squish()
+      ) %>%
+      move_values_to_new_trait(
+        "plant_growth_form","stem_growth_habit",
+        c("climber_scrambler", "prostrate_herb", "prostrate_shrub"),
+        c("scrambler", "prostrate", "prostrate"),
+        c("climber", "herb", "shrub")
       ) %>%
       group_by(Species_Name) %>%
         mutate(observation_number = row_number()) %>%
@@ -84,6 +94,22 @@ traits:
 - var_in: flowering_season
   unit_in: .na
   trait_name: flowering_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -266,6 +292,9 @@ traits:
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 substitutions:
+- trait_name: plant_growth_form
+  find: treelet
+  replace: mallee
 - trait_name: fire_response
   find: fire_killed resprouts
   replace: partial_resprouting
@@ -470,6 +499,9 @@ substitutions:
 - trait_name: dispersers
   find: invertebrate_insect
   replace: invertebrates
+- trait_name: plant_growth_form
+  find: ""
+  replace: .na
 taxonomic_updates:
 - find: Abutilon malvaefolium
   replace: Abutilon malvifolium

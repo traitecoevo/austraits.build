@@ -33,11 +33,15 @@ dataset:
       mutate(
         context_name = ifelse(TRIP == 1, "Trip 1 (wet season)","Trip 2 (dry season)"),
         population_id = SITE,
-        observation_number = ifelse(TRIP == 1, 1, 2)
+        observation_number = ifelse(TRIP == 1, 1, 2),
+        plant_growth_substrate = NA_character_
       ) %>%
       group_by(species_name_edited) %>%
         mutate_at(vars(`PLANT GROUP`), replace_duplicates_with_NA) %>%
-      ungroup()
+      ungroup() %>%
+      move_values_to_new_trait(
+        "PLANT GROUP", "plant_growth_substrate", "Mistletoe", "epiphyte", ""
+      )
   '
   collection_date: 2003/2003
   taxon_name: species_name_edited
@@ -103,6 +107,14 @@ traits:
 - var_in: PLANT GROUP
   unit_in: .na
   trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert knowledge
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -269,9 +281,6 @@ substitutions:
 - trait_name: plant_growth_form
   find: e
   replace: .na
-- trait_name: plant_growth_form
-  find: mistletoe
-  replace: epiphyte
 - trait_name: plant_growth_form
   find: mulga fern
   replace: fern

@@ -26,7 +26,8 @@ dataset:
         flowering_time =  ifelse(is.na(data$`flowering month begin`), NA, 
                           sprintf("%s-%s",month.abb[`flowering month begin`], 
                           month.abb[`flowering month end`]) %>% 
-                          convert_month_range_vec_to_binary())
+                          convert_month_range_vec_to_binary()),
+        stem_growth_habit = ifelse(`growth form` %in% c("p", "s p"), "prostrate", NA)
       )
   ' 
   collection_date: unknown/2002
@@ -124,6 +125,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Seen in field and information from herbarium records.
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Seen in field and information from herbarium records.
 - var_in: min height (m)
   unit_in: m
   trait_name: .na
@@ -181,10 +190,10 @@ substitutions:
   replace: shrub
 - trait_name: plant_growth_form
   find: p
-  replace: prostrate
+  replace: .na
 - trait_name: plant_growth_form
   find: s p
-  replace: prostrate_shrub
+  replace: shrub
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na

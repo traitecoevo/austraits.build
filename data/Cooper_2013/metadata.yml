@@ -30,7 +30,8 @@ dataset:
   custom_R_code: '
     data %>% 
       mutate(
-        growth_habit = ifelse(height=="prostrate","prostrate",NA),
+        stem_growth_habit = ifelse(height=="prostrate","prostrate",NA),
+        plant_growth_substrate = ifelse(form %in% c("mistletoe", "epiphyte"), "epiphyte", NA),
         fruit_fleshiness = fruits, fruit_dehiscence = fruits, dispersal_appendage = NA
       ) %>% 
       move_values_to_new_trait("fruits", "dispersal_appendage", c("dry & winged", "enclosed in aril"), 
@@ -62,9 +63,17 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: reference book
-- var_in: growth_habit
+- var_in: plant_growth_substrate
   unit_in: .na
-  trait_name: growth_habit
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: reference book
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -239,13 +248,13 @@ substitutions:
   replace: herb shrub
 - trait_name: plant_growth_form
   find: shrub, but occassionally emergent tree
-  replace: shrub treelet
+  replace: shrub tree
 - trait_name: plant_growth_form
   find: vine
   replace: climber_vine
 - trait_name: plant_growth_form
   find: vine/shrub
-  replace: climber_shrub
+  replace: climber_woody shrub
 - trait_name: plant_growth_form
   find: lily
   replace: geophyte
@@ -254,13 +263,13 @@ substitutions:
   replace: pandanus
 - trait_name: plant_growth_form
   find: banan plant
-  replace: palm
+  replace: herb_large
 - trait_name: plant_growth_form
   find: shrub?
   replace: shrub
 - trait_name: plant_growth_form
   find: vine/herb
-  replace: climber_herb
+  replace: climber_vine herb
 - trait_name: plant_growth_form
   find: fern tree
   replace: fern_tree
@@ -269,16 +278,19 @@ substitutions:
   replace: fern_tree
 - trait_name: plant_growth_form
   find: shrb, but occassionally emergent tree
-  replace: shrub treelet
+  replace: shrub tree
 - trait_name: plant_growth_form
   find: shrub in nsw & qld (tree in vic)
   replace: shrub tree
 - trait_name: plant_growth_form
   find: climbing palm
-  replace: climber_palm
+  replace: climber_liana
 - trait_name: plant_growth_form
   find: mistletoe
-  replace: epiphyte
+  replace: shrub
+- trait_name: plant_growth_form
+  find: epiphyte
+  replace: .na
 - trait_name: fruit_type
   find: a pair of mericarps
   replace: mericarp

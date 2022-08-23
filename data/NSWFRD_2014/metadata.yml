@@ -40,6 +40,7 @@ dataset:
         fire_response_detailed = Fireresponse,
         flowering_time_edited = convert_month_range_vec_to_binary(flowering_time_edited),
         fruiting_time_edited = convert_month_range_vec_to_binary(fruiting_time_edited),
+        stem_growth_habit = ifelse(`Life form` == "P", "prostrate", NA),
         dispersers = `Seed dispersal mechanism`,
         `Minimum maturity` = str_extract(`Minimum maturity`,"[:digit:]"),
         `Maximum maturity` = str_extract(`Maximum maturity`,"[:digit:]"),
@@ -68,6 +69,16 @@ traits:
 - var_in: Life form
   unit_in: .na
   trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: H=herb S=shrub T=tree P=prostarte C=climber V=vine F=fern TF=tree fern
+    FF=forkfern CM=clubmoss; See original file in raw data folder for extensive reference
+    list.
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -361,10 +372,10 @@ substitutions:
   replace: herb shrub
 - trait_name: plant_growth_form
   find: sT or M
-  replace: treelet
+  replace: treelet mallee
 - trait_name: plant_growth_form
   find: P
-  replace: prostrate
+  replace: .na
 - trait_name: plant_growth_form
   find: TF
   replace: fern_tree

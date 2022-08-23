@@ -649,7 +649,7 @@ traits:
       description: A trait to capture different mechanisms plants use to avoid or experience fire.
       type: categorical
       label: Plant's fire avoidance or exposure strategies
-      values: 
+      allowed_values_levels: 
         fire_not_relevant: Plant never affected by fire (for aquatic taxon).
         fire_avoidance_among_rocks: Plants rarely experience fires because their habitat is restricted to rocky outcrops or rock pavement.
     fire_response:
@@ -1287,43 +1287,6 @@ traits:
       allowed_values_levels:
         '0': not glaucous
         '1': glaucous
-    growth_habit:
-      description: Variable that defines a combination of growth habit and plant vegetative reproductive potential
-      type: categorical
-      label: Growth habit (data actually describes plant vegetative reproduction capacity)
-      values:        
-        bushy:
-        caespitose:
-        compact:
-        creeper: Creeper that roots along stems
-        cushion-forming:
-        decumbent:
-        dense:
-        erect:
-        hummock:
-        mat_forming:
-        open:
-        procumbent:
-        prostrate: Plants that lie flat on the ground
-        rhizomatous: Plants having modified underground stems
-        rosette:
-        scandent:
-        scrambling:
-        shrubby:
-        spindly:
-        sprawling: Leaning upon some object or lying on the ground; possible overlap in meaning with either scandent/climbing or prostrate
-        spreading:
-        stoloniferous: Plants having horizontal branches from the base of the plant that produce new plants from buds at its tip or nodes
-        trailing:
-        tufted: A dense clump attached at the base or growing close together; can refer to grasses, shrubs, or trees
-        twining:
-    growth_substrate:
-      description: Trait indicating the substrate on which a plant grows or its growth medium
-      type: categorical
-      label: Growth substrate
-      allowed_values_levels:
-        aquatic: Plant grows in water
-        epiphytic: Plant grows on another plant
     guard_cell_length:
       description: Length of guard cells
       type: numeric
@@ -2382,6 +2345,12 @@ traits:
         not_parasitic: Plant is not parasitic
         root_parasitic: Plant that is a root parasite
         stem_parasitic: Plant that is a stem parasite
+    plant_energy_aquisition_strategy:
+      description: Trait indicating non-photosynthetic strategies plants use to acquire energy.
+      type: categorical
+      label: Plant energy aquisition strategy
+      allowed_values_levels:
+        saprophyte: Plant that acquires nutrients from decaying matter.   
     pendulous_leaves:
       description: Binary variable describing whether or not leaves are pendulous
       type: categorical
@@ -2464,85 +2433,122 @@ traits:
       type: categorical
       label: Plant growth form
       allowed_values_levels:
-        aquatic: Grows primarily in water
-        aquatic_floating: Plant where most of the leaves are floating on water
-        aquatic_herb: Herb that grows primarily in water
-        aquatic_submerged: Plant where all the leaves are submerged in water        
-        climber: Plant that climbs up another plant's trunk, branches, rather than being able to support itself
-        climber_herb: Herbaceous plant that climbs up another plant
-        climber_liana: Liana (usually refers to a woody climber)
-        climber_shrub: Shrubby plant that climbs up another plant
-        climber_scrambler: Plant that climbs by scrambling
-        climber_tree: Tree that climbs up another plant
-        climber_twiner: Climber that ascends by twining (usually will refer to herbaceous climber, but not always)
-        climber_twiner_woody: Climber that ascends by twining and is explicitly indicated to be woody
-        climber_vine: Vine (usually will refer to herbaceous climber, but not always)
-        climber_vine_herbaceous: Vine, explicitly referring to herbareous taxa
-        climber_vine_woody: Vine whose stem is at least partially woody
-        climber_woody: Woody or thick (>2 cm) climbers with hooks, tendrils, adventitious roots, etc.
-        creeper: Creeper that roots along stems; move to growth habit; reassign as `herb`
-        cushion: Plant with tightly packed foliage help close to soil surface, with relatively even and rounded canopy boundary; a sub-category of herb in Cornellison, but possibly used for subshrubs as well by some
-        cycad: Cycad
-        epiphyte: Plant that grows on top of another plant
-        epiphyte_herb: Herb that grows on top of another plant
-        epiphyte_shrub: Shrub that grows on top of another plant
-        epiphyte_tree: Tree that grows on top of another plant
-        epiphyte_woody: Woody epiphyte
-        epiphyte_treelet: Tree that grows on top of another plant
-        erect_leafy: Plant essentially erect with leaves concentrated in the middle and/or top parts; a sub-category of herb
-        fern: A group of vascular plants that reproduce via spores
-        fern_tree: Tree fern
-        geophyte: A perennial plant with an underground food storage organ, such as a bulb, tuber, corm, or rhizome
-        graminoid: Herbaceous plants with a grass-like morphology; includes all entries of 'grass' and 'sedge' that are purely taxonomic descriptions, not indicating explicitly how the grass/sedge grows
+        herb: A seed-bearing plant which does not have a woody stem and dies down to the ground after flowering; when available this term has been divided into more detailed terms        
+        subshrub: A plant that is only woody at the base, with the remainder of the stems regenerating yearly. This term is not meant to encompass short-lived plants that are only borderline woody. (synonym, suffrutescent) [used in Pérez-Harguindeguy 2013, Traits Handbook for short-statured shrubs, regardless of extent of woodiness]
+        shrub: A woody plant that has multiple stems arising at or near ground level.
+        mallee: A fairly short tree with multiple stems arising at or near ground level. Generally refers to Eucalyptus species which regenerate from lignotubers. 
+        treelet: A short, woody, perennial plant, with a single main trunk. (`dwarf tree` per Pérez-Harguindeguy 2013, Traits Handbook)
+        tree: A tall, woody, perennial plant, usually with a single main trunk.
+        graminoid: Herbaceous plants with a grass-like morphology.
+        geophyte: A perennial plant with an underground food storage organ, such as a bulb, tuber, corm, or rhizome.
+        cushion: Plant with tightly packed foliage help close to soil surface, with relatively even and rounded canopy boundary; a sub-category of herb in Cornellison, but possibly used for subshrubs as well by some (Cornellison 1993 & Pérez-Harguindeguy 2013, Traits Handbook)
+        rosette: Herb where the leaves are concentrated right at the ground surface; also termed 'flat rosette' [also a habit] (Pérez-Harguindeguy 2013, Traits Handbook; NOT Cornellison)
+        tussock: Plant with many leaves from basal meristem forming prominent tufts (Cornellison 1993 & Pérez-Harguindeguy 2013, Traits Handbook)
+        rosette_erect: Rosette of leaves that is no flat on the ground; in Cornellison, this refers to semi-woody plant like a palm, but may have different meanings with some authors
+        palmoid: 'Bears a rosette-like canopy of typically large, often compound leaves atop a usually thick ('pachycaulous'), columnar, unbranched or littlebranched stem' (Cornellison 1993 & Pérez-Harguindeguy 2013, Traits Handbook)
+        babusoid: '?uncertain if worth using From handbook, An excurrently branched (cf. Point A.3.d.i in the present Section) trunk lacking or having only weak secondary growth is stiffened by sclerification to support a vertically extensive, sometimes tree-sized canopy (bamboos; various tall, herbaceous dicots such as Chenopodium, Amaranthus and Helianthus).`(Pérez-Harguindeguy 2013, Traits Handbook)'
+        erect_leafy: Plant essentially erect with leaves concentrated in the middle and/or top parts; a sub-category of herb (Cornellison 1993, Traits Handbook)
+        leafless_shrub_tree: Shrubs and trees with green, non-succulent stems as the main photosynthetic structures (Cornellison 1993, Traits Handbook) [not actually being used; recommend removing]
+        short_basal: Leaves <0.5 m long concentrated very close to the soil surface (encompasses both prostrate and rosette), but not forming a tussock; a sub-category of herb (Cornellison 1993, Traits Handbook)
+        long_basal: Large leaves >0.5 m long emerging from the soil surface; a sub-category of herb (Cornellison 1993, Traits Handbook)
+        herb_large: An herbaceous plant >0.5 m tall [although rarely scored, having some trait like this makes sense to maintain if people do score it]
+        semi_basal: Significant leaf area deployed both close to the soil surface and higher up the plant; a sub-category of herb (Cornellison 1993, Traits Handbook)       
+        succulent_short: A plant < 0.5 m tall where some parts are thick and fleshy and usually involved in water storage (Cornellison 1993, Traits Handbook)
+        succulent_tall: A plant > 0.5 m tall where some parts are thick and fleshy and usually involved in water storage (Cornellison 1993, Traits Handbook)
+        stem_succulent: Label that applies to perennial, semi-woody species like members of Cactaceae; encompasses 'succulent_tall', but explicity indicates the species is perennial [MERGE WITH succulent_tall; perennial, semi-woody captured elsewhere] (Pérez-Harguindeguy 2013, Traits Handbook) 
         graminoid_not_tussock: Herbaceous plants with a non-tussock grass-like morphology
         graminoid_not_tussock_tall: Herbaceous plants with a non-tussock grass-like morphology that are more than 1 m in height
         graminoid_tussock: Herbaceous plants with a tussock grass-like morphology; see also 'tussock'
         graminoid_tussock_tall: Herbaceous plants with a tussock grass-like morphology that are more than 1 m in height
-        grass-tree: Term specific refers to members of the family Xanthorrhoaceae, monocots with a tree-like growth-form
-        hemi-epiphyte: Plant that partially grows on top of another plant
-        hemi-epiphyte_shrub: Shrub that partially grows on top of another plant
-        hemi-epiphyte_tree: Tree that partially grows on top of another plant
-        herb: A seed-bearing plant which does not have a woody stem and dies down to the ground after flowering; when available this term has been divided into more detailed terms
-        herb_large: An herbaceous plant >0.5 m tall
-        hummock:
-        leafless_shrub_tree: Shrubs and trees with green, non-succulent stems as the main photosynthetic structures
-        lithophyte: Plant that grows on a rock
-        long_basal: Large leaves >0.5 m long emerging from the soil surface; a sub-category of herb
-        mallee: A fairly short tree with multiple stems arising at or near ground level; often referring to Eucalyptus species 
-        palm: Flowering plants in the family Arecaceae, most with large, compound evergreen leaves referred to as fronds
-        palm_tree: 
-        palm_basal:
-        pandanus: Pandanus
-        primitive: includes club moss, selaginella
-        prostrate_herb: Herbaceous plant that lies flat against the ground
-        prostrate_shrub: Woody plant that lies flat against the ground
-        reed: reed or rush; doesn't specify exact growth form
-        rosette: Herb where the leaves are concentrated right at the ground surface; also termed 'flat rosette'
-        rosette_erect: Rosette of leaves that is no flat on the ground; in Cornellison, this refers to semi-woody plant like a palm, but may have different meanings with some authors
-        saprophyte: Plant that acquires nutrients from decaying matter
-        semi-aquatic: 
-        semi_basal: Significant leaf area deployed both close to the soil surface and higher up the plant; a sub-category of herb
-        subshrub: A dwarf shrub, especially one that is only woody at the base
-        succulent_short: A plant < 0.5 m tall where some parts are thick and fleshy and usually involved in water storage (from Cornellison 1993)
-        succulent_tall: A plant > 0.5 m tall where some parts are thick and fleshy and usually involved in water storage (from Cornellison 1993)
-        stem_succulent: Label that applies to perennial, semi-woody species like members of Cactaceae; encompasses 'succulent_tall', but explicity indicates the species is perennial
-        short_basal: Leaves <0.5 m long concentrated very close to the soil surface (encompasses both prostrate and rosette); a sub-category of herb
-        shrub: A woody plant that has multiple stems arising at or near ground level
-        treelet: A woody plant that is intermediate between a shrub and a tree; also a short tree; includes mallee
-        tree: A tall, woody, perennial plant, usually with a single main trunk
-        tussock: Plant with many leaves from basal meristem forming prominent tufts
-    plant_growth_medium:
-      description: Categories referring to the substrate on which a plant grows. 
+        hummock: [Is this a stem habit or a plant form? Or both? Or neither] (synonym, tussock ?)             
+        reed: reed or rush; doesn't specify exact growth form - can these all be called graminoids, or not?
+        climber: Plant that climbs up another plant's trunk, branches, rather than being able to support itself. No information provided about whether the climber is woody. 
+        climber_herb: Herbaceous plant that climbs up another plant [MERGE with climber_vine]
+        climber_liana: Liana (usually refers to a woody climber)
+        climber_shrub: Shrub that climbs up another plant
+        climber_tree: Tree that climbs up another plant
+        climber_vine: Vine (usually will refer to herbaceous climber, but not always) [DECLARE to always to herbaceous]
+        climber_vine_herbaceous: Vine, explicitly referring to herbareous taxa [MERGE with climber_vine]
+        climber_vine_woody: Vine whose stem is at least partially woody [CHANGE TO climber_woody]
+        climber_woody: Woody or thick (>2 cm) climbers with hooks, tendrils, adventitious roots, etc. 
+        primitive: includes club moss, selaginella [TAXONOMIC GROUP - maintain, for easy filtering]
+        fern: A group of vascular plants that reproduce via spores [TAXONOMIC GROUP - maintain, for easy filtering]
+        fern_tree: Tree fern [TAXONOMIC GROUP; replace with palmoid? Or assign as `fern palmoid`] 
+        cycad: Cycad [TAXONOMIC GROUP; divide into species with/without aerial stem; aerial species = Palmoid]
+        palm: Flowering plants in the family Arecaceae, most with large, compound evergreen leaves referred to as fronds [TAXONOMIC GROUP; replace with palmoid]
+        pandanus: Pandanus [TAXONOMIC GROUP; replace with palmoid]        
+        grass-tree: Term specific refers to members of the family Xanthorrhoaceae, monocots with a tree-like growth-form [TAXONOMIC GROUP; replace with palmoid] 
+        REMOVED_semiaquatic: A plant that grows partially submerged in water or spends part of its life growing in water.
+        REMOVED_aquatic: Grows primarily in water
+        REMOVED_aquatic_floating: Plant where most of the leaves are floating on water
+        REMOVED_aquatic_herb: Herb that grows primarily in water
+        REMOVED_aquatic_submerged: Plant where all the leaves are submerged in water 
+        REMOVED_climber_twiner: Climber that ascends by twining
+        REMOVED_climber_twiner_woody : Climber that ascends by twining and is explicitly indicated to be woody
+        REMOVED_climber_scrambler: Plant that climbs by scrambling
+        REMOVED_climber_palm: REPLACED with `climber_liana`
+        REMOVED_epiphyte: Plant that grows on top of another plant
+        REMOVED_epiphyte_herb: Herb that grows on top of another plant
+        REMOVED_epiphyte_shrub: Shrub that grows on top of another plant
+        REMOVED_epiphyte_tree: Tree that grows on top of another plant
+        REMOVED_epiphyte_woody: Woody epiphyte    
+        REMOVED_creeper: Creeper that roots along stems; move to growth habit; reassign as `herb`         
+        REMOVED_lithophyte: Plant that grows on a rock
+        REMOVED_prostrate_shrub: Woody plant that lies flat against the ground      
+        REMOVED_prostrate_herb: Herbaceous plant that lies flat against the ground
+        REMOVED_hemi-epiphyte: Plant that partially grows on top of another plant
+        REMOVED_hemi-epiphyte_shrub: Shrub that partially grows on top of another plant
+        REMOVED_hemi-epiphyte_tree: Tree that partially grows on top of another plant
+    stem_growth_habit:
+      description: Variable to indicate the growth habit of the stem, including generic descriptions of basic branching structure.
+      notes: .na
       type: categorical
-      label: plant growth medium
-      values:
-        epiphyte:
-        lithophyte:
-        terrestrial:
-        semi-aquatic: 
-        aquatic:
-        marine:
-        hemi-epiphyte:
+      label: Stem growth habit
+      allowed_values_levels:
+        caespitose: Multiple short-shoots arise from the base of the plant forming a dense cushion or dense cluster of bunches, as in a bunch-grass (synonym, cushion-forming, cespitose, mat-forming)
+        creeper: Stem that creeps along the ground, rooting at nodes. (synonym, repent)
+        decumbent: Plants whose bases lie flat on the ground, but whose tip grow upward. (synonym, ascending)
+        erect: Plants whose shoots grow upright.
+        hummock: Plant that grows as a dense mound, generally specically referring to the growth habit of species in the genera Triodia and Plechrachne.
+        prostrate: Plants that lie flat on the ground but does not root at nodes (synonym, procumbent, reclining, trailing)
+        rosette: Plants whose leaves radiate from a central point at or near ground level. (synonym, acaulescent)
+        climbing: Plant that grows upward by means of tendrils, petioles, or adventitious roots. (per Simpson...)
+        scandent: A plant stem that sprawls across other plants or objects, but lacks specialized climbing structures.(synonym, clambering, sprawling) - WHICH IS BEST "MAIN" TERM TO LIST?
+        scrambling: Plant stems that are too weak to support themselves, and instead lean on and are supported by host vegetation. There are no specialized structures employed.
+        twining: Stems or petioles which coil around a host plant, facilitating climbing.
+        rhizomatous: Plants with short horizontal underground stems from which shoots emerge.
+        stoloniferous: Plants with long horizontal branches either slightly belowground or aboveground, that root at their nodes or tips, producing new plants. (synonym, sarmentose)
+        floating: Plant where most of the leaves are floating on water.
+        submerged: Plant where most of the leaves are submerged under water.
+        tufted: Plant has a dense clump of leaves, either at the base of the plant or clusters of leaves growing close together higher on the plant. This term can refer to grasses, shrubs, or trees. [used for 2332 taxa]
+        dense: Plant with a high density of branches. [used for 861 taxa]
+        compact: Plant with closely packed branches. [used for 614 taxa]
+        bushy: Plant with much-branched branches. [used for 489 taxa] (synonym, shrubby)
+        open: Plant with an open architecture of branches. [used for 515 taxa]              
+        spindly: Plants with weak, skinny branches. [used for 348 taxa]
+    vine_climbing_mechanism:
+      description: Mechanisms plants use to climb, including both specialised leaf and stem adaptations and stem growth habits.
+      type: categorical
+      label: Mechanism vines use to climb
+      allowed_values_levels:
+        adventitious_roots: Roots arising from stem nodes which cling to a host plant.
+        hooks: Curved stem outgrowths which allow climbers to cling to a host plant.
+        scrambling: Plant stems that are too weak to support themselves, and instead lean on and are supported by host vegetation. There are no specialized structures employed.
+        spines: Straight stem outgrowths which allow climbers to cling to host plant.
+        tendrils: Modified stems, leaves or petioles which coil tightly, forming a specialized structure for climbing.
+        twining: Stems or petioles which coil around a host plant, facilitating climbing.
+    plant_growth_substrate:
+      description: Trait broadly indicating the habitat in which a plant grows, the substrate on which a plant grows, or its growth medium.
+      type: categorical
+      label: plant growth habitat
+      allowed_values_levels:
+        epiphyte: A plant that grows upon another plant.
+        lithophyte: A plant that grows upon a rock.
+        terrestrial: A plant that grows on land, and generally referencing a plant that grows in soil.
+        semiaquatic: A plant that grows partially submerged in water or spends part of its life growing in water.
+        aquatic: A plant that grows in water.
+        marine: A plant that grows in the sea.
+        hemiepiphyte: A plant that spends part of its life cycle as an epiphyte, growing upon another plant.
     plant_type_by_resource_use:
       description: Plants categories referencing their ability to tolerate/obtain water and/or salt in their environment
       type: categorical
@@ -2630,7 +2636,7 @@ traits:
       description: Storage organ
       type: categorical
       label: Storage organ, either for post-fire regeneration or general energy storage. Trait values include both generic terms and quite specific ones. See Pausus, Lamont et al. 2018, doi.org/10.1111/nph.14982 for trait values used and detailed desciptions of recolonization ability and level of fire protection provided by each regeneration strategy. See also the trait `bud_bank_location`.
-      values:      
+      allowed_values_levels:      
         bulb: Below ground storage organ derived from stem (and sometimes leaf) tissue.
         fleshy_underground_organ: Plants that use fleshy, generally underground organs (swellings) to regenerate; examples include corms, tubers, bulbs, and caudex
         lignotuber: Swollen woody structures are located at the transition between the stem base and root crown of woody shrubs, mallees and small trees, and are formed from stem tissues. Buds are located over the entire structure. No colonisation ability.
@@ -3682,17 +3688,6 @@ traits:
       label: Count of veins per distance
       allowed_values_min: 0.01
       allowed_values_max: 20
-    vine_climbing_mechanism:
-      description: Mechanism vines use to climb
-      type: categorical
-      label: Mechanism vines use to climb
-      allowed_values_levels:
-        adventitious_roots: roots arising from stem nodes which cling to host plant
-        hooks: Curved stem outgrowths which allow climbers to cling to host plant
-        scrambling: Plant parts supported by host vegetation but no specialized structures employed
-        spines: Straight stem outgrowths which allow climbers to cling to host plant
-        tendrils: Modified stems, leaves or petioles forming a specialized structure for climbing
-        twining: Stems or petioles which coil around host plants
     water_band_index:
       description: Water band index, the ratio of the reflectance at 970 nm / 900 nm, recorded from the spectro-radiometer.
       type: numeric

@@ -34,8 +34,12 @@ dataset:
         date = ifelse(site == "Gambubal","1993-01",date), 
         date = ifelse(site == "Coominya","1993",date),
         rownumber = row_number(),
-        plant_growth_form = ifelse(rownumber > 94, NA, plant_growth_form)
-      )
+        plant_growth_form = ifelse(rownumber > 94, NA, plant_growth_form),
+        plant_growth_substrate = NA_character_
+      ) %>%
+      move_values_to_new_trait(
+        "plant_growth_form", "plant_growth_substrate", "O (mistletoe)", "epiphyte", ""
+      )      
   '
   collection_date: date
   taxon_name: name_edited
@@ -137,6 +141,14 @@ traits:
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert knowledge or reference book
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
   entity_type: species
   value_type: mode
   basis_of_value: expert_score

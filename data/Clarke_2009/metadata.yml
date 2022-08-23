@@ -31,7 +31,8 @@ dataset:
         measurement_remarks = str_replace(measurement_remarks, "WH","wet heaths"),
         measurement_remarks = str_replace(measurement_remarks, "GW","grassy woodlands"),
         measurement_remarks = str_replace(measurement_remarks, "WSF","wet sclerophyll forest"),
-        measurement_remarks = str_replace(measurement_remarks, "DSF","dry sclerophyll forests")
+        measurement_remarks = str_replace(measurement_remarks, "DSF","dry sclerophyll forests"),
+        stem_growth_habit = ifelse(`Growth form` == "Twinner", "twining", NA)
       ) %>%
       group_by(Species) %>%
       mutate(observation = row_number()) %>%
@@ -237,6 +238,17 @@ traits:
     flora records and published records and summarized into seven groups corresponding
     to stem type and then height classes.
   life_stage: adult
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The growth form of all woody species was determined from field observations,
+    flora records and published records and summarized into seven groups corresponding
+    to stem type and then height classes.
+  life_stage: adult
 substitutions:
 - trait_name: plant_growth_form
   find: Tree
@@ -258,7 +270,7 @@ substitutions:
   replace: shrub
 - trait_name: plant_growth_form
   find: Twinner
-  replace: climber_twiner
+  replace: climber
 - trait_name: bud_bank_location
   find: stem_buds
   replace: epicormic_buds

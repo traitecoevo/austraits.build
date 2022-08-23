@@ -32,16 +32,21 @@ dataset:
         dispersal_appendage = NA_character_,
         dispersers = NA_character_,
         dispersal_unit = NA_character_,
+        plant_growth_substrate = NA_character_,
+        stem_growth_habit = NA_character_,
         seed_storage_location = ifelse(stringr::str_detect(Maximum_propagule_longevity,"soil"),"soil",NA),
-        seed_longevity_numeric = Maximum_propagule_longevity
+        seed_longevity_numeric = Maximum_propagule_longevity,
+        parasitic = ifelse(Growth_form == "hemiparasite or holoparasite", "parasitic", NA)
       ) %>%
       move_values_to_new_trait(
         "Fruit_type", "dispersal_appendage",
         c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
-        "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)", "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)"), 
+          "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)",
+          "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)"), 
         c("fleshy_reward", "wing_or_plume", "wing_or_plume"),
         c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
-          "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)", "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)")
+          "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)",
+          "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)")
       ) %>%
       move_values_to_new_trait(
         "Dispersal_mode","dispersers",
@@ -50,7 +55,13 @@ dataset:
         c("Insect","water","wind")
       ) %>%
       move_values_to_new_trait(
-        "Fruit_type", "dispersal_unit", "Spore", "spore", "Spore"
+        "Fruit_type", "dispersal_unit", "Spore", "spore", ""
+      ) %>%
+      move_values_to_new_trait(
+        "Growth_form", "plant_growth_substrate", "Epiphyte", "epiphyte", ""
+      ) %>%
+      move_values_to_new_trait(
+        "Growth_form", "stem_growth_habit", "scrambler", "scrambler", "climber"
       )
 '
   collection_date: 2005/2005
@@ -292,6 +303,22 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
 - var_in: Raunkiaer_life_form
   unit_in: .na
   trait_name: life_form
@@ -314,6 +341,14 @@ traits:
 - var_in: Clonality
   unit_in: .na
   trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -566,16 +601,13 @@ substitutions:
   replace: short_basal
 - trait_name: plant_growth_form
   find: hemiparasite or holoparasite
-  replace: parasite hemi-parasite
+  replace: .na
 - trait_name: plant_growth_form
   find: long basal
   replace: long_basal
 - trait_name: plant_growth_form
   find: semi basal
   replace: semi_basal
-- trait_name: plant_growth_form
-  find: scrambler
-  replace: climber_scrambler
 - trait_name: pollination_syndrome
   find: flies
   replace: fly

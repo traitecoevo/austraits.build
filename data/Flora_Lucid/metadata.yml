@@ -20,11 +20,29 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
+  custom_R_code:  '
+    data %>%
+      mutate(
+        growth_habit = stringr::str_replace(growth_habit, "spreading", "prostrate"),        
+        growth_habit = stringr::str_replace(growth_habit, "trailing", "prostrate"),        
+        growth_habit = stringr::str_replace(growth_habit, "procumbent", "prostrate"),        
+        growth_habit = stringr::str_replace(growth_habit, "sprawling", "scandent"),      
+        growth_habit = stringr::str_replace(growth_habit, "shrubby", "bushy"),        
+        growth_habit = stringr::str_replace(growth_habit, "cushion-forming", "caespitose"),    
+        growth_habit = stringr::str_replace(growth_habit, "mat_forming", "caespitose"),
+        growth_habit2 = ifelse(str_detect(plant_growth_form, "submerged"), "submerged", NA),
+        growth_habit = ifelse(is.na(growth_habit), growth_habit2, growth_habit),
+        growth_habit = ifelse(!is.na(growth_habit) & !is.na(growth_habit2), paste(growth_habit,growth_habit2),growth_habit),
+        growth_medium2 = ifelse(str_detect(plant_growth_form, "aquatic"), "aquatic", NA),
+        growth_medium = ifelse(is.na(growth_medium), growth_medium2, growth_medium),
+        growth_medium = ifelse(!is.na(growth_medium) & !is.na(growth_medium2),paste(growth_medium,growth_medium2),growth_medium)
+      )
+  '
   collection_date: unknown/2022
   taxon_name: taxon_name
   description: unknown
-  collection_type: unknown
-  sample_age_class: unknown
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: unknown
   original_file: unknown
   notes: unknown
@@ -41,7 +59,7 @@ traits:
   methods: unknown
 - var_in: growth_habit
   unit_in: .na
-  trait_name: growth_habit
+  trait_name: stem_growth_habit
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -73,7 +91,7 @@ traits:
   methods: unknown
 - var_in: growth_medium
   unit_in: .na
-  trait_name: plant_growth_medium
+  trait_name: plant_growth_substrate
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -87,7 +105,22 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-substitutions: .na
+substitutions:
+- trait_name: plant_growth_substrate
+  find: aquatic aquatic
+  replace: aquatic
+- trait_name: stem_growth_habit
+  find: submerged submerged
+  replace: submerged
+- trait_name: plant_growth_form
+  find: aquatic_submerged
+  replace: herb
+- trait_name: plant_growth_form
+  find: aquatic_herb aquatic_submerged
+  replace: herb
+- trait_name: plant_growth_form
+  find: aquatic_herb
+  replace: herb
 taxonomic_updates:
 - find: Abutilon sp  mataranka r m.barker 877
   replace: Abutilon sp. Mataranka (R.M.Barker 877)

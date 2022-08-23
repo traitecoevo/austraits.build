@@ -33,6 +33,16 @@ dataset:
         mutate(trait = "flowering_time", lookup_data = map_chr(months, 
             ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months);
 
+    growth_habit <-
+      data %>%
+        filter(lookup_data == "creeper rooting along stems") %>%
+        mutate(trait = "growth_habit", lookup_data = "creeper");
+    
+    clonal <-
+      data %>%
+        filter(lookup_data == "creeper rooting along stems") %>%
+        mutate(trait = "clonal_spread_mechanism", lookup_data = "aboveground_clonal");
+    
     collapsed <-
       data %>% 
         filter(!trait %in% c("fruiting","flowering month")) %>%
@@ -40,7 +50,7 @@ dataset:
           trait = ifelse(lookup_data == "prostrate", "growth_habit", trait),
           trait = ifelse(lookup_data == "climbing", "growth_habit", trait),
           trait = ifelse(lookup_data == "parasitic", "parasitic", trait),
-          trait = ifelse(lookup_data == "epiphytic", "growth_substrate", trait),
+          trait = ifelse(str_detect(lookup_data,"epiphytic"), "growth_substrate", trait),
           trait = ifelse(lookup_data == "aquatic", "growth_substrate", trait),
           trait = ifelse(trait == "special growth form", "growth form", trait)   
         ) %>%
@@ -53,7 +63,9 @@ dataset:
     bind_rows(
       collapsed,
       fruiting,
-      flowering
+      flowering,
+      growth_habit,
+      clonal
     )
   '
   collection_date: unknown/2014
@@ -80,6 +92,22 @@ traits:
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: clonal_spread_mechanism
+  unit_in: .na
+  trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -215,7 +243,7 @@ traits:
   methods: unknown
 - var_in: growth_habit
   unit_in: .na
-  trait_name: growth_habit
+  trait_name: stem_growth_habit
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -223,7 +251,7 @@ traits:
   methods: unknown
 - var_in: growth_substrate
   unit_in: .na
-  trait_name: growth_substrate
+  trait_name: plant_growth_substrate
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -256,11 +284,11 @@ traits:
 substitutions:
 - trait_name: plant_growth_form
   find: herb creeper rooting along stems
-  replace: herb creeper
+  replace: herb
 - trait_name: plant_growth_form
   find: creeper rooting along stems
-  replace: creeper
-- trait_name: plant_growth_form
+  replace: herb
+- trait_name: plant_growth_substrate
   find: epiphytic
   replace: epiphyte
 - trait_name: plant_growth_form
@@ -809,7 +837,7 @@ substitutions:
 - trait_name: life_history
   find: short-lived long-lived
   replace: short_lived long_lived
-- trait_name: plant_growth_form
+- trait_name: plant_growth_substrate
   find: epiphytic parasitic
   replace: epiphyte
 taxonomic_updates:

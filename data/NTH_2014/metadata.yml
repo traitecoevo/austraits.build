@@ -24,7 +24,7 @@ dataset:
         leaf_type = ifelse(`leaf type` == "articles", "article", NA), 
         `leaf type` = ifelse(`leaf type` == "articles", NA, `leaf type`), 
         leaf_lobed = ifelse(`leaf type` == "l", "lobed", NA), 
-        GF = ifelse(aquatic %in% c("yes","y"),"aquatic_herb", GF),
+        GF = ifelse(aquatic %in% c("yes","y"),"herb", GF),
         GF = ifelse(succulent %in% c("yes","y"),"succulent_short herb", GF),
         parasitic = ifelse(GF=="parasite","parasitic",NA),
         fruit_type = NA,
@@ -64,6 +64,14 @@ traits:
 - var_in: GF
   unit_in: .na
   trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: aquatic
+  unit_in: .na
+  trait_name: plant_growth_substrate
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -275,6 +283,15 @@ substitutions:
 - trait_name: leaf_phenology
   find: e
   replace: evergreen
+- trait_name: plant_growth_substrate
+  find: 'y'
+  replace: aquatic
+- trait_name: plant_growth_substrate
+  find: yes
+  replace: aquatic
+- trait_name: plant_growth_form
+  find: parasite
+  replace: .na
 - trait_name: plant_growth_form
   find: liana
   replace: climber_liana
@@ -283,7 +300,7 @@ substitutions:
   replace: climber_vine
 - trait_name: plant_growth_form
   find: vine/shrub
-  replace: climber_shrub
+  replace: climber_woody shrub
 - trait_name: plant_growth_form
   find: forb
   replace: herb

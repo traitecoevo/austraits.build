@@ -27,7 +27,8 @@ dataset:
                       "lobed", "entire"), 
         `leaf shape` = ifelse(`leaf shape` == "lobed", NA, `leaf shape`),
         `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf type`),
-        parasitic = ifelse(`growth form`=="parasitic","parasitic",NA)
+        parasitic = ifelse(`growth form`=="parasitic","parasitic",NA),
+        plant_growth_substrate = ifelse(`growth form`=="aquatic","aquatic",NA)
       )
     %>% mutate_at(vars(`min leaf length (mm)`,`max leaf length (mm)`,
                       `min leaf width (mm)`,`max leaf width (mm)`), ~na_if(.,0)) %>% 
@@ -53,6 +54,14 @@ traits:
   replicates: .na
   methods: unknown
 - var_in: growth form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_growth_substrate
   unit_in: .na
   trait_name: plant_growth_form
   entity_type: species
@@ -145,11 +154,14 @@ substitutions:
   find: vine
   replace: climber_vine
 - trait_name: plant_growth_form
+  find: aquatic
+  replace: .na
+- trait_name: plant_growth_form
   find: grass
   replace: graminoid
 - trait_name: plant_growth_form
   find: parasitic
-  replace: parasite
+  replace: .na
 - trait_name: leaf_width
   find: '`'
   replace: '0'
