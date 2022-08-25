@@ -54,47 +54,39 @@ metadata_create_template <- function(dataset_id,
     tmp <- menu(c("Long", "Wide"), title="Is the data long or wide format?")
     data_is_long_format <- ifelse(tmp == 1, TRUE, FALSE)
     
+    out$dataset$data_is_long_format <- data_is_long_format
+
     data <- readr::read_csv(paste0(path, "/data.csv"), col_types = cols())
     
     # Setup config and select columns as appropriate
-    config <- list(data_is_long_format = data_is_long_format, 
-                   custom_R_code = NA,
-                   variable_match = list())
-    
-    v1 <- c("taxon_name")
-    v2 <- c("site_name", "context_name", "individual_id",  "collection_date")
-    
     if(data_is_long_format) {
       v1 <- c("taxon_name", "trait_name", "value")
-    }
-    if(!data_is_long_format)
+    } else{
       out$dataset[c("trait_name", "value")] <- NULL
+      v1 <- c("taxon_name")
+    }
     
     for(v in v1) {      
-      config[["variable_match"]][[v]] <- metadata_user_select_column(v, names(data))
+      out[["dataset"]][[v]] <- metadata_user_select_column(v, names(data))
     }
     
+     v2 <- c("site_name", "context_name", "individual_id", "collection_date")
+
     for(v in v2) {
       tmp <- metadata_user_select_column(v, c(NA, names(data)))
       if(!is.na(tmp)) {
-        config[["variable_match"]][[v]] <- tmp
+        out[["dataset"]][[v]] <- tmp
       }
       if(v == "collection_date" & is.na(tmp)){
-        collection_date <- readline(prompt="Enter collection_date range separated by a '/': ")
-        config[["variable_match"]][[v]] <- collection_date
+        collection_date <- readline(prompt="Enter collection_date range in format '2007/2009': ")
+        out[["dataset"]][[v]] <- collection_date
       }
     }
+
+    if(data_is_long_format) {
     
-    for(v in v1) {
-      out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
     }
-    
-    for(v in v2) {
-      out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
-    }
-    
-    out[["dataset"]][["data_is_long_format"]] <- config[["data_is_long_format"]]
-    out[["dataset"]][["custom_R_code"]] <- config[["custom_R_code"]]
+
   }
 
   write_metadata(out, paste0(path, "/metadata.yml"))
@@ -113,7 +105,7 @@ metadata_create_template <- function(dataset_id,
 metadata_user_select_column <- function(column, choices) {
   
   tmp <- utils::menu(choices, title= sprintf("Select column for `%s`", column))
-  
+
   choices[tmp]
 }
 
@@ -190,7 +182,7 @@ metadata_add_traits <- function(dataset_id) {
   if(!metadata$dataset$data_is_long_format) {
     v <- names(data)
   } else {
-    v <- unique(data[[metadata$dataset$variable_match$trait_name]])
+    v <- unique(data[[metadata$dataset$trait_name]])
   }
 
   var_in <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct traits in ", dataset_id), v)
