@@ -75,7 +75,7 @@ metadata_create_template <- function(dataset_id,
     }
     
     for(v in v2) {
-      tmp <- metadata_user_select_column(v, c(names(data), NA))
+      tmp <- metadata_user_select_column(v, c(NA, names(data)))
       if(!is.na(tmp)) {
         config[["variable_match"]][[v]] <- tmp
       }
@@ -111,7 +111,9 @@ metadata_create_template <- function(dataset_id,
 #' @param choices the options that can be selected from
 #'
 metadata_user_select_column <- function(column, choices) {
+  
   tmp <- utils::menu(choices, title= sprintf("Select column for `%s`", column))
+  
   choices[tmp]
 }
 
