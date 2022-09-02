@@ -265,7 +265,11 @@ format_min_max_as_range <- function(data, min_column, max_column, range_column, 
 #' }
 move_values_to_new_trait <- function(data, original_trait, new_trait, original_values, values_for_new_trait, values_to_keep) {
   
-#  data[[original_trait]] = NA_character_
+    #if (!new_trait %in% colnames(data)){
+    #  data[[new_trait]] = NA_character_
+    #}
+
+    #data[[original_trait]] = str_to_lower(data[[original_trait]])
 
        for (j in 1:length(original_values)) {
             
@@ -276,7 +280,7 @@ move_values_to_new_trait <- function(data, original_trait, new_trait, original_v
             data
        }
          
-  data[[original_trait]] = ifelse(data[[original_trait]] == "", NA, data[[original_trait]])
+  data = data %>% mutate_all(na_if,"")
   
   return(data)
 

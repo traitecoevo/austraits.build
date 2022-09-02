@@ -1279,14 +1279,7 @@ traits:
       units: pg
       label: Plant genome size
       allowed_values_min: 0.5
-      allowed_values_max: 100.0
-    glaucous:
-      description: Variable indicating if a plant's leaves are glaucous or not
-      type: categorical
-      label: Glaucous
-      allowed_values_levels:
-        '0': not glaucous
-        '1': glaucous
+      allowed_values_max: 100.0 
     growth_habit:
       description: Variable that defines a combination of growth habit and plant vegetative reproductive potential
       type: categorical
@@ -1361,14 +1354,29 @@ traits:
         amphibious_fluctuation_responders_plastic: Species which germinate in flooded conditions, grow in both flooded and damp conditions, reproduce above the surface of the water, and which have morphological plasticity (e.g. heterophylly) in response to water-level variation. (Morphologically plastic species; ARp)
         amphibious_fluctuation_responders_floating: Species which germinate in flooded conditions, grow in both flooded and damp conditions, reproduce above the surface of the water, and which have floating leaves when inundated. (Species with floating leaves; ARf)
         amphibious: Species which germinate in damp or flooded conditions and can grow in or our of water.
-        submerged: Species which germinate, grow and reproduce underwater. (S)
-    leaf_angle:
-      description: Leaf angle, relative to horizontal
+        submerged: Species which germinate, grow and reproduce underwater. (S
+    leaf_inclination_angle:
+      description: The inclination angle of the upper (adaxial) leaf lamina surface relative to a horizontal plane, such that a leaf surface facing the solar zenith has an angle of 0.
       type: numeric
       units: degrees
-      label: Leaf angle, relative to horizontal
+      label: Leaf inclination angle, relative to horizontal
       allowed_values_min: -180
       allowed_values_max: 180
+    leaf_axil_angle:
+      description: The angle between a shoot axis and a leaf that branches from the shoot axis.
+      type: numeric
+      units: degrees
+      label: Angle between a leaf and stem
+      allowed_values_min: -180
+      allowed_values_max: 180
+    leaf_pendulousness:
+      description: Binary variable describing whether or not leaves are pendulous, hanging loosely downward and possessing the ability to flutter. 
+      notes: This is a binary categorical trait, scoring whether or not leaves are pendulous and therefore hanging loosely and able to flutter. Two additional traits, `leaf_inclination_angle` and `leaf_axil_angle` document the actual angle of the leaf lamina relative to, respectively, the solar zenith and the stem.
+      type: categorical
+      label: Pendulous leaves 
+      allowed_values_levels:
+        not_pendulous: Leaves are not pendulous.
+        pendulous: Leaves are pendulous.
     leaf_curliness:
       description: Maximum absolute height of a leaf when positioned on a flat surface. A measure of how 3-dimensional a leaf is (versus planar).
       type: numeric
@@ -1664,20 +1672,37 @@ traits:
       label: Leaf fresh mass per leaf area
       allowed_values_min: 200
       allowed_values_max: 2000.0
-    leaf_hairs_adult:
-      description: Binary variable describing whether or not adult leaves have hairs
+    leaf_glaucousness:
+      description: Variable describing whether or not mature adult phase leaves have a glaucous appearance, the colour due to being covered with a smooth, usually whitish to bluish epicuticular wax that can easily be rubbed off.
+      notes: The accompanying methods should specify if the trait was scored on the upper (adaxial) or lower (abaxial) surface of the leaf; in the absence of any notes, it is assumed the trait was scored on the upper (adaxial) leaf surface.
+      type: categorical
+      label: Whether mature leaves are glaucous
+      allowed_value_levels:
+        glaucous: Mature (fully expanded) leaves on adult plants have a waxy coating, giving them a glaucous appearance.
+        not_glaucous: Mature (fully expanded) leaves on adult plants do not have a glaucous appearance.
+    leaf_hairs_adult_leaves:
+      description: Variable describing whether or not mature adult phase leaves on adult plants have hairs (trichomes).
       type: categorical
       label: Presence of hairs on adult leaves
       allowed_values_levels:
-        '0': leaves on adult plants do not have hairs
-        '1': leaves on adult plants do have hairs
-    leaf_hairs_juvenile:
-      description: Binary variable describing whether or not juvenile leaves have hairs
+        glabrous: Mature (fully expanded) leaves on adult plants do not have hairs (trichomes).
+        hairy: Mature (fully expanded) leaves on adult plants have hairs (trichomes).
+    leaf_hairs_immature_leaves:
+      description: Variable describing whether or not immature (still expanding) adult phase leaves on adult plants have hairs (trichomes).
+      notes: This trait captures the presence or absence of hairs on immature (still expanding) leaves on adult plants. The accompanying methods should specify if the trait was scored on the upper (adaxial) or lower (abaxial) surface of the leaf; in the absence of any notes, it is assumed the trait was scored on the upper (adaxial) leaf surface.
       type: categorical
-      label: Presence of hairs on juvenile leaves
-      allowed_values_levels:
-        '0': leaves on juvenile plants do not have hairs
-        '1': leaves on juvenile plants do have hairs
+      label: Presence of hairs on immature (still expanding) leaves
+      allowed_value_levels:
+        glabrous: Immature (still expanding) leaves do not have hairs (trichomes).
+        hairy: Immature (still expanding) leaves have hairs (trichomes).
+    leaf_hairs_juvenile_leaves:
+      description: Variable describing whether or not juvenile phase leaves (on adult or juvenile plants) have hairs (trichomes).
+      notes: This trait captures the presence or absence of hairs on fully-expanded juvenile phase leaves. It is best practice for the methods to specify whether these leaves were sampled from adult or juvenile plants. The accompanying methods should also specify if the trait was scored on the upper (adaxial) or lower (abaxial) surface of the leaf; in the absence of any notes, it is assumed the trait was scored on the upper (adaxial) leaf surface.
+      type: categorical
+      label: Presence of hairs on juvenile phase leaves
+      allowed_value_levels:
+        glabrous: Juvenile phase leaves do not have hairs (trichomes).
+        hairy: Juvenile phase leaves have hairs (trichomes).
     leaf_hydraulic_conductivity:
       description: Measure of how efficiently water is transported through the leaf, determined as the ratio of water flow rate through the leaf to the difference in water potential across the leaf, standardised to leaf area.
       type: numeric
@@ -2403,13 +2428,6 @@ traits:
         not_parasitic: Plant is not parasitic
         root_parasitic: Plant that is a root parasite
         stem_parasitic: Plant that is a stem parasite
-    pendulous_leaves:
-      description: Binary variable describing whether or not leaves are pendulous
-      type: categorical
-      label: Pendulous leaves
-      allowed_values_levels:
-        not_pendulous: leaves are not pendulous
-        pendulous: leaves are pendulous
     photosynthetic_bark:
       description: Binary variable indicating whether or not bark is photosynthetic
       type: categorical
@@ -2472,14 +2490,6 @@ traits:
       label: Leaf photosynthesis rate per unit leaf dry mass at saturating light conditions
       allowed_values_min: 0.001
       allowed_values_max: 1.0
-    physical_defence:
-      description: Physical defences
-      type: categorical
-      label: Physical defences
-      allowed_values_levels:
-        no_physical_defence:	Neither spines nor stinging hairs
-        spines_or_thorns: Plant has spines or thorns
-        stinging_or_irritant_hairs:	Stinging or irritant hairs
     plant_growth_form:
       description: Different growth forms displayed by plants, including both standard plant growth form descriptors (tree, shrub, etc.) and specific plant characteristics (i.e. parasitic)
       type: categorical
@@ -3355,18 +3365,30 @@ traits:
       label: Taproot length per unit root dry mass (specific tap root length, STRL)
       allowed_values_min: 0.5
       allowed_values_max: 5000
-    spinescence:
+    plant_physical_defence_structures:
+      description: The presence (or explicit absence) of specific physical defence structures on a plant, including spines, thorns, prickles, sharp-tipped leaves, and stinging hairs.
+      notes: This trait identifies explicit physical defence structures on a plant. For a curated trait identifying the degree of defence afforded to plants, see `plant_spinescence`, with values defined by Pérez-Harguindeguy et al. 2013 (doi:10.1071/BT12225). 
+      type: categorical
+      label: Spinescence
+      allowed_values_levels:
+        no_physical_defence_structures: Plant that lacks a physical defence structure.
+        sharp_pointed_defence: Plant that has either spines, thorns, or prickles.
+        prickle: A sharp-tipped outgrowth from the epidermis, bark or other plant organ that is explicitly not a spine (modified leaf) or thorn (modified stem).
+        pungent_leaf_apex: A sharp-tipped leaf.
+        spine: A sharp-pointed structure, which is a modified leaf or leaf part, including petioles, midribs, secondary veins, leaflets, or stipules.
+        stinging_or_irritant_hairs: Trichomes that string or irritate, of by injecting a toxin.
+        thorn: A sharp-pointed, stiff, woody modified stem.
+    plant_spinescence:
       description: Degree to which a plant is defended by spines, thorns and/or prickles; definition and trait values based on Perez-Harguindeguy 2016.
       type: categorical
       label: Spinescence
       allowed_values_levels:
-        0_no_spines: (0) No spines.
-        1_low_density_soft_spines: (1) Low or very local density of soft spines <5mm long; plant may sting or prickle when hit carelessly, but not impart strong pain.
-        2_high_density_soft_spines: (2) High density of soft spines, intermediate density of spines of intermediate hardness, or low density of hard, sharp spines >5mm long; plant causes actual pain when hit carelessly.
-        3_high_density_hard_spines_to_5mm: (3) Intermediate or high density of hard, sharp spines >5mm long; plant causes strong pain when hit carelessly.
-        4_high_density_hard_spines_to_20mm: (4) Intermediate or high density of hard, sharp spines >20mm long; plant may cause significant wounds when hit carelessly.
-        5_high_density_hard_spines_to_100mm: (5) Intermediate or high density of hard, sharp spines >100mm long; plant is dangerous to careless large mammals, including humans.
-        spines_present: spines present, details not given
+        0_no_spines: No spines (level 0).
+        1_low_density_soft_spines: Low or very local density of soft spines <5mm long; plant may sting or prickle when hit carelessly, but not impart strong pain (level 1).
+        2_high_density_soft_spines: High density of soft spines, intermediate density of spines of intermediate hardness, or low density of hard, sharp spines >5mm long; plant causes actual pain when hit carelessly (level 2).
+        3_high_density_hard_spines_to_5mm: Intermediate or high density of hard, sharp spines >5mm long; plant causes strong pain when hit carelessly (level 3).
+        4_high_density_hard_spines_to_20mm: Intermediate or high density of hard, sharp spines >20mm long; plant may cause significant wounds when hit carelessly (level 4).
+        5_high_density_hard_spines_to_100mm: Intermediate or high density of hard, sharp spines >100mm long; plant is dangerous to careless large mammals, including humans (level 5).
     spongy_mesophyll_thickness:
       description: Thickness of the spongy mesophyll cells
       type: numeric
@@ -3674,8 +3696,9 @@ traits:
       label: Fraction of wood comprised of tracheids
       allowed_values_min: 0.0
       allowed_values_max: 1.0
-    vein_angle_secondary:
-      description: Angle of secondary veins
+    leaf_vein_angle_secondary:
+      description: Angle between a leaf's and secondary vein and its primary vein (midrib).
+      notes: For a palmate leaf, there are several primary veins radiating from a common point, with secondary veins branching off each primary vein.
       type: numeric
       units: angle
       label: Angle of secondary veins
@@ -3688,11 +3711,20 @@ traits:
       label: Count of veins per distance
       allowed_values_min: 0.01
       allowed_values_max: 20
-    vein_density:
-      description: Length of minor veins per unit leaf area
+    leaf_total_vein_density:
+      description: The length of all minor and major leaf lamina veins per unit leaf area.
+      notes: This trait records the length of all orders of leaf lamina veins, while the trait `leaf_major_vein_density` records only the length of major veins (primary, secondary and tertiary veins).
       type: numeric
       units: mm/mm2
-      label: Length of minor veins per unit leaf area
+      label: Length of all minor and major leaf lamina veins per unit area.
+      allowed_values_min: 0.01
+      allowed_values_max: 20
+    leaf_major_vein_density:
+      description: The length of major leaf lamina veins per unit leaf area, where primary, secondary and tertiary leaf lamina veins are considered `major` veins.
+      notes: This trait records only the length of major veins (primary, secondary and tertiary veins), while the trait `leaf_total_vein_density` records the length of all orders of leaf lamina veins.
+      type: numeric
+      units: mm/mm2
+      label: Length of all minor and major leaf lamina veins per unit area.
       allowed_values_min: 0.01
       allowed_values_max: 20
     vine_climbing_mechanism:
