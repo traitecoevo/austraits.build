@@ -52,8 +52,8 @@ dataset:
           trait = ifelse(lookup_data == "parasitic", "parasitic", trait),
           trait = ifelse(str_detect(lookup_data,"epiphytic"), "growth_substrate", trait),
           trait = ifelse(lookup_data == "aquatic", "growth_substrate", trait),
-          trait = ifelse(trait == "special growth form", "growth form", trait)   
-        ) %>%
+          trait = ifelse(trait == "special growth form", "growth form", trait)
+        ) %>%   
         select(species, trait, units, lookup_data) %>%
         group_by(species, trait, units) %>% 
         mutate(lookup_data = paste0(lookup_data, collapse = " ")) %>% 
@@ -100,6 +100,14 @@ traits:
 - var_in: clonal_spread_mechanism
   unit_in: .na
   trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: vegetative_reproduction_ability
+  unit_in: .na
+  trait_name: vegetative_reproduction_ability
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -302,7 +310,13 @@ substitutions:
   replace: lobed
 - trait_name: life_history
   find: short-lived
-  replace: short_lived
+  replace: short_lived_perennial
+- trait_name: life_history
+  find: long_lived
+  replace: perennial
+- trait_name: life_history
+  find: indefinite
+  replace: perennial
 - trait_name: leaf_compoundness
   find: simple or appearing so
   replace: simple
@@ -809,34 +823,34 @@ substitutions:
   replace: reduced_to_scales
 - trait_name: life_history
   find: long-lived
-  replace: long_lived
-- trait_name: life_history
-  find: short-lived
-  replace: short_lived
+  replace: perennial
 - trait_name: vegetative_reproduction_ability
   find: not vegetative
   replace: not_vegetative
 - trait_name: life_history
   find: annual biennial short-lived
-  replace: annual biennial short_lived
+  replace: annual biennial short_lived_perennial
 - trait_name: life_history
   find: annual perennial short-lived
-  replace: annual perennial short_lived
+  replace: annual perennial short_lived_perennial
 - trait_name: life_history
   find: biennial short-lived
-  replace: biennial short_lived
+  replace: biennial short_lived_perennial
 - trait_name: life_history
   find: perennial biennial short-lived
-  replace: perennial biennial short_lived
+  replace: perennial biennial short_lived_perennial
+- trait_name: life_history
+  find: perennial indefinite
+  replace: perennial
 - trait_name: life_history
   find: perennial long-lived
-  replace: perennial long_lived
+  replace: perennial
 - trait_name: life_history
   find: perennial short-lived
-  replace: perennial short_lived
+  replace: perennial short_lived_perennial
 - trait_name: life_history
   find: short-lived long-lived
-  replace: short_lived long_lived
+  replace: short_lived_perennial perennial
 - trait_name: plant_growth_substrate
   find: epiphytic parasitic
   replace: epiphyte

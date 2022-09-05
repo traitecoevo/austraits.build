@@ -28,12 +28,19 @@ dataset:
         GF = ifelse(succulent %in% c("yes","y"),"succulent_short herb", GF),
         parasitic = ifelse(GF=="parasite","parasitic",NA),
         fruit_type = NA,
+        plant_succulence = NA
       ) %>%
       move_values_to_new_trait(
         "dispersal appendage", "fruit_type", 
         c("drupe", "samara"),
         c("drupe", "samara"),
         c(" ","wings")
+      ) %>%
+            move_values_to_new_trait(
+        "GF", "plant_succulence",
+        c("succulent_short herb"),
+        c("succulent"),
+        c("succulent_short herb")
       ) %>%
       separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>% 
       separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
@@ -261,6 +268,14 @@ traits:
   basis_of_value: expert_score
   replicates: unknown
   methods: unknown
+- var_in: plant_succulence
+  unit_in: .na
+  trait_name: plant_succulence
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: unknown
+  methods: unknown
 substitutions:
 - trait_name: glaucous
   find: .na
@@ -292,6 +307,9 @@ substitutions:
 - trait_name: plant_growth_form
   find: parasite
   replace: .na
+- trait_name: plant_growth_form
+  find: succulent_short herb
+  replace: herb
 - trait_name: plant_growth_form
   find: liana
   replace: climber_liana
