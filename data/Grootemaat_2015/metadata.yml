@@ -51,21 +51,14 @@ dataset:
                 ~ replace(.x, duplicated(.x),NA)) %>%
       ungroup() %>%
       mutate(
-        method_number = ifelse(material == "FRESH",1,NA),
-        method_number = ifelse(material == "DRIED",2,method_number),        
-        method_number = ifelse(material == "SENESCED",3,method_number),
-        measurement_remarks = ifelse(material == "FRESH","fresh leaves (indicating amount of leaf moisture)", NA),
-        measurement_remarks = ifelse(material == "DRIED","dry leaves (indicating amount of leaf moisture)", measurement_remarks),
-        measurement_remarks = ifelse(material == "SENESCED","senesced leaves (indicating amount of leaf moisture)", measurement_remarks),
         row_number = row_number(),
-        observation_number = ifelse(row_number == 372, 2, 1)
+        `tannin (%mass)` = ifelse(row_number == 372, NA, `tannin (%mass)`),        
+        `tannin (%mass)` = ifelse(row_number == 373, NA, `tannin (%mass)`)
       )
   '
   collection_date: 2012/2012
   taxon_name: taxon
   site_name: site_name
-  measurement_remarks: measurement_remarks
-  method_number: method_number
   description: The aim of this study was twofold, (i) to determine which morphological
     and chemical leaf traits drive flammability and (ii) to determine whether different
     (combinations of) morphological and chemical leaf traits drive interspecific variation
@@ -160,7 +153,20 @@ sites:
     soil C, total (%): 0.67
     soil cation exchange capacity (meq/kg): 38.7
     geology (stratigraphic map unit): Loamy red sand (Quaternary dune systems)
-contexts: .na
+contexts:
+  leaf moisture status:
+    var_in: material
+    category: method
+    values:
+    - find: FRESH
+      replace: fresh leaves
+      description: fresh leaves, indicating high leaf moisture level
+    - find: DRIED
+      replace: dried leaves
+      description: dry leaves, indicating low leaf moisture level
+    - find: SENESCED
+      replace: senesced leaves
+      description: senesced leaves, indicating low leaf moisture level
 traits:
 - var_in: length (mm)
   unit_in: mm

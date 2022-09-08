@@ -25,19 +25,15 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>% 
-      mutate(site_name = "Hawkesbury Forest Experiment site") %>% 
-      mutate(Date = Date %>% mdy()) %>%
-      arrange(Date) %>%
-      group_by(Chamber) %>%
-        mutate(observation = dplyr::row_number()) %>%
-      ungroup()
+      mutate(
+        site_name = "Hawkesbury Forest Experiment site",
+        Date = Date %>% mdy()
+      )
   '
   collection_date: Date
   taxon_name: Species
   individual_id: Chamber
-  observation_number: observation
   site_name: site_name
-  context_name: context
   description: An experiment to investigate where Eucalyptus globulus, a widely planted
     plantation species, would show high potential for acclimation of photosynthetic
     traits across a wide range of growth conditions, including elevated [CO2] and
@@ -123,66 +119,49 @@ sites:
     longitude (deg): 150.7410417
     description: tall closed tree chambers
 contexts:
-  ambient_temp_and_enriched_CO2_treatment_and_measured_in_AUG:
-    sampling season: August (late winter)
-    CO2 treatment: 640 ppm (elevated; 240 ppm above ambient) [manipulated]
-    temperature treatment: ambient (plants grown at ambient temperatures; Jan average
-      max = 29.4 dec C / July average min = 3.2 dec C) [manipulated]
-  ambient_temp_and_enriched_CO2_treatment_and_measured_in_DEC:
-    CO2 treatment: 640 ppm (elevated; 240 ppm above ambient) [manipulated]
-    temperature treatment: ambient (plants grown at ambient temperatures; Jan average
-      max = 29.4 dec C / July average min = 3.2 dec C) [manipulated]
-    sampling season: December (early summer)
-  ambient_temp_and_enriched_CO2_treatment_and_measured_in_FEB:
-    CO2 treatment: 640 ppm (elevated; 240 ppm above ambient) [manipulated]
-    temperature treatment: ambient (plants grown at ambient temperatures; Jan average
-      max = 29.4 dec C / July average min = 3.2 dec C) [manipulated]
-    sampling season: February (late summer)
-  ambient_temp_and_ambient_CO2_treatment_and_measured_in_AUG:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (plants grown at ambient temperatures; Jan average
-      max = 29.4 dec C / July average min = 3.2 dec C) [manipulated]
-    sampling season: August (late winter)
-  ambient_temp_and_ambient_CO2_treatment_and_measured_in_DEC:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (plants grown at ambient temperatures; Jan average
-      max = 29.4 dec C / July average min = 3.2 dec C) [manipulated]
-    sampling season: December (early summer)
-  ambient_temp_and_ambient_CO2_treatment_and_measured_in_FEB:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (plants grown at ambient temperatures; Jan average
-      max = 29.4 dec C / July average min = 3.2 dec C) [manipulated]
-    sampling season: February (late summer) [fieldl]
-  elevated_temp_and_enriched_CO2_treatment_and_measured_in_AUG:
-    CO2 treatment: 640 ppm (elevated; 240 ppm above ambient) [manipulated]
-    temperature treatment: elevated (plants grown 3 deg C above ambient temperatures)
-      [manipulated]
-    sampling season: August (late winter)
-  elevated_temp_and_enriched_CO2_treatment_and_measured_in_DEC:
-    CO2 treatment: 640 ppm (elevated; 240 ppm above ambient) [manipulated]
-    temperature treatment: elevated (plants grown 3 deg C above ambient temperatures)
-      [manipulated]
-    sampling season: December (early summer)
-  elevated_temp_and_enriched_CO2_treatment_and_measured_in_FEB:
-    CO2 treatment: 640 ppm (elevated; 240 ppm above ambient) [manipulated]
-    temperature treatment: elevated (plants grown 3 deg C above ambient temperatures)
-      [manipulated]
-    sampling season: February (late summer)
-  elevated_temp_and_ambient_CO2_treatment_and_measured_in_AUG:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (plants grown 3 deg C above ambient temperatures)
-      [manipulated]
-    sampling season: August (late winter)
-  elevated_temp_and_ambient_CO2_treatment_and_measured_in_DEC:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (plants grown 3 deg C above ambient temperatures)
-      [manipulated]
-    sampling season: December (early summer)
-  elevated_temp_and_ambient_CO2_treatment_and_measured_in_FEB:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (plants grown 3 deg C above ambient temperatures)
-      [manipulated]
-    sampling season: February (late summer)
+  sampling season:
+    var_in: month 
+    category: observation
+    values:
+    - find: AUG
+      replace: August
+      description: August (late winter)
+    - find: DEC
+      replace: December
+      description: December (early summer)
+    - find: FEB
+      replace: February
+      description: February (late summer)
+  temperature treatment:
+    var_in: Temp-trt 
+    category: treatment
+    value:
+    - find: ambient
+      replace: ambient
+      description: plants grown at ambient temperatures; Jan average max = 29.4 dec C / July average min = 3.2 dec C
+    - find: elevated
+      replace: elevated
+      description: plants grown 3 deg C above ambient temperatures
+  CO2 treatment:
+    var_in: Treatment 
+    category: treatment
+    value: 
+    - find: 0C
+      replace: 400 ppm
+      description: ambient CO2 (400 ppm)
+    - find: '+C'
+      replace: 640 ppm
+      description: elevated CO2 (640 ppm); 240 ppm above ambient
+  measurement temperature:
+    var_in: method_context
+    category: method
+    value: 
+    - find: Measurement made at 20°C
+      replace: 20°C
+      description: Measurement made at 20°C
+    - find: Measurement made at 25°C
+      replace: 25°C
+      description: Measurement made at 25°C
 traits:
 - var_in: Vcmax
   unit_in: umol/m2/s
@@ -191,8 +170,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: Maximum carboxylation rate in umol m-2 s-1 at 20°C 
+  method_context: Measurement made at 20°C
   methods: &Jmax_per_area_method Controlled photosynthetic CO2 response curve measurements were made using
     Li-Cor 6400 portable infrared gas analysers (LiCor Inc., Lincoln, NE, USA). CO2
     response curves of net CO2 assimilation (Anet) were developed at a constant temperature
@@ -235,8 +213,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: Measurement made at 20°C 
+  method_context: Measurement made at 20°C 
   methods: &respiration_method To determine the temperature dependence of the CO2 compensation point in
     the absence of daylight respiration (U*), measurements of the initial slope from
     Anet-Ci response curves at different PFDs were conducted on a single leaf at four
@@ -423,8 +400,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: Maximum carboxylation rate in umol m-2 s-1 at 20°C 
+  method_context: Measurement made at 20°C 
   methods: *Jmax_per_area_method
 - var_in: Jmax25
   unit_in: umol/m2/s
@@ -433,8 +409,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: Maximum electron transport rate in umol m-2 s-1 at 25°C 
+  method_context: Measurement made at 25°C
   methods: *Jmax_per_area_method
 - var_in: Vcmax25
   unit_in: umol/m2/s
@@ -442,9 +417,8 @@ traits:
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
-  replicates: 1
-  method_number: 2
-  measurement_remarks: Maximum carboxylation rate in umol m-2 s-1 at 25°C 
+  replicates: 1  
+  method_context: Measurement made at 25°C
   methods: *Jmax_per_area_method
 - var_in: Rd25
   unit_in: neg_umolCO2/m2/s
@@ -453,8 +427,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: Measurement made at 25°C 
+  method_context: Measurement made at 25°C 
   methods: *respiration_method
 substitutions: .na
 taxonomic_updates: .na
