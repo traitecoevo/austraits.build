@@ -26,16 +26,25 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(leaf_dry_matter_content = dry_weight_g/fresh_weight_g, leaf_water_content_per_saturated_mass = water_content_g/turgid_weight_g) %>% mutate(site_name = "Australian National University glasshouse") %>% mutate_at(vars("LMR","ABG_BG"), ~na_if(.,0)) %>% rename(Mother = 'Mother!') %>% mutate(measurement_remarks = paste0("maternal lineage ", Mother)) %>% mutate(context = paste0(population, " maternal lineage grown under ", water_treatment, " conditions"))
+  custom_R_code: '
+    data %>%
+      mutate(across(c(`LMR`,`ABG_BG`), ~na_if(.,0))) %>%
+      mutate(
+        leaf_dry_matter_content = dry_weight_g/fresh_weight_g, 
+        leaf_water_content_per_saturated_mass = water_content_g/turgid_weight_g,
+        site_name = "Australian National University glasshouse",
+        measurement_remarks = paste0("maternal lineage ", Mother)
+      )
+  '
   collection_date: 2010-05/2011-12
   taxon_name: species_name
   site_name: site_name
-  context_name: context
   description: An investigation of the extent of plasticity and the adaptive value
     thereof in water use traits in three herbaceous Australian alpine plant species
     to understand how these species will respond to projected climate change.
   basis_of_record: lab
   life_stage: seedling
+  measurement_remarks: measurement_remarks
   sampling_strategy: 'Seed collection and germination Seeds from three alpine herbs;
     Aciphylla glacialis (F. Muell.) Benth. (Apiaceae), Oreomyrrhis eriopoda (DC.)
     Hood.f. (Apiaceae), and Wahlenbergia ceracea Lothian (Campanulaceae), were collected
@@ -88,22 +97,37 @@ sites:
     precipitation, MAP (mm): 622
     description: Australian National University glasshouses
 contexts:
-  high elevation maternal lineage grown under high water conditions:
-    seed provenance: high elevation
-    water treatment: high water [manipulated]
-    water cycle: .na
-  high elevation maternal lineage grown under low water conditions:
-    seed provenance: high elevation
-    water treatment: low water [manipulated]    
-    water cycle: .na
-  low elevation maternal lineage grown under high water conditions:
-    seed provenance: low elevation
-    water treatment: high water [manipulated]    
-    water cycle: .na
-  low elevation maternal lineage grown under low water conditions:
-    seed provenance: low elevation
-    water treatment: low water [manipulated]    
-    water cycle: .na
+  subsite: .na
+  treatment:
+    - var_in: Elevation
+      context_name: seed provenance
+      values:
+      - LoElev: 
+        - label: low elevation
+          description: Seeds sourced from low elevation populations.
+      - HighElev: 
+        - label: high elevation
+          description: Seeds sourced from hight elevation populations.
+    - var_in: Treatment
+      context_name: water treatment
+      values:
+      - LoWat: 
+        - label: low water
+          description: Plants assigned to low water treatment.
+      - HighWat: 
+        - label: high water
+          description: Plants assigned to high water treatment.
+  observation:
+    - var_in: .na
+      context_name: time since watering
+      values:
+      - recently-watered: 
+        - label: recently-watered
+          description: Measurements made on the morning following a watering event (wet cycle) when the plants were at their least water-limited.
+      - droughted:
+        - label: droughted
+          description: Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
+  method: .na
 traits:
 - var_in: LMR
   unit_in: g/g
@@ -154,9 +178,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  observation_number: 1 
-  measurement_remarks: Recently-water plant measurement; Measurements made on the morning following a watering event (wet
-    cycle) when the plants were at their least water-limited.
+  context_observation: recently-watered
   methods: &gas_exchange_method Gas exchange was measured using a LiCor 6400 portable photosynthesis system
     (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
     each plant, a young fully expanded leaf was selected for measurement. Measurements
@@ -174,9 +196,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  observation_number: 1
-  measurement_remarks: Recently-water plant measurement; Measurements made on the morning following a watering event (wet
-    cycle) when the plants were at their least water-limited.
+  observation_context: recently-watered
   methods: *gas_exchange_method 
 - var_in: Ci
   unit_in: umolCO2/mol
@@ -185,9 +205,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  observation_number: 1
-  measurement_remarks: Recently-water plant measurement; Measurements made on the morning following a watering event (wet
-    cycle) when the plants were at their least water-limited.
+  observation_context: recently-watered
   methods: *gas_exchange_method 
 - var_in: Trmmol
   unit_in: mmolH2O/m2/s
@@ -196,9 +214,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  observation_number: 1
-  measurement_remarks: Recently-water plant measurement; Measurements made on the morning following a watering event (wet
-    cycle) when the plants were at their least water-limited.
+  observation_context: recently-watered
   methods: *gas_exchange_method 
 - var_in: Ci_Ca
   unit_in: umolCO2 internal/umolCO2 ambient
@@ -207,9 +223,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  observation_number: 1
-  measurement_remarks: Recently-water plant measurement; Measurements made on the morning following a watering event (wet
-    cycle) when the plants were at their least water-limited.
+  observation_context: recently-watered
   methods: *gas_exchange_method 
 - var_in: WUEi
   unit_in: umolCO2/mmolH2O
@@ -218,9 +232,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  observation_number: 1
-  measurement_remarks: Recently-water plant measurement; Measurements made on the morning following a watering event (wet
-    cycle) when the plants were at their least water-limited.
+  observation_context: recently-watered
   methods: *gas_exchange_method 
 - var_in: Photo_D
   unit_in: umolCO2/m2/s
@@ -229,8 +241,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Droughted plant measurement; Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
-  observation_number: 2
+  observation_context: droughted
   methods: *gas_exchange_method 
 - var_in: Cond_D
   unit_in: molH2O/m2/s
@@ -239,8 +250,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Droughted plant measurement; Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
-  observation_number: 2
+  observation_context: droughted
   methods: *gas_exchange_method 
 - var_in: Ci_D
   unit_in: umolCO2/mol
@@ -249,8 +259,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Droughted plant measurement; Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
-  observation_number: 2
+  observation_context: droughted
   methods: *gas_exchange_method 
 - var_in: Trmmol_D
   unit_in: mmolH2O/m2/s
@@ -259,8 +268,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Droughted plant measurement; Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
-  observation_number: 2
+  observation_context: droughted
   methods: *gas_exchange_method 
 - var_in: Ci_Ca_D
   unit_in: umolCO2 internal/umolCO2 ambient
@@ -269,8 +277,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Droughted plant measurement; Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
-  observation_number: 2
+  observation_context: droughted
   methods: *gas_exchange_method 
 - var_in: WUEi_D
   unit_in: umolCO2/mmolH2O
@@ -279,8 +286,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Droughted plant measurement; Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
-  observation_number: 2
+  observation_context: droughted
   methods: *gas_exchange_method
 - var_in: fresh_weight_g
   unit_in: g
