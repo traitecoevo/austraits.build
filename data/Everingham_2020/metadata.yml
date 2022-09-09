@@ -41,23 +41,19 @@ dataset:
         plant_code = paste0(`Replicate`, `Plant label number`, `Plant ID`),
         plant_code = gsub("NA","",plant_code),
         plant_code = ifelse(is.na(plant_code),"population",plant_code),
-        individual_id = paste(`Species`, `site`, `Modern/Historic`, plant_code, sep = "_"),
-        population_id = paste(`site`, `Modern/Historic`, sep = "_"),
+        individual_id = paste(`Species`, `site`, `Modern/Historic`, plant_code, sep = "_")
         observation_number = ifelse(row_number() %in% c("8393","6768","7525"), 2, 1)
       )
   '
   collection_date: Date Collected
   taxon_name: Species
   site_name: site
-  context_name: Modern/Historic
   individual_id: individual_id
-  population_id: population_id
-  observation_number: observation_number
   description: Seed and seedling trait measurements from resurrected historic seeds
     and compared these with modern seed and seedling traits collected from the same
     species in the same geographic location to understand trait responses to climate
     through time.
-  sampling_strategy: "To determine if plant traits have changed within a species over
+  sampling_strategy: To determine if plant traits have changed within a species over
     time, we compared historic and modern accessions of seeds of 43 native Australian
     plant species from regions in south-eastern Australia which have experience differing
     levels of climatic change (Fig. 1). Many plant species have large geographic ranges,
@@ -108,11 +104,11 @@ dataset:
     and modern seedlings were grown under the same conditions arranged in randomised
     blocks and re-randomised at monthly intervals to minimise possible positional
     effects during growth. Potting soil comprised 33% Australian Native Landscape
-    supply of \"Organic Garden Mix\", 33% washed river sand and 33% Cocopeat. Throughout
+    supply of 'Organic Garden Mix', 33% washed river sand and 33% Cocopeat. Throughout
     growth we added a general, slow release fertiliser containing nitrogen and phosphorus
     applied at c. 200 mL of fertiliser per 75 L of soil. All plants were grown with
     adequate water supplied by overhead sprinklers and ambient light conditions in
-    a glasshouse at UNSW, Sydney."
+    a glasshouse at UNSW, Sydney.
   basis_of_record: lab, field
   life_stage: seedling, adult
   original_file: SE_Germination Data.xls, SE_LMA data.xls, SE_Photosynthesis data.xls,
@@ -351,10 +347,26 @@ sites:
     latitude (deg): -43.4297
     longitude (deg): 147.2483
 contexts:
-  Historic:
-    seed age: historic seed collections used
-  Modern:
-    seed age: seeds collected at the time of the study were used
+  seed age:
+    var_in: Modern/Historic
+    category: method
+    values:
+    - find: Historic
+      replace: historic
+      description: Historic seed collections used.
+    - find: Modern
+      replace: modern
+      description: Seeds collected at the time of the study were used.
+  repeat observations:
+    var_in: observation_number 
+    category: observation
+    values:
+    - find: 1
+      replace: 1
+      description: observation 1
+    - find: 2
+      replace: 2
+      description: observation 2
 traits:
 - var_in: Seed Length (mm)
   unit_in: mm

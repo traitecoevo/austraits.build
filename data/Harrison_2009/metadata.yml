@@ -26,21 +26,24 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(age = gsub("O","old",age)) %>% mutate(age = gsub("Y","young",age))
-    %>% mutate(context_name = if_else(is.na(`age`),"no_context",paste0(`age`,"_leaves_from_",`nitrogen
-    treatment`,"_treatment")))
+  custom_R_code: '
+    data %>% 
+      mutate(
+        context_name = if_else(is.na(`age`), "no_context",
+        paste0(`age`,"_leaves_from_",`nitrogen treatment`,"_treatment"))
+      )
+  '
   collection_date: 2006/2006
   taxon_name: species
   site_name: site_name
-  context_name: context_name
   description: leaf traits for scleorphyllous species in Harrison (2009)
   life_stage: seedling, adult
   basis_of_record: field, lab
-  sampling_strategy: 'Morphological and physiological measurements were obtained from
+  sampling_strategy: "Morphological and physiological measurements were obtained from
     two independent investigations: a field study comparing species pairs from eight
     genera and a greenhouse experiment that examined seven species of the genus Eucalyptus.
     A field study was conducted using two C3 species from each of eight perennial
-    Australian evergreen genera growing in the ANBG, Canberra (35deg12''S, 149deg04''E).
+    Australian evergreen genera growing in the ANBG, Canberra (35deg12'S, 149deg04'E).
     The genera were selected so as to provide a wide range of LMA, and thus included
     a variety of growth forms including vines, shrubs and trees (Table 1). The greenhouse
     study was conducted at the Australian National University, Canberra, using 12-month-old
@@ -59,15 +62,15 @@ dataset:
     by six 150 W flood lamps between 0500-1000 and 1700-2100 h in order to extend
     day length. Midday PAR measured with a quantum light sensor (Li-Cor Inc., Lincoln,
     NE, USA) averaged 500 mmol PAR photons m-2 s-1 on sunny days. Seedlings were watered
-    to field capacity, twice daily. Rorison''s nutrient solution (Hewitt 1966) was
+    to field capacity, twice daily. Rorison's nutrient solution (Hewitt 1966) was
     applied twice per week to each seedling, 100 mL from 1 May to 16 June, and 625
     mL from 17 June to 1 July, to increase the size and growth rate of young leaves.
     For five of the replicates of each species, one per block, the 4 mm Ca(NO3)2 in
-    the Rorison''s solution was replaced with 4 mm CaCl2, providing plus- and minus-nitrogen
+    the Rorison's solution was replaced with 4 mm CaCl2, providing plus- and minus-nitrogen
     treatments, respectively. To distinguish between new and pre-existing leaves,
     white tags were attached to the youngest petiole on the main stem prior to the
     start of the experiment. Seedlings were periodically sprayed with chemicals for
-    control of psyllids and powdery mildew.'
+    control of psyllids and powdery mildew."
   original_file: Harrison et al 2009 PCE SI.xls
   notes: none
 sites:
@@ -82,25 +85,37 @@ sites:
     basis_of_record: lab
     life_stage: seedling
 contexts:
-  no_context:
-    leaf age: .na
-    nutrient treatment: .na
-  young_leaves_from_no_added_N_treatment:
-    leaf age: young
-    nutrient treatment: treated with nutrient solution containing 4 mm CaCl2, instead
-      of nitrogen-containing solution [manipulated]
-  old_leaves_from_no_added_N_treatment:
-    leaf age: old
-    nutrient treatment: treated with nutrient solution containing 4 mm CaCl2, instead
-      of nitrogen-containing solution [manipulated]
-  young_leaves_from_N_added_treatment:
-    leaf age: young
-    nutrient treatment: treated with Rorison's nutrient solution (4 mm Ca(NO3)2) twice
-      a week [manipulated]
-  old_leaves_from_N_added_treatment:
-    leaf age: old
-    nutrient treatment: treated with Rorison's nutrient solution (4 mm Ca(NO3)2) twice
-      a week [manipulated]
+  nutrient treatment:  
+    var_in: nitrogen treatment
+    category: treatment
+    values:
+    - find: no_added_N  
+      replace: control
+      description: Soil treated with nutrient solution containing 4 mm CaCl2, instead of nitrogen-containing solution
+    - find: N_added 
+      replace: nitrogen addition
+      description: Soil treated with Rorison's nutrient solution (4 mm Ca(NO3)2) twice
+      a week
+  leaf age:  
+    var_in: age
+    category: method
+    values:
+    - find: Y 
+      replace: young leaves 
+      description: Measurements made on young leaves.
+    - find: O
+      replace: old leaves
+      description: Measurements made on young leaves.
+  instrument used:  
+    var_in: method_context
+    category: method
+    values:
+    - find: infrared gas analyser
+      replace: infrared gas analyser 
+      description: Photosynthetic rate determined using an infrared gas analyser.
+    - find: Farquhar model
+      replace: Farquhar model
+      description: Photosynthetic rate adjusted using the model developed by Farquhar,von Caemmerer & Berry (1980). The model was used to scale all Aa measurements to a common intercellular CO2 partial pressure (Ci) of 300 umol mol-1 (Aa300).This approach was carried out using Eqn 1 in manuscript, assuming the in vivo maximum carboxylation activity of Rubisco per unit area (Vcmax) was limiting photosynthesis (Aa). The kinetic constants of Rubisco (Kc and Ko, the Michaelis-Menten constants for CO2 and O2, respectively, and G, the CO2 compensation point in the absence of dark respiration, Rd) were adopted from von Caemmerer et al. (1994) assuming infinite internal conductance, with their temperature dependence functions given in von Caemmerer (2000).Rd was assumed to be 0.1 of Aa for the ANBG data.These assumptions were validated from CO2 response curves measured on the eucalypt leaves (data not shown).      
 traits:
 - var_in: photosynthetic pathway
   unit_in: .na
@@ -251,8 +266,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 4-5
-  method_number: 1
-  measurement_remarks: Photosynthetic rate determined using an infrared gas analyser
+  method_context: infrared gas analyser
   methods: &photosynthesis_methods Measurements of CO2 assimilation rate per unit area (Aa) in the ANBG were
     made at saturating irradiance (Table 1), which was determined for each species
     by first measuring a light response curve. Measurements were made on leaves for
@@ -281,20 +295,8 @@ traits:
   entity_type: population
   value_type: mean
   basis_of_value: measurement
-  replicates: 4-5
-  method_number: 2
-  measurement_remarks: Photosynthetic rate adjusted using the model developed by Farquhar,
-    von Caemmerer & Berry (1980). The model was used to scale all Aa measurements to a common
-    intercellular CO2 partial pressure (Ci) of 300 umol mol-1 (Aa300).This approach
-    was carried out using Eqn 1 in manuscript, assuming the in vivo maximum carboxylation
-    activity of Rubisco per unit area (Vcmax) was limiting photosynthesis (Aa). The
-    kinetic constants of Rubisco (Kc and Ko, the Michaelis-Menten constants for CO2
-    and O2, respectively, and G, the CO2 compensation point in the absence of dark
-    respiration, Rd) were adopted from von Caemmerer et al. (1994) assuming infinite
-    internal conductance, with their temperature dependence functions given in von
-    Caemmerer (2000).Rd was assumed to be 0.1 of Aa for the ANBG data.These assumptions
-    were validated from CO2 response curves measured on the eucalypt leaves (data
-    not shown).
+  replicates: 4-5  
+  method_context: Farquhar model
   methods: *photosynthesis_methods
 - var_in: A300/Na  PNUE (mmol (mol N)-1 s-1)
   unit_in: umolCO2/molN/s
