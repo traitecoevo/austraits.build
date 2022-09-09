@@ -40,18 +40,15 @@ dataset:
         site = "University of Western Sydney",
         Date = Date %>% dmy(),
         leaf_area_ratio = coalesce(`LAR (m2 kg-1)`,`LAR m2 kg-1)`),
-        Potnum = ifelse(is.na(Potnum),paste0("x", row_number()), Potnum)
+        Potnum = ifelse(is.na(Potnum),paste0("x", row_number()), Potnum),
+        remove = ifelse(Potnum == 30 & Time.x == 49320, "flag", "keep")
       ) %>%
-      group_by(Potnum) %>%
-        mutate(observation = dplyr::row_number()) %>%
-      ungroup()
+      filter(remove == "keep")
   '
   collection_date: Date
   taxon_name: Species
   site_name: site
   individual_id: Potnum
-  observation_number: observation
-  context_name: context
   description: In this study, we investigated the growth and physiological responses
     of two Eucalyptus species, representing two different growth habits (i.e. slower-growing
     E. sideroxylon and faster-growing E. saligna), to past and future climates. Specifically,
@@ -133,149 +130,65 @@ sites:
     longitude (deg): 150.7407
     description: naturally sun-lit and C/T-controlled glasshouse
 contexts:
-  grown_at_Amb_temp_and_280_ppm_CO2_and_harvested_at_150_days:
-    age at harvest (days): 150
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Amb_temp_and_280_ppm_CO2_and_harvested_at_80_days:
-    age at harvest (days): 80
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Amb_temp_and_280_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days:
-    age at harvest (days): 150
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    measurement temperature (C): ambient (28 deg C; current growing season temperature)
-      [manipulated]
-  grown_at_Amb_temp_and_280_ppm_CO2_and_measurements_made_at_32_deg_C:
-    age at harvest (days): .na.character
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    measurement temperature (C): elevated (32 deg C; 4 deg C above current growing
-      season temperature) [manipulated]
-  grown_at_Amb_temp_and_400_ppm_CO2_and_harvested_at_150_days:
-    age at harvest (days): 150
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Amb_temp_and_400_ppm_CO2_and_harvested_at_80_days:
-    age at harvest (days): 80
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Amb_temp_and_400_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days:
-    age at harvest (days): 150
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    measurement temperature (C): ambient (28 deg C; current growing season temperature)
-      [manipulated]
-  grown_at_Amb_temp_and_400_ppm_CO2_and_measurements_made_at_32_deg_C:
-    age at harvest (days): .na.character
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    measurement temperature (C): elevated (32 deg C; 4 deg C above current growing
-      season temperature) [manipulated]
-  grown_at_Amb_temp_and_640_ppm_CO2_and_harvested_at_150_days:
-    age at harvest (days): 150
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Amb_temp_and_640_ppm_CO2_and_harvested_at_80_days:
-    age at harvest (days): 80
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Amb_temp_and_640_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days:
-    age at harvest (days): 150
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    measurement temperature (C): ambient (28 deg C; current growing season temperature)
-      [manipulated]
-  grown_at_Amb_temp_and_640_ppm_CO2_and_measurements_made_at_32_deg_C:
-    age at harvest (days): .na.character
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    measurement temperature (C): elevated (32 deg C; 4 deg C above current growing
-      season temperature) [manipulated]
-  grown_at_Elv_temp_and_280_ppm_CO2:
-    age at harvest (days): .na.character
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Elv_temp_and_280_ppm_CO2_and_harvested_at_150_days:
-    age at harvest (days): 150
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Elv_temp_and_280_ppm_CO2_and_harvested_at_80_days:
-    age at harvest (days): 80
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Elv_temp_and_280_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days:
-    age at harvest (days): 150
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): ambient (28 deg C; current growing season temperature)
-      [manipulated]
-  grown_at_Elv_temp_and_280_ppm_CO2_and_measurements_made_at_32_deg_C:
-    age at harvest (days): .na.character
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): elevated (32 deg C; 4 deg C above current growing
-      season temperature) [manipulated]
-  grown_at_Elv_temp_and_400_ppm_CO2_and_harvested_at_150_days:
-    age at harvest (days): 150
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Elv_temp_and_400_ppm_CO2_and_harvested_at_80_days:
-    age at harvest (days): 80
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Elv_temp_and_400_ppm_CO2_and_measurements_made_at_28_deg_C:
-    age at harvest (days): .na.character
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): ambient (28 deg C; current growing season temperature)
-      [manipulated]
-  grown_at_Elv_temp_and_400_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days:
-    age at harvest (days): 150
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): ambient (28 deg C; current growing season temperature)
-      [manipulated]
-  grown_at_Elv_temp_and_400_ppm_CO2_and_measurements_made_at_32_deg_C:
-    age at harvest (days): .na.character
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): elevated (32 deg C; 4 deg C above current growing
-      season temperature) [manipulated]
-  grown_at_Elv_temp_and_640_ppm_CO2_and_harvested_at_150_days:
-    age at harvest (days): 150
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Elv_temp_and_640_ppm_CO2_and_harvested_at_80_days:
-    age at harvest (days): 80
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): .na.character
-  grown_at_Elv_temp_and_640_ppm_CO2_and_measurements_made_at_28_deg_C_and_harvested_at_150_days:
-    age at harvest (days): 150
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): ambient (28 deg C; current growing season temperature)
-      [manipulated]
-  grown_at_Elv_temp_and_640_ppm_CO2_and_measurements_made_at_32_deg_C:
-    age at harvest (days): .na.character
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    measurement temperature (C): elevated (32 deg C; 4 deg C above current growing
-      season temperature) [manipulated]
+  age at harvest (days):
+    var_in: age_at_harvest 
+    category: treatment
+    values:
+    - find: 80_days  
+      replace: 80
+      description: Plant harvested at an age of 80 days.
+    - find: 150_days
+      replace: 150
+      description: Plant harvested at an age of 150 days.
+    - find: .na
+      replace: .na
+      description: .na
+  CO2 treatment:
+    var_in: CO2
+    category: treatment
+    values:
+    - find: 280 
+      replace: 280 ppm
+      description: Plants grown at sub-ambient CO2 (280 ppm); 120 ppm below ambient.
+    - find: 400
+      replace: 400 ppm
+      description: Plants grown at ambient CO2 (400 ppm).
+    - find: 640
+      replace: 640 ppm
+      description: Plants grown at elevated CO2 (640 ppm); 240 ppm above ambient.
+  temperature treatment:
+    var_in: Temp
+    category: treatment
+    values:
+    - find: Amb 
+      replace: ambient
+      description: Plants grown at ambient temperatures; 26/18 deg C (day/night).
+    - find: Elv
+      replace: elevated
+      description: Plants grown at elevated temperatures; 30/22 deg C (day/night).
+  measurement temperature (C):
+    var_in: MeasTemp
+    category: treatment
+    values:
+    - find: 28 
+      replace: 28
+      description: Plants measured at current growing season temperature (28 deg C).
+    - find: 32
+      replace: 32
+      description: Plants measured at 4 deg C above current growing season temperature (32 deg C).
+    - find: .na
+      replace: .na
+      description: .na
+  leaf sampling method:
+    var_in: method_context
+    category: method
+    values:
+    - find: entire plant LMA 
+      replace: entire plant LMA 
+      description: LMA based on the ratio of leaf mass / leaf area for the entire plant.
+    - find: single leaf LMA
+      replace: single leaf LMA
+      description: LMA based on the ratio of leaf mass / leaf area of a single leaf.
 traits:
 - var_in: A_sat_umol_per_m2_s1
   unit_in: umolCO2/m2/s
@@ -424,7 +337,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
+  method_context: entire plant LMA 
   methods: &leaf_harvest_method Two destructive harvests were conducted 80 and 150 DAP; nine trees at 80
     DAP and 18 trees at 150 DAP of each species were harvested within each [CO2] and
     temperature treatment combination. During each harvest, we measured the length
@@ -477,7 +390,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
+  method_context: single leaf LMA
   methods: Measurement on samples collected for biochemical analyses. Leaf area was
     determined using a portable leaf area meter (LI-3100A, LI-COR, Lincoln, NE, USA).Harvested
     samples were oven-dried at 80 deg C for 48 h, then weighed.

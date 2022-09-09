@@ -40,8 +40,7 @@ dataset:
   custom_R_code: '
     data %>% 
       mutate(
-        individual_id = paste(Species, Tree, sep = "_"),
-        observation = ifelse(season == "wet", 1, 2),
+        individual_id = paste(Species, Tree, sep = "_")
         Species = recode(Species, "Melaleuca DMF" = "Melaleuca leucadendra", 
         "Melaleuca W" = "Melaleuca viridiflora", "Melaleuca Sw" = "Melaleuca viridiflora"),
         leaf_density = 10/(`SLA (cm2/g)`*`Leaf thickness (mm)`),
@@ -57,8 +56,6 @@ dataset:
   taxon_name: Species
   site_name: site
   individual_id: individual_id
-  observation_number: observation
-  context_name: season
   description: field campaigns of Lynda Prior in NT via Ian Wright
   basis_of_record: field
   life_stage: adult
@@ -211,10 +208,16 @@ sites:
       total Kjeldahl N and P were determined using flow-injection analysis (Lachat
       Instruments, Milwaukee, WI, USA).
 contexts:
-  wet:
-    sampling season: Leaves measured in the wet season
-  dry:
-    sampling season: Leaves measured in the dry season
+  sampling_season:
+    var_in: season
+    category: observation
+    values:
+    - find: wet
+      replace: wet season 
+      description: Measurements made during the wet season.
+    - find: dry
+      replace: dry season
+      description: Measurements made during the dry season.
 traits:
 - var_in: growth form
   unit_in: .na

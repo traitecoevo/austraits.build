@@ -26,21 +26,11 @@ dataset:
     data %>% 
       group_by(Species) %>%
         mutate(across(c(`Seed mass (g)`),replace_duplicates_with_NA)) %>%
-      ungroup() %>%
-      mutate(
-        population_id = Site,
-        method_number = case_when(
-          `Light Treatment (Categorical)` == "control" ~ 1,
-          `Light Treatment (Categorical)` == "long" ~ 2,
-          `Light Treatment (Categorical)` == "short" ~ 3
-        )
-      )
+      ungroup()
   '
   collection_date: 2020-02/2020-04
   taxon_name: Species
   site_name: Site
-  context_name: Light Treatment (Categorical)
-  population_id: population_id
   description: To determine photoperiod sensitivity in Australian plants and whether
     there are trends in latitude, seed size, growth form, and across phylogeny and
     ecosystems.
@@ -353,12 +343,19 @@ sites:
     site code: T.N.P
     description: .na.character
 contexts:
-  control:
-    daylength treatment: 12/12 (12 hours light/12 hours dark) [manipulated]
-  long:
-    daylength treatment: 18/6 (18 hours light/6 hours dark) [manipulated]
-  short:
-    daylength treatment: 6/18 (6 hours light/18 hours dark) [manipulated]
+  daylength treatment:
+    var_in: Light Treatment (Categorical)
+    category: treatment
+    values:
+    - find: control 
+      replace: control 
+      description: Plants growth under 12 hours light/12 hours dark.
+    - find: long
+      replace: long daylength 18 hours light/6 hours dark.
+      description: Plants growth under 
+    - find: short
+      replace: short daylength
+      description: Plants growth under 6 hours light/18 hours dark.
 traits:
 - var_in: Seed mass (g)
   unit_in: g
@@ -379,8 +376,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: Total Seeds
-  method_number: method_number
-  observation_number: Replicate
   methods: Species were left in incubators until all seeds germinated. Any non-germinated
     seeds were tested for viability at the end of the 90-day period. I tested viability
     using a microscopic cut test analysis and staining with 1% 2,3,5-triphenyltetrazolium
