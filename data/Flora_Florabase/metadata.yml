@@ -22,17 +22,28 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>%
-      mutate(   
+      mutate(
+        plant_climbing_mechanism = ifelse(stringr::str_detect(growth_habit,"scrambling"),"scrambling", NA),
+        plant_climbing_mechanism = ifelse(stringr::str_detect(growth_habit,"twining"),"twining", plant_climbing_mechanism),
+        growth_habit = stringr::str_replace(growth_habit, "twining", "climbing"), 
+        growth_habit = stringr::str_replace(growth_habit, "scrambling", "climbing"),  
         partially_woody = stringr::str_replace(partially_woody, "soft_wood", "semi_woody"),        
         growth_habit = stringr::str_replace(growth_habit, "trailing", "prostrate"),        
         growth_habit = stringr::str_replace(growth_habit, "procumbent", "prostrate"),        
-        growth_habit = stringr::str_replace(growth_habit, "sprawling", "scandent"),      
+        growth_habit = stringr::str_replace(growth_habit, "scandent", "sprawling"),      
         growth_habit = stringr::str_replace(growth_habit, "shrubby", "bushy"),        
-        growth_habit = stringr::str_replace(growth_habit, "cushion-forming", "caespitose"),    
-        growth_habit = stringr::str_replace(growth_habit, "mat_forming", "caespitose"),    
+        growth_habit = stringr::str_replace(growth_habit, "creeper", "creeping"),         
+        growth_habit = stringr::str_replace(growth_habit, "hummock", "cushion-forming"),     
+        growth_habit = stringr::str_replace(growth_habit, "mat_forming", "mat-forming"),
+        plant_growth_form = stringr::str_replace(plant_growth_form, "climber_vine_herbaceous", "climber_herbaceous"), 
+        plant_growth_form = stringr::str_replace(plant_growth_form, "climber_vine_woody", "climber_woody"),  
+        plant_growth_form = stringr::str_replace(plant_growth_form, "climber_vine", "climber_herbaceous"),  
+        plant_growth_form = stringr::str_replace(plant_growth_form, "climber_liana", "climber_woody"), 
         plant_growth_form = stringr::str_replace(plant_growth_form, "epiphyte", "") %>% str_squish(),
         plant_growth_form = stringr::str_replace(plant_growth_form, "lithophyte", "") %>% str_squish(),
         growth_habit2 = ifelse(str_detect(plant_growth_form, "submerged"), "submerged", NA),
+        growth_habit2 = ifelse(str_detect(plant_growth_form, "cushion"), "cushion", growth_habit2),
+        plant_growth_form = stringr::str_replace(plant_growth_form, "cushion", "herb"),
         growth_habit = ifelse(is.na(growth_habit), growth_habit2, growth_habit),
         growth_habit = ifelse(!is.na(growth_habit) & !is.na(growth_habit2), 
           paste(growth_habit,growth_habit2), growth_habit),
@@ -62,6 +73,14 @@ traits:
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_climbing_mechanism
+  unit_in: .na
+  trait_name: plant_climbing_mechanism
   entity_type: species
   value_type: mode
   basis_of_value: expert_score

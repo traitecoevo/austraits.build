@@ -39,6 +39,7 @@ dataset:
           fire_not_relevant not_fire_killed_does_not_resprout"),
           "fire_not_relevant", NA),
         stem_growth_habit = NA,
+        plant_climbing_mechanism = NA,
         plant_growth_substrate = ifelse(str_detect(plant_growth_form, "epiphyte"), "epiphyte", NA),
         plant_growth_form = str_replace(plant_growth_form, "epiphyte_", ""),
         plant_growth_form = str_replace(plant_growth_form, "epiphyte", "")  %>% str_squish()
@@ -46,8 +47,14 @@ dataset:
       move_values_to_new_trait(
         "plant_growth_form","stem_growth_habit",
         c("climber_scrambler", "prostrate_herb", "prostrate_shrub"),
-        c("scrambler", "prostrate", "prostrate"),
-        c("climber", "herb", "shrub")
+        c("climbing", "prostrate", "prostrate"),
+        c("climber_scrambler", "herb", "shrub")
+      ) %>%
+      move_values_to_new_trait(
+        "plant_growth_form","plant_climbing_mechanism",
+        c("climber_scrambler"),
+        c("scrambling"),
+        c("climber")
       ) %>%
       group_by(Species_Name) %>%
         mutate(observation_number = row_number()) %>%
@@ -102,6 +109,14 @@ traits:
 - var_in: stem_growth_habit
   unit_in: .na
   trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
+- var_in: plant_climbing_mechanism
+  unit_in: .na
+  trait_name: plant_climbing_mechanism
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -533,8 +548,14 @@ substitutions:
   find: palm
   replace: palmoid
 - trait_name: plant_growth_form
+  find: fern_tree
+  replace: fern palmoid
+- trait_name: plant_growth_form
   find: palm graminoid_tussock
   replace: palmoid graminoid
+- trait_name: plant_growth_form
+  find: climber_liana
+  replace: climber_woody
 taxonomic_updates:
 - find: Abutilon malvaefolium
   replace: Abutilon malvifolium

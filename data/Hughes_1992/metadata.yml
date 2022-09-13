@@ -29,16 +29,21 @@ dataset:
       mutate(
         `flowering duration` = convert_month_range_vec_to_binary(`flowering duration`),
         parasitic = ifelse(`growth form`== "para"| `growth form`=="PARA","parasitic", NA),
-        plant_energy_aquisition_strategy = ifelse(`growth form`== "saprophyte","saprophyte", NA),
+        plant_heterotrophy = ifelse(`growth form`== "saprophyte","saprophyte", NA),
         plant_growth_substrate = ifelse(`growth form`== "Epiphyte", "epiphyte", NA),  
-        growth_habit = NA
+        growth_habit = NA,
+        plant_climbing_mechanism = NA
+      ) %>%
+      move_values_to_new_trait(
+        "growth form", "plant_climbing_mechanism",
+        c("Twiner"), c("twining"), c("Twiner")
       ) %>%
       move_values_to_new_trait(
         "growth form", "growth_habit",
         c("Herb, cree", "Floater", "Trailer", "Twiner"),        
-        c("creeper", "floating", "trailing", "twining"),
+        c("creeping", "floating", "prostrate", "climbing"),
         c("herb", "herb", "climber", "climber")
-      )
+      ) 
   '
   collection_date: 1992/1992
   taxon_name: name original
@@ -67,6 +72,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: published literature
+- var_in: plant_climbing_mechanism
+  unit_in: .na
+  trait_name: plant_climbing_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: published literature
 - var_in: plant_growth_substrate
   unit_in: .na
   trait_name: plant_growth_substrate
@@ -75,9 +88,9 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: published literature
-- var_in: plant_energy_aquisition_strategy
+- var_in: plant_heterotrophy
   unit_in: .na
-  trait_name: plant_energy_aquisition_strategy
+  trait_name: plant_heterotrophy
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
