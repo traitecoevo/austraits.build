@@ -41,8 +41,8 @@ dataset:
         plant_code = paste0(`Replicate`, `Plant label number`, `Plant ID`),
         plant_code = gsub("NA","",plant_code),
         plant_code = ifelse(is.na(plant_code),"population",plant_code),
+        plant_code = ifelse(row_number() %in% c("8393","6768","7525"), paste0(plant_code,"b"), plant_code),
         individual_id = paste(`Species`, `site`, `Modern/Historic`, plant_code, sep = "_")
-        observation_number = ifelse(row_number() %in% c("8393","6768","7525"), 2, 1)
       )
   '
   collection_date: Date Collected
@@ -357,16 +357,6 @@ contexts:
     - find: Modern
       replace: modern
       description: Seeds collected at the time of the study were used.
-  repeat observations:
-    var_in: observation_number 
-    category: observation
-    values:
-    - find: 1
-      replace: 1
-      description: observation 1
-    - find: 2
-      replace: 2
-      description: observation 2
 traits:
 - var_in: Seed Length (mm)
   unit_in: mm

@@ -31,9 +31,7 @@ dataset:
       mutate(
         site = "Crookwell",
         stem_hydraulic_conductivity = 10*`Hydraulic condictivity`,
-        population_id = site,
         individual_id = ifelse(is.na(tree),paste0("x",format(row_number(),000)),paste0("tree",format(tree,00))),
-        observation_number = ifelse(season == "winter", 1, 2),
         collection_date = ifelse(season == "winter", "2003-07", "2004-01")
       ) %>%
       mutate_at(vars(`SLA`),replace_duplicates_with_NA) %>% 
@@ -42,10 +40,7 @@ dataset:
   collection_date: collection_date
   taxon_name: species
   site_name: site
-  context_name: season
-  population_id: population_id
   individual_id: individual_id
-  observation_number: observation_number
   description: An investigation of correlations between soil conditions and plant
     ecophysiological traits and function across seasons.
   basis_of_record: field
@@ -110,10 +105,16 @@ sites:
     notes: coordinates listed are for Crookwell town, but the site was actually about
       7 km out of town on private property
 contexts:
-  winter:
-    sampling season: measurements made in winter
-  summer:
-    sampling season: measurements made in summer
+  sampling season:
+    var_in: season
+    category: observation
+    values:
+    - find: winter
+      replace: winter
+      description: Measurements made in winter.
+    - find: summer
+      replace: summer
+      description: Measurements made in summer.
 traits:
 - var_in: Hv sapwood
   unit_in: mm2_sapwood/mm2_leaf

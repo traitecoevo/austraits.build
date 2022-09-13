@@ -23,23 +23,11 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>% 
-      mutate(
-        site_name = "Round Hill-Nombinnie Nature Reserve",
-        context = ifelse(treat == "b","clip-and-burn",NA),
-        context = ifelse(treat == "c2","control",context),
-        context = ifelse(treat == "c","clip",context),
-        method_number = ifelse(treat == "b",2,NA),
-        method_number = ifelse(treat == "c2",1,method_number),
-        method_number = ifelse(treat == "c",3,method_number),
-        population_id = site_name
-      )
+      mutate(site_name = "Round Hill-Nombinnie Nature Reserve")
   '
   collection_date: 2000/2001
   taxon_name: SPECIES
   site_name: site_name
-  context_name: context
-  population_id: population_id
-  method_number: method_number
   description: data on bud reprouting following disturbance in semi-arid NSW
   basis_of_record: field_experiment
   life_stage: adult
@@ -113,14 +101,19 @@ sites:
       woodland may escape leaf scorch. There is light to moderate browsing by Western
       Grey kangaroos, Macropus fuliginosus, and feral goats, Capra hircus.
 contexts:
-  clip:
-    disturbance treatment: plant clipped to approximately 5 mm above ground [manipulated]
-  clip-and-burn:
-    disturbance treatment: plants burnt with butane torch, resulting in an average
-      temperatures of 71 deg C at 5 mm depth, and clipped to approximately 5 mm above
-      ground [manipulated]
-  control:
-    disturbance treatment: control; no burn or clip treatment applied
+  disturbance treatment:
+    var_in: treat
+    category: method
+    values:
+    - find: c2
+      replace: control
+      description: Control treatment, with no burn or clip treatment applied.
+    - find: c
+      replace: clip
+      description: Plant clipped to approximately 5 mm above ground.
+    - find: b
+      replace: clip-and-burn
+      description: Plants burnt with butane torch, resulting in an average temperatures of 71 deg C at 5 mm depth, and clipped to approximately 5 mm above ground.
 traits:
 - var_in: bud_depth_mm
   unit_in: mm

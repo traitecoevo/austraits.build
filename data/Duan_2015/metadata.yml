@@ -37,12 +37,11 @@ dataset:
     data %>% 
       mutate(
         site = "University of Western Sydney",
-        Date = Date %>% dmy(),
-        population_id = paste(Temp, CO2, Water, sep = "_")
+        Date = Date %>% dmy()
       ) %>% 
       mutate_at(c("Cond (mol m-2 s-1)"), ~na_if(.,0)) %>% 
-      subset(days_since_drought != "more_than_88") %>% 
-      arrange(Date) %>%
+      subset(Day < 88) %>% 
+      arrange(Potnum, Day) %>%
       group_by(Potnum, Temp, CO2, Water) %>%
         mutate(observation = dplyr::row_number()) %>%
       ungroup()
@@ -50,10 +49,7 @@ dataset:
   collection_date: Date
   taxon_name: Species
   site_name: site
-  population_id: population_id
   individual_id: Potnum
-  observation_number: observation
-  context_name: context
   description: 'Water relations and carbon dynamics were examined in two species with
     contrasting stomatal regulation strategies: Pinus radiata D. Don (relatively isohydric
     gymnosperm; regulating stomata to maintain leaf water potential above critical
@@ -130,150 +126,80 @@ sites:
     longitude (deg): 150.7407
     description: naturally sun-lit and C/T-controlled glasshouse
 contexts:
-  grown_at_Amb_temp_and_400_ppm_CO2_with_Dry_treatment_and_30_to_44_days_since_drought_treatment:
-    drought treatment duration: 30-44 days [manipulated]
-    water treatment: dry (seedlings received no water after the commencement of the
-      drought treatment) [manipulated]
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-  grown_at_Amb_temp_and_400_ppm_CO2_with_Dry_treatment_and_44_to_86_days_since_drought_treatment:
-    drought treatment duration: 44-86 days [manipulated]
-    water treatment: dry (seedlings received no water after the commencement of the
-      drought treatment) [manipulated]
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-  grown_at_Amb_temp_and_400_ppm_CO2_with_Dry_treatment_and_fewer_than_24_days_since_drought_treatment:
-    drought treatment duration: fewer than 24 days [manipulated]
-    water treatment: dry (seedlings received no water after the commencement of the
-      drought treatment) [manipulated]
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-  grown_at_Amb_temp_and_400_ppm_CO2_with_Wet_treatment_and_30_to_44_days_since_drought_treatment:
-    drought treatment duration: 30-44 days [manipulated]
-    water treatment: wet (well-watered seedlings were maintained at field capacity)
-      [manipulated]
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-  grown_at_Amb_temp_and_400_ppm_CO2_with_Wet_treatment_and_44_to_86_days_since_drought_treatment:
-    drought treatment duration: 44-86 days [manipulated]
-    water treatment: wet (well-watered seedlings were maintained at field capacity)
-      [manipulated]
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-  grown_at_Amb_temp_and_400_ppm_CO2_with_Wet_treatment_and_fewer_than_24_days_since_drought_treatment:
-    drought treatment duration: fewer than 24 days [manipulated]
-    water treatment: wet (well-watered seedlings were maintained at field capacity)
-      [manipulated]
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-  grown_at_Amb_temp_and_640_ppm_CO2_with_Dry_treatment_and_30_to_44_days_since_drought_treatment:
-    drought treatment duration: 30-44 days [manipulated]
-    water treatment: dry (seedlings received no water after the commencement of the
-      drought treatment) [manipulated]
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-  grown_at_Amb_temp_and_640_ppm_CO2_with_Dry_treatment_and_44_to_86_days_since_drought_treatment:
-    drought treatment duration: 44-86 days [manipulated]
-    water treatment: dry (seedlings received no water after the commencement of the
-      drought treatment) [manipulated]
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-  grown_at_Amb_temp_and_640_ppm_CO2_with_Dry_treatment_and_fewer_than_24_days_since_drought_treatment:
-    drought treatment duration: fewer than 24 days [manipulated]
-    water treatment: dry (seedlings received no water after the commencement of the
-      drought treatment) [manipulated]
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-  grown_at_Amb_temp_and_640_ppm_CO2_with_Wet_treatment_and_30_to_44_days_since_drought_treatment:
-    drought treatment duration: 30-44 days [manipulated]
-    water treatment: wet (well-watered seedlings were maintained at field capacity)
-      [manipulated]
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-  grown_at_Amb_temp_and_640_ppm_CO2_with_Wet_treatment_and_44_to_86_days_since_drought_treatment:
-    drought treatment duration: 44-86 days [manipulated]
-    water treatment: wet (well-watered seedlings were maintained at field capacity)
-      [manipulated]
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-  grown_at_Amb_temp_and_640_ppm_CO2_with_Wet_treatment_and_fewer_than_24_days_since_drought_treatment:
-    drought treatment duration: fewer than 24 days [manipulated]
-    water treatment: wet (well-watered seedlings were maintained at field capacity)
-      [manipulated]
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-  grown_at_Elv_temp_and_400_ppm_CO2_with_Dry_treatment_and_30_to_44_days_since_drought_treatment:
-    drought treatment duration: 30-44 days [manipulated]
-    water treatment: dry (seedlings received no water after the commencement of the
-      drought treatment) [manipulated]
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-  grown_at_Elv_temp_and_400_ppm_CO2_with_Dry_treatment_and_44_to_86_days_since_drought_treatment:
-    drought treatment duration: 44-86 days [manipulated]
-    water treatment: dry (seedlings received no water after the commencement of the
-      drought treatment) [manipulated]
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-  grown_at_Elv_temp_and_400_ppm_CO2_with_Dry_treatment_and_fewer_than_24_days_since_drought_treatment:
-    drought treatment duration: fewer than 24 days [manipulated]
-    water treatment: dry (seedlings received no water after the commencement of the
-      drought treatment) [manipulated]
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-  grown_at_Elv_temp_and_400_ppm_CO2_with_Wet_treatment_and_30_to_44_days_since_drought_treatment:
-    drought treatment duration: 30-44 days [manipulated]
-    water treatment: wet (well-watered seedlings were maintained at field capacity)
-      [manipulated]
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-  grown_at_Elv_temp_and_400_ppm_CO2_with_Wet_treatment_and_44_to_86_days_since_drought_treatment:
-    drought treatment duration: 44-86 days [manipulated]
-    water treatment: wet (well-watered seedlings were maintained at field capacity)
-      [manipulated]
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-  grown_at_Elv_temp_and_400_ppm_CO2_with_Wet_treatment_and_fewer_than_24_days_since_drought_treatment:
-    drought treatment duration: fewer than 24 days [manipulated]
-    water treatment: wet (well-watered seedlings were maintained at field capacity)
-      [manipulated]
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-  grown_at_Elv_temp_and_640_ppm_CO2_with_Dry_treatment_and_30_to_44_days_since_drought_treatment:
-    drought treatment duration: 30-44 days [manipulated]
-    water treatment: dry (seedlings received no water after the commencement of the
-      drought treatment) [manipulated]
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-  grown_at_Elv_temp_and_640_ppm_CO2_with_Dry_treatment_and_44_to_86_days_since_drought_treatment:
-    drought treatment duration: 44-86 days [manipulated]
-    water treatment: dry (seedlings received no water after the commencement of the
-      drought treatment) [manipulated]
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-  grown_at_Elv_temp_and_640_ppm_CO2_with_Dry_treatment_and_fewer_than_24_days_since_drought_treatment:
-    drought treatment duration: fewer than 24 days [manipulated]
-    water treatment: dry (seedlings received no water after the commencement of the
-      drought treatment) [manipulated]
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-  grown_at_Elv_temp_and_640_ppm_CO2_with_Wet_treatment_and_30_to_44_days_since_drought_treatment:
-    drought treatment duration: 30-44 days [manipulated]
-    water treatment: wet (well-watered seedlings were maintained at field capacity)
-      [manipulated]
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-  grown_at_Elv_temp_and_640_ppm_CO2_with_Wet_treatment_and_44_to_86_days_since_drought_treatment:
-    drought treatment duration: 44-86 days [manipulated]
-    water treatment: wet (well-watered seedlings were maintained at field capacity)
-      [manipulated]
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-  grown_at_Elv_temp_and_640_ppm_CO2_with_Wet_treatment_and_fewer_than_24_days_since_drought_treatment:
-    drought treatment duration: fewer than 24 days [manipulated]
-    water treatment: wet (well-watered seedlings were maintained at field capacity)
-      [manipulated]
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
+  drought treatment duration (days):
+    var_in: days_since_drought
+    category: observation
+    values:
+    - find: 1
+      replace: 1
+      description: Measurements made 1 day after the start of the drought treatment.
+    - find: 9
+      replace: 9
+      description: Measurements made 9 days after the start of the drought treatment.
+    - find: 16
+      replace: 16
+      description: Measurements made 16 days after the start of the drought treatment.
+    - find: 23
+      replace: 23
+      description: Measurements made 23 days after the start of the drought treatment.
+    - find: 30
+      replace: 30
+      description: Measurements made 30 days after the start of the drought treatment.
+    - find: 37
+      replace: 37
+      description: Measurements made 37 days after the start of the drought treatment.
+    - find: 44
+      replace: 44
+      description: Measurements made 44 days after the start of the drought treatment.
+    - find: 51
+      replace: 51
+      description: Measurements made 51 days after the start of the drought treatment.
+    - find: 57
+      replace: 57
+      description: Measurements made 57 days after the start of the drought treatment.
+    - find: 65
+      replace: 65
+      description: Measurements made 65 days after the start of the drought treatment.
+    - find: 72
+      replace: 72
+      description: Measurements made 72 days after the start of the drought treatment.
+    - find: 79
+      replace: 79
+      description: Measurements made 79 days after the start of the drought treatment.
+    - find: 86
+      replace: 86
+      description: Measurements made 86 days after the start of the drought treatment.
+  water treatment:
+    var_in: Water
+    category: treatment
+    values:
+    - find: Wet  
+      replace: wet
+      description: Seedlings were well-watered; they were maintained at field capacity.
+    - find: Dry
+      replace: dry
+      description: Seedlings were droughted; they received no water after the commencement of the
+      drought treatment.
+  CO2 treatment:
+    var_in: CO2
+    category: treatment
+    values:
+    - find: 400
+      replace: 400 ppm
+      description: Plants grown at ambient CO2 (400 ppm).
+    - find: 640
+      replace: 640 ppm
+      description: Plants grown at elevated CO2 (640 ppm); 240 ppm above ambient.
+  temperature treatment:
+    var_in: Temp
+    category: treatment
+    values:
+    - find: Amb 
+      replace: ambient
+      description: Plants grown at ambient temperatures, 26/18 deg C (day/night).
+    - find: Elv
+      replace: elevated
+      description: Plants grown at elevated temperatures, 30/22 deg C (day/night).
 traits:
 - var_in: Photo (umol m-2 s-1)
   unit_in: umolCO2/m2/s

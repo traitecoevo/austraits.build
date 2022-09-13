@@ -33,22 +33,16 @@ dataset:
         new_date = ifelse(sample_date %in% c("2011-05", "2010-09"), NA, sample_date),
         new_date = new_date %>% mdy(quiet=TRUE) %>% as.character(),
         date_WD = date_WD %>% dmy(quiet=TRUE) %>% as.character(),
-        date_merged = coalesce(new_date, date_WD, as.character(date_by_month)),
-        pop_id = site_name,
-        observation_number = ifelse(season == "dry season (Sep 2010)", 1, NA),
-        observation_number = ifelse(season == "wet season (May 2011)", 2, observation_number)
+        date_merged = coalesce(new_date, date_WD, as.character(date_by_month))
       ) %>%
         select(-date_by_month, -new_date, -date_WD, -sample_date, - notes, -spp, -`Pith diam (mm)`, -context) %>% 
-        group_by(date_merged, site_name, season, pop_id, Species, age, Rep, observation_number) %>% 
+        group_by(date_merged, site_name, season, Species, age, Rep) %>% 
           summarise_at(vars(`WD kg/m3`:`gas_ d13C_leaf`), mean, na.rm = TRUE) %>% 
         ungroup() 
   '
   collection_date: date_merged
   taxon_name: Species
   site_name: site_name
-  context_name: season
-  population_id: pop_id
-  observation_number: observation_number
   description: traits of NT savannah species
   basis_of_record: field
   life_stage: age
@@ -100,10 +94,16 @@ sites:
       samples (0-20 cm depth) collected in September 2010 were as follows: total C
       = 2.7% (1.8), total N = 0.093% (0.074), total P = 72.7 mg kg_1 (22.6).'
 contexts:
-  dry season (Sep 2010):
-    sampling season: dry season (Septmeber 2010)
-  wet season (May 2011):
-    sampling season: wet season (May 2011)
+  sampling season:
+    var_in: season
+    category: observation
+    values:
+    - find: dry season (Sep 2010)
+      replace: dry season (Sep 2010)
+      description: Measurements made during the dry season (Sep 2010).
+    - find: wet season (May 2011)
+      replace: wet season (May 2011)
+      description: Measurements made during the wet season (May 2011).
 traits:
 - var_in: WD kg/m3
   unit_in: kg/m3
