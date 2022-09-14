@@ -26,31 +26,28 @@ dataset:
     data %>% 
       mutate(
         Date = Date %>% dmy(),
+        Date = ifelse(is.na(Date), Year, Date),
         leaf_C_g_mg = `CN (g C g-1 N)` * `Nm (mg g-1)`,
-        method_number = ifelse(Age == "new", 1, NA),
-        method_number = ifelse(Age == "old", 2, method_number),
-        population_id = paste(Ring,CO2.treat, sep = "_"),
-        population_id = gsub("_NA","",population_id)
+        site = paste0(site_name, "_Ring_", Ring)
       ) %>%
       arrange(Date) %>%
-      group_by(Tree, population_id, method_number) %>%
+      group_by(Tree, site, Age, CO2.treat, Ring) %>%
         mutate(
-          observation = ifelse(!(is.na(Tree)) & !(is.na(context)),
+          observation = ifelse(!(is.na(Tree)) & !(is.na(Age)),
                               dplyr::row_number(), NA)
         ) %>%
       ungroup() %>%
       group_by(Ring, Age) %>%
-        mutate(litter_observation = ifelse(!is.na(P_litter),dplyr::row_number(), NA)) %>%
+        mutate(
+          litter_observation = ifelse(!is.na(P_litter),dplyr::row_number(), NA),
+          observation = ifelse(is.na(observation), 10+litter_observation, observation)
+        ) %>%
       ungroup()
   '
   collection_date: Date
   taxon_name: species_name
   site_name: site_name
-  context_name: context
   individual_id: Tree
-  population_id: population_id
-  method_number: method_number
-  observation_number: observation
   description: Live leaf, senesced leaf, and wood nutrient measurements to determine
     if their stoichiometry in leaves and wood was maintained or altered in a long-term
     elevated CO2 experiment in a mature Eucalyptus forest on a low P soil
@@ -68,7 +65,72 @@ dataset:
   original_file: EucFACE_Austraits_NPleaf_2012-2018-L3.csv
   notes: none
 sites:
-  EucFACE:
+  EucFACE_Ring_1:
+    latitude (deg): -33.6167
+    longitude (deg): 150.7333
+    description: remnant patch of native Cumberland Plain woodland on an ancient alluvial
+      floodplain in western Sydney
+    soil type: loamy sand
+    soil pH (H2O): 5.2
+    soil P, total (mg/kg): 76
+    temperature, MAT (C): 17
+    precipitation, MAP (mm): 800
+    notes: dominated by Eucalyptus tereticornis in the overstory with a few scattered
+      individuals of Eucalyptus amplifolia, while the understory is dominated by Microlaena
+      stipoides (a C3 grass) and some shrubs
+  EucFACE_Ring_2:
+    latitude (deg): -33.6167
+    longitude (deg): 150.7333
+    description: remnant patch of native Cumberland Plain woodland on an ancient alluvial
+      floodplain in western Sydney
+    soil type: loamy sand
+    soil pH (H2O): 5.2
+    soil P, total (mg/kg): 76
+    temperature, MAT (C): 17
+    precipitation, MAP (mm): 800
+    notes: dominated by Eucalyptus tereticornis in the overstory with a few scattered
+      individuals of Eucalyptus amplifolia, while the understory is dominated by Microlaena
+      stipoides (a C3 grass) and some shrubs
+  EucFACE_Ring_3:
+    latitude (deg): -33.6167
+    longitude (deg): 150.7333
+    description: remnant patch of native Cumberland Plain woodland on an ancient alluvial
+      floodplain in western Sydney
+    soil type: loamy sand
+    soil pH (H2O): 5.2
+    soil P, total (mg/kg): 76
+    temperature, MAT (C): 17
+    precipitation, MAP (mm): 800
+    notes: dominated by Eucalyptus tereticornis in the overstory with a few scattered
+      individuals of Eucalyptus amplifolia, while the understory is dominated by Microlaena
+      stipoides (a C3 grass) and some shrubs
+  EucFACE_Ring_4:
+    latitude (deg): -33.6167
+    longitude (deg): 150.7333
+    description: remnant patch of native Cumberland Plain woodland on an ancient alluvial
+      floodplain in western Sydney
+    soil type: loamy sand
+    soil pH (H2O): 5.2
+    soil P, total (mg/kg): 76
+    temperature, MAT (C): 17
+    precipitation, MAP (mm): 800
+    notes: dominated by Eucalyptus tereticornis in the overstory with a few scattered
+      individuals of Eucalyptus amplifolia, while the understory is dominated by Microlaena
+      stipoides (a C3 grass) and some shrubs
+  EucFACE_Ring_5:
+    latitude (deg): -33.6167
+    longitude (deg): 150.7333
+    description: remnant patch of native Cumberland Plain woodland on an ancient alluvial
+      floodplain in western Sydney
+    soil type: loamy sand
+    soil pH (H2O): 5.2
+    soil P, total (mg/kg): 76
+    temperature, MAT (C): 17
+    precipitation, MAP (mm): 800
+    notes: dominated by Eucalyptus tereticornis in the overstory with a few scattered
+      individuals of Eucalyptus amplifolia, while the understory is dominated by Microlaena
+      stipoides (a C3 grass) and some shrubs
+  EucFACE_Ring_6:
     latitude (deg): -33.6167
     longitude (deg): 150.7333
     description: remnant patch of native Cumberland Plain woodland on an ancient alluvial
@@ -82,27 +144,34 @@ sites:
       individuals of Eucalyptus amplifolia, while the understory is dominated by Microlaena
       stipoides (a C3 grass) and some shrubs
 contexts:
-  new _leaves_measured_on_plants_in_ Amb _CO2_treatment:
-    CO2 treatment: 400 ppm (ambient; Rings 2, 3 and 6 in the EucFACE experiment) [manipulated]
-    leaf age: new (leaves aged 35-88 days; see data.csv file for exact age) [manipulated]
-  new _leaves_measured_on_plants_in_ Elev _CO2_treatment:
-    CO2 treatment: 550 ppm (elevated; 150 ppm above ambient; Rings 1, 4 and 5 in the
-      EucFACE experiment) [manipulated]
-    leaf age: new (leaves aged 35-88 days; see data.csv file for exact age) [manipulated]
-  old _leaves_measured_on_plants_in_ Amb _CO2_treatment:
-    CO2 treatment: 400 ppm (ambient; Rings 2, 3 and 6 in the EucFACE experiment) [manipulated]
-    leaf age: old (leaves aged 93-404 days; see data.csv file for exact age) [manipulated]
-  old _leaves_measured_on_plants_in_ Elev _CO2_treatment:
-    CO2 treatment: 550 ppm (elevated; 150 ppm above ambient; Rings 1, 4 and 5 in the
-      EucFACE experiment) [manipulated]
-    leaf age: old (leaves aged 93-404 days; see data.csv file for exact age) [manipulated]
-  measured_on_plants_in_ Amb _CO2_treatment:
-    CO2 treatment: 400 ppm (ambient; Rings 2, 3 and 6 in the EucFACE experiment) [manipulated]
-    leaf age: .na
-  measured_on_plants_in_ Elev _CO2_treatment:
-    CO2 treatment: 550 ppm (elevated; 150 ppm above ambient; Rings 1, 4 and 5 in the
-      EucFACE experiment) [manipulated]
-    leaf age: .na
+  CO2 treatment:
+    var-in: CO2.treat
+    category: treatment
+    values:
+    - find: Amb
+      replace: 400 ppm
+      description: Plants grown at ambient CO2 (400 ppm) (Rings 2, 3 and 6 in the EucFACE experiment).
+    - find: Elev
+      replace: 550 ppm
+      description: Plants grown at elevated CO2 (550 ppm) (150 ppm above ambient; Rings 1, 4 and 5 in the
+      EucFACE experiment).
+  leaf age:
+    var_in: Age
+    category: method
+    values:
+    - find: new
+      replace: new
+      description: Leaves are new, aged 35-88 days; see data.csv file for exact age.
+    - find: old
+      replace: old
+      description: Leaves are mature; aged 93-404 days; see data.csv file for exact age.
+  repeat observations:
+    var_in: observation
+    category: observation
+    values:
+    - find: 1
+      replace: 1
+      description: 1
 traits:
 - var_in: LMA (g m-2)
   unit_in: g/m2

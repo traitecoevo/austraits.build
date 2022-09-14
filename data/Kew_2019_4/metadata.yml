@@ -18,18 +18,26 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>%
-      group_by(taxa, oilcontentval, oilmaterialdesc) %>%
-        mutate(ref = paste0(refshort, collapse = "; ")) %>%
-      ungroup() %>%
-        distinct(taxa, oilcontentval, oilmaterialdesc, .keep_all = TRUE) %>%
       mutate(
+        year = str_extract(refshort,"[:digit:][:digit:][:digit:][:digit:]"),
+        year = if_else(is.na(year),"unknown",year),
         oilcontentval = oilcontentval/100,
-        measurement_remarks = paste0("oil material, ", oilmaterialdesc,"; ", 
-            "moisture status, ", moisturestatus, "; ", "oil notes, ", oilnotes,
-            "; ", "reference, ",ref)
+        original_dataset_id = stringr::str_replace_all(refshort,"[\\(]",""),    
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\)",""),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\.",""),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\, ","_"),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\& ",""),
+        original_dataset_id = stringr::str_replace_all(original_dataset_id,"[:space:]","_"),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\_et_al",""),
+        original_dataset_id = if_else(is.na(original_dataset_id),"unknown",original_dataset_id),
       ) %>%
-      group_by(taxa) %>%
-        mutate(method_number = row_number()) %>%
+      arrange(taxa, oilcontentval, year) %>% 
+      group_by(taxa, oilcontentval, oilmaterialdesc) %>%
+        mutate(merged_ref = paste0(original_dataset_id, collapse = "; ")) %>%
+        summarise(across(.cols = everything(),.fns = first)) %>% 
+      ungroup() %>% 
+      group_by(taxa, oilmaterialdesc) %>% 
+        mutate(obs = row_number()) %>%
       ungroup()
   '
   collection_date: unknown/2019
@@ -38,11 +46,57 @@ dataset:
   basis_of_record: literature
   life_stage: adult
   sampling_strategy: information in data.csv file
-  original_file: in raw data folder
+  original_file: in raw data folder  
+  measurement_remarks: merged_ref
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons licesne. Data not to be used for Commercial Purposes.
 sites: .na
-contexts: .na
+contexts:
+  tissue sampled:
+    var_in: Entire seed/nut 
+    category: method
+    values:
+    - find: Entire seed/nut
+      replace: entire seed/nut
+      description: Measurements were made on the entire seed or nut.
+    - find: Kernel
+      replace: kernel 
+      description: Measurements were made on the kernel.
+    - find: Embryo+endosperm
+      replace: embryo+endosperm
+      description: Measurements were made on the embryo+endosperm.
+    - find: Embryo
+      replace: embryo
+      description: Measurements were made on the embryo.
+    - find: Endosperm
+      replace: endosperm
+      description: Measurements were made on the endosperm.
+  sample moisture status:
+    var_in: moisturestatus
+    category: method
+    values:
+    - find: Fresh weight basis
+      replace: Fresh weight basis
+      description: Fresh weight basis
+    - find: Air-dry basis
+      replace: Air-dry basis
+      description: Air-dry basis
+    - find: Dry weight basis
+      replace: Dry weight basis
+      description: Dry weight basis
+    - find: Moisture content not stated
+      replace: Moisture content not stated
+      description: Moisture content not stated
+  repeat observations:
+    var_in: obs
+    category: observation
+    values:
+    - find: 1
+      replace: 1
+      description: 1
+    - find: 2
+      replace: 2
+      description: 2
 traits:
 - var_in: oilcontentval
   unit_in: g/g
@@ -51,8 +105,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
-  method_number: method_number
-  measurement_remarks: measurement_remarks
   methods: Data sourced from various primary literature. For a species, the identical
     value often appears repeatedly under consecutive columns with different references
     - it seems sources have quoted one another and these aren't independent values

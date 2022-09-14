@@ -126,25 +126,8 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>%
-      mutate(
-        measurement_remarks = paste("data from ", secondary_ref),
-        method_number = case_when(
-          secondary_ref == "Bolza_1975" ~ 1,
-          secondary_ref == "CAB_2009" ~ 2, 
-          secondary_ref == "Chave_2009" ~ 3, 
-          secondary_ref == "Chudnoff_1984" ~ 4, 
-          secondary_ref == "CIRAD_2009" ~ 5, 
-          secondary_ref == "Desh_1996" ~ 6, 
-          secondary_ref == "Flynn_2001" ~ 7, 
-          secondary_ref == "Hong_1999" ~ 8, 
-          secondary_ref == "ICRAF_2009" ~ 9, 
-          secondary_ref == "Meier_2007" ~ 10, 
-          secondary_ref == "Prospect_2009" ~ 11, 
-          secondary_ref == "Seng_1951" ~ 12    
-        )
-      ) %>%
-      group_by(name_original, method_number) %>%
-        mutate(observation_number = row_number()) %>%
+      group_by(name_original, secondary_ref) %>%
+        mutate(observation_num = row_number()) %>%
       ungroup()
   '
   collection_date: unknown/2009
@@ -156,7 +139,63 @@ dataset:
   original_file: global_WD_database.xls
   notes: none
 sites: .na
-contexts: .na
+contexts:
+  original reference:
+    var_in: secondary_ref
+    category: method
+    values:
+    - find: Bolza_1975
+      replace: Bolza_1975
+      description: Measurement from Bolza_1975.
+    - find: CAB_2009
+      replace: CAB_2009
+      description: Measurement from CAB_2009.
+    - find: Chave_2009
+      replace: Chave_2009
+      description: Measurement from Chave_2009.
+    - find: Chudnoff_1984 
+      replace: Chudnoff_1984
+      description: Measurement from Chudnoff_1984.
+    - find: CIRAD_2009
+      replace: CIRAD_2009
+      description: Measurement from CIRAD_2009.
+    - find: Desh_1996
+      replace: Desh_1996
+      description: Measurement from Desh_1996.
+    - find: Flynn_2001
+      replace: Flynn_2001
+      description: Measurement from Flynn_2001.
+    - find: Hong_1999
+      replace: Hong_1999
+      description: Measurement from Hong_1999.
+    - find: ICRAF_2009
+      replace: ICRAF_2009
+      description: Measurement from ICRAF_2009.
+    - find: Meier_2007
+      replace: Meier_2007
+      description: Measurement from Meier_2007.
+    - find: Prospect_2009
+      replace: Prospect_2009
+      description: Measurement from Prospect_2009.
+    - find: Seng_1951
+      replace: Seng_1951
+      description: Measurement from Seng_1951.
+  multiple observations:
+    var_in: observation_num
+    category: observation
+    values:
+    - find: 1
+      replace: 1
+      description: 1
+    - find: 2
+      replace: 2
+      description: 2
+    - find: 3
+      replace: 3
+      description: 3
+    - find: 4
+      replace: 4
+      description: 4
 traits:
 - var_in: Wood density (g/cm^3)
   unit_in: mg/mm3
@@ -165,9 +204,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
-  method_number: method_number
-  measurement_remarks: measurement_remarks
-  observation_number: observation_number
   methods: unknown
 substitutions: .na
 taxonomic_updates:

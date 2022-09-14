@@ -20,10 +20,15 @@ dataset:
     data %>% 
       mutate(
         protcontentval = protcontentval/100,
-        measurement_remarks = paste(oilmaterialdesc, refdesc, sep = "; ")
-      )  %>%
-      group_by(`SID taxa`) %>%
-        mutate(method_number = row_number()) %>%
+        original_dataset_id = stringr::str_replace_all(refshort,"[\\(]",""),    
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\)",""),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\, ","_"),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\& ",""),
+        original_dataset_id = stringr::str_replace_all(original_dataset_id,"[:space:]","_"),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\_et_al.","")
+        ) %>% 
+      group_by(`SID taxa`, original_dataset_id, oilmaterialdesc) %>%
+      mutate(observation_num = row_number()) %>%
       ungroup()
   '
   collection_date: unknown/2019
@@ -38,7 +43,55 @@ dataset:
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons licesne. Data not to be used for Commercial Purposes.
 sites: .na
-contexts: .na
+contexts:
+  tissue sampled:
+    var_in: Entire seed/nut 
+    category: method
+    values:
+    - find: Entire seed/nut
+      replace: entire seed/nut
+      description: Measurements were made on the entire seed or nut.
+    - find: Kernel
+      replace: kernel 
+      description: Measurements were made on the kernel.
+  original dataset_id:
+    var_in: original_dataset_id
+    category: method
+    values:
+    - find: Brand_Cherikoff_1985
+      replace: Brand_Cherikoff_1985
+      description: Brand_Cherikoff_1985
+    - find: Barclay_Earle_1974
+      replace: Barclay_Earle_1974
+      description: Barclay_Earle_1974
+    - find: Earle_Jones_1962
+      replace: Earle_Jones_1962
+      description: Earle_Jones_1962
+    - find: Hagemann_1967
+      replace: Hagemann_1967
+      description: Hagemann_1967
+    - find: Jones_Earle_1966
+      replace: Jones_Earle_1966
+      description: Jones_Earle_1966
+    - find: Maconochie_1985
+      replace: Maconochie_1985
+      description: Maconochie_1985
+    - find: Schippers_2000   
+      replace: Schippers_2000   
+      description: Schippers_2000   
+    - find: Vaughan_1970 
+      replace: Vaughan_1970 
+      description: Vaughan_1970 
+  repeat observations:
+    var_in: observation_num
+    category: observation
+    values:
+    - find: 1
+      replace: 1
+      description: 1
+    - find: 2
+      replace: 2
+      description: 2
 traits:
 - var_in: protcontentval
   unit_in: '%'
@@ -47,8 +100,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: .na
-  method_number: method_number
-  measurement_remarks: measurement_remarks
   methods: Each entry is annotated with methods and references in data.csv file. Part of this information is included in the measurement remarks. Additional information is available at data.kew.org/sid/ if
     you look up the individual species.
 substitutions: .na

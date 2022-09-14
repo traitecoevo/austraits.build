@@ -35,18 +35,13 @@ dataset:
         canopy_position = ifelse(contextual == "canopy", "canopy", NA), 
         canopy_position = ifelse(contextual == "subcanopy sapling", "subcanopy", canopy_position),
         collection_date = ifelse(site2 %in% c("Cascades","Lumeah"),"1993-09/1993-10","1992-12/1993-02"),
-        row_number = row_number(),
-        population_id = site2,
-        method_number = ifelse(canopy_position == "canopy", 1, 2)
+        row_number = row_number()
       ) %>%
       filter(!row_number %in% c(4751, 4746))     
   '
   collection_date: collection_date
   taxon_name: species
   site_name: site2
-  context_name: canopy_position
-  population_id: population_id
-  method_number: method_number
   description: collection of trait data from Nothofagus forests across Australia,
     New Zealand and South America
   basis_of_record: field
@@ -177,10 +172,16 @@ sites:
     slope aspect (degrees): 294.0
     site code, alternate: T3
 contexts:
-  canopy:
-    canopy position: canopy
-  subcanopy:
-    canopy position: subcanopy
+  canopy position:
+    var_in: canopy_position
+    category: method
+    values:
+    - find: canopy
+      replace: canopy
+      description: Measurements made in the canopy.
+    - find: subcanopy
+      replace: subcanopy
+      description: Measurements made in the subcanopy.
 traits:
 - var_in: LENGTH
   unit_in: mm
