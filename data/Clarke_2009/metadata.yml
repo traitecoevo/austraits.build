@@ -23,26 +23,40 @@ dataset:
   custom_R_code: '
     data %>%
       mutate(
+        RO = stringr::str_extract(Habitats,"RO"),
+        RF = stringr::str_extract(Habitats,"RF"),
+        WH = stringr::str_extract(Habitats,"WH"),
+        GW = stringr::str_extract(Habitats,"GW"),
+        WSF = stringr::str_extract(Habitats,"WSF"),
+        DSF = stringr::str_extract(Habitats,"DSF"),
+      ) %>%
+      pivot_longer(cols = c(RO,RF,WH,GW,WSF,DSF), names_to = "habitat") %>%
+      filter(!is.na(value)) %>%
+      select(-value) %>%
+      mutate(
+        habitat = case_when(
+          habitat == "RO" ~ "rocky outcrops heaths in New England Tableland Bioregion",
+          habitat == "RF" ~ "rainforest in New England Tableland Bioregion",
+          habitat == "WH" ~ "wet heaths in New England Tableland Bioregion",
+          habitat == "GW" ~ "grassy woodlands in New England Tableland Bioregion",
+          habitat == "WSF" ~ "wet sclerophyll forest in New England Tableland Bioregion",
+          habitat == "DSF" ~ "dry sclerophyll forests in New England Tableland Bioregion"
+        ),
         fire_response = ifelse(not_in_Clarke_2015 == "x",fire_response,NA),
-        bud_bank_location = ifelse(not_in_Clarke_2015 == "x",regen_strategy,NA),
-        measurement_remarks = Habitats,
-        measurement_remarks = str_replace(measurement_remarks, "RO","rocky outcrops heaths"),
-        measurement_remarks = str_replace(measurement_remarks, "RF","rainforest"),
-        measurement_remarks = str_replace(measurement_remarks, "WH","wet heaths"),
-        measurement_remarks = str_replace(measurement_remarks, "GW","grassy woodlands"),
-        measurement_remarks = str_replace(measurement_remarks, "WSF","wet sclerophyll forest"),
-        measurement_remarks = str_replace(measurement_remarks, "DSF","dry sclerophyll forests")
+        bud_bank_location = ifelse(not_in_Clarke_2015 == "x",regen_strategy,NA)
       ) %>%
       group_by(Species) %>%
-      mutate(observation = row_number()) %>%
-      ungroup()
+        mutate(across(c(`Growth form`), replace_duplicates_with_NA)) %>%
+      ungroup() %>%
+      group_by(Species, habitat) %>%
+        mutate(observation_num = row_number()) %>%
+      ungroup() %>%
+        mutate(observation_num = ifelse(Species %in% c("Gompholobium heugelii","Leionema rotundifolium"),observation_num,1))
   '
   collection_date: 1996/2008
   taxon_name: Species
-  site_name: Site
-  measurement_remarks: measurement_remarks
-  observation_number: observation
-  description: Study documenting the post-fire response (resprouting and maturation
+  site_name: habitat
+  habitat: Study documenting the post-fire response (resprouting and maturation
     times) of woody species in six contrasting formations in the New England Tableland
     Bioregion of eastern Australia. The formations are rainforest, wet sclerophyll
     forest, dry sclerophyll forests, grassy woodlands, rocky outcrops heaths and wet
@@ -84,22 +98,65 @@ dataset:
   original_file: .na
   notes: .na
 sites:
-  New England Tableland Bioregion, eastern Australia:
+  rainforest in New England Tableland Bioregion:
     latitude (deg): -30.2
     longitude (deg): 151.6
-    description: Species were sampled from six major vegetation formations that are
-      prone to fire and occur in this Bioregion; rainforest (RF) (Northern Warm Temperate
-      Rainforest), wet sclerophyll forest (WSF) (Northern Escarpment Wet Sclerophyll
-      Forests and Northern Escarpment Wet Sclerophyll Forest), dry sclerophyll forests
-      (DSF) (New England Dry Scerophyll Forest, Northern Escarpment Dry Sclerophyll
-      Forest and Northern Tableland Dry Sclerophyll Forest), grassy woodlands (GW)
-      (Northern Grassy Woodlands), rocky outcrops heaths (RO) (Northern Montane Heaths)
-      and wet heaths (WH) (Montane Bogs and Fens) (see Keith 2004).
+    habitat: Northern Warm Temperate Rainforest (RF)
     fire history: Landscape scale fires in 2002 burnt into the more mesic wet sclerophyll
       forests and rainforests margins.
     georeference remarks: There were no particular sites or latitudes reported in
       the study. The latitude given is approximately the centre of the bioregion.
-contexts: .na
+  dry sclerophyll forests in New England Tableland Bioregion:
+    latitude (deg): -30.2
+    longitude (deg): 151.6
+    habitat: New England Dry Scerophyll Forest, Northern Escarpment Dry Sclerophyll Forest and Northern Tableland Dry Sclerophyll Forest (DSF)
+    fire history: Landscape scale fires in 2002 burnt into the more mesic wet sclerophyll
+      forests and rainforests margins.
+    georeference remarks: There were no particular sites or latitudes reported in
+      the study. The latitude given is approximately the centre of the bioregion.
+  wet sclerophyll forest in New England Tableland Bioregion:
+    latitude (deg): -30.2
+    longitude (deg): 151.6
+    habitat: Northern Escarpment Wet Sclerophyll Forests and Northern Escarpment Wet Sclerophyll Forest) (WSF)
+    fire history: Landscape scale fires in 2002 burnt into the more mesic wet sclerophyll
+      forests and rainforests margins.
+    georeference remarks: There were no particular sites or latitudes reported in
+      the study. The latitude given is approximately the centre of the bioregion. 
+  grassy woodlands in New England Tableland Bioregion:
+    latitude (deg): -30.2
+    longitude (deg): 151.6
+    habitat: Northern Grassy Woodlands (GW)
+    fire history: Landscape scale fires in 2002 burnt into the more mesic wet sclerophyll
+      forests and rainforests margins.
+    georeference remarks: There were no particular sites or latitudes reported in
+      the study. The latitude given is approximately the centre of the bioregion.  
+  rocky outcrops heaths in New England Tableland Bioregion:
+    latitude (deg): -30.2
+    longitude (deg): 151.6
+    habitat: Northern Montane Heaths (RO)
+    fire history: Landscape scale fires in 2002 burnt into the more mesic wet sclerophyll
+      forests and rainforests margins.
+    georeference remarks: There were no particular sites or latitudes reported in
+      the study. The latitude given is approximately the centre of the bioregion.  
+  wet heaths in New England Tableland Bioregion:
+    latitude (deg): -30.2
+    longitude (deg): 151.6
+    habitat: Montane Bogs and Fens (WH)
+    fire history: Landscape scale fires in 2002 burnt into the more mesic wet sclerophyll
+      forests and rainforests margins.
+    georeference remarks: There were no particular sites or latitudes reported in
+      the study. The latitude given is approximately the centre of the bioregion.
+contexts:
+  repeat observations:
+    var_in: obs
+    category: observation
+    values:
+    - find: 1
+      replace: 1
+      description: 1
+    - find: 2
+      replace: 2
+      description: 2
 traits:
 - var_in: Gill category
   unit_in: .na

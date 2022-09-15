@@ -98,8 +98,10 @@ dataset:
         as.character(LengthSample),
         as.character(seed_sample_replicates)
     )) %>%
-    distinct(trait, value, species_name, site_name_shorter, .keep_all = TRUE)%>%
-    group_by(species_name, site_name, trait, item_ID) %>% mutate(observation_number = dplyr::row_number()) %>% ungroup() %>%
+    distinct(trait, value, species_name, site_name_shorter, .keep_all = TRUE) %>%
+    group_by(species_name, site_name, trait, item_ID) %>% 
+      mutate(observation_num = dplyr::row_number()) %>%
+    ungroup() %>%
     mutate(value = ifelse(row_number() %in% c(303), 0.4340, value))
   '
   collection_date: gathering_date
@@ -108,7 +110,6 @@ dataset:
   value: value
   site_name: site_name_shorter
   individual_id: item_ID
-  observation_number: observation_number
   description: All seed data from Australian National Botanic Gardens collections.
     See www.anbg.gov.au/gardens/living/seedbank/index.html for more information about
     this collection.
@@ -13325,7 +13326,23 @@ sites:
     longitude (deg): .na.real
     locality: without locality
     recorded by: Unspecified collector of live material
-contexts: .na
+contexts:
+  repeat observations:
+    var_in: observation_num
+    category: observation
+    values:
+    - find: 1
+      replace: 1
+      description: 1
+    - find: 2
+      replace: 2
+      description: 2
+    - find: 3
+      replace: 3
+      description: 3
+    - find: 4
+      replace: 4
+      description: 4
 traits:
 - var_in: LengthSample
   unit_in: .na

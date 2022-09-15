@@ -28,15 +28,14 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>% 
+      mutate(rainfall = Site) %>%
       mutate_at(vars(`reserve_M (mg)`), ~na_if(.,0)) %>%
       group_by(spp, Site) %>%
-        mutate(observation_number = dplyr::row_number()) %>%
+        mutate(observation_num = dplyr::row_number()) %>%
       ungroup()
   '
   collection_date: 1998/1999
   taxon_name: spp
-  site_name: Site
-  observation_number: observation_number
   description: seed mass reserve data for various species in NSW
   basis_of_record: field
   life_stage: adult
@@ -53,32 +52,123 @@ dataset:
     been under Westoby_2003 are also unpublished and should be part of this dataset_id.
     (Westoby_2003 now refers to a different dataset entirely.) In addition, there
     is a column in the data.csv file with seed provenance.
-sites:
-  loRloP:
-    precipitation, MAP (mm): low
-    soil P, description: low
-    seed provenance: Round Hill mallee, and various seedstock
-    latitude (deg): .na
-    longitude (deg): .na
-  loRhiP:
-    precipitation, MAP (mm): low
-    soil P, description: high
-    seed provenance: Round Hill woodland, and various seedstock
-    latitude (deg): .na
-    longitude (deg): .na
-  hiRloP:
-    precipitation, MAP (mm): high
-    soil P, description: low
-    seed provenance: Murrua Track (KNP), Centre Track (KNP), and various seedstock
-    latitude (deg): .na
-    longitude (deg): .na
-  hiRhiP:
-    precipitation, MAP (mm): high
-    soil P, description: high
-    seed provenance: Westhead (KNP), Shoalhaven (MLF), and various seedstock
-    latitude (deg): .na
-    longitude (deg): .na
-contexts: .na
+sites: .na
+contexts:
+  repeat observations:
+    var_in: obs
+    category: observation
+    values:
+    - find: 1
+      replace: 1
+      description: 1
+    - find: 2
+      replace: 2
+      description: 2
+  phosphorus level:
+    var_in: Site
+    category: subsite
+    values:
+    - find: loRloP
+      replace: low phosphorus
+      description: Seeds sourced from a low phorphorus location.
+    - find: loRhiP
+      replace: high phosphorus
+      description: Seeds sourced from a high phorphorus location.
+    - find: hiRloP
+      replace: low phosphorus
+      description: Seeds sourced from a low phorphorus location.
+    - find: hiRhiP
+      replace: high phosphorus
+      description: Seeds sourced from a high phorphorus location.
+  precipitation:
+    var_in: rainfall
+    category: subsite
+    values:
+    - find: loRloP
+      replace: low rainfall
+      description: Seeds sourced from a low rainfall location.
+    - find: loRhiP
+      replace: low rainfall
+      description: Seeds sourced from a low rainfall location.
+    - find: hiRloP
+      replace: high rainfall
+      description: Seeds sourced from a high rainfall location.
+    - find: hiRhiP
+      replace: high rainfall
+      description: Seeds sourced from a high rainfall location.
+  seed_provenance:
+    var_in: Seed provenance simple 
+    category: treatment
+    values:
+    - find: MLF Alice Springs
+      replace: Alice Springs (MLF)
+      description: Seeds sourced from Alice Springs (MLF).
+    - find: ASC - Broken Hill
+      replace: Broken Hill (ASC)
+      description: Seeds sourced from Broken Hill (ASC).
+    - find: AustraHort - Bulahdelah
+      replace: Bulahdelah (AustraHort)
+      description: Seeds sourced from Bulahdelah (AustraHort).
+    - find: ASC - Central Coast
+      replace: Central Coast (ASC)
+      description: Seeds sourced from Central Coast (ASC).
+    - find: Harvest - Central Coast
+      replace: Central Coast (Harvest)
+      description: Seeds sourced from Central Coast (Harvest).
+    - find: ASC - CW Slopes
+      replace: Central West  Slopes (ASC)
+      description: Seeds sourced from Central West  Slopes (ASC).
+    - find: Centre Track KCNP
+      replace: KCNP - Centre Track 
+      description: Seeds sourced from Kuringgai-Chase NP - Centre Track .
+    - find: KCNP - sandy soil
+      replace: KCNP - sandy soil
+      description: Seeds sourced from Kuringgai-Chase NP - sandy soil.
+    - find: KCNP - West Head
+      replace: KCNP - West Head
+      description: Seeds sourced from Kuringgai-Chase NP - West Head.
+    - find: Leeton (wnsw) -seedstock
+      replace: Leeton (wNSW) (seedstock)
+      description: Seeds sourced from Leeton (wNSW) (seedstock).
+    - find: Murrua
+      replace: Murrua
+      description: Seeds sourced from Murrua.
+    - find: Round Hill
+      replace: Round Hill
+      description: Seeds sourced from Round Hill.
+    - find: Round Hill mallee
+      replace: Round Hill - mallee
+      description: Seeds sourced from Round Hill - mallee.
+    - find: Round Hill woodland
+      replace: Round Hill - woodland
+      description: Seeds sourced from Round Hill - woodland.
+    - find: ASC - SE Tasmania
+      replace: Southeast Tasmania (ASC)
+      description: Seeds sourced from Southeast Tasmania (ASC).
+    - find: Shoalhaven - MLF
+      replace: Shoalhaven (MLF)
+      description: Seeds sourced from Shoalhaven (MLF).
+    - find: AustraHort - Shoalhaven
+      replace: Shoalhaven (AustraHort)
+      description: Seeds sourced from Shoalhaven (AustraHort).
+    - find: ASC - SW Slopes
+      replace: Southwest Slopes (ASC)
+      description: Seeds sourced from Southwest Slopes (ASC).
+    - find: ASC Spencer Gulf
+      replace: Spencer Gulf (ASC)
+      description: Seeds sourced from Spencer Gulf (ASC).
+    - find: Harvest - Sydney
+      replace: Sydney (Harvest)
+      description: Seeds sourced from Sydney (Harvest).
+    - find: ASC - Tenterfield
+      replace: Tenterfield (ASC)
+      description: Seeds sourced from Tenterfield (ASC).
+    - find: seedstock
+      replace: unknown seedstock
+      description: Seeds sourced from unknown seedstock.
+    - find: ASC - Upper Blue Mts
+      replace: Upper Blue Mountains (ASC)
+      description: Seeds sourced from Upper Blue Mountains (ASC).
 traits:
 - var_in: whole_M (mg)
   unit_in: mg

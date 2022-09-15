@@ -33,14 +33,14 @@ dataset:
       arrange(Date) %>%
       group_by(Tree, site, Age, CO2.treat, Ring) %>%
         mutate(
-          observation = ifelse(!(is.na(Tree)) & !(is.na(Age)),
+          observation_num = ifelse(!(is.na(Tree)) & !(is.na(Age)),
                               dplyr::row_number(), NA)
         ) %>%
       ungroup() %>%
       group_by(Ring, Age) %>%
         mutate(
-          litter_observation = ifelse(!is.na(P_litter),dplyr::row_number(), NA),
-          observation = ifelse(is.na(observation), 10+litter_observation, observation)
+          litter_observation_num = ifelse(!is.na(P_litter),dplyr::row_number(), NA),
+          observation_num = ifelse(is.na(observation_num), 10+litter_observation_num, observation_num)
         ) %>%
       ungroup()
   '
@@ -412,7 +412,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 8
-  observation_number: litter_observation
   methods: Leaf litter was collected monthly in ~0.2m2 circular fine-mesh traps at
     eight random locations per ring (Duursma et al., 2016). Litter was sorted into
     leaf, twigs, bark, and other material, then oven-dried at 40 deg C and weighed.
@@ -429,7 +428,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 8
-  observation_number: litter_observation
   methods: Leaf litter was collected monthly in ~0.2m2 circular fine-mesh traps at
     eight random locations per ring (Duursma et al., 2016). Litter was sorted into
     leaf, twigs, bark, and other material, then oven-dried at 40 deg C and weighed.
