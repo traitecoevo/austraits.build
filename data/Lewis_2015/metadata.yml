@@ -42,15 +42,14 @@ dataset:
     data %>% 
       mutate(site = "University of Western Sydney") %>%
       arrange(date_gas_exchange) %>%
-      mutate(individual_id = ifelse(is.na(Potnum),dplyr::row_number(),Potnum)) %>%
-      group_by(Potnum) %>%
-        mutate(observation = row_number()) %>%
+      mutate(individual_id = ifelse(is.na(Potnum),dplyr::row_number()+500,Potnum)) %>%
+      group_by(individual_id) %>%
+        mutate(observation_num = row_number()) %>%
       ungroup()
   '
   collection_date: date_gas_exchange
   taxon_name: Species
   individual_id: individual_id
-  observation_number: observation
   site_name: site
   context_name: context
   description: Wollemi pine (Wollemia nobilis W.G.Jones, K.D.Hill, & J.M.Allen), formerly
@@ -114,204 +113,65 @@ sites:
     longitude (deg): 150.7407
     description: naturally sun-lit and C/T-controlled glasshouse
 contexts:
-  Amb_Temp_and_280_ppm_CO2:
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): .na.character
-  Amb_Temp_and_280_ppm_CO2_and_measured_at_1000_PAR:
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): 1000 [manipulated]
-  Amb_Temp_and_280_ppm_CO2_and_measured_at_700_PAR:
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): 700 [manipulated]
-  Amb_Temp_and_280_ppm_CO2_at_growth_period_T1:
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: T1 (leaf anatomy measurements made in February 2009 after 91 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Amb_Temp_and_280_ppm_CO2_at_growth_period_T2:
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: T2 (leaf anatomy measurements made in April 2009 after 144 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Amb_Temp_and_280_ppm_CO2_at_growth_period_T3:
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: T3 (leaf anatomy measurements made in June 2009 after 205 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Amb_Temp_and_400_ppm_CO2:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): .na.character
-  Amb_Temp_and_400_ppm_CO2_and_measured_at_1000_PAR:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): 1000 [manipulated]
-  Amb_Temp_and_400_ppm_CO2_and_measured_at_700_PAR:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): 700 [manipulated]
-  Amb_Temp_and_400_ppm_CO2_at_growth_period_T1:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: T1 (leaf anatomy measurements made in February 2009 after 91 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Amb_Temp_and_400_ppm_CO2_at_growth_period_T2:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: T2 (leaf anatomy measurements made in April 2009 after 144 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Amb_Temp_and_400_ppm_CO2_at_growth_period_T3:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: T3 (leaf anatomy measurements made in June 2009 after 205 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Amb_Temp_and_640_ppm_CO2:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): .na.character
-  Amb_Temp_and_640_ppm_CO2_and_measured_at_1000_PAR:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): 1000 [manipulated]
-  Amb_Temp_and_640_ppm_CO2_and_measured_at_700_PAR:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): 700 [manipulated]
-  Amb_Temp_and_640_ppm_CO2_at_growth_period_T1:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: T1 (leaf anatomy measurements made in February 2009 after 91 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Amb_Temp_and_640_ppm_CO2_at_growth_period_T2:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: T2 (leaf anatomy measurements made in April 2009 after 144 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Amb_Temp_and_640_ppm_CO2_at_growth_period_T3:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    growth period: T3 (leaf anatomy measurements made in June 2009 after 205 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Elv_Temp_and_280_ppm_CO2:
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): .na.character
-  Elv_Temp_and_280_ppm_CO2_and_measured_at_1000_PAR:
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): 1000 [manipulated]
-  Elv_Temp_and_280_ppm_CO2_and_measured_at_700_PAR:
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): 700 [manipulated]
-  Elv_Temp_and_280_ppm_CO2_at_growth_period_T1:
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: T1 (leaf anatomy measurements made in February 2009 after 91 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Elv_Temp_and_280_ppm_CO2_at_growth_period_T2:
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: T2 (leaf anatomy measurements made in April 2009 after 144 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Elv_Temp_and_280_ppm_CO2_at_growth_period_T3:
-    CO2 treatment: 280 ppm (sub-ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: T3 (leaf anatomy measurements made in June 2009 after 205 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Elv_Temp_and_400_ppm_CO2:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): .na.character
-  Elv_Temp_and_400_ppm_CO2_and_measured_at_1000_PAR:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): 1000 [manipulated]
-  Elv_Temp_and_400_ppm_CO2_and_measured_at_700_PAR:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): 700 [manipulated]
-  Elv_Temp_and_400_ppm_CO2_at_growth_period_T1:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: T1 (leaf anatomy measurements made in February 2009 after 91 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Elv_Temp_and_400_ppm_CO2_at_growth_period_T2:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: T2 (leaf anatomy measurements made in April 2009 after 144 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Elv_Temp_and_400_ppm_CO2_at_growth_period_T3:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: T3 (leaf anatomy measurements made in June 2009 after 205 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Elv_Temp_and_640_ppm_CO2_and_measured_at_1000_PAR:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): 1000 [manipulated]
-  Elv_Temp_and_640_ppm_CO2_and_measured_at_700_PAR:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): 700 [manipulated]
-  Elv_Temp_and_640_ppm_CO2_at_growth_period_T1:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: T1 (leaf anatomy measurements made in February 2009 after 91 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Elv_Temp_and_640_ppm_CO2_at_growth_period_T2:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: T2 (leaf anatomy measurements made in April 2009 after 144 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Elv_Temp_and_640_ppm_CO2_at_growth_period_T3:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: T3 (leaf anatomy measurements made in June 2009 after 205 treatment
-      days)
-    irradiance (umol photons m-2 s-1): .na.character
-  Elv_Temp_and_640_ppm_CO2:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    growth period: .na.character
-    irradiance (umol photons m-2 s-1): .na.character
+  CO2 treatment:
+    var_in: CO2
+    category: treatment
+    values:
+    - find: 400
+      replace: 400 ppm
+      description: Plants grown at ambient CO2 (400 ppm).
+    - find: 280
+      replace: 280 ppm
+      description: Plants grown at sub-ambient CO2 (280 ppm); 120 ppm below ambient.
+    - find: 640
+      replace: 640 ppm
+      description: Plants grown at elevated CO2 (640 ppm); 240 ppm above ambient.
+  temperature treatment:
+    var_in: Temp
+    category: treatment
+    values:
+    - find: Amb
+      replace: ambient
+      description: Plants grown at ambient temperatures (26/18 deg C (day/night)).
+    - find: Elv
+      replace: elevated
+      description: Plants grown at elevated temperatures (30/22 deg C (day/night)).
+  growth period:
+    var_in: GrowthPeriod
+    category: treatment
+    values:
+    - find: T1
+      replace: time period 1
+      description: Leaf anatomy measurements made in February 2009 after 91 treatment
+      days.
+    - find: T2
+      replace: time period 2
+      description: Leaf anatomy measurements made in April 2009 after 144 treatment
+      days.
+    - find: T3
+      replace: time period 3
+      description: Leaf anatomy measurements made in June 2009 after 205 treatment
+      days.
+  irradiance (umol photons m-2 s-1):
+    var_in: PAR_round
+    category: treatment
+    values:
+    - find: 700
+      replace: 700
+      description: Measurements made at 700 umol photons m-2 s-1 PAR. 
+    - find: 1000
+      replace: 1000
+      description: Measurements made at 1000 umol photons m-2 s-1 PAR. 
+  repeat observations:
+    var_in: observation_num
+    category: observation
+    values:
+    - find: 1
+      replace: 1 
+      description: 1
+    - find: 2
+      replace: 2
+      description: 2
 traits:
 - var_in: Amax
   unit_in: umolCO2/m2/s

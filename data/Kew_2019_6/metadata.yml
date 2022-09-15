@@ -21,15 +21,16 @@ dataset:
     data %>% 
       mutate(
         germination = germination_percent/100,
-        remarks = paste0("presow treatment, ", presowtreat)
-      ) %>%
-      group_by(taxa) %>%
-        mutate(observation_number = row_number()) %>%
-      ungroup()
+        germcond = stringr::str_replace(germcond, "�","º"),
+        remarks = paste0(
+          "PRE-SOW TREAT: ", presowtreat, "; ",
+          "GERMINATION COND: ", germcond
+        ),
+        remarks = stringr::str_replace(remarks, "PRE-SOW TREAT: NA; ","")
+      )
   '
   collection_date: unknown/2019
   taxon_name: taxa
-  observation_number: observation_number
   description: Germination data on species from Kew seed databases
   basis_of_record: preserved_specimen
   life_stage: seedling
@@ -43,7 +44,7 @@ traits:
 - var_in: germination
   unit_in: n/n
   trait_name: germination
-  entity_type: population
+  entity_type: individual
   value_type: mean
   basis_of_value: measurement
   replicates: seeds_sown

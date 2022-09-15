@@ -51,10 +51,8 @@ dataset:
         life_history = ifelse(life_history=="o","p",life_history),
         regen_strategy= ifelse(plant_growth_form=="f","fern",""),
         life_history = ifelse(life_history=="f","",life_history),
-        context_name = if_else(TRIP == 1,"dry",""), context_name = if_else(TRIP == 2, "wet",context_name),
-        population_id = site_name,
         Nfixer = gsub("y","Y",Nfixer),
-        observation_number = ifelse(TRIP == 2,2,1)
+        TRIP = ifelse(is.na(TRIP),1,TRIP)
       ) %>% 
       mutate_at(vars(`life_history`,`regen_strategy`), ~na_if(.,"")) %>%
       mutate_at(vars(`leaf_water_content`), ~na_if(.,0)) %>%
@@ -66,8 +64,6 @@ dataset:
   collection_date: 1994/1998
   taxon_name: species_name
   site_name: site_name
-  context_name: context_name
-  population_id: population_id
   description: Susanne Schmidt's Kakadu data, merged from several spreadsheets
   basis_of_record: field
   life_stage: adult
@@ -366,12 +362,16 @@ sites:
     latitude (deg): -13.272
     longitude (deg): 132.829
 contexts:
-  dry:
-    sampling season: dry season (Samples collected during the first trip, which occurred
-      during the dry season.)
-  wet:
-    sampling season: wet season (Samples collected during the second trip, which occurred
-      during the wet season.)
+  sampling season:
+    var_in: TRIP
+    category: observation
+    values:
+    - find: 1
+      replace: dry
+      description: Samples collected during the dry season (first trip).
+    - find: 2
+      replace: wet
+      description: Samples collected during the wet season (second trip).
 traits:
 - var_in: leaf_water_content
   unit_in: '%'

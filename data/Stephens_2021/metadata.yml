@@ -32,8 +32,9 @@ dataset:
                   paste0("Notes, ", Notes, "; Source, ", dataset_id),
                   paste0("Source, ", dataset_id))
       ) %>%
-      group_by(taxon_name) %>%
-        mutate(observation_number = dplyr::row_number()) %>%
+      rename(original_dataset_id = dataset_id) %>%
+      group_by(taxon_name, original_dataset_id) %>%
+        distinct(value, .keep_all = TRUE) %>%
       ungroup()
   '
   collection_date: 2020/2021

@@ -30,11 +30,11 @@ dataset:
   custom_R_code: '
     data %>%
       group_by(`gen spp`, site_text) %>%
-        mutate(observation_number = row_number()) %>%
+        mutate(observation_num = row_number()) %>%
       ungroup() %>%
       mutate(
-        observation_number = ifelse(!is.na(`15-N`),observation_number, NA),
-        observation_number = ifelse(observation_number > 2, 2, observation_number)
+        observation_num = ifelse(!is.na(`15-N`),observation_num, NA),
+        observation_num = ifelse(observation_num > 2, 2, observation_num)
       )
   '
   collection_date: 1998/1998
@@ -85,7 +85,17 @@ sites:
     fire history: The study area is subject to a fire regime under white subsites
       are burnt at intervals of 6-7 years with alternating 'hot' fires *burning during
       periods of prolonged dry conditions) and 'cold' fires (burning after rain).
-contexts: .na
+contexts:
+  repeat observations:
+    var_in: observation_num
+    category: observation
+    values:
+    - find: 1
+      replace: 1 
+      description: 1
+    - find: 2
+      replace: 2
+      description: 2
 traits:
 - var_in: fire_response
   unit_in: .na
@@ -190,7 +200,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 15-N_sample_size
-  observation_number: observation_number
   methods: Healthy mature leaves were oven dried at 60 deg C on the day of collection
     and ground to a fine powder using a ball mill (Retsch MM-2, Haan, Germany). Lignotubers
     and roots from two to six specimens were used for d15N analysis. Cross-sections
