@@ -44,13 +44,13 @@ dataset:
         context = ifelse(Site %in% c("Calperum mallee", "Great Western Woodlands") & 
                           Visit == "Winter", "Winter_favourable",context),
         replicate_original = Replicate,
-        Replicate = gsub("-S-","-",Replicate),
-        Replicate = gsub("-W-","-",Replicate),
-        Replicate = gsub("-D-","-",Replicate),
-        Replicate = gsub("-H-","-",Replicate),
-        Replicate = gsub("-B1","",Replicate),
-        Replicate = gsub("-B2","",Replicate),
-        Replicate = gsub("-B3","",Replicate),
+        Replicate = stringr::str_replace(Replicate,"-S-","-"),
+        Replicate = stringr::str_replace(Replicate,"-W-","-"),
+        Replicate = stringr::str_replace(Replicate,"-D-","-"),
+        Replicate = stringr::str_replace(Replicate,"-H-","-"),
+        Replicate = stringr::str_replace(Replicate,"-B1",""),
+        Replicate = stringr::str_replace(Replicate,"-B2",""),
+        Replicate = stringr::str_replace(Replicate,"-B3",""),
       ) %>% 
       select(-Tree.id, -replicate_original, - Branch) %>% 
       group_by(context, Site, Visit, Replicate, Species, Family, Genus, PFT) %>%

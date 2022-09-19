@@ -39,7 +39,7 @@ dataset:
         `Leaflet mass (g)` = ifelse(Leaf_or_leaflet == "Leaflet",`Leaf mass (g)`,NA),
         `Leaf mass (g)` = ifelse(Leaf_or_leaflet == "Leaf",`Leaf mass (g)`,NA),
         plant_code = paste0(`Replicate`, `Plant label number`, `Plant ID`),
-        plant_code = gsub("NA","",plant_code),
+        plant_code = stringr::str_replace(plant_code, "NA",""),
         plant_code = ifelse(is.na(plant_code),"population",plant_code),
         plant_code = ifelse(row_number() %in% c("8393","6768","7525"), paste0(plant_code,"b"), plant_code),
         individual_id = paste(`Species`, `site`, `Modern/Historic`, plant_code, sep = "_")

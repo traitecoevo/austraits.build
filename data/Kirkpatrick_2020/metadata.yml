@@ -20,18 +20,21 @@ dataset:
   custom_R_code: '
     data %>% 
       mutate(
-        Wind = gsub("y", "xxx", Wind),
-        `Bird/mammal` = gsub("y", "birds mammals", `Bird/mammal`),
-        Wind = gsub("n", NA, Wind),
-        `Bird/mammal` = gsub("n", NA, `Bird/mammal`),
-        Wind = gsub("xxx", "wind", Wind),
+        Wind = stringr::str_replace(Wind,"y", "xxx"),
+        `Bird/mammal` = stringr::str_replace(`Bird/mammal`, "y", "birds mammals"),
+        Wind = stringr::str_replace(Wind,"n", NA),
+        `Bird/mammal` = stringr::str_replace(`Bird/mammal`,"n", NA),
+        Wind = stringr::str_replace(Wind,"xxx", "wind"),
         dispersers = coalesce(
           as.character(Wind),
           as.character(`Bird/mammal`)),
         dispersal_syndrome = NA) %>% 
-        move_values_to_new_trait("dispersers", "dispersal_syndrome", 
-                              c("wind", "birds mammals"), c("anemochory", "zoochory"),
-                              c("wind", "birds mammals"))
+        move_values_to_new_trait(
+          "dispersers", "dispersal_syndrome", 
+          c("wind", "birds mammals"),
+          c("anemochory", "zoochory"),
+          c("wind", "birds mammals")
+        )
   '
   collection_date: 2020/2020
   taxon_name: species_name
