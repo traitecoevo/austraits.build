@@ -39,7 +39,7 @@ dataset:
         fence_treatment = ifelse(stringr::str_detect(trt,"Fence"),"fence","control"),
         nutrient_treatment = ifelse(trt=="Fence","control","trt"),
         nutrient_treatment = ifelse(nutrient_treatment == "NPK+Fence","NPK",nutrient_treatment),
-        population_id = paste(site_name, trt, block, sep = "-")
+        blocks = paste(trt, block, sep = "-")
       ) %>% 
       group_by(Taxon) %>% 
         mutate_at(vars(functional_group), replace_duplicates_with_NA) %>% 
@@ -48,7 +48,6 @@ dataset:
   collection_date: year
   taxon_name: Taxon
   site_name: site_name
-  population_id: population_id 
   description: In a global experimental test, we quantified how leaf traits in grasslands
     change in response to the addition of soil nutrients (that is, nitrogen, phosphorus
     and potassium) and the exclusion of vertebrate herbivores.
@@ -123,8 +122,11 @@ sites:
     elevation (m): 285
     description: Savanna grassland.
 contexts:
+  blocks:
+    var_in: blocks 
+    category: subsite
   nutrient treatment:
-    var_in: 
+    var_in: nutrient_treatment
     category: treatment
     values:
     - find: Control
