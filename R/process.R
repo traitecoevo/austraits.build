@@ -59,6 +59,95 @@ dataset_configure <- function(
        unit_conversion_functions = unit_conversion_functions_sub)
 }
 
+create_context_ids <- function(data, contexts) {
+  
+  # select context_cols
+  tmp <- contexts %>%
+    select(context_property, var_in) %>%
+    distinct()
+
+  # Extract context columns
+  context_cols <- data %>% select(tmp$var_in)
+  names(context_cols) <- tmp$context_property
+
+  # Find and replace values for each context property
+  for (v in unique(contexts$context_property)) {
+    ## first filter to each property
+    xx <- contexts %>%
+      filter(context_property == v, !is.na(find))
+    if (nrow(xx) > 0) {
+      ## create named vector
+      xxx <- setNames(xx$replace, xx$find)
+      ## use named vector for find and replace
+      context_cols[[v]] <- xxx[context_cols[[v]]]
+    }
+  }
+
+  # group_by category and create ids
+  tmp <-
+    contexts %>%
+    #  filter(category == v) %>%
+    select(category, context_property, replace) %>%
+    distinct()
+
+  categories <- c("plot", "treatment", "temporal", "method") %>% subset(., . %in% tmp$category)
+
+  ids <- tibble(.rows = nrow(context_cols))
+
+  make_id <- function(x) {
+    # unite function turns NAs into text, so need to deal with this
+    x[x == "NA"] <- NA
+    as.factor(x) %>% as.integer()
+  }
+
+  id_link <- list()
+
+  for (w in categories) {
+    xx <- contexts %>%
+      filter(category == w)
+
+    vars <- unique(xx[["context_property"]])
+
+    xxx <-
+      context_cols %>%
+      select(vars) %>%
+      unite("combined", remove = FALSE) %>%
+      mutate(id = make_id(combined)) %>%
+      select(-combined)
+
+    ## store ids
+    ids[[paste0(w, "_id")]] <- xxx[["id"]]
+
+    ## create link values
+    for (v in vars) {
+      id_link[[v]] <-
+        xxx %>%
+        select(v, id) %>%
+        filter(!is.na(id)) %>%
+        distinct() %>%
+        rename(replace = v) %>%
+        mutate(across(everything(), as.character)) %>%
+        group_by(replace) %>%
+        summarise(
+          category = w,
+          context_property = v,
+          link_id = paste0(w, "_id"),
+          link_vals = paste(id, collapse = ", ")
+        )
+    }
+  }
+
+  contexts_finished <-
+    id_link %>%
+    bind_rows() %>%
+    left_join(contexts, .)
+
+  list(
+    contexts = contexts_finished,
+    ids = ids
+  )
+}
+
 #' Load Dataset
 #'
 #' dataset_process is used to load individual studies using the config file generated
@@ -95,9 +184,38 @@ dataset_process <- function(filename_data_raw,
 
   unit_conversion_functions <- config_for_dataset$unit_conversion_functions
 
+
+  # read contextual data
+
+  # contexts <-
+  #   metadata$contexts %>%
+  #   process_format_sites(dataset_id, context = TRUE) %>%
+  #   process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]])) %>%
+  #   dplyr::select(-.data$error) %>%
+  #   # reorder so type, description come first, if present
+  #   dplyr::arrange(.data$context_name, .data$context_property)
+
+
+  f <- function(x) {
+    tibble::tibble(var_in = x$var_in, category = x$category, util_list_to_df2(x$values))
+  }
+
+  contexts <-
+    metadata$contexts %>%
+    purrr::map_df(.id = "context_property", f) %>%
+    mutate(dataset_id = dataset_id) %>%
+    select(dataset_id, category, context_property, var_in, find, replace, description)
+
   # load and clean trait data
-  traits <- readr::read_csv(filename_data_raw, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
-    process_custom_code(metadata[["dataset"]][["custom_R_code"]])() %>%
+  traits <- 
+    readr::read_csv(filename_data_raw, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
+    process_custom_code(metadata[["dataset"]][["custom_R_code"]])()
+    
+  context_ids <- create_context_ids(traits, contexts) 
+  
+  traits <- 
+    traits %>% 
+    bind_cols(context_ids$ids) %>%
     process_parse_data(dataset_id, metadata) %>%
     process_add_all_columns(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]])) %>%
     process_flag_unsupported_traits(definitions) %>%
@@ -126,15 +244,6 @@ dataset_process <- function(filename_data_raw,
                                 .data$site_property == "longitude (deg)" ~ 3, TRUE ~ 4)) %>%
     dplyr::arrange(.data$site_name, .data$i, .data$site_property) %>%
     dplyr::select(-.data$i)
-
-  # read contextual data
-  contexts <-
-    metadata$contexts %>%
-    process_format_sites(dataset_id, context = TRUE) %>%
-    process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]])) %>%
-    dplyr::select(-.data$error) %>%
-    # reorder so type, description come first, if present
-    dplyr::arrange(.data$context_name, .data$context_property)
 
   # record contributors
   if (length(unlist(metadata$contributors$data_collectors)) >1 ){
@@ -208,7 +317,7 @@ dataset_process <- function(filename_data_raw,
 
   # Where missing, fill variables with values from sites
   vars <- c("basis_of_record", "life_stage", "collection_date", "measurement_remarks", "entity_type",
-                  "value_type", "basis_of_value", "replicates", "observation_number", "method_id",
+                  "value_type", "basis_of_value", "replicates", "observation_id", "method_id",
                   "population_id", "individual_id")
   
   for(v in vars){
@@ -238,7 +347,7 @@ dataset_process <- function(filename_data_raw,
   list(dataset_id = dataset_id,
        traits     = traits %>% filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
        sites      = sites,
-       contexts   = contexts,
+       contexts   = context_ids$contexts,
        methods    = methods,
        excluded_data = 
          if(filter_missing_values == TRUE){
@@ -411,7 +520,7 @@ process_create_entity_id <- function(data) {
       replicates = as.character(replicates),
       check_for_ind = NA
     ) %>%
-    dplyr::select(-spp_id_segment, -pop_id_segment, -ind_id_segment, -individual_id, -population_id, -check_for_ind, -observation_id)
+    dplyr::select(-spp_id_segment, -pop_id_segment, -ind_id_segment, -check_for_ind)
 
 }
 
@@ -751,8 +860,8 @@ process_add_all_columns <- function(data, vars, add_error_column = TRUE) {
     data <- data%>%
       dplyr::mutate(!!v := NA_character_)
 
-  data <- data %>%
-    dplyr::select(dplyr::any_of(c(vars, "observation_id", "population_id", "individual_id")))
+  # data <- data %>%
+  #   dplyr::select(dplyr::any_of(c(vars, "observation_id", "population_id", "individual_id")))
 
   if(add_error_column){
     data <- data %>%
@@ -787,29 +896,19 @@ process_parse_data <- function(data, dataset_id, metadata) {
 
   df <- data %>%
         # next step selects and renames columns based on named vector
-        dplyr::select(any_of(var_in[i])) %>%
+        dplyr::select(any_of(c(var_in[i], "plot_id", "treatment_id", "temporal_id", "method_id"))) %>%
         dplyr::mutate(dataset_id = dataset_id) 
 
   # Step 1b. import any values that aren't columns of data
-  vars <- c( "entity_type", "value_type", "basis_of_value", "replicates", "collection_date",
-            "basis_of_record", "life_stage", "measurement_remarks", "observation_number", 
-            "method_id", "individual_id", "population_id")
+  vars <- c( "entity_type", "value_type", "basis_of_value", 
+            "replicates", "collection_date",
+            "basis_of_record", "life_stage", "measurement_remarks")
 
   df <-
     df %>%
     dplyr::bind_cols(
       metadata[["dataset"]][names(metadata[["dataset"]]) %in% vars[!vars %in% names(df)]] %>% tibble::as_tibble()
     )
-
-  if(is.null(df[["observation_number"]])) {
-      df <- 
-        df %>% dplyr::mutate(observation_number = as.character("1"))
-  }
-
-  if(is.null(df[["method_id"]])) {
-      df <-
-        df %>% dplyr::mutate(method_id = as.character("1"))
-  }
 
   # Add unique observation ids
   # functions to build ids -- determine number of 00s needed based on number of records
@@ -834,7 +933,6 @@ process_parse_data <- function(data, dataset_id, metadata) {
   # however it is required to correctly connect the proper rows of data until the entity_id can be made as part of the `load_study` function
   
   if(!data_is_long_format) {
-    
     
       # If an `individual_id` column  IS read in through metadata$dataset, it is used to correctly cluster and identify individuals
       # If there are rows of data within the file where `individual_id` is `NA`, these are filled in with the row_number() as a placeholder,
@@ -885,11 +983,14 @@ process_parse_data <- function(data, dataset_id, metadata) {
               dplyr::select(-.data$observation_id_tmp)
   }
 
+
   df <- df %>%
             mutate(
-              observation_number = as.character(observation_number),
-              method_id = as.character(method_id)
+              observation_id = as.character(observation_id)
+#              method_id = as.character(method_id)
             )
+
+#  browser()
 
   # Step 2. Add trait information, with correct names
   traits_table <-
