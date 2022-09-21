@@ -58,11 +58,12 @@ austraits:
       elements:
         dataset_id: &dataset_id Primary identifier for each study contributed to AusTraits; most often these are scientific papers, books, or online resources. By default this should be the name of the first author and year of publication, e.g. `Falster_2005`.
         taxon_name: &taxon_name Scientific name of the taxon on which traits were sampled, without authorship. When possible, this is the currently accepted (botanical) or valid (zoological) scientific name, but might also be a higher taxonomic level. [biodiversity.org.au:canonical_name]
-        site_name: &site_name Name of the site where the individual was sampled. Cross-references between similar columns in `sites` and `traits`.
-        context_name: &context_name Name of contextual scenario where the individual was sampled. Cross-references between similar columns in `contexts` and `traits`.
-        entity_id: &entity_id A unique identifier that encodes the taxon, population, and/or individual that is connected to a trait value. A taxon-level trait value will have an entity_id that only includes a taxon component. A population-level trait value will have an entity_id that includes both taxon and population components. And an individual-level trait value will have an entity_id that includes taxon, population, and individual components.  
-        observation_number: &observation_number A field to indicate that multiple measurements have been made on the same entity over time. Observation number defaults to 1, unless it is manually added as a column at the dataset level or to individual trait entries.
-        method_number: &method_number A field to indicate when a trait is measured multiple times on the same entity, with different methods used for each entry. Method number defaults to 1, unless it is manually added as a column or to individual traits.
+        site_name: &site_name Name of the site where the individual was sampled. Cross-references between similar columns in `sites` and `traits`.         
+        plot_id: &plot_id XXXX.
+        treatment_id: &treatment_id XXXX.
+        individual_id: &individual_id A unique identifier for an individual plant. Most often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time. 
+        observation_id: &observation_id A unique identifier for the observation, important for joining traits coming from the same `observation_id` until XXXX `entity_id` is created later in the workflow. For wide datasets, unless a column is specified under `individual_id` , these are assigned automatically based on the `dataset_id` and row number of the raw data.
+        method_id: &method_id A field to indicate when a trait is measured multiple times on the same entity, with different methods used for each entry. Method number defaults to 1, unless it is manually added as a column or to individual traits.
         trait_name: &trait_name Name of the trait sampled. Allowable values specified in the table `definitions`.
         value: &value The measured value of a trait, site property or context property.
         unit: &units Units of the sampled trait value after aligning with AusTraits standards.
@@ -88,7 +89,7 @@ austraits:
       type: table
       elements:
         dataset_id: *dataset_id
-        context_name: *context_name
+        context_name: XXX
         context_property: The contextual characteristic being recorded. If applicable, name should include units of measurement, e.g. `CO2 concentration (ppm)`.
         value: The measured value of a context property.
     methods:
@@ -115,10 +116,10 @@ austraits:
         dataset_id: *dataset_id
         taxon_name: *taxon_name
         site_name: *site_name
-        context_name: *context_name
-        entity_id: *entity_id
-        observation_number: *observation_number
-        method_number: *method_number
+        plot_id: *plot_id
+        treatment_id: *treatment_id
+        observation_id: *observation_id
+        method_id: *method_id
         trait_name: *trait_name
         value: The measured value of a trait.
         unit: *units
@@ -270,14 +271,12 @@ metadata:
         collection_date: *collection_date
         taxon_name: *taxon_name
         site_name: *site_name
-        context_name: *context_name
         entity_type: *entity_type
-        entity_id: *entity_id
-        population_id: &population_id A unique identifier for a population. As used in AusTraits, this is often a true biological population (that is, a site), but the term `population` is also used to distinguish between experimental treatments.
-        individual_id: &individual_id A unique identifier for an individual plant. Most often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time. 
-        observation_id: &observation_id A unique identifier for the observation, important for joining traits coming from the same `observation_id` until `entity_id` is created later in the workflow. For wide datasets, unless a column is specified under `individual_id` , these are assigned automatically based on the `dataset_id` and row number of the raw data.
-        observation_number: *observation_number
-        method_number: *method_number 
+        plot_id: *plot_id
+        treatment_id: *treatment_id
+        individual_id: *individual_id
+        observation_id: *observation_id
+        method_id: *method_id 
         trait_name: Element required for long datasets to specify the column indicating the trait name associated with each row of data.
         value: The measured value of a trait.
         description: *description
@@ -305,13 +304,12 @@ metadata:
         basis_of_value: *basis_of_value
         replicates: *replicates
         measurement_remarks: *measurement_remarks
-        method_number: *method_number
-        observation_number: *observation_number
         methods: *methods
-        entity_id: *entity_id
-        population_id: *population_id
+        plot_id: *plot_id
+        treatment_id: *treatment_id
         individual_id: *individual_id
         observation_id: *observation_id
+        method_id: *method_id
         life_stage: *life_stage
 
     substitutions:

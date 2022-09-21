@@ -208,7 +208,7 @@ dataset_process <- function(filename_data_raw,
 
   # Where missing, fill variables with values from sites
   vars <- c("basis_of_record", "life_stage", "collection_date", "measurement_remarks", "entity_type",
-                  "value_type", "basis_of_value", "replicates", "observation_number", "method_number",
+                  "value_type", "basis_of_value", "replicates", "observation_number", "method_id",
                   "population_id", "individual_id")
   
   for(v in vars){
@@ -793,7 +793,7 @@ process_parse_data <- function(data, dataset_id, metadata) {
   # Step 1b. import any values that aren't columns of data
   vars <- c( "entity_type", "value_type", "basis_of_value", "replicates", "collection_date",
             "basis_of_record", "life_stage", "measurement_remarks", "observation_number", 
-            "method_number", "individual_id", "population_id")
+            "method_id", "individual_id", "population_id")
 
   df <-
     df %>%
@@ -806,9 +806,9 @@ process_parse_data <- function(data, dataset_id, metadata) {
         df %>% dplyr::mutate(observation_number = as.character("1"))
   }
 
-  if(is.null(df[["method_number"]])) {
+  if(is.null(df[["method_id"]])) {
       df <-
-        df %>% dplyr::mutate(method_number = as.character("1"))
+        df %>% dplyr::mutate(method_id = as.character("1"))
   }
 
   # Add unique observation ids
@@ -888,7 +888,7 @@ process_parse_data <- function(data, dataset_id, metadata) {
   df <- df %>%
             mutate(
               observation_number = as.character(observation_number),
-              method_number = as.character(method_number)
+              method_id = as.character(method_id)
             )
 
   # Step 2. Add trait information, with correct names
