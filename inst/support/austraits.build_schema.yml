@@ -61,7 +61,8 @@ austraits:
         site_name: &site_name Name of the site where the individual was sampled. Cross-references between similar columns in `sites` and `traits`.         
         plot_id: &plot_id XXXX.
         treatment_id: &treatment_id XXXX.
-        individual_id: &individual_id A unique identifier for an individual plant. Most often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time. 
+        individual_id: &individual_id A unique identifier for an individual plant. Most often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time.
+        temporal_id: &temporal_id XXXX 
         observation_id: &observation_id A unique identifier for the observation, important for joining traits coming from the same `observation_id` until XXXX `entity_id` is created later in the workflow. For wide datasets, unless a column is specified under `individual_id` , these are assigned automatically based on the `dataset_id` and row number of the raw data.
         method_id: &method_id A field to indicate when a trait is measured multiple times on the same entity, with different methods used for each entry. Method number defaults to 1, unless it is manually added as a column or to individual traits.
         trait_name: &trait_name Name of the trait sampled. Allowable values specified in the table `definitions`.
@@ -75,7 +76,7 @@ austraits:
         basis_of_record: *basis_of_record 
         life_stage: &life_stage A field to indicate the life stage or age class of the entity measured. Standard values are `adult`, `sapling`, `seedling` and `juvenile`.         
         measurement_remarks: &measurement_remarks Brief comments or notes accompanying the trait measurement, often used to indicate why multiple method numbers have been assigned or to document original sources for data compilations.
-        original_name: &orginal_name Name given to taxon in the original data supplied by the authors.
+        original_name: &original_name Name given to taxon in the original data supplied by the authors.
     sites:
       description: A table containing observations of site characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
       type: table
@@ -119,6 +120,7 @@ austraits:
         plot_id: *plot_id
         treatment_id: *treatment_id
         observation_id: *observation_id
+        temporal_id: *temporal_id
         method_id: *method_id
         trait_name: *trait_name
         value: The measured value of a trait.
@@ -131,13 +133,13 @@ austraits:
         basis_of_record: *basis_of_record
         life_stage: *life_stage
         measurement_remarks: *measurement_remarks
-        original_name: *orginal_name
+        original_name: *original_name
     taxonomic_updates:
       description: A table of all taxonomic changes implemented in the construction of AusTraits. Changes are determined by comparing the originally submitted taxon name against the taxonomic names listed in the taxonomic reference files, best placed in a subfolder in the `config` folder . Cross referencing with the `traits` table is possible using combinations of the variables `dataset_id` and `taxon_name`.
       type: table
       elements:
         dataset_id: *dataset_id
-        original_name: *orginal_name
+        original_name: *original_name
         cleaned_name: The taxon name without authorship after implementing automated syntax standardisation and spelling changes as well as manually encoded syntax alignments for this taxon in the metadata file for the corresponding `dataset_id`. This name has not yet been matched to the currently accepted (botanical) or valid (zoological) taxon name in cases where there are taxonomic synonyms, isonyms, orthographic variants, etc.
         taxonIDClean: An identifier for the cleaned name before it is updated to the currently accepted name usage. This may be a global unique identifier or an identifier specific to the data set. Must be resolvable within this dataset. XXXX for APC/APNI at least this should be the [biodiversity.org.au:scientificNameID] because that way it applies to both APC/APNI, while we'd been matching to taxon_ID, which meant there were no identifiers for APNI names not in APC. XXXX [TBC - cleaned_name_taxon_ID]
         taxonomicStatusClean: The status of the use of the `cleaned_name` as a label for a taxon.     Requires taxonomic opinion to define the scope of a taxon. Rules of priority then are used to define the taxonomic status of the nomenclature contained in that scope, combined with the experts opinion. It must be linked to a specific taxonomic reference that defines the concept. [biodiversity.org.au:taxonomicStatus | dwc:taxonomicStatus] [TBC - cleaned_name_taxonomic_status]
@@ -276,7 +278,6 @@ metadata:
         treatment_id: *treatment_id
         individual_id: *individual_id
         observation_id: *observation_id
-        method_id: *method_id 
         trait_name: Element required for long datasets to specify the column indicating the trait name associated with each row of data.
         value: The measured value of a trait.
         description: *description
@@ -308,7 +309,7 @@ metadata:
         plot_id: *plot_id
         treatment_id: *treatment_id
         individual_id: *individual_id
-        observation_id: *observation_id
+        temporal_id: &temporal_id 
         method_id: *method_id
         life_stage: *life_stage
 
@@ -323,7 +324,7 @@ metadata:
       description: A table of taxonomic name changes needed to align original names in the dataset with taxon names in the chosen taxonomic reference(s).
       type: array
       values:
-        find: *orginal_name
+        find: *original_name
         replace: *taxon_name
         reason: Records why the change was implemented, e.g. `typos`, `taxonomic synonyms`, and `standardising spellings`
     exclude_observations:
