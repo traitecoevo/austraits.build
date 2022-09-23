@@ -137,6 +137,10 @@ create_context_ids <- function(data, contexts) {
     }
   }
 
+  contexts <-
+    contexts %>% 
+      mutate(across(everything(), as.character))
+  
   contexts_finished <-
     id_link %>%
     bind_rows() %>%
@@ -200,22 +204,34 @@ dataset_process <- function(filename_data_raw,
     tibble::tibble(var_in = x$var_in, category = x$category, util_list_to_df2(x$values))
   }
 
-  contexts <-
-    metadata$contexts %>%
-    purrr::map_df(.id = "context_property", f) %>%
-    mutate(dataset_id = dataset_id) %>%
-    select(dataset_id, category, context_property, var_in, find, replace, description)
+  if(!is.na(metadata$contexts)) {
+    contexts <-
+      metadata$contexts %>%
+      purrr::map_df(.id = "context_property", f) %>%
+      mutate(dataset_id = dataset_id) %>%
+      select(dataset_id, category, context_property, var_in, find, replace, description) %>%
+      mutate(replace = ifelse(is.na(replace),find,replace))
+  }
 
   # load and clean trait data
   traits <- 
     readr::read_csv(filename_data_raw, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
     process_custom_code(metadata[["dataset"]][["custom_R_code"]])()
-    
-  context_ids <- create_context_ids(traits, contexts) 
   
-  traits <- 
-    traits %>% 
-    bind_cols(context_ids$ids) %>%
+  if(!is.na(metadata$contexts)) {
+    context_ids <- create_context_ids(traits, contexts)
+  } else {
+    context_ids <- 
+      tibble::tibble(dataset_id = character()) %>%
+      mutate(contexts = NA_character_)
+  }  
+
+  if(!is.na(metadata$contexts)) {
+    traits <- traits %>% 
+        bind_cols(context_ids$ids)
+  }
+  
+  traits <- traits %>%
     process_parse_data(dataset_id, metadata) %>%
     process_add_all_columns(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]])) %>%
     process_flag_unsupported_traits(definitions) %>%
