@@ -31,15 +31,20 @@ dataset:
     data %>% 
       mutate(
         growth_habit = ifelse(height=="prostrate","prostrate",NA),
-        fruit_fleshiness = fruits, fruit_dehiscence = fruits, dispersal_appendage = NA
+        fruit_fleshiness = fruits,
+        fruit_dehiscence = fruits,
+        dispersal_appendage = NA
       ) %>% 
-      move_values_to_new_trait("fruits", "dispersal_appendage", c("dry & winged", "enclosed in aril"), 
-                              c("wings", "aril"), c("dry & winged", "enclosed in aril")) %>%
+      move_values_to_new_trait(
+        "fruits", "dispersal_appendage",
+        c("dry & winged", "enclosed in aril"), 
+        c("wings", "aril"),
+        c("dry & winged", "enclosed in aril")
+      ) %>%
       group_by(species_name) %>%
         mutate(
-          across(c(`form`, `height`, `stem diameter`, `fruits`, `dispersers`, 
-                    `dispersers_simple`, `min fruit length`, `max fruit length`,
-                    `min fruit width`, `max fruti width`), replace_duplicates_with_NA), %>%
+          across(c(`form`, `height`, `stem diameter`, `fruits`, `dispersers`,`dispersers_simple`, `min fruit length`, `max fruit length`, `min fruit width`, `max fruti width`), 
+                replace_duplicates_with_NA),
           observation_num = row_number()
         ) %>%
       ungroup()
@@ -55,7 +60,7 @@ dataset:
 sites: .na
 contexts:
   repeat observations:
-    var_in: obs
+    var_in: observation_num
     category: temporal
     values:
     - find: 1

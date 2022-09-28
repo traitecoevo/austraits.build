@@ -30,7 +30,7 @@ dataset:
         leaf_C_g_mg = `CN (g C g-1 N)` * `Nm (mg g-1)`,
       ) %>%
       arrange(Date) %>%
-      group_by(Tree, site, Age, CO2.treat, Ring) %>%
+      group_by(Tree, site_name, Age, CO2.treat, Ring) %>%
         mutate(
           observation_num = ifelse(!(is.na(Tree)) & !(is.na(Age)),
                               dplyr::row_number(), NA)
@@ -79,7 +79,7 @@ sites:
       stipoides (a C3 grass) and some shrubs.
 contexts:
   CO2 treatment:
-    var-in: CO2.treat
+    var_in: CO2.treat
     category: treatment
     values:
     - find: Amb
@@ -87,8 +87,7 @@ contexts:
       description: Plants grown at ambient CO2 (400 ppm) (Rings 2, 3 and 6 in the EucFACE experiment).
     - find: Elev
       replace: 550 ppm
-      description: Plants grown at elevated CO2 (550 ppm) (150 ppm above ambient; Rings 1, 4 and 5 in the
-      EucFACE experiment).
+      description: Plants grown at elevated CO2 (550 ppm) (150 ppm above ambient; Rings 1, 4 and 5 in the EucFACE experiment).
   leaf age:
     var_in: Age
     category: method
@@ -100,7 +99,7 @@ contexts:
       replace: old
       description: Leaves are mature; aged 93-404 days; see data.csv file for exact age.
   repeat observations:
-    var_in: observation
+    var_in: observation_num
     category: temporal
   blocks:
     var_in: Ring
