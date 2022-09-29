@@ -53,6 +53,18 @@ util_replace_null <- function(x, val=NA){
   x
 }
 
+
+#' Convert all columns in data frame to character
+
+#' @param df
+#' 
+#' @return a dataframe
+#' 
+#' @examples lapply(util_df_convert_character(iris), class) 
+util_df_convert_character <- function(df) {
+  dplyr::mutate(df, dplyr::across(dplyr::everything(), as.character))
+}
+
 #' Extract a trait element from the definitions$traits$elements
 #'
 #' @param i a value within the definitions$traits$elements list which refers to types of traits

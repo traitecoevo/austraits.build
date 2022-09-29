@@ -72,14 +72,20 @@ create_context_ids <- function(data, contexts) {
 
   # Find and replace values for each context property
   for (v in unique(contexts$context_property)) {
+
     ## first filter to each property
     xx <- contexts %>%
-      filter(context_property == v, !is.na(find))
-    if (nrow(xx) > 0) {
-      ## create named vector
-      xxx <- setNames(xx$replace, xx$find)
-      ## use named vector for find and replace
-      context_cols[[v]] <- xxx[context_cols[[v]]]
+      filter(context_property == v)
+    
+    ## only do if find column is present and has non NA values
+    if(!is.null(xx[["find"]])) {
+      xx <- dplyr::filter(xx, is.na(find))
+      if (nrow(xx) > 0) {  
+        ## create named vector
+        xxx <- setNames(xx$replace, xx$find)
+        ## use named vector for find and replace
+        context_cols[[v]] <- xxx[context_cols[[v]]]
+      }
     }
   }
 
@@ -125,9 +131,9 @@ create_context_ids <- function(data, contexts) {
         select(v, id) %>%
         filter(!is.na(id)) %>%
         distinct() %>%
-        rename(replace = v) %>%
-        mutate(across(everything(), as.character)) %>%
-        group_by(replace) %>%
+        rename(find = v) %>%
+        util_df_convert_character() %>%
+        group_by(find) %>%
         summarise(
           category = w,
           context_property = v,
@@ -137,18 +143,16 @@ create_context_ids <- function(data, contexts) {
     }
   }
 
-  contexts <-
-    contexts %>% 
-      mutate(across(everything(), as.character))
-  
   contexts_finished <-
-    id_link %>%
-    bind_rows() %>%
-    left_join(contexts, .)
+    contexts %>%
+    dplyr::left_join(
+      id_link %>% dplyr::bind_rows(),
+      by = c("category", "context_property", "find")
+    )
 
   list(
-    contexts = contexts_finished,
-    ids = ids
+    contexts = contexts_finished %>% util_df_convert_character(),
+    ids = ids %>% util_df_convert_character()
   )
 }
 
@@ -210,12 +214,17 @@ dataset_process <- function(filename_data_raw,
       purrr::map_df(.id = "context_property", f) %>%
       mutate(dataset_id = dataset_id) %>%
       select(dataset_id, category, context_property, var_in, 
-      dplyr::any_of(c("find", "replace", "description"))) #%>%
-      #keep values from find column if a replacement isn't specified
-      #mutate(find = ifelse(is.na(find), replace, find))
+      dplyr::any_of(c("find", "replace", "description")))
+
+      # keep values from find column if a replacement isn't specified
+      if(is.null(contexts[["find"]])) {
+        contexts[["find"]] <- NA_character_
+      } else{
+        contexts[["find"]] <- ifelse(is.na(contexts$find), contexts$replace, contexts$find)
+      }
   } else {
-    contexts <-
-          tibble::tibble(dataset_id = character())
+      contexts <-
+          tibble::tibble(dataset_id = character(), var_in = character())
   }
   
   # load and clean trait data
@@ -459,7 +468,7 @@ process_create_entity_id <- function(data) {
   
   if(all(is.na(data[["population_id"]]))) {
     data <- data %>%
-      dplyr::mutate(population_id = NA)
+      dplyr::mutate(population_id = NA_character_)
   }
   
 
@@ -897,8 +906,6 @@ process_add_all_columns <- function(data, vars, add_error_column = TRUE) {
 #' @importFrom rlang .data
 process_parse_data <- function(data, dataset_id, metadata, contexts) {
 
-  cat(  nrow(data))
-
   # get config data for dataset
   data_is_long_format <- metadata[["dataset"]][["data_is_long_format"]]
 
@@ -1080,7 +1087,11 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
 
   # Now create context ids
   if (nrow(contexts) == 0) {
-    context_ids <- contexts
+    context_ids <- 
+      list(
+        contexts = contexts,
+        ids = tibble::tibble()
+        )
   } else {
     context_ids <- create_context_ids(out, contexts)
 
