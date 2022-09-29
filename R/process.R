@@ -126,7 +126,7 @@ create_context_ids <- function(data, contexts) {
         filter(!is.na(id)) %>%
         distinct() %>%
         rename(replace = v) %>%
-        mutate(across(everything(), as.character)) %>%
+        util_df_convert_character() %>%
         group_by(replace) %>%
         summarise(
           category = w,
@@ -137,18 +137,17 @@ create_context_ids <- function(data, contexts) {
     }
   }
 
-  contexts <-
-    contexts %>% 
-      mutate(across(everything(), as.character))
-  
   contexts_finished <-
     id_link %>%
-    bind_rows() %>%
-    left_join(contexts, .)
+    dplyr::bind_rows() %>%
+    dplyr::left_join(
+      by = c("category", "context_property", "replace"),
+      contexts, .
+      )
 
   list(
-    contexts = contexts_finished,
-    ids = ids
+    contexts = contexts_finished %>% util_df_convert_character(),
+    ids = ids %>% util_df_convert_character()
   )
 }
 
@@ -459,7 +458,7 @@ process_create_entity_id <- function(data) {
   
   if(all(is.na(data[["population_id"]]))) {
     data <- data %>%
-      dplyr::mutate(population_id = NA)
+      dplyr::mutate(population_id = NA_character_)
   }
   
 
@@ -896,8 +895,6 @@ process_add_all_columns <- function(data, vars, add_error_column = TRUE) {
 #' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of bind_cols
 #' @importFrom rlang .data
 process_parse_data <- function(data, dataset_id, metadata, contexts) {
-
-  cat(  nrow(data))
 
   # get config data for dataset
   data_is_long_format <- metadata[["dataset"]][["data_is_long_format"]]
