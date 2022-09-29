@@ -131,9 +131,9 @@ create_context_ids <- function(data, contexts) {
         select(v, id) %>%
         filter(!is.na(id)) %>%
         distinct() %>%
-        rename(replace = v) %>%
+        rename(find = v) %>%
         util_df_convert_character() %>%
-        group_by(replace) %>%
+        group_by(find) %>%
         summarise(
           category = w,
           context_property = v,
@@ -144,12 +144,11 @@ create_context_ids <- function(data, contexts) {
   }
 
   contexts_finished <-
-    id_link %>%
-    dplyr::bind_rows() %>%
+    contexts %>%
     dplyr::left_join(
-      by = c("category", "context_property", "replace"),
-      contexts, .
-      )
+      id_link %>% dplyr::bind_rows(),
+      by = c("category", "context_property", "find")
+    )
 
   list(
     contexts = contexts_finished %>% util_df_convert_character(),
@@ -215,11 +214,16 @@ dataset_process <- function(filename_data_raw,
       purrr::map_df(.id = "context_property", f) %>%
       mutate(dataset_id = dataset_id) %>%
       select(dataset_id, category, context_property, var_in, 
-      dplyr::any_of(c("find", "replace", "description"))) #%>%
-      #keep values from find column if a replacement isn't specified
-      #mutate(find = ifelse(is.na(find), replace, find))
+      dplyr::any_of(c("find", "replace", "description")))
+
+      # keep values from find column if a replacement isn't specified
+      if(is.null(contexts[["find"]])) {
+        contexts[["find"]] <- NA_character_
+      } else{
+        contexts[["find"]] <- ifelse(is.na(contexts$find), contexts$replace, contexts$find)
+      }
   } else {
-    contexts <-
+      contexts <-
           tibble::tibble(dataset_id = character(), var_in = character())
   }
   
