@@ -204,13 +204,15 @@ dataset_process <- function(filename_data_raw,
     tibble::tibble(var_in = x$var_in, category = x$category, util_list_to_df2(x$values))
   }
 
-  if(!is.na(metadata$contexts)) {
+  if(!is.na(metadata$contexts[1])) {
     contexts <-
       metadata$contexts %>%
       purrr::map_df(.id = "context_property", f) %>%
       mutate(dataset_id = dataset_id) %>%
-      select(dataset_id, category, context_property, var_in, find, replace, description) %>%
-      mutate(replace = ifelse(is.na(replace),find,replace))
+      select(dataset_id, category, context_property, var_in, 
+      dplyr::any_of(c("find", "replace", "description"))) #%>%
+      #keep values from find column if a replacement isn't specified
+      #mutate(find = ifelse(is.na(find), replace, find))
   }
 
   # load and clean trait data
@@ -218,15 +220,14 @@ dataset_process <- function(filename_data_raw,
     readr::read_csv(filename_data_raw, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
     process_custom_code(metadata[["dataset"]][["custom_R_code"]])()
   
-  if(!is.na(metadata$contexts)) {
+  if(!is.na(metadata$contexts[1])) {
     context_ids <- create_context_ids(traits, contexts)
   } else {
     context_ids <- 
-      tibble::tibble(dataset_id = character()) %>%
-      mutate(contexts = NA_character_)
+      tibble::tibble(dataset_id = character(), contexts = character())
   }  
 
-  if(!is.na(metadata$contexts)) {
+  if(!is.na(metadata$contexts[1])) {
     traits <- traits %>% 
         bind_cols(context_ids$ids)
   }
