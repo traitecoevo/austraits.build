@@ -40,7 +40,8 @@ dataset:
   custom_R_code: '
     data %>%
       mutate(
-        site = ifelse(Yrs %in% c(15, 28, 36, 41, 86), paste(site,"_",Yrs,sep=""), site)
+        site = ifelse(Yrs %in% c(15, 28, 36, 41, 86), paste(site,"_",Yrs,sep=""), site),
+        Yrs = ifelse(!is.na(Yrs),paste0("Y",Yrs),Yrs)
       )
   '
   collection_date: 2013-04/2013-10
@@ -140,46 +141,49 @@ contexts:
     var_in: Yrs
     category: plot
     values:
-    - find: 0
+    - find: Y0
       replace: 0 years
       description: Site last burnt 0 years ago.
-    - find: 1
-      replace: 1 years
+    - find: Y1
+      replace: 1 year
       description: Site last burnt 1 year ago.
-    - find: 2 years
-      replace: 2
+    - find: Y2
+      replace: 2 years
       description: Site last burnt 2 years ago.
-    - find: 3
+    - find: Y3
       replace: 3 years
       description: Site last burnt 3 years ago.
-    - find: 4
+    - find: Y4
       replace: 4 years
       description: Site last burnt 4 years ago.
-    - find: 6
+    - find: Y6
       replace: 6 years
       description: Site last burnt 6 years ago.
-    - find: 13
+    - find: Y8
+      replace: 8 years
+      description: Site last burnt 8 years ago.
+    - find: Y13
       replace: 13 years
       description: Site last burnt 13 years ago.
-    - find: 15
+    - find: Y15
       replace: 15 years
       description: Site last burnt 15 years ago.
-    - find: 26
+    - find: Y26
       replace: 26 years
       description: Site last burnt 26 years ago.
-    - find: 28
+    - find: Y28
       replace: 28 years
       description: Site last burnt 28 years ago.
-    - find: 33
+    - find: Y33
       replace: 33 years
       description: Site last burnt 33 years ago.
-    - find: 36
+    - find: Y36
       replace: 36 years
       description: Site last burnt 36 years ago.
-    - find: 41
+    - find: Y41
       replace: 41 years
       description: Site last burnt 41 years ago.
-    - find: 86
+    - find: Y86
       replace: 86 years
       description: Site last burnt 86 years ago.
 traits:
@@ -239,14 +243,6 @@ traits:
     species were then pooled and finely ground for nitrogen analysis. Total nitrogen
     concentration based on mass (%) was measured using complete combustion gas chromatography
     performed by The Surface and Chemical Analysis Network at The University of Melbourne.
-- var_in: Yrs
-  unit_in: years
-  trait_name: .na
-  entity_type: individual
-  value_type: raw
-  basis_of_value: measurement
-  replicates: 1
-  methods: time in years since last fire (contextual variable)
 - var_in: Ht
   unit_in: cm
   trait_name: plant_height
