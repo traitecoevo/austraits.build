@@ -213,27 +213,20 @@ dataset_process <- function(filename_data_raw,
       dplyr::any_of(c("find", "replace", "description"))) #%>%
       #keep values from find column if a replacement isn't specified
       #mutate(find = ifelse(is.na(find), replace, find))
+  } else {
+    contexts <-
+          tibble::tibble(dataset_id = character())
   }
-
+  
   # load and clean trait data
   traits <- 
     readr::read_csv(filename_data_raw, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
-    process_custom_code(metadata[["dataset"]][["custom_R_code"]])()
+    process_custom_code(metadata[["dataset"]][["custom_R_code"]])() %>%
+    process_parse_data(dataset_id, metadata, contexts)
   
-  if(!is.na(metadata$contexts[1])) {
-    context_ids <- create_context_ids(traits, contexts)
-  } else {
-    context_ids <- 
-      tibble::tibble(dataset_id = character(), contexts = character())
-  }  
+  context_ids <- traits$context_ids
 
-  if(!is.na(metadata$contexts[1])) {
-    traits <- traits %>% 
-        bind_cols(context_ids$ids)
-  }
-  
-  traits <- traits %>%
-    process_parse_data(dataset_id, metadata) %>%
+  traits <- traits$traits %>%
     process_add_all_columns(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]])) %>%
     process_flag_unsupported_traits(definitions) %>%
     process_flag_excluded_observations(metadata) %>%
@@ -902,7 +895,19 @@ process_add_all_columns <- function(data, vars, add_error_column = TRUE) {
 #' substitutions and unique observation id added
 #' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of bind_cols
 #' @importFrom rlang .data
-process_parse_data <- function(data, dataset_id, metadata) {
+process_parse_data <- function(data, dataset_id, metadata, contexts) {
+
+#  browser()
+
+  if (nrow(contexts) == 0 ) {
+    context_ids <- contexts
+  } else {
+    context_ids <- create_context_ids(data, contexts)
+
+    data <- data %>%
+      bind_cols(context_ids$ids)
+  }
+
 
   # get config data for dataset
   data_is_long_format <- metadata[["dataset"]][["data_is_long_format"]]
@@ -1103,7 +1108,10 @@ process_parse_data <- function(data, dataset_id, metadata) {
     }
   }
   
-  out
+  list(
+    traits = out,
+    context_ids = context_ids
+  )
 }
 
 #' Standardise species names
