@@ -213,27 +213,20 @@ dataset_process <- function(filename_data_raw,
       dplyr::any_of(c("find", "replace", "description"))) #%>%
       #keep values from find column if a replacement isn't specified
       #mutate(find = ifelse(is.na(find), replace, find))
+  } else {
+    contexts <-
+          tibble::tibble(dataset_id = character())
   }
-
+  
   # load and clean trait data
   traits <- 
     readr::read_csv(filename_data_raw, col_types = cols(), guess_max = 100000, progress=FALSE) %>%
-    process_custom_code(metadata[["dataset"]][["custom_R_code"]])()
+    process_custom_code(metadata[["dataset"]][["custom_R_code"]])() %>%
+    process_parse_data(dataset_id, metadata, contexts)
   
-  if(!is.na(metadata$contexts[1])) {
-    context_ids <- create_context_ids(traits, contexts)
-  } else {
-    context_ids <- 
-      tibble::tibble(dataset_id = character(), contexts = character())
-  }  
+  context_ids <- traits$context_ids
 
-  if(!is.na(metadata$contexts[1])) {
-    traits <- traits %>% 
-        bind_cols(context_ids$ids)
-  }
-  
-  traits <- traits %>%
-    process_parse_data(dataset_id, metadata) %>%
+  traits <- traits$traits %>%
     process_add_all_columns(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]])) %>%
     process_flag_unsupported_traits(definitions) %>%
     process_flag_excluded_observations(metadata) %>%
@@ -902,7 +895,9 @@ process_add_all_columns <- function(data, vars, add_error_column = TRUE) {
 #' substitutions and unique observation id added
 #' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of bind_cols
 #' @importFrom rlang .data
-process_parse_data <- function(data, dataset_id, metadata) {
+process_parse_data <- function(data, dataset_id, metadata, contexts) {
+
+  cat(  nrow(data))
 
   # get config data for dataset
   data_is_long_format <- metadata[["dataset"]][["data_is_long_format"]]
@@ -913,9 +908,9 @@ process_parse_data <- function(data, dataset_id, metadata) {
 
   df <- data %>%
         # next step selects and renames columns based on named vector
-        dplyr::select(any_of(c(var_in[i], "plot_id", "treatment_id", "temporal_id", "method_id"))) %>%
-        dplyr::mutate(dataset_id = dataset_id) 
-
+        dplyr::select(any_of(c(var_in[i], "plot_id", "treatment_id", "temporal_id", "method_id", contexts$var_in))) %>%
+        dplyr::mutate(dataset_id = dataset_id)
+  
   # Step 1b. import any values that aren't columns of data
   vars <- c( "entity_type", "value_type", "basis_of_value", 
             "replicates", "collection_date",
@@ -1007,7 +1002,6 @@ process_parse_data <- function(data, dataset_id, metadata) {
 #              method_id = as.character(method_id)
             )
 
-#  browser()
 
   # Step 2. Add trait information, with correct names
   traits_table <-
@@ -1022,11 +1016,14 @@ process_parse_data <- function(data, dataset_id, metadata) {
     stop(paste(dataset_id, ": missing traits: ", setdiff(traits_table[["var_in"]], colnames(data))))
   }
 
+  vars_traits <- c(vars, contexts$var_in)    
+
   ## if needed, change from wide to long format
   if (!data_is_long_format) {
 
     # if the dataset is "wide" then process each variable in turn, to create the "long" dataset -
     # say the original dataset has 20 rows of data and 5 traits, then we will end up with 100 rows
+
     out <- list()
     for (i in seq_len(nrow(traits_table))) {
       # create a temporary dataframe which is a copy of df
@@ -1039,12 +1036,15 @@ process_parse_data <- function(data, dataset_id, metadata) {
       # Pull in additional information for each trait as specified in traits part of metadata, here represented as traits_table
       # Values in table can specify a column in the original data OR a value to use
 
-      vars_to_check <- vars[vars%in% names(traits_table)]
+      vars_to_check <- vars_traits[vars_traits %in% names(traits_table)]
       # For each column in traits_table
       for(v in vars_to_check) {
         # get value
         value <- traits_table[i,v, drop=TRUE]
         # Check if it is a column in data or not and process accordingly
+
+        # Question: Why can't "entity_type", "basis_of_value" come in as column of data?
+
         if(!is.na(value)) {
           if(!is.null(data[[value]]) && !(v %in% c("entity_type", "basis_of_value")) ) {
             out[[i]][[v]] <- data[[value]] %>% as.character()
@@ -1056,13 +1056,14 @@ process_parse_data <- function(data, dataset_id, metadata) {
     }
     out <- dplyr::bind_rows(out)
   } else {
+
     out <- df %>% filter(.data$trait_name %in% traits_table$var_in)
     out[["value"]] <- out[["value"]] %>%  as.character()
 
     # Pull in additional information for each trait as specified in traits part of metadata, here represented as traits_table
     # (column option not implemented) Values in table can specify a column in the original data OR a value to use
 
-    vars_to_check <- vars[vars%in% names(traits_table)]
+    vars_to_check <- vars_traits[vars_traits %in% names(traits_table)]
     # For each column in traits_table
     for (i in seq_len(nrow(traits_table))) {
       for(v in vars_to_check) {
@@ -1076,6 +1077,17 @@ process_parse_data <- function(data, dataset_id, metadata) {
 
   # Ensure all lower case
   out[["value"]] <- tolower(out[["value"]])
+
+  # Now create context ids
+  if (nrow(contexts) == 0) {
+    context_ids <- contexts
+  } else {
+    context_ids <- create_context_ids(out, contexts)
+
+    out <- 
+      dplyr::bind_cols(out, context_ids$ids) %>% 
+      dplyr::select(-any_of(unique(contexts$var_in)))
+  }
 
   # Now process any name changes as per metadata[["traits"]]
   out[["unit"]] <- NA_character_
@@ -1103,7 +1115,10 @@ process_parse_data <- function(data, dataset_id, metadata) {
     }
   }
   
-  out
+  list(
+    traits = out,
+    context_ids = context_ids
+  )
 }
 
 #' Standardise species names
