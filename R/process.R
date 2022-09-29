@@ -72,14 +72,20 @@ create_context_ids <- function(data, contexts) {
 
   # Find and replace values for each context property
   for (v in unique(contexts$context_property)) {
+
     ## first filter to each property
     xx <- contexts %>%
-      filter(context_property == v, !is.na(find))
-    if (nrow(xx) > 0) {
-      ## create named vector
-      xxx <- setNames(xx$replace, xx$find)
-      ## use named vector for find and replace
-      context_cols[[v]] <- xxx[context_cols[[v]]]
+      filter(context_property == v)
+    
+    ## only do if find column is present and has non NA values
+    if(!is.null(xx[["find"]])) {
+      xx <- dplyr::filter(xx, is.na(find))
+      if (nrow(xx) > 0) {  
+        ## create named vector
+        xxx <- setNames(xx$replace, xx$find)
+        ## use named vector for find and replace
+        context_cols[[v]] <- xxx[context_cols[[v]]]
+      }
     }
   }
 
@@ -214,7 +220,7 @@ dataset_process <- function(filename_data_raw,
       #mutate(find = ifelse(is.na(find), replace, find))
   } else {
     contexts <-
-          tibble::tibble(dataset_id = character())
+          tibble::tibble(dataset_id = character(), var_in = character())
   }
   
   # load and clean trait data
@@ -1077,7 +1083,11 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
 
   # Now create context ids
   if (nrow(contexts) == 0) {
-    context_ids <- contexts
+    context_ids <- 
+      list(
+        contexts = contexts,
+        ids = tibble::tibble()
+        )
   } else {
     context_ids <- create_context_ids(out, contexts)
 
