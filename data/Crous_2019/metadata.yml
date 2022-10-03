@@ -39,7 +39,9 @@ dataset:
       group_by(Ring, Age) %>%
         mutate(
           litter_observation_num = ifelse(!is.na(P_litter),dplyr::row_number(), NA),
-          observation_num = ifelse(is.na(observation_num), 10+litter_observation_num, observation_num)
+          observation_num = ifelse(is.na(observation_num), 10+litter_observation_num, observation_num) %>% 
+            as.character(),
+          observation_num = ifelse(nchar(observation_num)!=2,paste0("0",observation_num),observation_num)
         ) %>%
       ungroup()
   '
@@ -102,26 +104,25 @@ contexts:
     var_in: observation_num
     category: temporal
     values:    
-    - replace: 1
-    - replace: 2
-    - replace: 3
-    - replace: 4    
-    - replace: 5
-    - replace: 6
-    - replace: 7
-    - replace: 8    
-    - replace: 9
-    - replace: 10
-    - replace: 11
-    - replace: 12   
-    - replace: 13
-    - replace: 14
-    - replace: 15
-    - replace: 16
-    - replace: 17
+    - replace: '01'
+    - replace: '02'
+    - replace: '03'
+    - replace: '04'   
+    - replace: '05'
+    - replace: '06'
+    - replace: '07'
+    - replace: '08'    
+    - replace: '09'
+    - replace: '10'
+    - replace: '11'
+    - replace: '12'   
+    - replace: '13'
+    - replace: '15'
+    - replace: '16'
+    - replace: '17'
   blocks:
     var_in: Ring
-    category: subsite
+    category: plot
     values:    
     - replace: 1
     - replace: 2

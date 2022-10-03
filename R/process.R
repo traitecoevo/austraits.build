@@ -82,7 +82,7 @@ create_context_ids <- function(data, contexts) {
       xx <- dplyr::filter(xx, is.na(find))
       if (nrow(xx) > 0) {  
         ## create named vector
-        xxx <- setNames(xx$replace, xx$find)
+        xxx <- setNames(xx$replace, xx$replace)
         ## use named vector for find and replace
         context_cols[[v]] <- xxx[context_cols[[v]]]
       }
@@ -145,6 +145,7 @@ create_context_ids <- function(data, contexts) {
 
   contexts_finished <-
     contexts %>%
+    mutate(find = ifelse(is.na(find),as.character(replace),as.character(find))) %>%
     dplyr::left_join(
       id_link %>% dplyr::bind_rows(),
       by = c("category", "context_property", "find")
