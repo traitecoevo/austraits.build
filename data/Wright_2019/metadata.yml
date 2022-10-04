@@ -33,16 +33,18 @@ dataset:
         new_date = ifelse(sample_date %in% c("2011-05", "2010-09"), NA, sample_date),
         new_date = new_date %>% mdy(quiet=TRUE) %>% as.character(),
         date_WD = date_WD %>% dmy(quiet=TRUE) %>% as.character(),
-        date_merged = coalesce(new_date, date_WD, as.character(date_by_month))
+        date_merged = coalesce(new_date, date_WD, as.character(date_by_month)),
+        individual = paste(Species, site_name, age, Rep, sep = "_")
       ) %>%
         select(-date_by_month, -new_date, -date_WD, -sample_date, - notes, -spp, -`Pith diam (mm)`, -context) %>% 
         group_by(date_merged, site_name, season, Species, age, Rep) %>% 
           summarise_at(vars(`WD kg/m3`:`gas_ d13C_leaf`), mean, na.rm = TRUE) %>% 
-        ungroup() 
+        ungroup()
   '
   collection_date: date_merged
   taxon_name: Species
   site_name: site_name
+  individual_id: individual
   description: traits of NT savannah species
   basis_of_record: field
   life_stage: age
