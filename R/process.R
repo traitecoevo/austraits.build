@@ -561,7 +561,7 @@ process_create_entity_id <- function(data) {
       replicates = as.character(replicates),
       check_for_ind = NA
     ) %>%
-    dplyr::select(-pop_id_segment, -ind_id_segment, -check_for_ind, -parsing_id, -parsing_id_tmp, -individual_id)
+    dplyr::select(-pop_id_segment, -ind_id_segment, -check_for_ind, -parsing_id, -individual_id)
 }
 
 #' Format site and context data from list to tibble
@@ -986,16 +986,16 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
   # just as would occur if no `individual_id` column is specified.
     
       if(!is.null(df[["individual_id"]])) {
-        df[["parsing_id_tmp"]] <- df[["individual_id"]]
+        df[["parsing_id"]] <- df[["individual_id"]]
         
         prefix <- dataset_id
 
         df <- df %>%
-                  dplyr::mutate(parsing_id_tmp = ifelse(is.na(parsing_id_tmp),
-                                paste("temp", dplyr::row_number(), sep = "_"),parsing_id_tmp),
-                                parsing_id_tmp = as.character(parsing_id_tmp)
+                  dplyr::mutate(parsing_id = ifelse(is.na(parsing_id),
+                                paste("temp", dplyr::row_number(), sep = "_"),parsing_id),
+                                parsing_id = as.character(parsing_id)
                                 ) %>% 
-                  dplyr::mutate(parsing_id = create_id(parsing_id_tmp, prefix))
+                  dplyr::mutate(parsing_id = create_id(parsing_id, prefix))
         
       
       # If an `individual_id` column  IS NOT read in through metadata$dataset, row_numbers are assumed to represent unique `entities`
