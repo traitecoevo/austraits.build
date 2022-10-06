@@ -283,8 +283,21 @@ dataset_process <- function(filename_data_raw,
   # record methods on study from metadata
   sources <- metadata$source %>%
             lapply(util_list_to_bib) %>% purrr::reduce(c)
+
+  # identify sources as being `primary`, `secondary` or `original`
+  # secondary datasets are additional publications associated with the primary citation
+  # original dataset keys are used for compilations indicating the original data sources
+
+  tibble::tibble(
+    dataset_id = names(metadata$source),
+    type = str_replace_all(dataset_id,"[:punct:][:digit:][:digit:]","")
+  ) -> citation_types
+
   source_primary_key <- metadata$source$primary$key
-  source_secondary_keys <- setdiff(names(sources), source_primary_key)
+  source_secondary_keys <- citation_types %>% filter(type == "secondary")
+  source_original_dataset_keys <- citation_types %>% filter(type == "original")
+
+# source_secondary_keys <- setdiff(names(sources), source_primary_key)
 
   # combine collectors to add into the methods table
   collectors_tmp <-
@@ -311,12 +324,12 @@ dataset_process <- function(filename_data_raw,
           dplyr::mutate(dataset_id = dataset_id) %>%
           dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", 
                                          "trait_name", "population_id", "individual_id",
-                                         "context_name", "site_name", 
+                                         "context_name", "site_name", "original_dataset_id",
                                          "collection_date", "custom_R_code", 
                                          "taxon_name", "basis_of_value", "basis_of_record", "life_stage")))
       )  %>%
       full_join( by = "dataset_id",
-        #references
+      # references
         tibble::tibble(
           dataset_id = dataset_id,
           source_primary_key = source_primary_key,
@@ -324,6 +337,11 @@ dataset_process <- function(filename_data_raw,
           source_secondary_key = source_secondary_keys %>% paste(collapse = "; "),
           source_secondary_citation = ifelse(length(source_secondary_keys) == 0, NA_character_,
           map_chr(sources[source_secondary_keys], bib_print) %>% paste(collapse = "; ") %>%
+          stringr::str_replace_all(".;", ";")
+          ),                    
+          source_original_dataset_key = source_original_dataset_keys %>% paste(collapse = "; "),
+          source_original_dataset_citation = ifelse(length(source_original_dataset_keys) == 0, NA_character_,
+          map_chr(sources[source_original_dataset_keys], bib_print) %>% paste(collapse = "; ") %>%
           stringr::str_replace_all(".;", ";")
           )
         )
@@ -334,7 +352,7 @@ dataset_process <- function(filename_data_raw,
                                       ),
                   austraits_curators = metadata$contributors$austraits_curators
                   )
-
+ 
   # Where missing, fill variables with values from sites
   vars <- c("basis_of_record", "life_stage", "collection_date", "measurement_remarks", "entity_type",
                   "value_type", "basis_of_value", "replicates", "population_id", "individual_id")
@@ -942,7 +960,7 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
   # Step 1b. import any values that aren't columns of data
   vars <- c( "entity_type", "value_type", "basis_of_value", 
             "replicates", "collection_date",
-            "basis_of_record", "life_stage", "measurement_remarks")
+            "basis_of_record", "life_stage", "measurement_remarks", "original_dataset_id")
 
   df <-
     df %>%
