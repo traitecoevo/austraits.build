@@ -53,47 +53,56 @@ austraits:
   type: list
   elements:
     traits:
-      description: A table containing measurements of plant traits.
+      description: A table containing measurements of traits.
       type: table
       elements:
         dataset_id: &dataset_id Primary identifier for each study contributed to AusTraits; most often these are scientific papers, books, or online resources. By default this should be the name of the first author and year of publication, e.g. `Falster_2005`.
+        observation_id: &observation_id A unique integral identifier for the observation, where an observation is all measurements made on an individual at a single point in time. It is important for joining traits coming from the same `observation_id`. Within each dataset, observation_id's are unique combinations of `taxon_name`, `population_id`, `individual_id`, and `temporal_id`.
         taxon_name: &taxon_name Scientific name of the taxon on which traits were sampled, without authorship. When possible, this is the currently accepted (botanical) or valid (zoological) scientific name, but might also be a higher taxonomic level. [biodiversity.org.au:canonical_name]
-        site_name: &site_name Name of the site where the individual was sampled. Cross-references between similar columns in `sites` and `traits`.         
-        plot_id: &plot_id XXXX.
-        treatment_id: &treatment_id XXXX.
-        individual_id: &individual_id A unique identifier for an individual plant. Most often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time.
-        temporal_id: &temporal_id XXXX 
-        observation_id: &observation_id A unique identifier for the observation, important for joining traits coming from the same `observation_id` until XXXX `entity_id` is created later in the workflow. For wide datasets, unless a column is specified under `individual_id` , these are assigned automatically based on the `dataset_id` and row number of the raw data.
-        method_id: &method_id A field to indicate when a trait is measured multiple times on the same entity, with different methods used for each entry. Method number defaults to 1, unless it is manually added as a column or to individual traits.
         trait_name: &trait_name Name of the trait sampled. Allowable values specified in the table `definitions`.
         value: &value The measured value of a trait, site property or context property.
         unit: &units Units of the sampled trait value after aligning with AusTraits standards.
-        collection_date: &collection_date Date sample was taken, in the format `yyyy-mm-dd`, `yyyy-mm` or `yyyy`, depending on the resoluton specified. Alternatively an overall range for the study can be indicating, with the starting and ending sample date sepatated by a `/`, as in 2010-10/2011-03
         entity_type: *entity_type
         value_type: *value_type
         basis_of_value: *basis_of_value
         replicates: &replicates Number of replicate measurements that comprise a recorded trait measurement. A numeric value (or range) is ideal and appropriate if the value type is a `mean`, `median`, `min` or  `max`. For these value types, if replication is unknown the entry should be `unknown`. If the value type is `raw_value` the replicate value should be 1. If the trait is categorical or the value indicates a measurement for an entire species (or other taxon) replicate value should be `.na`.
         basis_of_record: *basis_of_record 
         life_stage: &life_stage A field to indicate the life stage or age class of the entity measured. Standard values are `adult`, `sapling`, `seedling` and `juvenile`.         
+        population_id: &population_id A unique integer identifier for a population, where a population is defined as individuals growing in the same location (location_id /site_name) and plot (plot_id, a context category) and being subjected to the same treatment (treatment_id, a context category).
+        individual_id: &individual_id A unique integer identifier for an individual, with individuals numbered sequentially within each dataset by taxon by population grouping. Most often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time.
+        temporal_id: &temporal_id A unique integer identifier assigned where repeat observations are made on the same individual (or population, or taxon) across time. The identifier links to specific information in the context table.
+        source_id: &source_id For datasets that are compilations, an identifier for the original data source.
+        site_name: &site_name site name
+        location_id: &location_id A unique integer identifier for a site, with sites numbered sequentially within a dataset. The identifier links to specific information in the site table.
+        plot_id: &plot_id A unique integer identifier for a plot, where a plot is a distinct collection of organisms within a single geographic location, such as plants growing on different aspects or blocks in an experiment. The identifier links to specific information in the context table.
+        treatment_id: &treatment_id A unique integer identifier for a treatment, where a treatment is any experimental manipulation to an organism's growing/living conditions. The identifier links to specific information in the context table.
+        collection_date: &collection_date Date sample was taken, in the format `yyyy-mm-dd`, `yyyy-mm` or `yyyy`, depending on the resoluton specified. Alternatively an overall range for the study can be indicating, with the starting and ending sample date sepatated by a `/`, as in 2010-10/2011-03
         measurement_remarks: &measurement_remarks Brief comments or notes accompanying the trait measurement, often used to indicate why multiple method numbers have been assigned or to document original sources for data compilations.
-        original_dataset_id: &original_dataset_id For datasets that are compilations, the dataset id for the original data source.
+        method_id: &method_id A unique integer identifier indicating a trait is measured multiple times on the same entity, with different methods used for each entry. This field is only used if a single trait is measured using multiple methods within the same dataset. The identifier links to specific information in the context table.
         original_name: &original_name Name given to taxon in the original data supplied by the authors.
+        parsing_id: &parsing_id A temporary identifier created by the function `process_parse_data` ensuring measurements on the same individual remain linked. It is later refined and replaced by `observation_id`
     sites:
       description: A table containing observations of site characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
       type: table
       elements:
         dataset_id: *dataset_id
+        location_id: *location_id
         site_name: *site_name
         site_property: The site characteristic being recorded. The name should include units of measurement, e.g. `MAT (C)`. Ideally we have at least the following variables for each site, `longitude (deg)`, `latitude (deg)`, `description`.
         value: The measured value of a site property.
     contexts:
-      description: A table containing observations of contextual characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `context_name`.
+      description: A table containing observations of contextual characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `link_id`, and `link_vals`.
       type: table
       elements:
         dataset_id: *dataset_id
-        context_name: XXX
+        category: The category of context property, with options being `plot`, `treatment`, `temporal` and `method`.
         context_property: The contextual characteristic being recorded. If applicable, name should include units of measurement, e.g. `CO2 concentration (ppm)`.
+        var_in: Column in data.csv file (or generated via custom_R_code) which includes relevant context data.
+        find: XXXX
         value: The measured value of a context property.
+        description: Description of a specific context property value.
+        link_id: Variable indicating which identifier column in the traits table contains the specified `link_vals`.
+        link_vals: Unique integer identifiers that link between identifier columns in the `traits` table and the contextual properties/values in the `contexts` table.  
     methods:
       description: A table containing details on methods with which data were collected, including time frame and source. Cross referencing with the `traits` table is possible using combinations of the variables `dataset_id`, `trait_name`.
       type: table
@@ -118,25 +127,27 @@ austraits:
       elements:
         error: Indicating why the record was excluded. Common reasons are missing_unit_conversions, missing_value, and unsupported_trait_value.
         dataset_id: *dataset_id
-        taxon_name: *taxon_name
-        site_name: *site_name
-        plot_id: *plot_id
-        treatment_id: *treatment_id
         observation_id: *observation_id
-        temporal_id: *temporal_id
-        method_id: *method_id
+        taxon_name: *taxon_name
         trait_name: *trait_name
         value: The measured value of a trait.
         unit: *units
-        collection_date: *collection_date
         entity_type: *entity_type
         value_type: *value_type
         basis_of_value: *basis_of_value
         replicates: *replicates
-        basis_of_record: *basis_of_record
-        life_stage: *life_stage
+        basis_of_record: *basis_of_record 
+        life_stage: *life_stage       
+        population_id: *population_id
+        individual_id: *individual_id
+        temporal_id: *temporal_id
+        source_id: *source_id
+        location_id: *location_id
+        plot_id: *plot_id
+        treatment_id: *treatment_id
+        collection_date: *collection_date
         measurement_remarks: *measurement_remarks
-        original_dataset_id: *original_dataset_id
+        method_id: *method_id
         original_name: *original_name
     taxonomic_updates:
       description: A table of all taxonomic changes implemented in the construction of AusTraits. Changes are determined by comparing the originally submitted taxon name against the taxonomic names listed in the taxonomic reference files, best placed in a subfolder in the `config` folder . Cross referencing with the `traits` table is possible using combinations of the variables `dataset_id` and `taxon_name`.
@@ -277,7 +288,7 @@ metadata:
         collection_date: *collection_date
         taxon_name: *taxon_name
         site_name: *site_name
-        original_dataset_id: &original_dataset_id
+        source_id: &source_id
         entity_type: *entity_type
         plot_id: *plot_id
         treatment_id: *treatment_id
@@ -314,10 +325,9 @@ metadata:
         plot_id: *plot_id
         treatment_id: *treatment_id
         individual_id: *individual_id
-        temporal_id: &temporal_id 
+        temporal_id: *temporal_id 
         method_id: *method_id
         life_stage: *life_stage
-
     substitutions:
       description: A list of any "find and replace" substitutions needed to get the data into the right format.
       type: array
@@ -336,7 +346,7 @@ metadata:
       description: A table of observations to remove from the compilation.
       type: array
       values:
-        variable: A variable from the traits table, typically `taxon_name`, `site_name` or `context_name`
+        variable: A variable from the traits table, typically `taxon_name` or `site_name`
         find: Value of variable to remove.
         reason: Records why the data was removed, e.g. `exotic`
     questions: A place to record any queries we have about the dataset (recorded as a named array), including notes on any additional traits that may have been collected in the study but have not been incorporated into AusTraits.
