@@ -72,7 +72,6 @@ austraits:
         individual_id: &individual_id A unique integer identifier for an individual, with individuals numbered sequentially within each dataset by taxon by population grouping. Most often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time.
         temporal_id: &temporal_id A unique integer identifier assigned where repeat observations are made on the same individual (or population, or taxon) across time. The identifier links to specific information in the context table.
         source_id: &source_id For datasets that are compilations, an identifier for the original data source.
-        site_name: &site_name site name
         location_id: &location_id A unique integer identifier for a site, with sites numbered sequentially within a dataset. The identifier links to specific information in the site table.
         plot_id: &plot_id A unique integer identifier for a plot, where a plot is a distinct collection of organisms within a single geographic location, such as plants growing on different aspects or blocks in an experiment. The identifier links to specific information in the context table.
         treatment_id: &treatment_id A unique integer identifier for a treatment, where a treatment is any experimental manipulation to an organism's growing/living conditions. The identifier links to specific information in the context table.
@@ -80,14 +79,13 @@ austraits:
         measurement_remarks: &measurement_remarks Brief comments or notes accompanying the trait measurement, often used to indicate why multiple method numbers have been assigned or to document original sources for data compilations.
         method_id: &method_id A unique integer identifier indicating a trait is measured multiple times on the same entity, with different methods used for each entry. This field is only used if a single trait is measured using multiple methods within the same dataset. The identifier links to specific information in the context table.
         original_name: &original_name Name given to taxon in the original data supplied by the authors.
-        parsing_id: &parsing_id A temporary identifier created by the function `process_parse_data` ensuring measurements on the same individual remain linked. It is later refined and replaced by `observation_id`
     sites:
       description: A table containing observations of site characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
       type: table
       elements:
         dataset_id: *dataset_id
         location_id: *location_id
-        site_name: *site_name
+        site_name: &site_name site name
         site_property: The site characteristic being recorded. The name should include units of measurement, e.g. `MAT (C)`. Ideally we have at least the following variables for each site, `longitude (deg)`, `latitude (deg)`, `description`.
         value: The measured value of a site property.
     contexts:
@@ -117,7 +115,7 @@ austraits:
         source_secondary_key: Citation key for the secondary source in `sources`.  The key is typically formatted as `Surname_year`.
         source_secondary_citation: Citations for the secondary source. This detail is generated from the secondary source in the metadata.
         source_original_dataset_key: Citation key for the original dataset_id in sources; for compilations.  The key is typically formatted as `Surname_year`.
-        source_original_dataset_secondary_citation: Citations for the original dataset_id in sources; for compilationse. This detail is generated from the original source in the metadata.
+        source_original_dataset_citation: Citations for the original dataset_id in sources; for compilationse. This detail is generated from the original source in the metadata.
         data_collectors: &data_collectors The person (people) leading data collection for this study.
         assistants: &assistants Names of additional people who played a more minor role in data collection for the study.
         austraits_curators: &austraits_curators Names of AusTraits team member(s) who contacted the data collectors and added the study to the AusTraits repository.

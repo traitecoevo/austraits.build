@@ -110,24 +110,24 @@ testthat::test_that("test datasets", {
                  filter(trait_name == "leaf_N_per_dry_mass") %>%
                  pull(basis_of_record) %>% grep(pattern ="wild") %>% length, 0)
   
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Atherton") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "01") %>%
                  pull(basis_of_record) %>% unique, c("NA", "lab"))
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Atherton") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "01") %>%
                  pull(basis_of_record) %>% length, 91)
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Atherton") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "01") %>%
                  pull(basis_of_record) %>% is.na %>% sum, 81)
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Atherton") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "01") %>%
                  pull(basis_of_record) %>% grep(pattern = "lab") %>% length, 10)
   
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Cape Tribulation") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% unique, c("Cape_Tribulation"))
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Cape Tribulation") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% length, 315)
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Cape Tribulation") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% grep(pattern = "Cape_Tribulation") %>% length, 315)
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Cape Tribulation") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% grep(pattern = "lab") %>% length, 0)
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Cape Tribulation") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% grep(pattern = "wild") %>% length, 0)
 })
 

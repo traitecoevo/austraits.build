@@ -145,11 +145,11 @@ create_context_ids <- function(data, contexts) {
 
   contexts_finished <-
     contexts %>%
-    mutate(find = ifelse(is.na(find),as.character(replace),as.character(find))) %>%
-    dplyr::left_join(
-      id_link %>% dplyr::bind_rows(),
-      by = c("category", "context_property", "find")
-    )
+      mutate(find = ifelse(is.na(find),as.character(replace),as.character(find))) %>%
+      dplyr::left_join(
+        id_link %>% dplyr::bind_rows(),
+        by = c("category", "context_property", "find")
+      )
 
   list(
     contexts = contexts_finished %>% util_df_convert_character(),
@@ -237,7 +237,7 @@ dataset_process <- function(filename_data_raw,
   context_ids <- traits$context_ids
 
   traits <- traits$traits %>%
-    process_add_all_columns(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]])) %>%
+    process_add_all_columns(c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]),"parsing_id","site_name")) %>%
     process_flag_unsupported_traits(definitions) %>%
     process_flag_excluded_observations(metadata) %>%
     process_convert_units(definitions, unit_conversion_functions) %>%
@@ -1163,6 +1163,19 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
         contexts = contexts,
         ids = tibble::tibble()
         )
+    context_ids$contexts <- context_ids$contexts %>%
+      mutate(
+        category = NA_character_,
+        context_property = NA_character_,
+        find = NA_character_,
+        value = NA_character_,
+        description = NA_character_,
+        link_id = NA_character_,
+        link_vals = NA_character_
+      ) %>%
+      dplyr::relocate(var_in, .after = context_property)
+# XXXX Why doesn't this work? process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))      
+      
   } else {
     context_ids <- create_context_ids(out, contexts)
 
