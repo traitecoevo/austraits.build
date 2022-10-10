@@ -38,8 +38,7 @@ test_that("metadata_create_template is working",{
 
   expect_isin(names(test_metadata$dataset), schema$metadata$elements$dataset$values %>% names())
  
-# 23 fields in schema, but two of them, `site_name` and `parsing_id` not in the final output
- expect_equal(length(test_metadata$dataset), 21)
+ expect_equal(length(test_metadata$dataset), 23)
 })
 
 test_that("metadata_path_dataset_id is working",{

@@ -594,7 +594,7 @@ process_create_observation_id <- function(data) {
   data <- data %>%
     dplyr::mutate(check_for_ind = NA) %>%
     dplyr::select(dataset_id, observation_id, taxon_name, trait_name, value, unit, entity_type, value_type, 
-                  basis_of_value, replicates, basis_of_record, life_stage,population_id, individual_id, 
+                  basis_of_value, replicates, basis_of_record, life_stage, sex, caste, population_id, individual_id, 
                   temporal_id, source_id, location_id, plot_id, treatment_id, collection_date, 
                   measurement_remarks, method_id, original_name, error)
 }
