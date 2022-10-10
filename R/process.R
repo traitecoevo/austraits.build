@@ -196,15 +196,6 @@ dataset_process <- function(filename_data_raw,
 
   # read contextual data
 
-  # contexts <-
-  #   metadata$contexts %>%
-  #   process_format_sites(dataset_id, context = TRUE) %>%
-  #   process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]])) %>%
-  #   dplyr::select(-.data$error) %>%
-  #   # reorder so type, description come first, if present
-  #   dplyr::arrange(.data$context_name, .data$context_property)
-
-
   f <- function(x) {
     tibble::tibble(var_in = x$var_in, category = x$category, util_list_to_df2(x$values))
   }
@@ -345,7 +336,7 @@ dataset_process <- function(filename_data_raw,
           dplyr::mutate(dataset_id = dataset_id) %>%
           dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", 
                                          "trait_name", "population_id", "individual_id",
-                                         "context_name", "site_name", "source_id",
+                                         "site_name", "source_id",
                                          "collection_date", "custom_R_code", 
                                          "taxon_name", "basis_of_value", "basis_of_record", "life_stage")))
       )  %>%
@@ -626,7 +617,7 @@ process_create_observation_id <- function(data) {
 #' process_format_sites(yaml::read_yaml("data/Apgaua_2017/metadata.yml")$context,
 #' "Apgaua_2017", context = TRUE)
 #' }
-process_format_sites <- function(my_list, dataset_id, context = FALSE) {
+process_format_sites <- function(my_list, dataset_id) {
 
   # default, if length 1 then it's an "na"
   if (length(unlist(my_list)) == 1) {
@@ -639,15 +630,9 @@ process_format_sites <- function(my_list, dataset_id, context = FALSE) {
     purrr::map_df(util_list_to_df1, .id = "name") %>%
     dplyr::mutate(dataset_id = dataset_id)
 
-  if (!context) {
     out <- out %>%
       dplyr::rename(site_property = "key", site_name = "name")
-  } else {
-    out <- out %>%
-      dplyr::rename(context_property = "key", context_name = "name")
-  }
-
-  out
+    out
 }
 
 #' Flag any unrecognised traits

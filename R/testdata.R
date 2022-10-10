@@ -419,35 +419,52 @@ dataset_test_worker <-
           test_list(metadata[["contexts"]], info = f)
           
           expect_silent(
-            contexts <-
-              metadata$contexts %>%
-              process_format_sites(dataset_id, context = TRUE) %>%
-              process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))
+            if(!is.na(metadata$contexts[1])) {
+                f <- function(x) {
+                    tibble::tibble(var_in = x$var_in, category = x$category, util_list_to_df2(x$values))
+                }
+
+                contexts <-
+                  metadata$contexts %>%
+                  purrr::map_df(.id = "context_property", f) %>%
+                  select(context_property, category, var_in,
+                  dplyr::any_of(c("find", "replace", "description"))) %>%                    
+                  process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))
+              } else {
+                contexts <-
+                  tibble::tibble(dataset_id = character(), var_in = character()) %>%                    
+                  process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))
+              }
           )
           
-          test_dataframe_names_contain(
-            contexts,
-            c(
-              "dataset_id",
-              "context_name",
-              "context_property",
-              "value"
-            ),
-            info = paste0(f, " - contexts")
-          )
+          # test_dataframe_names_contain(
+          #   contexts,
+          #   c(
+          #     "category",
+          #     "context_property",
+          #     "var_in",
+          #     "find",
+          #     "value",
+          #     "description",
+          #     "link_id",
+          #     "link_vals"
+          #   ),
+          #   info = paste0(f, " - contexts")
+          # )
           
-          for (v in names(metadata$contexts)) {
-            test_list(metadata[["contexts"]][[v]], info = paste0(f, "-contexts"))
-          }
+          # for (v in names(metadata$contexts)) {
+          #   test_list(metadata[["contexts"]][[v]], info = paste0(f, "-contexts"))
+          # }
         }
         
         # Traits
+
         expect_list_elements_contains_names(metadata[["traits"]],
-                                     schema$metadata$elements$traits$elements[1:3] %>% names(),
-                                     info = paste0(f, "-traits"))
+                                    schema$metadata$elements$traits$elements[1:3] %>% names(),
+                                    info = paste0(f, "-traits"))
         expect_list_elements_allowed_names(metadata[["traits"]],
-                                     schema$metadata$elements$traits$elements %>% names(),
-                                     info = paste0(f, "-traits"))
+                                    schema$metadata$elements$traits$elements %>% names(),
+                                    info = paste0(f, "-traits"))
         expect_silent(traits <-
                         austraits.build::util_list_to_df2(metadata[["traits"]]))
         expect_true(is.data.frame(traits))
@@ -584,41 +601,33 @@ dataset_test_worker <-
                       ))
         }
         
-        ## check context_names are in context dataset
+        ## check context details are in context dataset
         if (length(unlist(metadata[["contexts"]])) > 1) {
-          expect_true(
-            !is.null(metadata[["dataset"]][["context_name"]]),
-            info = paste0(files[2], " - variable_match -> context_name is missing")
-          )
-          
-          expect_contains(
-            names(data),
-            metadata[["dataset"]][["context_name"]],
-            info = paste0(files[2], " - column ", metadata[["dataset"]][["context_name"]], "not found in data")
-          )
-          
-          v <-
-            (data[[metadata[["dataset"]][["context_name"]]]] %>% unique %>% na.omit)
-          i <- v %in% names(metadata$contexts)
-          expect_true(all(i),
-                      info = paste0(
-                        f,
-                        "- context names from data file not present in metadata: ",
-                        v[!i]
-                      ))
-          
-          i <- names(metadata$contexts) %in% v
-          expect_true(
-            all(i),
-            info = paste0(
-              f ,
-              "-context names from metadata not present in data file: ",
-              names(metadata$contexts)[!i]
+
+          for (j in 1:length(metadata[["contexts"]])) {
+            context_prop <- metadata[["contexts"]][[j]]$var_in %>% as.vector()
+            context_input_values <- metadata$contexts[[1]]$values %>% util_list_to_df2 %>% select(find) %>% as.vector()
+
+            expect_contains(
+              names(data),
+              context_prop,
+              info = paste0(files[2], " - column ", context_prop, "not found in data")
             )
-          )
+
+            v <-
+              (data[[context_prop]] %>% unique %>% na.omit)
+
+#XXXX this will fail for studies where `find` isn't specified
+            i <- v %in% context_input_values$find
+
+            expect_true(all(i),
+                        info = paste0(
+                          f,
+                          "- context names from data file not present in metadata: ",
+                          v[!i]
+                        ))
+          }
         }
-        
-        
       })
     }
 
