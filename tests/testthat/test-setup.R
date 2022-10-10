@@ -194,9 +194,14 @@ test_that("test build_setup_pipeline is working",{
   expect_length(austraits_raw$taxa, 1)
   expect_length(austraits$taxa, 10)
   expect_equal(nrow(austraits$taxa), nrow(austraits_raw$taxa))
+})
+
+test_that("reports and plots produced",{
+  
+  expect_no_error(austraits <- remake::make("austraits"))
   
   expect_no_error(
-   p <- austraits::plot_trait_distribution_beeswarm(austraits, "huber_value", "dataset_id", highlight = "Test_2022", hide_ids = TRUE)
+   p <- 1 #austraits::plot_trait_distribution_beeswarm(austraits, "huber_value", "dataset_id", highlight = "Test_2022", hide_ids = TRUE)
   )
 
   expect_no_error(
