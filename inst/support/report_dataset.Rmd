@@ -280,7 +280,7 @@ create_if_missing <- function(df, var, type=rep(NA_character_, nrow(df))) {
   df
 }
 
-site_main <- c("site_name", "longitude (deg)","latitude (deg)", "description")
+site_main <- c("location_name", "longitude (deg)","latitude (deg)", "description")
 sites <-
   full_join(by="location_id",
             # count of records by site
@@ -294,7 +294,7 @@ sites <-
               select(-dataset_id) %>%
               spread(site_property, value) %>%
               create_if_missing("location_id") %>%
-              create_if_missing("site_name") %>%
+              create_if_missing("location_name") %>%
               create_if_missing("latitude (deg)") %>%
               create_if_missing("longitude (deg)") %>%
               create_if_missing("description")  %>%
@@ -303,13 +303,13 @@ sites <-
                 `longitude (deg)` = as.numeric(`longitude (deg)`)
                 )
   ) %>%
- select(location_id, site_name, records, `latitude (deg)`, `longitude (deg)`, description)
+ select(location_id, location_name, records, `latitude (deg)`, `longitude (deg)`, description)
 
  sites %>%
    my_kable_styling()
          
 
-if( any(tolower(sites$site_name) %in% c(NA, "unknown") ) ) {
+if( any(tolower(sites$location_name) %in% c(NA, "unknown") ) ) {
   new_question("(section `sites`) **Location data incomplete or unknown!** Can you provide location details where your data were sampled? If data are from a National Park, biological reserve, or other location with a name, but not linked to a specific site within the park, the site name should be that national park (or similar), and we will use the park's headquarters as the GPS coordinates. If the data are from herbarium specimens or a taxa monograph it is appropriate to leave this information blank.")
 }
 
@@ -325,7 +325,7 @@ if(nrow(sites) > 0 ) {
   leaflet::addScaleBar() %>%
   leaflet::addMiniMap(zoomLevelFixed=2) %>%
   leaflet::addMarkers(lng = sites$`longitude (deg)`, lat = sites$`latitude (deg)`,
-             label = sites$site_name)	
+             label = sites$location_name)	
 }
 ```
 
@@ -553,7 +553,7 @@ for(trait in traits_numeric) {
 
 if(nrow(filter(data_study$excluded_data, error == "Value out of allowable range" & trait_name == trait)) > 0 ) {
   data_study$excluded_data %>% filter(error == "Value out of allowable range" & trait_name == trait) %>%
-    select(observation_id, taxon_name, site_name, value, unit) %>%
+    select(observation_id, taxon_name, location_name, value, unit) %>%
     my_kable_styling() %>%
     writeLines()
 }

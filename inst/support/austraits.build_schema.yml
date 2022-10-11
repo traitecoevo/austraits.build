@@ -4,8 +4,8 @@ entity_type:
   type: categorical
   values:
     individual: Value comes from a single individual.
-    population: Value represents a summary statistic from multiple individuals at a single site.
-    metapopulation: Value represents a summary statistic from individuals of the taxon across multiple sites.
+    population: Value represents a summary statistic from multiple individuals at a single location.
+    metapopulation: Value represents a summary statistic from individuals of the taxon across multiple locations.
     species: Value represents a summary statistic for a species or infraspecific taxon across its range or as estimated by an expert based on their knowledge of the taxon. Data fitting this category include estimates from reference books that represent a taxon's entire range and values for categorical variables obtained from a reference book or identified by an expert.
     genus: Value represents a summary statistic or expert score for an entire genus.
     family: Value represents a summary statistic or expert score for an entire family.
@@ -70,7 +70,7 @@ austraits:
         life_stage: &life_stage A field to indicate the life stage or age class of the entity measured. Standard values are `adult`, `sapling`, `seedling` and `juvenile`.         
         sex: &sex Whether an individual is male or female.
         caste: &caste For social insects, division of individuals into grouping by structure and function separately from their sex.     
-        population_id: &population_id A unique integer identifier for a population, where a population is defined as individuals growing in the same location (location_id /site_name) and plot (plot_id, a context category) and being subjected to the same treatment (treatment_id, a context category).
+        population_id: &population_id A unique integer identifier for a population, where a population is defined as individuals growing in the same location (location_id /location_name) and plot (plot_id, a context category) and being subjected to the same treatment (treatment_id, a context category).
         individual_id: &individual_id A unique integer identifier for an individual, with individuals numbered sequentially within each dataset by taxon by population grouping. Most often each row of data represents an individual, but in some datasets trait data collected on a single individual is presented across multiple rows of data, such as if the same trait is measured using different methods or the same individual is measured repeatedly across time.
         temporal_id: &temporal_id A unique integer identifier assigned where repeat observations are made on the same individual (or population, or taxon) across time. The identifier links to specific information in the context table.
         source_id: &source_id For datasets that are compilations, an identifier for the original data source.
@@ -81,13 +81,13 @@ austraits:
         measurement_remarks: &measurement_remarks Brief comments or notes accompanying the trait measurement, often used to indicate why multiple method numbers have been assigned or to document original sources for data compilations.
         method_id: &method_id A unique integer identifier indicating a trait is measured multiple times on the same entity, with different methods used for each entry. This field is only used if a single trait is measured using multiple methods within the same dataset. The identifier links to specific information in the context table.
         original_name: &original_name Name given to taxon in the original data supplied by the authors.
-    sites:
-      description: A table containing observations of site characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `site_name`.
+    locations:
+      description: A table containing observations of location/site characteristics associated with information in `traits`. Cross referencing between the two dataframes is possible using combinations of the variables `dataset_id`, `location_name`.
       type: table
       elements:
         dataset_id: *dataset_id
         location_id: *location_id
-        site_name: &site_name site name
+        location_name: &location_name site name
         site_property: The site characteristic being recorded. The name should include units of measurement, e.g. `MAT (C)`. Ideally we have at least the following variables for each site, `longitude (deg)`, `latitude (deg)`, `description`.
         value: The measured value of a site property.
     contexts:
@@ -215,7 +215,7 @@ austraits:
 #-------------------------------------------------------------
 
 metadata:
-  description: &metadata Structured recording of metadata for each individual study, as entered into AusTraits. Information included in `sites` and `methods` are derived from this file. Also includes information on mapping of trait data into standard terms and units, plus any taxonomic changes implemented.
+  description: &metadata Structured recording of metadata for each individual study, as entered into AusTraits. Information included in `locations` and `methods` are derived from this file. Also includes information on mapping of trait data into standard terms and units, plus any taxonomic changes implemented.
   type: list
   elements:
     source:
@@ -289,7 +289,7 @@ metadata:
         custom_R_code: A field where additional R code can be included. This allows for custom manipulation of the data in the submitted spreadsheet into a different format for easy integration with AusTraits. `.na` indicates no custom R code was used.
         collection_date: *collection_date
         taxon_name: *taxon_name
-        site_name: *site_name
+        location_name: *location_name
         source_id: &source_id
         entity_type: *entity_type
         plot_id: *plot_id
@@ -308,7 +308,7 @@ metadata:
         measurement_remarks: *measurement_remarks
         original_file: The name of the file initially submitted to AusTraits.
         notes: Generic notes about the study and processing of data.
-    sites:
+    locations:
       description: A list of study locations (sites) and information about each of the study locations where data were collected. Each should include at least three variables - `latitude (deg)`, `longitude (deg)` and `description`. Additional variables can be included where available. Set to `.na` for botanical collections and field studies where data values are a mean across many locations.
       type: array
       elements:
@@ -365,7 +365,7 @@ metadata:
       description: A table of observations to remove from the compilation.
       type: array
       values:
-        variable: A variable from the traits table, typically `taxon_name` or `site_name`
+        variable: A variable from the traits table, typically `taxon_name` or `location_name`
         find: Value of variable to remove.
         reason: Records why the data was removed, e.g. `exotic`
     questions: A place to record any queries we have about the dataset (recorded as a named array), including notes on any additional traits that may have been collected in the study but have not been incorporated into AusTraits.

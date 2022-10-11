@@ -62,7 +62,7 @@ metadata_create_template <- function(dataset_id,
                    variable_match = list())
     
     v1 <- c("taxon_name")
-    v2 <- c("site_name", "context_name", "individual_id",  "collection_date")
+    v2 <- c("location_name", "context_name", "individual_id",  "collection_date")
     
     if(data_is_long_format) {
       v1 <- c("taxon_name", "trait_name", "value")
@@ -231,7 +231,7 @@ metadata_add_traits <- function(dataset_id) {
 #' @export
 #' @examples
 #' \dontrun{
-#' austraits$sites %>% dplyr::filter(dataset_id == "Falster_2005_1") %>% 
+#' austraits$locations %>% dplyr::filter(dataset_id == "Falster_2005_1") %>% 
 #' select(-dataset_id) %>% spread(site_property, value) %>% type_convert()-> site_data
 #' metadata_add_sites("Falster_2005_1", site_data)
 #' }
@@ -240,18 +240,18 @@ metadata_add_sites <- function(dataset_id, site_data) {
   # read metadata
   metadata <- read_metadata_dataset(dataset_id)
 
-  # Choose column for site_name
-  site_name <- metadata_user_select_column("site_name", names(site_data))
+  # Choose column for location_name
+  location_name <- metadata_user_select_column("location_name", names(site_data))
 
   # From remaining variables, choose those to keep
-  site_sub <- dplyr::select(site_data, -!!site_name)
+  site_sub <- dplyr::select(site_data, -!!location_name)
   keep <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct site_properties in ", dataset_id), names(site_sub))
 
   # Save and notify
-  metadata$sites <- dplyr::select(site_data, tidyr::one_of(keep)) %>%
-            split(site_data[[site_name]]) %>% lapply(as.list)
+  metadata$locations <- dplyr::select(site_data, tidyr::one_of(keep)) %>%
+            split(site_data[[location_name]]) %>% lapply(as.list)
 
-  cat(sprintf("Following sites added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$sites), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
+  cat(sprintf("Following locations added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$locations), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
   
   write_metadata_dataset(metadata, dataset_id)
 }

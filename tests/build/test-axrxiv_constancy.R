@@ -3,10 +3,10 @@ build_comparison_set <- function(root.dir, definitions, unit_conversions, schema
 
 # some datasets to compare against
 #  Baker_2019 - 1 excluded taxon, 1 taxonomic update, substitutions
-#  Bloomfield_2018 -  quite a few excluded numeric values; includes sites, date
+#  Bloomfield_2018 -  quite a few excluded numeric values; includes locations, date
 #  Catford_2014 -  complex custom R code
 #  Duan_2015 -  complex contexts
-#  Westoby_2014 -  big collection of numeric traits; but no "issues"; includes sites
+#  Westoby_2014 -  big collection of numeric traits; but no "issues"; includes locations
 #  Tomlinson_2019 - complete taxonomic changes
   
   f_build <- function(x, definitions, unit_conversions, schema) {
@@ -80,14 +80,14 @@ test_that("constancy of with version 3.0.2", {
   
   expect_equal(sum(is.na(v_old$in_current)), 0, info = paste("comparing", v, "to ", file_comparison))
 
-  v <- "sites"
-  vv <- c("dataset_id", "site_name", "site_property", "value")
+  v <- "locations"
+  vv <- c("dataset_id", "location_name", "site_property", "value")
   to_check <-  c("desciption", "latitude (deg)", "logitude (deg)")
   v1 <- austraits_raw_comparison[[v]][,vv] %>% 
-    dplyr::arrange(dataset_id, site_name, site_property) %>%
+    dplyr::arrange(dataset_id, location_name, site_property) %>%
     filter(site_property %in% to_check, dataset_id != "Bloomfield_2018") 
   v2 <- austraits_raw[[v]][,vv] %>% 
-    dplyr::arrange(dataset_id, site_name, site_property) %>%
+    dplyr::arrange(dataset_id, location_name, site_property) %>%
     filter(site_property %in% to_check, dataset_id != "Bloomfield_2018")
 
  expect_equal(v2, v1,

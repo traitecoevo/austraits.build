@@ -228,7 +228,7 @@ dataset_process <- function(filename_data_raw,
   context_ids <- traits$context_ids
 
   traits <- traits$traits %>%
-    process_add_all_columns(c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]),"parsing_id","site_name")) %>%
+    process_add_all_columns(c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]),"parsing_id","location_name")) %>%
     process_flag_unsupported_traits(definitions) %>%
     process_flag_excluded_observations(metadata) %>%
     process_convert_units(definitions, unit_conversion_functions) %>%
@@ -259,20 +259,20 @@ dataset_process <- function(filename_data_raw,
     id[match(x, d)]
   }
 
-  sites <-
-    metadata$sites %>%
+  locations <-
+    metadata$locations %>%
     process_format_sites(dataset_id) %>%
-    process_add_all_columns(names(schema[["austraits"]][["elements"]][["sites"]][["elements"]])) %>%
+    process_add_all_columns(names(schema[["austraits"]][["elements"]][["locations"]][["elements"]])) %>%
     dplyr::select(-.data$error) %>%
     dplyr::group_by(dataset_id) %>%
     dplyr::mutate(
-      location_id = create_id(site_name, "", sort = TRUE)
+      location_id = create_id(location_name, "", sort = TRUE)
     ) %>%
     dplyr::ungroup() %>%
     # reorder so type, description come first, if present
     dplyr::mutate(i = case_when(.data$site_property == "description" ~ 1, .data$site_property == "latitude (deg)" ~ 2,
                                 .data$site_property == "longitude (deg)" ~ 3, TRUE ~ 4)) %>%
-    dplyr::arrange(.data$location_id, .data$site_name, .data$i, .data$site_property) %>%
+    dplyr::arrange(.data$location_id, .data$location_name, .data$i, .data$site_property) %>%
     dplyr::select(-.data$i)
 
   # record contributors
@@ -336,7 +336,7 @@ dataset_process <- function(filename_data_raw,
           dplyr::mutate(dataset_id = dataset_id) %>%
           dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", 
                                          "trait_name", "population_id", "individual_id",
-                                         "site_name", "source_id",
+                                         "location_name", "source_id",
                                          "collection_date", "custom_R_code", 
                                          "taxon_name", "basis_of_value", "basis_of_record", "life_stage",
                                          "sex", "caste")))
@@ -366,17 +366,17 @@ dataset_process <- function(filename_data_raw,
                   austraits_curators = metadata$contributors$austraits_curators
                   )
  
-  # Where missing, fill variables with values from sites
+  # Where missing, fill variables with values from locations
   vars <- c("basis_of_record", "life_stage", "sex", "caste", "collection_date", "measurement_remarks", "entity_type",
                   "value_type", "basis_of_value", "replicates", "population_id", "individual_id")
   
   for(v in vars){
 
     # merge into traits from site level
-    if(v %in% unique(sites$site_property)) {
+    if(v %in% unique(locations$site_property)) {
       traits_tmp <- traits %>%
         dplyr::left_join(by = "location_id",
-                         sites %>% tidyr::pivot_wider(names_from = "site_property", values_from = "value") %>%
+                         locations %>% tidyr::pivot_wider(names_from = "site_property", values_from = "value") %>%
                            dplyr::select(.data$location_id, col_tmp = dplyr::any_of(v)) %>%
                            stats::na.omit()
                            )
@@ -386,7 +386,7 @@ dataset_process <- function(filename_data_raw,
   }
 
   # Remove any values included to map into traits table
-  sites <- sites %>% dplyr::filter(!(.data$site_property %in% vars))
+  locations <- locations %>% dplyr::filter(!(.data$site_property %in% vars))
 
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
@@ -397,7 +397,7 @@ dataset_process <- function(filename_data_raw,
 
   list(dataset_id = dataset_id,
        traits     = traits %>% filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
-       sites      = sites,
+       locations      = locations,
        contexts   = context_ids$contexts,
        methods    = methods,
        excluded_data = 
@@ -471,18 +471,18 @@ process_create_observation_id <- function(data) {
   # Create population_id
 
   # `population_id`'s are numbers assigned to unique combinations of 
-  #                site_name, treatment_id and plot_id
+  #                location_name, treatment_id and plot_id
   # their purpose is to allow `population_level` measurements to be
   # easily mapped to individuals within the given population
 
     if(
-      !all(is.na(data[["site_name"]]))|
+      !all(is.na(data[["location_name"]]))|
       !all(is.na(data[["plot_id"]]))|
       !all(is.na(data[["treatment_id"]]))
         ) {
       data <- data %>% 
         dplyr::mutate(
-          population_id = paste(site_name, plot_id, treatment_id, sep="")
+          population_id = paste(location_name, plot_id, treatment_id, sep="")
         )
     } else {
       data <- data %>% 
@@ -493,7 +493,7 @@ process_create_observation_id <- function(data) {
 
   data <- data %>%
     dplyr::mutate(
-              pop_id_segment = ifelse((!is.na(site_name)|!is.na(treatment_id)|!is.na(plot_id)) & 
+              pop_id_segment = ifelse((!is.na(location_name)|!is.na(treatment_id)|!is.na(plot_id)) & 
                                         entity_type %in% c("individual", "population"),
                                         create_id(population_id, "", sort = TRUE), 
                                         NA),
@@ -503,13 +503,13 @@ process_create_observation_id <- function(data) {
               population_id = pop_id_segment
             )
 
-  # replace site_name with a location_id
-  i <- !is.na(data$site_name)
+  # replace location_name with a location_id
+  i <- !is.na(data$location_name)
 
   data[i,] <- data[i,] %>%
     dplyr::group_by(dataset_id) %>%
     dplyr::mutate(
-      location_id = create_id(site_name, "", sort = TRUE)
+      location_id = create_id(location_name, "", sort = TRUE)
     ) %>%
     dplyr::ungroup()
 
@@ -631,7 +631,7 @@ process_format_sites <- function(my_list, dataset_id) {
     dplyr::mutate(dataset_id = dataset_id)
 
     out <- out %>%
-      dplyr::rename(site_property = "key", site_name = "name")
+      dplyr::rename(site_property = "key", location_name = "name")
     out
 }
 
@@ -1043,8 +1043,8 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
     
     df[["parsing_id_tmp"]] <- gsub(" ", "-", df[["taxon_name"]])
 
-    if(!is.null(df[["site_name"]][1]))
-      df[["parsing_id_tmp"]] <- paste0(df[["parsing_id_tmp"]],"_", df[["site_name"]])
+    if(!is.null(df[["location_name"]][1]))
+      df[["parsing_id_tmp"]] <- paste0(df[["parsing_id_tmp"]],"_", df[["location_name"]])
 
     if(!is.null(df[["individual_id"]])) {
       df[["parsing_id_tmp"]] <- paste0(df[["parsing_id_tmp"]],"_", df[["individual_id"]])
@@ -1343,7 +1343,7 @@ build_combine <- function(..., d=list(...)) {
   traits <- combine("traits", d)
 
   ret <- list(traits = traits,
-              sites = combine("sites", d),
+              locations = combine("locations", d),
               contexts = combine("contexts", d),
               methods = combine("methods", d),
               excluded_data = combine("excluded_data", d),
@@ -1459,7 +1459,7 @@ build_add_version <- function(austraits, version, git_sha) {
 #' @param austraits AusTraits database object
 #' @param path pathway to save file
 #'
-#' @return csv files of tibbles containing traits, sites, contexts, methods, excluded_data,
+#' @return csv files of tibbles containing traits, locations, contexts, methods, excluded_data,
 #' taxonomic updates, taxa, contributors
 #' @export
 write_plaintext <- function(austraits, path) {
@@ -1479,7 +1479,7 @@ write_plaintext <- function(austraits, path) {
   RefManageR::WriteBib(austraits$sources, sprintf("%s/sources", path))
 
   # Save tables
-  for (v in c("traits", "sites", "contexts", "methods", "excluded_data", "taxonomic_updates", "taxa", "contributors")) {
+  for (v in c("traits", "locations", "contexts", "methods", "excluded_data", "taxonomic_updates", "taxa", "contributors")) {
     readr::write_csv(austraits[[v]], sprintf("%s/%s.csv", path, v))
   }
 }

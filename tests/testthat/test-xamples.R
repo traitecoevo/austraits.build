@@ -89,7 +89,7 @@ testthat::test_that("test datasets", {
   # Example 5 - Test a combination of trait, site and dataset level values
   # Basis of record has been specified for dataset level ~ field, site level ~ Cape_Tribulation
   # trait level ~ leaf_N and column ~ wild
-  # column values should take precedence followed by traits values, followed by sites and then dataset values
+  # column values should take precedence followed by traits values, followed by locations and then dataset values
   Ex5 <- test_build_dataset(file.path(examples.dir, "test3-metadata.yml"), file.path(examples.dir, "test3-data.csv"), "Example 5", definitions, unit_conversions, schema)
   
   expect_equal(Ex5$traits$basis_of_record %>% unique, c("NA", "lab", "Cape_Tribulation"))
@@ -130,8 +130,8 @@ testthat::test_that("test datasets", {
   expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% grep(pattern = "wild") %>% length, 0)
   
-  expect_equal(Ex5$traits %>% pull(location_id) %>% unique, Ex5$sites %>% pull(location_id) %>% unique)
-  expect_equal(Ex5$traits %>% select(location_id) %>% unique() %>% nrow(), Ex5$sites %>% select(site_name) %>% unique() %>% nrow())
+  expect_equal(Ex5$traits %>% pull(location_id) %>% unique, Ex5$locations %>% pull(location_id) %>% unique)
+  expect_equal(Ex5$traits %>% select(location_id) %>% unique() %>% nrow(), Ex5$locations %>% select(location_name) %>% unique() %>% nrow())
 
   # Example 6 - Tests focus on context and the various context identifiers
   # Based on Crous_2013

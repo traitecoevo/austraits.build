@@ -17,7 +17,7 @@ test_that("metadata_create_template is working",{
                                             skip_manual = TRUE))
   test_metadata <- read_metadata("data/Test_2022/metadata.yml")
 
-  metadata_names <- c("source", "contributors", "dataset", "sites", "contexts", "traits",
+  metadata_names <- c("source", "contributors", "dataset", "locations", "contexts", "traits",
                       "substitutions", "taxonomic_updates", "exclude_observations",
                       "questions")
   data_collector_names <- c("last_name", "given_name", "affiliation", "ORCID", "additional_role")
