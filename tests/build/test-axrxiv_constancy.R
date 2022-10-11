@@ -81,14 +81,14 @@ test_that("constancy of with version 3.0.2", {
   expect_equal(sum(is.na(v_old$in_current)), 0, info = paste("comparing", v, "to ", file_comparison))
 
   v <- "locations"
-  vv <- c("dataset_id", "location_name", "site_property", "value")
+  vv <- c("dataset_id", "location_name", "location_property", "value")
   to_check <-  c("desciption", "latitude (deg)", "logitude (deg)")
   v1 <- austraits_raw_comparison[[v]][,vv] %>% 
-    dplyr::arrange(dataset_id, location_name, site_property) %>%
-    filter(site_property %in% to_check, dataset_id != "Bloomfield_2018") 
+    dplyr::arrange(dataset_id, location_name, location_property) %>%
+    filter(location_property %in% to_check, dataset_id != "Bloomfield_2018") 
   v2 <- austraits_raw[[v]][,vv] %>% 
-    dplyr::arrange(dataset_id, location_name, site_property) %>%
-    filter(site_property %in% to_check, dataset_id != "Bloomfield_2018")
+    dplyr::arrange(dataset_id, location_name, location_property) %>%
+    filter(location_property %in% to_check, dataset_id != "Bloomfield_2018")
 
  expect_equal(v2, v1,
                info = paste("comparing", v, "to ", file_comparison), ignore_attr = TRUE)

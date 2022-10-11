@@ -400,7 +400,7 @@ dataset_test_worker <-
           
           test_dataframe_names_contain(
             locations,
-            c("dataset_id", "location_name", "site_property", "value"),
+            c("dataset_id", "location_name", "location_property", "value"),
             info = paste0(f, " - locations")
           )
           

@@ -270,9 +270,9 @@ dataset_process <- function(filename_data_raw,
     ) %>%
     dplyr::ungroup() %>%
     # reorder so type, description come first, if present
-    dplyr::mutate(i = case_when(.data$site_property == "description" ~ 1, .data$site_property == "latitude (deg)" ~ 2,
-                                .data$site_property == "longitude (deg)" ~ 3, TRUE ~ 4)) %>%
-    dplyr::arrange(.data$location_id, .data$location_name, .data$i, .data$site_property) %>%
+    dplyr::mutate(i = case_when(.data$location_property == "description" ~ 1, .data$location_property == "latitude (deg)" ~ 2,
+                                .data$location_property == "longitude (deg)" ~ 3, TRUE ~ 4)) %>%
+    dplyr::arrange(.data$location_id, .data$location_name, .data$i, .data$location_property) %>%
     dplyr::select(-.data$i)
 
   # record contributors
@@ -372,10 +372,10 @@ dataset_process <- function(filename_data_raw,
   for(v in vars){
 
     # merge into traits from site level
-    if(v %in% unique(locations$site_property)) {
+    if(v %in% unique(locations$location_property)) {
       traits_tmp <- traits %>%
         dplyr::left_join(by = "location_id",
-                         locations %>% tidyr::pivot_wider(names_from = "site_property", values_from = "value") %>%
+                         locations %>% tidyr::pivot_wider(names_from = "location_property", values_from = "value") %>%
                            dplyr::select(.data$location_id, col_tmp = dplyr::any_of(v)) %>%
                            stats::na.omit()
                            )
@@ -385,7 +385,7 @@ dataset_process <- function(filename_data_raw,
   }
 
   # Remove any values included to map into traits table
-  locations <- locations %>% dplyr::filter(!(.data$site_property %in% vars))
+  locations <- locations %>% dplyr::filter(!(.data$location_property %in% vars))
 
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
@@ -630,7 +630,7 @@ process_format_sites <- function(my_list, dataset_id) {
     dplyr::mutate(dataset_id = dataset_id)
 
     out <- out %>%
-      dplyr::rename(site_property = "key", location_name = "name")
+      dplyr::rename(location_property = "key", location_name = "name")
     out
 }
 
