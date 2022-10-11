@@ -338,7 +338,8 @@ dataset_process <- function(filename_data_raw,
                                          "trait_name", "population_id", "individual_id",
                                          "site_name", "source_id",
                                          "collection_date", "custom_R_code", 
-                                         "taxon_name", "basis_of_value", "basis_of_record", "life_stage")))
+                                         "taxon_name", "basis_of_value", "basis_of_record", "life_stage",
+                                         "sex", "caste")))
       )  %>%
       full_join( by = "dataset_id",
       # references
@@ -366,7 +367,7 @@ dataset_process <- function(filename_data_raw,
                   )
  
   # Where missing, fill variables with values from sites
-  vars <- c("basis_of_record", "life_stage", "collection_date", "measurement_remarks", "entity_type",
+  vars <- c("basis_of_record", "life_stage", "sex", "caste", "collection_date", "measurement_remarks", "entity_type",
                   "value_type", "basis_of_value", "replicates", "population_id", "individual_id")
   
   for(v in vars){
@@ -477,11 +478,11 @@ process_create_observation_id <- function(data) {
     if(
       !all(is.na(data[["site_name"]]))|
       !all(is.na(data[["plot_id"]]))|
-      !all(is.na(data[["method_id"]]))
+      !all(is.na(data[["treatment_id"]]))
         ) {
       data <- data %>% 
         dplyr::mutate(
-          population_id = paste(site_name, plot_id, method_id, sep="")
+          population_id = paste(site_name, plot_id, treatment_id, sep="")
         )
     } else {
       data <- data %>% 
@@ -490,7 +491,6 @@ process_create_observation_id <- function(data) {
         )
     }
 
-  # create population_id segment of observation_id
   data <- data %>%
     dplyr::mutate(
               pop_id_segment = ifelse((!is.na(site_name)|!is.na(treatment_id)|!is.na(plot_id)) & 
@@ -971,7 +971,8 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
   # Step 1b. import any values that aren't columns of data
   vars <- c( "entity_type", "value_type", "basis_of_value", 
             "replicates", "collection_date",
-            "basis_of_record", "life_stage", "measurement_remarks", "source_id")
+            "basis_of_record", "life_stage", "sex", "caste",
+            "measurement_remarks", "source_id")
 
   df <-
     df %>%
@@ -1153,7 +1154,7 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
         category = NA_character_,
         context_property = NA_character_,
         find = NA_character_,
-        value = NA_character_,
+        replace = NA_character_,
         description = NA_character_,
         link_id = NA_character_,
         link_vals = NA_character_

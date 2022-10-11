@@ -129,5 +129,28 @@ testthat::test_that("test datasets", {
                  pull(basis_of_record) %>% grep(pattern = "lab") %>% length, 0)
   expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% grep(pattern = "wild") %>% length, 0)
-})
+  
+  expect_equal(Ex5$traits %>% pull(location_id) %>% unique, Ex5$sites %>% pull(location_id) %>% unique)
+  expect_equal(Ex5$traits %>% select(location_id) %>% unique() %>% nrow(), Ex5$sites %>% select(site_name) %>% unique() %>% nrow())
 
+  # Example 6 - Tests focus on context and the various context identifiers
+  # Based on Crous_2013
+  # Have also added data for sex to test this field
+
+  Ex6 <- test_build_dataset(file.path(examples.dir, "test4-metadata.yml"), file.path(examples.dir, "test4-data.csv"), "Example 6", definitions, unit_conversions, schema)
+  
+  expect_equal(Ex6$traits$sex %>% unique, c("male", "female"))
+  expect_equal(Ex6$traits$location_id %>% unique, c("01"))
+  expect_equal(Ex6$traits %>% filter(sex == "male") %>% nrow(), 85)
+  expect_equal(Ex6$traits %>% distinct(method_id, temporal_id, treatment_id) %>% nrow(), 36)
+
+  expect_equal(Ex6$contexts$category %>% unique, c("temporal", "treatment", "method"))
+  expect_equal(Ex6$contexts %>% nrow(), 9)
+  expect_equal(Ex6$contexts %>% nrow(), Ex6$contexts %>% group_by(link_id, link_vals) %>% distinct() %>% nrow())
+  expect_equal(Ex6$contexts %>% pull(var_in) %>% unique() %>% length, 4)
+
+  expect_equal(Ex6$traits %>% filter(trait_name == "fruit_colour") %>% pull(value) %>% unique, c("pink", "black", "red"))
+
+  expect_equal(Ex6$traits %>% pull(observation_id) %>% unique() %>% length(), 35)
+
+})
