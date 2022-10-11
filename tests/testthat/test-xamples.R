@@ -147,7 +147,7 @@ testthat::test_that("test datasets", {
   expect_equal(Ex6$contexts$category %>% unique, c("temporal", "treatment", "method"))
   expect_equal(Ex6$contexts %>% nrow(), 9)
   expect_equal(Ex6$contexts %>% nrow(), Ex6$contexts %>% group_by(link_id, link_vals) %>% distinct() %>% nrow())
-  expect_equal(Ex6$contexts %>% pull(var_in) %>% unique() %>% length, 4)
+  expect_equal(Ex6$contexts %>% pull(context_property) %>% unique() %>% length, 4)
 
   expect_equal(Ex6$traits %>% filter(trait_name == "fruit_colour") %>% pull(value) %>% unique, c("pink", "black", "red"))
 

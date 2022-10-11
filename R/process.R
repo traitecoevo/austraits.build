@@ -398,7 +398,7 @@ dataset_process <- function(filename_data_raw,
   list(dataset_id = dataset_id,
        traits     = traits %>% filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
        locations      = locations,
-       contexts   = context_ids$contexts,
+       contexts   = context_ids$contexts %>% dplyr::select(-.data$var_in, -.data$find),
        methods    = methods,
        excluded_data = 
          if(filter_missing_values == TRUE){
@@ -1150,7 +1150,7 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
         ids = tibble::tibble()
         )
     context_ids$contexts <- context_ids$contexts %>%
-      mutate(
+      dplyr::mutate(
         category = NA_character_,
         context_property = NA_character_,
         find = NA_character_,
@@ -1158,8 +1158,8 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
         description = NA_character_,
         link_id = NA_character_,
         link_vals = NA_character_
-      ) %>%
-      dplyr::relocate(var_in, .after = context_property)
+      )
+
 # XXXX Why doesn't this work? process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))      
       
   } else {
