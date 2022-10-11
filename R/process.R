@@ -96,7 +96,7 @@ create_context_ids <- function(data, contexts) {
     select(context_property, category, value) %>%
     distinct()
 
-  categories <- c("plot", "treatment", "temporal", "method") %>% subset(., . %in% tmp$category)
+  categories <- c("plot", "treatment", "entity_context", "temporal", "method") %>% subset(., . %in% tmp$category)
 
   ids <- tibble(.rows = nrow(context_cols))
 
@@ -594,7 +594,7 @@ process_create_observation_id <- function(data) {
     dplyr::mutate(check_for_ind = NA) %>%
     dplyr::select(dataset_id, observation_id, taxon_name, trait_name, value, unit, entity_type, value_type, 
                   basis_of_value, replicates, basis_of_record, life_stage, population_id, individual_id, 
-                  temporal_id, source_id, location_id, plot_id, treatment_id, collection_date, 
+                  temporal_id, source_id, location_id, entity_context_id, plot_id, treatment_id, collection_date, 
                   measurement_remarks, method_id, original_name, error)
 }
 
@@ -929,7 +929,7 @@ process_add_all_columns <- function(data, vars, add_error_column = TRUE) {
       dplyr::mutate(!!v := NA_character_)
 
    data <- data %>%
-     dplyr::select(dplyr::any_of(c(vars, "observation_id", "population_id", "individual_id", "plot_id", "method_id", "temporal_id")))
+     dplyr::select(dplyr::any_of(c(vars, "observation_id", "population_id", "individual_id", "entity_context_id", "plot_id", "method_id", "temporal_id")))
 
   if(add_error_column){
     data <- data %>%
@@ -964,7 +964,7 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
 
   df <- data %>%
         # next step selects and renames columns based on named vector
-        dplyr::select(any_of(c(var_in[i], "plot_id", "treatment_id", "temporal_id", "method_id", contexts$var_in))) %>%
+        dplyr::select(any_of(c(var_in[i], "entity_context_id", "plot_id", "treatment_id", "temporal_id", "method_id", contexts$var_in))) %>%
         dplyr::mutate(dataset_id = dataset_id)
   
   # Step 1b. import any values that aren't columns of data

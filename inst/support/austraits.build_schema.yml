@@ -73,6 +73,7 @@ austraits:
         temporal_id: &temporal_id A unique integer identifier assigned where repeat observations are made on the same individual (or population, or taxon) across time. The identifier links to specific information in the context table.
         source_id: &source_id For datasets that are compilations, an identifier for the original data source.
         location_id: &location_id A unique integer identifier for a site, with sites numbered sequentially within a dataset. The identifier links to specific information in the site table.
+        entity_context_id: &entity_context_id A unique integer identifier indicating specific contextual properties of an individual, possibly including the individual's sex or caste (for social insects). 
         plot_id: &plot_id A unique integer identifier for a plot, where a plot is a distinct collection of organisms within a single geographic location, such as plants growing on different aspects or blocks in an experiment. The identifier links to specific information in the context table.
         treatment_id: &treatment_id A unique integer identifier for a treatment, where a treatment is any experimental manipulation to an organism's growing/living conditions. The identifier links to specific information in the context table.
         collection_date: &collection_date Date sample was taken, in the format `yyyy-mm-dd`, `yyyy-mm` or `yyyy`, depending on the resoluton specified. Alternatively an overall range for the study can be indicating, with the starting and ending sample date sepatated by a `/`, as in 2010-10/2011-03
@@ -94,7 +95,7 @@ austraits:
       elements:
         dataset_id: *dataset_id
         context_property: The contextual characteristic being recorded. If applicable, name should include units of measurement, e.g. `CO2 concentration (ppm)`.
-        category: The category of context property, with options being `plot`, `treatment`, `temporal` and `method`.
+        category: The category of context property, with options being `plot`, `treatment`, `individual_context`, `temporal` and `method`.
         value: The measured value of a context property.
         description: Description of a specific context property value.
         link_id: Variable indicating which identifier column in the traits table contains the specified `link_vals`.
@@ -139,6 +140,7 @@ austraits:
         temporal_id: *temporal_id
         source_id: *source_id
         location_id: *location_id
+        entity_context_id: *entity_context_id
         plot_id: *plot_id
         treatment_id: *treatment_id
         collection_date: *collection_date
@@ -314,7 +316,7 @@ metadata:
       type: array
       elements:
         contextual_property: The contextual property represented by the data in the column specified by `var_in`.
-        category: The category of contextual data. Options are `plot` (a distinct collection of organisms within a single geographic location, such as plants growing on different aspects or blocks in an experiment), `treatment` (an experimental treatment), `temporal` (indicating when repeat observations are made on the same individual (or population, or taxon) across time) and `method` (indicating the same trait was measured on the same individual (or population, or taxon) using multiple methods).
+        category: The category of contextual data. Options are `plot` (a distinct collection of organisms within a single geographic location, such as plants growing on different aspects or blocks in an experiment), `treatment` (an experimental treatment), `entity_context` (contextual information to record about the entity the isn't documented elsewhere, including the entity's sex, caste), `temporal` (indicating when repeat observations are made on the same individual (or population, or taxon) across time) and `method` (indicating the same trait was measured on the same individual (or population, or taxon) using multiple methods).
         var_in: Name of column with contextual data in the orignal data submitted.
         find: The contextual values in the original data submitted (optional)
         value: The standardised contextual values, aligning syntax and wording with other studies. 
@@ -336,6 +338,7 @@ metadata:
         plot_id: *plot_id
         treatment_id: *treatment_id
         individual_id: *individual_id
+        entity_context_id: *entity_context_id
         temporal_id: *temporal_id 
         method_id: *method_id
         life_stage: *life_stage
