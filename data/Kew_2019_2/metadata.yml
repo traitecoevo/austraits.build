@@ -20,19 +20,20 @@ dataset:
     data %>% 
       mutate(
         protcontentval = protcontentval/100,
-        original_dataset_id = stringr::str_replace_all(refshort,"[\\(]",""),    
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\)",""),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\, ","_"),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\& ",""),
-        original_dataset_id = stringr::str_replace_all(original_dataset_id,"[:space:]","_"),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\_et_al.","")
+        source_id = stringr::str_replace_all(refshort,"[\\(]",""),    
+        source_id = stringr::str_replace(source_id,"\\)",""),
+        source_id = stringr::str_replace(source_id,"\\, ","_"),
+        source_id = stringr::str_replace(source_id,"\\& ",""),
+        source_id = stringr::str_replace_all(source_id,"[:space:]","_"),
+        source_id = stringr::str_replace(source_id,"\\_et_al.","")
         ) %>% 
-      group_by(`SID taxa`, original_dataset_id, oilmaterialdesc) %>%
+      group_by(`SID taxa`, source_id, oilmaterialdesc) %>%
       mutate(observation_num = row_number()) %>%
       ungroup()
   '
   collection_date: unknown/2019
   taxon_name: SID taxa
+  source_id: source_id
   description: seed protein contents for Australian species from the Kew Botanic Gardens
     database
   basis_of_record: literature
@@ -42,7 +43,7 @@ dataset:
   original_file: in raw data folder
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons licesne. Data not to be used for Commercial Purposes.
-sites: .na
+locations: .na
 contexts:
   tissue sampled:
     var_in: oilmaterialdesc
@@ -55,7 +56,7 @@ contexts:
       replace: kernel 
       description: Measurements were made on the kernel.
   original dataset_id:
-    var_in: original_dataset_id
+    var_in: source_id
     category: method
     values:
     - find: Brand_Cherikoff_1985

@@ -22,18 +22,18 @@ dataset:
         year = str_extract(refshort,"[:digit:][:digit:][:digit:][:digit:]"),
         year = if_else(is.na(year),"unknown",year),
         oilcontentval = oilcontentval/100,
-        original_dataset_id = stringr::str_replace_all(refshort,"[\\(]",""),    
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\)",""),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\.",""),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\, ","_"),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\& ",""),
-        original_dataset_id = stringr::str_replace_all(original_dataset_id,"[:space:]","_"),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\_et_al",""),
-        original_dataset_id = if_else(is.na(original_dataset_id),"unknown",original_dataset_id),
+        source_id = stringr::str_replace_all(refshort,"[\\(]",""),    
+        source_id = stringr::str_replace(source_id,"\\)",""),
+        source_id = stringr::str_replace(source_id,"\\.",""),
+        source_id = stringr::str_replace(source_id,"\\, ","_"),
+        source_id = stringr::str_replace(source_id,"\\& ",""),
+        source_id = stringr::str_replace_all(source_id,"[:space:]","_"),
+        source_id = stringr::str_replace(source_id,"\\_et_al",""),
+        source_id = if_else(is.na(source_id),"unknown",source_id),
       ) %>%
       arrange(taxa, oilcontentval, year) %>% 
       group_by(taxa, oilcontentval, oilmaterialdesc) %>%
-        mutate(merged_ref = paste0(original_dataset_id, collapse = "; ")) %>%
+        mutate(merged_ref = paste0(source_id, collapse = "; ")) %>%
         summarise(across(.cols = everything(),.fns = first)) %>% 
       ungroup() %>% 
       group_by(taxa, oilmaterialdesc) %>% 
@@ -42,6 +42,7 @@ dataset:
   '
   collection_date: unknown/2019
   taxon_name: taxa
+  source_id: source_id
   description: See oil content data on species from Kew seed databases
   basis_of_record: literature
   life_stage: adult
@@ -50,7 +51,7 @@ dataset:
   measurement_remarks: merged_ref
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons licesne. Data not to be used for Commercial Purposes.
-sites: .na
+locations: .na
 contexts:
   tissue sampled:
     var_in: oilmaterialdesc
