@@ -135,13 +135,13 @@ testthat::test_that("test datasets", {
 
   # Example 6 - Tests focus on context and the various context identifiers
   # Based on Crous_2013
-  # Have also added data for sex to test this field
+  # Have also added data for sex to test this field (commented out for now)
 
   Ex6 <- test_build_dataset(file.path(examples.dir, "test4-metadata.yml"), file.path(examples.dir, "test4-data.csv"), "Example 6", definitions, unit_conversions, schema)
   
-  expect_equal(Ex6$traits$sex %>% unique, c("male", "female"))
+  #expect_equal(Ex6$traits$sex %>% unique, c("male", "female"))
   expect_equal(Ex6$traits$location_id %>% unique, c("01"))
-  expect_equal(Ex6$traits %>% filter(sex == "male") %>% nrow(), 85)
+  #expect_equal(Ex6$traits %>% filter(sex == "male") %>% nrow(), 85)
   expect_equal(Ex6$traits %>% distinct(method_id, temporal_id, treatment_id) %>% nrow(), 36)
 
   expect_equal(Ex6$contexts$category %>% unique, c("temporal", "treatment", "method"))

@@ -338,8 +338,7 @@ dataset_process <- function(filename_data_raw,
                                          "trait_name", "population_id", "individual_id",
                                          "location_name", "source_id",
                                          "collection_date", "custom_R_code", 
-                                         "taxon_name", "basis_of_value", "basis_of_record", "life_stage",
-                                         "sex", "caste")))
+                                         "taxon_name", "basis_of_value", "basis_of_record", "life_stage")))
       )  %>%
       full_join( by = "dataset_id",
       # references
@@ -367,8 +366,8 @@ dataset_process <- function(filename_data_raw,
                   )
  
   # Where missing, fill variables with values from locations
-  vars <- c("basis_of_record", "life_stage", "sex", "caste", "collection_date", "measurement_remarks", "entity_type",
-                  "value_type", "basis_of_value", "replicates", "population_id", "individual_id")
+  vars <- c("basis_of_record", "life_stage", "collection_date", "measurement_remarks", "entity_type",
+            "value_type", "basis_of_value", "replicates", "population_id", "individual_id")
   
   for(v in vars){
 
@@ -594,7 +593,7 @@ process_create_observation_id <- function(data) {
   data <- data %>%
     dplyr::mutate(check_for_ind = NA) %>%
     dplyr::select(dataset_id, observation_id, taxon_name, trait_name, value, unit, entity_type, value_type, 
-                  basis_of_value, replicates, basis_of_record, life_stage, sex, caste, population_id, individual_id, 
+                  basis_of_value, replicates, basis_of_record, life_stage, population_id, individual_id, 
                   temporal_id, source_id, location_id, plot_id, treatment_id, collection_date, 
                   measurement_remarks, method_id, original_name, error)
 }
@@ -971,7 +970,7 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
   # Step 1b. import any values that aren't columns of data
   vars <- c( "entity_type", "value_type", "basis_of_value", 
             "replicates", "collection_date",
-            "basis_of_record", "life_stage", "sex", "caste",
+            "basis_of_record", "life_stage",
             "measurement_remarks", "source_id")
 
   df <-

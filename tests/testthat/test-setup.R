@@ -38,7 +38,7 @@ test_that("metadata_create_template is working",{
 
   expect_isin(names(test_metadata$dataset), schema$metadata$elements$dataset$values %>% names())
  
- expect_equal(length(test_metadata$dataset), 23)
+ expect_equal(length(test_metadata$dataset), 21)
 })
 
 test_that("metadata_path_dataset_id is working",{
