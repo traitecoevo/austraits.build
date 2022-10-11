@@ -82,8 +82,8 @@ create_context_ids <- function(data, contexts) {
       xx <- dplyr::filter(xx, is.na(find))
       if (nrow(xx) > 0) {  
         ## create named vector
-        xxx <- setNames(xx$replace, xx$replace)
-        ## use named vector for find and replace
+        xxx <- setNames(xx$value, xx$value)
+        ## use named vector for find and value
         context_cols[[v]] <- xxx[context_cols[[v]]]
       }
     }
@@ -93,7 +93,7 @@ create_context_ids <- function(data, contexts) {
   tmp <-
     contexts %>%
     #  filter(category == v) %>%
-    select(category, context_property, replace) %>%
+    select(context_property, category, value) %>%
     distinct()
 
   categories <- c("plot", "treatment", "temporal", "method") %>% subset(., . %in% tmp$category)
@@ -135,8 +135,8 @@ create_context_ids <- function(data, contexts) {
         util_df_convert_character() %>%
         group_by(find) %>%
         summarise(
-          category = w,
           context_property = v,
+          category = w,
           link_id = paste0(w, "_id"),
           link_vals = paste(id, collapse = ", ")
         )
@@ -145,10 +145,10 @@ create_context_ids <- function(data, contexts) {
 
   contexts_finished <-
     contexts %>%
-      mutate(find = ifelse(is.na(find),as.character(replace),as.character(find))) %>%
+      mutate(find = ifelse(is.na(find),as.character(value),as.character(find))) %>%
       dplyr::left_join(
         id_link %>% dplyr::bind_rows(),
-        by = c("category", "context_property", "find")
+        by = c("context_property", "category", "find")
       )
 
   list(
@@ -197,22 +197,22 @@ dataset_process <- function(filename_data_raw,
   # read contextual data
 
   f <- function(x) {
-    tibble::tibble(var_in = x$var_in, category = x$category, util_list_to_df2(x$values))
+    tibble::tibble(context_property = x$context_property, category = x$category, var_in = x$var_in, util_list_to_df2(x$values))
   }
 
   if(!is.na(metadata$contexts[1])) {
     contexts <-
       metadata$contexts %>%
-      purrr::map_df(.id = "context_property", f) %>%
+      purrr::map_df(f) %>%
       mutate(dataset_id = dataset_id) %>%
-      select(dataset_id, category, context_property, var_in, 
-      dplyr::any_of(c("find", "replace", "description")))
+      select(dataset_id, context_property, category, var_in, 
+      dplyr::any_of(c("find", "value", "description")))
 
       # keep values from find column if a replacement isn't specified
       if(is.null(contexts[["find"]])) {
         contexts[["find"]] <- NA_character_
       } else {
-        contexts[["find"]] <- ifelse(is.na(contexts$find), contexts$replace, contexts$find)
+        contexts[["find"]] <- ifelse(is.na(contexts$find), contexts$value, contexts$find)
       }
   } else {
       contexts <-
@@ -474,7 +474,7 @@ process_create_observation_id <- function(data) {
   #                location_name, treatment_id and plot_id
   # their purpose is to allow `population_level` measurements to be
   # easily mapped to individuals within the given population
-
+#browser()
     if(
       !all(is.na(data[["location_name"]]))|
       !all(is.na(data[["plot_id"]]))|
@@ -1151,10 +1151,10 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
         )
     context_ids$contexts <- context_ids$contexts %>%
       dplyr::mutate(
-        category = NA_character_,
         context_property = NA_character_,
+        category = NA_character_,
         find = NA_character_,
-        replace = NA_character_,
+        value = NA_character_,
         description = NA_character_,
         link_id = NA_character_,
         link_vals = NA_character_

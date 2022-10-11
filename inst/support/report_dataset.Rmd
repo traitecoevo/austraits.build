@@ -268,7 +268,7 @@ for(v in missing) {
 ```
 
 
-## Sites
+## Locations
 
 Data were collected at the following sites and locations. As a minimum, we are aiming to collect, the variables
 
@@ -280,17 +280,17 @@ create_if_missing <- function(df, var, type=rep(NA_character_, nrow(df))) {
   df
 }
 
-site_main <- c("location_name", "longitude (deg)","latitude (deg)", "description")
-sites <-
+location_main <- c("location_name", "longitude (deg)","latitude (deg)", "description")
+locations <-
   full_join(by="location_id",
-            # count of records by site
+            # count of records by location
             data_study$traits %>%
               mutate(location_id = ifelse(is.na(location_id), "unknown", location_id)) %>%
               group_by(location_id) %>%
               summarise(records = n()),
-            # details on sites from metadata
-            data_study$sites %>%
-              filter(site_property %in% site_main) %>%
+            # details on locations from metadata
+            data_study$locations %>%
+              filter(site_property %in% location_main) %>%
               select(-dataset_id) %>%
               spread(site_property, value) %>%
               create_if_missing("location_id") %>%
@@ -305,51 +305,51 @@ sites <-
   ) %>%
  select(location_id, location_name, records, `latitude (deg)`, `longitude (deg)`, description)
 
- sites %>%
+ locations %>%
    my_kable_styling()
          
 
-if( any(tolower(sites$location_name) %in% c(NA, "unknown") ) ) {
-  new_question("(section `sites`) **Location data incomplete or unknown!** Can you provide location details where your data were sampled? If data are from a National Park, biological reserve, or other location with a name, but not linked to a specific site within the park, the site name should be that national park (or similar), and we will use the park's headquarters as the GPS coordinates. If the data are from herbarium specimens or a taxa monograph it is appropriate to leave this information blank.")
+if( any(tolower(locations$location_name) %in% c(NA, "unknown") ) ) {
+  new_question("(section `locations`) **Location data incomplete or unknown!** Can you provide location details where your data were sampled? If data are from a National Park, biological reserve, or other location with a name, but not linked to a specific site within the park, the site name should be that national park (or similar), and we will use the park's headquarters as the GPS coordinates. If the data are from herbarium specimens or a taxa monograph it is appropriate to leave this information blank.")
 }
 
 ```
 
 ```{r maps, eval= TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.keep="all"}
 
-# Make a map of study sites using leaflet
-sites <- sites %>% filter(!is.na(`latitude (deg)`) & !is.na(`longitude (deg)`))
-if(nrow(sites) > 0 ) {
+# Make a map of study locations using leaflet
+locations <- locations %>% filter(!is.na(`latitude (deg)`) & !is.na(`longitude (deg)`))
+if(nrow(locations) > 0 ) {
   leaflet::leaflet() %>%
   leaflet::addTiles() %>%
   leaflet::addScaleBar() %>%
   leaflet::addMiniMap(zoomLevelFixed=2) %>%
-  leaflet::addMarkers(lng = sites$`longitude (deg)`, lat = sites$`latitude (deg)`,
-             label = sites$location_name)	
+  leaflet::addMarkers(lng = locations$`longitude (deg)`, lat = locations$`latitude (deg)`,
+             label = locations$location_name)	
 }
 ```
 
 ```{r, results='asis', echo=FALSE}
-new_question("(section `sites`) Do site details look complete and accurate? As a minimum we would like `latitude`, `longitude`, `description`.")
+new_question("(section `locations`) Do site details look complete and accurate? As a minimum we would like `latitude`, `longitude`, `description`.")
 ```
 
 ## Additional site data (optional)
 
-The following variables have been recorded for the sites included in the study:
+The following variables have been recorded for the locations included in the study:
 
 ```{r, results='asis', echo=FALSE}
 
-data_study$sites %>%
-  filter(!(site_property %in% site_main)) %>%
+data_study$locations %>%
+  filter(!(site_property %in% location_main)) %>%
   select(-dataset_id) %>%
-  spread(site_property, value) -> sites_extra
+  spread(site_property, value) -> locations_extra
 
-if(nrow(sites_extra) > 0 ) {
-  sites_extra %>%
+if(nrow(locations_extra) > 0 ) {
+  locations_extra %>%
     my_kable_styling() %>%
     writeLines()
 
-  new_question("(section `sites`) Do the additional site details look complete?")
+  new_question("(section `locations`) Do the additional site details look complete?")
   } else{
   writeLines("There is currently no additional site data associated with this dataset.")
 }
