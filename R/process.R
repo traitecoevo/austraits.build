@@ -108,7 +108,7 @@ dataset_process <- function(filename_data_raw,
 
   # context ids needed to continue processing
   context_ids <- traits$context_ids
-
+  
   locations <-
     metadata$locations %>%
     process_format_locations(dataset_id, schema)
@@ -145,7 +145,7 @@ dataset_process <- function(filename_data_raw,
     traits <- 
       traits %>% 
       dplyr::select(-.data$location_id) %>%
-      dplyr::left_join(by = c("location_name"), locations %>% dplyr::select(location_name, location_id))
+      dplyr::left_join(by = c("location_name"), locations %>% dplyr::select(.data$location_name, .data$location_id))
   }
 
   # Where missing, fill variables in traits table with values from locations
@@ -444,11 +444,11 @@ process_create_context_ids <- function(data, contexts) {
 
   # select context_cols
   tmp <- contexts %>%
-    select(context_property, var_in) %>%
-    distinct()
+    dplyr::select(.data$context_property, .data$var_in) %>%
+    dplyr::distinct()
 
   # Extract context columns
-  context_cols <- data %>% select(tmp$var_in)
+  context_cols <- data %>% dplyr::select(tmp$var_in)
   names(context_cols) <- tmp$context_property
 
   # Find and replace values for each context property
@@ -456,11 +456,11 @@ process_create_context_ids <- function(data, contexts) {
 
     ## first filter to each property
     xx <- contexts %>%
-      filter(context_property == v)
+      dplyr::filter(context_property == v)
 
     ## only do if find column is present and has non NA values
     if (!is.null(xx[["find"]])) {
-      xx <- dplyr::filter(xx, is.na(find))
+      xx <- dplyr::filter(xx, is.na(.data$find))
       if (nrow(xx) > 0) {
         ## create named vector
         xxx <- setNames(xx$value, xx$value)
@@ -474,12 +474,12 @@ process_create_context_ids <- function(data, contexts) {
   tmp <-
     contexts %>%
     #  filter(category == v) %>%
-    select(context_property, category, value) %>%
-    distinct()
+    dplyr::select(.data$context_property, .data$category, .data$value) %>%
+    dplyr::distinct()
 
   categories <- c("plot", "treatment", "entity_context", "temporal", "method") %>% subset(., . %in% tmp$category)
 
-  ids <- tibble(.rows = nrow(context_cols))
+  ids <- dplyr::tibble(.rows = nrow(context_cols))
 
   make_id <- function(x) {
     # unite function turns NAs into text, so need to deal with this
@@ -491,16 +491,16 @@ process_create_context_ids <- function(data, contexts) {
 
   for (w in categories) {
     xx <- contexts %>%
-      filter(category == w)
+      dplyr::filter(category == w)
 
     vars <- unique(xx[["context_property"]])
 
     xxx <-
       context_cols %>%
-      select(vars) %>%
-      unite("combined", remove = FALSE) %>%
-      mutate(id = make_id(combined)) %>%
-      select(-combined)
+      dplyr::select(vars) %>%
+      dplyr::unite("combined", remove = FALSE) %>%
+      dplyr::mutate(id = make_id(.data$combined)) %>%
+      dplyr::select(-.data$combined)
 
     ## store ids
     ids[[paste0(w, "_id")]] <- xxx[["id"]]
@@ -509,13 +509,13 @@ process_create_context_ids <- function(data, contexts) {
     for (v in vars) {
       id_link[[v]] <-
         xxx %>%
-        select(v, id) %>%
-        filter(!is.na(id)) %>%
-        distinct() %>%
-        rename(find = v) %>%
+        dplyr::select(v, .data$id) %>%
+        dplyr::filter(!is.na(.data$id)) %>%
+        dplyr::distinct() %>%
+        dplyr::rename(find = v) %>%
         util_df_convert_character() %>%
-        group_by(find) %>%
-        summarise(
+        dplyr::group_by(.data$find) %>%
+        dplyr::summarise(
           context_property = v,
           category = w,
           link_id = paste0(w, "_id"),
@@ -526,7 +526,7 @@ process_create_context_ids <- function(data, contexts) {
 
   contexts_finished <-
     contexts %>%
-    mutate(find = ifelse(is.na(find), as.character(value), as.character(find))) %>%
+    dplyr::mutate(find = ifelse(is.na(.data$find), as.character(.data$value), as.character(.data$find))) %>%
     dplyr::left_join(
       id_link %>% dplyr::bind_rows(),
       by = c("context_property", "category", "find")

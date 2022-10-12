@@ -7,7 +7,7 @@
 util_df_convert_character(df)
 }
 \arguments{
-\item{df}{}
+\item{df}{a dataframe}
 }
 \value{
 a dataframe
@@ -16,5 +16,5 @@ a dataframe
 Convert all columns in data frame to character
 }
 \examples{
-lapply(util_df_convert_character(iris), class) 
+lapply(austraits.build:::util_df_convert_character(iris), class) 
 }

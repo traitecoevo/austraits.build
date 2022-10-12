@@ -4,15 +4,17 @@
 \alias{process_format_contributors}
 \title{Format contributors from list into tibble}
 \usage{
-process_format_contributors(mylist, schema)
+process_format_contributors(mylist, dataset_id, schema)
 }
 \arguments{
+\item{dataset_id}{XXX}
+
 \item{schema}{XXX}
 
 \item{my_list}{list of input information}
 }
 \value{
-tibble with details of contribtuors
+tibble with details of contributors
 }
 \description{
 Format contributors, read in from the metadata.yml file. Converts from list to tibble.

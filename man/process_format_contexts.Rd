@@ -4,10 +4,12 @@
 \alias{process_format_contexts}
 \title{Format context data from list to tibble}
 \usage{
-process_format_contexts(my_list)
+process_format_contexts(my_list, dataset_id)
 }
 \arguments{
 \item{my_list}{list of input information}
+
+\item{dataset_id}{XXX}
 }
 \value{
 tibble with context details if available
