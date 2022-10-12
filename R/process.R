@@ -95,7 +95,7 @@ dataset_process <- function(filename_data_raw,
 
   unit_conversion_functions <- config_for_dataset$unit_conversion_functions
 
-  # load abd process contextual data
+  # load and process contextual data
   contexts <- 
     metadata$contexts %>% 
     process_format_contexts(dataset_id)
@@ -106,7 +106,7 @@ dataset_process <- function(filename_data_raw,
     process_custom_code(metadata[["dataset"]][["custom_R_code"]])() %>%
     process_parse_data(dataset_id, metadata, contexts)
 
-  # context ids needed to contnue processing
+  # context ids needed to continue processing
   context_ids <- traits$context_ids
 
   locations <-
