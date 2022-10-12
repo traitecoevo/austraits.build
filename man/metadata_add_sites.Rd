@@ -19,8 +19,8 @@ The output may require additional manual editing.
 }
 \examples{
 \dontrun{
-austraits$sites \%>\% dplyr::filter(dataset_id == "Falster_2005_1") \%>\% 
-select(-dataset_id) \%>\% spread(location_property, value) \%>\% type_convert()-> site_data
+austraits$locations \%>\% dplyr::filter(dataset_id == "Falster_2005_1") \%>\% 
+select(-dataset_id) \%>\% spread(site_property, value) \%>\% type_convert()-> site_data
 metadata_add_sites("Falster_2005_1", site_data)
 }
 }
