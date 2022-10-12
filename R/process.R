@@ -145,7 +145,7 @@ dataset_process <- function(filename_data_raw,
     traits <- 
       traits %>% 
       dplyr::select(-.data$location_id) %>%
-      dplyr::left_join(by = c("location_name"), locations %>% dplyr::select(.data$location_name, .data$location_id))
+      dplyr::left_join(by = c("location_name"), locations %>% dplyr::select(.data$location_name, .data$location_id) %>% dplyr::distinct())
   }
 
   # Where missing, fill variables in traits table with values from locations
