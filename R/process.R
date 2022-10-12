@@ -968,7 +968,10 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
       } else {
 
         df <- df %>%
-                  dplyr::mutate(parsing_id = process_generate_id(nrow(.), dataset_id))
+                  dplyr::mutate(
+                          row_numbers = dplyr::row_number(),
+                          parsing_id = process_generate_id(row_numbers, dataset_id)
+                        )
       }
 
   } else {
