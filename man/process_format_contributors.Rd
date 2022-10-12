@@ -4,14 +4,14 @@
 \alias{process_format_contributors}
 \title{Format contributors from list into tibble}
 \usage{
-process_format_contributors(mylist, dataset_id, schema)
+process_format_contributors(my_list, dataset_id, schema)
 }
 \arguments{
+\item{my_list}{list of input information}
+
 \item{dataset_id}{XXX}
 
 \item{schema}{XXX}
-
-\item{my_list}{list of input information}
 }
 \value{
 tibble with details of contributors

@@ -427,7 +427,7 @@ dataset_test_worker <-
                 contexts <-
                   metadata$contexts %>%
                   purrr::map_df(.id = "context_property", f) %>%
-                  select(context_property, category, var_in,
+                  dplyr::select(.data$context_property, .data$category, .data$var_in,
                   dplyr::any_of(c("find", "replace", "description"))) %>%                    
                   process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))
               } else {
@@ -436,29 +436,9 @@ dataset_test_worker <-
                   process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))
               }
           )
-          
-          # test_dataframe_names_contain(
-          #   contexts,
-          #   c(
-          #     "category",
-          #     "context_property",
-          #     "var_in",
-          #     "find",
-          #     "value",
-          #     "description",
-          #     "link_id",
-          #     "link_vals"
-          #   ),
-          #   info = paste0(f, " - contexts")
-          # )
-          
-          # for (v in names(metadata$contexts)) {
-          #   test_list(metadata[["contexts"]][[v]], info = paste0(f, "-contexts"))
-          # }
         }
         
         # Traits
-
         expect_list_elements_contains_names(metadata[["traits"]],
                                     schema$metadata$elements$traits$elements[1:3] %>% names(),
                                     info = paste0(f, "-traits"))
@@ -606,7 +586,10 @@ dataset_test_worker <-
 
           for (j in 1:length(metadata[["contexts"]])) {
             context_prop <- metadata[["contexts"]][[j]]$var_in %>% as.vector()
-            context_input_values <- metadata$contexts[[1]]$values %>% util_list_to_df2 %>% select(find) %>% as.vector()
+            context_input_values <- metadata$contexts[[1]]$values %>%
+              util_list_to_df2() %>%
+              dplyr::select(.data$find) %>%
+              as.vector()
 
             expect_contains(
               names(data),

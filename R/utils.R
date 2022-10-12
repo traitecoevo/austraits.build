@@ -325,6 +325,7 @@ create_tree_branch <- function(x, title, prefix = "") {
 #' 
 #' @param x vector of names to clean
 #' @return vector of cleaned names
+#' @importFrom stringr fixed
 #' @export 
 #' @examples c("Bankisa_serrata", "bankisa  serrata", "Banksia Seratta") %>% util_strip_taxon_names()
 util_strip_taxon_names <- function(x) {

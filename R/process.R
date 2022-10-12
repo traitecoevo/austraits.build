@@ -37,17 +37,17 @@ dataset_configure <- function(
   trait_mapping <-
     metadata[["traits"]] %>%
     util_list_to_df2() %>%
-    filter(!is.na(.data$trait_name)) %>%
+    dplyr::filter(!is.na(.data$trait_name)) %>%
     # determine unit conversions
     dplyr::mutate(
       i = match(.data$trait_name, names(definitions$elements)),
-      to = map_chr(.data$i, ~util_extract_list_element(.x, definitions$elements, "units")),
+      to = purrr::map_chr(.data$i, ~util_extract_list_element(.x, definitions$elements, "units")),
       conversion = process_unit_conversion_name(.data$unit_in, .data$to)
     )
 
   unit_conversion_functions_sub <-
     unit_conversion_functions[trait_mapping %>%
-    filter(.data$unit_in!=.data$to) %>% dplyr::pull(.data$conversion) %>% unique()]
+    dplyr::filter(.data$unit_in!=.data$to) %>% dplyr::pull(.data$conversion) %>% unique()]
 
   # subset of definitions
   definitions <-
@@ -204,7 +204,7 @@ dataset_process <- function(filename_data_raw,
 
   # combine for final output
   list(dataset_id = dataset_id,
-       traits     = traits %>% filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
+       traits     = traits %>% dplyr::filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
        locations  = locations,
        contexts   = context_ids$contexts %>% dplyr::select(-.data$var_in, -.data$find),
        methods    = methods,
@@ -272,7 +272,7 @@ process_create_observation_id <- function(data) {
         ) {
       data <- data %>% 
         dplyr::mutate(
-          population_id = paste(location_name, plot_id, treatment_id, sep="")
+          population_id = paste(.data$location_name, .data$plot_id, .data$treatment_id, sep = "")
         )
     } else {
       data <- data %>% 
@@ -283,14 +283,14 @@ process_create_observation_id <- function(data) {
 
   data <- data %>%
     dplyr::mutate(
-              pop_id_segment = ifelse((!is.na(location_name)|!is.na(treatment_id)|!is.na(plot_id)) & 
-                                        entity_type %in% c("individual", "population"),
-                                        process_generate_id(population_id, "", sort = TRUE), 
-                                        NA),
-              pop_id_segment = ifelse(is.na(pop_id_segment)  & 
-                                        entity_type %in% c("individual", "population"), 
-                                        "pop_unk", pop_id_segment),
-              population_id = pop_id_segment
+              pop_id_segment = ifelse(
+                (!is.na(.data$location_name)|!is.na(.data$treatment_id)|!is.na(.data$plot_id)) & .data$entity_type %in% c("individual", "population"),
+                process_generate_id(.data$population_id, "", sort = TRUE), 
+                NA),
+              pop_id_segment = ifelse(is.na(.data$pop_id_segment)  & 
+                                        .data$entity_type %in% c("individual", "population"), 
+                                        "pop_unk", .data$pop_id_segment),
+              population_id = .data$pop_id_segment
             )
 
   ## Create individual_id
@@ -320,9 +320,9 @@ process_create_observation_id <- function(data) {
   # (based on entity type)
     has_ind_value <-
       data %>%
-        dplyr::filter(!is.na(value)) %>%
-        dplyr::group_by(parsing_id) %>%
-        dplyr::summarise(check_for_ind = any(str_detect(entity_type, "individual"))) %>%
+        dplyr::filter(!is.na(.data$value)) %>%
+        dplyr::group_by(.data$parsing_id) %>%
+        dplyr::summarise(check_for_ind = any(stringr::str_detect(.data$entity_type, "individual"))) %>%
         dplyr::ungroup()
 
     # If yes, `individual_id` is copied from `parsing_id`
@@ -334,7 +334,7 @@ process_create_observation_id <- function(data) {
     data <- 
       data %>% 
       dplyr::left_join(has_ind_value, by = "parsing_id") %>%
-      dplyr::mutate(individual_id = ifelse( check_for_ind == TRUE, parsing_id, NA))
+      dplyr::mutate(individual_id = ifelse(.data$check_for_ind == TRUE, .data$parsing_id, NA))
   }
 
   # create final individual_id within each species and population
@@ -344,15 +344,15 @@ process_create_observation_id <- function(data) {
   # parsing_id/individual_id are given the same value.
   data <- 
     data %>% 
-    dplyr::group_by(taxon_name, population_id) %>%
+    dplyr::group_by(.data$taxon_name, .data$population_id) %>%
     dplyr::mutate(
-      ind_id_segment = ifelse(!is.na(individual_id) & entity_type == "individual", process_generate_id(individual_id,""), NA),
+      ind_id_segment = ifelse(!is.na(.data$individual_id) & .data$entity_type == "individual", process_generate_id(.data$individual_id,""), NA),
       #individual_id = row_number(),
-      ind_id_segment = ifelse(is.na(ind_id_segment) & is.na(entity_type), process_generate_id(individual_id,"entity_unk"),
-                              ind_id_segment)
+      ind_id_segment = ifelse(is.na(.data$ind_id_segment) & is.na(.data$entity_type), process_generate_id(.data$individual_id,"entity_unk"),
+                              .data$ind_id_segment)
           ) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(individual_id = ind_id_segment, check_for_ind = NA)
+    dplyr::mutate(individual_id = .data$ind_id_segment, check_for_ind = NA)
 
 
   ## Create observation_id  for a collection of measurements made on an entity
@@ -362,10 +362,10 @@ process_create_observation_id <- function(data) {
   i <- !is.na(data$value)
   data[i,] <- 
     data[i,] %>%
-    dplyr::group_by(dataset_id) %>%
+    dplyr::group_by(.data$dataset_id) %>%
     dplyr::mutate(
       observation_id = 
-        paste(taxon_name, population_id, individual_id, temporal_id, entity_type, sep="-") %>%  
+        paste(.data$taxon_name, .data$population_id, .data$individual_id, .data$temporal_id, .data$entity_type, sep="-") %>%  
         process_generate_id("", sort = TRUE)
     ) %>%
     dplyr::ungroup() 
@@ -420,9 +420,9 @@ process_format_contexts <- function(my_list, dataset_id) {
      contexts <-
        my_list %>%
        purrr::map_df(f) %>%
-       mutate(dataset_id = dataset_id) %>%
-       select(
-         dataset_id, context_property, category, var_in,
+       dplyr::mutate(dataset_id = dataset_id) %>%
+       dplyr::select(
+         .data$dataset_id, .data$context_property, .data$category, .data$var_in,
          dplyr::any_of(c("find", "value", "description"))
        )
 
@@ -441,7 +441,6 @@ process_format_contexts <- function(my_list, dataset_id) {
 }
 
 process_create_context_ids <- function(data, contexts) {
-
   # select context_cols
   tmp <- contexts %>%
     dplyr::select(.data$context_property, .data$var_in) %>%
@@ -456,14 +455,14 @@ process_create_context_ids <- function(data, contexts) {
 
     ## first filter to each property
     xx <- contexts %>%
-      dplyr::filter(context_property == v)
+      dplyr::filter(.data$context_property == v)
 
     ## only do if find column is present and has non NA values
     if (!is.null(xx[["find"]])) {
       xx <- dplyr::filter(xx, is.na(.data$find))
       if (nrow(xx) > 0) {
         ## create named vector
-        xxx <- setNames(xx$value, xx$value)
+        xxx <- stats::setNames(xx$value, xx$value)
         ## use named vector for find and value
         context_cols[[v]] <- xxx[context_cols[[v]]]
       }
@@ -473,7 +472,7 @@ process_create_context_ids <- function(data, contexts) {
   # group_by category and create ids
   tmp <-
     contexts %>%
-    #  filter(category == v) %>%
+    #  dplyr::filter(category == v) %>%
     dplyr::select(.data$context_property, .data$category, .data$value) %>%
     dplyr::distinct()
 
@@ -491,7 +490,7 @@ process_create_context_ids <- function(data, contexts) {
 
   for (w in categories) {
     xx <- contexts %>%
-      dplyr::filter(category == w)
+      dplyr::filter(.data$category == w)
 
     vars <- unique(xx[["context_property"]])
 
@@ -509,7 +508,7 @@ process_create_context_ids <- function(data, contexts) {
     for (v in vars) {
       id_link[[v]] <-
         xxx %>%
-        dplyr::select(all_of(v), .data$id) %>%
+        dplyr::select(dplyr::all_of(v), .data$id) %>%
         dplyr::filter(!is.na(.data$id)) %>%
         dplyr::distinct() %>%
         dplyr::rename(find = v) %>%
@@ -519,7 +518,7 @@ process_create_context_ids <- function(data, contexts) {
           context_property = v,
           category = w,
           link_id = paste0(w, "_id"),
-          link_vals = paste(id, collapse = ", ")
+          link_vals = paste(.data$id, collapse = ", ")
         )
     }
   }
@@ -901,6 +900,7 @@ process_add_all_columns <- function(data, vars, add_error_column = TRUE) {
 #' @param data tibble or dataframe containing the study data
 #' @param dataset_id identifier for a particular study in the AusTraits database
 #' @param metadata yaml file with metadata
+#' @param contexts dataframe of contexts for this study
 #' @return tibble in long format with AusTraits formatted trait names, trait
 #' substitutions and unique observation id added
 #' @importFrom dplyr select mutate filter arrange distinct case_when full_join everything any_of bind_cols
@@ -955,12 +955,12 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
         prefix <- dataset_id
 
         df <- df %>%
-                  dplyr::mutate(parsing_id = ifelse(is.na(parsing_id),
-                                paste("temp", dplyr::row_number(), sep = "_"),parsing_id),
-                                parsing_id = as.character(parsing_id)
-                                ) %>% 
-                  dplyr::mutate(parsing_id = process_generate_id(parsing_id, prefix))
-        
+                  dplyr::mutate(
+                    parsing_id = ifelse(is.na(.data$parsing_id),
+                                paste("temp", dplyr::row_number(), sep = "_"),.data$parsing_id) %>%
+                                as.character() %>% 
+                                process_generate_id(prefix)
+                  )
       
       # If an `individual_id` column  IS NOT read in through metadata$dataset, row_numbers are assumed to represent unique `entities`
       # and `parsing_id` values are based on row numbers
@@ -988,16 +988,16 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
     
     df <- df %>%
       dplyr::mutate(
-                parsing_id_tmp = as.character(parsing_id_tmp),
-                parsing_id = process_generate_id(parsing_id_tmp, prefix)
+                parsing_id = parsing_id_tmp %>% as.character() %>% 
+                process_generate_id(prefix)
                     ) %>%
               dplyr::select(-.data$parsing_id_tmp)
   }
 
 
   df <- df %>%
-            mutate(
-              parsing_id = as.character(parsing_id)
+            dplyr::mutate(
+              parsing_id = as.character(.data$parsing_id)
             )
 
 
@@ -1055,7 +1055,7 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
     out <- dplyr::bind_rows(out)
   } else {
 
-    out <- df %>% filter(.data$trait_name %in% traits_table$var_in)
+    out <- df %>% dplyr::filter(.data$trait_name %in% traits_table$var_in)
     out[["value"]] <- out[["value"]] %>%  as.character()
 
     # Pull in additional information for each trait as specified in traits part of metadata, here represented as traits_table
@@ -1152,14 +1152,14 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
 #' \dontrun{
 #' process_format_contributors(read_metadata("data/Falster_2003/metadata.yml")$contributors)
 #' }
-process_format_contributors <- function(mylist, dataset_id, schema) {
+process_format_contributors <- function(my_list, dataset_id, schema) {
 
-    if (length(unlist(mylist$data_collectors)) > 1) {
+    if (length(unlist(my_list$data_collectors)) > 1) {
       contributors <-
-        mylist$data_collectors %>%
+        my_list$data_collectors %>%
         util_list_to_df2() %>%
         dplyr::mutate(dataset_id = dataset_id) %>%
-        filter(!is.na(.data$last_name))
+        dplyr::filter(!is.na(.data$last_name))
     } else {
       contributors <- tibble::tibble(dataset_id = character())
     }
@@ -1179,14 +1179,16 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors) 
   citation_types <- 
     tibble::tibble(
       source_key = names(metadata$source),
-      type = str_replace_all(source_key, "[:punct:][:digit:][:digit:]", ""),
-      source_id = metadata$source %>% util_list_to_df2() %>% select(key)
+      type = str_replace_all(.data$source_key, "[:punct:][:digit:][:digit:]", ""),
+      source_id = metadata$source %>%
+        util_list_to_df2() %>%
+        dplyr::select(.data$key)
     ) 
 
   source_primary_key <- metadata$source$primary$key
-  source_secondary_keys <- citation_types %>% filter(type == "secondary") %>% select(source_id) %>% as.vector() 
+  source_secondary_keys <- citation_types %>% dplyr::filter(.data$type == "secondary") %>% dplyr::select(.data$source_id) %>% as.vector() 
   source_secondary_keys <- source_secondary_keys$source_id$key %>% as.vector()
-  source_original_dataset_keys <- citation_types %>% filter(type == "original") %>% select(source_id) %>% as.vector()
+  source_original_dataset_keys <- citation_types %>% dplyr::filter(.data$type == "original") %>% dplyr::select(.data$source_id) %>% as.vector()
   source_original_dataset_keys <- source_original_dataset_keys$source_id$key %>% as.vector()
   
   # combine collectors to add into the methods table
@@ -1211,8 +1213,8 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors) 
         util_list_to_df1() %>%
         tidyr::spread(.data$key, .data$value) %>%
         dplyr::select(dplyr::any_of(names(metadata$dataset))) %>%
-          dplyr::mutate(dataset_id = dataset_id) %>%
-          dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", 
+        dplyr::mutate(dataset_id = dataset_id) %>%
+        dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", 
                                          "trait_name", "population_id", "individual_id",
                                          "location_name", "source_id",
                                          "collection_date", "custom_R_code", 
@@ -1226,12 +1228,12 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors) 
           source_primary_citation = bib_print(sources[[source_primary_key]]),
           source_secondary_key = source_secondary_keys %>% paste(collapse = "; "),
           source_secondary_citation = ifelse(length(source_secondary_keys) == 0, NA_character_,
-            map_chr(sources[source_secondary_keys], bib_print) %>% paste(collapse = "; ") %>%
+            purrr::map_chr(sources[source_secondary_keys], bib_print) %>% paste(collapse = "; ") %>%
               stringr::str_replace_all("\\.;", ";")
             ),                    
           source_original_dataset_key = source_original_dataset_keys %>% paste(collapse = "; "),
           source_original_dataset_citation = ifelse(length(source_original_dataset_keys) == 0, NA_character_,
-            map_chr(sources[source_original_dataset_keys], bib_print) %>% paste(collapse = "; ") %>%
+            purrr::map_chr(sources[source_original_dataset_keys], bib_print) %>% paste(collapse = "; ") %>%
             stringr::str_replace_all("\\.;", ";")
           )
         )
@@ -1446,7 +1448,7 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
     ) %>%
     # extract genus as this is useful
     dplyr::mutate(
-      genus = .data$taxon_name  %>% stringr::str_split(" ") %>% map_chr(1),
+      genus = .data$taxon_name  %>% stringr::str_split(" ") %>% purrr::map_chr(1),
       genus = ifelse(.data$genus %in% taxa$taxon_name, .data$genus, NA_character_)
     )  %>%
     dplyr::arrange(.data$taxon_name) %>%
@@ -1458,9 +1460,9 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
 
   # check after the split, both "known" and "unknown" exist. If missing, create with empty
   if(is.null(species_tmp[["known"]]))
-    species_tmp[["known"]] <- species_tmp[["unknown"]] %>% filter(taxon_name=="dummy taxa")
+    species_tmp[["known"]] <- species_tmp[["unknown"]] %>% dplyr::filter(taxon_name=="dummy taxa")
   if(is.null(species_tmp[["unknown"]]))
-    species_tmp[["unknown"]] <- species_tmp[["known"]] %>% filter(taxon_name=="dummy taxa")
+    species_tmp[["unknown"]] <- species_tmp[["known"]] %>% dplyr::filter(taxon_name=="dummy taxa")
   
   # retrieve families from list of known genera - prioritise genera with accepted names
    species_tmp[["known"]] <-
