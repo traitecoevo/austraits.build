@@ -497,8 +497,8 @@ process_create_context_ids <- function(data, contexts) {
 
     xxx <-
       context_cols %>%
-      dplyr::select(vars) %>%
-      dplyr::unite("combined", remove = FALSE) %>%
+      dplyr::select(dplyr::all_of(vars)) %>%
+      tidyr::unite("combined", remove = FALSE) %>%
       dplyr::mutate(id = make_id(.data$combined)) %>%
       dplyr::select(-.data$combined)
 
@@ -509,7 +509,7 @@ process_create_context_ids <- function(data, contexts) {
     for (v in vars) {
       id_link[[v]] <-
         xxx %>%
-        dplyr::select(v, .data$id) %>%
+        dplyr::select(all_of(v), .data$id) %>%
         dplyr::filter(!is.na(.data$id)) %>%
         dplyr::distinct() %>%
         dplyr::rename(find = v) %>%
