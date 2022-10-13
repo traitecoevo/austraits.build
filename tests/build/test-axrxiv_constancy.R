@@ -47,6 +47,13 @@ test_that("constancy of with version 3.0.2", {
   # saveRDS(austraits_raw, file.path(root.dir, file_comparison))
   austraits_raw_comparison <- readRDS(file_comparison)
   
+  austraits_raw_comparison$sites -> austraits_raw_comparison$locations 
+  austraits_raw_comparison$sites <- NULL
+  austraits_raw_comparison$locations %>% rename(location_name = site_name, location_property = site_property) -> austraits_raw_comparison$locations
+  
+  austraits_raw$locations %>% select(dataset_id, location_id, location_name) %>% distinct() -> location_names
+  austraits_raw$traits %>% left_join(location_names) -> austraits_raw$traits
+  
   # change some names so comparison to new version still runs
   austraits_raw_comparison$traits$trait_name <- austraits_raw_comparison$traits$trait_name %>%
     gsub("seed_mass", "seed_dry_mass", . ) %>%
@@ -82,7 +89,7 @@ test_that("constancy of with version 3.0.2", {
 
   v <- "locations"
   vv <- c("dataset_id", "location_name", "location_property", "value")
-  to_check <-  c("desciption", "latitude (deg)", "logitude (deg)")
+  to_check <-  c("desciption", "latitude (deg)", "longitude (deg)")
   v1 <- austraits_raw_comparison[[v]][,vv] %>% 
     dplyr::arrange(dataset_id, location_name, location_property) %>%
     filter(location_property %in% to_check, dataset_id != "Bloomfield_2018") 
