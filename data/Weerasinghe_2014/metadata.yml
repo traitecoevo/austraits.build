@@ -32,31 +32,27 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
-      mutate_at(c("Photo","Cond","Ci","Trmmol","Rdark"), ~na_if(.,"-")) %>%
       mutate(
+        across(c(`Photo`,`Cond`,`Ci`,`Trmmol`,`Rdark`), ~na_if(.,"-")),
         Date = Date %>% dmy(),
         individual_id = paste(`Forest location`, Species, replicate, sep = "_"),
-        population_id = "Daintree Rainforest Observatory",
-        method_number = case_when(
-          `Canopy location` == "upper" ~ "1",
-          `Canopy location` == "lower" ~ "2",
-          `Canopy location` == "understory" ~ "3"
-        )
+        `replicates for columns 18 to 25` = str_replace(`replicates for columns 18 to 25`, "4-Mar","3-4")
       ) %>%
-      group_by(individual_id, site_name, `Canopy location`, method_number) %>%
-        mutate(observation_number = row_number()) %>%
-      ungroup
+      arrange(`value_type for columns 18 to 25`) %>%
+      group_by(Date, Species, `Forest location`, `Canopy location`, replicate, site_name, individual_id) %>% 
+        mutate(across(c(Photo:Rdark, `LMA_g_m-2`:`N_P_ratio`, `soluble_sugars_mg_g-1`:`TNC_g_m-2`), .fns=as.numeric)) %>% 
+        summarise(
+          across(c(Photo:Rdark, `LMA_g_m-2`:`N_P_ratio`, `soluble_sugars_mg_g-1`:`TNC_g_m-2`), .fns=mean, na.rm = TRUE),
+          across(c(`value_type for columns 18 to 25`, `replicates for columns 18 to 25`), .fns=first)
+          ) %>%
+      ungroup()
   '
   collection_date: Date
   taxon_name: Species
-  site_name: site_name
-  context_name: Canopy location
+  location_name: site_name
   individual_id: individual_id
-  population_id: population_id 
-  method_number: method_number
-  observation_number: observation_number
   description: A study exploring the impact of canopy position on leaf respiration
     (R) and associated traits in tree and shrub species growing in a lowland tropical
     rainforest in Far North Queensland, Australia.
@@ -123,7 +119,7 @@ dataset:
   notes: This same data is part of Bloomfield_2018 (dry season measurements for Daintree.)
     The data are read into AusTraits through this dataset_id, but the data are present
     in both data.csv files.
-sites:
+locations:
   Daintree Rainforest Observatory at location 103-51:
     plot code: 103-51
     latitude (deg): -16.117
@@ -440,12 +436,19 @@ sites:
     longitude (deg): 145.45
     description: lowland tropical wet forest
 contexts:
-  upper:
-    irradiance (umol photons m-2 s-1): 2400 PAR (upper canopy location)
-  lower:
-    irradiance (umol photons m-2 s-1): 117 PAR (lower canopy location)
-  understory:
-    irradiance (umol photons m-2 s-1): 11 PAR (understory)
+- context_property: irradiance (umol photons m-2 s-1)
+  category: method
+  var_in: Canopy location
+  values:
+  - find: upper
+    value: 2400 PAR
+    description: Light level in the upper canopy location; 2400 PAR.
+  - find: lower
+    value: 117 PAR
+    description: Light level in the lower canopy location; 117 PAR.
+  - find: understory
+    value: 11 PAR
+    description: Light level in the understory; 11 PAR.
 traits:
 - var_in: Photo
   unit_in: umolCO2/m2/s

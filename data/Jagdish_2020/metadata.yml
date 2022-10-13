@@ -22,25 +22,15 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       group_by(Species) %>%
         mutate(across(c(`Seed mass (g)`),replace_duplicates_with_NA)) %>%
-      ungroup() %>%
-      mutate(
-        population_id = Site,
-        method_number = case_when(
-          `Light Treatment (Categorical)` == "control" ~ 1,
-          `Light Treatment (Categorical)` == "long" ~ 2,
-          `Light Treatment (Categorical)` == "short" ~ 3
-        )
-      )
+      ungroup()
   '
   collection_date: 2020-02/2020-04
   taxon_name: Species
-  site_name: Site
-  context_name: Light Treatment (Categorical)
-  population_id: population_id
+  location_name: Site
   description: To determine photoperiod sensitivity in Australian plants and whether
     there are trends in latitude, seed size, growth form, and across phylogeny and
     ecosystems.
@@ -57,7 +47,7 @@ dataset:
     samples were reflective of true wild type characteristics (Meyer and Monsen, 1993).
   original_file: AusTraits.xls submitted by author and archived in raw data folder
   notes: none
-sites:
+locations:
   Bald Rock National Park (site_at_-28.8527_S_and_152.0401_E):
     latitude (deg): -28.8527
     longitude (deg): 152.0401
@@ -353,12 +343,19 @@ sites:
     site code: T.N.P
     description: .na.character
 contexts:
-  control:
-    daylength treatment: 12/12 (12 hours light/12 hours dark) [manipulated]
-  long:
-    daylength treatment: 18/6 (18 hours light/6 hours dark) [manipulated]
-  short:
-    daylength treatment: 6/18 (6 hours light/18 hours dark) [manipulated]
+- context_property: daylength treatment
+  category: treatment
+  var_in: Light Treatment (Categorical)
+  values:
+  - find: control
+    value: control
+    description: Plants growth under 12 hours light/12 hours dark.
+  - find: long
+    value: long daylength 18 hours light/6 hours dark.
+    description: Plants growth under
+  - find: short
+    value: short daylength
+    description: Plants growth under 6 hours light/18 hours dark.
 traits:
 - var_in: Seed mass (g)
   unit_in: g
@@ -379,8 +376,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: Total Seeds
-  method_number: method_number
-  observation_number: Replicate
   methods: Species were left in incubators until all seeds germinated. Any non-germinated
     seeds were tested for viability at the end of the 90-day period. I tested viability
     using a microscopic cut test analysis and staining with 1% 2,3,5-triphenyltetrazolium

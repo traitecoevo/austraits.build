@@ -633,10 +633,10 @@ Site data includes site names, latitude/longitude coordinates, verbal site descr
  
 4. If there is a column with a general vegetation description (i.e. `rainforest`, `coastal heath` it should be titled `description`)  
 
-5. Although site properties are not restricted to a controlled vocabulary, newly added studies should use the same site property syntax as others whenever possible, to allow future discoverability. To generate a list of already used under `site_property`, use: 
+5. Although site properties are not restricted to a controlled vocabulary, newly added studies should use the same site property syntax as others whenever possible, to allow future discoverability. To generate a list of already used under `location_property`, use: 
 
 ```
-austraits$sites %>% distinct(site_property)
+austraits$sites %>% distinct(location_property)
 ```
 
 A few contributors provide a standalone file of all site data. Otherwise, the following sequence works well:
@@ -658,13 +658,13 @@ read_csv("data/dataset_id/raw/site_data.csv") -> site_data
 ```
 
 As an example of what the site table should look like:  
-```{r, echo=FALSE, results="markup"}
+```{r, eval = FALSE, echo=FALSE, results="markup"}
 # data_Falster_2005 <-
 #   remake::make("Falster_2005_1")
 austraits$sites %>%
   filter(dataset_id == "Falster_2005_1") %>%
   select(-dataset_id) %>%
-  spread(site_property, value) %>%
+  spread(location_property, value) %>%
   type_convert()
 ```
 

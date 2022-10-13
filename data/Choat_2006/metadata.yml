@@ -35,33 +35,26 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       group_by(Species, Plant) %>%
       mutate(
         rownum = paste0("x",row_number()),
         Plant = as.character(Plant),
-        Plant = ifelse(is.na(Plant), rownum, Plant),
-        population_id = Site
+        Plant = ifelse(is.na(Plant), rownum, Plant)
       ) %>%
       ungroup() %>%
       mutate(
         Site = paste("Many Peaks site",Site), 
-        Site = gsub("Many Peaks site NA","Many Peaks",Site),
+        Site = stringr::str_replace(Site, "Many Peaks site NA","Many Peaks"),
         individual_plant = paste(Species, Plant, sep ="_"),
       ) %>% 
-      mutate_at(vars(gs),~na_if(.,0)) %>%
-      group_by(individual_plant) %>%
-      mutate(observation = dplyr::row_number()) %>%
-      ungroup() 
+      mutate_at(vars(gs),~na_if(.,0))
   '
   collection_date: 2000/2001
   taxon_name: Species
-  site_name: Site
-  context_name: context
+  location_name: Site
   individual_id: individual_plant
-  population_id: population_id
-  observation_number: observation
   description: Dataset of diurnal and seasonal patterns of leaf gas exchange and water
     relations in tree species of contrasting leaf phenology growing in a seasonally
     dry tropical rain forest in north-eastern Australia.
@@ -89,7 +82,7 @@ dataset:
   original_file: collection of 6 files in raw data folder and GoogleDrive
   notes: Data on hydraulic safety margins and water potentials at different "loss
     of conductivity" thresholds are included in Choat_2012
-sites:
+locations:
   Many Peaks site 1:
     latitude (deg): -19.19422
     longitude (deg): 146.764445
@@ -115,75 +108,34 @@ sites:
     precipitation, description: 80% of rainfall usually occurs during the summer wet
       season (December-March)
 contexts:
-  measurements made in the Dry season at 05:00:00:
-    sampling season: dry (July-October)
-    sampling time of day: '5:00:00'
-  measurements made in the Dry season at 09:00:00:
-    sampling season: dry (July-October)
-    sampling time of day: '9:00:00'
-  measurements made in the Dry season at 11:00:00:
-    sampling season: dry (July-October)
-    sampling time of day: '11:00:00'
-  measurements made in the Dry season at 13:00:00:
-    sampling season: dry (July-October)
-    sampling time of day: '13:00:00'
-  measurements made in the Dry season at 15:00:00:
-    sampling season: dry (July-October)
-    sampling time of day: '15:00:00'
-  measurements made in the Dry season at 17:00:00:
-    sampling season: dry (July-October)
-    sampling time of day: '17:00:00'
-  measurements made in the Late Dry season at 05:00:00:
-    sampling season: late dry (September)
-    sampling time of day: '5:00:00'
-  measurements made in the Late Dry season at 10:00:00:
-    sampling season: late dry (September)
-    sampling time of day: '10:00:00'
-  measurements made in the Late Dry season at 15:00:00:
-    sampling season: late dry (September)
-    sampling time of day: '15:00:00'
-  measurements made in the Late Dry season at 18:00:00:
-    sampling season: late dry (September)
-    sampling time of day: '18:00:00'
-  measurements made in the Wet season at 05:00:00:
-    sampling season: wet (November-March)
-    sampling time of day: '5:00:00'
-  measurements made in the Wet season at 09:00:00:
-    sampling season: wet (November-March)
-    sampling time of day: '9:00:00'
-  measurements made in the Wet season at 11:00:00:
-    sampling season: wet (November-March)
-    sampling time of day: '11:00:00'
-  measurements made in the Wet season at 13:00:00:
-    sampling season: wet (November-March)
-    sampling time of day: '13:00:00'
-  measurements made in the Wet season at 15:00:00:
-    sampling season: wet (November-March)
-    sampling time of day: '15:00:00'
-  measurements made in the Wet season at 17:00:00:
-    sampling season: wet (November-March)
-    sampling time of day: '17:00:00'
-  measurements made in the Wet/Dry season at 05:00:00:
-    sampling season: wet/dry (April-June)
-    sampling time of day: '5:00:00'
-  measurements made in the Wet/Dry season at 09:00:00:
-    sampling season: wet/dry (April-June)
-    sampling time of day: '9:00:00'
-  measurements made in the Wet/Dry season at 11:00:00:
-    sampling season: wet/dry (April-June)
-    sampling time of day: '11:00:00'
-  measurements made in the Wet/Dry season at 13:00:00:
-    sampling season: wet/dry (April-June)
-    sampling time of day: '13:00:00'
-  measurements made in the Wet/Dry season at 15:00:00:
-    sampling season: wet/dry (April-June)
-    sampling time of day: '15:00:00'
-  measurements made in the Wet/Dry season at 17:00:00:
-    sampling season: wet/dry (April-June)
-    sampling time of day: '17:00:00'
-  no context given:
-    sampling season: .na.character
-    sampling time of day: .na.character
+- context_property: sampling season
+  category: temporal
+  var_in: Season
+  values:
+  - find: Dry
+    value: dry (July-October)
+    description: Plants sampled during the dry season.
+  - find: Late Dry
+    value: late dry (September)
+    description: Plants sampled at the end of the dry season.
+  - find: Wet
+    value: wet (November-March)
+    description: Plants sampled during the wet season.
+  - find: Wet/Dry
+    value: wet/dry (April-June)
+    description: Plants sampled at end of the wet season/start of the dry season.
+- context_property: sampling time of day
+  category: temporal
+  var_in: Time
+  values:
+  - value: '05:00:00'
+  - value: '09:00:00'
+  - value: '10:00:00'
+  - value: '11:00:00'
+  - value: '13:00:00'
+  - value: '15:00:00'
+  - value: '17:00:00'
+  - value: '18:00:00'
 traits:
 - var_in: A
   unit_in: umolCO2/m2/s

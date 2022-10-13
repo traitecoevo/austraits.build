@@ -22,7 +22,7 @@ test_that("test dataset_configure is working",{
 })
 
 test_that("test dataset_process is working",{
-  austraits_names <- c("dataset_id", "traits", "sites", "contexts", "methods", "excluded_data", 
+  austraits_names <- c("dataset_id", "traits", "locations", "contexts", "methods", "excluded_data", 
                        "taxonomic_updates", "taxa", "contributors", "sources", "definitions", "schema")
   
   expect_no_error(  x <- dataset_process(Test_data, Test_config, schema))

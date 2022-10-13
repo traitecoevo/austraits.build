@@ -27,7 +27,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         root_mass_fraction = `Root (g)`/`Totalplant`, stem_mass_fraction = `Totalshoot (g)`/Totalplant,
@@ -39,25 +39,21 @@ dataset:
         `Leaflet mass (g)` = ifelse(Leaf_or_leaflet == "Leaflet",`Leaf mass (g)`,NA),
         `Leaf mass (g)` = ifelse(Leaf_or_leaflet == "Leaf",`Leaf mass (g)`,NA),
         plant_code = paste0(`Replicate`, `Plant label number`, `Plant ID`),
-        plant_code = gsub("NA","",plant_code),
+        plant_code = stringr::str_replace(plant_code, "NA",""),
         plant_code = ifelse(is.na(plant_code),"population",plant_code),
-        individual_id = paste(`Species`, `site`, `Modern/Historic`, plant_code, sep = "_"),
-        population_id = paste(`site`, `Modern/Historic`, sep = "_"),
-        observation_number = ifelse(row_number() %in% c("8393","6768","7525"), 2, 1)
+        plant_code = ifelse(row_number() %in% c("8393","6768","7525"), paste0(plant_code,"b"), plant_code),
+        individual_id = paste(`Species`, `site`, `Modern/Historic`, plant_code, sep = "_")
       )
   '
   collection_date: Date Collected
   taxon_name: Species
-  site_name: site
-  context_name: Modern/Historic
+  location_name: site
   individual_id: individual_id
-  population_id: population_id
-  observation_number: observation_number
   description: Seed and seedling trait measurements from resurrected historic seeds
     and compared these with modern seed and seedling traits collected from the same
     species in the same geographic location to understand trait responses to climate
     through time.
-  sampling_strategy: "To determine if plant traits have changed within a species over
+  sampling_strategy: To determine if plant traits have changed within a species over
     time, we compared historic and modern accessions of seeds of 43 native Australian
     plant species from regions in south-eastern Australia which have experience differing
     levels of climatic change (Fig. 1). Many plant species have large geographic ranges,
@@ -108,11 +104,11 @@ dataset:
     and modern seedlings were grown under the same conditions arranged in randomised
     blocks and re-randomised at monthly intervals to minimise possible positional
     effects during growth. Potting soil comprised 33% Australian Native Landscape
-    supply of \"Organic Garden Mix\", 33% washed river sand and 33% Cocopeat. Throughout
+    supply of 'Organic Garden Mix', 33% washed river sand and 33% Cocopeat. Throughout
     growth we added a general, slow release fertiliser containing nitrogen and phosphorus
     applied at c. 200 mL of fertiliser per 75 L of soil. All plants were grown with
     adequate water supplied by overhead sprinklers and ambient light conditions in
-    a glasshouse at UNSW, Sydney."
+    a glasshouse at UNSW, Sydney.
   basis_of_record: lab, field
   life_stage: seedling, adult
   original_file: SE_Germination Data.xls, SE_LMA data.xls, SE_Photosynthesis data.xls,
@@ -121,7 +117,7 @@ dataset:
   notes: Dates that specifiy a collection month, instead of date, 16-Dec, 14-Nov,
     16-Nov, 8-Nov, are rekeyed as having occurred on the first of the month, so that
     all cells have the same formatting. That is 16-Dec becomes 01-December-2016.
-sites:
+locations:
   site_at_26.4500_S_and_150.6500_E:
     latitude (deg): -26.45
     longitude (deg): 150.65
@@ -351,10 +347,16 @@ sites:
     latitude (deg): -43.4297
     longitude (deg): 147.2483
 contexts:
-  Historic:
-    seed age: historic seed collections used
-  Modern:
-    seed age: seeds collected at the time of the study were used
+- context_property: seed age
+  category: method
+  var_in: Modern/Historic
+  values:
+  - find: Historic
+    value: historic
+    description: Historic seed collections used.
+  - find: Modern
+    value: modern
+    description: Seeds collected at the time of the study were used.
 traits:
 - var_in: Seed Length (mm)
   unit_in: mm
