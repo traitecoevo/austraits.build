@@ -1182,7 +1182,7 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors) 
   citation_types <- 
     tibble::tibble(
       source_key = names(metadata$source),
-      type = str_replace_all(.data$source_key, "[:punct:][:digit:][:digit:]", ""),
+      type = str_replace_all(.data$source_key, "_[:digit:]+", ""),
       source_id = metadata$source %>%
         util_list_to_df2() %>%
         dplyr::select(.data$key)
