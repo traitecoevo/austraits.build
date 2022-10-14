@@ -26,22 +26,22 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
-      mutate(sample_date = sample_date %>% ym() %>% format.Date("%Y-%m") %>% sort()) %>%
-      group_by(name_original, site_text, treatment) %>% 
-        mutate(observation_number = row_number()) %>%
-      ungroup()
+      mutate(
+        sample_date = sample_date %>% ym() %>% format.Date("%Y-%m") %>% sort(),
+        treatment_simple = ifelse(treatment == "control (=same as +P)","control",treatment),
+        collection_date = sample_date
+      )
   '
-  collection_date: sample_date
+  collection_date: collection_date
   taxon_name: name_original
-  site_name: site_text
-  context_name: treatment
-  observation_number: observation_number
+  location_name: site_text
+  measurement_remarks: treatment
   description: A glasshouse experiment investigated the response to phosphorus of
     2 common and abundant ephemeral forbs and several additional species.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: 'The experimental layout was a randomised block design with 3
     replicates of each of 2 (0 P/200 P) treatments. Each block was located about 10
     m from neighbouring blocks and the 0 P and 200 P plots within each block were
@@ -66,7 +66,7 @@ dataset:
     mS/cm (as for pH).'
   original_file: Islam et al 1999.pdf
   notes: none
-sites:
+locations:
   Hamersley station Pilbara:
     longitude (deg): 117.6166667
     latitude (deg): -22.33
@@ -88,13 +88,32 @@ sites:
       The mean monthly maximum temperature was about 36 deg C in January, and in July,
       the mean monthly minimum temperature fell to 6 deg C
 contexts:
-  control (=same as +P):
-    nutrient treatment: control (=same as +P) (Natural soil and 200 kg P/ha addition
-      treatment combined, as no difference in outcome)
-  control:
-    nutrient treatment: control (Natural soil)
-  P added:
-    nutrient treatment: P added (phosphorus equivalent to 200 kg P/ha applied) [manipulated]
+- context_property: nutrient treatment
+  category: treatment
+  var_in: treatment_simple
+  values:
+  - value: control
+    description: Control treatment, with no nutrient addition. For the third and fourth
+      sampling times, data for the natural soil and 200 kg P/ha addition treatments
+      were combined, as there was no difference in outcome.
+  - value: P added
+    description: Phosphorus equivalent to 200 kg P/ha applied.
+- context_property: sampling season
+  category: temporal
+  var_in: sample_date
+  values:
+  - find: 1996-03
+    value: 1996-03
+    description: Measurements made in 1996-03.
+  - find: 1996-06
+    value: 1996-06
+    description: Measurements made in 1996-06.
+  - find: 1996-08
+    value: 1996-08
+    description: Measurements made in 1996-08.
+  - find: 1996-11
+    value: 1996-11
+    description: Measurements made in 1996-11.
 traits:
 - var_in: Nmass
   unit_in: mg/g

@@ -16,15 +16,14 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         `flowering time` = convert_month_range_vec_to_binary(`flowering time`), 
         `fruiting` = convert_month_range_vec_to_binary(`fruiting`), 
         leaf_type = ifelse(`leaf type` == "articles", "article", NA), 
         `leaf type` = ifelse(`leaf type` == "articles", NA, `leaf type`), 
-        leaf_lobed = ifelse(`leaf type` == "l", 1, NA), 
-        `leaf type` = ifelse(`leaf type` == "l", NA, `leaf type`),
+        leaf_lobed = ifelse(`leaf type` == "l", "lobed", NA), 
         GF = ifelse(aquatic %in% c("yes","y"),"aquatic_herb", GF),
         GF = ifelse(succulent %in% c("yes","y"),"succulent_short herb", GF),
         parasitic = ifelse(GF=="parasite","parasitic",NA),
@@ -46,12 +45,12 @@ dataset:
   taxon_name: species_name
   description: 'Transposed from species descriptions in Flora of the Darwin Region
     available online:  http://www.lrm.nt.gov.au/plants-and-animals/herbarium/darwin_flora_online'
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: unknown
   original_file: NT_flora.xls
   notes: Request ackowledgment of "Northern Territory Herbarium"
-sites: .na
+locations: .na
 contexts: .na
 traits:
 - var_in: longevity
@@ -133,7 +132,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &leaf_length_method unknown
+  methods: unknown
 - var_in: leaf_length_max
   unit_in: mm
   trait_name: leaf_length
@@ -141,7 +140,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *leaf_length_method
+  methods: unknown
 - var_in: leaf_width_min
   unit_in: mm
   trait_name: leaf_width
@@ -149,7 +148,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &leaf_width_method unknown
+  methods: unknown
 - var_in: leaf_width_max
   unit_in: mm
   trait_name: leaf_width
@@ -157,7 +156,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *leaf_width_method
+  methods: unknown
 - var_in: seed shape
   unit_in: .na
   trait_name: seed_shape
@@ -173,7 +172,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &seed_length_method unknown
+  methods: unknown
 - var_in: seed_length_max
   unit_in: mm
   trait_name: seed_length
@@ -181,7 +180,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *seed_length_method
+  methods: unknown
 - var_in: seed_width_min
   unit_in: mm
   trait_name: seed_width
@@ -189,7 +188,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &seed_width_method unknown
+  methods: unknown
 - var_in: seed_width_max
   unit_in: mm
   trait_name: seed_width
@@ -197,7 +196,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *seed_width_method
+  methods: unknown
 - var_in: seed_depth_min
   unit_in: mm
   trait_name: seed_height
@@ -205,7 +204,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &seed_height_method unknown
+  methods: unknown
 - var_in: seed_depth_max
   unit_in: mm
   trait_name: seed_height
@@ -213,7 +212,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *seed_height_method
+  methods: unknown
 - var_in: flowering time
   unit_in: .na
   trait_name: flowering_time
@@ -266,7 +265,7 @@ substitutions:
   replace: compound
 - trait_name: leaf_compoundness
   find: l
-  replace: lobed
+  replace: simple
 - trait_name: leaf_compoundness
   find: s
   replace: simple

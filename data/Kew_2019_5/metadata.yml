@@ -17,32 +17,42 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       mutate(
+        original_dataset_id = stringr::str_replace_all(refshort,"[\\(]",""),    
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\)",""),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\.",""),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\, ","_"),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\& ",""),
+        original_dataset_id = stringr::str_replace_all(original_dataset_id,"[:space:]","_"),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\_et_al",""),
+        original_dataset_id = if_else(is.na(original_dataset_id),"unknown",original_dataset_id),
         measurement_remarks = paste0(
-          "detailed notes, ", pdasubgroupdesc, "; ",
-          "method, ", method, "; ",
-          "animal group, ",  animalgp, "; ",
-          "species, ", animalspecies, "; ",
-          "notes, ", dispnotes, "; ",
-          "reference, ", refshort
-        )
-      ) %>%
-      group_by(`SID taxa`) %>%
-        mutate(method_number = row_number()) %>%
-      ungroup()
+          "DETAILED NOTES: ", pdasubgroupdesc, "; ",
+          "METHOD: ", method, "; ",
+          "ANIMAL GROUP: ",  animalgp, "; ",
+          "ANIMAL SPECIES: ", animalspecies, "; ",
+          "NOTES: ", dispnotes, "; ",
+          "REFERENCE: ", original_dataset_id
+        ),
+        measurement_remarks = stringr::str_replace(measurement_remarks, "DETAILED NOTES: NA; ",""),
+        measurement_remarks = stringr::str_replace(measurement_remarks, "METHOD: NA; ",""),
+        measurement_remarks = stringr::str_replace(measurement_remarks, "ANIMAL GROUP: NA; ",""),
+        measurement_remarks = stringr::str_replace(measurement_remarks, "ANIMAL SPECIES: NA; ",""),
+        measurement_remarks = stringr::str_replace(measurement_remarks, "NOTES: NA; ","")
+      )       
   '
   collection_date: unknown/2019
   taxon_name: SID taxa
   description: Seed dispersal data on species from Kew seed databases
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: information in data.csv file
   original_file: in raw data folder
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons licesne. Data not to be used for Commercial Purposes.
-sites: .na
+locations: .na
 contexts: .na
 traits:
 - var_in: pdadesc
@@ -52,7 +62,6 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  method_number: method_number
   measurement_remarks: measurement_remarks
   methods: Kew Gardens collections, with details in data.csv file under cmultiple
     columns

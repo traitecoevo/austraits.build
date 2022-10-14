@@ -20,23 +20,11 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-
 library(austraits.build)
-library(dplyr)
-library(readr)
 
-# root.dir <- rprojroot::find_root("remake.yml")
-# knitr::opts_knit$set(root.dir = root.dir)
-
-my_kable_styling <- my_kable_styling_html
+my_kable_styling <- util_kable_styling_html
 ```
 
-```{r, eval=FALSE, echo=FALSE, results='hide', message=FALSE}
-## Loads austraits into global name space
-  austraits <- remake::make("austraits")
-  schema <- austraits$schema
-  trait_definitions <- austraits$trait_definitions
-```
 
 ![](figures/logo.png)
 
@@ -76,7 +64,7 @@ Below are some of the ways you can contribute.
 We gladly accept new data contributions to AusTraits. If you would like to contribute data, the requirements are:
 
 - Data was collected for Australian plant species growing in Australia
-- You collected data on one of the traits listed in the [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html)
+- You collected data on one of the traits listed in the [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/definitions.html)
 - You are willing to release the data under an open license for reuse by the scientific community
 - You make it is as easy as possible for us to incorporate your data by following the instructions.
 
@@ -114,6 +102,15 @@ To check you have the right packages installed, you can use the [`devtools`](htt
 devtools::install_deps()
 ```
 
+## Source functions
+
+To successfully compile AusTraits you need to source a series of functions written explicitly for the database:
+
+```{r, eval=FALSE, echo=TRUE}
+source("scripts/custom.R")        # functions used in custom_R_code
+source("scripts/taxonomy.R")      # functions required to load taxonomic resources and update taxonomy
+```
+
 This command checks that the required packages, listed in the file `DESCRIPTION`, are available in your local machine. 
 
 ## Compile via `remake`
@@ -138,4 +135,4 @@ For those working with AusTraits code base or data, you may want to read about
 
 - the [structure of the compiled AusTraits database](http://traitecoevo.github.io/austraits.build/articles/austraits_database_structure.html), and
 - the [structure of the raw data files](http://traitecoevo.github.io/austraits.build/articles/austraits_file_structure.html),
-- the [list of trait definitions](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html)
+- the [list of trait definitions](http://traitecoevo.github.io/austraits.build/articles/definitions.html)

@@ -27,9 +27,9 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
-      mutate(`Ni (mg/kg)` = gsub("< ","",`Ni (mg/kg)`)) %>%
+      mutate(`Ni (mg/kg)` = stringr::str_replace(`Ni (mg/kg)`,"< ","")) %>%
       mutate_at(vars(`Stomatal conductance_HalogenLight`),~na_if(.,0)) %>%
       group_by(Species) %>%
         mutate_at(vars(`Nfixer`,`mycorrhizae`),replace_duplicates_with_NA) %>%
@@ -37,10 +37,10 @@ dataset:
   '
   collection_date: 1999/2000
   taxon_name: Species
-  site_name: site
+  location_name: site
   description: Rainforest trait data from Anna Richards
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: 'Three species pairs were studied: Gardenia actinocarpa (restricted)
     and G. ovularis (widespread); Archidendron kanisii (restricted) and A. whitei
     (widespread); Xanthostemon formosus (restricted) and X. chrysanthus (widespread).
@@ -56,7 +56,7 @@ dataset:
   original_file: Richards_2003.pdf
   notes: Anna Richards does not believe chlorophyll fluorescence data file she has
     look correct, so we're excluding those.
-sites:
+locations:
   daintree_creek_edge:
     longitude (deg): 145.433
     latitude (deg): -16.133

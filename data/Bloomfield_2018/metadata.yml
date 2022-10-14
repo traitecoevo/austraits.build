@@ -30,7 +30,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate_at(vars(`Rdark.a`), ~ na_if(., 0)) %>% 
       mutate(
@@ -44,36 +44,32 @@ dataset:
         context = ifelse(Site %in% c("Calperum mallee", "Great Western Woodlands") & 
                           Visit == "Winter", "Winter_favourable",context),
         replicate_original = Replicate,
-        Replicate = gsub("-S-","-",Replicate),
-        Replicate = gsub("-W-","-",Replicate),
-        Replicate = gsub("-D-","-",Replicate),
-        Replicate = gsub("-H-","-",Replicate),
-        Replicate = gsub("-B1","",Replicate),
-        Replicate = gsub("-B2","",Replicate),
-        Replicate = gsub("-B3","",Replicate),
+        Replicate = stringr::str_replace(Replicate,"-S-","-"),
+        Replicate = stringr::str_replace(Replicate,"-W-","-"),
+        Replicate = stringr::str_replace(Replicate,"-D-","-"),
+        Replicate = stringr::str_replace(Replicate,"-H-","-"),
+        Replicate = stringr::str_replace(Replicate,"-B1",""),
+        Replicate = stringr::str_replace(Replicate,"-B2",""),
+        Replicate = stringr::str_replace(Replicate,"-B3",""),
       ) %>% 
       select(-Tree.id, -replicate_original, - Branch) %>% 
       group_by(context, Site, Visit, Replicate, Species, Family, Genus, PFT) %>%
       summarise(across(c(`A400.a_with_Weerasinghe_2014`:`wue1500`), mean, na.rm = TRUE),
                 across(Date, first),
                 count = n()) %>%
-      group_by(Replicate) %>%
-      mutate(observation = dplyr::row_number()) %>%
-      ungroup() %>% 
-      mutate(value_type_column = ifelse(count == 1,"raw","mean"))
+      mutate(value_type_column = ifelse(count == 1,"raw","mean")) %>%
+      ungroup()
   '
   collection_date: Date
   taxon_name: Species
-  site_name: Site
+  location_name: Site
   individual_id: Replicate
-  observation_number: observation
-  context_name: context
   description: A field study of leaf trait variation at seven sites spanning a range
     of climates and latitudes across the Australian continent; 80 native plant species
     were included. We measured key traits associated with leaf structure, chemistry
     and metabolism during the favourable and unfavourable growing seasons.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: 'Our seven study sites are a subset of the Terrestrial Ecosystem
     Research Network (TERN) SuperSites (www.supersites.net.au) (Karan et al., 2016).
     The site locations and key descriptors of dominant vegetation and soil type are
@@ -116,7 +112,7 @@ dataset:
     read into AusTraits through Weerasinghe_2014. In this file, each of the relevant
     columns has been duplicated and in one, the Weerasinghe values have been replaced
     with 'NA'.
-sites:
+locations:
   Alice Mulga:
     latitude (deg): -22.3468
     longitude (deg): 133.3276
@@ -203,18 +199,42 @@ sites:
     temperature, MAT (C): 9.9
     precipitation, MAP (mm): 1591.0
 contexts:
-  Dry:
-    sampling season: dry season
-  Summer_favourable:
-    sampling season: summer in a location where this is the favourable season
-  Summer_unfavourable:
-    sampling season: summer in a location where this is the unfavourable season
-  Wet:
-    sampling season: wet season
-  Winter_favourable:
-    sampling season: winter in a location where this is the favourable season
-  Winter_unfavourable:
-    sampling season: winter in a location where this is the unfavourable season
+- context_property: sampling season
+  category: temporal
+  var_in: context
+  values:
+  - find: Dry
+    value: dry
+    description: Measurements made during the dry season.
+  - find: Summer_favourable
+    value: summer favourable
+    description: Measurements made during summer in a location where this is the favourable
+      season.
+  - find: Summer_unfavourable
+    value: summer unfavourable
+    description: Measurements made during summer in a location where this is the unfavourable
+      season.
+  - find: Wet
+    value: wet season
+    description: Measurements made during the wet season.
+  - find: Winter_favourable
+    value: winter favourable
+    description: Measurements made during winter in a location where this is the favourable
+      season.
+  - find: Winter_unfavourable
+    value: winter unfavourable
+    description: Measurements made during winter in a location where this is the unfavourable
+      season.
+- context_property: measurement CO2
+  category: method
+  var_in: method_context
+  values:
+  - find: 400 ppm CO2
+    value: 400 ppm
+    description: Measurement made at ambient CO2 concentrations (400 ppm).
+  - find: 1500 ppm CO2
+    value: 1500 ppm
+    description: Measurement made at an elevated CO2 concentration of 1500 ppm.
 traits:
 - var_in: A400.a
   unit_in: umolCO2/m2/s
@@ -223,7 +243,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 1
+  method_context: 400 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -243,7 +263,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 2
+  method_context: 1500 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -263,7 +283,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 1
+  method_context: 400 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -283,7 +303,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 1
+  method_context: 400 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -303,7 +323,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 2
+  method_context: 1500 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -323,7 +343,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 1
+  method_context: 400 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -343,7 +363,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 1
+  method_context: 400 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -363,7 +383,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 2
+  method_context: 1500 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -383,7 +403,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 1
+  method_context: 400 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -403,7 +423,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 1
+  method_context: 400 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -423,7 +443,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 2
+  method_context: 1500 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -516,7 +536,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 1
+  method_context: 400 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -536,7 +556,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 2
+  method_context: 1500 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -619,7 +639,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 1
+  method_context: 400 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -639,7 +659,7 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 1
+  method_context: 400 ppm CO2
   methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
@@ -659,9 +679,8 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 1
-  measurement_remarks: measurement made at 400 ppm CO2 concentration
-  methods: &water_use_efficiency_photosynthetic_method At each visit, we chose young, fully developed leaves from two sun exposed
+  method_context: 400 ppm CO2
+  methods: At each visit, we chose young, fully developed leaves from two sun exposed
     branches of each selected tree. Leaf gas exchange measurements were concentrated
     in the morning. Sun exposed branches were excised and the cut end of the branches
     immediately placed in a bucket and then recut under water to re-establish the
@@ -680,9 +699,20 @@ traits:
   value_type: value_type_column
   basis_of_value: measurement
   replicates: count
-  method_number: 2
+  method_context: 1500 ppm CO2
   measurement_remarks: measurement made at 1500 ppm CO2 concentration
-  methods: *water_use_efficiency_photosynthetic_method
+  methods: At each visit, we chose young, fully developed leaves from two sun exposed
+    branches of each selected tree. Leaf gas exchange measurements were concentrated
+    in the morning. Sun exposed branches were excised and the cut end of the branches
+    immediately placed in a bucket and then recut under water to re-establish the
+    xylem water column. For each leaf, approximately light-saturated (1500 umol photons
+    m-2 s-1) measures of net photosynthesis were taken at ambient CO2 concentration,
+    400 umol mol-1 (ppm) (A400) and then at 1500 ppm (A1500). The leaf was next wrapped
+    in aluminium foil for 30 minutes before respiration in darkness (Rdark) was measured,
+    still at 400 ppm CO2. Air flow was held constant and a constant chamber block
+    temperature was adopted, set marginally (ca. deg C) higher than expected morning
+    air temperatures to counter the effect of transpirational cooling and to ensure
+    leaf and ambient air temperatures were similar.
 substitutions: .na
 taxonomic_updates:
 - find: Myristica globosa ssp. muelleri

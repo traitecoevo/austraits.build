@@ -26,7 +26,7 @@ contributors:
   austraits_curators: Caitlyn Baxter, Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     max_dimensions <- 
       data %>%
         mutate(replicate = 1) %>%
@@ -44,13 +44,13 @@ dataset:
       filter(row_count > 438) %>%
       bind_rows(max_dimensions) %>%
       mutate(
-        species_name = gsub("."," ",species_name, fixed=TRUE),
+        species_name = stringr::str_replace(species_name,"."," "),
         date = dmy(date)
       )
   '
   collection_date: date
   taxon_name: species_name
-  site_name: site_name
+  location_name: site_name
   individual_id: sample.id
   description: Joint-species distribution models (JSDMs) can potentially untangle
     the environmental and competitive drivers of community composition. Extending
@@ -58,8 +58,8 @@ dataset:
     of community composition and species dominance. We describe a modelling approach
     that incorporates abundance data within a JSDM framework to identify non-native
     species having strong competitive impacts.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: We use data from an experiment that tested whether different
     management interventions (including grazing exclusion) can increase native grassland
     species richness (Driscoll, 2017). In 2010 ten sites were established along a
@@ -81,7 +81,7 @@ dataset:
     standard protocols (Perez-Harguindeguy et al. 2013)
   original_file: in raw data folder
   notes: none
-sites:
+locations:
   Pinnacle Reserve, ACT:
     description: The vegetation of the reserve comprised a scattered overstorey of
       trees, predominantly Eucalyptus blakelyi and E. melliodora, with a dense understorey

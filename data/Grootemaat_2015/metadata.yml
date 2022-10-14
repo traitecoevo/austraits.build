@@ -42,7 +42,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       filter(taxon != "NA NA") %>% 
       group_by(taxon) %>%  
@@ -51,28 +51,21 @@ dataset:
                 ~ replace(.x, duplicated(.x),NA)) %>%
       ungroup() %>%
       mutate(
-        method_number = ifelse(material == "FRESH",1,NA),
-        method_number = ifelse(material == "DRIED",2,method_number),        
-        method_number = ifelse(material == "SENESCED",3,method_number),
-        measurement_remarks = ifelse(material == "FRESH","fresh leaves (indicating amount of leaf moisture)", NA),
-        measurement_remarks = ifelse(material == "DRIED","dry leaves (indicating amount of leaf moisture)", measurement_remarks),
-        measurement_remarks = ifelse(material == "SENESCED","senesced leaves (indicating amount of leaf moisture)", measurement_remarks),
         row_number = row_number(),
-        observation_number = ifelse(row_number == 372, 2, 1)
+        `tannin (%mass)` = ifelse(row_number == 372, NA, `tannin (%mass)`),        
+        `tannin (%mass)` = ifelse(row_number == 373, NA, `tannin (%mass)`)
       )
   '
   collection_date: 2012/2012
   taxon_name: taxon
-  site_name: site_name
-  measurement_remarks: measurement_remarks
-  method_number: method_number
+  location_name: site_name
   description: The aim of this study was twofold, (i) to determine which morphological
     and chemical leaf traits drive flammability and (ii) to determine whether different
     (combinations of) morphological and chemical leaf traits drive interspecific variation
     in decomposition and litter flammability and, in turn, help us understand the
     relationship between decomposability and flammability.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: SITE AND SPECIES SELECTION The leaves for this study were collected
     from four sites in New South Wales, Australia. The leaf traits related to species'
     carbon and nutrient economies are well documented for these sites (Wright, Reich
@@ -110,7 +103,7 @@ dataset:
     leaves, and senesced leaves. For leaf length, width, thickness, ... only data
     on fresh, live leaves is integrated into AusTraits, but the complete dataset is
     available in the raw data folder for the study.
-sites:
+locations:
   Kuring-gai NP hiP:
     longitude (deg): 151.2922222
     latitude (deg): -33.5788889
@@ -160,7 +153,20 @@ sites:
     soil C, total (%): 0.67
     soil cation exchange capacity (meq/kg): 38.7
     geology (stratigraphic map unit): Loamy red sand (Quaternary dune systems)
-contexts: .na
+contexts:
+- context_property: leaf moisture status
+  category: method
+  var_in: material
+  values:
+  - find: FRESH
+    value: fresh leaves
+    description: fresh leaves, indicating high leaf moisture level
+  - find: DRIED
+    value: dried leaves
+    description: dry leaves, indicating low leaf moisture level
+  - find: SENESCED
+    value: senesced leaves
+    description: senesced leaves, indicating low leaf moisture level
 traits:
 - var_in: length (mm)
   unit_in: mm
@@ -316,7 +322,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
-  observation_number: observation_number
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). Soluble polyphenols (tannins) were determined using the Folin-Denis method
     (Allen et al. 1974).

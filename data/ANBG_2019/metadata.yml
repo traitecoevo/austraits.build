@@ -32,7 +32,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
     mutate(
     weird_date = ifelse(str_detect(gathering_date, "^[0-9]{4}"), gathering_date, NA),
@@ -98,22 +98,23 @@ dataset:
         as.character(LengthSample),
         as.character(seed_sample_replicates)
     )) %>%
-    distinct(trait, value, species_name, site_name_shorter, .keep_all = TRUE)%>%
-    group_by(species_name, site_name, trait, item_ID) %>% mutate(observation_number = dplyr::row_number()) %>% ungroup() %>%
+    distinct(trait, value, species_name, site_name_shorter, .keep_all = TRUE) %>%
+    group_by(species_name, site_name, trait, item_ID) %>% 
+      mutate(observation_num = dplyr::row_number()) %>%
+    ungroup() %>%
     mutate(value = ifelse(row_number() %in% c(303), 0.4340, value))
   '
   collection_date: gathering_date
   taxon_name: species_name
   trait_name: trait
   value: value
-  site_name: site_name_shorter
+  location_name: site_name_shorter
   individual_id: item_ID
-  observation_number: observation_number
   description: All seed data from Australian National Botanic Gardens collections.
     See www.anbg.gov.au/gardens/living/seedbank/index.html for more information about
     this collection.
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   replicates: replicates
   sampling_strategy: The Australian National Botanic Gardens' National Seed Bank is
     building a collection of native seed for conservation and research. The seed bank
@@ -140,7 +141,7 @@ dataset:
   notes: There are a few species whose seed masses are almost certainly incorrect.
     They've been compared to other AusTraits entries. These values have been manually
     adjusted in AusTraits, 15-02-2022, E Wenk
-sites:
+locations:
   Adelaide Botanic Gardens.:
     latitude (deg): .na.real
     longitude (deg): .na.real
@@ -13325,8 +13326,30 @@ sites:
     longitude (deg): .na.real
     locality: without locality
     recorded by: Unspecified collector of live material
-contexts: .na
+contexts:
+- context_property: repeat observations
+  category: temporal
+  var_in: observation_num
+  values:
+  - value: 1
+  - value: 2
+  - value: 3
+  - value: 4
 traits:
+- var_in: LengthSample
+  unit_in: .na
+  trait_name: .na
+  entity_type: .na
+  value_type: .na
+  basis_of_value: .na
+  methods: .na
+- var_in: WidthSample
+  unit_in: .na
+  trait_name: .na
+  entity_type: .na
+  value_type: .na
+  basis_of_value: .na
+  methods: .na
 - var_in: Seed Sample
   unit_in: mg
   trait_name: seed_dry_mass
@@ -13350,7 +13373,7 @@ traits:
   replicates: .na
   methods: experimental treatments trialled to germinate seed; additional data in
     raw data files
-  sample_age_class: seedling
+  life_stage: seedling
 - var_in: Texture
   unit_in: .na
   trait_name: seed_surface_texture
@@ -13755,7 +13778,7 @@ substitutions:
   replace: bristles hairs
 - trait_name: dispersal_appendage
   find: bract
-  replace: bracts
+  replace: bracts_and_glumes
 - trait_name: dispersal_appendage
   find: inflated cell layer
   replace: inflated_parts

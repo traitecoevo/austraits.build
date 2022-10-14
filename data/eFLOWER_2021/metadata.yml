@@ -61,11 +61,18 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code: data %>% mutate(Date = Date %>% dmy())
+  custom_R_code:     '
+    data %>% 
+      mutate(
+        Date = Date %>% dmy(),
+        source_id = FullRef %>% str_extract("[:digit:][:digit:][:digit:][:digit:]")
+      )
+  '
   collection_date: Date
   taxon_name: Taxon
   trait_name: Character
   value: trait_value
+  source_id: source_id
   individual_id: NDat
   description: Updated eFLOWER-792 dataset, exported from PROTEUS on 15 Feb 2021.
     This is the same list of 792 angiosperm species used in the first eFLOWER paper
@@ -75,8 +82,8 @@ dataset:
     of Schönenberger et al., 2020), this new dataset includes 608 new data records;
     in addition, 127 records have been updated and 43 deleted. Fossil data are excluded
     as AusTraits focuses on living species.
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: All data were recorded at the species level, based on taxonomic
     and morphological studies.
   original_file: qry_Paleo-eFLOWER_Data_AusTraits_2021-02-15.xlsx;  the version of
@@ -89,7 +96,7 @@ dataset:
     in the metadata - these are non-Australian species whose names are not matched
     by APC/APNI. This list will need to be added to as new expanded versions of eFLOWER
     are submitted.
-sites: .na
+locations: .na
 contexts: .na
 traits:
 - var_in: 100. Floral structural sex (D1)

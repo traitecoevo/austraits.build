@@ -27,26 +27,11 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
-        collection_type = ifelse(Treatment == "Drought","field_experiment","field"), 
-        collection_type = ifelse(is.na(collection_type),"field",collection_type),
-        population_id = paste(site, Treatment, sep = "_"),
-        method_number = case_when(
-         `branch location` == "canopy crown" ~ 1,
-         `branch location` == "inner canopy" ~ 2,
-         `branch location` == "understorey" ~ 3,
-         `branch location` == "notable gap" ~ 4,
-         `branch location` == "Reforestation" ~ 5
-        ),
-        measurement_remarks = case_when(
-         `branch location` == "canopy crown" ~ "measurement made on canopy crown",
-         `branch location` == "inner canopy" ~ "measurement made on inner canopy",
-         `branch location` == "understorey" ~ "measurement made on understorey",
-         `branch location` == "notable gap" ~ "measurement made in notable gap",
-         `branch location` == "Reforestation" ~ "measurement made at reforested location"
-        )
+        Treatment = ifelse(is.na(Treatment),"before treatment", Treatment),
+        basis_of_record = ifelse(Treatment == "Drought","field_experiment","field")
       ) %>% 
       group_by(Species) %>% 
         mutate_at(vars("Form"),replace_duplicates_with_NA) %>% 
@@ -54,18 +39,14 @@ dataset:
   ' 
   collection_date: Data_Set
   taxon_name: Species
-  site_name: site
-  context_name: context
+  location_name: site
   individual_id: Branch_ID
-  population_id: population_id
-  method_number: method_number
-  measurement_remarks: measurement_remarks
   description: Study to determine how isotopic, micro- and macro-morphological traits,
     in combination, reflect canopy position of leaves within a modern closed canopy
     forest, with the goal of understanding how these data could be applied to the
     fossil record.
-  collection_type: field, field_experiment
-  sample_age_class: adult
+  basis_of_record: field, field_experiment
+  life_stage: adult
   sampling_strategy: All leaf samples were obtained from the Daintree Rainforest Observatory
     (DRO), located in Cape Tribulation (-16.117 N, 145.45 E), 140 kilometres north
     of Cairns in Far North Queensland, Australia. The DRO, administered by James Cook
@@ -115,7 +96,7 @@ dataset:
     conditions.
   original_file: Aus_Trait_Submission.xls contributed by Alex Cheesman
   notes: none
-sites:
+locations:
   Crane:
     latitude (deg): -16.117
     longitude (deg): 145.45
@@ -127,33 +108,39 @@ sites:
     description: formally open field site, where the trees are now 'mature' (~25 y)
       with a closed canopy; complex mesophyll vine forest
 contexts:
-  measurements made at Reforestation site:
-    canopy layer: reforestation
-    water treatment: .na.character
-  measurements made from on  CANOPY CROWN branches before drought infrastructure installed:
-    canopy layer: canopy crown
-    water treatment: .na.character
-  measurements made in NOTABLE notable gap in CONTROL rainfall plot:
-    canopy layer: notable gap
-    water treatment: control
-  measurements made on CANOPY CROWN branches in CONTROL rainfall plot:
-    canopy layer: canopy crown
-    water treatment: control
-  measurements made on INNER CANOPY branches in CONTROL rainfall plot:
-    canopy layer: inner canopy
-    water treatment: control
-  measurements made on INNER CANOPY branches in DROUGHT  plot:
-    canopy layer: inner canopy
-    water treatment: drought [manipulated]
-  measurements made on INNER CANOPY branches in DROUGHT plot:
-    canopy layer: canopy crown
-    water treatment: drought [manipulated]
-  measurements made on UNDERSTOREY branches before drought infrastructure installed:
-    canopy layer: understorey
-    water treatment: .na.character
-  measurements made on UNDERSTOREY branches in CONTROL rainfall plot:
-    canopy layer: understorey
-    water treatment: control
+- context_property: canopy layer
+  category: method
+  var_in: branch location
+  values:
+  - find: Reforestation
+    value: reforestation
+    description: Measurements made on an individual growing at a reforestation site.
+  - find: canopy crown
+    value: canopy crown
+    description: Measurements made on branches in the canopy crown.
+  - find: inner canopy
+    value: inner canopy
+    description: Measurements made on branches in the inner canopy.
+  - find: understorey
+    value: understorey
+    description: Measurements made on branches in the understorey.
+  - find: notable gap
+    value: notable gap
+    description: Measurements made on an individual growing in a notable gap.
+- context_property: water treatment
+  category: treatment
+  var_in: Treatment
+  values:
+  - find: before treatment
+    value: before treatment
+    description: Measurement made on a plant before the drought infrastructure was
+      installed.
+  - find: Control
+    value: control
+    description: Measurements made on plant not subjected to a drought treatment.
+  - find: Drought
+    value: drought
+    description: Measurements made on droughted plant.
 traits:
 - var_in: Form
   unit_in: .na.character

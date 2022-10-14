@@ -32,12 +32,20 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       mutate(
         fire_response_juvenile = `PERVEG V, U, W, N, X (F=inadequate data)`,
         fire_response = `PERVEG V, U, W, N, X (F=inadequate data)`,
-        seed_longevity = `PERSEED D, S, G, C, Z (F=inadequate data)`
+        seed_longevity = `PERSEED D, S, G, C, Z (F=inadequate data)`,
+        fire_cued_seeding = ifelse(`PERSEED D, S, G, C, Z (F=inadequate data)` %in% c("S","G","C"), 
+          "fire_cued_seeding",NA), 
+        fire_cued_seeding = ifelse(`T, I, R, M, K (F=inadequate data)` %in% c("I","T"),
+          "fire_cued_seeding",fire_cued_seeding), 
+        fire_cued_seeding = ifelse(`PERSEED D, S, G, C, Z (F=inadequate data)` %in% c("Z"),
+          "no_fire_cued_seeding",fire_cued_seeding),
+        fire_cued_seeding = ifelse(`T, I, R, M, K (F=inadequate data)` %in% c("R","M"),
+          "no_fire_cued_seeding",fire_cued_seeding)
       ) %>%
       group_by(Species) %>%
         mutate_at(vars(`GEOPHYTE Y, N`), replace_duplicates_with_NA) %>%
@@ -47,19 +55,19 @@ dataset:
   taxon_name: Species
   description: Compilation of fire response and ecological attribute data for many
     Victoria species
-  collection_type: literature, field
-  sample_age_class: adult
+  basis_of_record: literature, field
+  life_stage: adult
   sampling_strategy: Compilation of ecological attribute data for Victorian plant
     species from diverse sources. These data were compiled to answer questions about
     plant response to disturbance and implement intervention management.
   original_file: Flora_VA_Data_Dec2017_min TFI spp.xls contributed by Matt White
   notes: none
-sites: .na
+locations: .na
 contexts: .na
 traits:
 - var_in: PERSEED D, S, G, C, Z (F=inadequate data)
   unit_in: .na
-  trait_name: fire_cued_seeding
+  trait_name: post_fire_recruitment
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -197,18 +205,6 @@ traits:
     long-lived species with a long time between seedling (or post-fire resprout stage)
     and reproductive maturity (mostly > 2 years), can establish in long-unburnt vegetation,
     but can also establish immediately after fire.
-- var_in: JUVEN 1, 2, 5, 10, 20, 40 (F=inadequate data)
-  unit_in: years
-  trait_name: reproductive_maturity
-  entity_type: species
-  value_type: bin
-  basis_of_value: expert_score
-  replicates: .na
-  methods: compilation from diverse sources and expert opinion; This trait captures
-    the time from fire event to onset of reproductive maturity (ie. a seed load or
-    a group of suckers sufficient to replace the adult population)   "adult population"  is
-    specific to the management objectives for each EVC and refers to maintenance of
-    the typical densities therein
 - var_in: SPP LIFE 3, 10, 20, 50, 100 (F=inadequate data)
   unit_in: years
   trait_name: lifespan
@@ -285,27 +281,6 @@ substitutions:
 - trait_name: life_form
   find: 'N'
   replace: .na
-- trait_name: reproductive_maturity
-  find: 1
-  replace: 0--1
-- trait_name: reproductive_maturity
-  find: F
-  replace: .na
-- trait_name: reproductive_maturity
-  find: 2
-  replace: 1--2
-- trait_name: reproductive_maturity
-  find: 5
-  replace: 3--5
-- trait_name: reproductive_maturity
-  find: 10
-  replace: 5--10
-- trait_name: reproductive_maturity
-  find: 20
-  replace: 10--20
-- trait_name: reproductive_maturity
-  find: 40
-  replace: 20--40
 - trait_name: fire_response_on_maturity
   find: V
   replace: mature_to_juvenile
@@ -347,28 +322,31 @@ substitutions:
   replace: widely_dispersed
 - trait_name: seed_longevity
   find: S
-  replace: long-lived
+  replace: long_persistent
 - trait_name: seed_longevity
   find: G
-  replace: long-lived
+  replace: long_persistent
 - trait_name: seed_longevity
   find: C
-  replace: short-lived
+  replace: transient
 - trait_name: seed_longevity
   find: Z
   replace: .na
-- trait_name: fire_cued_seeding
+- trait_name: post_fire_recruitment
+  find: Z
+  replace: no_post_fire_recruitment
+- trait_name: post_fire_recruitment
   find: D
-  replace: .na
-- trait_name: fire_cued_seeding
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
   find: S
-  replace: fire_cued_seeding_incomplete_germination
-- trait_name: fire_cued_seeding
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
   find: G
-  replace: fire_cued_seeding_complete_germination
-- trait_name: fire_cued_seeding
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
   find: C
-  replace: fire_cued_seeding_complete_germination
+  replace: post_fire_recruitment
 - trait_name: fire_and_establishing
   find: T
   replace: establish_anytime
@@ -377,13 +355,13 @@ substitutions:
   replace: establish_just_after_fire_only
 - trait_name: fire_and_establishing
   find: R
-  replace: establish_intermediate_to_over_mature_vegetation
+  replace: establish_intermediate_to_mature_vegetation_only
 - trait_name: fire_and_establishing
   find: M
-  replace: establish_intermediate_age
+  replace: establish_intermediate_to_mature_vegetation_only
 - trait_name: fire_and_establishing
   find: K
-  replace: establish_just_after_fire_and_mature_vegetation
+  replace: establish_anytime
 - trait_name: fire_and_establishing
   find: F
   replace: .na
@@ -405,10 +383,10 @@ substitutions:
 - trait_name: fire_response
   find: F
   replace: .na
-- trait_name: fire_cued_seeding
+- trait_name: post_fire_recruitment
   find: F
   replace: .na
-- trait_name: fire_cued_seeding
+- trait_name: post_fire_recruitment
   find: Z
   replace: .na
 - trait_name: seed_longevity

@@ -27,11 +27,11 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
-        n_fixer = grepl("Nitrogen fixer", strategy), 
-        roots = gsub(", Nitrogen fixer", "", strategy),
+        n_fixer = stringr::str_extract(strategy, "Nitrogen fixer"), 
+        roots = stringr::str_replace(strategy, ", Nitrogen fixer", ""),
         collection.date = collection.date %>% dmy()
       ) %>% 
       mutate_at(vars(`Mo_mature`), ~na_if(.,0)) %>%
@@ -41,10 +41,10 @@ dataset:
   '
   collection_date: collection.date
   taxon_name: species
-  site_name: plot.id
+  location_name: plot.id
   description: Ecological datasets from the Jurien Bay dune chronosequence
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: 'For leaf sampling, we used 50 plots (10 m x 10 m each) from
     five chronosequence stages where vegetation had been characterised previously
     (see jurienveg and jurienplots for more details). Using the vegetation survey
@@ -71,7 +71,7 @@ dataset:
     ten.'
   original_file: files in 'jurien' R-package
   notes: none
-sites:
+locations:
   B.HR.2:
     latitude (deg): -30.2950876
     longitude (deg): 115.1876421

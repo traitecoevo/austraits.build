@@ -23,32 +23,25 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         site_name = "Howard River catchment",
         date = date %>% mdy()
-      ) %>% 
-      arrange(date) %>%
-      group_by(Tree) %>%
-        mutate(observation_number = dplyr::row_number()) %>%
-      ungroup() %>% 
+      ) %>%  
       group_by(species) %>% 
         mutate_at(vars(`specific leaf area (m2 kg-1)`), replace_duplicates_with_NA) %>% 
       ungroup()
   '
   collection_date: date
   taxon_name: species
-  context_name: context
-  site_name: site_name
+  location_name: site_name
   individual_id: Tree
-  population_id: burn_status
-  observation_number: observation_number
   description: Measurements of stem CO2 efflux and leaf gas exchange in a tropical
     savanna ecosystem in northern Australia, and assessed the impact of fire on these
     processes.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: The stem CO2 efflux was initially measured at two locations,
     each of which was nested within a 3 km 2 plot. One plot was to be burned, while
     the other was to serve as an unburned control. At each location, the stem CO2
@@ -70,7 +63,7 @@ dataset:
   original_file: leaf_summary.xls, Rbranch summary2.xls, and Rstem summary6.xls submitted
     by Lucas Cernusak and archived in the raw data folder and GoogleDrive folder.
   notes: none
-sites:
+locations:
   Howard River catchment:
     latitude (deg): -12.495
     longitude (deg): 131.15
@@ -80,36 +73,35 @@ sites:
     temperature, max MAT (C): 30.5 - 33.2
     precipitation, MAP (mm): 1700
 contexts:
-  burn tree sampled in January:
-    burn status: burnt
-    sampling season: January
-  burn tree sampled in July:
-    burn status: burnt
-    sampling season: July
-  burn tree sampled in October:
-    burn status: burnt
-    sampling season: October
-  burn tree sampled in September:
-    burn status: burnt
-    sampling season: September
-  tree sampled in October:
-    burn status: .na.character
-    sampling season: October
-  unburnt tree sampled in January:
-    burn status: unburnt
-    sampling season: January
-  unburnt tree sampled in July:
-    burn status: unburnt
-    sampling season: July
-  unburnt tree sampled in June:
-    burn status: unburnt
-    sampling season: June
-  unburnt tree sampled in October:
-    burn status: unburnt
-    sampling season: October
-  unburnt tree sampled in September:
-    burn status: unburnt
-    sampling season: September
+- context_property: burn status
+  category: plot
+  var_in: burn_status
+  values:
+  - find: burn
+    value: burnt
+    description: Tree burnt
+  - find: unburnt
+    value: unburnt
+    description: Tree not burnt
+- context_property: sampling season
+  category: temporal
+  var_in: sampling_period
+  values:
+  - find: June
+    value: 1_June
+    description: measurement made in June
+  - find: July
+    value: 2_July
+    description: measurement made in July
+  - find: September
+    value: 3_September
+    description: measurement made in September
+  - find: October
+    value: 4_October
+    description: measurement made in October
+  - find: January
+    value: 5_January
+    description: measurement made in January
 traits:
 - var_in: R25_stem
   unit_in: umolCO2/g/s
