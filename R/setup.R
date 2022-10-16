@@ -514,7 +514,7 @@ metadata_add_substitutions_table <- function(dataframe_of_substitutions, dataset
 #'
 #' @return yml file with taxonomic change added
 #' @export
-metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
+metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason, taxon_resolution) {
 
   if(length(replace) > 1 ) {
     stop(sprintf("Cannot replace with two names!! (for %s -> %s)\n", crayon::red(find), crayon::red(replace)))
@@ -522,7 +522,7 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
   set_name <- "taxonomic_updates"
   metadata <- read_metadata_dataset(dataset_id)
 
-  to_add <- list(find = find, replace = replace, reason = reason) 
+  to_add <- list(find = find, replace = replace, reason = reason, taxon_resolution = taxon_resolution) 
     
   # add `set_name` category if it doesn't yet exist
   if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]])) {
