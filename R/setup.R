@@ -279,20 +279,76 @@ metadata_add_contexts <- function(dataset_id, context_data) {
   
   # read metadata
   metadata <- read_metadata_dataset(dataset_id)
+
+  # load and clean trait data
+  data <- readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols()) %>%
+    process_custom_code(metadata[["dataset"]][["custom_R_code"]])()
+
+  # Get list of potential traits
+  v <- names(data)
+
+  var_in <- metadata_user_select_names(paste("Indicate all columns that contain contextual data for ", dataset_id), v)
+
+  categories <- c("treatment", "plot", "temporal", "method", "entity_context")
+
+  contexts <- tibble::tibble(category = "unknown",
+                            var_in = var_in)
+                              
+  contexts_info <- tibble::tibble(context_property = NA_character_,
+                        var_in = NA_character_,
+                        category = NA_character_,
+                        find = NA_character_, 
+                        value =NA_character_,
+                        description = NA_character_)
+
+  for (i in seq_along(contexts$var_in)) {
+    
+    contexts$category[i] <- metadata_user_select_names(paste("What category does context", contexts$var_in[i], "fit in?"), categories)
+    tmp <- contexts$var_in[i]
+    
+    context_values <- data[[tmp]] %>% unique
   
-  # Choose column for context_name
-  context_name <- metadata_user_select_column("context_name", names(context_data))
-  
-  # From remaining variables, choose those to keep
-  context_sub <- dplyr::select(context_data, -!!context_name)
-  keep <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct context_properties in ", dataset_id), names(context_sub))
-  
-  # Save and notify
-  metadata$contexts <- dplyr::select(context_data, tidyr::one_of(keep)) %>%
-    split(context_data[[context_name]]) %>% lapply(as.list)
-  
-  cat(sprintf("Following contexts added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$contexts), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
-  
+      # XXXX - want a list of unique values printed on the screen - this is not the solution
+      sprintf("\tThe following values exist for this context %s.", find)
+      
+      replace_needed <- readline(prompt="Are replacement values required? (Y/N)")
+      
+      if(replace_needed == "Y") {
+        tmp2 <- tibble::tibble(context_property "unknown",
+                              var_in = contexts$var_in[i],
+                              category = contexts$category[i],
+                              find = context_values, 
+                              value ="unknown",
+                              description = "unknown"
+        )
+      } else {
+        tmp2 <- tibble::tibble(context_property "unknown",
+                              var_in = contexts$var_in[i],
+                              category = contexts$category[i],
+                              value = context_values
+        )
+      }  
+        contexts_info <- bind_rows(contexts_info, tmp2)
+        contexts_info
+    }
+
+    contexts_info2 <- contexts_info %>%
+      filter(!is.na(var_in)) %>%
+      dplyr::group_by(var_in) %>%
+      dplyr::group_split()
+
+    # XXXX doesn't actually seem to work - is meant to remove `find` and `description` if all NA's  
+    for (j in length(contexts_info2)) {
+      if(all(is.na(contexts_info2[[j]]$find))) {
+        contexts_info2[[j]] <- contexts_info2[[j]] %>% dplyr::select(-find, - description)
+      }
+    }  
+
+    # XXXX doesn't make indented lists - obviously, but I didn't even know what to try
+    metadata$contexts <- contexts_info2 %>%
+      lapply(as.list)
+
+
   write_metadata_dataset(metadata, dataset_id)
 }
 
