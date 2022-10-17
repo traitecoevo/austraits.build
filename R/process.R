@@ -123,7 +123,7 @@ dataset_process <- function(filename_data_raw,
     process_flag_excluded_observations(metadata) %>%
     process_convert_units(definitions, unit_conversion_functions) %>%
     process_flag_unsupported_values(definitions) %>%
-    process_create_observation_id() %>% 
+    process_create_observation_id() %>%
     process_taxonomic_updates(metadata) %>%
     # Sorting of data
     dplyr::mutate(
@@ -1321,7 +1321,9 @@ process_taxonomic_updates  <- function(data, metadata){
 
   # copy original species name to a new column
   out[["original_name"]] <- out[["taxon_name"]]
-
+#can not get this to work at all - Lizzy Oct 17
+  #  out[["taxonomic_resolution"]] <- "taxon_rank"
+  
   # Now make any replacements specified in metadata yaml
   ## Read metadata table, quit if empty
   substitutions_table <-  util_list_to_df2(metadata[["taxonomic_updates"]])
@@ -1330,6 +1332,10 @@ process_taxonomic_updates  <- function(data, metadata){
     return(out)
   }
 
+#  if(is.null(substitutions_table$taxonomic_resolution)) {
+#    substitutions_table$taxonomic_resolution <- NA
+#  }
+  
   to_update <- rep(TRUE, nrow(out))
 
   ## Makes replacements, row by row
@@ -1337,6 +1343,7 @@ process_taxonomic_updates  <- function(data, metadata){
     j <- which(out[["taxon_name"]] == substitutions_table[["find"]][i])
     if( length(j) > 0 ){
       out[["taxon_name"]][j] <- substitutions_table[["replace"]][i]
+   #   out[["taxonomic_resolution"]][j] <- substitutions_table[["taxonomic_resolution"]][i]
       to_update[j] <- FALSE
     }
   }
@@ -1346,6 +1353,7 @@ process_taxonomic_updates  <- function(data, metadata){
 
   ## Return updated table
   out
+  
 }
 
 #' Combine all the AusTraits studies into the compiled AusTraits database
@@ -1426,8 +1434,8 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
   austraits_raw$taxonomic_updates <-
     austraits_raw$taxonomic_updates %>%
     dplyr::left_join(by = "cleaned_name",
-              taxa %>% dplyr::select(.data$cleaned_name, .data$taxonIDClean, .data$taxonomicStatusClean,
-                                      .data$alternativeTaxonomicStatusClean, .data$acceptedNameUsageID, .data$taxon_name)
+              taxa %>% dplyr::select(.data$cleaned_name, .data$cleaned_name_taxon_id, .data$cleaned_name_taxonomic_status,
+                                      .data$cleaned_name_alternative_taxonomic_status, .data$taxon_id, .data$taxon_name)
               ) %>%
     dplyr::distinct() %>%
     dplyr::arrange(.data$cleaned_name)
@@ -1456,10 +1464,10 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
     )  %>%
     dplyr::arrange(.data$taxon_name) %>%
     dplyr::mutate(
-      taxonomicStatus = ifelse(is.na(.data$taxonomicStatus) & !is.na(.data$genus), "known", .data$taxonomicStatus),
-      taxonomicStatus = ifelse(is.na(.data$taxonomicStatus) & is.na(.data$genus), "unknown", .data$taxonomicStatus),
+      taxonomic_status = ifelse(is.na(.data$taxonomic_status) & !is.na(.data$genus), "known", .data$taxonomic_status),
+      taxonomic_status = ifelse(is.na(.data$taxonomic_status) & is.na(.data$genus), "unknown", .data$taxonomic_status),
     ) %>%
-    split(.$taxonomicStatus)
+    split(.$taxonomic_status)
 
   # check after the split, both "known" and "unknown" exist. If missing, create with empty
   if(is.null(species_tmp[["known"]]))
@@ -1472,7 +1480,7 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
      species_tmp[["known"]] %>%
      dplyr::select(-.data$family) %>%
      dplyr::left_join(by="genus",
-               taxa %>% dplyr::filter(.data$taxonRank == "Genus") %>%
+               taxa %>% dplyr::filter(.data$taxon_rank == "Genus") %>%
                  dplyr::select(genus = .data$taxon_name, .data$family) %>% dplyr::distinct()
      )
 

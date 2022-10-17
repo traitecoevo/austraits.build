@@ -591,7 +591,7 @@ austraits_rebuild_taxon_list <- function(austraits) {
 
   # First align to APC where possible 
   taxa <- 
-    # build list of observed species names
+    # build list of observed taxon names
     austraits$traits %>% 
     dplyr::select(cleaned_name = .data$taxon_name) %>% 
     dplyr::distinct() %>%
@@ -599,28 +599,31 @@ austraits_rebuild_taxon_list <- function(austraits) {
     dplyr::left_join(
       by = "cleaned_name", taxonomic_resources$APC %>% 
         dplyr::filter(!grepl("sp\\.$", .data$canonicalName)) %>% 
-        dplyr::select(cleaned_name = .data$canonicalName, taxonIDClean = .data$taxonID, 
-                      taxonomicStatusClean = .data$taxonomicStatus, .data$acceptedNameUsageID)) %>%
-    # Also add all accepted genera species, varieties etc
+        dplyr::select(cleaned_name = .data$canonicalName, cleaned_name_taxon_id = .data$taxonID, 
+                      cleaned_name_taxonomic_status = .data$taxonomicStatus)) %>%
+    # Also add all accepted genera species, varieties etc from APC
     dplyr::bind_rows(
       taxonomic_resources$APC %>% 
         # XXXX subspecies was missing from this list
-        dplyr::filter(.data$taxonRank %in% c('Series', 'Genus', 'Species', 'Forma', 'Varietas', 'Subspecies'), 
+        dplyr::filter(.data$taxonRank %in% c('Familia', 'Series', 'Genus', 'Species', 'Forma', 'Varietas', 'Subspecies'), 
                       .data$taxonomicStatus == "accepted") %>% 
-        dplyr::select(cleaned_name = .data$canonicalName, taxonIDClean = .data$taxonID, 
-                      taxonomicStatusClean = .data$taxonomicStatus, .data$acceptedNameUsageID)) %>%
+        dplyr::select(cleaned_name = .data$canonicalName, cleaned_name_taxon_id = .data$taxonID, 
+                      cleaned_name_taxonomic_status = .data$taxonomicStatus)) %>%
     dplyr::distinct() %>%
-    dplyr::mutate(source = ifelse(!is.na(.data$taxonIDClean), "APC", NA_character_)) %>% 
+    dplyr::mutate(taxonomic_reference = ifelse(!is.na(.data$cleaned_name_taxon_id), "APC", NA_character_)) %>% 
+    dplyr::mutate(taxon_id = .data$cleaned_name_taxon_id) %>%
     # Now find accepted names for each name in the list (sometimes they are the same)
     dplyr::left_join(
-      by = "acceptedNameUsageID", taxonomic_resources$APC %>% 
+      by = "taxon_id", taxonomic_resources$APC %>% 
         dplyr::filter(.data$taxonomicStatus =="accepted") %>% 
-        dplyr::select(.data$acceptedNameUsageID, taxon_name = .data$canonicalName, 
-                      .data$taxonomicStatus, .data$scientificNameAuthorship, .data$family, 
-                      .data$taxonDistribution, .data$taxonRank, .data$ccAttributionIRI)) %>%
+        dplyr::select(taxon_id = .data$taxonID, taxon_name = .data$canonicalName, 
+                      taxonomic_status = .data$taxonomicStatus,  
+                      scientific_name = .data$scientificName, scientific_name_id = .data$scientificNameID, 
+                      scientific_name_authorship = .data$scientificNameAuthorship, .data$family,
+                      taxon_distribution = .data$taxonDistribution, taxon_rank = .data$taxonRank)) %>%
     # Some species have multiple matches. We will prefer the accepted usage, but record others if they exists
-    # To do this we define the order we want variables to sort by,m with accepted at the top
-    dplyr::mutate(my_order = .data$taxonomicStatusClean %>% 
+    # To do this we define the order we want variables to sort in the order listed below with accepted at the top
+    dplyr::mutate(my_order = .data$cleaned_name_taxonomic_status %>% 
              forcats::fct_relevel(c("accepted", "taxonomic synonym", "basionym", "nomenclatural synonym", "isonym", 
                                     "orthographic variant", "common name", "doubtful taxonomic synonym", "replaced synonym", 
                                     "misapplied", "doubtful pro parte taxonomic synonym", "pro parte nomenclatural synonym", 
@@ -631,8 +634,8 @@ austraits_rebuild_taxon_list <- function(austraits) {
     # record any alternative status to indicate where there was ambiguity
     dplyr::group_by(.data$cleaned_name) %>% 
     dplyr::mutate(
-      alternativeTaxonomicStatusClean = ifelse(.data$taxonomicStatusClean[1] == "accepted", 
-                                               .data$taxonomicStatusClean %>% 
+      cleaned_name_alternative_taxonomic_status = ifelse(.data$cleaned_name_taxonomic_status[1] == "accepted", 
+                                               .data$cleaned_name_taxonomic_status %>% 
           unique() %>% 
           subset_accepted() %>% 
           paste0(collapse = " | ") %>% 
@@ -640,13 +643,14 @@ austraits_rebuild_taxon_list <- function(austraits) {
     dplyr::slice(1) %>%  
     dplyr::ungroup() %>% 
     dplyr::select(-.data$my_order) %>% 
-    dplyr::select(.data$cleaned_name, .data$source, .data$taxonIDClean, .data$taxonomicStatusClean, 
-                  .data$alternativeTaxonomicStatusClean, .data$acceptedNameUsageID, 
-                  .data$taxon_name, .data$scientificNameAuthorship, .data$taxonRank, 
-                  .data$taxonomicStatus, .data$family, .data$taxonDistribution, .data$ccAttributionIRI)
+    dplyr::select(.data$cleaned_name, .data$taxonomic_reference, .data$cleaned_name_taxon_id, .data$cleaned_name_taxonomic_status, 
+                  .data$cleaned_name_alternative_taxonomic_status, 
+                  .data$taxon_name, .data$taxon_id, .data$scientific_name_authorship, .data$taxon_rank, 
+                  .data$taxonomic_status, .data$family, .data$taxon_distribution, 
+                  .data$scientific_name, .data$scientific_name_id)
 
   taxa1 <- 
-    taxa %>% dplyr::filter(!is.na(.data$taxonIDClean)) %>% 
+    taxa %>% dplyr::filter(!is.na(.data$cleaned_name_taxon_id)) %>% 
     dplyr::distinct() 
   
   # Now check against APNI for any species not found in APC
@@ -654,26 +658,28 @@ austraits_rebuild_taxon_list <- function(austraits) {
 
   taxa2 <-
     taxa %>% 
-    dplyr::filter(is.na(.data$taxon_name)) %>% 
+    dplyr::filter(is.na(.data$taxon_name)) %>%
     dplyr::select(.data$cleaned_name) %>%
     dplyr::left_join(by = "cleaned_name", taxonomic_resources$APNI %>% 
                        dplyr::filter(.data$nameElement != "sp.") %>%
-                       dplyr::select(cleaned_name = .data$canonicalName, taxonIDClean = .data$scientificNameID, 
-                                     .data$family, .data$taxonRank)) %>% 
+                       dplyr::select(cleaned_name = .data$canonicalName, cleaned_name_taxon_id = .data$scientificNameID, 
+                                     .data$family, taxon_rank = .data$taxonRank, scientific_name = .data$scientificName)) %>% 
     dplyr::group_by(.data$cleaned_name) %>%
     dplyr::mutate(
-      taxonIDClean = paste(.data$taxonIDClean, collapse = " ") %>% 
+      cleaned_name_taxon_id = paste(.data$cleaned_name_taxon_id, collapse = " ") %>% 
         dplyr::na_if("NA"), family = ifelse(dplyr::n_distinct(.data$family) > 1, NA_character_, .data$family[1])) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(
-      source = as.character(ifelse(is.na(.data$taxonIDClean), NA_character_, "APNI")),
-      taxon_name = as.character(ifelse(is.na(.data$taxonIDClean), NA_character_, .data$cleaned_name)),
-      taxonomicStatusClean = as.character(ifelse(is.na(.data$taxonIDClean), "unknown", "unplaced")),
-      taxonomicStatus = as.character(.data$taxonomicStatusClean))
+      taxonomic_reference = as.character(ifelse(is.na(.data$cleaned_name_taxon_id), NA_character_, "APNI")),
+      taxon_name = as.character(ifelse(is.na(.data$cleaned_name_taxon_id), NA_character_, .data$cleaned_name)),
+      cleaned_name_taxonomic_status = as.character(ifelse(is.na(.data$cleaned_name_taxon_id), "unknown", "unplaced by APNI")),
+      taxonomic_status = as.character(.data$cleaned_name_taxonomic_status),
+      scientific_name_id = cleaned_name_taxon_id
+      )
 
   taxa_all <- taxa1 %>% 
     dplyr::bind_rows(taxa2 %>% 
-        dplyr::filter(!is.na(.data$taxonIDClean))) %>% 
+        dplyr::filter(!is.na(.data$cleaned_name_taxon_id))) %>% 
     arrange(.data$cleaned_name) 
   
   taxa_all %>%
