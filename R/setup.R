@@ -265,17 +265,11 @@ metadata_add_sites <- function(dataset_id, site_data) {
 #' The output may require additional manual editing.
 #'
 #' @inheritParams metadata_path_dataset_id
-#' @param context_data A dataframe of context variables
+#' @param overwrite Overwrite existing information
 #'
 #' @importFrom rlang .data
 #' @export
-#' @examples
-#' \dontrun{
-#' austraits$contexts %>% dplyr::filter(dataset_id == "Hall_1981") %>% 
-#' select(-dataset_id) %>% spread(context_property, value) %>% type_convert()-> context_data
-#' metadata_add_contexts("Hall_1981", context_data)
-#' }
-metadata_add_contexts <- function(dataset_id, context_data) {
+metadata_add_contexts <- function(dataset_id, overwrite = FALSE) {
   
   # read metadata
   metadata <- read_metadata_dataset(dataset_id)
@@ -288,14 +282,25 @@ metadata_add_contexts <- function(dataset_id, context_data) {
   # Get list of potential columns
   v <- names(data)
 
-  var_in <- metadata_user_select_names(paste("Indicate all columns that contain contextual data for ", dataset_id), v)
+  contexts <- list()
+  n_existing <- 0
+
+  # check for existing info
+  if (!overwrite & !is.na(metadata$contexts[1])) {
+    contexts <- metadata$contexts
+    n_existing <- length(metadata$contexts)
+
+    message(sprintf("Existign context information detected, from the following columns in the dataset: %s.", contexts %>% purrr::map_chr(~.x[["var_in"]]) %>% paste(collapse = ", ")))
+  }
+
+  var_in <- metadata_user_select_names(paste("Indicate all columns that contain additional contextual data for ", dataset_id), v)
 
   categories <- c("treatment", "plot", "temporal", "method", "entity_context")
 
-  contexts <- list()
-
   for (i in seq_along(var_in)) {
     
+    ii <- n_existing + i
+
     category <- metadata_user_select_names(
       paste("What category does context", var_in[i], "fit in?"), categories)
     
@@ -305,7 +310,7 @@ metadata_add_contexts <- function(dataset_id, context_data) {
       
     replace_needed <- readline(prompt="Are replacement values required? (y/n) ")
       
-    contexts[[i]] <-
+    contexts[[ii]] <-
       list(
       context_property = "unknown",
       category = category,
@@ -318,9 +323,9 @@ metadata_add_contexts <- function(dataset_id, context_data) {
       )
 
     if(tolower(replace_needed) == "y") {
-      contexts[[i]][["values"]][["value"]] = "unknown"
+      contexts[[ii]][["values"]][["value"]] = "unknown"
     } else {
-      contexts[[i]][["values"]][["find"]] <- NULL
+      contexts[[ii]][["values"]][["find"]] <- NULL
     }
   }
 
