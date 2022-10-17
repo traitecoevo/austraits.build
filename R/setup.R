@@ -281,78 +281,53 @@ metadata_add_contexts <- function(dataset_id, context_data) {
   metadata <- read_metadata_dataset(dataset_id)
 
   # load and clean trait data
-  data <- readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols()) %>%
+  data <-
+    readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols()) %>%
     process_custom_code(metadata[["dataset"]][["custom_R_code"]])()
 
-  # Get list of potential traits
+  # Get list of potential columns
   v <- names(data)
 
   var_in <- metadata_user_select_names(paste("Indicate all columns that contain contextual data for ", dataset_id), v)
 
   categories <- c("treatment", "plot", "temporal", "method", "entity_context")
 
-  contexts <- tibble::tibble(category = "unknown",
-                            var_in = var_in)
-                              
-  contexts_info <- tibble::tibble(context_property = NA_character_,
-                        var_in = NA_character_,
-                        category = NA_character_,
-                        find = NA_character_, 
-                        value =NA_character_,
-                        description = NA_character_)
+  contexts <- list()
 
-  for (i in seq_along(contexts$var_in)) {
+  for (i in seq_along(var_in)) {
     
-    contexts$category[i] <- metadata_user_select_names(paste("What category does context", contexts$var_in[i], "fit in?"), categories)
-    tmp <- contexts$var_in[i]
+    category <- metadata_user_select_names(
+      paste("What category does context", var_in[i], "fit in?"), categories)
     
-    context_values <- data[[tmp]] %>% unique
+    context_values <- data[[var_in[i]]] %>% unique()
   
-      # XXXX - want a list of unique values printed on the screen - this is not the solution
-      sprintf("\tThe following values exist for this context %s.", find)
+    message(sprintf("\tThe following values exist for this context: %s.", context_values %>% paste(collapse = ", ")))
       
-      replace_needed <- readline(prompt="Are replacement values required? (Y/N)")
+    replace_needed <- readline(prompt="Are replacement values required? (y/n) ")
       
-      if(replace_needed == "Y") {
-        tmp2 <- tibble::tibble(context_property "unknown",
-                              var_in = contexts$var_in[i],
-                              category = contexts$category[i],
-                              find = context_values, 
-                              value ="unknown",
-                              description = "unknown"
+    contexts[[i]] <-
+      list(
+      context_property = "unknown",
+      category = category,
+      var_in = var_in[i],
+      values = tibble::tibble(
+        find = context_values,
+        value = context_values, 
+        description = "unknown"
         )
-      } else {
-        tmp2 <- tibble::tibble(context_property "unknown",
-                              var_in = contexts$var_in[i],
-                              category = contexts$category[i],
-                              value = context_values
-        )
-      }  
-        contexts_info <- bind_rows(contexts_info, tmp2)
-        contexts_info
+      )
+
+    if(tolower(replace_needed) == "y") {
+      contexts[[i]][["values"]][["value"]] = "unknown"
+    } else {
+      contexts[[i]][["values"]][["find"]] <- NULL
     }
+  }
 
-    contexts_info2 <- contexts_info %>%
-      filter(!is.na(var_in)) %>%
-      dplyr::group_by(var_in) %>%
-      dplyr::group_split()
-
-    # XXXX doesn't actually seem to work - is meant to remove `find` and `description` if all NA's  
-    for (j in length(contexts_info2)) {
-      if(all(is.na(contexts_info2[[j]]$find))) {
-        contexts_info2[[j]] <- contexts_info2[[j]] %>% dplyr::select(-find, - description)
-      }
-    }  
-
-    # XXXX doesn't make indented lists - obviously, but I didn't even know what to try
-    metadata$contexts <- contexts_info2 %>%
-      lapply(as.list)
-
+  metadata$contexts <- contexts
 
   write_metadata_dataset(metadata, dataset_id)
 }
-
-
 
 #' Adds citation details to a metadata file for given study
 #'
