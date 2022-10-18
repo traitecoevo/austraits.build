@@ -290,7 +290,7 @@ metadata_add_contexts <- function(dataset_id, overwrite = FALSE) {
     contexts <- metadata$contexts
     n_existing <- length(metadata$contexts)
 
-    message(sprintf("Existign context information detected, from the following columns in the dataset: %s.", contexts %>% purrr::map_chr(~.x[["var_in"]]) %>% paste(collapse = ", ")))
+    message(sprintf("Existing context information detected, from the following columns in the dataset: %s.", contexts %>% purrr::map_chr(~.x[["var_in"]]) %>% paste(collapse = ", ")))
   }
 
   var_in <- metadata_user_select_names(paste("Indicate all columns that contain additional contextual data for ", dataset_id), v)
