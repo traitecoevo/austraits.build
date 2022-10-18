@@ -22,35 +22,33 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         Date = Date %>% dmy(),
+        Date = ifelse(is.na(Date), Year, Date),
         leaf_C_g_mg = `CN (g C g-1 N)` * `Nm (mg g-1)`,
-        method_number = ifelse(Age == "new", 1, NA),
-        method_number = ifelse(Age == "old", 2, method_number),
-        population_id = paste(Ring,CO2.treat, sep = "_"),
-        population_id = gsub("_NA","",population_id)
       ) %>%
       arrange(Date) %>%
-      group_by(Tree, population_id, method_number) %>%
+      group_by(Tree, site_name, Age, CO2.treat, Ring) %>%
         mutate(
-          observation = ifelse(!(is.na(Tree)) & !(is.na(context)),
+          observation_num = ifelse(!(is.na(Tree)) & !(is.na(Age)),
                               dplyr::row_number(), NA)
         ) %>%
       ungroup() %>%
       group_by(Ring, Age) %>%
-        mutate(litter_observation = ifelse(!is.na(P_litter),dplyr::row_number(), NA)) %>%
+        mutate(
+          litter_observation_num = ifelse(!is.na(P_litter),dplyr::row_number(), NA),
+          observation_num = ifelse(is.na(observation_num), 10+litter_observation_num, observation_num) %>% 
+            as.character(),
+          observation_num = ifelse(nchar(observation_num)!=2,paste0("0",observation_num),observation_num)
+        ) %>%
       ungroup()
   '
   collection_date: Date
   taxon_name: species_name
-  site_name: site_name
-  context_name: context
+  location_name: site_name
   individual_id: Tree
-  population_id: population_id
-  method_number: method_number
-  observation_number: observation
   description: Live leaf, senesced leaf, and wood nutrient measurements to determine
     if their stoichiometry in leaves and wood was maintained or altered in a long-term
     elevated CO2 experiment in a mature Eucalyptus forest on a low P soil
@@ -67,7 +65,7 @@ dataset:
     CO2 mole fraction of 150 umol mol-1 above ambient since February 2013.
   original_file: EucFACE_Austraits_NPleaf_2012-2018-L3.csv
   notes: none
-sites:
+locations:
   EucFACE:
     latitude (deg): -33.6167
     longitude (deg): 150.7333
@@ -80,29 +78,61 @@ sites:
     precipitation, MAP (mm): 800
     notes: dominated by Eucalyptus tereticornis in the overstory with a few scattered
       individuals of Eucalyptus amplifolia, while the understory is dominated by Microlaena
-      stipoides (a C3 grass) and some shrubs
+      stipoides (a C3 grass) and some shrubs.
 contexts:
-  new _leaves_measured_on_plants_in_ Amb _CO2_treatment:
-    CO2 treatment: 400 ppm (ambient; Rings 2, 3 and 6 in the EucFACE experiment) [manipulated]
-    leaf age: new (leaves aged 35-88 days; see data.csv file for exact age) [manipulated]
-  new _leaves_measured_on_plants_in_ Elev _CO2_treatment:
-    CO2 treatment: 550 ppm (elevated; 150 ppm above ambient; Rings 1, 4 and 5 in the
-      EucFACE experiment) [manipulated]
-    leaf age: new (leaves aged 35-88 days; see data.csv file for exact age) [manipulated]
-  old _leaves_measured_on_plants_in_ Amb _CO2_treatment:
-    CO2 treatment: 400 ppm (ambient; Rings 2, 3 and 6 in the EucFACE experiment) [manipulated]
-    leaf age: old (leaves aged 93-404 days; see data.csv file for exact age) [manipulated]
-  old _leaves_measured_on_plants_in_ Elev _CO2_treatment:
-    CO2 treatment: 550 ppm (elevated; 150 ppm above ambient; Rings 1, 4 and 5 in the
-      EucFACE experiment) [manipulated]
-    leaf age: old (leaves aged 93-404 days; see data.csv file for exact age) [manipulated]
-  measured_on_plants_in_ Amb _CO2_treatment:
-    CO2 treatment: 400 ppm (ambient; Rings 2, 3 and 6 in the EucFACE experiment) [manipulated]
-    leaf age: .na
-  measured_on_plants_in_ Elev _CO2_treatment:
-    CO2 treatment: 550 ppm (elevated; 150 ppm above ambient; Rings 1, 4 and 5 in the
-      EucFACE experiment) [manipulated]
-    leaf age: .na
+- context_property: CO2 treatment
+  category: treatment
+  var_in: CO2.treat
+  values:
+  - find: Amb
+    value: 400 ppm
+    description: Plants grown at ambient CO2 (400 ppm) (Rings 2, 3 and 6 in the EucFACE
+      experiment).
+  - find: Elev
+    value: 550 ppm
+    description: Plants grown at elevated CO2 (550 ppm) (150 ppm above ambient; Rings
+      1, 4 and 5 in the EucFACE experiment).
+- context_property: leaf age
+  category: method
+  var_in: Age
+  values:
+  - find: new
+    value: new
+    description: Leaves are new, aged 35-88 days; see data.csv file for exact age.
+  - find: old
+    value: old
+    description: Leaves are mature; aged 93-404 days; see data.csv file for exact
+      age.
+- context_property: repeat observations
+  category: temporal
+  var_in: observation_num
+  values:
+  - value: '01'
+  - value: '02'
+  - value: '03'
+  - value: '04'
+  - value: '05'
+  - value: '06'
+  - value: '07'
+  - value: 08
+  - value: 09
+  - value: '10'
+  - value: '11'
+  - value: '12'
+  - value: '13'
+  - value: '15'
+  - value: '16'
+  - value: '17'
+- context_property: blocks
+  category: plot
+  var_in: Ring
+  values:
+  - value: 1
+  - value: 2
+  - value: 3
+  - value: 4
+  - value: 5
+  - value: 6
 traits:
 - var_in: LMA (g m-2)
   unit_in: g/m2
@@ -343,7 +373,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 8
-  observation_number: litter_observation
   methods: Leaf litter was collected monthly in ~0.2m2 circular fine-mesh traps at
     eight random locations per ring (Duursma et al., 2016). Litter was sorted into
     leaf, twigs, bark, and other material, then oven-dried at 40 deg C and weighed.
@@ -360,7 +389,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 8
-  observation_number: litter_observation
   methods: Leaf litter was collected monthly in ~0.2m2 circular fine-mesh traps at
     eight random locations per ring (Duursma et al., 2016). Litter was sorted into
     leaf, twigs, bark, and other material, then oven-dried at 40 deg C and weighed.

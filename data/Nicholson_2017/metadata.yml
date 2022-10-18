@@ -30,14 +30,18 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(resprouting_percentage_by_severity = ifelse(is.na(severity),
-    resprouting_proportion_species_level*100, resprouting_percentage_by_severity),
-    severity = ifelse(is.na(severity), "global_average", paste0("fire_severity_",
-    severity)))
+  custom_R_code:     '
+    data %>% 
+      mutate(
+        resprouting_percentage_by_severity = ifelse(is.na(severity), 
+          resprouting_proportion_species_level*100, 
+          resprouting_percentage_by_severity),
+        severity = ifelse(is.na(severity), "global_average", severity)
+      )
+  '
   collection_date: 2014/2015
   taxon_name: Species
-  site_name: site_name
-  context_name: severity
+  location_name: site_name
   description: We report a case of widespread mortality of resprouters following a
     fire that burnt 98% of an 80-km2 island in Bass Strait, Australia.
   basis_of_record: field
@@ -57,7 +61,7 @@ dataset:
     severity_Nicholson et al 2017.xls' (means by species x severity), and 'individual
     tree data.xls' with individual tree data
   notes: unknown
-sites:
+locations:
   Clarke Island:
     latitude (deg): -40.54
     longitude (deg): 148.18
@@ -65,22 +69,32 @@ sites:
     description: Mediterranean-type vegetation, including heathland, Casuarina forest,
       scrub and coastal scrub
 contexts:
-  global_average:
-    fire intensity: average across all sites
-  fire_severity_1:
-    fire intensity: fire severity 1 (of 5); areas where foliage is retained
-  fire_severity_2:
-    fire intensity: fire severity 2 (of 5); areas where foliage removed but fine twigs
-      persisted (<0.5 cm diameter)
-  fire_severity_3:
-    fire intensity: fire severity 3 (of 5); areas where trees burnt down to thin branches
-      (0.5 to 3 cm diameter)
-  fire_severity_4:
-    fire intensity: fire severity 4 (of 5); areas where trees burnt down to thick
-      branches (3 to 5 cm diameter)
-  fire_severity_5:
-    fire intensity: fire severity 5 (of 5); areas where only stumps remain (all branches
-      removed)
+- context_property: fire_intensity
+  category: plot
+  var_in: severity
+  values:
+  - find: global_average
+    value: average fire severity
+    description: Average fire severity across all sites
+  - find: 1
+    value: fire severity 1
+    description: Areas where foliage was retained (fire severity 1 of 5).
+  - find: 2
+    value: fire severity 2
+    description: Areas where foliage was removed but fine twigs (<0.5 cm diameter)
+      persisted (fire severity 2 of 5).
+  - find: 3
+    value: fire severity 3
+    description: Areas where trees burnt down to thin branches (0.5 to 3 cm diameter)(fire
+      severity 3 of 5).
+  - find: 4
+    value: fire severity 4
+    description: Areas where trees burnt down to thick branches (3 to 5 cm diameter)(fire
+      severity 4 of 5).
+  - find: 5
+    value: fire severity 5
+    description: Areas where only stumps remain (all branches removed)(fire severity
+      5 of 5).
 traits:
 - var_in: fire_response
   unit_in: .na
@@ -109,7 +123,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 1-418
-  methods: &resprouting_method 'The 10 trees in each plot were identified to species level where possible,
+  methods: 'The 10 trees in each plot were identified to species level where possible,
     and categorised as (i) burnt or unburnt, and (ii) ''alive'', ''top-killed but
     resprouting'' or ''top-killed and completely dead''. The extent of damage to the
     crown, branches and stem of each woody individual was classified as: 1, trees
@@ -129,7 +143,19 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: individuals_sampled
-  methods: *resprouting_method 
+  methods: 'The 10 trees in each plot were identified to species level where possible,
+    and categorised as (i) burnt or unburnt, and (ii) ''alive'', ''top-killed but
+    resprouting'' or ''top-killed and completely dead''. The extent of damage to the
+    crown, branches and stem of each woody individual was classified as: 1, trees
+    retained their foliage; 2, foliage was removed but fine twigs persisted (0.5-cm
+    diameter); 3, trees were burnt down to thin branches (0.5-3-cm diameter); 4, trees
+    were burnt down to thick branches (3-5-cm diameter); and 5, only stumps were left
+    (all branches were removed) (Fig. 1). The median score of these measurements was
+    used to characterise the fire severity of each plot. Seedling regeneration was
+    not analysed because identifying the very small seedlings present was difficult,
+    as sometimes was determining the species present before the fire. The trait input
+    into AusTraits under this variable is the number of resprouting stems divided
+    by the sum of all burnt (resprouting + dead) stems.'
 substitutions: .na
 taxonomic_updates:
 - find: Hakea terrifolia

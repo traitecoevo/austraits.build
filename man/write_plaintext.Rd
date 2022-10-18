@@ -12,7 +12,7 @@ write_plaintext(austraits, path)
 \item{path}{pathway to save file}
 }
 \value{
-csv files of tibbles containing traits, sites, contexts, methods, excluded_data,
+csv files of tibbles containing traits, locations, contexts, methods, excluded_data,
 taxonomic updates, taxa, contributors
 }
 \description{

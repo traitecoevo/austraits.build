@@ -16,12 +16,30 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
-      mutate(measurement_remarks = paste(materialweigheddesc,seedweightnotes,refdesc, sep = "; ")) %>%
       group_by(taxa) %>%
-        distinct(thousandseedweight, .keep_all = TRUE) %>%
-      ungroup()
+      distinct(thousandseedweight, .keep_all = TRUE) %>%
+      ungroup() %>%
+      mutate(
+        original_dataset_id = stringr::str_replace_all(refshort,"[\\(]",""),    
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\)",""),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\.",""),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\, ","_"),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\,",""),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\& ",""),
+        original_dataset_id = stringr::str_replace_all(original_dataset_id,"[:space:]","_"),
+        original_dataset_id = stringr::str_replace(original_dataset_id,"\\_et_al",""),
+        original_dataset_id = if_else(is.na(original_dataset_id),"unknown",original_dataset_id),
+        measurement_remarks = paste0(
+          "MATERIAL: ", materialweigheddesc, "; ",
+          "NOTES: ", seedweightnotes, "; ",
+          "REFERENCE: ", original_dataset_id
+        ),
+        measurement_remarks = stringr::str_replace(measurement_remarks, "MATERIAL: NA; ",""),
+        measurement_remarks = stringr::str_replace(measurement_remarks, "NOTES: NA; ","")
+      ) %>% 
+      filter(!original_dataset_id %in% c("Jurado_1991", "Moles_2000", "Milberg_1998"))
   '
   collection_date: unknown/2019
   taxon_name: taxa
@@ -33,7 +51,7 @@ dataset:
   original_file: in raw data folder
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons licesne. Data not to be used for Commercial Purposes.
-sites: .na
+locations: .na
 contexts: .na
 traits:
 - var_in: thousandseedweight
@@ -43,7 +61,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
-  observation_number: observation_number
   measurement_remarks: measurement_remarks
   methods: Kew Gardens collections, with details in data.csv file under columns "materialweigheddesc"
     and "seedweightnotes"

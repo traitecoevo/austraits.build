@@ -40,7 +40,7 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         fire_response = ifelse(life_history == "r", "resprouts", NA),
@@ -51,10 +51,8 @@ dataset:
         life_history = ifelse(life_history=="o","p",life_history),
         regen_strategy= ifelse(plant_growth_form=="f","fern",""),
         life_history = ifelse(life_history=="f","",life_history),
-        context_name = if_else(TRIP == 1,"dry",""), context_name = if_else(TRIP == 2, "wet",context_name),
-        population_id = site_name,
-        Nfixer = gsub("y","Y",Nfixer),
-        observation_number = ifelse(TRIP == 2,2,1)
+        Nfixer = stringr::str_replace(Nfixer, "y","Y"),
+        TRIP = ifelse(is.na(TRIP),1,TRIP)
       ) %>% 
       mutate_at(vars(`life_history`,`regen_strategy`), ~na_if(.,"")) %>%
       mutate_at(vars(`leaf_water_content`), ~na_if(.,0)) %>%
@@ -65,9 +63,7 @@ dataset:
   '
   collection_date: 1994/1998
   taxon_name: species_name
-  site_name: site_name
-  context_name: context_name
-  population_id: population_id
+  location_name: site_name
   description: Susanne Schmidt's Kakadu data, merged from several spreadsheets
   basis_of_record: field
   life_stage: adult
@@ -117,7 +113,7 @@ dataset:
     moved them to the %C column. For many species there were replicate measurements
     and the replicate that is assumed to be %C was much different than the other two
     values.
-sites:
+locations:
   Kakadu1:
     description: waste rock dump
     date sampled: Data collected in dry (July 1994) and wet (Feb 1995)
@@ -366,12 +362,16 @@ sites:
     latitude (deg): -13.272
     longitude (deg): 132.829
 contexts:
-  dry:
-    sampling season: dry season (Samples collected during the first trip, which occurred
-      during the dry season.)
-  wet:
-    sampling season: wet season (Samples collected during the second trip, which occurred
-      during the wet season.)
+- context_property: sampling season
+  category: temporal
+  var_in: TRIP
+  values:
+  - find: 1
+    value: dry
+    description: Samples collected during the dry season (first trip).
+  - find: 2
+    value: wet
+    description: Samples collected during the wet season (second trip).
 traits:
 - var_in: leaf_water_content
   unit_in: '%'
@@ -380,7 +380,8 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  methods: Healthy mature leaves, twigs and roots were oven-dried at 60degC on the day of collection.
+  methods: Healthy mature leaves, twigs and roots were oven-dried at 60degC on the
+    day of collection.
 - var_in: fire_response
   unit_in: .na
   trait_name: fire_response

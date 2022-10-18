@@ -53,6 +53,18 @@ util_replace_null <- function(x, val=NA){
   x
 }
 
+
+#' Convert all columns in data frame to character
+
+#' @param df a dataframe
+#' 
+#' @return a dataframe
+#' 
+#' @examples lapply(austraits.build:::util_df_convert_character(iris), class) 
+util_df_convert_character <- function(df) {
+  dplyr::mutate(df, dplyr::across(dplyr::everything(), as.character))
+}
+
 #' Extract a trait element from the definitions$traits$elements
 #'
 #' @param i a value within the definitions$traits$elements list which refers to types of traits
@@ -313,6 +325,7 @@ create_tree_branch <- function(x, title, prefix = "") {
 #' 
 #' @param x vector of names to clean
 #' @return vector of cleaned names
+#' @importFrom stringr fixed
 #' @export 
 #' @examples c("Bankisa_serrata", "bankisa  serrata", "Banksia Seratta") %>% util_strip_taxon_names()
 util_strip_taxon_names <- function(x) {
