@@ -89,7 +89,7 @@ testthat::test_that("test datasets", {
   # Example 5 - Test a combination of trait, site and dataset level values
   # Basis of record has been specified for dataset level ~ field, site level ~ Cape_Tribulation
   # trait level ~ leaf_N and column ~ wild
-  # column values should take precedence followed by traits values, followed by sites and then dataset values
+  # column values should take precedence followed by traits values, followed by locations and then dataset values
   Ex5 <- test_build_dataset(file.path(examples.dir, "test3-metadata.yml"), file.path(examples.dir, "test3-data.csv"), "Example 5", definitions, unit_conversions, schema)
   
   expect_equal(Ex5$traits$basis_of_record %>% unique, c("NA", "lab", "Cape_Tribulation"))
@@ -110,24 +110,47 @@ testthat::test_that("test datasets", {
                  filter(trait_name == "leaf_N_per_dry_mass") %>%
                  pull(basis_of_record) %>% grep(pattern ="wild") %>% length, 0)
   
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Atherton") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "01") %>%
                  pull(basis_of_record) %>% unique, c("NA", "lab"))
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Atherton") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "01") %>%
                  pull(basis_of_record) %>% length, 91)
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Atherton") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "01") %>%
                  pull(basis_of_record) %>% is.na %>% sum, 81)
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Atherton") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "01") %>%
                  pull(basis_of_record) %>% grep(pattern = "lab") %>% length, 10)
   
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Cape Tribulation") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% unique, c("Cape_Tribulation"))
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Cape Tribulation") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% length, 315)
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Cape Tribulation") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% grep(pattern = "Cape_Tribulation") %>% length, 315)
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Cape Tribulation") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% grep(pattern = "lab") %>% length, 0)
-  expect_equal(Ex5$traits %>% select(site_name, basis_of_record) %>% filter(site_name == "Cape Tribulation") %>%
+  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% grep(pattern = "wild") %>% length, 0)
-})
+  
+  expect_equal(Ex5$traits %>% pull(location_id) %>% unique, Ex5$locations %>% pull(location_id) %>% unique)
+  expect_equal(Ex5$traits %>% select(location_id) %>% unique() %>% nrow(), Ex5$locations %>% select(location_name) %>% unique() %>% nrow())
 
+  # Example 6 - Tests focus on context and the various context identifiers
+  # Based on Crous_2013
+  # Have also added data for sex to test this field (commented out for now)
+
+  Ex6 <- test_build_dataset(file.path(examples.dir, "test4-metadata.yml"), file.path(examples.dir, "test4-data.csv"), "Example 6", definitions, unit_conversions, schema)
+  
+  #expect_equal(Ex6$traits$sex %>% unique, c("male", "female"))
+  expect_equal(Ex6$traits$location_id %>% unique, c("01"))
+  #expect_equal(Ex6$traits %>% filter(sex == "male") %>% nrow(), 85)
+  expect_equal(Ex6$traits %>% distinct(method_id, temporal_id, treatment_id) %>% nrow(), 36)
+
+  expect_equal(Ex6$contexts$category %>% unique, c("temporal", "treatment", "method"))
+  expect_equal(Ex6$contexts %>% nrow(), 9)
+  expect_equal(Ex6$contexts %>% nrow(), Ex6$contexts %>% group_by(link_id, link_vals) %>% distinct() %>% nrow())
+  expect_equal(Ex6$contexts %>% pull(context_property) %>% unique() %>% length, 4)
+
+  expect_equal(Ex6$traits %>% filter(trait_name == "fruit_colour") %>% pull(value) %>% unique, c("pink", "black", "red"))
+
+  expect_equal(Ex6$traits %>% pull(observation_id) %>% unique() %>% length(), 35)
+
+})

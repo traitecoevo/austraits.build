@@ -23,7 +23,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       rename(season = date) %>%
       mutate(
@@ -34,51 +34,47 @@ dataset:
         new_date = new_date %>% mdy(quiet=TRUE) %>% as.character(),
         date_WD = date_WD %>% dmy(quiet=TRUE) %>% as.character(),
         date_merged = coalesce(new_date, date_WD, as.character(date_by_month)),
-        pop_id = site_name,
-        observation_number = ifelse(season == "dry season (Sep 2010)", 1, NA),
-        observation_number = ifelse(season == "wet season (May 2011)", 2, observation_number)
+        individual = paste(Species, site_name, age, Rep, sep = "_")
       ) %>%
         select(-date_by_month, -new_date, -date_WD, -sample_date, - notes, -spp, -`Pith diam (mm)`, -context) %>% 
-        group_by(date_merged, site_name, season, pop_id, Species, age, Rep, observation_number) %>% 
+        group_by(date_merged, site_name, season, Species, age, Rep) %>% 
           summarise_at(vars(`WD kg/m3`:`gas_ d13C_leaf`), mean, na.rm = TRUE) %>% 
-        ungroup() 
+        ungroup()
   '
   collection_date: date_merged
   taxon_name: Species
-  site_name: site_name
-  context_name: season
-  population_id: pop_id
-  observation_number: observation_number
+  location_name: site_name
+  individual_id: individual
   description: traits of NT savannah species
   basis_of_record: field
   life_stage: age
-  sampling_strategy: "Deciduous, semi-deciduous and evergreen species are all present
+  sampling_strategy: 'Deciduous, semi-deciduous and evergreen species are all present
     in this savanna. Hence, we sampled plant traits at two time points: at the end
     of one dry season (September 2010), when deciduous species are leafless and the
     canopies of semi-deciduous species are at their thinnest; and right at the end
     of the subsequent wet season (early May 2011), when most species still tend to
     have full or nearly-full canopies (Williams et al. 1997). We selected 17 species
     to study, based on available growth rate data and their availability across two
-    nearby sub-sites (12 deg 27'10''S, 131 deg 6'30''E; 12 deg 27'57''S,
-    131 deg 6'51''E). This species-set represents a range of functional types (trees
+    nearby sub-sites (12 deg 27''10''''S, 131 deg 6''30''''E; 12 deg 27''57''''S,
+    131 deg 6''51''''E). This species-set represents a range of functional types (trees
     and shrubs; nitrogen-fixers and non-fixers; deciduous, semi-deciduous and evergreen
-    species; Table 1). We used diameter at breast height (DBH) to identify 'adults'
-    versus 'saplings' for each species, but we use these terms informally (i.e.
+    species; Table 1). We used diameter at breast height (DBH) to identify ''adults''
+    versus ''saplings'' for each species, but we use these terms informally (i.e.
     not necessarily reflecting degree of reproductive maturity), and synonymously
-    with 'small individuals' and 'large individuals' of each species (Prior et
+    with ''small individuals'' and ''large individuals'' of each species (Prior et
     al. 2006). For species that are large trees at maturity we used a DBH cut-off
     of 6 cm to distinguish saplings from adults; for smaller trees and shrub species
     we used a 3 cm cut-off, with the exception of the small, short-lived and fast
     growing species Acacia difficilis, for which we used a cut-off of 1.5 cm DBH (Table
     1). When choosing plants to sample we prioritized individuals of each species
-    which clearly fell into these size-defined 'sapling' and 'adult' categories,
+    which clearly fell into these size-defined ''sapling'' and ''adult'' categories,
     so as to minimize ambiguity in this regard. For each age/size class of each species
-    we aimed to make trait measurements on each of five individuals."
+    we aimed to make trait measurements on each of five individuals.'
   original_file: Wright et al NT traits data (Howard Springs, May 2011) and Wright
     et al NT traits data (Howard Springs, Sept 2010) in raw data folder, each comprised
     on many worksheets
   notes: none
-sites:
+locations:
   Howard_Springs:
     latitude (deg): -12.4528
     longitude (deg): 131.1083
@@ -100,10 +96,24 @@ sites:
       samples (0-20 cm depth) collected in September 2010 were as follows: total C
       = 2.7% (1.8), total N = 0.093% (0.074), total P = 72.7 mg kg_1 (22.6).'
 contexts:
-  dry season (Sep 2010):
-    sampling season: dry season (Septmeber 2010)
-  wet season (May 2011):
-    sampling season: wet season (May 2011)
+- context_property: sampling season
+  category: temporal
+  var_in: season
+  values:
+  - value: dry season (Sep 2010)
+    description: Measurements made during the dry season (Sep 2010).
+  - value: wet season (May 2011)
+    description: Measurements made during the wet season (May 2011).
+- context_property: leaf sample type
+  category: method
+  var_in: method_context
+  values:
+  - find: leaf morphology sample
+    value: leaf morphology sample
+    description: Leaf samples collected for leaf morphology measurements.
+  - find: gas exchange sample
+    value: gas exchange sample
+    description: Leaf samples collected for gas exchange measurements.
 traits:
 - var_in: WD kg/m3
   unit_in: kg/m3
@@ -127,9 +137,8 @@ traits:
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
-  replicates: 1  
-  method_number: 1
-  measurement_remarks: Leaf samples collected for leaf morphology measurements
+  replicates: 1
+  method_context: leaf morphology sample
   methods: Five recently-matured, fully-expanded and undamaged leaves (including petioles)
     were collected from each individual for determination of one-sided projected leaf
     area (flatbed scanner), oven-dried mass (70 deg C for at least 48 h) and thus
@@ -399,8 +408,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: Leaf samples from gas exchange measurements
+  method_context: gas exchange sample
   methods: Specific leaf area (SLA) measurements made on the leaves on which photosynthesis
     was measured. One-sided projected leaf area was determined (flatbed scanner),
     oven-dried mass (70 deg C for at least 48 h) and thus SLA (area per dry mass;

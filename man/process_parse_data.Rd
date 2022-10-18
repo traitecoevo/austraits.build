@@ -4,7 +4,7 @@
 \alias{process_parse_data}
 \title{Process a single dataset}
 \usage{
-process_parse_data(data, dataset_id, metadata)
+process_parse_data(data, dataset_id, metadata, contexts)
 }
 \arguments{
 \item{data}{tibble or dataframe containing the study data}
@@ -12,6 +12,8 @@ process_parse_data(data, dataset_id, metadata)
 \item{dataset_id}{identifier for a particular study in the AusTraits database}
 
 \item{metadata}{yaml file with metadata}
+
+\item{contexts}{dataframe of contexts for this study}
 }
 \value{
 tibble in long format with AusTraits formatted trait names, trait
