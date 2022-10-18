@@ -44,7 +44,8 @@ metadata_create_template <- function(dataset_id,
   out$contributors$data_collectors <- list(out$contributors$data_collectors)
   out$contributors[c("assistants", "austraits_curators")] <- "unknown"
 
-  out$dataset <- out$dataset$values[]
+  out$dataset <- out$dataset$values[c("data_is_long_format", "custom_R_code", "collection_date", "taxon_name", "location_name",
+                                                     "description", "basis_of_record", "life_stage", "sampling_strategy", "original_file", "notes")]
   out$dataset[] <- 'unknown'
   out$dataset$custom_R_code <- NA
   
@@ -70,7 +71,7 @@ metadata_create_template <- function(dataset_id,
       out[["dataset"]][[v]] <- metadata_user_select_column(v, names(data))
     }
     
-     v2 <- c("location_name", "context_name", "individual_id", "collection_date")
+     v2 <- c("location_name", "individual_id", "collection_date")
 
     for(v in v2) {
       tmp <- metadata_user_select_column(v, c(NA, names(data)))
@@ -89,6 +90,14 @@ metadata_create_template <- function(dataset_id,
 
   }
 
+  #reorder elements in dataset
+  order <- c("data_is_long_format","custom_R_code","collection_date", "taxon_name","trait_name","value","location_name","individual_id",
+             "description","basis_of_record", "life_stage", "sampling_strategy", "original_file", "notes")
+  
+  order <- order[which(order %in% names(out[["dataset"]]))]
+  
+  out[["dataset"]] <- out[["dataset"]][order]
+  
   write_metadata(out, paste0(path, "/metadata.yml"))
 }
 
@@ -97,7 +106,7 @@ metadata_create_template <- function(dataset_id,
 #' `metadata_user_select_column` is used to select which columns in a dataframe/ tibble 
 #' corresponds to the variable of interest. It is used compile the metadata yaml
 #' file by prompting the user to choose the relevant columns. It is used in 
-#' `metadata_add_sites` and `metadata_add_contexts` and `metadata_create_template`
+#' `metadata_add_locations` and `metadata_add_contexts` and `metadata_create_template`
 #'
 #' @param column name of the variable of interest
 #' @param choices the options that can be selected from
@@ -113,7 +122,7 @@ metadata_user_select_column <- function(column, choices) {
 #' 
 #' `user_select names` is used to prompt the user to select the variables that 
 #' are relevant for compiling the metadata yaml file. It is currently used for
-#' `metadata_add_traits`, `metadata_add_sites` and `metadata_add_contexts` 
+#' `metadata_add_traits`, `metadata_add_locations` and `metadata_add_contexts` 
 #'
 #' @param title character string providing the instruction for the user
 #' @param vars variable names
@@ -209,7 +218,7 @@ metadata_add_traits <- function(dataset_id) {
   write_metadata_dataset(metadata, dataset_id)
 }
 
-#' For specified `dataset_id` import site data from a dataframe
+#' For specified `dataset_id` import location data from a dataframe
 #'
 #' This functions asks users which columns in the dataframe they would like to keep
 #' and records this appropriately in the metadata. The input data is assumed to be 
@@ -217,31 +226,31 @@ metadata_add_traits <- function(dataset_id) {
 #' The output may require additional manual editing.
 #'
 #' @inheritParams metadata_path_dataset_id
-#' @param site_data A dataframe of site variables
+#' @param location_data A dataframe of site variables
 #'
 #' @importFrom rlang .data
 #' @export
 #' @examples
 #' \dontrun{
 #' austraits$locations %>% dplyr::filter(dataset_id == "Falster_2005_1") %>% 
-#' select(-dataset_id) %>% spread(site_property, value) %>% type_convert()-> site_data
-#' metadata_add_sites("Falster_2005_1", site_data)
+#' select(-dataset_id) %>% spread(location_property, value) %>% type_convert()-> location_data
+#' metadata_add_locations("Falster_2005_1", location_data)
 #' }
-metadata_add_sites <- function(dataset_id, site_data) {
+metadata_add_locations <- function(dataset_id, location_data) {
 
   # read metadata
   metadata <- read_metadata_dataset(dataset_id)
 
   # Choose column for location_name
-  location_name <- metadata_user_select_column("location_name", names(site_data))
+  location_name <- metadata_user_select_column("location_name", names(location_data))
 
   # From remaining variables, choose those to keep
-  site_sub <- dplyr::select(site_data, -!!location_name)
-  keep <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct site_properties in ", dataset_id), names(site_sub))
+  location_sub <- dplyr::select(location_data, -!!location_name)
+  keep <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct location_properties in ", dataset_id), names(location_sub))
 
   # Save and notify
-  metadata$locations <- dplyr::select(site_data, tidyr::one_of(keep)) %>%
-            split(site_data[[location_name]]) %>% lapply(as.list)
+  metadata$locations <- dplyr::select(location_data, tidyr::one_of(keep)) %>%
+            split(location_data[[location_name]]) %>% lapply(as.list)
 
   cat(sprintf("Following locations added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$locations), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
   

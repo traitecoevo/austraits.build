@@ -14,5 +14,5 @@ metadata_user_select_names(title, vars)
 \description{
 `user_select names` is used to prompt the user to select the variables that 
 are relevant for compiling the metadata yaml file. It is currently used for
-`metadata_add_traits`, `metadata_add_sites` and `metadata_add_contexts`
+`metadata_add_traits`, `metadata_add_locations` and `metadata_add_contexts`
 }
