@@ -711,7 +711,7 @@ traits:
       allowed_values_min: 0.1
       allowed_values_max: 200
     fire_fuel_bed_bulk_density:
-      description: Fuel bed bulk density. This is the mass of the fuel bed, divided by the guel bed volumne.
+      description: Fuel bed bulk density. This is the mass of the fuel bed, divided by the fuel bed volumne.
       type: numeric
       units: g/cm3
       label: Fuel bed bulk density.
@@ -1357,35 +1357,39 @@ traits:
         submerged: Species which germinate, grow and reproduce underwater. (S
     leaf_inclination_angle:
       description: The inclination angle of the upper (adaxial) leaf lamina surface relative to a horizontal plane, such that a leaf surface facing the solar zenith has an angle of 0.
+      notes: This trait records the slope of the leaf lamina relative to the ground surface. The angle between a stem and the leaf lamina is a separate trait, `leaf_axil_angle`. Complanate leaves can be scored as having a `leaf_inclination_angle` of 0.
       type: numeric
       units: degrees
       label: Leaf inclination angle, relative to horizontal
-      allowed_values_min: -180
-      allowed_values_max: 180
+      allowed_values_min: -90
+      allowed_values_max: 90
     leaf_axil_angle:
-      description: The angle between a shoot axis and a leaf that branches from the shoot axis.
+      description: The angle between a shoot and a leaf that branches from the shoot axis.
+      notes: This trait records the angle between the upper surface of a leaf and the stem to which it is attached. The slope of the leaf lamina relative to the solar zenith is a separate trait, `leaf_inclination_angle`.
       type: numeric
       units: degrees
       label: Angle between a leaf and stem
-      allowed_values_min: -180
+      allowed_values_min: 0
       allowed_values_max: 180
     leaf_pendulousness:
       description: Binary variable describing whether or not leaves are pendulous, hanging loosely downward and possessing the ability to flutter. 
-      notes: This is a binary categorical trait, scoring whether or not leaves are pendulous and therefore hanging loosely and able to flutter. Two additional traits, `leaf_inclination_angle` and `leaf_axil_angle` document the actual angle of the leaf lamina relative to, respectively, the solar zenith and the stem.
+      notes: This is a binary categorical trait, scoring whether or not leaves are pendulous and therefore hanging loosely downward and able to flutter. Two additional traits, `leaf_inclination_angle` and `leaf_axil_angle` document the actual angle of the leaf lamina relative to, respectively, the solar zenith and the stem.
       type: categorical
       label: Pendulous leaves 
       allowed_values_levels:
-        not_pendulous: Leaves are not pendulous.
-        pendulous: Leaves are pendulous.
-    leaf_curliness:
-      description: Maximum absolute height of a leaf when positioned on a flat surface. A measure of how 3-dimensional a leaf is (versus planar).
+      pendulous: Leaves are pendulous.
+      not_pendulous: Leaves are not pendulous.
+    leaf_posture_numeric:
+      description: The maximum perpendicular height of a leaf when positioned on a flat surface.
+      notes: A measure of how planar versus 3-dimensional a leaf is. The term posture refers to the placement of different parts of the leaf's lamina relative to a flat plane.
       type: numeric
       units: mm
-      label: Maximum absolute height of a leaf when positioned on a flat surface.
+      label: Leaf lamina posture (3-dimensionality)
       allowed_values_min: 0
       allowed_values_max: 100
     leaf_area:
-      description: Area of the leaf surface
+      description: The 2-dimensional projected (scanned) area of the surface of a leaf or a leaf analogue (leaflet, cladode, phyllode).
+      notes: This trait includes measurements of leaves and leaf analogues, including leaflets, cladodes, and phyllodes. When a measurement is made on a leaf analogue, the tissue measured should be documented as part of the methods or noted as a `context` or under `measurement_remarks`. Leaflet area can alternatively be mapped to the trait `leaflet_area`. It is most common for leaf area measurements to include the petiole; the measurement methods should indicate if the petiole is included in or excluded from the leaf area measurements. For terete leaves, leaf area should still be recorded as the 2-dimensional projected area.
       type: numeric
       units: mm2
       label: Leaf area
@@ -1399,10 +1403,11 @@ traits:
       allowed_values_min: 0.1
       allowed_values_max: 1.0e+06
     leaf_area_ratio:
-      description: Ratio of leaf area to total plant dry mass
+      description: The total leaf area of a plant divided by the plant's total dry mass; LAR.
+      notes: Since the total plant dry mass is required for leaf area ratio measurements, this is standardly measured only on young plants or plants grown for experiments where the entire plant can be harvested. It is best practice for leaf area measurements to include the petiole.
       type: numeric
       units: mm2/mg
-      label: Leaf area per unit plant dry mass
+      label: Leaf area ratio
       allowed_values_min: 0.05
       allowed_values_max: 100.0
     leaf_absorption:
@@ -1441,20 +1446,25 @@ traits:
       allowed_values_min: -1.0
       allowed_values_max: 1.0
     leaf_arrangement:
-      description: Leaf arrangement at stem nodes.
-      notes: Leaf arrangement is formally known as phyllotaxis. As defined here, leaf arrangement includes both formal terms describing leaf attachment at nodes (alternate, opposite, decussate, distichous, spiral, whorled) as well as indications of leaf clustering due to variation in internode length. See the trait `growth_habit` for whole-plant leaf pattern terms, such as `rosette`.
+      description: Leaf arrangement across stem nodes, indicating the 3-dimensional arrangement of leaves along the length of the stem.
+      notes: Leaf arrangement, as defined for this trait, indicates patterns of leaf arrangement across nodes, including both formal terms (decussate, distichous, spiral) as well as indications of leaf clustering due to variation in internode length. See the trait `leaf phyllotaxis` for terms describing leaf arrangement at a single node. See the trait `stem_growth_habit` for whole-plant leaf pattern terms, such as `rosette`.
       type: categorical
-      label: Arrangement of leaves
+      label: Leaf arrangement across stem nodes.
+      allowed_values_levels:
+      decussate: When sequential pairs of opposite leaves attach at right angles to the pair above or below.
+      distichous: When alternate or opposite leaves are arranged in two opposite rows.
+      spiral: When alternate leaves are attached in a progressive spiral pattern along the stem.
+      fasciculate: A tight bundle or cluster of leaves attached to the stem in a single location, generally due to the shortening of internodes.
+      crowded: When internode length varies considerably along a stem, such that leaves appear crowded or tufted.
+    leaf_phyllotaxis:
+      description: Leaf arrangement at a stem node, indicating the relative number and position of leaves at a single stem note.
+      notes: This trait only includes true phyllotaxis, the arrangement of leaves at a single node, while the trait `leaf arrangement` indicates how the leaves are presented along the entire shoot system. See the trait `stem_growth_habit` for whole-plant leaf pattern terms, such as `rosette`.
+      type: categorical
+      label: Leaf phyllotaxis
       allowed_values_levels:
         alternate: A single leaf is attached at each stem node.
-        opposite: A pair of leaves are attached at each stem node. 
-        whorled: 'Three or more leaves are attached at each stem node (synonym: verticillate).'
-        decussate: When sequential pairs of opposite leaves attach at right angles to the pair above or below.
-        distichous: When alternate or opposite leaves are arranged in two opposite rows.
-        spiral: When alternate leaves are attached in a progressive spiral pattern along the stem.
-        non_decussate: When sequential pairs of opposite leaves attach in line with the pair below, such that the stem has only two rows of leaves. This is a subcategory of distichous that applies only to opposite leaves.
-        fasciculate: A tight bundle or cluster of leaves attached to the stem in a single location, generally due to the shortening of internodes.
-        crowded: When internode length varies considerably along a stem, such that leaves appear crowded or tufted.
+        opposite: A pair of leaves are attached opposite to one another at each stem node.
+        whorled: Three or more leaves are attached at each stem node, arranged in a symmetrical pattern around the stem. (synonym, verticillate)
     leaf_ash_content_per_dry_mass:
       description: Leaf ash content per dry mass, where leaf ash is the component of the leaf remaining after combustion.
       type: numeric
@@ -1525,13 +1535,6 @@ traits:
       label: Leaf carbon/nitrogen (C/N) ratio
       allowed_values_min: 10.0
       allowed_values_max: 1000.0
-    leaf_compoundness:
-      description: A binary trait which indicates whether a leaf lamina is simple or divided into discontinuous leaflets (compound).
-      type: categorical
-      label: Leaf compoundness
-      allowed_values_levels:
-        compound: A leaf that is divided into multiple leaflets.
-        simple: A leaf with a single undivided blade.
     leaf_Co_per_dry_mass:
       description: Leaf cobalt (Co) content per unit leaf dry mass
       type: numeric
@@ -1624,7 +1627,8 @@ traits:
       allowed_values_min: 0.05
       allowed_values_max: 1.1
     leaf_dry_mass:
-      description: Leaf dry mass
+      description: The oven dry mass of a leaf or leaf analogue (leaflet, cladode, phyllode).
+      notes: This trait includes measurements of leaves and leaf analogues, including leaflets, cladodes, and phyllodes. When a measurement is made on a leaf analogue, the tissue measured should be documented as part of the methods or noted as a `context` or under `measurement_remarks`. Leaflet dry mass can alternatively be mapped to the trait `leaflet_dry_mass`. It is most common for leaf dry mass measurements to include the petiole; the measurement methods should indicate if the petiole is included in or excluded from the leaf dry mass measurements.
       type: numeric
       units: mg
       label: Leaf dry mass
@@ -1659,14 +1663,16 @@ traits:
       allowed_values_min: 1.0
       allowed_values_max: 10000.0
     leaf_fresh_mass:
-      description: Leaf fresh mass
+      description: The fresh mass of a leaf or leaf analogue (leaflet, cladode, phyllode).
+      notes: This trait includes measurements of leaves and leaf analogues, including leaflets, cladodes, and phyllodes. When a measurement is made on a leaf analogue, the tissue measured should be documented as part of the methods or noted as a `context` or under `measurement_remarks`. It is most common for leaf dry mass measurements to include the petiole; the measurement methods should indicate if the petiole is included in or excluded from the leaf dry mass measurements. A source of variation for this trait will be how leaves are stored and if they are partially rehydrated before weighing; these details should be documented in the methods.
       type: numeric
       units: mg
       label: Leaf fresh mass
       allowed_values_min: 0.1
       allowed_values_max: 30000.0
     leaf_fresh_mass_per_area:
-      description: Leaf fresh mass per leaf area
+      description: The ratio of leaf fresh mass to leaf area, measured on an entire leaf including the petiole.
+      notes: Leaf fresh mass per area is explicitly measured on an entire leaf, including the petiole. 
       type: numeric
       units: g/m2
       label: Leaf fresh mass per leaf area
@@ -1677,13 +1683,14 @@ traits:
       notes: The accompanying methods should specify if the trait was scored on the upper (adaxial) or lower (abaxial) surface of the leaf; in the absence of any notes, it is assumed the trait was scored on the upper (adaxial) leaf surface.
       type: categorical
       label: Whether mature leaves are glaucous
-      allowed_value_levels:
+      allowed_values_levels:
         glaucous: Mature (fully expanded) leaves on adult plants have a waxy coating, giving them a glaucous appearance.
-        not_glaucous: Mature (fully expanded) leaves on adult plants do not have a glaucous appearance.
+        not_glaucous: Mature (fully expanded) leaves on adult plants do not have a glaucous appearance. 
     leaf_hairs_adult_leaves:
-      description: Variable describing whether or not mature adult phase leaves on adult plants have hairs (trichomes).
+      description: Variable describing whether or not mature (fully expanded) adult phase leaves on adult plants have hairs (trichomes).
+      notes: This trait captures the presence or absence of hairs on mature (fully expanded), adult phase leaves on adult plants. Best practice is to sample leaves that are recently fully expanded, since older leaves have often shed many of their hairs. The accompanying methods should specify if the trait was scored on the upper (adaxial) or lower (abaxial) surface of the leaf; in the absence of any notes, it is assumed the trait was scored on the upper (adaxial) leaf surface.
       type: categorical
-      label: Presence of hairs on adult leaves
+      label: Presence of hairs on mature (fully expanded) leaves
       allowed_values_levels:
         glabrous: Mature (fully expanded) leaves on adult plants do not have hairs (trichomes).
         hairy: Mature (fully expanded) leaves on adult plants have hairs (trichomes).
@@ -1692,15 +1699,15 @@ traits:
       notes: This trait captures the presence or absence of hairs on immature (still expanding) leaves on adult plants. The accompanying methods should specify if the trait was scored on the upper (adaxial) or lower (abaxial) surface of the leaf; in the absence of any notes, it is assumed the trait was scored on the upper (adaxial) leaf surface.
       type: categorical
       label: Presence of hairs on immature (still expanding) leaves
-      allowed_value_levels:
+      allowed_values_levels:
         glabrous: Immature (still expanding) leaves do not have hairs (trichomes).
         hairy: Immature (still expanding) leaves have hairs (trichomes).
     leaf_hairs_juvenile_leaves:
-      description: Variable describing whether or not juvenile phase leaves (on adult or juvenile plants) have hairs (trichomes).
+      description: Variable describing whether or not fully expanded juvenile phase leaves (on adult or juvenile plants) have hairs (trichomes).
       notes: This trait captures the presence or absence of hairs on fully-expanded juvenile phase leaves. It is best practice for the methods to specify whether these leaves were sampled from adult or juvenile plants. The accompanying methods should also specify if the trait was scored on the upper (adaxial) or lower (abaxial) surface of the leaf; in the absence of any notes, it is assumed the trait was scored on the upper (adaxial) leaf surface.
       type: categorical
       label: Presence of hairs on juvenile phase leaves
-      allowed_value_levels:
+      allowed_values_levels:
         glabrous: Juvenile phase leaves do not have hairs (trichomes).
         hairy: Juvenile phase leaves have hairs (trichomes).
     leaf_hydraulic_conductivity:
@@ -1732,14 +1739,16 @@ traits:
       allowed_values_min: 0.1
       allowed_values_max: 100.0
     leaf_length:
-      description: Length of the leaf, including petiole and rachis in compound leaves
+      description: Length of a leaf (including the petiole) or a leaf analogue, from the leaf apex to the leaf axil (base).
+      notes: If a leaf analogue (leaflet, cladode, or phyllode) is measured instead of a true leaf, this should be noted as a `context` or under `measurement_remarks`.
       type: numeric
       units: mm
       label: Leaf length
       allowed_values_min: 0.1
       allowed_values_max: 100000.0
     leaf_lifespan:
-      description: Leaf lifespan (longevity)
+      description: Duration of time that an individual leaf is attached to the stem and physiologically functional.
+      notes: Leaf lifespan is the inverse of the rate of leaf turnover. For some species, leaflets or other portions of a leaf may be censused rather than the entire leaf lamina.
       type: numeric
       units: month
       label: Leaf lifespan (longevity)
@@ -1768,86 +1777,50 @@ traits:
       allowed_values_max: 1.0
     leaf_margin:
       description: Shape of the leaf margin, referencing incisions or projections in the outermost 1/8 of the leaf lamina.
-      notes: For leaf lamina projections and incisions that are greater than 1/8 of the distance to the midrib, see the trait `leaf_lobation`.
+      notes: Terms describing leaf lamina projections and incisions that are greater than 1/8 of the distance to the midrib are captured under the traits `leaf_lobation` and `leaf_lamina_division_detailed`.
       type: categorical
-      label: Leaf margin shape
+      label: Leaf margin
       allowed_values_levels:
         entire: Leaf margin lacks projections or indentations that extend less than 1/8 of the distance to the midrib.
-        toothed: Leaf margin has small projections or lobes along the edge of the leaf lamina. Broad term that includes serrate, dentate, and crenulate.
-        serrate: Leaf margin with sharp teeth that are angled toward the tip of the leaf. (synonym, saw-toothed)
-        dentate: Leaf margin with sharp teeth that point outwards at right angles to the leaf margin.
-        crenate: Leaf margin has rounded teeth that are rounded or obtuse, rather than with a sharp apex.
-        toothed_or_lobed: A temporary trait value, for data where lobed and toothed leaves are combined under a single value.
+        toothed: Leaf margin has small projections or lobes along the edge of the leaf lamina. This is a broad term that includes serrate, dentate, and crenulate.
+        toothed_serrate: Type of toothed leaf margin with sharp teeth that are angled toward the tip of the leaf. (synonym, saw-toothed)
+        toothed_dentate: Type of toothed leaf margin with sharp teeth that point outwards at right angles to the leaf margin.
+        toothed_crenate: Type of toothed leaf margin with teeth that are rounded or obtuse, rather than having a sharp apex. [PO:0025519]
     leaf_margin_posture:
-      description: Posture of the leaf margin, where posture refers to the placement of different parts of the leaf’s margin relative to a flat plane.
+      description: The posture (curvature or curling) of the leaf margin.
+      notes: This trait captures the posture of the leaf margin, where posture refers to the placement of different parts of the leaf's margin relative to a flat plane. This trait's definition and allowable levels will be further refined once more data are available to map onto possible trait values.
       type: categorical
       label: Leaf margin posture
       allowed_values_levels:
-        revolute: Leaf margins along the side of the leaf are rolled under or downward.
-        recurved: Leaf tip is curved outward or downward.
+        revolute: Leaf margins along the side of the leaf are rolled under or downward. [PATO:0001963]
+        recurved: Leaf tip is curved outward or downward. [PATO:0002211]
+        flat: Leaf lamina, including margins, is a flat plane. [PATO:0000407]
     leaf_lobation:
-      description: A binary trait which indicates whether or not a leaf lamina displays any divisions extending greater than ⅛ of the distance to the midrib. 
-      notes: For leaf lamina projections and incisions that are less than ⅛ of the distance to the midrib, see the trait `leaf_margin`.
+      description: A trait that indicates whether or not a leaf lamina displays any divisions or dissections on a 2-dimensional plane that extend greater than 1/8 of the distance to the midrib. 
+      Notes: For terms pertaining to 2-dimensional leaf lamina divisions and incisions that are less than 1/8 of the distance to the midrib, see the trait `leaf_margin`. See also the trait `leaf_lamina_division` for more detailed leaf lobation (and leaf compoundness) trait values. Note that there might be some species that grade from deeply lobed simple leaves to compound leaves.
       type: categorical
       label: Leaf lobation
       allowed_values_levels:
-        entire: Leaf margin lacks projections or indentations that extend more than ⅛ of the distance to the midrib.
-        lobed: Leaf margin has incisions, either rounded or sharp-tipped, that extend more than ⅛ of the distance to the midrib.         
-        lobed_deep: Leaf margin with lobes that extend more than half way to the midrib. (synonym, parted, divided)
-        lobed_shallow: Leaf margin with lobes that extend less than half way to the midrib. (synonym, cleft)
-    leaf_lobation_pattern:
-      description: The broad pattern of leaf division, distinguishing between pinnately and palmately lobed leaves.
+        unlobed: Leaf margin lacks projections or indentations that extend more than 1/8 of the distance to the midrib.
+        lobed: Leaf margin has incisions, either rounded or sharp-tipped, that extend more than 1/8 of the distance to the midrib. 
+        lobed_deep: Leaf margin with lobes that extend more than halfway to the midrib. (synonym, parted, divided)
+        lobed_shallow: Leaf margin with lobes that extend less than halfway to the midrib. (synonym, cleft)
+    leaf_compoundness:
+      description: A binary trait that indicates whether a leaf lamina is simple or divided into discontinuous leaflets (compound).
+      notes: See also the trait `leaf_lamina_division` for more detailed leaf compoundness trait values. Note that there might be some species that grade from deeply lobed simple leaves to compound leaves.
       type: categorical
-      label: Leaf division series
+      label: Leaf compoundness
       allowed_values_levels:
-        palmately_lobed: Leaf with divisions that radiate from a single point, usually the basal junction of major veins.
-        pinnately_lobed: Leaf with divisions that are symmetrical across a central axis, usually the midvein.
-    leaf_lobation_detailed:
-      description: Technical terms describing how a leaf a divided (lobed). 
-      type: categorical
-      label: Leaf division series
-      allowed_values_levels:
-        palmately_lobed: Leaf with divisions that radiate from a single point, usually the basal junction of major veins.
-        pinnately_lobed: Leaf with divisions that are symmetrical across a central axis, usually the midvein.
-        pinnatifid: Leaf with lobes that extend less than half-way to the midrib.
-        pinnatipartite: Leaf with lobes that extend more than half-way to the midrib.
-        pinnatisect: Leaf with lobes that extend nearly to the midrib, but the divisions are not separated into distinct leaflets.
-        bipinnatipartite: Leaf that is twice pinnatipartite, with two series of lobes that extend more than half-way to the midrib.
-        bipinnatisect: Leaf that is twice pinnatisect, with two series of lobes that extend nearly to the midrib, but the divisions are not separated into distinct leaflets.
-        trichotomously_divided: Leaf divided repeatedly into three lobes.
-        dichotomously_divided: Leaf divided repeatedly into two lobes.
-        bipartite: Leaf divided into two lobes.
-        tripartite: Leaf divided into three lobes.    
-    leaf_compoundness_pattern:
-      description: The broad pattern of leaf compoundness, distinguishing between pinnate and palmate leaves.
-      type: categorical
-      label: Leaf division series
-      allowed_values_levels:
-        palmate: Leaf divided into leaflets that attach to a central point.  
-        pinnate: Leaf divided into leaflets that attach along a central axis.
-    leaf_compoundness_detailed:
-      description: Technical terms describing the arrangement of the leaflets of a compound leaf. 
-      type: categorical
-      label: Leaf division series
-      allowed_values_levels:
-        palmate: Leaf divided into leaflets that attach to a central point.
-        pinnate: Leaf divided into leaflets that attach along a central axis.
-        bipinnate: Leaf that is twice pinnate, having pinnate leaflets are themselves pinnately divided.
-        tripinnate: Leaf that is three times pinnate, with pinnate leaflets that are twice more pinnately divided.
-        trifoliate: Leaf divided into three leaflets. (synonym, ternate, trifoliolate) 
-    leaf_division_technical:
-      description: Detailed description of leaf divisions and leaf compoundness, beyond what is captured in `leaf_compoundness` (simple, compound) and `leaf_lobation` (entire, lobed). 
-      notes: A decision will be made as to whether to maintain a single complicated 
+        simple: A leaf with a single undivided blade. [PO:0020042]
+        compound: A leaf that is divided into multiple leaflets. [PO:0020043]
+    leaf_lamina_division:
+      description: A trait that captures the types of lobed leaves and compound leaves, including the arrangement of the lobes or leaflets relative to the midrib or other primary veins and the number of orders of axes across which there are incisions or divisions.
+      notes: This trait provides detailed description of leaf divisions, beyond what is captured in `leaf_compoundness` (simple versus compound) and `leaf_lobation` (entire versus lobed). 
       type: categorical
       label: Leaf divisions
       allowed_values_levels:
-        palmate: Leaf divided into leaflets that attach to a central point.
-        pinnate: Leaf divided into leaflets that attach along a central axis.
-        bipinnate: Leaf that is twice pinnate, having pinnate leaflets are themselves pinnately divided.
-        tripinnate: Leaf that is three times pinnate, with pinnate leaflets that are twice more pinnately divided.
-        trifoliate: Leaf divided into three leaflets (synonym, ternate, trifoliolate)	
-        palmately_lobed: Leaf with divisions that radiate from a single point, usually the basal junction of major veins.
         pinnately_lobed: Leaf with divisions that are symmetrical across a central axis, usually the midvein.
+        palmately_lobed: Leaf with divisions that radiate from a single point, usually the basal junction of major veins.   
         pinnatifid: Leaf with lobes that extend less than half-way to the midrib.
         pinnatipartite: Leaf with lobes that extend more than half-way to the midrib.
         pinnatisect: Leaf with lobes that extend nearly to the midrib, but the divisions are not separated into distinct leaflets.
@@ -1856,7 +1829,12 @@ traits:
         trichotomously_divided: Leaf divided repeatedly into three lobes.
         dichotomously_divided: Leaf divided repeatedly into two lobes.
         bipartite: Leaf divided into two lobes.
-        tripartite: Leaf divided into three lobes.
+        tripartite: Leaf divided into three lobes.  
+        pinnately_divided: Leaf divided into leaflets that attach along a central axis. [PATO_0000410]
+        palmately_divided: Leaf divided into leaflets that attach to a central point. (synonym, digitate)
+        bipinnate: Leaf that is twice pinnate, having pinnate leaflets that are themselves pinnately divided.
+        tripinnate: Leaf that is three times pinnate, with pinnate leaflets that are twice more pinnately divided.
+        trifoliate: Leaf divided into three leaflets. (synonym, ternate, trifoliolate)
     leaf_mass_fraction:
       description: Ratio of leaf dry mass to total plant dry mass
       type: numeric
@@ -1956,15 +1934,18 @@ traits:
       allowed_values_min: 1
       allowed_values_max: 500
     leaf_phenology:
-      description: Variable indicating whether a plant has deciduous versus evergreen leaves; different types of deciduousness included as trait values
+      description: Trait indicating whether a plant retains a leaf canopy throughout the year and what environmental cues are associated with canopy shedding. 
+      notes: .na
       type: categorical
-      label: Leaf phenology type (evergreen, deciduous, semi-deciduous)
+      label: Leaf phenology type
       allowed_values_levels:
-        deciduous: Plant where all leaves are shed yearly, either due to drought or cold
-        evergreen: Plant which retains its leaves year-round
-        drought_deciduous: Plant that sheds its leaves in response to drought
-        facultative_drought_deciduous: Plant that sometimes sheds its leaves in response to drought
-        semi_deciduous: Plant that sheds its leaves each year for just a very brief period of time
+        deciduous: Plant loses its entire leaf canopy for part of the year, in response to either drought or cold.
+        evergreen: Plant retains a leaf canopy throughout the year.
+        cold_deciduous: Plant loses its entire leaf canopy for part of the year, in response to cold.
+        drought_deciduous: Plant loses its entire leaf canopy for part of the year, in response to drought.
+        facultative_drought_deciduous: Plant sometimes loses its leaf canopy for part of the year, in response to drought.
+        semi_deciduous: Plant thins, but does not entirely lose, its leaf canopy in response to an environmental cue, usually drought.
+        brevi_deciduous: Plant briefly loses its entire leaf canopy, but flushes a new leaf canopy almost simultaneously to leaf loss.
     leaf_photosynthetic_nitrogen_use_efficiency_maximum:
       description: Ratio of photosynthesis (CO2 assimilation rate) to leaf nitrogen content at saturating light and CO2 conditions
       type: numeric
@@ -2015,7 +1996,8 @@ traits:
       allowed_values_min: 50.0
       allowed_values_max: 50000.0
     leaf_shape:
-      description: Shapes and forms of a leaf.
+      description: Shapes of a leaf or leaflet.
+      notes: This trait includes terms to describe the shape of leaves, regardless if they are broad leaves, scale-like leaves, or needle-like leaves. For compound leaves, it is generally the shape of the leaflet that is recorded. See the trait `leaf_type` for broad terms referencing leaf form (broadleaf, needle, scale) and `plant_photosynthetic_organ` for terms indicating which plant organ or tissue functions as the plant's primary photosynthetic organ (e.g. phyllode, cladode, article). 
       type: categorical
       label: Leaf shape
       allowed_values_levels:
@@ -2047,27 +2029,25 @@ traits:
         narrowly_obtrullate: 'A 2-dimensional shape that is narrowly parallelogram-shaped, widest near the tip, and with a length:width ratio 3:1 to 6:1.'
         obtrullate: 'A 2-dimensional shape that is approximately parallelogram-shaped, widest near the tip, and with a length:width ratio 2:1 to 3:2.'
         widely_obtrullate: 'A 2-dimensional shape that is broadly parallelogram-shaped, widest near the tip, and with a length:width ratio of approximately 6:5.'
-        acicular: 'A 2-dimensional or 3-dimensional shape with a needlelike tip, often round in cross-section, with margins
-        straight and parallel, and a length:width ratio greater than 12:1. (synonym, needle-shaped)'
+        acicular: 'A 2-dimensional or 3-dimensional shape with a needlelike tip, often round in cross-section, with margins straight and parallel, and a length:width ratio greater than 12:1. (synonym, needle-shaped)'
         terete: 'A 3-dimensional shape that is a long, narrow cylinder approximately circular in cross-section. Terete leaves often taper toward the tip.'
         cordate: 'A 2-dimensional heart shape, approximately ovate with a cordate base, with the petiole attaching at the notch between the lobes. (synonym, cordiform)'
-        obcordate: 'A 2-dimensional heart shape, approximately ovate with a cordate apex.'
-        falcate: 'A 2-dimensional sickle-shape, approximately lanceolate to linear and curved on one side (synonym: scimitar-shaped, sickle-shaped, falciform)'
+        obcordate: 'A 2-dimensional heart shape, approximately ovate with a cordate apex, and the petiole attaching along the broad, curve side.'
+        falcate: 'A 2-dimensional sickle-shape, approximately lanceolate to linear and curved on one side. (synonym: scimitar-shaped, sickle-shaped, falciform)'
         reniform: 'A 2-dimensional shape that is roughly kidney-shaped, wider than long with a rounded apex and two rounded, basal lobes that are smoothly concave at their intersection.(synonym, kidney-shaped)'
-        spathulate: 'A 2-dimensional shape that can be approximately oblong, obovate, or
-        oblanceolate in outline with a long attenuate base. (synonym, spoon-shaped)'
+        spathulate: 'A 2-dimensional shape that can be approximately oblong, obovate, or oblanceolate in outline with a long attenuate base, like a spoon. (synonym, spoon-shaped)'
         subulate: 'A 2-dimensional shape that is awl-shaped, approximately narrowly oblong to narrowly triangular with a broad base. (synonym, awl-shaped).'
         peltate: 'A 2-dimensional orbicular shape, distinguished by the petiole attaching near the center of the leaf lamina.'
         filiform: 'A 2-dimensional shape that is long, thin, and typically flexuous, threadlike, filamentous'
     leaf_base_shape:
-      description: The shape of the base of the leaf.
+      description: The shape of the basal margin of a leaf.
       type: categorical
-      label: leaf base shape
+      label: Leaf base shape
       allowed_values_levels:
         attenuate: Basal leaf margin abruptly incurved (concave), the two sides intersecting at an angle of less than 45°.
         auriculate: Basal leaf margin with two rounded lobes. The leaf margin above the lobes is concave. The petiole attaches in the incised region between the lobes.
         cuneate: Basal leaf margin approximately straight, the two sides intersecting at an angle between 45° to 90°.
-        hastate: Basal leaf margin with two lobes oriented outward, such that they are at approximately 90° relative to central axis and the leaf margin is fairly flat at the base.
+        hastate: Basal leaf margin with two lobes oriented outward, such that they are at approximately 90° relative to the central axis and the leaf margin is fairly flat at the base.
         sagittate: Basal leaf margin with two lobes oriented downward, away from apex. The petiole attaches in the concave region between the lobes.
     leaf_specific_conductivity:
       description: Kl; the ratio of leaf hydraulic conductivity to the leaf area distil to the segment
@@ -2077,7 +2057,8 @@ traits:
       allowed_values_min: 0.1
       allowed_values_max: 500.0
     leaf_thickness:
-      description: Thickness of the leaf lamina
+      description: The thickness of the leaf lamina, generally measured away from the midrib.
+      notes: Leaf thickness measurements submitted from the ecological literature will generally avoid the midrib, but not avoid lower order leaf veins. In contrast, leaf thickness measurements from the taxonomic literature will usually include any veins or midribs, because in this literature leaf thickness is generally measured on succulent plants. The `methods` field should document whether the midrib was explicitly included, excluded, or ignored.
       type: numeric
       units: mm
       label: Leaf thickness
@@ -2147,25 +2128,26 @@ traits:
       allowed_values_min: -10
       allowed_values_max: -0.1
     plant_photosynthetic_organ:
-      description: Terms indicating a plant’s primary photosynthetic organ or tissue.
+      description: Trait indicating a plant's primary photosynthetic organ or tissue. 
+      notes: This trait is not intended to record the presence of primary versus secondary photosynthetic organs; only the primary photosynthetic organ should be keyed in. Many of the allowable values for this trait are frequently included under `leaf type` or `leaf form`. Here, we separate terms pertaining to the general form of the leaf (in the trait `leaf_type`) from those identifying the plant organ responsible for photosynthesis. 
       type: categorical
-      label: Plant primary photosynthetic organ
+      label: Plant photosynthetic organ
       allowed_values_levels:
-        leaf: True leaf, including both broad leaf lamina and needle-shaped leaves.
-        cladode: A photosynthetic stem, regardless of form, that functions as a leaf. Includes cacti and articles. (synonym, article, hylloclade, cladophyll)
-        phyllode: A leaf consisting of a flattened bladelike petiole.
-        non_photosynthetic_plant: A plant that lacks any photosynthetic organs.
+        leaf: A true leaf, including both laminar and needle-shaped leaves.
+        cladode: A photosynthetic shoot, regardless of form, that functions as a leaf. For example, cacti pads and Casuarina articles. (synonyms, article, phylloclade, cladophyll)
+        phyllode: A flattened bladelike petiole.
+        non-photosynthetic_plant: A plant that lacks any photosynthetic organs.
       deprecated_name: leaf_type
-    leaf_form_general:
-      description: Broad descriptions of leaf form.
+    leaf_type:
+      description: Variable distinguishing between general leaf form (shape) categories.
+      notes: Terms identifying the plant organ responsible for photosynthesis are mapped to the trait `plant_photosynthetic_organ`, while `leaf_form_general` only includes terms pertaining to the general form of the leaf. The trait `leaf_shape` provides detailed vocabulary to describe a leaf's shape.
       type: categorical
       label: Leaf form
       allowed_values_levels:
-        broadleaf: Flat leaf lamina.
-        needle: Needle or awl-shaped leaf that is at least somewhat 3-dimensional.
-        scale: Leaves reduced to small scales.
-        leafless: Plant lacks leaves.
-      deprecated_name: leaf_type
+        broadleaf: Flat leaf lamina, including leaves that both are and are not,toothed, lobed, or compound.
+        needle: Needle or awl-shaped leaf that is generally 3-dimensional.
+        scale: Leaf reduced to a small scale.
+        leafless: An adult stage plant that lacks leaves throughout the year.
     leaf_water_content_per_area:
       description: Ratio of the mass of water in a leaf to leaf surface area; leaf succulence
       type: numeric
@@ -2216,7 +2198,8 @@ traits:
       allowed_values_min: 0.01
       allowed_values_max: 1.0
     leaf_width:
-      description: Longest width axis of a leaf; orthogonal to its length
+      description: The maximum width axis of a leaf or a leaf analogue (a leaflet, cladode, or phyllode), measured perpendicular to the leaf length.
+      notes: This trait refers to the single line marking the maximum width of the leaf lamina. For a compound leaf the correct measure is the maximum width of the total leaf blade. It is the width measure that will be reported in taxonomic treatments. It is not the `effective_leaf_width`, a trait that records the diameter of the largest circle that can be drawn within the leaf lamina. If a leaf analogue (leaflet, cladode, or phyllode) is measured instead of a true leaf, this should be noted as a `context` or under `measurement_remarks`.
       type: numeric
       units: mm
       label: Leaf width
@@ -3340,12 +3323,29 @@ traits:
       allowed_values_min: 1.0
       allowed_values_max: 200.0
     specific_leaf_area:
-      description: Leaf area per unit leaf dry mass; SLA
+      description: The ratio of leaf dry mass to leaf area, measured on an entire leaf including the petiole; LMA. (The inverse of specific leaf area, SLA.)
+      notes: Leaf mass per area includes measurements submitted as `specific_leaf_area` (SLA); they are simply inverted. Leaf mass per area is explicitly measured on an entire leaf, including the petiole. Measurements made on a piece of the leaf lamina, excluding petiole and midrib, are a separate trait `leaf_lamina_mass_per_area`. If measurements are made on the entire leaf lamina, but the petiole is excluded, this should be noted in the methods or under `measurement_remarks`.
       type: numeric
-      units: mm2/mg
-      label: Leaf area per unit leaf dry mass (specific leaf area, SLA)
+      units: g/m2
+      label: Leaf mass per area
       allowed_values_min: 0.1
-      allowed_values_max: 500
+      allowed_values_max: 1500.0
+    leaf_mass_per_area:
+      description: The ratio of leaf dry mass to leaf area, measured on an entire leaf including the petiole; LMA. (The inverse of specific leaf area, SLA.)
+      notes: Leaf mass per area includes measurements submitted as `specific_leaf_area` (SLA); they are simply inverted. Leaf mass per area is explicitly measured on an entire leaf, including the petiole. Measurements made on a piece of the leaf lamina, excluding petiole and midrib, are a separate trait `leaf_lamina_mass_per_area`. If measurements are made on the entire leaf lamina, but the petiole is excluded, this should be noted in the methods or under `measurement_remarks`.
+      type: numeric
+      units: g/m2
+      label: Leaf mass per area
+      allowed_values_min: 0.1
+      allowed_values_max: 1500.0
+    leaf_lamina_mass_per_area:
+      description: The ratio of leaf dry mass to leaf area, measured on a piece of the leaf lamina that does not include the petiole or major veins.
+      notes: This trait only includes data made on subsamples of a leaf, usually a leaf punch sample associated with leaf strength measurements or from the herbivory literature. For whole-leaf LMA/SLA data, see the trait `leaf_mass_per_area`
+      type: numeric
+      units: g/m2
+      label: Leaf lamina mass per area
+      allowed_values_min: 0.1
+      allowed_values_max: 500.0           
     specific_root_area:
       description: Root area per unit root dry mass
       type: numeric
@@ -3368,29 +3368,30 @@ traits:
       allowed_values_min: 0.5
       allowed_values_max: 5000
     plant_physical_defence_structures:
-      description: The presence (or explicit absence) of specific physical defence structures on a plant, including spines, thorns, prickles, sharp-tipped leaves, and stinging hairs.
+      description: The presence (or explicit absence) of specific physical defence structures on a plant, including spines, thorns, prickles, and sharp-tipped leaves.
       notes: This trait identifies explicit physical defence structures on a plant. For a curated trait identifying the degree of defence afforded to plants, see `plant_spinescence`, with values defined by Pérez-Harguindeguy et al. 2013 (doi:10.1071/BT12225). 
       type: categorical
-      label: Spinescence
+      label: Physical defence structures
       allowed_values_levels:
-        no_physical_defence_structures: Plant that lacks a physical defence structure.
-        sharp_pointed_defence: Plant that has either spines, thorns, or prickles.
+        absent: Plant that lacks a physical defence structure.
+        sharp_pointed_defence: Plant that has either spines, thorns, or prickles, but the type of physical defence structure is not specified.
         prickle: A sharp-tipped outgrowth from the epidermis, bark or other plant organ that is explicitly not a spine (modified leaf) or thorn (modified stem).
         pungent_leaf_apex: A sharp-tipped leaf.
         spine: A sharp-pointed structure, which is a modified leaf or leaf part, including petioles, midribs, secondary veins, leaflets, or stipules.
-        stinging_or_irritant_hairs: Trichomes that string or irritate, of by injecting a toxin.
+        stinging_or_irritant_hairs: Trichomes that sting or irritate, by injecting a toxin.
         thorn: A sharp-pointed, stiff, woody modified stem.
     plant_spinescence:
-      description: Degree to which a plant is defended by spines, thorns and/or prickles; definition and trait values based on Perez-Harguindeguy 2016.
+      description: Degree to which a plant is defended by spines, thorns and/or prickles, as defined by Pérez-Harguindeguy et al. 2013.
+      notes: The values for this trait are exactly those defined by Pérez-Harguindeguy et al. 2013 (doi:10.1071/BT12225). See the trait `plant_physical_defence` for individual plant structures a plant uses for physical defence.
       type: categorical
       label: Spinescence
       allowed_values_levels:
-        0_no_spines: No spines (level 0).
-        1_low_density_soft_spines: Low or very local density of soft spines <5mm long; plant may sting or prickle when hit carelessly, but not impart strong pain (level 1).
-        2_high_density_soft_spines: High density of soft spines, intermediate density of spines of intermediate hardness, or low density of hard, sharp spines >5mm long; plant causes actual pain when hit carelessly (level 2).
-        3_high_density_hard_spines_to_5mm: Intermediate or high density of hard, sharp spines >5mm long; plant causes strong pain when hit carelessly (level 3).
-        4_high_density_hard_spines_to_20mm: Intermediate or high density of hard, sharp spines >20mm long; plant may cause significant wounds when hit carelessly (level 4).
-        5_high_density_hard_spines_to_100mm: Intermediate or high density of hard, sharp spines >100mm long; plant is dangerous to careless large mammals, including humans (level 5).
+        no_spines: No spines. (level 0)
+        low_density_soft_spines: Low or very local density of soft spines <5mm long; plant may sting or prickle when hit carelessly, but not impart strong pain. (level 1)
+        high_density_soft_spines: High density of soft spines, intermediate density of spines of intermediate hardness, or low density of hard, sharp spines >5mm long; plant causes actual pain when hit carelessly. (level 2)
+        high_density_hard_spines_to_5mm: Intermediate or high density of hard, sharp spines >5mm long; plant causes strong pain when hit carelessly. (level 3)
+        high_density_hard_spines_to_20mm: Intermediate or high density of hard, sharp spines >20mm long; plant may cause significant wounds when hit carelessly. (level 4)
+        high_density_hard_spines_to_100mm: Intermediate or high density of hard, sharp spines >100mm long; plant is dangerous to careless large mammals, including humans. (level 5)
     spongy_mesophyll_thickness:
       description: Thickness of the spongy mesophyll cells
       type: numeric
@@ -3698,19 +3699,20 @@ traits:
       label: Fraction of wood comprised of tracheids
       allowed_values_min: 0.0
       allowed_values_max: 1.0
-    leaf_vein_angle_secondary:
-      description: Angle between a leaf's and secondary vein and its primary vein (midrib).
-      notes: For a palmate leaf, there are several primary veins radiating from a common point, with secondary veins branching off each primary vein.
+    leaf_secondary_vein_angle:
+      description: Angle between a leaf's secondary vein and its primary vein (midrib).
+      notes: For a palmate leaf, the main veins radiating from the base are generally referred to as primary veins, with secondary veins branching off each primary vein.
       type: numeric
-      units: angle
+      units: angle 
       label: Angle of secondary veins
       allowed_values_min: 0
-      allowed_values_max: 90
+      allowed_values_max: 180
     leaf_vein_frequency:
-      description: Count of veins per distance
+      description: A measure of vein density, which is the number of veins intersecting the perimeter of a square divided by the perimeter of the square. 
+      notes: .na
       type: numeric
       units: count/mm
-      label: Count of veins per distance
+      label: Leaf vein frequency
       allowed_values_min: 0.01
       allowed_values_max: 20
     leaf_total_vein_density:
@@ -3720,13 +3722,13 @@ traits:
       units: mm/mm2
       label: Length of all minor and major leaf lamina veins per unit area.
       allowed_values_min: 0.01
-      allowed_values_max: 20
+      allowed_values_max: 20.0
     leaf_major_vein_density:
       description: The length of major leaf lamina veins per unit leaf area, where primary, secondary and tertiary leaf lamina veins are considered `major` veins.
-      notes: This trait records only the length of major veins (primary, secondary and tertiary veins), while the trait `leaf_total_vein_density` records the length of all orders of leaf lamina veins.
+      notes: This trait records the length of only major veins (primary, secondary and tertiary veins), while the trait `leaf_total_vein_density` records the length of all orders of leaf lamina veins.
       type: numeric
       units: mm/mm2
-      label: Length of all minor and major leaf lamina veins per unit area.
+      label: Length of all leaf lamina veins per unit area.
       allowed_values_min: 0.01
       allowed_values_max: 20
     vine_climbing_mechanism:

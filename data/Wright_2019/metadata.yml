@@ -34,7 +34,9 @@ dataset:
         new_date = new_date %>% mdy(quiet=TRUE) %>% as.character(),
         date_WD = date_WD %>% dmy(quiet=TRUE) %>% as.character(),
         date_merged = coalesce(new_date, date_WD, as.character(date_by_month)),
-        individual = paste(Species, site_name, age, Rep, sep = "_")
+        individual = paste(Species, site_name, age, Rep, sep = "_"),
+        across(everything(), ~na_if(.,"nan")),
+        across(everything(), ~na_if(.,"NaN"))
       ) %>%
         select(-date_by_month, -new_date, -date_WD, -sample_date, - notes, -spp, -`Pith diam (mm)`, -context) %>% 
         group_by(date_merged, site_name, season, Species, age, Rep) %>% 
