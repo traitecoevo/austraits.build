@@ -6,7 +6,7 @@ source:
     author: Anna Richards and Ian J. Wright
     title: 'Unpublished data: Transcription of Australian plant functional trait data
       from Ian Wright''s collection of papers, Macquarie University'
-  secondary_01:
+  original_01:
     key: Adams_1984
     bibtype: Article
     year: '1984'
@@ -18,7 +18,7 @@ source:
     number: '2'
     pages: 205--215
     doi: 10.1071/bt9840205
-  secondary_02:
+  original_02:
     key: Ashton_1975
     bibtype: Article
     year: '1975'
@@ -29,7 +29,7 @@ source:
     number: '3'
     pages: 413--433
     doi: 10.1071/bt9750413
-  secondary_03:
+  original_03:
     key: Ashton_1976
     bibtype: Article
     year: '1976'
@@ -40,7 +40,7 @@ source:
     number: '1'
     pages: 171--186
     doi: 10.2307/2258689
-  secondary_04:
+  original_04:
     key: Attiwill_1980
     bibtype: Article
     year: '1980'
@@ -52,7 +52,7 @@ source:
     number: '2'
     pages: 199--222
     doi: 10.1071/bt9800199
-  secondary_05:
+  original_05:
     key: Bell_1985
     bibtype: Conference
     year: '1985'
@@ -62,7 +62,7 @@ source:
     volume: .na
     number: .na
     pages: .na
-  secondary_06:
+  original_06:
     key: Bennett_1997
     bibtype: Article
     year: '1997'
@@ -227,16 +227,16 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       group_by(name_original, AusTraits_site_name) %>%
-        mutate(method_number = dplyr::row_number()) %>%
+        mutate(method_id2 = dplyr::row_number()) %>%
       ungroup() %>%
       mutate(
         measurement_remarks = context,
-        method_number = ifelse(context == "reference_site", 1, method_number),
-        method_number = ifelse(stringr::str_detect(context,"adult"),2, method_number),
-        method_number = ifelse(stringr::str_detect(context,"epicormic"),3, method_number),
+        method_id2 = ifelse(context == "reference_site", 1, method_id2),
+        method_id2 = ifelse(stringr::str_detect(context,"adult"),2, method_id2),
+        method_id2 = ifelse(stringr::str_detect(context,"epicormic"),3, method_id2),
         measurement_remarks = ifelse(context %in% c("roadside_adult_foliage","pasture_adult_foliage","remnant_woodland_adult_foliage"),"adult foliage", measurement_remarks),
         measurement_remarks = ifelse(context %in% c("roadside_epicormic_foliage","pasture_epicormic_foliage","remnant_woodland_epicormic_foliage"),"epicormic foliage", measurement_remarks),
         AusTraits_site_name = ifelse(context %in% c("roadside_adult_foliage","roadside_epicormic_foliage"),"Marsh_1995_Moormung_roadside", AusTraits_site_name),
@@ -247,11 +247,11 @@ dataset:
   collection_date: unknown/2009
   taxon_name: name_original
   measurement_remarks: measurement_remarks
-  site_name: AusTraits_site_name
+  location_name: AusTraits_site_name
+  source_id: AusTraits_key
   description: Collection of trait data on Australian plants compiled by Anna Richards
     and Ian Wright from papers
   basis_of_record: field
-  method_number: method_number
   life_stage: adult
   sampling_strategy: See the individual 'additional references' for the individual
     study motivations.
@@ -259,7 +259,7 @@ dataset:
     papers or from more recent papers with very few data points; most recent/larger
     datasets within Ian and Anna's compilation are in AusTraits individually.
   notes: none
-sites:
+locations:
   Adams_1984_Big Creek Basin:
     latitude (deg): -37.867
     longitude (deg): 145.75

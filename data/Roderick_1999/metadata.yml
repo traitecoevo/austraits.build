@@ -103,20 +103,13 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       mutate(
         site_name_complete = paste(site_name_complete, `soil type`, sep = "_"),
-        site_name_complete = gsub("NA_NA","unknown site", site_name_complete),
-        site_name_complete = gsub("_NA","", site_name_complete),
-        veg_stratum = gsub("ground-stratum","ground stratum",  veg_stratum),
-        method_number = case_when(
-          veg_stratum == "emergent stratum" ~ 1,
-          veg_stratum == "upper stratum" ~ 2,
-          veg_stratum == "mid-stratum" ~ 3,
-          veg_stratum == "lower stratum" ~ 4,         
-          veg_stratum == "ground stratum" ~ 5
-        ),
+        site_name_complete = stringr::str_replace(site_name_complete, "NA_NA", "unknown site"),
+        site_name_complete = stringr::str_replace(site_name_complete, "_NA", ""),
+        veg_stratum = stringr::str_replace(veg_stratum, "ground-stratum", "ground stratum"),
         entity_type = ifelse(AusTraits_key == "Landsberg_1990"|AusTraits_key == "Specht_1988"|((AusTraits_key == "Specht_1990") & (Species == "Eucalyptus incrassata")|(AusTraits_key == "Schulze_1994")& (Species == "Triticum aestivum")), "individual", "population"),
         value_type = ifelse(AusTraits_key == "Landsberg_1990"|AusTraits_key == "Specht_1988"|((AusTraits_key == "Specht_1990") & (Species == "Eucalyptus incrassata")|(AusTraits_key == "Schulze_1994")& (Species == "Triticum aestivum")), "raw", "mean"),
         replicate_count = ifelse(AusTraits_key == "Landsberg_1990"|AusTraits_key == "Specht_1988"|((AusTraits_key == "Specht_1990") & (Species == "Eucalyptus incrassata")|(AusTraits_key == "Schulze_1994")& (Species == "Triticum aestivum")), 1, "unknown")
@@ -124,11 +117,9 @@ dataset:
   '
   collection_date: 1997/2002
   taxon_name: Species
-  site_name: site_name_complete
-  context_name: veg_stratum
+  location_name: site_name_complete
   description: compilation of specific leaf area values from the literature
   basis_of_record: literature
-  method_number: method_number
   entity_type: entity_type
   life_stage: adult
   sampling_strategy: search of literature on Australian plant species from the 1970's,
@@ -136,7 +127,7 @@ dataset:
   original_file: lma_3, a formatted text file, saved as Roderick_2002_worldwide_data.csv;
     Australian component extracted as Roderick_2002_Australia_component.csv
   notes: none
-sites:
+locations:
   Koerner_1985 Dainer's Gap:
     longitude (deg): 148.47
     latitude (deg): -36.37
@@ -453,16 +444,20 @@ sites:
     elevation (m): .na.real
     description: .na.character
 contexts:
-  upper stratum:
-    canopy layer: upper stratum
-  lower stratum:
-    canopy layer: lower stratum
-  emergent stratum:
-    canopy layer: emergent stratum
-  mid-stratum:
-    canopy layer: mid-stratum
-  ground stratum:
-    canopy layer: ground stratum
+- context_property: canopy layer
+  category: method
+  var_in: veg_stratum
+  values:
+  - value: upper stratum
+    description: Measurements made in the upper stratum.
+  - value: emergent stratum
+    description: Measurements made in the emergent stratum.
+  - value: mid-stratum
+    description: Measurements made in the mid-stratum.
+  - value: lower stratum
+    description: Measurements made in the lower stratum.
+  - value: ground stratum
+    description: Measurements made in the ground stratum.
 traits:
 - var_in: leaf_area_m2
   unit_in: m2

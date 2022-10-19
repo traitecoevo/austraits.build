@@ -17,7 +17,7 @@ test_that("metadata_create_template is working",{
                                             skip_manual = TRUE))
   test_metadata <- read_metadata("data/Test_2022/metadata.yml")
 
-  metadata_names <- c("source", "contributors", "dataset", "sites", "contexts", "traits",
+  metadata_names <- c("source", "contributors", "dataset", "locations", "contexts", "traits",
                       "substitutions", "taxonomic_updates", "exclude_observations",
                       "questions")
   data_collector_names <- c("last_name", "given_name", "affiliation", "ORCID", "additional_role")
@@ -38,8 +38,7 @@ test_that("metadata_create_template is working",{
 
   expect_isin(names(test_metadata$dataset), schema$metadata$elements$dataset$values %>% names())
  
- # Todo: discuss with L:izzy what correct default is (currently all values included)
- expect_equal(length(test_metadata$dataset), 23)
+ expect_equal(length(test_metadata$dataset), 21)
 })
 
 test_that("metadata_path_dataset_id is working",{
@@ -194,9 +193,14 @@ test_that("test build_setup_pipeline is working",{
   expect_length(austraits_raw$taxa, 1)
   expect_length(austraits$taxa, 10)
   expect_equal(nrow(austraits$taxa), nrow(austraits_raw$taxa))
+})
+
+test_that("reports and plots produced",{
+  
+  expect_no_error(austraits <- remake::make("austraits"))
   
   expect_no_error(
-   p <- austraits::plot_trait_distribution_beeswarm(austraits, "huber_value", "dataset_id", highlight = "Test_2022", hide_ids = TRUE)
+   p <- 1 #austraits::plot_trait_distribution_beeswarm(austraits, "huber_value", "dataset_id", highlight = "Test_2022", hide_ids = TRUE)
   )
 
   expect_no_error(

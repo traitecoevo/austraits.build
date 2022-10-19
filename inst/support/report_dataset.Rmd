@@ -268,7 +268,7 @@ for(v in missing) {
 ```
 
 
-## Sites
+## Locations
 
 Data were collected at the following sites and locations. As a minimum, we are aiming to collect, the variables
 
@@ -280,20 +280,21 @@ create_if_missing <- function(df, var, type=rep(NA_character_, nrow(df))) {
   df
 }
 
-site_main <- c("longitude (deg)","latitude (deg)", "description")
-sites <-
-  full_join(by="site_name",
-            # count of records by site
+location_main <- c("location_name", "longitude (deg)","latitude (deg)", "description")
+locations <-
+  full_join(by="location_id",
+            # count of records by location
             data_study$traits %>%
-              mutate(site_name = ifelse(is.na(site_name), "unknown", site_name)) %>%
-              group_by(site_name) %>%
+              mutate(location_id = ifelse(is.na(location_id), "unknown", location_id)) %>%
+              group_by(location_id) %>%
               summarise(records = n()),
-            # details on sites from metadata
-            data_study$sites %>%
-              filter(site_property %in% site_main) %>%
+            # details on locations from metadata
+            data_study$locations %>%
+              filter(site_property %in% location_main) %>%
               select(-dataset_id) %>%
               spread(site_property, value) %>%
-              create_if_missing("site_name") %>%
+              create_if_missing("location_id") %>%
+              create_if_missing("location_name") %>%
               create_if_missing("latitude (deg)") %>%
               create_if_missing("longitude (deg)") %>%
               create_if_missing("description")  %>%
@@ -302,53 +303,53 @@ sites <-
                 `longitude (deg)` = as.numeric(`longitude (deg)`)
                 )
   ) %>%
- select(site_name, records, `latitude (deg)`, `longitude (deg)`, description)
+ select(location_id, location_name, records, `latitude (deg)`, `longitude (deg)`, description)
 
- sites %>%
+ locations %>%
    my_kable_styling()
          
 
-if( any(tolower(sites$site_name) %in% c(NA, "unknown") ) ) {
-  new_question("(section `sites`) **Location data incomplete or unknown!** Can you provide location details where your data were sampled? If data are from a National Park, biological reserve, or other location with a name, but not linked to a specific site within the park, the site name should be that national park (or similar), and we will use the park's headquarters as the GPS coordinates. If the data are from herbarium specimens or a taxa monograph it is appropriate to leave this information blank.")
+if( any(tolower(locations$location_name) %in% c(NA, "unknown") ) ) {
+  new_question("(section `locations`) **Location data incomplete or unknown!** Can you provide location details where your data were sampled? If data are from a National Park, biological reserve, or other location with a name, but not linked to a specific site within the park, the site name should be that national park (or similar), and we will use the park's headquarters as the GPS coordinates. If the data are from herbarium specimens or a taxa monograph it is appropriate to leave this information blank.")
 }
 
 ```
 
 ```{r maps, eval= TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.keep="all"}
 
-# Make a map of study sites using leaflet
-sites <- sites %>% filter(!is.na(`latitude (deg)`) & !is.na(`longitude (deg)`))
-if(nrow(sites) > 0 ) {
+# Make a map of study locations using leaflet
+locations <- locations %>% filter(!is.na(`latitude (deg)`) & !is.na(`longitude (deg)`))
+if(nrow(locations) > 0 ) {
   leaflet::leaflet() %>%
   leaflet::addTiles() %>%
   leaflet::addScaleBar() %>%
   leaflet::addMiniMap(zoomLevelFixed=2) %>%
-  leaflet::addMarkers(lng = sites$`longitude (deg)`, lat = sites$`latitude (deg)`,
-             label = sites$site_name)	
+  leaflet::addMarkers(lng = locations$`longitude (deg)`, lat = locations$`latitude (deg)`,
+             label = locations$location_name)	
 }
 ```
 
 ```{r, results='asis', echo=FALSE}
-new_question("(section `sites`) Do site details look complete and accurate? As a minimum we would like `latitude`, `longitude`, `description`.")
+new_question("(section `locations`) Do site details look complete and accurate? As a minimum we would like `latitude`, `longitude`, `description`.")
 ```
 
 ## Additional site data (optional)
 
-The following variables have been recorded for the sites included in the study:
+The following variables have been recorded for the locations included in the study:
 
 ```{r, results='asis', echo=FALSE}
 
-data_study$sites %>%
-  filter(!(site_property %in% site_main)) %>%
+data_study$locations %>%
+  filter(!(site_property %in% location_main)) %>%
   select(-dataset_id) %>%
-  spread(site_property, value) -> sites_extra
+  spread(site_property, value) -> locations_extra
 
-if(nrow(sites_extra) > 0 ) {
-  sites_extra %>%
+if(nrow(locations_extra) > 0 ) {
+  locations_extra %>%
     my_kable_styling() %>%
     writeLines()
 
-  new_question("(section `sites`) Do the additional site details look complete?")
+  new_question("(section `locations`) Do the additional site details look complete?")
   } else{
   writeLines("There is currently no additional site data associated with this dataset.")
 }
@@ -358,24 +359,29 @@ if(nrow(sites_extra) > 0 ) {
 ## Contexts
 
 
-The following contexts have been recorded for the measurements included in this study. The `type` column has been added to easily filter records across many studies.
+The following contexts have been recorded for the measurements included in this study. 
 
 ```{r, results='asis', echo=FALSE}
 data_study$contexts %>%
   select(-dataset_id) %>%
-  spread(context_property, value) -> context
+  group_by(context_property) %>%
+  group_split() -> context_properties
 
-if(nrow(context) > 0 ) {
-  context %>%
-    # make ordering of columns, same as dataframe
-    select(one_of(c("context_name", data_study$contexts$context_property %>% unique()))) %>%
-    my_kable_styling() %>%
-    writeLines()
+if(length(context_properties) > 0 ) {
+  context_properties %>%
+    for (i in 1:length(context_properties)) {      
+      writeLines("The column titled `r context_properties[[i]]$category[1]` in your dataset was mapped to contextual property `r context_properties[[i]]$context_property[1]`, within the category `r context_properties[[i]]$category[1]`")
 
+      writeLines("The following values exist for this context: ")
+
+      context_properties[[i]] %>% select(find, replace, description)  %>%
+        my_kable_styling() %>%
+        writeLines()
+    }
   new_question("(section `contexts`) Do the context details look complete?")
-  } else{
+  } else {
   writeLines("There is currently no contextual data associated with this dataset.")
-}
+  }
 
 ```
 
@@ -547,12 +553,12 @@ for(trait in traits_numeric) {
 
 if(nrow(filter(data_study$excluded_data, error == "Value out of allowable range" & trait_name == trait)) > 0 ) {
   data_study$excluded_data %>% filter(error == "Value out of allowable range" & trait_name == trait) %>%
-    select(observation_id, taxon_name, site_name, context_name, value, unit) %>%
+    select(observation_id, taxon_name, location_name, value, unit) %>%
     my_kable_styling() %>%
     writeLines()
 }
 
- austraits::plot_trait_distribution_beeswarm(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
+ # austraits::plot_trait_distribution_beeswarm(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
 
   writeLines(c(""))
 
