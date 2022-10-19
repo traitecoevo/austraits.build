@@ -116,12 +116,12 @@ test_that("metadata_add_source_bibtex is working",{
 })
 
 test_that("metadata_add_substitution is working",{
-  expect_silent(suppressMessages(metadata_add_substitution("Test_2022", "specific_leaf_area",
-                                                           "leaf_area", "specific_leaf_area")))
+  expect_silent(suppressMessages(metadata_add_substitution("Test_2022", "leaf_mass_per_area",
+                                                           "leaf_area", "leaf_mass_per_area")))
   expect_equal(length(read_metadata("data/Test_2022/metadata.yml")$substitutions[[1]]), 3)
-  expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions[[1]]$trait_name, "specific_leaf_area")
+  expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions[[1]]$trait_name, "leaf_mass_per_area")
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions[[1]]$find, "leaf_area")
-  expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions[[1]]$replace, "specific_leaf_area")
+  expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions[[1]]$replace, "leaf_mass_per_area")
 })
 
 test_that("metadata_add_taxonomic_change is working",{
