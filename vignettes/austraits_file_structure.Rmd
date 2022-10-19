@@ -118,7 +118,7 @@ The folder `data` contains the raw data from individual studies included in AusT
 Records within the `data` folder are organised as coming from a particular study, defined by the `dataset_id`. Data from each study are organised into a separate folder, with two files:
 
 - `data.csv`: a table containing the actual trait data.
-- `metadata.yml`: a file that contains study metadata (source, methods, sites, and context), maps trait names and units onto standard types, and lists any substitutions applied to the data in processing. 
+- `metadata.yml`: a file that contains study metadata (source, methods, locations, and context), maps trait names and units onto standard types, and lists any substitutions applied to the data in processing. 
 
 The folder `data` thus contains a long list of folders, one for each study and each containing two files:
 
@@ -143,13 +143,13 @@ where `Angevin_2010`, `Barlow_1981`, & `Bean_1997` are each a unique `dataset_id
 
 The file `data.csv` contains raw measurements and can be in either long or wide format.
 
-Required columns include the taxon name, the trait name (column in long format, header in wide format), units (column in long format, part of header in wide format), site (if applicable), context (if applicable), date (if available), and trait values.
+Required columns include the taxon name, the trait name (column in long format, header in wide format), units (column in long format, part of header in wide format), location (if applicable), context (if applicable), date (if available), and trait values.
 
-It is important that all trait measurements made on the same individual or that are the mean of a species' measurements from the same site are kept linked. 
+It is important that all trait measurements made on the same individual or that are the mean of a species' measurements from the same location are kept linked. 
 
-- If the data is in wide format, each row should include measurements made on a single individual at a single point in time or a single species-by-site mean, with different trait values as consecutive columns. 
+- If the data is in wide format, each row should include measurements made on a single individual at a single point in time or a single species-by-location mean, with different trait values as consecutive columns. 
 
-- If the data is in long format, an additional column, `individual_id`, is required to ensure multiple trait measurements made on the same individual, or the mean of a species' measurements from the same site, are linked. If the data is in wide format and there are multiple rows of data for the same individual, an `individual_id` column should be included. These `individual_id` columns ensure that related data values remain linked.
+- If the data is in long format, an additional column, `individual_id`, is required to ensure multiple trait measurements made on the same individual, or the mean of a species' measurements from the same location, are linked. If the data is in wide format and there are multiple rows of data for the same individual, an `individual_id` column should be included. These `individual_id` columns ensure that related data values remain linked.
 
 We aim to keep the data file in the rawest form possible (i.e. with as few changes as possible) but it must be a single csv file. Additional custom R code may be required to make the file exactly compatible with the AusTraits format, but these changes should be executed as AusTraits is compiled and should be in the `metadata.yml` file under `dataset/custom_R_code` (see below). Any files used to create the submitted `data.csv` file (e.g. Excel ...) should be archived in a sub-folder within the study folder named `raw`.
 
@@ -161,7 +161,9 @@ As a start, you may want to check out some examples from [existing studies in Au
 
 #### Source
 
-This section provides `r tolower(schema$metadata$elements$source$description)` In general we aim to reference the primary source. References are written in structured yml format, under the category `source` and then under sub-groupings `primary` and `secondary`. General guidelines for describing a source include:
+This section provides `r tolower(schema$metadata$elements$source$description)` In general we aim to reference the primary source. References are written in structured yml format, under the category `source` and then under sub-groupings `primary`, `secondary`, and `original`. A reference is designated as `secondary` if it is a second publication by the data collector that analyses the data. When the `primary` reference is a compilation of multiple sources for a meta-analysis, the original references are designated as `original`. 
+
+General guidelines for describing a source include:
 
 - A maximum of one primary source allowed.
 - Elements are names as in [bibtex format](https://en.wikipedia.org/wiki/BibTeX).
@@ -223,9 +225,8 @@ If a secondary source is included it may look like:
 This section provides `r tolower(schema$metadata$elements$contributors$description)` The following information is recorded for each data contributor:
 
 ```{r, echo=FALSE, results="show"}
-schema$metadata$elements$contributors$elements$data_collectors %>%
+schema$metadata$elements$contributors$elements$data_collectors$elements %>%
   util_list_to_df1() %>%
-  filter(!key %in% c("type","description")) %>%
   my_kable_styling()
 ```
 
@@ -249,8 +250,8 @@ Note that only the AusTraits custodians have the contributors' e-mail addresses 
 
 Additional fields within contributors are:
 
-- Assistants, `r tolower(schema$metadata$elements$contributors$elements$assistants$description)`
-- AusTraits dataset curators, `r tolower(schema$metadata$elements$contributors$elements$austraits_curators$description)`
+- `Assistants`, `r tolower(schema$metadata$elements$contributors$elements$assistants$description)`
+- `AusTraits_curators`, `r tolower(schema$metadata$elements$contributors$elements$austraits_curators$description)`
 
 #### Dataset
 
@@ -261,7 +262,7 @@ The following elements are included under the element `dataset`:
 ```{r}
 values <- schema$metadata$elements$dataset$values
 
-values <- values[!(names(values) %in% c("observation_id"))]
+values <- values[!(names(values) %in% c("observation_id", "entity_type", "plot_id", "temporal_id", "treatment_id", "replicates", "basis_of_value", "value_type"))]
 
 for (value in names(values)) {
   sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
@@ -269,13 +270,15 @@ for (value in names(values)) {
 ```
 
 
-The fields `collection_date`, `replicates`, `basis_of_value`, `value_type`, `life_stage`, `basis_of_record`, `measurement_remarks`, `observation_number`, and `method_number` can all be specified at the dataset level or the traits level (which overrides a dataset-level entry) or sites level (which also overrides a dataset-level entry). In each case, they can be a fixed text value or indicate a column within the data.csv file (or generated through `custom_R_code`) that includes the relevant information. 
+Of these, the fields `collection_date`, `life_stage`, `basis_of_record`, and `measurement_remarks` can all be specified at the dataset level or the traits level (which overrides a dataset-level entry) or location level (which also overrides a dataset-level entry). In each case, they can be a fixed text value or indicate a column within the data.csv file (or generated through `custom_R_code`) that includes the relevant information. 
 
 - `life_stage`, `basis_of_record`, and `collection_date` are usually included under `metadata$dataset` unless they vary by trait.
 
-- `replicates`, `basis_of_value`, and `value_type` are usually different across traits and are usually mapped under the `metadata$traits` section; see below
+- `entity_type`, `replicates`, `basis_of_value`, and `value_type` are usually different across traits and are usually mapped under the `metadata$traits` section (see below), but are allowed to be specified for the entire dataset in this section.
 
-- `measurement_remarks`, `observation_number`, and `method_number` are only included if required. They are absent from the majority of datasets.
+- `traits` and `value` are only specified in metadata$dataset for **long-format** datasets.
+
+- `measurement_remarks` and `individual_id` are only included if required. They are absent from the majority of datasets.
 
 An example is as follows:
 
@@ -284,7 +287,7 @@ An example is as follows:
   custom_R_code: '
     data %>% 
       mutate(
-        site_name = "Howard River catchment",
+        location_name = "Howard River catchment",
         date = date %>% mdy()
       ) %>% 
       arrange(date) %>%
@@ -292,16 +295,14 @@ An example is as follows:
         mutate(observation_number = dplyr::row_number()) %>%
       ungroup() %>% 
       group_by(species) %>% 
-        mutate_at(vars(`specific leaf area (m2 kg-1)`), replace_duplicates_with_NA) %>% 
+        mutate(across(c("specific leaf area (m2 kg-1)"), replace_duplicates_with_NA)) %>% 
       ungroup()
   '
   collection_date: date
   taxon_name: species
   context_name: context
-  site_name: site_name
+  location_name: location_name
   individual_id: Tree
-  population_id: burn_status
-  observation_number: observation_number
   description: Measurements of stem CO2 efflux and leaf gas exchange in a tropical
     savanna ecosystem in northern Australia, and assessed the impact of fire on these
     processes.
@@ -316,6 +317,90 @@ An example is as follows:
 
 A common use of the `custom_R_code` is to automate the conversion of a verbal description of flowering or fruiting periods into the supported trait values. It might also be used if values for a single trait are expressed across multiple columns and need to be merged. See `Catford_2014` as an example of this. The [adding data](http://traitecoevo.github.io/austraits.build/articles/adding_data.html) vignette provides additional examples of code regularly implemented in `custom_R_code`, including functions specifically that were developed for AusTraits data manipulations and are in the file `scripts\custom.R`. 
 
+#### locations
+This section provides `r stringr::str_replace(schema$metadata$elements$locations$description,"A","a")`
+
+Although the properties listed under each location are not part of a controlled vocabulary, it is best practice to align with in-use properties whenever possible. These can be identified by running `austraits$locations %>% distinct(location_property)`.
+
+An example of how a location and its properties, and the value of each property are listed (modified from Vesk_2019), is:
+```
+  Round Hill-Nombinnie Nature Reserve:
+    latitude (deg): -32.965
+    longitude (deg): 146.161
+    precipitation, MAP (mm): 370
+    temperature, summer mean (C): 32.5
+    temperature, winter mean (C): 14.2
+    soil type: loamy red sands light red clays and light red browns earths
+    description: predominantly open Callitris glaucophylla - Eucalyptus populnea woodland
+      and Eucalyptus dumosa - E. socialis shrub mallee woodland
+    fire frequency (years): 5-20 years
+```
+
+#### Contexts
+This section provides `r stringr::str_replace(schema$metadata$elements$contexts$description,"C","c")`
+
+Within the context section is a list of contextual properties, each encapsulating information read in through a different column or created through `custom_R_code` or as elements within specific `traits` (see below).
+
+```{r}
+values <- schema$metadata$elements$contexts$elements
+for (value in names(values)) {
+  sprintf("- **%s**: %s", value, values[[value]]) %>% writeLines()
+}
+```
+
+If the contextual values read in are appropriate and no substitutions are required, the field `find` can be omitted, with the values from the data.csv column entered under the field `value`. The field `description` can likewise be omitted if it is redundant; for instance, if the values are simply sequential observation numbers, times of day, or taxon names (e.g. insect host plants).
+
+As with location, the context properties are not part of a controlled vocabulary, but it is best practice to align syntax with in-use properties whenever possible. These can be identified by running `austraits$contexts %>% distinct(context_property)`.
+
+An example of how the contexts for a study are formatted (modified from Crous_2013), is:
+
+```
+contexts:
+- context_property: sampling season
+  category: temporal
+  var_in: month
+  values:
+  - find: AUG
+    value: August
+    description: August (late winter)
+  - find: DEC
+    value: December
+    description: December (early summer)
+  - find: FEB
+    value: February
+    description: February (late summer)
+- context_property: temperature treatment
+  category: treatment
+  var_in: Temp-trt
+  values:
+  - value: ambient
+    description: Plants grown at ambient temperatures; Jan average max = 29.4 dec
+      C / July average min = 3.2 dec C.
+  - value: elevated
+    description: Plants grown 3 deg C above ambient temperatures.
+- context_property: CO2 treatment
+  category: treatment
+  var_in: CO2_Treat
+  values:
+  - find: ambient CO2
+    value: 400 ppm
+    description: Plants grown at ambient CO2 (400 ppm).
+  - find: added CO2
+    value: 640 ppm
+    description: Plants grown at elevated CO2 (640 ppm); 240 ppm above ambient.
+- context_property: measurement temperature
+  category: method
+  var_in: method_context
+  values:
+  - find: Measurement made at 20°C
+    value: 20°C
+    description: Measurement made at 20°C
+  - find: Measurement made at 25°C
+    value: 25°C
+    description: Measurement made at 25°C
+```
+
+
 #### Traits
 
 This section provides `r stringr::str_replace(schema$metadata$elements$traits$description,"A","a")`
@@ -329,9 +414,9 @@ for (value in names(values)) {
 }
 ```
 
-The elements `trait_name`, `entity_type`, `value_type`, `basis_of_record`, and `basis of value` are controlled vocabularies; the values for these elements must be from the list of allowable values. Those for traits are listed in the `traits.yml` [file](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml) or [vignette](http://traitecoevo.github.io/austraits.build/articles/definitions.html). For the other elements, see
+The elements `trait_name`, `entity_type`, `value_type`, `basis_of_record`, and `basis of value` are controlled vocabularies; the values for these elements must be from the list of allowable values. Those for traits are listed in the `traits.yml` [file](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml) or [vignette](http://traitecoevo.github.io/austraits.build/articles/definitions.html). For the other elements, see the [database structure](http://traitecoevo.github.io/austraits.build/articles/austraits_database_structure.html) vignette.
 
-The fields `replicates`, `basis_of_value`, `value_type`, `life_stage`, `basis_of_record`, `measurement_remarks`, `observation_number`, and `method_number` can all be specified at the dataset level or the traits level (which overrides a dataset-level entry). In each case, they can be a fixed text value or indicate a column (within the `data.csv` file or generated through `custom_R_code`) that includes the relevant information. 
+The fields `replicates`, `basis_of_value`, `value_type`, `life_stage`, `basis_of_record`, and `measurement_remarks` can all be specified at the dataset level or the traits level (which overrides a dataset-level entry). In each case, they can be a fixed text value or indicate a column (within the `data.csv` file or generated through `custom_R_code`) that includes the relevant information. In addition, fields can be added to specify a specific context (most commonly a `method context`, but occasionally a `temporal context`). If such a field is added, the same name must appear in both the contexts section and for some (or all) of the traits.
 
 Two examples are as follows:
 
@@ -359,8 +444,7 @@ Two examples are as follows:
   value_type: raw                            # fixed value
   basis_of_value: measurement                # fixed value
   replicates: 1                              # fixed value
-  method_number: 2                           # optional field
-  measurement_remarks: Maximum electron transport rate in umol m-2 s-1 at 25°C          # optional field
+  method_context: 25C                        # optional field
   methods: Controlled photosynthetic CO2 response curve measurements were made using
     Li-Cor 6400 portable infrared gas analysers (LiCor Inc., Lincoln, NE, USA). CO2
     response curves of net CO2 assimilation (Anet) were developed at a constant temperature
@@ -470,12 +554,12 @@ Note the second line.
 
 ### Example problem 
 
-As an example, for `Blackman_2010` we want to combine two columns to create an appropriate site variable. Here is the code that was included in [data/Blackman_2010/metadata.yml](https://github.com/traitecoevo/austraits.build/blob/master/data/Blackman_2010/metadata.yml) under `custom_R_code`.
+As an example, for `Blackman_2010` we want to combine two columns to create an appropriate location variable. Here is the code that was included in [data/Blackman_2010/metadata.yml](https://github.com/traitecoevo/austraits.build/blob/master/data/Blackman_2010/metadata.yml) under `custom_R_code`.
 
 ```{r, eval=FALSE, echo=TRUE}
 data %>% mutate(
-  site = ifelse(site == "Mt Field" & habitat == "Montane rainforest", "Mt Field_wet", site),
-  site = ifelse(site == "Mt Field" & habitat == "Dry sclerophyll", "Mt Field_dry", site)
+  location = ifelse(location == "Mt Field" & habitat == "Montane rainforest", "Mt Field_wet", location),
+  location = ifelse(location == "Mt Field" & habitat == "Dry sclerophyll", "Mt Field_dry", location)
 )
 ```
 
@@ -501,7 +585,7 @@ data
 Second, write your code to manipulate data, like the example above
 
 
-Third, once you have some working code, you then want to add it into your yml file under a group `config` -> `custom_R_code`. 
+Third, once you have some working code, you then want to add it into your yml file under `dataset` -> `custom_R_code`. 
 
 Finally, check it works. Let's assume you added it in. The function `metadata_check_custom_R_code` loads the data and applies the custom R code:
 
