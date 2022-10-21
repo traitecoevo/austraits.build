@@ -187,7 +187,7 @@ dataset_process <- function(filename_data_raw,
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
     traits %>%
-    dplyr::select(dataset_id, .data$original_name, cleaned_name = .data$taxon_name) %>%
+    dplyr::select(dataset_id, .data$original_name, cleaned_name = .data$taxon_name, taxonomic_resolution = .data$taxonomic_resolution) %>%
     dplyr::distinct() %>%
     dplyr::arrange(.data$cleaned_name)
 
@@ -1316,34 +1316,33 @@ process_standardise_names <- function(x) {
 #'
 #' @return tibble with the taxonomic updates applied
 process_taxonomic_updates  <- function(data, metadata){
-
   out <- data
 
   # copy original species name to a new column
   out[["original_name"]] <- out[["taxon_name"]]
-#can not get this to work at all - Lizzy Oct 17
-  #  out[["taxonomic_resolution"]] <- "taxon_rank"
-  
+  out[["taxonomic_resolution"]] <- NA_character_
+ 
   # Now make any replacements specified in metadata yaml
   ## Read metadata table, quit if empty
   substitutions_table <-  util_list_to_df2(metadata[["taxonomic_updates"]])
 
-  if(any(is.na(substitutions_table)) || nrow(substitutions_table) == 0) {
+  if(any(is.na(substitutions_table[1])) || nrow(substitutions_table) == 0) {
     return(out)
   }
 
-#  if(is.null(substitutions_table$taxonomic_resolution)) {
-#    substitutions_table$taxonomic_resolution <- NA
-#  }
+  if(is.null(substitutions_table[["taxonomic_resolution"]])) {
+    substitutions_table[["taxonomic_resolution"]] <- NA
+  }
   
   to_update <- rep(TRUE, nrow(out))
 
   ## Makes replacements, row by row
   for(i in seq_len(nrow(substitutions_table))) {
+
     j <- which(out[["taxon_name"]] == substitutions_table[["find"]][i])
     if( length(j) > 0 ){
       out[["taxon_name"]][j] <- substitutions_table[["replace"]][i]
-   #   out[["taxonomic_resolution"]][j] <- substitutions_table[["taxonomic_resolution"]][i]
+      out[["taxonomic_resolution"]][j] <- substitutions_table[["taxonomic_resolution"]][i]
       to_update[j] <- FALSE
     }
   }
@@ -1391,11 +1390,11 @@ build_combine <- function(..., d=list(...)) {
   # taxonomy
   taxonomic_updates <-
     combine("taxonomic_updates", d) %>%
-    dplyr::group_by(.data$original_name, .data$cleaned_name) %>%
+    dplyr::group_by(.data$original_name, .data$cleaned_name, .data$taxonomic_resolution) %>%
     dplyr::mutate(dataset_id = paste(.data$dataset_id, collapse = " ")) %>%
     dplyr::ungroup() %>%
     dplyr::distinct() %>%
-    dplyr::arrange(.data$original_name, .data$cleaned_name)
+    dplyr::arrange(.data$original_name, .data$cleaned_name, .data$taxonomic_resolution)
 
   traits <- combine("traits", d)
 

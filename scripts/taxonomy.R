@@ -547,8 +547,8 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
   file_paths <- list(
     #APC = path_apc,
     #APNI = path_apni
-    APC = "config/NSL/APC-taxon-2022-02-24-0732.csv",
-    APNI = "config/NSL/APNI-names-2022-02-24-0712.csv"
+    APC = "config/NSL/APC-taxon-2022-10-21-4554.csv",
+    APNI = "config/NSL/APNI-names-2022-10-21-4546.csv"
   )
 
   if(!all(file.exists(unlist(file_paths)))) {
@@ -599,7 +599,7 @@ austraits_rebuild_taxon_list <- function(austraits) {
     dplyr::left_join(
       by = "cleaned_name", taxonomic_resources$APC %>% 
         dplyr::filter(!grepl("sp\\.$", .data$canonicalName)) %>% 
-        dplyr::select(cleaned_name = .data$canonicalName, cleaned_name_taxon_id = .data$taxonID, 
+        dplyr::select(cleaned_name = .data$canonicalName, cleaned_name_taxon_id = .data$scientificNameID, 
                       cleaned_name_taxonomic_status = .data$taxonomicStatus)) %>%
     # Also add all accepted genera species, varieties etc from APC
     dplyr::bind_rows(
