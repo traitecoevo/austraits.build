@@ -1320,6 +1320,7 @@ process_taxonomic_updates  <- function(data, metadata){
 
   # copy original species name to a new column
   out[["original_name"]] <- out[["taxon_name"]]
+  # create a column for `taxnomic_resolution` 
   out[["taxonomic_resolution"]] <- NA_character_
  
   # Now make any replacements specified in metadata yaml
@@ -1330,13 +1331,14 @@ process_taxonomic_updates  <- function(data, metadata){
     return(out)
   }
 
+  # if the substitutions table exists, but there is no taxonomic resolution specified, create a column
   if(is.null(substitutions_table[["taxonomic_resolution"]])) {
     substitutions_table[["taxonomic_resolution"]] <- NA
   }
   
   to_update <- rep(TRUE, nrow(out))
 
-  ## Makes replacements, row by row
+  ## Makes replacements, row by row for both taxon_name and adds taxonomic_resolution for each name
   for(i in seq_len(nrow(substitutions_table))) {
 
     j <- which(out[["taxon_name"]] == substitutions_table[["find"]][i])
@@ -1433,7 +1435,7 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
   austraits_raw$taxonomic_updates <-
     austraits_raw$taxonomic_updates %>%
     dplyr::left_join(by = "cleaned_name",
-              taxa %>% dplyr::select(.data$cleaned_name, .data$cleaned_name_taxon_id, .data$cleaned_name_taxonomic_status,
+              taxa %>% dplyr::select(.data$cleaned_name, .data$cleaned_scientific_name_id, .data$cleaned_name_taxonomic_status,
                                       .data$cleaned_name_alternative_taxonomic_status, .data$taxon_id, .data$taxon_name)
               ) %>%
     dplyr::distinct() %>%
@@ -1448,40 +1450,114 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
     dplyr::select(.data$dataset_id, .data$taxon_name, dplyr::everything()) %>%
     dplyr::mutate(taxon_name = ifelse(is.na(.data$taxon_name), .data$cleaned_name, .data$taxon_name)) %>%
     dplyr::select(-.data$cleaned_name)
-
+  
+# names, identifiers for all genera in APC
+# XXXX not sure exactly which fields we want to extract.... same for families below
+  APC_genera_tmp <- taxa %>% 
+    dplyr::filter(.data$taxon_rank == "Genus" & .data$taxonomic_reference == "APC") %>%
+    dplyr::select(.data$taxon_name, .data$taxon_id) %>%
+    dplyr::distinct()
+  
+# names, identifiers for all families in APC
+  APC_families_tmp <- taxa %>% dplyr::filter(.data$taxon_rank == "Familia" & .data$taxonomic_reference == "APC") %>%
+    dplyr::select(.data$taxon_name, .data$taxon_id) %>%
+    dplyr::distinct()
+  
+### Fill in columns for trinomial, binomial, genus, and family, as appropriate 
+  # and match additional taxon information to the most specific name 
+  
   species_tmp <-
     austraits_raw$traits %>%
-    dplyr::select(.data$taxon_name) %>%
+    dplyr::select(.data$taxon_name, .data$taxonomic_resolution) %>%
     dplyr::distinct() %>%
     dplyr::left_join(by = "taxon_name",
+                     taxa %>% dplyr::select(.data$taxon_name, .data$taxon_rank, .data$family) %>% dplyr::distinct()
+    ) %>%
+    dplyr::mutate(    
+      # if no taxonomic resolution is specified, then the name's taxonomic resolution is the taxon_rank for the taxon name
+      taxonomic_resolution = ifelse(is.na(taxonomic_resolution), taxon_rank, taxonomic_resolution),
+      # field trinomial is only filled in if taxonomic resolution is an infraspecific name 
+      trinomial = ifelse(.data$taxonomic_resolution %in% c("trinomial", "Subspecies", "Forma", "Varietas"), stringr::word(.data$taxon_name, start = 1, end = 4), NA),
+      # field binomial is filled in if taxonomic resolution is an infraspecific name or a binomial
+      binomial = ifelse(.data$taxonomic_resolution %in% c("binomial", "Species"), 
+                        stringr::str_split_fixed(.data$taxon_name, "\\[",2)[,1] %>% str_trim(), NA),
+      binomial = ifelse(.data$taxonomic_resolution %in% c("trinomial", "Subspecies", "Forma", "Varietas", "Series"), 
+                        stringr::word(taxon_name, start = 1, end = 2), binomial),
+      binomial = stringr::str_trim(binomial),
+      # genus filled in for all names that have a taxonomic of genus or more detailed
+      genus = ifelse(.data$taxonomic_resolution %in% c("Genus", "genus", "binomial", "trinomial", "Species", "Subspecies", "Forma",
+                                                       "Varietas") , stringr::word(.data$taxon_name, 1), NA),
+      # family filled in for all names that have a taxonomic of family or more detailed (should be everything)
+      family = ifelse(.data$taxonomic_resolution == "family", taxon_name, family),
+      
+      # identify which names is to be matched to the various identifiers, distribution information, etc. in the taxa file
+      # for names where a part of the complete name string matches to a trinomial, binomial, genus or family, those "truncated" names are the correct match
+      name_to_match_to = ifelse(taxonomic_resolution %in% c("trinomial"), trinomial, NA),      ,
+      name_to_match_to = ifelse(taxonomic_resolution %in% c("binomial"), binomial, name_to_match_to),
+      # for names where the entire taxon string matches to a species or infraspecific names that is APC/APNI recognised, that is the correct match
+      name_to_match_to = ifelse(is.na(name_to_match_to) & !taxonomic_resolution %in% c("genus", "family"), taxon_name, name_to_match_to),
+      name_to_match_to = ifelse(is.na(name_to_match_to), "DO NOT TRY TO MATCH", name_to_match_to),
+      genus = ifelse(is.na(genus), "NO GENUS NAME MATCH", genus)
+    ) %>%
+      # remove family, taxon_rank; they are about to be merged back in, but matches will now be possible to more rows
+    select(-family, -taxon_rank) %>%
+      # merge in identifiers for genus
+    #XXXX need to ask Herve if better to use taxon_id or scientific_name_id here
+    dplyr::left_join(by = c("genus"),
+                     taxa %>% filter(.data$taxon_rank == "Genus") %>%
+                       dplyr::arrange(.data$taxon_id) %>%
+                       dplyr::select(genus = .data$taxon_name, genus_taxon_id = .data$taxon_id) %>%
+                       dplyr::distinct(.data$genus, .keep_all = TRUE)) %>%
+      # merge in all data from taxa
+      # XXXX some actual decisions to make here - do we match the APC genus taxon_ID to names that are genus sp? Or have a separate column with the genus match, but for all taxa?
+      # XXXX it doesn't seem quite right to match genus-resolution names to genus identifiers, because those identifiers apply equally to taxa identified to species
+      # XXXX I do wonder if it would be best to have genus_taxon_id as a column
+    # add identifier for genus, this will the 1 identifier for species with taxonomic_resolution = `genus`; 
+    # but makes clear it is the same genus across all references to that name.
+    dplyr::left_join(by = c("name_to_match_to" = "taxon_name"),
       taxa %>% dplyr::select(-dplyr::contains("clean")) %>% dplyr::distinct()
-    ) %>%
-    # extract genus as this is useful
-    dplyr::mutate(
-      genus = .data$taxon_name  %>% stringr::str_split(" ") %>% purrr::map_chr(1),
-      genus = ifelse(.data$genus %in% taxa$taxon_name, .data$genus, NA_character_)
-    )  %>%
-    dplyr::arrange(.data$taxon_name) %>%
-    dplyr::mutate(
-      taxonomic_status = ifelse(is.na(.data$taxonomic_status) & !is.na(.data$genus), "known", .data$taxonomic_status),
-      taxonomic_status = ifelse(is.na(.data$taxonomic_status) & is.na(.data$genus), "unknown", .data$taxonomic_status),
-    ) %>%
-    split(.$taxonomic_status)
+    ) %>% 
+    dplyr::arrange(.data$taxon_name)
+    
+
+
+  
+  # XXXX why does this only work if I create "genus_taxon_id = NA" (line 1499 above), then delete it again to maintain number of columns in and out?
+  # the code is the same formulation as lines 362, where new column added for subset of data
+  
+  # i <- !is.na(species_tmp$genus)
+  # species_tmp[i,] <-
+  #   species_tmp[i,] %>%
+  #     select(-genus_taxon_id) %>%
+  #     dplyr::left_join(by = c("genus"),
+  #                  taxa %>% filter(.data$taxon_rank == "Genus") %>%
+  #                    dplyr::arrange(.data$taxon_id) %>%
+  #                    dplyr::select(genus = .data$taxon_name, genus_taxon_id = .data$taxon_id) %>%
+  #                    dplyr::distinct(.data$genus, .keep_all = TRUE)
+  #     )
+    
+  # XXXX probably will go  
+    #dplyr::mutate(
+      #taxonomic_status = ifelse(is.na(.data$taxonomic_status) & !is.na(.data$genus), "known genus ", .data$taxonomic_status),
+      #taxonomic_status = ifelse(is.na(.data$taxonomic_status) & is.na(.data$genus), "unknown", .data$taxonomic_status),
+   # ) %>%
+   
+    # split(.$taxonomic_status)
 
   # check after the split, both "known" and "unknown" exist. If missing, create with empty
-  if(is.null(species_tmp[["known"]]))
-    species_tmp[["known"]] <- species_tmp[["unknown"]] %>% dplyr::filter(taxon_name=="dummy taxa")
-  if(is.null(species_tmp[["unknown"]]))
-    species_tmp[["unknown"]] <- species_tmp[["known"]] %>% dplyr::filter(taxon_name=="dummy taxa")
+  # if(is.null(species_tmp[["known"]]))
+  #   species_tmp[["known"]] <- species_tmp[["unknown"]] %>% dplyr::filter(taxon_name=="dummy taxa")
+  # if(is.null(species_tmp[["unknown"]]))
+  #   species_tmp[["unknown"]] <- species_tmp[["known"]] %>% dplyr::filter(taxon_name=="dummy taxa")
   
-  # retrieve families from list of known genera - prioritise genera with accepted names
-   species_tmp[["known"]] <-
-     species_tmp[["known"]] %>%
-     dplyr::select(-.data$family) %>%
-     dplyr::left_join(by="genus",
-               taxa %>% dplyr::filter(.data$taxon_rank == "Genus") %>%
-                 dplyr::select(genus = .data$taxon_name, .data$family) %>% dplyr::distinct()
-     )
+  # # retrieve families from list of known genera - prioritise genera with accepted names
+  #  species_tmp[["known"]] <-
+  #    species_tmp[["known"]] %>%
+  #    dplyr::select(-.data$family) %>%
+  #    dplyr::left_join(by="genus",
+  #              taxa %>% dplyr::filter(.data$taxon_rank == "Genus") %>%
+  #                dplyr::select(genus = .data$taxon_name, .data$family) %>% dplyr::distinct()
+  #    )
 
   austraits_raw$taxa <-
     species_tmp %>%

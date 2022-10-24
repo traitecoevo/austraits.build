@@ -6,7 +6,6 @@ strip_names <- function(x) {
     str_replace_all(" f. ", " ") %>%
     str_replace_all(" s.l. ", " ") %>% 
     str_replace_all(" s.s. ", " ") %>% 
-    #str_replace_all(" aff. ", " ") %>%
     str_replace_all("[-._()]", " ") %>% 
     str_squish() %>% tolower() 
 }
