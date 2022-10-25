@@ -413,12 +413,13 @@ metadata_check_taxa <- function(dataset_id,
                 length(which(distance_c==min_dist_abs_c))==1
               ) {
                 # only allow fuzzy matches if the first 3 letters of the genus are identical
+
                   if(
                     genus_input == to_check[[v]]$genus_first_3_letters[which(distance_c==min_dist_abs_c)]
                   ) {
                       words_in_name <- 1 + stringr::str_count(s, " ")
                     found <-
-                        metadata_add_taxonomic_change(dataset_id, s, paste0(to_check[[v]]$cleaned_name, " [", stringr::word(s, start = 5, end = words_in_name), "; ", dataset_id, "]"),
+                        metadata_add_taxonomic_change(dataset_id, s, paste0(to_check[[v]]$canonicalName[which(distance_c==min_dist_abs_c)], " [", stringr::word(s, start = 5, end = words_in_name), "; ", dataset_id, "]"),
                           sprintf("match_5a. Automatic fuzzy matching alignment with trinomial when notes ignored, %s (%s)", v, Sys.Date()), "trinomial")
                   }
               }
@@ -427,7 +428,9 @@ metadata_check_taxa <- function(dataset_id,
       # XXXXX ERROR - actual binomials are not being caught be this properly - "browser" triggered if called just before this "if" loop, 
             # but not on the first line within it, even if conditions met. But then that binomial is also not being moved forward to 5c, 5d - so lost 
             # this is causing an error if there are 2-word names (i.e. binomials) that need to be aligned to genus - they will get caught here.
-      } else if(
+      } 
+      
+      if(
         !is.na(binomial) &
         !(stringr::word(binomial, 2) == "sp")
           ) { 
@@ -451,10 +454,9 @@ metadata_check_taxa <- function(dataset_id,
               if(
                 genus_input == to_check[[v]]$genus_first_3_letters[which(distance_c==min_dist_abs_c)]
               ) {
-                words_in_name <- 1 + stringr::str_count(s, " ")
                 found <-
                    metadata_add_taxonomic_change(dataset_id, s, 
-                   paste0(to_check[[v]]$cleaned_name, " [", stringr::word(s, start = 3, end = words_in_name), "; ", dataset_id, "]"),
+                   paste0(to_check[[v]]$canonicalName[which(distance_c==min_dist_abs_c)], " [", s, "; ", dataset_id, "]"),
                      sprintf("match_5b. Automatic fuzzy matching alignment with binomial when notes ignored, %s (%s)", v, Sys.Date()),"binomial")
                 }
               }
@@ -536,7 +538,7 @@ metadata_check_taxa <- function(dataset_id,
 
 
    cat("After adding substitutions you should consider rebuilding taxon list with ",
-       crayon::blue("austraits_rebuild_taxon_list()"), "\n\n")
+       crayon::blue("austraits_rebuild_taxon_list(austraits)"), "\n\n")
 
 } #ends function
 
