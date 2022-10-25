@@ -24,16 +24,19 @@ dataset:
         leaf_type = ifelse(`leaf type` == "articles", "article", NA), 
         `leaf type` = ifelse(`leaf type` == "articles", NA, `leaf type`), 
         leaf_lobed = ifelse(`leaf type` == "l", "lobed", NA), 
-        GF = ifelse(aquatic %in% c("yes","y"),"aquatic_herb", GF),
-        GF = ifelse(succulent %in% c("yes","y"),"succulent_short herb", GF),
-        parasitic = ifelse(GF=="parasite","parasitic",NA),
-        fruit_type = NA,
+        GF = ifelse(aquatic %in% c("yes","y"), "aquatic_herb", GF),
+        GF = ifelse(succulent %in% c("yes","y"), "succulent_short herb", GF),
+        parasitic = ifelse(GF == "parasite", "parasitic", NA),
+        fruit_type = NA
       ) %>%
       move_values_to_new_trait(
         "dispersal appendage", "fruit_type", 
         c("drupe", "samara"),
         c("drupe", "samara"),
-        c(" ","wings")
+        c("NA", "wings")
+      ) %>%
+      mutate(
+      `dispersal appendage` = ifelse(`dispersal appendage` == "NA", NA, `dispersal appendage`)
       ) %>%
       separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>% 
       separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%

@@ -48,10 +48,10 @@ dataset:
       group_by(`Species_reconciled with updates and additions`) %>%
         distinct() %>%
         summarise(
-          `growth form` = paste0(`growth form`, collapse = " "),
-          `leaf type` = paste0(`leaf type`, collapse = " "),
-          `leaves lobed` = paste0(`leaves lobed`, collapse = " "),
-          `leaf longevity` = paste0(`leaf longevity`, collapse = " "),
+          `growth form` = paste0(`growth form`, collapse = " ") %>% na_if(.,"NA"),
+          `leaf type` = paste0(`leaf type`, collapse = " ") %>% na_if(.,"NA"),
+          `leaves lobed` = paste0(`leaves lobed`, collapse = " ") %>% na_if(.,"NA"),
+          `leaf longevity` = paste0(`leaf longevity`, collapse = " ") %>% na_if(.,"NA"),
           `wood density species` = mean(`wood density species`),
           `Height (m)` = max(`Height (m)`),
           `leaf length minimum (mm)` = min(`leaf length minimum (mm)`),
@@ -63,7 +63,11 @@ dataset:
           `seed width minimum (mm)` = min(`seed width minimum (mm)`),
           `seed width maximum (mm)` = max(`seed width maximum (mm)`),
           `seed breadth (mm)` = mean(`seed breadth (mm)`)
-          )
+          ) %>%
+      ungroup() %>%
+    mutate(
+      `leaves lobed` = ifelse(`leaves lobed` %in% c("no NA", "no NA NA", "no NA NA NA"), "entire", `leaves lobed`)
+    ) 
   '
   collection_date: 2010/2010
   taxon_name: Species_reconciled with updates and additions
