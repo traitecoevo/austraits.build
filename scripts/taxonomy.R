@@ -495,26 +495,19 @@ metadata_check_taxa <- function(dataset_id,
         # (Only considering genus for now.)
 
       } else {
-          distance_c <- utils::adist(genus, stringr::word(genera_accepted$canonicalName,1), fixed=TRUE)[1,]
-          min_dist_abs_c <-  min(distance_c)
-          min_dist_per_c <-  min(distance_c) / stringr::str_length(genus)
 
-        if(
-            ## Within allowable number of characters (absolute)
-            min_dist_abs_c <= max_distance_abs &
-            ## Within allowable number of characters (relative)
-            min_dist_per_c <= max_distance_rel &
-            ## Is a unique solution
-            length(which(distance_c==min_dist_abs_c))==1
-          ) {
+        match_genus <- 
+          fuzzy_match(genus, genera_accepted$canonicalName, 2, 0.3, n_allowed = 1)
+        
+        if(!is.na(match_genus)) {
             found <-
-              metadata_add_taxonomic_change(dataset_id, s, paste0(
-                genera_accepted$canonicalName[which(distance_c==min_dist_abs_c)], " sp. [", dataset_id, "]"),
+              metadata_add_taxonomic_change(dataset_id, s, paste0(match_genus, " sp. [", dataset_id, "]"),
                 sprintf("5e. Genus matched by fuzzy matching to a name in %s (%s)", v, Sys.Date()), "genus")
             } else {
               cat(sprintf("\tTaxa %s ABSOLUTELY not found\n",
                       crayon::blue(s)))
             }
+
       #if(v == dplyr::last(names(to_check))){
       #  cat(sprintf("\tTaxa ABSOLUTELY not found: %s. Note, genus %s is %s in APC\n", 
       #              crayon::blue(s), crayon::green(genus), 
@@ -543,6 +536,29 @@ metadata_check_taxa <- function(dataset_id,
 } #ends function
 
 
+fuzzy_match <- function(txt, accepted_list, max_distance_abs, max_distance_rel, n_allowed = 1) {
+  
+  distance_c <- utils::adist(txt, accepted_list, fixed=TRUE)[1,]
+  
+  min_dist_abs_c <-  min(distance_c)
+  min_dist_per_c <-  min(distance_c) / stringr::str_length(txt)
+  
+  i <- which(distance_c==min_dist_abs_c)
+  
+  if(
+    ## Within allowable number of characters (absolute)
+    min_dist_abs_c <= max_distance_abs &
+    ## Within allowable number of characters (relative)
+    min_dist_per_c <= max_distance_rel &
+    ## Is a unique solution
+    length(i)<=n_allowed
+  ) {
+    return(accepted_list[i])
+  }
+  return(NA)
+}
+
+
 #' Load taxonomic resources from the APC and APNI
 #' 
 #' Load taxonomic resources from the Australian Plant Census and the Australian 
@@ -556,10 +572,10 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
                                      path_apni = "config/NSL/APNI-names-2020-05-14-1341.csv") {
   
   file_paths <- list(
-    #APC = path_apc,
-    #APNI = path_apni
-    APC = "config/NSL/APC-taxon-2022-10-21-4554.csv",
-    APNI = "config/NSL/APNI-names-2022-10-21-4546.csv"
+    APC = path_apc,
+    APNI = path_apni
+    #APC = "config/NSL/APC-taxon-2022-10-21-4554.csv",
+    #APNI = "config/NSL/APNI-names-2022-10-21-4546.csv"
   )
 
   if(!all(file.exists(unlist(file_paths)))) {
@@ -575,6 +591,8 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
     taxonomic_resources <- list()
     taxonomic_resources$APC <- read_csv_char(file_paths$APC)
     taxonomic_resources$APNI <- read_csv_char(file_paths$APNI) %>% dplyr::distinct(.data$canonicalName, .keep_all = TRUE)
+    taxonomic_resources[["genera_accepted"]] <-
+      taxonomic_resources$APC %>% dplyr::filter(taxonRank %in% c('Genus'), taxonomicStatus == "accepted")
     assign("taxonomic_resources", taxonomic_resources, envir = .GlobalEnv)
   } 
   
