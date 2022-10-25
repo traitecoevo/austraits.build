@@ -55,7 +55,7 @@ metadata_check_taxa <- function(dataset_id,
   metadata <- read_metadata(file.path("data", dataset_id, "metadata.yml"))
 
   # XXXX this line causes a warning - I haven't changed it
-  if(!all(is.null(metadata$taxonomic_updates)) && !is.na(metadata$taxonomic_updates)) {
+  if(!all(is.null(metadata$taxonomic_updates)) && !is.na(metadata$taxonomic_updates[1])) {
     metadata_changes <- 
       metadata$taxonomic_updates %>% util_list_to_df2() 
 
@@ -164,7 +164,7 @@ metadata_check_taxa <- function(dataset_id,
           cat(sprintf("\tName %s displays pattern `family sp.` and it is not being further assessed because family %s in APC\n", 
                        crayon::blue(s), crayon::green(genus)))
         found <- metadata_add_taxonomic_change(dataset_id, s, paste0(genus, " sp. [", dataset_id, "]"),
-                                               sprintf("match_1a.2. Rewording taxon with ending with `sp.` to indicate a family-level alignment with APC accepted name (%s)", Sys.Date()), "genus")
+                                               sprintf("match_1a.2. Rewording taxon with ending with `sp.` to indicate a family-level alignment with APC accepted name (%s)", Sys.Date()), "family")
         
     # XXXX Daniel - this "found" is not inside a loop where found leads to break; should I therefore be adding a "break" at the end of the if statement?
     }
@@ -636,9 +636,10 @@ austraits_rebuild_taxon_list <- function(austraits) {
     # To do this we define the order we want variables to sort in the order listed below with accepted at the top
     # have currently removed some that don't exist - and confused how they will ever exist if you've filtered to only merge in `accepted names`
     # removed: "replaced synonym", "doubtful pro parte taxonomic synonym", "pro parte taxonomic synonym", "doubtful misapplied", "doubtful pro parte misapplied"
+    # , "basionym", "orthographic variant", 
     dplyr::mutate(my_order = .data$cleaned_name_taxonomic_status %>% 
-             forcats::fct_relevel(c("accepted", "taxonomic synonym", "basionym", "nomenclatural synonym", 
-                                    "orthographic variant", "doubtful taxonomic synonym", 
+             forcats::fct_relevel(c("accepted", "taxonomic synonym", "nomenclatural synonym", 
+                                    "doubtful taxonomic synonym", 
                                     "misapplied", "pro parte misapplied", "excluded"))) %>%
     dplyr::arrange(.data$cleaned_name, .data$my_order) %>%
     # For each species, keep the first record (accepted if present) and 

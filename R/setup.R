@@ -614,13 +614,13 @@ metadata_exclude_observations <- function(dataset_id, variable, find, reason) {
 #'
 #' @return yml file with added substitution
 #' @export
-metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) {
+metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason, taxonomic_resolution) {
 
   set_name <- "taxonomic_updates"
 
   metadata <- read_metadata_dataset(dataset_id)
 
-  to_add <- list(find = find, replace = replace, reason = reason) 
+  to_add <- list(find = find, replace = replace, reason = reason, taxonomic_resolution = taxonomic_resolution) 
 
   data <-  util_list_to_df2(metadata[[set_name]]) 
   i <- match(find, data$find)
@@ -631,6 +631,7 @@ metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) 
 
   metadata[[set_name]][[i]][["replace"]] <- replace
   metadata[[set_name]][[i]][["reason"]] <- reason
+  metadata[[set_name]][[i]][["taxonomic_resolution"]] <- taxonomic_resolution
   message(sprintf("%s %s: %s -> %s (%s)", crayon::red("Updating taxonomic change in"),crayon::red(dataset_id), crayon::blue(find), crayon::green(replace), reason))
 
   write_metadata_dataset(metadata, dataset_id)
