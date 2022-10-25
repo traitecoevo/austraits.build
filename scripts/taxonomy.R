@@ -703,12 +703,11 @@ austraits_rebuild_taxon_list <- function(austraits) {
                       taxon_distribution = .data$taxonDistribution, taxon_rank = .data$taxonRank)) %>%
     # Some species have multiple matches. We will prefer the accepted usage, but record others if they exists
     # To do this we define the order we want variables to sort in the order listed below with accepted at the top
-    # have currently removed some that don't exist - and confused how they will ever exist if you've filtered to only merge in `accepted names`
-    # removed: "replaced synonym", "doubtful pro parte taxonomic synonym", "pro parte taxonomic synonym", "doubtful misapplied", "doubtful pro parte misapplied"
-    # , "basionym", "orthographic variant", 
     dplyr::mutate(my_order = .data$cleaned_name_taxonomic_status %>% 
              forcats::fct_relevel(c("accepted", "taxonomic synonym", "nomenclatural synonym", 
-                                    "doubtful taxonomic synonym", 
+                                    "doubtful taxonomic synonym", "basionym", "orthographic variant",
+                                    "replaced synonym", "doubtful pro parte taxonomic synonym", "pro parte taxonomic synonym",
+                                    "doubtful misapplied", "doubtful pro parte misapplied",
                                     "misapplied", "pro parte misapplied", "excluded"))) %>%
     dplyr::arrange(.data$cleaned_name, .data$my_order) %>%
     # For each species, keep the first record (accepted if present) and 

@@ -117,7 +117,7 @@ dataset_process <- function(filename_data_raw,
     traits$traits %>%
     process_add_all_columns(
       c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]),
-        "parsing_id","location_name")
+        "parsing_id","location_name", "taxonomic_resolution", "genus_taxon_id")
     ) %>%
     process_flag_unsupported_traits(definitions) %>%
     process_flag_excluded_observations(metadata) %>%
@@ -163,7 +163,7 @@ dataset_process <- function(filename_data_raw,
                             dplyr::select(.data$location_id, col_tmp = dplyr::any_of(v)) %>%
                             stats::na.omit()
                           )
-      ## Use location level value if present
+      # Use location level value if present
       traits[[v]] <- ifelse(!is.na(traits_tmp[["col_tmp"]]), traits_tmp[["col_tmp"]], traits[[v]])
       }
     }
@@ -192,9 +192,10 @@ dataset_process <- function(filename_data_raw,
     dplyr::arrange(.data$cleaned_name)
 
   # ensure correct order of columns in traits table
+  # at this point, need to retain `genus_taxon_id` & `taxonomic_resolution`, because taxa table & taxonomic_updates not yet assembled.
   traits <-
     traits %>%
-    dplyr::select(c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]), "error"))
+    dplyr::select(c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]), "error", "genus_taxon_id", "taxonomic_resolution"))
 
   # Remove missing values is specified
   if( filter_missing_values == TRUE ) {
@@ -1431,7 +1432,7 @@ build_combine <- function(..., d=list(...)) {
 #'
 #' @export
 build_update_taxonomy <- function(austraits_raw, taxa) {
-
+  
   austraits_raw$taxonomic_updates <-
     austraits_raw$taxonomic_updates %>%
     dplyr::left_join(by = "cleaned_name",
@@ -1465,7 +1466,6 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
   
 ### Fill in columns for trinomial, binomial, genus, and family, as appropriate 
   # and match additional taxon information to the most specific name 
-  
   species_tmp <-
     austraits_raw$traits %>%
     dplyr::select(.data$taxon_name, .data$taxonomic_resolution) %>%
@@ -1508,35 +1508,22 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
                        dplyr::arrange(.data$taxon_id) %>%
                        dplyr::select(genus = .data$taxon_name, genus_taxon_id = .data$taxon_id) %>%
                        dplyr::distinct(.data$genus, .keep_all = TRUE)) %>%
-      # merge in all data from taxa
-      # XXXX some actual decisions to make here - do we match the APC genus taxon_ID to names that are genus sp? Or have a separate column with the genus match, but for all taxa?
-      # XXXX it doesn't seem quite right to match genus-resolution names to genus identifiers, because those identifiers apply equally to taxa identified to species
-      # XXXX I do wonder if it would be best to have genus_taxon_id as a column
-    # add identifier for genus, this will the 1 identifier for species with taxonomic_resolution = `genus`; 
-    # but makes clear it is the same genus across all references to that name.
+    # merge in all data from taxa
+    
+    # add identifier for genus, this will be the 1 identifier for species with `taxonomic_resolution = genus`
+    # taxa that resolve to species or an infraspecific name will have both a genus-level identifier and the appropriate species/infraspecific taxon_id and scientific_name_id
+    # this setup clearly links all taxonomic names with the same genus name
     dplyr::left_join(by = c("name_to_match_to" = "taxon_name"),
       taxa %>% dplyr::select(-dplyr::contains("clean")) %>% dplyr::distinct()
     ) %>% 
-    dplyr::arrange(.data$taxon_name)
-    
-
-
-  
-  # XXXX why does this only work if I create "genus_taxon_id = NA" (line 1499 above), then delete it again to maintain number of columns in and out?
-  # the code is the same formulation as lines 362, where new column added for subset of data
-  
-  # i <- !is.na(species_tmp$genus)
-  # species_tmp[i,] <-
-  #   species_tmp[i,] %>%
-  #     select(-genus_taxon_id) %>%
-  #     dplyr::left_join(by = c("genus"),
-  #                  taxa %>% filter(.data$taxon_rank == "Genus") %>%
-  #                    dplyr::arrange(.data$taxon_id) %>%
-  #                    dplyr::select(genus = .data$taxon_name, genus_taxon_id = .data$taxon_id) %>%
-  #                    dplyr::distinct(.data$genus, .keep_all = TRUE)
-  #     )
-    
-  # XXXX probably will go  
+    dplyr::arrange(.data$taxon_name) %>%
+    dplyr::mutate(
+      taxonomic_status = ifelse(is.na(.data$taxonomic_status) & !is.na(.data$genus_taxon_id), "known_genus", .data$taxonomic_status),
+      taxonomic_status = ifelse(is.na(.data$taxonomic_status), "unknown_name", .data$taxonomic_status),
+      taxonomic_reference = ifelse(taxonomic_status == "known_genus", "APC", taxonomic_reference)
+    )
+      
+  # XXXX keeping as archive for now, but replaced with scheme above
     #dplyr::mutate(
       #taxonomic_status = ifelse(is.na(.data$taxonomic_status) & !is.na(.data$genus), "known genus ", .data$taxonomic_status),
       #taxonomic_status = ifelse(is.na(.data$taxonomic_status) & is.na(.data$genus), "unknown", .data$taxonomic_status),
@@ -1564,7 +1551,14 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
     dplyr::bind_rows() %>%
     dplyr::arrange(.data$taxon_name)
 
-  austraits_raw
+  # only now, at the very end, can `genus_taxon_id` and `taxonomic_resolution` be removed from the traits table
+  
+  austraits_raw$traits <-
+    austraits_raw$traits %>%
+      dplyr::select(-.data$genus_taxon_id, -.data$taxonomic_resolution)
+
+  austraits_raw  
+  
 }
 
 #' Add version information to AusTraits
