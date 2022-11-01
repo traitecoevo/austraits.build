@@ -16,28 +16,24 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:     '
+  custom_R_code: '
     data %>%
       mutate(
-        year = str_extract(refshort,"[:digit:][:digit:][:digit:][:digit:]"),
-        year = if_else(is.na(year),"unknown",year),
         oilcontentval = oilcontentval/100,
-        source_id = stringr::str_replace_all(refshort,"[\\(]",""),    
-        source_id = stringr::str_replace(source_id,"\\)",""),
-        source_id = stringr::str_replace(source_id,"\\.",""),
-        source_id = stringr::str_replace(source_id,"\\, ","_"),
-        source_id = stringr::str_replace(source_id,"\\& ",""),
-        source_id = stringr::str_replace_all(source_id,"[:space:]","_"),
-        source_id = stringr::str_replace(source_id,"\\_et_al",""),
-        source_id = if_else(is.na(source_id),"unknown",source_id),
+        ref_year = stringr::str_extract(refshort, "[:digit:]{4}"),
+        ref_year = ifelse(is.na(ref_year), "2019", ref_year),
+        ref_author = stringr::word(refdesc, 1),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]",""),
+        source_id = paste0(ref_author, "_", ref_year),
+        source_id = if_else(is.na(source_id),"unknown",source_id)
       ) %>%
-      arrange(taxa, oilcontentval, year) %>% 
+      arrange(taxa, oilcontentval, ref_year) %>% 
       group_by(taxa, oilcontentval, oilmaterialdesc) %>%
-        mutate(merged_ref = paste0(source_id, collapse = "; ")) %>%
-        summarise(across(.cols = everything(),.fns = first)) %>% 
+      mutate(merged_ref = paste0(source_id, collapse = "; ")) %>%
+      summarise(across(.cols = everything(),.fns = first)) %>% 
       ungroup() %>% 
       group_by(taxa, oilmaterialdesc) %>% 
-        mutate(obs = row_number()) %>%
+      mutate(obs = row_number()) %>%
       ungroup()
   '
   collection_date: unknown/2019

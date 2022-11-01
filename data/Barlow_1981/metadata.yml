@@ -73,7 +73,10 @@ dataset:
             value = ifelse(species_name %in% c("Piper hederaceum var. hederaceum") & trait == "lifeform","climber_vine_woody",value),
             value = ifelse(species_name %in% c("Stephania japonica var. discolor") &  trait == "lifeform","vine",value),
             value = ifelse(species_name %in% c("Caesalpinia subtropica") & trait == "lifeform","climber_woody",value)
-      )
+      ) %>%
+      group_by(species_name, trait) %>%
+        distinct(value, .keep_all = TRUE) %>%
+      ungroup()
   ' 
   collection_date: unknown/2015
   taxon_name: species_name

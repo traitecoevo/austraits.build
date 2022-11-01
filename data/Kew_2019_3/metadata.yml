@@ -23,15 +23,22 @@ dataset:
         planttype = ifelse(planttype=="-",NA,planttype),
         maxdsm = ifelse(maxdsm=="SW",80,maxdsm),
         maxdsm = ifelse(maxdsm=="sw?",80,maxdsm),
-        salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"), planttype, NA)
+        salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"), planttype, NA),
+        ref_year = stringr::str_extract(refshort, "[:digit:]{4}"),
+        ref_year = ifelse(is.na(ref_year), "2019", ref_year),
+        ref_author = stringr::word(refdesc, 1),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]",""),
+        source_id = paste0(ref_author, "_", ref_year),
+        source_id = if_else(is.na(source_id),"unknown",source_id)
       ) %>%
       group_by(taxa) %>%
         mutate(references = paste0(refdesc, collapse = "; ")) %>%
       ungroup %>%
-      distinct(taxa, references, planttype, maxdsm, salt_tolerance, phopath)
+      distinct(taxa, references, planttype, maxdsm, salt_tolerance, phopath, source_id)
   '
   collection_date: unknown/2019
   taxon_name: taxa
+  source_id: source_id
   description: Salt and water tolerance data on species from Kew seed databases
   basis_of_record: literature
   life_stage: adult

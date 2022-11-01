@@ -7,7 +7,7 @@ source:
     title: Seed Information Database (SID) and Seed Bank Database
     url: http://data.kew.org/sid/
   original_01:
-    key: Jones_Earle_1966
+    key: Jones_1966
     bibtype: Article
     year: '1966'
     author: Quentin Jones and F. R. Earle
@@ -18,7 +18,7 @@ source:
     pages: 127--155
     doi: 10.1007/bf02904010
   original_02:
-    key: Brand_Cherikoff_1985
+    key: Brand_1985
     bibtype: InBook
     year: 1985
     author: J.C. Brand and V. Cherikoff
@@ -27,7 +27,7 @@ source:
     editor: G.E.Wickens, J.R.Goodin and D.V.Field
     publisher: George Allen and Unwin
     place: London
-    pages: 53-68
+    pages: 53--68
   original_03:
     key: Maconochie_1985
     bibtype: InBook
@@ -38,9 +38,9 @@ source:
     editor: G.E.Wickens, J.R.Goodin and D.V.Field
     publisher: George Allen and Unwin
     place: London
-    pages: 53-68
+    pages: 289--302
   original_04:
-    key: Barclay_Earle_1974
+    key: Barclay_1974
     bibtype: Article
     year: 1974
     author: F.R. Earle and A.S. Barclay
@@ -49,7 +49,7 @@ source:
     volume: 28
     pages: 178--236
   original_05:
-    key: Earle_Jones_1962
+    key: Earle_1962
     bibtype: Article
     year: 1974
     author: F.R. Earle and Q. Jones
@@ -91,19 +91,17 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:       '
+  custom_R_code: '
     data %>% 
       mutate(
-        protcontentval = protcontentval/100,
-        source_id = stringr::str_replace_all(refshort,"[\\(]",""),    
-        source_id = stringr::str_replace(source_id,"\\)",""),
-        source_id = stringr::str_replace(source_id,"\\, ","_"),
-        source_id = stringr::str_replace(source_id,"\\& ",""),
-        source_id = stringr::str_replace_all(source_id,"[:space:]","_"),
-        source_id = stringr::str_replace(source_id,"\\_et_al.","")
+        protcontentval = protcontentval/100,        
+        ref_year = stringr::str_extract(refshort, "[:digit:]{4}"),
+        ref_author = stringr::word(refdesc, 1),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]",""),
+        source_id = paste0(ref_author, "_", ref_year)
         ) %>% 
       group_by(`SID taxa`, source_id, oilmaterialdesc) %>%
-      mutate(observation_num = row_number()) %>%
+        mutate(observation_num = row_number()) %>%
       ungroup()
   '
   collection_date: unknown/2019

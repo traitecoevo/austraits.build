@@ -20,21 +20,18 @@ dataset:
   custom_R_code:     '
     data %>%
       mutate(
-        original_dataset_id = stringr::str_replace_all(refshort,"[\\(]",""),    
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\)",""),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\.",""),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\, ","_"),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\& ",""),
-        original_dataset_id = stringr::str_replace_all(original_dataset_id,"[:space:]","_"),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\_et_al",""),
-        original_dataset_id = if_else(is.na(original_dataset_id),"unknown",original_dataset_id),
+        ref_year = stringr::str_extract(refshort, "[:digit:]{4}"),
+        ref_author = stringr::word(refdesc, 1),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]",""),
+        ref_author = ifelse(stringr::str_detect(refshort, "(van der Pijl, 1982)"), "vanderPijl", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "(van Rheede van Oudtshoorn & van Rooyen, 1999)"), "vanRheede", ref_author),
+        source_id = paste0(ref_author, "_", ref_year),
         measurement_remarks = paste0(
           "DETAILED NOTES: ", pdasubgroupdesc, "; ",
           "METHOD: ", method, "; ",
           "ANIMAL GROUP: ",  animalgp, "; ",
           "ANIMAL SPECIES: ", animalspecies, "; ",
-          "NOTES: ", dispnotes, "; ",
-          "REFERENCE: ", original_dataset_id
+          "NOTES: ", dispnotes
         ),
         measurement_remarks = stringr::str_replace(measurement_remarks, "DETAILED NOTES: NA; ",""),
         measurement_remarks = stringr::str_replace(measurement_remarks, "METHOD: NA; ",""),
@@ -45,6 +42,7 @@ dataset:
   '
   collection_date: unknown/2019
   taxon_name: SID taxa
+  source_id: source_id
   description: Seed dispersal data on species from Kew seed databases
   basis_of_record: literature
   life_stage: adult

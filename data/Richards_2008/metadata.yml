@@ -227,26 +227,10 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code:     '
-    data %>%
-      group_by(name_original, AusTraits_site_name) %>%
-        mutate(method_id2 = dplyr::row_number()) %>%
-      ungroup() %>%
-      mutate(
-        measurement_remarks = context,
-        method_id2 = ifelse(context == "reference_site", 1, method_id2),
-        method_id2 = ifelse(stringr::str_detect(context,"adult"),2, method_id2),
-        method_id2 = ifelse(stringr::str_detect(context,"epicormic"),3, method_id2),
-        measurement_remarks = ifelse(context %in% c("roadside_adult_foliage","pasture_adult_foliage","remnant_woodland_adult_foliage"),"adult foliage", measurement_remarks),
-        measurement_remarks = ifelse(context %in% c("roadside_epicormic_foliage","pasture_epicormic_foliage","remnant_woodland_epicormic_foliage"),"epicormic foliage", measurement_remarks),
-        AusTraits_site_name = ifelse(context %in% c("roadside_adult_foliage","roadside_epicormic_foliage"),"Marsh_1995_Moormung_roadside", AusTraits_site_name),
-        AusTraits_site_name = ifelse(context %in% c("pasture_adult_foliage","pasture_epicormic_foliage"),"Marsh_1995_Moormung_pasture", AusTraits_site_name),
-        AusTraits_site_name = ifelse(context %in% c("remnant_woodland_adult_foliage","remnant_woodland_epicormic_foliage"),"Marsh_1995_Moormung_remnant_woodland", AusTraits_site_name)
-      )
-  '
+  custom_R_code: .na
   collection_date: unknown/2009
   taxon_name: name_original
-  measurement_remarks: measurement_remarks
+  measurement_remarks: context
   location_name: AusTraits_site_name
   source_id: AusTraits_key
   description: Collection of trait data on Australian plants compiled by Anna Richards
@@ -515,43 +499,6 @@ locations:
     geology (parent material): .na.character
     elevation (m): .na.character
     soil P, total: .na.character
-  Marsh_1995_Moormung_roadside:
-    latitude (deg): -37.817
-    longitude (deg): 147.63
-    description: roadside
-    precipitation, MAP (mm): .na.real
-    temperature, MAT (C): .na.real
-    georeference remarks: Marsh_1995
-    soil type: .na.character
-    soil pH: .na.character
-    geology (parent material): .na.character
-    elevation (m): .na.character
-    soil P, total: .na.character
-  Marsh_1995_Moormung_pasture:
-    latitude (deg): -37.817
-    longitude (deg): 147.63
-    description: pasture
-    precipitation, MAP (mm): .na.real
-    temperature, MAT (C): .na.real
-    georeference remarks: Marsh_1995
-    soil type: .na.character
-    soil pH: .na.character
-    geology (parent material): .na.character
-    elevation (m): .na.character
-    soil P, total: .na.character
-  Marsh_1995_Moormung_remnant_woodland:
-    latitude (deg): -37.817
-    longitude (deg): 147.63
-    description: undisturbed redgum forest with a grassy stratum dominated by Poa
-      species
-    precipitation, MAP (mm): .na.real
-    temperature, MAT (C): .na.real
-    georeference remarks: Marsh_1995
-    soil type: .na.character
-    soil pH: .na.character
-    geology (parent material): .na.character
-    elevation (m): .na.character
-    soil P, total: .na.character
   Marsh_1995_Moormung:
     latitude (deg): -37.817
     longitude (deg): 147.63
@@ -781,7 +728,59 @@ locations:
     geology (parent material): Lower Permian sediments
     elevation (m): .na.character
     soil P, total: .na.character
-contexts: .na
+contexts:
+- context_property: leaf age
+  category: method
+  var_in: leaf_age
+  values:
+  - value: immature leaves
+  - value: mature leaves
+  - value: second year leaves
+  - value: young leaves
+  - value: adult foliage
+  - value: epicormic foliage
+- context_property: stand age
+  category: plot
+  var_in: stand_maturity
+  values:
+  - value: declining
+    description: Stand is at a declining stage.
+  - value: intermediate
+    description: Stand is at an intermediate stage.
+  - value: healthy
+    description: Stand is at a healthy stage.
+- context_property: canopy position
+  category: method
+  var_in: canopy_position
+  values:
+  - value: canopy
+  - value: gap
+  - value: understory
+- context_property: vegetation history
+  category: plot
+  var_in: plot_location
+  values:
+  - value: reference_site
+  - value: roadside
+  - value: pasture
+  - value: remant woodland
+- context_property: unknown
+  category: method
+  var_in: wood_sample_type
+  values:
+  - find: branch_wood_smooth-barked_less_1.25_cm
+    value: smooth-barked branch wood less than 1.25 cm in diameter
+  - find: branch_wood_smooth-branch_wood_barked_more_1.25_cm
+    value: smooth-barked branch wood more than 1.25 cm in diameter
+  - value: rough-barked
+  - value: sapwood
+  - value: heartwood
+  - value: branch wood
+  - value: living branches
+  - value: stem wood
+  - value: branch wood & bark
+  - value: stem wood & bark
+  - value: branch
 traits:
 - var_in: photosynthetic pathway
   unit_in: .na.character

@@ -30,14 +30,13 @@ dataset:
     data %>%
       mutate(
         sample_date = sample_date %>% ym() %>% format.Date("%Y-%m") %>% sort(),
-        treatment_simple = ifelse(treatment == "control (=same as +P)","control",treatment),
-        collection_date = sample_date
+        collection_date = sample_date,
+        treatment = ifelse(treatment == "control (=same as +P)", "same_as_+P", treatment)
       )
   '
   collection_date: collection_date
   taxon_name: name_original
   location_name: site_text
-  measurement_remarks: treatment
   description: A glasshouse experiment investigated the response to phosphorus of
     2 common and abundant ephemeral forbs and several additional species.
   basis_of_record: field
@@ -90,29 +89,27 @@ locations:
 contexts:
 - context_property: nutrient treatment
   category: treatment
-  var_in: treatment_simple
+  var_in: treatment
   values:
   - value: control
     description: Control treatment, with no nutrient addition. For the third and fourth
       sampling times, data for the natural soil and 200 kg P/ha addition treatments
       were combined, as there was no difference in outcome.
+  - value: same_as_+P
+    description: P addition treatment where there was no significant difference to the control treatment.
   - value: P added
     description: Phosphorus equivalent to 200 kg P/ha applied.
 - context_property: sampling season
   category: temporal
-  var_in: sample_date
+  var_in: month_sampled
   values:
-  - find: 1996-03
-    value: 1996-03
+  - value: March
     description: Measurements made in 1996-03.
-  - find: 1996-06
-    value: 1996-06
+  - value: June
     description: Measurements made in 1996-06.
-  - find: 1996-08
-    value: 1996-08
+  - value: August
     description: Measurements made in 1996-08.
-  - find: 1996-11
-    value: 1996-11
+  - value: November
     description: Measurements made in 1996-11.
 traits:
 - var_in: Nmass
