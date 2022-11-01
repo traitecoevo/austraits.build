@@ -375,15 +375,18 @@ dataset_test_worker <-
         ))
         
         # people
+        # XXXX I've broken this - but previously it was still looking for "people" so wasn't an actual test
         test_list(metadata[["contributors"]], info = f)
         expect_list_elements_contains_names(metadata[["contributors"]],
-                                     schema$metadata$elements$people$elements %>% names(),
+                                     schema$metadata$elements$contributors$elements$data_collectors %>% names(),
                                      info = f)
-        
+          
         # dataset
+
         test_list_named_allowed(metadata[["dataset"]],
                                 schema$metadata$elements$dataset$values %>% names(),
                                 info = paste0(f,"-dataset"))
+        
         expect_type(metadata[["dataset"]][["data_is_long_format"]], "logical")
         expect_type(metadata[["dataset"]], "list")
         
@@ -394,7 +397,7 @@ dataset_test_worker <-
           expect_silent(
             locations <-
               metadata$locations %>%
-              process_format_locations(dataset_id) %>%
+              process_format_locations(dataset_id, schema) %>%
               process_add_all_columns(names(schema[["austraits"]][["elements"]][["locations"]][["elements"]]))
           )
           
@@ -420,15 +423,15 @@ dataset_test_worker <-
           
           expect_silent(
             if(!is.na(metadata$contexts[1])) {
-                f <- function(x) {
+                f2 <- function(x) {
                     tibble::tibble(var_in = x$var_in, category = x$category, util_list_to_df2(x$values))
                 }
 
                 contexts <-
                   metadata$contexts %>%
-                  purrr::map_df(.id = "context_property", f) %>%
+                  purrr::map_df(.id = "context_property", f2) %>%
                   dplyr::select(.data$context_property, .data$category, .data$var_in,
-                  dplyr::any_of(c("find", "replace", "description"))) %>%                    
+                  dplyr::any_of(c("find", "value", "description"))) %>%                    
                   process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))
               } else {
                 contexts <-
@@ -439,6 +442,8 @@ dataset_test_worker <-
         }
         
         # Traits
+        
+        # XXXX below, the second item needs to also list the various context var_in values as allowable - as in either trait elements or context columns
         expect_list_elements_contains_names(metadata[["traits"]],
                                     schema$metadata$elements$traits$elements[1:3] %>% names(),
                                     info = paste0(f, "-traits"))
@@ -525,7 +530,7 @@ dataset_test_worker <-
         ## Check config files contain all relevant columns
         if (metadata[["dataset"]][["data_is_long_format"]]) {
           # Variable match
-          #expect_isin(names(metadata[["dataset"]]), c("taxon_name",  "trait_name", "value","location_name", "observation_id", "context_name", "date"), info=paste0(f, " - variable_match"))
+          #expect_isin(names(metadata[["dataset"]]), c("taxon_name",  "trait_name", "value","location_name", "individual_id", "context_name", "collection_date"), info=paste0(f, " - variable_match"))
           
           # For vertical datasets, expect all values of "trait column" found in traits
           var_out <- names(metadata[["dataset"]])
@@ -535,7 +540,7 @@ dataset_test_worker <-
           expect_contains(traits[["var_in"]], values, info = files[2])
         } else {
           # Variable match
-          #expect_isin(names(metadata[["dataset"]]), c("taxon_name", "location_name", "observation_id", "context_name", "date"), info=paste0(f, " - variable_match"))
+          #expect_isin(names(metadata[["dataset"]]), c("taxon_name", "location_name", "individual_id", "context_name", "collection_date"), info=paste0(f, " - variable_match"))
           
           # For wide datasets, expect variables in traits are header in the data
           values <- names(data)
@@ -586,7 +591,7 @@ dataset_test_worker <-
 
           for (j in 1:length(metadata[["contexts"]])) {
             context_prop <- metadata[["contexts"]][[j]]$var_in %>% as.vector()
-            context_input_values <- metadata$contexts[[1]]$values %>%
+            context_input_values <- metadata[["contexts"]][[j]]$values %>%
               util_list_to_df2() %>%
               dplyr::select(.data$find) %>%
               as.vector()
