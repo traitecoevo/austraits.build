@@ -20,17 +20,19 @@ dataset:
     data %>%
       mutate(
         oilcontentval = oilcontentval/100,
-        ref_year = stringr::str_extract(refshort, "[:digit:]{4}"),
+        ref_year = stringr::str_extract(refshort, "(?<!\\d)\\d{4}(?!\\d)"),
         ref_year = ifelse(is.na(ref_year), "2019", ref_year),
-        ref_author = stringr::word(refdesc, 1),
-        ref_author = stringr::str_replace_all(ref_author, "[:punct:]",""),
+        ref_author = ifelse(stringr::str_detect(refdesc, "RBG Kew, Wakehurst"), "Kew", NA),
+        ref_author = ifelse(stringr::str_detect(refdesc, "Seed Conservation Centre, Adelaide ") & is.na(ref_author), "ABG", ref_author),
+        ref_author = ifelse(is.na(ref_author), stringr::str_trim(word(refshort, 1)), ref_author),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]", ""),
+        ref_author = ifelse(is.na(ref_author), "unknown", ref_author),
         source_id = paste0(ref_author, "_", ref_year),
-        source_id = if_else(is.na(source_id),"unknown",source_id)
       ) %>%
       arrange(taxa, oilcontentval, ref_year) %>% 
       group_by(taxa, oilcontentval, oilmaterialdesc) %>%
       mutate(merged_ref = paste0(source_id, collapse = "; ")) %>%
-      summarise(across(.cols = everything(),.fns = first)) %>% 
+      summarise(across(.cols = everything(), .fns = first)) %>%
       ungroup() %>% 
       group_by(taxa, oilmaterialdesc) %>% 
       mutate(obs = row_number()) %>%
