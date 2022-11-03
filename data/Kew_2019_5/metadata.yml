@@ -20,25 +20,38 @@ dataset:
   custom_R_code:     '
     data %>%
       mutate(
-        ref_year = stringr::str_extract(refshort, "[:digit:]{4}"),
-        ref_author = stringr::word(refdesc, 1),
-        ref_author = stringr::str_replace_all(ref_author, "[:punct:]",""),
-        ref_author = ifelse(stringr::str_detect(refshort, "(van der Pijl, 1982)"), "vanderPijl", ref_author),
-        ref_author = ifelse(stringr::str_detect(refshort, "(van Rheede van Oudtshoorn & van Rooyen, 1999)"), "vanRheede", ref_author),
+        ref_year = stringr::str_extract(refshort, "(?<!\\d)\\d{4}(?!\\d)"),
+        ref_year = ifelse(is.na(ref_year), "2019", ref_year),
+        ref_author = ifelse(stringr::str_detect(refshort, "van der Pijl"), "vanderPijl", NA),
+        ref_author = ifelse(stringr::str_detect(refshort, "van Rheede van Oudtshoorn") & is.na(ref_author), "vanRheedevanOudtshoorn", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "RBG Kew, Wakehurst Place") & is.na(ref_author), "Kew", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Forest Restoration Research Unit,") & is.na(ref_author), "CMU", ref_author),
+        ref_author = ifelse(is.na(ref_author), stringr::str_trim(word(refdesc, 1)), ref_author),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]", ""),
         source_id = paste0(ref_author, "_", ref_year),
         measurement_remarks = paste0(
-          "DETAILED NOTES: ", pdasubgroupdesc, "; ",
-          "METHOD: ", method, "; ",
-          "ANIMAL GROUP: ",  animalgp, "; ",
-          "ANIMAL SPECIES: ", animalspecies, "; ",
-          "NOTES: ", dispnotes
+            "DETAILED NOTES: ", pdasubgroupdesc, "; ",
+            "METHOD: ", method, "; ",
+            "ANIMAL GROUP: ",  animalgp, "; ",
+            "ANIMAL SPECIES: ", animalspecies, "; ",
+            "NOTES: ", dispnotes
         ),
-        measurement_remarks = stringr::str_replace(measurement_remarks, "DETAILED NOTES: NA; ",""),
-        measurement_remarks = stringr::str_replace(measurement_remarks, "METHOD: NA; ",""),
-        measurement_remarks = stringr::str_replace(measurement_remarks, "ANIMAL GROUP: NA; ",""),
-        measurement_remarks = stringr::str_replace(measurement_remarks, "ANIMAL SPECIES: NA; ",""),
-        measurement_remarks = stringr::str_replace(measurement_remarks, "NOTES: NA; ","")
-      )       
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "DETAILED NOTES: NA; ", ""),
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "METHOD: NA; ", ""),
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "ANIMAL GROUP: NA; ", ""),
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "ANIMAL SPECIES: NA; ", ""),
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "NOTES: NA; ", "")
+      )     
   '
   collection_date: unknown/2019
   taxon_name: SID taxa
