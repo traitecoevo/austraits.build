@@ -95,13 +95,13 @@ dataset:
     data %>% 
       mutate(
         protcontentval = protcontentval/100,        
-        ref_year = stringr::str_extract(refshort, "[:digit:]{4}"),
-        ref_author = stringr::word(refdesc, 1),
-        ref_author = stringr::str_replace_all(ref_author, "[:punct:]",""),
+        ref_year = stringr::str_extract(refshort, "(?<!\\d)\\d{4}(?!\\d)"),
+        ref_author = stringr::str_trim(word(refshort, 1)),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]", ""),
         source_id = paste0(ref_author, "_", ref_year)
-        ) %>% 
+      ) %>% 
       group_by(`SID taxa`, source_id, oilmaterialdesc) %>%
-        mutate(observation_num = row_number()) %>%
+      mutate(observation_num = row_number()) %>%
       ungroup()
   '
   collection_date: unknown/2019
