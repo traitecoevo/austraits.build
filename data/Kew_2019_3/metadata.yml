@@ -20,21 +20,32 @@ dataset:
   custom_R_code:     '
     data %>% 
       mutate(
-        planttype = ifelse(planttype=="-",NA,planttype),
-        maxdsm = ifelse(maxdsm=="SW",80,maxdsm),
-        maxdsm = ifelse(maxdsm=="sw?",80,maxdsm),
+        planttype = ifelse(planttype == "-", NA, planttype),
+        maxdsm = ifelse(maxdsm == "SW", 80, maxdsm),
+        maxdsm = ifelse(maxdsm == "sw?", 80, maxdsm),
         salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"), planttype, NA),
-        ref_year = stringr::str_extract(refshort, "[:digit:]{4}"),
+        ref_year = stringr::str_extract(refshort, "(?<!\\d)\\d{4}(?!\\d)"),
+        ref_year = ifelse(stringr::str_detect(refshort, "Proc. 11th Int."), "1970", ref_year),
         ref_year = ifelse(is.na(ref_year), "2019", ref_year),
-        ref_author = stringr::word(refdesc, 1),
-        ref_author = stringr::str_replace_all(ref_author, "[:punct:]",""),
+        ref_author = ifelse(stringr::str_detect(refshort, "Bidner-BarHava"), "BidnerBarhava", NA),
+        ref_author = ifelse(stringr::str_detect(refshort, "Den Hartog") & is.na(ref_author), "denHartog", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Environmental Research Laboratory.") & is.na(ref_author), "UArizona", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Le Houerou,") & is.na(ref_author), "LeHouerou", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Le Roux") & is.na(ref_author), "LeRoux", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Proc. 11th Int. Grass.") & is.na(ref_author), "IGC", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "St. John") & is.na(ref_author), "StJohn", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Van Steenis") & is.na(ref_author), "vanSteenis", ref_author),
+        ref_author = ifelse(is.na(ref_author), stringr::str_trim(word(refshort, 1)), ref_author),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]", ""),
+        ref_author = ifelse(is.na(ref_author), "unknown", ref_author),
         source_id = paste0(ref_author, "_", ref_year),
-        source_id = if_else(is.na(source_id),"unknown",source_id)
+        source_id = ifelse(is.na(refdesc), source_id, ifelse(stringr::str_detect(refdesc, "O'Leary et al., 1986"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(refdesc), source_id, ifelse(stringr::str_detect(refdesc, "O'Leary, 1986"), paste0(source_id, "_2", sep = ""), source_id))
       ) %>%
       group_by(taxa) %>%
-        mutate(references = paste0(refdesc, collapse = "; ")) %>%
+      mutate(references = paste0(refdesc, collapse = "; ")) %>%
       ungroup %>%
-      distinct(taxa, references, planttype, maxdsm, salt_tolerance, phopath, source_id)
+      distinct(taxa, spauth, infraspauth, planttype, maxdsm, salt_tolerance, phopath, references, refdesc, refshort, source_id)
   '
   collection_date: unknown/2019
   taxon_name: taxa
