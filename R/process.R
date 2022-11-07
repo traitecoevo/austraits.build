@@ -117,7 +117,7 @@ dataset_process <- function(filename_data_raw,
     traits$traits %>%
     process_add_all_columns(
       c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]),
-        "parsing_id","location_name", "taxonomic_resolution", "genus_taxon_id")
+        "parsing_id","location_name", "taxonomic_resolution")
     ) %>%
     process_flag_unsupported_traits(definitions) %>%
     process_flag_excluded_observations(metadata) %>%
@@ -192,10 +192,10 @@ dataset_process <- function(filename_data_raw,
     dplyr::arrange(.data$cleaned_name)
 
   # ensure correct order of columns in traits table
-  # at this point, need to retain `genus_taxon_id` & `taxonomic_resolution`, because taxa table & taxonomic_updates not yet assembled.
+  # at this point, need to retain `taxonomic_resolution`, because taxa table & taxonomic_updates not yet assembled.
   traits <-
     traits %>%
-    dplyr::select(c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]), "error", "genus_taxon_id", "taxonomic_resolution"))
+    dplyr::select(c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]), "error", "taxonomic_resolution"))
 
   # Remove missing values is specified
   if( filter_missing_values == TRUE ) {
@@ -1506,7 +1506,7 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
     dplyr::left_join(by = c("genus"),
                      taxa %>% filter(.data$taxon_rank == "Genus") %>%
                        dplyr::arrange(.data$taxon_id) %>%
-                       dplyr::select(genus = .data$taxon_name, genus_taxon_id = .data$taxon_id) %>%
+                       dplyr::select(genus = .data$taxon_name) %>%
                        dplyr::distinct(.data$genus, .keep_all = TRUE)) %>%
     # merge in all data from taxa
     
@@ -1518,7 +1518,7 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
     ) %>% 
     dplyr::arrange(.data$taxon_name) %>%
     dplyr::mutate(
-      taxonomic_status = ifelse(is.na(.data$taxonomic_status) & !is.na(.data$genus_taxon_id), "known_genus", .data$taxonomic_status),
+      taxonomic_status = ifelse(is.na(.data$taxonomic_status), "known_genus", .data$taxonomic_status),
       taxonomic_status = ifelse(is.na(.data$taxonomic_status), "unknown_name", .data$taxonomic_status),
       taxonomic_reference = ifelse(taxonomic_status == "known_genus", "APC", taxonomic_reference)
     )
@@ -1551,11 +1551,11 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
     dplyr::bind_rows() %>%
     dplyr::arrange(.data$taxon_name)
 
-  # only now, at the very end, can `genus_taxon_id` and `taxonomic_resolution` be removed from the traits table
+  # only now, at the very end, can `taxonomic_resolution` be removed from the traits table
   
   austraits_raw$traits <-
     austraits_raw$traits %>%
-      dplyr::select(-.data$genus_taxon_id, -.data$taxonomic_resolution)
+      dplyr::select(-.data$taxonomic_resolution)
 
   austraits_raw  
   

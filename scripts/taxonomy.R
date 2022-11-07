@@ -149,6 +149,7 @@ metadata_check_taxa <- function(dataset_id,
 
      #XXXX next 3 lines removed  - scheme different since it is now that we are acknowleding certain names are genus-aligned
      if(stringr::str_detect(cleaned_name,"sp.$") & (genus %in% genera_accepted$canonicalName)) {
+     if(stringr::str_detect(cleaned_name,"sp.$") & (genus %in% genera_accepted$canonicalName) & stringr::words(cleaned_name, 2)) {
       #   cat(sprintf("\tSkipping %s - not assessing names ending in `sp.` Note, genus %s is %s in APC\n", 
       #               crayon::blue(s), crayon::green(genus), 
       #               ifelse(genus %in% genera_accepted$canonicalName, crayon::green("IS"), crayon::red("IS NOT"))))
@@ -625,6 +626,10 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
     APNI = path_apni
     #APC = "config/NSL/APC-taxon-2022-10-21-4554.csv",
     #APNI = "config/NSL/APNI-names-2022-10-21-4546.csv"
+    #APC = path_apc,
+    #APNI = path_apni
+    APC = "config/NSL/APC-taxon-2022-10-21-4554.csv",
+    APNI = "config/NSL/APNI-names-2022-10-21-4546.csv"
   )
 
   if(!all(file.exists(unlist(file_paths)))) {
@@ -723,11 +728,20 @@ austraits_rebuild_taxon_list <- function(austraits) {
     dplyr::slice(1) %>%  
     dplyr::ungroup() %>% 
     dplyr::select(-.data$my_order) %>% 
+    dplyr::mutate(
+      count_naturalised = stringr::str_count(.data$taxon_distribution, "naturalised"),
+      count_n_and_n = stringr::str_count(.data$taxon_distribution, "native and naturalised"),
+      count_states = stringr::str_count(.data$taxon_distribution, ",") + 1,
+      establishment_means = ifelse(.data$count_naturalised > 0 & .data$count_n_and_n == 0, "naturalised", NA),
+      establishment_means = ifelse(.data$count_n_and_n > 0 | (.data$count_naturalised > 0 & .data$count_states > .data$count_naturalised), "native and naturalised", .data$establishment_means),
+      establishment_means = ifelse(.data$count_naturalised == 0 & .data$count_n_and_n == 0, "native", .data$establishment_means)
+    ) %>%
     dplyr::select(.data$cleaned_name, .data$taxonomic_reference, .data$cleaned_scientific_name_id, .data$cleaned_name_taxonomic_status, 
                   .data$cleaned_name_alternative_taxonomic_status, 
                   .data$taxon_name, .data$taxon_id, .data$scientific_name_authorship, .data$taxon_rank, 
-                  .data$taxonomic_status, .data$family, .data$taxon_distribution, 
-                  .data$scientific_name, .data$scientific_name_id)
+                  .data$taxonomic_status, .data$family, .data$taxon_distribution, .data$establishment_means,
+                  .data$scientific_name, .data$scientific_name_id) %>%
+
 
   taxa1 <- 
     taxa %>% dplyr::filter(!is.na(.data$cleaned_scientific_name_id)) %>% 
