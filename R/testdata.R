@@ -159,9 +159,7 @@ dataset_test_worker <-
                          i,
                          colour_characters(object[[i]], which(disallowed[[i]])))
         }
-        
-        # if(any(check)) browser()
-        
+                
         expect(
           identical(as.vector(all(!check)), TRUE),
           sprintf("%s -- disallowed characters detected: %s", info, txt)
@@ -375,12 +373,35 @@ dataset_test_worker <-
         ))
         
         # people
-        # XXXX I've broken this - but previously it was still looking for "people" so wasn't an actual test
         test_list(metadata[["contributors"]], info = f)
-        expect_list_elements_contains_names(metadata[["contributors"]],
-                                     schema$metadata$elements$contributors$elements$data_collectors %>% names(),
-                                     info = f)
-          
+        
+        test_list_named_allowed(metadata[["contributors"]],
+          schema$metadata$elements$contributors$elements %>% names(),
+          info = f
+        )
+
+        # data_collectors
+        if(!is.na(metadata[["contributors"]][["data_collectors"]][1])){
+          test_list(metadata[["contributors"]][["data_collectors"]], info=f)
+        
+          vars <- schema$metadata$elements$contributors$elements$data_collectors$elements %>% names()
+          for(i in seq_along(metadata[["contributors"]][["data_collectors"]])){
+            test_list_named_allowed(
+              metadata[["contributors"]][["data_collectors"]][[i]], 
+              vars, info = paste(f, "data_collector", i)
+            )
+            expect_contains(metadata[["contributors"]][["data_collectors"]][[i]] %>% names(), vars[1:4])
+          }
+        }
+
+        # austraits_curators
+        expect_true(!is.null(metadata[["contributors"]][["austraits_curators"]]))
+        expect_type(metadata[["contributors"]][["austraits_curators"]], "character")
+  
+        # assistants
+        if(!is.null(metadata[["contributors"]][["assistants"]][1]))
+          expect_type(metadata[["contributors"]][["assistants"]], "character")
+
         # dataset
 
         test_list_named_allowed(metadata[["dataset"]],
@@ -418,49 +439,80 @@ dataset_test_worker <-
         }
         
         # contexts
-        if (length(unlist(metadata[["contexts"]])) > 1) {
-          test_list(metadata[["contexts"]], info = f)
-          
-          expect_silent(
-            if(!is.na(metadata$contexts[1])) {
-                f2 <- function(x) {
-                    tibble::tibble(var_in = x$var_in, category = x$category, util_list_to_df2(x$values))
-                }
+        expect_silent(
+          contexts <-
+            metadata$contexts %>%
+            process_format_contexts(dataset_id)
+        )
 
-                contexts <-
-                  metadata$contexts %>%
-                  purrr::map_df(.id = "context_property", f2) %>%
-                  dplyr::select(.data$context_property, .data$category, .data$var_in,
-                  dplyr::any_of(c("find", "value", "description"))) %>%                    
-                  process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))
-              } else {
-                contexts <-
-                  tibble::tibble(dataset_id = character(), var_in = character()) %>%                    
-                  process_add_all_columns(names(schema[["austraits"]][["elements"]][["contexts"]][["elements"]]))
-              }
+        ## check context details load
+        if(nrow(contexts > 0)) {
+          
+          test_dataframe_names_contain(
+            contexts,
+            schema$metadata$elements$contexts$elements %>% names(),
+            info = paste0(f, "-contexts")
           )
         }
         
-        # Traits
-        
-        # XXXX below, the second item needs to also list the various context var_in values as allowable - as in either trait elements or context columns
+        # Traits        
         expect_list_elements_contains_names(metadata[["traits"]],
                                     schema$metadata$elements$traits$elements[1:3] %>% names(),
                                     info = paste0(f, "-traits"))
         expect_list_elements_allowed_names(metadata[["traits"]],
-                                    schema$metadata$elements$traits$elements %>% names(),
+                                    c(schema$metadata$elements$traits$elements %>% names(), unique(contexts$var_in)),
                                     info = paste0(f, "-traits"))
-        expect_silent(traits <-
-                        austraits.build::util_list_to_df2(metadata[["traits"]]))
+        expect_silent(
+          traits <- austraits.build::util_list_to_df2(metadata[["traits"]])
+          )
         expect_true(is.data.frame(traits))
         
         expect_isin(traits$trait_name,
                     definitions$elements %>% names(),
                     info = paste0(f, "-traits"))
         
+        # Now that traits loaded, check details of context match
+        if (nrow(contexts > 0)) {
+
+          # Check they are in context dataset
+          expect_contains(
+            c(names(data), names(traits)),
+            unique(contexts$var_in),
+            info = files[2]
+          )
+
+
+          for (j in unique(contexts[["var_in"]])) {
+            contextsub <- 
+              contexts %>% filter(var_in == j)
+            
+            unique2 <- function(x) {unique(x[!is.na(x)])}
+            # Context values align either with a column of data or a column of traits table
+            if(is.null(data[[j]])) {
+              v <- traits[[j]] %>% unique2()
+            } else {
+              v <- data[[j]] %>% unique2()
+            }
+
+            if (all(!is.na(contextsub[["find"]]))) {
+              i <- v %in% contextsub[["find"]]
+            } else {
+              i <- v %in% contextsub[["value"]]
+            }
+
+            expect_true(all(i),
+              info = paste0(
+                f,
+                "- context names from data file not present in metadata contexts: ",
+                v[!i]
+              )
+            )
+          }
+        }
+
         # Check value types in metadata and any columns of data
         
-        # To do -- also check for entity type, basis of value and any other columns
+        # XXXX To do -- also check for entity type, basis of value and any other columns
         
         i <- (traits$value_type %in% names(data))
         
@@ -507,7 +559,7 @@ dataset_test_worker <-
                 definitions$elements[[trait]]$type == "categorical") {
               to_check <- x[[trait]]$replace %>% unique()
               allowable <-
-                c(definitions$elements[[trait]]$values %>% names(),
+                c(definitions$elements[[trait]]$allowed_values_levels %>% names(),
                   NA)
               failing <- to_check[!(
                 is.na(to_check) |
@@ -586,39 +638,10 @@ dataset_test_worker <-
                       ))
         }
         
-        ## check context details are in context dataset
-        if (length(unlist(metadata[["contexts"]])) > 1) {
-
-          for (j in 1:length(metadata[["contexts"]])) {
-            context_prop <- metadata[["contexts"]][[j]]$var_in %>% as.vector()
-            context_input_values <- metadata[["contexts"]][[j]]$values %>%
-              util_list_to_df2() %>%
-              dplyr::select(.data$find) %>%
-              as.vector()
-
-            expect_contains(
-              names(data),
-              context_prop,
-              info = paste0(files[2], " - column ", context_prop, "not found in data")
-            )
-
-            v <-
-              (data[[context_prop]] %>% unique %>% na.omit)
-
-#XXXX this will fail for studies where `find` isn't specified
-            i <- v %in% context_input_values$find
-
-            expect_true(all(i),
-                        info = paste0(
-                          f,
-                          "- context names from data file not present in metadata: ",
-                          v[!i]
-                        ))
-          }
-        }
+    
       })
     }
 
-        # keep this
+    # keep this
     context("end")
   }
