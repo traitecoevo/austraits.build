@@ -264,11 +264,10 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
 #' lists (~8 vs 230Mb)
 #' 
 #' @param austraits austraits data object
+#' @param taxonomic_resources resources used for building taxon list
 #' @importFrom rlang .data
 #' @export
-austraits_rebuild_taxon_list <- function(austraits) {
-
-  taxonomic_resources <- load_taxonomic_resources()
+austraits_rebuild_taxon_list <- function(austraits, taxonomic_resources) {
   
   subset_accepted <- function(x) {
     x[x!= "accepted"]
@@ -305,11 +304,11 @@ austraits_rebuild_taxon_list <- function(austraits) {
     # Some species have multiple matches. We will prefer the accepted usage, but record others if they exists
     # To do this we define the order we want variables to sort by,m with accepted at the top
     dplyr::mutate(my_order = .data$taxonomicStatusClean %>% 
-             forcats::fct_relevel(c("accepted", "taxonomic synonym", "basionym", "nomenclatural synonym", "isonym", 
+             suppressWarnings(forcats::fct_relevel(c("accepted", "taxonomic synonym", "basionym", "nomenclatural synonym", "isonym", 
                                     "orthographic variant", "common name", "doubtful taxonomic synonym", "replaced synonym", 
                                     "misapplied", "doubtful pro parte taxonomic synonym", "pro parte nomenclatural synonym", 
                                     "pro parte taxonomic synonym", "pro parte misapplied", "excluded", "doubtful misapplied", 
-                                    "doubtful pro parte misapplied"))) %>%
+                                    "doubtful pro parte misapplied")))) %>%
     dplyr::arrange(.data$cleaned_name, .data$my_order) %>%
     # For each species, keep the first record (accepted if present) and 
     # record any alternative status to indicate where there was ambiguity
