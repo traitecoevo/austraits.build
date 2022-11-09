@@ -586,7 +586,34 @@ metadata_check_taxa <- function(dataset_id,
 } #ends function
 
 
+#' Fuzzy match taxonomic names
+#' 
+#' This function attempts to match input strings to a list of allowable taxonomic names.
+#' It requires that the first letter (or digit) of each word is identical between the input and output strings to avoid mis-matches
+#' 
+#' @param txt The string of text requiring a match
+#' @param accepted_list The list of accepted names attempting to match to
+#' @param max_distance_abs The maximum allowable number of characters differing between the input string and the match
+#' @param max_distance_rel The maximum proportional difference between the input string and the match
+#' @param n_allowed The number of allowable matches returned. Defaults to 1
+#'
+#' @return A text string that matches a recognised taxon name or scientific name
+#' @export
+#'
+#' @examples
 fuzzy_match <- function(txt, accepted_list, max_distance_abs, max_distance_rel, n_allowed = 1) {
+  
+  words_in_text <- 1 + stringr::str_count(txt," ")
+  
+  txt_word1_start <- stringr::str_extract(txt, "[:alpha:]")
+  
+  if(words_in_text > 1) {
+    txt_word2_start <- stringr::str_extract(word(txt,2), "[:alpha:]")
+  }
+  
+  if(words_in_text > 2) {
+    txt_word3_start <- stringr::str_extract(word(txt,3), "[:alpha:]")
+  }
   
   distance_c <- utils::adist(txt, accepted_list, fixed=TRUE)[1,]
   
@@ -594,7 +621,7 @@ fuzzy_match <- function(txt, accepted_list, max_distance_abs, max_distance_rel, 
   min_dist_per_c <-  min(distance_c) / stringr::str_length(txt)
   
   i <- which(distance_c==min_dist_abs_c)
-
+  
   if(
     ## Within allowable number of characters (absolute)
     min_dist_abs_c <= max_distance_abs &
@@ -603,11 +630,87 @@ fuzzy_match <- function(txt, accepted_list, max_distance_abs, max_distance_rel, 
     ## Is a unique solution
     length(i)<=n_allowed
   ) {
-    return(accepted_list[i])
+    words_in_match <- 1 + stringr::str_count(accepted_list[i]," ")
+    
+    match_word1_start <- stringr::str_extract(accepted_list[i], "^[:alpha:]")
+    
+    if(words_in_text > 1) {
+      match_word2_start <- stringr::str_extract(word(accepted_list[i],2), "^[:alpha:]")
+    }
+    
+    if(words_in_text > 2) {
+      match_word3_start <- stringr::str_extract(word(accepted_list[i],3), "^[:alpha:]")
+    }
+    
+    keep = FALSE
+    
+    if(words_in_text == 1) {
+      if (txt_word1_start == match_word1_start) {
+        keep = TRUE }
+      
+    } else if(words_in_text == 2) {
+      if (txt_word1_start == match_word1_start & txt_word2_start == match_word2_start) {
+        keep = TRUE }
+      
+    } else if(words_in_text > 2) {
+      if (txt_word1_start == match_word1_start & txt_word2_start == match_word2_start & txt_word3_start == match_word3_start) {
+        keep = TRUE }
+    }
+    
+    if(keep == TRUE) {
+      
+      return(accepted_list[i])
+      
+    }
+    return(NA)
   }
   return(NA)
 }
 
+#' Strip names of punctuation and filler words
+#'
+#' @param x Text string, generally a taxonomic name
+#'
+#' @return Taxonomic name stripped of punctuation and filler words, excluding sp.
+#' @export
+#'
+#' @examples
+strip_names <- function(x) {
+  x %>% 
+    str_replace_all(" subsp. ", " ") %>% 
+    str_replace_all(" var. |var$", " ") %>% 
+    str_replace_all(" ser. ", " ") %>% 
+    str_replace_all(" f. ", " ") %>%
+    str_replace_all(" s.l. ", " ") %>% 
+    str_replace_all(" s.s. ", " ") %>% 
+    str_replace_all("[:punct:]", " ") %>%
+    str_replace_all("\\=", " ") %>%
+    str_replace_all("  ", " ") %>%
+    str_squish() %>% tolower() 
+}
+
+#' Strip names of punctuation and filler words, including sp.
+#'
+#' @param x Text string, generally a taxonomic name
+#'
+#' @return Taxonomic name stripped of punctuation and filler words, including sp.
+#' @export
+#'
+#' @examples
+strip_names_2 <- function(x) {
+  x %>% 
+    str_replace_all(" subsp. ", " ") %>% 
+    str_replace_all(" var. |var$", " ") %>% 
+    str_replace_all(" ser. ", " ") %>% 
+    str_replace_all(" f. ", " ") %>%
+    str_replace_all(" s.l. ", " ") %>% 
+    str_replace_all(" s.s. ", " ") %>% 
+    str_replace_all(" sp. |sp.$", " ") %>%
+    str_replace_all("[:punct:]", " ") %>%
+    str_replace_all("\\=", " ") %>%
+    str_replace_all("  ", " ") %>%
+    str_squish() %>% tolower() 
+}
 
 #' Load taxonomic resources from the APC and APNI
 #' 
