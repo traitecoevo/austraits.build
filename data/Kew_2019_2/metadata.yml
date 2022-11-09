@@ -99,8 +99,15 @@ dataset:
         ref_author = stringr::str_trim(word(refshort, 1)),
         ref_author = stringr::str_replace_all(ref_author, "[:punct:]", ""),
         source_id = paste0(ref_author, "_", ref_year)
-      ) %>% 
-      group_by(`SID taxa`, source_id, oilmaterialdesc) %>%
+    ) %>% 
+      arrange(`SID taxa`, protcontentval, source_id) %>% 
+      group_by(`SID taxa`, oilmaterialdesc, protcontentval) %>%
+      mutate(merged_ref = ifelse(length(unique(source_id)) == 1, source_id, paste0(source_id, collapse = "; "))) %>%
+      ungroup() %>% 
+      group_by(`SID taxa`, merged_ref, oilmaterialdesc) %>%
+      mutate(across(protcontentval, replace_duplicates_with_NA)) %>% 
+      ungroup() %>% 
+      group_by(`SID taxa`, source_id, oilmaterialdesc) %>% 
       mutate(observation_num = row_number()) %>%
       ungroup()
   '
@@ -114,8 +121,9 @@ dataset:
   sampling_strategy: each entry is carefully annotated with methods and references
     in data.csv file
   original_file: in raw data folder
+  measurement_remarks: merged_ref
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
-    Commons licesne. Data not to be used for Commercial Purposes.
+    Commons license. Data not to be used for Commercial Purposes.
 locations: .na
 contexts:
 - context_property: tissue sampled
@@ -134,6 +142,21 @@ contexts:
   values:
   - value: 1
   - value: 2
+  - value: 3
+  - value: 4
+  - value: 5
+  - value: 6
+  - value: 7
+  - value: 8
+  - value: 9
+  - value: 10
+  - value: 11
+  - value: 12
+  - value: 13
+  - value: 14
+  - value: 15
+  - value: 16
+  - value: 17
 traits:
 - var_in: protcontentval
   unit_in: '%'

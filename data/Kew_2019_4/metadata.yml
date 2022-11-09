@@ -28,13 +28,20 @@ dataset:
         ref_author = stringr::str_replace_all(ref_author, "[:punct:]", ""),
         ref_author = ifelse(is.na(ref_author), "unknown", ref_author),
         source_id = paste0(ref_author, "_", ref_year),
+        source_id = ifelse(is.na(refdesc), source_id, ifelse(stringr::str_detect(refdesc, "Engelmann, F., Chabrillange, N."), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(refdesc), source_id, ifelse(stringr::str_detect(refdesc, "Engelmann, F., Dumet, D."), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(refdesc), source_id, ifelse(stringr::str_detect(refdesc, "Yoshinaga, A. 2004a. CCRT"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(refdesc), source_id, ifelse(stringr::str_detect(refdesc, "Yoshinaga, A. 2004b. NCGRP"), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(refdesc), source_id, ifelse(stringr::str_detect(refdesc, "Yoshinaga, A. 2004c. NTBG"), paste0(source_id, "_3", sep = ""), source_id))
       ) %>%
-      arrange(taxa, oilcontentval, ref_year) %>% 
-      group_by(taxa, oilcontentval, oilmaterialdesc) %>%
-      mutate(merged_ref = paste0(source_id, collapse = "; ")) %>%
-      summarise(across(.cols = everything(), .fns = first)) %>%
+      arrange(taxa, oilcontentval, source_id) %>% 
+      group_by(taxa, oilmaterialdesc, oilcontentval) %>%
+      mutate(merged_ref = ifelse(length(unique(source_id)) == 1, source_id, paste0(source_id, collapse = "; "))) %>%
       ungroup() %>% 
-      group_by(taxa, oilmaterialdesc) %>% 
+      group_by(taxa, merged_ref) %>%
+      mutate(across(c(oilcontentval), replace_duplicates_with_NA)) %>% 
+      ungroup() %>% 
+      group_by(taxa, source_id, oilmaterialdesc) %>% 
       mutate(obs = row_number()) %>%
       ungroup()
   '
@@ -48,7 +55,7 @@ dataset:
   original_file: in raw data folder
   measurement_remarks: merged_ref
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
-    Commons licesne. Data not to be used for Commercial Purposes.
+    Commons license. Data not to be used for Commercial Purposes.
 locations: .na
 contexts:
 - context_property: tissue sampled
@@ -92,6 +99,21 @@ contexts:
   values:
   - value: 1
   - value: 2
+  - value: 3
+  - value: 4
+  - value: 5
+  - value: 6
+  - value: 7
+  - value: 8
+  - value: 9
+  - value: 10
+  - value: 11
+  - value: 12
+  - value: 13
+  - value: 14
+  - value: 15
+  - value: 16
+  - value: 17
 traits:
 - var_in: oilcontentval
   unit_in: g/g
