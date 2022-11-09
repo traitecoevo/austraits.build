@@ -107,8 +107,9 @@ metadata_check_taxa <- function(dataset_id,
   to_check[["APNI names"]] <- 
     taxonomic_resources$APNI %>% dplyr::filter(.data$nameElement != "sp.") %>% 
     dplyr::select(.data$canonicalName, .data$scientificName, ID = .data$scientificNameID, .data$nameType, .data$taxonRank) %>% 
+    dplyr::filter(.data$taxonRank %in% c('Series', 'Subspecies', 'Species', 'Forma', 'Varietas')) %>% 
     dplyr::mutate(
-            taxonomicStatus = "unplaced for APC", 
+            taxonomicStatus = "unplaced by APC", 
             stripped_canonical = strip_names(.data$canonicalName),
             stripped_scientific = strip_names(.data$scientificName),
             binomial = ifelse(.data$nameType == "scientific", stringr::word(.data$stripped_canonical, start = 1, end = 2), NA),
@@ -148,7 +149,6 @@ metadata_check_taxa <- function(dataset_id,
       # Indicate genera not being matched and omit these names from further searches
 
      #XXXX next 3 lines removed  - scheme different since it is now that we are acknowleding certain names are genus-aligned
-     if(stringr::str_detect(cleaned_name,"sp.$") & (genus %in% genera_accepted$canonicalName)) {
      if(stringr::str_detect(cleaned_name,"sp.$") & (genus %in% genera_accepted$canonicalName) & stringr::words(cleaned_name, 2)) {
       #   cat(sprintf("\tSkipping %s - not assessing names ending in `sp.` Note, genus %s is %s in APC\n", 
       #               crayon::blue(s), crayon::green(genus), 
@@ -622,10 +622,6 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
                                      path_apni = "config/NSL/APNI-names-2020-05-14-1341.csv") {
   
   file_paths <- list(
-    APC = path_apc,
-    APNI = path_apni
-    #APC = "config/NSL/APC-taxon-2022-10-21-4554.csv",
-    #APNI = "config/NSL/APNI-names-2022-10-21-4546.csv"
     #APC = path_apc,
     #APNI = path_apni
     APC = "config/NSL/APC-taxon-2022-10-21-4554.csv",
@@ -643,10 +639,11 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
   if(!exists("taxonomic_resources",  envir = .GlobalEnv)) {
     message(crayon::red("loading object `taxonomic_resources` into global environment"))
     taxonomic_resources <- list()
-    taxonomic_resources$APC <- read_csv_char(file_paths$APC)
-    taxonomic_resources$APNI <- read_csv_char(file_paths$APNI) %>% dplyr::distinct(.data$canonicalName, .keep_all = TRUE)
-    taxonomic_resources[["genera_accepted"]] <-
-      taxonomic_resources$APC %>% dplyr::filter(taxonRank %in% c('Genus'), taxonomicStatus == "accepted")
+    taxonomic_resources$APC <- read_csv_char(file_paths$APC) %>%
+      dplyr::filter(!.data$taxonomicStatus == "excluded")
+    taxonomic_resources$APNI <- read_csv_char(file_paths$APNI) %>%
+      dplyr::distinct(.data$canonicalName, .keep_all = TRUE) %>%
+      dyplr::filter(!.data$caonicalName %in% taxonomic_resources$APC$canonicalName)
     assign("taxonomic_resources", taxonomic_resources, envir = .GlobalEnv)
   } 
   
@@ -676,106 +673,121 @@ austraits_rebuild_taxon_list <- function(austraits) {
   taxa <- 
     # build list of observed taxon names
     austraits$traits %>% 
-    dplyr::select(cleaned_name = .data$taxon_name) %>% 
-    dplyr::distinct() %>%
-    # match our cleaned names against names in APC list
-    dplyr::left_join(
-      by = "cleaned_name", taxonomic_resources$APC %>% 
-        dplyr::filter(!grepl("sp\\.$", .data$canonicalName)) %>% 
-        dplyr::select(cleaned_name = .data$canonicalName, cleaned_scientific_name_id = .data$scientificNameID, 
-                      cleaned_name_taxonomic_status = .data$taxonomicStatus, accepted_name_usage_id = .data$acceptedNameUsageID)) %>% 
-    # Also add all accepted genera species, varieties etc from APC
-    dplyr::bind_rows(
-      taxonomic_resources$APC %>% 
-        # XXXX subspecies was missing from this list
-        dplyr::filter(.data$taxonRank %in% c('Familia', 'Series', 'Genus', 'Species', 'Forma', 'Varietas', 'Subspecies'), 
-                      .data$taxonomicStatus == "accepted") %>% 
+      dplyr::select(cleaned_name = .data$taxon_name) %>%
+      dplyr::mutate(
+        complete_name = cleaned_name,
+        cleaned_name = stringr::str_split_fixed(.data$cleaned_name, "\\[",2)[,1] %>% str_trim(),
+        cleaned_name = stringr::str_replace(.data$cleaned_name, " sp\\.$",""), 
+        cleaned_name = stringr::str_replace(.data$cleaned_name, " x$","")
+      ) %>% 
+      dplyr::distinct() %>%
+      # match our cleaned names against names in APC list
+      dplyr::left_join(
+        by = "cleaned_name", taxonomic_resources$APC %>% 
         dplyr::select(cleaned_name = .data$canonicalName, cleaned_scientific_name_id = .data$scientificNameID, 
                       cleaned_name_taxonomic_status = .data$taxonomicStatus, accepted_name_usage_id = .data$acceptedNameUsageID)) %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(taxonomic_reference = ifelse(!is.na(.data$cleaned_scientific_name_id), "APC", NA_character_)) %>% 
-    #dplyr::mutate(scientific_name_id = .data$cleaned_scientific_name_id) %>%
-    # Now find accepted names for each name in the list (sometimes they are the same)
-    dplyr::left_join(
-      by = "accepted_name_usage_id", taxonomic_resources$APC %>% 
-        # XXXX next line confuses me. How do you draw in all the other variants if you're only merging in accepted names?
-        dplyr::filter(.data$taxonomicStatus =="accepted") %>% 
-        dplyr::select(accepted_name_usage_id = .data$acceptedNameUsageID,
-                      taxon_id = .data$taxonID, taxon_name = .data$canonicalName, 
-                      taxonomic_status = .data$taxonomicStatus,  
-                      scientific_name = .data$scientificName, scientific_name_id = .data$scientificNameID, 
-                      scientific_name_authorship = .data$scientificNameAuthorship, .data$family,
-                      taxon_distribution = .data$taxonDistribution, taxon_rank = .data$taxonRank)) %>%
-    # Some species have multiple matches. We will prefer the accepted usage, but record others if they exists
-    # To do this we define the order we want variables to sort in the order listed below with accepted at the top
-    dplyr::mutate(my_order = .data$cleaned_name_taxonomic_status %>% 
-             forcats::fct_relevel(c("accepted", "taxonomic synonym", "nomenclatural synonym", 
-                                    "doubtful taxonomic synonym", "basionym", "orthographic variant",
-                                    "replaced synonym", "doubtful pro parte taxonomic synonym", "pro parte taxonomic synonym",
-                                    "doubtful misapplied", "doubtful pro parte misapplied",
-                                    "misapplied", "pro parte misapplied", "excluded"))) %>%
-    dplyr::arrange(.data$cleaned_name, .data$my_order) %>%
-    # For each species, keep the first record (accepted if present) and 
-    # record any alternative status to indicate where there was ambiguity
-    dplyr::group_by(.data$cleaned_name) %>% 
-    dplyr::mutate(
-      cleaned_name_alternative_taxonomic_status = ifelse(.data$cleaned_name_taxonomic_status[1] == "accepted", 
-                                               .data$cleaned_name_taxonomic_status %>% 
-          unique() %>% 
-          subset_accepted() %>% 
-          paste0(collapse = " | ") %>% 
-          dplyr::na_if(""), NA_character_)) %>% 
-    dplyr::slice(1) %>%  
-    dplyr::ungroup() %>% 
-    dplyr::select(-.data$my_order) %>% 
-    dplyr::mutate(
-      count_naturalised = stringr::str_count(.data$taxon_distribution, "naturalised"),
-      count_n_and_n = stringr::str_count(.data$taxon_distribution, "native and naturalised"),
-      count_states = stringr::str_count(.data$taxon_distribution, ",") + 1,
-      establishment_means = ifelse(.data$count_naturalised > 0 & .data$count_n_and_n == 0, "naturalised", NA),
-      establishment_means = ifelse(.data$count_n_and_n > 0 | (.data$count_naturalised > 0 & .data$count_states > .data$count_naturalised), "native and naturalised", .data$establishment_means),
-      establishment_means = ifelse(.data$count_naturalised == 0 & .data$count_n_and_n == 0, "native", .data$establishment_means)
-    ) %>%
-    dplyr::select(.data$cleaned_name, .data$taxonomic_reference, .data$cleaned_scientific_name_id, .data$cleaned_name_taxonomic_status, 
-                  .data$cleaned_name_alternative_taxonomic_status, 
-                  .data$taxon_name, .data$taxon_id, .data$scientific_name_authorship, .data$taxon_rank, 
-                  .data$taxonomic_status, .data$family, .data$taxon_distribution, .data$establishment_means,
-                  .data$scientific_name, .data$scientific_name_id) %>%
-
-
+      # Also add all accepted genera species, varieties etc from APC
+      dplyr::bind_rows(
+        taxonomic_resources$APC %>% 
+          dplyr::filter(.data$taxonRank %in% c('Familia', 'Series', 'Genus', 'Species', 'Forma', 'Varietas', 'Subspecies'), 
+                        .data$taxonomicStatus == "accepted") %>% 
+          dplyr::select(cleaned_name = .data$canonicalName, cleaned_scientific_name_id = .data$scientificNameID, 
+                        cleaned_name_taxonomic_status = .data$taxonomicStatus, accepted_name_usage_id = .data$acceptedNameUsageID)) %>%
+      dplyr::arrange(complete_name) %>%
+      dplyr::distinct(complete_name, cleaned_name, .keep_all = TRUE) %>%
+      dplyr::mutate(taxonomic_reference = ifelse(!is.na(.data$cleaned_scientific_name_id), "APC", NA_character_)) %>%
+      # For all names that can be linked to a taxon `accepted` by APC, add in additional columns of data
+      # These matches are done using `accepted_name_usage_id`, because this identifier is the same for all `known` names that link
+        # to a single `accepted` name
+      # Only `accepted` names are merged in right now, because the goal is to add in the `taxon_id` and `scientific_name_id` for
+        # the `accepted` name only
+      dplyr::left_join(
+        by = "accepted_name_usage_id", taxonomic_resources$APC %>%
+          dplyr::filter(.data$taxonomicStatus =="accepted") %>% 
+          dplyr::select(accepted_name_usage_id = .data$acceptedNameUsageID,
+                        taxon_id = .data$taxonID, taxon_name = .data$canonicalName, 
+                        taxonomic_status = .data$taxonomicStatus,  
+                        scientific_name = .data$scientificName, scientific_name_id = .data$scientificNameID, 
+                        scientific_name_authorship = .data$scientificNameAuthorship, .data$family,
+                        taxon_distribution = .data$taxonDistribution, taxon_rank = .data$taxonRank)) %>%
+      # Some values for `cleaned_name` will have multiple matches in the APC. 
+      # We will prefer the accepted usage, but record others if they exist
+      # To do this we define the order we want variables to sort in the order listed below with accepted at the top
+      dplyr::mutate(my_order = .data$cleaned_name_taxonomic_status %>% 
+               forcats::fct_relevel(c("accepted", "taxonomic synonym", "nomenclatural synonym", 
+                                      "doubtful taxonomic synonym", "basionym", "orthographic variant",
+                                      "replaced synonym", "doubtful pro parte taxonomic synonym", "pro parte taxonomic synonym",
+                                      "doubtful misapplied", "doubtful pro parte misapplied",
+                                      "misapplied", "pro parte misapplied"))) %>%
+      dplyr::arrange(.data$cleaned_name, .data$my_order) %>%
+      # For each species, keep the first record (accepted if present) and 
+      # record any alternative status to indicate where there was ambiguity
+      dplyr::group_by(.data$cleaned_name, .data$complete_name) %>%
+      dplyr::mutate(
+        cleaned_name_alternative_taxonomic_status = ifelse(.data$cleaned_name_taxonomic_status[1] == "accepted", 
+                                                 .data$cleaned_name_taxonomic_status %>% 
+            unique() %>% 
+            subset_accepted() %>% 
+            paste0(collapse = " | ") %>% 
+            dplyr::na_if(""), NA_character_)) %>%
+      dplyr::slice(1) %>%  
+      dplyr::ungroup() %>%
+      dplyr::select(-.data$my_order) %>%
+      # Add in `establishment_means`, indicating if a taxon is native, naturalised or both
+      # This code is based on the exact syntax for taxon_distribution in APC; 
+        # the word `native` is used only if a taxon is both native and naturalised in a state
+      dplyr::mutate(
+        count_naturalised = stringr::str_count(.data$taxon_distribution, "naturalised"),
+        count_n_and_n = stringr::str_count(.data$taxon_distribution, "native and naturalised"),
+        count_states = stringr::str_count(.data$taxon_distribution, ",") + 1,
+        establishment_means = ifelse(.data$count_naturalised > 0 & .data$count_n_and_n == 0, "naturalised", NA),
+        establishment_means = ifelse(.data$count_n_and_n > 0 | (.data$count_naturalised > 0 & .data$count_states > .data$count_naturalised), "native and naturalised", .data$establishment_means),
+        establishment_means = ifelse(.data$count_naturalised == 0 & .data$count_n_and_n == 0, "native", .data$establishment_means),
+      ) %>%
+      dplyr::select(.data$cleaned_name, .data$complete_name, .data$taxonomic_reference, .data$cleaned_scientific_name_id, .data$cleaned_name_taxonomic_status, 
+                    .data$cleaned_name_alternative_taxonomic_status, 
+                    .data$taxon_name, .data$taxon_id, .data$scientific_name_authorship, .data$taxon_rank, 
+                    .data$taxonomic_status, .data$family, .data$taxon_distribution, .data$establishment_means,
+                    .data$scientific_name, .data$scientific_name_id)
+    
+  # taxa 1 is the `cleaned names` that have been matched to an `accepted` or `known` name in APC and therefore now have a `cleaned_scientific_name_id` assigned
+  
   taxa1 <- 
-    taxa %>% dplyr::filter(!is.na(.data$cleaned_scientific_name_id)) %>% 
+    taxa %>% dplyr::filter(!is.na(.data$scientific_name_id)) %>%
+    dplyr::mutate(cleaned_name = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), .data$complete_name, .data$cleaned_name)) %>%
     dplyr::distinct() 
   
-  # Now check against APNI for any species not found in APC
+  # Now check against APNI for any `cleaned names` not found in APC
   # Only keep those species with a match
 
   taxa2 <-
     taxa %>% 
-    dplyr::filter(is.na(.data$taxon_name)) %>%
-    dplyr::select(.data$cleaned_name) %>%
-    dplyr::left_join(by = "cleaned_name", taxonomic_resources$APNI %>% 
-                       dplyr::filter(.data$nameElement != "sp.") %>%
+    dplyr::filter(is.na(.data$scientific_name_id)) %>%
+    dplyr::select(.data$cleaned_name, .data$complete_name) %>%
+    dplyr::left_join(by = "cleaned_name", taxonomic_resources$APNI %>%
                        dplyr::select(cleaned_name = .data$canonicalName, cleaned_scientific_name_id = .data$scientificNameID, 
-                                     .data$family, taxon_rank = .data$taxonRank, scientific_name = .data$scientificName)) %>% 
+                                     .data$family, taxon_rank = .data$taxonRank, scientific_name = .data$scientificName)) %>%
     dplyr::group_by(.data$cleaned_name) %>%
-    dplyr::mutate(
-      cleaned_scientific_name_id = paste(.data$cleaned_scientific_name_id, collapse = " ") %>% 
-        dplyr::na_if("NA"), family = ifelse(dplyr::n_distinct(.data$family) > 1, NA_character_, .data$family[1])) %>%
+      dplyr::mutate(
+        cleaned_scientific_name_id = paste(.data$cleaned_scientific_name_id, collapse = " ") %>% 
+          dplyr::na_if("NA"),
+        family = ifelse(dplyr::n_distinct(.data$family) > 1, NA_character_, .data$family[1])) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(
       taxonomic_reference = as.character(ifelse(is.na(.data$cleaned_scientific_name_id), NA_character_, "APNI")),
       taxon_name = as.character(ifelse(is.na(.data$cleaned_scientific_name_id), NA_character_, .data$cleaned_name)),
-      cleaned_name_taxonomic_status = as.character(ifelse(is.na(.data$cleaned_scientific_name_id), "unknown", "unplaced by APNI")),
+      cleaned_name_taxonomic_status = as.character(ifelse(is.na(.data$cleaned_scientific_name_id), "unknown", "unplaced by APC")),
       taxonomic_status = as.character(.data$cleaned_name_taxonomic_status),
-      scientific_name_id = cleaned_scientific_name_id
+      scientific_name_id = cleaned_scientific_name_id,
+      cleaned_name = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), .data$complete_name, .data$cleaned_name)
       )
 
   taxa_all <- taxa1 %>% 
     dplyr::bind_rows(taxa2 %>% 
         dplyr::filter(!is.na(.data$cleaned_scientific_name_id))) %>% 
-    arrange(.data$cleaned_name) 
+    arrange(.data$cleaned_name)  %>%
+    select(-.data$complete_name)
   
   taxa_all %>%
     readr::write_csv("config/taxon_list.csv")
-}
+} 
