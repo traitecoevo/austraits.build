@@ -1219,8 +1219,8 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors) 
         dplyr::mutate(dataset_id = dataset_id) %>%
         dplyr::select(-dplyr::any_of(c("original_file", "notes", "data_is_long_format", "taxon_name", 
                                          "trait_name", "population_id", "individual_id",
-                                         "location_name", "source_id",
-                                         "collection_date", "custom_R_code", 
+                                         "location_name", "source_id", "value", "entity_type", 
+                                         "collection_date", "custom_R_code", "replicates", "measurement_remarks",
                                          "taxon_name", "basis_of_value", "basis_of_record", "life_stage")))
       )  %>%
       full_join( by = "dataset_id",
