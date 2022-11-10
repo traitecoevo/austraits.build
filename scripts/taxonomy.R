@@ -608,11 +608,11 @@ fuzzy_match <- function(txt, accepted_list, max_distance_abs, max_distance_rel, 
   txt_word1_start <- stringr::str_extract(txt, "[:alpha:]")
   
   if(words_in_text > 1) {
-    txt_word2_start <- stringr::str_extract(word(txt,2), "[:alpha:]")
+    txt_word2_start <- stringr::str_extract(word(txt,2), "[:alpha:]|[:digit:]")
   }
   
   if(words_in_text > 2) {
-    txt_word3_start <- stringr::str_extract(word(txt,3), "[:alpha:]")
+    txt_word3_start <- stringr::str_extract(word(txt,3), "[:alpha:]|[:digit:]")
   }
   
   distance_c <- utils::adist(txt, accepted_list, fixed=TRUE)[1,]
@@ -632,14 +632,14 @@ fuzzy_match <- function(txt, accepted_list, max_distance_abs, max_distance_rel, 
   ) {
     words_in_match <- 1 + stringr::str_count(accepted_list[i]," ")
     
-    match_word1_start <- stringr::str_extract(accepted_list[i], "^[:alpha:]")
+    match_word1_start <- stringr::str_extract(accepted_list[i], "[:alpha:]")
     
     if(words_in_text > 1) {
-      match_word2_start <- stringr::str_extract(word(accepted_list[i],2), "^[:alpha:]")
+      match_word2_start <- stringr::str_extract(word(accepted_list[i],2), "[:alpha:]|[:digit:]")
     }
     
     if(words_in_text > 2) {
-      match_word3_start <- stringr::str_extract(word(accepted_list[i],3), "^[:alpha:]")
+      match_word3_start <- stringr::str_extract(word(accepted_list[i],3), "[:alpha:]|[:digit:]")
     }
     
     keep = FALSE
@@ -653,7 +653,10 @@ fuzzy_match <- function(txt, accepted_list, max_distance_abs, max_distance_rel, 
         keep = TRUE }
       
     } else if(words_in_text > 2) {
-      if (txt_word1_start == match_word1_start & txt_word2_start == match_word2_start & txt_word3_start == match_word3_start) {
+      if (words_in_match > 2) {
+        if (txt_word1_start == match_word1_start & txt_word2_start == match_word2_start & txt_word3_start == match_word3_start) {
+          keep = TRUE }
+      } else if (txt_word1_start == match_word1_start & txt_word2_start == match_word2_start) {
         keep = TRUE }
     }
     
@@ -677,13 +680,13 @@ fuzzy_match <- function(txt, accepted_list, max_distance_abs, max_distance_rel, 
 #' @examples
 strip_names <- function(x) {
   x %>% 
-    str_replace_all(" subsp. ", " ") %>% 
-    str_replace_all(" var. |var$", " ") %>% 
-    str_replace_all(" ser. ", " ") %>% 
-    str_replace_all(" f. ", " ") %>%
-    str_replace_all(" s.l. ", " ") %>% 
-    str_replace_all(" s.s. ", " ") %>% 
     str_replace_all("[:punct:]", " ") %>%
+    str_replace_all(" subsp ", " ") %>% 
+    str_replace_all(" var |var$", " ") %>% 
+    str_replace_all(" ser ", " ") %>% 
+    str_replace_all(" f ", " ") %>%
+    str_replace_all(" s l ", " ") %>% 
+    str_replace_all(" s s ", " ") %>% 
     str_replace_all("\\=", " ") %>%
     str_replace_all("  ", " ") %>%
     str_squish() %>% tolower() 
@@ -699,14 +702,19 @@ strip_names <- function(x) {
 #' @examples
 strip_names_2 <- function(x) {
   x %>% 
-    str_replace_all(" subsp. ", " ") %>% 
-    str_replace_all(" var. |var$", " ") %>% 
-    str_replace_all(" ser. ", " ") %>% 
-    str_replace_all(" f. ", " ") %>%
-    str_replace_all(" s.l. ", " ") %>% 
-    str_replace_all(" s.s. ", " ") %>% 
-    str_replace_all(" sp. |sp.$", " ") %>%
     str_replace_all("[:punct:]", " ") %>%
+    str_replace_all(" subsp ", " ") %>% 
+    str_replace_all(" var |var$", " ") %>% 
+    str_replace_all(" ser ", " ") %>% 
+    str_replace_all(" f ", " ") %>%
+    str_replace_all(" s l ", " ") %>% 
+    str_replace_all(" s s ", " ") %>% 
+    str_replace_all(" x ", " ") %>%  
+    str_replace_all(" sp |sp $", " ") %>%  
+    str_replace_all(" sp1", " 1") %>%  
+    str_replace_all(" sp2", " 2") %>% 
+    str_replace_all(" ssp |ssp $", " ") %>% 
+    str_replace_all(" cf$", " ") %>%
     str_replace_all("\\=", " ") %>%
     str_replace_all("  ", " ") %>%
     str_squish() %>% tolower() 
