@@ -426,6 +426,9 @@ process_format_contexts <- function(my_list, dataset_id) {
          dplyr::any_of(c("find", "value", "description"))
        )
 
+     if(is.null(contexts[["description"]]) ) {
+      contexts[["description"]] <- NA_character_
+     }
      # keep values from find column if a replacement isn't specified
      if ( is.null(contexts[["find"]]) ) {
        contexts[["find"]] <- NA_character_

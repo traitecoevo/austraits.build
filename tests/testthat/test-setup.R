@@ -20,26 +20,12 @@ test_that("metadata_create_template is working",{
   metadata_names <- c("source", "contributors", "dataset", "locations", "contexts", "traits",
                       "substitutions", "taxonomic_updates", "exclude_observations",
                       "questions")
-  data_collector_names <- c("last_name", "given_name", "affiliation", "ORCID", "additional_role")
-
   ## Test metadata exists with correct names
   expect_named(test_metadata)
   expect_equal(names(test_metadata), metadata_names)
   expect_equal(length(test_metadata$source$primary), 10)
-
-  ## Test contributors exist with the correct names
-  expect_equal(length(test_metadata$contributors), 3)
-  expect_equal(length(test_metadata$contributors$data_collectors), 1)
-  expect_equal(length(test_metadata$contributors$data_collectors[[1]]), 5)
-  expect_equal(names(test_metadata$contributors$data_collectors[[1]]), data_collector_names)
-  expect_equal(length(test_metadata$contributors$assistants), 1)
-  expect_equal(length(test_metadata$contributors$austraits_curators), 1)
-  expect_equal(length(test_metadata$contributors$austraits_curators), 1)
-
   expect_isin(names(test_metadata$dataset), schema$metadata$elements$dataset$values %>% names())
- 
- expect_equal(length(test_metadata$dataset), 21)
-})
+ })
 
 test_that("metadata_path_dataset_id is working",{
   expect_silent(metadata_path_dataset_id("Test_2022"))

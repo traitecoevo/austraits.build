@@ -27,6 +27,7 @@ test_that("test taxonomic resources are working",{
   expect_type(x$APC, "list")
   expect_type(x$APNI, "list")
 
+  unlink(".remake",  recursive=TRUE)
   expect_silent(build_setup_pipeline())
   expect_true(file.exists("config/taxon_list.csv"))
   expect_no_error(austraits_raw <- remake::make("austraits_raw"))
@@ -35,12 +36,12 @@ test_that("test taxonomic resources are working",{
   expect_named(taxa1, vars)
   expect_length(taxa1, 13)
   expect_true(nrow(taxa1) == 0)
-  expect_no_error(suppressWarnings(austraits_rebuild_taxon_list(austraits_raw) ))
+  expect_no_error(austraits_rebuild_taxon_list(austraits_raw, taxonomic_resources))
   expect_true(file.exists("config/taxon_list.csv"))
   expect_silent(taxa2 <- read_csv_char("config/taxon_list.csv"))
   expect_named(taxa2, vars)
   expect_length(taxa2, 13)
-  expect_true(nrow(taxa2) == 5)
+  expect_equal(nrow(taxa2), 5)
   expect_no_error(austraits <- remake::make("austraits"))
   
   expect_length(austraits_raw$taxa, 1)
