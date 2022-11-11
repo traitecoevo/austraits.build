@@ -23,9 +23,13 @@ dataset:
       mutate(
         parasitic = ifelse(`growth form`=="parasite","parasitic",NA),
         `flowering time` = convert_month_range_vec_to_binary(`flowering time`), 
-        leaf_type = ifelse(`leaf type` == "articles", "article", NA), 
-        `leaf type`= ifelse(`leaf type` %in% c("articles", "palmate", "palm"), NA, `leaf type`),
-        leaf_division = ifelse(`leaf type` %in% c("palmate", "palm"), "palmately_compound", NA)
+        leaf_type = ifelse(`leaf type` == "articles", "article", NA),
+        leaf_type =  ifelse(`leaf type` == "leafless", "leafless", NA),
+        leaf_lamina_division = ifelse(`leaf type` %in% c("palmate", "palm"), "palmately_compound", NA),
+        `leaf type`= ifelse(`leaf type` %in% c("articles", "palmate", "palm", "leafless"), NA, `leaf type`),
+        leaf_lobation = ifelse(`leaf shape` == "lobed","lobed",NA),
+        across(c("leaf length max (cm)", "leaf length min (cm)",
+                      "leaf width max (cm)", "leaf width min (cm)"), ~na_if(.,0)) 
       )
   '
   collection_date: unknown/1993
@@ -95,9 +99,17 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf_division
+- var_in: leaf_type
   unit_in: .na
-  trait_name: leaf_division
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lamina_division
+  unit_in: .na
+  trait_name: leaf_lamina_division
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -192,9 +204,12 @@ traits:
   replicates: .na
   methods: unknown
 substitutions:
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: articles
-  replace: article
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
+  find: article
+  replace: cladode
 - trait_name: plant_growth_form
   find: liana
   replace: climber_liana
@@ -216,6 +231,12 @@ substitutions:
 - trait_name: seed_shape
   find: flat
   replace: discoid
+- trait_name: leaf_shape
+  find: palm
+  replace: .na
+- trait_name: leaf_shape
+  find: lobed
+  replace: .na
 taxonomic_updates:
 - find: Bauhinia binatum
   replace: Bauhinia binata

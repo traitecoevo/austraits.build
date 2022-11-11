@@ -24,8 +24,15 @@ dataset:
   data_is_long_format: no
   custom_R_code:     '
     data %>% 
-      mutate(woodiness = "woody") %>% 
-      distinct(`species name`, `ht (m)`, `ll (mm)`, `lw (mm)`, `leaf form`, `habit`, .keep_all = TRUE)
+      mutate(
+        woodiness = "woody",
+        leaf_type = NA
+      ) %>% 
+      distinct(`species name`, `ht (m)`, `ll (mm)`, `lw (mm)`, `leaf form`, `habit`, .keep_all = TRUE) %>%
+      move_values_to_new_trait(
+        "leaf form", "leaf_type",
+        "scale", "scale", ""
+      )
   '
   collection_date: 2014/2014
   taxon_name: species name
@@ -92,6 +99,14 @@ traits:
 - var_in: leaf form
   unit_in: .na
   trait_name: leaf_compoundness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: data sourced from reference books listed as secondary references
+- var_in: leaf_type
+  unit_in: .na
+  trait_name: leaf_type
   entity_type: species
   value_type: mode
   basis_of_value: expert_score

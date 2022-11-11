@@ -32,7 +32,13 @@ dataset:
         nest(months = c(lookup_id)) %>%
         mutate(trait = "flowering_time", lookup_data = map_chr(months, 
             ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months);
-
+  
+    scales <-
+      data %>%
+        mutate(trait = ifelse(str_detect(lookup_data, "scales"), "leaf_type", trait)) %>%
+        filter(trait == "leaf_type") %>% 
+        mutate(lookup_data = "scale");
+            
     collapsed <-
       data %>% 
         filter(!trait %in% c("fruiting","flowering month")) %>%
@@ -42,18 +48,22 @@ dataset:
           trait = ifelse(lookup_data == "parasitic", "parasitic", trait),
           trait = ifelse(lookup_data == "epiphytic", "growth_substrate", trait),
           trait = ifelse(lookup_data == "aquatic", "growth_substrate", trait),
-          trait = ifelse(trait == "special growth form", "growth form", trait)   
+          trait = ifelse(trait == "special growth form", "growth form", trait),
+          lookup_data = str_replace(lookup_data,"toothed or lobed","toothed_or_lobed")    
         ) %>%
         select(species, trait, units, lookup_data) %>%
         group_by(species, trait, units) %>% 
-        mutate(lookup_data = paste0(lookup_data, collapse = " ")) %>% 
+          summarise(
+            lookup_data = paste0(lookup_data, collapse = " ")
+          ) %>% 
         ungroup() %>%
         distinct(species, trait, units, lookup_data);
    
     bind_rows(
       collapsed,
       fruiting,
-      flowering
+      flowering,
+      scales
     )
   '
   collection_date: unknown/2014
@@ -120,6 +130,14 @@ traits:
 - var_in: leaf arrangement
   unit_in: .na
   trait_name: leaf_arrangement
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_type
+  unit_in: .na
+  trait_name: leaf_type
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -270,8 +288,17 @@ substitutions:
   find: parasitic
   replace: parasite
 - trait_name: leaf_margin
+  find: toothed_or_lobed
+  replace: .na
+- trait_name: leaf_margin
+  find: entire toothed_or_lobed
+  replace: .na
+- trait_name: leaf_margin
   find: toothed or lobed
-  replace: lobed
+  replace: .na
+- trait_name: leaf_margin
+  find: entire toothed lobed
+  replace: .na
 - trait_name: life_history
   find: short-lived
   replace: short_lived
@@ -736,25 +763,25 @@ substitutions:
   replace: yellow_orange yellow_orange red_brown
 - trait_name: leaf_arrangement
   find: whorled, tufted or crowded
-  replace: whorled_tufted_crowded
+  replace: .na
 - trait_name: leaf_arrangement
   find: alternate opposite whorled, tufted or crowded
-  replace: alternate opposite whorled_tufted_crowded
+  replace: alternate opposite
 - trait_name: leaf_arrangement
   find: alternate reduced to scales
-  replace: alternate reduced_to_scales
+  replace: alternate
 - trait_name: leaf_arrangement
   find: alternate whorled, tufted or crowded
-  replace: alternate whorled_tufted_crowded
+  replace: alternate
 - trait_name: leaf_arrangement
   find: opposite reduced to scales
-  replace: opposite reduced_to_scales
+  replace: opposite
 - trait_name: leaf_arrangement
   find: opposite whorled, tufted or crowded
-  replace: opposite whorled_tufted_crowded
+  replace: opposite
 - trait_name: leaf_arrangement
   find: opposite whorled, tufted or crowded reduced to scales
-  replace: opposite whorled_tufted_crowded reduced_to_scales
+  replace: opposite
 - trait_name: leaf_compoundness
   find: simple or appearing so compound
   replace: simple compound
@@ -766,7 +793,7 @@ substitutions:
   replace: '5'
 - trait_name: leaf_margin
   find: entire toothed or lobed
-  replace: entire toothed lobed
+  replace: .na
 - trait_name: leaf_width
   find: 1.5 2
   replace: '2'
@@ -778,7 +805,7 @@ substitutions:
   replace: white_cream
 - trait_name: leaf_arrangement
   find: reduced to scales
-  replace: reduced_to_scales
+  replace: .na
 - trait_name: life_history
   find: long-lived
   replace: long_lived
