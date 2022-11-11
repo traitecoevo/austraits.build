@@ -61,11 +61,12 @@ test_that("constancy of with version 3.0.2", {
   
   austraits_raw_comparison$methods$trait_name <- austraits_raw_comparison$methods$trait_name %>%
     gsub("seed_mass", "seed_dry_mass", . ) %>%
-    gsub("seed_breadth", "seed_height", .)
+    gsub("seed_breadth", "seed_height", .) %>%
+    gsub("growth_habit", "stem_growth_habit")
   
   austraits_raw_comparison$traits$replicates <- austraits_raw_comparison$traits$replicates %>%
     gsub("3 replicates on 1 individual per species or 1 replicate on each individual", "3",. )
-  
+
   # Compare some select columns of select elements 
   v <- "traits"
   vv <- c("dataset_id", "taxon_name", "trait_name", "value", "unit", "original_name")
