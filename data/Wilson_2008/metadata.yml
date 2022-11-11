@@ -23,8 +23,14 @@ dataset:
   custom_R_code:     '
     data %>% 
       mutate(
-        leaf_division = ifelse(stringr::str_detect(`leaf type`,"trifoliate"),"trifoliate",NA),
-        `leaf type` = stringr::str_replace(`leaf type`,"trifoliate","compound"))
+        leaf_lamina_division = ifelse(stringr::str_detect(`leaf type`,"trifoliate"),"trifoliate",NA),
+        `leaf type` = stringr::str_replace(`leaf type`,"trifoliate","compound"),
+        leaf_base_shape = NA
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_shape", "leaf_base_shape",
+        "cuneate obovate", "cuneate", "obovate"
+      )
   '
   collection_date: unknown/2008
   taxon_name: binomial
@@ -63,9 +69,9 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
-- var_in: leaf_division
+- var_in: leaf_lamina_division
   unit_in: .na
-  trait_name: leaf_division
+  trait_name: leaf_lamina_division
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -175,6 +181,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
+- var_in: leaf_base_shape
+  unit_in: .na
+  trait_name: leaf_base_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or opinion, from herbarium specimens
 - var_in: fruit_length min (mm)
   unit_in: mm
   trait_name: fruit_length
@@ -246,6 +260,12 @@ substitutions:
 - trait_name: life_history
   find: a/p
   replace: .na
+- trait_name: leaf_compoundness
+  find: simple compound compound
+  replace: compound simple
+- trait_name: leaf_compoundness
+  find: compound compound
+  replace: compound
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na

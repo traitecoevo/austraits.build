@@ -22,14 +22,32 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code:     data %>% mutate( flowering = convert_month_range_vec_to_binary(flowering),
-    fruiting = convert_month_range_vec_to_binary(fruiting), leaf_lobed = ifelse(`leaf
-    type` == "lobed", 1 , NA), `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf
-    type`)) %>% separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max")
-    %>% separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
-    separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>% separate_range("seed
-    width (mm)", "seed_width_min", "seed_width_max") %>% mutate(fruit_type = NA) %>% move_values_to_new_trait("dispersal
-    mode", "fruit_type", "samara", "samara", "wings")
+  custom_R_code: '
+    data %>%
+      mutate(
+        flowering = convert_month_range_vec_to_binary(flowering),
+        fruiting = convert_month_range_vec_to_binary(fruiting),
+        leaf_lobed = ifelse(`leaf type` == "lobed" | `leaf shape` == "lobed", "lobed", NA),
+        `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf type`),
+        plant_photosynthetic_organ = ifelse(`leaf shape` %in% c("articles","article"),"cladode", NA)
+      ) %>%
+      separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>%
+      separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
+      separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>%
+      separate_range("seed width (mm)", "seed_width_min", "seed_width_max") %>%
+      mutate(
+        fruit_type = NA,
+        leaf_base_shape = NA
+      ) %>%
+      move_values_to_new_trait(
+        "dispersal mode", "fruit_type",
+        "samara", "samara", "wings"
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "leaf_base_shape",
+        c("cuneate","hastate"), c("cuneate","hastate"), c("","")
+      )
+  '
   collection_date: unknown/2009
   taxon_name: taxon
   description: transposed from taxonomic descriptions in the Flora of Tasmania accessed
@@ -76,6 +94,22 @@ traits:
   basis_of_value: measurement
   replicates: .na
   methods: unknown
+- var_in: plant_photosynthetic_organ
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lobed
+  unit_in: .na
+  trait_name: leaf_lobation
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
@@ -114,6 +148,14 @@ traits:
   entity_type: species
   value_type: maximum
   basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf_base_shape
+  unit_in: .na
+  trait_name: leaf_base_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf shape
@@ -206,8 +248,11 @@ traits:
   methods: Extracted from records of dispersal_appendage.
 substitutions:
 - trait_name: leaf_shape
+  find: lobed
+  replace: .na
+- trait_name: leaf_shape
   find: articles
-  replace: article
+  replace: .na
 - trait_name: plant_growth_form
   find: liana
   replace: climber_woody
@@ -223,6 +268,9 @@ substitutions:
 - trait_name: leaf_shape
   find: elliptic
   replace: elliptical
+- trait_name: leaf_shape
+  find: circular
+  replace: orbicular
 - trait_name: seed_shape
   find: turbinate
   replace: conical
