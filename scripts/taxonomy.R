@@ -704,17 +704,20 @@ strip_names_2 <- function(x) {
   x %>% 
     str_replace_all("[:punct:]", " ") %>%
     str_replace_all(" subsp ", " ") %>% 
-    str_replace_all(" var |var$", " ") %>% 
+    str_replace_all(" var | var$", " ") %>% 
     str_replace_all(" ser ", " ") %>% 
-    str_replace_all(" f ", " ") %>%
+    str_replace_all(" f ", " ") %>% 
+    str_replace_all(" forma ", " ") %>% 
+    str_replace_all(" species ", " ") %>%
     str_replace_all(" s l ", " ") %>% 
-    str_replace_all(" s s ", " ") %>% 
+    str_replace_all(" s s ", " ") %>%  
+    str_replace_all(" ss ", " ") %>% 
     str_replace_all(" x ", " ") %>%  
     str_replace_all(" sp |sp $", " ") %>%  
     str_replace_all(" sp1", " 1") %>%  
     str_replace_all(" sp2", " 2") %>% 
     str_replace_all(" ssp |ssp $", " ") %>% 
-    str_replace_all(" cf$", " ") %>%
+    str_replace_all(" cf | cf$", " ") %>%
     str_replace_all("\\=", " ") %>%
     str_replace_all("  ", " ") %>%
     str_squish() %>% tolower() 
