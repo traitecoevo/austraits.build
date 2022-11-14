@@ -47,7 +47,8 @@ dataset:
         `Lifespan > than` = str_extract(`Lifespan > than`,"[:digit:]"),
         `Lifespan < than` = str_extract(`Lifespan < than`,"[:digit:]"),
         storage_organ = ifelse(stringr::str_detect(`Resprout location`, "lignotuber"), "lignotuber", NA),
-        serotiny = ifelse(stringr::str_detect(`Seed storage`, "serotinous"), "serotinous", NA)
+        serotiny = ifelse(stringr::str_detect(`Seed storage`, "serotinous"), "serotinous", NA),
+        `Secondary juvenile period` = stringr::str_replace(`Secondary juvenile period`,"-","--")
       ) %>%
       group_by(`Current Scientific Name`) %>%
         mutate(observation_num = row_number()) %>%
@@ -319,11 +320,14 @@ traits:
   unit_in: years
   trait_name: reproductive_maturity_secondary_after_fire
   entity_type: species
-  value_type: mean
+  value_type: bin
   basis_of_value: measurement
   replicates: .na
   methods: Post-fire age at which flowering first occurs from resprouting material
 substitutions:
+- trait_name: reproductive_maturity_secondary_after_fire
+  find: <1
+  replace: 0--1
 - trait_name: fire_response
   find: R
   replace: resprouts

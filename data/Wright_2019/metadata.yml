@@ -39,8 +39,8 @@ dataset:
         across(everything(), ~na_if(.,"NaN"))
       ) %>%
         select(-date_by_month, -new_date, -date_WD, -sample_date, - notes, -spp, -`Pith diam (mm)`, -context) %>% 
-        group_by(date_merged, site_name, season, Species, age, Rep) %>% 
-          summarise_at(vars(`WD kg/m3`:`gas_ d13C_leaf`), mean, na.rm = TRUE) %>% 
+        group_by(date_merged, site_name, season, Species, age, Rep, individual) %>% 
+          summarise_at(vars(`WD kg/m3`:`gas_ d13C_leaf`), ~mean(.x) %>% na_if("NaN"), na.rm = TRUE) %>% 
         ungroup()
   '
   collection_date: date_merged

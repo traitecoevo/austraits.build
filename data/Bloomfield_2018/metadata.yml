@@ -54,7 +54,7 @@ dataset:
       ) %>% 
       select(-Tree.id, -replicate_original, - Branch) %>% 
       group_by(context, Site, Visit, Replicate, Species, Family, Genus, PFT) %>%
-      summarise(across(c(`A400.a_with_Weerasinghe_2014`:`wue1500`), mean, na.rm = TRUE),
+      summarise(across(c(`A400.a_with_Weerasinghe_2014`:`wue1500`), ~mean(.x) %>% na_if("NaN"), na.rm = TRUE),
                 across(Date, first),
                 count = n()) %>%
       mutate(value_type_column = ifelse(count == 1,"raw","mean")) %>%

@@ -38,16 +38,33 @@ dataset:
         fruit_type = NA, 
         dispersal_syndrome = NA
       ) %>% 
-      move_values_to_new_trait("dispersal appendage/syndrome", "fruit_type", 
-        c("drupe", "berry","fleshy syncarp"), c("drupe", "berry","syconium"), 
-        c("drupe", "berry","fleshy syncarp")) %>% 
-      move_values_to_new_trait("dispersal appendage/syndrome", "fruit_fleshiness", 
-      c("fleshy syncarp", "fleshy"), c("fleshy", "fleshy"), c("fleshy syncarp", "fleshy")) %>%
-      move_values_to_new_trait("dispersal appendage/syndrome", "fruit_dehiscence", 
-        c("fleshy syncarp"), c("indehiscent"), c("fleshy syncarp"))  %>% 
-      move_values_to_new_trait("dispersal appendage/syndrome", "dispersal_syndrome", 
-        c("unassisted", "wing","water","animal"), c("unassisted", "wind","water","animal"), 
-        c("unassisted", "wing","water","animal"))
+      move_values_to_new_trait(
+        "dispersal appendage/syndrome", "fruit_type", 
+        c("drupe", "berry", "fleshy syncarp"),
+        c("drupe", "berry", "syconium"), 
+        c("NA", "NA", "fleshy syncarp")
+      ) %>% 
+      move_values_to_new_trait(
+        "dispersal appendage/syndrome", "fruit_fleshiness",
+        c("fleshy syncarp", "fleshy"),
+        c("fleshy", "fleshy"),
+        c("fleshy syncarp", "NA")
+      ) %>%
+      move_values_to_new_trait(
+        "dispersal appendage/syndrome", "fruit_dehiscence", 
+        c("fleshy syncarp"),
+        c("indehiscent"),
+        c("NA")
+      ) %>% 
+      move_values_to_new_trait(
+        "dispersal appendage/syndrome", "dispersal_syndrome", 
+        c("unassisted", "wing", "water", "animal"),
+        c("unassisted", "wind", "water", "animal"), 
+        c("none", "wing", "NA", "NA")
+      ) %>%
+      mutate(
+        `dispersal appendage/syndrome` = ifelse(`dispersal appendage/syndrome` == "NA", NA, `dispersal appendage/syndrome`)
+      )
   '
   collection_date: 2012/2012
   taxon_name: species_name

@@ -36,7 +36,7 @@ dataset:
       group_by(ID) %>% 
         summarise(
           across(c(Owner:Species), .fns = first),
-          across(c(`Asat_area (micromol/m2/s)`:`Parea (g/m2)`), .fns = mean, na.rm = TRUE)
+          across(c(`Asat_area (micromol/m2/s)`:`Parea (g/m2)`), ~mean(.x) %>% na_if("NaN"), na.rm = TRUE)
           ) %>%
       ungroup()
   '
