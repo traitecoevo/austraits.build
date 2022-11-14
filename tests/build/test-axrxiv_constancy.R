@@ -57,14 +57,19 @@ test_that("constancy of with version 3.0.2", {
   # change some names so comparison to new version still runs
   austraits_raw_comparison$traits$trait_name <- austraits_raw_comparison$traits$trait_name %>%
     gsub("seed_mass", "seed_dry_mass", . ) %>%
-    gsub("seed_breadth", "seed_height", .)
+    gsub("seed_breadth", "seed_height", .)  %>%
+    gsub("growth_habit", "stem_growth_habit", .)
   
   austraits_raw_comparison$methods$trait_name <- austraits_raw_comparison$methods$trait_name %>%
     gsub("seed_mass", "seed_dry_mass", . ) %>%
-    gsub("seed_breadth", "seed_height", .)
+    gsub("seed_breadth", "seed_height", .) %>%
+    gsub("growth_habit", "stem_growth_habit", .)
   
   austraits_raw_comparison$traits$replicates <- austraits_raw_comparison$traits$replicates %>%
     gsub("3 replicates on 1 individual per species or 1 replicate on each individual", "3",. )
+
+  austraits_raw_comparison$traits$value <- austraits_raw_comparison$traits$value %>%
+    gsub("climber_liana", "climber_woody", . )
   
   # Compare some select columns of select elements 
   v <- "traits"

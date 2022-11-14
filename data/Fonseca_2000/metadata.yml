@@ -61,7 +61,8 @@ dataset:
         `TRAIT Leaf Dry Mass UNITS g` = ifelse(name_original %in% c("Acacia deanei", 
           "Livistona australis", "Kennedia rubicunda", "Alpinia caerulea", 
           "Ripogonum fawcettianum", "Brachychiton acerifolius", 
-          "Blechnum cartilagineum"), NA, `TRAIT Leaf Dry Mass UNITS g`)
+          "Blechnum cartilagineum"), NA, `TRAIT Leaf Dry Mass UNITS g`),
+        plant_growth_substrate = ifelse(`TRAIT Growth Form CATEGORICAL EP epiphyte (mistletoe) F fern G grass H herb S shrub T tree V vine` == "EP", "epiphyte", NA)
       )
   '
   collection_date: 1996/1997
@@ -607,7 +608,15 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: TRAIT SLA UNITS mm2/g
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: 'TRAIT SLA UNITS mm2/g'
   unit_in: mm2/mg
   trait_name: leaf_mass_per_area
   entity_type: population
@@ -699,13 +708,13 @@ substitutions:
   replace: tree
 - trait_name: plant_growth_form
   find: EP
-  replace: epiphyte
+  replace: shrub
 - trait_name: plant_growth_form
   find: G
   replace: graminoid
 - trait_name: plant_growth_form
   find: V
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: F
   replace: fern

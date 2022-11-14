@@ -27,6 +27,7 @@ dataset:
                       "lobed", "unlobed"), 
         `leaf shape` = ifelse(`leaf shape` == "lobed", NA, `leaf shape`),
         `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf type`),
+        plant_growth_substrate = ifelse(`growth form`=="aquatic","aquatic",NA),
         parasitic = ifelse(`growth form`=="parasitic","parasitic", NA),
         plant_photosynthetic_organ = ifelse(`leaf shape`=="articles","cladode", NA)
       )
@@ -62,6 +63,14 @@ traits:
   replicates: .na
   methods: unknown
 - var_in: growth form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_growth_substrate
   unit_in: .na
   trait_name: plant_growth_form
   entity_type: species
@@ -152,13 +161,16 @@ traits:
 substitutions:
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
+- trait_name: plant_growth_form
+  find: aquatic
+  replace: .na
 - trait_name: plant_growth_form
   find: grass
   replace: graminoid
 - trait_name: plant_growth_form
   find: parasitic
-  replace: parasite
+  replace: .na
 - trait_name: leaf_width
   find: '`'
   replace: '0'

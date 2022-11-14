@@ -281,7 +281,7 @@ move_values_to_new_trait <- function(data, original_trait, new_trait, original_v
        }
          
   data = data %>% mutate_all(na_if,"")
-  
+
   return(data)
 
 }

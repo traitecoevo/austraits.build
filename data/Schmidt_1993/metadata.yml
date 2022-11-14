@@ -22,8 +22,13 @@ dataset:
       mutate(
         nitrogen_fixing =  stringr::str_extract(`mycorrhizal status`,"nod"),
         life_history = stringr::str_extract(`growth form`,"annual"),
-        `growth form` = stringr::str_replace(`growth form`,"annual","herb")
-      )
+        `growth form` = stringr::str_replace(`growth form`,"annual","herb"),
+        stem_growth_habit = NA
+      ) %>%
+      move_values_to_new_trait(
+        "growth form", "stem_growth_habit",
+        c("rosette"), c("rosette"), c("herb")
+      ) 
   '
   collection_date: 1993/1993
   taxon_name: species
@@ -51,6 +56,14 @@ traits:
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert knowledge
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -118,8 +131,11 @@ substitutions:
   find: pigmy
   replace: herb
 - trait_name: plant_growth_form
+  find: rosette
+  replace: herb
+- trait_name: plant_growth_form
   find: small tree
-  replace: treelet
+  replace: tree
 - trait_name: root_structure
   find: (ECM)/VAM
   replace: ectomycorrhizal arbuscular_mycorrhizal
