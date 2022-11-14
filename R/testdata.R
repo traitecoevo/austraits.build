@@ -338,7 +338,7 @@ dataset_test_worker <-
         test_list_names_valid(metadata[["source"]], info = f)
         
         v <- names(metadata[["source"]])
-        i <- grepl("primary", v) | grepl("secondary", v)
+        i <- grepl("primary", v) | grepl("secondary", v) | grepl("original", v)
         
         expect_contains(v, "primary", info = f)
         

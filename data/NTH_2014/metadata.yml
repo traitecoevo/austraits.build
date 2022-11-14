@@ -28,9 +28,9 @@ dataset:
         GF = ifelse(succulent %in% c("yes","y"),"succulent_short herb", GF),
         parasitic = ifelse(GF=="parasite","parasitic",NA),
         fruit_type = NA,
-        plant_succulence = NA
+        plant_succulence = NA,
         leaf_lobation = NA,
-        leaf_lobation_pattern = NA,
+        leaf_lamina_division = NA,
         plant_photosynthetic_organ2 = NA,
         plant_photosynthetic_organ3 = NA
       ) %>%
@@ -45,7 +45,7 @@ dataset:
         c("lobed"), c("lobed"), c("")
       ) %>%
       move_values_to_new_trait(
-        "leaf shape", "leaf_lobation_pattern", 
+        "leaf shape", "leaf_lamina_division", 
         "palmately lobed", "palmately_lobed", ""
       ) %>%
       move_values_to_new_trait(
@@ -64,9 +64,9 @@ dataset:
       ) %>%
             move_values_to_new_trait(
         "GF", "plant_succulence",
-        c("succulent_short herb"),
-        c("succulent"),
-        c("succulent_short herb")
+        c("succulent_short herb","y"),
+        c("succulent", "succulent"),
+        c("herb", "herb")
       ) %>%
       separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>% 
       separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
@@ -174,9 +174,9 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf_lobation_pattern
+- var_in: leaf_lamina_division
   unit_in: .na
-  trait_name: leaf_lobation_pattern
+  trait_name: leaf_lamina_division
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -372,7 +372,7 @@ substitutions:
   replace: shrub tree
 - trait_name: plant_growth_form
   find: 'y'
-  replace: succulent_short
+  replace: .na
 - trait_name: leaf_shape
   find: palmately_lobed
   replace: .na
@@ -406,7 +406,7 @@ substitutions:
 - trait_name: leaf_shape
   find: obovtae
   replace: obovate
-- trait_name: leaf_margin
+- trait_name: leaf_lobation
   find: 1
   replace: lobed
 - trait_name: dispersal_appendage
@@ -414,7 +414,7 @@ substitutions:
   replace: wings
 - trait_name: leaf_shape
   find: linear-oblanceolate
-  replace: linear_oblanceolate
+  replace: narrowly_oblanceolate
 - trait_name: leaf_shape
   find: palmately lobed
   replace: .na
