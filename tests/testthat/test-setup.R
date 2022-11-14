@@ -20,26 +20,12 @@ test_that("metadata_create_template is working",{
   metadata_names <- c("source", "contributors", "dataset", "locations", "contexts", "traits",
                       "substitutions", "taxonomic_updates", "exclude_observations",
                       "questions")
-  data_collector_names <- c("last_name", "given_name", "affiliation", "ORCID", "additional_role")
-
   ## Test metadata exists with correct names
   expect_named(test_metadata)
   expect_equal(names(test_metadata), metadata_names)
   expect_equal(length(test_metadata$source$primary), 10)
-
-  ## Test contributors exist with the correct names
-  expect_equal(length(test_metadata$contributors), 3)
-  expect_equal(length(test_metadata$contributors$data_collectors), 1)
-  expect_equal(length(test_metadata$contributors$data_collectors[[1]]), 5)
-  expect_equal(names(test_metadata$contributors$data_collectors[[1]]), data_collector_names)
-  expect_equal(length(test_metadata$contributors$assistants), 1)
-  expect_equal(length(test_metadata$contributors$austraits_curators), 1)
-  expect_equal(length(test_metadata$contributors$austraits_curators), 1)
-
   expect_isin(names(test_metadata$dataset), schema$metadata$elements$dataset$values %>% names())
- 
- expect_equal(length(test_metadata$dataset), 21)
-})
+ })
 
 test_that("metadata_path_dataset_id is working",{
   expect_silent(metadata_path_dataset_id("Test_2022"))
@@ -116,12 +102,12 @@ test_that("metadata_add_source_bibtex is working",{
 })
 
 test_that("metadata_add_substitution is working",{
-  expect_silent(suppressMessages(metadata_add_substitution("Test_2022", "specific_leaf_area",
-                                                           "leaf_area", "specific_leaf_area")))
+  expect_silent(suppressMessages(metadata_add_substitution("Test_2022", "leaf_mass_per_area",
+                                                           "leaf_area", "leaf_mass_per_area")))
   expect_equal(length(read_metadata("data/Test_2022/metadata.yml")$substitutions[[1]]), 3)
-  expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions[[1]]$trait_name, "specific_leaf_area")
+  expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions[[1]]$trait_name, "leaf_mass_per_area")
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions[[1]]$find, "leaf_area")
-  expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions[[1]]$replace, "specific_leaf_area")
+  expect_equal(read_metadata("data/Test_2022/metadata.yml")$substitutions[[1]]$replace, "leaf_mass_per_area")
 })
 
 test_that("metadata_add_taxonomic_change is working",{

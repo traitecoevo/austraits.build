@@ -54,7 +54,7 @@ dataset:
       ) %>% 
       select(-Tree.id, -replicate_original, - Branch) %>% 
       group_by(context, Site, Visit, Replicate, Species, Family, Genus, PFT) %>%
-      summarise(across(c(`A400.a_with_Weerasinghe_2014`:`wue1500`), mean, na.rm = TRUE),
+      summarise(across(c(`A400.a_with_Weerasinghe_2014`:`wue1500`), ~mean(.x) %>% na_if("NaN"), na.rm = TRUE),
                 across(Date, first),
                 count = n()) %>%
       mutate(value_type_column = ifelse(count == 1,"raw","mean")) %>%
@@ -480,7 +480,7 @@ traits:
     C for a minimum of 48 hours, after which their dry mass was recorded.
 - var_in: LMA
   unit_in: g/m2
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: value_type_column
   basis_of_value: measurement

@@ -9,8 +9,7 @@ dataset_report(
   austraits,
   overwrite = FALSE,
   output_path = "export/reports",
-  input_file = system.file("support", "report_dataset.Rmd", package =
-    "austraits.build"),
+  input_file = system.file("support", "report_dataset.Rmd", package = "austraits.build"),
   quiet = TRUE,
   keep = FALSE
 )
