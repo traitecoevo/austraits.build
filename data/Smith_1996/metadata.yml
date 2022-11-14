@@ -25,7 +25,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         life_stage = ifelse(contextual == "juvenile","juvenile", NA), 
@@ -35,18 +35,13 @@ dataset:
         canopy_position = ifelse(contextual == "canopy", "canopy", NA), 
         canopy_position = ifelse(contextual == "subcanopy sapling", "subcanopy", canopy_position),
         collection_date = ifelse(site2 %in% c("Cascades","Lumeah"),"1993-09/1993-10","1992-12/1993-02"),
-        row_number = row_number(),
-        population_id = site2,
-        method_number = ifelse(canopy_position == "canopy", 1, 2)
+        row_number = row_number()
       ) %>%
       filter(!row_number %in% c(4751, 4746))     
   '
   collection_date: collection_date
   taxon_name: species
-  site_name: site2
-  context_name: canopy_position
-  population_id: population_id
-  method_number: method_number
+  location_name: site2
   description: collection of trait data from Nothofagus forests across Australia,
     New Zealand and South America
   basis_of_record: field
@@ -129,8 +124,10 @@ dataset:
     microtopography were noted.'
   original_file: A large number of files in the raw data folder and corresponding
     GoogleDrive folder
-  notes: 2 rows of data have been filtered out - they represent duplicate measures for the same species x site x context for %N, %P, which are designated as being population-level measures. Retaining them causes problems with `pivot_wider` functions.
-sites:
+  notes: 2 rows of data have been filtered out - they represent duplicate measures
+    for the same species x site x context for %N, %P, which are designated as being
+    population-level measures. Retaining them causes problems with `pivot_wider` functions.
+locations:
   Anne:
     site code: SWT1
     locality: Tasmania, Mt Anne, Derwent Valley LGA
@@ -177,10 +174,14 @@ sites:
     slope aspect (degrees): 294.0
     site code, alternate: T3
 contexts:
-  canopy:
-    canopy position: canopy
-  subcanopy:
-    canopy position: subcanopy
+- context_property: canopy position
+  category: method
+  var_in: canopy_position
+  values:
+  - value: canopy
+    description: Measurements made in the canopy.
+  - value: subcanopy
+    description: Measurements made in the subcanopy.
 traits:
 - var_in: LENGTH
   unit_in: mm
@@ -228,7 +229,7 @@ traits:
     of 1 mm2.
 - var_in: INCLIN
   unit_in: degrees
-  trait_name: leaf_angle
+  trait_name: leaf_inclination_angle
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -385,7 +386,7 @@ traits:
     - 4.62*A664)/FW.CHL*VOL.CHL*1E-4 (%)'
 - var_in: specific_leaf_area
   unit_in: cm2/g
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: population
   value_type: mean
   basis_of_value: measurement

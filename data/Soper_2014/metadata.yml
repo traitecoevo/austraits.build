@@ -28,23 +28,21 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       mutate(
-        context_name = ifelse(TRIP == 1, "Trip 1 (wet season)","Trip 2 (dry season)"),
-        population_id = SITE,
-        observation_number = ifelse(TRIP == 1, 1, 2)
+        plant_growth_substrate = NA_character_
       ) %>%
       group_by(species_name_edited) %>%
         mutate_at(vars(`PLANT GROUP`), replace_duplicates_with_NA) %>%
-      ungroup()
+      ungroup() %>%
+      move_values_to_new_trait(
+        "PLANT GROUP", "plant_growth_substrate", "Mistletoe", "epiphyte", ""
+      )
   '
   collection_date: 2003/2003
   taxon_name: species_name_edited
-  site_name: SITE
-  context_name: context_name
-  population_id: population_id
-  observation_number: observation_number
+  location_name: SITE
   description: Data for a study of indices of soil N availability and acquisition
     by woody plant taxa with distinct nutritional specialisations along a north Australian
     rainfall gradient
@@ -68,7 +66,7 @@ dataset:
   original_file: combinedplantdeltas June 2005.xls provided by Suzanne Schmidt; file
     then manually manipulated in Excel by E. Wenk to create Soper_2014_E_Wenk_manipulated.xls
   notes: none
-sites:
+locations:
   Alice Springs:
     latitude (deg): -23.51694
     longitude (deg): 133.64917
@@ -94,15 +92,30 @@ sites:
     notes: near repeater station
     description: two sub-sites dominated by either Acacia or Eucalyptus
 contexts:
-  Trip 1 (wet season):
-    sampling season: wet season (sampling conducted March-April 2003)
-  Trip 2 (dry season):
-    sampling season: dry season, usually (sampled conducted August 2003; usually dry
-      season, but following a brief period of rain)
+- context_property: sampling season
+  category: temporal
+  var_in: TRIP
+  values:
+  - find: 1
+    value: wet
+    description: Samples collected during the wet season (first trip; March-April
+      2003).
+  - find: 2
+    value: dry
+    description: Samples collected during the dry season (second trip; August 2003;
+      usually dry season, but following a brief period of rain).
 traits:
 - var_in: PLANT GROUP
   unit_in: .na
   trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert knowledge
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -269,9 +282,6 @@ substitutions:
 - trait_name: plant_growth_form
   find: e
   replace: .na
-- trait_name: plant_growth_form
-  find: mistletoe
-  replace: epiphyte
 - trait_name: plant_growth_form
   find: mulga fern
   replace: fern

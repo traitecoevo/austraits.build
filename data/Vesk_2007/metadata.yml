@@ -16,12 +16,19 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(Site = gsub("Basalt Hill bogs","Basalt Hill bog",Site))
-    %>% group_by(Spp_Name) %>% mutate_at(vars(`plant_growth_form`),replace_duplicates_with_NA)
-    %>% ungroup()
+  custom_R_code:     '
+    data %>%
+      mutate(
+        Site = stringr::str_replace(Site,"Basalt Hill bogs","Basalt Hill bog"),
+        stem_growth_habit = ifelse(`plant_growth_form` == "prostrate shrub", "prostrate", NA)
+      ) %>%
+      group_by(Spp_Name) %>%
+       mutate_at(vars(`plant_growth_form`),replace_duplicates_with_NA) %>%
+      ungroup()
+  '
   collection_date: 2007/2007
   taxon_name: Spp_Name
-  site_name: Site
+  location_name: Site
   description: Leaf Mass Area Measurements for Falls Creek Flora
   basis_of_record: field
   life_stage: adult
@@ -37,7 +44,7 @@ dataset:
     Peter Vesk. They've been intentionally removed from the current version, because
     Peter Vesk is uncertain how many leaves were scanned for the recorded leaf areas.
     (The data were collected to calculate SLA, not explicitly for leaf area.)
-sites:
+locations:
   Basalt Hill:
     latitude (deg): -36.89
     longitude (deg): 147.31
@@ -71,7 +78,7 @@ contexts: .na
 traits:
 - var_in: SLA(mm2/mg)
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -89,13 +96,21 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Based on expert assignments/floras
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Based on expert assignments/floras
 substitutions:
 - trait_name: plant_growth_form
   find: grass
   replace: graminoid
 - trait_name: plant_growth_form
   find: prostrate shrub
-  replace: prostrate_shrub
+  replace: shrub
 taxonomic_updates:
 - find: Acaena novae-zealandiae
   replace: Acaena novae-zelandiae

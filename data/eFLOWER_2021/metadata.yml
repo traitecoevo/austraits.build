@@ -61,11 +61,18 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code: data %>% mutate(Date = Date %>% dmy())
+  custom_R_code:     '
+    data %>% 
+      mutate(
+        Date = Date %>% dmy(),
+        source_id = FullRef %>% str_extract("[:digit:][:digit:][:digit:][:digit:]")
+      )
+  '
   collection_date: Date
   taxon_name: Taxon
   trait_name: Character
   value: trait_value
+  source_id: source_id
   individual_id: NDat
   description: Updated eFLOWER-792 dataset, exported from PROTEUS on 15 Feb 2021.
     This is the same list of 792 angiosperm species used in the first eFLOWER paper
@@ -89,7 +96,7 @@ dataset:
     in the metadata - these are non-Australian species whose names are not matched
     by APC/APNI. This list will need to be added to as new expanded versions of eFLOWER
     are submitted.
-sites: .na
+locations: .na
 contexts: .na
 traits:
 - var_in: 100. Floral structural sex (D1)
@@ -1171,6 +1178,9 @@ substitutions:
 - trait_name: flower_ovary_position
   find: '102. Ovary position (D1): (5) 1/4-inferior or less'
   replace: one_quarter_inferior
+- trait_name: flower_ovary_position
+  find: '102. ovary position (d1): (4) 1/4-inferior or less'
+  replace: one_quarter_inferior
 - trait_name: flower_perianth_symmetry
   find: '207. Symmetry of perianth (D1): (0) actinomorphic (strictly polysymmetric)'
   replace: actinomorphic_strictly_polysymmetric
@@ -1299,13 +1309,13 @@ substitutions:
   replace: ventrifixed
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (0) longitudinal slit'
-  replace: longitudinal slit
+  replace: longitudinal_slit
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (1) poricidal'
   replace: poricidal
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (2) H-valvate'
-  replace: H_valvate
+  replace: h_valvate
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (3) flap-valvate'
   replace: flap_valvate

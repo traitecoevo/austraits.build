@@ -37,18 +37,16 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       mutate(
         site = ifelse(Yrs %in% c(15, 28, 36, 41, 86), paste(site,"_",Yrs,sep=""), site),
-        context = paste0(Yrs," years since last fire"),
-        context = gsub("NA years since last fire", NA, context)
+        Yrs = ifelse(!is.na(Yrs),paste0("Y",Yrs),Yrs)
       )
   '
   collection_date: 2013-04/2013-10
   taxon_name: species_binomial
-  site_name: site
-  context_name: context
+  location_name: site
   description: Freya's thesis data; study examines the height growth trajectories
     in 18 woody plant species in a light-saturated, fire-prone, semi-arid environment
     as well as the influence of functional traits on those trajectories.
@@ -74,7 +72,7 @@ dataset:
     study took advantage of fire histories within Murray Sunset National Park (Avitabile
     et al. 2013) to conduct a chronosequence study of plant species growth over time
     (Falster & Westoby 2005a; Muir et al. 2014). Eleven areas varying in time-since-fire
-    (1,2,4,8,13,15, 26, 33, 36,46,86 years), were selected within a relatively small
+    (1,2,4,8,13,15,26,33,36,46,86 years), were selected within a relatively small
     region of Murray Sunset National Park, sites encompassed a range of post-fire
     ages whilst restricting the amount of edaphic variation, and all areas were within
     Triodia Mallee. Between three and five different patches within a 'time-since-fire'
@@ -83,7 +81,7 @@ dataset:
     survey sites, a total of 1250 individual plants were sampled.
   original_file: FT_species_traits.csv within raw folder in Thomas_2017 folder
   notes: .na
-sites:
+locations:
   MurraySunset:
     latitude (deg): -34.6
     longitude (deg): 141.6
@@ -139,40 +137,59 @@ sites:
     primary productivity (tons C/ha/year): 0.9
     fire history (years since fire): 86.0
 contexts:
-  0 years since last fire:
-    fire history: site last burnt 0 years ago
-  1 years since last fire:
-    fire history: site last burnt 1 years ago
-  2 years since last fire:
-    fire history: site last burnt 2 years ago
-  3 years since last fire:
-    fire history: site last burnt 3 years ago
-  4 years since last fire:
-    fire history: site last burnt 4 years ago
-  6 years since last fire:
-    fire history: site last burnt 6 years ago
-  8 years since last fire:
-    fire history: site last burnt 8 years ago
-  13 years since last fire:
-    fire history: site last burnt 13 years ago
-  26 years since last fire:
-    fire history: site last burnt 26 years ago
-  33 years since last fire:
-    fire history: site last burnt 33 years ago
-  15 years since last fire:
-    fire history: site last burnt 15 years ago
-  28 years since last fire:
-    fire history: site last burnt 28 years ago
-  36 years since last fire:
-    fire history: site last burnt 36 years ago
-  41 years since last fire:
-    fire history: site last burnt 41 years ago
-  86 years since last fire:
-    fire history: site last burnt 86 years ago
+- context_property: fire history
+  category: plot
+  var_in: Yrs
+  values:
+  - find: Y0
+    value: 0 years
+    description: Site last burnt 0 years ago.
+  - find: Y1
+    value: 1 year
+    description: Site last burnt 1 year ago.
+  - find: Y2
+    value: 2 years
+    description: Site last burnt 2 years ago.
+  - find: Y3
+    value: 3 years
+    description: Site last burnt 3 years ago.
+  - find: Y4
+    value: 4 years
+    description: Site last burnt 4 years ago.
+  - find: Y6
+    value: 6 years
+    description: Site last burnt 6 years ago.
+  - find: Y8
+    value: 8 years
+    description: Site last burnt 8 years ago.
+  - find: Y13
+    value: 13 years
+    description: Site last burnt 13 years ago.
+  - find: Y15
+    value: 15 years
+    description: Site last burnt 15 years ago.
+  - find: Y26
+    value: 26 years
+    description: Site last burnt 26 years ago.
+  - find: Y28
+    value: 28 years
+    description: Site last burnt 28 years ago.
+  - find: Y33
+    value: 33 years
+    description: Site last burnt 33 years ago.
+  - find: Y36
+    value: 36 years
+    description: Site last burnt 36 years ago.
+  - find: Y41
+    value: 41 years
+    description: Site last burnt 41 years ago.
+  - find: Y86
+    value: 86 years
+    description: Site last burnt 86 years ago.
 traits:
 - var_in: SLA
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: metapopulation
   value_type: mean
   basis_of_value: measurement
@@ -226,14 +243,6 @@ traits:
     species were then pooled and finely ground for nitrogen analysis. Total nitrogen
     concentration based on mass (%) was measured using complete combustion gas chromatography
     performed by The Surface and Chemical Analysis Network at The University of Melbourne.
-- var_in: Yrs
-  unit_in: years
-  trait_name: .na
-  entity_type: individual
-  value_type: raw
-  basis_of_value: measurement
-  replicates: 1
-  methods: time in years since last fire (contextual variable)
 - var_in: Ht
   unit_in: cm
   trait_name: plant_height

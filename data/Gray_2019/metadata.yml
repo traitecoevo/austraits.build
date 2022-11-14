@@ -27,21 +27,22 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       group_by(Species) %>% 
-        mutate_at(vars(`Nmass (%)`,`Narea (g/m2)`,`Pmass (%)`,`LeafP_mass`,`Parea (g/m2)`),
-        replace_duplicates_with_NA) %>%
+      mutate_at(vars(`Nmass (%)`,`Narea (g/m2)`,`Pmass (%)`,`LeafP_mass`,`Parea (g/m2)`),
+                replace_duplicates_with_NA) %>%
       ungroup() %>%
-      group_by(ID) %>%
-        mutate(observation_number = row_number()) %>%
+      group_by(ID) %>% 
+        summarise(
+          across(c(Owner:Species), .fns = first),
+          across(c(`Asat_area (micromol/m2/s)`:`Parea (g/m2)`), ~mean(.x) %>% na_if("NaN"), na.rm = TRUE)
+          ) %>%
       ungroup()
   '
   collection_date: 2013-10/2013-10
-  individual_id: ID
   taxon_name: Species
-  site_name: site_name
-  observation_number: observation_number
+  location_name: site_name
   description: growth and functional trait measurements in tropical forest to understand
     relationshop between growth, allometry, and trait values
   basis_of_record: field
@@ -55,7 +56,7 @@ dataset:
     leaf nutrient concentrations.
   original_file: Gray et al 2019 Qld gas & trait data.xls
   notes: none
-sites:
+locations:
   Atherton:
     latitude (deg): -17.609964
     longitude (deg): 145.766577
@@ -172,7 +173,7 @@ traits:
     performed at the Appleton Laboratory (University of Queensland).
 - var_in: SLA (cm2/g)
   unit_in: cm2/g
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -231,8 +232,8 @@ traits:
 - var_in: Nmass (%)
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
   replicates: 1
   methods: Leaf nitrogen concentration was determined by combustion using a LECO TruSpec
@@ -240,8 +241,8 @@ traits:
 - var_in: Narea (g/m2)
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
   replicates: 1
   methods: Leaf nitrogen concentration was determined by combustion using a LECO TruSpec
@@ -249,8 +250,8 @@ traits:
 - var_in: Pmass (%)
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
   replicates: 1
   methods: Leaf samples were digested in acid and total P concentration was determined
@@ -258,8 +259,8 @@ traits:
 - var_in: LeafP_mass
   unit_in: .na
   trait_name: .na
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
   replicates: 1
   methods: Leaf samples were digested in acid and total P concentration was determined
@@ -267,8 +268,8 @@ traits:
 - var_in: Parea (g/m2)
   unit_in: g/m2
   trait_name: leaf_P_per_area
-  entity_type: individual
-  value_type: raw
+  entity_type: population
+  value_type: mean
   basis_of_value: measurement
   replicates: 1
   methods: Leaf samples were digested in acid and total P concentration was determined

@@ -17,10 +17,16 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      mutate(
+        leaf_hairs_adult = stringr::str_replace(leaf_hairs_adult, "1", "hairy"),
+        leaf_hairs_adult = stringr::str_replace(leaf_hairs_adult, "0", "glabrous")        
+      )
+  '
   collection_date: 2018/2018
   taxon_name: species
-  site_name: site
+  location_name: site
   description: To understand intra-specific variation in leaf morphology of the Pultenaea
     juniperina species complex and resolve its taxonomic status in Tasmania (unpublished
     honours data)
@@ -31,7 +37,7 @@ dataset:
     developed leaves.
   original_file: pult_juni_ind_avgs.xls
   notes: none
-sites:
+locations:
   site_at_ 41.2087822 _deg_S_and_ 146.7094075 _deg_E:
     latitude (deg): -41.2087822
     longitude (deg): 146.7094075
@@ -232,7 +238,7 @@ traits:
   methods: Measured in mm using digital calipers. Average of five leaves.
 - var_in: leaf_hairs_adult
   unit_in: .na
-  trait_name: leaf_hairs_adult
+  trait_name: leaf_hairs_adult_leaves
   entity_type: individual
   value_type: mode
   basis_of_value: expert_score
@@ -248,7 +254,16 @@ traits:
   replicates: 1
   methods: Categorical, where within individual variation existed value is the dominant
     lefa shape.
-substitutions: .na
+substitutions:
+- trait_name: leaf_shape
+  find: broadly_lanceolate
+  replace: narrowly_ovate
+- trait_name: leaf_hairs_adult_leaves
+  find: 0
+  replace: glabrous
+- trait_name: leaf_hairs_adult_leaves
+  find: 1
+  replace: hairy
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na

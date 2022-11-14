@@ -120,13 +120,13 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
-    data %>% 
+  custom_R_code:     '
+    data %>%
       mutate_at(vars(`gl Mo (mg/kg)`,`gl Na (mg/g)`), ~na_if(.,0))
   '
   collection_date: 2011/2012
   taxon_name: Genus_species
-  site_name: location
+  location_name: location
   description: field campaigns of Sean Gleason, Don Butler and Chris Blackman in eastern
     Australia
   basis_of_record: field
@@ -175,7 +175,7 @@ dataset:
     set here because the reduced data set yielded similar results.'
   original_file: in raw folder
   notes: Some species wood density values are included in Zieminska_2013.
-sites:
+locations:
   Bothwell:
     latitude (deg): -42.387
     longitude (deg): 147.048
@@ -373,7 +373,29 @@ sites:
     temperature, monthly min (C): 2.8
     temperature, monthly max (C): 28.6
     aridity index (MAP/PET): 0.598
-contexts: .na
+contexts:
+- context_property: vessel type measured
+  category: method
+  var_in: method_context
+  values:
+  - value: midrib vessels
+    description: Measurements made on midrib vessels.
+  - value: 2nd-order vessels
+    description: Measurements made on 2nd-order vessels.
+  - value: minor vessels
+    description: Measurements made on minor vessels.
+  - value: petiole vessels
+    description: Measurements made on petiole vessels.
+- context_property: data source
+  category: method
+  var_in: method_context2
+  values:
+  - find: Zieminska_2013
+    value: Zieminska_2013
+    description: Data provided separately by Kasia Zieminska.
+  - find: this study
+    value: Westoby_2014
+    description: Data were collected explicitly for this study.
 traits:
 - var_in: MOR (Pa)
   unit_in: MPa
@@ -450,9 +472,8 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: '5'
-  method_number: 1
-  measurement_remarks: data collected for this study
-  methods: &wood_density_method Wood density was measured on segments 3-5 cm long for each twig sample.
+  method_context2: this study
+  methods: Wood density was measured on segments 3-5 cm long for each twig sample.
     Bark and pith were removed and measurements were carried out on xylem only. In
     this paper we refer to xylem as 'wood'. After removing bark and pith, wood pieces
     were soaked in water for at least 48 h prior to volume measurement. Then a beaker
@@ -474,13 +495,27 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: '1'
-  method_number: 2
-  measurement_remarks: data provided separately by Kasia Zieminska. There are species for which wood density is not provided, as these values are
-    included in the dataset Zieminska_2013.
-  methods: *wood_density_method    
+  method_context2: Zieminska_2013
+  measurement_remarks: There are species for which wood density is not provided, as
+    these values are included in the dataset Zieminska_2013.
+  methods: Wood density was measured on segments 3-5 cm long for each twig sample.
+    Bark and pith were removed and measurements were carried out on xylem only. In
+    this paper we refer to xylem as 'wood'. After removing bark and pith, wood pieces
+    were soaked in water for at least 48 h prior to volume measurement. Then a beaker
+    filled with water was placed on a balance (0.0001 g, Mettler AE 160). A thin wire
+    platform was suspended in water so that it did not touch the side or bottom of
+    the beaker. The balance was tared before each measurement and a sample was gently
+    placed on the platform. The mass of displaced water was read from the balance.
+    From standard water density of 1 g cm-3 and knowing the mass of displaced water,
+    we calculated sample volumes applying Archimedes' buoyancy principle (e.g. 1 g
+    of displaced water equals 1 cm3 volume). Samples were then placed in paper envelopes
+    and dried at 70  deg C for at least 72 h. Wood density was calculated as the dry
+    mass divided by water saturated volume (g cm-3). These are values not collected
+    by Kasia Zieminska. There are species for which wood density is not provided,
+    as these values are included in the dataset Zieminska_2013.
 - var_in: LMA (g m-2)
   unit_in: g/m2
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -887,7 +922,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: 3
-  methods: &conductivity_method Blackman 2014; For each mainland Australian site leaf hydraulic vulnerability
+  methods: Blackman 2014; For each mainland Australian site leaf hydraulic vulnerability
     was measured in 11-16 of the most common co-occurring woody species. Leaf hydraulic
     vulnerability data for the Tasmanian and Peruvian species were sourced from previous
     work (Blackman et al., 2010, 2012). Vulnerability curves were generated for each
@@ -928,7 +963,40 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 3
-  methods: *conductivity_method
+  methods: Blackman 2014; For each mainland Australian site leaf hydraulic vulnerability
+    was measured in 11-16 of the most common co-occurring woody species. Leaf hydraulic
+    vulnerability data for the Tasmanian and Peruvian species were sourced from previous
+    work (Blackman et al., 2010, 2012). Vulnerability curves were generated for each
+    species by measuring Kleaf at a range of water potentials (Cleaf ). Kleaf wasmeasured
+    using amodified rehydration technique whereby leaves were allowed to rehydrate
+    while connected to a flow meter (Brodribb and Cochard, 2009). Branches 1-2 m in
+    length were cut from the upper canopies of three individuals of each species and
+    immediately placed inside plastic bags for transport back to the laboratory. Most
+    sampling was done early in the morning when plants were well hydrated. Cut branches
+    were laid on the bench top and allowed to dehydrate slowly in approx. 1-MPa steps.
+    At each 1-MPa step, the branch was carefully re-bagged to arrest water loss and
+    ensure water potential equilibrium. After equilibration, two adjacent leaves or
+    small shoot tips with fully expanded leaves were cut from each branch for determination
+    of Cleaf (pressure chamber Model 1000, PMS Instruments, Corvallis, OR, USA). An
+    adjacent sample shoot was then cut under water to prevent vessel cavitation and
+    immediately connected via silicon tubing to a beaker of ultra-pure milli-Q water
+    placed on a laboratory balance (Sartorius CP225D, Goettingen, Germany). A pressure
+    release valve ensured zero pressure in the system upon connection of the shoot
+    to the tubing. Water was then drawn into the rehydrating leaves out of the balance,
+    which logged the change in mass every 2 s. The maximum rate of water flow was
+    calculated from the first 3-4 data points at the very beginning of the rehydration
+    (exponential decay) curve. This ratewas then normalized by leaf area, pressure
+    gradient (i.e. leaf water potential) and water viscosity. For each species, normalized
+    flowrates (Kleaf )weremaximal in shoots near full hydration (between -1 and -2
+    MPa) and declined as shoots became progressively drier. Loss in Kleaf was plotted
+    against initial leaf (xylem) water potential and fitted with an exponential sigmoidal
+    equation (Pammenter and VanderWilligen, 1998).We assumed losses in hydraulic conductance
+    in our sample group were primarily due to cavitation and the formation of embolisms
+    in the water conducting xylem; however, we acknowledge that processes such as
+    turgor loss and leaf shrinkage may also act to drive changes in Kleaf (Scoffoni
+    et al., 2014), especially in the small number of non-sclerophyllous species from
+    moist sites. Embolism resistance was expressed as the water potential at which
+    50% of the initial conductance was lost.
 - var_in: P88_leaf (Mpa)
   unit_in: neg_MPa
   trait_name: water_potential_88percent_lost_conductivity
@@ -936,7 +1004,40 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 3
-  methods: *conductivity_method
+  methods: Blackman 2014; For each mainland Australian site leaf hydraulic vulnerability
+    was measured in 11-16 of the most common co-occurring woody species. Leaf hydraulic
+    vulnerability data for the Tasmanian and Peruvian species were sourced from previous
+    work (Blackman et al., 2010, 2012). Vulnerability curves were generated for each
+    species by measuring Kleaf at a range of water potentials (Cleaf ). Kleaf wasmeasured
+    using amodified rehydration technique whereby leaves were allowed to rehydrate
+    while connected to a flow meter (Brodribb and Cochard, 2009). Branches 1-2 m in
+    length were cut from the upper canopies of three individuals of each species and
+    immediately placed inside plastic bags for transport back to the laboratory. Most
+    sampling was done early in the morning when plants were well hydrated. Cut branches
+    were laid on the bench top and allowed to dehydrate slowly in approx. 1-MPa steps.
+    At each 1-MPa step, the branch was carefully re-bagged to arrest water loss and
+    ensure water potential equilibrium. After equilibration, two adjacent leaves or
+    small shoot tips with fully expanded leaves were cut from each branch for determination
+    of Cleaf (pressure chamber Model 1000, PMS Instruments, Corvallis, OR, USA). An
+    adjacent sample shoot was then cut under water to prevent vessel cavitation and
+    immediately connected via silicon tubing to a beaker of ultra-pure milli-Q water
+    placed on a laboratory balance (Sartorius CP225D, Goettingen, Germany). A pressure
+    release valve ensured zero pressure in the system upon connection of the shoot
+    to the tubing. Water was then drawn into the rehydrating leaves out of the balance,
+    which logged the change in mass every 2 s. The maximum rate of water flow was
+    calculated from the first 3-4 data points at the very beginning of the rehydration
+    (exponential decay) curve. This ratewas then normalized by leaf area, pressure
+    gradient (i.e. leaf water potential) and water viscosity. For each species, normalized
+    flowrates (Kleaf )weremaximal in shoots near full hydration (between -1 and -2
+    MPa) and declined as shoots became progressively drier. Loss in Kleaf was plotted
+    against initial leaf (xylem) water potential and fitted with an exponential sigmoidal
+    equation (Pammenter and VanderWilligen, 1998).We assumed losses in hydraulic conductance
+    in our sample group were primarily due to cavitation and the formation of embolisms
+    in the water conducting xylem; however, we acknowledge that processes such as
+    turgor loss and leaf shrinkage may also act to drive changes in Kleaf (Scoffoni
+    et al., 2014), especially in the small number of non-sclerophyllous species from
+    moist sites. Embolism resistance was expressed as the water potential at which
+    50% of the initial conductance was lost.
 - var_in: rad_mid
   unit_in: um/2
   trait_name: vessel_diameter_leaves
@@ -944,48 +1045,46 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 3
-  method_number: 1
-  measurement_remarks: hydraulic radius (micron) of midrib vessels
-  methods: &vessel_measurement_method Fully expanded sun-leaves were
-    collected from three individuals from each field site at the time leaf hydraulic
-    vulnerability measurements were made. Between five and ten sample leaves from
-    each of three individuals per species were sealed in zip-lock bags with moist
-    paper-towel and placed inside an insulated cool-box. Samples were transported
-    back to the laboratory within 3 d of collecting and fixed in FAA (formalin acetic
-    acid) solution and stored. Measurements of xylem anatomy in petioles, midribs,
-    2deg veins and minor veins were made in one leaf from two to three individuals
-    per species, with the exception of vessels in 2deg veins of Pultenaea scabra which
-    were calculated from a single leaf (see Table S1). Leaf area was measured using
-    a flat-bed scanner (Scan Maker i900, Microtek International, China) before sectioning.
-    Transverse sections of vein xylem were made using a vibratome (VT1000s, Leica
-    Microsystems, Germany). Sections were made half-way along the length of the petiole,
-    mid-rib and 2deg veins (minor vein anatomy was generally captured within lower
-    order vein sections). Small (<deg1 cm2) pieces of leaf, each containing a target
-    vein, were cut out and individually suspended in 6 % agarose blocks. Each agarose
-    block was shaped with a razor-blade and then mounted onto the vibratome stage
-    ensuring that the target vein was perpendicular to the cutting edge of the blade.
-    Several transverse sections were cut at a thickness of between 10 and 20 um. Sections
-    were stained in dilute 1 % methylene blue before mounting onto glass slides in
-    phenol glycerine jelly. The xylem anatomy of each vein order was photographed
-    using a digital camera (DXM1200F, Nikon, Japan) attached to a light microscope
-    (Bx50, Olympus Optical, Japan). Magnification of each vein depended on vessel
-    size; petioles, mid-ribs and 2 deg veins were photographed at 40x or 100x, while
-    minor veins were photographed at 100x. From each image, lumen breadth (b) and
-    wall thickness (t) was measured using ImageJ software (National Institutes of
-    Health, USA) from a representative sample of between ten and 100 hydraulically
-    functional vessels. Due to the typically low number of vessels in minor veins,
-    b and t were measured from two or three different minor veins per leaf. For all
-    veins, care was taken to avoid cell-types such as fibre cells and xylem parenchyma
-    that were deemed to provide functional roles beyond water transport. Also, minor
-    veins were identified as the smallest veins in cross section with a clearly defined
-    vascular bundle (xylem and phloem), and were carefully distinguished from free
-    vein endings, which were often enlarged and represented sclereids and/or tracheids
-    in some species. Because vessels were often elliptical in shape, b was measured
-    along the short and long axes of each vessel, and then transformed to the circular
-    equivalent diameter (Choat et al., 2007). Hydraulically weighted vessel diameter
-    (bh) was calculated according to the formula bh = sum(b4/n)0.25, which weights
-    the vessels (n) within each vein order by their hydraulic contribution to total
-    vein conductance (Tyree and Zimmermann, 2002).
+  method_context: midrib vessels
+  methods: Fully expanded sun-leaves were collected from three individuals from each
+    field site at the time leaf hydraulic vulnerability measurements were made. Between
+    five and ten sample leaves from each of three individuals per species were sealed
+    in zip-lock bags with moist paper-towel and placed inside an insulated cool-box.
+    Samples were transported back to the laboratory within 3 d of collecting and fixed
+    in FAA (formalin acetic acid) solution and stored. Measurements of xylem anatomy
+    in petioles, midribs, 2deg veins and minor veins were made in one leaf from two
+    to three individuals per species, with the exception of vessels in 2deg veins
+    of Pultenaea scabra which were calculated from a single leaf (see Table S1). Leaf
+    area was measured using a flat-bed scanner (Scan Maker i900, Microtek International,
+    China) before sectioning. Transverse sections of vein xylem were made using a
+    vibratome (VT1000s, Leica Microsystems, Germany). Sections were made half-way
+    along the length of the petiole, mid-rib and 2deg veins (minor vein anatomy was
+    generally captured within lower order vein sections). Small (<deg1 cm2) pieces
+    of leaf, each containing a target vein, were cut out and individually suspended
+    in 6 % agarose blocks. Each agarose block was shaped with a razor-blade and then
+    mounted onto the vibratome stage ensuring that the target vein was perpendicular
+    to the cutting edge of the blade. Several transverse sections were cut at a thickness
+    of between 10 and 20 um. Sections were stained in dilute 1 % methylene blue before
+    mounting onto glass slides in phenol glycerine jelly. The xylem anatomy of each
+    vein order was photographed using a digital camera (DXM1200F, Nikon, Japan) attached
+    to a light microscope (Bx50, Olympus Optical, Japan). Magnification of each vein
+    depended on vessel size; petioles, mid-ribs and 2 deg veins were photographed
+    at 40x or 100x, while minor veins were photographed at 100x. From each image,
+    lumen breadth (b) and wall thickness (t) was measured using ImageJ software (National
+    Institutes of Health, USA) from a representative sample of between ten and 100
+    hydraulically functional vessels. Due to the typically low number of vessels in
+    minor veins, b and t were measured from two or three different minor veins per
+    leaf. For all veins, care was taken to avoid cell-types such as fibre cells and
+    xylem parenchyma that were deemed to provide functional roles beyond water transport.
+    Also, minor veins were identified as the smallest veins in cross section with
+    a clearly defined vascular bundle (xylem and phloem), and were carefully distinguished
+    from free vein endings, which were often enlarged and represented sclereids and/or
+    tracheids in some species. Because vessels were often elliptical in shape, b was
+    measured along the short and long axes of each vessel, and then transformed to
+    the circular equivalent diameter (Choat et al., 2007). Hydraulically weighted
+    vessel diameter (bh) was calculated according to the formula bh = sum(b4/n)0.25,
+    which weights the vessels (n) within each vein order by their hydraulic contribution
+    to total vein conductance (Tyree and Zimmermann, 2002).
 - var_in: rad_2nd
   unit_in: um/2
   trait_name: vessel_diameter_leaves
@@ -993,9 +1092,46 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 3
-  method_number: 2
-  measurement_remarks: hydraulic radius (micron) of 2nd-order vessels
-  methods: *vessel_measurement_method
+  method_context: 2nd-order vessels
+  methods: Fully expanded sun-leaves were collected from three individuals from each
+    field site at the time leaf hydraulic vulnerability measurements were made. Between
+    five and ten sample leaves from each of three individuals per species were sealed
+    in zip-lock bags with moist paper-towel and placed inside an insulated cool-box.
+    Samples were transported back to the laboratory within 3 d of collecting and fixed
+    in FAA (formalin acetic acid) solution and stored. Measurements of xylem anatomy
+    in petioles, midribs, 2deg veins and minor veins were made in one leaf from two
+    to three individuals per species, with the exception of vessels in 2deg veins
+    of Pultenaea scabra which were calculated from a single leaf (see Table S1). Leaf
+    area was measured using a flat-bed scanner (Scan Maker i900, Microtek International,
+    China) before sectioning. Transverse sections of vein xylem were made using a
+    vibratome (VT1000s, Leica Microsystems, Germany). Sections were made half-way
+    along the length of the petiole, mid-rib and 2deg veins (minor vein anatomy was
+    generally captured within lower order vein sections). Small (<deg1 cm2) pieces
+    of leaf, each containing a target vein, were cut out and individually suspended
+    in 6 % agarose blocks. Each agarose block was shaped with a razor-blade and then
+    mounted onto the vibratome stage ensuring that the target vein was perpendicular
+    to the cutting edge of the blade. Several transverse sections were cut at a thickness
+    of between 10 and 20 um. Sections were stained in dilute 1 % methylene blue before
+    mounting onto glass slides in phenol glycerine jelly. The xylem anatomy of each
+    vein order was photographed using a digital camera (DXM1200F, Nikon, Japan) attached
+    to a light microscope (Bx50, Olympus Optical, Japan). Magnification of each vein
+    depended on vessel size; petioles, mid-ribs and 2 deg veins were photographed
+    at 40x or 100x, while minor veins were photographed at 100x. From each image,
+    lumen breadth (b) and wall thickness (t) was measured using ImageJ software (National
+    Institutes of Health, USA) from a representative sample of between ten and 100
+    hydraulically functional vessels. Due to the typically low number of vessels in
+    minor veins, b and t were measured from two or three different minor veins per
+    leaf. For all veins, care was taken to avoid cell-types such as fibre cells and
+    xylem parenchyma that were deemed to provide functional roles beyond water transport.
+    Also, minor veins were identified as the smallest veins in cross section with
+    a clearly defined vascular bundle (xylem and phloem), and were carefully distinguished
+    from free vein endings, which were often enlarged and represented sclereids and/or
+    tracheids in some species. Because vessels were often elliptical in shape, b was
+    measured along the short and long axes of each vessel, and then transformed to
+    the circular equivalent diameter (Choat et al., 2007). Hydraulically weighted
+    vessel diameter (bh) was calculated according to the formula bh = sum(b4/n)0.25,
+    which weights the vessels (n) within each vein order by their hydraulic contribution
+    to total vein conductance (Tyree and Zimmermann, 2002).
 - var_in: rad_pet
   unit_in: um/2
   trait_name: vessel_diameter_leaves
@@ -1003,9 +1139,46 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 3
-  method_number: 3
-  measurement_remarks: hydraulic radius (micron) of petiole vessels
-  methods: *vessel_measurement_method
+  method_context: petiole vessels
+  methods: Fully expanded sun-leaves were collected from three individuals from each
+    field site at the time leaf hydraulic vulnerability measurements were made. Between
+    five and ten sample leaves from each of three individuals per species were sealed
+    in zip-lock bags with moist paper-towel and placed inside an insulated cool-box.
+    Samples were transported back to the laboratory within 3 d of collecting and fixed
+    in FAA (formalin acetic acid) solution and stored. Measurements of xylem anatomy
+    in petioles, midribs, 2deg veins and minor veins were made in one leaf from two
+    to three individuals per species, with the exception of vessels in 2deg veins
+    of Pultenaea scabra which were calculated from a single leaf (see Table S1). Leaf
+    area was measured using a flat-bed scanner (Scan Maker i900, Microtek International,
+    China) before sectioning. Transverse sections of vein xylem were made using a
+    vibratome (VT1000s, Leica Microsystems, Germany). Sections were made half-way
+    along the length of the petiole, mid-rib and 2deg veins (minor vein anatomy was
+    generally captured within lower order vein sections). Small (<deg1 cm2) pieces
+    of leaf, each containing a target vein, were cut out and individually suspended
+    in 6 % agarose blocks. Each agarose block was shaped with a razor-blade and then
+    mounted onto the vibratome stage ensuring that the target vein was perpendicular
+    to the cutting edge of the blade. Several transverse sections were cut at a thickness
+    of between 10 and 20 um. Sections were stained in dilute 1 % methylene blue before
+    mounting onto glass slides in phenol glycerine jelly. The xylem anatomy of each
+    vein order was photographed using a digital camera (DXM1200F, Nikon, Japan) attached
+    to a light microscope (Bx50, Olympus Optical, Japan). Magnification of each vein
+    depended on vessel size; petioles, mid-ribs and 2 deg veins were photographed
+    at 40x or 100x, while minor veins were photographed at 100x. From each image,
+    lumen breadth (b) and wall thickness (t) was measured using ImageJ software (National
+    Institutes of Health, USA) from a representative sample of between ten and 100
+    hydraulically functional vessels. Due to the typically low number of vessels in
+    minor veins, b and t were measured from two or three different minor veins per
+    leaf. For all veins, care was taken to avoid cell-types such as fibre cells and
+    xylem parenchyma that were deemed to provide functional roles beyond water transport.
+    Also, minor veins were identified as the smallest veins in cross section with
+    a clearly defined vascular bundle (xylem and phloem), and were carefully distinguished
+    from free vein endings, which were often enlarged and represented sclereids and/or
+    tracheids in some species. Because vessels were often elliptical in shape, b was
+    measured along the short and long axes of each vessel, and then transformed to
+    the circular equivalent diameter (Choat et al., 2007). Hydraulically weighted
+    vessel diameter (bh) was calculated according to the formula bh = sum(b4/n)0.25,
+    which weights the vessels (n) within each vein order by their hydraulic contribution
+    to total vein conductance (Tyree and Zimmermann, 2002).
 - var_in: rad_min
   unit_in: um/2
   trait_name: vessel_diameter_leaves
@@ -1013,49 +1186,235 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 3
-  method_number: 4
-  measurement_remarks: hydraulic radius (micron) of minor vessels
-  methods: *vessel_measurement_method
+  method_context: minor vessels
+  methods: Fully expanded sun-leaves were collected from three individuals from each
+    field site at the time leaf hydraulic vulnerability measurements were made. Between
+    five and ten sample leaves from each of three individuals per species were sealed
+    in zip-lock bags with moist paper-towel and placed inside an insulated cool-box.
+    Samples were transported back to the laboratory within 3 d of collecting and fixed
+    in FAA (formalin acetic acid) solution and stored. Measurements of xylem anatomy
+    in petioles, midribs, 2deg veins and minor veins were made in one leaf from two
+    to three individuals per species, with the exception of vessels in 2deg veins
+    of Pultenaea scabra which were calculated from a single leaf (see Table S1). Leaf
+    area was measured using a flat-bed scanner (Scan Maker i900, Microtek International,
+    China) before sectioning. Transverse sections of vein xylem were made using a
+    vibratome (VT1000s, Leica Microsystems, Germany). Sections were made half-way
+    along the length of the petiole, mid-rib and 2deg veins (minor vein anatomy was
+    generally captured within lower order vein sections). Small (<deg1 cm2) pieces
+    of leaf, each containing a target vein, were cut out and individually suspended
+    in 6 % agarose blocks. Each agarose block was shaped with a razor-blade and then
+    mounted onto the vibratome stage ensuring that the target vein was perpendicular
+    to the cutting edge of the blade. Several transverse sections were cut at a thickness
+    of between 10 and 20 um. Sections were stained in dilute 1 % methylene blue before
+    mounting onto glass slides in phenol glycerine jelly. The xylem anatomy of each
+    vein order was photographed using a digital camera (DXM1200F, Nikon, Japan) attached
+    to a light microscope (Bx50, Olympus Optical, Japan). Magnification of each vein
+    depended on vessel size; petioles, mid-ribs and 2 deg veins were photographed
+    at 40x or 100x, while minor veins were photographed at 100x. From each image,
+    lumen breadth (b) and wall thickness (t) was measured using ImageJ software (National
+    Institutes of Health, USA) from a representative sample of between ten and 100
+    hydraulically functional vessels. Due to the typically low number of vessels in
+    minor veins, b and t were measured from two or three different minor veins per
+    leaf. For all veins, care was taken to avoid cell-types such as fibre cells and
+    xylem parenchyma that were deemed to provide functional roles beyond water transport.
+    Also, minor veins were identified as the smallest veins in cross section with
+    a clearly defined vascular bundle (xylem and phloem), and were carefully distinguished
+    from free vein endings, which were often enlarged and represented sclereids and/or
+    tracheids in some species. Because vessels were often elliptical in shape, b was
+    measured along the short and long axes of each vessel, and then transformed to
+    the circular equivalent diameter (Choat et al., 2007). Hydraulically weighted
+    vessel diameter (bh) was calculated according to the formula bh = sum(b4/n)0.25,
+    which weights the vessels (n) within each vein order by their hydraulic contribution
+    to total vein conductance (Tyree and Zimmermann, 2002).
 - var_in: ves_den_min
   unit_in: count/mm2
   trait_name: vessel_density_leaves
   entity_type: population
   value_type: mean
   basis_of_value: measurement
-  replicates: 3  
-  method_number: 4
-  measurement_remarks: vessel density (no/mm2 xylem) minor vessels
-  methods: *vessel_measurement_method
+  replicates: 3
+  method_context: minor vessels
+  methods: Fully expanded sun-leaves were collected from three individuals from each
+    field site at the time leaf hydraulic vulnerability measurements were made. Between
+    five and ten sample leaves from each of three individuals per species were sealed
+    in zip-lock bags with moist paper-towel and placed inside an insulated cool-box.
+    Samples were transported back to the laboratory within 3 d of collecting and fixed
+    in FAA (formalin acetic acid) solution and stored. Measurements of xylem anatomy
+    in petioles, midribs, 2deg veins and minor veins were made in one leaf from two
+    to three individuals per species, with the exception of vessels in 2deg veins
+    of Pultenaea scabra which were calculated from a single leaf (see Table S1). Leaf
+    area was measured using a flat-bed scanner (Scan Maker i900, Microtek International,
+    China) before sectioning. Transverse sections of vein xylem were made using a
+    vibratome (VT1000s, Leica Microsystems, Germany). Sections were made half-way
+    along the length of the petiole, mid-rib and 2deg veins (minor vein anatomy was
+    generally captured within lower order vein sections). Small (<deg1 cm2) pieces
+    of leaf, each containing a target vein, were cut out and individually suspended
+    in 6 % agarose blocks. Each agarose block was shaped with a razor-blade and then
+    mounted onto the vibratome stage ensuring that the target vein was perpendicular
+    to the cutting edge of the blade. Several transverse sections were cut at a thickness
+    of between 10 and 20 um. Sections were stained in dilute 1 % methylene blue before
+    mounting onto glass slides in phenol glycerine jelly. The xylem anatomy of each
+    vein order was photographed using a digital camera (DXM1200F, Nikon, Japan) attached
+    to a light microscope (Bx50, Olympus Optical, Japan). Magnification of each vein
+    depended on vessel size; petioles, mid-ribs and 2 deg veins were photographed
+    at 40x or 100x, while minor veins were photographed at 100x. From each image,
+    lumen breadth (b) and wall thickness (t) was measured using ImageJ software (National
+    Institutes of Health, USA) from a representative sample of between ten and 100
+    hydraulically functional vessels. Due to the typically low number of vessels in
+    minor veins, b and t were measured from two or three different minor veins per
+    leaf. For all veins, care was taken to avoid cell-types such as fibre cells and
+    xylem parenchyma that were deemed to provide functional roles beyond water transport.
+    Also, minor veins were identified as the smallest veins in cross section with
+    a clearly defined vascular bundle (xylem and phloem), and were carefully distinguished
+    from free vein endings, which were often enlarged and represented sclereids and/or
+    tracheids in some species. Because vessels were often elliptical in shape, b was
+    measured along the short and long axes of each vessel, and then transformed to
+    the circular equivalent diameter (Choat et al., 2007). Hydraulically weighted
+    vessel diameter (bh) was calculated according to the formula bh = sum(b4/n)0.25,
+    which weights the vessels (n) within each vein order by their hydraulic contribution
+    to total vein conductance (Tyree and Zimmermann, 2002).
 - var_in: ves_den_2nd
   unit_in: count/mm2
   trait_name: vessel_density_leaves
   entity_type: population
   value_type: mean
-  basis_of_value: measurementf
+  basis_of_value: measurement
   replicates: 3
-  method_number: 2
-  measurement_remarks: vessel density (no/mm2 xylem) 2nd-order vessels
-  methods: *vessel_measurement_method
+  method_context: 2nd-order vessels
+  methods: Fully expanded sun-leaves were collected from three individuals from each
+    field site at the time leaf hydraulic vulnerability measurements were made. Between
+    five and ten sample leaves from each of three individuals per species were sealed
+    in zip-lock bags with moist paper-towel and placed inside an insulated cool-box.
+    Samples were transported back to the laboratory within 3 d of collecting and fixed
+    in FAA (formalin acetic acid) solution and stored. Measurements of xylem anatomy
+    in petioles, midribs, 2deg veins and minor veins were made in one leaf from two
+    to three individuals per species, with the exception of vessels in 2deg veins
+    of Pultenaea scabra which were calculated from a single leaf (see Table S1). Leaf
+    area was measured using a flat-bed scanner (Scan Maker i900, Microtek International,
+    China) before sectioning. Transverse sections of vein xylem were made using a
+    vibratome (VT1000s, Leica Microsystems, Germany). Sections were made half-way
+    along the length of the petiole, mid-rib and 2deg veins (minor vein anatomy was
+    generally captured within lower order vein sections). Small (<deg1 cm2) pieces
+    of leaf, each containing a target vein, were cut out and individually suspended
+    in 6 % agarose blocks. Each agarose block was shaped with a razor-blade and then
+    mounted onto the vibratome stage ensuring that the target vein was perpendicular
+    to the cutting edge of the blade. Several transverse sections were cut at a thickness
+    of between 10 and 20 um. Sections were stained in dilute 1 % methylene blue before
+    mounting onto glass slides in phenol glycerine jelly. The xylem anatomy of each
+    vein order was photographed using a digital camera (DXM1200F, Nikon, Japan) attached
+    to a light microscope (Bx50, Olympus Optical, Japan). Magnification of each vein
+    depended on vessel size; petioles, mid-ribs and 2 deg veins were photographed
+    at 40x or 100x, while minor veins were photographed at 100x. From each image,
+    lumen breadth (b) and wall thickness (t) was measured using ImageJ software (National
+    Institutes of Health, USA) from a representative sample of between ten and 100
+    hydraulically functional vessels. Due to the typically low number of vessels in
+    minor veins, b and t were measured from two or three different minor veins per
+    leaf. For all veins, care was taken to avoid cell-types such as fibre cells and
+    xylem parenchyma that were deemed to provide functional roles beyond water transport.
+    Also, minor veins were identified as the smallest veins in cross section with
+    a clearly defined vascular bundle (xylem and phloem), and were carefully distinguished
+    from free vein endings, which were often enlarged and represented sclereids and/or
+    tracheids in some species. Because vessels were often elliptical in shape, b was
+    measured along the short and long axes of each vessel, and then transformed to
+    the circular equivalent diameter (Choat et al., 2007). Hydraulically weighted
+    vessel diameter (bh) was calculated according to the formula bh = sum(b4/n)0.25,
+    which weights the vessels (n) within each vein order by their hydraulic contribution
+    to total vein conductance (Tyree and Zimmermann, 2002).
 - var_in: ves_den_mid
   unit_in: count/mm2
   trait_name: vessel_density_leaves
   entity_type: population
   value_type: mean
   basis_of_value: measurement
-  replicates: 3  
-  method_number: 1
+  replicates: 3
+  method_context: midrib vessels
   measurement_remarks: vessel density (no/mm2 xylem) midrib vessels
-  methods: *vessel_measurement_method
+  methods: Fully expanded sun-leaves were collected from three individuals from each
+    field site at the time leaf hydraulic vulnerability measurements were made. Between
+    five and ten sample leaves from each of three individuals per species were sealed
+    in zip-lock bags with moist paper-towel and placed inside an insulated cool-box.
+    Samples were transported back to the laboratory within 3 d of collecting and fixed
+    in FAA (formalin acetic acid) solution and stored. Measurements of xylem anatomy
+    in petioles, midribs, 2deg veins and minor veins were made in one leaf from two
+    to three individuals per species, with the exception of vessels in 2deg veins
+    of Pultenaea scabra which were calculated from a single leaf (see Table S1). Leaf
+    area was measured using a flat-bed scanner (Scan Maker i900, Microtek International,
+    China) before sectioning. Transverse sections of vein xylem were made using a
+    vibratome (VT1000s, Leica Microsystems, Germany). Sections were made half-way
+    along the length of the petiole, mid-rib and 2deg veins (minor vein anatomy was
+    generally captured within lower order vein sections). Small (<deg1 cm2) pieces
+    of leaf, each containing a target vein, were cut out and individually suspended
+    in 6 % agarose blocks. Each agarose block was shaped with a razor-blade and then
+    mounted onto the vibratome stage ensuring that the target vein was perpendicular
+    to the cutting edge of the blade. Several transverse sections were cut at a thickness
+    of between 10 and 20 um. Sections were stained in dilute 1 % methylene blue before
+    mounting onto glass slides in phenol glycerine jelly. The xylem anatomy of each
+    vein order was photographed using a digital camera (DXM1200F, Nikon, Japan) attached
+    to a light microscope (Bx50, Olympus Optical, Japan). Magnification of each vein
+    depended on vessel size; petioles, mid-ribs and 2 deg veins were photographed
+    at 40x or 100x, while minor veins were photographed at 100x. From each image,
+    lumen breadth (b) and wall thickness (t) was measured using ImageJ software (National
+    Institutes of Health, USA) from a representative sample of between ten and 100
+    hydraulically functional vessels. Due to the typically low number of vessels in
+    minor veins, b and t were measured from two or three different minor veins per
+    leaf. For all veins, care was taken to avoid cell-types such as fibre cells and
+    xylem parenchyma that were deemed to provide functional roles beyond water transport.
+    Also, minor veins were identified as the smallest veins in cross section with
+    a clearly defined vascular bundle (xylem and phloem), and were carefully distinguished
+    from free vein endings, which were often enlarged and represented sclereids and/or
+    tracheids in some species. Because vessels were often elliptical in shape, b was
+    measured along the short and long axes of each vessel, and then transformed to
+    the circular equivalent diameter (Choat et al., 2007). Hydraulically weighted
+    vessel diameter (bh) was calculated according to the formula bh = sum(b4/n)0.25,
+    which weights the vessels (n) within each vein order by their hydraulic contribution
+    to total vein conductance (Tyree and Zimmermann, 2002).
 - var_in: ves_den_pet
   unit_in: count/mm2
   trait_name: vessel_density_leaves
   entity_type: population
   value_type: mean
   basis_of_value: measurement
-  replicates: 3  
-  method_number: 3
-  measurement_remarks: vessel density (no/mm2 xylem) petiole vessels
-  methods: *vessel_measurement_method
+  replicates: 3
+  method_context: petiole vessels
+  methods: Fully expanded sun-leaves were collected from three individuals from each
+    field site at the time leaf hydraulic vulnerability measurements were made. Between
+    five and ten sample leaves from each of three individuals per species were sealed
+    in zip-lock bags with moist paper-towel and placed inside an insulated cool-box.
+    Samples were transported back to the laboratory within 3 d of collecting and fixed
+    in FAA (formalin acetic acid) solution and stored. Measurements of xylem anatomy
+    in petioles, midribs, 2deg veins and minor veins were made in one leaf from two
+    to three individuals per species, with the exception of vessels in 2deg veins
+    of Pultenaea scabra which were calculated from a single leaf (see Table S1). Leaf
+    area was measured using a flat-bed scanner (Scan Maker i900, Microtek International,
+    China) before sectioning. Transverse sections of vein xylem were made using a
+    vibratome (VT1000s, Leica Microsystems, Germany). Sections were made half-way
+    along the length of the petiole, mid-rib and 2deg veins (minor vein anatomy was
+    generally captured within lower order vein sections). Small (<deg1 cm2) pieces
+    of leaf, each containing a target vein, were cut out and individually suspended
+    in 6 % agarose blocks. Each agarose block was shaped with a razor-blade and then
+    mounted onto the vibratome stage ensuring that the target vein was perpendicular
+    to the cutting edge of the blade. Several transverse sections were cut at a thickness
+    of between 10 and 20 um. Sections were stained in dilute 1 % methylene blue before
+    mounting onto glass slides in phenol glycerine jelly. The xylem anatomy of each
+    vein order was photographed using a digital camera (DXM1200F, Nikon, Japan) attached
+    to a light microscope (Bx50, Olympus Optical, Japan). Magnification of each vein
+    depended on vessel size; petioles, mid-ribs and 2 deg veins were photographed
+    at 40x or 100x, while minor veins were photographed at 100x. From each image,
+    lumen breadth (b) and wall thickness (t) was measured using ImageJ software (National
+    Institutes of Health, USA) from a representative sample of between ten and 100
+    hydraulically functional vessels. Due to the typically low number of vessels in
+    minor veins, b and t were measured from two or three different minor veins per
+    leaf. For all veins, care was taken to avoid cell-types such as fibre cells and
+    xylem parenchyma that were deemed to provide functional roles beyond water transport.
+    Also, minor veins were identified as the smallest veins in cross section with
+    a clearly defined vascular bundle (xylem and phloem), and were carefully distinguished
+    from free vein endings, which were often enlarged and represented sclereids and/or
+    tracheids in some species. Because vessels were often elliptical in shape, b was
+    measured along the short and long axes of each vessel, and then transformed to
+    the circular equivalent diameter (Choat et al., 2007). Hydraulically weighted
+    vessel diameter (bh) was calculated according to the formula bh = sum(b4/n)0.25,
+    which weights the vessels (n) within each vein order by their hydraulic contribution
+    to total vein conductance (Tyree and Zimmermann, 2002).
 substitutions: .na
 taxonomic_updates:
 - find: Dodonaea viscosa cuneata

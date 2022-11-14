@@ -32,11 +32,14 @@ contributors:
   austraits_curators: Elizabeth Wenk, Caitlan Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         trt = ifelse(trt == "N", "nitrogen",trt),
-        population_id = paste(site_name, trt, block, sep = "-")
+        fence_treatment = ifelse(stringr::str_detect(trt,"Fence"),"fence","control"),
+        nutrient_treatment = ifelse(trt=="Fence","control",trt),
+        nutrient_treatment = ifelse(nutrient_treatment == "NPK+Fence","NPK",nutrient_treatment),
+        blocks = paste(trt, block, sep = "-")
       ) %>% 
       group_by(Taxon) %>% 
         mutate_at(vars(functional_group), replace_duplicates_with_NA) %>% 
@@ -44,9 +47,7 @@ dataset:
   '
   collection_date: year
   taxon_name: Taxon
-  site_name: site_name
-  context_name: trt
-  population_id: population_id 
+  location_name: site_name
   description: In a global experimental test, we quantified how leaf traits in grasslands
     change in response to the addition of soil nutrients (that is, nitrogen, phosphorus
     and potassium) and the exclusion of vertebrate herbivores.
@@ -71,7 +72,7 @@ dataset:
     Values for the nutrient addition plots are given in the
   original_file: Firn_australian_sites_NutNet_foliar_data.xls
   notes: .na
-sites:
+locations:
   Bogong:
     latitude (deg): -36.874
     longitude (deg): 147.254
@@ -121,51 +122,88 @@ sites:
     elevation (m): 285
     description: Savanna grassland.
 contexts:
-  Control:
-    nutrient treatment: control (no nutrient additions)
-    fence treatment: control (no fence)
-  nitrogen:
-    nutrient treatment: N (added 10 gN m-2 yr-1 as timed-release urea) [manipulated]
-    fence treatment: control (no fence)
-  P:
-    nutrient treatment: P (added 10 gP m-2 yr-1 as triple super phosphate) [manipulated]
-    fence treatment: control (no fence)
-  K:
-    nutrient treatment: K (10 gK m-2 yr-1 as potassium sulphate plus a one-off addition
-      (100 g m-2 yr-1) of macro- and micronutrients (that is, Fe, S, Mg, Mn, Cu, Zn,
-      B, Mo and Ca)) [manipulated]
-    fence treatment: control (no fence)
-  NP:
-    nutrient treatment: NP (added 10 gN m-2 yr-1 as timed-release urea and 10 gP m-2
-      yr-1 as triple super phosphate) [manipulated]
-    fence treatment: control (no fence)
-  NK:
-    nutrient treatment: NK (added 10 gN m-2 yr-1 as timed-release urea and 10 gK m-2
-      yr-1 as potassium sulphate plus a one-off addition (100 g m-2 yr-1) of macro-
-      and micronutrients (that is, Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca)) [manipulated]
-    fence treatment: control (no fence)
-  PK:
-    nutrient treatment: PK (added 10 gP m-2 yr-1 as triple super phosphate and 10
-      gK m-2 yr-1 as potassium sulphate plus a one-off addition (100 g m-2 yr-1) of
-      macro- and micronutrients (that is, Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca)) [manipulated]
-    fence treatment: control (no fence)
-  NPK:
-    nutrient treatment: NPK (added 10 gN m-2 yr-1 as timed-release urea and 10 gP
-      m-2 yr-1 as triple super phosphate and 10 gK m-2 yr-1 as potassium sulphate
-      plus a one-off addition (100 g m-2 yr-1) of macro- and micronutrients (that
-      is, Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca)) [manipulated]
-    fence treatment: control (no fence)
-  Fence:
-    nutrient treatment: control (no nutrient additions)
-    fence treatment: fence (fence desgined to exclude large aboveground mammalian
-      herbivores) [manipulated]
-  NPK+Fence:
-    nutrient treatment: NPK (added 10 gN m-2 yr-1 as timed-release urea and 10 gP
-      m-2 yr-1 as triple super phosphate and 10 gK m-2 yr-1 as potassium sulphate
-      plus a one-off addition (100 g m-2 yr-1) of macro- and micronutrients (that
-      is, Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca)) [manipulated]
-    fence treatment: fence (fence desgined to exclude large aboveground mammalian
-      herbivores) [manipulated]
+- context_property: blocks
+  category: plot
+  var_in: blocks
+  values:
+  - value: nitrogen-1
+  - value: PK-1
+  - value: Control-1
+  - value: Fence-1
+  - value: NPK-1
+  - value: NK-1
+  - value: K-1
+  - value: NP-1
+  - value: NPK+Fence-1
+  - value: P-1
+  - value: Control-2
+  - value: PK-2
+  - value: P-2
+  - value: NP-2
+  - value: NPK-2
+  - value: NPK+Fence-2
+  - value: Fence-2
+  - value: NK-2
+  - value: nitrogen-2
+  - value: K-2
+  - value: Control-3
+  - value: nitrogen-3
+  - value: NPK-3
+  - value: K-3
+  - value: NP-3
+  - value: Fence-3
+  - value: P-3
+  - value: NPK+Fence-3
+  - value: PK-3
+  - value: NK-3
+  - value: K-4
+  - value: nitrogen-4
+  - value: NK-4
+  - value: PK-4
+  - value: P-4
+  - value: NPK-4
+  - value: NPK+Fence-4
+  - value: Control-4
+  - value: NP-4
+  - value: Fence-4
+- context_property: nutrient treatment
+  category: treatment
+  var_in: nutrient_treatment
+  values:
+  - value: Control
+    description: No nutrient addition.
+  - value: nitrogen
+    description: Added 10 gN m-2 yr-1 as timed-release urea.
+  - value: P
+    description: Added 10 gP m-2 yr-1 as triple super phosphate.
+  - value: K
+    description: Added 10 gK m-2 yr-1 as potassium sulphate plus a one-off addition
+      (100 g m-2 yr-1) of macro- and micronutrients (Fe, S, Mg, Mn, Cu, Zn, B, Mo
+      and Ca).
+  - value: NP
+    description: Added 10 gN m-2 yr-1 as timed-release urea and 10 gP m-2 yr-1 as
+      triple super phosphate.
+  - value: NK
+    description: Added 10 gN m-2 yr-1 as timed-release urea and 10 gK m-2 yr-1 as
+      potassium sulphate plus a one-off addition (100 g m-2 yr-1) of macro- and micronutrients
+      (Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca).
+  - value: PK
+    description: Added 10 gP m-2 yr-1 as triple super phosphate and 10 gK m-2 yr-1
+      as potassium sulphate plus a one-off addition (100 g m-2 yr-1) of macro- and
+      micronutrients (Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca).
+  - value: NPK
+    description: Added 10 gN m-2 yr-1 as timed-release urea and 10 gP m-2 yr-1 as
+      triple super phosphate and 10 gK m-2 yr-1 as potassium sulphate plus a one-off
+      addition (100 g m-2 yr-1) of macro- and micronutrients (Fe, S, Mg, Mn, Cu, Zn,
+      B, Mo and Ca).
+- context_property: fence treatment
+  category: treatment
+  var_in: fence_treatment
+  values:
+  - value: control
+    description: No vertebrate herbivore exclusion fence.
+  - value: fence
+    description: Vertebrate herbivore exclusion fence.
 traits:
 - var_in: functional_group
   unit_in: .na
@@ -219,7 +257,7 @@ traits:
     after Duodu et al. with some exceptios (see paper)
 - var_in: SLA_v2
   unit_in: mm2/g
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: population
   value_type: mean
   basis_of_value: measurement

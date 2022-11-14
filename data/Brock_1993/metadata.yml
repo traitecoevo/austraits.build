@@ -18,14 +18,18 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
-        parasitic = ifelse(`growth form`=="parasite","parasitic",NA),
+        parasitic = ifelse(`growth form` == "parasite", "parasitic", NA),
         `flowering time` = convert_month_range_vec_to_binary(`flowering time`), 
-        leaf_type = ifelse(`leaf type` == "articles", "article", NA), 
-        `leaf type`= ifelse(`leaf type` %in% c("articles", "palmate", "palm"), NA, `leaf type`),
-        leaf_division = ifelse(`leaf type` %in% c("palmate", "palm"), "palmately_compound", NA)
+        leaf_type = ifelse(`leaf type` == "articles", "article", NA),
+        leaf_type =  ifelse(`leaf type` == "leafless", "leafless", NA),
+        leaf_lamina_division = ifelse(`leaf type` %in% c("palmate", "palm"), "palmately_compound", NA),
+        `leaf type`= ifelse(`leaf type` %in% c("articles", "palmate", "palm", "leafless"), NA, `leaf type`),
+        leaf_lobation = ifelse(`leaf shape` == "lobed","lobed",NA),
+        across(c("leaf length max (cm)", "leaf length min (cm)",
+                      "leaf width max (cm)", "leaf width min (cm)"), ~na_if(.,0)) 
       )
   '
   collection_date: unknown/1993
@@ -36,7 +40,7 @@ dataset:
   sampling_strategy: unknown
   original_file: flora Northern Aust.xls
   notes: none
-sites: .na
+locations: .na
 contexts: .na
 traits:
 - var_in: longevity
@@ -70,7 +74,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &plant_height_methods unknown
+  methods: unknown
 - var_in: height (m)
   unit_in: m
   trait_name: plant_height
@@ -78,7 +82,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *plant_height_methods
+  methods: unknown
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
@@ -95,9 +99,17 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf_division
+- var_in: leaf_type
   unit_in: .na
-  trait_name: leaf_division
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lamina_division
+  unit_in: .na
+  trait_name: leaf_lamina_division
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -118,7 +130,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &leaf_length_methods unknown
+  methods: unknown
 - var_in: leaf length max (cm)
   unit_in: cm
   trait_name: leaf_length
@@ -126,7 +138,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *leaf_length_methods
+  methods: unknown
 - var_in: leaf width min (cm)
   unit_in: cm
   trait_name: leaf_width
@@ -134,7 +146,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &leaf_width_methods unknown
+  methods: unknown
 - var_in: leaf width max (cm)
   unit_in: cm
   trait_name: leaf_width
@@ -142,7 +154,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *leaf_width_methods
+  methods: unknown
 - var_in: flowering time
   unit_in: .na
   trait_name: flowering_time
@@ -192,18 +204,30 @@ traits:
   replicates: .na
   methods: unknown
 substitutions:
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: articles
-  replace: article
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
+  find: article
+  replace: cladode
 - trait_name: plant_growth_form
   find: liana
-  replace: climber_liana
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: parasite
+  replace: .na
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: grass
   replace: graminoid
+- trait_name: plant_growth_form
+  find: cycad
+  replace: palmoid
+- trait_name: plant_growth_form
+  find: palm
+  replace: palmoid
 - trait_name: flowering_time
   find: ephemeral
   replace: .na
@@ -216,6 +240,12 @@ substitutions:
 - trait_name: seed_shape
   find: flat
   replace: discoid
+- trait_name: leaf_shape
+  find: palm
+  replace: .na
+- trait_name: leaf_shape
+  find: lobed
+  replace: .na
 taxonomic_updates:
 - find: Bauhinia binatum
   replace: Bauhinia binata

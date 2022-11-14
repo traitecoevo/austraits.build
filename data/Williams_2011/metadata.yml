@@ -63,17 +63,45 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       mutate(
         Clonality = paste0(Clonality,Clonality_b),
-        nitrogen_fixing = ifelse(`Nutrient uptake strategy` == 1,1,0)
+        nitrogen_fixing = ifelse(`Nutrient uptake strategy` == 1,1,0),
+        plant_growth_substrate = NA_character_,
+        stem_growth_habit = NA_character_,
+        parasitic = NA_character_,
+        plant_succulence = NA_character_,
       ) %>%
-      subset(`Extant/Extinct` == 1 & `Native/Exotic` == 0)
+      subset(`Extant/Extinct` == 1 & `Native/Exotic` == 0) %>%
+      move_values_to_new_trait(
+        "Growth form", "plant_growth_substrate",
+        c("14","18","19"),
+        c("epiphyte", "aquatic", "aquatic"),
+        c("14","18","19")
+      ) %>%
+      move_values_to_new_trait(
+        "Growth form", "stem_growth_habit",
+        c("18","19","5"),
+        c("submerged","floating", "cushion-forming"),
+        c("18","19","5")
+      ) %>%
+      move_values_to_new_trait(
+        "Growth form", "parasitic",
+        c("17"),
+        c("hemiparasitic parasitic"),
+        c("17")
+      ) %>%
+      move_values_to_new_trait(
+        "Growth form", "plant_succulence",
+        c("11","12"),
+        c("succulent","succulent_stems"),
+        c("11","12")
+      )
   '
   collection_date: 2011/2013
   taxon_name: Species
-  site_name: context
+  location_name: context
   description: A collection of trait data on species growing in Adelaide and Melbourne
     to determine the traits of species that are advantaged and disadvantaged by urbanisation.
   basis_of_record: field
@@ -88,7 +116,7 @@ dataset:
     but also some datasets from John Morgan's lab, Trevor Meers data, and a few datasets
     from Macquarie University labs, Leishman_1992 and Hughes_1992 in particular) have
     been filtered out
-sites:
+locations:
   grows in Adelaide:
     latitude (deg): NA
     longitude (deg): NA
@@ -111,6 +139,41 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: 20 categories according to Cornelissen et al. Information gathered from
+    Floras.
+- var_in: plant_succulence
+  unit_in: .na
+  trait_name: plant_succulence
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The 2 of the 20 growth form categories according to Cornelissen et al. that pertain to succulence. Information gathered from Floras.
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 3 of the 20 plant growth form categories according to Cornelissen et al. Information gathered from
+    Floras.
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 3 of the 20 plant growth form categories according to Cornelissen et al. Information gathered from
+    Floras.
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 1 of the 20 plant growth form categories according to Cornelissen et al. Information gathered from
     Floras.
 - var_in: Life form
   unit_in: .na
@@ -180,7 +243,7 @@ traits:
     www.ffp.csiro.au/research/mycorrhiza and Google search for academic papers.
 - var_in: Spinescence
   unit_in: .na
-  trait_name: spinescence
+  trait_name: plant_spinescence
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -218,7 +281,7 @@ traits:
   methods: assigned at family/ genus level from tables in Cornelissen et al.
 - var_in: SLA_filtered
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -231,6 +294,12 @@ traits:
     University labs, Leishman_1992 and Hughes_1992 in particular) have been filtered
     out.
 substitutions:
+- trait_name: nitrogen_fixing
+  find: '1'
+  replace: nitrogen_fixer
+- trait_name: nitrogen_fixing
+  find: '0'
+  replace: non_nitrogen_fixer
 - trait_name: root_structure
   find: 1
   replace: .na
@@ -320,28 +389,28 @@ substitutions:
   replace: therophyte
 - trait_name: life_form
   find: 6
-  replace: helophytes
+  replace: helophyte
 - trait_name: life_form
   find: 7
-  replace: hydrophytes
+  replace: hydrophyte
 - trait_name: life_form
   find: 8
   replace: .na
 - trait_name: plant_growth_form
   find: 1
-  replace: short_basal
+  replace: herb
 - trait_name: plant_growth_form
   find: 2
-  replace: long_basal
+  replace: herb
 - trait_name: plant_growth_form
   find: 3
-  replace: semi_basal
+  replace: herb
 - trait_name: plant_growth_form
   find: 4
-  replace: erect_leafy
+  replace: herb
 - trait_name: plant_growth_form
   find: 5
-  replace: cushion
+  replace: herb
 - trait_name: plant_growth_form
   find: 6
   replace: tussock
@@ -356,31 +425,31 @@ substitutions:
   replace: tree
 - trait_name: plant_growth_form
   find: 10
-  replace: leafless_shrub_tree
+  replace: .na
 - trait_name: plant_growth_form
   find: 11
-  replace: succulent_short
+  replace: herb
 - trait_name: plant_growth_form
   find: 12
-  replace: succulent_tall
+  replace: herb
 - trait_name: plant_growth_form
   find: 13
-  replace: palm
+  replace: palmoid
 - trait_name: plant_growth_form
   find: 14
-  replace: epiphyte
+  replace: .na
 - trait_name: plant_growth_form
   find: 15
   replace: climber
 - trait_name: plant_growth_form
   find: 17
-  replace: hemi-parasite parasite
+  replace: .na
 - trait_name: plant_growth_form
   find: 18
-  replace: aquatic_submerged
+  replace: herb
 - trait_name: plant_growth_form
   find: 19
-  replace: aquatic_floating
+  replace: herb
 - trait_name: plant_growth_form
   find: 20
   replace: .na
@@ -405,18 +474,18 @@ substitutions:
 - trait_name: photosynthetic_pathway
   find: 3
   replace: cam
-- trait_name: spinescence
+- trait_name: plant_spinescence
   find: 0
-  replace: 0_no_spines
-- trait_name: spinescence
+  replace: no_spines
+- trait_name: plant_spinescence
   find: 1
-  replace: 1_low_density_soft_spines
-- trait_name: spinescence
+  replace: low_density_soft_spines
+- trait_name: plant_spinescence
   find: 2
-  replace: 2_high_density_soft_spines
-- trait_name: spinescence
+  replace: high_density_soft_spines
+- trait_name: plant_spinescence
   find: 3
-  replace: 3_high_density_hard_spines_to_5mm
+  replace: high_density_hard_spines_to_5mm
 taxonomic_updates:
 - find: Melicytus sp. aff. dentatus (Volcanic Plain variant
   replace: Melicytus sp. aff. dentatus (Volcanic Plain variant)

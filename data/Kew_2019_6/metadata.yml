@@ -17,19 +17,19 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         germination = germination_percent/100,
-        remarks = paste0("presow treatment, ", presowtreat)
-      ) %>%
-      group_by(taxa) %>%
-        mutate(observation_number = row_number()) %>%
-      ungroup()
+        remarks = paste0(
+          "PRE-SOW TREAT: ", presowtreat, "; ",
+          "GERMINATION COND: ", germcond
+        ),
+        remarks = stringr::str_replace(remarks, "PRE-SOW TREAT: NA; ","")
+      )
   '
   collection_date: unknown/2019
   taxon_name: taxa
-  observation_number: observation_number
   description: Germination data on species from Kew seed databases
   basis_of_record: preserved_specimen
   life_stage: seedling
@@ -37,13 +37,13 @@ dataset:
   original_file: in raw data folder
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons licesne. Data not to be used for Commercial Purposes.
-sites: .na
+locations: .na
 contexts: .na
 traits:
 - var_in: germination
   unit_in: n/n
   trait_name: germination
-  entity_type: population
+  entity_type: individual
   value_type: mean
   basis_of_value: measurement
   replicates: seeds_sown

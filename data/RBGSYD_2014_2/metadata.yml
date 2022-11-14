@@ -11,7 +11,7 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: yes
-  custom_R_code:   '
+  custom_R_code:       '
     check_months <-  function(x){(1:12 %in% x %>% as.integer() %>% paste(collapse=""))};
 
     fruiting <- 
@@ -33,6 +33,22 @@ dataset:
         mutate(trait = "flowering_time", lookup_data = map_chr(months, 
             ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months);
 
+    growth_habit <-
+      data %>%
+        filter(lookup_data == "creeper rooting along stems") %>%
+        mutate(trait = "growth_habit", lookup_data = "creeping");
+    
+    clonal <-
+      data %>%
+        filter(lookup_data == "creeper rooting along stems") %>%
+        mutate(trait = "clonal_spread_mechanism", lookup_data = "aboveground_clonal");
+  
+    scales <-
+      data %>%
+        mutate(trait = ifelse(str_detect(lookup_data, "scales"), "leaf_type", trait)) %>%
+        filter(trait == "leaf_type") %>% 
+        mutate(lookup_data = "scale");
+            
     collapsed <-
       data %>% 
         filter(!trait %in% c("fruiting","flowering month")) %>%
@@ -40,20 +56,26 @@ dataset:
           trait = ifelse(lookup_data == "prostrate", "growth_habit", trait),
           trait = ifelse(lookup_data == "climbing", "growth_habit", trait),
           trait = ifelse(lookup_data == "parasitic", "parasitic", trait),
-          trait = ifelse(lookup_data == "epiphytic", "growth_substrate", trait),
+          trait = ifelse(str_detect(lookup_data,"epiphytic"), "growth_substrate", trait),
           trait = ifelse(lookup_data == "aquatic", "growth_substrate", trait),
-          trait = ifelse(trait == "special growth form", "growth form", trait)   
+          trait = ifelse(trait == "special growth form", "growth form", trait),
+          lookup_data = str_replace(lookup_data,"toothed or lobed","toothed_or_lobed")    
         ) %>%
         select(species, trait, units, lookup_data) %>%
         group_by(species, trait, units) %>% 
-        mutate(lookup_data = paste0(lookup_data, collapse = " ")) %>% 
+          summarise(
+            lookup_data = paste0(lookup_data, collapse = " ")
+          ) %>% 
         ungroup() %>%
         distinct(species, trait, units, lookup_data);
    
     bind_rows(
       collapsed,
       fruiting,
-      flowering
+      flowering,
+      growth_habit,
+      clonal,
+      scales
     )
   '
   collection_date: unknown/2014
@@ -66,7 +88,7 @@ dataset:
   sampling_strategy: herbarium specimens
   original_file: PLantNET.xls
   notes: Request acknowledgement of "National Herbarium of NSW and PLantNET"
-sites: .na
+locations: .na
 contexts: .na
 traits:
 - var_in: flowering_time
@@ -80,6 +102,30 @@ traits:
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: clonal_spread_mechanism
+  unit_in: .na
+  trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: vegetative_reproduction_ability
+  unit_in: .na
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -119,7 +165,15 @@ traits:
   methods: unknown
 - var_in: leaf arrangement
   unit_in: .na
-  trait_name: leaf_arrangement
+  trait_name: leaf_phyllotaxis
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_type
+  unit_in: .na
+  trait_name: leaf_type
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -215,7 +269,7 @@ traits:
   methods: unknown
 - var_in: growth_habit
   unit_in: .na
-  trait_name: growth_habit
+  trait_name: stem_growth_habit
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -223,7 +277,7 @@ traits:
   methods: unknown
 - var_in: growth_substrate
   unit_in: .na
-  trait_name: growth_substrate
+  trait_name: plant_growth_substrate
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -256,11 +310,11 @@ traits:
 substitutions:
 - trait_name: plant_growth_form
   find: herb creeper rooting along stems
-  replace: herb creeper
+  replace: herb
 - trait_name: plant_growth_form
   find: creeper rooting along stems
-  replace: creeper
-- trait_name: plant_growth_form
+  replace: herb
+- trait_name: plant_growth_substrate
   find: epiphytic
   replace: epiphyte
 - trait_name: plant_growth_form
@@ -268,13 +322,28 @@ substitutions:
   replace: climber
 - trait_name: plant_growth_form
   find: parasitic
-  replace: parasite
+  replace: .na
+- trait_name: leaf_margin
+  find: toothed_or_lobed
+  replace: .na
+- trait_name: leaf_margin
+  find: entire toothed_or_lobed
+  replace: .na
 - trait_name: leaf_margin
   find: toothed or lobed
-  replace: lobed
+  replace: .na
+- trait_name: leaf_margin
+  find: entire toothed lobed
+  replace: .na
 - trait_name: life_history
   find: short-lived
-  replace: short_lived
+  replace: short_lived_perennial
+- trait_name: life_history
+  find: long_lived
+  replace: perennial
+- trait_name: life_history
+  find: indefinite
+  replace: perennial
 - trait_name: leaf_compoundness
   find: simple or appearing so
   replace: simple
@@ -734,27 +803,27 @@ substitutions:
 - trait_name: flower_colour
   find: yellow orange yellow orange red or brown
   replace: yellow_orange yellow_orange red_brown
-- trait_name: leaf_arrangement
+- trait_name: leaf_phyllotaxis
   find: whorled, tufted or crowded
-  replace: whorled_tufted_crowded
-- trait_name: leaf_arrangement
+  replace: .na
+- trait_name: leaf_phyllotaxis
   find: alternate opposite whorled, tufted or crowded
-  replace: alternate opposite whorled_tufted_crowded
-- trait_name: leaf_arrangement
+  replace: alternate opposite
+- trait_name: leaf_phyllotaxis
   find: alternate reduced to scales
-  replace: alternate reduced_to_scales
-- trait_name: leaf_arrangement
+  replace: alternate
+- trait_name: leaf_phyllotaxis
   find: alternate whorled, tufted or crowded
-  replace: alternate whorled_tufted_crowded
-- trait_name: leaf_arrangement
+  replace: alternate
+- trait_name: leaf_phyllotaxis
   find: opposite reduced to scales
-  replace: opposite reduced_to_scales
-- trait_name: leaf_arrangement
+  replace: opposite
+- trait_name: leaf_phyllotaxis
   find: opposite whorled, tufted or crowded
-  replace: opposite whorled_tufted_crowded
-- trait_name: leaf_arrangement
+  replace: opposite
+- trait_name: leaf_phyllotaxis
   find: opposite whorled, tufted or crowded reduced to scales
-  replace: opposite whorled_tufted_crowded reduced_to_scales
+  replace: opposite
 - trait_name: leaf_compoundness
   find: simple or appearing so compound
   replace: simple compound
@@ -766,7 +835,7 @@ substitutions:
   replace: '5'
 - trait_name: leaf_margin
   find: entire toothed or lobed
-  replace: entire toothed lobed
+  replace: .na
 - trait_name: leaf_width
   find: 1.5 2
   replace: '2'
@@ -776,40 +845,40 @@ substitutions:
 - trait_name: flower_colour
   find: white or cream
   replace: white_cream
-- trait_name: leaf_arrangement
+- trait_name: leaf_phyllotaxis
   find: reduced to scales
-  replace: reduced_to_scales
+  replace: .na
 - trait_name: life_history
   find: long-lived
-  replace: long_lived
-- trait_name: life_history
-  find: short-lived
-  replace: short_lived
+  replace: perennial
 - trait_name: vegetative_reproduction_ability
   find: not vegetative
   replace: not_vegetative
 - trait_name: life_history
   find: annual biennial short-lived
-  replace: annual biennial short_lived
+  replace: annual biennial short_lived_perennial
 - trait_name: life_history
   find: annual perennial short-lived
-  replace: annual perennial short_lived
+  replace: annual perennial short_lived_perennial
 - trait_name: life_history
   find: biennial short-lived
-  replace: biennial short_lived
+  replace: biennial short_lived_perennial
 - trait_name: life_history
   find: perennial biennial short-lived
-  replace: perennial biennial short_lived
+  replace: perennial biennial short_lived_perennial
+- trait_name: life_history
+  find: perennial indefinite
+  replace: perennial
 - trait_name: life_history
   find: perennial long-lived
-  replace: perennial long_lived
+  replace: perennial
 - trait_name: life_history
   find: perennial short-lived
-  replace: perennial short_lived
+  replace: perennial short_lived_perennial
 - trait_name: life_history
   find: short-lived long-lived
-  replace: short_lived long_lived
-- trait_name: plant_growth_form
+  replace: short_lived_perennial perennial
+- trait_name: plant_growth_substrate
   find: epiphytic parasitic
   replace: epiphyte
 taxonomic_updates:

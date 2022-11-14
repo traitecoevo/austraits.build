@@ -26,12 +26,16 @@ contributors:
   austraits_curators: Caitlyn Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(site_name = "University of Queensland") %>% group_by(Species)
-    %>% mutate_at(vars(SeedMass), replace_duplicates_with_NA) %>% ungroup()
+  custom_R_code:     '
+    data %>%
+      mutate(site_name = "University of Queensland") %>%
+        group_by(Species) %>%
+          mutate_at(vars(SeedMass), replace_duplicates_with_NA) %>%
+        ungroup()
+  '
   collection_date: 2014/2014
   taxon_name: Species
-  site_name: site_name
-  context_name: Treatment
+  location_name: site_name
   description: A greenhouse experiment that examined nine drought resistance traits
     (six morphological/allocation traits plus assimilation, stomatal conductance and
     water-use efficiency) in well-watered and water-stressed seedlingsof four Brachychiton
@@ -83,19 +87,25 @@ dataset:
     only had four individuals due to mid-experiment mortality, see Appendix 2).
   original_file: Reynolds_Brachychiton_Trait_Data.xls
   notes: none
-sites:
+locations:
   University of Queensland:
     latitude (deg): -27.495667
     longitude (deg): 153.01002
     description: St Lucia campus glasshouse location
 contexts:
-  Control:
-    water treatment: control (Seedlings received their full transpiration requirements
-      at similar intervals until the conclusion of the experiment.) [manipulated]
-  Drought:
-    water treatment: drought (Seedlings received half of their transpiration requirements
-      every second day, amounting to a quarter of their full requirements for the
-      duration of the experiment.) [manipulated]
+- context_property: water treatment
+  category: treatment
+  var_in: Treatment
+  values:
+  - find: Control
+    value: control
+    description: Seedlings received enough water to supply their full transpiration
+      requirements until the conclusion of the experiment.
+  - find: Drought
+    value: drought
+    description: Seedlings received enough water to supply half of their transpiration
+      requirements only every second day, amounting to a quarter of their full requirements
+      for the duration of the experiment.
 traits:
 - var_in: LDMC
   unit_in: mg/g
@@ -165,7 +175,7 @@ traits:
     in AusTraits
 - var_in: SLA
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement

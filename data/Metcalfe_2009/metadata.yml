@@ -24,7 +24,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       mutate(
         fruit_fleshiness = Fruit_type,
@@ -32,16 +32,21 @@ dataset:
         dispersal_appendage = NA_character_,
         dispersers = NA_character_,
         dispersal_unit = NA_character_,
+        plant_growth_substrate = NA_character_,
+        stem_growth_habit = NA_character_,
         seed_storage_location = ifelse(stringr::str_detect(Maximum_propagule_longevity,"soil"),"soil",NA),
-        seed_longevity_numeric = Maximum_propagule_longevity
+        seed_longevity_numeric = Maximum_propagule_longevity,
+        parasitic = ifelse(Growth_form == "hemiparasite or holoparasite", "parasitic", NA)
       ) %>%
       move_values_to_new_trait(
         "Fruit_type", "dispersal_appendage",
         c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
-        "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)", "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)"), 
+          "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)",
+          "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)"), 
         c("fleshy_reward", "wing_or_plume", "wing_or_plume"),
         c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
-          "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)", "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)")
+          "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)",
+          "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)")
       ) %>%
       move_values_to_new_trait(
         "Dispersal_mode","dispersers",
@@ -50,12 +55,18 @@ dataset:
         c("Insect","water","wind")
       ) %>%
       move_values_to_new_trait(
-        "Fruit_type", "dispersal_unit", "Spore", "spore", "Spore"
+        "Fruit_type", "dispersal_unit", "Spore", "spore", ""
+      ) %>%
+      move_values_to_new_trait(
+        "Growth_form", "plant_growth_substrate", "Epiphyte", "epiphyte", ""
+      ) %>%
+      move_values_to_new_trait(
+        "Growth_form", "stem_growth_habit", "scrambler", "scrambler", "climber"
       )
 '
   collection_date: 2005/2005
   taxon_name: species_name
-  site_name: site_name
+  location_name: site_name
   description: Part of a worldwide dataset that explores how land-use change impacts
     these attributes in plant communities, using data from 18 land-use intensity gradients
     that represent five biomes and > 2800 species. We identify functional groups using
@@ -81,7 +92,7 @@ dataset:
     to the site name of the first site where it is present, by sequentially cycling
     through sites number 1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 4.2, 5.2. However the presence/absence
     data shows that most species are present on more than one site.
-sites:
+locations:
   Harney's:
     site code: 1.1
     geodetic datum: GDA94
@@ -292,6 +303,22 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
 - var_in: Raunkiaer_life_form
   unit_in: .na
   trait_name: life_form
@@ -319,9 +346,17 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
 - var_in: Physical_defence
   unit_in: .na
-  trait_name: physical_defence
+  trait_name: plant_physical_defence_structures
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -470,10 +505,10 @@ traits:
   replicates: .na
   methods: expert observation or reference book
 - var_in: seed_longevity_numeric
-  unit_in: .na
+  unit_in: years
   trait_name: seed_longevity_numeric
   entity_type: species
-  value_type: mode
+  value_type: bin
   basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
@@ -519,13 +554,13 @@ substitutions:
 - trait_name: leaf_area
   find: 0
   replace: .na
-- trait_name: physical_defence
+- trait_name: plant_physical_defence_structures
   find: None
-  replace: no_physical_defence
-- trait_name: physical_defence
+  replace: absent
+- trait_name: plant_physical_defence_structures
   find: Spines or thorns
-  replace: spines_or_thorns
-- trait_name: physical_defence
+  replace: sharp_pointed_defence
+- trait_name: plant_physical_defence_structures
   find: Stinging or irritant hairs
   replace: stinging_or_irritant_hairs
 - trait_name: dispersal_syndrome
@@ -551,31 +586,31 @@ substitutions:
   replace: tree
 - trait_name: plant_growth_form
   find: liana
-  replace: climber_liana
+  replace: climber_woody
 - trait_name: plant_growth_form
   find: short tree
-  replace: treelet
+  replace: tree
 - trait_name: plant_growth_form
   find: erect leafy
-  replace: erect_leafy
+  replace: herb
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: short basal
-  replace: short_basal
+  replace: herb
 - trait_name: plant_growth_form
   find: hemiparasite or holoparasite
-  replace: parasite hemi-parasite
+  replace: .na
 - trait_name: plant_growth_form
   find: long basal
-  replace: long_basal
+  replace: herb
 - trait_name: plant_growth_form
   find: semi basal
-  replace: semi_basal
+  replace: herb
 - trait_name: plant_growth_form
   find: scrambler
-  replace: climber_scrambler
+  replace: climber
 - trait_name: pollination_syndrome
   find: flies
   replace: fly
@@ -617,10 +652,10 @@ substitutions:
   replace: belowground_clonal
 - trait_name: nitrogen_fixing
   find: 'yes'
-  replace: '1'
+  replace: nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'no'
-  replace: '0'
+  replace: non_nitrogen_fixer
 - trait_name: root_structure
   find: hairy root clusters
   replace: proteoid_root

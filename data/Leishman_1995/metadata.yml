@@ -42,14 +42,16 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate_at(vars(`Height (cm)_filtered`,`Seed mass (mg)_filtered`),~na_if(.,0)) %>% 
       mutate(
         dispersal_appendage = NA,
         dispersers = NA,
         fruit_fleshiness = NA,
-        site_name = "Sydney"
+        site_name = "Sydney",
+        plant_growth_substrate = ifelse("GrowthForm 1=tree; 2=shrub; 3=subshrub; 4=forb; 5=grass; 8=fern; 10=climber;
+    11=orchid, epiphyte." == "11","epiphyte", NA)
       ) %>% 
       move_values_to_new_trait(
           "Seed Dispersal syndrome 1=unassisted; 2=ant (elaiosome); 3=vertebrate ingestion (fleshy); 4=adhesion (hooks etc); 5=wind (wing, pappus); 6=ballistic+ant; 7=ba llistic; 8=vertebrate.", 
@@ -68,12 +70,12 @@ dataset:
         "fruit_fleshiness", 
         c("3","fleshy fruit","vertebrate ingestion (fleshy)"),
         c("fleshy","fleshy","fleshy"),
-        c("3",NA,"vertebrate ingestion (fleshy)")
+        c("3","","vertebrate ingestion (fleshy)")
       )
   '
   collection_date: 1996/1996
   taxon_name: species
-  site_name: site_name
+  location_name: site_name
   description: trait data for Sydney sites from Michelle Leishman
   basis_of_record: field
   life_stage: adult
@@ -94,16 +96,24 @@ dataset:
     and Fairlie & Moore (1989).
   original_file: Leishman syd LHS (ian version for Tom Jan 2008).xls
   notes: none
-sites: 
+locations:
   Sydney:
     latitude (deg): .na
     longitude (deg): .na
-    description: The floras of western New South Wales and Central Australia are typical semiarid/arid communities, consisting of a perennial grass understorey with a mix of annual and perennial forbs, and an overstorey of scattered shrubs and trees. The western New South Wales flora included communities of three soil types (see Leishman & Westoby (1992) for further detail), while the Central Australian flora included a number of habitats such as Acacia woodland, open woodland and floodplain. The Sydney flora consisted of two distinct communities, those of fertile soils (wet sclerophyll forest to rainforest) and those of infertile soils (dry sclerophyll forest and shrubland).
+    description: The floras of western New South Wales and Central Australia are typical
+      semiarid/arid communities, consisting of a perennial grass understorey with
+      a mix of annual and perennial forbs, and an overstorey of scattered shrubs and
+      trees. The western New South Wales flora included communities of three soil
+      types (see Leishman & Westoby (1992) for further detail), while the Central
+      Australian flora included a number of habitats such as Acacia woodland, open
+      woodland and floodplain. The Sydney flora consisted of two distinct communities,
+      those of fertile soils (wet sclerophyll forest to rainforest) and those of infertile
+      soils (dry sclerophyll forest and shrubland).
 contexts: .na
 traits:
 - var_in: SLA(mm2/mg)
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -164,6 +174,23 @@ traits:
     that are facultative perennials (able to persist for more than one year under
     particularly good conditions) were considered as annuals because at most germination
     opportunities they are present as a seed bank only.
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Species with secondary thickening were assigned to the growth form category
+    'woody plants'. Herbaceous species without secondary thickening were defined as
+    'forbs'. Grasses, rushes and sedges (i.e. species belonging to the families Cyperaceae,
+    Juncaceae, Poaceae, Restionaceae, Sparganiaceae and Typhaceae) were classed as
+    'graminoids'. Climbers, twiners and vines were defined as 'climbers'. We assigned
+    climbing species that had no information available on height of release of the
+    seeds to height class 4 (1.1-5.0 m). Species from the arid and semiarid floras
+    that are facultative perennials (able to persist for more than one year under
+    particularly good conditions) were considered as annuals because at most germination
+    opportunities they are present as a seed bank only.
 - var_in: Seed Dispersal syndrome 1=unassisted; 2=ant (elaiosome); 3=vertebrate ingestion
     (fleshy); 4=adhesion (hooks etc); 5=wind (wing, pappus); 6=ballistic+ant; 7=ba
     llistic; 8=vertebrate.
@@ -173,7 +200,7 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: &dispersal_method Divided into the following classes, unassisted, ant-adapted, vertebrate-adapted,
+  methods: Divided into the following classes, unassisted, ant-adapted, vertebrate-adapted,
     adhesion-adapted, wind-adapted and scatterhoarded. Dispersal modes were attributed
     to species on the basis of the morphological features of the seed. Ant-adapted
     seeds were defined as those with an elaiosome, vertebrate-adapted seeds were defined
@@ -200,7 +227,26 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: *dispersal_method
+  methods: Divided into the following classes, unassisted, ant-adapted, vertebrate-adapted,
+    adhesion-adapted, wind-adapted and scatterhoarded. Dispersal modes were attributed
+    to species on the basis of the morphological features of the seed. Ant-adapted
+    seeds were defined as those with an elaiosome, vertebrate-adapted seeds were defined
+    as having an aril or flesh. Adhesion-adapted seeds had hooks, spines or barbs
+    to assist attachment, while wind-adapted had wings, hairs or a pappus to provide
+    air-resistance. Unassisted seeds were defined as having no obvious morphological
+    structure which would assist dispersal. Seeds which float, or are dispersed in
+    mud or by ingestion with foliage (see Janzen 1984) are thus classified as unassisted.
+    The exception to this was the category of scatterhoarded. In the two northern
+    hemisphere floras there were 12 species whose seeds are known to be scatterhoarded
+    by mammals. Although these species have no morphological structures which can
+    be used to define 'scatterhoarding', we felt that their natural history was sufficiently
+    well-known to justify the use of this dispersal category. The Sydney and Sheffield
+    databases contained a few species that had ballistic dispersal. Ballistic dispersal
+    is difficult to determine when herbarium seed material has been used, as the ballistic
+    mechanism is part of the parent plant. Thus ballistically dispersed seeds were
+    classified as unassisted in order to standardize the databases. Some ballistically
+    dispersed seeds also have an elaiosome for dispersal by ants. These species were
+    classified as ant-adapted only, for the purpose of this analysis.
 - var_in: dispersers
   unit_in: .na
   trait_name: dispersers
@@ -208,7 +254,26 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: *dispersal_method
+  methods: Divided into the following classes, unassisted, ant-adapted, vertebrate-adapted,
+    adhesion-adapted, wind-adapted and scatterhoarded. Dispersal modes were attributed
+    to species on the basis of the morphological features of the seed. Ant-adapted
+    seeds were defined as those with an elaiosome, vertebrate-adapted seeds were defined
+    as having an aril or flesh. Adhesion-adapted seeds had hooks, spines or barbs
+    to assist attachment, while wind-adapted had wings, hairs or a pappus to provide
+    air-resistance. Unassisted seeds were defined as having no obvious morphological
+    structure which would assist dispersal. Seeds which float, or are dispersed in
+    mud or by ingestion with foliage (see Janzen 1984) are thus classified as unassisted.
+    The exception to this was the category of scatterhoarded. In the two northern
+    hemisphere floras there were 12 species whose seeds are known to be scatterhoarded
+    by mammals. Although these species have no morphological structures which can
+    be used to define 'scatterhoarding', we felt that their natural history was sufficiently
+    well-known to justify the use of this dispersal category. The Sydney and Sheffield
+    databases contained a few species that had ballistic dispersal. Ballistic dispersal
+    is difficult to determine when herbarium seed material has been used, as the ballistic
+    mechanism is part of the parent plant. Thus ballistically dispersed seeds were
+    classified as unassisted in order to standardize the databases. Some ballistically
+    dispersed seeds also have an elaiosome for dispersal by ants. These species were
+    classified as ant-adapted only, for the purpose of this analysis.
 - var_in: fruit_fleshiness
   unit_in: .na
   trait_name: fruit_fleshiness
@@ -216,14 +281,33 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: *dispersal_method
+  methods: Divided into the following classes, unassisted, ant-adapted, vertebrate-adapted,
+    adhesion-adapted, wind-adapted and scatterhoarded. Dispersal modes were attributed
+    to species on the basis of the morphological features of the seed. Ant-adapted
+    seeds were defined as those with an elaiosome, vertebrate-adapted seeds were defined
+    as having an aril or flesh. Adhesion-adapted seeds had hooks, spines or barbs
+    to assist attachment, while wind-adapted had wings, hairs or a pappus to provide
+    air-resistance. Unassisted seeds were defined as having no obvious morphological
+    structure which would assist dispersal. Seeds which float, or are dispersed in
+    mud or by ingestion with foliage (see Janzen 1984) are thus classified as unassisted.
+    The exception to this was the category of scatterhoarded. In the two northern
+    hemisphere floras there were 12 species whose seeds are known to be scatterhoarded
+    by mammals. Although these species have no morphological structures which can
+    be used to define 'scatterhoarding', we felt that their natural history was sufficiently
+    well-known to justify the use of this dispersal category. The Sydney and Sheffield
+    databases contained a few species that had ballistic dispersal. Ballistic dispersal
+    is difficult to determine when herbarium seed material has been used, as the ballistic
+    mechanism is part of the parent plant. Thus ballistically dispersed seeds were
+    classified as unassisted in order to standardize the databases. Some ballistically
+    dispersed seeds also have an elaiosome for dispersal by ants. These species were
+    classified as ant-adapted only, for the purpose of this analysis.
 substitutions:
 - trait_name: plant_growth_form
   find: 10
   replace: climber
 - trait_name: plant_growth_form
   find: 11
-  replace: epiphyte_herb
+  replace: herb
 - trait_name: plant_growth_form
   find: 5
   replace: graminoid

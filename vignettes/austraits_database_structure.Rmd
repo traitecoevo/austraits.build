@@ -47,7 +47,7 @@ names(austraits) %>%
 ```
 austraits
 ├── traits
-├── sites
+├── locations
 ├── contexts
 ├── methods
 ├── excluded_data
@@ -101,9 +101,9 @@ elements <- schema$austraits$elements$traits
 
 **Details:**  
 
-#### Entity IDs, entity type, observation number, method number, and measurement remarks
+#### Entity type
 
-Each trait measurement has an associated `entity_id` and `entity_type`.  Entity IDs bind together measurements within a dataset made on the same entity, and thereby allow transformation between long format (e.g. with variables `trait_name` and `value`) and wide format (e.g. with traits as columns). This is possible, because when multiple traits were collected on the same entity, they all share the same entity_id.
+An entity is the `feature of interest`, indicating what a trait value applies to. While an entity can be just a component of an organism, within the scope of AusTraits, an `individual` is the finest scale entity that can be documented. The same study might measure some traits at a population-level (`entity = population`) and others at an individual-level (`entity = individual`).
 
 In detail:
 
@@ -116,19 +116,36 @@ schema$entity_type$values %>%
   writeLines()
 ```
 
-- `entity_id` is built from up to three segments, a taxon_id segment (for all entity types), a population_id segment (when `entity_type` is `population` or `individual`), and a individual_id segment (when `entity_type` is `individual`).
+#### Identifiers
 
-    - The taxon_id segment numbers an alphabetised list of taxa within the study sequentially, producing segments `tax001`, `tax002`, etc.
-    
-    - The population_id segments numbers an alphabetised list of sites or, in some cases, site by context combinations, sequentially, producing segments `pop01`, `pop02`, etc. For experimental and manipulative studies, "population" is defined as a group of individuals subjected to the same treatment conditions. 
-    
-    - The individual_id segments number individuals within a taxon by population combination sequentially, producing segments `ind001`, `ind002`, etc. For datasets submitted to AusTraits in long format, if a column specifying `individual_id` does not exist, it is assumed that `species_name` is the appropriate grouping variable. For datasets submitted to AusTraits in long format, if a column specifying `individual_id` does not exist, it is assumed that each row of data represents a unique entity.
-    
-- `observation_number` is used to indicate that multiple observations were made on the same entity for the same trait, representing repeated measures over time.
+The traits table includes 12 identifiers, `dataset_id`, `observation_id`, `taxon_name`, `population_id`, `individual_id`, `temporal_id`, `source_id`, `location_id`, `entity_context_id`, `plot_id`, `treatment_id`, and `method_id`.
 
-- `method_number` is used to indicate that multiple observations were made on the same entity for the same trait at a given time, using multiple methods. The difference between methods is indicated under `measurement_remarks`. In literature compilations, `method_number` can be used to distiguish between trait values for the same entity recorded from different sources.
+`dataset_id`, `source_id` and `taxon_name` have easy-to-interpret values. The others are simply integral identifiers that link groups of measurements and are automatically generated through the AusTraits workflow (`individual_id` can be assigned in the metadata file or automatically generated.)
 
-- `measurement_remarks` is used to document `r tolower(schema$metadata$elements$traits$elements$measurement_remarks)`
+To expand on the definitions provided above,
+
+- `observation_id` links measurements made on the same entity (individual, population, or species) at a single point in time.
+
+- `population_id` indicates entites that share a common `location_id`, `plot_id`, and `treatment_id`. It is used to align measurements and observation_id's for `individuals` versus `populations` (i.e. distinct `entity_types`) that share a common `population_id`. It is numbered sequentially within a dataset.
+
+- `individual_id` indicates a unique organisms. It is numbered sequentially within a dataset by population. Multiple observations on the same organism across time (with distinct `observation_id` values), share a common `individual_id`.
+
+- `temporal_id` indicates a distinct point in time and is used only if there are repeat measurements on a population or individual across time. The identifier links to context properties (& their associated information) in the `contexts` table for context properties of type `temporal`.
+
+- `source_id` is applied if not all data within a single dataset (`dataset_id`) is from the same source, such as when a dataset represents a compilation for a meta-analysis.
+
+- `location_id` links to a distinct `location_name` and associated `location_properties` in the `location` table.
+
+- `entity_context_id` links to information in the `contexts` table for context properties (& associated values/descriptions) with category `entity_context`. 
+`Entity_contexts` include organism sex, organism caste and any other features of an entity that needs to be documented.
+
+- `plot_id` links to information in the `contexts` table for context properties (& associated values/descriptions) with category `plot`. `Plot contexts` include both blocks/plots within an experimental design as well as any stratified variation within a location that needs to be documented (e.g. slope position).
+
+- `treatment_id`links to information in the `contexts` table for context properties (& associated values/descriptions) with category `treatment`. `Treatment contexts` are experimental manipulations applied to groups of individuals.
+
+- `method_id`links to information in the `contexts` table for context properties (& associated values/descriptions) with category `method`. A `method context` indicates that the same trait was measured on or across individuals using different methods.
+
+As well, `measurement_remarks` is used to document `r tolower(schema$metadata$elements$traits$elements$measurement_remarks)`
 
 #### Life stage, basis of record 
 
@@ -147,10 +164,11 @@ schema$basis_of_record$values %>%
 
 Each record in the table of trait data has an associated `value`,  `value_type`, and `basis_of_value`. 
 
-Traits are either `numeric` or `categorical`. For traits with numerical values, the recorded value has been converted into standardised units and we have checked that the value can be converted into a number and lies within the allowable range. For categorical variables, we only include records whose values are included as allowable values (terms) in a trait's definition in the definitions table. Moreover, we use a format whereby
-
-- we use `_` for multi-word terms, e.g. `semi_deciduous`  
-- we use a space for situations where two values co-occur for the same entity. For instance, a flora might indicate that a plant species can be either annual or biennial, in which case the trait is scored as `annual biennial`.
+`Value type:` A trait's `value_type` is either `numeric` or `categorical`. 
+  - For traits with numerical values, the recorded value has been converted into standardised units and the AusTraits workflow has confirmed the value can be converted into a number and lies within the allowable range. 
+  - For categorical variables, records have been aligned through substitutions to values listed as allowable values (terms) in a trait's definition. 
+      * we use `_` for multi-word terms, e.g. `semi_deciduous`  
+      * we use a space for situations where two values co-occur for the same entity. For instance, a flora might indicate that a plant species can be either annual or biennial, in which case the trait is scored as `annual biennial`.
 
 Each trait measurement has an associated `value_type`, which is `r tolower(schema$metadata$elements$traits$elements$value_type)` Possible values are:
 
@@ -176,9 +194,9 @@ AusTraits does not include intra-individual observations made at a single point 
 
 
 
-## sites
+## locations
 ```{r}
-elements <- schema$austraits$elements$sites
+elements <- schema$austraits$elements$locations
 
   sprintf("**Description:** %s.\n", elements$description) %>%
     stringr::str_replace_all("\\.\\.", "\\.") %>%
@@ -290,7 +308,7 @@ labelled as either `numeric` or `categorical`. An example of each type is as fol
 
 
 ```{r, traits}
-for (trait in c("specific_leaf_area", "woodiness")) {
+for (trait in c("leaf_mass_per_area", "woodiness")) {
   elements <- austraits$schema$traits$elements[[trait]]
 
   data_trait <- austraits$traits %>% filter(trait_name == trait)

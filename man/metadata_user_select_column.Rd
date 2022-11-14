@@ -15,5 +15,5 @@ metadata_user_select_column(column, choices)
 `metadata_user_select_column` is used to select which columns in a dataframe/ tibble 
 corresponds to the variable of interest. It is used compile the metadata yaml
 file by prompting the user to choose the relevant columns. It is used in 
-`metadata_add_sites` and `metadata_add_contexts` and `metadata_create_template`
+`metadata_add_locations` and `metadata_add_contexts` and `metadata_create_template`
 }
