@@ -21,13 +21,18 @@ dataset:
       mutate(
         `flowering time` = convert_month_range_vec_to_binary(`flowering time`), 
         `fruiting` = convert_month_range_vec_to_binary(`fruiting`), 
-        leaf_type = ifelse(`leaf type` == "articles", "article", NA), 
+        leaf_type = ifelse(`leaf type` == "articles", "cladode", NA), 
         `leaf type` = ifelse(`leaf type` == "articles", NA, `leaf type`), 
         leaf_lobed = ifelse(`leaf type` == "l", "lobed", NA), 
-        GF = ifelse(aquatic %in% c("yes","y"), "aquatic_herb", GF),
-        GF = ifelse(succulent %in% c("yes","y"), "succulent_short herb", GF),
-        parasitic = ifelse(GF == "parasite", "parasitic", NA),
-        fruit_type = NA
+        GF = ifelse(aquatic %in% c("yes","y"),"herb", GF),
+        GF = ifelse(succulent %in% c("yes","y"),"succulent_short herb", GF),
+        parasitic = ifelse(GF=="parasite","parasitic",NA),
+        fruit_type = NA,
+        plant_succulence = NA,
+        leaf_lobation = NA,
+        leaf_lamina_division = NA,
+        plant_photosynthetic_organ2 = NA,
+        plant_photosynthetic_organ3 = NA
       ) %>%
       move_values_to_new_trait(
         "dispersal appendage", "fruit_type", 
@@ -37,6 +42,34 @@ dataset:
       ) %>%
       mutate(
       `dispersal appendage` = ifelse(`dispersal appendage` == "NA", NA, `dispersal appendage`)
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "leaf_lobation", 
+        c("lobed"), c("lobed"), c("")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "leaf_lamina_division", 
+        "palmately lobed", "palmately_lobed", ""
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "plant_photosynthetic_organ2",
+        c("cladode"), c("cladode"), c("")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "plant_photosynthetic_organ3",
+        c("article","branchlets with articles","articles"),
+        c("cladode","cladode","cladode"),
+        c("","","")
+      ) %>%
+      mutate(
+        leaf_type = ifelse(is.na(plant_photosynthetic_organ2),leaf_type,plant_photosynthetic_organ2),
+        leaf_type = ifelse(is.na(plant_photosynthetic_organ3),leaf_type,plant_photosynthetic_organ3)
+      ) %>%
+            move_values_to_new_trait(
+        "GF", "plant_succulence",
+        c("succulent_short herb","y"),
+        c("succulent", "succulent"),
+        c("herb", "herb")
       ) %>%
       separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>% 
       separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
@@ -72,6 +105,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
+- var_in: aquatic
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
@@ -98,7 +139,7 @@ traits:
   methods: unknown
 - var_in: glacous
   unit_in: .na
-  trait_name: glaucous
+  trait_name: leaf_glaucousness
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -114,7 +155,7 @@ traits:
   methods: unknown
 - var_in: leaf_type
   unit_in: .na
-  trait_name: leaf_type
+  trait_name: plant_photosynthetic_organ
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -123,6 +164,22 @@ traits:
 - var_in: leaf shape
   unit_in: .na
   trait_name: leaf_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lobation
+  unit_in: .na
+  trait_name: leaf_lobation
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lamina_division
+  unit_in: .na
+  trait_name: leaf_lamina_division
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -250,19 +307,27 @@ traits:
   methods: unknown
 - var_in: leaf_lobed
   unit_in: .na
-  trait_name: leaf_margin
+  trait_name: leaf_lobation
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: unknown
+  methods: unknown
+- var_in: plant_succulence
+  unit_in: .na
+  trait_name: plant_succulence
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: unknown
   methods: unknown
 substitutions:
-- trait_name: glaucous
+- trait_name: leaf_glaucousness
   find: .na
-  replace: '0'
-- trait_name: glaucous
+  replace: not_glaucous
+- trait_name: leaf_glaucousness
   find: 'y'
-  replace: '1'
+  replace: glaucous
 - trait_name: leaf_compoundness
   find: c
   replace: compound
@@ -278,15 +343,27 @@ substitutions:
 - trait_name: leaf_phenology
   find: e
   replace: evergreen
+- trait_name: plant_growth_substrate
+  find: 'y'
+  replace: aquatic
+- trait_name: plant_growth_substrate
+  find: yes
+  replace: aquatic
+- trait_name: plant_growth_form
+  find: parasite
+  replace: .na
+- trait_name: plant_growth_form
+  find: succulent_short herb
+  replace: herb
 - trait_name: plant_growth_form
   find: liana
-  replace: climber_liana
+  replace: climber_woody
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: vine/shrub
-  replace: climber_shrub
+  replace: climber_woody shrub
 - trait_name: plant_growth_form
   find: forb
   replace: herb
@@ -298,13 +375,28 @@ substitutions:
   replace: shrub tree
 - trait_name: plant_growth_form
   find: 'y'
-  replace: succulent_short
+  replace: .na
 - trait_name: leaf_shape
-  find: articles
-  replace: article
+  find: palmately_lobed
+  replace: .na
 - trait_name: leaf_shape
   find: elliptic
   replace: elliptical
+- trait_name: leaf_shape
+  find: obovoid
+  replace: obovate
+- trait_name: leaf_shape
+  find: deltoid
+  replace: deltate
+- trait_name: leaf_shape
+  find: circular
+  replace: orbicular
+- trait_name: leaf_shape
+  find: linear-oblanceolate
+  replace: narrowly_oblanceolate
+- trait_name: leaf_shape
+  find: dimidate
+  replace: .na
 - trait_name: seed_width
   find: 5.5.
   replace: '5.5'
@@ -317,21 +409,18 @@ substitutions:
 - trait_name: leaf_shape
   find: obovtae
   replace: obovate
-- trait_name: leaf_margin
+- trait_name: leaf_lobation
   find: 1
   replace: lobed
 - trait_name: dispersal_appendage
   find: winged seed
   replace: wings
 - trait_name: leaf_shape
-  find: branchlets with articles
-  replace: branchlets_articles
-- trait_name: leaf_shape
   find: linear-oblanceolate
-  replace: linear_oblanceolate
+  replace: narrowly_oblanceolate
 - trait_name: leaf_shape
   find: palmately lobed
-  replace: palmately_lobed
+  replace: .na
 - trait_name: seed_shape
   find: comma shaped
   replace: comma-shaped

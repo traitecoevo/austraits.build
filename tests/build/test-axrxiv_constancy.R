@@ -52,19 +52,24 @@ test_that("constancy of with version 3.0.2", {
   austraits_raw_comparison$locations %>% rename(location_name = site_name, location_property = site_property) -> austraits_raw_comparison$locations
   
   austraits_raw$locations %>% select(dataset_id, location_id, location_name) %>% distinct() -> location_names
-  austraits_raw$traits %>% left_join(location_names) -> austraits_raw$traits
+  austraits_raw$traits %>% left_join(by = c("dataset_id", "location_id"), location_names) -> austraits_raw$traits
   
   # change some names so comparison to new version still runs
   austraits_raw_comparison$traits$trait_name <- austraits_raw_comparison$traits$trait_name %>%
     gsub("seed_mass", "seed_dry_mass", . ) %>%
-    gsub("seed_breadth", "seed_height", .)
+    gsub("seed_breadth", "seed_height", .)  %>%
+    gsub("growth_habit", "stem_growth_habit", .)
   
   austraits_raw_comparison$methods$trait_name <- austraits_raw_comparison$methods$trait_name %>%
     gsub("seed_mass", "seed_dry_mass", . ) %>%
-    gsub("seed_breadth", "seed_height", .)
+    gsub("seed_breadth", "seed_height", .) %>%
+    gsub("growth_habit", "stem_growth_habit", .)
   
   austraits_raw_comparison$traits$replicates <- austraits_raw_comparison$traits$replicates %>%
     gsub("3 replicates on 1 individual per species or 1 replicate on each individual", "3",. )
+
+  austraits_raw_comparison$traits$value <- austraits_raw_comparison$traits$value %>%
+    gsub("climber_liana", "climber_woody", . )
   
   # Compare some select columns of select elements 
   v <- "traits"
@@ -80,7 +85,9 @@ test_that("constancy of with version 3.0.2", {
   v_old <- austraits_raw_comparison[[v]][, vv] %>%
     filter(trait_name %in% trait_to_check) %>%
     mutate(in_old = "old_version") %>%
-    left_join(v_curr)
+    left_join(
+      by = c("dataset_id", "taxon_name", "trait_name", "value", "unit", "original_name"),
+      v_curr)
 
   # Check data from previous compilation is contained within new compilation
   # The datasets won't be the same, as the comparison set only includes a subset of each dataset and ordering will have changed between versions

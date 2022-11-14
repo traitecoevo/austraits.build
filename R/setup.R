@@ -44,7 +44,8 @@ metadata_create_template <- function(dataset_id,
   out$contributors$data_collectors <- list(out$contributors$data_collectors)
   out$contributors[c("assistants", "austraits_curators")] <- "unknown"
 
-  out$dataset <- out$dataset$values[]
+  out$dataset <- out$dataset$values[c("data_is_long_format", "custom_R_code", "collection_date", "taxon_name", "location_name",
+                                                     "description", "basis_of_record", "life_stage", "sampling_strategy", "original_file", "notes")]
   out$dataset[] <- 'unknown'
   out$dataset$custom_R_code <- NA
   
@@ -54,49 +55,49 @@ metadata_create_template <- function(dataset_id,
     tmp <- menu(c("Long", "Wide"), title="Is the data long or wide format?")
     data_is_long_format <- ifelse(tmp == 1, TRUE, FALSE)
     
+    out$dataset$data_is_long_format <- data_is_long_format
+
     data <- readr::read_csv(paste0(path, "/data.csv"), col_types = cols())
     
     # Setup config and select columns as appropriate
-    config <- list(data_is_long_format = data_is_long_format, 
-                   custom_R_code = NA,
-                   variable_match = list())
-    
-    v1 <- c("taxon_name")
-    v2 <- c("location_name", "context_name", "individual_id",  "collection_date")
-    
     if(data_is_long_format) {
       v1 <- c("taxon_name", "trait_name", "value")
-    }
-    if(!data_is_long_format)
+    } else{
       out$dataset[c("trait_name", "value")] <- NULL
+      v1 <- c("taxon_name")
+    }
     
     for(v in v1) {      
-      config[["variable_match"]][[v]] <- metadata_user_select_column(v, names(data))
+      out[["dataset"]][[v]] <- metadata_user_select_column(v, names(data))
     }
     
+     v2 <- c("location_name", "individual_id", "collection_date")
+
     for(v in v2) {
       tmp <- metadata_user_select_column(v, c(NA, names(data)))
       if(!is.na(tmp)) {
-        config[["variable_match"]][[v]] <- tmp
+        out[["dataset"]][[v]] <- tmp
       }
       if(v == "collection_date" & is.na(tmp)){
-        collection_date <- readline(prompt="Enter collection_date range separated by a '/': ")
-        config[["variable_match"]][[v]] <- collection_date
+        collection_date <- readline(prompt="Enter collection_date range in format '2007/2009': ")
+        out[["dataset"]][[v]] <- collection_date
       }
     }
+
+    if(data_is_long_format) {
     
-    for(v in v1) {
-      out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
     }
-    
-    for(v in v2) {
-      out[["dataset"]][[v]] <- config[["variable_match"]][[v]]
-    }
-    
-    out[["dataset"]][["data_is_long_format"]] <- config[["data_is_long_format"]]
-    out[["dataset"]][["custom_R_code"]] <- config[["custom_R_code"]]
+
   }
 
+  #reorder elements in dataset
+  order <- c("data_is_long_format","custom_R_code","collection_date", "taxon_name","trait_name","value","location_name","individual_id",
+             "description","basis_of_record", "life_stage", "sampling_strategy", "original_file", "notes")
+  
+  order <- order[which(order %in% names(out[["dataset"]]))]
+  
+  out[["dataset"]] <- out[["dataset"]][order]
+  
   write_metadata(out, paste0(path, "/metadata.yml"))
 }
 
@@ -105,7 +106,7 @@ metadata_create_template <- function(dataset_id,
 #' `metadata_user_select_column` is used to select which columns in a dataframe/ tibble 
 #' corresponds to the variable of interest. It is used compile the metadata yaml
 #' file by prompting the user to choose the relevant columns. It is used in 
-#' `metadata_add_sites` and `metadata_add_contexts` and `metadata_create_template`
+#' `metadata_add_locations` and `metadata_add_contexts` and `metadata_create_template`
 #'
 #' @param column name of the variable of interest
 #' @param choices the options that can be selected from
@@ -113,7 +114,7 @@ metadata_create_template <- function(dataset_id,
 metadata_user_select_column <- function(column, choices) {
   
   tmp <- utils::menu(choices, title= sprintf("Select column for `%s`", column))
-  
+
   choices[tmp]
 }
 
@@ -121,7 +122,7 @@ metadata_user_select_column <- function(column, choices) {
 #' 
 #' `user_select names` is used to prompt the user to select the variables that 
 #' are relevant for compiling the metadata yaml file. It is currently used for
-#' `metadata_add_traits`, `metadata_add_sites` and `metadata_add_contexts` 
+#' `metadata_add_traits`, `metadata_add_locations` and `metadata_add_contexts` 
 #'
 #' @param title character string providing the instruction for the user
 #' @param vars variable names
@@ -190,7 +191,7 @@ metadata_add_traits <- function(dataset_id) {
   if(!metadata$dataset$data_is_long_format) {
     v <- names(data)
   } else {
-    v <- unique(data[[metadata$dataset$variable_match$trait_name]])
+    v <- unique(data[[metadata$dataset$trait_name]])
   }
 
   var_in <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct traits in ", dataset_id), v)
@@ -217,7 +218,7 @@ metadata_add_traits <- function(dataset_id) {
   write_metadata_dataset(metadata, dataset_id)
 }
 
-#' For specified `dataset_id` import site data from a dataframe
+#' For specified `dataset_id` import location data from a dataframe
 #'
 #' This functions asks users which columns in the dataframe they would like to keep
 #' and records this appropriately in the metadata. The input data is assumed to be 
@@ -225,31 +226,31 @@ metadata_add_traits <- function(dataset_id) {
 #' The output may require additional manual editing.
 #'
 #' @inheritParams metadata_path_dataset_id
-#' @param site_data A dataframe of site variables
+#' @param location_data A dataframe of site variables
 #'
 #' @importFrom rlang .data
 #' @export
 #' @examples
 #' \dontrun{
 #' austraits$locations %>% dplyr::filter(dataset_id == "Falster_2005_1") %>% 
-#' select(-dataset_id) %>% spread(site_property, value) %>% type_convert()-> site_data
-#' metadata_add_sites("Falster_2005_1", site_data)
+#' select(-dataset_id) %>% spread(location_property, value) %>% type_convert()-> location_data
+#' metadata_add_locations("Falster_2005_1", location_data)
 #' }
-metadata_add_sites <- function(dataset_id, site_data) {
+metadata_add_locations <- function(dataset_id, location_data) {
 
   # read metadata
   metadata <- read_metadata_dataset(dataset_id)
 
   # Choose column for location_name
-  location_name <- metadata_user_select_column("location_name", names(site_data))
+  location_name <- metadata_user_select_column("location_name", names(location_data))
 
   # From remaining variables, choose those to keep
-  site_sub <- dplyr::select(site_data, -!!location_name)
-  keep <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct site_properties in ", dataset_id), names(site_sub))
+  location_sub <- dplyr::select(location_data, -!!location_name)
+  keep <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct location_properties in ", dataset_id), names(location_sub))
 
   # Save and notify
-  metadata$locations <- dplyr::select(site_data, tidyr::one_of(keep)) %>%
-            split(site_data[[location_name]]) %>% lapply(as.list)
+  metadata$locations <- dplyr::select(location_data, tidyr::one_of(keep)) %>%
+            split(location_data[[location_name]]) %>% lapply(as.list)
 
   cat(sprintf("Following locations added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$locations), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
   
@@ -265,38 +266,74 @@ metadata_add_sites <- function(dataset_id, site_data) {
 #' The output may require additional manual editing.
 #'
 #' @inheritParams metadata_path_dataset_id
-#' @param context_data A dataframe of context variables
+#' @param overwrite Overwrite existing information
 #'
 #' @importFrom rlang .data
 #' @export
-#' @examples
-#' \dontrun{
-#' austraits$contexts %>% dplyr::filter(dataset_id == "Hall_1981") %>% 
-#' select(-dataset_id) %>% spread(context_property, value) %>% type_convert()-> context_data
-#' metadata_add_contexts("Hall_1981", context_data)
-#' }
-metadata_add_contexts <- function(dataset_id, context_data) {
+metadata_add_contexts <- function(dataset_id, overwrite = FALSE) {
   
   # read metadata
   metadata <- read_metadata_dataset(dataset_id)
+
+  # load and clean trait data
+  data <-
+    readr::read_csv(file.path("data", dataset_id,  "data.csv"), col_types = cols()) %>%
+    process_custom_code(metadata[["dataset"]][["custom_R_code"]])()
+
+  # Get list of potential columns
+  v <- names(data)
+
+  contexts <- list()
+  n_existing <- 0
+
+  # check for existing info
+  if (!overwrite & !is.na(metadata$contexts[1])) {
+    contexts <- metadata$contexts
+    n_existing <- length(metadata$contexts)
+
+    message(sprintf("Existing context information detected, from the following columns in the dataset: %s.", contexts %>% purrr::map_chr(~.x[["var_in"]]) %>% paste(collapse = ", ")))
+  }
+
+  var_in <- metadata_user_select_names(paste("Indicate all columns that contain additional contextual data for ", dataset_id), v)
+
+  categories <- c("treatment", "plot", "temporal", "method", "entity_context")
+
+  for (i in seq_along(var_in)) {
+    
+    ii <- n_existing + i
+
+    category <- metadata_user_select_names(
+      paste("What category does context", var_in[i], "fit in?"), categories)
+    
+    context_values <- data[[var_in[i]]] %>% unique()
   
-  # Choose column for context_name
-  context_name <- metadata_user_select_column("context_name", names(context_data))
-  
-  # From remaining variables, choose those to keep
-  context_sub <- dplyr::select(context_data, -!!context_name)
-  keep <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct context_properties in ", dataset_id), names(context_sub))
-  
-  # Save and notify
-  metadata$contexts <- dplyr::select(context_data, tidyr::one_of(keep)) %>%
-    split(context_data[[context_name]]) %>% lapply(as.list)
-  
-  cat(sprintf("Following contexts added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$contexts), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
-  
+    message(sprintf("\tThe following values exist for this context: %s.", context_values %>% paste(collapse = ", ")))
+      
+    replace_needed <- readline(prompt="Are replacement values required? (y/n) ")
+      
+    contexts[[ii]] <-
+      list(
+      context_property = "unknown",
+      category = category,
+      var_in = var_in[i],
+      values = tibble::tibble(
+        find = context_values,
+        value = context_values, 
+        description = "unknown"
+        )
+      )
+
+    if(tolower(replace_needed) == "y") {
+      contexts[[ii]][["values"]][["value"]] = "unknown"
+    } else {
+      contexts[[ii]][["values"]][["find"]] <- NULL
+    }
+  }
+
+  metadata$contexts <- contexts
+
   write_metadata_dataset(metadata, dataset_id)
 }
-
-
 
 #' Adds citation details to a metadata file for given study
 #'

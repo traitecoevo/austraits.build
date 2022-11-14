@@ -47,6 +47,7 @@ dataset:
       -plant_height_duplicate, -wood_density_duplicate) %>%
       group_by(`Species_reconciled with updates and additions`) %>%
         distinct() %>%
+        mutate(across(c(`growth form`, `leaf type`, `leaves lobed`, `leaf longevity`), replace_duplicates_with_NA)) %>%
         summarise(
           `growth form` = paste0(`growth form`, collapse = " ") %>% na_if(.,"NA"),
           `leaf type` = paste0(`leaf type`, collapse = " ") %>% na_if(.,"NA"),
@@ -66,8 +67,13 @@ dataset:
           ) %>%
       ungroup() %>%
     mutate(
-      `leaves lobed` = ifelse(`leaves lobed` %in% c("no NA", "no NA NA", "no NA NA NA"), "entire", `leaves lobed`)
-    ) 
+      `leaves lobed` = ifelse(`leaves lobed` %in% c("no NA", "no NA NA", "no NA NA NA"), "entire", `leaves lobed`),
+      `growth form` = str_replace_all(`growth form`," NA",""),
+      `growth form` = na_if(`growth form`,"NA"), 
+      `leaf type` = str_replace_all(`leaf type`," NA",""),  
+      `leaf longevity` = str_replace_all(`leaf longevity`," NA",""),
+      `leaf longevity` = na_if(`leaf longevity`,"NA"),
+      )
   '
   collection_date: 2010/2010
   taxon_name: Species_reconciled with updates and additions
@@ -142,7 +148,7 @@ traits:
   methods: from floras
 - var_in: leaves lobed
   unit_in: .na
-  trait_name: leaf_margin
+  trait_name: leaf_lobation
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -306,33 +312,42 @@ traits:
   replicates: .na
   methods: from floras
 substitutions:
-- trait_name: leaf_margin
+- trait_name: leaf_compoundness
+  find: 'NA'
+  replace: .na
+- trait_name: leaf_lobation
   find: 'yes'
   replace: lobed
-- trait_name: leaf_margin
+- trait_name: leaf_lobation
   find: 'no'
-  replace: entire
+  replace: unlobed
+- trait_name: leaf_lobation
+  find: 'NA'
+  replace: .na
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: tree tree vine vine
-  replace: tree climber_vine
+  replace: tree climber_herbaceous
 - trait_name: plant_growth_form
   find: tree tree vine
-  replace: tree climber_vine
+  replace: tree climber_herbaceous
 - trait_name: plant_growth_form
   find: tree vine
-  replace: tree climber_vine
+  replace: tree climber_herbaceous
 - trait_name: plant_growth_form
   find: shrub vine
-  replace: shrub climber_vine
+  replace: shrub climber_herbaceous
 - trait_name: plant_growth_form
   find: shrub shrub vine vine
-  replace: shrub climber_vine
+  replace: shrub climber_herbaceous
 - trait_name: plant_growth_form
   find: shrub shrub vine vine
-  replace: shrub climber_vine
+  replace: shrub climber_herbaceous
+- trait_name: plant_growth_form
+  find: "NA"
+  replace: .na
 taxonomic_updates:
 - find: Abutilon aff. subviscosum
   replace: Abutilon subviscosum

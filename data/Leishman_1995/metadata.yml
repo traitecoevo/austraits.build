@@ -49,7 +49,9 @@ dataset:
         dispersal_appendage = NA,
         dispersers = NA,
         fruit_fleshiness = NA,
-        site_name = "Sydney"
+        site_name = "Sydney",
+        plant_growth_substrate = ifelse("GrowthForm 1=tree; 2=shrub; 3=subshrub; 4=forb; 5=grass; 8=fern; 10=climber;
+    11=orchid, epiphyte." == "11","epiphyte", NA)
       ) %>% 
       move_values_to_new_trait(
           "Seed Dispersal syndrome 1=unassisted; 2=ant (elaiosome); 3=vertebrate ingestion (fleshy); 4=adhesion (hooks etc); 5=wind (wing, pappus); 6=ballistic+ant; 7=ba llistic; 8=vertebrate.", 
@@ -68,7 +70,7 @@ dataset:
         "fruit_fleshiness", 
         c("3","fleshy fruit","vertebrate ingestion (fleshy)"),
         c("fleshy","fleshy","fleshy"),
-        c("3",NA,"vertebrate ingestion (fleshy)")
+        c("3","","vertebrate ingestion (fleshy)")
       )
   '
   collection_date: 1996/1996
@@ -111,7 +113,7 @@ contexts: .na
 traits:
 - var_in: SLA(mm2/mg)
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -158,6 +160,23 @@ traits:
     11=orchid, epiphyte.
   unit_in: .na
   trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Species with secondary thickening were assigned to the growth form category
+    'woody plants'. Herbaceous species without secondary thickening were defined as
+    'forbs'. Grasses, rushes and sedges (i.e. species belonging to the families Cyperaceae,
+    Juncaceae, Poaceae, Restionaceae, Sparganiaceae and Typhaceae) were classed as
+    'graminoids'. Climbers, twiners and vines were defined as 'climbers'. We assigned
+    climbing species that had no information available on height of release of the
+    seeds to height class 4 (1.1-5.0 m). Species from the arid and semiarid floras
+    that are facultative perennials (able to persist for more than one year under
+    particularly good conditions) were considered as annuals because at most germination
+    opportunities they are present as a seed bank only.
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -288,7 +307,7 @@ substitutions:
   replace: climber
 - trait_name: plant_growth_form
   find: 11
-  replace: epiphyte_herb
+  replace: herb
 - trait_name: plant_growth_form
   find: 5
   replace: graminoid

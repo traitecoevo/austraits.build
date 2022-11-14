@@ -37,7 +37,24 @@ dataset:
           ifelse(fire_response %in% c("fire_not_relevant", "fire_not_relevant fire_killed",
           "fire_killed fire_not_relevant", "fire_not_relevant resprouts","
           fire_not_relevant not_fire_killed_does_not_resprout"),
-          "fire_not_relevant", NA)
+          "fire_not_relevant", NA),
+        stem_growth_habit = NA,
+        plant_climbing_mechanism = NA,
+        plant_growth_substrate = ifelse(str_detect(plant_growth_form, "epiphyte"), "epiphyte", NA),
+        plant_growth_form = str_replace(plant_growth_form, "epiphyte_", ""),
+        plant_growth_form = str_replace(plant_growth_form, "epiphyte", "")  %>% str_squish()
+      ) %>%
+      move_values_to_new_trait(
+        "plant_growth_form","stem_growth_habit",
+        c("climber_scrambler", "prostrate_herb", "prostrate_shrub"),
+        c("climbing", "prostrate", "prostrate"),
+        c("climber_scrambler", "herb", "shrub")
+      ) %>%
+      move_values_to_new_trait(
+        "plant_growth_form","plant_climbing_mechanism",
+        c("climber_scrambler"),
+        c("scrambling"),
+        c("climber")
       ) %>%
       group_by(Species_Name) %>%
         mutate(observation_num = row_number()) %>%
@@ -94,6 +111,30 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
+- var_in: plant_climbing_mechanism
+  unit_in: .na
+  trait_name: plant_climbing_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
@@ -128,7 +169,7 @@ traits:
     resprouters will die.
 - var_in: Prickly_Plant
   unit_in: .na
-  trait_name: spinescence
+  trait_name: plant_physical_defence_structures
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -271,6 +312,42 @@ traits:
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 substitutions:
+- trait_name: plant_growth_form
+  find: treelet
+  replace: mallee
+- trait_name: plant_growth_form
+  find: climber_shrub
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: graminoid_tussock
+  replace: tussock
+- trait_name: plant_growth_form
+  find: graminoid_not_tussock_tall
+  replace: graminoid_not_tussock
+- trait_name: plant_growth_form
+  find: graminoid_tussock_tall
+  replace: tussock
+- trait_name: plant_growth_form
+  find: herb_large
+  replace: herb
+- trait_name: plant_growth_form
+  find: herb_large shrub
+  replace: herb shrub
+- trait_name: plant_growth_form
+  find: semi_basal
+  replace: herb
+- trait_name: plant_growth_form
+  find: short_basal
+  replace: herb
+- trait_name: plant_growth_form
+  find: climber_herb
+  replace: climber_herbaceous
+- trait_name: nitrogen_fixing
+  find: '1'
+  replace: nitrogen_fixer
+- trait_name: nitrogen_fixing
+  find: '0'
+  replace: non_nitrogen_fixer
 - trait_name: fire_response
   find: fire_killed resprouts
   replace: partial_resprouting
@@ -292,12 +369,12 @@ substitutions:
 - trait_name: fire_response
   find: not_fire_killed_does_not_resprout
   replace: no_significant_fire_response
-- trait_name: spinescence
+- trait_name: plant_physical_defence_structures
   find: 0
-  replace: 0_no_spines
-- trait_name: spinescence
+  replace: absent
+- trait_name: plant_physical_defence_structures
   find: 1
-  replace: spines_present
+  replace: sharp_pointed_defence
 - trait_name: seed_longevity
   find: 10
   replace: short_persistent
@@ -475,6 +552,21 @@ substitutions:
 - trait_name: dispersers
   find: invertebrate_insect
   replace: invertebrates
+- trait_name: plant_growth_form
+  find: ""
+  replace: .na
+- trait_name: plant_growth_form
+  find: palm
+  replace: palmoid
+- trait_name: plant_growth_form
+  find: fern_tree
+  replace: fern palmoid
+- trait_name: plant_growth_form
+  find: palm graminoid_tussock
+  replace: palmoid graminoid
+- trait_name: plant_growth_form
+  find: climber_liana
+  replace: climber_woody
 taxonomic_updates:
 - find: Abutilon malvaefolium
   replace: Abutilon malvifolium
