@@ -75,7 +75,11 @@ test_that("constancy of with version 3.0.2", {
   v <- "traits"
   vv <- c("dataset_id", "taxon_name", "trait_name", "value", "unit", "original_name")
   # these traits have known changes in names or values
-  trait_to_check <- c("flood_regime_classification", "life_history", "plant_growth_form", "plant_height", "growth_habit", "leaf_area", "leaf_dry_mass", "root_shoot_ratio", "leaf_compoundness", "leaf_length", "leaf_width", "seed_shape", "seed_width", "leaf_phenology", "huber_value", "leaf_B_per_dry_mass", "water_potential_predawn", "vessel_density_leaves", "vessel_diameter_leaves", "wood_density", "leaf_hydraulic_conductivity", "water_potential_50percent_lost_conductivity", "water_potential_88percent_lost_conductivity")
+  trait_to_check <- c("flood_regime_classification", "life_history", "plant_growth_form", "plant_height", "growth_habit", "leaf_area", 
+                      "leaf_dry_mass", "root_shoot_ratio", "leaf_compoundness", "leaf_length", "leaf_width", "seed_shape", "seed_width", 
+                      "leaf_phenology", "huber_value", "leaf_B_per_dry_mass", "water_potential_predawn", "vessel_density_leaves", 
+                      "vessel_diameter_leaves", "wood_density", "leaf_hydraulic_conductivity", "water_potential_50percent_lost_conductivity",
+                      "water_potential_88percent_lost_conductivity")
 
 
   v_curr <- austraits_raw[[v]][,vv] %>% 
