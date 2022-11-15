@@ -29,7 +29,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         leaf_area = `Tot Lf area(mm)`/`No. lvs`, 
@@ -37,26 +37,19 @@ dataset:
         A_mass = `Mean photo`/(10*`SLA(area/wt)`),
         site_name = "Tidbinbilla koala enclosure",
         Date = ifelse(Time == "flowering","2000-11","2000-12"),
-        Date = ifelse(Time == "post-fruit","2001-01",Date),
-        population_id = site_name
-      ) %>%
-      group_by(`Plant ID`) %>%
-        mutate(observation = dplyr::row_number()) %>%
-      ungroup()
+        Date = ifelse(Time == "post-fruit","2001-01",Date)
+      )
   '
   collection_date: Date
   taxon_name: species_name
-  site_name: site_name
-  context_name: context
-  individual_id: 'Plant ID'
-  population_id: population_id
-  observation_number: observation
+  location_name: site_name
+  individual_id: Plant ID
   description: An investigation of reproductive allocation (RA) and other morphological
     and physiological characters in Gynatrix pulchella, a dimorphic species that we
     found ranges from dioecious to subdioecious or gynodioecious, depending on season
     and locality.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Gynatrix pulchella (Willd.) Alef. (Malvaceae), or hemp bush,
     is a spreading, reportedly dioecious, evergreen shrub growing up to 4 m high.
     Three  populations of G. pulchella were studied in the Australian Capital Territory,
@@ -91,30 +84,33 @@ dataset:
     leaf mass, flower counts, fruit counts, RA calculations) collected at both the
     Tidbinbilla site and two additional sites
   notes: none
-sites:
+locations:
   Tidbinbilla koala enclosure:
     latitude (deg): -35.444102
     longitude (deg): 148.928462
     description: low-lying drainage areas along creek beds in wet sclerophyll forest
 contexts:
-  female plant at flowering stage:
-    reproductive stage: flowering plant
-    plant sex: female plant
-  female plant at fruiting stage:
-    reproductive stage: fruiting plant
-    plant sex: female plant
-  female plant at post-fruit stage:
-    reproductive stage: plant at post-fruiting stage
-    plant sex: female plant
-  male plant at flowering stage:
-    reproductive stage: flowering plant
-    plant sex: male plant
-  male plant at fruiting stage:
-    reproductive stage: fruiting plant
-    plant sex: male plant
-  male plant at post-fruit stage:
-    reproductive stage: plant at post-fruiting stage
-    plant sex: male plant
+- context_property: plant sex
+  category: entity_context
+  var_in: Sex
+  values:
+  - value: female
+    description: Female plant.
+  - value: male
+    description: Male plant.
+- context_property: reproductive stage
+  category: entity_context
+  var_in: Time
+  values:
+  - find: flowering
+    value: flowering
+    description: Plant at flowering stage.
+  - find: fruiting
+    value: fruiting
+    description: Plant at fruiting stage.
+  - find: post-fruit
+    value: post-fruit
+    description: Plant at post-fruiting stage.
 traits:
 - var_in: A_mass
   unit_in: umolCO2/g/s
@@ -283,7 +279,7 @@ traits:
     leaves for that branch to obtain an estimate of SLA for each plant.
 - var_in: SLA(area/wt)
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement

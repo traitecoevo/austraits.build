@@ -26,16 +26,19 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(age = gsub("O","old",age)) %>% mutate(age = gsub("Y","young",age))
-    %>% mutate(context_name = if_else(is.na(`age`),"no_context",paste0(`age`,"_leaves_from_",`nitrogen
-    treatment`,"_treatment")))
+  custom_R_code:     '
+    data %>% 
+      mutate(
+        context_name = if_else(is.na(`age`), "no_context",
+        paste0(`age`,"_leaves_from_",`nitrogen treatment`,"_treatment"))
+      )
+  '
   collection_date: 2006/2006
   taxon_name: species
-  site_name: site_name
-  context_name: context_name
+  location_name: site_name
   description: leaf traits for scleorphyllous species in Harrison (2009)
-  sample_age_class: seedling, adult
-  collection_type: field, glasshouse
+  life_stage: seedling, adult
+  basis_of_record: field, lab
   sampling_strategy: 'Morphological and physiological measurements were obtained from
     two independent investigations: a field study comparing species pairs from eight
     genera and a greenhouse experiment that examined seven species of the genus Eucalyptus.
@@ -70,37 +73,61 @@ dataset:
     control of psyllids and powdery mildew.'
   original_file: Harrison et al 2009 PCE SI.xls
   notes: none
-sites:
+locations:
   Australian National Botanic Gardens:
     longitude (deg): 149.067
     latitude (deg): -35.2
-    collection_type: arboretum
-    sample_age_class: adult
+    basis_of_record: captive_cultivated
+    life_stage: adult
   ANU Greenhouse:
     longitude (deg): 149.117
     latitude (deg): -35.277
-    collection_type: glasshouse
-    sample_age_class: seedling
+    basis_of_record: lab
+    life_stage: seedling
 contexts:
-  no_context:
-    leaf age: .na
-    nutrient treatment: .na
-  young_leaves_from_no_added_N_treatment:
-    leaf age: young
-    nutrient treatment: treated with nutrient solution containing 4 mm CaCl2, instead
-      of nitrogen-containing solution [manipulated]
-  old_leaves_from_no_added_N_treatment:
-    leaf age: old
-    nutrient treatment: treated with nutrient solution containing 4 mm CaCl2, instead
-      of nitrogen-containing solution [manipulated]
-  young_leaves_from_N_added_treatment:
-    leaf age: young
-    nutrient treatment: treated with Rorison's nutrient solution (4 mm Ca(NO3)2) twice
-      a week [manipulated]
-  old_leaves_from_N_added_treatment:
-    leaf age: old
-    nutrient treatment: treated with Rorison's nutrient solution (4 mm Ca(NO3)2) twice
-      a week [manipulated]
+- context_property: nutrient treatment
+  category: treatment
+  var_in: nitrogen treatment
+  values:
+  - find: no_added_N
+    value: control
+    description: Soil treated with nutrient solution containing 4 mm CaCl2, instead
+      of nitrogen-containing solution.
+  - find: N_added
+    value: nitrogen addition
+    description: Soil treated with Rorison's nutrient solution (4 mm Ca(NO3)2) twice
+      a week.
+- context_property: leaf age
+  category: method
+  var_in: age
+  values:
+  - find: 'Y'
+    value: young leaves
+    description: Measurements made on young leaves.
+  - find: O
+    value: old leaves
+    description: Measurements made on young leaves.
+- context_property: instrument used
+  category: method
+  var_in: method_context
+  values:
+  - find: infrared gas analyser
+    value: infrared gas analyser
+    description: Photosynthetic rate determined using an infrared gas analyser.
+  - find: Farquhar model
+    value: Farquhar model
+    description: Photosynthetic rate adjusted using the model developed by Farquhar,von
+      Caemmerer & Berry (1980). The model was used to scale all Aa measurements to
+      a common intercellular CO2 partial pressure (Ci) of 300 umol mol-1 (Aa300).This
+      approach was carried out using Eqn 1 in manuscript, assuming the in vivo maximum
+      carboxylation activity of Rubisco per unit area (Vcmax) was limiting photosynthesis
+      (Aa). The kinetic constants of Rubisco (Kc and Ko, the Michaelis-Menten constants
+      for CO2 and O2, respectively, and G, the CO2 compensation point in the absence
+      of dark respiration, Rd) were adopted from von Caemmerer et al. (1994) assuming
+      infinite internal conductance, with their temperature dependence functions given
+      in von Caemmerer (2000).Rd was assumed to be 0.1 of Aa for the ANBG data.These
+      assumptions were validated from CO2 response curves measured on the eucalypt
+      leaves (data not shown).
 traits:
 - var_in: photosynthetic pathway
   unit_in: .na
@@ -112,7 +139,7 @@ traits:
   methods: assume reference book
 - var_in: LMA (g m-2)
   unit_in: g/m2
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -251,9 +278,8 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 4-5
-  method_number: 1
-  measurement_remarks: Photosynthetic rate determined using an infrared gas analyser
-  methods: &photosynthesis_methods Measurements of CO2 assimilation rate per unit area (Aa) in the ANBG were
+  method_context: infrared gas analyser
+  methods: Measurements of CO2 assimilation rate per unit area (Aa) in the ANBG were
     made at saturating irradiance (Table 1), which was determined for each species
     by first measuring a light response curve. Measurements were made on leaves for
     all species except Acacia, where phyllodes were used, from 28 March 2006 to 24
@@ -282,20 +308,29 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 4-5
-  method_number: 2
-  measurement_remarks: Photosynthetic rate adjusted using the model developed by Farquhar,
-    von Caemmerer & Berry (1980). The model was used to scale all Aa measurements to a common
-    intercellular CO2 partial pressure (Ci) of 300 umol mol-1 (Aa300).This approach
-    was carried out using Eqn 1 in manuscript, assuming the in vivo maximum carboxylation
-    activity of Rubisco per unit area (Vcmax) was limiting photosynthesis (Aa). The
-    kinetic constants of Rubisco (Kc and Ko, the Michaelis-Menten constants for CO2
-    and O2, respectively, and G, the CO2 compensation point in the absence of dark
-    respiration, Rd) were adopted from von Caemmerer et al. (1994) assuming infinite
-    internal conductance, with their temperature dependence functions given in von
-    Caemmerer (2000).Rd was assumed to be 0.1 of Aa for the ANBG data.These assumptions
-    were validated from CO2 response curves measured on the eucalypt leaves (data
-    not shown).
-  methods: *photosynthesis_methods
+  method_context: Farquhar model
+  methods: Measurements of CO2 assimilation rate per unit area (Aa) in the ANBG were
+    made at saturating irradiance (Table 1), which was determined for each species
+    by first measuring a light response curve. Measurements were made on leaves for
+    all species except Acacia, where phyllodes were used, from 28 March 2006 to 24
+    April 2006, using an infrared gas analyser (IRGA) (LI-6400, Li-Cor) open gas exchange
+    system. Where possible, a second LI-6400 was used on adjacent leaves of the same
+    plant, allowing cross-checks for consistency in measurement. Steady-state measurements
+    were made on similar fully expanded young leaves at an ambient CO2 concentration
+    (Ca) of 375umol mol-1, between 0900 and 1500 h on sunny days. Leaf temperature
+    was allowed to follow ambient conditions, which ranged between 15 and 32 deg C.   Photosynthetic
+    light response curves were measured for all seven greenhouse-grown eucalypt species.
+    A standard irradiance of 1800 umol PAR photons m-2 s-1 was adopted for all species
+    during the measurement of CO2 response curves, with the block temperature maintained
+    at 22 deg C, a flow rate of 500 umol s-1 and the relative humidity of air entering
+    the leaf chamber maintained between 70 and 80%. Following equilibration, Aa was
+    measured at ambient CO2 (375 umol mol-1) and a series of nine consecutive CO2
+    concentrations from 50 to 1300 umol mol-1.As with the ANBG measurements, two LI-6400s
+    were used.  At the time of measurement, only E. elata,E. bridgesiana, E. mannifera
+    and E. polyanthemos plants had grown fully expanded, new leaves.There were no
+    new leaves on minus nitrogen E. polyanthemos plants at this time. To allow contrasts
+    between all species, at least four pre-existing, non-necrotic leaves on different
+    plants from the plus nitrogen treatment were measured.
 - var_in: A300/Na  PNUE (mmol (mol N)-1 s-1)
   unit_in: umolCO2/molN/s
   trait_name: leaf_photosynthetic_nitrogen_use_efficiency_saturated

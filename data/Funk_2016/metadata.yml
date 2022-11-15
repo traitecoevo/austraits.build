@@ -26,33 +26,23 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
-    data %>%
-      mutate(
-        `Nut acq strat` = gsub("Nfixer/","",`Nut acq strat`),
-        `Nut acq strat` = gsub("MD",NA,`Nut acq strat`),
-        `Rt tp cat` = gsub("MD",NA,`Rt tp cat`),
-        `Root depth (cm)` = gsub("MD",NA,`Root depth (cm)`),
-        `Height (mm)` = gsub("MD",NA,`Height (mm)`),
-        `Aarea` = gsub("MD",NA,`Aarea`),
-        `Amass` = gsub("MD",NA,`Amass`),
-        `PNUE`= gsub("MD",NA,`PNUE`),
-        `PPUE` = gsub("MD",NA,`PPUE`),
-        `WUE`= gsub("MD",NA,`WUE`),
-        `Root type` = gsub("MD",NA,`Root type`)
-        ) %>%
-      mutate(
-        Date = ifelse(Site == "Banksia woodland","2011-09/2011-11",NA),
-        Date = ifelse(Site == "Coastal banksia woodland","2012-09/2012-11",Date)
-        )
+  custom_R_code:     '
+data %>%
+  mutate(
+    `Nut acq strat` = stringr::str_replace(`Nut acq strat`, "Nfixer/",""),
+    across(c(`Nut acq strat`, `Rt tp cat`, `Root depth (cm)`, `Height (mm)`,
+        `Aarea`, `Amass`, `PNUE`, `PPUE`, `WUE`, `Root type`), ~na_if(.,"MD")),
+    Date = ifelse(Site == "Banksia woodland","2011-09/2011-11",NA),
+    Date = ifelse(Site == "Coastal banksia woodland","2012-09/2012-11",Date)
+  )
   '
   collection_date: Date
   taxon_name: Species
-  site_name: Site
+  location_name: Site
   description: Australian subset of a worldwide comparison of functional traits in
     invasive versus native species in mediterranean-climate ecosystems
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: We selected eight moderately to heavily invaded MCE communities
     including grasslands, shrublands, and woodlands. Our sites had similar mean annual
     precipitation (330-834 mm), but varied greatly in soil nutrient availability,
@@ -64,7 +54,7 @@ dataset:
     middle of the spring growing season, prior to fl owering.
   original_file: AusTraits_banksia woodland.xls in raw folder and in GoogleDrive folder
   notes: none
-sites:
+locations:
   Banksia woodland:
     latitude (deg): -32.04667
     longitude (deg): 115.83639
@@ -127,7 +117,7 @@ traits:
   methods: expert observation or reference book
 - var_in: LMA (g/m2)
   unit_in: g/m2
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -298,10 +288,10 @@ traits:
 substitutions:
 - trait_name: nitrogen_fixing
   find: 'yes'
-  replace: 1
+  replace: nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'no'
-  replace: 0
+  replace: non_nitrogen_fixer
 - trait_name: root_structure
   find: AMF
   replace: arbuscular_mycorrhizal
@@ -325,10 +315,10 @@ substitutions:
   replace: long_root_hairs
 - trait_name: plant_growth_form
   find: shrub/sml tree
-  replace: shrub treelet
+  replace: shrub tree
 - trait_name: plant_growth_form
   find: sml tree
-  replace: treelet
+  replace: tree
 - trait_name: plant_growth_form
   find: grass
   replace: graminoid
@@ -337,7 +327,7 @@ substitutions:
   replace: graminoid
 - trait_name: plant_growth_form
   find: tree-like monocot
-  replace: grass-tree
+  replace: palmoid
 - trait_name: root_morphology
   find: I
   replace: type_i

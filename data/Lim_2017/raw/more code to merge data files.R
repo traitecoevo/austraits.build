@@ -26,5 +26,5 @@ read_csv("data/Lim_2017/data.csv") %>%
 write_csv(data_tmp,"data/Lim_2017/data.csv")
 
 austraits <- remake::make("austraits")
-build_dataset_report("Lim_2017",overwrite = TRUE)
+dataset_generate_report("Lim_2017",overwrite = TRUE)
 

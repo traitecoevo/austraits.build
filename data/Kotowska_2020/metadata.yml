@@ -30,16 +30,16 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(Species = gsub("_"," ",Species))
+  custom_R_code:     data %>% mutate(Species = stringr::str_replace(Species, "_"," "))
   collection_date: 2017-04/2018-05
   taxon_name: Species
-  site_name: Plot
+  location_name: Plot
   description: An analysis of wood tissue fractions of 16 Australian angiosperm species
     sampled from two nearby areas with similar climate but very different soil nutrient
     profiles and investigation of structure-function links with soil and tissue nutrient
     concentrations and other plant traits.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Plant material for nutrient analysis, wood anatomy and trait
     measurements was collected at the end of austral summer in April 2017 and for
     twig and leaf samples again in early spring in October 2017. For measuring tissue
@@ -63,7 +63,7 @@ dataset:
   original_file: AUSTrait_leaf_livespan_2020-05-07.xls and AUSTrait_raw data_2020-05-07.xls
     submitted by the author and archived in the raw data folder and GoogleDrive folder
   notes: none
-sites:
+locations:
   HighP_1:
     latitude (deg): -33.370861
     longitude (deg): 151.316146
@@ -600,7 +600,27 @@ sites:
     soil N, total (mg/g): .na.real
     soil P, extractable (mg/kg): .na.real
     soil P, total (mg/kg): .na.real
-contexts: .na
+contexts:
+- context_property: wood sample type
+  category: method
+  var_in: method_context
+  values:
+  - value: stem sample
+    description: Measurements made on the main stem.
+  - value: branch sample
+    description: Measurements made on a branch.
+  - value: heartwood sample
+    description: Measurements made on heartwood.
+- context_property: leaf lifespan method
+  category: method
+  var_in: method_context2
+  values:
+  - find: birth lifespan
+    value: leaf lifespan birth
+    description: Leaf lifespan calculated from 'leaf birth'
+  - find: death lifespan
+    value: leaf lifespan death
+    description: Leaf lifespan calculated from 'leaf death'
 traits:
 - var_in: WD
   unit_in: g/cm3
@@ -619,23 +639,22 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: &Stem_method For measuring tissue fractions in xylem, one wood core of
-    the main trunk and one twig sample per tree was taken. The wood cores of length
-    5-6 cm were extracted using an increment borer with an inner diameter of 5.15
-    mm (Haglof, Langsele, Sweden). The samples were transported in marked straws to
-    ensure the determination of inner and outer segments. In the lab the cores were
-    immediately divided into five segments of 1 cm length for sapwood nutrient analysis,
-    sapwood wood anatomy, wood density, inner wood anatomy, and inner wood nutrient
-    analysis (from the outer to the inner wood, respectively). Fresh samples for wood
-    anatomy were stored in 70% ethanol until further processing while nutrient samples
-    were oven dried at 60 deg C for 48 h. Ethanol storage has proven to be a better
-    storage method based on preliminary work, as cutting previously dried samples
-    led to lower quality sections in some species. All plant samples were oven-dried
-    at 60 deg C for 48 h and then ground and analyzed for C+N contents with a CN auto-analyzer
-    (Vario EL III, Hanau, Germany) and for P and other nutrients after HNO3 digestion
-    by inductively coupled plasma optical emission spectrometry analysis (Perkin Elmer
+  method_context: branch sample
+  methods: For measuring tissue fractions in xylem, one wood core of the main trunk
+    and one twig sample per tree was taken. The wood cores of length 5-6 cm were extracted
+    using an increment borer with an inner diameter of 5.15 mm (Haglof, Langsele,
+    Sweden). The samples were transported in marked straws to ensure the determination
+    of inner and outer segments. In the lab the cores were immediately divided into
+    five segments of 1 cm length for sapwood nutrient analysis, sapwood wood anatomy,
+    wood density, inner wood anatomy, and inner wood nutrient analysis (from the outer
+    to the inner wood, respectively). Fresh samples for wood anatomy were stored in
+    70% ethanol until further processing while nutrient samples were oven dried at
+    60 deg C for 48 h. Ethanol storage has proven to be a better storage method based
+    on preliminary work, as cutting previously dried samples led to lower quality
+    sections in some species. All plant samples were oven-dried at 60 deg C for 48
+    h and then ground and analyzed for C+N contents with a CN auto-analyzer (Vario
+    EL III, Hanau, Germany) and for P and other nutrients after HNO3 digestion by
+    inductively coupled plasma optical emission spectrometry analysis (Perkin Elmer
     Optima 5300 DV) at the University of Goettingen, Germany.
 - var_in: Bark_thickn.st
   unit_in: cm
@@ -644,12 +663,26 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: stem sample
-  methods: *Stem_method
+  method_context: stem sample
+  methods: For measuring tissue fractions in xylem, one wood core of the main trunk
+    and one twig sample per tree was taken. The wood cores of length 5-6 cm were extracted
+    using an increment borer with an inner diameter of 5.15 mm (Haglof, Langsele,
+    Sweden). The samples were transported in marked straws to ensure the determination
+    of inner and outer segments. In the lab the cores were immediately divided into
+    five segments of 1 cm length for sapwood nutrient analysis, sapwood wood anatomy,
+    wood density, inner wood anatomy, and inner wood nutrient analysis (from the outer
+    to the inner wood, respectively). Fresh samples for wood anatomy were stored in
+    70% ethanol until further processing while nutrient samples were oven dried at
+    60 deg C for 48 h. Ethanol storage has proven to be a better storage method based
+    on preliminary work, as cutting previously dried samples led to lower quality
+    sections in some species. All plant samples were oven-dried at 60 deg C for 48
+    h and then ground and analyzed for C+N contents with a CN auto-analyzer (Vario
+    EL III, Hanau, Germany) and for P and other nutrients after HNO3 digestion by
+    inductively coupled plasma optical emission spectrometry analysis (Perkin Elmer
+    Optima 5300 DV) at the University of Goettingen, Germany.
 - var_in: SLA
   unit_in: cm2/g
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -680,61 +713,59 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: &Anatomical_method "Anatomical trait measures and cell type
-    fractions were obtained from transverse sections of twig and stem wood (Figure
-    1). The 10-25 um thick sections were cut using a sledge microtome (Reichert, Vienna,
-    Austria) and disposable blades (model A35, Feather Safety Razor Co. Ltd, Japan).
-    Additionally, tangential sections were made for species where the differentiation
-    of axial parenchyma, tracheids, and fibers appeared problematic. Subsequently
-    the sections were stained as follows: staining in 1% safranin (Sigma-Aldrich,
-    Castle Hill, Australia) in 50% ethanol solution for 2 min, washing with distilled
-    water, staining in 1% Astra Blue (Australian Biostain Pty Ltd, Traralgon, Australia)
-    for 30 min, washing with distilled water, and gradually dehydrating over 50% ethanol,
-    75% ethanol to 99% ethanol, each step taking 2 min. P. undulatum and S. australis
-    sections were stained in Astra Blue only for 15 min as the coloring was sufficiently
-    saturated after this time. The sections were then mounted in Euparal (BioQuip
-    Products, Rancho Dominguez, USA) and dried at 60 deg C over 72 h. To determine
-    cell types in detail, high resolution photographs were taken at 200x magnification
-    using a Nikon digital camera (model DXM 1200F, Nikon Corporation, Japan) mounted
-    on a light microscope (Olympus BX 50F, Olympus Co. Ltd., Japan). To analyze cell
-    type fractions and other anatomical traits on larger segments, we took images
-    using a stereo-microscope with an automatic stage equipped with a digital camera
-    (SteREOV20, Carl Zeiss MicroImaging GmbH, Goettingen, Germany) at 125x magnification.
-    Per sample, from 10 up to 40 single images were stitched together to obtain the
-    whole cross-sectional area. Images were processed with Adobe Photoshop CS6 (version
-    13.0, Adobe Systems Incorporated, USA) and ImageJ (version 1.3e). From each stem
-    section a rectangular shaped area (6-30 mm2) was analyzed using as much as possible
-    of the wood core lengths. For twig samples either half or one quarter of each
-    cross section, depending on the quality of the section, was analyzed yielding
-    1-18 mm2 of sapwood area. To determine cell tissue fractions we used a grid-based
-    counting method as described by Zieminska et al. (2015). Each sample image was
-    overlaid with a regular grid of lines spaced 120-140 um apart for stem and 40-80
-    um apart for twig sections in ImageJ. A minimum 300 intersections for each sample
-    was ensured. Each grid intersection point overlaying the image region was then
-    classified using the ''''Cell counter'''' plugin (https://imagej.net/Cell_Counter)
-    depending on which tissue type it was located on, marked and added by tissue type.
-    Anatomical definitions followed ''''IAWA list of microscopic features for hardwood
-    identification'''' (IAWA Committee 1989). Cell types were grouped in five categories
-    based on staining, cell wall characteristics and cellular content: 1) conduits:
-    vessel and other conduit lumen, 2) axial parenchyma, 3) ray parenchyma, 4) fiber:
-    fiber lumen together with fiber and conduit wall 5) other: all other cell types
-    including mucilage or oil cells and cell type that could not be determined with
-    certainty. To distinguish between thin-walled fibers and thick-walled axial parenchyma,
-    section fragments were inspected with higher magnification and tangential sections
-    were consulted to assess whether the axial cells have a spindle-shaped morphology
-    typical for fibers or are rectangular and arranged in strands as typical for axial
-    parenchyma. Septate fibers are known to occur in three of our study species, namely
-    Pittosporum undulatum, Synoum glandulosum, and Sloanea australis. These cells
-    play a role in starch storage and can remain nucleated at maturity in the outer
-    xylem (Rajput and Rao, 1999; Carlquist, 2015; Carlquist, 2018). Here, we included
-    septate fibers under category (4), as their abundance is difficult to quantify
-    accurately from transverse sections and the determination of their metabolic activity
-    requires molecular techniques, radioactive stains or high-resolution microcopy.
-    Other anatomical traits measured were determined using the particle-analysis function
-    from ImageJ for estimating vessel density (VD, n mm-1), the idealized vessels
-    diameter (d)"
+  method_context: branch sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: dh_mean.br
   unit_in: um
   trait_name: vessel_diameter_hydraulic
@@ -742,9 +773,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Anatomical_method
+  method_context: branch sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: VD.br
   unit_in: count/mm2
   trait_name: vessel_density
@@ -752,9 +833,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Anatomical_method
+  method_context: branch sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: Alum.br
   unit_in: '%'
   trait_name: vessel_lumen_fraction
@@ -762,9 +893,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Anatomical_method
+  method_context: branch sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: Ks.br
   unit_in: kg/m/s/MPa
   trait_name: sapwood_specific_conductivity_theoretical
@@ -772,14 +953,13 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: The theoretical hydraulic conductivity (Kh) was calculated
-    based on Hagen-Poiseuille's law as Kh=(pxSr4)/8h)x r,with r the vessel radius,
-    h the viscosity (1.002x10-3 Pa s) and r the density of water (998.2 kg m-3), both
-    at 20 deg C. Theoretical area-specific hydraulic conductivity (KS, kg m-1 MPa-1s-1)
-    was obtained from Kh by dividing through the microscopically determined crosssectional
-    area without bark and pit.
+  method_context: branch sample
+  methods: The theoretical hydraulic conductivity (Kh) was calculated based on Hagen-Poiseuille's
+    law as Kh=(pxSr4)/8h)x r,with r the vessel radius, h the viscosity (1.002x10-3
+    Pa s) and r the density of water (998.2 kg m-3), both at 20 deg C. Theoretical
+    area-specific hydraulic conductivity (KS, kg m-1 MPa-1s-1) was obtained from Kh
+    by dividing through the microscopically determined crosssectional area without
+    bark and pit.
 - var_in: Frac_fib.br
   unit_in: '%'
   trait_name: wood_fibre_fraction
@@ -787,9 +967,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Anatomical_method
+  method_context: branch sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: Frac_con.br
   unit_in: '%'
   trait_name: wood_conduit_fraction
@@ -797,9 +1027,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Anatomical_method
+  method_context: branch sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: Frac_ray.br
   unit_in: '%'
   trait_name: wood_ray_fraction
@@ -807,9 +1087,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Anatomical_method
+  method_context: branch sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: Frac_axi.br
   unit_in: '%'
   trait_name: wood_axial_parenchyma_fraction
@@ -817,9 +1147,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Anatomical_method
+  method_context: branch sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: d_max.st
   unit_in: um
   trait_name: vessel_diameter
@@ -827,9 +1207,59 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: 1
-  method_number: 1  
-  measurement_remarks: stem sample
-  methods: *Anatomical_method
+  method_context: stem sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: dh_mean.st
   unit_in: um
   trait_name: vessel_diameter_hydraulic
@@ -837,9 +1267,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1  
-  measurement_remarks: stem sample
-  methods: *Anatomical_method
+  method_context: stem sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: VD.st
   unit_in: count/mm2
   trait_name: vessel_density
@@ -847,9 +1327,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: stem sample
-  methods: *Anatomical_method
+  method_context: stem sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: Alum.st
   unit_in: '%'
   trait_name: vessel_lumen_fraction
@@ -857,10 +1387,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  
-  method_number: 1
-  measurement_remarks: stem sample
-  methods: *Anatomical_method
+  method_context: stem sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: Ks.st
   unit_in: kg/m/s/MPa
   trait_name: sapwood_specific_conductivity_theoretical
@@ -868,14 +1447,13 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: stem sample
-  methods: The theoretical hydraulic conductivity (Kh) was calculated
-    based on Hagen-Poiseuille's law as Kh=(pxSr4)/8h)x r,with r the vessel radius,
-    h the viscosity (1.002x10-3 Pa s) and r the density of water (998.2 kg m-3), both
-    at 20 deg C. Theoretical area-specific hydraulic conductivity (KS, kg m-1 MPa-1s-1)
-    was obtained from Kh by dividing through the microscopically determined crosssectional
-    area without bark and pit.
+  method_context: stem sample
+  methods: The theoretical hydraulic conductivity (Kh) was calculated based on Hagen-Poiseuille's
+    law as Kh=(pxSr4)/8h)x r,with r the vessel radius, h the viscosity (1.002x10-3
+    Pa s) and r the density of water (998.2 kg m-3), both at 20 deg C. Theoretical
+    area-specific hydraulic conductivity (KS, kg m-1 MPa-1s-1) was obtained from Kh
+    by dividing through the microscopically determined crosssectional area without
+    bark and pit.
 - var_in: Frac_fib.st
   unit_in: '%'
   trait_name: wood_fibre_fraction
@@ -883,9 +1461,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: stem sample
-  methods: *Anatomical_method
+  method_context: stem sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: Frac_con.st
   unit_in: '%'
   trait_name: wood_conduit_fraction
@@ -893,9 +1521,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: stem sample
-  methods: *Anatomical_method 
+  method_context: stem sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: Frac_ray.st
   unit_in: '%'
   trait_name: wood_ray_fraction
@@ -903,9 +1581,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: stem sample
-  methods: *Anatomical_method
+  method_context: stem sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: Frac_axi.st
   unit_in: '%'
   trait_name: wood_axial_parenchyma_fraction
@@ -913,9 +1641,59 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: stem sample
-  methods: *Anatomical_method
+  method_context: stem sample
+  methods: 'Anatomical trait measures and cell type fractions were obtained from transverse
+    sections of twig and stem wood (Figure 1). The 10-25 um thick sections were cut
+    using a sledge microtome (Reichert, Vienna, Austria) and disposable blades (model
+    A35, Feather Safety Razor Co. Ltd, Japan). Additionally, tangential sections were
+    made for species where the differentiation of axial parenchyma, tracheids, and
+    fibers appeared problematic. Subsequently the sections were stained as follows:
+    staining in 1% safranin (Sigma-Aldrich, Castle Hill, Australia) in 50% ethanol
+    solution for 2 min, washing with distilled water, staining in 1% Astra Blue (Australian
+    Biostain Pty Ltd, Traralgon, Australia) for 30 min, washing with distilled water,
+    and gradually dehydrating over 50% ethanol, 75% ethanol to 99% ethanol, each step
+    taking 2 min. P. undulatum and S. australis sections were stained in Astra Blue
+    only for 15 min as the coloring was sufficiently saturated after this time. The
+    sections were then mounted in Euparal (BioQuip Products, Rancho Dominguez, USA)
+    and dried at 60 deg C over 72 h. To determine cell types in detail, high resolution
+    photographs were taken at 200x magnification using a Nikon digital camera (model
+    DXM 1200F, Nikon Corporation, Japan) mounted on a light microscope (Olympus BX
+    50F, Olympus Co. Ltd., Japan). To analyze cell type fractions and other anatomical
+    traits on larger segments, we took images using a stereo-microscope with an automatic
+    stage equipped with a digital camera (SteREOV20, Carl Zeiss MicroImaging GmbH,
+    Goettingen, Germany) at 125x magnification. Per sample, from 10 up to 40 single
+    images were stitched together to obtain the whole cross-sectional area. Images
+    were processed with Adobe Photoshop CS6 (version 13.0, Adobe Systems Incorporated,
+    USA) and ImageJ (version 1.3e). From each stem section a rectangular shaped area
+    (6-30 mm2) was analyzed using as much as possible of the wood core lengths. For
+    twig samples either half or one quarter of each cross section, depending on the
+    quality of the section, was analyzed yielding 1-18 mm2 of sapwood area. To determine
+    cell tissue fractions we used a grid-based counting method as described by Zieminska
+    et al. (2015). Each sample image was overlaid with a regular grid of lines spaced
+    120-140 um apart for stem and 40-80 um apart for twig sections in ImageJ. A minimum
+    300 intersections for each sample was ensured. Each grid intersection point overlaying
+    the image region was then classified using the ''''''''Cell counter'''''''' plugin
+    (https://imagej.net/Cell_Counter) depending on which tissue type it was located
+    on, marked and added by tissue type. Anatomical definitions followed ''''''''IAWA
+    list of microscopic features for hardwood identification'''''''' (IAWA Committee
+    1989). Cell types were grouped in five categories based on staining, cell wall
+    characteristics and cellular content: 1) conduits: vessel and other conduit lumen,
+    2) axial parenchyma, 3) ray parenchyma, 4) fiber: fiber lumen together with fiber
+    and conduit wall 5) other: all other cell types including mucilage or oil cells
+    and cell type that could not be determined with certainty. To distinguish between
+    thin-walled fibers and thick-walled axial parenchyma, section fragments were inspected
+    with higher magnification and tangential sections were consulted to assess whether
+    the axial cells have a spindle-shaped morphology typical for fibers or are rectangular
+    and arranged in strands as typical for axial parenchyma. Septate fibers are known
+    to occur in three of our study species, namely Pittosporum undulatum, Synoum glandulosum,
+    and Sloanea australis. These cells play a role in starch storage and can remain
+    nucleated at maturity in the outer xylem (Rajput and Rao, 1999; Carlquist, 2015;
+    Carlquist, 2018). Here, we included septate fibers under category (4), as their
+    abundance is difficult to quantify accurately from transverse sections and the
+    determination of their metabolic activity requires molecular techniques, radioactive
+    stains or high-resolution microcopy. Other anatomical traits measured were determined
+    using the particle-analysis function from ImageJ for estimating vessel density
+    (VD, n mm-1), the idealized vessels diameter (d)'
 - var_in: N.st
   unit_in: mg/g
   trait_name: wood_N_per_dry_mass
@@ -923,9 +1701,23 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: stem sample
-  methods: *Stem_method
+  method_context: stem sample
+  methods: For measuring tissue fractions in xylem, one wood core of the main trunk
+    and one twig sample per tree was taken. The wood cores of length 5-6 cm were extracted
+    using an increment borer with an inner diameter of 5.15 mm (Haglof, Langsele,
+    Sweden). The samples were transported in marked straws to ensure the determination
+    of inner and outer segments. In the lab the cores were immediately divided into
+    five segments of 1 cm length for sapwood nutrient analysis, sapwood wood anatomy,
+    wood density, inner wood anatomy, and inner wood nutrient analysis (from the outer
+    to the inner wood, respectively). Fresh samples for wood anatomy were stored in
+    70% ethanol until further processing while nutrient samples were oven dried at
+    60 deg C for 48 h. Ethanol storage has proven to be a better storage method based
+    on preliminary work, as cutting previously dried samples led to lower quality
+    sections in some species. All plant samples were oven-dried at 60 deg C for 48
+    h and then ground and analyzed for C+N contents with a CN auto-analyzer (Vario
+    EL III, Hanau, Germany) and for P and other nutrients after HNO3 digestion by
+    inductively coupled plasma optical emission spectrometry analysis (Perkin Elmer
+    Optima 5300 DV) at the University of Goettingen, Germany.
 - var_in: N.leaf
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
@@ -933,9 +1725,8 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: &Branch_method For the twig samples one sun-exposed branch per tree optimally in mid-canopy
+  method_context: branch sample
+  methods: For the twig samples one sun-exposed branch per tree optimally in mid-canopy
     position was chosen and cut using loppers mounted on an elongated pole. From this
     branch a healthy twig with diameter 5-7 mm was selected and a 3-4 cm segment removed
     for wood anatomy and for nutrient analysis. From this branch, 5-30 healthy and
@@ -957,9 +1748,22 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Branch_method 
+  method_context: branch sample
+  methods: For the twig samples one sun-exposed branch per tree optimally in mid-canopy
+    position was chosen and cut using loppers mounted on an elongated pole. From this
+    branch a healthy twig with diameter 5-7 mm was selected and a 3-4 cm segment removed
+    for wood anatomy and for nutrient analysis. From this branch, 5-30 healthy and
+    intact mature leaves (the youngest fully expanded leaves without any sign of damage)
+    were taken and dust removed using wet tissue. Senescent leaves (usually visually
+    determinable by an altered color and easy to detach) were collected from the same
+    branch or at least the same tree by shaking the tree or touching the leaf by hand.
+    In the lab, bark from nutrient-sample twigs was carefully removed and bagged separately.
+    Small pieces of stem bark were removed using a knife or small chisel. All plant
+    samples were oven-dried at 60 deg C for 48 h and then ground and analyzed for
+    C+N contents with a CN auto-analyzer (Vario EL III, Hanau, Germany) and for P
+    and other nutrients after HNO3 digestion by inductively coupled plasma optical
+    emission spectrometry analysis (Perkin Elmer Optima 5300 DV) at the University
+    of Goettingen, Germany.
 - var_in: N.br
   unit_in: mg/g
   trait_name: wood_N_per_dry_mass
@@ -967,9 +1771,22 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Branch_method 
+  method_context: branch sample
+  methods: For the twig samples one sun-exposed branch per tree optimally in mid-canopy
+    position was chosen and cut using loppers mounted on an elongated pole. From this
+    branch a healthy twig with diameter 5-7 mm was selected and a 3-4 cm segment removed
+    for wood anatomy and for nutrient analysis. From this branch, 5-30 healthy and
+    intact mature leaves (the youngest fully expanded leaves without any sign of damage)
+    were taken and dust removed using wet tissue. Senescent leaves (usually visually
+    determinable by an altered color and easy to detach) were collected from the same
+    branch or at least the same tree by shaking the tree or touching the leaf by hand.
+    In the lab, bark from nutrient-sample twigs was carefully removed and bagged separately.
+    Small pieces of stem bark were removed using a knife or small chisel. All plant
+    samples were oven-dried at 60 deg C for 48 h and then ground and analyzed for
+    C+N contents with a CN auto-analyzer (Vario EL III, Hanau, Germany) and for P
+    and other nutrients after HNO3 digestion by inductively coupled plasma optical
+    emission spectrometry analysis (Perkin Elmer Optima 5300 DV) at the University
+    of Goettingen, Germany.
 - var_in: N.bark
   unit_in: mg/g
   trait_name: bark_N_per_dry_mass
@@ -977,9 +1794,22 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: stem sample
-  methods: *Branch_method 
+  method_context: stem sample
+  methods: For the twig samples one sun-exposed branch per tree optimally in mid-canopy
+    position was chosen and cut using loppers mounted on an elongated pole. From this
+    branch a healthy twig with diameter 5-7 mm was selected and a 3-4 cm segment removed
+    for wood anatomy and for nutrient analysis. From this branch, 5-30 healthy and
+    intact mature leaves (the youngest fully expanded leaves without any sign of damage)
+    were taken and dust removed using wet tissue. Senescent leaves (usually visually
+    determinable by an altered color and easy to detach) were collected from the same
+    branch or at least the same tree by shaking the tree or touching the leaf by hand.
+    In the lab, bark from nutrient-sample twigs was carefully removed and bagged separately.
+    Small pieces of stem bark were removed using a knife or small chisel. All plant
+    samples were oven-dried at 60 deg C for 48 h and then ground and analyzed for
+    C+N contents with a CN auto-analyzer (Vario EL III, Hanau, Germany) and for P
+    and other nutrients after HNO3 digestion by inductively coupled plasma optical
+    emission spectrometry analysis (Perkin Elmer Optima 5300 DV) at the University
+    of Goettingen, Germany.
 - var_in: N.br.bark
   unit_in: mg/g
   trait_name: bark_N_per_dry_mass
@@ -987,9 +1817,22 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Branch_method 
+  method_context: branch sample
+  methods: For the twig samples one sun-exposed branch per tree optimally in mid-canopy
+    position was chosen and cut using loppers mounted on an elongated pole. From this
+    branch a healthy twig with diameter 5-7 mm was selected and a 3-4 cm segment removed
+    for wood anatomy and for nutrient analysis. From this branch, 5-30 healthy and
+    intact mature leaves (the youngest fully expanded leaves without any sign of damage)
+    were taken and dust removed using wet tissue. Senescent leaves (usually visually
+    determinable by an altered color and easy to detach) were collected from the same
+    branch or at least the same tree by shaking the tree or touching the leaf by hand.
+    In the lab, bark from nutrient-sample twigs was carefully removed and bagged separately.
+    Small pieces of stem bark were removed using a knife or small chisel. All plant
+    samples were oven-dried at 60 deg C for 48 h and then ground and analyzed for
+    C+N contents with a CN auto-analyzer (Vario EL III, Hanau, Germany) and for P
+    and other nutrients after HNO3 digestion by inductively coupled plasma optical
+    emission spectrometry analysis (Perkin Elmer Optima 5300 DV) at the University
+    of Goettingen, Germany.
 - var_in: N.hr
   unit_in: mg/g
   trait_name: wood_N_per_dry_mass
@@ -997,9 +1840,23 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 3
-  measurement_remarks: stem sample
-  methods: *Stem_method 
+  method_context: heartwood sample
+  methods: For measuring tissue fractions in xylem, one wood core of the main trunk
+    and one twig sample per tree was taken. The wood cores of length 5-6 cm were extracted
+    using an increment borer with an inner diameter of 5.15 mm (Haglof, Langsele,
+    Sweden). The samples were transported in marked straws to ensure the determination
+    of inner and outer segments. In the lab the cores were immediately divided into
+    five segments of 1 cm length for sapwood nutrient analysis, sapwood wood anatomy,
+    wood density, inner wood anatomy, and inner wood nutrient analysis (from the outer
+    to the inner wood, respectively). Fresh samples for wood anatomy were stored in
+    70% ethanol until further processing while nutrient samples were oven dried at
+    60 deg C for 48 h. Ethanol storage has proven to be a better storage method based
+    on preliminary work, as cutting previously dried samples led to lower quality
+    sections in some species. All plant samples were oven-dried at 60 deg C for 48
+    h and then ground and analyzed for C+N contents with a CN auto-analyzer (Vario
+    EL III, Hanau, Germany) and for P and other nutrients after HNO3 digestion by
+    inductively coupled plasma optical emission spectrometry analysis (Perkin Elmer
+    Optima 5300 DV) at the University of Goettingen, Germany.
 - var_in: N.recy.st
   unit_in: '%'
   trait_name: .na
@@ -1008,7 +1865,22 @@ traits:
   basis_of_value: measurement
   replicates: 1
   measurement_remarks: Stem sample; N recycling efficiency stems
-  methods: *Stem_method 
+  methods: For measuring tissue fractions in xylem, one wood core of the main trunk
+    and one twig sample per tree was taken. The wood cores of length 5-6 cm were extracted
+    using an increment borer with an inner diameter of 5.15 mm (Haglof, Langsele,
+    Sweden). The samples were transported in marked straws to ensure the determination
+    of inner and outer segments. In the lab the cores were immediately divided into
+    five segments of 1 cm length for sapwood nutrient analysis, sapwood wood anatomy,
+    wood density, inner wood anatomy, and inner wood nutrient analysis (from the outer
+    to the inner wood, respectively). Fresh samples for wood anatomy were stored in
+    70% ethanol until further processing while nutrient samples were oven dried at
+    60 deg C for 48 h. Ethanol storage has proven to be a better storage method based
+    on preliminary work, as cutting previously dried samples led to lower quality
+    sections in some species. All plant samples were oven-dried at 60 deg C for 48
+    h and then ground and analyzed for C+N contents with a CN auto-analyzer (Vario
+    EL III, Hanau, Germany) and for P and other nutrients after HNO3 digestion by
+    inductively coupled plasma optical emission spectrometry analysis (Perkin Elmer
+    Optima 5300 DV) at the University of Goettingen, Germany.
 - var_in: N.recy.br
   unit_in: '%'
   trait_name: .na
@@ -1017,7 +1889,21 @@ traits:
   basis_of_value: measurement
   replicates: 1
   measurement_remarks: Branch sample; N recycling efficiency leaves
-  methods: *Branch_method
+  methods: For the twig samples one sun-exposed branch per tree optimally in mid-canopy
+    position was chosen and cut using loppers mounted on an elongated pole. From this
+    branch a healthy twig with diameter 5-7 mm was selected and a 3-4 cm segment removed
+    for wood anatomy and for nutrient analysis. From this branch, 5-30 healthy and
+    intact mature leaves (the youngest fully expanded leaves without any sign of damage)
+    were taken and dust removed using wet tissue. Senescent leaves (usually visually
+    determinable by an altered color and easy to detach) were collected from the same
+    branch or at least the same tree by shaking the tree or touching the leaf by hand.
+    In the lab, bark from nutrient-sample twigs was carefully removed and bagged separately.
+    Small pieces of stem bark were removed using a knife or small chisel. All plant
+    samples were oven-dried at 60 deg C for 48 h and then ground and analyzed for
+    C+N contents with a CN auto-analyzer (Vario EL III, Hanau, Germany) and for P
+    and other nutrients after HNO3 digestion by inductively coupled plasma optical
+    emission spectrometry analysis (Perkin Elmer Optima 5300 DV) at the University
+    of Goettingen, Germany.
 - var_in: P.st
   unit_in: mg/g
   trait_name: wood_P_per_dry_mass
@@ -1025,9 +1911,23 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: stem sample
-  methods: *Stem_method 
+  method_context: stem sample
+  methods: For measuring tissue fractions in xylem, one wood core of the main trunk
+    and one twig sample per tree was taken. The wood cores of length 5-6 cm were extracted
+    using an increment borer with an inner diameter of 5.15 mm (Haglof, Langsele,
+    Sweden). The samples were transported in marked straws to ensure the determination
+    of inner and outer segments. In the lab the cores were immediately divided into
+    five segments of 1 cm length for sapwood nutrient analysis, sapwood wood anatomy,
+    wood density, inner wood anatomy, and inner wood nutrient analysis (from the outer
+    to the inner wood, respectively). Fresh samples for wood anatomy were stored in
+    70% ethanol until further processing while nutrient samples were oven dried at
+    60 deg C for 48 h. Ethanol storage has proven to be a better storage method based
+    on preliminary work, as cutting previously dried samples led to lower quality
+    sections in some species. All plant samples were oven-dried at 60 deg C for 48
+    h and then ground and analyzed for C+N contents with a CN auto-analyzer (Vario
+    EL III, Hanau, Germany) and for P and other nutrients after HNO3 digestion by
+    inductively coupled plasma optical emission spectrometry analysis (Perkin Elmer
+    Optima 5300 DV) at the University of Goettingen, Germany.
 - var_in: P.leaf
   unit_in: mg/g
   trait_name: leaf_P_per_dry_mass
@@ -1035,8 +1935,22 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Branch sample
-  methods: *Branch_method
+  method_context: branch sample
+  methods: For the twig samples one sun-exposed branch per tree optimally in mid-canopy
+    position was chosen and cut using loppers mounted on an elongated pole. From this
+    branch a healthy twig with diameter 5-7 mm was selected and a 3-4 cm segment removed
+    for wood anatomy and for nutrient analysis. From this branch, 5-30 healthy and
+    intact mature leaves (the youngest fully expanded leaves without any sign of damage)
+    were taken and dust removed using wet tissue. Senescent leaves (usually visually
+    determinable by an altered color and easy to detach) were collected from the same
+    branch or at least the same tree by shaking the tree or touching the leaf by hand.
+    In the lab, bark from nutrient-sample twigs was carefully removed and bagged separately.
+    Small pieces of stem bark were removed using a knife or small chisel. All plant
+    samples were oven-dried at 60 deg C for 48 h and then ground and analyzed for
+    C+N contents with a CN auto-analyzer (Vario EL III, Hanau, Germany) and for P
+    and other nutrients after HNO3 digestion by inductively coupled plasma optical
+    emission spectrometry analysis (Perkin Elmer Optima 5300 DV) at the University
+    of Goettingen, Germany.
 - var_in: P.lit
   unit_in: mg/g
   trait_name: senesced_leaf_P_per_dry_mass
@@ -1044,9 +1958,22 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Branch_method
+  method_context: branch sample
+  methods: For the twig samples one sun-exposed branch per tree optimally in mid-canopy
+    position was chosen and cut using loppers mounted on an elongated pole. From this
+    branch a healthy twig with diameter 5-7 mm was selected and a 3-4 cm segment removed
+    for wood anatomy and for nutrient analysis. From this branch, 5-30 healthy and
+    intact mature leaves (the youngest fully expanded leaves without any sign of damage)
+    were taken and dust removed using wet tissue. Senescent leaves (usually visually
+    determinable by an altered color and easy to detach) were collected from the same
+    branch or at least the same tree by shaking the tree or touching the leaf by hand.
+    In the lab, bark from nutrient-sample twigs was carefully removed and bagged separately.
+    Small pieces of stem bark were removed using a knife or small chisel. All plant
+    samples were oven-dried at 60 deg C for 48 h and then ground and analyzed for
+    C+N contents with a CN auto-analyzer (Vario EL III, Hanau, Germany) and for P
+    and other nutrients after HNO3 digestion by inductively coupled plasma optical
+    emission spectrometry analysis (Perkin Elmer Optima 5300 DV) at the University
+    of Goettingen, Germany.
 - var_in: P.br
   unit_in: mg/g
   trait_name: wood_P_per_dry_mass
@@ -1054,9 +1981,22 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Branch_method
+  method_context: branch sample
+  methods: For the twig samples one sun-exposed branch per tree optimally in mid-canopy
+    position was chosen and cut using loppers mounted on an elongated pole. From this
+    branch a healthy twig with diameter 5-7 mm was selected and a 3-4 cm segment removed
+    for wood anatomy and for nutrient analysis. From this branch, 5-30 healthy and
+    intact mature leaves (the youngest fully expanded leaves without any sign of damage)
+    were taken and dust removed using wet tissue. Senescent leaves (usually visually
+    determinable by an altered color and easy to detach) were collected from the same
+    branch or at least the same tree by shaking the tree or touching the leaf by hand.
+    In the lab, bark from nutrient-sample twigs was carefully removed and bagged separately.
+    Small pieces of stem bark were removed using a knife or small chisel. All plant
+    samples were oven-dried at 60 deg C for 48 h and then ground and analyzed for
+    C+N contents with a CN auto-analyzer (Vario EL III, Hanau, Germany) and for P
+    and other nutrients after HNO3 digestion by inductively coupled plasma optical
+    emission spectrometry analysis (Perkin Elmer Optima 5300 DV) at the University
+    of Goettingen, Germany.
 - var_in: P.bark
   unit_in: mg/g
   trait_name: bark_P_per_dry_mass
@@ -1064,9 +2004,23 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: stem sample
-  methods: *Stem_method 
+  method_context: stem sample
+  methods: For measuring tissue fractions in xylem, one wood core of the main trunk
+    and one twig sample per tree was taken. The wood cores of length 5-6 cm were extracted
+    using an increment borer with an inner diameter of 5.15 mm (Haglof, Langsele,
+    Sweden). The samples were transported in marked straws to ensure the determination
+    of inner and outer segments. In the lab the cores were immediately divided into
+    five segments of 1 cm length for sapwood nutrient analysis, sapwood wood anatomy,
+    wood density, inner wood anatomy, and inner wood nutrient analysis (from the outer
+    to the inner wood, respectively). Fresh samples for wood anatomy were stored in
+    70% ethanol until further processing while nutrient samples were oven dried at
+    60 deg C for 48 h. Ethanol storage has proven to be a better storage method based
+    on preliminary work, as cutting previously dried samples led to lower quality
+    sections in some species. All plant samples were oven-dried at 60 deg C for 48
+    h and then ground and analyzed for C+N contents with a CN auto-analyzer (Vario
+    EL III, Hanau, Germany) and for P and other nutrients after HNO3 digestion by
+    inductively coupled plasma optical emission spectrometry analysis (Perkin Elmer
+    Optima 5300 DV) at the University of Goettingen, Germany.
 - var_in: P.br.bark
   unit_in: mg/g
   trait_name: bark_P_per_dry_mass
@@ -1074,9 +2028,22 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: branch sample
-  methods: *Branch_method
+  method_context: branch sample
+  methods: For the twig samples one sun-exposed branch per tree optimally in mid-canopy
+    position was chosen and cut using loppers mounted on an elongated pole. From this
+    branch a healthy twig with diameter 5-7 mm was selected and a 3-4 cm segment removed
+    for wood anatomy and for nutrient analysis. From this branch, 5-30 healthy and
+    intact mature leaves (the youngest fully expanded leaves without any sign of damage)
+    were taken and dust removed using wet tissue. Senescent leaves (usually visually
+    determinable by an altered color and easy to detach) were collected from the same
+    branch or at least the same tree by shaking the tree or touching the leaf by hand.
+    In the lab, bark from nutrient-sample twigs was carefully removed and bagged separately.
+    Small pieces of stem bark were removed using a knife or small chisel. All plant
+    samples were oven-dried at 60 deg C for 48 h and then ground and analyzed for
+    C+N contents with a CN auto-analyzer (Vario EL III, Hanau, Germany) and for P
+    and other nutrients after HNO3 digestion by inductively coupled plasma optical
+    emission spectrometry analysis (Perkin Elmer Optima 5300 DV) at the University
+    of Goettingen, Germany.
 - var_in: P.hr
   unit_in: mg/g
   trait_name: wood_P_per_dry_mass
@@ -1084,9 +2051,23 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 3
-  measurement_remarks: stem sample
-  methods: *Stem_method 
+  method_context: heartwood sample
+  methods: For measuring tissue fractions in xylem, one wood core of the main trunk
+    and one twig sample per tree was taken. The wood cores of length 5-6 cm were extracted
+    using an increment borer with an inner diameter of 5.15 mm (Haglof, Langsele,
+    Sweden). The samples were transported in marked straws to ensure the determination
+    of inner and outer segments. In the lab the cores were immediately divided into
+    five segments of 1 cm length for sapwood nutrient analysis, sapwood wood anatomy,
+    wood density, inner wood anatomy, and inner wood nutrient analysis (from the outer
+    to the inner wood, respectively). Fresh samples for wood anatomy were stored in
+    70% ethanol until further processing while nutrient samples were oven dried at
+    60 deg C for 48 h. Ethanol storage has proven to be a better storage method based
+    on preliminary work, as cutting previously dried samples led to lower quality
+    sections in some species. All plant samples were oven-dried at 60 deg C for 48
+    h and then ground and analyzed for C+N contents with a CN auto-analyzer (Vario
+    EL III, Hanau, Germany) and for P and other nutrients after HNO3 digestion by
+    inductively coupled plasma optical emission spectrometry analysis (Perkin Elmer
+    Optima 5300 DV) at the University of Goettingen, Germany.
 - var_in: P.recy.st
   unit_in: '%'
   trait_name: .na
@@ -1095,7 +2076,22 @@ traits:
   basis_of_value: measurement
   replicates: 1
   measurement_remarks: stem sample; P recycling efficiency in stems
-  methods: *Stem_method 
+  methods: For measuring tissue fractions in xylem, one wood core of the main trunk
+    and one twig sample per tree was taken. The wood cores of length 5-6 cm were extracted
+    using an increment borer with an inner diameter of 5.15 mm (Haglof, Langsele,
+    Sweden). The samples were transported in marked straws to ensure the determination
+    of inner and outer segments. In the lab the cores were immediately divided into
+    five segments of 1 cm length for sapwood nutrient analysis, sapwood wood anatomy,
+    wood density, inner wood anatomy, and inner wood nutrient analysis (from the outer
+    to the inner wood, respectively). Fresh samples for wood anatomy were stored in
+    70% ethanol until further processing while nutrient samples were oven dried at
+    60 deg C for 48 h. Ethanol storage has proven to be a better storage method based
+    on preliminary work, as cutting previously dried samples led to lower quality
+    sections in some species. All plant samples were oven-dried at 60 deg C for 48
+    h and then ground and analyzed for C+N contents with a CN auto-analyzer (Vario
+    EL III, Hanau, Germany) and for P and other nutrients after HNO3 digestion by
+    inductively coupled plasma optical emission spectrometry analysis (Perkin Elmer
+    Optima 5300 DV) at the University of Goettingen, Germany.
 - var_in: P.recy.br
   unit_in: '%'
   trait_name: .na
@@ -1104,7 +2100,21 @@ traits:
   basis_of_value: measurement
   replicates: 1
   measurement_remarks: branch sample; P recycling efficiency in branch
-  methods: *Branch_method
+  methods: For the twig samples one sun-exposed branch per tree optimally in mid-canopy
+    position was chosen and cut using loppers mounted on an elongated pole. From this
+    branch a healthy twig with diameter 5-7 mm was selected and a 3-4 cm segment removed
+    for wood anatomy and for nutrient analysis. From this branch, 5-30 healthy and
+    intact mature leaves (the youngest fully expanded leaves without any sign of damage)
+    were taken and dust removed using wet tissue. Senescent leaves (usually visually
+    determinable by an altered color and easy to detach) were collected from the same
+    branch or at least the same tree by shaking the tree or touching the leaf by hand.
+    In the lab, bark from nutrient-sample twigs was carefully removed and bagged separately.
+    Small pieces of stem bark were removed using a knife or small chisel. All plant
+    samples were oven-dried at 60 deg C for 48 h and then ground and analyzed for
+    C+N contents with a CN auto-analyzer (Vario EL III, Hanau, Germany) and for P
+    and other nutrients after HNO3 digestion by inductively coupled plasma optical
+    emission spectrometry analysis (Perkin Elmer Optima 5300 DV) at the University
+    of Goettingen, Germany.
 - var_in: lifespan
   unit_in: years
   trait_name: leaf_lifespan
@@ -1112,19 +2122,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: Leaf lifespan calculated from 'leaf death'
-  methods: &Leaf_demography_method Leaf demography was monitored
-    from May'17-May'18 to obtain leaf birth and shedding. Leaf lifespan was then calculated
-    per species as the mean of these two variables pooled over all branches. For each
-    species at least ten well-developed twigs from 5-9 individual trees were randomly
-    selected in a sun exposed but easy to reach position optimally at the mid-crown
-    of the marked individuals. Occasionally large individuals were bent over and held
-    for the duration of the counting. For each of these twigs a detailed map drawing
-    was created carefully marking and counting green, senescent and dry leaves at
-    each sampling date - May'17, July'17 and May'18 (Milla et al., 2004). Diameter
-    growth at the twig base and at three additional marked locations along the twig
-    was recorded also.
+  method_context2: death lifespan
+  methods: Leaf demography was monitored from May'17-May'18 to obtain leaf birth and
+    shedding. Leaf lifespan was then calculated per species as the mean of these two
+    variables pooled over all branches. For each species at least ten well-developed
+    twigs from 5-9 individual trees were randomly selected in a sun exposed but easy
+    to reach position optimally at the mid-crown of the marked individuals. Occasionally
+    large individuals were bent over and held for the duration of the counting. For
+    each of these twigs a detailed map drawing was created carefully marking and counting
+    green, senescent and dry leaves at each sampling date - May'17, July'17 and May'18
+    (Milla et al., 2004). Diameter growth at the twig base and at three additional
+    marked locations along the twig was recorded also.
 - var_in: lifespan_birth
   unit_in: years
   trait_name: leaf_lifespan
@@ -1132,9 +2140,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: Leaf lifespan calculated from 'leaf birth'
-  methods: *Leaf_demography_method
+  method_context2: birth lifespan
+  methods: Leaf demography was monitored from May'17-May'18 to obtain leaf birth and
+    shedding. Leaf lifespan was then calculated per species as the mean of these two
+    variables pooled over all branches. For each species at least ten well-developed
+    twigs from 5-9 individual trees were randomly selected in a sun exposed but easy
+    to reach position optimally at the mid-crown of the marked individuals. Occasionally
+    large individuals were bent over and held for the duration of the counting. For
+    each of these twigs a detailed map drawing was created carefully marking and counting
+    green, senescent and dry leaves at each sampling date - May'17, July'17 and May'18
+    (Milla et al., 2004). Diameter growth at the twig base and at three additional
+    marked locations along the twig was recorded also.
 substitutions: .na
 taxonomic_updates:
 - find: Leptospermum poligalifolium

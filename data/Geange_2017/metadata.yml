@@ -26,16 +26,25 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate(leaf_dry_matter_content = dry_weight_g/fresh_weight_g, leaf_water_content_per_saturated_mass = water_content_g/turgid_weight_g) %>% mutate(site_name = "Australian National University glasshouse") %>% mutate_at(vars("LMR","ABG_BG"), ~na_if(.,0)) %>% rename(Mother = 'Mother!') %>% mutate(measurement_remarks = paste0("maternal lineage ", Mother)) %>% mutate(context = paste0(population, " maternal lineage grown under ", water_treatment, " conditions"))
+  custom_R_code:     '
+    data %>%
+      mutate(across(c(`LMR`,`ABG_BG`), ~na_if(.,0))) %>%
+      mutate(
+        leaf_dry_matter_content = dry_weight_g/fresh_weight_g, 
+        leaf_water_content_per_saturated_mass = water_content_g/turgid_weight_g,
+        site_name = "Australian National University glasshouse",
+        measurement_remarks = paste0("maternal lineage ", Mother)
+      )
+  '
   collection_date: 2010-05/2011-12
   taxon_name: species_name
-  site_name: site_name
-  context_name: context
+  location_name: site_name
   description: An investigation of the extent of plasticity and the adaptive value
     thereof in water use traits in three herbaceous Australian alpine plant species
     to understand how these species will respond to projected climate change.
-  collection_type: glasshouse
-  sample_age_class: seedling
+  basis_of_record: lab
+  life_stage: seedling
+  measurement_remarks: measurement_remarks
   sampling_strategy: 'Seed collection and germination Seeds from three alpine herbs;
     Aciphylla glacialis (F. Muell.) Benth. (Apiaceae), Oreomyrrhis eriopoda (DC.)
     Hood.f. (Apiaceae), and Wahlenbergia ceracea Lothian (Campanulaceae), were collected
@@ -81,29 +90,43 @@ dataset:
   notes: The gas exchange measurements were made under both well-watered conditions
     and at the end of the drought period. Only the well-watered measurements are included
     in AusTraits, although both sets of measurements are in the data.csv file.
-sites:
+locations:
   Australian National University glasshouse:
     latitude (deg): -35.283
     longitude (deg): 149.1167
     precipitation, MAP (mm): 622
     description: Australian National University glasshouses
 contexts:
-  high elevation maternal lineage grown under high water conditions:
-    seed provenance: high elevation
-    water treatment: high water [manipulated]
-    water cycle: .na
-  high elevation maternal lineage grown under low water conditions:
-    seed provenance: high elevation
-    water treatment: low water [manipulated]    
-    water cycle: .na
-  low elevation maternal lineage grown under high water conditions:
-    seed provenance: low elevation
-    water treatment: high water [manipulated]    
-    water cycle: .na
-  low elevation maternal lineage grown under low water conditions:
-    seed provenance: low elevation
-    water treatment: low water [manipulated]    
-    water cycle: .na
+- context_property: seed provenance
+  category: treatment
+  var_in: Elevation
+  values:
+  - find: LoElev
+    value: low elevation
+    description: Seeds sourced from low elevation populations.
+  - find: HiElev
+    value: high elevation
+    description: Seeds sourced from hight elevation populations.
+- context_property: drought treatment
+  category: treatment
+  var_in: Treatment
+  values:
+  - find: LoWat
+    value: low water
+    description: Plants assigned to low water treatment.
+  - find: HiWat
+    value: high water
+    description: Plants assigned to high water treatment.
+- context_property: drought treatment duration
+  category: temporal
+  var_in: observation_context
+  values:
+  - value: recently-watered
+    description: Measurements made on the morning following a watering event (wet
+      cycle) when the plants were at their least water-limited.
+  - value: droughted
+    description: Measurements made on the final day of a watering cycle (dry cycle)
+      when the low water plants were at the driest point in the cycle.
 traits:
 - var_in: LMR
   unit_in: g/g
@@ -154,10 +177,8 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  observation_number: 1 
-  measurement_remarks: Recently-water plant measurement; Measurements made on the morning following a watering event (wet
-    cycle) when the plants were at their least water-limited.
-  methods: &gas_exchange_method Gas exchange was measured using a LiCor 6400 portable photosynthesis system
+  observation_context: recently-watered
+  methods: Gas exchange was measured using a LiCor 6400 portable photosynthesis system
     (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
     each plant, a young fully expanded leaf was selected for measurement. Measurements
     were taken at two time points; on the morning following a watering event (wet
@@ -174,10 +195,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  observation_number: 1
-  measurement_remarks: Recently-water plant measurement; Measurements made on the morning following a watering event (wet
-    cycle) when the plants were at their least water-limited.
-  methods: *gas_exchange_method 
+  observation_context: recently-watered
+  methods: Gas exchange was measured using a LiCor 6400 portable photosynthesis system
+    (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
+    each plant, a young fully expanded leaf was selected for measurement. Measurements
+    were taken at two time points; on the morning following a watering event (wet
+    cycle) when the plants were at their least water-limited, and on the final day
+    of a watering cycle (dry cycle) when the low water plants were at the driest point
+    in the cycle. Block temperature was set at ~20 deg C, CO2 was 400 ppm, relative
+    humidity was maintained around 60% and light levels were 500 umol m2 s. Preliminary
+    assessment indicated that this light level was saturating. Photosynthetic measurements
+    were done between 8:00 till 13:00 h, before stomatal closure.
 - var_in: Ci
   unit_in: umolCO2/mol
   trait_name: ci_at_Asat
@@ -185,10 +213,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  observation_number: 1
-  measurement_remarks: Recently-water plant measurement; Measurements made on the morning following a watering event (wet
-    cycle) when the plants were at their least water-limited.
-  methods: *gas_exchange_method 
+  observation_context: recently-watered
+  methods: Gas exchange was measured using a LiCor 6400 portable photosynthesis system
+    (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
+    each plant, a young fully expanded leaf was selected for measurement. Measurements
+    were taken at two time points; on the morning following a watering event (wet
+    cycle) when the plants were at their least water-limited, and on the final day
+    of a watering cycle (dry cycle) when the low water plants were at the driest point
+    in the cycle. Block temperature was set at ~20 deg C, CO2 was 400 ppm, relative
+    humidity was maintained around 60% and light levels were 500 umol m2 s. Preliminary
+    assessment indicated that this light level was saturating. Photosynthetic measurements
+    were done between 8:00 till 13:00 h, before stomatal closure.
 - var_in: Trmmol
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Asat
@@ -196,10 +231,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  observation_number: 1
-  measurement_remarks: Recently-water plant measurement; Measurements made on the morning following a watering event (wet
-    cycle) when the plants were at their least water-limited.
-  methods: *gas_exchange_method 
+  observation_context: recently-watered
+  methods: Gas exchange was measured using a LiCor 6400 portable photosynthesis system
+    (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
+    each plant, a young fully expanded leaf was selected for measurement. Measurements
+    were taken at two time points; on the morning following a watering event (wet
+    cycle) when the plants were at their least water-limited, and on the final day
+    of a watering cycle (dry cycle) when the low water plants were at the driest point
+    in the cycle. Block temperature was set at ~20 deg C, CO2 was 400 ppm, relative
+    humidity was maintained around 60% and light levels were 500 umol m2 s. Preliminary
+    assessment indicated that this light level was saturating. Photosynthetic measurements
+    were done between 8:00 till 13:00 h, before stomatal closure.
 - var_in: Ci_Ca
   unit_in: umolCO2 internal/umolCO2 ambient
   trait_name: ci_over_ca
@@ -207,10 +249,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  observation_number: 1
-  measurement_remarks: Recently-water plant measurement; Measurements made on the morning following a watering event (wet
-    cycle) when the plants were at their least water-limited.
-  methods: *gas_exchange_method 
+  observation_context: recently-watered
+  methods: Gas exchange was measured using a LiCor 6400 portable photosynthesis system
+    (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
+    each plant, a young fully expanded leaf was selected for measurement. Measurements
+    were taken at two time points; on the morning following a watering event (wet
+    cycle) when the plants were at their least water-limited, and on the final day
+    of a watering cycle (dry cycle) when the low water plants were at the driest point
+    in the cycle. Block temperature was set at ~20 deg C, CO2 was 400 ppm, relative
+    humidity was maintained around 60% and light levels were 500 umol m2 s. Preliminary
+    assessment indicated that this light level was saturating. Photosynthetic measurements
+    were done between 8:00 till 13:00 h, before stomatal closure.
 - var_in: WUEi
   unit_in: umolCO2/mmolH2O
   trait_name: water_use_efficiency_photosynthetic
@@ -218,10 +267,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  observation_number: 1
-  measurement_remarks: Recently-water plant measurement; Measurements made on the morning following a watering event (wet
-    cycle) when the plants were at their least water-limited.
-  methods: *gas_exchange_method 
+  observation_context: recently-watered
+  methods: Gas exchange was measured using a LiCor 6400 portable photosynthesis system
+    (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
+    each plant, a young fully expanded leaf was selected for measurement. Measurements
+    were taken at two time points; on the morning following a watering event (wet
+    cycle) when the plants were at their least water-limited, and on the final day
+    of a watering cycle (dry cycle) when the low water plants were at the driest point
+    in the cycle. Block temperature was set at ~20 deg C, CO2 was 400 ppm, relative
+    humidity was maintained around 60% and light levels were 500 umol m2 s. Preliminary
+    assessment indicated that this light level was saturating. Photosynthetic measurements
+    were done between 8:00 till 13:00 h, before stomatal closure.
 - var_in: Photo_D
   unit_in: umolCO2/m2/s
   trait_name: photosynthetic_rate_per_area_saturated
@@ -229,9 +285,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Droughted plant measurement; Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
-  observation_number: 2
-  methods: *gas_exchange_method 
+  observation_context: droughted
+  methods: Gas exchange was measured using a LiCor 6400 portable photosynthesis system
+    (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
+    each plant, a young fully expanded leaf was selected for measurement. Measurements
+    were taken at two time points; on the morning following a watering event (wet
+    cycle) when the plants were at their least water-limited, and on the final day
+    of a watering cycle (dry cycle) when the low water plants were at the driest point
+    in the cycle. Block temperature was set at ~20 deg C, CO2 was 400 ppm, relative
+    humidity was maintained around 60% and light levels were 500 umol m2 s. Preliminary
+    assessment indicated that this light level was saturating. Photosynthetic measurements
+    were done between 8:00 till 13:00 h, before stomatal closure.
 - var_in: Cond_D
   unit_in: molH2O/m2/s
   trait_name: stomatal_conductance_per_area_at_Asat
@@ -239,9 +303,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Droughted plant measurement; Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
-  observation_number: 2
-  methods: *gas_exchange_method 
+  observation_context: droughted
+  methods: Gas exchange was measured using a LiCor 6400 portable photosynthesis system
+    (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
+    each plant, a young fully expanded leaf was selected for measurement. Measurements
+    were taken at two time points; on the morning following a watering event (wet
+    cycle) when the plants were at their least water-limited, and on the final day
+    of a watering cycle (dry cycle) when the low water plants were at the driest point
+    in the cycle. Block temperature was set at ~20 deg C, CO2 was 400 ppm, relative
+    humidity was maintained around 60% and light levels were 500 umol m2 s. Preliminary
+    assessment indicated that this light level was saturating. Photosynthetic measurements
+    were done between 8:00 till 13:00 h, before stomatal closure.
 - var_in: Ci_D
   unit_in: umolCO2/mol
   trait_name: ci_at_Asat
@@ -249,9 +321,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Droughted plant measurement; Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
-  observation_number: 2
-  methods: *gas_exchange_method 
+  observation_context: droughted
+  methods: Gas exchange was measured using a LiCor 6400 portable photosynthesis system
+    (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
+    each plant, a young fully expanded leaf was selected for measurement. Measurements
+    were taken at two time points; on the morning following a watering event (wet
+    cycle) when the plants were at their least water-limited, and on the final day
+    of a watering cycle (dry cycle) when the low water plants were at the driest point
+    in the cycle. Block temperature was set at ~20 deg C, CO2 was 400 ppm, relative
+    humidity was maintained around 60% and light levels were 500 umol m2 s. Preliminary
+    assessment indicated that this light level was saturating. Photosynthetic measurements
+    were done between 8:00 till 13:00 h, before stomatal closure.
 - var_in: Trmmol_D
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Asat
@@ -259,9 +339,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Droughted plant measurement; Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
-  observation_number: 2
-  methods: *gas_exchange_method 
+  observation_context: droughted
+  methods: Gas exchange was measured using a LiCor 6400 portable photosynthesis system
+    (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
+    each plant, a young fully expanded leaf was selected for measurement. Measurements
+    were taken at two time points; on the morning following a watering event (wet
+    cycle) when the plants were at their least water-limited, and on the final day
+    of a watering cycle (dry cycle) when the low water plants were at the driest point
+    in the cycle. Block temperature was set at ~20 deg C, CO2 was 400 ppm, relative
+    humidity was maintained around 60% and light levels were 500 umol m2 s. Preliminary
+    assessment indicated that this light level was saturating. Photosynthetic measurements
+    were done between 8:00 till 13:00 h, before stomatal closure.
 - var_in: Ci_Ca_D
   unit_in: umolCO2 internal/umolCO2 ambient
   trait_name: ci_over_ca
@@ -269,9 +357,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Droughted plant measurement; Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
-  observation_number: 2
-  methods: *gas_exchange_method 
+  observation_context: droughted
+  methods: Gas exchange was measured using a LiCor 6400 portable photosynthesis system
+    (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
+    each plant, a young fully expanded leaf was selected for measurement. Measurements
+    were taken at two time points; on the morning following a watering event (wet
+    cycle) when the plants were at their least water-limited, and on the final day
+    of a watering cycle (dry cycle) when the low water plants were at the driest point
+    in the cycle. Block temperature was set at ~20 deg C, CO2 was 400 ppm, relative
+    humidity was maintained around 60% and light levels were 500 umol m2 s. Preliminary
+    assessment indicated that this light level was saturating. Photosynthetic measurements
+    were done between 8:00 till 13:00 h, before stomatal closure.
 - var_in: WUEi_D
   unit_in: umolCO2/mmolH2O
   trait_name: water_use_efficiency_photosynthetic
@@ -279,9 +375,17 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  measurement_remarks: Droughted plant measurement; Measurements made on the final day of a watering cycle (dry cycle) when the low water plants were at the driest point in the cycle.
-  observation_number: 2
-  methods: *gas_exchange_method
+  observation_context: droughted
+  methods: Gas exchange was measured using a LiCor 6400 portable photosynthesis system
+    (LiCor, Lincoln, Neb) after 6 months of growth (26/11/2011 to 16/12/2011). On
+    each plant, a young fully expanded leaf was selected for measurement. Measurements
+    were taken at two time points; on the morning following a watering event (wet
+    cycle) when the plants were at their least water-limited, and on the final day
+    of a watering cycle (dry cycle) when the low water plants were at the driest point
+    in the cycle. Block temperature was set at ~20 deg C, CO2 was 400 ppm, relative
+    humidity was maintained around 60% and light levels were 500 umol m2 s. Preliminary
+    assessment indicated that this light level was saturating. Photosynthetic measurements
+    were done between 8:00 till 13:00 h, before stomatal closure.
 - var_in: fresh_weight_g
   unit_in: g
   trait_name: leaf_fresh_mass
@@ -368,7 +472,7 @@ traits:
     specific leaf area was calculated as area/dry mass (cm-2 g-1).
 - var_in: SLA_cm_g:4
   unit_in: cm2/g
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement

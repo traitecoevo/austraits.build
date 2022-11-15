@@ -27,7 +27,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       mutate(
         site_name = "Cape Tribulation",
@@ -35,7 +35,8 @@ dataset:
         collection_date = ifelse(is.na(collection_date),"2014/2014", collection_date)
       ) %>%
       group_by(Tree) %>%
-        mutate(observation_number = row_number()) %>%
+        mutate_at(vars(`Density`), replace_duplicates_with_NA) %>%
+        mutate(observation_num = row_number()) %>%
       ungroup() %>%
       group_by(Species_name) %>%
         mutate_at(vars(`Growth.Form`), replace_duplicates_with_NA) %>%
@@ -43,15 +44,13 @@ dataset:
   '
   collection_date: collection_date
   taxon_name: Species_name
-  site_name: site_name
-  context_name: Sun/Shade
+  location_name: site_name
   individual_id: Tree
-  observation_number: observation_number
   description: This study investigated the functional traits of lianas and trees in
     a lowland tropical forest in northeast Queensland, Australia to understand and
     predict the effect of lianas on ecosystem processes in tropical forests.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: The study took place in a lowland tropical rainforest in Cape
     Tribulation, Queensland, Australia (16.1 deg S, 145.4 deg E). Multiple individuals
     of liana and tree species were accessed in an established 1-ha study plot (Laidlaw
@@ -95,17 +94,29 @@ dataset:
   original_file: A collection of files in raw data folder and GoogleDrive folder
   notes: There are multiple columns with collection dates for different traits; rows
     121 and 122 in the data file are identical. Both remain in AusTraits for now.
-sites:
+locations:
   Cape Tribulation:
     latitude (deg): -16.1
     longitude (deg): 145.4
     description: lowland tropical rainforest
     precipitation, MAP (mm): 4207
 contexts:
-  Sun:
-    light environment: full sun (measurements made on leaves in full sun environment)
-  Understory:
-    light environment: understory (measurements made on understory leaves)
+- context_property: measurement irradiance
+  category: method
+  var_in: Sun/Shade
+  values:
+  - find: Sun
+    value: full sun
+    description: Measurements made on leaves in full sun environment.
+  - find: Understory
+    value: understory
+    description: Measurements made on understory leaves.
+- context_property: repeat observations
+  category: temporal
+  var_in: observation_num
+  values:
+  - value: 1
+  - value: 2
 traits:
 - var_in: Growth.Form
   unit_in: .na
@@ -320,7 +331,7 @@ traits:
     at the base, blade and apex of the leaf.
 - var_in: SLA
   unit_in: cm2/g
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -662,7 +673,7 @@ substitutions:
   replace: tree
 - trait_name: plant_growth_form
   find: L
-  replace: climber_herb
+  replace: climber_woody
 taxonomic_updates:
 - find: Agyrodendron peralatum
   replace: Argyrodendron peralatum

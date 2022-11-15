@@ -23,27 +23,25 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:       '
     data %>% 
-      mutate(site_name = "Hawkesbury Forest Experiment site") %>% 
-      mutate(Date = Date %>% mdy()) %>%
-      arrange(Date) %>%
-      group_by(Chamber) %>%
-        mutate(observation = dplyr::row_number()) %>%
-      ungroup()
+      mutate(
+        site_name = "Hawkesbury Forest Experiment site",
+        Date = Date %>% mdy(),
+        CO2_Treat = stringr::str_replace(Treatment,"\\+C","added CO2"),
+        CO2_Treat = stringr::str_replace(CO2_Treat,"0C","ambient CO2")
+      )
   '
   collection_date: Date
   taxon_name: Species
   individual_id: Chamber
-  observation_number: observation
-  site_name: site_name
-  context_name: context
+  location_name: site_name
   description: An experiment to investigate where Eucalyptus globulus, a widely planted
     plantation species, would show high potential for acclimation of photosynthetic
     traits across a wide range of growth conditions, including elevated [CO2] and
     climate warming.
-  collection_type: glasshouse
-  sample_age_class: sapling
+  basis_of_record: lab
+  life_stage: sapling
   sampling_strategy: Plant material Eucalyptus globulus ssp. globulus planting material
     was obtained from a commercial tree nursery in Victoria as firstseason tube stock
     seedlings. Seedlings for this study were from Seedlot No. 08-12-106M, originally
@@ -117,72 +115,93 @@ dataset:
     up as duplicates, because the values adjusted to 25C and the raw values are sometimes
     identical; both formulations are read into AusTraits, but the data are in separate
     columns.
-sites:
+locations:
   Hawkesbury Forest Experiment site:
     latitude (deg): -33.6108111
     longitude (deg): 150.7410417
     description: tall closed tree chambers
 contexts:
-  ambient_temp_and_enriched_CO2_treatment_and_measured_in_AUG:
-    sampling season: August (late winter)
-    CO2 treatment: 640 ppm (elevated; 240 ppm above ambient) [manipulated]
-    temperature treatment: ambient (plants grown at ambient temperatures; Jan average
-      max = 29.4 dec C / July average min = 3.2 dec C) [manipulated]
-  ambient_temp_and_enriched_CO2_treatment_and_measured_in_DEC:
-    CO2 treatment: 640 ppm (elevated; 240 ppm above ambient) [manipulated]
-    temperature treatment: ambient (plants grown at ambient temperatures; Jan average
-      max = 29.4 dec C / July average min = 3.2 dec C) [manipulated]
-    sampling season: December (early summer)
-  ambient_temp_and_enriched_CO2_treatment_and_measured_in_FEB:
-    CO2 treatment: 640 ppm (elevated; 240 ppm above ambient) [manipulated]
-    temperature treatment: ambient (plants grown at ambient temperatures; Jan average
-      max = 29.4 dec C / July average min = 3.2 dec C) [manipulated]
-    sampling season: February (late summer)
-  ambient_temp_and_ambient_CO2_treatment_and_measured_in_AUG:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (plants grown at ambient temperatures; Jan average
-      max = 29.4 dec C / July average min = 3.2 dec C) [manipulated]
-    sampling season: August (late winter)
-  ambient_temp_and_ambient_CO2_treatment_and_measured_in_DEC:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (plants grown at ambient temperatures; Jan average
-      max = 29.4 dec C / July average min = 3.2 dec C) [manipulated]
-    sampling season: December (early summer)
-  ambient_temp_and_ambient_CO2_treatment_and_measured_in_FEB:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (plants grown at ambient temperatures; Jan average
-      max = 29.4 dec C / July average min = 3.2 dec C) [manipulated]
-    sampling season: February (late summer) [fieldl]
-  elevated_temp_and_enriched_CO2_treatment_and_measured_in_AUG:
-    CO2 treatment: 640 ppm (elevated; 240 ppm above ambient) [manipulated]
-    temperature treatment: elevated (plants grown 3 deg C above ambient temperatures)
-      [manipulated]
-    sampling season: August (late winter)
-  elevated_temp_and_enriched_CO2_treatment_and_measured_in_DEC:
-    CO2 treatment: 640 ppm (elevated; 240 ppm above ambient) [manipulated]
-    temperature treatment: elevated (plants grown 3 deg C above ambient temperatures)
-      [manipulated]
-    sampling season: December (early summer)
-  elevated_temp_and_enriched_CO2_treatment_and_measured_in_FEB:
-    CO2 treatment: 640 ppm (elevated; 240 ppm above ambient) [manipulated]
-    temperature treatment: elevated (plants grown 3 deg C above ambient temperatures)
-      [manipulated]
-    sampling season: February (late summer)
-  elevated_temp_and_ambient_CO2_treatment_and_measured_in_AUG:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (plants grown 3 deg C above ambient temperatures)
-      [manipulated]
-    sampling season: August (late winter)
-  elevated_temp_and_ambient_CO2_treatment_and_measured_in_DEC:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (plants grown 3 deg C above ambient temperatures)
-      [manipulated]
-    sampling season: December (early summer)
-  elevated_temp_and_ambient_CO2_treatment_and_measured_in_FEB:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (plants grown 3 deg C above ambient temperatures)
-      [manipulated]
-    sampling season: February (late summer)
+- context_property: sampling season
+  category: temporal
+  var_in: month
+  values:
+  - find: AUG
+    value: August
+    description: August (late winter)
+  - find: DEC
+    value: December
+    description: December (early summer)
+  - find: FEB
+    value: February
+    description: February (late summer)
+- context_property: temperature treatment
+  category: treatment
+  var_in: Temp-trt
+  values:
+  - find: ambient
+    value: ambient
+    description: Plants grown at ambient temperatures; Jan average max = 29.4 dec
+      C / July average min = 3.2 dec C.
+  - find: elevated
+    value: elevated
+    description: Plants grown 3 deg C above ambient temperatures.
+- context_property: CO2 treatment
+  category: treatment
+  var_in: CO2_Treat
+  values:
+  - find: ambient CO2
+    value: 400 ppm
+    description: Plants grown at ambient CO2 (400 ppm).
+  - find: added CO2
+    value: 640 ppm
+    description: Plants grown at elevated CO2 (640 ppm); 240 ppm above ambient.
+- context_property: measurement temperature
+  category: method
+  var_in: method_context
+  values:
+  - find: Measurement made at 20°C
+    value: 20°C
+    description: Measurement made at 20°C
+  - find: Measurement made at 25°C
+    value: 25°C
+    description: Measurement made at 25°C
+- context_property: plots
+  category: plot
+  var_in: PlotSite
+  values:
+  - value: 1.0
+  - value: 6.0
+  - value: 12.0
+  - value: 16.0
+  - value: 23.0
+  - value: 29.0
+  - value: 34.0
+  - value: 38.0
+  - value: 42.0
+  - value: 47.0
+  - value: 51.0
+  - value: 57.0
+  - value: 62.0
+  - value: 67.0
+  - value: 71.0
+  - value: 75.0
+  - value: 80.0
+  - value: 87.0
+  - value: 91.0
+  - value: 96.0
+  - value: 101.0
+  - value: 107.0
+  - value: 115.0
+  - value: 120.0
+  - value: 125.0
+  - value: 128.0
+  - value: 130.0
+  - value: 134.0
+  - value: 138.0
+  - value: 143.0
+  - value: 148.0
+  - value: 153.0
+  - value: 157.0
 traits:
 - var_in: Vcmax
   unit_in: umol/m2/s
@@ -191,9 +210,8 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: Maximum carboxylation rate in umol m-2 s-1 at 20°C 
-  methods: &Jmax_per_area_method Controlled photosynthetic CO2 response curve measurements were made using
+  method_context: Measurement made at 20°C
+  methods: Controlled photosynthetic CO2 response curve measurements were made using
     Li-Cor 6400 portable infrared gas analysers (LiCor Inc., Lincoln, NE, USA). CO2
     response curves of net CO2 assimilation (Anet) were developed at a constant temperature
     (termed 'Anet-Ci curves') for intact leaves within each tree chamber. These Anet-Ci
@@ -235,9 +253,8 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: Measurement made at 20°C 
-  methods: &respiration_method To determine the temperature dependence of the CO2 compensation point in
+  method_context: Measurement made at 20°C
+  methods: To determine the temperature dependence of the CO2 compensation point in
     the absence of daylight respiration (U*), measurements of the initial slope from
     Anet-Ci response curves at different PFDs were conducted on a single leaf at four
     different temperatures (20, 25, 32, 40 deg C) in the leaf cuvette (Laisk, 1977;
@@ -361,7 +378,7 @@ traits:
     stomatal closure.
 - var_in: LMA
   unit_in: g/m2
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -423,9 +440,34 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: 1
-  method_number: 1
-  measurement_remarks: Maximum carboxylation rate in umol m-2 s-1 at 20°C 
-  methods: *Jmax_per_area_method
+  method_context: Measurement made at 20°C
+  methods: Controlled photosynthetic CO2 response curve measurements were made using
+    Li-Cor 6400 portable infrared gas analysers (LiCor Inc., Lincoln, NE, USA). CO2
+    response curves of net CO2 assimilation (Anet) were developed at a constant temperature
+    (termed 'Anet-Ci curves') for intact leaves within each tree chamber. These Anet-Ci
+    curve measurements progressed at four to five specified leaf temperatures for
+    the same leaf (i.e. one leaf per chamber) in each of three seasons (early summer,
+    December 2010; late summer, February 2011; and late winter, August 2011). Each
+    Anet-Ci response curve started with a steady-state measurement at the growth [CO2]
+    (henceforth called 'Anet at the growth [CO2]') and then consisted of 11 additional
+    steps all measured at a constant set leaf temperature while using light-saturating
+    photon flux density (PFD) of 1800 umol m-2 s-1. There were at least five [CO2]
+    levels used in the linear part of the curve, and at least three steps measured
+    in the saturating part of the curve. These Anet-Ci response curves were measured
+    on a leaf at the lowest set temperature (20 deg C) and then repeated fourmore
+    times on the same leaf, each time at an increased leaf temperature for each curve
+    following a progression of 25, 30, 35 and 41 deg C. From Anet-Ci response measurements
+    conducted at the set leaf temperatures, the photosynthetic parameters Jmax and
+    Vcmax from the biochemical model of Farquhar et al. (1980) can be extracted (e.g.
+    see (Bernacchi et al., 2002, 2001; Medlyn et al., 2002a). During the leaf-level
+    measurements, the entire tree was subjected to similar air temperatures in the
+    whole-tree chambers during the measurements. The entire tree was exposed to each
+    set temperature for at least 0.5 h before leaf gas exchange measurements started,
+    resulting in approximately 1.5 h duration set at each temperature level. At each
+    temperature, the curve was started with a measurement of Anet at the growth [CO2]
+    using the [CO2] appropriate for the long-term treatment for each chamber tree.
+    See manuscript for additional details on how humidity was controlled in the experimental
+    chambers to minimize stomatal closure.
 - var_in: Jmax25
   unit_in: umol/m2/s
   trait_name: Jmax_per_area
@@ -433,9 +475,34 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: Maximum electron transport rate in umol m-2 s-1 at 25 °C 
-  methods: *Jmax_per_area_method
+  method_context: Measurement made at 25°C
+  methods: Controlled photosynthetic CO2 response curve measurements were made using
+    Li-Cor 6400 portable infrared gas analysers (LiCor Inc., Lincoln, NE, USA). CO2
+    response curves of net CO2 assimilation (Anet) were developed at a constant temperature
+    (termed 'Anet-Ci curves') for intact leaves within each tree chamber. These Anet-Ci
+    curve measurements progressed at four to five specified leaf temperatures for
+    the same leaf (i.e. one leaf per chamber) in each of three seasons (early summer,
+    December 2010; late summer, February 2011; and late winter, August 2011). Each
+    Anet-Ci response curve started with a steady-state measurement at the growth [CO2]
+    (henceforth called 'Anet at the growth [CO2]') and then consisted of 11 additional
+    steps all measured at a constant set leaf temperature while using light-saturating
+    photon flux density (PFD) of 1800 umol m-2 s-1. There were at least five [CO2]
+    levels used in the linear part of the curve, and at least three steps measured
+    in the saturating part of the curve. These Anet-Ci response curves were measured
+    on a leaf at the lowest set temperature (20 deg C) and then repeated fourmore
+    times on the same leaf, each time at an increased leaf temperature for each curve
+    following a progression of 25, 30, 35 and 41 deg C. From Anet-Ci response measurements
+    conducted at the set leaf temperatures, the photosynthetic parameters Jmax and
+    Vcmax from the biochemical model of Farquhar et al. (1980) can be extracted (e.g.
+    see (Bernacchi et al., 2002, 2001; Medlyn et al., 2002a). During the leaf-level
+    measurements, the entire tree was subjected to similar air temperatures in the
+    whole-tree chambers during the measurements. The entire tree was exposed to each
+    set temperature for at least 0.5 h before leaf gas exchange measurements started,
+    resulting in approximately 1.5 h duration set at each temperature level. At each
+    temperature, the curve was started with a measurement of Anet at the growth [CO2]
+    using the [CO2] appropriate for the long-term treatment for each chamber tree.
+    See manuscript for additional details on how humidity was controlled in the experimental
+    chambers to minimize stomatal closure.
 - var_in: Vcmax25
   unit_in: umol/m2/s
   trait_name: Vcmax_per_area
@@ -443,9 +510,34 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: Maximum carboxylation rate in umol m-2 s-1 at 25 °C 
-  methods: *Jmax_per_area_method
+  method_context: Measurement made at 25°C
+  methods: Controlled photosynthetic CO2 response curve measurements were made using
+    Li-Cor 6400 portable infrared gas analysers (LiCor Inc., Lincoln, NE, USA). CO2
+    response curves of net CO2 assimilation (Anet) were developed at a constant temperature
+    (termed 'Anet-Ci curves') for intact leaves within each tree chamber. These Anet-Ci
+    curve measurements progressed at four to five specified leaf temperatures for
+    the same leaf (i.e. one leaf per chamber) in each of three seasons (early summer,
+    December 2010; late summer, February 2011; and late winter, August 2011). Each
+    Anet-Ci response curve started with a steady-state measurement at the growth [CO2]
+    (henceforth called 'Anet at the growth [CO2]') and then consisted of 11 additional
+    steps all measured at a constant set leaf temperature while using light-saturating
+    photon flux density (PFD) of 1800 umol m-2 s-1. There were at least five [CO2]
+    levels used in the linear part of the curve, and at least three steps measured
+    in the saturating part of the curve. These Anet-Ci response curves were measured
+    on a leaf at the lowest set temperature (20 deg C) and then repeated fourmore
+    times on the same leaf, each time at an increased leaf temperature for each curve
+    following a progression of 25, 30, 35 and 41 deg C. From Anet-Ci response measurements
+    conducted at the set leaf temperatures, the photosynthetic parameters Jmax and
+    Vcmax from the biochemical model of Farquhar et al. (1980) can be extracted (e.g.
+    see (Bernacchi et al., 2002, 2001; Medlyn et al., 2002a). During the leaf-level
+    measurements, the entire tree was subjected to similar air temperatures in the
+    whole-tree chambers during the measurements. The entire tree was exposed to each
+    set temperature for at least 0.5 h before leaf gas exchange measurements started,
+    resulting in approximately 1.5 h duration set at each temperature level. At each
+    temperature, the curve was started with a measurement of Anet at the growth [CO2]
+    using the [CO2] appropriate for the long-term treatment for each chamber tree.
+    See manuscript for additional details on how humidity was controlled in the experimental
+    chambers to minimize stomatal closure.
 - var_in: Rd25
   unit_in: neg_umolCO2/m2/s
   trait_name: leaf_light_respiration_per_area
@@ -453,9 +545,24 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  method_number: 2
-  measurement_remarks: Measurement made at 25°C 
-  methods: *respiration_method
+  method_context: Measurement made at 25°C
+  methods: To determine the temperature dependence of the CO2 compensation point in
+    the absence of daylight respiration (U*), measurements of the initial slope from
+    Anet-Ci response curves at different PFDs were conducted on a single leaf at four
+    different temperatures (20, 25, 32, 40 deg C) in the leaf cuvette (Laisk, 1977;
+    Peisker & Apel, 2001). During these measurements, the entire tree was subjected
+    to similar air temperatures as those within the leaf chamber. The three PFDs used
+    for these measurements were 1800, 500 and 200 umol m-2 s-1. We used flow rates
+    of 500 umol s-1 through the leaf chamber for these measurements except at the
+    lowest PFD where the flow was reduced to 300 umol s-1 to increase measurement
+    resolution. Each curve contained four to five points measured in the linear part
+    of the Anet-Ci curve. Using the Laisk approach described in Peisker & Apel (2001),
+    we simultaneously obtained the temperature dependencies of Rday, representing
+    respiration in the daylight in the absence of photorespiration, and of U*. These
+    measurements were conducted in March 2011. Temperature responses of both U* and
+    Rday measurements were leak corrected for diffusion through the gaskets (Bruhn
+    et al., 2002) and fit with an Arrhenius function as described below (Eqn 1, Medlyn
+    et al., 2002a).
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na

@@ -27,20 +27,30 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
-      mutate(site_name = "northeastern Queensland") %>%
+      mutate(
+        site_name = "northeastern Queensland",
+        plant_growth_substrate = NA
+      ) %>%
+      move_values_to_new_trait(
+        "growth_form", "plant_growth_substrate",
+        c("TT HE", "HE", "E", "ST E", "S E", "H E"),
+        c("hemiepiphyte", "hemiepiphyte", "epiphyte", "epiphyte", "epiphyte", "epiphyte"),
+        c("TT", "", "", "ST", "S", "H")
+      ) %>%
       group_by(name_original) %>%
-        mutate_at(vars(growth_form, dispersal_syndrome), replace_duplicates_with_NA) %>%
+        mutate(across(c(growth_form, dispersal_syndrome), replace_duplicates_with_NA)) %>%
         mutate(observation_number = row_number()) %>%
       ungroup()
   '
   collection_date: 1992/1995
   taxon_name: name_original
-  site_name: site_name
+  location_name: site_name
+  measurement_remarks: shade_tolerance
   description: dispersal appendage data for tropical  species
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: We have collected seeds from sufficient genera and species to
     make a large proportion of the intergeneric- but-intrafamilial and intrageneric
     comparisons between light-demanders and shade-tolerators which are possible in
@@ -50,13 +60,13 @@ dataset:
     have restricted our sampling to forest types 1 and 5a (com- plex mesophyll vine
     forest and complex notophyll vine forest) of Tracey (1982). The sites from which
     seed has been collected range from sea level to 750 m, and from very wet (annual
-    rainfall c. 4 m and, on aver- age, no 'dry month' sensu Walter 1971) to the dry
+    rainfall c. 4 m and, on average, no 'dry month' sensu Walter 1971) to the dry
     edge of 'rain forest' near Atherton where there is only c. 14 4myear-1 (and, on
     ayerage, 4 'dry months' per year). Most of the species collected are found on
-    a variety of soils derived from basalt, granite or nutri- ent-poor metamorphics.
+    a variety of soils derived from basalt, granite or nutrient-poor metamorphics.
   original_file: FD_CC_traits.xls
   notes: none
-sites: 
+locations:
   northeastern Queensland:
     latitude (deg): .na
     longitude (deg): .na
@@ -70,7 +80,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
-  observation_number: observation_number
   methods: A 'seed' is defined as a single mature fertilized ovule including the testa
     plus the fibrous inner part of the fruit wall where present. Any fleshy part of
     the fruit wall was removed, as was any aril or sarcotesta except where the latter
@@ -108,6 +117,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Expect observtion and reference materials
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Expect observtion and reference materials
 - var_in: shade_tolerance
   unit_in: .na
   trait_name: .na
@@ -136,7 +153,7 @@ substitutions:
   replace: tree
 - trait_name: plant_growth_form
   find: ST
-  replace: treelet
+  replace: shrub tree
 - trait_name: plant_growth_form
   find: S
   replace: shrub
@@ -144,29 +161,11 @@ substitutions:
   find: H
   replace: herb
 - trait_name: plant_growth_form
-  find: E
-  replace: epiphyte
-- trait_name: plant_growth_form
-  find: HE
-  replace: hemi-epiphyte
-- trait_name: plant_growth_form
   find: TV
-  replace: climber
+  replace: tree climber_woody
 - trait_name: plant_growth_form
   find: SV
-  replace: climber
-- trait_name: plant_growth_form
-  find: ST E
-  replace: epiphyte_treelet
-- trait_name: plant_growth_form
-  find: S E
-  replace: epiphyte_shrub
-- trait_name: plant_growth_form
-  find: TT HE
-  replace: hemi-epiphyte_tree
-- trait_name: plant_growth_form
-  find: H E
-  replace: epiphyte_herb
+  replace: shrub climber_woody
 taxonomic_updates:
 - find: Athertonia diversidolia
   replace: Athertonia diversifolia

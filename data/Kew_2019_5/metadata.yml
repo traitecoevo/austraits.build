@@ -17,32 +17,53 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       mutate(
+        ref_year = stringr::str_extract(refshort, "(?<!\\d)\\d{4}(?!\\d)"),
+        ref_year = ifelse(is.na(ref_year), "2019", ref_year),
+        ref_author = ifelse(stringr::str_detect(refshort, "van der Pijl"), "vanderPijl", NA),
+        ref_author = ifelse(stringr::str_detect(refshort, "van Rheede van Oudtshoorn") & is.na(ref_author), "vanRheedevanOudtshoorn", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "RBG Kew, Wakehurst Place") & is.na(ref_author), "Kew", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Forest Restoration Research Unit,") & is.na(ref_author), "CMU", ref_author),
+        ref_author = ifelse(is.na(ref_author), stringr::str_trim(word(refdesc, 1)), ref_author),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]", ""),
+        source_id = paste0(ref_author, "_", ref_year),
         measurement_remarks = paste0(
-          "detailed notes, ", pdasubgroupdesc, "; ",
-          "method, ", method, "; ",
-          "animal group, ",  animalgp, "; ",
-          "species, ", animalspecies, "; ",
-          "notes, ", dispnotes, "; ",
-          "reference, ", refshort
-        )
-      ) %>%
-      group_by(`SID taxa`) %>%
-        mutate(method_number = row_number()) %>%
-      ungroup()
+            "DETAILED NOTES: ", pdasubgroupdesc, "; ",
+            "METHOD: ", method, "; ",
+            "ANIMAL GROUP: ",  animalgp, "; ",
+            "ANIMAL SPECIES: ", animalspecies, "; ",
+            "NOTES: ", dispnotes
+        ),
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "DETAILED NOTES: NA; ", ""),
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "METHOD: NA; ", ""),
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "ANIMAL GROUP: NA; ", ""),
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "ANIMAL SPECIES: NA; ", ""),
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "NOTES: NA; ", "")
+      ) 
   '
   collection_date: unknown/2019
   taxon_name: SID taxa
+  source_id: source_id
   description: Seed dispersal data on species from Kew seed databases
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: information in data.csv file
   original_file: in raw data folder
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
-    Commons licesne. Data not to be used for Commercial Purposes.
-sites: .na
+    Commons license. Data not to be used for Commercial Purposes.
+locations: .na
 contexts: .na
 traits:
 - var_in: pdadesc
@@ -52,7 +73,6 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  method_number: method_number
   measurement_remarks: measurement_remarks
   methods: Kew Gardens collections, with details in data.csv file under cmultiple
     columns

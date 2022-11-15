@@ -22,18 +22,28 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
-      mutate(woodiness = "woody") %>% 
-      distinct(`species name`, `ht (m)`, `ll (mm)`, `lw (mm)`, `leaf form`, `habit`, .keep_all = TRUE)
+      mutate(
+        woodiness = "woody",
+        plant_growth_form = habit,
+        parasitic = ifelse(habit %in% c("parasite", "mistletoe"), "parasitic", NA),        
+        plant_growth_substrate = ifelse(habit %in% c("mistletoe"), "epiphyte", NA),
+        leaf_type = NA
+      ) %>% 
+      distinct(`species name`, `ht (m)`, `ll (mm)`, `lw (mm)`, `leaf form`, `habit`, .keep_all = TRUE) %>%
+      move_values_to_new_trait(
+        "leaf form", "leaf_type",
+        "scale", "scale", ""
+      )
   '
   collection_date: 2014/2014
   taxon_name: species name
-  site_name: sites
+  location_name: sites
   description: compilation of plant trait data from Victoria and Tasmania reference
     books
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: Plant height, leaf length, leaf width, life form, and leaf form
     data collated for all Tasmanian and Victorian woody plant species using the following
     references, Curtis, W. M. (1963); The Student's Flora of Tasmania. Part II. Government
@@ -46,7 +56,7 @@ dataset:
     Press.
   original_file: Woody plants in Tasmania and Victoria.xls
   notes: none
-sites:
+locations:
   state not specified:
     latitude (deg): .na.real
     longitude (deg): .na.real
@@ -97,7 +107,39 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: data sourced from reference books listed as secondary references
+- var_in: leaf_type
+  unit_in: .na
+  trait_name: leaf_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: data sourced from reference books listed as secondary references
 - var_in: habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: data sourced from reference books listed as secondary references
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: data sourced from reference books listed as secondary references
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: data sourced from reference books listed as secondary references
+- var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
   entity_type: species
@@ -117,22 +159,46 @@ traits:
 substitutions:
 - trait_name: plant_growth_form
   find: mistletoe
-  replace: parasite_woody
+  replace: shrub
 - trait_name: plant_growth_form
   find: parasite
-  replace: parasite_woody
+  replace: .na
 - trait_name: plant_growth_form
   find: sprawling
-  replace: prostrate_shrub
+  replace: shrub
 - trait_name: plant_growth_form
   find: prostrate
-  replace: prostrate_shrub
+  replace: shrub
 - trait_name: plant_growth_form
   find: scandent
   replace: climber_woody
 - trait_name: plant_growth_form
   find: climber
   replace: climber_woody
+- trait_name: stem_growth_habit
+  find: mistletoe
+  replace: .na
+- trait_name: stem_growth_habit
+  find: parasite
+  replace: .na
+- trait_name: stem_growth_habit
+  find: prostrate
+  replace: prostrate
+- trait_name: stem_growth_habit
+  find: scandent
+  replace: sprawling
+- trait_name: stem_growth_habit
+  find: climber
+  replace: climbing
+- trait_name: stem_growth_habit
+  find: shrub
+  replace: .na
+- trait_name: stem_growth_habit
+  find: subshrub
+  replace: .na
+- trait_name: stem_growth_habit
+  find: tree
+  replace: .na
 taxonomic_updates:
 - find: Prostanthera aspathaloides
   replace: Prostanthera aspalathoides

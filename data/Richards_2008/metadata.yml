@@ -6,7 +6,7 @@ source:
     author: Anna Richards and Ian J. Wright
     title: 'Unpublished data: Transcription of Australian plant functional trait data
       from Ian Wright''s collection of papers, Macquarie University'
-  secondary_01:
+  original_01:
     key: Adams_1984
     bibtype: Article
     year: '1984'
@@ -18,7 +18,7 @@ source:
     number: '2'
     pages: 205--215
     doi: 10.1071/bt9840205
-  secondary_02:
+  original_02:
     key: Ashton_1975
     bibtype: Article
     year: '1975'
@@ -29,7 +29,7 @@ source:
     number: '3'
     pages: 413--433
     doi: 10.1071/bt9750413
-  secondary_03:
+  original_03:
     key: Ashton_1976
     bibtype: Article
     year: '1976'
@@ -40,7 +40,7 @@ source:
     number: '1'
     pages: 171--186
     doi: 10.2307/2258689
-  secondary_04:
+  original_04:
     key: Attiwill_1980
     bibtype: Article
     year: '1980'
@@ -52,7 +52,7 @@ source:
     number: '2'
     pages: 199--222
     doi: 10.1071/bt9800199
-  secondary_05:
+  original_05:
     key: Bell_1985
     bibtype: Conference
     year: '1985'
@@ -62,7 +62,7 @@ source:
     volume: .na
     number: .na
     pages: .na
-  secondary_06:
+  original_06:
     key: Bennett_1997
     bibtype: Article
     year: '1997'
@@ -74,7 +74,7 @@ source:
     number: '1'
     pages: 15 - 30
     doi: 10.1071/bt96025
-  secondary_07:
+  original_07:
     key: Bevege_1978
     bibtype: TechReport
     year: '1978'
@@ -84,7 +84,7 @@ source:
     volume: 6
     number: .na
     pages: 20
-  secondary_08:
+  original_08:
     key: Birk_1992
     bibtype: Article
     year: '1992'
@@ -96,7 +96,7 @@ source:
     number: 1-4
     pages: 1--28
     doi: 10.1016/0378-1127(92)90262-8
-  secondary_09:
+  original_09:
     key: Cromer_1975
     bibtype: Article
     year: '1975'
@@ -108,7 +108,7 @@ source:
     number: 3
     pages: 165--173
     doi: https://publications.csiro.au/publications/#publication/PIprocite:1721ec54-3c7a-459d-8ece-40ccc96301a0
-  secondary_10:
+  original_10:
     key: Feller_1980
     bibtype: Article
     year: '1980'
@@ -119,7 +119,7 @@ source:
     number: '3'
     pages: 309--333
     doi: 10.1111/j.1442-9993.1980.tb01255.x
-  secondary_11:
+  original_11:
     key: Hatch_1955
     bibtype: Article
     year: '1955'
@@ -131,7 +131,7 @@ source:
     number: 70
     pages: 18
     doi: .na
-  secondary_12:
+  original_12:
     key: Hopmans_1993
     bibtype: Article
     year: '1993'
@@ -143,7 +143,7 @@ source:
     number: 1-2
     pages: 29--51
     doi: 10.1016/0378-1127(93)90069-y
-  secondary_13:
+  original_13:
     key: Lambert_1979
     bibtype: Thesis
     year: '1979'
@@ -151,7 +151,7 @@ source:
     title: Sulphur relationships of native and exotic tree species
     type: Masters
     institution: Macquarie University, Sydney
-  secondary_16:
+  original_16:
     key: Leuning_1991
     bibtype: Article
     year: '1991'
@@ -163,7 +163,7 @@ source:
     number: '4'
     pages: 504--510
     doi: 10.1007/bf00317712
-  secondary_17:
+  original_17:
     key: Marsh_1995
     bibtype: Article
     year: '1995'
@@ -175,13 +175,13 @@ source:
     number: '1'
     pages: 39--49
     doi: 10.1071/bt9950039
-  secondary_18:
+  original_18:
     key: Meakins_0000
     bibtype: Unpublished
     year: unknown
     author: Meakins
     title: 'Unpublished data: Study of Brindabella species'
-  secondary_19:
+  original_19:
     key: Moore_1967
     bibtype: Article
     year: '1967'
@@ -193,7 +193,7 @@ source:
     number: '1'
     pages: 11--24
     doi: 10.1071/bt9670011
-  secondary_20:
+  original_20:
     key: Pearcy_1987
     bibtype: Article
     year: '1987'
@@ -205,7 +205,7 @@ source:
     number: '3'
     pages: 169--178
     doi: 10.2307/2389419
-  secondary_22:
+  original_22:
     key: Turner_1983
     bibtype: Article
     year: '1983'
@@ -227,39 +227,23 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: '
-    data %>%
-      group_by(name_original, AusTraits_site_name) %>%
-        mutate(method_number = dplyr::row_number()) %>%
-      ungroup() %>%
-      mutate(
-        measurement_remarks = context,
-        method_number = ifelse(context == "reference_site", 1, method_number),
-        method_number = ifelse(stringr::str_detect(context,"adult"),2, method_number),
-        method_number = ifelse(stringr::str_detect(context,"epicormic"),3, method_number),
-        measurement_remarks = ifelse(context %in% c("roadside_adult_foliage","pasture_adult_foliage","remnant_woodland_adult_foliage"),"adult foliage", measurement_remarks),
-        measurement_remarks = ifelse(context %in% c("roadside_epicormic_foliage","pasture_epicormic_foliage","remnant_woodland_epicormic_foliage"),"epicormic foliage", measurement_remarks),
-        AusTraits_site_name = ifelse(context %in% c("roadside_adult_foliage","roadside_epicormic_foliage"),"Marsh_1995_Moormung_roadside", AusTraits_site_name),
-        AusTraits_site_name = ifelse(context %in% c("pasture_adult_foliage","pasture_epicormic_foliage"),"Marsh_1995_Moormung_pasture", AusTraits_site_name),
-        AusTraits_site_name = ifelse(context %in% c("remnant_woodland_adult_foliage","remnant_woodland_epicormic_foliage"),"Marsh_1995_Moormung_remnant_woodland", AusTraits_site_name)
-      )
-  '
+  custom_R_code: .na
   collection_date: unknown/2009
   taxon_name: name_original
-  measurement_remarks: measurement_remarks
-  site_name: AusTraits_site_name
+  measurement_remarks: context
+  location_name: AusTraits_site_name
+  source_id: AusTraits_key
   description: Collection of trait data on Australian plants compiled by Anna Richards
     and Ian Wright from papers
-  collection_type: field
-  method_number: method_number
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: See the individual 'additional references' for the individual
     study motivations.
   original_file: The portion of 'Extra ozglop data OCT07 (iAN).xls' from pre-2000
     papers or from more recent papers with very few data points; most recent/larger
     datasets within Ian and Anna's compilation are in AusTraits individually.
   notes: none
-sites:
+locations:
   Adams_1984_Big Creek Basin:
     latitude (deg): -37.867
     longitude (deg): 145.75
@@ -518,8 +502,7 @@ sites:
   Marsh_1995_Moormung:
     latitude (deg): -37.817
     longitude (deg): 147.63
-    description: undisturbed redgum forest with a grassy stratum dominated by Poa
-      species
+    description: unknown
     precipitation, MAP (mm): .na.real
     temperature, MAT (C): .na.real
     georeference remarks: Marsh_1995
@@ -745,7 +728,59 @@ sites:
     geology (parent material): Lower Permian sediments
     elevation (m): .na.character
     soil P, total: .na.character
-contexts: .na
+contexts:
+- context_property: leaf age
+  category: method
+  var_in: leaf_age
+  values:
+  - value: immature leaves
+  - value: mature leaves
+  - value: second year leaves
+  - value: young leaves
+  - value: adult foliage
+  - value: epicormic foliage
+- context_property: stand age
+  category: plot
+  var_in: stand_maturity
+  values:
+  - value: declining
+    description: Stand is at a declining stage.
+  - value: intermediate
+    description: Stand is at an intermediate stage.
+  - value: healthy
+    description: Stand is at a healthy stage.
+- context_property: canopy layer
+  category: method
+  var_in: canopy_position
+  values:
+  - value: canopy
+  - value: gap
+  - value: understory
+- context_property: vegetation history
+  category: plot
+  var_in: plot_location
+  values:
+  - value: reference_site
+  - value: roadside
+  - value: pasture
+  - value: remnant woodland
+- context_property: wood sample type
+  category: method
+  var_in: wood_sample_type
+  values:
+  - find: branch_wood_smooth-barked_less_1.25_cm
+    value: smooth-barked branch wood less than 1.25 cm in diameter
+  - find: branch_wood_smooth-branch_wood_barked_more_1.25_cm
+    value: smooth-barked branch wood more than 1.25 cm in diameter
+  - value: rough-barked
+  - value: sapwood
+  - value: heartwood
+  - value: branch wood
+  - value: living branches
+  - value: stem wood
+  - value: branch wood & bark
+  - value: stem wood & bark
+  - value: branch
 traits:
 - var_in: photosynthetic pathway
   unit_in: .na.character
@@ -809,7 +844,7 @@ traits:
     alphabetically under 'additional references'
 - var_in: SLA (cm2/g)
   unit_in: cm2/g
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -819,7 +854,7 @@ traits:
     references'
 - var_in: LMA (g/m2)
   unit_in: g/m2
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1218,10 +1253,10 @@ substitutions:
   replace: compound
 - trait_name: nitrogen_fixing
   find: 'n'
-  replace: 0
+  replace: non_nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'y'
-  replace: 1
+  replace: nitrogen_fixer
 taxonomic_updates:
 - find: Eucalyptus camadulensis
   replace: Eucalyptus camaldulensis

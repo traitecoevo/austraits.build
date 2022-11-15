@@ -61,11 +61,159 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code: data %>% mutate(Date = Date %>% dmy())
+  custom_R_code:   '
+    data %>% 
+      mutate(
+        Date = Date %>% dmy(),
+        ref_year = stringr::str_extract(FullRef, "(?<!\\d)\\d{4}(?!\\d)"),
+        ref_year = ifelse(is.na(FullRef), ref_year, ifelse(stringr::str_detect(FullRef, "American Journal of Botany 87"), "2000", ref_year)),
+        WeblinkRef_stripped = stringr::str_replace_all(WeblinkRef,"[:punct:]",""),
+        WeblinkRef_stripped = stringr::str_replace_all(WeblinkRef_stripped,"\\/",""),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "plantnetrbgsydnswgovau"), "RBGSYD", NA),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "appskeworg") & is.na(ref_author), "KewEfloras", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "plantillustrations") & is.na(ref_author), "PlantIllustrations", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "efloras") & is.na(ref_author), "Efloras", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "eolorg") & is.na(ref_author), "EOL", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "trinorg") & is.na(ref_author), "TRIN", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "palmweb") & is.na(ref_author), "Palmweb", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "anpsaorg") & is.na(ref_author), "ANPSA", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "apsaanueduau") & is.na(ref_author), "ASPA", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "climberslsaumich") & is.na(ref_author), "UMich", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "malesiana") & is.na(ref_author), "Flora_malesiana", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "emonocotorg") & is.na(ref_author), "Emonocot", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "florachilenacl") & is.na(ref_author), "FloraChilena", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "prota4uorg") & is.na(ref_author), "PROTA", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "gobotanynewenglandwildorg") & is.na(ref_author), "NewEnglandWild", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "deltaintkeycom") & is.na(ref_author), "Dallwitz", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "telabotanicaorg") & is.na(ref_author), "Telabotanica", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "sciencemnhnfrinstitutionmnhnsearch") & is.na(ref_author), "MNFNFR", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "uraotsaccrflorula4") & is.na(ref_author), "Florula", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "canadaplantsca") & is.na(ref_author), "CanadaPlant", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "vicflorarbgvicgovauflora") & is.na(ref_author), "VicFlora", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "herbanwmexnet") & is.na(ref_author), "Herban", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "rhsorgukplants") & is.na(ref_author), "RHS", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "mobotorgMOBOTresearchAPwebwelcomehtml") & is.na(ref_author), "MOBOT", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "anbggovau") & is.na(ref_author), "ANBG", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "plantsystematicsorg") & is.na(ref_author), "PlantSystematics", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "botanyhawaiiedufacultycarrpfamilieshtm") & is.na(ref_author), "BotanyHawaii", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "nationaalherbariumnlEuphorbshomehtm") & is.na(ref_author), "NationaalHerbariumNL", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "pfaforguserdefaultaspx") & is.na(ref_author), "PFAP", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "microscopyukorguk") & is.na(ref_author), "Microscopy", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "illinoiswildflowersinfo") & is.na(ref_author), "IllinoisWildflowers", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "malpighialesmyspeciesinfo") & is.na(ref_author), "MySpecies", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "plantsusdagovjava") & is.na(ref_author), "USDA", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "ALINA") & is.na(ref_author), "Alina", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "apsa.anu") & is.na(ref_author), "APSA", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "van Heel") & is.na(ref_author), "vanHeel", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "van Heusden") & is.na(ref_author), "vanHeusden", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "van Steenis CGGJ. 1957.") & is.na(ref_author), "vanSteenis", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "van Steenis CGGJ. 1984.") & is.na(ref_author), "vanSteenis", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "van Steenis CGGJ 1984 ") & is.na(ref_author), "vanSteenis", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "van Houtte") & is.na(ref_author), "vanHoutte", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Van Damme") & is.na(ref_author), "vanDamme", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "von Balthazar M, Alverson WS") & is.na(ref_author), "vonBalthazar", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "von Bothmer") & is.na(ref_author), "vonBothmer", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Maiden NSW Government Printing Office") & is.na(ref_author), "Maiden", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "apsa.anu") & is.na(ref_author), "APSA", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "American Journal of Botany 87") & is.na(ref_author), "Tucker", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "B. Kasapligil 1951") & is.na(ref_author), "Kasapligil", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "C. S. Venkatesh 1956") & is.na(ref_author), "Venkatesh", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "de Carvalho MLS , Nakamura AT") & is.na(ref_author), "deCarvalho", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Elaeocarpus in Australia and New Zealand") & is.na(ref_author), "Coode", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Pollen flora of Pakistan") & is.na(ref_author), "Perveen", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "C. Montaner, E. Floris, J. M. Alvarez") & is.na(ref_author), "Montaner", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "F. B. Sampson & D. B. Foreman") & is.na(ref_author), "Sampson", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "F. B. Sampson, Variation and similarities") & is.na(ref_author), "Sampson", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Flora of Australia Online") & is.na(ref_author), "FloraOfAustralia", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "H. P. Linder, B. G. Briggs") & is.na(ref_author), "Linder", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "H Banks, F Forest, G Lewis") & is.na(ref_author), "Banks", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "anthos.es") & is.na(ref_author), "ANTHOS", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "natureloveyou") & is.na(ref_author), "NatureLoveYou", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Pollenatlas") & is.na(ref_author), "PollenAtlas", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "J.J. Skvarla & J.W. Nowicke") & is.na(ref_author), "Skvarla", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Mignot") & is.na(ref_author), "Mignot", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Airy Shaw HK.  1980.") & is.na(ref_author), "AiryShaw", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "AL-Anbari AK, Barusrux S,") & is.na(ref_author), "AlAnbari", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Arbres Reunion 2013") & is.na(ref_author), "ArbresReunion", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Ashoke Bhattacharya and Sudhendu Manda.") & is.na(ref_author), "Bhattacharya", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Boswell Syme, JT") & is.na(ref_author), "BoswellSyme", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Botanic Garden Meise.") & is.na(ref_author), "BotanicGardenMeise", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Comparative Floral Developmental Study in Pisonia") & is.na(ref_author), "Vanvinckenroye", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "David R. Smyth,") & is.na(ref_author), "Smyth", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Den Hartog C. 1957.") & is.na(ref_author), "denHartog", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Discover plants and fungi.") & is.na(ref_author), "Kew", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "s botanical register. Vol 2.") & is.na(ref_author), "Lindley", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Geoffrey A. Levin and Michael G. Simpson.") & is.na(ref_author), "Levin", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Herbarium University of Michigan.") & is.na(ref_author), "UMich", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Hugo Carl Albert Fischer,") & is.na(ref_author), "Fischer", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "IGERSHEIM A,  ENDRESS PK 1998") & is.na(ref_author), "Igersheim", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Jepson herbaria.") & is.na(ref_author), "JepsonHerbarium", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "L. W. CayzerA,C, M. D. CrispA and I. R. H. Telford") & is.na(ref_author), "Cayzer", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Paul Hermann Wilhelm Taubert 1891") & is.na(ref_author), "Taubert", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Maas-van de Kamer H, Maas PJM 2008") & is.na(ref_author), "MassvandeKamer", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Marcelo Carnier Dornelas, Adriana Pinheiro Martinelli Rodriguez;") & is.na(ref_author), "Dornelas", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Mohana Rao PR. 1986.") & is.na(ref_author), "MohanaRao", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Mu\\?ller FJH. 1861.") & is.na(ref_author), "vonMueller", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "National Herbarium of Nederland and Flora Malesiana.") & is.na(ref_author), "NationaalHerbariumNL", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Natural History Museum. The Trustees of the Natural History Museum, London.") & is.na(ref_author), "NHM", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Observation made at the RBGE July-August 2014.") & is.na(ref_author), "RBGE", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Pakistan Plant Database. 2014") & is.na(ref_author), "PPD", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "que Muséum National d") & is.na(ref_author), "MNHN", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Perrier de la Bâthie H.") & is.na(ref_author), "PerrierdelaBâthie", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Perrier de La Bâthie H.") & is.na(ref_author), "PerrierdelaBâthie", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Pinheiro Boeira AS.") & is.na(ref_author), "Boeira", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Plants of Southern Africa, an online checklist.") & is.na(ref_author), "POSA", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "pollen.usda.gov") & is.na(ref_author), "USDA", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "R. deFilipps. 1969. ") & is.na(ref_author), "DeFilipps", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "rhodes, d. g. 1975.") & is.na(ref_author), "Rhodes", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Ronse De Craene LP, Smets EF 1996") & is.na(ref_author), "RonseDeCraene", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Ronse De Craene LP, Smets EF. 1999.") & is.na(ref_author), "RonseDeCraene", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Ronse de Craene LP. 2010. Floral Diagrams.") & is.na(ref_author), "RonseDeCraene", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Seen on plants at the RBGE. Accession number 1998.0982A") & is.na(ref_author), "RBGE", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Studies in the Proteaceae I. Cytology and Floral Morphology") & is.na(ref_author), "Kausik", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Tasmanian herbarium, Tasmanian Museum and Art Gallery. ") & is.na(ref_author), "TMAG", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "The Flowering Plants and Ferns of New South Wales -") & is.na(ref_author), "Maiden", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Thome\\? OW. 1885.") & is.na(ref_author), "Thomé", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Tree SA. 2019. The Trees of Sourthern Africa") & is.na(ref_author), "TreeSA", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Wild Flower Finder by R.W.Darlington") & is.na(ref_author), "Darlington", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "William C. Dickison, Joan W.") & is.na(ref_author), "Dickison", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Watson L, Dallwitz MJ. 1992 onwards.") & is.na(ref_author), "Watson", ref_author),
+        ref_author = ifelse(is.na(FullRef), ref_author, ifelse(stringr::str_detect(FullRef, "Endlicher S. 1837-1838. "), "Endlicher", ref_author)),
+        ref_author = ifelse(is.na(FullRef), ref_author, ifelse(stringr::str_detect(FullRef, "Spach E. 1834-1847."), "Spach", ref_author)),
+        ref_author = ifelse(is.na(ref_author), stringr::str_trim(word(FullRef, 1)), ref_author),
+        ref_author = stringr::str_replace(ref_author,"[:punct:]",""),
+        year_entered = year(Date),
+        ref_year = ifelse(is.na(ref_year), year_entered, ref_year),
+        ref_year = ifelse(is.na(ref_year), 2021, ref_year),
+        ref_author = ifelse(is.na(ref_author), "unknown", ref_author),
+        source_id = paste0(ref_author, "_", ref_year),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Bertin RI. 1982. Floral biology"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Bertin RI. 1982. Paternity and"), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Endress PK. 1994. Shapes, sizes"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Endress PK. 1994. Diversity and"), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Endress PK. 1994. Evolutionary"), paste0(source_id, "_3", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Forster PI. 1997. A taxonomic revision of Austrobuxus"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Forster PI. 1997. A taxonomic revision of Dissiliaria"), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Staedler YM, Endress PK. 2009. "), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Staedler YM, Weston PH, Endress PK. 2009."), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Tsou C-H. 1994. The embryology,"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Tsou C-H. 1994.  The classification"), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "van Steenis CGGJ. 1984. A synopsis"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "van Steenis CGGJ 1984 Sphenostemonaceae."), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Salvadoraceae. In"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Kubitzki K, Bayer C , eds. 2003. The "), paste0(source_id, "_2", sep = ""), source_id))
+      ) %>%
+      arrange(source_id, Taxon, Character, trait_value) %>%
+      group_by(source_id, Character, Taxon) %>%
+      distinct(NDat, .keep_all = TRUE) %>%
+      mutate(observation_number = row_number()) %>%
+      ungroup()
+  '
   collection_date: Date
   taxon_name: Taxon
   trait_name: Character
   value: trait_value
+  source_id: source_id
   individual_id: NDat
   description: Updated eFLOWER-792 dataset, exported from PROTEUS on 15 Feb 2021.
     This is the same list of 792 angiosperm species used in the first eFLOWER paper
@@ -75,8 +223,8 @@ dataset:
     of Schönenberger et al., 2020), this new dataset includes 608 new data records;
     in addition, 127 records have been updated and 43 deleted. Fossil data are excluded
     as AusTraits focuses on living species.
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: All data were recorded at the species level, based on taxonomic
     and morphological studies.
   original_file: qry_Paleo-eFLOWER_Data_AusTraits_2021-02-15.xlsx;  the version of
@@ -89,8 +237,24 @@ dataset:
     in the metadata - these are non-Australian species whose names are not matched
     by APC/APNI. This list will need to be added to as new expanded versions of eFLOWER
     are submitted.
-sites: .na
-contexts: .na
+locations: .na
+contexts:
+- context_property: replicate observations
+  category: temporal
+  var_in: observation_number
+  values:
+  - value: 1
+  - value: 2
+  - value: 3
+  - value: 4
+  - value: 5
+  - value: 6
+  - value: 7
+  - value: 8
+  - value: 9
+  - value: 10
+  - value: 11
+  - value: 12
 traits:
 - var_in: 100. Floral structural sex (D1)
   unit_in: .na
@@ -214,7 +378,7 @@ traits:
   unit_in: n/n
   trait_name: flower_perianth_fusion
   entity_type: species
-  value_type: mode
+  value_type: minimum
   basis_of_value: expert_score
   replicates: .na
   methods: Fusion of perianth organs (congenital or postgenital) at anthesis, recorded
@@ -241,7 +405,7 @@ traits:
   unit_in: n/n
   trait_name: flower_perianth_fusion
   entity_type: species
-  value_type: mode
+  value_type: maximum
   basis_of_value: expert_score
   replicates: .na
   methods: Fusion of perianth organs (congenital or postgenital) at anthesis, recorded
@@ -1171,6 +1335,9 @@ substitutions:
 - trait_name: flower_ovary_position
   find: '102. Ovary position (D1): (5) 1/4-inferior or less'
   replace: one_quarter_inferior
+- trait_name: flower_ovary_position
+  find: '102. ovary position (d1): (4) 1/4-inferior or less'
+  replace: one_quarter_inferior
 - trait_name: flower_perianth_symmetry
   find: '207. Symmetry of perianth (D1): (0) actinomorphic (strictly polysymmetric)'
   replace: actinomorphic_strictly_polysymmetric
@@ -1299,13 +1466,13 @@ substitutions:
   replace: ventrifixed
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (0) longitudinal slit'
-  replace: longitudinal slit
+  replace: longitudinal_slit
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (1) poricidal'
   replace: poricidal
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (2) H-valvate'
-  replace: H_valvate
+  replace: h_valvate
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (3) flap-valvate'
   replace: flap_valvate
@@ -1323,7 +1490,7 @@ substitutions:
   replace: short_apical_slits
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (A) T-valvate (T-shaped stomium)'
-  replace: T_valvate
+  replace: t_valvate
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (B) common stomium of confluent thecae'
   replace: common_stomium_confluent_thecae

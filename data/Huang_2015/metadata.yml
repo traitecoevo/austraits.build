@@ -33,22 +33,21 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       mutate(Potnum = ifelse(is.na(Potnum),paste("temp", row_number(), sep = "_"),Potnum)) %>%
       filter(Potnum != 68)
   '
   collection_date: 2011/2012
   taxon_name: species_name
-  site_name: site_name
-  context_name: context
+  location_name: site_name
   individual_id: Potnum
   description: An investigation of the main and interactive effects of elevated [CO2]
     (CE) and elevated temperature (TE) on growth and physiology of Coastal (warmer,
     less variable temperature environment) and Upland (cooler, more variable temperature
     environment) genotypes of an Australian woody species Telopea speciosissima.
-  collection_type: glasshouse
-  sample_age_class: seedling
+  basis_of_record: lab
+  life_stage: seedling
   sampling_strategy: 'Two natural genotypes of T. speciosissima were included in this
     study: one originating from Patonga (33.53 deg S, 151.28 deg E, 180 m altitude,
     the coastal region) and the other from Newnes Forest (33.39 deg S, 150.21 deg
@@ -90,44 +89,44 @@ dataset:
   notes: Omitted pot 68, becuse in the spreadsheet with ACi curves, pot 68 is marked
     as being from population 'BWK219T2', while in the spreadsheet with AQ curve data,
     pot 68 is marked as being from population 'BWK214T2'
-sites:
+locations:
   University of Western Sydney:
     latitude (deg): -33.61
     longitude (deg): 150.7407
     description: naturally sun-lit and C/T-controlled glasshouse
 contexts:
-  Seeds_from_Coastal_population_grown_at_Amb_temp_and_400_ppm_CO2:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    seed provenance: coastal (Patonga, at 33.53 deg S, 151.28 deg E, 180 m altitude)
-  Seeds_from_Coastal_population_grown_at_Amb_temp_and_640_ppm_CO2:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    seed provenance: coastal (Patonga, at 33.53 deg S, 151.28 deg E, 180 m altitude)
-  Seeds_from_Coastal_population_grown_at_Elv_temp_and_400_ppm_CO2:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    seed provenance: coastal (Patonga, at 33.53 deg S, 151.28 deg E, 180 m altitude)
-  Seeds_from_Coastal_population_grown_at_Elv_temp_and_640_ppm_CO2:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    seed provenance: coastal (Patonga, at 33.53 deg S, 151.28 deg E, 180 m altitude)
-  Seeds_from_Upland_population_grown_at_Amb_temp_and_400_ppm_CO2:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    seed provenance: upland (Newnes Forest, at 33.39 deg S, 150.21 deg E, 1150 m altitude)
-  Seeds_from_Upland_population_grown_at_Amb_temp_and_640_ppm_CO2:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: ambient (26/18 deg C (day/night)) [manipulated]
-    seed provenance: upland (Newnes Forest, at 33.39 deg S, 150.21 deg E, 1150 m altitude)
-  Seeds_from_Upland_population_grown_at_Elv_temp_and_400_ppm_CO2:
-    CO2 treatment: 400 ppm (ambient) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    seed provenance: upland (Newnes Forest, at 33.39 deg S, 150.21 deg E, 1150 m altitude)
-  Seeds_from_Upland_population_grown_at_Elv_temp_and_640_ppm_CO2:
-    CO2 treatment: 640 ppm (elevated) [manipulated]
-    temperature treatment: elevated (30/22 deg C (day/night)) [manipulated]
-    seed provenance: Upland (Newnes Forest, at 33.39 deg S, 150.21 deg E, 1150 m altitude)
+- context_property: CO2 treatment
+  category: treatment
+  var_in: CO2
+  values:
+  - find: 400
+    value: 400 ppm
+    description: Plants grown at ambient CO2 (400 ppm).
+  - find: 640
+    value: 640 ppm
+    description: Plants grown at elevated CO2 (640 ppm); 240 ppm above ambient.
+- context_property: temperature treatment
+  category: treatment
+  var_in: Temp
+  values:
+  - find: Amb
+    value: ambient
+    description: Plants grown at ambient temperatures (26/18 deg C (day/night)).
+  - find: Elv
+    value: elevated
+    description: Plants grown at elevated temperatures (30/22 deg C (day/night)).
+- context_property: seed provenance
+  category: treatment
+  var_in: Population
+  values:
+  - find: Coastal
+    value: coastal
+    description: Seeds collected from a coastal population, Patonga, at 33.53 deg
+      S, 151.28 deg E, 180 m altitude.
+  - find: Upland
+    value: upland
+    description: Seeds collected from an upland population, Newnes Forest, at 33.39
+      deg S, 150.21 deg E, 1150 m altitude.
 traits:
 - var_in: LeafSize (cm2)
   unit_in: cm2
@@ -143,7 +142,7 @@ traits:
     Lincoln, NE, USA).
 - var_in: LMA (g m-2)
   unit_in: g/m2
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement

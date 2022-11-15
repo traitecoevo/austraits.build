@@ -27,22 +27,22 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
-        Species = gsub("_"," ",Species),
+        Species = stringr::str_replace(Species,"_"," "),
         measurement_remarks = ifelse(Organ == "Twig", "measurements made on twigs", NA)
       )
   '
   collection_date: 2011/2013
   taxon_name: Species
-  site_name: site_name
+  location_name: site_name
   description: To assess hypotheses regarding tradeoffs and functional coordination,
     we measured bark traits reflecting protection, storage, mechanics, and photosynthesis
     in branches of 90 species spanning a wide phylogenetic and environmental range.
-  collection_type: field
-  measurement_remarks: measurement_remarks 
-  sample_age_class: adult
+  basis_of_record: field
+  measurement_remarks: measurement_remarks
+  life_stage: adult
   sampling_strategy: LOCALITIES AND SAMPLING  We measured traits of 90 species in
     six localities ranging from xerophytic shrubland to tropical rainforest in Mexico
     and Australia (Table 1). The selection of species aimed to maximize phylogenetic
@@ -67,7 +67,7 @@ dataset:
     Fig. 1a).
   original_file: Rosell_et_al_2014_NewPhytol_Australian_Species.xls
   notes: none
-sites:
+locations:
   Bothwell:
     latitude (deg): -42.4
     longitude (deg): 147.0
@@ -368,7 +368,13 @@ traits:
   methods: We assessed the presence of photosynthetic bark at 1 m from the tip by
     carefully scraping the outer bark (phellem or rhytidome) to reveal a green layer
     indicative of bark photosynthesis or the absence thereof (Pfanz et al., 2002).
-substitutions: .na
+substitutions:
+- trait_name: photosynthetic_bark
+  find: '0'
+  replace: non_photosynthetic_bark
+- trait_name: photosynthetic_bark
+  find: '1'
+  replace: photosynthetic_bark
 taxonomic_updates:
 - find: Cassinia aff. cunninghamii
   replace: Cassinia cunninghamii

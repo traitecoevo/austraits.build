@@ -25,7 +25,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       subset(NonIndigenous != 1) %>%
       mutate(flowering_season = paste0(Flower_Jan,Flower_Feb,Flower_Mar,Flower_Apr,Flower_May,Flower_Jun,
@@ -37,18 +37,34 @@ dataset:
           ifelse(fire_response %in% c("fire_not_relevant", "fire_not_relevant fire_killed",
           "fire_killed fire_not_relevant", "fire_not_relevant resprouts","
           fire_not_relevant not_fire_killed_does_not_resprout"),
-          "fire_not_relevant", NA)
+          "fire_not_relevant", NA),
+        stem_growth_habit = NA,
+        plant_climbing_mechanism = NA,
+        plant_growth_substrate = ifelse(str_detect(plant_growth_form, "epiphyte"), "epiphyte", NA),
+        plant_growth_form = str_replace(plant_growth_form, "epiphyte_", ""),
+        plant_growth_form = str_replace(plant_growth_form, "epiphyte", "")  %>% str_squish()
+      ) %>%
+      move_values_to_new_trait(
+        "plant_growth_form","stem_growth_habit",
+        c("climber_scrambler", "prostrate_herb", "prostrate_shrub"),
+        c("climbing", "prostrate", "prostrate"),
+        c("climber_scrambler", "herb", "shrub")
+      ) %>%
+      move_values_to_new_trait(
+        "plant_growth_form","plant_climbing_mechanism",
+        c("climber_scrambler"),
+        c("scrambling"),
+        c("climber")
       ) %>%
       group_by(Species_Name) %>%
-        mutate(observation_number = row_number()) %>%
+        mutate(observation_num = row_number()) %>%
       ungroup()
   '
   collection_date: unknown/2020
   taxon_name: Species_Name
   description: Compilation of trait data for Victorian plant species
-  collection_type: literature, field
-  sample_age_class: adult
-  observation_number: observation_number
+  basis_of_record: literature, field
+  life_stage: adult
   sampling_strategy: Compilation of trait data for Victorian plant species from diverse
     sources. Data are generally linked to specific plot data. As a result, there are
     some species names not recognised by APC/APNI, because when the phrase names or
@@ -62,8 +78,15 @@ dataset:
     from diverse sources; includes many phrase names used by individual researchers
     and only in ALA, not APC/APNI, but kept by White to maintain connection to these
     studies
-sites: .na
-contexts: .na
+locations: .na
+contexts:
+- context_property: replicate observations
+  category: temporal
+  var_in: observation_num
+  values:
+  - value: 1
+  - value: 2
+  - value: 3
 traits:
 - var_in: dispersal_syndrome
   unit_in: .na
@@ -84,6 +107,30 @@ traits:
 - var_in: flowering_season
   unit_in: .na
   trait_name: flowering_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
+- var_in: plant_climbing_mechanism
+  unit_in: .na
+  trait_name: plant_climbing_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -112,7 +159,9 @@ traits:
 - var_in: fire_exposure_level
   unit_in: .na
   trait_name: fire_exposure_level
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion; with rare exceptions,
     this dataset has marked species as either "fire-killed" or "resprouts", rather
@@ -121,7 +170,7 @@ traits:
     resprouters will die.
 - var_in: Prickly_Plant
   unit_in: .na
-  trait_name: spinescence
+  trait_name: plant_physical_defence_structures
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -185,7 +234,7 @@ traits:
   methods: compilation from diverse sources and expert opinion
 - var_in: Proliferate
   unit_in: .na
-  trait_name: vegetative_regeneration_ability
+  trait_name: vegetative_reproduction_ability
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -202,7 +251,9 @@ traits:
 - var_in: regen_strategy
   unit_in: .na
   trait_name: regeneration_non_fire_disturbance
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: calcicole_status
@@ -262,6 +313,42 @@ traits:
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 substitutions:
+- trait_name: plant_growth_form
+  find: treelet
+  replace: mallee
+- trait_name: plant_growth_form
+  find: climber_shrub
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: graminoid_tussock
+  replace: tussock
+- trait_name: plant_growth_form
+  find: graminoid_not_tussock_tall
+  replace: graminoid_not_tussock
+- trait_name: plant_growth_form
+  find: graminoid_tussock_tall
+  replace: tussock
+- trait_name: plant_growth_form
+  find: herb_large
+  replace: herb
+- trait_name: plant_growth_form
+  find: herb_large shrub
+  replace: herb shrub
+- trait_name: plant_growth_form
+  find: semi_basal
+  replace: herb
+- trait_name: plant_growth_form
+  find: short_basal
+  replace: herb
+- trait_name: plant_growth_form
+  find: climber_herb
+  replace: climber_herbaceous
+- trait_name: nitrogen_fixing
+  find: '1'
+  replace: nitrogen_fixer
+- trait_name: nitrogen_fixing
+  find: '0'
+  replace: non_nitrogen_fixer
 - trait_name: fire_response
   find: fire_killed resprouts
   replace: partial_resprouting
@@ -269,7 +356,7 @@ substitutions:
   find: fire_not_relevant
   replace: .na
 - trait_name: fire_response
-  find: fire_not_relevant fire_killed 
+  find: fire_not_relevant fire_killed
   replace: fire_killed
 - trait_name: fire_response
   find: fire_killed fire_not_relevant
@@ -283,12 +370,12 @@ substitutions:
 - trait_name: fire_response
   find: not_fire_killed_does_not_resprout
   replace: no_significant_fire_response
-- trait_name: spinescence
+- trait_name: plant_physical_defence_structures
   find: 0
-  replace: 0_no_spines
-- trait_name: spinescence
+  replace: absent
+- trait_name: plant_physical_defence_structures
   find: 1
-  replace: spines_present
+  replace: sharp_pointed_defence
 - trait_name: seed_longevity
   find: 10
   replace: short_persistent
@@ -314,13 +401,13 @@ substitutions:
   find: 0
   replace: .na
 - trait_name: reproductive_maturity
-  find: '<1'
+  find: <1
   replace: 0--1
 - trait_name: reproductive_maturity
-  find: '1-5'
+  find: 1-5
   replace: 1--5
 - trait_name: reproductive_maturity
-  find: '5-20'
+  find: 5-20
   replace: 5--20
 - trait_name: reproductive_maturity
   find: '>20'
@@ -466,6 +553,21 @@ substitutions:
 - trait_name: dispersers
   find: invertebrate_insect
   replace: invertebrates
+- trait_name: plant_growth_form
+  find: ""
+  replace: .na
+- trait_name: plant_growth_form
+  find: palm
+  replace: palmoid
+- trait_name: plant_growth_form
+  find: fern_tree
+  replace: fern palmoid
+- trait_name: plant_growth_form
+  find: palm graminoid_tussock
+  replace: palmoid graminoid
+- trait_name: plant_growth_form
+  find: climber_liana
+  replace: climber_woody
 taxonomic_updates:
 - find: Abutilon malvaefolium
   replace: Abutilon malvifolium
@@ -1056,7 +1158,7 @@ taxonomic_updates:
   replace: Dianella sp. aff longifolia (Riverina)
   reason: Automatic alignment with name in APC list (accepted) (2020-06-22)
 - find: Dianella sp. aff. revoluta
-  replace: Dianella sp. [Dianella sp. aff. revoluta] 
+  replace: Dianella sp. [Dianella sp. aff. revoluta]
   reason: Rewrite name for `sp. aff` taxon (Elizabeth Wenk, 2022-06-02)
 - find: Dillwynia cinerascens s.l.
   replace: Dillwynia cinerascens

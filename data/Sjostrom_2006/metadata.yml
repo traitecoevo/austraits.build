@@ -26,10 +26,15 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
-      mutate(clonal_spread_mechanism = NA) %>%
-      move_values_to_new_trait("fruit_to_use", "clonal_spread_mechanism", "27", "viviparous", NA) %>% mutate(
+      mutate(
+        clonal_spread_mechanism = NA,   
+        dispersal_unit = NA_character_
+      ) %>%
+      move_values_to_new_trait("fruit_to_use", "clonal_spread_mechanism", 27, "viviparous", 27) %>%
+      move_values_to_new_trait("fruit_to_use", "dispersal_unit", 24, "spore", "NA") %>% 
+      mutate(
         fruit_fleshiness = fruit_to_use,
         fruit_dehiscence = fruit_to_use
       )
@@ -40,8 +45,8 @@ dataset:
     affect population persistence (e.g. habit and life span) and those that influence
     reproductive success (e.g. sexual system and fruit type) are non-randomly correlated
     with extinction risk (i.e. threat category) in the Australian flora.
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: EXTANT FLORA To begin we compiled a list of the flowering plant
     families for Australia (n = 222 families) and determined the number of species
     in each family by consulting Hnatiuk (1990), and, when it became available, the
@@ -101,7 +106,7 @@ dataset:
   original_file: CLGross All Aust Flora data base.xls and CLGross Extinct data base.xls,
     submitted by Caroline Gross
   notes: none
-sites: .na
+locations: .na
 contexts: .na
 traits:
 - var_in: habit_to_use
@@ -147,6 +152,19 @@ traits:
     saliqua, most schizocarps, and loments), or fleshy (including berry, drupe, gyconium,
     pome, pseudocarp, spathe, synangium, syncarp, viviparous seedlings, pipo, and
     pyrene).
+- var_in: dispersal_unit
+  unit_in: .na
+  trait_name: dispersal_unit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Literature searches. Fruit type was categorized as dry-indehiscent (including
+    achene, caryopsis, nut, nutlet, samara, some schizocarps, utricle, and some capsules),
+    drydehiscent (including most capsules, stroboli, follicles, legume, mericarp,
+    saliqua, most schizocarps, and loments), or fleshy (including berry, drupe, gyconium,
+    pome, pseudocarp, spathe, synangium, syncarp, viviparous seedlings, pipo, and
+    pyrene).
 - var_in: fruit_fleshiness
   unit_in: .na
   trait_name: fruit_fleshiness
@@ -181,11 +199,8 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Literature searches. Fruit type identified as "viviparous seedlings" moved
-    to regen_strategy.
+    to clonal_spread_mechanism.
 substitutions:
-- trait_name: regen_strategy
-  find: viviparous
-  replace: herb
 - trait_name: plant_growth_form
   find: 1
   replace: herb
@@ -197,10 +212,10 @@ substitutions:
   replace: tree
 - trait_name: plant_growth_form
   find: 4
-  replace: climber_liana
+  replace: climber_woody
 - trait_name: plant_growth_form
   find: 5
-  replace: climber_vine_herbaceous
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: 8
   replace: .na
@@ -311,7 +326,7 @@ substitutions:
   replace: schizocarp
 - trait_name: fruit_type
   find: 24
-  replace: synangium
+  replace: .na
 - trait_name: fruit_type
   find: 25
   replace: multiple_fruit
@@ -320,7 +335,7 @@ substitutions:
   replace: utricle
 - trait_name: fruit_type
   find: 27
-  replace: viviparous
+  replace: .na
 - trait_name: fruit_type
   find: 29
   replace: .na
@@ -391,6 +406,9 @@ substitutions:
   find: 26
   replace: dry
 - trait_name: fruit_fleshiness
+  find: 27
+  replace: .na
+- trait_name: fruit_fleshiness
   find: 29
   replace: .na
 - trait_name: fruit_dehiscence
@@ -459,6 +477,9 @@ substitutions:
 - trait_name: fruit_dehiscence
   find: 26
   replace: indehiscent
+- trait_name: fruit_dehiscence
+  find: 27
+  replace: .na
 - trait_name: fruit_dehiscence
   find: 29
   replace: .na

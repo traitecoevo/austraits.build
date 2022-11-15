@@ -27,32 +27,46 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
+        stem_growth_habit = ifelse(height=="prostrate","prostrate",NA),
+        plant_growth_substrate = ifelse(form %in% c("mistletoe", "epiphyte"), "epiphyte", NA),        
         growth_habit = ifelse(height=="prostrate","prostrate",NA),
-        fruit_fleshiness = fruits, fruit_dehiscence = fruits, dispersal_appendage = NA
+        fruit_fleshiness = fruits,
+        fruit_dehiscence = fruits,
+        dispersal_appendage = NA
       ) %>% 
-      move_values_to_new_trait("fruits", "dispersal_appendage", c("dry & winged", "enclosed in aril"), 
-                              c("wings", "aril"), c("dry & winged", "enclosed in aril")) %>%
+      move_values_to_new_trait(
+        "fruits", "dispersal_appendage",
+        c("dry & winged", "enclosed in aril"), 
+        c("wings", "aril"),
+        c("dry & winged", "enclosed in aril")
+      ) %>%
       group_by(species_name) %>%
-        mutate_at(vars(`form`, `height`, `stem diameter`, `fruits`, `dispersers`, 
-                    `dispersers_simple`, `min fruit length`, `max fruit length`,
-                    `min fruit width`, `max fruti width`), replace_duplicates_with_NA) %>%
-        mutate(observation_number = row_number()) %>%
+        mutate(
+          across(c(`form`, `height`, `stem diameter`, `fruits`, `dispersers`,`dispersers_simple`, `min fruit length`, `max fruit length`, `min fruit width`, `max fruti width`), 
+                replace_duplicates_with_NA),
+          observation_num = row_number()
+        ) %>%
       ungroup()
   '
   collection_date: unknown/2013
   taxon_name: species_name
-  observation_number: observation_number
   description: transcription of data in Australian Rainforest Fruits
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: extraction of data from a book
   original_file: Cooper & Cooper_Australian Rainforest Plants.xls in raw data folder
   notes: none
-sites: .na
-contexts: .na
+locations: .na
+contexts:
+- context_property: replicate observations
+  category: temporal
+  var_in: observation_num
+  values:
+  - value: 1
+  - value: 2
 traits:
 - var_in: form
   unit_in: .na
@@ -62,9 +76,17 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: reference book
-- var_in: growth_habit
+- var_in: plant_growth_substrate
   unit_in: .na
-  trait_name: growth_habit
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: reference book
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -134,7 +156,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &fruit_length_method reference book
+  methods: reference book
 - var_in: max fruit length
   unit_in: mm
   trait_name: fruit_length
@@ -142,13 +164,13 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *fruit_length_method
+  methods: reference book
 - var_in: min fruit width
   unit_in: mm
   trait_name: fruit_width
   entity_type: species
   value_type: minimum
-  basis_of_value: &fruit_width_method measurement
+  basis_of_value: measurement
   replicates: .na
   methods: reference book
 - var_in: max fruti width
@@ -158,7 +180,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *fruit_width_method
+  methods: measurement
 - var_in: min seed length
   unit_in: mm
   trait_name: seed_length
@@ -166,7 +188,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &seed_length_method reference book
+  methods: reference book
 - var_in: max seed length
   unit_in: mm
   trait_name: seed_length
@@ -174,7 +196,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *seed_length_method
+  methods: reference book
 - var_in: flowering_span
   unit_in: .na
   trait_name: flowering_time
@@ -239,46 +261,58 @@ substitutions:
   replace: herb shrub
 - trait_name: plant_growth_form
   find: shrub, but occassionally emergent tree
-  replace: shrub treelet
+  replace: shrub tree
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: vine/shrub
-  replace: climber_shrub
+  replace: climber_woody shrub
 - trait_name: plant_growth_form
   find: lily
   replace: geophyte
 - trait_name: plant_growth_form
   find: pandanus tree
-  replace: pandanus
+  replace: palmoid
+- trait_name: plant_growth_form
+  find: palm
+  replace: palmoid
 - trait_name: plant_growth_form
   find: banan plant
-  replace: palm
+  replace: palmoid
 - trait_name: plant_growth_form
   find: shrub?
   replace: shrub
 - trait_name: plant_growth_form
   find: vine/herb
-  replace: climber_herb
+  replace: climber_herbaceous herb
 - trait_name: plant_growth_form
   find: fern tree
-  replace: fern_tree
+  replace: fern palmoid
 - trait_name: plant_growth_form
   find: tree fern
-  replace: fern_tree
+  replace: fern palmoid
 - trait_name: plant_growth_form
   find: shrb, but occassionally emergent tree
-  replace: shrub treelet
+  replace: shrub tree
 - trait_name: plant_growth_form
   find: shrub in nsw & qld (tree in vic)
   replace: shrub tree
 - trait_name: plant_growth_form
   find: climbing palm
-  replace: climber_palm
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: herb_large
+  replace: herb
 - trait_name: plant_growth_form
   find: mistletoe
-  replace: epiphyte
+  replace: shrub
+- trait_name: plant_growth_form
+  find: epiphyte
+  replace: .na
+- trait_name: plant_growth_form
+  find: cycad
+  replace: palmoid
 - trait_name: fruit_type
   find: a pair of mericarps
   replace: mericarp

@@ -30,16 +30,18 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: 'data %>% mutate_all(~ gsub("*", NA, .x, fixed=TRUE))'
+  custom_R_code:     '
+    data %>%
+      mutate(across(.cols = everything(), ~na_if(.,"*")))
+  '
   collection_date: 2011-02/2011-03
   taxon_name: Species
-  site_name: site
-  context_name: Treatment
+  location_name: site
   description: A study to determine whether granite outcrop species could improve
     green roof performance by evaluating water use strategies under contrasting water
     availability.
-  collection_type: glasshouse
-  sample_age_class: adult
+  basis_of_record: lab
+  life_stage: adult
   sampling_strategy: Species selection ^p   Twelve species which grow on granite outcrops
     in southeastern Australia (chosen from Victorian Ecological Vegetation Class (EVC)
     characteristic species lists) along with a succulent commonly used on green roofs
@@ -74,19 +76,24 @@ dataset:
     availability.
   original_file: Farrell et al 2013 Plant and Soil data.xls
   notes: none
-sites:
+locations:
   The University of Melbourne Burnley campus:
     latitude (deg): -37.828472
     longitude (deg): 145.020883
     description: temperature controlled glasshouse
 contexts:
-  Watered:
-    water treatment: well-watered (plants were watered to pot capacity (2 L per pot))
-      [manipulated]
-  Drought:
-    water treatment: drought (plant watered with 20% of the water used by well watered
+- context_property: drought treatment
+  category: treatment
+  var_in: Treatment
+  values:
+  - find: Drought
+    value: drought
+    description: The plants were watered with 20% of the water used by well-watered
       plants (determined gravimetrically) in the 3-4 days preceding each watering
-      event) [manipulated]
+      event).
+  - find: Watered
+    value: well-watered
+    description: The plants were watered to pot capacity at (2 L per pot).
 traits:
 - var_in: life_form
   unit_in: .na
@@ -254,7 +261,7 @@ traits:
     instantaneous IRGA measurements.)
 - var_in: LMA kg/m2
   unit_in: kg/m2
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement

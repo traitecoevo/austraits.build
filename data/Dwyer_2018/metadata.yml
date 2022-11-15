@@ -26,15 +26,14 @@ contributors:
   austraits_curators: Caitlan Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         individual_plant = paste(species, Ind_ID, sep = "_")
       ) %>%
       group_by(individual_plant, species, Ind_ID, .drop = FALSE) %>%
         summarise(
-          sla = mean(sla, na.rm=TRUE),
-          stem_specific_density = mean(stem_specific_density, na.rm=TRUE),
+          across(c(sla, stem_specific_density), ~mean(.x) %>% na_if("NaN"), na.rm=TRUE),
           wd_notes = last(wd_notes)
         ) %>%
       ungroup() %>%
@@ -42,14 +41,14 @@ dataset:
   '
   collection_date: 2015/2015
   taxon_name: species
-  site_name: site_name
+  location_name: site_name
   individual_id: individual_plant
   description: We investigated plant community responses 8 years after thinning in
     densely resprouting brigalow (Acacia harpophylla) forests in Australia. We examined
     the abundance, diversity, composition, and size of all woody recruits, as well
     as the functional composition of woody plant assemblages using functional traits.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Four treatments were applied to 25 x 25 m plots in a randomized
     block design; control (no thinning) and random thinning (ringbarking) down to
     4,000, 2,000, and 1,000 stems/ha. Reference plots were also established in a nearby
@@ -62,7 +61,7 @@ dataset:
     in regrowth plots).
   original_file: Dwyer_&_Mason_SLA.csv and Dwyer_&_Mason_SSD.csv
   notes: The two original files were combined into one data.csv file.
-sites:
+locations:
   Bulli State Forest:
     latitude (deg): -28.036347
     longitude (deg): 150.92267
@@ -90,7 +89,7 @@ contexts: .na
 traits:
 - var_in: sla
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: mean
   basis_of_value: measurement

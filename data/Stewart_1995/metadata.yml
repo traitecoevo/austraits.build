@@ -26,7 +26,7 @@ contributors:
   austraits_curators: Ian Wright, Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         date = ifelse(site == "Loganholme","1992-12",NA), 
@@ -34,16 +34,20 @@ dataset:
         date = ifelse(site == "Gambubal","1993-01",date), 
         date = ifelse(site == "Coominya","1993",date),
         rownumber = row_number(),
-        plant_growth_form = ifelse(rownumber > 94, NA, plant_growth_form)
-      )
+        plant_growth_form = ifelse(rownumber > 94, NA, plant_growth_form),
+        plant_growth_substrate = NA_character_
+      ) %>%
+      move_values_to_new_trait(
+        "plant_growth_form", "plant_growth_substrate", "O (mistletoe)", "epiphyte", ""
+      )      
   '
   collection_date: date
   taxon_name: name_edited
-  site_name: site
+  location_name: site
   description: A collection of leaf d13C values for plant communities across Queensland
     to understand how rainfall affects carbon isotope discrimination
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Plant specimens were collected from 12 sites along a rainfall
     gradient in southern Queensland, of approximately 900 km in length, at an approximate
     latitude of 27deg s. The location and dominant plant community of each site are
@@ -62,8 +66,10 @@ dataset:
     manipulated in Excel to craete a single row of data.
   notes: This dataset does not include data for all the sites listed in the manuscript.
     AusTraits has been unable to obtain a complete dataset; the additional site data
-    are in the file in the raw data folder. Also, the plant growth form column starts to contain a number of nonsensical values beyond row 94 and these have been filtered out (E. Wenk, 2022-05-31)
-sites:
+    are in the file in the raw data folder. Also, the plant growth form column starts
+    to contain a number of nonsensical values beyond row 94 and these have been filtered
+    out (E. Wenk, 2022-05-31)
+locations:
   Coominya:
     locality: Coominya
     description: Open Forest
@@ -142,6 +148,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert knowledge or reference book
 - var_in: GrowthForm2 (woody/herbaceuous)
   unit_in: .na
   trait_name: .na
@@ -196,13 +210,13 @@ substitutions:
   replace: needle
 - trait_name: nitrogen_fixing
   find: 'y'
-  replace: 1
+  replace: nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: y?
-  replace: 1
+  replace: nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'n'
-  replace: 0
+  replace: non_nitrogen_fixer
 - trait_name: photosynthetic_pathway
   find: '?'
   replace: .na
@@ -211,7 +225,7 @@ substitutions:
   replace: shrub
 - trait_name: plant_growth_form
   find: o (mistletoe)
-  replace: epiphyte
+  replace: .na
 - trait_name: plant_growth_form
   find: t
   replace: tree
@@ -220,10 +234,10 @@ substitutions:
   replace: herb
 - trait_name: plant_growth_form
   find: v
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: seedling
   replace: .na

@@ -25,28 +25,34 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         flowering_time = format_flowering_months(flowering_time_start, 
-                                                flowering_time_end),
-        fruit_dehiscence = `Fruit.Type.Specific`) %>%
-      move_values_to_new_trait("Fruit.Type.Specific", "fruit_dehiscence", 
-          c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle", 
-            "berry", "utricle", "syncarp", "syconium", "schizocarp"), 
-          c("dehiscent", "dehiscent", "indehiscent", "indehiscent", 
+                                                flowering_time_end),        
+        fruit_dehiscence = `Fruit.Type.Specific`,
+      ) %>%
+      move_values_to_new_trait(
+        "Fruit.Type.Specific", "fruit_dehiscence", 
+        c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle", 
+            "berry", "utricle", "syncarp", "syconium"), 
+        c("dehiscent", "dehiscent", "indehiscent", "indehiscent", 
             "indehiscent", "indehiscent", "dehiscent", "indehiscent", 
-            "indehiscent", "indehiscent", "indehiscent", NA), 
-          c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle",
-            "berry", "utricle", "syncarp", "syconium", "schizocarp")) %>% 
-      mutate(fruit_dehiscence = if_else(`Adaptive.Trait` %in% 
-        c("indehiscent", "indehiscent, woody"), "indehiscent",fruit_dehiscence))
+            "indehiscent", "indehiscent", "indehiscent"), 
+        c("pod", "capsule", "drupe", "achene", "nut", "samara", "follicle",
+            "berry", "utricle", "syncarp", "syconium")
+      ) %>% 
+      mutate(
+        fruit_dehiscence = if_else(`Adaptive.Trait` %in% 
+        c("indehiscent", "indehiscent, woody"), "indehiscent", fruit_dehiscence),
+        fruit_dehiscence = na_if(fruit_dehiscence, "")
+      )
   '
   collection_date: 2014/2014
   taxon_name: species
   description: angiosperm and gymnosperm dispersal data from Si-Chong Chen PhD
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: A list of Australian plant species was obtained from the 'Flora
     of Australia online database' (Flora of Australia online 2009). Hybrids, aquatic
     species and naturalised species were removed from the dataset. We checked the
@@ -63,7 +69,7 @@ dataset:
     data.
   notes: Original species names assigned follow the species nomenclatures in the Flora
     of Australia Online.
-sites: .na
+locations: .na
 contexts: .na
 traits:
 - var_in: Fruit.Type.Botany
@@ -195,6 +201,9 @@ traits:
   replicates: .na
   methods: literature search
 substitutions:
+- trait_name: fruit_dehiscence
+  find: schizocarp
+  replace: .na.character
 - trait_name: fruit_type
   find: pod
   replace: legume

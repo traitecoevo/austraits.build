@@ -19,22 +19,37 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: data %>% mutate( flowering_time =  ifelse(is.na(data$`flowering month
-    begin`), NA, sprintf("%s-%s",month.abb[`flowering month begin`], month.abb[`flowering
-    month end`]) %>% convert_month_range_vec_to_binary())) %>% mutate( fruiting_time
-    = ifelse(is.na(data$`fruiting month begin`), NA, sprintf("%s-%s",month.abb[`fruiting
-    month begin`], month.abb[`fruiting month end`]) %>% convert_month_range_vec_to_binary()))
+  custom_R_code: '
+    data %>%
+      mutate(
+        flowering_time =  ifelse(is.na(data$`flowering month begin`), NA, 
+          sprintf("%s-%s",month.abb[`flowering month begin`], month.abb[`flowering month end`]) %>%
+          convert_month_range_vec_to_binary()),
+        fruiting_time = ifelse(is.na(data$`fruiting month begin`), NA,
+          sprintf("%s-%s",month.abb[`fruiting month begin`], month.abb[`fruiting month end`]) %>%
+          convert_month_range_vec_to_binary()),
+        leaf_margin_posture = NA,
+        leaf_type2 = ifelse(
+          leaf_shape %in% c("scale", "scale terete", "triangular_scale", "scales") |
+          leaf_type %in% c("scale","scale phyllode", "phyllode scale"), 
+          "scale", NA)
+        ) %>%
+      move_values_to_new_trait(
+        "leaf_margins","leaf_margin_posture",
+        c("recurved", "revolute toothed"), c("recurved", "revolute"), c("", "toothed")
+      )
+  '
   collection_date: 1984/2017
   taxon_name: species
   description: transcribed from 'A monograph of Daviesia (Mirbelieae, Faboideae, Fabaceae)'
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: herbarium and field censuses
   original_file: transcribed from manuscript
   notes: Scattered duplicates with many of the large datasets from herbaria, NTH_2014,
     RBGSYD_2014_2, SAH_2014, Wheeler_2002, but nothing has been filtered out, because
     no consistent patterns, suggesting same measurements used by multiple sources.
-sites: .na
+locations: .na
 contexts: .na
 traits:
 - var_in: growth_form
@@ -60,7 +75,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &canopy_width_method herbarium collections
+  methods: herbarium collections
 - var_in: canopy_width_max_cm
   unit_in: cm
   trait_name: plant_width
@@ -68,7 +83,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *canopy_width_method
+  methods: herbarium collections
 - var_in: fire_status
   unit_in: .na
   trait_name: fire_response
@@ -78,6 +93,14 @@ traits:
   replicates: .na
   methods: herbarium collections
 - var_in: leaf_type
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: herbarium collections
+- var_in: leaf_type2
   unit_in: .na
   trait_name: leaf_type
   entity_type: species
@@ -101,6 +124,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections
+- var_in: leaf_margin_posture
+  unit_in: .na
+  trait_name: leaf_margin_posture
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: herbarium collections
 - var_in: leaf_length_min_mm
   unit_in: mm
   trait_name: leaf_length
@@ -108,7 +139,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &leaf_length_method herbarium collections
+  methods: herbarium collections
 - var_in: leaf_length_max_mm
   unit_in: mm
   trait_name: leaf_length
@@ -116,7 +147,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *leaf_length_method
+  methods: herbarium collections
 - var_in: leaf_width_min_mm
   unit_in: mm
   trait_name: leaf_width
@@ -124,7 +155,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &leaf_width_method herbarium collections
+  methods: herbarium collections
 - var_in: leaf_width_max_mm
   unit_in: mm
   trait_name: leaf_width
@@ -132,7 +163,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *leaf_width_method
+  methods: herbarium collections
 - var_in: fruit_length_min_mm
   unit_in: mm
   trait_name: fruit_length
@@ -140,7 +171,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &fruit_length_method herbarium collections
+  methods: herbarium collections
 - var_in: fruit_length_max_mm
   unit_in: mm
   trait_name: fruit_length
@@ -148,7 +179,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *fruit_length_method
+  methods: herbarium collections
 - var_in: fruit_width_min_mm
   unit_in: mm
   trait_name: fruit_width
@@ -156,7 +187,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &fruit_width_method herbarium collections
+  methods: herbarium collections
 - var_in: fruit_width_max_mm
   unit_in: mm
   trait_name: fruit_width
@@ -164,7 +195,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *fruit_width_method
+  methods: herbarium collections
 - var_in: seed_shape
   unit_in: .na
   trait_name: seed_shape
@@ -180,7 +211,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &seed_length_method herbarium collections
+  methods: herbarium collections
 - var_in: seed_length_max_mm
   unit_in: mm
   trait_name: seed_length
@@ -188,7 +219,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *seed_length_method
+  methods: herbarium collections
 - var_in: seed_width_min_mm
   unit_in: mm
   trait_name: seed_width
@@ -196,7 +227,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &seed_width_method herbarium collections
+  methods: herbarium collections
 - var_in: seed_width_max_mm
   unit_in: mm
   trait_name: seed_width
@@ -204,7 +235,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *seed_width_method
+  methods: herbarium collections
 - var_in: seed_breadth_min_mm
   unit_in: mm
   trait_name: seed_height
@@ -212,7 +243,7 @@ traits:
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
-  methods: &seed_height_method herbarium collections
+  methods: herbarium collections
 - var_in: seed_breadth_max_mm
   unit_in: mm
   trait_name: seed_height
@@ -220,7 +251,7 @@ traits:
   value_type: maximum
   basis_of_value: measurement
   replicates: .na
-  methods: *seed_height_method
+  methods: herbarium collections
 - var_in: dispersal_appendage
   unit_in: .na
   trait_name: dispersal_appendage
@@ -246,42 +277,60 @@ traits:
   replicates: .na
   methods: herbarium collections and field observations
 substitutions:
-- trait_name: leaf_margin
-  find: revolute toothed
-  replace: lobed
-- trait_name: leaf_margin
-  find: recurved
-  replace: lobed
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: scale
-  replace: scale_leaf
-- trait_name: leaf_type
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
   find: scale phyllode
-  replace: scale_leaf phyllode
-- trait_name: leaf_type
+  replace: cladode phyllode
+- trait_name: plant_photosynthetic_organ
   find: phyllode scale
-  replace: scale_leaf phyllode
+  replace: cladode phyllode
 - trait_name: leaf_shape
   find: narrowly_elliptic linear
   replace: narrowly_elliptical linear
 - trait_name: leaf_shape
+  find: clavate linear terete
+  replace: linear terete
+- trait_name: leaf_shape
   find: oblong_triangular_lobes
-  replace: oblong lobed
+  replace: oblong triangular
 - trait_name: leaf_shape
   find: linear-fusiform
-  replace: linear fusiform
+  replace: linear
+- trait_name: leaf_shape
+  find: oblong deltoid subulate
+  replace: oblong deltate subulate
+- trait_name: leaf_shape
+  find: ovate broadly_ovate
+  replace: ovate widely_ovate
+- trait_name: leaf_shape
+  find: ovate broadly_ovate cordate
+  replace: ovate widely_ovate cordate
+- trait_name: leaf_shape
+  find: broadly_ovate cordate
+  replace: widely_ovate cordate
 - trait_name: leaf_shape
   find: needle-like terete
-  replace: needle terete
+  replace: acicular terete
 - trait_name: leaf_shape
   find: needle-like
-  replace: needle
+  replace: acicular
+- trait_name: leaf_shape
+  find: needle
+  replace: acicular
 - trait_name: fire_response
   find: resprouting
   replace: resprouts
 - trait_name: leaf_shape
+  find: straight
+  replace: .na
+- trait_name: leaf_shape
+  find: spine
+  replace: .na
+- trait_name: leaf_shape
   find: triangular_scale
-  replace: scale
+  replace: triangular
 - trait_name: leaf_shape
   find: linear_twisted
   replace: linear
@@ -293,40 +342,52 @@ substitutions:
   replace: linear_elliptical
 - trait_name: leaf_shape
   find: linear-clavate terete
-  replace: linear clavate terete
+  replace: linear terete
 - trait_name: leaf_shape
   find: scales
-  replace: scale
+  replace: .na
+- trait_name: leaf_shape
+  find: scale
+  replace: .na
+- trait_name: leaf_shape
+  find: scale terete
+  replace: terete
 - trait_name: leaf_shape
   find: sigmoid linear-clavate terete
-  replace: linear clavate terete
+  replace: linear terete
 - trait_name: leaf_shape
   find: subulate terete straight
   replace: subulate terete
+- trait_name: leaf_shape
+  find: linear_obovate linear_elliptical
+  replace: narrowly_oblanceolate linear_elliptical
 - trait_name: leaf_shape
   find: narrowly_elliptical linearly_elliptical
   replace: narrowly_elliptical linear_elliptical
 - trait_name: leaf_shape
   find: terete needle-like
-  replace: terete needle
+  replace: terete acicular
+- trait_name: leaf_shape
+  find: obovate broadly_obovate subulate
+  replace: obovate widely_obovate subulate
 - trait_name: leaf_shape
   find: spines
-  replace: spine
-- trait_name: leaf_type
-  find: scale
-  replace: scale_leaf
+  replace: .na
+- trait_name: plant_photosynthetic_organ
+  find: phyllode leafless
+  replace: phyllode
 - trait_name: leaf_shape
   find: narrowly subulate
-  replace: narrowly_subulate
+  replace: subulate
 - trait_name: leaf_shape
   find: sickle-shaped subulate
   replace: falcate subulate
 - trait_name: leaf_shape
   find: terete vertically_compressed
-  replace: terete_compressed
+  replace: terete
 - trait_name: leaf_shape
   find: trigonous terete
-  replace: trigonous_terete
+  replace: terete
 - trait_name: leaf_shape
   find: obliquely_quadrilateral triangular
   replace: triangular

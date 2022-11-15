@@ -27,22 +27,22 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       group_by(`gen spp`, site_text) %>%
-        mutate(observation_number = row_number()) %>%
+        mutate(observation_num = row_number()) %>%
       ungroup() %>%
       mutate(
-        observation_number = ifelse(!is.na(`15-N`),observation_number, NA),
-        observation_number = ifelse(observation_number > 2, 2, observation_number)
+        observation_num = ifelse(!is.na(`15-N`),observation_num, NA),
+        observation_num = ifelse(observation_num > 2, 2, observation_num)
       )
   '
   collection_date: 1998/1998
   taxon_name: gen spp
-  site_name: site_text
+  location_name: site_text
   description: Compilation of data from Susanne Schmidt
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: The study site is a wet coastal subtropical heathland (wallum)
     situated at the Beerwah Scientific Area no. t, in south eastern Australia, 80
     km north of Brisbane (26deg51'S, 153degOO'E). The mean annual temperature is 20-5
@@ -67,7 +67,7 @@ dataset:
   original_file: subset of schmidt data for RhysWhitleyJuly2012.xls for the Beerwah
     Wallum site merged with raw values from BWDELTA.xls, BWDELC.xls
   notes: none
-sites:
+locations:
   Beerwah:
     latitude (deg): -26.9
     longitude (deg): 152.9
@@ -85,7 +85,13 @@ sites:
     fire history: The study area is subject to a fire regime under white subsites
       are burnt at intervals of 6-7 years with alternating 'hot' fires *burning during
       periods of prolonged dry conditions) and 'cold' fires (burning after rain).
-contexts: .na
+contexts:
+- context_property: replicate observations
+  category: temporal
+  var_in: observation_num
+  values:
+  - value: 1
+  - value: 2
 traits:
 - var_in: fire_response
   unit_in: .na
@@ -190,7 +196,6 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 15-N_sample_size
-  observation_number: observation_number
   methods: Healthy mature leaves were oven dried at 60 deg C on the day of collection
     and ground to a fine powder using a ball mill (Retsch MM-2, Haan, Germany). Lignotubers
     and roots from two to six specimens were used for d15N analysis. Cross-sections
@@ -219,10 +224,10 @@ substitutions:
   replace: facultative_drought_deciduous
 - trait_name: nitrogen_fixing
   find: 'N'
-  replace: '0'
+  replace: non_nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'Y'
-  replace: '1'
+  replace: nitrogen_fixer
 - trait_name: plant_growth_form
   find: G
   replace: geophyte

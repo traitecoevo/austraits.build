@@ -37,11 +37,10 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         individual_id = paste(Species, Tree, sep = "_"),
-        observation = ifelse(season == "wet", 1, 2),
         Species = recode(Species, "Melaleuca DMF" = "Melaleuca leucadendra", 
         "Melaleuca W" = "Melaleuca viridiflora", "Melaleuca Sw" = "Melaleuca viridiflora"),
         leaf_density = 10/(`SLA (cm2/g)`*`Leaf thickness (mm)`),
@@ -55,13 +54,11 @@ dataset:
   '
   collection_date: 2003/2003
   taxon_name: Species
-  site_name: site
+  location_name: site
   individual_id: individual_id
-  observation_number: observation
-  context_name: season
   description: field campaigns of Lynda Prior in NT via Ian Wright
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: At each site, all tree species with six or more representatives
     at least 2 m tall and with accessible leaves (lower than about 2 m from the ground)
     were included in the study, giving a total of 21 species from the four habitats
@@ -81,7 +78,7 @@ dataset:
     chlorostachys ) are considered nitrogen-fixers.
   original_file: Prior compiled.xls
   notes: none
-sites:
+locations:
   dry monsoon forest:
     longitude (deg): 130.9
     latitude (deg): -12.4
@@ -211,10 +208,16 @@ sites:
       total Kjeldahl N and P were determined using flow-injection analysis (Lachat
       Instruments, Milwaukee, WI, USA).
 contexts:
-  wet:
-    sampling season: Leaves measured in the wet season
-  dry:
-    sampling season: Leaves measured in the dry season
+- context_property: sampling season
+  category: temporal
+  var_in: season
+  values:
+  - find: wet
+    value: wet season
+    description: Measurements made during the wet season.
+  - find: dry
+    value: dry season
+    description: Measurements made during the dry season.
 traits:
 - var_in: growth form
   unit_in: .na
@@ -277,7 +280,7 @@ traits:
     were counted monthly.
 - var_in: SLA (cm2/g)
   unit_in: cm2/g
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -475,10 +478,10 @@ substitutions:
   replace: tree
 - trait_name: nitrogen_fixing
   find: 'No'
-  replace: '0'
+  replace: non_nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'Yes'
-  replace: '1'
+  replace: nitrogen_fixer
 - trait_name: leaf_phenology
   find: semi-deciduous
   replace: semi_deciduous

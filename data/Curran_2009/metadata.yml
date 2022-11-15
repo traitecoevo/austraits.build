@@ -30,27 +30,23 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         stomatal_conductance_per_area_ambient = `gs (stomatal conductance, cm.s-1)`*10*38.97,
-        individual_plant = paste(species,Site,`Tree #`, sep = "_")
-      ) %>%
-      arrange(`Sampling period`) %>%
-      group_by(individual_plant) %>%
-        mutate(observation = dplyr::row_number()) %>%
-      ungroup()
+        individual_plant = paste(species,Site,`Tree #`, sep = "_"),
+        collection_date = `Sampling period`
+      )
   '
-  collection_date: Sampling period
+  collection_date: collection_date
   taxon_name: Taxon
-  site_name: site_name
+  location_name: site_name
   individual_id: individual_plant
-  observation_number: observation
   description: Study to compare the ecophysiological traits of common trees and shrubs
     of semi-evergreen vine thicket (dry rainforest) on two contrasting soils during
     the Millenial Drought and subsequent breaking of the drought.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Experimental design ^p   Phytogeographical surveys of the dry
     rainforests of the western slopes of New South Wales (NSW) identified several
     sites where patches of a type of dry rainforest, semi-evergreen vine thicket (SEVT),
@@ -93,7 +89,7 @@ dataset:
     during subsequent analyses.
   original_file: Curran et al. SEVT ecophysiology data for AusTraits.xls
   notes: none
-sites:
+locations:
   southern slope Planchonella Nature Reserve:
     site code: 1
     description: 'Loam #1'
@@ -150,7 +146,20 @@ sites:
     soil P, SE total (mg/kg): 183.0
     elevation (m): 386.0
     slope aspect (degrees): 116.0
-contexts: .na
+contexts:
+- context_property: sampling season
+  category: temporal
+  var_in: Sampling period
+  values:
+  - find: 2003-01
+    value: summer drought
+    description: Plants measured during a summer drought period.
+  - find: 2003-03
+    value: summer non-drought
+    description: Plants measured during a summer non-drought period.
+  - find: 2003-08
+    value: winter non-drought
+    description: Plants measured during a winter non-drought period.
 traits:
 - var_in: pre-dawn WP (Mpa)
   unit_in: MPa
@@ -249,7 +258,7 @@ traits:
     per individual and the average calculated.
 - var_in: SLA (mm2 mg-1)
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: mean
   basis_of_value: measurement
@@ -264,7 +273,7 @@ traits:
     per individual and the average calculated.
 - var_in: leaf angle to horizontal (deg)
   unit_in: degrees
-  trait_name: leaf_angle
+  trait_name: leaf_inclination_angle
   entity_type: individual
   value_type: mean
   basis_of_value: measurement

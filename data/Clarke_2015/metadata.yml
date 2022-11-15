@@ -28,25 +28,38 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>%
       mutate(
-        `species records` = gsub("_", " ", `species records`, fixed=TRUE),
-        storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA),
-        woodiness ="woody"
+        `species records` = str_replace_all(`species records`, "_", " "),
+        storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA)
       ) %>%
-      group_by(`species records`) %>%
-        mutate_at(vars(`R+`,`S+`,`resp.type`, woodiness), replace_duplicates_with_NA) %>%
-        mutate(observation_number = row_number()) %>%
-      ungroup() 
+      distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`, `Conserved R+`, `Conserved S+`) %>%
+  group_by(`species records`, Ecosystem) %>%
+    mutate(
+      across(c(`R+`,`S+`,`resp.type`), ~na_if(., "X")),
+      `R+` = paste(`R+`, collapse = " "),
+      `S+` = paste(`S+`, collapse = " "),
+      `resp.type` = paste(`resp.type`, collapse = " ")
+    ) %>%
+  ungroup() %>%
+  distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`,`Conserved R+`, `Conserved S+`) %>%
+  mutate(
+    `R+` = ifelse(`R+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `R+`),
+    `S+` = str_replace(`S+`, "no NA", "no"),
+    `S+` = ifelse(`S+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `S+`),
+    storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA),
+    resp.type = resp.type %>% na_if(.,"NA"),
+    `R+` = `R+` %>% na_if(.,"NA"),
+    `S+` = `S+` %>% na_if(.,"NA")
+    )
   '
   collection_date: unknown/2015
   taxon_name: species records
-  site_name: Ecosystem
-  observation_number: observation_number
+  location_name: Ecosystem
   description: Collection of resprouting data from across all Australian ecosystems
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: From existing data in 6031 plots comprising the presence-absence
     of 3421 woody plant taxa (species and subspecies, forms and variants), we collated
     records of fire resprouting (resprouting R+ or killed R-) and postfire seedling
@@ -98,13 +111,45 @@ dataset:
     traits/growth form, but not in the data file online or in the one Michael Lawes
     has. Hopefully this information is in AusTraits through herbarium records for
     the same species.
-sites: .na
+locations:
+  Grassland:
+    latitude (deg): .na
+    longitude (deg): .na
+    habitat: grassland
+  Eucalypt Forest:
+    latitude (deg): .na
+    longitude (deg): .na
+    habitat: eucalypt forest
+  Acacia Shrublands:
+    latitude (deg): .na
+    longitude (deg): .na
+    habitat: acacia shrublands
+  Savanna:
+    latitude (deg): .na
+    longitude (deg): .na
+    habitat: savanna
+  Spinifex Grassland:
+    latitude (deg): .na
+    longitude (deg): .na
+    habitat: spinifex grassland
+  Eucalypt Shrubland:
+    latitude (deg): .na
+    longitude (deg): .na
+    habitat: eucalypt shrubland
+  Heath:
+    latitude (deg): .na
+    longitude (deg): .na
+    habitat: heath
+  Rainforest:
+    latitude (deg): .na
+    longitude (deg): .na
+    habitat: rainforest
 contexts: .na
 traits:
 - var_in: resp.type
   unit_in: .na
   trait_name: bud_bank_location
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -116,8 +161,8 @@ traits:
     was recorded.'
 - var_in: storage_organ
   unit_in: .na
-  trait_name: storage_organ 
-  entity_type: species
+  trait_name: storage_organ
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -130,25 +175,25 @@ traits:
 - var_in: R+
   unit_in: .na
   trait_name: fire_response
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: Taxa were classified as resprouters (R+; 70-100% of individuals in the population
-    resprouted) or non-resprouters (R-; less than 30% of individuals in a population
-    resprouted) (Gill and Bradstock, 1992), although a third resprouting class (variable,
-    V)where 31-69% of individuals in a population resprouted, was also noted (Clarke
-    et al., 2005). A taxon was scored as a non-resprouter if all of its records were
-    R-, or if most records were R- and the remaining were variable. Taxa that experienced
-    complete canopy scorch and died were classified as R-. Conversely, a taxon was
-    scored as a resprouter if all of its records were R+, most were R+ and the remaining
-    were V, or if all records of population response were V. In the rare instance
-    where there were equal proportions of R-, V, and R+ records for a taxon, it was
-    scored as a resprouter (R+).
+  methods: Taxa were classified as resprouters (R+; 70-100% of individuals in the
+    population resprouted) or non-resprouters (R-; less than 30% of individuals in
+    a population resprouted) (Gill and Bradstock, 1992), although a third resprouting
+    class (variable, V)where 31-69% of individuals in a population resprouted, was
+    also noted (Clarke et al., 2005). A taxon was scored as a non-resprouter if all
+    of its records were R-, or if most records were R- and the remaining were variable.
+    Taxa that experienced complete canopy scorch and died were classified as R-. Conversely,
+    a taxon was scored as a resprouter if all of its records were R+, most were R+
+    and the remaining were V, or if all records of population response were V. In
+    the rare instance where there were equal proportions of R-, V, and R+ records
+    for a taxon, it was scored as a resprouter (R+).
 - var_in: S+
   unit_in: .na
   trait_name: post_fire_recruitment
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -174,11 +219,20 @@ substitutions:
   find: Apical
   replace: apical_buds
 - trait_name: bud_bank_location
+  find: apical na
+  replace: apical_buds
+- trait_name: bud_bank_location
   find: Basal
   replace: basal_stem_buds
 - trait_name: bud_bank_location
-  find: X
-  replace: .na
+  find: basal na
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
+  find: na basal
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
+  find: epicormic epicormic
+  replace: epicormic_buds
 - trait_name: bud_bank_location
   find: Lignotuber
   replace: basal_buds
@@ -188,18 +242,15 @@ substitutions:
 - trait_name: fire_response
   find: 'yes'
   replace: resprouts
-- trait_name: fire_response
-  find: X
-  replace: .na
 - trait_name: post_fire_recruitment
   find: 'no'
   replace: no_post_fire_recruitment
 - trait_name: post_fire_recruitment
+  find: no yes
+  replace: no_post_fire_recruitment post_fire_recruitment
+- trait_name: post_fire_recruitment
   find: 'yes'
   replace: post_fire_recruitment
-- trait_name: post_fire_recruitment
-  find: X
-  replace: .na
 taxonomic_updates:
 - find: Erythroxylum sp. (Splityard Creek L.Pedley 5360)
   replace: Erythroxylum sp. Splityard Creek (L.Pedley 5360)

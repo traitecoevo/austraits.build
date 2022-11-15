@@ -4,23 +4,16 @@
 \alias{metadata_add_contexts}
 \title{For specified `dataset_id` import context data from a dataframe}
 \usage{
-metadata_add_contexts(dataset_id, context_data)
+metadata_add_contexts(dataset_id, overwrite = FALSE)
 }
 \arguments{
 \item{dataset_id}{identifier for a particular study in the AusTraits database}
 
-\item{context_data}{A dataframe of context variables}
+\item{overwrite}{Overwrite existing information}
 }
 \description{
 This functions asks users which columns in the dataframe they would like to keep
 and records this appropriately in the metadata. The input data is assumed to be 
 in wide format.
 The output may require additional manual editing.
-}
-\examples{
-\dontrun{
-austraits$contexts \%>\% dplyr::filter(dataset_id == "Hall_1981") \%>\% 
-select(-dataset_id) \%>\% spread(context_property, value) \%>\% type_convert()-> context_data
-metadata_add_contexts("Hall_1981", context_data)
-}
 }
