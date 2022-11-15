@@ -248,7 +248,7 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
     message(crayon::red("loading object `taxonomic_resources` into global environment"))
     taxonomic_resources <- list()
     taxonomic_resources$APC <- read_csv_char(file_paths$APC)
-    taxonomic_resources$APNI <- read_csv_char(file_paths$APNI)
+    taxonomic_resources$APNI <- read_csv_char(file_paths$APNI) %>% distinct(.data$canonicalName, .keep_all = TRUE)
     assign("taxonomic_resources", taxonomic_resources, envir = .GlobalEnv)
   } 
   
@@ -357,6 +357,7 @@ austraits_rebuild_taxon_list <- function(austraits, taxonomic_resources) {
   taxa_all <- taxa1 %>% 
     dplyr::bind_rows(taxa2 %>% 
         dplyr::filter(!is.na(.data$taxonIDClean))) %>% 
+        dplyr::distinct(.data$cleaned_name, .keep_all = TRUE) %>%
     arrange(.data$cleaned_name) 
   
   taxa_all %>%
