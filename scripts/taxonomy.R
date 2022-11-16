@@ -757,7 +757,7 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
       dplyr::filter(!.data$taxonomicStatus == "excluded")
     taxonomic_resources$APNI <- read_csv_char(file_paths$APNI) %>%
       dplyr::distinct(.data$canonicalName, .keep_all = TRUE) %>%
-      dyplr::filter(!.data$caonicalName %in% taxonomic_resources$APC$canonicalName)
+      dplyr::filter(!.data$canonicalName %in% taxonomic_resources$APC$canonicalName)
     assign("taxonomic_resources", taxonomic_resources, envir = .GlobalEnv)
   } 
   
