@@ -867,8 +867,11 @@ austraits_rebuild_taxon_list <- function(austraits, taxonomic_resources) {
   
   taxa1 <- 
     taxa %>% dplyr::filter(!is.na(.data$scientific_name_id)) %>%
-    dplyr::mutate(cleaned_name = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), .data$complete_name, .data$cleaned_name)) %>%
-    dplyr::distinct() 
+    dplyr::mutate(
+      cleaned_name = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), .data$complete_name, .data$cleaned_name),
+      complete_name =ifelse(is.na(complete_name), cleaned_name, complete_name)
+      ) %>%
+    dplyr::distinct(.data$complete_name, .data$cleaned_name, .keep_all = TRUE)
   
   # Now check against APNI for any `cleaned names` not found in APC
   # Only keep those species with a match
@@ -899,7 +902,8 @@ austraits_rebuild_taxon_list <- function(austraits, taxonomic_resources) {
     dplyr::bind_rows(taxa2 %>% 
         dplyr::filter(!is.na(.data$cleaned_scientific_name_id))) %>% 
     arrange(.data$cleaned_name)  %>%
-    select(-.data$complete_name)
+    select(-.data$complete_name) %>%
+    distinct(.data$cleaned_name, .keep_all = TRUE)
   
   taxa_all %>%
     readr::write_csv("config/taxon_list.csv")
