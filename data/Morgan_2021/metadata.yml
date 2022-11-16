@@ -35,21 +35,21 @@ dataset:
   custom_R_code: '
     data %>%
       mutate(
-        taxon_name = str_c(genus, " ", species),
-        collection_date = parse_date_time(collection_date, orders = "dmy") %>%
+        taxon_name = stringr::str_c(genus, " ", species),
+        collection_date = lubridate::parse_date_time(collection_date, orders = "dmy") %>%
             format.Date("%Y-%m-%d")
       )
   '
   collection_date: collection_date
   taxon_name: taxon_name
-  site_name: site_location_name
+  location_name: site_location_name
   individual_id: tree_id
   description: This pilot study investigated the feasibility of using TERN (Australia's
     national land ecosystem observatory) data to measure a single morphological trait,
     specific leaf area. The study was restricted to Eucalyptus spp. and aimed to inform
     future sampling strategy for SLA.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: The first component of the study was the measurement of leaves
     from voucher specimens. We located 30 Eucalyptus vouchers exclusively from South
     Australian plots (figure 1) and took 5 leaves from each specimen to be dried and
@@ -61,7 +61,7 @@ dataset:
     leaves and leaf SLA for dry and fresh leaves.
   original_file: Located in raw data folder and also in austraits Google Drive
   notes: .na
-sites:
+locations:
   SAAKAN0001:
     latitude (deg): -35.6486444
     longitude (deg): 137.3680278
@@ -134,7 +134,15 @@ sites:
   WAITECONRES:
     latitude (deg): -34.9722
     longitude (deg): 138.64143
-contexts: .na
+contexts:
+- context_property: sample moisture status
+  category: method
+  var_in: method_context
+  values:
+  - value: dry leaf measurement
+    description: measurements made on a dry leaf
+  - value: fresh leaf measurement
+    description: measurements made on a fresh leaf
 traits:
 - var_in: mean_dry_area
   unit_in: mm2
@@ -143,8 +151,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 5
-  measurement_remarks: dry leaf measurement
-  method_number: 1
+  method_context: dry leaf measurement
   methods: This is the one-sided area of the dry leaf. The leaves were mounted onto
     sheets of paper, placed into a plant press and dried in an oven for 24 hours at
     70C, and scanned with a flatbed scanner. Leaf area was measured from the scans
@@ -163,13 +170,12 @@ traits:
     and weighed with the same microbalance.
 - var_in: mean_SLA
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: mean
   basis_of_value: measurement
   replicates: 5
-  measurement_remarks: dry leaf measurement
-  method_number: 1
+  method_context: dry leaf measurement
   methods: SLA here is measured with the dry area and dry mass of the leaf. The leaves
     were mounted onto sheets of paper and scanned with a flatbed scanner. Leaf area
     was measured from the scans using ImageJ software. The mounted leaves were placed
@@ -186,19 +192,17 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: 5
-  measurement_remarks: fresh leaf measurement
-  method_number: 2
+  method_context: fresh leaf measurement
   methods: This is fresh leaf area. The leaves were mounted onto sheets of paper,
     scanned with a flatbed scanner and measured using ImageJ software.
 - var_in: mean_fresh_SLA
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: mean
   basis_of_value: measurement
   replicates: 5
-  measurement_remarks: fresh leaf measurement
-  method_number: 2
+  method_context: fresh leaf measurement
   methods: SLA here is calculated with fresh leaf area and dry leaf mass. The leaves
     were mounted onto sheets of paper, scanned with a flatbed scanner and measured
     using ImageJ software. They were then dried in an oven for 72 hours at 70C and

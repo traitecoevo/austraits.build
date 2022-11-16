@@ -290,9 +290,9 @@ locations <-
               summarise(records = n()),
             # details on locations from metadata
             data_study$locations %>%
-              filter(site_property %in% location_main) %>%
+              filter(location_property %in% location_main) %>%
               select(-dataset_id) %>%
-              spread(site_property, value) %>%
+              spread(location_property, value) %>%
               create_if_missing("location_id") %>%
               create_if_missing("location_name") %>%
               create_if_missing("latitude (deg)") %>%
@@ -333,16 +333,16 @@ if(nrow(locations) > 0 ) {
 new_question("(section `locations`) Do site details look complete and accurate? As a minimum we would like `latitude`, `longitude`, `description`.")
 ```
 
-## Additional site data (optional)
+## Additional location data (optional)
 
 The following variables have been recorded for the locations included in the study:
 
 ```{r, results='asis', echo=FALSE}
 
 data_study$locations %>%
-  filter(!(site_property %in% location_main)) %>%
+  filter(!(location_property %in% location_main)) %>%
   select(-dataset_id) %>%
-  spread(site_property, value) -> locations_extra
+  spread(location_property, value) -> locations_extra
 
 if(nrow(locations_extra) > 0 ) {
   locations_extra %>%
