@@ -168,7 +168,7 @@ To aid your review, we have attached the following files:
 ```{r, results='asis', echo=FALSE}
 # Any additional questions from metadata
 
-if(!is.null(metadata$questions) & !is.na(metadata$questions)) {
+if(!is.null(metadata$questions) & !is.na(metadata$questions[1])) {
 
   x <- names(metadata$questions)[ !(names(metadata$questions) %in% c(
                                       "additional_traits", "austraits") 
@@ -368,13 +368,15 @@ data_study$contexts %>%
   group_split() -> context_properties
 
 if(length(context_properties) > 0 ) {
-  context_properties %>%
-    for (i in 1:length(context_properties)) {      
-      writeLines("The column titled `r context_properties[[i]]$category[1]` in your dataset was mapped to context property `r context_properties[[i]]$context_property[1]`, within the category `r context_properties[[i]]$category[1]`")
+    for (i in seq_along(context_properties)) { 
+      var_in <- context_properties[[i]][["var_in"]][1]
 
-      writeLines("The following values exist for this context: ")
+      writeLines(paste0("**", context_properties[[i]]$context_property[1], "**:", ifelse(is.null(var_in), "Added ",         
+        paste0("Mapped from the column titled **", var_in, "** in your dataset ")), "with the category *", context_properties[[i]]$category[1], "*."))
 
-      context_properties[[i]] %>% select(find, replace, description)  %>%
+      writeLines("\n\nThe following values exist for this context:\n")
+
+      context_properties[[i]] %>% dplyr::select(dplyr::any_of(c("find", "value", "description")))  %>%
         my_kable_styling() %>%
         writeLines()
     }
@@ -630,7 +632,7 @@ for(trait in traits_categorical) {
     sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the AusTraits database.\n\nThe contributed data has the following properties:", transforms$var_in, trait),
     "",
     sprintf("- **standardised name**: %s", trait ),
-    sprintf("- **standardised description**: %s", definitions$elements[[trait]]$description ),
+    sprintf("- **standardised description**: %s", elements$description ),
     sprintf("- **label**: %s", elements$label ),
     sprintf("- **records**: %s in this study (of %s in AusTraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
     "", 
@@ -641,7 +643,7 @@ for(trait in traits_categorical) {
     "",
     "The allowable values for this trait in AusTraits are:",
     "",
-    elements$values %>% unlist() %>% as.data.frame() %>% tibble::rownames_to_column() %>% rename(trait_value = "rowname", definition = ".") %>% arrange(trait_value) %>% my_kable_styling(),
+    elements$allowed_values_levels %>% unlist() %>% as.data.frame() %>% tibble::rownames_to_column() %>% rename(trait_value = "rowname", definition = ".") %>% arrange(trait_value) %>% my_kable_styling(),
     "",
     ifelse(nrow(substitutions_for_trait)>0,
     "The following substitutions have been implemented to align categorical trait values in the submitted data table with allowable trait values specified in the AusTraits traits_definitions file.",
