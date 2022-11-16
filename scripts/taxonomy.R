@@ -314,16 +314,16 @@ fuzzy_match <- function(txt, accepted_list, max_distance_abs, max_distance_rel, 
 #' @examples
 strip_names <- function(x) {
   x %>% 
-    str_replace_all("[:punct:]", " ") %>%
-    str_replace_all(" subsp ", " ") %>% 
-    str_replace_all(" var |var$", " ") %>% 
-    str_replace_all(" ser ", " ") %>% 
-    str_replace_all(" f ", " ") %>%
-    str_replace_all(" s l ", " ") %>% 
-    str_replace_all(" s s ", " ") %>% 
-    str_replace_all("\\=", " ") %>%
-    str_replace_all("  ", " ") %>%
-    str_squish() %>% tolower() 
+    stringr::str_replace_all("[:punct:]", " ") %>%
+    stringr::str_replace_all(" subsp ", " ") %>% 
+    stringr::str_replace_all(" var |var$", " ") %>% 
+    stringr::str_replace_all(" ser ", " ") %>% 
+    stringr::str_replace_all(" f ", " ") %>%
+    stringr::str_replace_all(" s l ", " ") %>% 
+    stringr::str_replace_all(" s s ", " ") %>% 
+    stringr::str_replace_all("\\=", " ") %>%
+    stringr::str_replace_all("  ", " ") %>%
+    stringr::str_squish() %>% tolower() 
 }
 
 #' Strip names of punctuation and filler words, including sp.
@@ -336,25 +336,25 @@ strip_names <- function(x) {
 #' @examples
 strip_names_2 <- function(x) {
   x %>% 
-    str_replace_all("[:punct:]", " ") %>%
-    str_replace_all(" subsp ", " ") %>% 
-    str_replace_all(" var | var$", " ") %>% 
-    str_replace_all(" ser ", " ") %>% 
-    str_replace_all(" f ", " ") %>% 
-    str_replace_all(" forma ", " ") %>% 
-    str_replace_all(" species ", " ") %>%
-    str_replace_all(" s l ", " ") %>% 
-    str_replace_all(" s s ", " ") %>%  
-    str_replace_all(" ss ", " ") %>% 
-    str_replace_all(" x ", " ") %>%  
-    str_replace_all(" sp |sp $", " ") %>%  
-    str_replace_all(" sp1", " 1") %>%  
-    str_replace_all(" sp2", " 2") %>% 
-    str_replace_all(" ssp |ssp $", " ") %>% 
-    str_replace_all(" cf | cf$", " ") %>%
-    str_replace_all("\\=", " ") %>%
-    str_replace_all("  ", " ") %>%
-    str_squish() %>% tolower() 
+    stringr::str_replace_all("[:punct:]", " ") %>%
+    stringr::str_replace_all(" subsp ", " ") %>% 
+    stringr::str_replace_all(" var | var$", " ") %>% 
+    stringr::str_replace_all(" ser ", " ") %>% 
+    stringr::str_replace_all(" f ", " ") %>% 
+    stringr::str_replace_all(" forma ", " ") %>% 
+    stringr::str_replace_all(" species ", " ") %>%
+    stringr::str_replace_all(" s l ", " ") %>% 
+    stringr::str_replace_all(" s s ", " ") %>%  
+    stringr::str_replace_all(" ss ", " ") %>% 
+    stringr::str_replace_all(" x ", " ") %>%  
+    stringr::str_replace_all(" sp |sp $", " ") %>%  
+    stringr::str_replace_all(" sp1", " 1") %>%  
+    stringr::str_replace_all(" sp2", " 2") %>% 
+    stringr::str_replace_all(" ssp |ssp $", " ") %>% 
+    stringr::str_replace_all(" cf | cf$", " ") %>%
+    stringr::str_replace_all("\\=", " ") %>%
+    stringr::str_replace_all("  ", " ") %>%
+    stringr::str_squish() %>% tolower() 
 }
 
 #' Load taxonomic resources from the APC and APNI
@@ -440,8 +440,8 @@ austraits_rebuild_taxon_list <- function(austraits, taxonomic_resources) {
                         .data$taxonomicStatus == "accepted") %>% 
           dplyr::select(cleaned_name = .data$canonicalName, cleaned_scientific_name_id = .data$scientificNameID, 
                         cleaned_name_taxonomic_status = .data$taxonomicStatus, accepted_name_usage_id = .data$acceptedNameUsageID)) %>%
-      dplyr::arrange(complete_name) %>%
-      dplyr::distinct(complete_name, cleaned_name, .keep_all = TRUE) %>%
+      dplyr::arrange(.data$complete_name) %>%
+      dplyr::distinct(.data$complete_name, .data$cleaned_name, .keep_all = TRUE) %>%
       dplyr::mutate(taxonomic_reference = ifelse(!is.na(.data$cleaned_scientific_name_id), "APC", NA_character_)) %>%
       # For all names that can be linked to a taxon `accepted` by APC, add in additional columns of data
       # These matches are done using `accepted_name_usage_id`, because this identifier is the same for all `known` names that link
@@ -500,44 +500,45 @@ austraits_rebuild_taxon_list <- function(austraits, taxonomic_resources) {
   # taxa 1 is the `cleaned names` that have been matched to an `accepted` or `known` name in APC and therefore now have a `cleaned_scientific_name_id` assigned
   
   taxa1 <- 
-    taxa %>% dplyr::filter(!is.na(.data$scientific_name_id)) %>%
-    dplyr::mutate(
-      cleaned_name = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), .data$complete_name, .data$cleaned_name),
-      complete_name =ifelse(is.na(complete_name), cleaned_name, complete_name)
-      ) %>%
-    dplyr::distinct(.data$complete_name, .data$cleaned_name, .keep_all = TRUE)
+    taxa %>% 
+      dplyr::filter(!is.na(.data$scientific_name_id)) %>%
+      dplyr::mutate(
+        cleaned_name = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), .data$complete_name, .data$cleaned_name),
+        complete_name =ifelse(is.na(.data$complete_name), .data$cleaned_name, .data$complete_name)
+        ) %>%
+      dplyr::distinct(.data$complete_name, .data$cleaned_name, .keep_all = TRUE)
   
   # Now check against APNI for any `cleaned names` not found in APC
   # Only keep those species with a match
 
   taxa2 <-
     taxa %>% 
-    dplyr::filter(is.na(.data$scientific_name_id)) %>%
-    dplyr::select(.data$cleaned_name, .data$complete_name) %>%
-    dplyr::left_join(by = "cleaned_name", taxonomic_resources$APNI %>%
-                       dplyr::select(cleaned_name = .data$canonicalName, cleaned_scientific_name_id = .data$scientificNameID, 
-                                     .data$family, taxon_rank = .data$taxonRank, scientific_name = .data$scientificName)) %>%
-    dplyr::group_by(.data$cleaned_name) %>%
+      dplyr::filter(is.na(.data$scientific_name_id)) %>%
+      dplyr::select(.data$cleaned_name, .data$complete_name) %>%
+      dplyr::left_join(by = "cleaned_name", taxonomic_resources$APNI %>%
+                         dplyr::select(cleaned_name = .data$canonicalName, cleaned_scientific_name_id = .data$scientificNameID, 
+                                       .data$family, taxon_rank = .data$taxonRank, scientific_name = .data$scientificName)) %>%
+      dplyr::group_by(.data$cleaned_name) %>%
+        dplyr::mutate(
+          cleaned_scientific_name_id = paste(.data$cleaned_scientific_name_id, collapse = " ") %>% 
+            dplyr::na_if("NA"),
+          family = ifelse(dplyr::n_distinct(.data$family) > 1, NA_character_, .data$family[1])) %>%
+      dplyr::ungroup() %>%
       dplyr::mutate(
-        cleaned_scientific_name_id = paste(.data$cleaned_scientific_name_id, collapse = " ") %>% 
-          dplyr::na_if("NA"),
-        family = ifelse(dplyr::n_distinct(.data$family) > 1, NA_character_, .data$family[1])) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(
-      taxonomic_reference = as.character(ifelse(is.na(.data$cleaned_scientific_name_id), NA_character_, "APNI")),
-      taxon_name = as.character(ifelse(is.na(.data$cleaned_scientific_name_id), NA_character_, .data$cleaned_name)),
-      cleaned_name_taxonomic_status = as.character(ifelse(is.na(.data$cleaned_scientific_name_id), "unknown", "unplaced by APC")),
-      taxonomic_status = as.character(.data$cleaned_name_taxonomic_status),
-      scientific_name_id = cleaned_scientific_name_id,
-      cleaned_name = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), .data$complete_name, .data$cleaned_name)
-      )
+        taxonomic_reference = as.character(ifelse(is.na(.data$cleaned_scientific_name_id), NA_character_, "APNI")),
+        taxon_name = as.character(ifelse(is.na(.data$cleaned_scientific_name_id), NA_character_, .data$cleaned_name)),
+        cleaned_name_taxonomic_status = as.character(ifelse(is.na(.data$cleaned_scientific_name_id), "unknown", "unplaced by APC")),
+        taxonomic_status = as.character(.data$cleaned_name_taxonomic_status),
+        scientific_name_id = .data$cleaned_scientific_name_id,
+        cleaned_name = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), .data$complete_name, .data$cleaned_name)
+        )
 
   taxa_all <- taxa1 %>% 
     dplyr::bind_rows(taxa2 %>% 
         dplyr::filter(!is.na(.data$cleaned_scientific_name_id))) %>% 
-    arrange(.data$cleaned_name)  %>%
-    select(-.data$complete_name) %>%
-    distinct(.data$cleaned_name, .keep_all = TRUE)
+    dplyr::arrange(.data$cleaned_name)  %>%
+    dplyr::select(-.data$complete_name) %>%
+    dplyr::distinct(.data$cleaned_name, .keep_all = TRUE)
   
   taxa_all %>%
     readr::write_csv("config/taxon_list.csv")

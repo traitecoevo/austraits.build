@@ -1483,55 +1483,54 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
   species_tmp <- species_tmp %>%  
     dplyr::mutate(    
       # if no taxonomic resolution is specified, then the name's taxonomic resolution is the taxon_rank for the taxon name
-      taxon_rank = ifelse(!is.na(taxonomic_resolution), taxonomic_resolution, taxon_rank),
+      taxon_rank = ifelse(!is.na(.data$taxonomic_resolution), .data$taxonomic_resolution, .data$taxon_rank),
       # field trinomial is only filled in if taxonomic resolution is an infraspecific name 
       trinomial = ifelse(.data$taxon_rank %in% c("trinomial", "Subspecies", "Forma", "Varietas"),             
-                        stringr::str_split_fixed(.data$taxon_name, "\\[",2)[,1] %>% str_trim(), NA),
+                        stringr::str_split_fixed(.data$taxon_name, "\\[",2)[,1] %>% stringr::str_trim(), NA),
       # field binomial is filled in if taxonomic resolution is an infraspecific name or a binomial
       # all taxon names that have "extra" information (beyond the actual name) have been formatted to have that information in square brackets '[]',
       # so these can be used as a delimitor to extract the actual name
       binomial = ifelse(.data$taxon_rank %in% c("binomial", "Species"), 
-                        stringr::str_split_fixed(.data$taxon_name, "\\[",2)[,1] %>% str_trim(), NA),
+                        stringr::str_split_fixed(.data$taxon_name, "\\[",2)[,1] %>% stringr::str_trim(), NA),
       binomial = ifelse(.data$taxon_rank %in% c("trinomial", "Subspecies", "Forma", "Varietas", "Series"), 
-                        stringr::word(.data$taxon_name, start = 1, end = 2), binomial),
-      binomial = stringr::str_trim(binomial),
+                        stringr::word(.data$taxon_name, start = 1, end = 2), .data$binomial),
+      binomial = stringr::str_trim(.data$binomial),
       # genus filled in for all names that have a taxonomic of genus or more detailed
       genus = ifelse(!.data$taxon_rank %in% c("Familia", "family"), stringr::word(.data$taxon_name, 1), NA),
-      family = ifelse(.data$taxon_rank %in% c("Familia", "family"), stringr::word(.data$taxon_name, 1), family),
+      family = ifelse(.data$taxon_rank %in% c("Familia", "family"), stringr::word(.data$taxon_name, 1), .data$family),
       # identify which name is to be matched to the various identifiers, distribution information, etc. in the taxa file
-      name_to_match_to = ifelse(taxon_rank %in% c("trinomial", "Subspecies", "Forma", "Varietas"), trinomial, NA),
-      name_to_match_to = ifelse(is.na(name_to_match_to) & taxon_rank %in% c("binomial", "Species"), binomial, name_to_match_to),
-      name_to_match_to = ifelse(is.na(name_to_match_to) & taxon_rank %in% c("genus", "Genus"), genus, name_to_match_to),
-      name_to_match_to = ifelse(is.na(name_to_match_to) & is.na(taxon_rank), genus, name_to_match_to),
-      name_to_match_to = ifelse(is.na(name_to_match_to) & taxon_rank %in% c("family", "Familia"), family, name_to_match_to)
+      name_to_match_to = ifelse(.data$taxon_rank %in% c("trinomial", "Subspecies", "Forma", "Varietas"), .data$trinomial, NA),
+      name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("binomial", "Species"), .data$binomial, .data$name_to_match_to),
+      name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("genus", "Genus"), .data$genus, .data$name_to_match_to),
+      name_to_match_to = ifelse(is.na(.data$name_to_match_to) & is.na(.data$taxon_rank), .data$genus, .data$name_to_match_to),
+      name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("family", "Familia"), .data$family, .data$name_to_match_to)
       ) %>%
       # remove family, taxon_rank; they are about to be merged back in, but matches will now be possible to more rows
-      select(-taxon_rank, - taxonomic_resolution) %>%
-      rename(family_tmp = family) %>%
+      select(-.data$taxon_rank, - .data$taxonomic_resolution) %>%
+      rename(family_tmp = .data$family) %>%
       # merge in all data from taxa 
       dplyr::left_join(by = c("name_to_match_to" = "taxon_name"),
         taxa %>% dplyr::select(-dplyr::contains("clean")) %>% dplyr::distinct()
       ) %>% 
       dplyr::arrange(.data$taxon_name) %>%
-      # merge in identifiers for genus & families
-      dplyr::left_join(genera_tmp) %>% 
-      #dplyr::mutate(ifelse(is.na(family), family_tmp, family)) %>%
-      dplyr::left_join(families_tmp) %>% 
+      # merge in identifiers for genera & families
+      dplyr::left_join(by = c("name_to_match_to", "family"), genera_tmp) %>% 
+      dplyr::left_join(by = "name_to_match_to", families_tmp) %>% 
       dplyr::mutate(
-        taxonomic_status = ifelse(taxon_rank %in% c("Genus", "genus"), .data$taxonomic_status_genus, .data$taxonomic_status),
-        taxonomic_status = ifelse(taxon_rank %in% c("Familia", "family"), .data$taxonomic_status_family, .data$taxonomic_status),
-        taxonomic_reference = ifelse(taxon_rank %in% c("Genus", "genus"), .data$taxonomic_reference_genus, .data$taxonomic_reference),
-        taxonomic_reference = ifelse(taxon_rank %in% c("Familia", "family"), .data$taxonomic_reference_family, .data$taxonomic_reference),
-        taxon_id = ifelse(taxon_rank %in% c("Genus", "genus"), taxon_id_genus, taxon_id),
-        taxon_id = ifelse(taxon_rank %in% c("Familia", "family"), taxon_id_family, taxon_id),
-        scientific_name_id = ifelse(taxon_rank %in% c("Genus", "genus"), scientific_name_id_genus, scientific_name_id),
-        scientific_name_id = ifelse(taxon_rank %in% c("Familia", "family"), scientific_name_id_family, scientific_name_id),
-        taxon_distribution = ifelse(taxon_rank %in% c("Familia", "family", "Genus", "genus"), NA, taxon_distribution),
-        establishment_means = ifelse(taxon_rank %in% c("Familia", "family", "Genus", "genus"), NA, establishment_means)
+        taxonomic_status = ifelse(.data$taxon_rank %in% c("Genus", "genus"), .data$taxonomic_status_genus, .data$taxonomic_status),
+        taxonomic_status = ifelse(.data$taxon_rank %in% c("Familia", "family"), .data$taxonomic_status_family, .data$taxonomic_status),
+        taxonomic_reference = ifelse(.data$taxon_rank %in% c("Genus", "genus"), .data$taxonomic_reference_genus, .data$taxonomic_reference),
+        taxonomic_reference = ifelse(.data$taxon_rank %in% c("Familia", "family"), .data$taxonomic_reference_family, .data$taxonomic_reference),
+        taxon_id = ifelse(.data$taxon_rank %in% c("Genus", "genus"), .data$taxon_id_genus, .data$taxon_id),
+        taxon_id = ifelse(.data$taxon_rank %in% c("Familia", "family"), .data$taxon_id_family, .data$taxon_id),
+        scientific_name_id = ifelse(.data$taxon_rank %in% c("Genus", "genus"), .data$scientific_name_id_genus, .data$scientific_name_id),
+        scientific_name_id = ifelse(.data$taxon_rank %in% c("Familia", "family"), .data$scientific_name_id_family, .data$scientific_name_id),
+        taxon_distribution = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), NA, .data$taxon_distribution),
+        establishment_means = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), NA, .data$establishment_means)
       ) %>% 
-      dplyr::select(-taxon_id_genus, -taxon_id_family, -scientific_name_id_genus, -scientific_name_id_family, 
-                    - taxonomic_status_genus, -taxonomic_status_family, -taxonomic_reference_genus, -taxonomic_reference_family,
-                    -name_to_match_to, -family_tmp)
+      dplyr::select(-.data$taxon_id_genus, -.data$taxon_id_family, -.data$scientific_name_id_genus, -.data$scientific_name_id_family, 
+                    -.data$taxonomic_status_genus, -.data$taxonomic_status_family, -.data$taxonomic_reference_genus, -.data$taxonomic_reference_family,
+                    -.data$name_to_match_to, -.data$family_tmp)
 
   austraits_raw$taxa <-
     species_tmp %>%
