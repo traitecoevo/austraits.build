@@ -773,11 +773,10 @@ load_taxonomic_resources <- function(path_apc = "config/NSL/APC-taxon-2020-05-14
 #' lists (~8 vs 230Mb)
 #' 
 #' @param austraits austraits data object
+#' @param taxonomic_resources resources used for building taxon list
 #' @importFrom rlang .data
 #' @export
-austraits_rebuild_taxon_list <- function(austraits) {
-
-  taxonomic_resources <- load_taxonomic_resources()
+austraits_rebuild_taxon_list <- function(austraits, taxonomic_resources) {
   
   subset_accepted <- function(x) {
     x[x!= "accepted"]

@@ -20,7 +20,7 @@ value_type:
     mean: Value is the median of values recorded for an entity.
     median: Value is the  median of values recorded for an entity.
     maximum: Value is the maximum of values recorded for an entity.
-    mode: Value is the mode of values recorded for an entity.
+    mode: Value is the mode of values recorded for an entity. This is the appropriate value type for a categorical trait value.
     range: Value is a range of values recorded for an entity.
     bin: Value for an entity falls within specified limits.
     unknown: Not currently known.
@@ -277,13 +277,14 @@ metadata:
       elements:
         data_collectors:
           description: *data_collectors
-          last_name: Last name of data collector.
-          given_name: Given name of data collector.
-          affiliation: Affiliation of data collector.
-          notes: optional notes for the data collector.
-          ORCID: ORCID ID (Open Researcher and Contributor ID) for the data collector, if available.
-          additional_role: Any additional roles the data collector had in the study, a field most frequently used to identify which data contributor is the contact person for the dataset.
           type: categorical
+          elements:
+            last_name: Last name of data collector.
+            given_name: Given name of data collector.
+            affiliation: Affiliation of data collector.
+            ORCID: ORCID ID (Open Researcher and Contributor ID) for the data collector, if available.
+            notes: optional notes for the data collector.
+            additional_role: Any additional roles the data collector had in the study, a field most frequently used to identify which data contributor is the contact person for the dataset.
         assistants:
           description: *assistants
         austraits_curators:
@@ -297,7 +298,7 @@ metadata:
         collection_date: *collection_date
         taxon_name: *taxon_name
         location_name: *location_name
-        source_id: &source_id
+        source_id: *source_id
         entity_type: *entity_type
         plot_id: *plot_id
         treatment_id: *treatment_id
@@ -326,9 +327,9 @@ metadata:
       description: Contextual characteristics associated with information in `traits`.
       type: array
       elements:
-        contextual_property: The contextual property represented by the data in the column specified by `var_in`.
+        context_property: The context property represented by the data in the column specified by `var_in`.
         category: The category of contextual data. Options are `plot` (a distinct collection of organisms within a single geographic location, such as plants growing on different aspects or blocks in an experiment), `treatment` (an experimental treatment), `entity_context` (contextual information to record about the entity the isn't documented elsewhere, including the entity's sex, caste), `temporal` (indicating when repeat observations are made on the same individual (or population, or taxon) across time) and `method` (indicating the same trait was measured on the same individual (or population, or taxon) using multiple methods).
-        var_in: Name of column with contextual data in the orignal data submitted.
+        var_in: Name of column with contextual data in the original data submitted.
         find: The contextual values in the original data submitted (optional)
         value: The standardised contextual values, aligning syntax and wording with other studies. 
         description: A description of the contextual values.
@@ -346,12 +347,6 @@ metadata:
         replicates: *replicates
         measurement_remarks: *measurement_remarks
         methods: *methods
-        plot_id: *plot_id
-        treatment_id: *treatment_id
-        individual_id: *individual_id
-        entity_context_id: *entity_context_id
-        temporal_id: *temporal_id 
-        method_id: *method_id
         life_stage: *life_stage
     substitutions:
       description: A list of any "find and replace" substitutions needed to get the data into the right format.

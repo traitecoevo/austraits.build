@@ -45,13 +45,13 @@ dataset:
   ungroup() %>%
   distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`,`Conserved R+`, `Conserved S+`) %>%
   mutate(
-    `R+` = str_replace(`R+`,"yes NA", "yes"),
-    `R+` = str_replace(`R+`,"NA yes", "yes"),
-    `R+` = str_replace(`R+`,"yes yes", "yes"),
-    `S+` = str_replace(`S+`,"NA yes", "yes"),
-    `S+` = str_replace(`S+`,"no NA", "yes"),
-    `S+` = str_replace(`S+`,"yes yes", "yes"),
-    storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA)
+    `R+` = ifelse(`R+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `R+`),
+    `S+` = str_replace(`S+`, "no NA", "no"),
+    `S+` = ifelse(`S+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `S+`),
+    storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA),
+    resp.type = resp.type %>% na_if(.,"NA"),
+    `R+` = `R+` %>% na_if(.,"NA"),
+    `S+` = `S+` %>% na_if(.,"NA")
     )
   '
   collection_date: unknown/2015
@@ -149,7 +149,7 @@ traits:
 - var_in: resp.type
   unit_in: .na
   trait_name: bud_bank_location
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -162,7 +162,7 @@ traits:
 - var_in: storage_organ
   unit_in: .na
   trait_name: storage_organ
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -175,7 +175,7 @@ traits:
 - var_in: R+
   unit_in: .na
   trait_name: fire_response
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -193,7 +193,7 @@ traits:
 - var_in: S+
   unit_in: .na
   trait_name: post_fire_recruitment
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -219,8 +219,20 @@ substitutions:
   find: Apical
   replace: apical_buds
 - trait_name: bud_bank_location
+  find: apical na
+  replace: apical_buds
+- trait_name: bud_bank_location
   find: Basal
   replace: basal_stem_buds
+- trait_name: bud_bank_location
+  find: basal na
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
+  find: na basal
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
+  find: epicormic epicormic
+  replace: epicormic_buds
 - trait_name: bud_bank_location
   find: Lignotuber
   replace: basal_buds

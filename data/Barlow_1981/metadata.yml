@@ -33,7 +33,7 @@ dataset:
       filter(is.na(units) & !(trait %in% c("longevity", "flowering time start", "flowering time end"))
             ) %>%
         mutate(trait = ifelse(value %in% "articles", "leaf_type", trait),
-              value = ifelse(value %in% "articles", "article", value));
+              value = ifelse(value %in% "articles", "cladode", value));
 
     data_flowering <- data %>%
         filter( trait %in% c("flowering time start", "flowering time end")) %>%
@@ -61,8 +61,17 @@ dataset:
               value = ifelse(value %in% c("AP", "EAP"), "annual perennial", value),
               value = ifelse(value %in% c("EPB", "DPB", "PB"), "biennial perennial", value));
 
+    data_substrate <- data %>%
+      filter(trait == "plant_growth_form" & value %in% c("SE", "HA")) %>%
+      mutate(
+        trait = "plant_growth_substrate",
+        value = case_when(
+          value == "SE" ~ "epiphyte",
+          value == "HA" ~ "aquatic")
+      );
+
     bind_rows(data_numeric, data_categorical_other, data_flowering, 
-      data_longevity, data_lifehistory) %>%
+      data_longevity, data_lifehistory, data_substrate) %>%
       arrange(i) %>%
       select(-i) %>%
       mutate(value = ifelse(species_name %in%
@@ -72,8 +81,12 @@ dataset:
                               trait == "lifeform","shrub treelet",value),
             value = ifelse(species_name %in% c("Piper hederaceum var. hederaceum") & trait == "lifeform","climber_vine_woody",value),
             value = ifelse(species_name %in% c("Stephania japonica var. discolor") &  trait == "lifeform","vine",value),
-            value = ifelse(species_name %in% c("Caesalpinia subtropica") & trait == "lifeform","climber_woody",value)
-      )
+            value = ifelse(species_name %in% c("Caesalpinia subtropica") & trait == "lifeform","climber_woody",value),
+            trait = ifelse(value %in% c("HE", "A", "E"), "plant_growth_substrate", trait)
+      ) %>%
+      group_by(species_name, trait) %>%
+        distinct(value, .keep_all = TRUE) %>%
+      ungroup()
   ' 
   collection_date: unknown/2015
   taxon_name: species_name
@@ -100,6 +113,14 @@ traits:
 - var_in: lifeform
   unit_in: .na
   trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -235,7 +256,7 @@ traits:
   methods: unknown
 - var_in: leaf_type
   unit_in: .na
-  trait_name: leaf_type
+  trait_name: plant_photosynthetic_organ
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -252,7 +273,7 @@ traits:
 substitutions:
 - trait_name: plant_growth_form
   find: V
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: T
   replace: tree
@@ -273,7 +294,7 @@ substitutions:
   replace: shrub climber_woody
 - trait_name: plant_growth_form
   find: L
-  replace: climber_liana
+  replace: climber_woody
 - trait_name: plant_growth_form
   find: SV
   replace: climber
@@ -282,22 +303,22 @@ substitutions:
   replace: herb
 - trait_name: plant_growth_form
   find: HL
-  replace: climber_liana
+  replace: climber_woody
 - trait_name: plant_growth_form
   find: CV
-  replace: climber_vine_woody
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: SE
-  replace: epiphyte
+  replace: shrub
 - trait_name: plant_growth_form
   find: C
   replace: climber
 - trait_name: plant_growth_form
   find: SL
-  replace: climber_shrub
+  replace: climber_woody
 - trait_name: plant_growth_form
   find: TSC
-  replace: climber_tree climber_shrub
+  replace: .na
 - trait_name: plant_growth_form
   find: SU
   replace: shrub subshrub
@@ -305,38 +326,44 @@ substitutions:
   find: SH
   replace: shrub herb
 - trait_name: plant_growth_form
+  find: shrub treelet
+  replace: shrub tree
+- trait_name: plant_growth_form
   find: U
   replace: subshrub
 - trait_name: plant_growth_form
   find: VL
-  replace: climber_vine climber_liana
+  replace: climber_herbaceous climber_woody
 - trait_name: plant_growth_form
   find: CP
-  replace: climber_vine_woody
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: climber_vine_woody
+  replace: climber_woody
 - trait_name: plant_growth_form
   find: SUH
-  replace: .na
-- trait_name: plant_growth_form
+  replace: shrub subshrub herb
+- trait_name: plant_growth_substrate
   find: A
   replace: aquatic
 - trait_name: plant_growth_form
   find: TSV
-  replace: treelet
+  replace: .na
 - trait_name: plant_growth_form
   find: HA
-  replace: aquatic_herb
+  replace: herb
 - trait_name: plant_growth_form
   find: HV
-  replace: epiphyte_herb epiphyte_woody
-- trait_name: plant_growth_form
+  replace: herb climber_herbaceous
+- trait_name: plant_growth_substrate
   find: E
   replace: epiphyte
-- trait_name: plant_growth_form
+- trait_name: plant_growth_substrate
   find: HE
-  replace: hemi-epiphyte
+  replace: hemiepiphyte
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: seed_shape
   find: 'NULL'
   replace: .na

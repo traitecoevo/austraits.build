@@ -44,7 +44,7 @@ dataset:
       group_by(Date, Species, `Forest location`, `Canopy location`, replicate, site_name, individual_id) %>% 
         mutate(across(c(Photo:Rdark, `LMA_g_m-2`:`N_P_ratio`, `soluble_sugars_mg_g-1`:`TNC_g_m-2`), .fns=as.numeric)) %>% 
         summarise(
-          across(c(Photo:Rdark, `LMA_g_m-2`:`N_P_ratio`, `soluble_sugars_mg_g-1`:`TNC_g_m-2`), .fns=mean, na.rm = TRUE),
+          across(c(Photo:Rdark, `LMA_g_m-2`:`N_P_ratio`, `soluble_sugars_mg_g-1`:`TNC_g_m-2`), ~mean(.x) %>% na_if("NaN"), na.rm = TRUE),
           across(c(`value_type for columns 18 to 25`, `replicates for columns 18 to 25`), .fns=first)
           ) %>%
       ungroup()
@@ -436,7 +436,7 @@ locations:
     longitude (deg): 145.45
     description: lowland tropical wet forest
 contexts:
-- context_property: irradiance (umol photons m-2 s-1)
+- context_property: measurement irradiance
   category: method
   var_in: Canopy location
   values:
@@ -592,7 +592,7 @@ traits:
     humidity.'
 - var_in: LMA_g_m-2
   unit_in: g/m2
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement

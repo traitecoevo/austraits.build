@@ -31,6 +31,9 @@ dataset:
       ) %>%  
       group_by(species) %>% 
         mutate_at(vars(`specific leaf area (m2 kg-1)`), replace_duplicates_with_NA) %>% 
+      ungroup() %>%
+      group_by(species, Tree, site_name, `burn_status`, `sampling_period`) %>%
+        mutate(observation_number = row_number()) %>%
       ungroup()
   '
   collection_date: date
@@ -73,7 +76,7 @@ locations:
     temperature, max MAT (C): 30.5 - 33.2
     precipitation, MAP (mm): 1700
 contexts:
-- context_property: burn status
+- context_property: fire history
   category: plot
   var_in: burn_status
   values:
@@ -102,6 +105,12 @@ contexts:
   - find: January
     value: 5_January
     description: measurement made in January
+- context_property: replicate observations
+  category: temporal
+  var_in: observation_number
+  values:
+  - value: 1
+  - value: 2
 traits:
 - var_in: R25_stem
   unit_in: umolCO2/g/s
@@ -284,7 +293,7 @@ traits:
     Eamus et al. 1999a; Miller 2002; Prior, Eamus & Bowman 2003).
 - var_in: specific leaf area (m2 kg-1)
   unit_in: m2/kg
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: population
   value_type: mean
   basis_of_value: literature

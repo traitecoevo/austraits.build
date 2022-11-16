@@ -64,8 +64,8 @@ dataset:
         life_history = ifelse(longevity %in% c("EAPB"), "annual biennial perennial", life_history),
         leaf_phenology = ifelse(longevity %in% c("EP", "E", "EAP", "EPB", "EAPB"), "evergreen", NA),
         leaf_phenology = ifelse(longevity %in% c("DP"), "deciduous", leaf_phenology),
-        leaf_type = ifelse(`leaf type` == "articles","article", NA),
-        leaf_type = ifelse(`leaf type` %in% c("simple","compound"),"broadleaf", leaf_type)) %>%
+        leaf_type = ifelse(`leaf type` == "articles","cladode", NA),
+        leaf_type = ifelse(`leaf type` %in% c("simple","compound"),"leaf", leaf_type)) %>%
       select(-longevity, -`leaf type`) %>%
       pivot_longer(cols = c("life_history", "leaf_phenology", "leaf_type"), names_to = "trait", values_to = "value");
 
@@ -236,7 +236,7 @@ traits:
   methods: unknown
 - var_in: leaf_type
   unit_in: .na
-  trait_name: leaf_type
+  trait_name: plant_photosynthetic_organ
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -279,7 +279,7 @@ substitutions:
   replace: .na
 - trait_name: plant_growth_form
   find: L
-  replace: climber_liana
+  replace: climber_woody
 - trait_name: dispersal_appendage
   find: exarillate
   replace: none

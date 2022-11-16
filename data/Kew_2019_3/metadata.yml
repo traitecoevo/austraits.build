@@ -1,6 +1,6 @@
 source:
   primary:
-    key: Kew_2019_1
+    key: Kew_2019_3
     bibtype: Online
     author: '{Royal Botanic Gardens Kew}'
     year: 2019
@@ -20,25 +20,47 @@ dataset:
   custom_R_code:     '
     data %>% 
       mutate(
-        planttype = ifelse(planttype=="-",NA,planttype),
-        maxdsm = ifelse(maxdsm=="SW",80,maxdsm),
-        maxdsm = ifelse(maxdsm=="sw?",80,maxdsm),
-        salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"), planttype, NA)
+        planttype = ifelse(planttype == "-", NA, planttype),
+        maxdsm = ifelse(maxdsm == "SW", 80, maxdsm),
+        maxdsm = ifelse(maxdsm == "sw?", 80, maxdsm),
+        salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"), planttype, NA),
+        ref_year = stringr::str_extract(refshort, "(?<!\\d)\\d{4}(?!\\d)"),
+        ref_year = ifelse(stringr::str_detect(refshort, "Proc. 11th Int."), "1970", ref_year),
+        ref_year = ifelse(is.na(ref_year), "2019", ref_year),
+        ref_author = ifelse(stringr::str_detect(refshort, "Bidner-BarHava"), "BidnerBarhava", NA),
+        ref_author = ifelse(stringr::str_detect(refshort, "Den Hartog") & is.na(ref_author), "denHartog", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Environmental Research Laboratory.") & is.na(ref_author), "UArizona", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Le Houerou,") & is.na(ref_author), "LeHouerou", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Le Roux") & is.na(ref_author), "LeRoux", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Proc. 11th Int. Grass.") & is.na(ref_author), "IGC", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "St. John") & is.na(ref_author), "StJohn", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Van Steenis") & is.na(ref_author), "vanSteenis", ref_author),
+        ref_author = ifelse(is.na(ref_author), stringr::str_trim(word(refshort, 1)), ref_author),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]", ""),
+        ref_author = ifelse(is.na(ref_author), "unknown", ref_author),
+        source_id = paste0(ref_author, "_", ref_year),
+        source_id = ifelse(is.na(refshort), source_id, ifelse(stringr::str_detect(refshort, "Leary et al., 1986"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(refshort), source_id, ifelse(stringr::str_detect(refshort, "Leary, 1986"), paste0(source_id, "_2", sep = ""), source_id))
       ) %>%
-      group_by(taxa) %>%
-        mutate(references = paste0(refdesc, collapse = "; ")) %>%
-      ungroup %>%
-      distinct(taxa, references, planttype, maxdsm, salt_tolerance, phopath)
+      arrange(taxa, planttype, maxdsm, phopath, salt_tolerance, source_id) %>% 
+      group_by(taxa, planttype, maxdsm, phopath, salt_tolerance) %>%
+      mutate(merged_ref = ifelse(length(unique(source_id)) == 1, source_id, paste0(source_id, collapse = "; "))) %>%
+      ungroup() %>% 
+      group_by(taxa, merged_ref) %>%
+      mutate(across(c(planttype, maxdsm, phopath, salt_tolerance), replace_duplicates_with_NA)) %>% 
+      ungroup()
   '
   collection_date: unknown/2019
   taxon_name: taxa
+  source_id: source_id
   description: Salt and water tolerance data on species from Kew seed databases
   basis_of_record: literature
   life_stage: adult
   sampling_strategy: information in data.csv file
   original_file: in raw data folder
+  measurement_remarks: merged_ref
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
-    Commons licesne. Data not to be used for Commercial Purposes.
+    Commons license. Data not to be used for Commercial Purposes.
 locations: .na
 contexts: .na
 traits:

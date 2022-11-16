@@ -23,11 +23,13 @@ dataset:
   custom_R_code:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           '
     data %>% 
       mutate(
-        leaf_margin = ifelse(`leaf type` == "lobed" | `leaf shape` == "lobed",
-                      "lobed", "entire"), 
+        leaf_lobation = ifelse(`leaf type` == "lobed" | `leaf shape` == "lobed",
+                      "lobed", "unlobed"), 
         `leaf shape` = ifelse(`leaf shape` == "lobed", NA, `leaf shape`),
         `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf type`),
-        parasitic = ifelse(`growth form`=="parasitic","parasitic",NA)
+        plant_growth_substrate = ifelse(`growth form`=="aquatic","aquatic",NA),
+        parasitic = ifelse(`growth form`=="parasitic","parasitic", NA),
+        plant_photosynthetic_organ = ifelse(`leaf shape`=="articles","cladode", NA)
       )
     %>% mutate_at(vars(`min leaf length (mm)`,`max leaf length (mm)`,
                       `min leaf width (mm)`,`max leaf width (mm)`), ~na_if(.,0)) %>% 
@@ -44,6 +46,14 @@ dataset:
 locations: .na
 contexts: .na
 traits:
+- var_in: plant_photosynthetic_organ
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
@@ -60,6 +70,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
@@ -68,9 +86,9 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf_margin
+- var_in: leaf_lobation
   unit_in: .na
-  trait_name: leaf_margin
+  trait_name: leaf_lobation
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -143,28 +161,34 @@ traits:
 substitutions:
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
+- trait_name: plant_growth_form
+  find: aquatic
+  replace: .na
 - trait_name: plant_growth_form
   find: grass
   replace: graminoid
 - trait_name: plant_growth_form
   find: parasitic
-  replace: parasite
+  replace: .na
 - trait_name: leaf_width
   find: '`'
   replace: '0'
 - trait_name: leaf_shape
   find: articles
-  replace: article
+  replace: .na
 - trait_name: leaf_shape
   find: elliptic
   replace: elliptical
 - trait_name: leaf_shape
   find: needle
   replace: acicular
-- trait_name: leaf_margin
+- trait_name: leaf_lobation
   find: '1'
   replace: lobed
+- trait_name: leaf_shape
+  find: circular
+  replace: orbicular
 taxonomic_updates:
 - find: Actinotus sp. Walpole
   replace: Actinotus repens

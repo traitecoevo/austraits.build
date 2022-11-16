@@ -51,14 +51,17 @@ dataset:
         life_history = ifelse(life_history=="o","p",life_history),
         regen_strategy= ifelse(plant_growth_form=="f","fern",""),
         life_history = ifelse(life_history=="f","",life_history),
-        Nfixer = stringr::str_replace(Nfixer, "y","Y"),
+        Nfixer = stringr::str_replace(Nfixer, "y|Y","1"),
+        Nfixer = stringr::str_replace(Nfixer, "101","0"),
+        Nfixer = stringr::str_replace(Nfixer, "n|N","0"),     
+        plant_growth_form = ifelse(plant_growth_form %in% c("S or T", "T/S", "T or S"), "shrub tree", plant_growth_form),
         TRIP = ifelse(is.na(TRIP),1,TRIP)
       ) %>% 
       mutate_at(vars(`life_history`,`regen_strategy`), ~na_if(.,"")) %>%
       mutate_at(vars(`leaf_water_content`), ~na_if(.,0)) %>%
       group_by(species_name) %>%
         mutate_at(vars(`regen_strategy`,`root_structure`,`C3C4`,`Nfixer`,`plant_growth_form`,
-        `life_history`,`phenology`),replace_duplicates_with_NA) %>%
+        `life_history`,`phenology`, fire_response), replace_duplicates_with_NA) %>%
       ungroup()
   '
   collection_date: 1994/1998
@@ -506,16 +509,22 @@ substitutions:
   replace: facultative_drought_deciduous
 - trait_name: nitrogen_fixing
   find: '101'
-  replace: '0'
+  replace: non_nitrogen_fixer
+- trait_name: nitrogen_fixing
+  find: '0'
+  replace: non_nitrogen_fixer
+- trait_name: nitrogen_fixing
+  find: '1'
+  replace: nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'N'
-  replace: '0'
+  replace: non_nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'Y'
-  replace: '1'
+  replace: nitrogen_fixer
 - trait_name: plant_growth_form
   find: V
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: O (Fern)
   replace: fern
@@ -527,7 +536,7 @@ substitutions:
   replace: graminoid
 - trait_name: plant_growth_form
   find: p
-  replace: palm
+  replace: palmoid
 - trait_name: plant_growth_form
   find: H
   replace: herb

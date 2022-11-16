@@ -28,14 +28,27 @@ dataset:
     data %>%
       mutate(
         `flowering duration` = convert_month_range_vec_to_binary(`flowering duration`),
-        parasitic = ifelse(`growth form`=="para"|`growth form`=="PARA","parasitic",NA),
-        `growth form` = ifelse(`growth form` %in% c("para", "PARA"),NA,`growth form`),
         growth_habit = ifelse(`growth form` == "Herb, cree", "creeper", NA),
-        root_structure = ifelse(`growth form` == "saprophyte", "saprophyte", NA),
-        `growth form` = ifelse(`growth form` == "saprophyte", NA,`growth form`),
         `growth form` = ifelse(`name original` == "Commelina cyanea", "herb",`growth form`),
-        `growth form` = ifelse(`name original` == "Hibbertia dentata", "climber_twiner",`growth form`),`growth form` = ifelse(`name original` == "Xanthosia tridentata", "subshrub",`growth form`)
+        `growth form` = ifelse(`name original` == "Hibbertia dentata", "climber_herbaceous",`growth form`),
+        `growth form` = ifelse(`name original` == "Xanthosia tridentata", "subshrub",`growth form`)
       )
+        parasitic = ifelse(`growth form`== "para"| `growth form`=="PARA","parasitic", NA),
+        plant_heterotrophy = ifelse(`growth form`== "saprophyte","saprophyte", NA),
+        plant_growth_substrate = ifelse(`growth form`== "Epiphyte", "epiphyte", NA),  
+        growth_habit = NA,
+        plant_climbing_mechanism = NA
+      ) %>%
+      move_values_to_new_trait(
+        "growth form", "plant_climbing_mechanism",
+        c("Twiner"), c("twining"), c("Twiner")
+      ) %>%
+      move_values_to_new_trait(
+        "growth form", "growth_habit",
+        c("Herb, cree", "Floater", "Trailer", "Twiner"),        
+        c("creeping", "floating", "prostrate", "climbing"),
+        c("herb", "herb", "climber", "climber")
+      ) 
   '
   collection_date: 1992/1992
   taxon_name: name original
@@ -58,16 +71,35 @@ traits:
   methods: published literature
 - var_in: growth_habit
   unit_in: .na
-  trait_name: growth_habit
-  value_type: expert_mean
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: published literature
-- var_in: growth_habit
+- var_in: plant_climbing_mechanism
   unit_in: .na
-  trait_name: growth_habit
-  value_type: expert_mean
+  trait_name: plant_climbing_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: published literature
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: published literature
+- var_in: plant_heterotrophy
+  unit_in: .na
+  trait_name: .na
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
@@ -130,26 +162,20 @@ traits:
   methods: published literature
 substitutions:
 - trait_name: plant_growth_form
-  find: Floater
-  replace: aquatic_floating
-- trait_name: plant_growth_form
-  find: Trailer
-  replace: climber
-- trait_name: plant_growth_form
-  find: Twiner
-  replace: climber_twiner
+  find: epiphyte
+  replace: .na
 - trait_name: plant_growth_form
   find: Vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: Grass
   replace: graminoid
 - trait_name: plant_growth_form
   find: Reed
-  replace: reed
+  replace: graminoid
 - trait_name: plant_growth_form
   find: Sedge
   replace: graminoid
@@ -166,11 +192,17 @@ substitutions:
   find: Woody herb
   replace: herb
 - trait_name: plant_growth_form
-  find: mallee
-  replace: treelet
+  find: PARA
+  replace: .na
+- trait_name: plant_growth_form
+  find: para
+  replace: .na
 - trait_name: plant_growth_form
   find: shrub/tree
   replace: shrub tree
+- trait_name: plant_growth_form
+  find: saprophyte
+  replace: .na
 - trait_name: serotiny
   find: 'no'
   replace: not_serotinous

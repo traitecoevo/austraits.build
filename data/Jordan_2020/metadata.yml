@@ -62,7 +62,52 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      mutate(
+        leaf_lobation = leaf_margin,
+        leaf_lobation = str_replace_all(leaf_lobation,"toothed|toothed | toothed", ""),
+        leaf_margin = str_replace_all(leaf_margin,"lobed| lobed|lobed ", ""),
+        leaf_margin2 = NA_character_,
+        leaf_compoundness2 = NA_character_,
+        leaf_lobation2 = NA_character_,
+        leaf_base_shape = NA_character_
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_lamina_division", "leaf_margin2",
+        c("dentate", "crenate", "toothed", "deeply_toothed", "coarsely_toothed", "toothed pinnatifid", "deeply_toothed pinnatifid", "pinnatifid toothed","pinnate entire","pinnatifid toothed entire", "pinnatifid entire", "entire pinnately_lobed", "entire lobed toothed", "entire toothed lobed", "entire bipartite tripartite", "entire lobed compound","entire deeply_segmented", "pinnatifid deeply_toothed", "crenate dentate", "entire lobed pinnate"),
+        c("toothed_dentate", "toothed_crenate", "toothed", "toothed", "toothed", "toothed", "toothed", "toothed", "entire", "toothed entire", "entire", "entire", "entire toothed", "entire toothed", "entire", "entire","entire", "toothed", "toothed_crenate toothed_dentate", "entire"),
+        c("", "", "", "", "", "pinnatifid", "pinnatifid", "pinnatifid","pinnately_divided","pinnatifid", "pinnatifid", "pinnately_lobed", "entire lobed toothed", "entire lobed toothed", "bipartite tripartite", "entire lobed compound","entire deeply_segmented", "pinnatifid", "", "unlobed lobed pinnate")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_lamina_division", "leaf_compoundness2",
+        c("compound","entire lobed compound"),
+        c("compound","compound"),
+        c("","lobed")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_lamina_division", "leaf_lobation2",
+        c("lobed", "shallowly_lobed", "deeply_segmented", "entire pinnately_lobed", "entire bipartite", "entire shallowly_lobed",
+        "entire lobed toothed","entire deeply_segmented", "unlobed lobed pinnate", "lobed pinnatisect"),
+        c("lobed", "lobed_shallow", "lobed_deep", "unlobed lobed", "unlobed lobed", "unlobed lobed",
+        "unlobed lobed", "lobed_deep", "unlobed lobed", "lobed"),
+        c("", "", "", "pinnately_lobed", "bipartite", "",
+        "", "", "pinnate", "pinnatisect")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_shape", "leaf_base_shape",
+        c("cuneate", "auriculate"),
+        c("cuneate", "auriculate"),
+        c("", "")
+      ) %>%
+      mutate(
+        leaf_margin = ifelse(is.na(leaf_margin2), leaf_margin, leaf_margin2),
+        leaf_compoundness = ifelse(is.na(leaf_compoundness2), leaf_compoundness, leaf_compoundness2),        
+        leaf_lobation = ifelse(is.na(leaf_lobation2), leaf_lobation, leaf_lobation2),
+        leaf_lobation = ifelse(is.na(leaf_lobation) & stringr::str_detect(leaf_lamina_division,"lobed"), "lobed", leaf_lobation),
+        leaf_margin = ifelse(is.na(leaf_margin) & stringr::str_detect(leaf_lamina_division,"entire"), "entire", leaf_margin)
+      )
+  '
   collection_date: unknown/2020
   taxon_name: species
   location_name: site_name
@@ -1228,8 +1273,8 @@ traits:
     assumptions are consistent with dimensions observed in extant Proteaceae (G.J.J.
     12 December 2015, unpublished data).
 - var_in: Total vein density (mm/mm2)
-  unit_in: count/mm
-  trait_name: vein_density
+  unit_in: mm/mm2
+  trait_name: leaf_total_vein_density
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1274,7 +1319,7 @@ traits:
   methods: unknown
 - var_in: ad trichomes
   unit_in: .na.character
-  trait_name: leaf_hairs_adult
+  trait_name: leaf_hairs_adult_leaves
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -1402,6 +1447,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation and reference books
+- var_in: leaf_lobation
+  unit_in: .na.character
+  trait_name: leaf_lobation
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na.character
+  methods: expert observation and reference books
 - var_in: leaf_shape
   unit_in: .na.character
   trait_name: leaf_shape
@@ -1410,12 +1463,23 @@ traits:
   basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation and reference books. The values under 'adult leaf type'
-    that referred to leaf_shape terms in AusTraits (versus leaf_margin or leaf_division
+    that referred to leaf_shape terms in AusTraits (versus leaf_margin or leaf_lamina_division
     terms) have been applied to this variable; there are therefore only a few species
     included here
-- var_in: leaf_division
+- var_in: leaf_base_shape
+  unit_in: .na
+  trait_name: leaf_base_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation and reference books. The values under 'adult leaf type'
+    that referred to leaf_shape terms in AusTraits (versus leaf_margin or leaf_lamina_division
+    terms) have been applied to this variable; there are therefore only a few species
+    included here
+- var_in: leaf_lamina_division
   unit_in: .na.character
-  trait_name: leaf_division
+  trait_name: leaf_lamina_division
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -1504,7 +1568,7 @@ traits:
     further.
 - var_in: leaf mass per unit area gm-2
   unit_in: g/m2
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1674,9 +1738,96 @@ traits:
   replicates: 1-5
   methods: scanned leaf area
 substitutions:
+- trait_name: leaf_shape
+  find: 'NA'
+  replace: .na
+- trait_name: leaf_shape
+  find: flat
+  replace: .na
+- trait_name: leaf_shape
+  find: flat terete
+  replace: terete
+- trait_name: leaf_shape
+  find: terete flat
+  replace: terete
+- trait_name: leaf_shape
+  find: flabelliform
+  replace: obtriangular
+- trait_name: leaf_lamina_division
+  find: entire
+  replace: .na
+- trait_name: leaf_lamina_division
+  find: palmately_compound
+  replace: palmately_divided
+- trait_name: leaf_lamina_division
+  find: lobed_to_midvein
+  replace: pinnatisect
+- trait_name: leaf_lamina_division
+  find: deeply_bipinnatifid
+  replace: bipinnatifid
+- trait_name: leaf_lamina_division
+  find: deeply_pinnatifid
+  replace: pinnatifid
+- trait_name: leaf_lamina_division
+  find: pinnate
+  replace: pinnately_divided
+- trait_name: leaf_lamina_division
+  find: pinnate bipinnate 
+  replace: pinnately_divided bipinnate
+- trait_name: leaf_lamina_division
+  find: pinnate bipinnate tripinnate
+  replace: pinnately_divided bipinnate tripinnate
+- trait_name: leaf_lamina_division
+  find: pinnate tripinnate
+  replace: pinnately_divided tripinnate
+- trait_name: leaf_lamina_division
+  find: deeply_pinnatipartite
+  replace: pinnatipartite
+- trait_name: leaf_lamina_division
+  find: lobed toothed  
+  replace: .na
+- trait_name: leaf_lamina_division
+  find: entire lobed 
+  replace: .na
+- trait_name: leaf_lamina_division
+  find: deeply_bipinnatifid bipinnatisect
+  replace: bipinnatifid bipinnatisect
+- trait_name: leaf_lamina_division
+  find: lobed entire
+  replace: .na
+- trait_name: leaf_lamina_division
+  find: '?'
+  replace: .na
+- trait_name: leaf_lamina_division
+  find: entire toothed 
+  replace: .na 
 - trait_name: upper_cuticle_thickness
   find: '?'
   replace: .na
+- trait_name: leaf_margin
+  find: ''
+  replace: .na
+- trait_name: leaf_margin
+  find: ' toothed'
+  replace: toothed
+- trait_name: leaf_margin
+  find: crenate
+  replace: toothed_crenate
+- trait_name: leaf_margin
+  find: dentate
+  replace: toothed_dentate
+- trait_name: leaf_lobation
+  find: ''
+  replace: .na
+- trait_name: leaf_lobation
+  find: ' lobed'
+  replace: lobed
+- trait_name: leaf_lobation
+  find: entire
+  replace: unlobed
+- trait_name: leaf_lobation
+  find: entire lobed
+  replace: unlobed lobed
 - trait_name: lower_cuticle_thickness
   find: '?'
   replace: .na
@@ -1704,6 +1855,12 @@ substitutions:
 - trait_name: stomatal_hairs
   find: y/n
   replace: stomata_covered_with_dense_hairs stomata_not_covered_by_hairs
+- trait_name: leaf_hairs_adult_leaves
+  find: 0
+  replace: glabrous
+- trait_name: leaf_hairs_adult_leaves
+  find: 1
+  replace: hairy
 taxonomic_updates:
 - find: Adenanthos barbiger
   replace: Adenanthos barbigerus

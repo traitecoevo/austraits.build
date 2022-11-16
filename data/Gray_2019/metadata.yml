@@ -36,7 +36,7 @@ dataset:
       group_by(ID) %>% 
         summarise(
           across(c(Owner:Species), .fns = first),
-          across(c(`Asat_area (micromol/m2/s)`:`Parea (g/m2)`), .fns = mean, na.rm = TRUE)
+          across(c(`Asat_area (micromol/m2/s)`:`Parea (g/m2)`), ~mean(.x) %>% na_if("NaN"), na.rm = TRUE)
           ) %>%
       ungroup()
   '
@@ -173,7 +173,7 @@ traits:
     performed at the Appleton Laboratory (University of Queensland).
 - var_in: SLA (cm2/g)
   unit_in: cm2/g
-  trait_name: specific_leaf_area
+  trait_name: leaf_mass_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
