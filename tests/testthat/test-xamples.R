@@ -7,7 +7,7 @@ testthat::test_that("test datasets", {
 
   definitions <- get_schema("config/traits.yml", "traits")
   unit_conversions <- austraits.build:::get_unit_conversions("config/unit_conversions.csv")
-  #taxon_list <- read_csv_char("config/taxon_list.csv")
+  taxon_list <- read_csv_char("config/taxon_list.csv")
 
 
   examples.dir <- "examples"
@@ -16,7 +16,7 @@ testthat::test_that("test datasets", {
   
   # Example 1 - Test for basis_of_record and life_stage at the dataset level
   # test1-metadata and test1-data are copies of Falster_2005_1
-  Ex1 <- test_build_dataset(file.path(examples.dir, "test1-metadata.yml"), file.path(examples.dir, "test1-data.csv"), "Example 1", definitions, unit_conversions, schema)
+  Ex1 <- test_build_dataset(file.path(examples.dir, "test1-metadata.yml"), file.path(examples.dir, "test1-data.csv"), "Example 1", definitions, unit_conversions, schema, taxon_list)
   
   expect_equal(Ex1$traits$basis_of_record %>% unique, "field")
   expect_equal(Ex1$traits$life_stage %>% unique, "adult")
@@ -28,7 +28,7 @@ testthat::test_that("test datasets", {
   # test2-metadata basis_of_record for Leaf N trait changed  to lab, basis_of_record for every other trait
   # has not been specified so should take the dataset level value
   ## Ex2 basis_of_record for Leaf N changed  to lab
-  Ex2 <- test_build_dataset(file.path(examples.dir, "test2-metadata.yml"), file.path(examples.dir, "test1-data.csv"), "Example 2", definitions, unit_conversions, schema)
+  Ex2 <- test_build_dataset(file.path(examples.dir, "test2-metadata.yml"), file.path(examples.dir, "test1-data.csv"), "Example 2", definitions, unit_conversions, schema, taxon_list)
   
   expect_equal(Ex2$traits$basis_of_record %>% unique, c("field", "lab"))
   expect_equal(Ex2$traits %>% filter(basis_of_record == "field") %>% nrow(), 361)
@@ -45,7 +45,7 @@ testthat::test_that("test datasets", {
   # test2.1 metadata basis_of_record and life_stage changed to match column name
   # basis_of_record in the column contains "wild" while the dataset level basis_of_record is "field"
   # the values in the column should take precedence over the dataset value
-  Ex3 <- test_build_dataset(file.path(examples.dir, "test2.1-metadata.yml"), file.path(examples.dir, "test2-data.csv"), "Example 3", definitions, unit_conversions, schema)
+  Ex3 <- test_build_dataset(file.path(examples.dir, "test2.1-metadata.yml"), file.path(examples.dir, "test2-data.csv"), "Example 3", definitions, unit_conversions, schema, taxon_list)
   
   expect_equal(Ex3$traits$basis_of_record %>% unique, c("wild", "lab"))
   expect_equal(Ex3$traits %>% filter(basis_of_record == "wild") %>% nrow(), 361)
@@ -59,7 +59,7 @@ testthat::test_that("test datasets", {
   # also introduced a value at the trait level Leaf_N ~ lab
   # test3-data basis_of_record column has been added in data.csv with missing values 
   # Similar to EX 3 but this time values should be filled in for traits that have a value specified
-  Ex4 <- test_build_dataset(file.path(examples.dir, "test2.1-metadata.yml"), file.path(examples.dir, "test3-data.csv"), "Example 4", definitions, unit_conversions, schema)
+  Ex4 <- test_build_dataset(file.path(examples.dir, "test2.1-metadata.yml"), file.path(examples.dir, "test3-data.csv"), "Example 4", definitions, unit_conversions, schema, taxon_list)
   
   expect_equal(Ex4$traits$basis_of_record %>% unique, c("NA", "lab", "wild"))
   expect_equal(Ex4$traits %>% filter(is.na(basis_of_record)) %>% nrow(), 352)
@@ -90,7 +90,7 @@ testthat::test_that("test datasets", {
   # Basis of record has been specified for dataset level ~ field, site level ~ Cape_Tribulation
   # trait level ~ leaf_N and column ~ wild
   # column values should take precedence followed by traits values, followed by locations and then dataset values
-  Ex5 <- test_build_dataset(file.path(examples.dir, "test3-metadata.yml"), file.path(examples.dir, "test3-data.csv"), "Example 5", definitions, unit_conversions, schema)
+  Ex5 <- test_build_dataset(file.path(examples.dir, "test3-metadata.yml"), file.path(examples.dir, "test3-data.csv"), "Example 5", definitions, unit_conversions, schema, taxon_list)
   
   expect_equal(Ex5$traits$basis_of_record %>% unique, c("NA", "lab", "Cape_Tribulation"))
   expect_equal(Ex5$traits %>% filter(is.na(basis_of_record)) %>% nrow(), 81)
@@ -137,7 +137,7 @@ testthat::test_that("test datasets", {
   # Based on Crous_2013
   # Have also added data for sex to test this field (commented out for now)
 
-  Ex6 <- test_build_dataset(file.path(examples.dir, "test4-metadata.yml"), file.path(examples.dir, "test4-data.csv"), "Example 6", definitions, unit_conversions, schema)
+  Ex6 <- test_build_dataset(file.path(examples.dir, "test4-metadata.yml"), file.path(examples.dir, "test4-data.csv"), "Example 6", definitions, unit_conversions, schema, taxon_list)
   
   #expect_equal(Ex6$traits$sex %>% unique, c("male", "female"))
   expect_equal(Ex6$traits$location_id %>% unique, c("01"))

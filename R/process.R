@@ -195,7 +195,7 @@ dataset_process <- function(filename_data_raw,
   # at this point, need to retain `taxonomic_resolution`, because taxa table & taxonomic_updates not yet assembled.
   traits <-
     traits %>%
-    dplyr::select(c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]), "error", "taxonomic_resolution"))
+    dplyr::select(dplyr::all_of(c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]), "error", "taxonomic_resolution")))
 
   # Remove missing values is specified
   if( filter_missing_values == TRUE ) {
@@ -204,7 +204,7 @@ dataset_process <- function(filename_data_raw,
   }
 
   # combine for final output
-  list(dataset_id = dataset_id,
+  list(
        traits     = traits %>% dplyr::filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
        locations  = locations,
        contexts   = context_ids$contexts %>% dplyr::select(-.data$var_in, -.data$find),
@@ -216,7 +216,8 @@ dataset_process <- function(filename_data_raw,
        contributors = contributors,
        sources    = sources,
        definitions = definitions,
-       schema=schema
+       schema = schema,
+       build_info = list(session_info = utils::sessionInfo())
   )
 }
 
@@ -1372,10 +1373,10 @@ process_taxonomic_updates  <- function(data, metadata){
 #' @importFrom rlang .data
 #' @export
 build_combine <- function(..., d=list(...)) {
+
   combine <- function(name, d) {
     dplyr::bind_rows(lapply(d, "[[", name))
   }
-
 
   # combine sources and remove duplicates
   sources <- d %>% lapply("[[", "sources")
@@ -1395,11 +1396,11 @@ build_combine <- function(..., d=list(...)) {
   # taxonomy
   taxonomic_updates <-
     combine("taxonomic_updates", d) %>%
-    dplyr::group_by(.data$original_name, .data$cleaned_name, .data$taxonomic_resolution) %>%
+    dplyr::group_by(.data$original_name, .data$taxon_name, .data$taxonomic_resolution) %>%
     dplyr::mutate(dataset_id = paste(.data$dataset_id, collapse = " ")) %>%
     dplyr::ungroup() %>%
     dplyr::distinct() %>%
-    dplyr::arrange(.data$original_name, .data$cleaned_name, .data$taxonomic_resolution)
+    dplyr::arrange(.data$original_name, .data$taxon_name, .data$taxonomic_resolution)
 
   traits <- combine("traits", d)
 
@@ -1409,7 +1410,7 @@ build_combine <- function(..., d=list(...)) {
               methods = combine("methods", d),
               excluded_data = combine("excluded_data", d),
               taxonomic_updates = taxonomic_updates,
-              taxa = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
+              taxa = taxonomic_updates %>% dplyr::distinct(),
               contributors = combine("contributors", d),
               sources = sources,
               definitions = definitions,
@@ -1443,6 +1444,7 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
               ) %>%
     dplyr::distinct() %>%
     dplyr::arrange(.data$cleaned_name)
+
 
   austraits_raw$traits <-
     austraits_raw$traits %>%
