@@ -75,7 +75,6 @@ The easiest way to load the functions into your workspace is to run the followin
 
 ```{r, echo=TRUE, eval=FALSE}
 source("scripts/custom.R")            # source functions written for use within custom_R_code
-source("scripts/taxonomy.R")          # source functions required to use our taxonomy matching workflow 
 library(austraits.build)              # open the austraits.build package that provides the pipeline to build AusTraits
 ```
 
@@ -988,139 +987,6 @@ If AusTraits fails to `pivot_wider`, likely problems are:
     ungroup()'
 ```
   Then add `observation_number` as a context with `category: temporal`
-  
-
-## Update taxonomy  
-The species names used in a given dataset need to be aligned with the currently accepted APC taxonomy (and APNI names) used in AusTraits. 
-
-The AusTraits config files include the file `taxon_list.csv`, a list of all taxa in AusTraits with names recognised by APC/APNI, including outdated/obsolete/misapplied taxonomic names (e.g. nomenclatural synonym, taxonomic synonym). Outdated names are automatically aligned with currently recognised taxonomy.
-
-In addition, the folder config/NSL includes complete lists of taxa recognised by APC/APNI, including names not yet represented in AusTraits. 
-
-To check if there are any taxon names in the study unrecognised by APC/APNI, use: 
-```{r, eval=FALSE, echo=TRUE}
-metadata_check_taxa(dataset_id = current_study)
-```
-
-This function aligns slightly misspelled names through fuzzy matching (default is up to 3 characters different). 
-
-Additional arguments can be added to the function:
-
-```{r, eval=FALSE, echo=TRUE}
-metadata_check_taxa(dataset_id, max_distance_abs = 2, max_distance_rel = 0.2, try_outside_guesses = FALSE)
-```
-
-- `max_distance_abs` is the maximum number of different characters allowed with fuzzy matching.
-- `max_distance_rel` is the maximum proportion of characters that are allowed to be different with fuzzy matching.
-- `try_outside_guesses` offers a menu of matching suggestions for each species. Set this as false for the first run of the function – it is best to start with automated matching and use this for a small number of unmatched species at the end.
-
-1.	Run the function once to align the easily re-aligned names.  
-
-    Messages output during the checking include:
--  *All taxa are already known*: All taxa in the study being input are exact matches to names in `taxon_list.csv`. You're done. 
-
--  *Automatic alignment with name in APC/APNI*: The taxon name is on the complete APC/APNI list, but not yet in AusTraits.  
-
--  *species are not yet matched, checking for close matches in APC & APNI*: The matching algorithm is using fuzzy matching to try and align the taxon name in the dataset. If a match is found, you will also receive a second message for that taxon, indicating the match and its source (i.e. *APC list (accepted)*)  
-
--  *Skipping - not assessing anything ending in `sp.` Note, genus is in APC*: Names formatted as `genus sp.` or `genus sp. [characters]` are recognised as members of a given genus. For instance, the name in the data file is `Acacia sp.`, and the algorithm has successfully matched the genus, but not the species.  
-
--  *Taxa not found. Note, genus is in APC*: The algorithm has successfully matched the genus of the submitted name, but cannot find a suitable match at the species level.  
-    
-2. Taxon alignments made by `metadata_check_taxa` are added under `metadata$taxonomic_updates` 
-    Check all substitutions added to the metadata file, to confirm they make sense.
-        
-```{r, eval=FALSE, echo=TRUE}
-- find: Byrsonima crassifolia
-  replace: Boronia crassifolia
-  reason: Automatic alignment with name in APC list (accepted) (2021-09-16)
-- find: Hydrocotyle vulgaris
-  replace: Hydrocotyle rivularis
-  reason: Automatic alignment with name in APC list (accepted) (2021-09-16)
-```
-
-    a. On occasion there are nonsensical realignments due to fuzzy matching. 
-    
-    -   If the species is obviously a misspelled Australian species, but was mismatched, manually correct the alignment.
-    
-    -   Incorrect realignments most often occur when measurements were made on non-naturalised horticultural plants, whose names do not appear on the APNI/APC lists. If this is the case, add these taxa to the excluded_data list. For instance, in eFLOWER_2021, the inclusion of many non-native species in the submitted dataset led to the following two incorrect substitutions. These need to be manually deleted, with the species added to the excluded data section.
- 
-
-4.	Run the function a second time to see the (hopefully) short list of names that couldn’t be easily matched and require manual matches or substitutions.
-    a. If you don't expect more than 10-20 unmatched taxa, set `try_outside_guesses` to TRUE:
-
-```{r, eval=FALSE, echo=TRUE}
-metadata_check_taxa(dataset_id, max_distance_abs = 3, max_distance_rel = 0.2, try_outside_guesses = TRUE)
-```    
- 
-  b. If there are unrecognised names that you know are either non-naturalised horticultural plants (or measurements made outside Australia on a non-native, naturalised species), exclude them in the metadata. In addition, exclude mosses, liverworts, etc. as these are not (yet) included in AusTraits. For instance, from the `excluded_data` section of eFLOWER_2021:  
-
-```{r, eval=FALSE, echo=TRUE}
-excluded_data:  
-  variable: taxon_name
-  find: Antirrhinum majus, Atropa belladonna, Averrhoa carambola, Byrsonima crassifolia,
-    Carpodetus serratus, Citronella suaveolens, Cornus mas, Cussonia spicata, Echinops
-    exaltatus, Elaeis guineensis, Garrya elliptica, Gymnosporia senegalensis, Homalanthus
-    populneus, Myoporum mauritianum, Najas minor, Pimelodendron zoanthogyne, Rourea
-    minor, Siphonodon celastrineus, Trachycarpus fortunei
-  reason: These are 'unplaced' species that likely show up in the APNI list because
-    they are horticultural species, but they are not widespread naturalised species
-```
-  c. Do nothing for names formatted as `genus sp.` or `genus sp. [characters]`. The matching algorithm has already recognised them as members of the given genus. 
-
-5. Manually add substitutions for the remaining "unmatched" taxa (if possible), using the `metadata_add_taxonomic_change` function.
-
-```{r, eval=FALSE, echo=TRUE}
-metadata_add_taxonomic_change("study", "find", "replace", "reason")
-```
-or by manually typing the information into the `metadata.yml` file:
-```{r, eval=FALSE, echo=TRUE}
-- find: Senna sturtii
-  replace: Senna artemisioides subsp. x sturtii
-  reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
-```
-
-  a.	For taxa recorded only to the genus level (e.g. Acacia sp.), add manual substitutions to reformat the observations to `genus sp. [characters]`. For instance, `Acacia sp.` or `Acacia sp. [long leaf]` not `long leaf Acacia species`  
-  b.	If there are unrecognised phrase names, use the APC/APNI website (https://biodiversity.org.au/nsl/services/search/taxonomy; use ‘%’ as a wildcard character) to search for the recognised syntax. For instance, from White_2020:
-```
-- find: Celmisia 'pulchella'  
-  replace: Celmisia sp. Pulchella (M.Gray & C.Totterdell 7079)  
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-30)  
-``` 
-
- c.	For hybrid species look through the files under `config\NSL` for examples or the extensive list of substitutions in White_2020.  
-   
-
-For a study requiring a large number of manual taxonomic changes, you can create a data frame with headers `dataset_id`, `find` (original name), `replace` (APC/APNI accepted name), and `reason` to manually fill in and read into the `taxonomic_updates` section:
-    
-Begin by generating a list of taxa that haven't been matched:  
-```{r, eval = FALSE, echo=TRUE}
-recognised_taxa <-
-  austraits$taxa %>%
-  filter(source %in% c("APC", "APNI"))
-
-austraits$traits %>%
-  filter(dataset_id == current_study) %>%
-  distinct(taxon_name) %>%
-  anti_join(recognised_taxa) %>%
-  rename(find = taxon_name) %>%
-  write_csv("data/dataset_id/raw/unmatched_taxa.csv")
-```
-
-Add columns for `replace` and `reason`, fill in the missing values and save as csv file. Then  
-```{r, eval=FALSE, echo=TRUE}
-taxon_substitutions <-
-  read_csv("data/dataset_id/raw/unmatched_taxa_edited.csv")
-
-metadata_add_taxonomic_changes_list(current_study, taxon_substitutions)
-```
-
-4.	Occasional studies report phrase names that aren’t in the APC/APNI lists, but are present in the ALA (Atlas of Living Australia) database. In this case, format the name to match the accepted phrase name format. The name will be remain unrecognised by AusTraits. Please alert an AusTraits custodian, as the curators of the APC/APNI lists would like to review such taxon names.
-
-**5. Finally, but very important, update the list of taxa in `taxon_list.csv` by running:**
-```{r, eval=FALSE, echo=TRUE}
-austraits_rebuild_taxon_list()
-```
 
 ## Check for duplicates  
 
@@ -1281,16 +1147,6 @@ Difficulties:
 
 ## Build study report  
 
-A final quality check is conducted by generating a report on the data in each study. 
-
-Rebuild the taxon list and AusTraits to ensure other changes made during the quality checks were implemented. Then build the study report:  
-
-```{r, eval=FALSE, echo=TRUE}
-austraits_rebuild_taxon_list()
-austraits <- remake::make("austraits")
-dataset_report(current_study)
-```
-
 The report is located in the `export` folder.
 
 Check the study report to ensure:  
@@ -1390,9 +1246,6 @@ build_setup_pipeline()
 
 # check data builds
 remake::make(dataset_ids)
-
-# Check taxonomy has been updated
-metadata_check_taxa(dataset_ids)
 
 # run tests on dataset
 austraits_run_tests()
