@@ -6,6 +6,81 @@ source:
     year: 2019
     title: Seed Information Database (SID) and Seed Bank Database
     url: http://data.kew.org/sid/
+  original_01:
+    key: Jones_1966
+    bibtype: Article
+    year: '1966'
+    author: Quentin Jones and F. R. Earle
+    journal: Economic Botany
+    title: 'Chemical analyses of seeds {II}: Oil and protein content of 759 species'
+    volume: '20'
+    number: '2'
+    pages: 127--155
+    doi: 10.1007/bf02904010
+  original_02:
+    key: Brand_1985
+    bibtype: InBook
+    year: 1985
+    author: J.C. Brand and V. Cherikoff
+    title: The nutritional composition of Australian Aboriginal food plants of the desert regions.
+    booktitle: Plants for Arid Lands
+    editor: G.E.Wickens, J.R.Goodin and D.V.Field
+    publisher: George Allen and Unwin
+    place: London
+    pages: 53--68
+  original_03:
+    key: Maconochie_1985
+    bibtype: InBook
+    year: 1985
+    author: J.R. Maconochie
+    title: Plants of the Australian arid zone - an undeveloped potential.
+    booktitle: Plants for Arid Lands
+    editor: G.E.Wickens, J.R.Goodin and D.V.Field
+    publisher: George Allen and Unwin
+    place: London
+    pages: 289--302
+  original_04:
+    key: Barclay_1974
+    bibtype: Article
+    year: 1974
+    author: F.R. Earle and A.S. Barclay
+    title: "Chemical analyses of seeds III: oil and protein content of 1253 species"
+    journal: Economic Botany
+    volume: 28
+    pages: 178--236
+  original_05:
+    key: Earle_1962
+    bibtype: Article
+    year: 1974
+    author: F.R. Earle and Q. Jones
+    title: Analyses of seed samples from 113 plant families.
+    journal: Economic Botany
+    volume: 16
+    pages: 221--250
+  original_06: 
+    key: Schippers_2000
+    bibtype: Manual
+    year: 2000
+    author: R.R. Schippers
+    title: "African Indigenous Vegetables: an Overview of Cultivated Species."
+    organization: Natural Resources Institute/ACP-EU Technical Centre for Agricultural and Rural Cooperation, Chatham, UK.
+  original_07: 
+    key: Vaughan_1970
+    bibtype: Book
+    year: 1970
+    author: J.G. Vaughan
+    title: The Structure and Utilisation of Oil Seeds.
+    publisher: Chapman and Hall Ltd.
+    place: London.
+  original_08:
+    key: Hagemann_1967
+    bibtype: Article
+    year: 1967
+    author: J.M. Hagemann and F.R. Earle and I.A. Wolff and A.S. Barclay
+    title: Search for new industrial oils. XIV. Seed oils of Labiatae.
+    journal: Lipids
+    volume: 2
+    pages: 371--380
 contributors:
   data_collectors:
   - last_name: Liu
@@ -16,18 +91,23 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:     '
+  custom_R_code: '
     data %>% 
       mutate(
-        protcontentval = protcontentval/100,
-        source_id = stringr::str_replace_all(refshort,"[\\(]",""),    
-        source_id = stringr::str_replace(source_id,"\\)",""),
-        source_id = stringr::str_replace(source_id,"\\, ","_"),
-        source_id = stringr::str_replace(source_id,"\\& ",""),
-        source_id = stringr::str_replace_all(source_id,"[:space:]","_"),
-        source_id = stringr::str_replace(source_id,"\\_et_al.","")
-        ) %>% 
-      group_by(`SID taxa`, source_id, oilmaterialdesc) %>%
+        protcontentval = protcontentval/100,        
+        ref_year = stringr::str_extract(refshort, "(?<!\\d)\\d{4}(?!\\d)"),
+        ref_author = stringr::str_trim(word(refshort, 1)),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]", ""),
+        source_id = paste0(ref_author, "_", ref_year)
+      ) %>% 
+      arrange(`SID taxa`, protcontentval, source_id) %>% 
+      group_by(`SID taxa`, oilmaterialdesc, protcontentval) %>%
+      mutate(merged_ref = ifelse(length(unique(source_id)) == 1, source_id, paste0(source_id, collapse = "; "))) %>%
+      ungroup() %>% 
+      group_by(`SID taxa`, merged_ref, oilmaterialdesc) %>%
+      mutate(across(protcontentval, replace_duplicates_with_NA)) %>% 
+      ungroup() %>% 
+      group_by(`SID taxa`, source_id, oilmaterialdesc) %>% 
       mutate(observation_num = row_number()) %>%
       ungroup()
   '
@@ -41,8 +121,9 @@ dataset:
   sampling_strategy: each entry is carefully annotated with methods and references
     in data.csv file
   original_file: in raw data folder
+  measurement_remarks: merged_ref
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
-    Commons licesne. Data not to be used for Commercial Purposes.
+    Commons license. Data not to be used for Commercial Purposes.
 locations: .na
 contexts:
 - context_property: tissue sampled
@@ -55,40 +136,27 @@ contexts:
   - find: Kernel
     value: kernel
     description: Measurements were made on the kernel.
-- context_property: original dataset_id
-  category: method
-  var_in: source_id
-  values:
-  - find: Brand_Cherikoff_1985
-    value: Brand_Cherikoff_1985
-    description: Brand_Cherikoff_1985
-  - find: Barclay_Earle_1974
-    value: Barclay_Earle_1974
-    description: Barclay_Earle_1974
-  - find: Earle_Jones_1962
-    value: Earle_Jones_1962
-    description: Earle_Jones_1962
-  - find: Hagemann_1967
-    value: Hagemann_1967
-    description: Hagemann_1967
-  - find: Jones_Earle_1966
-    value: Jones_Earle_1966
-    description: Jones_Earle_1966
-  - find: Maconochie_1985
-    value: Maconochie_1985
-    description: Maconochie_1985
-  - find: Schippers_2000
-    value: Schippers_2000
-    description: Schippers_2000
-  - find: Vaughan_1970
-    value: Vaughan_1970
-    description: Vaughan_1970
-- context_property: repeat observations
+- context_property: replicate observations
   category: temporal
   var_in: observation_num
   values:
   - value: 1
   - value: 2
+  - value: 3
+  - value: 4
+  - value: 5
+  - value: 6
+  - value: 7
+  - value: 8
+  - value: 9
+  - value: 10
+  - value: 11
+  - value: 12
+  - value: 13
+  - value: 14
+  - value: 15
+  - value: 16
+  - value: 17
 traits:
 - var_in: protcontentval
   unit_in: '%'

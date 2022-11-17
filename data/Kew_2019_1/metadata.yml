@@ -18,46 +18,68 @@ dataset:
   data_is_long_format: no
   custom_R_code:     '
     data %>%
-      group_by(taxa) %>%
-      distinct(thousandseedweight, .keep_all = TRUE) %>%
-      ungroup() %>%
       mutate(
-        original_dataset_id = stringr::str_replace_all(refshort,"[\\(]",""),    
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\)",""),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\.",""),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\, ","_"),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\,",""),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\& ",""),
-        original_dataset_id = stringr::str_replace_all(original_dataset_id,"[:space:]","_"),
-        original_dataset_id = stringr::str_replace(original_dataset_id,"\\_et_al",""),
-        original_dataset_id = if_else(is.na(original_dataset_id),"unknown",original_dataset_id),
+        ref_year = stringr::str_extract(refshort, "(?<!\\d)\\d{4}(?!\\d)"),
+        ref_year = ifelse(is.na(ref_year), "2019", ref_year),
+        ref_author = ifelse(stringr::str_detect(refshort, "RBG Kew, Wakehurst Place"), "Kew", NA),
+        ref_author = ifelse(stringr::str_detect(refshort, "Baker Seed Herbarium, California") & is.na(ref_author), "JepsonHerbarium", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "von Carlowitz") & is.na(ref_author), "vonCarlowitz", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Peter Juniper") & is.na(ref_author), "Juniper", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Forest Service") & is.na(ref_author), "ForestService", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "de Taffin") & is.na(ref_author), "deTaffin", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Berry Botanic Garden") & is.na(ref_author), "BerryBotanicGarden", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "P<e9>rez-Fern<e1>ndez et al.") & is.na(ref_author), "PérezFernández", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Groom") & is.na(ref_author), "Groom", ref_author),
+        ref_author = ifelse(is.na(ref_author), stringr::str_trim(word(refshort, 1)), ref_author),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]", ""),
+        ref_author = ifelse(is.na(ref_author), "unknown", ref_author),
+        original_dataset_id = paste0(ref_author, "_", ref_year),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "Clarke, P.J. and Davison, E.A."), paste0(original_dataset_id, "_1", sep = ""), original_dataset_id)),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "Clarke, P.J., Kerrigan, R.A. and Westphal,"), paste0(original_dataset_id, "_2", sep = ""), original_dataset_id)),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "DFSC. 2000a. The Project"), paste0(original_dataset_id, "_1", sep = ""), original_dataset_id)),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "DFSC. 2000b. The Project"), paste0(original_dataset_id, "_2", sep = ""), original_dataset_id)),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "Vaughton, G. and Ramsey, M. 1998"), paste0(original_dataset_id, "_1", sep = ""), original_dataset_id)),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "Vaughton, G. 1998. Soil seed bank"), paste0(original_dataset_id, "_2", sep = ""), original_dataset_id)),
         measurement_remarks = paste0(
-          "MATERIAL: ", materialweigheddesc, "; ",
-          "NOTES: ", seedweightnotes, "; ",
-          "REFERENCE: ", original_dataset_id
+            "MATERIAL: ", materialweigheddesc, "; ",
+            "NOTES: ", seedweightnotes, "; ",
+            "REFERENCE: ", original_dataset_id
         ),
-        measurement_remarks = stringr::str_replace(measurement_remarks, "MATERIAL: NA; ",""),
-        measurement_remarks = stringr::str_replace(measurement_remarks, "NOTES: NA; ","")
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "MATERIAL: NA; ", ""),
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "NOTES: NA; ", "")
       ) %>% 
-      filter(!original_dataset_id %in% c("Jurado_1991", "Moles_2000", "Milberg_1998"))
+      filter(!original_dataset_id %in% c("Jurado_1991", "Moles_2000", "Milberg_1998")) %>% 
+      arrange(taxa, materialweigheddesc, thousandseedweight, original_dataset_id) %>% 
+      group_by(taxa, materialweigheddesc, thousandseedweight, seedweightnotes, weightprecision) %>%
+      mutate(merged_ref = ifelse(length(unique(original_dataset_id)) == 1, original_dataset_id, paste0(original_dataset_id, collapse = "; "))) %>%
+      ungroup() %>% 
+      group_by(taxa, merged_ref) %>%
+      mutate(across(c(thousandseedweight, materialweigheddesc), replace_duplicates_with_NA)) %>% 
+      ungroup()
   '
   collection_date: unknown/2019
   taxon_name: taxa
+  source_id: original_dataset_id
   description: all seed weights for Australian species from the Kew Botanic Gardens
     database
   basis_of_record: preserved_specimen
   life_stage: adult
   sampling_strategy: information in data.csv file
   original_file: in raw data folder
+  measurement_remarks: merged_ref
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
-    Commons licesne. Data not to be used for Commercial Purposes.
+    Commons license. Data not to be used for Commercial Purposes.
 locations: .na
 contexts: .na
 traits:
 - var_in: thousandseedweight
   unit_in: mg
   trait_name: seed_dry_mass
-  entity_type: unknown
+  entity_type: individual
   value_type: mean
   basis_of_value: measurement
   replicates: unknown

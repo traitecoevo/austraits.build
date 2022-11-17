@@ -83,7 +83,10 @@ dataset:
             value = ifelse(species_name %in% c("Stephania japonica var. discolor") &  trait == "lifeform","vine",value),
             value = ifelse(species_name %in% c("Caesalpinia subtropica") & trait == "lifeform","climber_woody",value),
             trait = ifelse(value %in% c("HE", "A", "E"), "plant_growth_substrate", trait)
-      )
+      ) %>%
+      group_by(species_name, trait) %>%
+        distinct(value, .keep_all = TRUE) %>%
+      ungroup()
   ' 
   collection_date: unknown/2015
   taxon_name: species_name
