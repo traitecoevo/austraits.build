@@ -172,6 +172,12 @@ test_that("test build_setup_pipeline is working",{
   expect_length(taxa1, 15)
   expect_true(nrow(taxa1) == 0)
   
+  expect_true(file.copy("config/taxon_list-orig.csv", "config/taxon_list.csv", TRUE))
+  expect_silent(taxa2 <- read_csv_char("config/taxon_list.csv"))
+  expect_named(taxa2, vars)
+  expect_length(taxa2, 13)
+  expect_true(nrow(taxa2) == 5)
+ 
   expect_no_error(austraits <- remake::make("austraits"))
   
   expect_null(austraits_raw$build_info$version)

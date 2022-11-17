@@ -6,6 +6,7 @@ test_that("test taxonomic resources are working",{
   unlink("data", TRUE)
   expect_true(file.copy("../testthat/config", ".", recursive = TRUE, overwrite = TRUE))
   expect_true(file.copy("../testthat/data", ".", recursive = TRUE, overwrite = TRUE))
+  expect_true(file.copy("config/taxon_list-orig.csv", "config/taxon_list.csv", overwrite = TRUE))
   expect_true(file.copy("data/Test_2022/test-metadata.yml", "data/Test_2022/metadata.yml", overwrite = TRUE))
   unlink(".git", recursive = TRUE)
   expect_no_error(zip::unzip("config/testgit.zip"))
@@ -23,7 +24,4 @@ test_that("test taxonomic resources are working",{
   expect_length(taxa1, 15)
   expect_true(nrow(taxa1) == 5)
   expect_no_error(austraits <- remake::make("austraits"))
-
-  unlink("data")
-  unlink("config")
 })
