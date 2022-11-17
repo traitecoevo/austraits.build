@@ -1530,7 +1530,11 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
       ) %>% 
       dplyr::select(-.data$taxon_id_genus, -.data$taxon_id_family, -.data$scientific_name_id_genus, -.data$scientific_name_id_family, 
                     -.data$taxonomic_status_genus, -.data$taxonomic_status_family, -.data$taxonomic_reference_genus, -.data$taxonomic_reference_family,
-                    -.data$name_to_match_to, -.data$family_tmp)
+                    -.data$name_to_match_to, -.data$family_tmp) %>%
+      dplyr::select(.data$taxon_name, .data$taxonomic_reference, .data$taxon_rank, .data$trinomial, .data$binomial, 
+                    .data$genus, .data$family, .data$taxon_distribution, .data$establishment_means, 
+                    .data$taxonomic_status, .data$scientific_name, .data$scientific_name_authorship, .data$taxon_id, 
+                    .data$scientific_name_id)
 
   austraits_raw$taxa <-
     species_tmp %>%
