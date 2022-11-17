@@ -41,11 +41,16 @@ targets:
                  definitions,
                  unit_conversions
                  )
-  {{dataset_id}}:
+  {{dataset_id}}_raw:
     command: >
       dataset_process("{{path}}/{{dataset_id}}/data.csv",
                   {{dataset_id}}_config,
                   schema
+                 )
+  {{dataset_id}}:
+    command: >
+      build_update_taxonomy({{dataset_id}}_raw,
+                  taxon_list
                  )
 
 {{/dataset_ids}}
@@ -57,9 +62,6 @@ targets:
         {{dataset_id}},
 {{/dataset_ids}}
         NULL)
-
-  austraits_taxonomy:
-    command: build_update_taxonomy(austraits_raw, taxon_list)
     
   austraits:
-    command: build_add_version(austraits_taxonomy, version_number, git_SHA)
+    command: build_add_version(austraits_raw, version_number, git_SHA)

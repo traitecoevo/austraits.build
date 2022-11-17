@@ -56,7 +56,7 @@ dataset_configure <- function(
   list(dataset_id = dataset_id,
        metadata = metadata,
        definitions = definitions,
-       unit_conversion_functions = unit_conversion_functions_sub)
+       unit_conversion_functions = unit_conversion_functions_sub) 
 }
 
 #' Load Dataset
