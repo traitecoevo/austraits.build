@@ -1547,6 +1547,10 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
     austraits_raw$traits %>%
       dplyr::select(-.data$taxonomic_resolution)
 
+  austraits_raw$excluded_data <-
+    austraits_raw$excluded_data %>%
+      dplyr::select(-.data$taxonomic_resolution)
+
   austraits_raw  
 }
 

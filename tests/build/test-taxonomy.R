@@ -15,11 +15,12 @@ test_that("test taxonomic resources are working",{
   expect_true(file.exists("config/taxon_list.csv"))
   expect_no_error(austraits_raw <- remake::make("austraits_raw"))
   expect_silent(taxa1 <- read_csv_char("config/taxon_list.csv"))
-  
-  vars <- c("cleaned_name","source","taxonIDClean","taxonomicStatusClean","alternativeTaxonomicStatusClean","acceptedNameUsageID",
-  "taxon_name","scientificNameAuthorship","taxonRank","taxonomicStatus","family","taxonDistribution","ccAttributionIRI")
+  vars <- c("cleaned_name", "taxonomic_reference", "cleaned_scientific_name_id", "cleaned_name_taxonomic_status",
+  "cleaned_name_alternative_taxonomic_status", "taxon_name", "taxon_id", "scientific_name_authorship", "taxon_rank",
+  "taxonomic_status", "family", "taxon_distribution", "establishment_means", "scientific_name", 
+  "scientific_name_id")
   expect_named(taxa1, vars)
-  expect_length(taxa1, 13)
+  expect_length(taxa1, 15)
   expect_true(nrow(taxa1) == 5)
   expect_no_error(austraits <- remake::make("austraits"))
 
