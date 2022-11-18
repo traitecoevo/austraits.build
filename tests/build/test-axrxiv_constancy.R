@@ -86,13 +86,14 @@ test_that("constancy of with version 3.0.2", {
 
   v_curr <- austraits_raw[[v]][,vv] %>% 
     filter(trait_name %in% trait_to_check) %>%
+    select(-taxon_name) %>%
     mutate(in_current = "in_current")
 
   v_old <- austraits_raw_comparison[[v]][, vv] %>%
     filter(trait_name %in% trait_to_check) %>%
     mutate(in_old = "old_version") %>%
     left_join(
-      by = c("dataset_id", "taxon_name", "trait_name", "value", "unit", "original_name"),
+      by = c("dataset_id", "trait_name", "value", "unit", "original_name"),
       v_curr)
 
   # Check data from previous compilation is contained within new compilation
