@@ -1,5 +1,5 @@
 
-build_comparison_set <- function(root.dir, definitions, unit_conversions, schema) {
+build_comparison_set <- function(root.dir, definitions, unit_conversions, schema, taxon_list) {
 
 # some datasets to compare against
 #  Baker_2019 - 1 excluded taxon, 1 taxonomic update, substitutions
@@ -9,19 +9,21 @@ build_comparison_set <- function(root.dir, definitions, unit_conversions, schema
 #  Westoby_2014 -  big collection of numeric traits; but no "issues"; includes locations
 #  Tomlinson_2019 - complete taxonomic changes
   
-  f_build <- function(x, definitions, unit_conversions, schema) {
+  f_build <- function(x, definitions, unit_conversions, schema, taxon_list) {
     config <-  dataset_configure(file.path(root.dir, "data", x, "metadata.yml"), definitions, unit_conversions)
     data <-  dataset_process(file.path(root.dir, "data", x, "data.csv"), config, schema)
+    data <- build_update_taxonomy(data, taxon_list)
+    
     data
   }
   
-  Baker_2019 <- f_build("Baker_2019", definitions, unit_conversions, schema)
-  Bloomfield_2018 <- f_build("Bloomfield_2018", definitions, unit_conversions, schema)
-  Catford_2014 <- f_build("Catford_2014", definitions, unit_conversions, schema)
-  Duan_2015 <- f_build("Duan_2015", definitions, unit_conversions, schema)
-  Maslin_2012 <- f_build("Maslin_2012", definitions, unit_conversions, schema)
-  Tomlinson_2019 <- f_build("Tomlinson_2019", definitions, unit_conversions, schema)
-  Westoby_2014 <- f_build("Westoby_2014", definitions, unit_conversions, schema)
+  Baker_2019 <- f_build("Baker_2019", definitions, unit_conversions, schema, taxon_list)
+  Bloomfield_2018 <- f_build("Bloomfield_2018", definitions, unit_conversions, schema, taxon_list)
+  Catford_2014 <- f_build("Catford_2014", definitions, unit_conversions, schema, taxon_list)
+  Duan_2015 <- f_build("Duan_2015", definitions, unit_conversions, schema, taxon_list)
+  Maslin_2012 <- f_build("Maslin_2012", definitions, unit_conversions, schema, taxon_list)
+  Tomlinson_2019 <- f_build("Tomlinson_2019", definitions, unit_conversions, schema, taxon_list)
+  Westoby_2014 <- f_build("Westoby_2014", definitions, unit_conversions, schema, taxon_list)
   
   austraits_raw <-  austraits.build:::build_combine(Baker_2019, Bloomfield_2018, Catford_2014, Duan_2015, Maslin_2012, Tomlinson_2019, Westoby_2014)
   
@@ -38,7 +40,7 @@ test_that("constancy of with version 3.0.2", {
   
   # some datasets to compare against
   expect_no_error(
-    austraits_raw <- build_comparison_set(root.dir, definitions, unit_conversions, schema)
+    austraits_raw <- build_comparison_set(root.dir, definitions, unit_conversions, schema, taxon_list)
     , info = "Building comparison set")
   
   file_comparison <- "comparison_set_3.0.2.rds"
