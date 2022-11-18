@@ -145,7 +145,6 @@ test_that("test dataset_test is working",{
 test_that("test build_setup_pipeline is working",{
 
   
-  unlink(".remake", recursive = TRUE)
   unlink("remake.yml")
   unlink("config/taxon_list.csv")
 
@@ -162,7 +161,6 @@ test_that("test build_setup_pipeline is working",{
   expect_true(file.exists("remake.yml"))
   expect_silent(yaml::read_yaml("remake.yml"))
   expect_true(file.exists("config/taxon_list.csv"))
-  expect_no_error(austraits_raw <- remake::make("austraits_raw"))
   expect_silent(taxa1 <- read_csv_char("config/taxon_list.csv"))
   vars <- c("cleaned_name","taxonomic_reference", "cleaned_scientific_name_id", "cleaned_name_taxonomic_status","cleaned_name_alternative_taxonomic_status", "taxon_name", "taxon_id", "scientific_name_authorship", "taxon_rank", 
   "taxonomic_status", "family", "taxon_distribution", "establishment_means", "scientific_name", "scientific_name_id")
@@ -173,8 +171,10 @@ test_that("test build_setup_pipeline is working",{
   expect_silent(taxa2 <- read_csv_char("config/taxon_list.csv"))
   expect_named(taxa2, vars)
   expect_length(taxa2, 15)
-  expect_true(nrow(taxa2) == 5)
- 
+  expect_true(nrow(taxa2) == 7)
+  
+  unlink(".remake", recursive = TRUE)
+  expect_no_error(austraits_raw <- remake::make("austraits_raw"))
   expect_no_error(austraits <- remake::make("austraits"))
   
   expect_null(austraits_raw$build_info$version)
@@ -184,7 +184,7 @@ test_that("test build_setup_pipeline is working",{
   expect_equal(austraits$build_info$git_SHA, sha)
   expect_equal(austraits$build_info$git_SHA, "6c73238d8d048781d9a4f5239a03813be313f0dd")
   
-  expect_length(austraits_raw$taxa, 1)
+  expect_length(austraits_raw$taxa, 14)
   expect_length(austraits$taxa, 14)
   expect_equal(nrow(austraits$taxa), nrow(austraits_raw$taxa))
 })
