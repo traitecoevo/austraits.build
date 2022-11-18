@@ -1402,15 +1402,13 @@ build_combine <- function(..., d=list(...)) {
     dplyr::distinct() %>%
     dplyr::arrange(.data$original_name, .data$taxon_name, .data$taxonomic_resolution)
 
-  traits <- combine("traits", d)
-
-  ret <- list(traits = traits,
+  ret <- list(traits = combine("traits", d),
               locations = combine("locations", d),
               contexts = combine("contexts", d),
               methods = combine("methods", d),
               excluded_data = combine("excluded_data", d),
               taxonomic_updates = taxonomic_updates,
-              taxa = taxonomic_updates %>% dplyr::distinct(),
+              taxa = combine("taxa", d) %>% dplyr::distinct() %>% dplyr::arrange(taxon_name),
               contributors = combine("contributors", d),
               sources = sources,
               definitions = definitions,
@@ -1537,6 +1535,7 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
                     .data$genus, .data$family, .data$taxon_distribution, .data$establishment_means, 
                     .data$taxonomic_status, .data$scientific_name, .data$scientific_name_authorship, .data$taxon_id, 
                     .data$scientific_name_id)
+
 
   austraits_raw$taxa <-
     species_tmp %>%

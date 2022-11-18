@@ -779,21 +779,21 @@ build_setup_pipeline <- function(
 
   if(!file.exists(filename)) {
     dplyr::tibble(
-      cleaned_name = character(), 
-      cleaned_name_scientific_name_id  = character(), 
-      cleaned_name_taxonomic_status = character(), 
-      cleaned_name_alternative_taxonomic_status = character(), 
+      cleaned_name = character(),
       taxonomic_reference = character(),
-      taxonomic_resolution = character(),
-      accepted_name_usage_ID = character(), 
-      taxon_name = character(), 
-      scientific_name_authorship = character(), 
-      scientific_name = character(), 
-      scientific_name_id = character(), 
-      taxon_rank = character(), 
-      taxonomic_status = character(), 
-      family = character(), 
-      taxon_distribution = character()
+      cleaned_scientific_name_id = character(),
+      cleaned_name_taxonomic_status = character(),
+      cleaned_name_alternative_taxonomic_status = character(),
+      taxon_name = character(),
+      taxon_id = character(),
+      scientific_name_authorship = character(),
+      taxon_rank = character(),
+      taxonomic_status = character(),
+      family = character(),
+      taxon_distribution = character(),
+      establishment_means = character(),
+      scientific_name = character(),
+      scientific_name_id = character()
     ) %>%  readr::write_csv(filename)
   }
 }
