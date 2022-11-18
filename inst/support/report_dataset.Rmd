@@ -290,9 +290,9 @@ locations <-
               summarise(records = n()),
             # details on locations from metadata
             data_study$locations %>%
-              filter(site_property %in% location_main) %>%
+              filter(location_property %in% location_main) %>%
               select(-dataset_id) %>%
-              spread(site_property, value) %>%
+              spread(location_property, value) %>%
               create_if_missing("location_id") %>%
               create_if_missing("location_name") %>%
               create_if_missing("latitude (deg)") %>%
@@ -340,9 +340,9 @@ The following variables have been recorded for the locations included in the stu
 ```{r, results='asis', echo=FALSE}
 
 data_study$locations %>%
-  filter(!(site_property %in% location_main)) %>%
+  filter(!(location_property %in% location_main)) %>%
   select(-dataset_id) %>%
-  spread(site_property, value) -> locations_extra
+  spread(location_property, value) -> locations_extra
 
 if(nrow(locations_extra) > 0 ) {
   locations_extra %>%
@@ -368,13 +368,13 @@ data_study$contexts %>%
   group_split() -> context_properties
 
 if(length(context_properties) > 0 ) {
-  context_properties %>%
+  
     for (i in 1:length(context_properties)) {      
       writeLines("The column titled `r context_properties[[i]]$category[1]` in your dataset was mapped to context property `r context_properties[[i]]$context_property[1]`, within the category `r context_properties[[i]]$category[1]`")
 
       writeLines("The following values exist for this context: ")
 
-      context_properties[[i]] %>% select(find, replace, description)  %>%
+      context_properties[[i]] %>% select(dplyr::any_of(c("find", "value", "description"))) %>%
         my_kable_styling() %>%
         writeLines()
     }
@@ -553,12 +553,12 @@ for(trait in traits_numeric) {
 
 if(nrow(filter(data_study$excluded_data, error == "Value out of allowable range" & trait_name == trait)) > 0 ) {
   data_study$excluded_data %>% filter(error == "Value out of allowable range" & trait_name == trait) %>%
-    select(observation_id, taxon_name, location_name, value, unit) %>%
+    select(observation_id, taxon_name, location_id, value, unit) %>%
     my_kable_styling() %>%
     writeLines()
 }
 
- # austraits::plot_trait_distribution_beeswarm(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
+ austraits::plot_trait_distribution_beeswarm(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
 
   writeLines(c(""))
 
