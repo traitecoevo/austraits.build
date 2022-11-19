@@ -39,7 +39,11 @@ dataset:
       ) %>%
       move_values_to_new_trait(
         "plant_growth_form", "plant_growth_substrate", "O (mistletoe)", "epiphyte", ""
-      )      
+      ) %>%
+      group_by(name_edited) %>%
+        mutate(across(c(`N-fixer (Y/N)` ,`leaf_type(B/N)`, `plant_growth_form`, `plant_growth_substrate`,
+        `evergreen/deciduous(E/D)`, `photosynthetic_pathway`), replace_duplicates_with_NA)) %>%
+      ungroup()     
   '
   collection_date: date
   taxon_name: name_edited

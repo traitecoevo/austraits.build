@@ -48,7 +48,11 @@ dataset:
         bud_bank_location = ifelse(not_in_Clarke_2015 == "x",regen_strategy,NA)
       ) %>%
       group_by(Species) %>%
-        mutate(across(c(`Growth form`), replace_duplicates_with_NA)) %>%
+        mutate(
+          across(c(`Growth form`, plant_climbing_mechanism), replace_duplicates_with_NA),
+          `Growth form`= paste(`Growth form`, collapse = " "),
+          across(c(`Growth form`), replace_duplicates_with_NA)
+        ) %>%
       ungroup() %>%
       group_by(Species, habitat) %>%
         mutate(observation_num = row_number()) %>%
@@ -183,7 +187,7 @@ traits:
 - var_in: fire_response
   unit_in: .na
   trait_name: fire_response
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -207,7 +211,7 @@ traits:
 - var_in: regen_strategy
   unit_in: .na
   trait_name: bud_bank_location
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -231,7 +235,7 @@ traits:
 - var_in: seed_storage_location
   unit_in: .na
   trait_name: seed_storage_location
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -255,7 +259,7 @@ traits:
 - var_in: Primary juvenile period
   unit_in: years
   trait_name: reproductive_maturity
-  entity_type: species
+  entity_type: population
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
@@ -270,7 +274,7 @@ traits:
 - var_in: Secondary juvenile period
   unit_in: years
   trait_name: reproductive_maturity_secondary_after_fire
-  entity_type: species
+  entity_type: population
   value_type: minimum
   basis_of_value: measurement
   replicates: .na
