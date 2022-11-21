@@ -56,7 +56,7 @@ dataset_configure <- function(
   list(dataset_id = dataset_id,
        metadata = metadata,
        definitions = definitions,
-       unit_conversion_functions = unit_conversion_functions_sub)
+       unit_conversion_functions = unit_conversion_functions_sub) 
 }
 
 #' Load Dataset
@@ -117,13 +117,13 @@ dataset_process <- function(filename_data_raw,
     traits$traits %>%
     process_add_all_columns(
       c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]),
-        "parsing_id","location_name")
+        "parsing_id","location_name", "taxonomic_resolution")
     ) %>%
     process_flag_unsupported_traits(definitions) %>%
     process_flag_excluded_observations(metadata) %>%
     process_convert_units(definitions, unit_conversion_functions) %>%
     process_flag_unsupported_values(definitions) %>%
-    process_create_observation_id() %>% 
+    process_create_observation_id() %>%
     process_taxonomic_updates(metadata) %>%
     # Sorting of data
     dplyr::mutate(
@@ -163,7 +163,7 @@ dataset_process <- function(filename_data_raw,
                             dplyr::select(.data$location_id, col_tmp = dplyr::any_of(v)) %>%
                             stats::na.omit()
                           )
-      ## Use location level value if present
+      # Use location level value if present
       traits[[v]] <- ifelse(!is.na(traits_tmp[["col_tmp"]]), traits_tmp[["col_tmp"]], traits[[v]])
       }
     }
@@ -187,14 +187,15 @@ dataset_process <- function(filename_data_raw,
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
     traits %>%
-    dplyr::select(dataset_id, .data$original_name, cleaned_name = .data$taxon_name) %>%
+    dplyr::select(dataset_id, .data$original_name, cleaned_name = .data$taxon_name, taxonomic_resolution = .data$taxonomic_resolution) %>%
     dplyr::distinct() %>%
     dplyr::arrange(.data$cleaned_name)
 
   # ensure correct order of columns in traits table
+  # at this point, need to retain `taxonomic_resolution`, because taxa table & taxonomic_updates not yet assembled.
   traits <-
     traits %>%
-    dplyr::select(c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]), "error"))
+    dplyr::select(dplyr::all_of(c(names(schema[["austraits"]][["elements"]][["traits"]][["elements"]]), "error", "taxonomic_resolution")))
 
   # Remove missing values is specified
   if( filter_missing_values == TRUE ) {
@@ -203,7 +204,7 @@ dataset_process <- function(filename_data_raw,
   }
 
   # combine for final output
-  list(dataset_id = dataset_id,
+  list(
        traits     = traits %>% dplyr::filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
        locations  = locations,
        contexts   = context_ids$contexts %>% dplyr::select(-.data$var_in, -.data$find),
@@ -215,7 +216,8 @@ dataset_process <- function(filename_data_raw,
        contributors = contributors,
        sources    = sources,
        definitions = definitions,
-       schema=schema
+       schema = schema,
+       build_info = list(session_info = utils::sessionInfo())
   )
 }
 
@@ -1318,27 +1320,35 @@ process_standardise_names <- function(x) {
 #'
 #' @return tibble with the taxonomic updates applied
 process_taxonomic_updates  <- function(data, metadata){
-
   out <- data
 
   # copy original species name to a new column
   out[["original_name"]] <- out[["taxon_name"]]
-
+  # create a column for `taxnomic_resolution` 
+  out[["taxonomic_resolution"]] <- NA_character_
+ 
   # Now make any replacements specified in metadata yaml
   ## Read metadata table, quit if empty
   substitutions_table <-  util_list_to_df2(metadata[["taxonomic_updates"]])
 
-  if(any(is.na(substitutions_table)) || nrow(substitutions_table) == 0) {
+  if(any(is.na(substitutions_table[1])) || nrow(substitutions_table) == 0) {
     return(out)
   }
 
+  # if the substitutions table exists, but there is no taxonomic resolution specified, create a column
+  if(is.null(substitutions_table[["taxonomic_resolution"]])) {
+    substitutions_table[["taxonomic_resolution"]] <- NA
+  }
+  
   to_update <- rep(TRUE, nrow(out))
 
-  ## Makes replacements, row by row
+  ## Makes replacements, row by row for both taxon_name and adds taxonomic_resolution for each name
   for(i in seq_len(nrow(substitutions_table))) {
+
     j <- which(out[["taxon_name"]] == substitutions_table[["find"]][i])
     if( length(j) > 0 ){
       out[["taxon_name"]][j] <- substitutions_table[["replace"]][i]
+      out[["taxonomic_resolution"]][j] <- substitutions_table[["taxonomic_resolution"]][i]
       to_update[j] <- FALSE
     }
   }
@@ -1348,6 +1358,7 @@ process_taxonomic_updates  <- function(data, metadata){
 
   ## Return updated table
   out
+  
 }
 
 #' Combine all the AusTraits studies into the compiled AusTraits database
@@ -1362,10 +1373,10 @@ process_taxonomic_updates  <- function(data, metadata){
 #' @importFrom rlang .data
 #' @export
 build_combine <- function(..., d=list(...)) {
+
   combine <- function(name, d) {
     dplyr::bind_rows(lapply(d, "[[", name))
   }
-
 
   # combine sources and remove duplicates
   sources <- d %>% lapply("[[", "sources")
@@ -1385,21 +1396,19 @@ build_combine <- function(..., d=list(...)) {
   # taxonomy
   taxonomic_updates <-
     combine("taxonomic_updates", d) %>%
-    dplyr::group_by(.data$original_name, .data$cleaned_name) %>%
+    dplyr::group_by(.data$original_name, .data$taxon_name, .data$taxonomic_resolution) %>%
     dplyr::mutate(dataset_id = paste(.data$dataset_id, collapse = " ")) %>%
     dplyr::ungroup() %>%
     dplyr::distinct() %>%
-    dplyr::arrange(.data$original_name, .data$cleaned_name)
+    dplyr::arrange(.data$original_name, .data$taxon_name, .data$taxonomic_resolution)
 
-  traits <- combine("traits", d)
-
-  ret <- list(traits = traits,
+  ret <- list(traits = combine("traits", d),
               locations = combine("locations", d),
               contexts = combine("contexts", d),
               methods = combine("methods", d),
               excluded_data = combine("excluded_data", d),
               taxonomic_updates = taxonomic_updates,
-              taxa = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
+              taxa = combine("taxa", d) %>% dplyr::distinct() %>% dplyr::arrange(taxon_name),
               contributors = combine("contributors", d),
               sources = sources,
               definitions = definitions,
@@ -1428,11 +1437,12 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
   austraits_raw$taxonomic_updates <-
     austraits_raw$taxonomic_updates %>%
     dplyr::left_join(by = "cleaned_name",
-              taxa %>% dplyr::select(.data$cleaned_name, .data$taxonIDClean, .data$taxonomicStatusClean,
-                                      .data$alternativeTaxonomicStatusClean, .data$acceptedNameUsageID, .data$taxon_name)
+              taxa %>% dplyr::select(.data$cleaned_name, .data$cleaned_scientific_name_id, .data$cleaned_name_taxonomic_status,
+                                      .data$cleaned_name_alternative_taxonomic_status, .data$taxon_id, .data$taxon_name)
               ) %>%
     dplyr::distinct() %>%
     dplyr::arrange(.data$cleaned_name)
+
 
   austraits_raw$traits <-
     austraits_raw$traits %>%
@@ -1442,48 +1452,107 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
               ) %>%
     dplyr::select(.data$dataset_id, .data$taxon_name, dplyr::everything()) %>%
     dplyr::mutate(taxon_name = ifelse(is.na(.data$taxon_name), .data$cleaned_name, .data$taxon_name)) %>%
+    dplyr::mutate(taxon_name = ifelse(stringr::str_detect(.data$cleaned_name, "\\["), .data$cleaned_name, .data$taxon_name)) %>%
     dplyr::select(-.data$cleaned_name)
+  
+# names, identifiers for all genera
+  genera_tmp <- taxa %>% 
+    dplyr::filter(.data$taxon_rank %in% c("Genus", "genus")) %>%
+    dplyr::select(name_to_match_to = .data$taxon_name, .data$family, taxonomic_reference_genus = .data$taxonomic_reference, taxon_id_genus = .data$taxon_id,
+                  scientific_name_id_genus = .data$scientific_name_id, taxonomic_status_genus = .data$taxonomic_status) %>%
+    dplyr::distinct()
+  
+# names, identifiers for all families in APC
+  families_tmp <- taxa %>% 
+    dplyr::filter(.data$taxon_rank %in% c("Familia", "family")) %>%
+    dplyr::select(name_to_match_to = .data$taxon_name, taxonomic_reference_family = .data$taxonomic_reference, taxon_id_family = .data$taxon_id,
+    scientific_name_id_family = .data$scientific_name_id, taxonomic_status_family = .data$taxonomic_status) %>%
+    dplyr::distinct()
+  
+### Fill in columns for trinomial, binomial, genus, and family, as appropriate 
+  # and match additional taxon information to the most specific name 
 
   species_tmp <-
     austraits_raw$traits %>%
-    dplyr::select(.data$taxon_name) %>%
+    dplyr::select(.data$taxon_name, .data$taxonomic_resolution) %>%
     dplyr::distinct() %>%
     dplyr::left_join(by = "taxon_name",
-      taxa %>% dplyr::select(-dplyr::contains("clean")) %>% dplyr::distinct()
-    ) %>%
-    # extract genus as this is useful
-    dplyr::mutate(
-      genus = .data$taxon_name  %>% stringr::str_split(" ") %>% purrr::map_chr(1),
-      genus = ifelse(.data$genus %in% taxa$taxon_name, .data$genus, NA_character_)
-    )  %>%
-    dplyr::arrange(.data$taxon_name) %>%
-    dplyr::mutate(
-      taxonomicStatus = ifelse(is.na(.data$taxonomicStatus) & !is.na(.data$genus), "known", .data$taxonomicStatus),
-      taxonomicStatus = ifelse(is.na(.data$taxonomicStatus) & is.na(.data$genus), "unknown", .data$taxonomicStatus),
-    ) %>%
-    split(.$taxonomicStatus)
+                     taxa %>% dplyr::select(.data$taxon_name, .data$taxon_rank, .data$family) %>% dplyr::distinct()
+    ) 
 
-  # check after the split, both "known" and "unknown" exist. If missing, create with empty
-  if(is.null(species_tmp[["known"]]))
-    species_tmp[["known"]] <- species_tmp[["unknown"]] %>% dplyr::filter(taxon_name=="dummy taxa")
-  if(is.null(species_tmp[["unknown"]]))
-    species_tmp[["unknown"]] <- species_tmp[["known"]] %>% dplyr::filter(taxon_name=="dummy taxa")
-  
-  # retrieve families from list of known genera - prioritise genera with accepted names
-   species_tmp[["known"]] <-
-     species_tmp[["known"]] %>%
-     dplyr::select(-.data$family) %>%
-     dplyr::left_join(by="genus",
-               taxa %>% dplyr::filter(.data$taxonRank == "Genus") %>%
-                 dplyr::select(genus = .data$taxon_name, .data$family) %>% dplyr::distinct()
-     )
+  species_tmp <- species_tmp %>%  
+    dplyr::mutate(    
+      # if no taxonomic resolution is specified, then the name's taxonomic resolution is the taxon_rank for the taxon name
+      taxon_rank = ifelse(!is.na(.data$taxonomic_resolution), .data$taxonomic_resolution, .data$taxon_rank),
+      # field trinomial is only filled in if taxonomic resolution is an infraspecific name 
+      trinomial = ifelse(.data$taxon_rank %in% c("trinomial", "Subspecies", "Forma", "Varietas"),             
+                        stringr::str_split_fixed(.data$taxon_name, "\\[",2)[,1] %>% stringr::str_trim(), NA),
+      # field binomial is filled in if taxonomic resolution is an infraspecific name or a binomial
+      # all taxon names that have "extra" information (beyond the actual name) have been formatted to have that information in square brackets '[]',
+      # so these can be used as a delimitor to extract the actual name
+      binomial = ifelse(.data$taxon_rank %in% c("binomial", "Species"), 
+                        stringr::str_split_fixed(.data$taxon_name, "\\[",2)[,1] %>% stringr::str_trim(), NA),
+      binomial = ifelse(.data$taxon_rank %in% c("trinomial", "Subspecies", "Forma", "Varietas", "Series"), 
+                        stringr::word(.data$taxon_name, start = 1, end = 2), .data$binomial),
+      binomial = stringr::str_trim(.data$binomial),
+      # genus filled in for all names that have a taxonomic of genus or more detailed
+      genus = ifelse(!.data$taxon_rank %in% c("Familia", "family"), stringr::word(.data$taxon_name, 1), NA),
+      family = ifelse(.data$taxon_rank %in% c("Familia", "family"), stringr::word(.data$taxon_name, 1), .data$family),
+      # identify which name is to be matched to the various identifiers, distribution information, etc. in the taxa file
+      name_to_match_to = ifelse(.data$taxon_rank %in% c("trinomial", "Subspecies", "Forma", "Varietas"), .data$trinomial, NA),
+      name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("binomial", "Species"), .data$binomial, .data$name_to_match_to),
+      name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("genus", "Genus"), .data$genus, .data$name_to_match_to),
+      name_to_match_to = ifelse(is.na(.data$name_to_match_to) & is.na(.data$taxon_rank), .data$genus, .data$name_to_match_to),
+      name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("family", "Familia"), .data$family, .data$name_to_match_to)
+      ) %>%
+      # remove family, taxon_rank; they are about to be merged back in, but matches will now be possible to more rows
+      select(-.data$taxon_rank, - .data$taxonomic_resolution) %>%
+      rename(family_tmp = .data$family) %>%
+      # merge in all data from taxa 
+      dplyr::left_join(by = c("name_to_match_to" = "taxon_name"),
+        taxa %>% dplyr::select(-dplyr::contains("clean")) %>% dplyr::distinct()
+      ) %>% 
+      dplyr::arrange(.data$taxon_name) %>%
+      # merge in identifiers for genera & families
+      dplyr::left_join(by = c("name_to_match_to", "family"), genera_tmp) %>% 
+      dplyr::left_join(by = "name_to_match_to", families_tmp) %>% 
+      dplyr::mutate(
+        taxonomic_status = ifelse(.data$taxon_rank %in% c("Genus", "genus"), .data$taxonomic_status_genus, .data$taxonomic_status),
+        taxonomic_status = ifelse(.data$taxon_rank %in% c("Familia", "family"), .data$taxonomic_status_family, .data$taxonomic_status),
+        taxonomic_reference = ifelse(.data$taxon_rank %in% c("Genus", "genus"), .data$taxonomic_reference_genus, .data$taxonomic_reference),
+        taxonomic_reference = ifelse(.data$taxon_rank %in% c("Familia", "family"), .data$taxonomic_reference_family, .data$taxonomic_reference),
+        taxon_id = ifelse(.data$taxon_rank %in% c("Genus", "genus"), .data$taxon_id_genus, .data$taxon_id),
+        taxon_id = ifelse(.data$taxon_rank %in% c("Familia", "family"), .data$taxon_id_family, .data$taxon_id),
+        scientific_name_id = ifelse(.data$taxon_rank %in% c("Genus", "genus"), .data$scientific_name_id_genus, .data$scientific_name_id),
+        scientific_name_id = ifelse(.data$taxon_rank %in% c("Familia", "family"), .data$scientific_name_id_family, .data$scientific_name_id),
+        taxon_distribution = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), NA, .data$taxon_distribution),
+        establishment_means = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), NA, .data$establishment_means)
+      ) %>% 
+      dplyr::select(-.data$taxon_id_genus, -.data$taxon_id_family, -.data$scientific_name_id_genus, -.data$scientific_name_id_family, 
+                    -.data$taxonomic_status_genus, -.data$taxonomic_status_family, -.data$taxonomic_reference_genus, -.data$taxonomic_reference_family,
+                    -.data$name_to_match_to, -.data$family_tmp) %>%
+      dplyr::select(.data$taxon_name, .data$taxonomic_reference, .data$taxon_rank, .data$trinomial, .data$binomial, 
+                    .data$genus, .data$family, .data$taxon_distribution, .data$establishment_means, 
+                    .data$taxonomic_status, .data$scientific_name, .data$scientific_name_authorship, .data$taxon_id, 
+                    .data$scientific_name_id)
+
 
   austraits_raw$taxa <-
     species_tmp %>%
     dplyr::bind_rows() %>%
     dplyr::arrange(.data$taxon_name)
 
-  austraits_raw
+  # only now, at the very end, can `taxonomic_resolution` be removed from the traits table
+  
+  austraits_raw$traits <-
+    austraits_raw$traits %>%
+      dplyr::select(-.data$taxonomic_resolution)
+
+  austraits_raw$excluded_data <-
+    austraits_raw$excluded_data %>%
+      dplyr::select(-.data$taxonomic_resolution)
+
+  austraits_raw  
 }
 
 #' Add version information to AusTraits

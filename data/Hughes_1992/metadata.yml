@@ -28,6 +28,10 @@ dataset:
     data %>%
       mutate(
         `flowering duration` = convert_month_range_vec_to_binary(`flowering duration`),
+        growth_habit = ifelse(`growth form` == "Herb, cree", "creeper", NA),
+        `growth form` = ifelse(`name original` == "Commelina cyanea", "herb",`growth form`),
+        `growth form` = ifelse(`name original` == "Hibbertia dentata", "climber_herbaceous",`growth form`),
+        `growth form` = ifelse(`name original` == "Xanthosia tridentata", "subshrub",`growth form`),
         parasitic = ifelse(`growth form`== "para"| `growth form`=="PARA","parasitic", NA),
         plant_heterotrophy = ifelse(`growth form`== "saprophyte","saprophyte", NA),
         plant_growth_substrate = ifelse(`growth form`== "Epiphyte", "epiphyte", NA),  
@@ -166,14 +170,14 @@ substitutions:
   find: sedge
   replace: graminoid
 - trait_name: plant_growth_form
+  find: Herb, cree
+  replace: herb
+- trait_name: plant_growth_form
   find: Herb, Pere
   replace: herb
 - trait_name: plant_growth_form
-  find: Herb, wood
-  replace: subshrub herb
-- trait_name: plant_growth_form
   find: Woody herb
-  replace: subshrub herb
+  replace: herb
 - trait_name: plant_growth_form
   find: PARA
   replace: .na
