@@ -551,7 +551,7 @@ metadata_add_substitutions_table <- function(dataframe_of_substitutions, dataset
 #'
 #' @return yml file with taxonomic change added
 #' @export
-metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
+metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason, taxonomic_resolution) {
 
   if(length(replace) > 1 ) {
     stop(sprintf("Cannot replace with two names!! (for %s -> %s)\n", crayon::red(find), crayon::red(replace)))
@@ -559,7 +559,7 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason) {
   set_name <- "taxonomic_updates"
   metadata <- read_metadata_dataset(dataset_id)
 
-  to_add <- list(find = find, replace = replace, reason = reason) 
+  to_add <- list(find = find, replace = replace, reason = reason, taxonomic_resolution = taxonomic_resolution) 
     
   # add `set_name` category if it doesn't yet exist
   if(is.null(metadata[[set_name]]) || is.na(metadata[[set_name]])) {
@@ -651,13 +651,13 @@ metadata_exclude_observations <- function(dataset_id, variable, find, reason) {
 #'
 #' @return yml file with added substitution
 #' @export
-metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) {
+metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason, taxonomic_resolution) {
 
   set_name <- "taxonomic_updates"
 
   metadata <- read_metadata_dataset(dataset_id)
 
-  to_add <- list(find = find, replace = replace, reason = reason) 
+  to_add <- list(find = find, replace = replace, reason = reason, taxonomic_resolution = taxonomic_resolution) 
 
   data <-  util_list_to_df2(metadata[[set_name]]) 
   i <- match(find, data$find)
@@ -668,6 +668,7 @@ metadata_update_taxonomic_change <- function(dataset_id, find, replace, reason) 
 
   metadata[[set_name]][[i]][["replace"]] <- replace
   metadata[[set_name]][[i]][["reason"]] <- reason
+  metadata[[set_name]][[i]][["taxonomic_resolution"]] <- taxonomic_resolution
   message(sprintf("%s %s: %s -> %s (%s)", crayon::red("Updating taxonomic change in"),crayon::red(dataset_id), crayon::blue(find), crayon::green(replace), reason))
 
   write_metadata_dataset(metadata, dataset_id)
@@ -778,19 +779,21 @@ build_setup_pipeline <- function(
 
   if(!file.exists(filename)) {
     dplyr::tibble(
-      cleaned_name = character(), 
-      source = character(), 
-      taxonIDClean = character(), 
-      taxonomicStatusClean = character(), 
-      alternativeTaxonomicStatusClean = character(), 
-      acceptedNameUsageID = character(), 
-      taxon_name = character(), 
-      scientificNameAuthorship = character(), 
-      taxonRank = character(), 
-      taxonomicStatus = character(), 
-      family = character(), 
-      taxonDistribution = character(), 
-      ccAttributionIRI = character()
+      cleaned_name = character(),
+      taxonomic_reference = character(),
+      cleaned_scientific_name_id = character(),
+      cleaned_name_taxonomic_status = character(),
+      cleaned_name_alternative_taxonomic_status = character(),
+      taxon_name = character(),
+      taxon_id = character(),
+      scientific_name_authorship = character(),
+      taxon_rank = character(),
+      taxonomic_status = character(),
+      family = character(),
+      taxon_distribution = character(),
+      establishment_means = character(),
+      scientific_name = character(),
+      scientific_name_id = character()
     ) %>%  readr::write_csv(filename)
   }
 }

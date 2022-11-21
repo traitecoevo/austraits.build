@@ -111,10 +111,11 @@ test_that("metadata_add_substitution is working",{
 })
 
 test_that("metadata_add_taxonomic_change is working",{
-  expect_output(metadata_add_taxonomic_change("Test_2022", "flower", "tree", "leaves"))
+  expect_output(metadata_add_taxonomic_change("Test_2022", "flower", "tree", "leaves", "Tissue"))
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$taxonomic_updates[[1]]$find, "flower")
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$taxonomic_updates[[1]]$replace, "tree")
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$taxonomic_updates[[1]]$reason, "leaves")
+  expect_equal(read_metadata("data/Test_2022/metadata.yml")$taxonomic_updates[[1]]$taxonomic_resolution, "Tissue")
 })
 
 test_that("metadata_exclude_observations is working",{
@@ -125,11 +126,12 @@ test_that("metadata_exclude_observations is working",{
 })
 
 test_that("metadata_update_taxonomic_change is working",{
-  expect_error(metadata_update_taxonomic_change("Test_2022", "grass", "bark", "soil"))
-  expect_invisible(suppressMessages(metadata_update_taxonomic_change("Test_2022", "flower", "bark", "soil")))
+  expect_error(metadata_update_taxonomic_change("Test_2022", "grass", "bark", "soil", "Substrate"))
+  expect_invisible(suppressMessages(metadata_update_taxonomic_change("Test_2022", "flower", "bark", "soil", "Substrate")))
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$taxonomic_updates[[1]]$find, "flower")
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$taxonomic_updates[[1]]$replace, "bark")
   expect_equal(read_metadata("data/Test_2022/metadata.yml")$taxonomic_updates[[1]]$reason, "soil")
+  expect_equal(read_metadata("data/Test_2022/metadata.yml")$taxonomic_updates[[1]]$taxonomic_resolution, "Substrate")
 })
 
 test_that("metadata_remove_taxonomic_change is working",{
@@ -143,7 +145,6 @@ test_that("test dataset_test is working",{
 test_that("test build_setup_pipeline is working",{
 
   
-  unlink(".remake", recursive = TRUE)
   unlink("remake.yml")
   unlink("config/taxon_list.csv")
 
@@ -160,13 +161,21 @@ test_that("test build_setup_pipeline is working",{
   expect_true(file.exists("remake.yml"))
   expect_silent(yaml::read_yaml("remake.yml"))
   expect_true(file.exists("config/taxon_list.csv"))
-  expect_no_error(austraits_raw <- remake::make("austraits_raw"))
   expect_silent(taxa1 <- read_csv_char("config/taxon_list.csv"))
-  vars <- c("cleaned_name", "source", "taxonIDClean", "taxonomicStatusClean", "alternativeTaxonomicStatusClean", "acceptedNameUsageID", "taxon_name", "scientificNameAuthorship", "taxonRank", "taxonomicStatus", "family", "taxonDistribution", "ccAttributionIRI")
+
+  vars <-  c('cleaned_name', 'taxonomic_reference', 'cleaned_scientific_name_id', 'cleaned_name_taxonomic_status', 'cleaned_name_alternative_taxonomic_status', 'taxon_name', 'taxon_id', 'scientific_name_authorship', 'taxon_rank', 'taxonomic_status', 'family', 'taxon_distribution', 'establishment_means', 'scientific_name', 'scientific_name_id') 
+
   expect_named(taxa1, vars)
-  expect_length(taxa1, 13)
+  expect_length(taxa1, 15)
   expect_true(nrow(taxa1) == 0)
+  expect_true(file.copy("config/taxon_list-orig.csv", "config/taxon_list.csv", TRUE))
+  expect_silent(taxa2 <- read_csv_char("config/taxon_list.csv"))
+  expect_named(taxa2, vars)
+  expect_length(taxa2, 15)
+  expect_true(nrow(taxa2) == 7)
   
+  unlink(".remake", recursive = TRUE)
+  expect_no_error(austraits_raw <- remake::make("austraits_raw"))
   expect_no_error(austraits <- remake::make("austraits"))
   
   expect_null(austraits_raw$build_info$version)
@@ -176,8 +185,8 @@ test_that("test build_setup_pipeline is working",{
   expect_equal(austraits$build_info$git_SHA, sha)
   expect_equal(austraits$build_info$git_SHA, "6c73238d8d048781d9a4f5239a03813be313f0dd")
   
-  expect_length(austraits_raw$taxa, 1)
-  expect_length(austraits$taxa, 10)
+  expect_length(austraits_raw$taxa, 14)
+  expect_length(austraits$taxa, 14)
   expect_equal(nrow(austraits$taxa), nrow(austraits_raw$taxa))
 })
 
