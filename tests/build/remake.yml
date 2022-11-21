@@ -40,11 +40,16 @@ targets:
                  definitions,
                  unit_conversions
                  )
-  Test_2022:
+  Test_2022_raw:
     command: >
       dataset_process("data/Test_2022/data.csv",
                   Test_2022_config,
                   schema
+                 )
+  Test_2022:
+    command: >
+      build_update_taxonomy(Test_2022_raw,
+                  taxon_list
                  )
 
 
@@ -53,9 +58,6 @@ targets:
       build_combine(
         Test_2022,
         NULL)
-
-  austraits_taxonomy:
-    command: build_update_taxonomy(austraits_raw, taxon_list)
     
   austraits:
-    command: build_add_version(austraits_taxonomy, version_number, git_SHA)
+    command: build_add_version(austraits_raw, version_number, git_SHA)
