@@ -71,8 +71,19 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:                                         data %>% mutate(Kl = Kl*10000) %>% mutate (ca = ca_ci + ci, ci_ca
-    = ci / ca)
+  custom_R_code: '
+    data %>%
+      mutate(
+        Kl = Kl*10000,
+        ca = ca_ci + ci, ci_ca = ci / ca
+      ) %>%
+      group_by(species_name) %>%
+        mutate(
+          `max_height_m` = max(`max_height_m`),
+          across(c(`max_height_m`), replace_duplicates_with_NA)
+        ) %>% 
+      ungroup()
+  '
   collection_date: 2001/2001
   taxon_name: species_name
   location_name: site_name
