@@ -61,8 +61,8 @@ dataset:
         mutate(
           across(c(`life_history_a`, `woodiness_a`, `plant_growth_form_a`, `stem_growth_habit_a`, `parasitic_a`,
          `plant_growth_substrate_a`, `sex_type_a`), replace_duplicates_with_NA),
-         plant_growth_form_a = paste(plant_growth_form_a, collapse = " "),
-         stem_growth_habit_a = paste(stem_growth_habit_a, collapse = " "),
+          plant_growth_form_a = ifelse(all(!is.na(plant_growth_form_a)), paste(plant_growth_form_a, collapse = " "), plant_growth_form_a),
+          stem_growth_habit_a = ifelse(all(!is.na(stem_growth_habit_a)), paste(stem_growth_habit_a, collapse = " "), stem_growth_habit_a),
          across(c(`plant_growth_form_a`, `stem_growth_habit_a`), replace_duplicates_with_NA)
         ) %>%
       ungroup()

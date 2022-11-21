@@ -59,6 +59,8 @@ dataset:
         plant_growth_form = ifelse(species_name == "Sauropus sp.", "herb shrub", plant_growth_form),
         plant_growth_form = ifelse(species_name == "Ampelocissus acetosa", "climber_herbaceous herb", plant_growth_form),
         plant_growth_form = ifelse(species_name == "Carpentaria acuminata", "tree", plant_growth_form),
+        phenology = ifelse(species_name == "Alstonia actinophylla", "facultative_drought_deciduous evergreen", phenology),
+        phenology = ifelse(species_name == "Petalostigma quadriloculare", "facultative_drought_deciduous evergreen", phenology),
         root_structure = ifelse(species_name == "Lophostemon lactifluus", "ectomycorrhizal arbuscular_mycorrhizal", root_structure),
         root_structure = ifelse(species_name == "Cartonema spicatum", "non_mycorrhizal", root_structure),
         TRIP = ifelse(is.na(TRIP),1,TRIP)
@@ -68,10 +70,8 @@ dataset:
       group_by(species_name) %>%
         mutate(
           across(c(`regen_strategy`,`root_structure`,`C3C4`,`Nfixer`,`plant_growth_form`,
-          `life_history`,`phenology`, fire_response), replace_duplicates_with_NA),
-          phenology = paste(phenology, collapse = " "),
-          across(c(`phenology`), replace_duplicates_with_NA),          
-          ) %>%
+          `life_history`,`phenology`, fire_response), replace_duplicates_with_NA)
+        ) %>%
       ungroup()
   '
   collection_date: 1994/1998
