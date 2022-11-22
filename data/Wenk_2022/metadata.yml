@@ -19,8 +19,8 @@ contributors:
       and Environmental Sciences, UNSW Sydney, Australia
   austraits_curators: Elizabeth Wenk
 dataset:
-  data_is_long_format: no  
-  custom_R_code:  '
+  data_is_long_format: no
+  custom_R_code: '
     data %>%
       filter(str_detect(taxon_name, " ")) %>%
       mutate(
@@ -36,10 +36,119 @@ dataset:
   '
   collection_date: unknown/2022
   taxon_name: taxon_name
-  description: A curated collection of plant growth form values that includes nearly all species in the Australian Plant Census (APC). Dataset is compiled from a combination of data extracted from state and national online floras, supplemented by the taxonomic literature.
+  description: A curated collection of plant growth form values that includes nearly
+    all species in the Australian Plant Census (APC). Dataset is compiled from a combination
+    of data extracted from state and national online floras, supplemented by the taxonomic
+    literature.
   basis_of_record: preserved_specimen
   life_stage: adult
-  sampling_strategy: "A curated collection of plant growth form values that includes all species in the Australian Plant Census (APC). The basis for this dataset are the data from the online Flora of Australia, state herbarium floras (VicFlora, PlantNet (NSW), South Australia eFlora, Florabase (WA), and NT eFlora), and the Lucid Key compilation for Australian Tropical Rainforest Plants. These were supplemented by the dataset on Tasmanian plants compiled by Greg Jordan and Matt McGlone. After each dataset was scraped and compiled into a spreadsheet, it was run through a script that extracted words pertaining to plant growth forms; these automatically extracted datasets are independently in AusTraits. With a few exceptions, the plant growth forms values from the floras were only acceptedif the same or very similar terms were reported in all the floras. Others were left to assess in steps below. In addition, at this stage, climbing plants were not yet scored unless an entire family is woody or herbaceous.	Tasmanian species are considered `scraped`, but for species not in Greg Jordan and Matt McGlone's compilation, the taxa were individually looked up at utas.edu.au/dicotkey, a reference to Tasmanian plants maintained by Greg Jordan. There were only ~100 species and the descriptions were written in a way that would have been more difficult to scrape. In sum, the scraped data yielded results for 24521 APC accepted taxa (species, infraspecifc taxa, genera, families). ^p 2.	Filling in missing taxa for families and genera with a single plant_growth_form: The next step was to fill in data for families (or genera) with a single reported plant growth form. For instance, all orchids are herbs and therefore herbaceous. Filling in family-level values added data for 2979 APC accepted taxa and filling in genus-level values added data for an additional 1053 APC accepted taxa. ^p This left 4217 taxa to fill in and a diverse set of approaches were used to fill in this data, generally working through taxa one at a time, family by family. Some strategies were faster, others slower. The faster approaches were: In the floras, for herbaceous species, the descriptions often omit any mention of the species being 'herbaceous' or an 'herb', instead indicating only if it is annual or perennial. Therefore, for the remaining missing species, the next step was to check if one (or more) of the scraped floras reported that a species was an annual/perennial. All mentions of annual were considered to be 'herbaceous/herb' without further checking, unless, a different plant growth form or woodiness score already existed in AusTraits (very few cases). If a taxon was 'perennial' the actual species description in the relevant flora was read, to ensure it wasn't a woody perennial. In all cases, they turned out to be an 'herb'. Usually it was fully herbaceous, although occasionally it was a taxon with a woody base or was a 'soft shrub'/'green shrub'. An additional 276 APC-accepted taxa were scored using this approach. The flora descriptions for subspecies and varieties generally do not mention plant growth form or woodiness if that is a trait that doesn't vary between subspecies/varieties. Therefore, for these taxa, the individual descriptions were checked and if there was no mention of plant growth form, the species plant growth form was used for the subspecies/varieties. An additional 734 taxa were scored using this approach. ^p There were taxa included in one of the scraped floras which had a description that was not easily scraped. This occurred when none of our search terms were present in the description, if it was a climbing plant (woodiness status often unclear), or was a plant that bridged being an herb and a shrub. For these species I read the actual description in the flora to fine tune the scraped terms. For instance, distinguishing between woody versus herbaceous climbing species and determining if an `herb shrub` was a small plant with a woody base or a large annual/biennial plant. 638 APC accepted taxa were scored using this approach. For taxa with phrase names, it was assumed that unless a state flora (or other scraped data source) included a plant growth form description (mainly from Florabase and Lucid; Australia Tropical Rainforest Plants), a plant growth form description wasn't going to be found. Therefore, if a plant growth form was given in AusTraits, it was used; otherwise it was left as 'unscorable'. (The lack of other information was verified by checking many taxa while developing this approach.) Most AusTraits values for phrase names came from either Cooper & Cooper 2013 or from one of the big state compilations and are considered to be accurate. 410 phrase name taxa were tagged us unscorable. For taxa that are hybrids, the value of the two parent-taxa was used if they were the same. In the few cases where the two parent-taxa weren't identical (usually `shrub tree` versus `tree`, the combination of values was used (i.e. `shrub tree` for the above example). An additional 79 APC accepted species were scored using this approach. The remaining 2011 taxa were looked up from a large collection of different resources, with a selection of different approaches used. These are mostly taxa from Queensland (no online flora), the Northern Territory (incomplete online flora), offshore islands or taxa that have been described in the past 10 years and have not yet been incorporated into the various state floras. For taxa with descriptions in the published Flora of Australia volumes, the text was copied from the pdf copies of the Flora. Both the volumes with taxa from Australia's islands were published, so filling in data for these species was fast. A few additional families had published volumes, but generally if the print Flora of Australia volume was published, the taxon descriptions had already been uploaded to the electronic Flora of Australia version. 71 species were scored from the Flora of Australia print editions. The taxonomic literature was heavily relied upon to fill in missing information. The taxon name was looked up in the APC/APNI name-checker (biodiversity.org.au/nsl/services/search/names) and the most recent taxon description or taxonomic revision was downloaded. 1231 APC taxa were scored from taxonomic revisions. 15 species had their plant growth forms inferred from online keys, usually those in KeyBase. Very few keys in KeyBase included `plant growth form` or `woodiness` as a distinguishing trait, which was disappointing. ^p In addition, the following websites were found to be well-referenced and heavily relied upon: Queensland species profiles site (apps.des.qld.gov.au) - this has complete taxon descriptions, although this resource is very sparsely populated; Wikipedia: since the Wikipedia descriptions are linked to iNaturalist, they are becoming increasingly well-referenced and detailed; A collection of websites documenting information about threatened and endangered species, including environment.gov.au/biodiversity/threatened/species, environment.gov.au/cgi-bin/sprat/public/publicspecies; For naturalised species, a collection of websites documenting information about invasive species, including cabi.org, Lucid - weeds, weeds.dpi.PlantNet.gov.au, weeds.brisbane.qld.gov.au, daf.qld.gov.au,  hear.org; A collection of websites with worldwide species compilations, although usually with relatively sparse information content, including eol.org, plants.jstor.org, powo.science.kew.org; Compilations of plant and plant features for various audiences including Plants For a Future (pfaf.org), Useful Tropical Plants (tropical.theferns.info), Useful Temperate Plants (temperate.theferns.info); eFloras: for naturalised species, information was used from a number of different national floras, but in particular there were many species in the Flora of China. For naturalised species, national or regional floras including pza.sanbi.org, indiabiodiversity.org, nparks.gov.sg, nzflora.info (includes some native species), pngplants.org. ^p These methods allowed all but 176 APC accepted taxa to be scored. 69 of these taxa had pre-existing values in AusTraits and in these instances, the AusTraits value was used. 53 taxa were scored from poorly documented websites or photos. Values obtained from these websites are documented as ` website - without source references or incompletely referenced` and these taxa will be revisited when additional sources become available. No information could be found for 54 taxa. 2 of these have recent taxonomic publications that are behind paywalls. The others had at most a nebulous photograph or image of an herbarium specimen from which plant growth form could not be discerned."
+  sampling_strategy: "A curated collection of plant growth form values that includes
+    all species in the Australian Plant Census (APC). The basis for this dataset are
+    the data from the online Flora of Australia, state herbarium floras (VicFlora,
+    PlantNet (NSW), South Australia eFlora, Florabase (WA), and NT eFlora), and the
+    Lucid Key compilation for Australian Tropical Rainforest Plants. These were supplemented
+    by the dataset on Tasmanian plants compiled by Greg Jordan and Matt McGlone. After
+    each dataset was scraped and compiled into a spreadsheet, it was run through a
+    script that extracted words pertaining to plant growth forms; these automatically
+    extracted datasets are independently in AusTraits. With a few exceptions, the
+    plant growth forms values from the floras were only acceptedif the same or very
+    similar terms were reported in all the floras. Others were left to assess in steps
+    below. In addition, at this stage, climbing plants were not yet scored unless
+    an entire family is woody or herbaceous.\tTasmanian species are considered `scraped`,
+    but for species not in Greg Jordan and Matt McGlone's compilation, the taxa were
+    individually looked up at utas.edu.au/dicotkey, a reference to Tasmanian plants
+    maintained by Greg Jordan. There were only ~100 species and the descriptions were
+    written in a way that would have been more difficult to scrape. In sum, the scraped
+    data yielded results for 24521 APC accepted taxa (species, infraspecifc taxa,
+    genera, families). ^p 2.\tFilling in missing taxa for families and genera with
+    a single plant_growth_form: The next step was to fill in data for families (or
+    genera) with a single reported plant growth form. For instance, all orchids are
+    herbs and therefore herbaceous. Filling in family-level values added data for
+    2979 APC accepted taxa and filling in genus-level values added data for an additional
+    1053 APC accepted taxa. ^p This left 4217 taxa to fill in and a diverse set of
+    approaches were used to fill in this data, generally working through taxa one
+    at a time, family by family. Some strategies were faster, others slower. The faster
+    approaches were: In the floras, for herbaceous species, the descriptions often
+    omit any mention of the species being 'herbaceous' or an 'herb', instead indicating
+    only if it is annual or perennial. Therefore, for the remaining missing species,
+    the next step was to check if one (or more) of the scraped floras reported that
+    a species was an annual/perennial. All mentions of annual were considered to be
+    'herbaceous/herb' without further checking, unless, a different plant growth form
+    or woodiness score already existed in AusTraits (very few cases). If a taxon was
+    'perennial' the actual species description in the relevant flora was read, to
+    ensure it wasn't a woody perennial. In all cases, they turned out to be an 'herb'.
+    Usually it was fully herbaceous, although occasionally it was a taxon with a woody
+    base or was a 'soft shrub'/'green shrub'. An additional 276 APC-accepted taxa
+    were scored using this approach. The flora descriptions for subspecies and varieties
+    generally do not mention plant growth form or woodiness if that is a trait that
+    doesn't vary between subspecies/varieties. Therefore, for these taxa, the individual
+    descriptions were checked and if there was no mention of plant growth form, the
+    species plant growth form was used for the subspecies/varieties. An additional
+    734 taxa were scored using this approach. ^p There were taxa included in one of
+    the scraped floras which had a description that was not easily scraped. This occurred
+    when none of our search terms were present in the description, if it was a climbing
+    plant (woodiness status often unclear), or was a plant that bridged being an herb
+    and a shrub. For these species I read the actual description in the flora to fine
+    tune the scraped terms. For instance, distinguishing between woody versus herbaceous
+    climbing species and determining if an `herb shrub` was a small plant with a woody
+    base or a large annual/biennial plant. 638 APC accepted taxa were scored using
+    this approach. For taxa with phrase names, it was assumed that unless a state
+    flora (or other scraped data source) included a plant growth form description
+    (mainly from Florabase and Lucid; Australia Tropical Rainforest Plants), a plant
+    growth form description wasn't going to be found. Therefore, if a plant growth
+    form was given in AusTraits, it was used; otherwise it was left as 'unscorable'.
+    (The lack of other information was verified by checking many taxa while developing
+    this approach.) Most AusTraits values for phrase names came from either Cooper
+    & Cooper 2013 or from one of the big state compilations and are considered to
+    be accurate. 410 phrase name taxa were tagged us unscorable. For taxa that are
+    hybrids, the value of the two parent-taxa was used if they were the same. In the
+    few cases where the two parent-taxa weren't identical (usually `shrub tree` versus
+    `tree`, the combination of values was used (i.e. `shrub tree` for the above example).
+    An additional 79 APC accepted species were scored using this approach. The remaining
+    2011 taxa were looked up from a large collection of different resources, with
+    a selection of different approaches used. These are mostly taxa from Queensland
+    (no online flora), the Northern Territory (incomplete online flora), offshore
+    islands or taxa that have been described in the past 10 years and have not yet
+    been incorporated into the various state floras. For taxa with descriptions in
+    the published Flora of Australia volumes, the text was copied from the pdf copies
+    of the Flora. Both the volumes with taxa from Australia's islands were published,
+    so filling in data for these species was fast. A few additional families had published
+    volumes, but generally if the print Flora of Australia volume was published, the
+    taxon descriptions had already been uploaded to the electronic Flora of Australia
+    version. 71 species were scored from the Flora of Australia print editions. The
+    taxonomic literature was heavily relied upon to fill in missing information. The
+    taxon name was looked up in the APC/APNI name-checker (biodiversity.org.au/nsl/services/search/names)
+    and the most recent taxon description or taxonomic revision was downloaded. 1231
+    APC taxa were scored from taxonomic revisions. 15 species had their plant growth
+    forms inferred from online keys, usually those in KeyBase. Very few keys in KeyBase
+    included `plant growth form` or `woodiness` as a distinguishing trait, which was
+    disappointing. ^p In addition, the following websites were found to be well-referenced
+    and heavily relied upon: Queensland species profiles site (apps.des.qld.gov.au)
+    - this has complete taxon descriptions, although this resource is very sparsely
+    populated; Wikipedia: since the Wikipedia descriptions are linked to iNaturalist,
+    they are becoming increasingly well-referenced and detailed; A collection of websites
+    documenting information about threatened and endangered species, including environment.gov.au/biodiversity/threatened/species,
+    environment.gov.au/cgi-bin/sprat/public/publicspecies; For naturalised species,
+    a collection of websites documenting information about invasive species, including
+    cabi.org, Lucid - weeds, weeds.dpi.PlantNet.gov.au, weeds.brisbane.qld.gov.au,
+    daf.qld.gov.au,  hear.org; A collection of websites with worldwide species compilations,
+    although usually with relatively sparse information content, including eol.org,
+    plants.jstor.org, powo.science.kew.org; Compilations of plant and plant features
+    for various audiences including Plants For a Future (pfaf.org), Useful Tropical
+    Plants (tropical.theferns.info), Useful Temperate Plants (temperate.theferns.info);
+    eFloras: for naturalised species, information was used from a number of different
+    national floras, but in particular there were many species in the Flora of China.
+    For naturalised species, national or regional floras including pza.sanbi.org,
+    indiabiodiversity.org, nparks.gov.sg, nzflora.info (includes some native species),
+    pngplants.org. ^p These methods allowed all but 176 APC accepted taxa to be scored.
+    69 of these taxa had pre-existing values in AusTraits and in these instances,
+    the AusTraits value was used. 53 taxa were scored from poorly documented websites
+    or photos. Values obtained from these websites are documented as ` website - without
+    source references or incompletely referenced` and these taxa will be revisited
+    when additional sources become available. No information could be found for 54
+    taxa. 2 of these have recent taxonomic publications that are behind paywalls.
+    The others had at most a nebulous photograph or image of an herbarium specimen
+    from which plant growth form could not be discerned."
   original_file: unknown
   notes: .na
 locations: .na
@@ -52,7 +161,22 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: See 'sampling strategy' above for method details. Overall, while many plants were very clearly described as herbs, shrubs, or trees, some taxa's plant growth forms and woodiness were less obvious. As indicated above, the scraped data was only used without double-checking the actual taxon description all scraped floras had identical or very similar plant growth form scores. This of course means that there is greater certainty for the values of species that occur in several states. Taxa were also double-checked if the score in the flora was different to that already in AusTraits. Trait values were scored to align with the plant growth forms values worked out during one of the AusTraits vocabulary workshops. A few Australia-centric terms are retained, including hummock grasses (`hummock`), tussock grasses (`tussock`), and `mallee`. Unless a more specific value was scrapped/coded from some source, all members of the families Poaceae, Cyperaceae, Juncaceae, Restionaceae, Centrolepidaceae, Anarthriaceae, and Ecdeiocoleaceae were scored as `graminoid`. All large monocots/ferns with a trunk and elevated leaf canopy are considered `palmoid`, including grass-trees, trunked cycads, palms, and tree ferns. Large monocots without a trunk are usually scored as `basal_large`.
+  methods: See 'sampling strategy' above for method details. Overall, while many plants
+    were very clearly described as herbs, shrubs, or trees, some taxa's plant growth
+    forms and woodiness were less obvious. As indicated above, the scraped data was
+    only used without double-checking the actual taxon description all scraped floras
+    had identical or very similar plant growth form scores. This of course means that
+    there is greater certainty for the values of species that occur in several states.
+    Taxa were also double-checked if the score in the flora was different to that
+    already in AusTraits. Trait values were scored to align with the plant growth
+    forms values worked out during one of the AusTraits vocabulary workshops. A few
+    Australia-centric terms are retained, including hummock grasses (`hummock`), tussock
+    grasses (`tussock`), and `mallee`. Unless a more specific value was scrapped/coded
+    from some source, all members of the families Poaceae, Cyperaceae, Juncaceae,
+    Restionaceae, Centrolepidaceae, Anarthriaceae, and Ecdeiocoleaceae were scored
+    as `graminoid`. All large monocots/ferns with a trunk and elevated leaf canopy
+    are considered `palmoid`, including grass-trees, trunked cycads, palms, and tree
+    ferns. Large monocots without a trunk are usually scored as `basal_large`.
 - var_in: woodiness_to_use
   unit_in: .na
   trait_name: woodiness_detailed
@@ -60,7 +184,15 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: See 'sampling strategy' above for method details. Overall, while many plants were very clearly described as herbs, shrubs, or trees, some taxa's plant growth forms and woodiness were less obvious. As indicated above, the scraped data was only used without double-checking the actual taxon description all scraped floras had identical or very similar plant growth form scores. This of course means that there is greater certainty for the values of species that occur in several states. Taxa were also double-checked if the score in the flora was different to that already in AusTraits. While some of these taxa clearly bridge the boundary of herbaceous and woody, the value in the floras was almost always the one used.
+  methods: See 'sampling strategy' above for method details. Overall, while many plants
+    were very clearly described as herbs, shrubs, or trees, some taxa's plant growth
+    forms and woodiness were less obvious. As indicated above, the scraped data was
+    only used without double-checking the actual taxon description all scraped floras
+    had identical or very similar plant growth form scores. This of course means that
+    there is greater certainty for the values of species that occur in several states.
+    Taxa were also double-checked if the score in the flora was different to that
+    already in AusTraits. While some of these taxa clearly bridge the boundary of
+    herbaceous and woody, the value in the floras was almost always the one used.
 substitutions:
 - trait_name: plant_growth_form
   find: monocot_large_basal
