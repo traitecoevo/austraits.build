@@ -55,13 +55,23 @@ dataset:
         Nfixer = stringr::str_replace(Nfixer, "101","0"),
         Nfixer = stringr::str_replace(Nfixer, "n|N","0"),     
         plant_growth_form = ifelse(plant_growth_form %in% c("S or T", "T/S", "T or S"), "shrub tree", plant_growth_form),
+        plant_growth_form = ifelse(plant_growth_form %in% c("S/H", "H or S", "S or H", "H/S"), "herb shrub", plant_growth_form),
+        plant_growth_form = ifelse(species_name == "Sauropus sp.", "herb shrub", plant_growth_form),
+        plant_growth_form = ifelse(species_name == "Ampelocissus acetosa", "climber_herbaceous herb", plant_growth_form),
+        plant_growth_form = ifelse(species_name == "Carpentaria acuminata", "tree", plant_growth_form),
+        root_structure = ifelse(species_name == "Lophostemon lactifluus", "ectomycorrhizal arbuscular_mycorrhizal", root_structure),
+        root_structure = ifelse(species_name == "Cartonema spicatum", "non_mycorrhizal", root_structure),
         TRIP = ifelse(is.na(TRIP),1,TRIP)
       ) %>% 
       mutate_at(vars(`life_history`,`regen_strategy`), ~na_if(.,"")) %>%
       mutate_at(vars(`leaf_water_content`), ~na_if(.,0)) %>%
       group_by(species_name) %>%
-        mutate_at(vars(`regen_strategy`,`root_structure`,`C3C4`,`Nfixer`,`plant_growth_form`,
-        `life_history`,`phenology`, fire_response), replace_duplicates_with_NA) %>%
+        mutate(
+          across(c(`regen_strategy`,`root_structure`,`C3C4`,`Nfixer`,`plant_growth_form`,
+          `life_history`,`phenology`, fire_response), replace_duplicates_with_NA),
+          phenology = paste(phenology, collapse = " "),
+          across(c(`phenology`), replace_duplicates_with_NA),          
+          ) %>%
       ungroup()
   '
   collection_date: 1994/1998
@@ -420,7 +430,7 @@ traits:
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na

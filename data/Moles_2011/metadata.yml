@@ -61,7 +61,10 @@ dataset:
           longitude == 139.5025833 ~ "Adelaide - Brookfield mallee", 
           longitude == 138.7398333 ~ "Adelaide - Coxs Scrub"
         )
-      )
+      ) %>%
+      group_by(species) %>%
+        mutate(across(c(`Growth form`,`presence of hair on adult leaves`, `presence of spines on vegetative parts of plant`, `presence of hair on juvenile leaves`), replace_duplicates_with_NA)) %>%
+      ungroup()
   '
   collection_date: 2004-07/2006-06
   taxon_name: species

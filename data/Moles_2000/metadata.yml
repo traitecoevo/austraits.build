@@ -34,7 +34,10 @@ dataset:
           longitude == 151.245833 ~ "terrace",
           longitude == 151.2917 ~ "diatreme"
         )
-      )
+      ) %>%
+      group_by(Species) %>%
+        mutate(across(c(`presence_of_hair_ on_mature_leaves`), replace_duplicates_with_NA)) %>%
+      ungroup()
   '
   collection_date: 1998/1998
   taxon_name: Species
