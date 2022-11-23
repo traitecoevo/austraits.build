@@ -1496,7 +1496,7 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
                         stringr::word(.data$taxon_name, start = 1, end = 2), .data$binomial),
       binomial = stringr::str_trim(.data$binomial),
       # genus filled in for all names that have a taxonomic of genus or more detailed
-      genus = ifelse(!.data$taxon_rank %in% c("Familia", "family"), stringr::word(.data$taxon_name, 1), NA),
+      genus = ifelse(!.data$taxon_rank %in% c("Familia", "family"), ifelse(stringr::word(.data$taxon_name, 1) == "x", stringr::word(.data$taxon_name, start = 1, end = 2), stringr::word(.data$taxon_name, 1)), NA),
       family = ifelse(.data$taxon_rank %in% c("Familia", "family"), stringr::word(.data$taxon_name, 1), .data$family),
       # identify which name is to be matched to the various identifiers, distribution information, etc. in the taxa file
       name_to_match_to = ifelse(.data$taxon_rank %in% c("trinomial", "Subspecies", "Forma", "Varietas"), .data$trinomial, NA),
@@ -1540,7 +1540,8 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
   austraits_raw$taxa <-
     species_tmp %>%
     dplyr::bind_rows() %>%
-    dplyr::arrange(.data$taxon_name)
+    dplyr::arrange(.data$taxon_name) %>%
+    dplyr::distinct(.data$taxon_name, .keep_all = TRUE)
 
   # only now, at the very end, can `taxonomic_resolution` be removed from the traits table
   
