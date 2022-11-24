@@ -34,6 +34,42 @@ targets:
   taxon_list:
     command: read_csv_char("config/taxon_list.csv")
 
+  ABRS_1981_config:
+    command: >
+      dataset_configure("data/ABRS_1981/metadata.yml",
+                 definitions,
+                 unit_conversions
+                 )
+  ABRS_1981_raw:
+    command: >
+      dataset_process("data/ABRS_1981/data.csv",
+                  ABRS_1981_config,
+                  schema
+                 )
+  ABRS_1981:
+    command: >
+      build_update_taxonomy(ABRS_1981_raw,
+                  taxon_list
+                 )
+
+  ABRS_2022_config:
+    command: >
+      dataset_configure("data/ABRS_2022/metadata.yml",
+                 definitions,
+                 unit_conversions
+                 )
+  ABRS_2022_raw:
+    command: >
+      dataset_process("data/ABRS_2022/data.csv",
+                  ABRS_2022_config,
+                  schema
+                 )
+  ABRS_2022:
+    command: >
+      build_update_taxonomy(ABRS_2022_raw,
+                  taxon_list
+                 )
+
   Ahrens_2019_config:
     command: >
       dataset_configure("data/Ahrens_2019/metadata.yml",
@@ -1237,42 +1273,6 @@ targets:
   Firn_2019:
     command: >
       build_update_taxonomy(Firn_2019_raw,
-                  taxon_list
-                 )
-
-  FoA_1981_config:
-    command: >
-      dataset_configure("data/FoA_1981/metadata.yml",
-                 definitions,
-                 unit_conversions
-                 )
-  FoA_1981_raw:
-    command: >
-      dataset_process("data/FoA_1981/data.csv",
-                  FoA_1981_config,
-                  schema
-                 )
-  FoA_1981:
-    command: >
-      build_update_taxonomy(FoA_1981_raw,
-                  taxon_list
-                 )
-
-  FoA_2022_config:
-    command: >
-      dataset_configure("data/FoA_2022/metadata.yml",
-                 definitions,
-                 unit_conversions
-                 )
-  FoA_2022_raw:
-    command: >
-      dataset_process("data/FoA_2022/data.csv",
-                  FoA_2022_config,
-                  schema
-                 )
-  FoA_2022:
-    command: >
-      build_update_taxonomy(FoA_2022_raw,
                   taxon_list
                  )
 
@@ -5366,6 +5366,8 @@ targets:
   austraits_raw:
     command: >
       build_combine(
+        ABRS_1981,
+        ABRS_2022,
         Ahrens_2019,
         ANBG_2019,
         Angevin_2011,
@@ -5433,8 +5435,6 @@ targets:
         Farrell_2013,
         Farrell_2017,
         Firn_2019,
-        FoA_1981,
-        FoA_2022,
         Fonseca_2000,
         Forster_1992,
         Forster_1995,
