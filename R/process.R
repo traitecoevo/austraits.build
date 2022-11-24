@@ -493,6 +493,9 @@ process_create_context_ids <- function(data, contexts) {
 
     vars <- unique(xx[["context_property"]])
 
+    make_id <- function(x) {
+      sprintf(paste0("%0", max(2, ceiling(log10(x)), na.rm = TRUE), "d"), x)
+    }
     # Below, unite function turns NAs into text, we need to convert back
     # Need to modify structure of NA, depending on the number of
     # variables in vars so two NAs will be NA_NA
@@ -506,8 +509,7 @@ process_create_context_ids <- function(data, contexts) {
       dplyr::mutate(
         combined = ifelse(.data$combined == NAs, NA, .data$combined),  
         id = .data$combined %>%
-          as.factor() %>%
-          as.integer()
+          as.factor() %>% as.integer() %>% make_id()
       ) %>%
       dplyr::select(-.data$combined)
 
