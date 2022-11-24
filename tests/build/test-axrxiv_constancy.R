@@ -60,12 +60,16 @@ test_that("constancy of with version 3.0.2", {
   austraits_raw_comparison$traits$trait_name <- austraits_raw_comparison$traits$trait_name %>%
     gsub("seed_mass", "seed_dry_mass", . ) %>%
     gsub("seed_breadth", "seed_height", .)  %>%
-    gsub("growth_habit", "stem_growth_habit", .)
+    gsub("growth_habit", "stem_growth_habit", .) %>%
+    gsub("vessel_density_leaves", "leaf_vessel_density", .) %>%
+    gsub("vessel_diameter_leaves", "leaf_vessel_diameter", .)
   
   austraits_raw_comparison$methods$trait_name <- austraits_raw_comparison$methods$trait_name %>%
     gsub("seed_mass", "seed_dry_mass", . ) %>%
     gsub("seed_breadth", "seed_height", .) %>%
-    gsub("growth_habit", "stem_growth_habit", .)
+    gsub("growth_habit", "stem_growth_habit", .) %>%
+    gsub("vessel_density_leaves", "leaf_vessel_density", .) %>%
+    gsub("vessel_diameter_leaves", "leaf_vessel_diameter", .)
   
   austraits_raw_comparison$traits$replicates <- austraits_raw_comparison$traits$replicates %>%
     gsub("3 replicates on 1 individual per species or 1 replicate on each individual", "3",. )
