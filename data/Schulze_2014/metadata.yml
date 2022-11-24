@@ -67,13 +67,14 @@ dataset:
         "leaf type", "leaf_type",
         c("needle like", "scale like"),c("needle","scale"),c("needle like", "scale like")
       ) %>%
+      mutate(`leaf type` = ifelse(`leaf type` %in% c("linearly", "lanceolat"), "leaf", `leaf type`)) %>%
       group_by(species_name) %>%
         mutate_at(vars(`physical_defence`,`leaf type`, leaf_type, `leaf_compoundness`, `Deciduous`,
         `Life-form`,`N2 fixing`), replace_duplicates_with_NA) %>%
       ungroup()
   '
   collection_date: Date_to_use_edited
-  taxon_name: species_name_new
+  taxon_name: species_name
   location_name: site_name
   description: In this study, Eucalyptus and Acacia were collected along a south-north
     gradient from winter- to summer-dominated rainfall to investigate whether trait
