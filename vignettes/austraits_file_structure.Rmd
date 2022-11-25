@@ -98,7 +98,8 @@ The file `taxon_list.csv` is our master list of known taxa. Each species is list
 
 ```{r, results='show'}
 read_csv("config/taxon_list.csv", show_col_types = FALSE) %>%
-  select(taxon_name, family, scientificNameAuthorship, source, taxonomicStatusClean, taxonIDClean) %>%
+  select(taxon_name, family, scientific_name_authorship, taxonomic_reference, cleaned_name_taxonomic_status, cleaned_scientific_name_id
+) %>%
   slice(1:10) %>%
   my_kable_styling()
 ```
@@ -501,16 +502,24 @@ for (value in names(values)) {
 
 Algorithms within AusTraits automatically align outdated taxonomy and taxonomic synonyms to their currently accepted scientific name, so such adjustments are not documented as substitutions.
 
-An example is as follows:
+Some examples of taxonomic updates are as follows:
 
 ```
 taxonomic_updates:
-- find: Eucalyptus albens X crebra
-  replace: Eucalyptus albens x Eucalyptus crebra
-  reason: Change wording for hybrid species (Elizabeth Wenk, 2020-06-30)
-- find: Eucalyptus albens x moluccana
-  replace: Eucalyptus albens x  Eucalyptus moluccana
-  reason: Change wording for hybrid species (Elizabeth Wenk, 2020-06-30)
+- find: Drummondita rubroviridis
+  replace: Drummondita rubriviridis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Acacia ancistrophylla/sclerophylla
+  replace: Acacia sp. [Acacia ancistrophylla/sclerophylla; White_2020]
+  reason: match_04. Rewording taxon where `/` indicates uncertain species identification
+    to align with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Polyalthia (Wyvur)
+  replace: Polyalthia sp. (Wyvuri B.P.Hyland RFK2632)
+  reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
+    in `APC known` when everything except first 2 words ignored (2022-11-10)
+  taxonomic_resolution: Species
 ```
 
 #### Questions
