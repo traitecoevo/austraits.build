@@ -485,12 +485,6 @@ process_create_context_ids <- function(data, contexts) {
 
   ids <- dplyr::tibble(.rows = nrow(context_cols))
 
-  make_id <- function(x) {
-    # unite function turns NAs into text, so need to deal with this
-    x[x == "NA"] <- NA
-    as.factor(x) %>% as.integer()
-  }
-
   id_link <- list()
 
   for (w in categories) {
@@ -499,11 +493,24 @@ process_create_context_ids <- function(data, contexts) {
 
     vars <- unique(xx[["context_property"]])
 
+    make_id <- function(x) {
+      sprintf(paste0("%0", max(2, ceiling(log10(x)), na.rm = TRUE), "d"), x)
+    }
+    # Below, unite function turns NAs into text, we need to convert back
+    # Need to modify structure of NA, depending on the number of
+    # variables in vars so two NAs will be NA_NA
+    # only treat rows where everything is NA as NA
+    NAs <- paste(rep("NA", length(vars)), collapse = "_")
+
     xxx <-
       context_cols %>%
       dplyr::select(dplyr::all_of(vars)) %>%
       tidyr::unite("combined", remove = FALSE) %>%
-      dplyr::mutate(id = make_id(.data$combined)) %>%
+      dplyr::mutate(
+        combined = ifelse(.data$combined == NAs, NA, .data$combined),  
+        id = .data$combined %>%
+          as.factor() %>% as.integer() %>% make_id()
+      ) %>%
       dplyr::select(-.data$combined)
 
     ## store ids
