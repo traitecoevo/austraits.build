@@ -4,7 +4,13 @@
 \alias{metadata_add_taxonomic_change}
 \title{Add a taxonomic change into the metadata yaml file for a dataset_id}
 \usage{
-metadata_add_taxonomic_change(dataset_id, find, replace, reason)
+metadata_add_taxonomic_change(
+  dataset_id,
+  find,
+  replace,
+  reason,
+  taxonomic_resolution
+)
 }
 \arguments{
 \item{dataset_id}{identifier for a particular study in the AusTraits database}
