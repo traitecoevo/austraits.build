@@ -203,13 +203,17 @@ austraits:
       description: Metadata associated with the dataset, including title, creators, license, subject, funding sources.
       type: list
       elements:
-        resource_type: The general type of a resource (database).
+        title: A name or title by which the dataset is known.
+        description: A brief description of the resource.
+        version: Version number of the dataset.
         doi: A unique doi string that identifies a released version of the resource.
         structure_URI: The URI of the repository with the source code that compiles the database.
-        version: Version number of the dataset.
-        creators: Dataset creators.
-        contributors: Dataset contributors, reflecting names included in the contributors tibble.
-        title: A name or title by which the dataset is known.
+        geo_location:
+          description: Spatial region or named place where the data was gathered or about which the data is focused.
+          type: table
+          elements:
+            geo_location_place: The broadest geographic location that encompasses the scope of the dataset.
+            geodetic_datum: The global datum reference or reference frame in which geospatial information is reported in the dataset. Best practise is to use codes from the EPSG Geodetic Parameter Dataset.
         language: The primary language of the resource.
         related_identifiers: 
           description: Identifiers of related resources.
@@ -219,17 +223,15 @@ austraits:
             identifier: The related identifier.
             relation: Description of the relationship of the related resource to the primary resource.
             resource_type: The general type of a resource (database), using controlled values from DataCite, https://support.datacite.org/docs/schema-40.
-        access_right: 
-        access_right_category: 
-        rights_holder: Person or institution owning or managing property rights, including intellectual property rights over the resource.
-        references: Resource that this resource references. 
-        publication_date: The data when this resource was or will be made publicly available.
+        references: Resource that this resource references.
         publisher: The name of the entity that holds, archives, publishes prints, distributes, releases, issues, or produces the resource. 
+        publication_date: The data when this resource was or will be made publicly available.
         license:
-          description: 
+          description: License applying to the resource. 
           type: table
           elements:
             rights: Any rights information for this resource.    
+            rights_holder: Person or institution owning or managing property rights, including intellectual property rights over the resource.          
             rights_URI: The URI of the license.
             description: A verbal description of the license
         subject:
@@ -239,12 +241,6 @@ austraits:
             subject_scheme: The name of the subject scheme or classification code or authority if one is used.
             scheme_URI: The URI of the subject identifier scheme.
             values_URI: The URI of the subject term.
-        geo_location:
-          description: Spatial region or named place where the data was gathered or about which the data is focused.
-          type: table
-          elements:
-            geo_location_place: The broadest geographic location that encompasses the scope of the dataset.
-            geodetic_datum: The global datum reference or reference frame in which geospatial information is reported in the dataset. Best practise is to use codes from the EPSG Geodetic Parameter Dataset.
         funding_reference:
           description: Information about financial support (funding) for the resource being registered.
           type: table
@@ -253,6 +249,8 @@ austraits:
             award_IRI: The URI leading to a page provided by the funder for more information about the award (grant).
             award_number: The funding provider's number of the award (grant).
             award_title: The title of the award (grant).
+        creators: Dataset creators.
+        contributors: Dataset contributors, reflecting names included in the contributors table.
     build_info:
       description: A description of the computing environment used to create this version of the dataset, including version number, git commit and R session_info.
       type: list

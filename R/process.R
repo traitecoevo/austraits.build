@@ -87,7 +87,7 @@ dataset_configure <- function(
 dataset_process <- function(filename_data_raw, 
                        config_for_dataset, 
                        schema,
-                       database_metadata,
+                       resource_metadata,
                        filter_missing_values = TRUE){
 
   dataset_id <- config_for_dataset$dataset_id
@@ -204,7 +204,7 @@ dataset_process <- function(filename_data_raw,
       traits %>% dplyr::filter(!(!is.na(.data$error) & (.data$error == "Missing value")))
   }
 
-  # Todo - database_metadata
+  # Todo - resource_metadata
   # - Add contributors
 
   # combine for final output
@@ -221,7 +221,7 @@ dataset_process <- function(filename_data_raw,
        sources    = sources,
        definitions = definitions,
        schema = schema,
-       metadata = database_metadata,
+       metadata = resource_metadata,
        build_info = list(session_info = utils::sessionInfo())
   )
 }
