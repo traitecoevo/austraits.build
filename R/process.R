@@ -87,6 +87,7 @@ dataset_configure <- function(
 dataset_process <- function(filename_data_raw, 
                        config_for_dataset, 
                        schema,
+                       database_metadata,
                        filter_missing_values = TRUE){
 
   dataset_id <- config_for_dataset$dataset_id
@@ -203,6 +204,9 @@ dataset_process <- function(filename_data_raw,
       traits %>% dplyr::filter(!(!is.na(.data$error) & (.data$error == "Missing value")))
   }
 
+  # Todo - database_metadata
+  # - Add contributors
+
   # combine for final output
   list(
        traits     = traits %>% dplyr::filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
@@ -217,6 +221,7 @@ dataset_process <- function(filename_data_raw,
        sources    = sources,
        definitions = definitions,
        schema = schema,
+       metadata = database_metadata,
        build_info = list(session_info = utils::sessionInfo())
   )
 }
@@ -1401,7 +1406,14 @@ build_combine <- function(..., d=list(...)) {
     dplyr::ungroup() %>%
     dplyr::distinct() %>%
     dplyr::arrange(.data$original_name, .data$taxon_name, .data$taxonomic_resolution)
-
+  
+  # metadata
+  contributors <- combine("contributors", d)
+  metadata <- d[[1]][["metadata"]]
+  
+  metadata[["contributors"]] <-
+    contributors %>% dplyr::select(-dplyr::any_of(c("dataset_id", "additional_role"))) %>% distinct() %>% arrange(.data$last_name, .data$given_name) %>% util_df_to_list()
+  
   ret <- list(traits = combine("traits", d),
               locations = combine("locations", d),
               contexts = combine("contexts", d),
@@ -1409,10 +1421,11 @@ build_combine <- function(..., d=list(...)) {
               excluded_data = combine("excluded_data", d),
               taxonomic_updates = taxonomic_updates,
               taxa = combine("taxa", d) %>% dplyr::distinct() %>% dplyr::arrange(taxon_name),
-              contributors = combine("contributors", d),
+              contributors = contributors,
               sources = sources,
               definitions = definitions,
               schema = d[[1]][["schema"]],
+              metadata = metadata,
               build_info = list(
                       session_info = utils::sessionInfo()
                       )
@@ -1593,9 +1606,9 @@ write_plaintext <- function(austraits, path) {
   writeLines(build_info, sprintf("%s/build_info.md", path))
 
   # Save definitions
-  yaml::write_yaml(austraits[["definitions"]], sprintf("%s/definitions.yml", path))
-  yaml::write_yaml(austraits[["schema"]], sprintf("%s/schema.yml", path))
-
+  for(v in c("definitions", "schema", "metadata")) {
+    yaml::write_yaml(austraits[[v]], sprintf("%s/%s.yml", path, v))
+  }
   # Save references
   RefManageR::WriteBib(austraits$sources, sprintf("%s/sources", path))
 
