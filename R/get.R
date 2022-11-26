@@ -28,8 +28,8 @@ get_schema <- function(path=system.file("support", "austraits.build_schema.yml",
 #'
 #' @return a string
 #' @export
-util_get_version <- function(path =  "config/traits.yml") {
-  get_schema(path)$build$version
+util_get_version <- function(path =  "config/metadata.yml") {
+  get_schema(path)$metadata$version
 }
 
 

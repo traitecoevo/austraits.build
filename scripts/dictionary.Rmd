@@ -10,6 +10,8 @@ output:
     toc_float:
       collapsed: true
       smooth_scroll: true
+params:
+  austraits: provide
 editor_options:
   chunk_output_type: console
 ---
@@ -115,7 +117,7 @@ for(v in names(austraits)) {
 ```
 
 
-# Methological details {#methods}
+# Methological details
 
 ## Dataset IDs
 
@@ -214,8 +216,6 @@ for(trait in traits) {
    sprintf("- type: %s%s", elements$type,  
       ifelse(elements$type == "numeric", sprintf("\n- units: %s", elements$units), "")), 
    ifelse(elements$type == "numeric", sprintf("- allowable range: %s - %s %s", elements$allowed_values_min, elements$allowed_values_max, elements$units), sprintf("- allowable values:\n%s\n",                paste0("    - *",elements$allowed_values_levels %>% names(), "*: ", elements$allowed_values_levels %>% unlist(), collapse="\n"))),
-   sprintf("- number of records: %s", data_trait %>% nrow() ),
-   sprintf("- number of studies: %s", data_trait %>% pull(dataset_id) %>% unique() %>% length() ),
    "") %>% writeLines()
 }
 ```

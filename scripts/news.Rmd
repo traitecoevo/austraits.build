@@ -18,6 +18,10 @@ vclean <- function(v) paste0("v", clean(v))
 
 v_prev <- clean(params$v_prev)
 v_curr <- clean(params$v_curr)
+# for debug pruposes
+# params <- list()
+# params$v_prev <- "3.0.2"
+# params$v_curr <- "3.0.2.9000"
 
 # Create news
 filename <- function(v) {
@@ -26,6 +30,14 @@ filename <- function(v) {
 
 austraits_prev <- readRDS(filename(v_prev))
 austraits_curr <- readRDS(filename(v_curr))
+
+# patches to make various versions play nicely together
+
+if(v_prev <= "3.0.2") {
+    austraits_prev$traits[["location_id"]] <- austraits_prev$traits[["site_name"]]
+}
+austraits_curr$contributors <- austraits_curr$contributors %>% mutate(name = paste(given_name, last_name))
+
 ```
 
 
@@ -46,16 +58,16 @@ Compared to the last version, this release contains substantial additions of new
 
 ```{r, results="asis"}
 
-f_summarsie <- function(data, v) { 
+f_summarsie <- function(data, v) {
   data$traits %>% 
-  summarise(version = data$build_info$version,
+  summarise(version = data$build_info$version %>% as.character,
             dataset_id = n_distinct(dataset_id),
             taxa = n_distinct(taxon_name),
-            sites = n_distinct(site_name),
+            locations = n_distinct(location_id),
             traits = n_distinct(trait_name),
             records= n()
   )
-  }
+}
 
 bind_rows(
   austraits_prev %>% f_summarsie(v_prev),
@@ -94,7 +106,7 @@ Details on new studies:
 new_data %>% 
 	group_by(dataset_id) %>% 
 	summarise(taxa = length(unique(taxon_name)), 
-	          sites = length(unique(site_name)),
+	          locations = length(unique(location_id)),
 	          traits = length(unique(trait_name)),
 	          records= n()
 	          ) %>% knitr::kable("markdown") %>% writeLines()
