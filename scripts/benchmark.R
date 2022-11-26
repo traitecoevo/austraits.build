@@ -7,11 +7,12 @@ run_benchmark <- function( ) {
   f_build <- function(x, n_max=2000) {
 
     schema <- get_schema()
+    resource_metadata <- get_schema("config/metadata.yml", "metadata")
     definitions <- get_schema("config/traits.yml", "traits")
     unit_conversions <- get_unit_conversions("config/unit_conversions.csv")
     
     config <- dataset_configure(sprintf("data/%s/metadata.yml", x), definitions, unit_conversions)
-    data <- dataset_process(sprintf("data/%s/data.csv", x), config, schema)
+    data <- dataset_process(sprintf("data/%s/data.csv", x), config, schema, resource_metadata)
     
     data
   }
