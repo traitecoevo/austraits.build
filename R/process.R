@@ -1488,9 +1488,10 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
   species_tmp <-
     austraits_raw$traits %>%
     dplyr::select(.data$taxon_name, .data$taxonomic_resolution) %>%
-    dplyr::distinct() %>%
+    dplyr::distinct() %>% 
+    util_df_convert_character() %>%
     dplyr::left_join(by = "taxon_name",
-                     taxa %>% dplyr::select(.data$taxon_name, .data$taxon_rank, .data$family) %>% dplyr::distinct()
+                     taxa %>% dplyr::select(.data$taxon_name, .data$taxon_rank, .data$family) %>% dplyr::distinct() %>% util_df_convert_character()
     ) 
 
   species_tmp <- species_tmp %>%  
@@ -1521,9 +1522,10 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
       # remove family, taxon_rank; they are about to be merged back in, but matches will now be possible to more rows
       select(-.data$taxon_rank, - .data$taxonomic_resolution) %>%
       rename(family_tmp = .data$family) %>%
+      util_df_convert_character() %>%
       # merge in all data from taxa 
       dplyr::left_join(by = c("name_to_match_to" = "taxon_name"),
-        taxa %>% dplyr::select(-dplyr::contains("clean")) %>% dplyr::distinct()
+        taxa %>% dplyr::select(-dplyr::contains("clean")) %>% dplyr::distinct() %>% util_df_convert_character()
       ) %>% 
       dplyr::arrange(.data$taxon_name) %>%
       # merge in identifiers for genera & families
