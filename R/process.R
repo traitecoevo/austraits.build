@@ -87,6 +87,7 @@ dataset_configure <- function(
 dataset_process <- function(filename_data_raw, 
                        config_for_dataset, 
                        schema,
+                       resource_metadata,
                        filter_missing_values = TRUE){
 
   dataset_id <- config_for_dataset$dataset_id
@@ -203,6 +204,9 @@ dataset_process <- function(filename_data_raw,
       traits %>% dplyr::filter(!(!is.na(.data$error) & (.data$error == "Missing value")))
   }
 
+  # Todo - resource_metadata
+  # - Add contributors
+
   # combine for final output
   list(
        traits     = traits %>% dplyr::filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
@@ -217,6 +221,7 @@ dataset_process <- function(filename_data_raw,
        sources    = sources,
        definitions = definitions,
        schema = schema,
+       metadata = resource_metadata,
        build_info = list(session_info = utils::sessionInfo())
   )
 }
@@ -1408,7 +1413,14 @@ build_combine <- function(..., d=list(...)) {
     dplyr::ungroup() %>%
     dplyr::distinct() %>%
     dplyr::arrange(.data$original_name, .data$taxon_name, .data$taxonomic_resolution)
-
+  
+  # metadata
+  contributors <- combine("contributors", d)
+  metadata <- d[[1]][["metadata"]]
+  
+  metadata[["contributors"]] <-
+    contributors %>% dplyr::select(-dplyr::any_of(c("dataset_id", "additional_role"))) %>% distinct() %>% arrange(.data$last_name, .data$given_name) %>% util_df_to_list()
+  
   ret <- list(traits = combine("traits", d),
               locations = combine("locations", d),
               contexts = combine("contexts", d),
@@ -1416,10 +1428,11 @@ build_combine <- function(..., d=list(...)) {
               excluded_data = combine("excluded_data", d),
               taxonomic_updates = taxonomic_updates,
               taxa = combine("taxa", d) %>% dplyr::distinct() %>% dplyr::arrange(taxon_name),
-              contributors = combine("contributors", d),
+              contributors = contributors,
               sources = sources,
               definitions = definitions,
               schema = d[[1]][["schema"]],
+              metadata = metadata,
               build_info = list(
                       session_info = utils::sessionInfo()
                       )
@@ -1482,9 +1495,10 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
   species_tmp <-
     austraits_raw$traits %>%
     dplyr::select(.data$taxon_name, .data$taxonomic_resolution) %>%
-    dplyr::distinct() %>%
+    dplyr::distinct() %>% 
+    util_df_convert_character() %>%
     dplyr::left_join(by = "taxon_name",
-                     taxa %>% dplyr::select(.data$taxon_name, .data$taxon_rank, .data$family) %>% dplyr::distinct()
+                     taxa %>% dplyr::select(.data$taxon_name, .data$taxon_rank, .data$family) %>% dplyr::distinct() %>% util_df_convert_character()
     ) 
 
   species_tmp <- species_tmp %>%  
@@ -1515,9 +1529,10 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
       # remove family, taxon_rank; they are about to be merged back in, but matches will now be possible to more rows
       select(-.data$taxon_rank, - .data$taxonomic_resolution) %>%
       rename(family_tmp = .data$family) %>%
+      util_df_convert_character() %>%
       # merge in all data from taxa 
       dplyr::left_join(by = c("name_to_match_to" = "taxon_name"),
-        taxa %>% dplyr::select(-dplyr::contains("clean")) %>% dplyr::distinct()
+        taxa %>% dplyr::select(-dplyr::contains("clean")) %>% dplyr::distinct() %>% util_df_convert_character()
       ) %>% 
       dplyr::arrange(.data$taxon_name) %>%
       # merge in identifiers for genera & families
@@ -1600,9 +1615,9 @@ write_plaintext <- function(austraits, path) {
   writeLines(build_info, sprintf("%s/build_info.md", path))
 
   # Save definitions
-  yaml::write_yaml(austraits[["definitions"]], sprintf("%s/definitions.yml", path))
-  yaml::write_yaml(austraits[["schema"]], sprintf("%s/schema.yml", path))
-
+  for(v in c("definitions", "schema", "metadata")) {
+    yaml::write_yaml(austraits[[v]], sprintf("%s/%s.yml", path, v))
+  }
   # Save references
   RefManageR::WriteBib(austraits$sources, sprintf("%s/sources", path))
 

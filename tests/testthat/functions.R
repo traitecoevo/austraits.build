@@ -81,7 +81,7 @@ test_dataframe_named <- function(data, expected_colnames, info) {
 }
 
 
-test_build_dataset <- function(path_metadata, path_data, info, definitions, unit_conversions, schema, taxon_list) {
+test_build_dataset <- function(path_metadata, path_data, info, definitions, unit_conversions, schema, resource_metadata, taxon_list) {
   
   # test it builds with no errors
   expect_no_error({
@@ -89,7 +89,7 @@ test_build_dataset <- function(path_metadata, path_data, info, definitions, unit
   }, info = paste(info, " config"))
   
   expect_no_error({
-    build_dataset_raw <- dataset_process(path_data, build_config, schema)
+    build_dataset_raw <- dataset_process(path_data, build_config, schema, resource_metadata)
   }, info = paste(info, " dataset_process"))
   
   expect_no_error({
@@ -106,7 +106,7 @@ test_structure <- function(data, info, schema, definitions, single_dataset = TRU
   vars_austraits <-
     schema$austraits$elements %>% names()
 
-  vars_tables <- vars_austraits %>% subset(., !(. %in% c("dataset_id", "definitions", "schema", "sources", "build_info")))
+  vars_tables <- vars_austraits %>% subset(., !(. %in% c("dataset_id", "definitions", "schema", "sources", "metadata", "build_info")))
 
   # test lists have the right objects
   comparison <- vars_austraits

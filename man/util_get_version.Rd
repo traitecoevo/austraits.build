@@ -4,7 +4,7 @@
 \alias{util_get_version}
 \title{Retrieve version for compilation from definitions}
 \usage{
-util_get_version(path = "config/traits.yml")
+util_get_version(path = "config/metadata.yml")
 }
 \arguments{
 \item{path}{path to traits definitions}

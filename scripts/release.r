@@ -20,10 +20,20 @@ create_release <- function(austraits, v_prev= NULL) {
   saveRDS(austraits, filename)
 
   # readme
-  knitr::knit("scripts/README.Rmd", output = sprintf("%s/readme.txt", export_dir))
+  rmarkdown::render(
+    "scripts/README.Rmd", 
+    output_format = "all",
+    output_dir = export_dir, 
+    params = list(version_number = version_number)
+  )
 
   # dictionary_target:
-  rmarkdown::render("scripts/dictionary.Rmd", params = list(austraits = austraits), output_file = sprintf("../%s/dictionary.html", export_dir))
+  rmarkdown::render(
+    "scripts/dictionary.Rmd", 
+    output_format = "all",
+    output_dir = export_dir,
+    params = list(austraits = austraits), 
+  )
 
   # plaintext_target:
   path <- sprintf("%s/austraits-%s", export_dir, version_number)
@@ -31,18 +41,15 @@ create_release <- function(austraits, v_prev= NULL) {
 
   # News
   if (!is.null(v_prev)) {
-    rmarkdown::render("scripts/news.Rmd",
+    rmarkdown::render(
+      "scripts/news.Rmd",
+      output_format = "all",
+      output_dir = export_dir,
       params = list(v_prev = v_prev, v_curr = version_number),
-      output_file = "tmp_news.md"
     )
 
-    f1 <- readLines("scripts/tmp_news.md")
-    f2 <- readLines("NEWS.md")
-
-    writeLines(c(f1, "\n", f2), "NEWS.md")
+  file.copy(sprintf("%s/NEWS.md", export_dir), "NEWS.md")
   }
-
-  file.copy("NEWS.md", sprintf("%s/NEWS.md", export_dir))
 
   # Go to directory and zip
   # remove existing file

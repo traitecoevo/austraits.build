@@ -180,7 +180,7 @@ test_that("test build_setup_pipeline is working",{
   
   expect_null(austraits_raw$build_info$version)
   expect_null(austraits_raw$build_info$git_SHA)
-  expect_equal(austraits$build_info$version, "3.0.2.9000")
+  expect_equal(austraits$build_info$version, "4.0.0")
   expect_true(is.character(austraits$build_info$git_SHA))
   expect_equal(austraits$build_info$git_SHA, sha)
   expect_equal(austraits$build_info$git_SHA, "6c73238d8d048781d9a4f5239a03813be313f0dd")
