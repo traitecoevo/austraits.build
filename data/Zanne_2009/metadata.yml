@@ -9,7 +9,7 @@ source:
     title: 'Data from: Towards a worldwide wood economics spectrum'
     journal: Dryad Digital Repository
     doi: 10.5061/dryad.234
-  secondary_1:
+  original_01:
     key: Bolza_1975
     bibtype: Book
     author: Eleanor Bolza
@@ -17,14 +17,14 @@ source:
     title: Properties and uses of 175 timber species from Papua New Guinea and West
       Irian
     publisher: Victoria (Australia) CSIRO, Div. of Building Research
-  secondary_2:
+  original_02:
     key: CAB_2009
     bibtype: Online
     url: http://www.cabi.org/fc/
     title: Forestry Compendium
     author: '{CAB International}'
     year: 2009
-  secondary_3:
+  original_03:
     key: Chave_2009
     bibtype: Article
     author: Jerome Chave, David Coomes, Steven Jansen, Simon L. Lewis, Nathan G. Swenson,
@@ -36,7 +36,7 @@ source:
     pages: 351--366
     publisher: Wiley-Blackwell
     doi: 10.1111/j.1461-0248.2009.01285.x
-  secondary_4:
+  original_04:
     key: Chudnoff_1984
     bibtype: Book
     title: Tropical timbers of the world
@@ -46,7 +46,7 @@ source:
     place: Washington DC, USA
     ISBN: '3935638825'
     pages: 472
-  secondary_5:
+  original_05:
     key: CIRAD_2009
     bibtype: Online
     url: http://www.cirad.fr/
@@ -54,7 +54,7 @@ source:
       (CIRAD)}'
     title: Wood density data
     year: 2009
-  secondary_6:
+  original_06:
     key: Desh_1996
     bibtype: Book
     title: Timber structure, properties, conversion and use
@@ -63,7 +63,7 @@ source:
     publisher: Palgrave Macmillan
     place: New York
     ISBN: 156022861X
-  secondary_7:
+  original_07:
     key: Flynn_2001
     bibtype: Book
     year: 2001
@@ -72,7 +72,7 @@ source:
     edition: 2nd
     publisher: Forest Products Society
     ISBN: '1892529157'
-  secondary_8:
+  original_08:
     key: Hong_1999
     bibtype: Book
     author: L.T. Hong, R.H.M.J. Lemmens, S. Prawirohatmodjo, I. Soerianegara, M.S.M.
@@ -83,21 +83,21 @@ source:
     year: 1999
     ISBN: '9783540147732'
     pages: World biodiversity Database CD rom series
-  secondary_9:
+  original_09:
     key: ICRAF_2009
     bibtype: Online
     author: '{World Agroforestry Centre (ICRAF)}'
     title: The wood density database
     year: 2009
     url: http://www.worldagroforestry.org/output/wood-density-database
-  secondary_10:
+  original_10:
     key: Meier_2007
     bibtype: Online
     author: Eirc Meier
     title: The wood database
     year: 2007
     url: http://www.wood-database.com/
-  secondary_11:
+  original_11:
     key: Prospect_2009
     bibtype: Online
     url: http://dps.plants.ox.ac.uk/ofi/prospect/index.htm
@@ -105,7 +105,7 @@ source:
     author: '{Oxford Forestry Institute}'
     publisher: Department of Plant Sciences, University of Oxford
     year: 2009
-  secondary_12:
+  original_12:
     key: Seng_1951
     bibtype: Techreport
     title: Specific gravity of Indonesian Woods and its significance for practical
@@ -113,112 +113,155 @@ source:
     author: Oey Djoen Seng
     year: 1951
     institution: FPRDC Forestry Department, Bogor, Indonesia
-people:
-- name: Amy Zanne
-  institution: George Washington University
-  role: contributor, contact
+contributors:
+  data_collectors:
+  - last_name: Zanne
+    given_name: Amy
+    ORCID: 0000-0001-6379-9452
+    affiliation: Department of Biology, University of Miami, Coral Gables, Florida
+      33146, USA
+    additional_role: contact
+  austraits_curators: Amy Zanne
 dataset:
-  year_collected_start: 2009
-  year_collected_end: 2009
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      group_by(name_original, primary_source_id) %>%
+        mutate(observation_num = row_number()) %>%
+      ungroup()
+  '
+  collection_date: unknown/2009
+  taxon_name: name_original
   description: Wood density data compiled for the Global Wood Density Database
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Wood density data compiled for the Global Wood Density Database
+  source_id: primary_source_id
   original_file: global_WD_database.xls
   notes: none
-sites: .na
-contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-  custom_R_code: .na
+locations: .na
+contexts:
+- context_property: replicate observations
+  category: temporal
+  var_in: observation_num
+  values:
+  - value: 1
+  - value: 2
+  - value: 3
+  - value: 4
+  - value: 5
 traits:
 - var_in: Wood density (g/cm^3)
   unit_in: mg/mm3
   trait_name: wood_density
-  value_type: unknown
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 substitutions: .na
 taxonomic_updates:
-- find: Gossia dallachyana
-  replace: Gossia dallachiana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
 - find: Acacia leucophloea
   replace: Acacia leucophylla
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Eucalyptus urophylla
-  replace: Eucalyptus euryphylla
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
+    in `APC known` when everything except first 2 words ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Aglaia indet
+  replace: Aglaia sp. [Aglaia indet; Zanne_2009]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Artocarpus indet
+  replace: Artocarpus sp. [Artocarpus indet; Zanne_2009]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Beilschmiedia indet
+  replace: Beilschmiedia sp. [Beilschmiedia indet; Zanne_2009]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Diospyros indet
+  replace: Diospyros sp. [Diospyros indet; Zanne_2009]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Endiandra indet
+  replace: Endiandra sp. [Endiandra indet; Zanne_2009]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Eugenia indet
+  replace: Eugenia sp. [Eugenia indet; Zanne_2009]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Flindersia indet
+  replace: Flindersia sp. [Flindersia indet; Zanne_2009]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Garcinia indet
+  replace: Garcinia sp. [Garcinia indet; Zanne_2009]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Haplostichanthus indet
+  replace: Haplostichanthus sp. [Haplostichanthus indet; Zanne_2009]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Litsea domarensis
   replace: Litsea domariensis
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Aglaia indet
-  replace: Aglaia sp. [Aglaia inet]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Artocarpus indet
-  replace: Artocarpus sp. [Artocarpus indet]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Beilschmiedia indet
-  replace: Beilschmiedia sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Diospyros indet
-  replace: Diospyros sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Endiandra indet
-  replace: Endiandra sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Eugenia indet
-  replace: Eugenia sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Flindersia indet
-  replace: Flindersia sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Garcinia indet
-  replace: Garcinia sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Haplostichanthus indet
-  replace: Haplostichanthus sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Psychotria indet
-  replace: Psychotria sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Psychotria sp. [Psychotria indet; Zanne_2009]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Tristiropsis subangula
+  replace: Tristiropsis sp. [Tristiropsis subangula; Zanne_2009]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Wilkiea indet
-  replace: Wilkiea sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Wilkiea sp. [Wilkiea indet; Zanne_2009]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Zanthoxylum indet
-  replace: Zanthoxylum sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Zanthoxylum sp. [Zanthoxylum indet; Zanne_2009]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 exclude_observations:
 - variable: taxon_name
   find: Aglaia cucullata, Aglaia indet, Ailanthus peekelii, Albizia falcataria, Alstonia
-    brassii, Araucaria hunsteinii, Buchanania heterophylla, Buchanania macrocarpa,
-    Caldcluvia indet, Calophyllum papuanum, Canarium oleosum, Casuarina papuana, Celtis
-    kajewskii, Celtis nymanii, Chionanthus brassii, Chisocheton indet, Chisocheton
-    schumannii, Chrysophyllum rigescens, Cinnamomum culilawan, Colubrina papuana,
-    Cryptocarya alleniana, Cryptocarya crassinervia, Cryptocarya lanceolata, Cryptocarya
-    palmerensis, Cynometra indet, Dillenia papuana, Diospyros papuana, Drypetes indet,
-    Elaeocarpus novo-guineensis, Elaeocarpus sphaericus, Erythrina merrilliana, Eucalyptus
-    deglupta, Ficus indet, Flindersia amboinensis, Flindersia indet, Gardenia indet,
-    Gmelina moluccana, Grevillea papuana, Halfordia papuana, Harpullia indet, Hernandia
-    papuana, Hibiscus papuodendron, Homalium foetidum, Horsfieldia irya, Intsia palembanica,
-    Lagerstroemia indet, Macaranga aleuritoides, Mangifera minor, Mangifera salomonensis,
-    Manilkara fasciculata, Manilkara kanosiensis, Maniltoa psilogyne, Mimosa umbellata,
-    Myristica buchneriana, Nauclea mitragyna, Nauclea tenuiflora, Neonauclea calycina,
-    Neonauclea maluensis, Neonauclea papuana, Neonauclea perspicuinervia, Nothofagus
-    grandis, Nothofagus perryi, Palaquium indet, Planchonia papuana, Podocarpus hypophylla,
-    Podocarpus latifolia, Polyalthia oblongifolia, Pouteria kaernbachiana, Pouteria
-    torricellensis, Prunus indet, Santalum macgregorii, Schizomeria serrata, Semecarpus
-    magnifica, Siphonodon celastrineus, Sloanea forbesii, Sonneratia indet, Sterculia
-    conwentzii, Terminalia brassii, Terminalia calamansanay, Terminalia canaliculata,
-    Terminalia copelandi, Terminalia faveolata, Terminalia hypargyrea, Terminalia
-    kaernbachii, Terminalia longespicata, Terminalia rubiginosa, Terminalia sepicana,
-    Terminalia solomonensis, Toona sureni, Vitex cofassus, Vitex quinata, Zanthoxylum
-    brassii, Zanthoxylum indet, Zanthoxylum papuanum, Artocarpus indet
+    brassii, Araucaria hunsteinii, Brachychiton carruthersii, Buchanania heterophylla,
+    Buchanania macrocarpa, Caldcluvia indet, Calophyllum papuanum, Canarium oleosum,
+    Casuarina papuana, Celtis kajewskii, Celtis nymanii, Chionanthus brassii, Chisocheton
+    indet, Chisocheton schumannii, Chrysophyllum rigescens, Cinnamomum culilawan,
+    Colubrina papuana, Cryptocarya alleniana, Cryptocarya crassinervia, Cryptocarya
+    lanceolata, Cryptocarya palmerensis, Cynometra indet, Dillenia papuana, Diospyros
+    papuana, Drypetes indet, Elaeocarpus novo-guineensis, Elaeocarpus sphaericus,
+    Erythrina merrilliana, Eucalyptus deglupta, Ficus indet, Flindersia amboinensis,
+    Flindersia indet, Gardenia indet, Gmelina moluccana, Grevillea papuana, Halfordia
+    papuana, Harpullia indet, Hernandia papuana, Hibiscus papuodendron, Homalium foetidum,
+    Horsfieldia irya, Intsia palembanica, Lagerstroemia indet, Macaranga aleuritoides,
+    Mangifera minor, Mangifera salomonensis, Manilkara fasciculata, Manilkara kanosiensis,
+    Maniltoa psilogyne, Mimosa umbellata, Myristica buchneriana, Nauclea mitragyna,
+    Nauclea tenuiflora, Neonauclea calycina, Neonauclea maluensis, Neonauclea papuana,
+    Neonauclea perspicuinervia, Nothofagus grandis, Nothofagus perryi, Palaquium indet,
+    Planchonia papuana, Podocarpus hypophylla, Podocarpus latifolia, Polyalthia oblongifolia,
+    Pouteria kaernbachiana, Pouteria torricellensis, Prunus indet, Santalum macgregorii,
+    Schizomeria serrata, Semecarpus magnifica, Siphonodon celastrineus, Sloanea forbesii,
+    Sonneratia indet, Sterculia conwentzii, Terminalia brassii, Terminalia calamansanay,
+    Terminalia canaliculata, Terminalia copelandi, Terminalia faveolata, Terminalia
+    hypargyrea, Terminalia kaernbachii, Terminalia longespicata, Terminalia rubiginosa,
+    Terminalia sepicana, Terminalia solomonensis, Toona sureni, Vitex cofassus, Vitex
+    quinata, Zanthoxylum brassii, Zanthoxylum indet, Zanthoxylum papuanum, Artocarpus
+    indet
   reason: PNG tree - in Zanne_2009 under PNG trees reference; Bolza (E Wenk, 2020.06.18)
 - variable: taxon_name
   find: Acacia polyacantha, Agathis dammara, Anisoptera polyandra, Breonia chinensis,
@@ -236,4 +279,3 @@ exclude_observations:
     philippinensis, Vatica papuana, Xanthomyrtus indet, Ziziphus grewioides
   reason: non-native (E Wenk, 2020.06.18)
 questions: .na
-

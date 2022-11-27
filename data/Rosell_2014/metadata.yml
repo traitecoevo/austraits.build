@@ -12,21 +12,37 @@ source:
     number: '2'
     pages: 486--497
     doi: 10.1111/nph.12541
-people:
-- name: Julieta A. Rosell
-  institution: National Autonomous University of Mexico
-  role: collector, contact
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Rosell
+    given_name: Julieta A.
+    ORCID: 0000-0001-5741-8027
+    affiliation: Laboratorio Nacional de Ciencias de la Sostenibilidad, Instituto
+      de Ecología, Universidad Nacional Autónoma de México, Ciudad de México, Mexico
+    additional_role: contact
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2011
-  year_collected_end: 2013
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        Species = stringr::str_replace(Species,"_"," "),
+        measurement_remarks = ifelse(Organ == "Twig", "measurements made on twigs", NA)
+      )
+  '
+  collection_date: 2011/2013
+  taxon_name: Species
+  location_name: site_name
   description: To assess hypotheses regarding tradeoffs and functional coordination,
     we measured bark traits reflecting protection, storage, mechanics, and photosynthesis
     in branches of 90 species spanning a wide phylogenetic and environmental range.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  measurement_remarks: measurement_remarks
+  life_stage: adult
   sampling_strategy: LOCALITIES AND SAMPLING  We measured traits of 90 species in
     six localities ranging from xerophytic shrubland to tropical rainforest in Mexico
     and Australia (Table 1). The selection of species aimed to maximize phylogenetic
@@ -51,60 +67,52 @@ dataset:
     Fig. 1a).
   original_file: Rosell_et_al_2014_NewPhytol_Australian_Species.xls
   notes: none
-sites:
+locations:
   Bothwell:
     latitude (deg): -42.4
     longitude (deg): 147.0
     description: cool temperate woodland
-    MAP (mm): 547.0
-    MAT (C): 10.0
+    precipitation, MAP (mm): 547.0
+    temperature, MAT (C): 10.0
     fire intensity (kW m-1): 1000-5000
-    fire interval (yr): 5-20
+    fire interval (years): 5-20
     crown fire: facultative
   Daintree National Park:
     latitude (deg): -16.1
     longitude (deg): 145.4
     description: tropical rainforest
-    MAP (mm): 3500.0
-    MAT (C): 25.1
+    precipitation, MAP (mm): 3500.0
+    temperature, MAT (C): 25.1
     fire intensity (kW m-1): 0-100
-    fire interval (yr): '>100'
+    fire interval (years): '>100'
     crown fire: none
   Howard Springs Nature Park:
     latitude (deg): -12.5
     longitude (deg): 131.1
     description: savanna
-    MAP (mm): 1714.0
-    MAT (C): 27.8
+    precipitation, MAP (mm): 1714.0
+    temperature, MAT (C): 27.8
     fire intensity (kW m-1): 100-1000
-    fire interval (yr): 2-5
+    fire interval (years): 2-5
     crown fire: none
   Yengo National Park:
     latitude (deg): -32.8
     longitude (deg): 150.9
     description: temperate woodland
-    MAP (mm): 802.0
-    MAT (C): 16.6
+    precipitation, MAP (mm): 802.0
+    temperature, MAT (C): 16.6
     fire intensity (kW m-1): 1000-5000
-    fire interval (yr): 5-20
+    fire interval (years): 5-20
     crown fire: facultative
-contexts:
-  Twig:
-    type: field
-    description: measurements made on twigs
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-    context_name: Organ
-  custom_R_code: data %>% mutate(Species = gsub("_"," ",Species))
+contexts: .na
 traits:
 - var_in: Wood density (g/cm^3)
   unit_in: g/cm3
   trait_name: wood_density
-  value_type: site_mean
-  replicates: 3-5
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: sample_size
   methods: We cut two stem disks 0.5-1 cm tall at the point where bark thickness was
     measured. We carefully removed outer bark from one of the disks with a razor blade.
     We calculated the density of wood and of total and inner bark as the ratio of
@@ -123,8 +131,10 @@ traits:
 - var_in: Total bark density (g/cm^3)
   unit_in: g/cm3
   trait_name: bark_density
-  value_type: site_mean
-  replicates: 3-5
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: sample_size
   methods: Total bark density; the data.csv file also includes data for inner bark
     density; We cut two stem disks 0.5-1 cm tall at the point where bark thickness
     was measured. We carefully removed outer bark from one of the disks with a razor
@@ -144,8 +154,10 @@ traits:
 - var_in: Inner bark density (g/cm^3)
   unit_in: g/cm3
   trait_name: .na
-  value_type: site_mean
-  replicates: 3-5
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: sample_size
   methods: Inner bark density; We cut two stem disks 0.5-1 cm tall at the point where
     bark thickness was measured. We carefully removed outer bark from one of the disks
     with a razor blade. We calculated the density of wood and of total and inner bark
@@ -164,8 +176,10 @@ traits:
 - var_in: Bark thickness (mm)
   unit_in: mm
   trait_name: bark_thickness
-  value_type: site_mean
-  replicates: 3-5
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: sample_size
   methods: Bark thickness measured on twigs; the data.csv file also includes data
     for inner bark thickness and outer bark thickness; We cut two stem disks 0.5-1
     cm tall at the point where bark thickness was measured. We carefully removed outer
@@ -185,8 +199,10 @@ traits:
 - var_in: Relative bark thickness (%, standardized by stem diameter)
   unit_in: '%'
   trait_name: .na
-  value_type: site_mean
-  replicates: 3-5
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: sample_size
   methods: We cut two stem disks 0.5-1 cm tall at the point where bark thickness was
     measured. We carefully removed outer bark from one of the disks with a razor blade.
     We calculated the density of wood and of total and inner bark as the ratio of
@@ -205,8 +221,10 @@ traits:
 - var_in: Outer bark thickness (mm)
   unit_in: mm
   trait_name: .na
-  value_type: site_mean
-  replicates: 3-5
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: sample_size
   methods: We cut two stem disks 0.5-1 cm tall at the point where bark thickness was
     measured. We carefully removed outer bark from one of the disks with a razor blade.
     We calculated the density of wood and of total and inner bark as the ratio of
@@ -225,8 +243,10 @@ traits:
 - var_in: Inner bark thickness (mm)
   unit_in: mm
   trait_name: .na
-  value_type: site_mean
-  replicates: 3-5
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: sample_size
   methods: We cut two stem disks 0.5-1 cm tall at the point where bark thickness was
     measured. We carefully removed outer bark from one of the disks with a razor blade.
     We calculated the density of wood and of total and inner bark as the ratio of
@@ -244,9 +264,11 @@ traits:
     100.
 - var_in: Structural Young's modulus (N/m^2)
   unit_in: MPa
-  trait_name: modulus_of_elasticity_stem
-  value_type: site_mean
-  replicates: 3-5
+  trait_name: stem_modulus_of_elasticity
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: sample_size
   methods: 'Structural modulus of whole stem; We collected straight, relatively unbranched
     segments immediately distal to the sample used for density measurements. We performed
     three point bending tests on segments with a 1 : 20 span : length ratio using
@@ -266,9 +288,11 @@ traits:
     at 1 m from the tip as EIbark/EIstruct x 100. '
 - var_in: Wood Young's modulus (N/m^2)
   unit_in: MPa
-  trait_name: modulus_of_elasticity_xylem
-  value_type: site_mean
-  replicates: 3-5
+  trait_name: xylem_modulus_of_elasticity
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: sample_size
   methods: 'Modulus of elasticity of wood; We collected straight, relatively unbranched
     segments immediately distal to the sample used for density measurements. We performed
     three point bending tests on segments with a 1 : 20 span : length ratio using
@@ -288,9 +312,11 @@ traits:
     at 1 m from the tip as EIbark/EIstruct x 100. '
 - var_in: Total bark Young's modulus (N/m^2)
   unit_in: MPa
-  trait_name: modulus_of_elasticity_bark
-  value_type: site_mean
-  replicates: 3-5
+  trait_name: bark_modulus_of_elasticity
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: sample_size
   methods: 'Modulus of elasticity of bark; We collected straight, relatively unbranched
     segments immediately distal to the sample used for density measurements. We performed
     three point bending tests on segments with a 1 : 20 span : length ratio using
@@ -311,8 +337,10 @@ traits:
 - var_in: MOR
   unit_in: MPa
   trait_name: modulus_of_rupture
-  value_type: site_mean
-  replicates: 3-5
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: sample_size
   methods: 'Strcutural modualus of bark; We collected straight, relatively unbranched
     segments immediately distal to the sample used for density measurements. We performed
     three point bending tests on segments with a 1 : 20 span : length ratio using
@@ -332,22 +360,43 @@ traits:
     at 1 m from the tip as EIbark/EIstruct x 100. '
 - var_in: 'Bark photosynthesis (0: absence, 1: presence)'
   unit_in: .na
-  trait_name: photosynthetic_bark
-  value_type: expert_mean
+  trait_name: bark_photosynthetic_status
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: We assessed the presence of photosynthetic bark at 1 m from the tip by
     carefully scraping the outer bark (phellem or rhytidome) to reveal a green layer
     indicative of bark photosynthesis or the absence thereof (Pfanz et al., 2002).
-substitutions: .na
+substitutions:
+- trait_name: bark_photosynthetic_status
+  find: '0'
+  replace: non_photosynthetic_bark
+- trait_name: bark_photosynthetic_status
+  find: '1'
+  replace: photosynthetic_bark
 taxonomic_updates:
 - find: Cassinia aff. cunninghamii
-  replace: Cassinia cunninghamii
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  replace: Cassinia sp. [Cassinia aff. cunninghamii; Rosell_2014]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Cassinia aff._cunninghamii
+  replace: Cassinia sp. [Cassinia aff._cunninghamii; Rosell_2014]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-22)
+  taxonomic_resolution: genus
 - find: Prostanthera aff. violaceae
-  replace: Prostanthera violacea
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  replace: Prostanthera sp. [Prostanthera aff. violaceae; Rosell_2014]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Prostanthera aff._violaceae
+  replace: Prostanthera sp. [Prostanthera aff._violaceae; Rosell_2014]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-22)
+  taxonomic_resolution: genus
 exclude_observations: .na
 questions:
   additional_traits: many traits, including inner bark density, which includes the
     inner living portion of bark only
-

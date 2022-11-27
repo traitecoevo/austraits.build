@@ -48,20 +48,73 @@ source:
     number: '4'
     pages: 249--303
     doi: 10.1111/j.1095-8339.1994.tb00434.x
-people:
-- name: Gregory Jordan
-  institution: University of Tasmania
-  role: collector, contact
-- name: Raymond Carpenter
-  institution: University of Adelaide
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Jordan
+    given_name: Gregory
+    ORCID: 0000-0002-6033-2766
+    affiliation: University of Tasmania, Australia
+    additional_role: contact
+  - last_name: Carpenter
+    given_name: Raymond
+    ORCID: 0000-0001-7129-2870
+    affiliation: University of Adelaide, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: unknown
-  year_collected_end: unknown
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        leaf_lobation = leaf_margin,
+        leaf_lobation = str_replace_all(leaf_lobation,"toothed|toothed | toothed", ""),
+        leaf_margin = str_replace_all(leaf_margin,"lobed| lobed|lobed ", ""),
+        leaf_margin2 = NA_character_,
+        leaf_compoundness2 = NA_character_,
+        leaf_lobation2 = NA_character_,
+        leaf_base_shape = NA_character_
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_lamina_division", "leaf_margin2",
+        c("dentate", "crenate", "toothed", "deeply_toothed", "coarsely_toothed", "toothed pinnatifid", "deeply_toothed pinnatifid", "pinnatifid toothed","pinnate entire","pinnatifid toothed entire", "pinnatifid entire", "entire pinnately_lobed", "entire lobed toothed", "entire toothed lobed", "entire bipartite tripartite", "entire lobed compound","entire deeply_segmented", "pinnatifid deeply_toothed", "crenate dentate", "entire lobed pinnate"),
+        c("toothed_dentate", "toothed_crenate", "toothed", "toothed", "toothed", "toothed", "toothed", "toothed", "entire", "toothed entire", "entire", "entire", "entire toothed", "entire toothed", "entire", "entire","entire", "toothed", "toothed_crenate toothed_dentate", "entire"),
+        c("", "", "", "", "", "pinnatifid", "pinnatifid", "pinnatifid","pinnately_divided","pinnatifid", "pinnatifid", "pinnately_lobed", "entire lobed toothed", "entire lobed toothed", "bipartite tripartite", "entire lobed compound","entire deeply_segmented", "pinnatifid", "", "unlobed lobed pinnate")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_lamina_division", "leaf_compoundness2",
+        c("compound","entire lobed compound"),
+        c("compound","compound"),
+        c("","lobed")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_lamina_division", "leaf_lobation2",
+        c("lobed", "shallowly_lobed", "deeply_segmented", "entire pinnately_lobed", "entire bipartite", "entire shallowly_lobed",
+        "entire lobed toothed","entire deeply_segmented", "unlobed lobed pinnate", "lobed pinnatisect"),
+        c("lobed", "lobed_shallow", "lobed_deep", "unlobed lobed", "unlobed lobed", "unlobed lobed",
+        "unlobed lobed", "lobed_deep", "unlobed lobed", "lobed"),
+        c("", "", "", "pinnately_lobed", "bipartite", "",
+        "", "", "pinnate", "pinnatisect")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_shape", "leaf_base_shape",
+        c("cuneate", "auriculate"),
+        c("cuneate", "auriculate"),
+        c("", "")
+      ) %>%
+      mutate(
+        leaf_margin = ifelse(is.na(leaf_margin2), leaf_margin, leaf_margin2),
+        leaf_compoundness = ifelse(is.na(leaf_compoundness2), leaf_compoundness, leaf_compoundness2),        
+        leaf_lobation = ifelse(is.na(leaf_lobation2), leaf_lobation, leaf_lobation2),
+        leaf_lobation = ifelse(is.na(leaf_lobation) & stringr::str_detect(leaf_lamina_division,"lobed"), "lobed", leaf_lobation),
+        leaf_margin = ifelse(is.na(leaf_margin) & stringr::str_detect(leaf_lamina_division,"entire"), "entire", leaf_margin)
+      )
+  '
+  collection_date: unknown/2020
+  taxon_name: species
+  location_name: site_name
   description: Extensive collection of leaf anatomical and morphological trait data
     for Proteaceae
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: 'From Jordan_2008: CHARACTERS AND DATA SOURCES Presence/absence
     characters were scored for species for climatic variables and forms of stomatal
     protection. The climatic characters were scored for all Australian species of
@@ -78,7 +131,7 @@ dataset:
     to among-species variation.'
   original_file: Proteaceae data for austraits.xls
   notes: none
-sites:
+locations:
   (often wet) heathland to woodland in sw WA:
     native to: sw WA
     description: (often wet) heathland to woodland
@@ -1160,17 +1213,13 @@ sites:
     latitude (deg): .na
     longitude (deg): .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    site_name: site_name
-  custom_R_code: .na
 traits:
 - var_in: stomatal distribution
   unit_in: .na.character
-  trait_name: stomatal_distribution
-  value_type: expert_mean
+  trait_name: leaf_stomatal_distribution
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: Five epidermal characters (electronic supplementary material, table S5
     and figure S1) were estimated on both fossils and extant specimens. Guard cell
@@ -1189,19 +1238,25 @@ traits:
 - var_in: woodiness
   unit_in: .na.character
   trait_name: woodiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert knowledge and reference books
 - var_in: habit
   unit_in: .na.character
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert knowledge and reference books
 - var_in: Guard cell length
   unit_in: um
-  trait_name: guard_cell_length
-  value_type: site_mean
+  trait_name: leaf_guard_cell_length
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1-5
   methods: Five epidermal characters (electronic supplementary material, table S5
     and figure S1) were estimated on both fossils and extant specimens. Guard cell
@@ -1218,21 +1273,27 @@ traits:
     assumptions are consistent with dimensions observed in extant Proteaceae (G.J.J.
     12 December 2015, unpublished data).
 - var_in: Total vein density (mm/mm2)
-  unit_in: count/mm
-  trait_name: vein_density
-  value_type: site_mean
+  unit_in: mm/mm2
+  trait_name: leaf_total_vein_density
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: adaxial hypodermis
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: seems to be a binary variable
 - var_in: adaxial cuticle thickness (microns)
   unit_in: um
-  trait_name: upper_cuticle_thickness
-  value_type: site_mean
+  trait_name: leaf_cuticle_thickness_adaxial
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1-5
   methods: Five epidermal characters (electronic supplementary material, table S5
     and figure S1) were estimated on both fossils and extant specimens. Guard cell
@@ -1251,25 +1312,33 @@ traits:
 - var_in: ad papillae5
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: unknown
 - var_in: ad trichomes
   unit_in: .na.character
-  trait_name: .na.character
-  value_type: expert_mean
+  trait_name: leaf_hairs_adult_leaves
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: unknown
 - var_in: ab hypo
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: abaxial hypodermis; seems to be a binary variable
 - var_in: ab cut thick
   unit_in: um
-  trait_name: lower_cuticle_thickness
-  value_type: site_mean
+  trait_name: leaf_cuticle_thickness_abaxial
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1-5
   methods: Five epidermal characters (electronic supplementary material, table S5
     and figure S1) were estimated on both fossils and extant specimens. Guard cell
@@ -1288,38 +1357,50 @@ traits:
 - var_in: bundle sheath extensions
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: unknown
 - var_in: lignified margins
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: unknown
 - var_in: sclereids at vein endings
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: unknown
 - var_in: sclereids protruding from bundle sheaths
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: unknown
 - var_in: bundle sheaths 1= large parenchyma-like cells; 3=bundles sheaths surrounded
     by sclereids; 4= bundles embedded in a lignified core
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: unknown
 - var_in: crystals in mesophyll
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: unknown
 - var_in: hypodermal structures (0=no specialised structure; 1 = lignified adaxial
@@ -1328,54 +1409,89 @@ traits:
     type; 6 = ideosclereids extending under adaxial hypodermis)
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: unknown
 - var_in: compound midribs
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: unknown
 - var_in: ideosclereids (0=absent; 1=ordinary; 2= branched; 3=asterosclereids; 4=osteosclereids;5=dense
     clusters of sclereids)
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: unknown
 - var_in: leaf_compoundness
   unit_in: .na.character
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation and reference books
 - var_in: leaf_margin
   unit_in: .na.character
   trait_name: leaf_margin
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na.character
+  methods: expert observation and reference books
+- var_in: leaf_lobation
+  unit_in: .na.character
+  trait_name: leaf_lobation
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation and reference books
 - var_in: leaf_shape
   unit_in: .na.character
   trait_name: leaf_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation and reference books. The values under 'adult leaf type'
-    that referred to leaf_shape terms in AusTraits (versus leaf_margin or leaf_division
+    that referred to leaf_shape terms in AusTraits (versus leaf_margin or leaf_lamina_division
     terms) have been applied to this variable; there are therefore only a few species
     included here
-- var_in: leaf_division
+- var_in: leaf_base_shape
+  unit_in: .na
+  trait_name: leaf_base_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation and reference books. The values under 'adult leaf type'
+    that referred to leaf_shape terms in AusTraits (versus leaf_margin or leaf_lamina_division
+    terms) have been applied to this variable; there are therefore only a few species
+    included here
+- var_in: leaf_lamina_division
   unit_in: .na.character
-  trait_name: leaf_division
-  value_type: expert_mean
+  trait_name: leaf_lamina_division
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation and reference books. The values for this variable have
     been manually manipulated by E. Wenk based on entires under 'adult leaf type'
 - var_in: dense hairs covering the stomata
   unit_in: .na.character
-  trait_name: .na.character
-  value_type: expert_mean
+  trait_name: leaf_stomatal_hairs
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: Dense hairs covering the stomatal regions were defined as the presence
     of a dense layer of hairs obscuring the stomata in fully developed leaves. This
@@ -1386,7 +1502,9 @@ traits:
     to either midrib or other margin
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: Presence of tightly revolute margins. In these species, the leaf margins
     were appressed either to each other or to a protruding midrib. The apertures of
@@ -1398,7 +1516,9 @@ traits:
     not restricted to grooves)
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: Presence of longitudinal grooves. In these species, the stomata were restricted
     to a series of deep, narrow, hair-lined grooves running the length of the leaf.
@@ -1408,7 +1528,9 @@ traits:
 - var_in: Banksia-type pits
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: The presence of deep pits. In these species, the leaf areoles were deeply
     invaginated, creating a large cavity lined by stomata (Figs. 5, 6). The apertures
@@ -1419,7 +1541,9 @@ traits:
 - var_in: hakea-type pits
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: The presence of deep pits. In these species, the leaf areoles were deeply
     invaginated, creating a large cavity lined by stomata (Figs. 5, 6). The apertures
@@ -1430,7 +1554,9 @@ traits:
 - var_in: telopea-type papillae
   unit_in: .na.character
   trait_name: .na.character
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: Papillose pits were defined to include stomata that were sunken below the
     epidermis and partially covered by large papillae (Figs. 7, 8; see also 27). The
@@ -1442,14 +1568,18 @@ traits:
     further.
 - var_in: leaf mass per unit area gm-2
   unit_in: g/m2
-  trait_name: specific_leaf_area
-  value_type: site_mean
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: total stomatal density (mm-2)
   unit_in: count/mm2
-  trait_name: stomatal_density_average
-  value_type: site_mean
+  trait_name: leaf_stomatal_density_average
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1-5
   methods: Five epidermal characters (electronic supplementary material, table S5
     and figure S1) were estimated on both fossils and extant specimens. Guard cell
@@ -1467,8 +1597,10 @@ traits:
     12 December 2015, unpublished data).
 - var_in: adaxial stomatal density (mm-2)
   unit_in: count/mm2
-  trait_name: stomatal_density_adaxial
-  value_type: site_mean
+  trait_name: leaf_stomatal_density_adaxial
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1-5
   methods: Five epidermal characters (electronic supplementary material, table S5
     and figure S1) were estimated on both fossils and extant specimens. Guard cell
@@ -1486,8 +1618,10 @@ traits:
     12 December 2015, unpublished data).
 - var_in: abaxial stomatal density (mm-2)
   unit_in: count/mm2
-  trait_name: stomatal_density_abaxial
-  value_type: site_mean
+  trait_name: leaf_stomatal_density_abaxial
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1-5
   methods: Five epidermal characters (electronic supplementary material, table S5
     and figure S1) were estimated on both fossils and extant specimens. Guard cell
@@ -1506,13 +1640,17 @@ traits:
 - var_in: lamina thickness (microns)
   unit_in: um
   trait_name: leaf_thickness
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1-5
   methods: leaf thickness, measured as part of detailed anatomical measurements
 - var_in: epidermal width (microns)
   unit_in: um
-  trait_name: epidermis_thickness
-  value_type: site_mean
+  trait_name: leaf_epidermis_thickness
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1-5
   methods: Five epidermal characters (electronic supplementary material, table S5
     and figure S1) were estimated on both fossils and extant specimens. Guard cell
@@ -1530,8 +1668,10 @@ traits:
     12 December 2015, unpublished data).
 - var_in: palisade width (microns)
   unit_in: um
-  trait_name: palisade_cell_width
-  value_type: site_mean
+  trait_name: leaf_palisade_cell_width
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1-5
   methods: Five epidermal characters (electronic supplementary material, table S5
     and figure S1) were estimated on both fossils and extant specimens. Guard cell
@@ -1550,7 +1690,9 @@ traits:
 - var_in: epidermal cell density
   unit_in: count/mm2
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1-5
   methods: Five epidermal characters (electronic supplementary material, table S5
     and figure S1) were estimated on both fossils and extant specimens. Guard cell
@@ -1569,7 +1711,9 @@ traits:
 - var_in: stomatal index
   unit_in: .na
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1-5
   methods: Five epidermal characters (electronic supplementary material, table S5
     and figure S1) were estimated on both fossils and extant specimens. Guard cell
@@ -1588,343 +1732,182 @@ traits:
 - var_in: leaf area (cm2)
   unit_in: cm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1-5
   methods: scanned leaf area
 substitutions:
-- trait_name: vein_density
-  find: n/a
+- trait_name: leaf_shape
+  find: NA
   replace: .na
-- trait_name: upper_cuticle_thickness
+- trait_name: leaf_shape
+  find: flat
+  replace: .na
+- trait_name: leaf_shape
+  find: flat terete
+  replace: terete
+- trait_name: leaf_shape
+  find: terete flat
+  replace: terete
+- trait_name: leaf_shape
+  find: flabelliform
+  replace: obtriangular
+- trait_name: leaf_lamina_division
+  find: entire
+  replace: .na
+- trait_name: leaf_lamina_division
+  find: palmately_compound
+  replace: palmately_divided
+- trait_name: leaf_lamina_division
+  find: lobed_to_midvein
+  replace: pinnatisect
+- trait_name: leaf_lamina_division
+  find: deeply_bipinnatifid
+  replace: bipinnatifid
+- trait_name: leaf_lamina_division
+  find: deeply_pinnatifid
+  replace: pinnatifid
+- trait_name: leaf_lamina_division
+  find: pinnate
+  replace: pinnately_divided
+- trait_name: leaf_lamina_division
+  find: pinnate bipinnate
+  replace: pinnately_divided bipinnate
+- trait_name: leaf_lamina_division
+  find: pinnate bipinnate tripinnate
+  replace: pinnately_divided bipinnate tripinnate
+- trait_name: leaf_lamina_division
+  find: pinnate tripinnate
+  replace: pinnately_divided tripinnate
+- trait_name: leaf_lamina_division
+  find: deeply_pinnatipartite
+  replace: pinnatipartite
+- trait_name: leaf_lamina_division
+  find: lobed toothed
+  replace: .na
+- trait_name: leaf_lamina_division
+  find: entire lobed
+  replace: .na
+- trait_name: leaf_lamina_division
+  find: deeply_bipinnatifid bipinnatisect
+  replace: bipinnatifid bipinnatisect
+- trait_name: leaf_lamina_division
+  find: lobed entire
+  replace: .na
+- trait_name: leaf_lamina_division
   find: '?'
   replace: .na
-- trait_name: lower_cuticle_thickness
+- trait_name: leaf_lamina_division
+  find: entire toothed 
+  replace: .na 
+- trait_name: leaf_cuticle_thickness_adaxial
   find: '?'
   replace: .na
-- trait_name: stomatal_distribution
+- trait_name: leaf_margin
+  find: ''
+  replace: .na
+- trait_name: leaf_margin
+  find: ' toothed'
+  replace: toothed
+- trait_name: leaf_margin
+  find: crenate
+  replace: toothed_crenate
+- trait_name: leaf_margin
+  find: dentate
+  replace: toothed_dentate
+- trait_name: leaf_lobation
+  find: ''
+  replace: .na
+- trait_name: leaf_lobation
+  find: ' lobed'
+  replace: lobed
+- trait_name: leaf_lobation
+  find: entire
+  replace: unlobed
+- trait_name: leaf_lobation
+  find: entire lobed
+  replace: unlobed lobed
+- trait_name: leaf_cuticle_thickness_abaxial
+  find: '?'
+  replace: .na
+- trait_name: leaf_stomatal_distribution
   find: ?probably amphistomatic
   replace: amphistomatic
-- trait_name: stomatal_distribution
+- trait_name: leaf_stomatal_distribution
   find: uneven amphistomatic
   replace: amphistomatic_uneven
-- trait_name: stomatal_distribution
+- trait_name: leaf_stomatal_distribution
   find: unevenly amphistomatic
   replace: amphistomatic_uneven
-- trait_name: stomatal_distribution
+- trait_name: leaf_stomatal_distribution
   find: essentially hypostomatic (shows very rare stomata upper surface)
   replace: hypostomatic
+- trait_name: leaf_stomatal_hairs
+  find: 'y'
+  replace: stomata_covered_with_dense_hairs
+- trait_name: leaf_stomatal_hairs
+  find: 'n'
+  replace: stomata_not_covered_by_hairs
+- trait_name: leaf_stomatal_hairs
+  find: n/y
+  replace: stomata_covered_with_dense_hairs stomata_not_covered_by_hairs
+- trait_name: leaf_stomatal_hairs
+  find: y/n
+  replace: stomata_covered_with_dense_hairs stomata_not_covered_by_hairs
+- trait_name: leaf_hairs_adult_leaves
+  find: 0
+  replace: glabrous
+- trait_name: leaf_hairs_adult_leaves
+  find: 1
+  replace: hairy
 taxonomic_updates:
-- find: Adenanthos barbiger
-  replace: Adenanthos barbigerus
-  reason: Alignment with existing species identified by TaxonStand (2020-05-21)
 - find: Conospermum caniculatum
-  replace: Conospermum paniculatum
-  reason: Alignment with existing species identified by TaxonStand (2020-05-21)
+  replace: Conospermum canaliculatum
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
 - find: Grevillea bronwenae
   replace: Grevillea bronweniae
-  reason: Alignment with existing species identified by TaxonStand (2020-05-21)
-- find: Grevillea mccutcheonii
-  replace: Grevillea maccutcheonii
-  reason: Alignment with existing species identified by TaxonStand (2020-05-21)
-- find: Grevillea quinquinervis
-  replace: Grevillea quinquenervis
-  reason: Alignment with existing species identified by TaxonStand (2020-05-21)
-- find: Petrophile shuttleworthia
-  replace: Petrophile shuttleworthiana
-  reason: Alignment with existing species identified by TaxonStand (2020-05-21)
-- find: Stirlingia divaricatissim
-  replace: Stirlingia divaricatissima
-  reason: Alignment with existing species identified by TaxonStand (2020-05-21)
-- find: Banksia bipinnatifida
-  replace: Dryandra bipinnatifida
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia biterax
-  replace: Dryandra baxteri
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia mucronulata
-  replace: Dryandra mucronulata
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia pteridifolia
-  replace: Dryandra pteridifolia
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia acanthopoda
-  replace: Dryandra acanthopoda
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia concinna
-  replace: Dryandra concinna
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia hewardiana
-  replace: Dryandra hewardiana
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia proteoides
-  replace: Dryandra proteoides
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia serra
-  replace: Dryandra serra
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia stuposa
-  replace: Dryandra stuposa
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia undata
-  replace: Dryandra praemorsa
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia densa
-  replace: Dryandra conferta
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia subulata
-  replace: Dryandra subulata
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia nivea
-  replace: Dryandra nivea
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia cynaroides
-  replace: Dryandra cynaroides
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia epimicta
-  replace: Dryandra epimicta
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia kippistiana
-  replace: Dryandra kippistiana
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia obtusa
-  replace: Dryandra obtusa
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia vestita
-  replace: Dryandra vestita
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia rufa
-  replace: Dryandra ferruginea
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia tenuis
-  replace: Dryandra tenuifolia
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia plumosa
-  replace: Dryandra plumosa
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia drummondii
-  replace: Dryandra drummondii
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia arctotidis
-  replace: Dryandra arctotidis
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia aurantia
-  replace: Dryandra aurantia
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia borealis
-  replace: Dryandra borealis
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia cirsioides
-  replace: Dryandra cirsioides
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia nobilis
-  replace: Dryandra nobilis
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia bella
-  replace: Dryandra pulchella
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia fraseri
-  replace: Dryandra fraseri
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia polycephala
-  replace: Dryandra polycephala
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia carlinoides
-  replace: Dryandra carlinoides
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia comosa
-  replace: Dryandra comosa
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia mimica
-  replace: Dryandra mimica
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia acuminata
-  replace: Dryandra preissii
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia anatona
-  replace: Dryandra anatona
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia arborea
-  replace: Dryandra arborea
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia armata
-  replace: Dryandra armata
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia calophylla
-  replace: Dryandra calophylla
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia falcata
-  replace: Dryandra falcata
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia foliolata
-  replace: Dryandra foliolata
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia heliantha
-  replace: Dryandra quercifolia
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia nana
-  replace: Dryandra nana
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia seneciifolia
-  replace: Dryandra seneciifolia
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia serratuloides
-  replace: Dryandra serratuloides
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia squarrosa
-  replace: Dryandra squarrosa
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia prolata
-  replace: Dryandra longifolia
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia alliacea
-  replace: Dryandra nervosa
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia brunnea
-  replace: Dryandra brownii
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia catoglypta
-  replace: Dryandra catoglypta
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia columnaris
-  replace: Dryandra columnaris
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia corvijuga
-  replace: Dryandra corvijuga
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia cypholoba
-  replace: Dryandra cypholoba
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia dallanneyi
-  replace: Dryandra lindleyana
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia echinata
-  replace: Dryandra echinata
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia erythrocephala
-  replace: Dryandra erythrocephala
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia fasciculata
-  replace: Dryandra fasciculata
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia fililoba
-  replace: Dryandra fililoba
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia foliosissima
-  replace: Dryandra foliosissima
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia formosa
-  replace: Dryandra formosa
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia fuscobractea
-  replace: Dryandra fuscobractea
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia glaucifolia
-  replace: Dryandra glauca
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia hirta
-  replace: Dryandra hirsuta
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia horrida
-  replace: Dryandra horrida
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia idiogenes
-  replace: Dryandra idiogenes
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia insulanemorecincta
-  replace: Dryandra insulanemorecincta
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia ionthocarpa
-  replace: Dryandra ionthocarpa
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia lepidorhiza
-  replace: Dryandra lepidorhiza
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia meganotia
-  replace: Dryandra meganotia
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia montana
-  replace: Dryandra montana
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia octotriginta
-  replace: Dryandra octotriginta
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia pallida
-  replace: Dryandra pallida
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia pellaeifolia
-  replace: Dryandra blechnifolia
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia platycarpa
-  replace: Dryandra platycarpa
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia porrecta
-  replace: Dryandra porrecta
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia pseudoplumosa
-  replace: Dryandra pseudoplumosa
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia purdieana
-  replace: Dryandra purdieana
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia rufistylis
-  replace: Dryandra rufistylis
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia sclerophylla
-  replace: Dryandra sclerophylla
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia shanklandiorum
-  replace: Dryandra shanklandiorum
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia splendida
-  replace: Dryandra speciosa
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia stenoprion
-  replace: Dryandra stenoprion
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia strictifolia
-  replace: Dryandra stricta
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia subpinnatifida
-  replace: Dryandra subpinnatifida
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia tortifolia
-  replace: Dryandra tortifolia
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia trifontinalis
-  replace: Dryandra trifontinalis
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia viscida
-  replace: Dryandra viscida
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia wonganensis
-  replace: Dryandra wonganensis
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Banksia xylothemelia
-  replace: Dryandra xylothemelia
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Hakea decurrens
-  replace: Hakea sericea
-  reason: Synonym reported by TaxonStand (2020-05-21)
-- find: Persoonia teretifolia
-  replace: Persoonia biglandulosa
-  reason: Synonym reported by TaxonStand (2020-05-21)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
 - find: Grevillea luffitzii
   replace: Grevillea lullfitzii
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Grevillea quinquinervis
+  replace: Grevillea quinquenervis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hakea cygna
+  replace: Hakea cygnus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
 - find: Hakea eryeana
   replace: Hakea eyreana
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-26)
-- find: Hollandaea Devil's thumb
-  replace: Hollandaea sp. (Devils Thumb)
-  reason: Alignment with known name in APC list (known names) (Elizabeth Wenk, 2020-06-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Helicia ferruginiflora
   replace: Helicia ferruginea
-  reason: Alignment with known name in APC list (accepted) (Elizabeth Wenk, 2020-06-26)
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
+    APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hollandaea Devil's thumb
+  replace: Hollandaea sp. (Devils Thumb P.I.Forster+ PIF10720)
+  reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
+    in `APC known` when everything except first 2 words ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Petrophile shuttleworthia
+  replace: Petrophile shuttleworthiana
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Stirlingia divaricatissim
+  replace: Stirlingia divaricatissima
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations:
 - variable: taxon_name
-  find: Bleasdalea papuana, Lasjia erecta
+  find: Bleasdalea papuana, Lasjia erecta, Alloxylon brachycarpum
   reason: non-native (Indonesia, PNG)
 questions:
   additional_traits: Lots of binary traits describing detailed anatomical features
     to protect stomata; other anatomical traits
-

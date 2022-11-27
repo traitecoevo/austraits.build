@@ -11,23 +11,36 @@ source:
     volume: 39
     pages: 149--159
     doi: 10.1071/EA98133
-people:
-- name: Muhammad Islam
-  institution: unknown
-  role: collector
-- name: Mark Adams
-  institution: University of Western Australia
-  role: lab_leader, contact
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Islam
+    given_name: Muhammad
+    ORCID: .na.character
+    affiliation: unknown
+    notes: no contact
+  - last_name: Adams
+    given_name: Mark
+    ORCID: 0000-0002-8154-0097
+    affiliation: Swinburne University of Technology, Australia
+    additional_role: contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 1996
-  year_collected_end: 1997
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        sample_date = sample_date %>% ym() %>% format.Date("%Y-%m") %>% sort(),
+        collection_date = sample_date,
+        treatment = ifelse(treatment == "control (=same as +P)", "same_as_+P", treatment)
+      )
+  '
+  collection_date: collection_date
+  taxon_name: name_original
+  location_name: site_text
   description: A glasshouse experiment investigated the response to phosphorus of
     2 common and abundant ephemeral forbs and several additional species.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: 'The experimental layout was a randomised block design with 3
     replicates of each of 2 (0 P/200 P) treatments. Each block was located about 10
     m from neighbouring blocks and the 0 P and 200 P plots within each block were
@@ -52,17 +65,17 @@ dataset:
     mS/cm (as for pH).'
   original_file: Islam et al 1999.pdf
   notes: none
-sites:
+locations:
   Hamersley station Pilbara:
     longitude (deg): 117.6166667
     latitude (deg): -22.33
-    soil_pH (mol/l): 7.1
-    OMC (%): 1.21
-    soil_total_N (mg/g): 0.99
-    soil_total_P (ug/g): 4.7
-    rainfall (mm): 354
-    min_monthly_temp: 6
-    max_monthly_temp: 36
+    soil pH (H2O): 7.1
+    soil organic content (%): 1.21
+    soil N, total (mg/g): 0.99
+    soil P, total (mg/kg): 4.7
+    precipitation, MAP (mm): 354
+    temperature, monthly min (C): 6
+    temperature, monthly max (C): 36
     description: The soil type at the study sites is a silty clay loam of high P-fixation
       capacity and is rich in iron and aluminium oxides and poor in available N and
       P (Bennett and Adams 1999). Long-term annual rainfall at Hamersley Station is
@@ -74,29 +87,38 @@ sites:
       The mean monthly maximum temperature was about 36 deg C in January, and in July,
       the mean monthly minimum temperature fell to 6 deg C
 contexts:
-  control (=same as +P):
-    type: control
-    description: Natural soil and 200 kg P/ha addition treatment combined, as no difference
-      in outcome
-  control:
-    type: control
-    description: Natural soil
-  P added:
-    type: treatment_favourable
-    description: phosphorus equivalent to 200 kg P/ha applied
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-    site_name: site_text
-    context_name: treatment
-    date: sample_date
-  custom_R_code: .na
+- context_property: nutrient treatment
+  category: treatment
+  var_in: treatment
+  values:
+  - value: control
+    description: Control treatment, with no nutrient addition. For the third and fourth
+      sampling times, data for the natural soil and 200 kg P/ha addition treatments
+      were combined, as there was no difference in outcome.
+  - value: same_as_+P
+    description: P addition treatment where there was no significant difference to
+      the control treatment.
+  - value: P added
+    description: Phosphorus equivalent to 200 kg P/ha applied.
+- context_property: sampling season
+  category: temporal
+  var_in: month_sampled
+  values:
+  - value: March
+    description: Measurements made in 1996-03.
+  - value: June
+    description: Measurements made in 1996-06.
+  - value: August
+    description: Measurements made in 1996-08.
+  - value: November
+    description: Measurements made in 1996-11.
 traits:
 - var_in: Nmass
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -114,7 +136,9 @@ traits:
 - var_in: Pmass
   unit_in: mg/g
   trait_name: leaf_P_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -132,7 +156,9 @@ traits:
 - var_in: K_%
   unit_in: '%'
   trait_name: leaf_K_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -150,7 +176,9 @@ traits:
 - var_in: Ca_%
   unit_in: '%'
   trait_name: leaf_Ca_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -168,7 +196,9 @@ traits:
 - var_in: Mg_%
   unit_in: '%'
   trait_name: leaf_Mg_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Above-ground biomass (1 m2 quadrat) was harvested 4 times (August 1996,
     November 1996, March 1997, and June 1997) from each of the 6 plots. Areas disturbed
@@ -185,15 +215,18 @@ traits:
     absorption spectroscopy.
 substitutions: .na
 taxonomic_updates:
-- find: Ptilotus aerovides
-  replace: Ptilotus aervoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
 - find: Dysphania radulans
   replace: Dactyloctenium radulans
-  reason: Name incorrectly transcribed from paper to data file; fixed (E. Wenk, 2020-05-24)
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Ptilotus aerovides
+  replace: Ptilotus aervoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Sasola kali
-  replace: Salsola australis
-  reason: Change spelling to Align to APC or ALA species lists (Sam Andrew, 2018-02-07)
+  replace: Kali sp. [Sasola kali; Islam_1999_1]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 exclude_observations: .na
 questions: .na
-

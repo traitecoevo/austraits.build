@@ -4,20 +4,37 @@ source:
     bibtype: Unpublished
     year: 1993
     author: Susanne Schmidt
-    title: "Unpublished data: Compilation of mycorrhizal status data, University of Queensland"
-people:
-- name: Susanne Schmidt
-  institution: University of Queensland
-  role: collector, contact
-- name: Ian Wright
-  institution: Macquarie University
-  role: contributor
+    title: 'Unpublished data: Compilation of mycorrhizal status data, University of
+      Queensland'
+contributors:
+  data_collectors:
+  - last_name: Schmidt
+    given_name: Susanne
+    ORCID: 0000-0001-8369-1238
+    affiliation: School of Agriculture and Food Science, The University of Queensland,
+      Australia
+    additional_role: contact
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 1993
-  year_collected_end: 1993
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        nitrogen_fixing =  stringr::str_extract(`mycorrhizal status`,"nod"),
+        life_history = stringr::str_extract(`growth form`,"annual"),
+        `growth form` = stringr::str_replace(`growth form`,"annual","herb"),
+        stem_growth_habit = NA
+      ) %>%
+      move_values_to_new_trait(
+        "growth form", "stem_growth_habit",
+        c("rosette"), c("rosette"), c("herb")
+      ) 
+  '
+  collection_date: 1993/1993
+  taxon_name: species
   description: compilation of mycorrhizal status data for Australian species
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: compilation from the following sources, 1) Bellgard, S.E. Mycorrhizal
     associations of plant species in Hawkesbury Sandstone Vegetation, Austr. J. Bot.,
     1991, 39, 357-64; 2) Brockhoff, J.O., Allaway, W.G., Vesicular-arbuscular mycorrhizal
@@ -33,28 +50,39 @@ dataset:
     associations of Australian indigenous plants, New Phytol., 1980, 85, 531-535
   original_file: MYCLIST.xls received from Ian Wright and archived in raw data folder
   notes: none
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-  custom_R_code: data %>% mutate(nitrogen_fixing = `mycorrhizal status`) %>% mutate(nitrogen_fixing
-    = str_extract(nitrogen_fixing,"nod")) %>% mutate(`mycorrhizal status` = gsub(",
-    nod","",`mycorrhizal status`)) %>% mutate(`mycorrhizal status` = gsub("  nod","",`mycorrhizal
-    status`))  %>% mutate(life_history = str_extract(`growth form`,"annual")) %>%
-    mutate(`growth form` = gsub("annual",NA,`growth form`))
 traits:
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert knowledge
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert knowledge
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge
 - var_in: mycorrhizal status
   unit_in: .na
   trait_name: root_structure
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from the following sources, 1) Bellgard, S.E. Mycorrhizal associations
     of plant species in Hawkesbury Sandstone Vegetation, Austr. J. Bot., 1991, 39,
@@ -72,7 +100,9 @@ traits:
 - var_in: nitrogen_fixing
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: compilation from the following sources, 1) Bellgard, S.E. Mycorrhizal associations
     of plant species in Hawkesbury Sandstone Vegetation, Austr. J. Bot., 1991, 39,
@@ -90,115 +120,10 @@ traits:
 substitutions:
 - trait_name: nitrogen_fixing
   find: nod
-  replace: '1'
+  replace: nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: NA
-  replace: '0'
-- trait_name: root_structure
-  find: vam
-  replace: arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: v
-  replace: arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: 'v '
-  replace: arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: V / nil
-  replace: arbuscular_mycorrhizal non_mycorrhizal
-- trait_name: root_structure
-  find: V/ nil
-  replace: arbuscular_mycorrhizal non_mycorrhizal
-- trait_name: root_structure
-  find: V + nil
-  replace: arbuscular_mycorrhizal non_mycorrhizal
-- trait_name: root_structure
-  find: VAM+nil
-  replace: arbuscular_mycorrhizal non_mycorrhizal
-- trait_name: root_structure
-  find: nil
-  replace: non_mycorrhizal
-- trait_name: root_structure
-  find: subepidermal M
-  replace: subepidermal_mycorrhizal
-- trait_name: root_structure
-  find: subepidermal
-  replace: subepidermal_mycorrhizal
-- trait_name: root_structure
-  find: ecm
-  replace: ectomycorrhizal
-- trait_name: root_structure
-  find: (ECM)/VAM
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: ECM/VAM
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: ecm/vam
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: ecm/vam nod
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: ECM/V
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: VAM/ECM
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: (ECM)VAM
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: VAM, ECM
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: vam,ecm
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: vam ecm
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: V nod/ECM
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: Ectendo
-  replace: ectomycorrhizal arbuscular_mycorrhizal
-- trait_name: root_structure
-  find: ecm/vam, cr
-  replace: ectomycorrhizal arbuscular_mycorrhizal proteoid_root
-- trait_name: root_structure
-  find: ecm/vam, cluster roots
-  replace: ectomycorrhizal arbuscular_mycorrhizal cluster_roots
-- trait_name: root_structure
-  find: Epacrid
-  replace: ericoid_mycorrhizal
-- trait_name: root_structure
-  find: ericoid
-  replace: ericoid_mycorrhizal
-- trait_name: root_structure
-  find: ORCH
-  replace: orchid_mycorrhizal
-- trait_name: root_structure
-  find: nil, cluster roots
-  replace: non_mycorrhizal cluster_roots
-- trait_name: root_structure
-  find: nil  cr
-  replace: non_mycorrhizal proteoid_root
-- trait_name: root_structure
-  find: nil, cr
-  replace: non_mycorrhizal proteoid_root
-- trait_name: root_structure
-  find: nil, sparse cr
-  replace: non_mycorrhizal proteoid_root
-- trait_name: root_structure
-  find: sparse CR
-  replace: proteoid_root
-- trait_name: root_structure
-  find: coil VAM
-  replace: coiling_vam
-- trait_name: root_structure
-  find: nil, root haustor.
-  replace: non_mycorrhizal haustorium
+  replace: non_nitrogen_fixer
 - trait_name: plant_growth_form
   find: climbing
   replace: climber
@@ -206,207 +131,373 @@ substitutions:
   find: pigmy
   replace: herb
 - trait_name: plant_growth_form
+  find: rosette
+  replace: herb
+- trait_name: plant_growth_form
   find: small tree
-  replace: treelet
+  replace: tree
+- trait_name: root_structure
+  find: (ECM)/VAM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: (ECM)VAM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: coil VAM
+  replace: coiling_vam
+- trait_name: root_structure
+  find: ECM
+  replace: ectomycorrhizal
+- trait_name: root_structure
+  find: ECM  nod
+  replace: ectomycorrhizal
+- trait_name: root_structure
+  find: ECM/V
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: ECM/VAM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: ECM/VAM nod
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: ECM/VAM, cluster roots
+  replace: ectomycorrhizal arbuscular_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: Ectendo
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: Epacrid
+  replace: ericoid_mycorrhizal
+- trait_name: root_structure
+  find: ericoid
+  replace: ericoid_mycorrhizal
+- trait_name: root_structure
+  find: nil
+  replace: non_mycorrhizal
+- trait_name: root_structure
+  find: nil, cluster roots
+  replace: non_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: nil, cluster roots, nod
+  replace: non_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: nil, CR
+  replace: non_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: nil, root haustor.
+  replace: non_mycorrhizal haustorium
+- trait_name: root_structure
+  find: nil, sparse CR
+  replace: non_mycorrhizal proteoid_root
+- trait_name: root_structure
+  find: ORCH
+  replace: orchid_mycorrhizal
+- trait_name: root_structure
+  find: sparse CR
+  replace: proteoid_root
+- trait_name: root_structure
+  find: subepidermal
+  replace: subepidermal_mycorrhizal
+- trait_name: root_structure
+  find: subepidermal M
+  replace: subepidermal_mycorrhizal
+- trait_name: root_structure
+  find: V
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: V  nod
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: V / nil
+  replace: arbuscular_mycorrhizal non_mycorrhizal
+- trait_name: root_structure
+  find: V + nil
+  replace: arbuscular_mycorrhizal non_mycorrhizal
+- trait_name: root_structure
+  find: V nod/ECM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: V/ nil
+  replace: arbuscular_mycorrhizal non_mycorrhizal
+- trait_name: root_structure
+  find: VAM
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: VAM  nod
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: VAM, nod
+  replace: arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: VAM,ECM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: VAM/ECM
+  replace: ectomycorrhizal arbuscular_mycorrhizal
+- trait_name: root_structure
+  find: VAM+nil
+  replace: arbuscular_mycorrhizal non_mycorrhizal
+- trait_name: root_structure
+  find: .na.character
+  replace: non_mycorrhizal
 taxonomic_updates:
 - find: Acacia michellii
   replace: Acacia mitchellii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia pulcella
   replace: Acacia pulchella
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia utophylla
   replace: Acacia urophylla
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Actinotis helianthi
   replace: Actinotus helianthi
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Banksiapaludosa
-  replace: Banksia paludosa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Blenospora drummondii
-  replace: Blennospora drummondii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Brachycome liniariloba
-  replace: Brachyscome lineariloba
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Brunonia australia
-  replace: Brunonia australis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Calltris columellaris
-  replace: Callitris columellaris
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Coltula turbinata
-  replace: Cotula turbinata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Drosera erythorrhiza
-  replace: Drosera erythrorhiza
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Eucalyptus haemostoma
-  replace: Eucalyptus haemastoma
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Euphorbia cyanthophora
-  replace: Euphorbia cyathophora
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Glischrocaryou behrii
-  replace: Glischrocaryon behrii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Grevillea lavandulaceae
-  replace: Grevillea lavandulacea
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Grevillea querecifolia
-  replace: Grevillea quercifolia
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Hibbertia communata
-  replace: Hibbertia commutata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Hypolaena fastigata
-  replace: Hypolaena fastigiata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Impera cylindrica
-  replace: Imperata cylindrica
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Indigofera ausralis
-  replace: Indigofera australis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Labicea punctata
-  replace: Labichea punctata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Lasiopetalum bractatum
-  replace: Lasiopetalum bracteatum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Lepidosperma augustatum
-  replace: Lepidosperma angustatum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Leucopogon cleandii
-  replace: Leucopogon clelandii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Melaleuca latericia
-  replace: Melaleuca lateritia
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Platylobium formosa
-  replace: Platylobium formosum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Podotheca angustifolius
-  replace: Podotheca angustifolia
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pomaderris eliptica
-  replace: Pomaderris elliptica
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pomaderris obocordata
-  replace: Pomaderris obcordata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Psapalidium gracile
-  replace: Paspalidium gracile
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pteridum esculentum
-  replace: Pteridium esculentum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Ptilotus polystachus
-  replace: Ptilotus polystachyus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pultanaea daphnoides
-  replace: Pultenaea daphnoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pultanaea scabra
-  replace: Pultenaea scabra
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Sowerbea laxiflora
-  replace: Sowerbaea laxiflora
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Spiridium eriocephalum
-  replace: Spyridium eriocephalum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Spiridium parvifolium
-  replace: Spyridium parvifolium
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Stylidium junccum
-  replace: Stylidium junceum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Thomasiarhynchocarpa
-  replace: Thomasia rhynchocarpa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Thysanotus junctifolius
-  replace: Thysanotus juncifolius
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Tibulus cistoides
-  replace: Tribulus cistoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Xanthorrhoea preisii
-  replace: Xanthorrhoea preissii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Zaluzianyska divaricata
-  replace: Zaluzianskya divaricata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Ziera smithii
-  replace: Zieria smithii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Avillinia mitchellii
-  replace: Avellinia michelii
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Laxmannia sessilifoilia
-  replace: Laxmannia sessiliflora
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Agonis lincarifolia
   replace: Agonis linearifolia
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
+    in `APC known` when everything except first 2 words ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Avillinia mitchellii
+  replace: Avellinia michelii
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Banksiapaludosa
+  replace: Banksia paludosa
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Blenospora drummondii
+  replace: Blennospora drummondii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Borhavia tetrandra
-  replace: Boerhavia tetrandra
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  replace: Boronia tetrandra
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Brachycome liniariloba
+  replace: Brachyscome lineariloba
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Brunonia australia
+  replace: Brunonia australis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Calistemon macropunctatus
+  replace: Callistemon macropunctatus
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Calltris columellaris
+  replace: Callitris columellaris
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Coltula turbinata
+  replace: Cotula turbinata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Conyza canadiensis
   replace: Conyza canadensis
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Drosera erythorrhiza
+  replace: Drosera erythrorhiza
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Eragrostis phillipica
   replace: Eragrostis philippica
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Eucalyptus haemostoma
+  replace: Eucalyptus haemastoma
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Euphorbia cyanthophora
+  replace: Euphorbia cyathophora
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Glischrocaryou behrii
+  replace: Glischrocaryon behrii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Gnaphalium luteo-album
   replace: Gnaphalium luteoalbum
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Goodenia pimulacea
   replace: Goodenia primulacea
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Oxylobium liniarifolium
-  replace: Oxylobium linariifolium
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Ptilanthelium deustem
-  replace: Ptilanthelium deustum
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Pultanaea elliptica
-  replace: Pultenaea elliptica
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Pultanaea obovata
-  replace: Pultenaea obovata
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Rhizinocarpus pinifolius
-  replace: Ricinocarpus pinifolius
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Trymalium d'altonii
-  replace: Trymalium daltonii
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Calistemon macropunctatus
-  replace: Callistemon rugulosus
-  reason: correct typo and align to species accepted by APC (E. Wenk, 2020-05-24)
+  reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
+    in `APC known` when everything except first 2 words ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Grevillea lavandulaceae
+  replace: Grevillea lavandulacea
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Grevillea querecifolia
+  replace: Grevillea quercifolia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hibbertia communata
+  replace: Hibbertia commutata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hypolaena fastigata
+  replace: Hypolaena fastigiata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Impera cylindrica
+  replace: Imperata cylindrica
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Indigofera ausralis
+  replace: Indigofera australis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Labicea punctata
+  replace: Labichea punctata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lasiopetalum bractatum
+  replace: Lasiopetalum bracteatum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Laxmannia sessilifoilia
+  replace: Laxmannia sessiliflora
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
+    APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lepidosperma augustatum
+  replace: Lepidosperma angustatum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Leucopogon cleandii
+  replace: Leucopogon clelandii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Lobelia tenuior ?
   replace: Lobelia tenuior
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-26)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Melaleuca latericia
+  replace: Melaleuca lateritia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Oxylobium liniarifolium
+  replace: Oxylobium linariifolium
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Platylobium formosa
+  replace: Platylobium formosum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Podotheca angustifolius
+  replace: Podotheca angustifolia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pomaderris eliptica
+  replace: Pomaderris elliptica
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pomaderris obocordata
+  replace: Pomaderris obcordata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Psapalidium dilatatum
   replace: Paspalum dilatatum
-  reason: correct typo (E. Wenk, 2020-05-24)
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
+    APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Psapalidium gracile
+  replace: Paspalidium gracile
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pteridum esculentum
+  replace: Pteridium esculentum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Ptilanthelium deustem
+  replace: Ptilanthelium deustum
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Ptilotus polystachus
+  replace: Ptilotus polystachyus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultanaea daphnoides
+  replace: Pultenaea daphnoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultanaea elliptica
+  replace: Pultenaea elliptica
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultanaea obovata
+  replace: Pultenaea obovata
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultanaea scabra
+  replace: Pultenaea scabra
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Rhizinocarpus pinifolius
+  replace: Ricinocarpos pinifolius
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sowerbea laxiflora
+  replace: Sowerbaea laxiflora
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Spiridium eriocephalum
+  replace: Spyridium eriocephalum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Spiridium parvifolium
+  replace: Spyridium parvifolium
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Stylidium junccum
+  replace: Stylidium junceum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Thomasiarhynchocarpa
+  replace: Thomasia rhynchocarpa
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Thysanotus junctifolius
+  replace: Thysanotus juncifolius
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Tibulus cistoides
+  replace: Tribulus cistoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Trachymene pusillus
-  replace: Trachymene pilosa
-  reason: Aligned with APC accepted synonym (E. Wenk, 2020-05-25)
-exclude_observations: .na
+  replace: Trachymene sp. [Trachymene pusillus; Schmidt_1993]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Trymalium d'altonii
+  replace: Trymalium daltonii
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Xanthorrhoea preisii
+  replace: Xanthorrhoea preissii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Zaluzianyska divaricata
+  replace: Zaluzianskya divaricata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Ziera smithii
+  replace: Zieria smithii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+exclude_observations:
+- variable: taxon_name
+  find: Trachymene pusillus
+  reason: collapses to duplicate
 questions: .na
-

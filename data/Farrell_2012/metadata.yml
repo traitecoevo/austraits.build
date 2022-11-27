@@ -3,29 +3,38 @@ source:
     key: Farrell_2012
     bibtype: Article
     year: '2012'
-    author: C. Farrell and R. E. Mitchell and C. Szota and J. P. Rayner and N. S. G. Williams
+    author: C. Farrell and R. E. Mitchell and C. Szota and J. P. Rayner and N. S.
+      G. Williams
     journal: Ecological Engineering
     title: 'Green roofs for hot and dry climates: Interacting effects of plant water
       use, succulence and substrate'
     volume: '49'
     pages: 270--276
     doi: 10.1016/j.ecoleng.2012.08.036
-people:
-- name: Claire Farrell
-  institution: University of Melbourne
-  role: collector, contact
-- name: Christopher Szota
-  institution: University of Melbourne
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Farrell
+    given_name: Claire
+    ORCID: 0000-0002-5822-7529
+    affiliation: University of Melbourne, Australia
+    additional_role: contact
+  - last_name: Szota
+    given_name: Christopher
+    ORCID: 0000-0002-8837-591X
+    affiliation: University of Melbourne, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: January 2011
-  year_collected_end: June 2011
+  data_is_long_format: no
+  custom_R_code:      data %>% mutate(plant_succulence = plant_growth_form)
+  collection_date: 2011-01/2011-06
+  taxon_name: Species
+  location_name: site
   description: An investigation of the effects of severe drought on the growth, water
     use and survival of five succulent species to determine how green roofs will perform
     in hot and dry climates where water is often limiting and drought tolerance determines
     plant survival.
-  collection_type: glasshouse
-  sample_age_class: adult
+  basis_of_record: lab
+  life_stage: adult
   sampling_strategy: Five succulent species were evaluated, three introduced Sedum
     species (S. pachyphyllum Rose, S. clavatum Clausen and S. spurium Marshall von
     Bieberstein) and two Australian species (Carpobro-tus modestus S.T. Blake and
@@ -72,30 +81,28 @@ dataset:
     pot capacity at the start of the experiment then received no further watering.
   original_file: Farrell et al 2012 Ecol Eng data.xls
   notes: none
-sites:
+locations:
   The University of Melbourne Burnley campus:
     latitude (deg): -37.828472
     longitude (deg): 145.020883
     description: temperature controlled glasshouse
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site
-  custom_R_code: .na
 traits:
 - var_in: SLA mm2/mg
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf areas of individual leaves were measured using ImageJ 1.43 software
     (NIH, USA).
 - var_in: Degree of leaf succulence g water/cm2 leaf
   unit_in: g/cm2
   trait_name: leaf_water_content_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Ten leaves from well-watered plants of each species were sampled to determine
     leaf succulence, determined as, Leaf succulence = water content of leaf/surface
@@ -104,20 +111,38 @@ traits:
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: literature sourced and expert opinion
+- var_in: plant_succulence
+  unit_in: .na
+  trait_name: plant_succulence
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: literature sourced and expert opinion
 - var_in: photosynthetic_pathway
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: literature sourced and expert opinion
-substitutions: .na
+substitutions:
+- trait_name: plant_growth_form
+  find: succulent_short
+  replace: herb
+- trait_name: plant_succulence
+  find: succulent_short
+  replace: succulent_leaves
 taxonomic_updates:
 - find: Carprotus modestus
   replace: Carpobrotus modestus
-  reason: Automatic alignment with name in APC list (accepted) (2021-02-22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

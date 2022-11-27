@@ -4,22 +4,34 @@ source:
     bibtype: Unpublished
     author: John Morgan
     year: 2004
-    title: 'Unpublished data: Trait data from Victorian alpine plant species, La Trobe University'
-people:
-- name: John Morgan
-  institution: La Trobe University
-  role: collector, contact, lab_leader
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+    title: 'Unpublished data: Trait data from Victorian alpine plant species, La Trobe
+      University'
+contributors:
+  data_collectors:
+  - last_name: Morgan
+    given_name: John
+    ORCID: 0000-0003-2003-5983
+    affiliation: La Trobe University, Australia
+    additional_role: contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2004
-  year_collected_end: 2014
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        site_name = "Mt Nelse-Bogong High Plains-Mt Hotham",
+        row_number = row_number()
+      ) %>%
+      filter(!row_number %in% c(208,209,210,211))
+  '
+  collection_date: 2004/2014
+  taxon_name: Scientific Name
+  location_name: site_name
   description: This is an alpine species dataset collected between Mt Nelse-Bogong
     High Plains-Mt Hotham in Victoria. The dataset might also include some data from
     John Morgan's database not specifically associated with a campaign
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: This is an alpine species dataset collected between Mt Nelse-Bogong
     High Plains-Mt Hotham in Victoria.
   original_file: relevent data from the file "2014  updated plant functional trait
@@ -30,56 +42,63 @@ dataset:
     specifically associated with a campaign; there are 10 duplicate values with Venn_2011,
     but these are spread across species and traits without any notable pattern, and
     are left in.
-sites:
+locations:
   Mt Nelse-Bogong High Plains-Mt Hotham:
     latitude (deg): -36.87
     longitude (deg): 147.32
-    lat/lon notes: lat/lon for location near Bogong High Plains Road given, but data
-      more broadly collected between Mt Nelse-Bogong High Plains-Mt Hotham in Victoria
+    georeference remarks: lat/lon for location near Bogong High Plains Road given,
+      but data more broadly collected between Mt Nelse-Bogong High Plains-Mt Hotham
+      in Victoria
     description: dataset collected between Mt Nelse-Bogong High Plains-Mt Hotham in
       Victoria
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Scientific Name
-    site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "Mt Nelse-Bogong High Plains-Mt Hotham")
 traits:
 - var_in: SLA (mg/mm2)
   unit_in: mm2/mg
   trait_name: .na
-  value_type: unknown
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
-  methods: unknown
+  methods: unknown; not mapped because the majority of data are in Pickering_2014
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: Height (cm)
   unit_in: cm
   trait_name: plant_height
-  value_type: site_max
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Seed mass (mg)
   unit_in: mg
-  trait_name: seed_mass
-  value_type: unknown
+  trait_name: seed_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: LDMC (mg/g)
   unit_in: mg/g
   trait_name: .na
-  value_type: unknown
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
-  methods: unknown
+  methods: unknown; not mapped because these data are in Pickering_2014
 - var_in: Leaf area (mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: unknown
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 substitutions:
@@ -89,62 +108,77 @@ substitutions:
 taxonomic_updates:
 - find: Astelia alpina var. novae hollandiae
   replace: Astelia alpina var. novae-hollandiae
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Euphrasia collina var. diversicolor
-  replace: Euphrasia collina subsp. diversicolor
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Brachysome stolonifera
-  replace: Brachyscome stolonifera
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Colobanthus pulvnatus
-  replace: Colobanthus pulvinatus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Leptorynchus squamatus
-  replace: Leptorhynchos squamatus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Stackhousia pulvinarus
-  replace: Stackhousia pulvinaris
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Ranunculus anenonemous
-  replace: Ranunculus anemoneus
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Varietas
 - find: Brachysome spatulatha subsp. Spathulata
   replace: Brachyscome spathulata subsp. spathulata
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Brachysome spatulatha subsp. spathulata
   replace: Brachyscome spathulata subsp. spathulata
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Brachysome stolonifera
+  replace: Brachyscome stolonifera
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Chinogentias muelleriana
   replace: Chionogentias muelleriana
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Colobanthus pulvnatus
+  replace: Colobanthus pulvinatus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Erigeron bellidiodes
   replace: Erigeron bellidioides
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Erigeron bellidoides
   replace: Erigeron bellidioides
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Pratia surrepens s.l.
-  replace: Pratia surrepens
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Senecio pinnatifolius var. pleicephalus
-  replace: Senecio pinnatifolius var. pleiocephalus
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Lycopogon fastigatum
-  replace: Lycopodium fastigiatum
-  reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Euphrasia collina subs.glacialis
   replace: Euphrasia collina subsp. glacialis
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Euphrasia collina var. diversicolor
+  replace: Euphrasia collina subsp. diversicolor
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Leptorynchus squamatus
+  replace: Leptorhynchos squamatus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lycopogon fastigatum
+  replace: Lycopodium fastigiatum
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
+    APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Melictys sp.
-  replace: Melicytus sp.
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Melicytus sp. [Morgan_2014]
+  reason: match_01_fuzzy. Fuzzy match of name ending with `sp.` to an APC accepted
+    genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Pratia surrepens s.l.
+  replace: Pratia surrepens
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Ranunculus anenonemous
+  replace: Ranunculus anemoneus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Senecio pinnatifolius var. pleicephalus
+  replace: Senecio pinnatifolius var. pleiocephalus
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Stackhousia pulvinarus
+  replace: Stackhousia pulvinaris
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

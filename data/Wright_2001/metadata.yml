@@ -4,23 +4,41 @@ source:
     bibtype: Unpublished
     author: Ian J. Wright
     year: 2001
-    title: 'Unpublished data: Seed mass reserve data for various species in NSW, Macquarie University'
-people:
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: collector, contact, contributor
-- name: Martin Henery
-  institution: CSIRO
-  role: collector
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
+    title: 'Unpublished data: Seed mass reserve data for various species in NSW, Macquarie
+      University'
+contributors:
+  data_collectors:
+  - last_name: Wright
+    given_name: Ian
+    ORCID: 0000-0001-8338-9143
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  - last_name: Henery
+    given_name: Martin
+    ORCID: .na.character
+    affiliation: Parks Australia, Department of Agriculture, Water and the Environment,
+      Australia
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 1998
-  year_collected_end: 1999
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(rainfall = Site) %>%
+      mutate_at(vars(`reserve_M (mg)`), ~na_if(.,0)) %>%
+      group_by(spp, Site) %>%
+        mutate(observation_num = dplyr::row_number()) %>%
+      ungroup()
+  '
+  collection_date: 1998/1999
+  taxon_name: spp
   description: seed mass reserve data for various species in NSW
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Seed mass data measured on seeds dissected by Ian Wright & Martin
     Henery, 1998/1999. Seeds sourced from different locations, including Australian
     seed company (ASC), MLF (unknown seed company), Kuringgai National Park (KNP)
@@ -34,89 +52,214 @@ dataset:
     been under Westoby_2003 are also unpublished and should be part of this dataset_id.
     (Westoby_2003 now refers to a different dataset entirely.) In addition, there
     is a column in the data.csv file with seed provenance.
-sites:
-  loRloP:
-    rainfall: low
-    phosphorus: low
-    seed provenance: Round Hill mallee, and various seedstock
-    latitude (deg): .na
-    longitude (deg): .na
-  loRhiP:
-    rainfall: low
-    phosphorus: high
-    seed provenance: Round Hill woodland, and various seedstock
-    latitude (deg): .na
-    longitude (deg): .na
-  hiRloP:
-    rainfall: high
-    phosphorus: low
-    seed provenance: Murrua Track (KNP), Centre Track (KNP), and various seedstock
-    latitude (deg): .na
-    longitude (deg): .na
-  hiRhiP:
-    rainfall: high
-    phosphorus: high
-    seed provenance: Westhead (KNP), Shoalhaven (MLF), and various seedstock
-    latitude (deg): .na
-    longitude (deg): .na
-contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: spp
-    site_name: Site
-  custom_R_code: data %>% mutate_at(c("reserve_M (mg)"), ~na_if(.,0))
+locations: .na
+contexts:
+- context_property: replicate observations
+  category: temporal
+  var_in: observation_num
+  values:
+  - value: 1
+  - value: 2
+  - value: 3
+- context_property: phosphorus level
+  category: plot
+  var_in: Site
+  values:
+  - find: loRloP
+    value: low phosphorus
+    description: Seeds sourced from a low phorphorus location.
+  - find: loRhiP
+    value: high phosphorus
+    description: Seeds sourced from a high phorphorus location.
+  - find: hiRloP
+    value: low phosphorus
+    description: Seeds sourced from a low phorphorus location.
+  - find: hiRhiP
+    value: high phosphorus
+    description: Seeds sourced from a high phorphorus location.
+- context_property: precipitation
+  category: plot
+  var_in: rainfall
+  values:
+  - find: loRloP
+    value: low rainfall
+    description: Seeds sourced from a low rainfall location.
+  - find: loRhiP
+    value: low rainfall
+    description: Seeds sourced from a low rainfall location.
+  - find: hiRloP
+    value: high rainfall
+    description: Seeds sourced from a high rainfall location.
+  - find: hiRhiP
+    value: high rainfall
+    description: Seeds sourced from a high rainfall location.
+- context_property: seed provenance
+  category: treatment
+  var_in: Seed provenance simple
+  values:
+  - find: MLF Alice Springs
+    value: Alice Springs (MLF)
+    description: Seeds sourced from Alice Springs (MLF).
+  - find: ASC - Broken Hill
+    value: Broken Hill (ASC)
+    description: Seeds sourced from Broken Hill (ASC).
+  - find: AustraHort - Bulahdelah
+    value: Bulahdelah (AustraHort)
+    description: Seeds sourced from Bulahdelah (AustraHort).
+  - find: ASC - Central Coast
+    value: Central Coast (ASC)
+    description: Seeds sourced from Central Coast (ASC).
+  - find: Harvest - Central Coast
+    value: Central Coast (Harvest)
+    description: Seeds sourced from Central Coast (Harvest).
+  - find: ASC - CW Slopes
+    value: Central West  Slopes (ASC)
+    description: Seeds sourced from Central West  Slopes (ASC).
+  - find: Centre Track KCNP
+    value: KCNP - Centre Track
+    description: Seeds sourced from Kuringgai-Chase NP - Centre Track .
+  - find: KCNP - sandy soil
+    value: KCNP - sandy soil
+    description: Seeds sourced from Kuringgai-Chase NP - sandy soil.
+  - find: KCNP - West Head
+    value: KCNP - West Head
+    description: Seeds sourced from Kuringgai-Chase NP - West Head.
+  - find: Leeton (wnsw) -seedstock
+    value: Leeton (wNSW) (seedstock)
+    description: Seeds sourced from Leeton (wNSW) (seedstock).
+  - find: Murrua
+    value: Murrua
+    description: Seeds sourced from Murrua.
+  - find: Round Hill mallee
+    value: Round Hill - mallee
+    description: Seeds sourced from Round Hill - mallee.
+  - find: Round Hill woodland
+    value: Round Hill - woodland
+    description: Seeds sourced from Round Hill - woodland.
+  - find: ASC - SE Tasmania
+    value: Southeast Tasmania (ASC)
+    description: Seeds sourced from Southeast Tasmania (ASC).
+  - find: Shoalhaven - MLF
+    value: Shoalhaven (MLF)
+    description: Seeds sourced from Shoalhaven (MLF).
+  - find: AustraHort - Shoalhaven
+    value: Shoalhaven (AustraHort)
+    description: Seeds sourced from Shoalhaven (AustraHort).
+  - find: ASC - SW Slopes
+    value: Southwest Slopes (ASC)
+    description: Seeds sourced from Southwest Slopes (ASC).
+  - find: ASC Spencer Gulf
+    value: Spencer Gulf (ASC)
+    description: Seeds sourced from Spencer Gulf (ASC).
+  - find: Harvest - Sydney
+    value: Sydney (Harvest)
+    description: Seeds sourced from Sydney (Harvest).
+  - find: ASC - Tenterfield
+    value: Tenterfield (ASC)
+    description: Seeds sourced from Tenterfield (ASC).
+  - find: seedstock
+    value: unknown seedstock
+    description: Seeds sourced from unknown seedstock.
+  - find: ASC - Upper Blue Mts
+    value: Upper Blue Mountains (ASC)
+    description: Seeds sourced from Upper Blue Mountains (ASC).
 traits:
 - var_in: whole_M (mg)
   unit_in: mg
-  trait_name: seed_mass
-  value_type: site_mean
-  replicates: 6-113
+  trait_name: seed_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: n (wholeM)
   methods: Seeds were assumed to be ellipsoids and the volumes calculated for 302
     species from measurements of seed length (l), breadth (b) and width (w) (volume
     = pi / 6.1 .b.w). Seed volume ranged from 0.001 mm3 (Drosera bunnaniz) to 93,530
     mm3 (Aleurites molucanna) and was log transformed prior to analyses since the
-    distribution was log normal. Replicate count is given as a column in the data.csv
-    file.
+    distribution was log normal.
 - var_in: reserve_M (mg)
   unit_in: mg
-  trait_name: seed_mass_reserve
-  value_type: site_mean
-  replicates: 6-113
+  trait_name: seed_dry_mass_reserve
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: n (wholeM)
   methods: Data for seed reserve mass (dry mass of embryo plus endosperm if present)
     were drawn from previous studies in similar vegetation (Leishman et al. 1995;
     Westoby et al. 1990) or from unpublished datasets for western NSW, but none of
-    the values are present in other datasets within AusTraits. Replicate count is
-    given as a column in the data.csv file.
+    the values are present in other datasets within AusTraits.
 substitutions: .na
 taxonomic_updates:
+- find: Allocasuarina sp.
+  replace: Allocasuarina sp. [Wright_2001]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Corymbia  gummifera
+  replace: Corymbia gummifera
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Dodonaea viscosa angustissima
   replace: Dodonaea viscosa subsp. angustissima
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Dodonaea viscosa cuneata
   replace: Dodonaea viscosa subsp. cuneata
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Dodonaea viscosa spatulata
   replace: Dodonaea viscosa subsp. spatulata
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Gompholobium  latifolium
+  replace: Gompholobium latifolium
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lasiopetalum  ferrugineum
+  replace: Lasiopetalum ferrugineum
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Olearia pimelioides
   replace: Olearia pimeleoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Olearia sp
+  replace: Olearia sp. [Wright_2001]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Persoonia  levis
+  replace: Persoonia levis
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Phyllota phyllicoides
   replace: Phyllota phylicoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Pimelea microcephela
   replace: Pimelea microcephala
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Olearia sp
-  replace: Olearia sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Senna artemisioides var 1lft. pair
   replace: Senna artemisioides
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
 - find: Senna artemisioides var. 3lft
   replace: Senna artemisioides
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Synoum  glandulosum
+  replace: Synoum glandulosum
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

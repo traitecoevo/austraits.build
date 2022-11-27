@@ -12,27 +12,52 @@ source:
     number: '7'
     pages: 756--770
     doi: 10.1093/treephys/tpv047
-people:
-- name: Honglang Duan
-  institution: Hawkesbury Institute for the Environment, Western Sydney University
-  role: collector
-- name: David Tissue
-  institution: Hawkesbury Institute for the Environment, Western Sydney University
-  role: collector, lab_leader, contact
-- name: Renee Smith
-  institution: Hawkesbury Institute for the Environment, Western Sydney University
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Duan
+    given_name: Honglang
+    ORCID: 0000-0003-3761-6936
+    affiliation: Institute for Forest Resources & Environment of Guizhou. Guizhou
+      University, Guiyang, China
+  - last_name: Tissue
+    given_name: David
+    ORCID: 0000-0002-8497-2047
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  - last_name: Smith
+    given_name: Renee
+    ORCID: .na.character
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2012
-  year_collected_end: 2012
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        site = "University of Western Sydney",
+        Date = Date %>% dmy()
+      ) %>% 
+      mutate_at(c("Cond (mol m-2 s-1)"), ~na_if(.,0)) %>% 
+      subset(Day < 88) %>% 
+      arrange(Potnum, Day) %>%
+      group_by(Potnum, Temp, CO2, Water) %>%
+        mutate(observation = dplyr::row_number()) %>%
+      ungroup()
+  '
+  collection_date: Date
+  taxon_name: Species
+  location_name: site
+  individual_id: Potnum
   description: 'Water relations and carbon dynamics were examined in two species with
     contrasting stomatal regulation strategies: Pinus radiata D. Don (relatively isohydric
     gymnosperm; regulating stomata to maintain leaf water potential above critical
     thresholds; data not included in AusTraits) and Callitris rhomboidea R. Br (relatively
     anisohydric gymnosperm; allowing leaf water potential to decline as the soil dries),
     to assess response to drought as a function of [CO2] and temperature.'
-  collection_type: glasshouse
-  sample_age_class: seedling
+  basis_of_record: lab
+  life_stage: seedling
   sampling_strategy: 'Experimental design Three-month-old seedlings of P. radiata
     (Pinaceae family) and C. rhomboidea (Cupressaceae family) raised in forestry tube
     stock were obtained from Greening Australia (Sydney) on 13 January 2012. Thereafter,
@@ -95,255 +120,80 @@ dataset:
   original_file: GHS30_Pines-TxCxW_biomass_20120327-20121016_L1.csv, GHS30_Pines-TxCxW_carbohydrates_20120327-20121016_L1.csv,
     and GHS30_Pines-TxCxW_GasExchange_20120326-20120808_L1.csv
   notes: none
-sites:
+locations:
   University of Western Sydney:
     latitude (deg): -33.61
     longitude (deg): 150.7407
     description: naturally sun-lit and C/T-controlled glasshouse
 contexts:
-  grown_at_Amb_temp_and_400_ppm_CO2_with_Dry_treatment_and_30_to_44_days_since_drought_treatment:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2: 400 (ambient)
-    drought treatment: Dry (seedlings received no water after the commencement of
-      the drought treatment)
-    days since drought treatment: 30_to_44
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Amb_temp_and_400_ppm_CO2_with_Dry_treatment_and_44_to_86_days_since_drought_treatment:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2: 400 (ambient)
-    drought treatment: Dry (seedlings received no water after the commencement of
-      the drought treatment)
-    days since drought treatment: 44_to_86
-    type: treatment_harsh
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Amb_temp_and_400_ppm_CO2_with_Dry_treatment_and_fewer_than_24_days_since_drought_treatment:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2: 400 (ambient)
-    drought treatment: Dry (seedlings received no water after the commencement of
-      the drought treatment)
-    days since drought treatment: fewer_than_24
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Amb_temp_and_400_ppm_CO2_with_Wet_treatment_and_30_to_44_days_since_drought_treatment:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2: 400 (ambient)
-    drought treatment: Wet (well-watered seedlings were maintained at field capacity)
-    days since drought treatment: 30_to_44
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Amb_temp_and_400_ppm_CO2_with_Wet_treatment_and_44_to_86_days_since_drought_treatment:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2: 400 (ambient)
-    drought treatment: Wet (well-watered seedlings were maintained at field capacity)
-    days since drought treatment: 44_to_86
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Amb_temp_and_400_ppm_CO2_with_Wet_treatment_and_fewer_than_24_days_since_drought_treatment:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2: 400 (ambient)
-    drought treatment: Wet (well-watered seedlings were maintained at field capacity)
-    days since drought treatment: fewer_than_24
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Amb_temp_and_640_ppm_CO2_with_Dry_treatment_and_30_to_44_days_since_drought_treatment:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2: 640 (elevated)
-    drought treatment: Dry (seedlings received no water after the commencement of
-      the drought treatment)
-    days since drought treatment: 30_to_44
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Amb_temp_and_640_ppm_CO2_with_Dry_treatment_and_44_to_86_days_since_drought_treatment:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2: 640 (elevated)
-    drought treatment: Dry (seedlings received no water after the commencement of
-      the drought treatment)
-    days since drought treatment: 44_to_86
-    type: treatment_harsh
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Amb_temp_and_640_ppm_CO2_with_Dry_treatment_and_fewer_than_24_days_since_drought_treatment:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2: 640 (elevated)
-    drought treatment: Dry (seedlings received no water after the commencement of
-      the drought treatment)
-    days since drought treatment: fewer_than_24
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Amb_temp_and_640_ppm_CO2_with_Wet_treatment_and_30_to_44_days_since_drought_treatment:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2: 640 (elevated)
-    drought treatment: Wet (well-watered seedlings were maintained at field capacity)
-    days since drought treatment: 30_to_44
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Amb_temp_and_640_ppm_CO2_with_Wet_treatment_and_44_to_86_days_since_drought_treatment:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2: 640 (elevated)
-    drought treatment: Wet (well-watered seedlings were maintained at field capacity)
-    days since drought treatment: 44_to_86
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Amb_temp_and_640_ppm_CO2_with_Wet_treatment_and_fewer_than_24_days_since_drought_treatment:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2: 640 (elevated)
-    drought treatment: Wet (well-watered seedlings were maintained at field capacity)
-    days since drought treatment: fewer_than_24
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Elv_temp_and_400_ppm_CO2_with_Dry_treatment_and_30_to_44_days_since_drought_treatment:
-    growing temperature: Elevated (30/22 deg C (day/night))
-    growing CO2: 400 (ambient)
-    drought treatment: Dry (seedlings received no water after the commencement of
-      the drought treatment)
-    days since drought treatment: 30_to_44
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Elv_temp_and_400_ppm_CO2_with_Dry_treatment_and_44_to_86_days_since_drought_treatment:
-    growing temperature: Elevated (30/22 deg C (day/night))
-    growing CO2: 400 (ambient)
-    drought treatment: Dry (seedlings received no water after the commencement of
-      the drought treatment)
-    days since drought treatment: 44_to_86
-    type: treatment_harsh
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Elv_temp_and_400_ppm_CO2_with_Dry_treatment_and_fewer_than_24_days_since_drought_treatment:
-    growing temperature: Elevated (30/22 deg C (day/night))
-    growing CO2: 400 (ambient)
-    drought treatment: Dry (seedlings received no water after the commencement of
-      the drought treatment)
-    days since drought treatment: fewer_than_24
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Elv_temp_and_400_ppm_CO2_with_Wet_treatment_and_30_to_44_days_since_drought_treatment:
-    growing temperature: Elevated (30/22 deg C (day/night))
-    growing CO2: 400 (ambient)
-    drought treatment: Wet (well-watered seedlings were maintained at field capacity)
-    days since drought treatment: 30_to_44
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Elv_temp_and_400_ppm_CO2_with_Wet_treatment_and_44_to_86_days_since_drought_treatment:
-    growing temperature: Elevated (30/22 deg C (day/night))
-    growing CO2: 400 (ambient)
-    drought treatment: Wet (well-watered seedlings were maintained at field capacity)
-    days since drought treatment: 44_to_86
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Elv_temp_and_400_ppm_CO2_with_Wet_treatment_and_fewer_than_24_days_since_drought_treatment:
-    growing temperature: Elevated (30/22 deg C (day/night))
-    growing CO2: 400 (ambient)
-    drought treatment: Wet (well-watered seedlings were maintained at field capacity)
-    days since drought treatment: fewer_than_24
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Elv_temp_and_640_ppm_CO2_with_Dry_treatment_and_30_to_44_days_since_drought_treatment:
-    growing temperature: Elevated (30/22 deg C (day/night))
-    growing CO2: 640 (elevated)
-    drought treatment: Dry (seedlings received no water after the commencement of
-      the drought treatment)
-    days since drought treatment: 30_to_44
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Elv_temp_and_640_ppm_CO2_with_Dry_treatment_and_44_to_86_days_since_drought_treatment:
-    growing temperature: Elevated (30/22 deg C (day/night))
-    growing CO2: 640 (elevated)
-    drought treatment: Dry (seedlings received no water after the commencement of
-      the drought treatment)
-    days since drought treatment: 44_to_86
-    type: treatment_harsh
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Elv_temp_and_640_ppm_CO2_with_Dry_treatment_and_fewer_than_24_days_since_drought_treatment:
-    growing temperature: Elevated (30/22 deg C (day/night))
-    growing CO2: 640 (elevated)
-    drought treatment: Dry (seedlings received no water after the commencement of
-      the drought treatment)
-    days since drought treatment: fewer_than_24
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Elv_temp_and_640_ppm_CO2_with_Wet_treatment_and_30_to_44_days_since_drought_treatment:
-    growing temperature: Elevated (30/22 deg C (day/night))
-    growing CO2: 640 (elevated)
-    drought treatment: Wet (well-watered seedlings were maintained at field capacity)
-    days since drought treatment: 30_to_44
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Elv_temp_and_640_ppm_CO2_with_Wet_treatment_and_44_to_86_days_since_drought_treatment:
-    growing temperature: Elevated (30/22 deg C (day/night))
-    growing CO2: 640 (elevated)
-    drought treatment: Wet (well-watered seedlings were maintained at field capacity)
-    days since drought treatment: 44_to_86
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-  grown_at_Elv_temp_and_640_ppm_CO2_with_Wet_treatment_and_fewer_than_24_days_since_drought_treatment:
-    growing temperature: Elevated (30/22 deg C (day/night))
-    growing CO2: 640 (elevated)
-    drought treatment: Wet (well-watered seedlings were maintained at field capacity)
-    days since drought treatment: fewer_than_24
-    type: treatment
-    description: Factorial experiment with plants grown at two temperatures, two CO2
-      concentrations,  and under two drought conditions; gas exchange measurements
-      were made at various dates after the onset of drought.
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site
-    observation_id: Potnum
-    context_name: context
-    date: Date
-  custom_R_code: data %>% mutate(site = "University of Western Sydney") %>% mutate_at(c("Cond
-    (mol m-2 s-1)"), ~na_if(.,0)) %>% subset(days_since_drought != "more_than_88")
+- context_property: drought treatment duration
+  category: treatment
+  var_in: Day
+  values:
+  - value: '1'
+    description: Measurements made 1 day after the start of the drought treatment.
+  - value: '9'
+    description: Measurements made 9 days after the start of the drought treatment.
+  - value: '16'
+    description: Measurements made 16 days after the start of the drought treatment.
+  - value: '23'
+    description: Measurements made 23 days after the start of the drought treatment.
+  - value: '30'
+    description: Measurements made 30 days after the start of the drought treatment.
+  - value: '37'
+    description: Measurements made 37 days after the start of the drought treatment.
+  - value: '44'
+    description: Measurements made 44 days after the start of the drought treatment.
+  - value: '51'
+    description: Measurements made 51 days after the start of the drought treatment.
+  - value: '57'
+    description: Measurements made 57 days after the start of the drought treatment.
+  - value: '65'
+    description: Measurements made 65 days after the start of the drought treatment.
+  - value: '72'
+    description: Measurements made 72 days after the start of the drought treatment.
+  - value: '79'
+    description: Measurements made 79 days after the start of the drought treatment.
+  - value: '86'
+    description: Measurements made 86 days after the start of the drought treatment.
+- context_property: drought treatment
+  category: treatment
+  var_in: Water
+  values:
+  - find: Wet
+    value: wet
+    description: Seedlings were well-watered; they were maintained at field capacity.
+  - find: Dry
+    value: dry
+    description: Seedlings were droughted; they received no water after the commencement
+      of the drought treatment.
+- context_property: CO2 treatment
+  category: treatment
+  var_in: CO2
+  values:
+  - find: '400'
+    value: 400 ppm
+    description: Plants grown at ambient CO2 (400 ppm).
+  - find: '640'
+    value: 640 ppm
+    description: Plants grown at elevated CO2 (640 ppm); 240 ppm above ambient.
+- context_property: temperature treatment
+  category: treatment
+  var_in: Temp
+  values:
+  - find: Amb
+    value: ambient
+    description: Plants grown at ambient temperatures, 26/18 deg C (day/night).
+  - find: Elv
+    value: elevated
+    description: Plants grown at elevated temperatures, 30/22 deg C (day/night).
 traits:
 - var_in: Photo (umol m-2 s-1)
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
-  value_type: raw_value
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf gas exchange measurements were taken on small branches (C. rhomboidea)
     of seedlings using a portable open path gas exchange system (Licor-6400, Li-Cor,
@@ -358,8 +208,10 @@ traits:
     the glasshouse during the day.
 - var_in: Cond (mol m-2 s-1)
   unit_in: molH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: raw_value
+  trait_name: leaf_stomatal_conductance_per_area_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf gas exchange measurements were taken on small branches (C. rhomboidea)
     of seedlings using a portable open path gas exchange system (Licor-6400, Li-Cor,
@@ -374,8 +226,10 @@ traits:
     the glasshouse during the day.
 - var_in: Ci (umol mol-1)
   unit_in: umolCO2/mol
-  trait_name: ci_at_Asat
-  value_type: raw_value
+  trait_name: leaf_intercellular_CO2_concentration_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf gas exchange measurements were taken on small branches (C. rhomboidea)
     of seedlings using a portable open path gas exchange system (Licor-6400, Li-Cor,
@@ -391,7 +245,9 @@ traits:
 - var_in: Trmmol (mmol m-2 s-1)
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Asat
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf gas exchange measurements were taken on small branches (C. rhomboidea)
     of seedlings using a portable open path gas exchange system (Licor-6400, Li-Cor,
@@ -406,8 +262,10 @@ traits:
     the glasshouse during the day.
 - var_in: CiCa
   unit_in: umolCO2 internal/umolCO2 ambient
-  trait_name: ci_over_ca
-  value_type: raw_value
+  trait_name: leaf_intercellular_CO2_concentration_to_atmospheric_CO2_concentration_ratio
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf gas exchange measurements were taken on small branches (C. rhomboidea)
     of seedlings using a portable open path gas exchange system (Licor-6400, Li-Cor,
@@ -423,7 +281,9 @@ traits:
 - var_in: Rdark (umol m-2 s-1)
   unit_in: umolCO2/m2/s
   trait_name: leaf_dark_respiration_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf gas exchange measurements were taken on small branches (C. rhomboidea)
     of seedlings using a portable open path gas exchange system (Licor-6400, Li-Cor,
@@ -441,8 +301,10 @@ traits:
     or 20 deg C) (n = 3). 758 Duan et al.
 - var_in: leaf_soluble_sugar_mg_per_g
   unit_in: mg/g
-  trait_name: leaf_soluable_sugars_per_mass
-  value_type: raw_value
+  trait_name: leaf_soluble_sugars_per_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Oven-dried plant organ samples from Days 1 to 206 were ground to fine powder
     in a ball mill. NSC concentration (mg g-1) (as the sum of starch concentration
@@ -460,8 +322,10 @@ traits:
     by the anthrone method (Ebell 1969).
 - var_in: leaf_soluble_starch_mg_per_g
   unit_in: mg/g
-  trait_name: leaf_soluable_starch_per_mass
-  value_type: raw_value
+  trait_name: leaf_soluble_starch_per_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Oven-dried plant organ samples from Days 1 to 206 were ground to fine powder
     in a ball mill. NSC concentration (mg g-1) (as the sum of starch concentration
@@ -479,8 +343,10 @@ traits:
     by the anthrone method (Ebell 1969).
 - var_in: stem_soluble_sugar_mg_per_g
   unit_in: mg/g
-  trait_name: stem_soluable_sugars_per_mass
-  value_type: raw_value
+  trait_name: stem_soluble_sugars_per_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Oven-dried plant organ samples from Days 1 to 206 were ground to fine powder
     in a ball mill. NSC concentration (mg g-1) (as the sum of starch concentration
@@ -498,8 +364,10 @@ traits:
     by the anthrone method (Ebell 1969).
 - var_in: stem_soluble_starch_mg_per_g
   unit_in: mg/g
-  trait_name: stem_soluable_starch_per_mass
-  value_type: raw_value
+  trait_name: stem_soluble_starch_per_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Oven-dried plant organ samples from Days 1 to 206 were ground to fine powder
     in a ball mill. NSC concentration (mg g-1) (as the sum of starch concentration
@@ -517,8 +385,10 @@ traits:
     by the anthrone method (Ebell 1969).
 - var_in: root_soluble_sugar_mg_per_g
   unit_in: mg/g
-  trait_name: root_soluable_sugars_per_mass
-  value_type: raw_value
+  trait_name: root_soluble_sugars_per_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Oven-dried plant organ samples from Days 1 to 206 were ground to fine powder
     in a ball mill. NSC concentration (mg g-1) (as the sum of starch concentration
@@ -536,8 +406,10 @@ traits:
     by the anthrone method (Ebell 1969).
 - var_in: root_soluble_starch_mg_per_g
   unit_in: mg/g
-  trait_name: root_soluable_starch_per_mass
-  value_type: raw_value
+  trait_name: root_soluble_starch_per_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Oven-dried plant organ samples from Days 1 to 206 were ground to fine powder
     in a ball mill. NSC concentration (mg g-1) (as the sum of starch concentration
@@ -556,7 +428,9 @@ traits:
 - var_in: root_shoot_ratio
   unit_in: mg_root/mg_shoot
   trait_name: root_shoot_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three seedlings within each species assigned to well-watered treatment
     (n = 3) in each of the four C and T treatments were randomly selected for destructive
@@ -573,7 +447,9 @@ traits:
 - var_in: leaf_area_ratio_cm2_g
   unit_in: cm2/g
   trait_name: leaf_area_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three seedlings within each species assigned to well-watered treatment
     (n = 3) in each of the four C and T treatments were randomly selected for destructive
@@ -588,8 +464,10 @@ traits:
     was calculated by AusTraits as the ratio of total leaf area to plant dry mass.
 - var_in: specific_leaf_area_cm2_g
   unit_in: cm2/g
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three seedlings within each species assigned to well-watered treatment
     (n = 3) in each of the four C and T treatments were randomly selected for destructive
@@ -608,4 +486,3 @@ exclude_observations: .na
 questions:
   additional_traits: Duan also has pre-dawn water potential and hydraulic conductance
     data.
-

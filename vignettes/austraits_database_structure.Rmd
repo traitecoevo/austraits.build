@@ -3,7 +3,7 @@ title: Structure of AusTraits data compilation
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ Structure of AusTraits data compilation}
+  %\VignetteIndexEntry{Structure of AusTraits data compilation}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:
@@ -21,46 +21,43 @@ knitr::opts_chunk$set(
 )
 
 library(austraits.build)
-library(dplyr)
-library(readr)
 
-root.dir <- rprojroot::find_root("remake.yml")
-knitr::opts_knit$set(root.dir = root.dir)
-
-my_kable_styling <- my_kable_styling_html
+my_kable_styling <- util_kable_styling_html
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
 ## Loads austraits into global name space
-  austraits <- remake::make("austraits")
-  definitions <- austraits$definitions
+austraits <- austraits:::austraits_lite
+schema <- get_schema()
 ```
 
 
-This document describes the structure of the AusTraits compilation, corresponding to **Version `r desc::desc_get_version("./DESCRIPTION")`** of the dataset. 
+This document describes the structure of the AusTraits compilation, corresponding to **Version `r austraits$build_info$version`** of the dataset. 
 
-Note that the information provided below is based on the information provided within the file `definitions.yml`. 
+Note that the information provided below is based on the information provided within the file `austraits.build_schema.yml`, which can be accessed by running `get_schema` or `system.file("support", "austraits.build_schema.yml", package = "austraits.build")`. 
 
 AusTraits is essentially a series of linked components, which cross link against each other::
 
 ```{r, results="hide", comment = '', eval=FALSE}
 names(austraits) %>%
-  create_tree_branch("austraits") %>%
+  create_tree_branch("austraits.build") %>%
   writeLines()
 ```
 
 ```
 austraits
 ├── traits
-├── sites
+├── locations
 ├── contexts
 ├── methods
 ├── excluded_data
-├── taxa
 ├── taxonomic_updates
-├── definitions
+├── taxa
 ├── contributors
 ├── sources
+├── definitions
+├── schema
+├── metadata
 └── build_info
 ```
 
@@ -71,7 +68,7 @@ These include all the data and contextual information submitted with each contri
 The core components are defined as follows.
 
 ```{r}
-print_definitions_element <- function(elements) {
+print_schema_element <- function(elements) {
   if (elements$type == "character") {
     sprintf("**Content:** %s\n", elements$value) %>%
       writeLines()
@@ -82,7 +79,7 @@ print_definitions_element <- function(elements) {
       writeLines()
 
     elements$elements %>%
-      list1_to_df() %>%
+      util_list_to_df1() %>%
       my_kable_styling() %>%
       writeLines()
   }
@@ -91,87 +88,151 @@ print_definitions_element <- function(elements) {
 
 ## traits {#traits}
 ```{r}
-elements <- austraits$definitions$austraits$elements$traits
+elements <- schema$austraits$elements$traits
 
   sprintf("**Description:** %s.\n", elements$description) %>%
     stringr::str_replace_all("\\.\\.", "\\.") %>%
     writeLines()
 
   elements %>%
-    print_definitions_element()
+    print_schema_element()
 
   writeLines(c(""))
 ```
 
 **Details:**  
 
-#### Observation IDs
+#### Entity type
 
-Each trait measurement has an associated `observation_id`.  Observation IDs bind together related measurements within any dataset, and thereby allow transformation between long format (e.g. with variables `trait_name` and `value`) and wide format (e.g. with traits as columns). When multiple traits were collected on the same individual, the `observation_id` identified which measurements were made on the same individual (or population,  species depending on the level of detail supplied). Generally, `observation_id` has the format `dataset_id_XX` where `XX` is a unique number within each dataset. 
+An entity is the `feature of interest`, indicating what a trait value applies to. While an entity can be just a component of an organism, within the scope of AusTraits, an `individual` is the finest scale entity that can be documented. The same study might measure some traits at a population-level (`entity = population`) and others at an individual-level (`entity = individual`).
 
-For datasets submitted to AusTraits in long format, a column specifying `observation_id` should already exist, assigned based on a specified grouping variable.  If missing, `observation_id` is assigned based on `species_name`. 
+In detail:
 
-For datasets submitted to AusTraits in wide format each row is assigned a unique `observation_id` during processing, allowing conversion to long format. 
+- `entity_type` is `r tolower(schema$metadata$elements$traits$elements$entity_type)` Possible values are: 
 
-
-#### Values and Value types {#value_types}
-
-Each record in the table of trait data has an associated `value` and `value_type`. 
-
-Traits are either `numeric` or `categorical`. For traits with numerical values, the recorded value has been converted into standardised units and we have checked that the value can be converted into a number and lies within the allowable range.  For categorical variables, we only include records whose values are included as allowable values (terms) in a trait's definition in the definitions table. Moreover, we use a format whereby
-
-- we use `_` for multi-word terms, e.g. `semi_deciduous`  
-- we use a space for situations where a single study reports two possible values for that trait, e.g. `annual biennial` for a plant species which is either annual or biennial 
-
-Each trait measurement also has an associated `value_type`, which is ``r austraits$definitions$value_type$description`` Possible values are:  
-
-```{r value_type}
-austraits$definitions$value_type$values %>%
-  list1_to_df() %>%
+```{r entity_type}
+schema$entity_type$values %>%
+  util_list_to_df1() %>%
   my_kable_styling() %>%
   writeLines()
 ```
 
-AusTraits does not include intra-individual observations. When multiple measurements per individual are submitted to AusTraits, we take the mean of the values and record the value_type as `individual_mean`.  
+#### Identifiers
 
-## sites
+The traits table includes 12 identifiers, `dataset_id`, `observation_id`, `taxon_name`, `population_id`, `individual_id`, `temporal_id`, `source_id`, `location_id`, `entity_context_id`, `plot_id`, `treatment_id`, and `method_id`.
+
+`dataset_id`, `source_id` and `taxon_name` have easy-to-interpret values. The others are simply integral identifiers that link groups of measurements and are automatically generated through the AusTraits workflow (`individual_id` can be assigned in the metadata file or automatically generated.)
+
+To expand on the definitions provided above,
+
+- `observation_id` links measurements made on the same entity (individual, population, or species) at a single point in time.
+
+- `population_id` indicates entites that share a common `location_id`, `plot_id`, and `treatment_id`. It is used to align measurements and observation_id's for `individuals` versus `populations` (i.e. distinct `entity_types`) that share a common `population_id`. It is numbered sequentially within a dataset.
+
+- `individual_id` indicates a unique organisms. It is numbered sequentially within a dataset by population. Multiple observations on the same organism across time (with distinct `observation_id` values), share a common `individual_id`.
+
+- `temporal_id` indicates a distinct point in time and is used only if there are repeat measurements on a population or individual across time. The identifier links to context properties (& their associated information) in the `contexts` table for context properties of type `temporal`.
+
+- `source_id` is applied if not all data within a single dataset (`dataset_id`) is from the same source, such as when a dataset represents a compilation for a meta-analysis.
+
+- `location_id` links to a distinct `location_name` and associated `location_properties` in the `location` table.
+
+- `entity_context_id` links to information in the `contexts` table for context properties (& associated values/descriptions) with category `entity_context`. 
+`Entity_contexts` include organism sex, organism caste and any other features of an entity that needs to be documented.
+
+- `plot_id` links to information in the `contexts` table for context properties (& associated values/descriptions) with category `plot`. `Plot contexts` include both blocks/plots within an experimental design as well as any stratified variation within a location that needs to be documented (e.g. slope position).
+
+- `treatment_id`links to information in the `contexts` table for context properties (& associated values/descriptions) with category `treatment`. `Treatment contexts` are experimental manipulations applied to groups of individuals.
+
+- `method_id`links to information in the `contexts` table for context properties (& associated values/descriptions) with category `method`. A `method context` indicates that the same trait was measured on or across individuals using different methods.
+
+As well, `measurement_remarks` is used to document `r tolower(schema$metadata$elements$traits$elements$measurement_remarks)`
+
+#### Life stage, basis of record 
+
+- `life_stage` is `r tolower(schema$metadata$elements$traits$elements$life_stage)`.
+
+- `basis_of_record` is `r tolower(schema$metadata$elements$traits$elements$basis_of_record)` Possible values are:
+
+```{r basis_of_record}
+schema$basis_of_record$values %>%
+  util_list_to_df1() %>%
+  my_kable_styling() %>%
+  writeLines()
+```
+
+#### Values, Value types, basis of value {#value_types}
+
+Each record in the table of trait data has an associated `value`,  `value_type`, and `basis_of_value`. 
+
+`Value type:` A trait's `value_type` is either `numeric` or `categorical`. 
+  - For traits with numerical values, the recorded value has been converted into standardised units and the AusTraits workflow has confirmed the value can be converted into a number and lies within the allowable range. 
+  - For categorical variables, records have been aligned through substitutions to values listed as allowable values (terms) in a trait's definition. 
+      * we use `_` for multi-word terms, e.g. `semi_deciduous`  
+      * we use a space for situations where two values co-occur for the same entity. For instance, a flora might indicate that a plant species can be either annual or biennial, in which case the trait is scored as `annual biennial`.
+
+Each trait measurement has an associated `value_type`, which is `r tolower(schema$metadata$elements$traits$elements$value_type)` Possible values are:
+
+```{r value_type}
+schema$value_type$values %>%
+  util_list_to_df1() %>%
+  my_kable_styling() %>%
+  writeLines()
+```
+
+Each trait measurement also has an associated `basis_of_value`, which is `r tolower(schema$metadata$elements$traits$elements$basis_of_value)` Possible values are: 
+
+```{r basis_of_value}
+schema$basis_of_value$values %>%
+  util_list_to_df1() %>%
+  my_kable_styling() %>%
+  writeLines()
+```
+
+
+AusTraits does not include intra-individual observations made at a single point in time. When multiple measurements per individual are submitted to AusTraits, we take the mean of the values and record the value_type as `mean` and indicate under replicates the number of measurements made.  
+
+
+
+
+## locations
 ```{r}
-elements <- austraits$definitions$austraits$elements$sites
+elements <- schema$austraits$elements$locations
 
   sprintf("**Description:** %s.\n", elements$description) %>%
     stringr::str_replace_all("\\.\\.", "\\.") %>%
     writeLines()
 
   elements %>%
-    print_definitions_element()
+    print_schema_element()
 
   writeLines(c(""))
 ```
 
 ## contexts
 ```{r}
-elements <- austraits$definitions$austraits$elements$contexts
+elements <- schema$austraits$elements$contexts
 
   sprintf("**Description:** %s.\n", elements$description) %>%
     stringr::str_replace_all("\\.\\.", "\\.") %>%
     writeLines()
 
   elements %>%
-    print_definitions_element()
+    print_schema_element()
 
   writeLines(c(""))
 ```
 
 ## methods {#methods}
 ```{r}
-elements <- austraits$definitions$austraits$elements$methods
+elements <- schema$austraits$elements$methods
 
   sprintf("**Description:** %s.\n", elements$description) %>%
     stringr::str_replace_all("\\.\\.", "\\.") %>%
     writeLines()
 
   elements %>%
-    print_definitions_element()
+    print_schema_element()
 
   writeLines(c(""))
 ```
@@ -179,14 +240,14 @@ elements <- austraits$definitions$austraits$elements$methods
 
 ## exluded_data
 ```{r}
-elements <- austraits$definitions$austraits$elements$excluded_data
+elements <- schema$austraits$elements$excluded_data
 
   sprintf("**Description:** %s.\n", elements$description) %>%
     stringr::str_replace_all("\\.\\.", "\\.") %>%
     writeLines()
 
   elements %>%
-    print_definitions_element()
+    print_schema_element()
 
   writeLines(c(""))
 ```
@@ -201,10 +262,10 @@ Version `r desc::desc_get_field("Version")` of AusTraits contains records for `r
 
 
 ```{r}
-elements <- austraits$definitions$austraits$elements$taxa
+elements <- schema$austraits$elements$taxa
 
   elements %>%
-    print_definitions_element()
+    print_schema_element()
 
   writeLines(c(""))
 ```
@@ -213,14 +274,14 @@ elements <- austraits$definitions$austraits$elements$taxa
 ## taxonomic_updates
 
 ```{r}
-elements <- austraits$definitions$austraits$elements$taxonomic_updates
+elements <- schema$austraits$elements$taxonomic_updates
 
   sprintf("**Description:** %s.\n", elements$description) %>%
     stringr::str_replace_all("\\.\\.", "\\.") %>%
     writeLines()
 
   elements %>%
-    print_definitions_element()
+    print_schema_element()
 
   writeLines(c(""))
 ```
@@ -231,25 +292,25 @@ Both the original and the updated taxon names are included in the [`traits`](#tr
 
 ## definitions
 ```{r}
-elements <- austraits$definitions$austraits$elements$definitions
+elements <- schema$austraits$elements$definitions
 
   sprintf("**Description:** %s.\n", elements$description) %>%
     stringr::str_replace_all("\\.\\.", "\\.") %>%
     writeLines()
 
   elements %>%
-    print_definitions_element()
+    print_schema_element()
 
   writeLines(c(""))
 ```
 
 **Details on trait definitions:** The allowable trait names and trait values are defined in the definitions file. Each trait is 
-labelled as either `numeric` or `categorical`. An example of each type is as follows. For the full list, see the [Trait definitions vignette](http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html).
+labelled as either `numeric` or `categorical`. An example of each type is as follows. For the full list, see the [Trait definitions vignette](http://traitecoevo.github.io/austraits.build/articles/definitions.html).
 
 
 ```{r, traits}
-for (trait in c("specific_leaf_area", "woodiness")) {
-  elements <- austraits$definitions$traits$elements[[trait]]
+for (trait in c("leaf_mass_per_area", "woodiness")) {
+  elements <- austraits$schema$traits$elements[[trait]]
 
   data_trait <- austraits$traits %>% filter(trait_name == trait)
 
@@ -260,14 +321,14 @@ for (trait in c("specific_leaf_area", "woodiness")) {
 
 ## contributors
 ```{r}
-elements <- austraits$definitions$austraits$elements$contributors
+elements <- schema$austraits$elements$contributors
 
   sprintf("**Description:** %s.\n", elements$description) %>%
     stringr::str_replace_all("\\.\\.", "\\.") %>%
     writeLines()
 
   elements %>%
-    print_definitions_element()
+    print_schema_element()
 
   writeLines(c(""))
 ```
@@ -275,12 +336,13 @@ elements <- austraits$definitions$austraits$elements$contributors
 
 ## sources
 
-For each dataset in the compilation there is the option to list primary and secondary citations. The primary citation is defined as, ``r austraits$definitions$metadata$elements$source$values$primary`` The secondary citation is defined as, ``r austraits$definitions$metadata$elements$source$values$secondary`` 
+For each dataset in the compilation there is the option to list primary and secondary citations. The primary citation is defined as, ``r austraits$schema$metadata$elements$source$values$primary$description`` The secondary citation is defined as, ``r austraits$schema$metadata$elements$source$values$secondary$description`` 
 
 The element `sources` includes bibtex versions of all sources which can be imported into your reference library:
+
 ```
-WriteBib(austraits$sources)                             #write all sources to file
-WriteBib(austraits$sources["Falster_2005_1"])           #write a single reference to a file
+RefManageR::WriteBib(austraits$sources, "refs.bib") # write all sources to file
+RefManageR::WriteBib(austraits$sources["Falster_2005_1"], "refs.bib") # write a single reference to a file
 ```
 
 Or individually viewed:
@@ -291,17 +353,28 @@ austraits$sources["Falster_2005_1"]
 A formatted version of the sources also exists within the table [methods](#methods). 
 
 
+## metadata
+```{r}
+elements <- schema$austraits$elements$metadata
+
+  sprintf("**Description:** %s.\n", elements$description) %>%
+    stringr::str_replace_all("\\.\\.", "\\.") %>%
+    writeLines()
+
+  writeLines(c(""))
+```
+
 
 ## build_info
 ```{r}
-elements <- austraits$definitions$austraits$elements$build_info
+elements <- schema$austraits$elements$build_info
 
   sprintf("**Description:** %s.\n", elements$description) %>%
     stringr::str_replace_all("\\.\\.", "\\.") %>%
     writeLines()
 
   elements %>%
-    print_definitions_element()
+    print_schema_element()
 
   writeLines(c(""))
 ```

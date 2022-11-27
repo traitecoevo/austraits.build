@@ -5,95 +5,114 @@ source:
     author: Gregory J. Jordan
     year: 2007
     title: 'Unpublished data: Leaf traits for Tasmanian species, University of Tasmania'
-people:
-- name: Gregory Jordan
-  institution: University of Tasmania
-  role: collector, contact, lab_leader
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Jordan
+    given_name: Gregory
+    ORCID: 0000-0002-6033-2766
+    affiliation: University of Tasmania, Australia
+    additional_role: contact
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 2007
-  year_collected_end: 2007
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      group_by(species) %>%
+        mutate(across(c(`leaf longevity`), replace_duplicates_with_NA)) %>%
+      ungroup()
+  '
+  collection_date: 2007/2007
+  taxon_name: species
+  location_name: site_TEXT
   description: leaf size and LMA for Tasmanian species
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: unknown
   original_file: Greg Jordan tassie cuticle data(ian).xls
   notes: none
-sites:
+locations:
   Frodshams Pass:
     longitude (deg): 146.4
     latitude (deg): -42.8
-    MAP (mm): 1780
-    MAT (C): 8.5
+    precipitation, MAP (mm): 1780
+    temperature, MAT (C): 8.5
     description: All woody species growing in community; cool temperate rainforest
   Mt_Read:
     longitude (deg): 145.6
     latitude (deg): -41.8
-    MAP (mm): 3710
-    MAT (C): 6.5
+    precipitation, MAP (mm): 3710
+    temperature, MAT (C): 6.5
     description: All woody species growing in community; montane  cool temperate rainforest
   wet_scler_UTAS:
     longitude (deg): 147.3
     latitude (deg): -42.9
-    MAP (mm): 620
-    MAT (C): 12.1
+    precipitation, MAP (mm): 620
+    temperature, MAT (C): 12.1
     description: All woody species growing in community; lowland wet sclerophyll forest
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    site_name: site_TEXT
-  custom_R_code: .na
 traits:
 - var_in: leaf longevity
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: LfSize(mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: unknown
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: LMA(g/m2)
   unit_in: g/m2
-  trait_name: specific_leaf_area
-  value_type: unknown
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Ldepthum
   unit_in: um
   trait_name: leaf_thickness
-  value_type: unknown
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: upcut_um
   unit_in: um
-  trait_name: upper_cuticle_thickness
-  value_type: unknown
+  trait_name: leaf_cuticle_thickness_adaxial
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Upper cuticle depth in microns
 - var_in: locut_um
   unit_in: um
-  trait_name: lower_cuticle_thickness
-  value_type: unknown
+  trait_name: leaf_cuticle_thickness_abaxial
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Lower cuticle depth in microns
 - var_in: upepi_um
   unit_in: um
-  trait_name: epidermis_thickness_upper_leaf_surface
-  value_type: unknown
+  trait_name: leaf_epidermis_thickness_adaxial
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Upper epidermal depth in microns
 - var_in: loepi_um
   unit_in: um
-  trait_name: epidermis_thickness_lower_leaf_surface
-  value_type: unknown
+  trait_name: leaf_epidermis_thickness_abaxial
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Lower epidermal depth in microns
 substitutions:
@@ -103,101 +122,163 @@ substitutions:
 taxonomic_updates:
 - find: Acacia_melanoxylon
   replace: Acacia melanoxylon
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia_mucronata
   replace: Acacia mucronata
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Agastachys_odorata
   replace: Agastachys odorata
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Anodopetalum_biglandulosum
   replace: Anodopetalum biglandulosum
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Banksia_marginata
-  replace: Banksia marginata
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Bedfordia_salicina
-  replace: Bedfordia salicina
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Bellendena_montana
-  replace: Bellendena montana
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Beyeria_viscosa
-  replace: Beyeria viscosa
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Bursaria_spinosa
-  replace: Bursaria spinosa
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Cenarrhenes_nitida
-  replace: Cenarrhenes nitida
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Dodonaea_viscosa
-  replace: Dodonaea viscosa
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Eucalyptus_obliqua
-  replace: Eucalyptus obliqua
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Gaultheria_hispida
-  replace: Gaultheria hispida
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Leptecophylla_juniperina
-  replace: Leptecophylla juniperina
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Leptospermum_nitidum
-  replace: Leptospermum nitidum
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Melaleuca_squarrosa
-  replace: Melaleuca squarrosa
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Monotoca_glauca
-  replace: Monotoca glauca
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Nematolepis_squamea
-  replace: Nematolepis squamea
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Nothofagus_cunninghamii
-  replace: Nothofagus cunninghamii
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Olearia_argophylla
-  replace: Olearia argophylla
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Olearia_persoonioides
-  replace: Olearia persoonioides
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Orites_acicularis
-  replace: Orites acicularis
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Orites_milliganii
-  replace: Orites milliganii
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Persoonia_gunnii
-  replace: Persoonia gunnii
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Pittosporum_bicolor
-  replace: Pittosporum bicolor
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Pomaderris_apetala
-  replace: Pomaderris apetala
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Tasmannia_lanceolata
-  replace: Tasmannia lanceolata
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Telopea_truncata
-  replace: Telopea truncata
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Trochocarpa_cunninghamii
-  replace: Trochocarpa cunninghamii
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Zieria_arborescens
-  replace: Zieria arborescens
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Orites_revoluta
-  replace: Orites revoluta
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Archeria_serpyllifolia
   replace: Archeria serpyllifolia
-  reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Banksia_marginata
+  replace: Banksia marginata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Bedfordia_salicina
+  replace: Bedfordia salicina
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Bellendena_montana
+  replace: Bellendena montana
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Beyeria_viscosa
+  replace: Beyeria viscosa
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Bursaria_spinosa
+  replace: Bursaria spinosa
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cenarrhenes_nitida
+  replace: Cenarrhenes nitida
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Dodonaea_viscosa
+  replace: Dodonaea viscosa
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Eucalyptus_obliqua
+  replace: Eucalyptus obliqua
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Gaultheria_hispida
+  replace: Gaultheria hispida
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Leptecophylla_juniperina
+  replace: Leptecophylla juniperina
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Leptospermum_nitidum
+  replace: Leptospermum nitidum
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Melaleuca_squarrosa
+  replace: Melaleuca squarrosa
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Monotoca_glauca
+  replace: Monotoca glauca
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Nematolepis_squamea
+  replace: Nematolepis squamea
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Nothofagus_cunninghamii
+  replace: Nothofagus cunninghamii
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Olearia_argophylla
+  replace: Olearia argophylla
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Olearia_persoonioides
+  replace: Olearia persoonioides
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Orites_acicularis
+  replace: Orites acicularis
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Orites_milliganii
+  replace: Orites milliganii
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Orites_revoluta
+  replace: Orites revoluta
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Persoonia_gunnii
+  replace: Persoonia gunnii
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pittosporum_bicolor
+  replace: Pittosporum bicolor
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pomaderris_apetala
+  replace: Pomaderris apetala
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Tasmannia_lanceolata
+  replace: Tasmannia lanceolata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Telopea_truncata
+  replace: Telopea truncata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Trochocarpa_cunninghamii
+  replace: Trochocarpa cunninghamii
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Zieria_arborescens
+  replace: Zieria arborescens
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

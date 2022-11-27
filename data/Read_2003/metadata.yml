@@ -11,21 +11,39 @@ source:
     number: '1'
     pages: 81--99
     doi: 10.1046/j.1469-8137.2003.00855.x
-people:
-- name: Jennifer Read
-  institution: School of Biological Sciences, Monash University
-  role: contact, collector, lab_leader
-- name: Gordon Sanson
-  institution: School of Biological Sciences, Monash University
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Read
+    given_name: Jennifer
+    ORCID: 0000-0002-4727-3482
+    affiliation: School of Biological Sciences, Monash University, Australia
+    additional_role: contact
+  - last_name: Sanson
+    given_name: Gordon
+    ORCID: .na.character
+    affiliation: School of Biological Sciences, Monash University, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: October 2000
-  year_collected_end: November 2000
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      group_by(`APC species`) %>%
+        mutate(across(c("N-fixer","leaf"),replace_duplicates_with_NA)) %>%
+      ungroup() %>%
+      mutate(plant_photosynthetic_organ = NA) %>%
+      move_values_to_new_trait(
+        "leaf", "plant_photosynthetic_organ",
+        "phyllode", "phyllode", ""
+      )
+  '
+  collection_date: 2000-10/2000-11
+  taxon_name: APC species
+  location_name: vegetation
   description: Measurements of a wide range of mechanical properties across a diverse
     range of species and leaf forms, including highly scleromorphic leaves, and compared
     these with sclerophylly indices to determine the mechanical properties of sclerophylls.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: captive_cultivated
+  life_stage: adult
   sampling_strategy: Leaves were collected in October-November 2000 from the Royal
     Botanic Gardens, Melbourne, Australia (37.8 deg S, 145.0 deg E). The climate of
     Melbourne is relatively mild, with a mean daily maximum and minimum temperature
@@ -61,7 +79,7 @@ dataset:
   original_file: New Phytol 2003 to send.xls submitted by contributor; additional
     traits transcribed from manuscript
   notes: none
-sites:
+locations:
   Royal Botanic Gardens Melbourne:
     latitude (deg): -37.8
     longitude (deg): 145.0
@@ -71,30 +89,37 @@ sites:
     longitude (deg): 145.1
     description: university campus gardens
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: APC species
-    site_name: vegetation
-  custom_R_code: data %>% group_by(`APC species`) %>% mutate_at(vars("N-fixer","leaf"),replace_duplicates_with_NA)
-    %>% ungroup()
 traits:
 - var_in: N-fixer
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge
 - var_in: leaf
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge
+- var_in: plant_photosynthetic_organ
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation
 - var_in: leaf area (mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Midway through the test period, leaves were collected from each replicate
     plant of each species to obtain sclerophylly indices, and for chemical analyses.
@@ -103,8 +128,10 @@ traits:
     and weighed.
 - var_in: SLA (mm2/mg)
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Midway through the test period, leaves were collected from each replicate
     plant of each species to obtain sclerophylly indices, and for chemical analyses.
@@ -116,15 +143,19 @@ traits:
 - var_in: thickness (mm)
   unit_in: mm
   trait_name: leaf_thickness
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Midway through the test period, leaves were collected from each replicate
     plant of each species to obtain sclerophylly indices, and for chemical analyses.
 - var_in: succulence
   unit_in: g/m2
   trait_name: leaf_water_content_per_area
-  value_type: site_mean
-  replicates: 5
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Midway through the test period, leaves were collected from each replicate
     plant of each species to obtain sclerophylly indices, and for chemical analyses.
     Succulence (weight of water per unit leaf area, Cowling & Campbell, 1983) was
@@ -133,28 +164,36 @@ traits:
 - var_in: freshweight (g)
   unit_in: g
   trait_name: leaf_fresh_mass
-  value_type: site_mean
-  replicates: 5
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Midway through the test period, leaves were collected from each replicate
     plant of each species to obtain sclerophylly indices, and for chemical analyses.
 - var_in: dryweight (g)
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: site_mean
-  replicates: 5
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Midway through the test period, leaves were collected from each replicate
     plant of each species to obtain sclerophylly indices, and for chemical analyses.
 - var_in: leaf_dry_matter_content
   unit_in: g/g
   trait_name: leaf_dry_matter_content
-  value_type: site_mean
-  replicates: 5
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Midway through the test period, leaves were collected from each replicate
     plant of each species to obtain sclerophylly indices, and for chemical analyses.
 - var_in: N (mg/g)
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Midway through the test period, leaves were collected from each replicate
     plant of each species to obtain sclerophylly indices, and for chemical analyses.
@@ -166,7 +205,9 @@ traits:
 - var_in: Narea (g/m2)
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Midway through the test period, leaves were collected from each replicate
     plant of each species to obtain sclerophylly indices, and for chemical analyses.
@@ -178,7 +219,9 @@ traits:
 - var_in: P (%)
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Midway through the test period, leaves were collected from each replicate
     plant of each species to obtain sclerophylly indices, and for chemical analyses.
@@ -189,7 +232,9 @@ traits:
 - var_in: Parea (g/m2)
   unit_in: g/m2
   trait_name: leaf_P_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Midway through the test period, leaves were collected from each replicate
     plant of each species to obtain sclerophylly indices, and for chemical analyses.
@@ -200,7 +245,9 @@ traits:
 - var_in: bending_test_MN/m2
   unit_in: MN/m2
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: LEAF BIOMECHANICAL PROPERTIES Tests were undertaken within 48 h of collection
     on haphazardly chosen leaves from each replicate plant. A Universal Testing Machine
@@ -263,7 +310,9 @@ traits:
 - var_in: force_to_tear_per_unit_width_N/m
   unit_in: N/m
   trait_name: leaf_work_to_tear_adjusted
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: LEAF BIOMECHANICAL PROPERTIES Tests were undertaken within 48 h of collection
     on haphazardly chosen leaves from each replicate plant. A Universal Testing Machine
@@ -316,7 +365,9 @@ traits:
 - var_in: work_to_shear_J/m
   unit_in: J/m
   trait_name: leaf_work_to_shear
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: LEAF BIOMECHANICAL PROPERTIES Tests were undertaken within 48 h of collection
     on haphazardly chosen leaves from each replicate plant. A Universal Testing Machine
@@ -369,7 +420,9 @@ traits:
 - var_in: work_to_shear_per_width_J/m2
   unit_in: kJ/m2
   trait_name: leaf_work_to_shear_adjusted
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: LEAF BIOMECHANICAL PROPERTIES Tests were undertaken within 48 h of collection
     on haphazardly chosen leaves from each replicate plant. A Universal Testing Machine
@@ -422,7 +475,9 @@ traits:
 - var_in: average_punch_strength_N/m2
   unit_in: N/m2
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: LEAF BIOMECHANICAL PROPERTIES Tests were undertaken within 48 h of collection
     on haphazardly chosen leaves from each replicate plant. A Universal Testing Machine
@@ -475,7 +530,9 @@ traits:
 - var_in: average_work_to_punch_kJ/m2
   unit_in: kJ/m2
   trait_name: leaf_work_to_punch
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: LEAF BIOMECHANICAL PROPERTIES Tests were undertaken within 48 h of collection
     on haphazardly chosen leaves from each replicate plant. A Universal Testing Machine
@@ -528,7 +585,9 @@ traits:
 - var_in: work_to_punch_adjusted_MJ/m2/m
   unit_in: MJ/m2/m
   trait_name: leaf_work_to_punch_adjusted
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: LEAF BIOMECHANICAL PROPERTIES Tests were undertaken within 48 h of collection
     on haphazardly chosen leaves from each replicate plant. A Universal Testing Machine
@@ -581,7 +640,9 @@ traits:
 - var_in: work_to_tear_J/m
   unit_in: J/m
   trait_name: leaf_work_to_tear
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: LEAF BIOMECHANICAL PROPERTIES Tests were undertaken within 48 h of collection
     on haphazardly chosen leaves from each replicate plant. A Universal Testing Machine
@@ -634,10 +695,9 @@ traits:
 substitutions:
 - trait_name: nitrogen_fixing
   find: legume
-  replace: 1
+  replace: nitrogen_fixer
 taxonomic_updates: .na
 exclude_observations: .na
 questions:
-  additional_traits: there are also various measures of leaf strength, measured through
+  additional_traits: there are additional measures of leaf strength, measured through
     punching, tearing, shearing
-

@@ -9,229 +9,328 @@ source:
     volume: 300
     pages: 1-308
     doi: 10.11646/phytotaxa.300.1.1
-people:
-- name: Michael Crisp
-  institution: The Australian National University
-  role: collector, contact
+contributors:
+  data_collectors:
+  - last_name: Crisp
+    given_name: Michael
+    ORCID: 0000-0002-8255-6349
+    affiliation: The Australian National University, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 1984
-  year_collected_end: 2017
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        flowering_time =  ifelse(is.na(data$`flowering month begin`), NA, 
+          sprintf("%s-%s",month.abb[`flowering month begin`], month.abb[`flowering month end`]) %>%
+          convert_month_range_vec_to_binary()),
+        fruiting_time = ifelse(is.na(data$`fruiting month begin`), NA,
+          sprintf("%s-%s",month.abb[`fruiting month begin`], month.abb[`fruiting month end`]) %>%
+          convert_month_range_vec_to_binary()),
+        leaf_margin_posture = NA,
+        leaf_type2 = ifelse(
+          leaf_shape %in% c("scale", "scale terete", "triangular_scale", "scales") |
+          leaf_type %in% c("scale","scale phyllode", "phyllode scale"), 
+          "scale", NA)
+        ) %>%
+      move_values_to_new_trait(
+        "leaf_margins","leaf_margin_posture",
+        c("recurved", "revolute toothed"), c("recurved", "revolute"), c("", "toothed")
+      )
+  '
+  collection_date: 1984/2017
+  taxon_name: species
   description: transcribed from 'A monograph of Daviesia (Mirbelieae, Faboideae, Fabaceae)'
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: herbarium and field censuses
   original_file: transcribed from manuscript
   notes: Scattered duplicates with many of the large datasets from herbaria, NTH_2014,
     RBGSYD_2014_2, SAH_2014, Wheeler_2002, but nothing has been filtered out, because
     no consistent patterns, suggesting same measurements used by multiple sources.
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-  custom_R_code: data %>% mutate( flowering_time =  ifelse(is.na(data$`flowering month
-    begin`), NA, sprintf("%s-%s",month.abb[`flowering month begin`], month.abb[`flowering
-    month end`]) %>% convert_month_range_vec_to_binary())) %>% mutate( fruiting_time
-    = ifelse(is.na(data$`fruiting month begin`), NA, sprintf("%s-%s",month.abb[`fruiting
-    month begin`], month.abb[`fruiting month end`]) %>% convert_month_range_vec_to_binary()))
 traits:
 - var_in: growth_form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: field observations and information on herbarium sheets
 - var_in: height_max_cm
   unit_in: cm
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: canopy_width_min_cm
   unit_in: cm
   trait_name: plant_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: canopy_width_max_cm
   unit_in: cm
   trait_name: plant_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: fire_status
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections
 - var_in: leaf_type
   unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: herbarium collections
+- var_in: leaf_type2
+  unit_in: .na
   trait_name: leaf_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections
 - var_in: leaf_shape
   unit_in: .na
   trait_name: leaf_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections
 - var_in: leaf_margins
   unit_in: .na
   trait_name: leaf_margin
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: herbarium collections
+- var_in: leaf_margin_posture
+  unit_in: .na
+  trait_name: leaf_margin_posture
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections
 - var_in: leaf_length_min_mm
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: leaf_length_max_mm
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: leaf_width_min_mm
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: leaf_width_max_mm
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: fruit_length_min_mm
   unit_in: mm
   trait_name: fruit_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: fruit_length_max_mm
   unit_in: mm
   trait_name: fruit_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: fruit_width_min_mm
   unit_in: mm
   trait_name: fruit_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: fruit_width_max_mm
   unit_in: mm
   trait_name: fruit_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: seed_shape
   unit_in: .na
   trait_name: seed_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections
 - var_in: seed_length_min_mm
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: seed_length_max_mm
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: seed_width_min_mm
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: seed_width_max_mm
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: seed_breadth_min_mm
   unit_in: mm
-  trait_name: seed_breadth
-  value_type: expert_min
+  trait_name: seed_height
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: seed_breadth_max_mm
   unit_in: mm
-  trait_name: seed_breadth
-  value_type: expert_max
+  trait_name: seed_height
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: herbarium collections
 - var_in: dispersal_appendage
   unit_in: .na
   trait_name: dispersal_appendage
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections
 - var_in: flowering_time
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections and field observations
 - var_in: fruiting_time
   unit_in: .na
   trait_name: fruiting_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections and field observations
 substitutions:
-- trait_name: leaf_margin
-  find: revolute toothed
-  replace: lobed
-- trait_name: leaf_margin
-  find: recurved
-  replace: lobed
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: scale
-  replace: scale_leaf
-- trait_name: leaf_type
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
   find: scale phyllode
-  replace: scale_leaf phyllode
-- trait_name: leaf_type
+  replace: cladode phyllode
+- trait_name: plant_photosynthetic_organ
   find: phyllode scale
-  replace: scale_leaf phyllode
+  replace: cladode phyllode
 - trait_name: leaf_shape
   find: narrowly_elliptic linear
   replace: narrowly_elliptical linear
 - trait_name: leaf_shape
+  find: clavate linear terete
+  replace: linear terete
+- trait_name: leaf_shape
   find: oblong_triangular_lobes
-  replace: oblong lobed
+  replace: oblong triangular
 - trait_name: leaf_shape
   find: linear-fusiform
-  replace: linear fusiform
-- trait_name: seed_shape
-  find: irregularly ellipsoid
-  replace: ellipsoid
+  replace: linear
+- trait_name: leaf_shape
+  find: oblong deltoid subulate
+  replace: oblong deltate subulate
+- trait_name: leaf_shape
+  find: ovate broadly_ovate
+  replace: ovate widely_ovate
+- trait_name: leaf_shape
+  find: ovate broadly_ovate cordate
+  replace: ovate widely_ovate cordate
+- trait_name: leaf_shape
+  find: broadly_ovate cordate
+  replace: widely_ovate cordate
 - trait_name: leaf_shape
   find: needle-like terete
-  replace: needle terete
+  replace: acicular terete
 - trait_name: leaf_shape
   find: needle-like
-  replace: needle
+  replace: acicular
+- trait_name: leaf_shape
+  find: needle
+  replace: acicular
 - trait_name: fire_response
   find: resprouting
   replace: resprouts
 - trait_name: leaf_shape
+  find: straight
+  replace: .na
+- trait_name: leaf_shape
+  find: spine
+  replace: .na
+- trait_name: leaf_shape
   find: triangular_scale
-  replace: scale
+  replace: triangular
 - trait_name: leaf_shape
   find: linear_twisted
   replace: linear
@@ -243,109 +342,147 @@ substitutions:
   replace: linear_elliptical
 - trait_name: leaf_shape
   find: linear-clavate terete
-  replace: linear clavate terete
+  replace: linear terete
 - trait_name: leaf_shape
   find: scales
-  replace: scale
+  replace: .na
+- trait_name: leaf_shape
+  find: scale
+  replace: .na
+- trait_name: leaf_shape
+  find: scale terete
+  replace: terete
 - trait_name: leaf_shape
   find: sigmoid linear-clavate terete
-  replace: linear clavate terete
+  replace: linear terete
 - trait_name: leaf_shape
   find: subulate terete straight
   replace: subulate terete
+- trait_name: leaf_shape
+  find: linear_obovate linear_elliptical
+  replace: narrowly_oblanceolate linear_elliptical
 - trait_name: leaf_shape
   find: narrowly_elliptical linearly_elliptical
   replace: narrowly_elliptical linear_elliptical
 - trait_name: leaf_shape
   find: terete needle-like
-  replace: terete needle
+  replace: terete acicular
+- trait_name: leaf_shape
+  find: obovate broadly_obovate subulate
+  replace: obovate widely_obovate subulate
 - trait_name: leaf_shape
   find: spines
-  replace: spine
-- trait_name: seed_shape
-  find: ovoid-elliptical
-  replace: ovoid ellipsoid
-- trait_name: seed_shape
-  find: compressed longitudinally
-  replace: compressed
-- trait_name: seed_shape
-  find: round oblong
-  replace: globoid obloid
-- trait_name: seed_shape
-  find: globular
-  replace: globoid
-- trait_name: seed_shape
-  find: round_oblong
-  replace: globoid obloid
-- trait_name: seed_shape
-  find: ovoid-ellipsoid
-  replace: ovoid ellipsoid
-- trait_name: seed_shape
-  find: oblong-ellipsoid
-  replace: obloid ellipsoid
-- trait_name: seed_shape
-  find: obovate
-  replace: obovoid
-- trait_name: leaf_type
-  find: scale
-  replace: scale_leaf
-- trait_name: seed_shape
-  find: oblong ellipsoid unevenly_globose
-  replace: obloid ellipsoid globoid
-- trait_name: seed_shape
-  find: linear-fusiform
-  replace: fusiform
-- trait_name: seed_shape
-  find: compressed_elliptical-reniform
-  replace: compressed_ellipsoid reniform
-- trait_name: seed_shape
-  find: oblong
-  replace: obloid
-- trait_name: seed_shape
-  find: elliptical
-  replace: ellipsoid
-- trait_name: seed_shape
-  find: globose
-  replace: globoid
-- trait_name: seed_shape
-  find: ellipsoid globose
-  replace: ellipsoid globoid
-- trait_name: seed_shape
-  find: globose fusiform
-  replace: globoid fusiform
-- trait_name: seed_shape
-  find: globose obloid
-  replace: globoid obloid
+  replace: .na
+- trait_name: plant_photosynthetic_organ
+  find: phyllode leafless
+  replace: phyllode
 - trait_name: leaf_shape
   find: narrowly subulate
-  replace: narrowly_subulate
+  replace: subulate
 - trait_name: leaf_shape
   find: sickle-shaped subulate
   replace: falcate subulate
 - trait_name: leaf_shape
   find: terete vertically_compressed
-  replace: terete_compressed
+  replace: terete
 - trait_name: leaf_shape
   find: trigonous terete
-  replace: trigonous_terete
+  replace: terete
 - trait_name: leaf_shape
   find: obliquely_quadrilateral triangular
   replace: triangular
+- trait_name: seed_shape
+  find: ellipsoid
+  replace: ellipsoid
+- trait_name: seed_shape
+  find: irregularly ellipsoid
+  replace: ellipsoid
+- trait_name: seed_shape
+  find: obloid
+  replace: ellipsoid
+- trait_name: seed_shape
+  find: oblong
+  replace: ellipsoid
+- trait_name: seed_shape
+  find: ellipsoid globose
+  replace: ellipsoid globoid
+- trait_name: seed_shape
+  find: ellipsoid obovoid
+  replace: ellipsoid ovoid
+- trait_name: seed_shape
+  find: broadly_ellipsoid
+  replace: ellipsoid_flattened
+- trait_name: seed_shape
+  find: compressed longitudinally
+  replace: ellipsoid_flattened
+- trait_name: seed_shape
+  find: compressed_ellipsoid
+  replace: ellipsoid_flattened
+- trait_name: seed_shape
+  find: oblong-ellipsoid
+  replace: ellipsoid_flattened
+- trait_name: seed_shape
+  find: round_oblong
+  replace: ellipsoid_flattened
+- trait_name: seed_shape
+  find: oblong ellipsoid unevenly_globose
+  replace: ellipsoid_flattened globoid_flattened
+- trait_name: seed_shape
+  find: fusiform
+  replace: fusiform
+- trait_name: seed_shape
+  find: globose fusiform
+  replace: fusiform globoid
+- trait_name: seed_shape
+  find: globoid
+  replace: globoid
+- trait_name: seed_shape
+  find: globose
+  replace: globoid
+- trait_name: seed_shape
+  find: globular
+  replace: globoid
+- trait_name: seed_shape
+  find: globose obloid
+  replace: globoid globoid_flattened
+- trait_name: seed_shape
+  find: broadly_obovoid
+  replace: ovoid
+- trait_name: seed_shape
+  find: obovoid
+  replace: ovoid
+- trait_name: seed_shape
+  find: obovoid ovoid
+  replace: ovoid
+- trait_name: seed_shape
+  find: ovoid
+  replace: ovoid
+- trait_name: seed_shape
+  find: ovoid-ellipsoid
+  replace: ovoid ellipsoid
+- trait_name: seed_shape
+  find: ovoid-elliptical
+  replace: ovoid ellipsoid
+- trait_name: seed_shape
+  find: compressed_obovoid
+  replace: ovoid_flattened
+- trait_name: seed_shape
+  find: compressed_ovoid
+  replace: ovoid_flattened
+- trait_name: seed_shape
+  find: reniform
+  replace: reniform
+- trait_name: seed_shape
+  find: compressed_elliptical-reniform
+  replace: reniform ellipsoid_flattened
 taxonomic_updates:
 - find: Daviesia ellipticala
   replace: Daviesia elliptica
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Daviesia scabrella
-  replace: Gardenia scabrella
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Daviesia implexa
-  replace: Daviesia elongata subsp. implexa
-  reason: Original name, 'Daviesia implexa' recently added by Crisp during genus reworking
-    and will presumably soon be accepted by APC (E. Wenk, 2020-05-26)
-- find: Daviesia subulata
-  replace: Daviesia sp. Subulata (T.R.Lally & B.J.Lepschi 1091)
-  reason: Aligned with current APC accepted name, but '[Daviesia subulata' is a recently
-    added name by Crisp and will resumably shortly be accepted (E. Wenk, 2020-05-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Daviesia euryloba
+  replace: Daviesia eurylobos
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

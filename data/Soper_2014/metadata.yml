@@ -13,21 +13,41 @@ source:
     number: '1'
     pages: 297--308
     doi: 10.1007/s00442-014-3176-3
-people:
-- name: Fiona Soper
-  institution: Cornell University
-  role: collector
-- name: Susanne Schmidt
-  institution: University of Queensland
-  role: lab_leader, collector, contact
+contributors:
+  data_collectors:
+  - last_name: Soper
+    given_name: Fiona
+    ORCID: 0000-0002-9910-9377
+    affiliation: McGill University, Canada
+  - last_name: Schmidt
+    given_name: Susanne
+    ORCID: 0000-0001-8369-1238
+    affiliation: School of Agriculture and Food Science, The University of Queensland,
+      Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2003
-  year_collected_end: 2003
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        plant_growth_substrate = NA_character_
+      ) %>%
+      group_by(species_name_edited) %>%
+        mutate_at(vars(`PLANT GROUP`), replace_duplicates_with_NA) %>%
+      ungroup() %>%
+      move_values_to_new_trait(
+        "PLANT GROUP", "plant_growth_substrate", "Mistletoe", "epiphyte", ""
+      )
+  '
+  collection_date: 2003/2003
+  taxon_name: species_name_edited
+  location_name: SITE
   description: Data for a study of indices of soil N availability and acquisition
     by woody plant taxa with distinct nutritional specialisations along a north Australian
     rainfall gradient
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: 'Species in three prominent plant families were sampled at four
     sites along the transect: (1) diazotrophic, arbuscular/ ecto-mycorrhizal Acacia
     species (Fabaceae, including Acacia shirleyi Maiden, A. kempeana F. Muell., A.
@@ -46,58 +66,67 @@ dataset:
   original_file: combinedplantdeltas June 2005.xls provided by Suzanne Schmidt; file
     then manually manipulated in Excel by E. Wenk to create Soper_2014_E_Wenk_manipulated.xls
   notes: none
-sites:
+locations:
   Alice Springs:
     latitude (deg): -23.51694
     longitude (deg): 133.64917
-    MAP (mm): 250.0
+    precipitation, MAP (mm): 250.0
     notes: Kunoth Paddock
     description: Acacia-dominated mulga woodland
   Darwin:
     latitude (deg): -12.43389
     longitude (deg): 130.92278
-    MAP (mm): 1600.0
+    precipitation, MAP (mm): 1600.0
     notes: Berrimah
     description: Eucalyptus-dominated
   Katherine:
     latitude (deg): -14.47306
     longitude (deg): 132.30306
-    MAP (mm): 1300.0
+    precipitation, MAP (mm): 1300.0
     notes: near Katherine Research Station grazing exclosure experiment
     description: .na.character
   Newcastle Waters:
     latitude (deg): -17.3775
     longitude (deg): 133.40972
-    MAP (mm): 600.0
+    precipitation, MAP (mm): 600.0
     notes: near repeater station
     description: two sub-sites dominated by either Acacia or Eucalyptus
 contexts:
-  Trip 1 (wet season):
-    type: field
-    description: sampling conducted March-April 2003 (wet season)
-  Trip 2 (dry season):
-    type: field
-    description: sampled conducted August 2003 (usually dry season, but following
-      a brief period of rain)
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name_edited
-    site_name: SITE
-    context_name: context_name
-  custom_R_code: data %>% mutate(context_name = ifelse(TRIP == 1, "Trip 1 (wet season)","Trip
-    2 (dry season)"))
+- context_property: sampling season
+  category: temporal
+  var_in: TRIP
+  values:
+  - find: 1
+    value: wet
+    description: Samples collected during the wet season (first trip; March-April
+      2003).
+  - find: 2
+    value: dry
+    description: Samples collected during the dry season (second trip; August 2003;
+      usually dry season, but following a brief period of rain).
 traits:
 - var_in: PLANT GROUP
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert knowledge
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge
 - var_in: '%C_leaf'
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Fully expanded leaves and phyllodes were sampled from mature trees, air-dried
     in the field, dried at 50 deg C for 3 days, homogenised and analysed for  C and
@@ -106,7 +135,9 @@ traits:
 - var_in: del C_leaf
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Fully expanded leaves and phyllodes were sampled from mature trees, air-dried
     in the field, dried at 50 deg C for 3 days, homogenised and analysed for d13C
@@ -115,7 +146,9 @@ traits:
 - var_in: '%N_leaf'
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Fully expanded leaves and phyllodes were sampled from mature trees, air-dried
     in the field, dried at 50 deg C for 3 days, homogenised and analysed for  C and
@@ -124,7 +157,9 @@ traits:
 - var_in: Del N_leaf
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Fully expanded leaves and phyllodes were sampled from mature trees, air-dried
     in the field, dried at 50 deg C for 3 days, homogenised and analysed for d13C
@@ -133,7 +168,9 @@ traits:
 - var_in: xylem delN root
   unit_in: per mille
   trait_name: root_xylem_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, 4-14 individual trees representing 2-4 species from each
     of the three plant families were sampled for foliage and shoot and root xylem
@@ -152,7 +189,9 @@ traits:
 - var_in: xylem delN shoot
   unit_in: per mille
   trait_name: leaf_xylem_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, 4-14 individual trees representing 2-4 species from each
     of the three plant families were sampled for foliage and shoot and root xylem
@@ -171,7 +210,9 @@ traits:
 - var_in: '%C_root'
   unit_in: '%'
   trait_name: root_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, 4-14 individual trees representing 2-4 species from each
     of the three plant families were sampled for foliage and shoot and root xylem
@@ -183,7 +224,9 @@ traits:
 - var_in: del C_root
   unit_in: per mille
   trait_name: root_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Dried root samples were analysed via continuous flow isotope ratio mass
     spectrometry (Tracer Mass, routine precision 0.2 - SD; Europa Scientific, now
@@ -191,7 +234,9 @@ traits:
 - var_in: '%N_root'
   unit_in: '%'
   trait_name: root_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, 4-14 individual trees representing 2-4 species from each
     of the three plant families were sampled for foliage and shoot and root xylem
@@ -202,17 +247,22 @@ traits:
     MI, USA).
 - var_in: '%N-2_root'
   unit_in: '%'
-  trait_name: root_N_per_dry_mass
-  value_type: raw_value
+  trait_name: .na
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Fully expanded leaves and phyllodes were sampled from mature trees, air-dried
     in the field, dried at 50 deg C for 3 days, homogenised and analysed for  C and
     N via dry combustion and infrared detection in a LECO analyser (CNS-2000; LECO,
-    MI, USA).
+    MI, USA). (unmapped, as duplicate values to various leaf N measurements or to
+    other root N measurements, E. Wenk 2022.11.02)
 - var_in: Del N_root
   unit_in: per mille
   trait_name: root_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Dried root samples were analysed via continuous flow isotope ratio mass
     spectrometry (Tracer Mass, routine precision 0.2 - SD; Europa Scientific, now
@@ -234,40 +284,59 @@ substitutions:
   find: e
   replace: .na
 - trait_name: plant_growth_form
-  find: mistletoe
-  replace: epiphyte
-- trait_name: plant_growth_form
   find: mulga fern
   replace: fern
 taxonomic_updates:
+- find: Acacia broadleaf sp.
+  replace: Acacia sp. [Acacia broadleaf sp.; Soper_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Eucalyptus lancewood sp.
+  replace: Eucalyptus sp. [Eucalyptus lancewood sp.; Soper_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Eucalyptus tetradonta
   replace: Eucalyptus tetrodonta
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Hakea suberia
   replace: Hakea suberea
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Acacia broadleaf sp.
-  replace: Acacia  sp. [broad leaf 2]
-  reason: Align with known genus (E. Wenk, 2020-05-24)
-- find: Eucalyptus lancewood sp.
-  replace: Eucalyptus sp. [lancewood sp.]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Misteloe
-  replace: Loranthaceae or Viscaceae [Misteloe]
-  reason: align to mistletoe family (E. Wenk, 2020-05-26)
-- find: mistletoe on Acacia
-  replace: Loranthaceae or Viscaceae [mistletoe on Acacia]
-  reason: align to mistletoe family (E. Wenk, 2020-05-26)
-- find: mistletoe on Acacia aneura
-  replace: Loranthaceae or Viscaceae [mistletoe on Acacia aneura]
-  reason: align to mistletoe family (E. Wenk, 2020-05-26)
+  replace: Loranthaceae or Viscaceae [Misteloe; Soper_2014]
+  reason: Manual matched to family for taxon that can't be matcheded to genus (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: family
+- find: Mistletoe on Acacia
+  replace: Loranthaceae or Viscaceae [mistletoe on Acacia; Soper_2014]
+  reason: Manual matched to family for taxon that can't be matcheded to genus (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: family
+- find: Mistletoe on Acacia aneura
+  replace: Loranthaceae or Viscaceae [mistletoe on Acacia aneura; Soper_2014]
+  reason: Manual matched to family for taxon that can't be matcheded to genus (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: family
 - find: Triodia sp. 1
-  replace: Triodia sp. [Triodia sp. 1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Triodia sp. [Triodia sp. 1; Soper_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Triodia sp. 3
-  replace: Triodia sp. [Triodia sp. 3]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Triodia sp. [Triodia sp. 3; Soper_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Mistletoe on Acacia
+  replace: Loranthaceae sp. [Mistletoe on Acacia]
+  reason: manual alignment to family (Elizabeth Wenk, 2022-11-23)
+  taxonomic_resolution: family
+- find: Mistletoe on Acacia aneura
+  replace: Loranthaceae sp. [Mistletoe on Acacia aneura]
+  reason: manual alignment to family (Elizabeth Wenk, 2022-11-23)
+  taxonomic_resolution: family
 exclude_observations: .na
 questions: .na
-

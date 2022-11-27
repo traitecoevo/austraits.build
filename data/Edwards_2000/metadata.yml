@@ -24,26 +24,45 @@ source:
     pages: 261--277
     publisher: Informa UK Limited
     doi: 10.1080/11263500012331350445
-people:
-- name: Jennifer Read
-  institution: School of Biological Sciences, Monash University
-  role: lab_leader, contact
-- name: Gordon Sanson
-  institution: School of Biological Sciences, Monash University
-  role: lab_leader
-- name: Cheryl Edwards
-  institution: School of Biological Sciences, Monash University
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Read
+    given_name: Jennifer
+    ORCID: 0000-0002-4727-3482
+    affiliation: School of Biological Sciences, Monash University, Australia
+    additional_role: contact
+  - last_name: Sanson
+    given_name: Gordon
+    ORCID: .na.character
+    affiliation: School of Biological Sciences, Monash University, Australia
+  - last_name: Edwards
+    given_name: Cheryl
+    ORCID: 0000-0003-3275-1020
+    affiliation: Melbourne Water, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 1995
-  year_collected_end: 1995
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        `work_to_punch_x102_J/m2` = ifelse(`name_original` %in% c("Goodenia ovata","Bedfordia arborescens"), NA, `work_to_punch_x102_J/m2`),
+        `work_to_punch_adjusted_MJ/m2/m` = ifelse(`name_original` %in% c("Goodenia ovata","Bedfordia arborescens"), NA, `work_to_punch_adjusted_MJ/m2/m`),
+        `growth form` = ifelse(name_original == "Banksia marginata", "shrub tree", `growth form`)
+      ) %>%
+      group_by(name_original) %>%
+        mutate(across(c(`growth form`, `leaf longevity`, `leaf_type`, `N_fixer`), replace_duplicates_with_NA)) %>%
+      ungroup() 
+  '
+  collection_date: 1995/1995
+  taxon_name: name_original
+  location_name: site
   description: leaf P and N mass and other traits for 21 species from Wilson Promontery.
     By, using an index of sclerophylly derived from botanists rankings (botanists
     sclerophylly index, BSI) we determined that leaves considered by botanists to
     be sclerophyllous generally had both high strength and work to fracture (particularly
     in punching and tearing tests), both at the level of leaf and per unit leaf thickness.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: The plants were sampled over a distance of c. 500 m. Nineteen
     species (_Table 1) were selected as described by EDWARDS et al. (2000). Leaves
     varied in texture from "soft" to "hard". Five plants per species were selected
@@ -52,14 +71,17 @@ dataset:
     from sunlit branches. The acacia foliage comprises phyllodes but these are referred
     to as leaves for simplicity.
   original_file: Read_WilsonsProm.xls
-  notes: Punch test values for Goodenia ovata and Bedfordia salicina have been removed, as the authors had difficulty measuring values for the thinnest, softest leaves at that time and believe these values should be used in broader comparative studies. The values are in the data.csv file but have been excluded from AusTraits.
-sites:
+  notes: Punch test values for Goodenia ovata and Bedfordia salicina have been removed,
+    as the authors had difficulty measuring values for the thinnest, softest leaves
+    at that time and believe these values should be used in broader comparative studies.
+    The values are in the data.csv file but have been excluded from AusTraits.
+locations:
   ReadWilsonsProm_forest:
     latitude (deg): -39.01667
     longitude (deg): 146.3333
-    soil_total_P (ppm): 410
-    soil_total_N (%): 0.31
-    rainfall (mm): 1000
+    soil P, total (mg/kg): 410
+    soil N, total (%): 0.31
+    precipitation, MAP (mm): 1000
     description: Leaves were collected in November 1995 from Lilly Pilly Gully at
       Wilson's Promontory National Park in the far south-eastern Australian mainland
       (39 deg 1'S, 146 deg 0'E). The climate is relatively mild with few extremes
@@ -78,14 +100,14 @@ sites:
       and the forest on sands derived from granite, the latter commonly with more
       clay and organic matter (PARSONS, 1966) and in this study with higher levels
       of phosphorus and exchangeable cations (Table 2).
-    lat_lon_explanation: The lat/longs given is the mid-point of the area used for
+    georeference remarks: The lat/longs given is the mid-point of the area used for
       sample collection.
   ReadWilsonsProm_heath:
     latitude (deg): -39.01667
     longitude (deg): 146.3333
-    soil_total_P (ppm): 90
-    soil_total_N (%): 0.4
-    rainfall (mm): 1000
+    soil P, total (mg/kg): 90
+    soil N, total (%): 0.4
+    precipitation, MAP (mm): 1000
     description: Leaves were collected in November 1995 from Lilly Pilly Gully at
       Wilson's Promontory National Park in the far south-eastern Australian mainland
       (39 deg 1'S, 146 deg 20'E). The climate is relatively mild with few extremes
@@ -104,44 +126,48 @@ sites:
       and the forest on sands derived from granite, the latter commonly with more
       clay and organic matter (PARSONS, 1966) and in this study with higher levels
       of phosphorus and exchangeable cations (Table 2).
-    lat_lon_explanation: The lat/longs given is the mid-point of the area used for
+    georeference remarks: The lat/longs given is the mid-point of the area used for
       sample collection.
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-    site_name: site
-  custom_R_code: data %>% mutate(`work_to_punch_x102_J/m2` = ifelse(`name_original` %in% c("Goodenia ovata","Bedfordia arborescens"),NA,`work_to_punch_x102_J/m2`),`work_to_punch_adjusted_MJ/m2/m` = ifelse(`name_original` %in% c("Goodenia ovata","Bedfordia arborescens"),NA,`work_to_punch_adjusted_MJ/m2/m`))
 traits:
 - var_in: growth form
   unit_in: .na.character
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert opinion and observation
 - var_in: leaf longevity
   unit_in: .na.character
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert opinion and observation
 - var_in: leaf_type
   unit_in: .na.character
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert opinion and observation
 - var_in: N_fixer
   unit_in: .na.character
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert opinion and observation
 - var_in: SLA (mm2/mg)
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: 'SLA was sourced from Edwards C, Read J, Sanson G. (2000) Characterising
     sclerophylly: some mechanical properties of leaves from heath and forest. Oecologia
@@ -150,13 +176,17 @@ traits:
 - var_in: Leaf size (mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: Leaf area was measured by image analysis (Bioscan Image Analyser).
 - var_in: Lamina_Thickness (mm)
   unit_in: mm
   trait_name: leaf_thickness
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: 'Leaves were kept as fully hydrated as possible prior to measuring mechanical
     properties and were stored at c. 5C prior to measurement of leaf anatomy and morphology.
@@ -173,14 +203,18 @@ traits:
 - var_in: leaf N per mass (mg/g)
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: Leaf N was measured by automated distillation of ammonia and colorimetry
     following digestion using a Tecator Kjeltec Auto 1030 Analyzer.
 - var_in: Leaf N per area (g/m2)
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: Leaf N was measured by automated distillation of ammonia and colorimetry
     following digestion using a Tecator Kjeltec Auto 1030 Analyzer. Leaf area was
@@ -188,7 +222,9 @@ traits:
 - var_in: Leaf P per mass, %
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf material was dried, then ground in a Tecator Cyclotec Mill to pass
     through a 1-mm mesh. Foliar P was measured by the molybdenum-blue colorimetric
@@ -202,7 +238,9 @@ traits:
 - var_in: Leaf P per area (g/m2)
   unit_in: g/m2
   trait_name: leaf_P_per_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf material was dried, then ground in a Tecator Cyclotec Mill to pass
     through a 1-mm mesh. Foliar P was measured by the molybdenum-blue colorimetric
@@ -216,7 +254,9 @@ traits:
 - var_in: punch_strength_MN/m2
   unit_in: MN/m2
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Tests were undertaken within 48 h of collection on one of three haphazardly
     chosen leaves from each replicate plant of each species, including the two separate
@@ -247,7 +287,9 @@ traits:
 - var_in: punch_strength_adjusted_x103_MN/m2/m
   unit_in: MN/m2/m
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Tests were undertaken within 48 h of collection on one of three haphazardly
     chosen leaves from each replicate plant of each species, including the two separate
@@ -278,7 +320,9 @@ traits:
 - var_in: work_to_punch_x102_J/m2
   unit_in: 100xJ/m2
   trait_name: leaf_work_to_punch
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Tests were undertaken within 48 h of collection on one of three haphazardly
     chosen leaves from each replicate plant of each species, including the two separate
@@ -309,7 +353,9 @@ traits:
 - var_in: work_to_punch_adjusted_MJ/m2/m
   unit_in: MJ/m2/m
   trait_name: leaf_work_to_punch_adjusted
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Tests were undertaken within 48 h of collection on one of three haphazardly
     chosen leaves from each replicate plant of each species, including the two separate
@@ -340,7 +386,9 @@ traits:
 - var_in: strength_to_tear_MN/m2
   unit_in: MN/m2
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Tests were undertaken within 48 h of collection on one of three haphazardly
     chosen leaves from each replicate plant of each species, including the two separate
@@ -388,7 +436,9 @@ traits:
 - var_in: work_to_tear_x10-3_J/m
   unit_in: J/m
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Tests were undertaken within 48 h of collection on one of three haphazardly
     chosen leaves from each replicate plant of each species, including the two separate
@@ -436,7 +486,9 @@ traits:
 - var_in: work_to_tear_adjusted_kJ/m2
   unit_in: kJ/m2
   trait_name: leaf_work_to_tear_adjusted
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Work to tear leaf, adjusted to cross-sectional area; Tests were undertaken
     within 48 h of collection on one of three haphazardly chosen leaves from each
@@ -485,7 +537,9 @@ traits:
 - var_in: work_to_shear_J/m
   unit_in: J/m
   trait_name: leaf_work_to_shear
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Tests were undertaken within 48 h of collection on one of three haphazardly
     chosen leaves from each replicate plant of each species, including the two separate
@@ -524,7 +578,9 @@ traits:
 - var_in: work_to_shear_adjusted_kJ/m2
   unit_in: kJ/m2
   trait_name: leaf_work_to_shear_adjusted
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Tests were undertaken within 48 h of collection on one of three haphazardly
     chosen leaves from each replicate plant of each species, including the two separate
@@ -581,18 +637,22 @@ substitutions:
   replace: compound
 - trait_name: nitrogen_fixing
   find: 'Y'
-  replace: '1'
+  replace: nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'N'
-  replace: '0'
+  replace: non_nitrogen_fixer
 taxonomic_updates:
 - find: Banksia marginata forest
   replace: Banksia marginata
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Banksia marginata heath
   replace: Banksia marginata
-  reason: Alignment with existing species identified by TaxonStand (2020-05-14)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions:
-  additional_traits: there are also various measures of leaf strength, measured through punching, tearing, shearing
-
+  additional_traits: there are also various measures of leaf strength, measured through
+    punching, tearing, shearing

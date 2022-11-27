@@ -6,210 +6,327 @@ source:
     year: 2014
     url: http://www.lrm.nt.gov.au/plants-and-animals/herbarium/darwin_flora_online
     title: Flora of the Darwin Region Online
-people:
-- name: Ian Cowie
-  institution: Northern Territory Herbarium
-  role: curator, contact
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Cowie
+    given_name: Ian
+    ORCID: 0000-0001-5295-9596
+    affiliation: Northern Territory Herbarium, Australia
+    notes: no contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2014
-  year_collected_end: 2014
+  data_is_long_format: no
+  custom_R_code: '
+    data %>% 
+      mutate(
+        `flowering time` = convert_month_range_vec_to_binary(`flowering time`), 
+        `fruiting` = convert_month_range_vec_to_binary(`fruiting`), 
+        leaf_type = ifelse(`leaf type` == "articles", "cladode", NA), 
+        `leaf type` = ifelse(`leaf type` == "articles", NA, `leaf type`), 
+        leaf_lobed = ifelse(`leaf type` == "l", "lobed", NA), 
+        GF = ifelse(aquatic %in% c("yes","y"),"herb", GF),
+        GF = ifelse(succulent %in% c("yes","y"),"succulent_short herb", GF),
+        parasitic = ifelse(GF=="parasite","parasitic",NA),
+        fruit_type = NA,
+        plant_succulence = NA,
+        leaf_lobation = NA,
+        leaf_lamina_division = NA,
+        plant_photosynthetic_organ2 = NA,
+        plant_photosynthetic_organ3 = NA
+      ) %>%
+      move_values_to_new_trait(
+        "dispersal appendage", "fruit_type", 
+        c("drupe", "samara"),
+        c("drupe", "samara"),
+        c("NA", "wings")
+      ) %>%
+      mutate(
+      `dispersal appendage` = ifelse(`dispersal appendage` == "NA", NA, `dispersal appendage`)
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "leaf_lobation", 
+        c("lobed"), c("lobed"), c("")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "leaf_lamina_division", 
+        "palmately lobed", "palmately_lobed", ""
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "plant_photosynthetic_organ2",
+        c("cladode"), c("cladode"), c("")
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "plant_photosynthetic_organ3",
+        c("article","branchlets with articles","articles"),
+        c("cladode","cladode","cladode"),
+        c("","","")
+      ) %>%
+      mutate(
+        leaf_type = ifelse(is.na(plant_photosynthetic_organ2),leaf_type,plant_photosynthetic_organ2),
+        leaf_type = ifelse(is.na(plant_photosynthetic_organ3),leaf_type,plant_photosynthetic_organ3),
+        leaf_lobation = ifelse(is.na(leaf_lobation), leaf_lobed, leaf_lobation)
+      ) %>%
+      move_values_to_new_trait(
+        "GF", "plant_succulence",
+        c("succulent_short herb","y"),
+        c("succulent", "succulent"),
+        c("herb", "herb")
+      ) %>%
+      separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>% 
+      separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
+      separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>% 
+      separate_range("seed diameter (mm)", "seed_width_min", "seed_width_max") %>% 
+      separate_range("seed depth (mm)", "seed_depth_min", "seed_depth_max")
+  '    
+  collection_date: unknown/2014
+  taxon_name: species_name
   description: 'Transposed from species descriptions in Flora of the Darwin Region
     available online:  http://www.lrm.nt.gov.au/plants-and-animals/herbarium/darwin_flora_online'
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: unknown
   original_file: NT_flora.xls
   notes: Request ackowledgment of "Northern Territory Herbarium"
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-  custom_R_code: data %>% mutate(`flowering time` = convert_month_range_vec_to_binary(`flowering
-    time`), `fruiting` = convert_month_range_vec_to_binary(`fruiting`), leaf_type   =
-    ifelse(`leaf type` == "articles", "article", NA), `leaf type` = ifelse(`leaf type`
-    == "articles", NA, `leaf type`), leaf_lobed   = ifelse(`leaf type` == "l", 1,
-    NA), `leaf type` = ifelse(`leaf type` == "l", NA, `leaf type`)) %>% separate_range("leaf
-    length (mm)", "leaf_length_min", "leaf_length_max") %>% separate_range("leaf width
-    (mm)", "leaf_width_min", "leaf_width_max") %>% separate_range("seed length (mm)",
-    "seed_length_min", "seed_length_max") %>% separate_range("seed diameter (mm)",
-    "seed_width_min", "seed_width_max") %>% separate_range("seed depth (mm)", "seed_depth_min",
-    "seed_depth_max") %>% mutate(GF = ifelse(aquatic %in% c("yes","y"),"aquatic_herb",
-    GF)) %>% mutate(parasitic = ifelse(GF=="parasite","parasitic",NA))
 traits:
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: GF
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: aquatic
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf longevity
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: max height (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: glacous
   unit_in: .na
-  trait_name: glaucous
-  value_type: expert_mean
+  trait_name: leaf_glaucousness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf_type
   unit_in: .na
-  trait_name: leaf_type
-  value_type: expert_mean
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf shape
   unit_in: .na
   trait_name: leaf_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lobation
+  unit_in: .na
+  trait_name: leaf_lobation
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lamina_division
+  unit_in: .na
+  trait_name: leaf_lamina_division
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf_length_min
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf_length_max
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf_width_min
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf_width_max
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed shape
   unit_in: .na
   trait_name: seed_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: seed_length_min
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed_length_max
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed_width_min
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed_width_max
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed_depth_min
   unit_in: mm
-  trait_name: seed_breadth
-  value_type: expert_min
+  trait_name: seed_height
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed_depth_max
   unit_in: mm
-  trait_name: seed_breadth
-  value_type: expert_max
+  trait_name: seed_height
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: flowering time
   unit_in: .na
   trait_name: flowering_time
-  value_type: unknown
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: unknown
   methods: unknown
 - var_in: fruiting
   unit_in: .na
   trait_name: fruiting_time
-  value_type: unknown
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: unknown
+  methods: unknown
+- var_in: fruit_type
+  unit_in: .na
+  trait_name: fruit_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
   methods: unknown
 - var_in: dispersal appendage
   unit_in: .na
   trait_name: dispersal_appendage
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: aquatic
+- var_in: plant_succulence
   unit_in: .na
-  trait_name: .na
-  value_type: unknown
+  trait_name: plant_succulence
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: unknown
-  methods: unknown
-- var_in: leaf_lobed
-  unit_in: .na
-  trait_name: leaf_margin
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: succulent
-  unit_in: .na
-  trait_name: plant_growth_form
-  value_type: expert_mean
-  replicates: .na
   methods: unknown
 substitutions:
-- trait_name: glaucous
+- trait_name: leaf_glaucousness
   find: .na
-  replace: '0'
-- trait_name: glaucous
+  replace: not_glaucous
+- trait_name: leaf_glaucousness
   find: 'y'
-  replace: '1'
+  replace: glaucous
 - trait_name: leaf_compoundness
   find: c
   replace: compound
 - trait_name: leaf_compoundness
   find: l
-  replace: lobed
+  replace: simple
 - trait_name: leaf_compoundness
   find: s
   replace: simple
@@ -219,15 +336,27 @@ substitutions:
 - trait_name: leaf_phenology
   find: e
   replace: evergreen
+- trait_name: plant_growth_substrate
+  find: 'y'
+  replace: aquatic
+- trait_name: plant_growth_substrate
+  find: yes
+  replace: aquatic
+- trait_name: plant_growth_form
+  find: parasite
+  replace: .na
+- trait_name: plant_growth_form
+  find: succulent_short herb
+  replace: herb
 - trait_name: plant_growth_form
   find: liana
-  replace: climber_liana
+  replace: climber_woody
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: vine/shrub
-  replace: climber_shrub
+  replace: climber_woody shrub
 - trait_name: plant_growth_form
   find: forb
   replace: herb
@@ -239,13 +368,28 @@ substitutions:
   replace: shrub tree
 - trait_name: plant_growth_form
   find: 'y'
-  replace: succulent_short
+  replace: .na
 - trait_name: leaf_shape
-  find: articles
-  replace: article
+  find: palmately_lobed
+  replace: .na
 - trait_name: leaf_shape
   find: elliptic
   replace: elliptical
+- trait_name: leaf_shape
+  find: obovoid
+  replace: obovate
+- trait_name: leaf_shape
+  find: deltoid
+  replace: deltate
+- trait_name: leaf_shape
+  find: circular
+  replace: orbicular
+- trait_name: leaf_shape
+  find: linear-oblanceolate
+  replace: narrowly_oblanceolate
+- trait_name: leaf_shape
+  find: dimidate
+  replace: .na
 - trait_name: seed_width
   find: 5.5.
   replace: '5.5'
@@ -258,258 +402,348 @@ substitutions:
 - trait_name: leaf_shape
   find: obovtae
   replace: obovate
-- trait_name: leaf_margin
+- trait_name: leaf_lobation
   find: 1
   replace: lobed
-- trait_name: seed_shape
-  find: compressed obovoid
-  replace: compressed_obovoid
 - trait_name: dispersal_appendage
   find: winged seed
   replace: wings
 - trait_name: leaf_shape
-  find: branchlets with articles
-  replace: branchlets_articles
-- trait_name: leaf_shape
   find: linear-oblanceolate
-  replace: linear_oblanceolate
+  replace: narrowly_oblanceolate
 - trait_name: leaf_shape
   find: palmately lobed
-  replace: palmately_lobed
-- trait_name: seed_shape
-  find: broadly obovoid
-  replace: broadly_obovoid
+  replace: .na
 - trait_name: seed_shape
   find: comma shaped
-  replace: comma_shaped
+  replace: comma-shaped
+- trait_name: seed_shape
+  find: cylindrical
+  replace: cylindrical
+- trait_name: seed_shape
+  find: subcylindrical
+  replace: cylindrical
+- trait_name: seed_shape
+  find: circular
+  replace: discoid
+- trait_name: seed_shape
+  find: discoidal
+  replace: discoid
+- trait_name: seed_shape
+  find: round
+  replace: discoid
+- trait_name: seed_shape
+  find: ellipsoid
+  replace: ellipsoid
+- trait_name: seed_shape
+  find: oblong
+  replace: ellipsoid
 - trait_name: seed_shape
   find: compressed-ellipsoid
-  replace: compressed_ellipsoid
+  replace: ellipsoid_flattened
 - trait_name: seed_shape
-  find: compressed-obovoid
-  replace: compressed_obovoid
-- trait_name: seed_shape
-  find: pea shape
-  replace: globoid
+  find: fusiform
+  replace: fusiform
 - trait_name: seed_shape
   find: globular
   replace: globoid
 - trait_name: seed_shape
-  find: discoidal
-  replace: discoid
+  find: pea shape
+  replace: globoid
+- trait_name: seed_shape
+  find: spherical
+  replace: globoid
+- trait_name: seed_shape
+  find: spheroidal
+  replace: globoid
+- trait_name: seed_shape
+  find: subcircular
+  replace: globoid_flattened
+- trait_name: seed_shape
+  find: subglobular
+  replace: globoid_flattened
+- trait_name: seed_shape
+  find: suborbicular
+  replace: globoid_flattened
+- trait_name: seed_shape
+  find: semicircular
+  replace: hemispheric
+- trait_name: seed_shape
+  find: lenticular
+  replace: lenticular
+- trait_name: seed_shape
+  find: orbicular
+  replace: orbicular
+- trait_name: seed_shape
+  find: broadly obovoid
+  replace: ovoid
+- trait_name: seed_shape
+  find: lanceolate
+  replace: ovoid
+- trait_name: seed_shape
+  find: obovate
+  replace: ovoid
+- trait_name: seed_shape
+  find: obovoid
+  replace: ovoid
+- trait_name: seed_shape
+  find: ovate
+  replace: ovoid
+- trait_name: seed_shape
+  find: ovoid
+  replace: ovoid
+- trait_name: seed_shape
+  find: obclavate
+  replace: ovoid_elongated
+- trait_name: seed_shape
+  find: compressed obovoid
+  replace: ovoid_flattened
+- trait_name: seed_shape
+  find: compressed-obovoid
+  replace: ovoid_flattened
+- trait_name: seed_shape
+  find: angular
+  replace: polyhedral
+- trait_name: seed_shape
+  find: rhombic
+  replace: polyhedral
+- trait_name: seed_shape
+  find: square
+  replace: polyhedral
+- trait_name: seed_shape
+  find: subtriangular
+  replace: polyhedral
+- trait_name: seed_shape
+  find: triangular
+  replace: polyhedral
+- trait_name: seed_shape
+  find: cordiform
+  replace: reniform
+- trait_name: seed_shape
+  find: reniform
+  replace: reniform
 - trait_name: seed_shape
   find: segment shaped
   replace: sectoroid
 - trait_name: seed_shape
   find: wedge-shaped
-  replace: wedge_shaped
-- trait_name: seed_shape
-  find: oblong
-  replace: obloid
-- trait_name: seed_shape
-  find: ovate
-  replace: ovoid
-- trait_name: seed_shape
-  find: obovate
-  replace: obovoid
-- trait_name: seed_shape
-  find: rhombic
-  replace: rhomboid
-- trait_name: seed_shape
-  find: spheroidal
-  replace: spheroid
-- trait_name: seed_shape
-  find: fusiform spheroidal
-  replace: fusiform spheroid
-- trait_name: seed_shape
-  find: square
-  replace: square_prism
-- trait_name: seed_shape
-  find: subcircular
-  replace: subgloboid
-- trait_name: seed_shape
-  find: subglobular
-  replace: subgloboid
-- trait_name: seed_shape
-  find: semicircular
-  replace: semigloboid
+  replace: sectoroid
 taxonomic_updates:
+- find: Acacia Douglas R.
+  replace: Acacia douglasii
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Asteromyrtus symphocarpa
   replace: Asteromyrtus symphyocarpa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Cajanus eticulatus
-  replace: Cajanus reticulatus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Desmodium ichostachyum
-  replace: Desmodium trichostachyum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Drosera dilatatopetiolaris
-  replace: Drosera dilatato-petiolaris
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: exocarpus latifolius
-  replace: Exocarpos latifolius
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Galactia mueller
-  replace: Galactia muelleri
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Grevillea dryandi subsp. Dasycarpa
-  replace: Grevillea dryandri subsp. dasycarpa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Grevillea dryandi subsp. Dryandi
-  replace: Grevillea dryandri subsp. dryandri
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Grevillea pyramidalid
-  replace: Grevillea pyramidalis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Omalanthus novo-guineensis
-  replace: Homalanthus novo-guineensis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Santalum lanceolata
-  replace: Santalum lanceolatum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Vertcordia cunninghamii
-  replace: Verticordia cunninghamii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Vertcordia decussata
-  replace: Verticordia decussata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Vertcordia verticillata
-  replace: Verticordia verticillata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Zornia muelleriana subsp. Mulleriana
-  replace: Zornia muelleriana subsp. muelleriana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Chamaecrista nictitans
-  replace: Chamaecrista nigricans
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Muehlenbeckia Mt Brockman (L.A. Craven 2357)
-  replace: Muehlenbeckia sp. Mt Brockman (L.A.Craven 2357)
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Muehlenbeckia arnhemica
-  replace: Muehlenbeckia arnhemica MS
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Phyllanthus 'Golden Sands'
-  replace: Phyllanthus sp. 'Golden Sands'
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Sauropus Darwin'
-  replace: Sauropus sp. 'Darwin'
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Sauropus Melville Is.'
-  replace: Sauropus sp. 'Melville Is.'
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Sauropus Tiwi'
-  replace: Sauropus sp. 'Tiwi'
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Excoecaria parviflora
-  replace: Excoecaria parvifolia
-  reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
-- find: Acacia Douglas R.
-  replace: Vachellia douglasica
-  reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Austrodolichos 'Kakadu'
   replace: Austrodolichos sp. 'Kakadu'
-  reason: Align with  APNI phrase name; not APC accepted (E. Wenk, 2020-05-24)
+  reason: match_19. Automatic alignment with species-level canonical name in APNI
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cajanus eticulatus
+  replace: Cajanus sp. [Cajanus eticulatus; NTH_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Cajanus maritima
-  replace: Canavalia rosea
-  reason: Align to most likely name on APC list; three species in a row with same
-    likely incorrect genus (E. Wenk, 2020-05-26)
+  replace: Causonis maritima
+  reason: match_17_fuzzy. Imprecise fuzzy alignment with canonical name in APNI (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cajanus papuana
-  replace: Canavalia papuana
-  reason: Align to most likely name on APC list; three species in a row with same
-    likely incorrect genus (E. Wenk, 2020-05-26)
+  replace: Cajanus sp. [Cajanus papuana; NTH_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Cajanus rosea
-  replace: Canavalia rosea
-  reason: Align to most likely name on APC list; three species in a row with same
-    likely incorrect genus (E. Wenk, 2020-05-26)
-- find: Chamaecrista sp. Cassia harneyi
+  replace: Cajanus sp. [Cajanus rosea; NTH_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Chamaecrista nictitans
   replace: Chamaecrista nigricans
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Chamaecrista sp. Cassia harneyi
+  replace: Chamaecrista sp. [Cassia harneyi Specht]
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC known
+    names when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cochlospermum sp. Arnhem Land
   replace: Cochlospermum sp. Arnhem Land (I.D.Cowie 5916)
-  reason: Confirm alignment with accepted phrase name on APC list (E. Wenk, 2020-05-24)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC known
+    names when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Croton sp. aff. dockr illii Airy Shaw
-  replace: Croton sp. aff. dockrillii
-  reason: Align to current phrase name on APNI list; not APC accepted (E. Wenk, 2020-05-25)
+  replace: Croton sp. [Croton sp. aff. dockr illii Airy Shaw; NTH_2014]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Cucumis sp. Gunlom
-  replace: Cucumis umbellatus
-  reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
+  replace: Cucumis sp. Gunlom (J.L.McKean 864b)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Dendrolobium 'Green Ant Ck'
   replace: Dendrolobium sp. 'Green Ant Ck'
-  reason: Align to APNI listed phrase name; not on APC list (E. Wenk, 2020-05-26)
+  reason: match_18. Automatic alignment with infraspecific canonical name in APNI
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Desmodium 'Darwin'
   replace: Desmodium sp. 'Darwin'
-  reason: Align to APNI phrase name; not APC accepted (E. Wenk, 2020-05-26)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Desmodium ichostachyum
+  replace: Desmodium trichostachyum
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
 - find: Desmodium 'Limbunya'
   replace: Desmodium sp. 'Limbunya'
-  reason: Align to APNI phrase name; not APC accepted (E. Wenk, 2020-05-26)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Desmodium Melville Is.
   replace: Desmodium sp. 'Melville Is.'
-  reason: Align to APNI phrase name; not APC accepted (E. Wenk, 2020-05-26)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC known
+    names when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Desmodium Pine Ck
   replace: Desmodium sp. 'Pine Ck'
-  reason: Align to APNI phrase name; not APC accepted (E. Wenk, 2020-05-26)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC known
+    names when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Excoecaria parviflora
+  replace: Excoecaria parvifolia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: exocarpus latifolius
+  replace: Exocarpos latifolius
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Flemingia Rum Jungle
   replace: Flemingia sp. 'Rum Jungle'
-  reason: Align to APNI phrase name; not APC accepted (E. Wenk, 2020-05-25)
+  reason: match_18. Automatic alignment with infraspecific canonical name in APNI
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Galactia Litchfield
   replace: Galactia sp. Litchfield (S.T.Blake 16645)
-  reason: Confirm alignment with APC accepted phrase name (E. Wenk, 2020-05-24)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Galactia mueller
+  replace: Galactia muelleri
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Grevillea dryandi subsp. Dasycarpa
+  replace: Grevillea dryandri subsp. dasycarpa
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Grevillea dryandi subsp. Dryandi
+  replace: Grevillea dryandri subsp. dryandri
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Grevillea pyramidalid
+  replace: Grevillea pyramidalis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Leptosema sp. [Brachysema uniflorum Benth.]
   replace: Leptosema uniflorum
-  reason: Change spelling to Align to APC or ALA species lists (Sam Andrew, 2018-02-07)
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Muehlenbeckia arnhemica
+  replace: Muehlenbeckia arnhemica MS
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Muehlenbeckia Mt Brockman (L.A. Craven 2357)
+  replace: Muehlenbeckia sp. Mt Brockman (L.A.Craven 2357)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Neptunia 'Darwin'
   replace: Neptunia sp. 'Darwin'
-  reason: Align to APNI phrase name; not APC accepted (E. Wenk, 2020-05-25)
+  reason: match_19. Automatic alignment with species-level canonical name in APNI
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Phyllanthus 'Golden Sands'
+  replace: Phyllanthus sp. 'Golden Sands'
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC known
+    names when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Santalum lanceolata
+  replace: Santalum lanceolatum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sauropus Darwin'
+  replace: Sauropus sp. 'Darwin'
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sauropus Melville Is.'
+  replace: Sauropus sp. 'Melville Is.'
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC known
+    names when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sauropus Tiwi'
+  replace: Sauropus sp. 'Tiwi'
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Stenocarpus top end'
-  replace: Stenocarpus verticis
-  reason: Align previous phrase name with current APC name (E. Wenk, 2020-05-25)
+  replace: Stenocarpus 'Top End'
+  reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-12)
+  taxonomic_resolution: Species
 - find: Tephrosia Hayes Ck
   replace: Tephrosia sp. 'Hayes Ck'
-  reason: Align to APNI phrase name; not APC accepted (E. Wenk, 2020-05-25)
+  reason: match_18. Automatic alignment with infraspecific canonical name in APNI
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Tephrosia Katherine Gorge
-  replace: Tephrosia sp. 'Katherine Gorge'
-  reason: Align to APNI phrase name; not APC accepted (E. Wenk, 2020-05-25)
+  replace: Tephrosia sp. Katherine (H.S.McKee 8509)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Trichosanthes sp. Fine Leaf
-  replace: Trichosanthes cucumerina var. cucumerina
-  reason: Change spelling to Align to APC or ALA species lists (Sam Andrew, 2018-02-07)
+  replace: Trichosanthes sp. Fine leaf (L.A.Craven 7930)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC known
+    names when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Trichosanthes sp. Kakadu
-  replace: Trichosanthes morrisii
-  reason: Confirm alignment with APC accepted name (E. Wenk, 2020-05-25)
+  replace: Trichosanthes sp. Kakadu (C.R.Dunlop 6639)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Uraria Litchfield
   replace: Uraria sp. Litchfield (C.R.Dunlop 5220)
-  reason: Confirm alignment with accepted phrase name on APC list (E. Wenk, 2020-05-24)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Vertcordia cunninghamii
+  replace: Verticordia cunninghamii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Vertcordia decussata
+  replace: Verticordia decussata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Vertcordia verticillata
+  replace: Verticordia verticillata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Zornia Darwin Lawns
-  replace: Zornia sp. 'Darwin Lawns'
-  reason: Align with  APNI phrase name; not APC accepted (E. Wenk, 2020-05-25)
-- find: Barringtonia acutangula subsp. Acutangula
-  replace: Barringtonia acutangula subsp. acutangula
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-25)
-- find: Indigofera trita subsp. Trita
-  replace: Indigofera trita subsp. trita
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-25)
-- find: Grevillea goodii subsp. Goodii
-  replace: Grevillea goodii subsp. goodii
-  reason: Automatic alignment with name in APC list (known names) (2020-06-25)
-- find: Grevillea goodii subsp. Pluricaulis
-  replace: Grevillea goodii subsp. pluricaulis
-  reason: Automatic alignment with name in APC list (known names) (2020-06-25)
+  replace: Zornia sp. Darwin (J.S.Muspratt 186)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Zornia muelleriana subsp. Mulleriana
+  replace: Zornia muelleriana subsp. muelleriana
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Acmena hemilampra subsp. Hemilampra
   replace: Acmena hemilampra subsp. hemilampra
-  reason: Automatic alignment with name in APC list (known names) (2020-06-25)
-- find: Leptospermum madidum subsp. Sativum
-  replace: Leptospermum madidum subsp. sativum
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-25)
-- find: Syzygium eucalyptoides subsp. Bleeseri
-  replace: Syzygium eucalyptoides subsp. bleeseri
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-25)
-- find: Syzygium eucalyptoides subsp. Eucalyptoides
-  replace: Syzygium eucalyptoides subsp. eucalyptoides
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-25)
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-23)
+  taxonomic_resolution: Subspecies
 exclude_observations: .na
 questions: .na
-

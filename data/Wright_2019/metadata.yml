@@ -12,16 +12,47 @@ source:
     number: '2'
     pages: 339--350
     doi: 10.1111/aec.12678
-people:
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: collector, contributor, lab_leader
+contributors:
+  data_collectors:
+  - last_name: Wright
+    given_name: Ian
+    ORCID: 0000-0001-8338-9143
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2010
-  year_collected_end: 2011
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      rename(season = date) %>%
+      mutate(
+        site_name = "Howard_Springs",
+        date_by_month = ifelse(sample_date %in% c("2011-05", "2010-09"), sample_date, NA),
+        date_by_month = ifelse(is.na(date_WD), date_by_month, NA),
+        new_date = ifelse(sample_date %in% c("2011-05", "2010-09"), NA, sample_date),
+        new_date = new_date %>% mdy(quiet=TRUE) %>% as.character(),
+        date_WD = date_WD %>% dmy(quiet=TRUE) %>% as.character(),
+        date_merged = coalesce(new_date, date_WD, as.character(date_by_month)),
+        individual = paste(Species, site_name, age, Rep, sep = "_"),
+        across(everything(), ~na_if(.,"nan")),
+        across(everything(), ~na_if(.,"NaN"))
+      ) %>%
+        select(-date_by_month, -new_date, -date_WD, -sample_date, - notes, -spp, -`Pith diam (mm)`, -context) %>% 
+        group_by(site_name, season, Species, age, Rep, individual) %>% 
+          summarise(
+            across(c(`WD kg/m3`:`gas_ d13C_leaf`), ~mean(.x), na.rm = TRUE),
+            date_merged = first(date_merged)
+          ) %>% 
+        ungroup()
+  '
+  collection_date: date_merged
+  taxon_name: Species
+  location_name: site_name
+  individual_id: individual
   description: traits of NT savannah species
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: age
   sampling_strategy: 'Deciduous, semi-deciduous and evergreen species are all present
     in this savanna. Hence, we sampled plant traits at two time points: at the end
     of one dry season (September 2010), when deciduous species are leafless and the
@@ -48,68 +79,53 @@ dataset:
     et al NT traits data (Howard Springs, Sept 2010) in raw data folder, each comprised
     on many worksheets
   notes: none
-sites:
+locations:
   Howard_Springs:
     latitude (deg): -12.4528
     longitude (deg): 131.1083
-    vegetation: tropical savanna
+    description: tropical savanna
     elevation (m): 30
-    total C (%): 2.7
-    total N (%): 0.093
-    total P (ppm): 72.7
-    description: 'We sampled species at Howard Springs Nature Reserve, 30 km east
-      from Darwin. The savanna vegetation there is typical of the region, with an
-      overstory dominated by eucalypts and an understory dominated by C4 grasses.
-      Overstory leaf area index ranges between about 0.6 in the dry season to 1 in
-      the wet season (Hutley et al. 2001). At Darwin airport (20 km to the west),
-      long-term annual rainfall is 1736 mm, typically with >95% of rain falling during
-      the wet season (October-April). Mean annual temperature is 27.6 deg C (data
-      from www.bom.gov.au). Fires occur regularly in the dry season; typical fire
-      return intervals in the region are 1-3 years (Russell-Smith et al. 2003). Soils
-      at the site are sandy and low in nutrients: mean (and standard deviation) nutrient
-      concentrations in eight soil samples (0-20 cm depth) collected in September
-      2010 were as follows: total C = 2.7% (1.8), total N = 0.093% (0.074), total
-      P = 72.7 mg kg_1 (22.6).'
+    soil C, total (%): 2.7
+    soil N, total (%): 0.093
+    soil P, total (mg/kg): 72.7
+    notes: 'We sampled species at Howard Springs Nature Reserve, 30 km east from Darwin.
+      The savanna vegetation there is typical of the region, with an overstory dominated
+      by eucalypts and an understory dominated by C4 grasses. Overstory leaf area
+      index ranges between about 0.6 in the dry season to 1 in the wet season (Hutley
+      et al. 2001). At Darwin airport (20 km to the west), long-term annual rainfall
+      is 1736 mm, typically with >95% of rain falling during the wet season (October-April).
+      Mean annual temperature is 27.6 deg C (data from www.bom.gov.au). Fires occur
+      regularly in the dry season; typical fire return intervals in the region are
+      1-3 years (Russell-Smith et al. 2003). Soils at the site are sandy and low in
+      nutrients: mean (and standard deviation) nutrient concentrations in eight soil
+      samples (0-20 cm depth) collected in September 2010 were as follows: total C
+      = 2.7% (1.8), total N = 0.093% (0.074), total P = 72.7 mg kg_1 (22.6).'
 contexts:
-  dry_season_measurement_on_adult:
-    type: field
-    description: Measurements made in September 2010, late in the dry season, on an
-      adult plant
-    season: Dry season (Septmeber 2010)
-    plant age: Adult
-  wet_season_measurement_on_adult:
-    type: field
-    description: Measurements made in May 2011, during the wet season, on an adult
-      plant
-    season: Wet season (May 2011)
-    plant age: Adult
-  dry_season_measurement_on_sapling:
-    type: field
-    description: Measurements made in September 2010, late in the dry season, on a
-      sapling
-    season: Dry season (Septmeber 2010)
-    plant age: Sapling
-  wet_season_measurement_on_sapling:
-    type: field
-    description: Measurements made in May 2011, during the wet season, on a sapling
-    season: Wet season (May 2011)
-    plant age: Sapling
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-    context_name: context
-    date: sample_date
-  custom_R_code: data %>% mutate(site_name = "Howard_Springs") %>% mutate_at(c("Cu"),
-    ~na_if(.,0)) %>% mutate(season = date) %>% mutate(sample_date = sample_date %>%
-    mdy(quiet=TRUE)) %>% group_by(Species,Rep,context) %>% mutate_at(vars(7:49),replace_duplicates_with_NA)
-    %>% ungroup()
+- context_property: sampling season
+  category: temporal
+  var_in: season
+  values:
+  - value: dry season (Sep 2010)
+    description: Measurements made during the dry season (Sep 2010).
+  - value: wet season (May 2011)
+    description: Measurements made during the wet season (May 2011).
+- context_property: leaf sample type
+  category: method
+  var_in: method_context
+  values:
+  - find: leaf morphology sample
+    value: leaf morphology sample
+    description: Leaf samples collected for leaf morphology measurements.
+  - find: gas exchange sample
+    value: gas exchange sample
+    description: Leaf samples collected for gas exchange measurements.
 traits:
 - var_in: WD kg/m3
   unit_in: kg/m3
   trait_name: wood_density
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Stem tissue density (dry mass per fresh volume) was measured on 2 cm long
     branch segments of approximately 1 cm over-bark diameter. For dry season samples,
@@ -122,9 +138,12 @@ traits:
     after oven-drying at 70 deg C for 7 days.
 - var_in: SLAmm2mg
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
+  method_context: leaf morphology sample
   methods: Five recently-matured, fully-expanded and undamaged leaves (including petioles)
     were collected from each individual for determination of one-sided projected leaf
     area (flatbed scanner), oven-dried mass (70 deg C for at least 48 h) and thus
@@ -132,7 +151,9 @@ traits:
 - var_in: C%
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Total N concentration of leaf and soil samples was measured with a LECO
     TruSpec CHN analyser; total P by ICP-OES, on nitric acid digests (analyses run
@@ -142,7 +163,9 @@ traits:
 - var_in: N%
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Total N concentration of leaf and soil samples was measured with a LECO
     TruSpec CHN analyser; total P by ICP-OES, on nitric acid digests (analyses run
@@ -152,7 +175,9 @@ traits:
 - var_in: P%
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Total N concentration of leaf and soil samples was measured with a LECO
     TruSpec CHN analyser; total P by ICP-OES, on nitric acid digests (analyses run
@@ -162,7 +187,9 @@ traits:
 - var_in: leaf_mass_mg
   unit_in: mg
   trait_name: leaf_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Five recently-matured, fully-expanded and undamaged leaves (including petioles)
     were collected from each individual for determination of one-sided projected leaf
@@ -170,8 +197,10 @@ traits:
     SLA (area per dry mass; cm2 g-1).
 - var_in: LM/SM80
   unit_in: g/g
-  trait_name: leaf_mass_to_stem_mass
-  value_type: raw_value
+  trait_name: leaf_mass_to_stem_mass_ratio
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'A single terminal branch, 80 cm in length, was sampled from each of several
     individuals of each species/age class (average, 4.8 branches per species/age).
@@ -192,7 +221,9 @@ traits:
 - var_in: LMF80
   unit_in: g/g
   trait_name: leaf_mass_fraction
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'A single terminal branch, 80 cm in length, was sampled from each of several
     individuals of each species/age class (average, 4.8 branches per species/age).
@@ -213,7 +244,9 @@ traits:
 - var_in: leaf_area_mm2
   unit_in: mm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Five (May 2011) or 2-3 (Sep 2010) recently-matured, fully-expanded and
     undamaged leaves (including petioles) were collected from each individual for
@@ -222,7 +255,9 @@ traits:
 - var_in: Bark thickness (mm)
   unit_in: mm
   trait_name: bark_thickness
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Measured on wet season samples collected for wood density; determined with
     calipers. For wet season samples, the bark was first removed, allowing us to measure
@@ -234,19 +269,9 @@ traits:
 - var_in: Bark area (cm2)
   unit_in: cm2
   trait_name: .na
-  value_type: raw_value
-  replicates: 1
-  methods: Measured on wet season samples collected for wood density; determined with
-    calipers. For wet season samples, the bark was first removed, allowing us to measure
-    relative dry mass allocation to bark versus sapwood. For these samples, stem density
-    refers to that of the sapwood only (plus any pith, if present). Hereafter we refer
-    to these quantities as 'WD' (wood density). At each date, five samples were taken
-    per species/age class. Sample volumes were measured using standard procedure (via
-    displacement), and dry masses after oven-drying at 70 deg C for 7 days.
-- var_in: Pith diam (mm)
-  unit_in: mm
-  trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Measured on wet season samples collected for wood density; determined with
     calipers. For wet season samples, the bark was first removed, allowing us to measure
@@ -257,8 +282,10 @@ traits:
     displacement), and dry masses after oven-drying at 70 deg C for 7 days.
 - var_in: Asat_area (micromol/m2/s)
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
-  value_type: raw_value
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Light-saturated rates of photosynthesis (Asat) and stomatal conductance
     to water vapour (gs) were measured during the wet season only, using a Li-Cor
@@ -272,8 +299,10 @@ traits:
     deviation 0.28).
 - var_in: gsw (mol/m2/s)
   unit_in: mmolH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: raw_value
+  trait_name: leaf_stomatal_conductance_per_area_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Light-saturated rates of photosynthesis (Asat) and stomatal conductance
     to water vapour (gs) were measured during the wet season only, using a Li-Cor
@@ -287,8 +316,10 @@ traits:
     deviation 0.28).
 - var_in: Ci
   unit_in: umolCO2/mol
-  trait_name: ci_at_Asat
-  value_type: raw_value
+  trait_name: leaf_intercellular_CO2_concentration_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Light-saturated rates of photosynthesis (Asat) and stomatal conductance
     to water vapour (gs) were measured during the wet season only, using a Li-Cor
@@ -302,8 +333,10 @@ traits:
     deviation 0.28).
 - var_in: Ca
   unit_in: umolCO2/mol
-  trait_name: ca
-  value_type: raw_value
+  trait_name: atmospheric_CO2_concentration
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Light-saturated rates of photosynthesis (Asat) and stomatal conductance
     to water vapour (gs) were measured during the wet season only, using a Li-Cor
@@ -317,8 +350,10 @@ traits:
     deviation 0.28).
 - var_in: CiCa ratio
   unit_in: umolCO2 internal/umolCO2 ambient
-  trait_name: ci_over_ca
-  value_type: raw_value
+  trait_name: leaf_intercellular_CO2_concentration_to_atmospheric_CO2_concentration_ratio
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Light-saturated rates of photosynthesis (Asat) and stomatal conductance
     to water vapour (gs) were measured during the wet season only, using a Li-Cor
@@ -333,25 +368,33 @@ traits:
 - var_in: Tleaf
   unit_in: C
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: leaf temperature measured during photosynthesis measurements
 - var_in: DBH
   unit_in: mm
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: diameter at breast height
 - var_in: CBH
   unit_in: mm
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: circumference at breast height
 - var_in: Amass
   unit_in: nmolCO2/g/s
-  trait_name: photosynthetic_rate_per_dry_mass_saturated
-  value_type: raw_value
+  trait_name: leaf_photosynthetic_rate_per_dry_mass_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Light-saturated rates of photosynthesis (Asat) and stomatal conductance
     to water vapour (gs) were measured during the wet season only, using a Li-Cor
@@ -365,9 +408,12 @@ traits:
     deviation 0.28).
 - var_in: SLA_photosynthesis_mm2mg
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
+  method_context: gas exchange sample
   methods: Specific leaf area (SLA) measurements made on the leaves on which photosynthesis
     was measured. One-sided projected leaf area was determined (flatbed scanner),
     oven-dried mass (70 deg C for at least 48 h) and thus SLA (area per dry mass;
@@ -375,73 +421,97 @@ traits:
 - var_in: Al
   unit_in: mg/kg
   trait_name: leaf_Al_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: P and other elemental results obtained by ICPOES on nitric acid digests
 - var_in: B
   unit_in: mg/kg
   trait_name: leaf_B_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: P and other elemental results obtained by ICPOES on nitric acid digests
 - var_in: calcium
   unit_in: mg/kg
   trait_name: leaf_Ca_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: P and other elemental results obtained by ICPOES on nitric acid digests
 - var_in: Cu
   unit_in: mg/kg
   trait_name: leaf_Cu_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: P and other elemental results obtained by ICPOES on nitric acid digests
 - var_in: Fe
   unit_in: mg/kg
   trait_name: leaf_Fe_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: P and other elemental results obtained by ICPOES on nitric acid digests
 - var_in: K
   unit_in: mg/kg
   trait_name: leaf_K_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: P and other elemental results obtained by ICPOES on nitric acid digests
 - var_in: Mg
   unit_in: mg/kg
   trait_name: leaf_Mg_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: P and other elemental results obtained by ICPOES on nitric acid digests
 - var_in: Mn
   unit_in: mg/kg
   trait_name: leaf_Mn_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: P and other elemental results obtained by ICPOES on nitric acid digests
 - var_in: Na
   unit_in: mg/kg
   trait_name: leaf_Na_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: P and other elemental results obtained by ICPOES on nitric acid digests
 - var_in: S
   unit_in: mg/kg
   trait_name: leaf_S_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: P and other elemental results obtained by ICPOES on nitric acid digests
 - var_in: Zn
   unit_in: mg/kg
   trait_name: leaf_Zn_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: P and other elemental results obtained by ICPOES on nitric acid digests
 - var_in: gas_d15N_leaf
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf lamina material used in photosynthetic measurements was oven-dried
     and pooled per species/age class, then analysed for 13C/12C and 15N/14N stable
@@ -452,7 +522,9 @@ traits:
 - var_in: gas_ d13C_leaf
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf lamina material used in photosynthetic measurements was oven-dried
     and pooled per species/age class, then analysed for 13C/12C and 15N/14N stable
@@ -463,7 +535,9 @@ traits:
 - var_in: LMA_leaf_isotope_gm2
   unit_in: g/m2
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf lamina material used in photosynthetic measurements was oven-dried
     and pooled per species/age class for isotope measurements. These are the LMA /
@@ -473,7 +547,9 @@ traits:
 - var_in: N(%)_leaf
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf N associated with isotope samples. Leaf lamina material used in photosynthetic
     measurements was oven-dried and pooled per species/age class, then analysed for
@@ -485,35 +561,45 @@ traits:
 - var_in: d15N_bark
   unit_in: per mille
   trait_name: bark_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Bark was analysed for 15N/14N stable isotope composition at the Stable
     Isotopes Laboratory, Australian National University, Canberra.
 - var_in: d13C_bark
   unit_in: per mille
   trait_name: bark_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Bark was analysed for 13C/12C stable isotope composition at the Stable
     Isotopes Laboratory, Australian National University, Canberra.
 - var_in: d15N_wood
   unit_in: per mille
   trait_name: wood_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Wood was analysed for 15N/14N stable isotope composition at the Stable
     Isotopes Laboratory, Australian National University, Canberra.
 - var_in: d13C_wood
   unit_in: per mille
   trait_name: wood_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Wood was analysed for 13C/12C stable isotope composition at the Stable
     Isotopes Laboratory, Australian National University, Canberra.
 - var_in: C%_bark
   unit_in: '%'
   trait_name: bark_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Bark was analysed for 13C/12C stable isotope composition at the Stable
     Isotopes Laboratory, Australian National University, Canberra. These are the simultaneously
@@ -521,7 +607,9 @@ traits:
 - var_in: N%_bark
   unit_in: '%'
   trait_name: bark_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Bark was analysed for 15N/14N stable isotope composition at the Stable
     Isotopes Laboratory, Australian National University, Canberra. These are the simultaneously
@@ -529,7 +617,9 @@ traits:
 - var_in: C%_wood
   unit_in: '%'
   trait_name: wood_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Wood was analysed for 13C/12C stable isotope composition at the Stable
     Isotopes Laboratory, Australian National University, Canberra. These are the simultaneously
@@ -537,16 +627,14 @@ traits:
 - var_in: N%_wood
   unit_in: '%'
   trait_name: wood_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Wood was analysed for 15N/14N stable isotope composition at the Stable
     Isotopes Laboratory, Australian National University, Canberra. These are the simultaneously
     determined %N values.
 substitutions: .na
-taxonomic_updates:
-- find: Erythrophloem chlorostachys
-  replace: Erythrophleum chlorostachys
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

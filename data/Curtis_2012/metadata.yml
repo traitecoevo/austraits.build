@@ -9,22 +9,32 @@ source:
       modes of thermal protection'
     volume: '60'
     number: '6'
-    pages: '471--483'
+    pages: 471--483
     doi: 10.1071/bt11284
-people:
-- name: Andrea Leigh
-  institution: University of Technology Sydney
-  role: lab_leader, contact
-- name: Ellen Curtis
-  institution: University of Technology Sydney
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Leigh
+    given_name: Andrea
+    ORCID: 0000-0003-3568-2606
+    affiliation: University of Technology Sydney, Australia
+    additional_role: contact
+  - last_name: Curtis
+    given_name: Ellen
+    ORCID: .na.character
+    affiliation: University of Technology Sydney, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2010
-  year_collected_end: 2010
+  data_is_long_format: no
+  custom_R_code:      data %>% mutate(leaf_dry_matter_content = `Leaf dry weight (petiole
+    attached)`/`Leaf wet weight (petiole attached)`) %>% group_by(`Scientific Name`)
+    %>% mutate_at(vars(Habit, LH, Pend), replace_duplicates_with_NA) %>% ungroup()
+  collection_date: 2010/2010
+  taxon_name: Scientific Name
+  location_name: site_name
   description: Study investigating relationships between leaf traits that protect
     against critically high leaf temperatures and how these traits vary within a biome.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: 'Study area and species selection The study was conducted in
     north-west New South Wales, Australia, in an area bounded by the Barrier and Byngnano
     Ranges at Mutawintji National Park in the south and the Grey Range at Sturt National
@@ -47,69 +57,69 @@ dataset:
   original_file: CollatedData Curtis et al 2012.xls in raw data folder and GoogleDrive
     folder; the first and last worksheet were used
   notes: none
-sites:
+locations:
   Mutawintje National Park, close to campground:
     description: hot, arid climate
     latitude (deg): -31.28
     longitude (deg): 142.3
-    location notes: lat/lon approximate, based on place names
-    MAP (mm): < 250
-    average maximum summer temperature (C): 44.0
+    georeference remarks: lat/lon approximate, based on place names
+    precipitation, MAP (mm): < 250
+    temperature, mean summer max (C): 44.0
   Mutawintji National Park in Mutawintji Gorge:
     description: hot, arid climate
     latitude (deg): -31.27
     longitude (deg): 142.31
-    location notes: lat/lon approximate, based on place names
-    MAP (mm): < 250
-    average maximum summer temperature (C): 44.0
+    georeference remarks: lat/lon approximate, based on place names
+    precipitation, MAP (mm): < 250
+    temperature, mean summer max (C): 44.0
   Silver City Highway near Fowlers Gap:
     description: hot, arid climate
     latitude (deg): -31.41
     longitude (deg): 141.62
-    location notes: lat/lon approximate, based on place names
-    MAP (mm): < 250
-    average maximum summer temperature (C): 44.0
+    georeference remarks: lat/lon approximate, based on place names
+    precipitation, MAP (mm): < 250
+    temperature, mean summer max (C): 44.0
   Sturt National Park, around Olive Downs Homestead:
     description: hot, arid climate
     latitude (deg): -29.05
     longitude (deg): 141.86
-    location notes: lat/lon approximate, based on place names
-    MAP (mm): < 250
-    average maximum summer temperature (C): 44.0
+    georeference remarks: lat/lon approximate, based on place names
+    precipitation, MAP (mm): < 250
+    temperature, mean summer max (C): 44.0
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Scientific Name
-    site_name: site_name
-  custom_R_code: data %>% mutate(leaf_dry_matter_content = `Leaf dry weight (petiole
-    attached)`/`Leaf wet weight (petiole attached)`) %>% group_by(`Scientific Name`)
-    %>% mutate_at(vars(Habit, LH, Pend), replace_duplicates_with_NA) %>% ungroup()
 traits:
 - var_in: Habit
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation; coding in data.csv file, 1=herb/forb, 2=shrub or 3=perennial
 - var_in: LH
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation; coding in data.csv file, 1=annual, 2=ephemeral (forb
     that dies back to a perennial rootstock), 3=perennial
 - var_in: Pend
   unit_in: .na
-  trait_name: pendulous_leaves
-  value_type: expert_mean
+  trait_name: leaf_pendulousness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation of whether the leaves had a pendulous habit; coding
     in data.csv file, 1=no, 2=yes
 - var_in: Leaf area (approximated total area)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: All morphological leaf traits were measured on a minimum of three leaves
     from each of five plants (i.e. >= 15 leaves) for all 95 species. Sample leaves
@@ -124,7 +134,9 @@ traits:
 - var_in: Leaf Length
   unit_in: mm
   trait_name: leaf_length
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: All morphological leaf traits were measured on a minimum of three leaves
     from each of five plants (i.e. >= 15 leaves) for all 95 species. Sample leaves
@@ -139,7 +151,9 @@ traits:
 - var_in: Leaf width
   unit_in: mm
   trait_name: leaf_width
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: All morphological leaf traits were measured on a minimum of three leaves
     from each of five plants (i.e. >= 15 leaves) for all 95 species. Sample leaves
@@ -154,7 +168,9 @@ traits:
 - var_in: Leaf thickness
   unit_in: mm
   trait_name: leaf_thickness
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: All morphological leaf traits were measured on a minimum of three leaves
     from each of five plants (i.e. >= 15 leaves) for all 95 species. Sample leaves
@@ -172,7 +188,9 @@ traits:
 - var_in: Leaf wet weight (petiole attached)
   unit_in: g
   trait_name: leaf_fresh_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: All morphological leaf traits were measured on a minimum of three leaves
     from each of five plants (i.e. >= 15 leaves) for all 95 species. Sample leaves
@@ -190,7 +208,9 @@ traits:
 - var_in: Leaf dry weight (petiole attached)
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: All morphological leaf traits were measured on a minimum of three leaves
     from each of five plants (i.e. >= 15 leaves) for all 95 species. Sample leaves
@@ -203,8 +223,10 @@ traits:
     to 0.001 g.
 - var_in: Leaf Mass Per Area (LMA g/m-2) PETIOLE ATTACHED
   unit_in: g/m2
-  trait_name: specific_leaf_area
-  value_type: site_mean
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: All morphological leaf traits were measured on a minimum of three leaves
     from each of five plants (i.e. >= 15 leaves) for all 95 species. Sample leaves
@@ -222,7 +244,9 @@ traits:
 - var_in: Percent Water Content (WC)
   unit_in: '%'
   trait_name: leaf_water_content_per_fresh_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: All morphological leaf traits were measured on a minimum of three leaves
     from each of five plants (i.e. >= 15 leaves) for all 95 species. Sample leaves
@@ -237,7 +261,9 @@ traits:
 - var_in: leaf_dry_matter_content
   unit_in: g/g
   trait_name: leaf_dry_matter_content
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: All morphological leaf traits were measured on a minimum of three leaves
     from each of five plants (i.e. >= 15 leaves) for all 95 species. Sample leaves
@@ -252,7 +278,9 @@ traits:
 - var_in: VIS %R (460-680nm)
   unit_in: '%'
   trait_name: leaf_reflectance
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Reflectance of visible and near infrared wavelengths was measured in 0.5-nm
     increments between 300 and 1100 nm, as a percentage of incoming light for each
@@ -266,7 +294,9 @@ traits:
 - var_in: NIR %R (750-1050nm)
   unit_in: '%'
   trait_name: leaf_reflectance_near_infrared
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Reflectance of visible and near infrared wavelengths was measured in 0.5-nm
     increments between 300 and 1100 nm, as a percentage of incoming light for each
@@ -296,36 +326,35 @@ substitutions:
 - trait_name: life_history
   find: 3
   replace: perennial
-- trait_name: pendulous_leaves
+- trait_name: leaf_pendulousness
   find: 1
   replace: not_pendulous
-- trait_name: pendulous_leaves
+- trait_name: leaf_pendulousness
   find: 2
   replace: pendulous
 taxonomic_updates:
 - find: Dodonaea viscosa subsp. spathulata
   replace: Dodonaea viscosa var. spathulata
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Portulaca oleraceae
-  replace: Portulaca oleracea
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Senecio sp. (aff. Cunnighammii)
-  replace: Senecio sp. (aff. S. cunninghamii)
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Senna sturtii
-  replace: Senna artemisioides subsp. x sturtii
-  reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
-- find: Salsola kali var. kali
-  replace: Salsola kali
-  reason: Aligned with APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Pimelea microcephala subsp. Microcephala
-  replace: Pimelea microcephala subsp. microcephala
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Varietas
 - find: Eucalyptus camaldulensis ssp. Obtusa
   replace: Eucalyptus camaldulensis subsp. obtusa
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Portulaca oleraceae
+  replace: Portulaca oleracea
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Senecio sp. (aff. Cunnighammii)
+  replace: Senecio sp. aff. cunninghamii
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Senna sturtii
+  replace: Senna artemisioides subsp. x sturtii
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
 exclude_observations: .na
 questions: .na
-

@@ -11,26 +11,38 @@ source:
     pages: e84378
     publisher: Public Library of Science (PLoS)
     doi: 10.1371/journal.pone.0084378
-people:
-- name: Yue Phin David Jeremiah-Seok Tng
-  institution: Institute of Biology, Federal University of Bahia, R. Bario Jeremoabo,
-    Ondina, 40170-115 Salvador, Bahia, Brazil
-  role: collector, contact
-- name: David Bowman
-  institution: University of Tasmania
-  role: lab_leader
-- name: Gregory Jordan
-  institution: University of Tasmania
-  role: lab_leader
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Tng
+    given_name: David Yue Phin Jeremiah-Seok
+    ORCID: 0000-0001-5135-0922
+    affiliation: Centre for Rainforest Studies, School for Field Studies, Yungaburra,
+      Queensland 4872, Australia
+    additional_role: contact
+  - last_name: Bowman
+    given_name: David
+    ORCID: 0000-0001-8075-124X
+    affiliation: University of Tasmania, Australia
+  - last_name: Jordan
+    given_name: Gregory
+    ORCID: 0000-0002-6033-2766
+    affiliation: University of Tasmania, Australia
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2012
-  year_collected_end: 2012
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        leaflet_area = ifelse(name_original == "Acacia dealbata", `leaf area mm2`, NA),
+        `leaf area mm2` = ifelse(name_original == "Acacia dealbata", NA, `leaf area mm2`)  
+      )
+  '
+  collection_date: 2012/2012
+  taxon_name: name_original
+  location_name: site_ID
   description: various traits for 128 trees and shrubs from transition zones
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: In each region the three vegetation types are readily recognised,
     allowing for a priori allocation of vegetation samples and species; (i) rainforests
     have closed canopies and an absence of eucalypts; (ii) giant eucalypt forests
@@ -57,12 +69,12 @@ dataset:
     species will be applicable to vines.
   original_file: Tng_2013.pdf
   notes: none
-sites:
+locations:
   Arve Valley:
     longitude (deg): 146.76861
     latitude (deg): -43.0772
-    MAT (C): 18.4
-    MAP (mm): 2070
+    temperature, MAT (C): 18.4
+    precipitation, MAP (mm): 2070
     description: We sampled rainforest, and the surrounding giant eucalypt forest
       and open vegetation but did not sample treeless grasslands or sedgelands in
       two regions- tropical north Queensland and cool temperate Tasmania. North Queensland
@@ -76,8 +88,8 @@ sites:
   Herberton:
     longitude (deg): 145.3833
     latitude (deg): -17.3833
-    MAT (C): 27.1
-    MAP (mm): 2240
+    temperature, MAT (C): 27.1
+    precipitation, MAP (mm): 2240
     description: We sampled rainforest, and the surrounding giant eucalypt forest
       and open vegetation but did not sample treeless grasslands or sedgelands in
       two regions- tropical north Queensland and cool temperate Tasmania. North Queensland
@@ -89,25 +101,38 @@ sites:
       rainfall of 2070mm for a typical site (Arve Valley 43 deg 14'S, 146 deg 79'E).
       The climate is thermally seasonal and has winter dominated 'precipitation
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-    site_name: site_ID
-  custom_R_code: .na
 traits:
 - var_in: 13C %
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: site_mean
-  replicates: 4-5
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 1
   methods: For leaf carbon isotope ratio (d13C) determination, the leaves of four
     to five individuals were bulked, ground finely and d13C assessed by the School
     of Plant Biology, University of Western Australia.
 - var_in: leaf area mm2
   unit_in: cm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 4-5
+  methods: For leaf area and leaf mass per area (LMA), two to 20 replicates per individual
+    of sun-exposed leaves were obtained from the tree or shrub mid-canopy. For species
+    with compound leaves, leaflets were taken to be the functional unit equivalent
+    to leaves. For shrubs and short trees, an extension cutter was used to obtain
+    the leaves but for trees taller than 10 meters, canopy branches were collected
+    using a slingshot and weighted line. Only fully expanded leaves were used and
+    these were scanned with a flatbed scanner and the leaf scans were processed by
+    imaging software ImageJ to obtain leaf areas.
+- var_in: leaflet_area
+  unit_in: cm2
+  trait_name: leaflet_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: For leaf area and leaf mass per area (LMA), two to 20 replicates per individual
     of sun-exposed leaves were obtained from the tree or shrub mid-canopy. For species
@@ -119,8 +144,10 @@ traits:
     imaging software ImageJ to obtain leaf areas.
 - var_in: LMA gm2
   unit_in: g/m2
-  trait_name: specific_leaf_area
-  value_type: site_mean
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: For leaf area and leaf mass per area (LMA), two to 20 replicates per individual
     of sun-exposed leaves were obtained from the tree or shrub mid-canopy. For species
@@ -135,7 +162,9 @@ traits:
 - var_in: WD g cm3
   unit_in: mg/mm3
   trait_name: wood_density
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: For wood density, we followed a protocol similar to Falster & Westoby [51].
     For trees, we collected branches and obtained two to five 5cm segments of the
@@ -148,7 +177,9 @@ traits:
 - var_in: Height (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Maximum height (Htmax) was obtained from literature sources [52-56]. (Only
     15 of the records are duplicates with current AusTraits values and across many
@@ -156,7 +187,9 @@ traits:
 - var_in: leaf slenderness
   unit_in: dimensionless
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: For shrubs and short trees, an extension cutter was used to obtain the
     leaves but for trees taller than 10 meters, canopy branches were collected using
@@ -166,8 +199,10 @@ traits:
     of the leaf length to leaf breadth.
 - var_in: bark thickness index
   unit_in: dimensionless
-  trait_name: .na
-  value_type: site_mean
+  trait_name: bark_thickness_index
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: Bark thickness was only measured on trees, and was obtained using a bark
     gauge at a height of 1.3m above the ground. In trees with fissured bark, we took
@@ -185,21 +220,25 @@ substitutions: .na
 taxonomic_updates:
 - find: Alphitonia whitea
   replace: Alphitonia whitei
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Alstonia mulleriana
   replace: Alstonia muelleriana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cassinia trinervia
   replace: Cassinia trinerva
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Hedycarya loxocarpa
   replace: Hedycarya loxocarya
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Leptospermum laenigerum
   replace: Leptospermum lanigerum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions:
   additional_traits: leaf slenderness (ratio of leaf length to width) and an index
     of bark thickness.
-

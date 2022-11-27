@@ -11,24 +11,33 @@ source:
     number: '7'
     pages: 1752--1761
     doi: 10.1002/eap.1782
-people:
-- name: Pengzhen Du
-  institution: Lanzhou University
-  role: collector
-- name: Claire Farrell
-  institution: University of Melbourne
-  role: lab_leader, contact
-- name: Stefan Arndt
-  institution: University of Melbourne
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Du
+    given_name: Pengzhen
+    ORCID: 0000-0002-5774-5711
+    affiliation: Lanzhou University, China
+  - last_name: Farrell
+    given_name: Claire
+    ORCID: 0000-0002-5822-7529
+    affiliation: University of Melbourne, Australia
+    additional_role: contact
+  - last_name: Arndt
+    given_name: Stefan
+    ORCID: 0000-0001-7086-9375
+    affiliation: University of Melbourne, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: December 2015
-  year_collected_end: July 2016
+  data_is_long_format: no
+  custom_R_code: .na
+  collection_date: 2015-12/2016-07
+  taxon_name: Species
+  location_name: site
   description: A glasshouse experiment to determine the possible trade-offs between
     shrub water use for stormwater management and their response to drought conditions,
     to better identify ideal species for green or vegetated roofs.
-  collection_type: glasshouse
-  sample_age_class: adult
+  basis_of_record: lab
+  life_stage: seedling
   sampling_strategy: Plant material  ^p     In this experiment, 20 shrubs were selected
     from different climates of origin across southern Australia based on their heat
     moisture index (HMI; Table 1). We used species occurrence records in the Atlas
@@ -70,33 +79,32 @@ dataset:
     different days based on their dry-down rates.
   original_file: Du et al 2018 Ecological applications.xls
   notes: none
-sites:
+locations:
   The University of Melbourne Burnley campus:
     latitude (deg): -37.828472
     longitude (deg): 145.020883
     description: temperature controlled glasshouse
 contexts:
-  Water deficit:
-    type: treatment
-    description: The plants were watered to pot capacity at 17:00 three times per
-      week (Monday, Wednesday, and Friday)
-  Well Watered:
-    type: treatment
+- context_property: drought treatment
+  category: treatment
+  var_in: Treatment
+  values:
+  - find: Water deficit
+    value: water deficit
     description: The plants were watered three times per week (Monday, Wednesday,
       and Friday). They received 50% of the water used by well-watered plants during
       the previous watering cycle.
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site
-    context_name: Treatment
-  custom_R_code: .na
+  - find: Well Watered
+    value: well-watered
+    description: The plants were watered to pot capacity at 17:00 three times per
+      week (Monday, Wednesday, and Friday).
 traits:
 - var_in: ET (g H2O/day/cm2)
   unit_in: g/day/cm2
   trait_name: whole_plant_transpiration
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: Cumulative evapotranspiration per pot was determined as the sum of evapotranspiration
     over the 42-81 d of the experiment, depending on each species' dry-down rate.
@@ -104,8 +112,10 @@ traits:
     evapotranspiration. (AusTraits scaled this number to total plant leaf area.)
 - var_in: SLA (m2/kg leaf)
   unit_in: m2/kg
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: Five replicates of 20 species were initially harvested prior to the watering
     treatments to obtain total plant dry mass, total leaf dry mass, and total leaf
@@ -121,7 +131,9 @@ traits:
 - var_in: LAR (m2leaf/kg plant
   unit_in: m2/kg
   trait_name: leaf_area_ratio
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: Five replicates of 20 species were initially harvested prior to the watering
     treatments to obtain total plant dry mass, total leaf dry mass, and total leaf
@@ -137,7 +149,9 @@ traits:
 - var_in: RGR(mg g-1day-1)
   unit_in: mg/g/day
   trait_name: .na.character
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: Five replicates of 20 species were initially harvested prior to the watering
     treatments to obtain total plant dry mass, total leaf dry mass, and total leaf
@@ -153,7 +167,9 @@ traits:
 - var_in: WP-PD(-Mpa)
   unit_in: neg_MPa
   trait_name: water_potential_predawn
-  value_type: experiment_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: At the conclusion of the dry-down for each species, leaf water potentials
     at predawn (WP-PD; 05:00-05:30) and midday (WP-MD; 12:30-13:00) were measured
@@ -162,7 +178,9 @@ traits:
 - var_in: WP-MD(-Mpa)
   unit_in: neg_MPa
   trait_name: water_potential_midday
-  value_type: experiment_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: At the conclusion of the dry-down for each species, leaf water potentials
     at predawn (WP-PD; 05:00-05:30) and midday (WP-MD; 12:30-13:00) were measured
@@ -172,4 +190,3 @@ substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

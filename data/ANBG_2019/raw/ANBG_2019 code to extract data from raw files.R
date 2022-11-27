@@ -92,5 +92,5 @@ View(check)
 
 
 
-build_study_report("ANBG_2019",overwrite=TRUE)
+dataset_generate_report("ANBG_2019",overwrite=TRUE)
 

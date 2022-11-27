@@ -2,9 +2,10 @@
 # `austraits.build`: source for `AusTraits`
 
 <!-- badges: start -->
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3583418.svg)](https://doi.org/10.5281/zenodo.3583418)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3568417.svg)](https://doi.org/10.5281/zenodo.3568417)
 [![build](https://github.com/traitecoevo/austraits.build/actions/workflows/check-build.yml/badge.svg)](https://github.com/traitecoevo/austraits.build/actions/workflows/check-build.yml)
 [![R-CMD-check](https://github.com/traitecoevo/austraits.build/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/traitecoevo/austraits.build/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/traitecoevo/austraits.build/branch/develop/graph/badge.svg)](https://app.codecov.io/gh/traitecoevo/austraits.build?branch=develop)
 <!-- badges: end -->
 
 <img src="docs/figures/logo.png">

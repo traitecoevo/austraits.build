@@ -10,148 +10,179 @@ source:
     pages: 619--739
     publisher: CSIRO Publishing
     doi: 10.1071/sb01010
-people:
-- name: Gregory Chandler
-  institution: unknown
-  role: collector, contact
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Chandler
+    given_name: Gregory
+    ORCID: 0000-0002-0905-6823
+    affiliation: Department of Agriculture, Australia
+    additional_role: contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2002
-  year_collected_end: 2002
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        flowering_time =  ifelse(is.na(data$`flowering month begin`), NA, 
+                          sprintf("%s-%s",month.abb[`flowering month begin`], 
+                          month.abb[`flowering month end`]) %>% 
+                          convert_month_range_vec_to_binary()),
+        stem_growth_habit = ifelse(`growth form` %in% c("p", "s p"), "prostrate", NA)
+      )
+  ' 
+  collection_date: unknown/2002
+  taxon_name: binomial
   description: 'transposed from Chandler Monograph of Gastrolobium (Fabaceae: Mirbelieae)'
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: herbarium specimens
   original_file: Chandler_2002_gastrolobium.xls
   notes: No duplication with other studies; some duplicates within study, for species
     where min and max seed dimensions or leaf dimensions are identical.
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: binomial
-  custom_R_code: data %>% mutate( flowering_time =  ifelse(is.na(data$`flowering month
-    begin`), NA, sprintf("%s-%s",month.abb[`flowering month begin`], month.abb[`flowering
-    month end`]) %>% convert_month_range_vec_to_binary()))
 traits:
 - var_in: max height (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf length min (mm)
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Determined on herbarium specimens. Length is measured from base to apex
     and is not necessarily the longest axis.
 - var_in: leaf length max (mm)
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Determined on herbarium specimens. Length is measured from base to apex
     and is not necessarily the longest axis.
 - var_in: leaf width min (mm)
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Determined on herbarium specimens and is the breadth perpendicular to the
     length at the widest point.
 - var_in: leaf width max (mm)
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Determined on herbarium specimens and is the breadth perpendicular to the
     length at the widest point.
 - var_in: flowering_time
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: seed min length (mm)
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Determined on herbarium specimens.
 - var_in: seed max length (mm)
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Determined on herbarium specimens.
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
-  replicates: Verified during field work (expert opinion) and from prior references
-    (i.e., all other references say the same thing).
-  methods: unknown
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Verified during field work (expert opinion) and from prior references (i.e.,
+    all other references say the same thing).
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Seen in field and information from herbarium records.
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Seen in field and information from herbarium records.
 - var_in: min height (m)
   unit_in: m
   trait_name: .na
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: extreme max height (m)
   unit_in: m
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: .na
   methods: .na
 - var_in: extreme min leaf length (mm)
   unit_in: mm
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: .na
   methods: .na
 - var_in: extreme max leaf length (mm)
   unit_in: mm
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: .na
   methods: .na
 - var_in: extreme min leaf width (mm)
   unit_in: mm
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: .na
   methods: .na
 - var_in: extreme max leaf width (mm)
   unit_in: mm
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: .na
   methods: .na
-- var_in: seed min width (mm)
-  unit_in: mm
-  trait_name: seed_width
-  value_type: expert_min
-  replicates: .na
-  methods: Determined on herbarium specimens. Included pickled flowers for accurate
-    measurements of floral traits.
-- var_in: seed max width (mm)
-  unit_in: mm
-  trait_name: seed_width
-  value_type: expert_max
-  replicates: .na
-  methods: Determined on herbarium specimens. Included pickled flowers for accurate
-    measurements of floral traits.
 substitutions:
 - trait_name: life_history
   find: p
@@ -161,11 +192,10 @@ substitutions:
   replace: shrub
 - trait_name: plant_growth_form
   find: p
-  replace: prostrate
+  replace: .na
 - trait_name: plant_growth_form
   find: s p
-  replace: prostrate_shrub
+  replace: shrub
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

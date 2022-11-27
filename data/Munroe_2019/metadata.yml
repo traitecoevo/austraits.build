@@ -3,33 +3,58 @@ source:
     key: Munroe_2019
     bibtype: Article
     year: '2021'
-    author: Samantha E. M. Munroe, Francesca A. McInerney, Jake Andrae, Nina
-      Welti, Greg R. Guerin, Emrys Leitch, Tony Hall, Steve Szarvas,
-      Rachel Atkins, Stefan Caddy-Retalic, Ben Sparrow
+    author: Samantha E. M. Munroe, Francesca A. McInerney, Jake Andrae, Nina Welti,
+      Greg R. Guerin, Emrys Leitch, Tony Hall, Steve Szarvas, Rachel Atkins, Stefan
+      Caddy-Retalic, Ben Sparrow
     journal: Scientific Data
-    title: The Photosynthetic Pathways of Plant Species Surveyed in {{Australia}}'s National Terrestrial Monitoring Network
+    title: The Photosynthetic Pathways of Plant Species Surveyed in {{Australia}}'s
+      National Terrestrial Monitoring Network
     volume: '8'
     pages: '97'
     doi: 10.1038/s41597-021-00877-z
-people:
-- name: Samantha Munroe
-  institution: Terrestrial Ecosystem Research Network, The School of Biological Sciences,
-    The University of Adelaide, Adelaide, SA, 5005, Australia.
-  role: contact, collector
-- name: Greg Guerin
-  institution: Terrestrial Ecosystem Research Network, The School of Biological Sciences,
-    The University of Adelaide, Adelaide, SA, 5005, Australia.
-  role: collector
-- name: Ben Sparrow
-  institution: Terrestrial Ecosystem Research Network, The School of Biological Sciences,
-    The University of Adelaide, Adelaide, SA, 5005, Australia.
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Munroe
+    given_name: Samantha
+    ORCID: 0000-0001-7827-1028
+    affiliation: Terrestrial Ecosystem Research Network, The School of Biological
+      Sciences, The University of Adelaide, Adelaide, SA, 5005, Australia
+    additional_role: contact
+  - last_name: Guerin
+    given_name: Greg
+    ORCID: 0000-0002-2104-6695
+    affiliation: Terrestrial Ecosystem Research Network, The School of Biological
+      Sciences, The University of Adelaide, Adelaide, SA, 5005, Australia
+  - last_name: Sparrow
+    given_name: Ben
+    ORCID: 0000-0003-2566-1895
+    affiliation: Terrestrial Ecosystem Research Network, The School of Biological
+      Sciences, The University of Adelaide, Adelaide, SA, 5005, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2019
-  year_collected_end: 2019
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        remarks = ifelse(`Photosynthetic.pathway (confirmed using data from literature or TERN stable isotope analysis)`
+        %in% c("C3","C4","C3-C4","CAM","C3-CAM","C4-CAM"),
+          paste0("Photosynthetic pathway confirmed using data from literature or TERN stable isotope analysis; source, ", 
+          Source),NA),
+        remarks = ifelse(`Photosyntehtic.pathway (inferred from lineage)` 
+        %in% c("C3","C4","C3-C4","CAM","C3-CAM","C4-CAM"),
+          paste0("Photosynthetic pathway inferred from lineage; source, ", 
+          `Justification for inference based on lineage`), remarks)
+      ) %>%
+      group_by(Species) %>%
+        distinct(`Photosynthetic pathway (combined)`, .keep_all = TRUE) %>%
+      ungroup()
+  '
+  collection_date: 2019/2019
+  taxon_name: Species
+  location_name: site_name
   description: TERN Plant Photosynthetic Pathway Trait Dataset
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: The TERN Plant Photosynthetic Pathway Trait Databset includes
     species detected at TERN Ecosystem Surveillance plots using the TERN Ausplots
     Rangelands method. AusPlots Rangelands protocols are detailed in the TERN Ausplots
@@ -44,7 +69,7 @@ dataset:
   original_file: TERN_Plant_Photosynthetic_Pathway_Trait_Dataset and associated source
     and metadata text files in raw data folder and in corresponding folder on GoogleDrive
   notes: none
-sites:
+locations:
   site_at_-12.739_deg_lat_132.34_deg_long:
     longitude (deg): 132.3403361
     latitude (deg): -12.739225
@@ -276,9 +301,6 @@ sites:
   site_at_-23.302_deg_lat_120.217_deg_long:
     longitude (deg): 120.2171194
     latitude (deg): -23.3019861
-  site_at_-23.344_deg_lat_138.252_deg_long:
-    longitude (deg): 138.2522444
-    latitude (deg): -23.3444972
   site_at_-23.385_deg_lat_120.479_deg_long:
     longitude (deg): 120.4791389
     latitude (deg): -23.3847
@@ -661,18 +683,15 @@ sites:
     longitude (deg): .na
     latitude (deg): .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-  custom_R_code: .na
 traits:
 - var_in: Photosynthetic pathway (combined)
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
+  measurement_remarks: remarks
   methods: Species recorded at each plot were assigned a photosynthetic pathway using
     a combination of information from existing plant trait databases, published literature,
     and carbon stable isotope analysis performed by TERN using TERN tissue samples.
@@ -686,51 +705,73 @@ traits:
     plant samples were used for carbon isotope analysis to determine the photosynthetic
     pathway. 'TRY' indicates the photosynthetic pathway was assigned based on information
     available from the TRY Plant Trait Databas. All other references are from the
-    literature (available as a seperate spreadsheet in the raw data folder).
+    literature (available as a separate spreadsheet in the raw data folder).
 substitutions: .na
 taxonomic_updates:
-- find: Paractaenum novae hollandiae
-  replace: Paractaenum novae-hollandiae
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Taraxacum sect taraxacum
-  replace: Taraxacum sect. Taraxacum
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
 - find: Brachyscome tadgelii
   replace: Brachyscome tadgellii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Eucalyptus accendens
   replace: Eucalyptus accedens
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Eucalyptus camaldulenis
   replace: Eucalyptus camaldulensis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hakea cygna
+  replace: Hakea cygnus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
 - find: Lepidosperma yonsii
   replace: Lepidosperma lyonsii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
 - find: Maireana lanifolia
   replace: Maireana planifolia
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
 - find: Micromyrtus obovatus
   replace: Micromyrtus obovata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Polygala pterocarya
-  replace: Polygala pterocarpa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Salvia verbenacea
-  replace: Salvia verbenaca
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Scaevola parviflora
-  replace: Scaevola parvifolia
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Murchisonia volubilis brittan
   replace: Murchisonia volubilis
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Paractaenum novae hollandiae
+  replace: Paractaenum novae-hollandiae
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Phyllanthus collinus
-  replace: Phyllanthus sp. [Phyllanthus collinus]
-  reason: Algin to genus, as only reference to species from 1927 (E. Wenk, 2020-05-25)
+  replace: Phyllanthus calycinus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Polygala pterocarya
+  replace: Polygala pterocarpa
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Salvia verbenacea
+  replace: Salvia verbenaca
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Scaevola parviflora
+  replace: Scaevola parvifolia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Taraxacum sect taraxacum
+  replace: Taraxacum sp. [Taraxacum sect taraxacum; Munroe_2019]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Tephrosia procera cowie
   replace: Tephrosia procera
-  reason: "Change spelling to Align to APC accepted name (E. Wenk, 2020-05-25)\r\n"
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations:
 - variable: taxon_name
   find: Campylopus introflexus, Dicranoloma menziesii, Philonotis tenuis, Polytrichastrum
@@ -740,4 +781,3 @@ exclude_observations:
   find: Xanthoparmelia semiviridis
   reason: lichen (E Wenk, 2020.06.18)
 questions: .na
-

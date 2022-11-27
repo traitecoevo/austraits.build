@@ -21,7 +21,7 @@ source:
       series)
     pages: 456
     ISBN: 0642568014, 9780642568014
-  secondary_03:
+  secondary_02:
     key: McGlone_2010
     bibtype: Article
     year: '2010'
@@ -32,17 +32,30 @@ source:
     volume: '34'
     number: '1'
     pages: 137-151
-people:
-- name: Karel Mokany
-  institution: CSIRO, Canberra
-  role: contact, collector
+contributors:
+  data_collectors:
+  - last_name: Mokany
+    given_name: Karel
+    ORCID: 0000-0003-4199-3697
+    affiliation: CSIRO Land and Water, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2015
-  year_collected_end: 2015
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate_at(vars(plant_height_unique_values),~na_if(.,0)) %>%
+      mutate(
+        leaflet_area = ifelse(`Spp Name` == "Acacia dealbata", `Leaf_Area_cm2`, NA),
+        `Leaf_Area_cm2` = ifelse(`Spp Name` == "Acacia dealbata", NA, `Leaf_Area_cm2`)
+      )
+  '
+  collection_date: 2015/2015
+  taxon_name: Spp Name
   description: These data provide observed and interpolated functional trait values
     for 1220 Tasmanian plant species.
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: We collated functional trait data (maximum height, maximum leaf
     length, maximum leaf width, mean seed mass) for as many of the target 1220 Tasmanian
     plant species as possible. Data on leaf length and width were collated for the
@@ -62,18 +75,15 @@ dataset:
     SAH_2014, TMAG_2009, and WAH_1998 have been removed. Harden 2000 and Maslin and
     Tame 2001 are not included as secondary references, because AusTraits includes
     references that supercede these.
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Spp Name
-  custom_R_code: data %>% mutate_at(vars(plant_height_unique_values),~na_if(.,0))
 traits:
 - var_in: plant_height_unique_values
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: We collated functional trait data (maximum height, maximum leaf length,
     maximum leaf width, mean seed mass) for as many of the target 1220 Tasmanian plant
@@ -88,7 +98,24 @@ traits:
 - var_in: Leaf_Area_cm2
   unit_in: cm2
   trait_name: leaf_area
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: Data on leaf length and width were collated for the smallest lamina for
+    compound leaves and ferns, with length and width for all species combined to calculate
+    a single 'leaf area' trait, by assuming elliptically shaped leaves for every species.
+    Trait data were collated from a variety of published material (Reid et al. 1999,
+    Harden 2000, Jordan 2001, Maslin and Tame 2001, McGlone et al. 2010), and field
+    collection by the authors. No values for leaf area were a priori filtered during
+    data input by AusTraits as there was minimal overlap with species x value combinations
+    already in AusTraits. These interpolated values have been filtered out of AusTraits.
+- var_in: leaflet_area
+  unit_in: cm2
+  trait_name: leaflet_area
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: Data on leaf length and width were collated for the smallest lamina for
     compound leaves and ferns, with length and width for all species combined to calculate
@@ -100,8 +127,10 @@ traits:
     already in AusTraits. These interpolated values have been filtered out of AusTraits.
 - var_in: seed_mass_unique_values
   unit_in: g
-  trait_name: seed_mass
-  value_type: expert_mean
+  trait_name: seed_dry_mass
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: We collated functional trait data (maximum height, maximum leaf length,
     maximum leaf width, mean seed mass) for as many of the target 1220 Tasmanian plant
@@ -116,72 +145,54 @@ traits:
     because Jordan recorded seed width and length, not actual seed mass.
 substitutions: .na
 taxonomic_updates:
-- find: Agrostis aff parviflora
-  replace: Agrostis parviflora
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Carex diandra
-  replace: Carex aff. diandra
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Viola sieberana
-  replace: Viola sieberiana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
 - find: Acaena ovina
   replace: Acaena x ovina
-  reason: Typo picked up by data contributor
-- find: Crocosmia Xcrocosmiiflora
-  replace: Crocosmia x crocosmiiflora
-  reason: Alignment with existing species identified by TaxonStand (2020-04-08)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
 - find: Acaena Xanserovina
   replace: Acaena x anserovina
-  reason: Align with known species (E Wenk, 2020-05-22)
-- find: Arachnorchis dilatata
-  replace: Caladenia dilatata
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Agrostis aff parviflora
+  replace: Agrostis sp. [Agrostis aff. parviflora; Mokany_2015]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Athrotaxis laxifolia
-  replace: Athrotaxis x laxifolia
-  reason: Align with APC accepted hybrid (E. Wenk, 2020-05-25)
-- find: Caladenia deformis
-  replace: Pheladenia deformis
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
-- find: Corunastylis archeri
-  replace: Genoplesium archeri
-  reason: Align to APNI 'inferred' name within Orchidaceae; not APC accepted (E. Wenk,
-    2020-05-25)
-- find: Corysanthes incurva
-  replace: Corybas incurvus
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-25)
-- find: Hydrorchis orbicularis
-  replace: Microtis orbicularis
-  reason: Align to APNI 'inferred' name within Orchidaceae; not APC accepted (E. Wenk,
-    2020-05-24)
+  replace: Arthrotaxis laxifolia
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Carex diandra
+  replace: Carex aff. diandra
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Crocosmia Xcrocosmiiflora
+  replace: Crocosmia x crocosmiiflora
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Lachnagrostis scabra subsp scabra
   replace: Lachnagrostis scabra
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Nemacianthus caudatus
-  replace: Acianthus caudatus
-  reason: Align to APNI 'inferred' name within Orchidaceae; not APC accepted (E. Wenk,
-    2020-05-24)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Ozothamnus expansifolius
   replace: Ozothamnus x expansifolius
-  reason: Align to APC accepted hybrid (E. Wenk, 2020-05-25)
-- find: Petalochilus fuscatus
-  replace: Caladenia fuscata
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-24)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
 - find: Pterostylis Xingens
-  replace: Pterostylis acuminata var. ingens
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  replace: Pterostylis x ingens
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Richea curtisiae
   replace: Richea x curtisiae
-  reason: Align to APC accepted hybrid (E. Wenk, 2020-05-25)
-- find: Stegostyla alpina
-  replace: Caladenia alpina
-  reason: Align to species (E. Wenk 2020-05-23)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Viola sieberana
+  replace: Viola sieberiana
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

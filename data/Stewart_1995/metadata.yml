@@ -9,25 +9,49 @@ source:
       a biological integrator of water availability'
     volume: '22'
     number: '1'
-    pages: '51--55'
+    pages: 51--55
     doi: 10.1071/pp9950051
-people:
-- name: George Stewart
-  institution: University of Queensland
-  role: collector, lab_leader
-- name: Susanne Schmidt
-  institution: University of Queensland
-  role: collector
-- name: Ian Wright
-  institution: Macquarie University
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Stewart
+    given_name: George
+    ORCID: .na.character
+    affiliation: The University of Queensland, Australia
+    notes: no contact
+  - last_name: Schmidt
+    given_name: Susanne
+    ORCID: 0000-0001-8369-1238
+    affiliation: School of Agriculture and Food Science, The University of Queensland,
+      Australia
+  austraits_curators: Ian Wright, Elizabeth Wenk
 dataset:
-  year_collected_start: 1992
-  year_collected_end: 1993
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        date = ifelse(site == "Loganholme","1992-12",NA), 
+        date = ifelse(site == "Idalia","1992",date), 
+        date = ifelse(site == "Gambubal","1993-01",date), 
+        date = ifelse(site == "Coominya","1993",date),
+        rownumber = row_number(),
+        plant_growth_form = ifelse(rownumber > 94, NA, plant_growth_form),
+        plant_growth_substrate = NA_character_
+      ) %>%
+      move_values_to_new_trait(
+        "plant_growth_form", "plant_growth_substrate", "O (mistletoe)", "epiphyte", ""
+      ) %>%
+      group_by(name_edited) %>%
+        mutate(across(c(`N-fixer (Y/N)` ,`leaf_type(B/N)`, `plant_growth_form`, `plant_growth_substrate`,
+        `evergreen/deciduous(E/D)`, `photosynthetic_pathway`), replace_duplicates_with_NA)) %>%
+      ungroup()     
+  '
+  collection_date: date
+  taxon_name: name_edited
+  location_name: site
   description: A collection of leaf d13C values for plant communities across Queensland
     to understand how rainfall affects carbon isotope discrimination
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Plant specimens were collected from 12 sites along a rainfall
     gradient in southern Queensland, of approximately 900 km in length, at an approximate
     latitude of 27deg s. The location and dominant plant community of each site are
@@ -46,104 +70,118 @@ dataset:
     manipulated in Excel to craete a single row of data.
   notes: This dataset does not include data for all the sites listed in the manuscript.
     AusTraits has been unable to obtain a complete dataset; the additional site data
-    are in the file in the raw data folder
-sites:
+    are in the file in the raw data folder. Also, the plant growth form column starts
+    to contain a number of nonsensical values beyond row 94 and these have been filtered
+    out (E. Wenk, 2022-05-31)
+locations:
   Coominya:
-    description: Coominya
-    vegetation: Open Forest
+    locality: Coominya
+    description: Open Forest
     latitude (deg): -27.2
     longitude (deg): 152.5
-    year collected: '1993'
-    MAP (mm): 822.0
-    5-yr-rainfall (mm): 979.0
-    rain day (per annum): 64.0
+    precipitation, MAP (mm): 822.0
+    precipitation, 5 year total (mm): 979.0
+    precipitation, rain days (per year): 64.0
     moisture balance (mm per annum): -778.0
-    Jan-Mar rain: .na.real
-    Oct-Mar rain: .na.real
+    precipitation, Jan-Mar (mm): .na.real
+    precipitation, Oct-Mar: .na.real
   Gambubal:
-    description: Gambubul State Forest
-    vegetation: Subtropical rainforest
+    locality: Gambubul State Forest
+    description: Subtropical rainforest
     latitude (deg): -28.03
     longitude (deg): 152.83
-    year collected: early 1993
-    MAP (mm): 1199.0
-    5-yr-rainfall (mm): 1199.0
-    rain day (per annum): 104.0
+    precipitation, MAP (mm): 1199.0
+    precipitation, 5 year total (mm): 1199.0
+    precipitation, rain days (per year): 104.0
     moisture balance (mm per annum): -361.0
-    Jan-Mar rain: .na.real
-    Oct-Mar rain: .na.real
+    precipitation, Jan-Mar (mm): .na.real
+    precipitation, Oct-Mar: .na.real
   Idalia:
-    description: Idalia National Park
-    vegetation: Brigalow, tropical woodland
+    locality: Idalia National Park
+    description: Brigalow, tropical woodland
     latitude (deg): -24.08
     longitude (deg): 145.0
-    year collected: '1992'
-    MAP (mm): 450.0
-    5-yr-rainfall (mm): 450.0
-    rain day (per annum): 51.0
+    precipitation, MAP (mm): 450.0
+    precipitation, 5 year total (mm): 450.0
+    precipitation, rain days (per year): 51.0
     moisture balance (mm per annum): -2090.0
-    Jan-Mar rain: .na.real
-    Oct-Mar rain: .na.real
+    precipitation, Jan-Mar (mm): .na.real
+    precipitation, Oct-Mar: .na.real
   Loganholme:
-    description: Loganholme
-    vegetation: Melaleuca Swamp
+    locality: Loganholme
+    description: Melaleuca Swamp
     latitude (deg): -27.8
     longitude (deg): 153.1
-    year collected: Dec-92
-    MAP (mm): 1244.0
-    5-yr-rainfall (mm): 1341.0
-    rain day (per annum): 124.0
+    precipitation, MAP (mm): 1244.0
+    precipitation, 5 year total (mm): 1341.0
+    precipitation, rain days (per year): 124.0
     moisture balance (mm per annum): -336.0
-    Jan-Mar rain: 391.0
-    Oct-Mar rain: 718.0
+    precipitation, Jan-Mar (mm): 391.0
+    precipitation, Oct-Mar: 718.0
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_edited
-    site_name: site
-  custom_R_code: .na
 traits:
 - var_in: leaf_type(B/N)
   unit_in: .na
   trait_name: leaf_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: evergreen/deciduous(E/D)
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: photosynthetic_pathway
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert knowledge or reference book
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: GrowthForm2 (woody/herbaceuous)
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: N-fixer (Y/N)
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: delta_13C
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf samples for each species (n = 3-12) were oven-dried at 70deg C and
     ground to a fine powder in a vibratory ball mill (Retsch MM - 2, Haan, Germany).
@@ -176,13 +214,13 @@ substitutions:
   replace: needle
 - trait_name: nitrogen_fixing
   find: 'y'
-  replace: 1
+  replace: nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: y?
-  replace: 1
+  replace: nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'n'
-  replace: 0
+  replace: non_nitrogen_fixer
 - trait_name: photosynthetic_pathway
   find: '?'
   replace: .na
@@ -191,7 +229,7 @@ substitutions:
   replace: shrub
 - trait_name: plant_growth_form
   find: o (mistletoe)
-  replace: epiphyte
+  replace: .na
 - trait_name: plant_growth_form
   find: t
   replace: tree
@@ -200,10 +238,10 @@ substitutions:
   replace: herb
 - trait_name: plant_growth_form
   find: v
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: seedling
   replace: .na
@@ -217,100 +255,136 @@ substitutions:
   find: s or t (root parasite, at least early on in life)
   replace: shrub tree
 taxonomic_updates:
-- find: Adianthum formosum
-  replace: Adiantum formosum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Argyrodendron trifoliatum
-  replace: Argyrodendron trifoliolatum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Atriplex lindegi
-  replace: Atriplex lindleyi
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Callistemon saligna
-  replace: Callistemon salignus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Dubosia myoporoides
-  replace: Duboisia myoporoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Exocarpus latifolius
-  replace: Exocarpos latifolius
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Gallium migrans
-  replace: Galium migrans
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Geranium solandre
-  replace: Geranium solanderi
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Gmelina leichhardii
-  replace: Gmelina leichhardtii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Melaleuca quinquinervia
-  replace: Melaleuca quinquenervia
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Neobasia proseriflora
-  replace: Neobassia proceriflora
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pennatia cunninghamii
-  replace: Pennantia cunninghamii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Tasmania insipida
-  replace: Tasmannia insipida
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+- find: Acacia harpophylla Host
+  replace: Acacia harpophylla
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
+    APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Achmena ingens
   replace: Acmena ingens
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Adianthum formosum
+  replace: Adiantum formosum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Arachodendropsis Host
+  replace: Archidendropsis sp. [Arachodendropsis Host; Stewart_1995]
+  reason: match_22_fuzzy. Aligning name with fuzzy matches genus accepted by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Argyrodendron trifoliatum
+  replace: Argyrodendron trifoliolatum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Atriplex lindegi
+  replace: Atriplex lindleyi
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Callistemon saligna
+  replace: Callistemon salignus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cassia nemophylla var. nemophylla
   replace: Cassia nemophila var. nemophila
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: Manual alignment with canonical name of rank `varietas` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Varietas
 - find: Cassia nemophylla var. zygophylla
   replace: Cassia nemophila var. zygophylla
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Varietas
 - find: Cassia phylodinia
   replace: Cassia phyllodinea
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Acacia harpophylla Host
-  replace: Acacia sp. [Acacia harpophylla Host]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Arachodendropsis Host
-  replace: Archidendropsis sp. [Arachodendropsis Host]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cedrela aclerata
+  replace: Cedrela sp. [Cedrela aclerata; Stewart_1995]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus in APNI
+    (2022-11-10)
+  taxonomic_resolution: genus
+- find: Dubosia myoporoides
+  replace: Duboisia myoporoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Eremophila sp.1
-  replace: Eremophila sp. [Eremophila sp.1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Eremophila sp. [Eremophila sp.1; Stewart_1995]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Eremophila sp.2
-  replace: Eremophila sp. [Eremophila sp.2]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Eremophila sp. [Eremophila sp.2; Stewart_1995]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Erimophylla sp.1
-  replace: Eremophila sp. 1
-  reason: Align to genus (E. Wenk, 2020-05-23)
+  replace: Eremophila sp. [Erimophylla sp.1; Stewart_1995]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
 - find: Erimophylla sp.2
-  replace: Eremophila sp. 2
-  reason: Align to genus (E. Wenk, 2020-05-23)
+  replace: Eremophila sp. [Erimophylla sp.2; Stewart_1995]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
+- find: Exocarpus latifolius
+  replace: Exocarpos latifolius
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Gallium migrans
+  replace: Galium migrans
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Geranium solandre
+  replace: Geranium solanderi
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Gmelina leichhardii
+  replace: Gmelina leichhardtii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Maireana tomentosa ?
   replace: Maireana tomentosa
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Melaleuca quinquinervia
+  replace: Melaleuca quinquenervia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Neobasia proseriflora
+  replace: Neobassia proceriflora
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Pandorea jasminoides ?
   replace: Pandorea jasminoides
-  reason: Change spelling to Align to APC accepted name (E. Wenk, 2020-05-26)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pennatia cunninghamii
+  replace: Pennantia cunninghamii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Senna artemisioides subsp. artemisioides
   replace: Senna artemisioides subsp. x artemisioides
-  reason: Align to accepted hybrid species on APC list (E. Wenk, 2020-05-25)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Subspecies
 - find: Senna artemisioides subsp. coriacea
   replace: Senna artemisioides subsp. x coriacea
-  reason: Align to accepted hybrid species on APC list (E. Wenk, 2020-05-25)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Subspecies
 - find: Senna artemisioides subsp. petiolaris
   replace: Senna artemisioides subsp. x petiolaris
-  reason: Align to APC accepted hybrid (E. Wenk, 2020-05-25)
-- find: Cedrela aclerata
-  replace: Toona sp.
-  reason: Align to current genus (E. Wenk, 2020-06-26)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Tasmania insipida
+  replace: Tasmannia insipida
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations:
 - variable: taxon_name
   find: Khaya nyasica, Khaya nyastica
   reason: non-native (E Wenk, 2020.06.18)
 questions: .na
-

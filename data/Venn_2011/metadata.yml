@@ -10,28 +10,35 @@ source:
     volume: 212
     pages: 1491--1499
     doi: 10.1007/s11258-011-9923-1
-people:
-- name: Susanna Venn
-  institution: Deakin University
-  role: collector, contact
-- name: Catherine Pickering
-  institution: School of Environment, Griffith University
-  role: collector
-- name: John Morgan
-  institution: La Trobe University
-  role: collector
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Venn
+    given_name: Susanna
+    ORCID: 0000-0002-7433-0120
+    affiliation: Centre for Integrative Ecology, School of Life and Environmental
+      Sciences, Deakin University, Burwood, Australia
+    additional_role: contact
+  - last_name: Pickering
+    given_name: Catherine
+    ORCID: 0000-0002-3731-5407
+    affiliation: School of Environment and Science, Griffith University, Australia
+  - last_name: Morgan
+    given_name: John
+    ORCID: 0000-0003-2003-5983
+    affiliation: La Trobe University, Australia
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2008
-  year_collected_end: 2009
+  data_is_long_format: no
+  custom_R_code:      data %>% mutate(site = "Main Range, Kosciuszko National Park")
+  collection_date: 2008/2009
+  taxon_name: SPECIES
+  location_name: site
   description: Study used three continuous plant functional traits (leaf area, plant
     height, seed mass) and their divergence (using the FDvar index) to document current
     patterns of community assembly and predict plant community responses to future
     environmental filters in alpine snowpatch vegetation.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: The study was conducted across seven snowpatches of the Main
     Range in the alpine area of Kosciuszko National Park, Snowy Mountains, south-eastern
     Australia. The region is characterized by continuous snow cover for up to 4 months
@@ -75,26 +82,22 @@ dataset:
     (Mason et al. 2003) and are also directly linked to ecosystem functioning.
   original_file: AusTraits database_SV.xls
   notes: .na
-sites:
+locations:
   Main Range, Kosciuszko National Park:
     latitude (deg): -36.417
     longitude (deg): 148.286
     description: snowpatch vegetation
-    region: alpine
-    coordinate source: A sample lat/lon from near the center of the sites sampled
+    biome: alpine
+    georeference remarks: A sample lat/lon from near the center of the sites sampled
       is listed as the location; this is the 'Club Lake FF' site from Pickering_2014.
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: SPECIES
-    site_name: site
-  custom_R_code: data %>% mutate(site = "Main Range, Kosciuszko National Park")
 traits:
 - var_in: MEAN SEED MASS (g)
   unit_in: g
-  trait_name: seed_mass
-  value_type: multisite_mean
+  trait_name: seed_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10-25
   methods: We measured mean seed mass (ug) of all snowpatch species using seed freshly
     collected during the growing season of 2008/2009, stored seed, and seed associated
@@ -104,7 +107,9 @@ traits:
 - var_in: MEAN LEAF AREA (mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: multisite_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10-25
   methods: For most species, we collected fresh material from the field during the
     growing season of 2008/2009 and scanned up to 25 adult leaves (collected from
@@ -117,32 +122,40 @@ traits:
 - var_in: FOLIAGE HEIGHT (cm)
   unit_in: cm
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: For every species, we used maximum height measurements from the local flora
     for this region (Costin et al. 2000).
 substitutions: .na
 taxonomic_updates:
-- find: Euphrasia collina sub sp diversitcolour
-  replace: Euphrasia collina subsp. diversicolor
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Leptorynchus squamatus
-  replace: Leptorhynchos squamatus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
 - find: Erigeron bellidoides
   replace: Erigeron bellidioides
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Senecio pinnatifolius var. pleicephalus
-  replace: Senecio pinnatifolius var. pleiocephalus
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Euphrasia collina sub sp diversitcolour
+  replace: Euphrasia collina subsp. diversicolor
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Leptorynchus squamatus
+  replace: Leptorhynchos squamatus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Oreomyrrhis eriopoda (pinnae)
   replace: Oreomyrrhis eriopoda
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Oreomyrrhis pulvinifica (pinnae)
   replace: Oreomyrrhis pulvinifica
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Senecio pinnatifolius var. pleicephalus
+  replace: Senecio pinnatifolius var. pleiocephalus
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Varietas
 exclude_observations: .na
 questions: .na
-

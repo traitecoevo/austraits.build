@@ -23,22 +23,42 @@ source:
     number: '5'
     pages: 707--718
     doi: 10.1111/j.0269-8463.2004.00885.x
-people:
-- name: Lynda Prior
-  institution: University of Tasmania
-  role: collector, contact
-- name: David Bowman
-  institution: University of Tasmania
-  role: lab_leader
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Prior
+    given_name: Lynda
+    ORCID: 0000-0002-5511-2320
+    affiliation: University of Tasmania, Australia
+    additional_role: contact
+  - last_name: Bowman
+    given_name: David
+    ORCID: 0000-0001-8075-124X
+    affiliation: University of Tasmania, Australia
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 2003
-  year_collected_end: 2003
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        individual_id = paste(Species, Tree, sep = "_"),
+        Species = recode(Species, "Melaleuca DMF" = "Melaleuca leucadendra", 
+        "Melaleuca W" = "Melaleuca viridiflora", "Melaleuca Sw" = "Melaleuca viridiflora"),
+        leaf_density = 10/(`SLA (cm2/g)`*`Leaf thickness (mm)`),
+        `leaf_chlorophyll_per_area_umol/m2`= (10000*`leaf chlorophyll (umol/g)`)/`SLA (cm2/g)`,
+        leaf_dry_matter_content = 1 - `water%`
+      ) %>% 
+      group_by(Species) %>%
+        mutate_at(vars("leaf longevity","growth form","leaf type","photosynthetic pathway","Nfixer"),
+            replace_duplicates_with_NA) %>%
+      ungroup()
+  '
+  collection_date: 2003/2003
+  taxon_name: Species
+  location_name: site
+  individual_id: individual_id
   description: field campaigns of Lynda Prior in NT via Ian Wright
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: At each site, all tree species with six or more representatives
     at least 2 m tall and with accessible leaves (lower than about 2 m from the ground)
     were included in the study, giving a total of 21 species from the four habitats
@@ -58,7 +78,7 @@ dataset:
     chlorostachys ) are considered nitrogen-fixers.
   original_file: Prior compiled.xls
   notes: none
-sites:
+locations:
   dry monsoon forest:
     longitude (deg): 130.9
     latitude (deg): -12.4
@@ -188,37 +208,31 @@ sites:
       total Kjeldahl N and P were determined using flow-injection analysis (Lachat
       Instruments, Milwaukee, WI, USA).
 contexts:
-  wet:
-    description: Leaves measured in the wet season
-    type: field
-  dry:
-    description: Leaves measured in the dry season
-    type: field
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site
-    observation_id: Tree
-    context_name: season
-  custom_R_code: data %>% mutate(Species = recode(Species, "Melaleuca DMF" = "Melaleuca
-    leucadendra", "Melaleuca W" = "Melaleuca viridiflora", "Melaleuca Sw" = "Melaleuca
-    viridiflora")) %>% mutate(leaf_density = 10/(`SLA (cm2/g)`*`Leaf thickness (mm)`))
-    %>% mutate(`chlorophyll_per_area_umol/m2`= (10000*`leaf chlorophyll (umol/g)`)/`SLA
-    (cm2/g)`) %>% mutate(leaf_dry_matter_content = 1 - `water%`) %>% group_by(Species)
-    %>% mutate_at(vars("leaf longevity","growth form","leaf type","photosynthetic
-    pathway","Nfixer"),replace_duplicates_with_NA) %>% ungroup()
+- context_property: sampling season
+  category: temporal
+  var_in: season
+  values:
+  - find: wet
+    value: wet season
+    description: Measurements made during the wet season.
+  - find: dry
+    value: dry season
+    description: Measurements made during the dry season.
 traits:
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Observed in field
 - var_in: leaf longevity
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: 'We observed the phenology of all species during our study; results are
     published in Fig. 8 of Prior, L.D., Eamus, D., and Bowman, D.M.J.S. (2004). Tree
@@ -229,7 +243,9 @@ traits:
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: By observation of field samples; The compound leaves were from Erythrophleum
     chlorostachys, which is listed as 'bipinnate' by Brock (1993) Native plants of
@@ -237,19 +253,25 @@ traits:
 - var_in: photosynthetic pathway
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Assumed from phylogeny and growth form (woody plants)
 - var_in: Nfixer
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion
 - var_in: leaf longevity (months)
   unit_in: month
   trait_name: leaf_lifespan
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Median leaf life span was determined for each tree by tagging new branchlets
     during major flushes. Three branchlets from each of six trees per species were
@@ -258,8 +280,10 @@ traits:
     were counted monthly.
 - var_in: SLA (cm2/g)
   unit_in: cm2/g
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Area of each leaf was then estimated using a Delta-T Scan image analysis
     system (Delta-T Devices, Cambridge, UK). For the C. intratropica branchlets, leaf
@@ -268,7 +292,9 @@ traits:
 - var_in: Leaf size (cm2)
   unit_in: cm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Area of each leaf was then estimated using a Delta-T Scan image analysis
     system (Delta-T Devices, Cambridge, UK). For the C. intratropica branchlets, leaf
@@ -276,14 +302,18 @@ traits:
 - var_in: Leaf thickness (mm)
   unit_in: mm
   trait_name: leaf_thickness
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf thickness was measured in four places between major veins with a micrometer
     (Moore & Wright,Sheffield, UK).
 - var_in: leaf_density
   unit_in: mg/mm3
   trait_name: leaf_density
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf thickness was measured in four places between major veins with a micrometer
     (Moore & Wright,Sheffield, UK). Area of each leaf was then estimated using a Delta-T
@@ -294,7 +324,9 @@ traits:
 - var_in: water%
   unit_in: g/g
   trait_name: leaf_water_content_per_fresh_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Measurements were made on well lit leaves between 0.5 and 2.5 m high. Leaflets
     of E. chlorostachys, phyllodes of A. auriculiformis and small terminal branchlets
@@ -310,7 +342,9 @@ traits:
 - var_in: leaf_dry_matter_content
   unit_in: g/g
   trait_name: leaf_dry_matter_content
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Measurements were made on well lit leaves between 0.5 and 2.5 m high. Leaflets
     of E. chlorostachys, phyllodes of A. auriculiformis and small terminal branchlets
@@ -326,7 +360,9 @@ traits:
 - var_in: Nmass
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Total Kjeldahl nitrogen (Nmass) was determined using flow-injection analysis
     (Lachat Instruments, WI, USA). One leaf per tree (six leaves per species) was
@@ -335,7 +371,9 @@ traits:
 - var_in: Narea
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Total Kjeldahl nitrogen (Nmass) was determined using flow-injection analysis
     (Lachat Instruments, WI, USA). One leaf per tree (six leaves per species) was
@@ -347,7 +385,9 @@ traits:
 - var_in: Pmass
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Total phosphorus (P mass) was determined using flow-injection analysis
     (Lachat Instruments, WI, USA). One leaf per tree (six leaves per species) was
@@ -357,7 +397,9 @@ traits:
 - var_in: Parea
   unit_in: g/m2
   trait_name: leaf_P_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Total phosphorus (P mass) was determined using flow-injection analysis
     (Lachat Instruments, WI, USA). Area of each leaf was estimated using a Delta-T
@@ -366,8 +408,10 @@ traits:
     diameter.
 - var_in: Amass
   unit_in: nmolCO2/g/s
-  trait_name: photosynthetic_rate_per_dry_mass_saturated
-  value_type: raw_value
+  trait_name: leaf_photosynthetic_rate_per_dry_mass_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: "Measurements were made on well lit leaves between 0.5 and 2.5 m high.
     Leaflets of E. chlorostachys, phyllodes of A. auriculiformis and small terminal
@@ -385,8 +429,10 @@ traits:
     dried for a minimum of 48 h at 70degC."
 - var_in: Aarea
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
-  value_type: raw_value
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Area of each leaf was estimated using a Delta-T Scan image analysis system
     (Delta-T Devices, Cambridge, UK). For the C. intratropica branchlets, leaf area
@@ -394,7 +440,9 @@ traits:
 - var_in: saturated water content (g H20/gDW)
   unit_in: g/g
   trait_name: leaf_water_content_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Measured leaves were then harvested and sealed in plastic bags containing
     damp paper towel before being fully rehydrated overnight in an air-conditioned
@@ -403,16 +451,20 @@ traits:
     dried for a minimum of 48 h at 70degC
 - var_in: leaf chlorophyll (umol/g)
   unit_in: umol/g
-  trait_name: chlorophyll_per_dry_mass
-  value_type: raw_value
+  trait_name: leaf_chlorophyll_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Two readings were then taken on each leaf with a chlorophyll meter (SPAD-502;
     Minolta, Osaka, Japan), which was calibrated for each species individually using
     the extraction method of Coombs et al. (1985).
-- var_in: chlorophyll_per_area_umol/m2
+- var_in: leaf_chlorophyll_per_area_umol/m2
   unit_in: umol/m2
-  trait_name: chlorophyll_per_area
-  value_type: raw_value
+  trait_name: leaf_chlorophyll_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Two readings were then taken on each leaf with a chlorophyll meter (SPAD-502;
     Minolta, Osaka, Japan), which was calibrated for each species individually using
@@ -426,27 +478,30 @@ substitutions:
   replace: tree
 - trait_name: nitrogen_fixing
   find: 'No'
-  replace: '0'
+  replace: non_nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'Yes'
-  replace: '1'
+  replace: nitrogen_fixer
 - trait_name: leaf_phenology
   find: semi-deciduous
   replace: semi_deciduous
 taxonomic_updates:
 - find: Planchonia careya A
   replace: Planchonia careya
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Planchonia careya C
   replace: Planchonia careya
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Terminalia ferdinandiana A
   replace: Terminalia ferdinandiana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Terminalia ferdinandiana C
   replace: Terminalia ferdinandiana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions:
   additional_traits: DBH increment
-

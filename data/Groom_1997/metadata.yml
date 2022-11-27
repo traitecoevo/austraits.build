@@ -21,20 +21,36 @@ source:
       in southwestern Australia.
     editor: S.D. Hopper, M. Harvey, J. Chappill and A.S. George
     publisher: Surrey Beatty, Chipping Norton
-people:
-- name: Philip K Groom
-  institution: Curtin University
-  role: collector
-- name: Byron Lamont
-  institution: Curtin University
-  role: collector, contact
+contributors:
+  data_collectors:
+  - last_name: Groom
+    given_name: Philip K
+    ORCID: .na.character
+    affiliation: Curtin University, Australia
+  - last_name: Lamont
+    given_name: Byron
+    ORCID: 0000-0001-9279-7149
+    affiliation: Curtin University, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: unknown
-  year_collected_end: unknown
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      na_if(".na") %>% 
+      mutate(
+        site_name = "southwest Australia",
+        fire_response = ifelse(regeneration_mode == "NS", "fire_killed", "resprouts"),
+        storage_organ = ifelse(regeneration_mode %in% c("RS","RS/EP","RS?"),"lignotuber", NA)
+      )
+  '
+  collection_date: unknown/1997
+  taxon_name: Species
+  location_name: site_name
   description: data on reproductive traits of non-sprouting and re-sprouting Hakea
     species in southwestern Australia
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Twenty follicles of 94 Hakea species (out of a possible 100)
     were collected from natural populations within southwestern Australia. Fruit and
     seed attributes and germination parameters of 50 species of Hakea - 24 non-sprouters
@@ -44,26 +60,21 @@ dataset:
     fruit and seed masses to enable comparison of subgeneric sections and sister species.
   original_file: Groom&Lamont Hakea seedfruit data
   notes: none
-sites:
+locations:
   southwest Australia:
     latitude (deg): .na
     longitude (deg): .na
     latitude range (deg): -27.5 to -34.5
     longitude range (deg): 114 - 122
-    description: Mediterranea climate region
+    description: Mediterranean climate region
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-  custom_R_code: data %>% na_if(".na") %>% mutate(site_name = "southwest Australia")
-    %>% mutate(fire_response = if_else(regeneration_mode=="NS","fire_killed","resprouts"))
 traits:
 - var_in: seed_mass_mg
   unit_in: mg
-  trait_name: seed_mass
-  value_type: site_mean
+  trait_name: seed_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: Seeds were extracted from opening follicles and weighed (fresh weight)
     after removal of the seed wing. Seed body mass (embryo plus testa) was used as
@@ -72,8 +83,10 @@ traits:
     as seeds were to be germinated.
 - var_in: regeneration_mode
   unit_in: .na
-  trait_name: regen_strategy
-  value_type: expert_mean
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Data relating to regenerative mode and fruit production were compiled from
     observations in the field. Regenerative mode was determined by digging around
@@ -85,10 +98,12 @@ traits:
 - var_in: fire_response
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Data relating to regenerative mode and fruit production were compiled from
-    obsen,ations in the field. Regenerative mode was determined by digging around
+    observations in the field. Regenerative mode was determined by digging around
     the base of the srem to see if a lignotuber or sucker was present. Plants were
     also examined to determine whether they had resprouted via epicormic buds. Non-sprouters
     typicallv rvere single stemmed ar. rhe base and lignoruberolls resprouters were
@@ -97,7 +112,9 @@ traits:
 - var_in: serotiny_level
   unit_in: .na
   trait_name: serotiny
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: 'Each species was then categorized into one of four levels of serotiny
     based on the condition of the follicles on branchlets of known age (after Cowling
@@ -108,7 +125,9 @@ traits:
 - var_in: fruit_length_mm
   unit_in: mm
   trait_name: fruit_length
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: For each species, follicles were collected from at least five representative
     plants. Follicle length, width and height (Fig. 1) were measured with calipers
@@ -117,7 +136,9 @@ traits:
 - var_in: fruit_width_mm
   unit_in: mm
   trait_name: fruit_width
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: For each species, follicles were collected from at least five representative
     plants. Follicle length, width and height (Fig. 1) were measured with calipers
@@ -125,8 +146,10 @@ traits:
     after which any remaining closed follicles were manually opened.
 - var_in: fruit_mass_mg
   unit_in: mg
-  trait_name: fruit_mass
-  value_type: site_mean
+  trait_name: fruit_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: For each species, follicles were collected from at least five representative
     plants. Follicle length, width and height (Fig. 1) were measured with calipers
@@ -136,13 +159,17 @@ traits:
 - var_in: pollinator
   unit_in: .na
   trait_name: pollination_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation and reference books
 - var_in: '%_germinated'
   unit_in: '%'
-  trait_name: germination
-  value_type: experiment_mean
+  trait_name: seed_germination
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 30
   methods: Thirty seeds were used to compare percentage germination and rates of germination
     between species. Seeds were soaked in tap water containing a wetting agent for
@@ -157,6 +184,7 @@ traits:
     seeds, expressed as a percentage of the original number of seeds used. The number
     of days to first germinations, 50% germination (of germinated seeds) and between
     first and last germination were also recorded.
+  life_stage: seedling
 substitutions:
 - trait_name: serotiny
   find: 1
@@ -170,27 +198,27 @@ substitutions:
 - trait_name: serotiny
   find: '4'
   replace: not_serotinous
-- trait_name: regen_strategy
+- trait_name: bud_bank_location
   find: NS
-  replace: fire_killed
-- trait_name: regen_strategy
+  replace: none
+- trait_name: bud_bank_location
   find: RTS
   replace: bud-bearing_root
-- trait_name: regen_strategy
+- trait_name: bud_bank_location
   find: RS
-  replace: lignotuber
-- trait_name: regen_strategy
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
   find: RS?
-  replace: lignotuber
-- trait_name: regen_strategy
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
   find: EP
-  replace: epicormic
-- trait_name: regen_strategy
+  replace: epicormic_buds
+- trait_name: bud_bank_location
   find: RS/EP
-  replace: lignotuber epicormic
-- trait_name: regen_strategy
+  replace: basal_stem_buds epicormic_buds
+- trait_name: bud_bank_location
   find: RTS/EP
-  replace: bud-bearing_root epicormic
+  replace: bud-bearing_root epicormic_buds
 - trait_name: pollination_syndrome
   find: i
   replace: insect
@@ -200,46 +228,70 @@ substitutions:
 taxonomic_updates:
 - find: Hakea cygna cygna
   replace: Hakea cygna subsp. cygna
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-12)
+  taxonomic_resolution: Subspecies
 - find: Hakea cygna needlei
-  replace: Hakea cygna subsp. needlei
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Hakea obliqua obliqua
-  replace: Hakea obliqua subsp. obliqua
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Hakea obliqua parviflora
-  replace: Hakea obliqua subsp. parviflora
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Hakea recurva arida
-  replace: Hakea recurva subsp. arida
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Hakea recurva recurva
-  replace: Hakea recurva subsp. recurva
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Hakea scoparia scoparia
-  replace: Hakea scoparia subsp. scoparia
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Hakea francisiana fran
-  replace: Hakea francisiana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Hakea psilorryncha
-  replace: Hakea psilorrhyncha
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  replace: Hakea cygnus subsp. needlei
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Hakea cygna subsp. needlei
+  replace: Hakea cygnus subsp. needlei
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Subspecies
 - find: Hakea fran coriacea
   replace: Hakea coriacea
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Hakea pand crass
-  replace: Hakea pandanicarpa subsp. crassifolia
-  reason: E. Wenk June 4, 2019 abbreviation used in data file
-- find: Hakea orth orth
-  replace: Hakea orthorrhyncha var. orthorrhyncha
-  reason: E. Wenk June 4, 2019 abbreviation used in data file
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Hakea francisiana fran
+  replace: Hakea francisiana
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
+    APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hakea obliqua obliqua
+  replace: Hakea obliqua subsp. obliqua
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Hakea obliqua parviflora
+  replace: Hakea obliqua subsp. parviflora
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Hakea orth fil
   replace: Hakea orthorrhyncha var. filiformis
-  reason: Align to APC accepted spelling (E. Wenk, 2020-05-25)
+  reason: Manual alignment with canonical name of rank `varietas` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Varietas
+- find: Hakea orth orth
+  replace: Hakea orthorrhyncha var. orthorrhyncha
+  reason: Manual alignment with canonical name of rank `varietas` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Varietas
+- find: Hakea pand crass
+  replace: Hakea pandanicarpa subsp. crassifolia
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Hakea psilorryncha
+  replace: Hakea psilorrhyncha
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hakea recurva arida
+  replace: Hakea recurva subsp. arida
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Hakea recurva recurva
+  replace: Hakea recurva subsp. recurva
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Hakea scoparia scoparia
+  replace: Hakea scoparia subsp. scoparia
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 exclude_observations: .na
 questions:
   additional_traits: seed wall thickness (all dimensions), fruit density, seed wing
     area, seed wing load ug mm-2
-

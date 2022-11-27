@@ -4,31 +4,72 @@ source:
     bibtype: Unpublished
     year: 2007
     author: Mark K. J. Ooi, Peter Myerscough, Tony Auld
-    title: 'Unpublished data: Longterm seed mass field campaign, University of New South Wales'
-people:
-- name: Mark Ooi
-  institution: University of New South Wales, Centre for Ecosystem Science
-  role: collector, contact
-- name: Peter Myerscough
-  institution: School of Biological Sciences, University of Sydney
-  role: collector
-- name: Tony Auld
-  institution: .na
-  role: collector
+    title: 'Unpublished data: Longterm seed mass field campaign, University of New
+      South Wales'
+contributors:
+  data_collectors:
+  - last_name: Ooi
+    given_name: Mark
+    ORCID: 0000-0002-3046-0417
+    affiliation: Centre for Ecosystem Science, School of Biological, Earth, and Environmental
+      Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Myerscough
+    given_name: Peter
+    ORCID: .na.character
+    affiliation: School of Life and Environmental Sciences, The University of Sydney,
+      Australia
+    notes: deceased
+  - last_name: Auld
+    given_name: Tony
+    ORCID: 0000-0002-8766-2829
+    affiliation: NSW Department of Planning Industry and Environment, Australia
+  austraits_curators: Elizabeth Wenk, Caitlan Baxter
 dataset:
-  year_collected_start: 1974
-  year_collected_end: 2007
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(`DATE OF COLLECTION` = `DATE OF COLLECTION` %>% dmy()) %>% 
+      group_by(SPECIES) %>%
+        mutate_at(vars(DORM_TYPE), replace_duplicates_with_NA) %>%
+      ungroup() %>%
+      mutate(
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(4603, 4673, 8936, 12050, 12283, 12576, 14503), NA, 1),
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(12981:13080), 0.001, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(14527:14547), 0.01, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(7175), 0.01, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(9425,9479:9503,12664), 0.001, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(14257), 0.0001, `SEED WEIGHT multiplier`),
+        `notes for edited & omitted values` = ifelse(row_number() %in% c(4603, 4673, 8936, 12050, 12283, 12576, 14503),
+        "outlier for species, removed by E. Wenk, 2021-10-27", ""), `notes for edited & omitted values` =
+        ifelse(row_number() %in% c(12981:13080),
+        "divide 1000 to fit within range of other AusTraits observations of species & other Leptospermum in this study",
+        `notes for edited & omitted values`), `notes for edited & omitted values` = ifelse(row_number() %in% c(7175),
+        "seed mass divided by 10^2, E. Wenk 2021-10-27", `notes for edited & omitted values`),
+        `notes for edited & omitted values` = ifelse(row_number() %in% c(9425,9479:9503,12664),
+        "seed mass divided by 10^3, E. Wenk 2021-10-27", `notes for edited & omitted values`),
+        `notes for edited & omitted values` = ifelse(row_number() %in% c(14257),
+        "seed mass divided by 10^4, E. Wenk 2021-10-27", `notes for edited & omitted values`)) %>% 
+      mutate(
+        `SEED WEIGHT mg` = ifelse(as.character(`SEED WEIGHT multiplier`) == "outlier",NA,`SEED WEIGHT mg`),
+        `SEED WEIGHT mg` = ifelse(is.na(`SEED WEIGHT multiplier`),
+            `SEED WEIGHT mg`,`SEED WEIGHT mg`*as.numeric(`SEED WEIGHT multiplier`))
+        )
+  '
+  collection_date: DATE OF COLLECTION
+  taxon_name: SPECIES
+  location_name: SITE
   description: Dataset was put together for a comparative study of dormancy type and
     germination.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Data collected by multiple people across numerous locations over
     many years.
   original_file: Ooi_seed weight_dorm type spp for AusTraits.csv
   notes: Note from data processor - To fill in missing location details on sites,
     coordinates of the town or NP have been included where possible. These coordinates
     are not exact and were sourced from NationalMap.
-sites:
+locations:
   10 miles south of Pelaw Main on Road to Morriset:
     longitude (deg): .na.real
     latitude (deg): .na.real
@@ -324,93 +365,100 @@ sites:
     longitude (deg): .na.real
     latitude (deg): .na.real
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: SPECIES
-    site_name: SITE
-    date: DATE OF COLLECTION
-  custom_R_code: data %>% mutate(`DATE OF COLLECTION` = `DATE OF COLLECTION` %>% dmy())
-    %>% group_by("SPECIES") %>% mutate_at(vars(DORM_TYPE),replace_duplicates_with_NA)
-    %>% ungroup()
 traits:
 - var_in: SEED WEIGHT mg
   unit_in: mg
-  trait_name: seed_mass
-  value_type: raw_value
+  trait_name: seed_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Seeds were weighed individually (ie one seed per measurement as opposed
     to bulking seeds). A fine resolution balance was used.
 - var_in: DORM_TYPE
   unit_in: .na
-  trait_name: dormancy_type
-  value_type: expert_mean
+  trait_name: seed_dormancy_class
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Determined by expert opinion. Dormancy type is based on a classification
     scheme developed by Baskin and Baskin (2014).
 substitutions:
-- trait_name: dormancy_type
+- trait_name: seed_dormancy_class
   find: ND
   replace: non_dormant
-- trait_name: dormancy_type
+- trait_name: seed_dormancy_class
   find: PY
   replace: physical_dormancy
-- trait_name: dormancy_type
+- trait_name: seed_dormancy_class
   find: PD
   replace: physiological_dormancy
-- trait_name: dormancy_type
+- trait_name: seed_dormancy_class
   find: MPD
   replace: morphophysiological_dormancy
-- trait_name: dormancy_type
+- trait_name: seed_dormancy_class
   find: ND/PD
   replace: non_dormant physiological_dormancy
 taxonomic_updates:
-- find: Ceratopetalum Gummifera
-  replace: Ceratopetalum gummiferum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Eucalyptus bancroftei
-  replace: Eucalyptus bancroftii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Eucalyptus macroryncha
-  replace: Eucalyptus macrorhyncha
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Eucalytpus umbra
-  replace: Eucalyptus umbra
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Gynochthodes jasminioides
-  replace: Gynochthodes jasminoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Hakea proprinqua
-  replace: Hakea propinqua
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Melaleuca quinquinerva
-  replace: Melaleuca quinquenervia
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Platylobuim formosum
-  replace: Platylobium formosum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
 - find: Acacia irrorata ssp velutina
   replace: Acacia irrorata subsp. velutinella
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_13_fuzzy. Fuzzy match alignment with infraspecific canonical name
+    in APC accepted when notes are ignored (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Banksia asplenifolia
   replace: Banksia aspleniifolia
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Ceratopetalum Gummifera
+  replace: Ceratopetalum gummiferum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Eucalyptus bancroftei
+  replace: Eucalyptus bancroftii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Eucalyptus deosa var angustifolia
   replace: Eucalyptus oleosa var. angustifolia
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: Manual alignment with canonical name of rank `varietas` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Varietas
+- find: Eucalyptus macroryncha
+  replace: Eucalyptus macrorhyncha
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Eucalyptus pikata
+  replace: Eucalyptus sp. [Eucalyptus pikata; Ooi_2007]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Eucalytpus umbra
+  replace: Eucalyptus umbra
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Gynochthodes jasminioides
+  replace: Gynochthodes jasminoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Haemadorum teretifolium
   replace: Haemodorum teretifolium
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hakea proprinqua
+  replace: Hakea propinqua
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Melaleuca quinquinerva
+  replace: Melaleuca quinquenervia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Platylobuim formosum
+  replace: Platylobium formosum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Pultenea scabra var scabra
   replace: Pultenaea scabra var. scabra
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Eucalyptus pikata
-  replace: Eucalyptus sp. [Eucalyptus pikata]
-  reason: Aign to genus, because no obvious misspelling found (E. Wenk, 2020-05-26)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Varietas
 exclude_observations: .na
 questions: .na
-

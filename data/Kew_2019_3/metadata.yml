@@ -1,71 +1,114 @@
 source:
   primary:
-    key: Kew_2019_1
+    key: Kew_2019_3
     bibtype: Online
     author: '{Royal Botanic Gardens Kew}'
     year: 2019
     title: Salt and water tolerance data from the Seed Information Database (SID)
       and Seed Bank Database
     url: http://data.kew.org/sid/
-people:
-- name: Udayangani Liu
-  institution: Kew Botanic Gardens
-  role: contact
+contributors:
+  data_collectors:
+  - last_name: Liu
+    given_name: Udayangani
+    ORCID: 0000-0002-6192-1319
+    affiliation: Royal Botanic Gardens, Kew, United Kingdom
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: unknown
-  year_collected_end: 2019
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        planttype = ifelse(planttype == "-", NA, planttype),
+        maxdsm = ifelse(maxdsm == "SW", 80, maxdsm),
+        maxdsm = ifelse(maxdsm == "sw?", 80, maxdsm),
+        salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"), planttype, NA),
+        ref_year = stringr::str_extract(refshort, "(?<!\\d)\\d{4}(?!\\d)"),
+        ref_year = ifelse(stringr::str_detect(refshort, "Proc. 11th Int."), "1970", ref_year),
+        ref_year = ifelse(is.na(ref_year), "2019", ref_year),
+        ref_author = ifelse(stringr::str_detect(refshort, "Bidner-BarHava"), "BidnerBarhava", NA),
+        ref_author = ifelse(stringr::str_detect(refshort, "Den Hartog") & is.na(ref_author), "denHartog", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Environmental Research Laboratory.") & is.na(ref_author), "UArizona", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Le Houerou,") & is.na(ref_author), "LeHouerou", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Le Roux") & is.na(ref_author), "LeRoux", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Proc. 11th Int. Grass.") & is.na(ref_author), "IGC", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "St. John") & is.na(ref_author), "StJohn", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Van Steenis") & is.na(ref_author), "vanSteenis", ref_author),
+        ref_author = ifelse(is.na(ref_author), stringr::str_trim(word(refshort, 1)), ref_author),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]", ""),
+        ref_author = ifelse(is.na(ref_author), "unknown", ref_author),
+        source_id = paste0(ref_author, "_", ref_year),
+        source_id = ifelse(is.na(refshort), source_id, ifelse(stringr::str_detect(refshort, "Leary et al., 1986"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(refshort), source_id, ifelse(stringr::str_detect(refshort, "Leary, 1986"), paste0(source_id, "_2", sep = ""), source_id))
+      ) %>%
+      arrange(taxa, planttype, maxdsm, phopath, salt_tolerance, source_id) %>% 
+      group_by(taxa, planttype, maxdsm, phopath, salt_tolerance) %>%
+      mutate(merged_ref = ifelse(length(unique(source_id)) == 1, source_id, paste0(source_id, collapse = "; "))) %>%
+      ungroup() %>% 
+      group_by(taxa, merged_ref) %>%
+      mutate(across(c(planttype, maxdsm, phopath, salt_tolerance), replace_duplicates_with_NA)) %>% 
+      ungroup()
+  '
+  collection_date: unknown/2019
+  taxon_name: taxa
+  source_id: source_id
   description: Salt and water tolerance data on species from Kew seed databases
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: information in data.csv file
   original_file: in raw data folder
+  measurement_remarks: merged_ref
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
-    Commons licesne. Data not to be used for Commercial Purposes.
-sites: .na
+    Commons license. Data not to be used for Commercial Purposes.
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: taxa
-  custom_R_code: data %>% mutate(planttype = ifelse(planttype=="-",NA,planttype))
-    %>% mutate(maxdsm = ifelse(maxdsm=="SW",80,maxdsm)) %>% mutate(maxdsm = ifelse(maxdsm=="sw?",80,maxdsm))
-    %>% group_by(taxa) %>% mutate_at(vars("planttype","maxdsm","phopath"),replace_duplicates_with_NA)
-    %>% ungroup() %>% mutate(salt_tolerance = ifelse(`planttype` %in% c("hyhal","xeroh"),
-    planttype, NA))
 traits:
 - var_in: planttype
   unit_in: .na
   trait_name: plant_type_by_resource_use
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
-    the same value has been reported in multiple sources included and so identical
-    values for a species have been filtered out
+  measurement_remarks: references
+  methods: Kew Gardens collections; for all species the same value is often reported
+    multiple times with different references. These are collapsed into a single entry
+    with the relevant references listed in measurement_remarks.
 - var_in: salt_tolerance
   unit_in: .na
   trait_name: salt_tolerance
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
-    subset of 'planttype' values referring to salt tolerance strategies have been
-    duplicates here; the same value has been reported in multiple sources included
-    and so identical values for a species have been filtered out
+  measurement_remarks: references
+  methods: Kew Gardens collections; subset of 'planttype' values referring to salt
+    tolerance strategies have been duplicates here; for all species the same value
+    is often reported multiple times with different references. These are collapsed
+    into a single entry with the relevant references listed in measurement_remarks.
 - var_in: maxdsm
   unit_in: dS/m
   trait_name: soil_salinity_tolerance
-  value_type: expert_mean
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
-    the same value has been reported in multiple sources included and so identical
-    values for a species have been filtered out
+  measurement_remarks: references
+  methods: Kew Gardens collections; for all species the same value is often reported
+    multiple times with different references. These are collapsed into a single entry
+    with the relevant references listed in measurement_remarks.
 - var_in: phopath
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: Kew Gardens collections, with details in data.csv file under column "refdesc";
-    the same value has been reported in multiple sources included and so identical
-    values for a species have been filtered out
+  measurement_remarks: references
+  methods: Kew Gardens collections; for all species the same value is often reported
+    multiple times with different references. These are collapsed into a single entry
+    with the relevant references listed in measurement_remarks.
 substitutions:
 - trait_name: soil_salinity_tolerance
   find: '?'
@@ -115,4 +158,3 @@ substitutions:
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

@@ -22,18 +22,37 @@ source:
     number: '3'
     pages: 400--406
     doi: 10.1038/s41559-018-0790-1
-people:
-- name: Jennifer Firn
-  institution: Queensland University of Technology
-  role: contact
+contributors:
+  data_collectors:
+  - last_name: Firn
+    given_name: Jennifer
+    ORCID: 0000-0001-6026-8912
+    affiliation: Queensland University of Technology, Brisbane, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk, Caitlan Baxter
 dataset:
-  year_collected_start: 2011
-  year_collected_end: 2011
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        trt = ifelse(trt == "N", "nitrogen",trt),
+        fence_treatment = ifelse(stringr::str_detect(trt,"Fence"),"fence","control"),
+        nutrient_treatment = ifelse(trt=="Fence","control",trt),
+        nutrient_treatment = ifelse(nutrient_treatment == "NPK+Fence","NPK",nutrient_treatment),
+        blocks = paste(trt, block, sep = "-")
+      ) %>% 
+      group_by(Taxon) %>% 
+        mutate_at(vars(functional_group), replace_duplicates_with_NA) %>% 
+      ungroup()
+  '
+  collection_date: year
+  taxon_name: Taxon
+  location_name: site_name
   description: In a global experimental test, we quantified how leaf traits in grasslands
     change in response to the addition of soil nutrients (that is, nitrogen, phosphorus
     and potassium) and the exclusion of vertebrate herbivores.
-  collection_type: field_experiment
-  sample_age_class: adult
+  basis_of_record: field_experiment
+  life_stage: adult
   sampling_strategy: The 27 study sites (four located in Australia and included into
     AusTraits) are part of NutNet- a cooperative globally distributed experiment (Fig.
     1 and Supplementary Table 1; http://www.nutnet.org/). Each experimental site had
@@ -53,121 +72,157 @@ dataset:
     Values for the nutrient addition plots are given in the
   original_file: Firn_australian_sites_NutNet_foliar_data.xls
   notes: .na
-sites:
+locations:
   Bogong:
     latitude (deg): -36.874
     longitude (deg): 147.254
-    MAT (C): 5.7
-    temperature variation: 47.59
-    MAP (mm): 1592.0
-    precipitaqtion variation: 26.0
+    temperature, MAT (C): 5.7
+    temperature variation (C): 47.59
+    precipitation, MAP (mm): 1592.0
+    precipitation, variation: 26.0
     elevation (m): 1760
-    soil_total_N (%): 0.722
-    soil_total_P (ppm): 43
-    soil_total_K (ppm): 193
+    soil N, total (%): 0.722
+    soil P, total (mg/kg): 43
+    soil K (mg/kg): 193
     description: Alpine grassland.
   Burrawan:
     latitude (deg): -27.7348
     longitude (deg): 151.1395
-    MAT (C): 18.4
-    temperature variation: 50.49
-    MAP (mm): 683.0
-    precipitaqtion variation: 36.0
-    soil_total_N (%): 0.085
-    soil_total_P (ppm): 21
-    soil_total_K (ppm): 79
+    temperature, MAT (C): 18.4
+    temperature variation (C): 50.49
+    precipitation, MAP (mm): 683.0
+    precipitation, variation: 36.0
+    soil N, total (%): 0.085
+    soil P, total (mg/kg): 21
+    soil K (mg/kg): 79
     elevation (m): 425
     description: Semi arid grassland.
   Kinypanial:
     latitude (deg): -36.2
     longitude (deg): 143.75
-    MAT (C): 15.5
-    temperature variation: 49.26
-    MAP (mm): 426.0
-    precipitaqtion variation: 21.0
-    soil_total_N (%): 0.12
-    soil_total_P (ppm): 11
-    soil_total_K (ppm): 677
+    temperature, MAT (C): 15.5
+    temperature variation (C): 49.26
+    precipitation, MAP (mm): 426.0
+    precipitation, variation: 21.0
+    soil N, total (%): 0.12
+    soil P, total (mg/kg): 11
+    soil K (mg/kg): 677
     elevation (m): 90
     description: Semi arid grassland.
   Mt. Caroline:
     latitude (deg): -31.7821
     longitude (deg): 117.6108
-    MAT (C): 17.3
-    temperature variation: 52.55
-    MAP (mm): 330.0
-    precipitaqtion variation: 55.0
-    soil_total_N (%): 0.09
-    soil_total_P (ppm): 9
-    soil_total_K (ppm): 190
+    temperature, MAT (C): 17.3
+    temperature variation (C): 52.55
+    precipitation, MAP (mm): 330.0
+    precipitation, variation: 55.0
+    soil N, total (%): 0.09
+    soil P, total (mg/kg): 9
+    soil K (mg/kg): 190
     elevation (m): 285
     description: Savanna grassland.
 contexts:
-  Control:
-    description: no nutrient additions
-    type: treatment_control
-  nitrogen:
-    description: added 10 gN m-2 yr-1 as timed-release urea
-    type: treatment_favourable
-  P:
-    description: added 10 gP m-2 yr-1 as triple super phosphate
-    type: treatment_favourable
-  K:
-    description: 10 gK m-2 yr-1 as potassium sulphate plus a one-off addition (100
-      g m-2 yr-1) of macro- and micronutrients (that is, Fe, S, Mg, Mn, Cu, Zn, B,
-      Mo and Ca)
-    type: treatment_favourable
-  NP:
-    description: added 10 gN m-2 yr-1 as timed-release urea and 10 gP m-2 yr-1 as
-      triple super phosphate
-    type: treatment_favourable
-  NK:
-    description: added 10 gN m-2 yr-1 as timed-release urea and 10 gK m-2 yr-1 as
+- context_property: blocks
+  category: plot
+  var_in: blocks
+  values:
+  - value: nitrogen-1
+  - value: PK-1
+  - value: Control-1
+  - value: Fence-1
+  - value: NPK-1
+  - value: NK-1
+  - value: K-1
+  - value: NP-1
+  - value: NPK+Fence-1
+  - value: P-1
+  - value: Control-2
+  - value: PK-2
+  - value: P-2
+  - value: NP-2
+  - value: NPK-2
+  - value: NPK+Fence-2
+  - value: Fence-2
+  - value: NK-2
+  - value: nitrogen-2
+  - value: K-2
+  - value: Control-3
+  - value: nitrogen-3
+  - value: NPK-3
+  - value: K-3
+  - value: NP-3
+  - value: Fence-3
+  - value: P-3
+  - value: NPK+Fence-3
+  - value: PK-3
+  - value: NK-3
+  - value: K-4
+  - value: nitrogen-4
+  - value: NK-4
+  - value: PK-4
+  - value: P-4
+  - value: NPK-4
+  - value: NPK+Fence-4
+  - value: Control-4
+  - value: NP-4
+  - value: Fence-4
+- context_property: nutrient treatment
+  category: treatment
+  var_in: nutrient_treatment
+  values:
+  - value: control
+    description: No nutrient addition.
+  - find: Control
+    value: control
+    description: No nutrient addition.
+  - value: nitrogen
+    description: Added 10 gN m-2 yr-1 as timed-release urea.
+  - value: P
+    description: Added 10 gP m-2 yr-1 as triple super phosphate.
+  - value: K
+    description: Added 10 gK m-2 yr-1 as potassium sulphate plus a one-off addition
+      (100 g m-2 yr-1) of macro- and micronutrients (Fe, S, Mg, Mn, Cu, Zn, B, Mo
+      and Ca).
+  - value: NP
+    description: Added 10 gN m-2 yr-1 as timed-release urea and 10 gP m-2 yr-1 as
+      triple super phosphate.
+  - value: NK
+    description: Added 10 gN m-2 yr-1 as timed-release urea and 10 gK m-2 yr-1 as
       potassium sulphate plus a one-off addition (100 g m-2 yr-1) of macro- and micronutrients
-      (that is, Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca)
-    type: treatment_favourable
-  PK:
-    description: added 10 gP m-2 yr-1 as triple super phosphate and 10 gK m-2 yr-1
+      (Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca).
+  - value: PK
+    description: Added 10 gP m-2 yr-1 as triple super phosphate and 10 gK m-2 yr-1
       as potassium sulphate plus a one-off addition (100 g m-2 yr-1) of macro- and
-      micronutrients (that is, Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca)
-    type: treatment_favourable
-  NPK:
-    description: added 10 gN m-2 yr-1 as timed-release urea and 10 gP m-2 yr-1 as
+      micronutrients (Fe, S, Mg, Mn, Cu, Zn, B, Mo and Ca).
+  - value: NPK
+    description: Added 10 gN m-2 yr-1 as timed-release urea and 10 gP m-2 yr-1 as
       triple super phosphate and 10 gK m-2 yr-1 as potassium sulphate plus a one-off
-      addition (100 g m-2 yr-1) of macro- and micronutrients (that is, Fe, S, Mg,
-      Mn, Cu, Zn, B, Mo and Ca)
-    type: treatment_favourable
-  Fence:
-    description: fence desgined to exclude large aboveground mammalian herbivores
-    type: treatment_favourable
-  NPK+Fence:
-    description: added 10 gN m-2 yr-1 as timed-release urea and 10 gP m-2 yr-1 as
-      triple super phosphate and 10 gK m-2 yr-1 as potassium sulphate plus a one-off
-      addition (100 g m-2 yr-1) of macro- and micronutrients (that is, Fe, S, Mg,
-      Mn, Cu, Zn, B, Mo and Ca); surrounded by fence desgined to exclude large aboveground
-      mammalian herbivores
-    type: treatment_favourable
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Taxon
-    site_name: site_name
-    context_name: trt
-    date: year
-  custom_R_code: data %>% mutate(trt = if_else(trt == 'N', "nitrogen",trt)) %>% group_by(Taxon)
-    %>% mutate_at(vars(functional_group), replace_duplicates_with_NA) %>% ungroup()
+      addition (100 g m-2 yr-1) of macro- and micronutrients (Fe, S, Mg, Mn, Cu, Zn,
+      B, Mo and Ca).
+- context_property: fence treatment
+  category: treatment
+  var_in: fence_treatment
+  values:
+  - value: control
+    description: No vertebrate herbivore exclusion fence.
+  - value: fence
+    description: Vertebrate herbivore exclusion fence.
 traits:
 - var_in: functional_group
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: categorical vegetation type - sedges, forbes, grass.
 - var_in: leaf_pct_N
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Leaf percent by mass nitrogen. Dried leaves were then ground, bulked per
     plot and per species, and analysed for leaf nutrient concentrations. The leaf
     nitrogen content was determined using a LECO TruMac, which is based on a combustion
@@ -176,31 +231,39 @@ traits:
 - var_in: leaf_pct_C
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Leaf percent by mass carbon. The leaf potassium and phosphorus concentrations
     were determined using laser ablation inductively coupled plasma mass spectrometry
     after Duodu et al. with some exceptions (see paper)
 - var_in: leaf_pct_P
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Leaf phosphorus concentration. The leaf potassium and phosphorus concentrations
     were determined using laser ablation inductively coupled plasma mass spectrometry
     after Duodu et al. with some exceptions(see paper)
 - var_in: leaf_pct_K
   unit_in: '%'
   trait_name: leaf_K_per_dry_mass
-  value_type: raw_value
-  replicates: 1
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: Leaf percent by mass potassium. The leaf potassium and phosphorus concentrations
     were determined using laser ablation inductively coupled plasma mass spectrometry
     after Duodu et al. with some exceptios (see paper)
 - var_in: SLA_v2
   unit_in: mm2/g
-  trait_name: specific_leaf_area
-  value_type: site_mean
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 5
   methods: SLA calculated by dividing leaf area/ leaf dry mass. For each species selected
     for leaf trait analysis in each plot, we randomly selected five fully developed
@@ -227,15 +290,20 @@ substitutions:
   find: legume
   replace: herb
 taxonomic_updates:
-- find: Stipa sp.
-  replace: Austrostipa sp.
-  reason: Align to genus (E. Wenk, 2020-05-23)
-- find: Trachymene humilis ssp. Breviscapa
-  replace: Trachymene humilis subsp. breviscapa
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
 - find: Hordeum murinum ssp. Leporinum
   replace: Hordeum murinum subsp. leporinum
-  reason: Automatic alignment with name in APC list (known names) (2020-06-24)
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Stipa sp.
+  replace: Stipa sp. [Firn_2019]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APNI` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Trachymene humilis ssp. Breviscapa
+  replace: Trachymene humilis subsp. breviscapa
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 exclude_observations: .na
 questions: .na
-

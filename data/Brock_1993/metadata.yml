@@ -6,175 +6,228 @@ source:
     year: 1993
     title: Native plants of northern Australia
     publisher: Reed New Holland
-    address: Frenchs Forest, N.S.W.
+    place: Frenchs Forest, N.S.W.
     isbn: '9781877069246'
-people:
-- name: John Brock
-  institution: unknown
-  role: collector
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor, contact
+contributors:
+  data_collectors:
+  - last_name: Brock
+    given_name: John
+    ORCID: .na.character
+    affiliation: unknown
+    notes: no contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2014
-  year_collected_end: 2014
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        parasitic = ifelse(`growth form` == "parasite", "parasitic", NA),
+        `flowering time` = convert_month_range_vec_to_binary(`flowering time`), 
+        leaf_type2 = ifelse(`leaf type` == "articles", "article", NA),
+        leaf_type = ifelse(`leaf type` == "leafless", "leafless", NA),
+        leaf_lamina_division = ifelse(`leaf type` %in% c("palmate", "palm"), "palmately_divided", NA),
+        `leaf type`= ifelse(`leaf type` %in% c("articles", "palmate", "palm", "leafless"), NA, `leaf type`),
+        leaf_lobation = ifelse(`leaf shape` == "lobed","lobed",NA),
+        across(c("leaf length max (cm)", "leaf length min (cm)",
+                      "leaf width max (cm)", "leaf width min (cm)"), ~na_if(.,0)) 
+      )
+  '
+  collection_date: unknown/1993
+  taxon_name: binomial
   description: traits of NT flora from John Brocks book Flora of Northern Australia
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: unknown
   original_file: flora Northern Aust.xls
   notes: none
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: binomial
-  custom_R_code: data %>% mutate( `flowering time` = convert_month_range_vec_to_binary(`flowering
-    time`), leaf_type = ifelse(`leaf type` == "articles", "article", NA), `leaf type`
-    = ifelse(`leaf type` %in% c("articles", "palmate"), NA, `leaf type`) ) %>% mutate_at(c("leaf
-    length min (cm)","leaf length max (cm)","leaf width min (cm)","leaf width max
-    (cm)"), ~na_if(.,0)) %>% mutate(parasitic = ifelse(`growth form`=="parasite","parasitic",NA))
 traits:
-- var_in: genus
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: species
-  unit_in: .na
-  trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: height min (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: height (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf_type
   unit_in: .na
   trait_name: leaf_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_type2
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lamina_division
+  unit_in: .na
+  trait_name: leaf_lamina_division
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf shape
   unit_in: .na
   trait_name: leaf_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf length min (cm)
   unit_in: cm
   trait_name: leaf_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf length max (cm)
   unit_in: cm
   trait_name: leaf_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf width min (cm)
   unit_in: cm
   trait_name: leaf_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf width max (cm)
   unit_in: cm
   trait_name: leaf_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: flowering time
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf longevity
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: seed length (mm)
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_mean
+  entity_type: species
+  value_type: median
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed width (mm)
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_mean
+  entity_type: species
+  value_type: median
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed breadth (mm)
   unit_in: mm
-  trait_name: seed_breadth
-  value_type: expert_mean
+  trait_name: seed_height
+  entity_type: species
+  value_type: median
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed shape
   unit_in: .na
   trait_name: seed_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 substitutions:
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: articles
-  replace: article
-- trait_name: leaf_compoundness
-  find: palm
-  replace: palmate
-- trait_name: leaf_compoundness
-  find: palmate
-  replace: palmate
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
+  find: article
+  replace: cladode
 - trait_name: plant_growth_form
   find: liana
-  replace: climber_liana
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: parasite
+  replace: .na
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: grass
   replace: graminoid
+- trait_name: plant_growth_form
+  find: cycad
+  replace: palmoid
+- trait_name: plant_growth_form
+  find: palm
+  replace: palmoid
 - trait_name: flowering_time
   find: ephemeral
   replace: .na
@@ -184,73 +237,74 @@ substitutions:
 - trait_name: leaf_phenology
   find: semi-deciduous
   replace: semi_deciduous
+- trait_name: seed_shape
+  find: flat
+  replace: discoid
+- trait_name: leaf_shape
+  find: palm
+  replace: .na
+- trait_name: leaf_shape
+  find: lobed
+  replace: .na
 taxonomic_updates:
+- find: Amyena sanguineum
+  replace: Amyema sanguinea
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Amyena thalassium
+  replace: Amyema thalassia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Bauhinia binatum
   replace: Bauhinia binata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Bucchanania arborescens
   replace: Buchanania arborescens
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Bucchanania obovata
   replace: Buchanania obovata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Crotolaria novae-hollandiae
   replace: Crotalaria novae-hollandiae
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Desmodium heterocarpum var. strigosum
-  replace: Desmodium heterocarpon var. strigosum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Erythroxylum elliipticum
   replace: Erythroxylum ellipticum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Exocarpus latifolius
   replace: Exocarpos latifolius
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Horsfeldia australiana
-  replace: Horsfieldia australiana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Mallotus philippinensis
-  replace: Mallotus philippensis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Melaleuca viridifolia
-  replace: Melaleuca viridiflora
-  reason: Change spelling to align with known name in APC (E Wenk, 2020.06.25)
-- find: Urticularia fulva
-  replace: Utricularia fulva
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Urticularia odorata
-  replace: Utricularia odorata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Grevillea orientalis
   replace: Grevillea occidentalis
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Amyena sanguineum
-  replace: Amyema sanguineum
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Amyena thalassium
-  replace: Amyema thalassium
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Dipodium stenochilum
-  replace: Dipodium sp. [Dipodium stenochilum]
-  reason: Align to genus, as last APNI reference from 1989 (E. Wenk, 2020-05-26)
-- find: Habenaria eurystoma
-  replace: Habenaria ochroleuca
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-25)
-- find: Aglaia rufa
-  replace: Aglaia tomentosa
-  reason: Align with current name. (E. Wenk 2020-06-18)
-- find: Syzygium eucalyptoides subsp. Eucalyptoides
-  replace: Syzygium eucalyptoides subsp. eucalyptoides
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Syzygium eucalyptoides subsp. Bleeseri
-  replace: Syzygium eucalyptoides subsp. bleeseri
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Horsfeldia australiana
+  replace: Horsfieldia australiana
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Mallotus philippinensis
+  replace: Mallotus philippensis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Melaleuca viridifolia
+  replace: Melaleuca viridiflora
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Urticularia fulva
+  replace: Utricularia fulva
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Urticularia odorata
+  replace: Utricularia odorata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations:
 - variable: taxon_name
   find: Aglaia rufa
   reason: non-native (E Wenk, 2020.06.18)
 questions: .na
-

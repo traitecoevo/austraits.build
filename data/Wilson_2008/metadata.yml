@@ -9,182 +9,248 @@ source:
     journal: Telopea
     volume: 12
     pages: 293-307
-people:
-- name: Peter Wilson
-  institution: National Herbarium of NSW
-  role: collector, contact
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Wilson
+    given_name: Peter
+    ORCID: 0000-0001-8581-318X
+    affiliation: National Herbarium of NSW and Royal Botanic Gardens and Domain Trust,
+      Australia
+    additional_role: contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2008
-  year_collected_end: 2008
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        leaf_lamina_division = ifelse(stringr::str_detect(`leaf type`,"trifoliate"),"trifoliate",NA),
+        `leaf type` = stringr::str_replace(`leaf type`,"trifoliate","compound"),
+        leaf_base_shape = NA
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_shape", "leaf_base_shape",
+        "cuneate obovate", "cuneate", "obovate"
+      )
+  '
+  collection_date: unknown/2008
+  taxon_name: binomial
   description: transposed from Wilson, P. G., & Rowe, R. (2008). A revision of the
     Indigofereae (Fabaceae) in Australia. 2. Indigofera species with trifoliolate
     and alternately pinnate leaves.Telopea, 12(2), 293-307.
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: herbarium specimens
   original_file: Wilson_2008_Indigofera.xls
   notes: none
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: binomial
-  custom_R_code: data %>% mutate(leaf_division = ifelse(stringr::str_detect(`leaf
-    type`,"trifoliate"),"trifoliate",NA), `leaf type` = gsub("trifoliate","compound",`leaf
-    type`))
 traits:
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
-- var_in: leaf_division
+- var_in: leaf_lamina_division
   unit_in: .na
-  trait_name: leaf_division
-  value_type: expert_mean
+  trait_name: leaf_lamina_division
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: extreme min height (m)
   unit_in: m
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: unknown
   methods: expert observation or opinion, from herbarium specimens
 - var_in: min height (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: max height (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: extreme max height (m)
   unit_in: m
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: unknown
   methods: expert observation or opinion, from herbarium specimens
 - var_in: extreme min leaf length (mm)
   unit_in: mm
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: unknown
   methods: expert observation or opinion, from herbarium specimens
 - var_in: leaf length min (mm)
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: leaf length max (mm)
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: extreme max leaf length (mm)
   unit_in: mm
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: unknown
   methods: expert observation or opinion, from herbarium specimens
 - var_in: extreme min leaf width (mm)
   unit_in: mm
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: unknown
   methods: expert observation or opinion, from herbarium specimens
 - var_in: leaf width min (mm)
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: leaf width max (mm)
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: extreme max leaf width (mm)
   unit_in: mm
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: unknown
   methods: unknown
 - var_in: leaf_shape
   unit_in: .na
   trait_name: leaf_shape
-  value_type: .na
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or opinion, from herbarium specimens
+- var_in: leaf_base_shape
+  unit_in: .na
+  trait_name: leaf_base_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: fruit_length min (mm)
   unit_in: mm
   trait_name: fruit_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: fruit_length max  (mm)
   unit_in: mm
   trait_name: fruit_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: fruit_width_min  (mm)
   unit_in: mm
   trait_name: fruit_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: fruit_width_max  (mm)
   unit_in: mm
   trait_name: fruit_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: seed_length min (mm)
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: seed_length max  (mm)
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: seed_width_min  (mm)
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 - var_in: seed_width_max  (mm)
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: expert observation or opinion, from herbarium specimens
 substitutions:
@@ -194,7 +260,12 @@ substitutions:
 - trait_name: life_history
   find: a/p
   replace: .na
+- trait_name: leaf_compoundness
+  find: simple compound compound
+  replace: compound simple
+- trait_name: leaf_compoundness
+  find: compound compound
+  replace: compound
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

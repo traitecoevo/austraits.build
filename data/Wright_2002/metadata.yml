@@ -47,25 +47,49 @@ source:
     number: '4'
     pages: 423--434
     doi: 10.1046/j.0269-8463.2001.00542.x
-people:
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: collector, contact, contributor
-- name: Tanja Lenz
-  institution: Macquarie University Sydney
-  role: collector
-- name: Amy Zanne
-  institution: George Washington University
-  role: collector
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Wright
+    given_name: Ian
+    ORCID: 0000-0001-8338-9143
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  - last_name: Lenz
+    given_name: Tanja
+    ORCID: .na.character
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  - last_name: Zanne
+    given_name: Amy
+    ORCID: 0000-0001-6379-9452
+    affiliation: Department of Biology, University of Miami, Coral Gables, Florida
+      33146, USA
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2001
-  year_collected_end: 2001
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        Kl = Kl*10000,
+        ca = ca_ci + ci, ci_ca = ci / ca
+      ) %>%
+      group_by(species_name) %>%
+        mutate(
+          `max_height_m` = max(`max_height_m`),
+          across(c(`max_height_m`), replace_duplicates_with_NA)
+        ) %>% 
+      ungroup()
+  '
+  collection_date: 2001/2001
+  taxon_name: species_name
+  location_name: site_name
   description: subset of Phd data from Ian Wright
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Traits of fully expanded, outer-canopy leaves were measured on
     perennial species sampled from nutrient-rich and nutrient poor sites in each of
     two rainfall zones in eastern Australia (site details given in Table A1, species
@@ -79,75 +103,73 @@ dataset:
   original_file: Wright_phdData subset for Rach.xls + many others
   notes: Zanne_2007 and Hughes_2005 include additional trait measurements made at
     the same sites.
-sites:
+locations:
   Kuring-gai NP hiP:
     longitude (deg): 151.2922222
     latitude (deg): -33.5788889
-    description: Kuring-gai National Park, high P site
-    vegetation: Closed forest
-    nutrient summary: hiRhiP
-    MAP (mm): 1220
-    soil_total_P (ppm): 442.3
-    soil_total_N (%): 0.256
-    soil_total_C (%): 5.91
-    soil_cation_exchange_capacity (meq/kg): 55.6
-    geology: Red-brown clay (weathered volcanic dyke)
+    locality: Kuring-gai National Park, high P site
+    description: Closed forest
+    soil nutrient summary: hiRhiP
+    precipitation, MAP (mm): 1220
+    soil P, total (mg/kg): 442.3
+    soil N, total (%): 0.256
+    soil C, total (%): 5.91
+    soil cation exchange capacity (meq/kg): 55.6
+    geology (stratigraphic map unit): Red-brown clay (weathered volcanic dyke)
   Kuring-gai NP lowP:
     longitude (deg): 151.1430556
     latitude (deg): -33.6938889
-    description: Kuring-gai National Park, low P site
-    vegetation: Low open woodland
-    nutrient summary: hiRhiP
-    MAP (mm): 1220
-    soil_total_P (ppm): 93.6
-    soil_total_N (%): 0.03
-    soil_total_C (%): 0.95
-    soil_cation_exchange_capacity (meq/kg): 9
-    geology: Yellow-grey sand (Hawkesbury sandstone)
+    locality: Kuring-gai National Park, low P site
+    description: Low open woodland
+    soil nutrient summary: hiRhiP
+    precipitation, MAP (mm): 1220
+    soil P, total (mg/kg): 93.6
+    soil N, total (%): 0.03
+    soil C, total (%): 0.95
+    soil cation exchange capacity (meq/kg): 9
+    geology (stratigraphic map unit): Yellow-grey sand (Hawkesbury sandstone)
   Round Hill woodland:
     longitude (deg): 146.1547222
     latitude (deg): -32.9666667
-    description: Round Hill Nature Reserve, woodland site
-    vegetation: Open woodland
-    nutrient summary: loRhiP
-    MAP (mm): 387
-    soil_total_P (ppm): 250.4
-    soil_total_N (%): 0.071
-    soil_total_C (%): 1.2
-    soil_cation_exchange_capacity (meq/kg): 65.8
-    geology: Light red clay (residual deposits overlying Mt Hope volcanics)
+    locality: Round Hill Nature Reserve, woodland site
+    description: Open woodland
+    soil nutrient summary: loRhiP
+    precipitation, MAP (mm): 387
+    soil P, total (mg/kg): 250.4
+    soil N, total (%): 0.071
+    soil C, total (%): 1.2
+    soil cation exchange capacity (meq/kg): 65.8
+    geology (stratigraphic map unit): Light red clay (residual deposits overlying
+      Mt Hope volcanics)
   Round Hill mallee:
     longitude (deg): 146.1458333
     latitude (deg): -32.9763889
-    description: Round Hill Nature Reserve, mallee site
-    vegetation: Open shrub mallee
-    nutrient summary: loRloP
-    MAP (mm): 387
-    soil_total_P (ppm): 132.4
-    soil_total_N (%): 0.031
-    soil_total_C (%): 0.67
-    soil_cation_exchange_capacity (meq/kg): 38.7
-    geology: Loamy red sand (Quaternary dune systems)
+    locality: Round Hill Nature Reserve, mallee site
+    description: Open shrub mallee
+    soil nutrient summary: loRloP
+    precipitation, MAP (mm): 387
+    soil P, total (mg/kg): 132.4
+    soil N, total (%): 0.031
+    soil C, total (%): 0.67
+    soil cation exchange capacity (meq/kg): 38.7
+    geology (stratigraphic map unit): Loamy red sand (Quaternary dune systems)
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-    site_name: site_name
-  custom_R_code: data %>% mutate(Kl = Kl*10000) %>% mutate (ca = ca_ci + ci, ci_ca
-    = ci / ca)
 traits:
 - var_in: max_height_m
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na.character
   methods: unknown
 - var_in: SLA_cm2_g_new
   unit_in: mm2/mg
   trait_name: .na
-  value_type: site_mean
-  replicates: '5'
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: LMA was calculated from leaf dry mass (oven-dried for 48 h at 65 deg C)
     and one-sided leaf area (flat bed scanner; needle leaves assumed to have circular
     cross-section and leaf area adjusted by pi/2). For LMA, five leaves from each
@@ -156,8 +178,10 @@ traits:
     1997 and a further 6-10 leaves collected in November 1998.
 - var_in: SLA_raw
   unit_in: cm2/g
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: LMA was calculated from leaf dry mass (oven-dried for 48 h at 65 deg C)
     and one-sided leaf area (flat bed scanner; needle leaves assumed to have circular
@@ -168,15 +192,19 @@ traits:
 - var_in: leaf_area_mm2_new
   unit_in: mm2
   trait_name: leaf_area
-  value_type: site_mean
-  replicates: '5'
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: One-sided leaf area was calculated using a flat bed scanner (needle leaves
     assumed to have circular cross-section and leaf area adjusted by pi/2).
 - var_in: leaf_N_mass_new
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
-  replicates: 2-4
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_CN
   methods: Leaves were sampled for determining average total nitrogen concentration
     over a 2.5-year period at the drier, nutrient-rich site (December 1997-June 2000)
     and for c . 2 years at all other sites ( June 1998-August 2000). Between two and
@@ -189,8 +217,10 @@ traits:
 - var_in: Cmass
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: site_mean
-  replicates: 2-4
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_CN
   methods: Leaves were sampled for determining average total nitrogen concentration
     over a 2.5-year period at the drier, nutrient-rich site (December 1997-June 2000)
     and for c . 2 years at all other sites ( June 1998-August 2000). Between two and
@@ -203,15 +233,19 @@ traits:
 - var_in: leaf_P_mass_new
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Leaves were oven-dried for a minimum of 48 h at 65 deg C, weighed, finely
     ground, and analysed for Kjeldahl N and P.
 - var_in: leaf_N_area_g_m2_new
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: site_mean
-  replicates: 2-4
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_CN
   methods: Leaves were sampled for determining average total nitrogen concentration
     over a 2.5-year period at the drier, nutrient-rich site (December 1997-June 2000)
     and for c . 2 years at all other sites (June 1998-August 2000). Between two and
@@ -224,14 +258,18 @@ traits:
 - var_in: leaf_P_area_g_m2_new
   unit_in: g/m2
   trait_name: leaf_P_per_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Leaves were oven-dried for a minimum of 48 h at 65 deg C, weighed, finely
     ground, and analysed for Kjeldahl N and P.
 - var_in: LL
   unit_in: years
   trait_name: leaf_lifespan
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 15
   methods: Fifteen 'sun' twigs were randomly chosen across several individuals of
     each species in mid-1998. For each twig, a leaf 'sequence' was defined from the
@@ -259,8 +297,10 @@ traits:
 - var_in: PSIpd
   unit_in: MPa
   trait_name: water_potential_predawn
-  value_type: site_mean
-  replicates: '5'
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: To obtain an estimate of access to soil moisture and midday water status
     that could be compared across species within vegetation types, predawn (04:00-07:20
     hours, depending on sunrise) and midday (12:00-14:00 hours) shoot water potentials
@@ -280,8 +320,10 @@ traits:
 - var_in: PSImd
   unit_in: MPa
   trait_name: water_potential_midday
-  value_type: site_mean
-  replicates: '5'
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
   methods: To obtain an estimate of access to soil moisture and midday water status
     that could be compared across species within vegetation types, predawn (04:00-07:20
     hours, depending on sunrise) and midday (12:00-14:00 hours) shoot water potentials
@@ -301,7 +343,9 @@ traits:
 - var_in: d13C
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1
   methods: Craine et. al 2009; 13C and 15N were measured by mass spectrometry on bulked
     leaf samples used for measuring Rd by Wright et al 2001. The 13C isotope data
@@ -309,7 +353,9 @@ traits:
 - var_in: d15N
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1
   methods: Craine et. al 2009; 13C and 15N were measured by mass spectrometry on bulked
     leaf samples used for measuring Rd by Wright et al 2001. The 13C isotope data
@@ -317,7 +363,9 @@ traits:
 - var_in: Ks
   unit_in: kg/m/s/MPa
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: In Zanne_2007; Stem hydraulic conductivity was measured on branch samples
     using previously described methods (Zwieniecki & Holbrook, 1998; Sperry & Hacke,
@@ -339,7 +387,9 @@ traits:
 - var_in: Kh
   unit_in: kg*m/s/MPa
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: In Zanne_2007; Stem hydraulic conductivity was measured on branch samples
     using previously described methods (Zwieniecki & Holbrook, 1998; Sperry & Hacke,
@@ -361,7 +411,9 @@ traits:
 - var_in: Kl
   unit_in: 10^4 x kg/m/s/MPa
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: In Zanne_2007; Stem hydraulic conductivity was measured on branch samples
     using previously described methods (Zwieniecki & Holbrook, 1998; Sperry & Hacke,
@@ -383,7 +435,9 @@ traits:
 - var_in: ci
   unit_in: umolCO2/mol
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 6.2
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -405,8 +459,10 @@ traits:
     from different individuals (except Exocarpos aphyllus ).
 - var_in: ci_raw
   unit_in: umolCO2/mol
-  trait_name: ci_at_Asat
-  value_type: raw_value
+  trait_name: leaf_intercellular_CO2_concentration_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -429,7 +485,9 @@ traits:
 - var_in: ca
   unit_in: umolCO2/mol
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 6.2
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -451,8 +509,10 @@ traits:
     from different individuals (except Exocarpos aphyllus ).
 - var_in: CO2a_raw
   unit_in: umolCO2/mol
-  trait_name: ca
-  value_type: raw_value
+  trait_name: atmospheric_CO2_concentration
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -474,8 +534,10 @@ traits:
     from different individuals (except Exocarpos aphyllus ).
 - var_in: ci_ca
   unit_in: umolCO2 internal/umolCO2 ambient
-  trait_name: ci_over_ca
-  value_type: site_mean
+  trait_name: leaf_intercellular_CO2_concentration_to_atmospheric_CO2_concentration_ratio
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 6.2
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -497,8 +559,10 @@ traits:
     from different individuals (except Exocarpos aphyllus ).
 - var_in: Aarea_gs
   unit_in: umolCO2/mmolH2O
-  trait_name: water_use_efficiency_intrinsic
-  value_type: site_mean
+  trait_name: leaf_water_use_efficiency_intrinsic
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 6.2
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -521,7 +585,9 @@ traits:
 - var_in: trans
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Asat
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 6.2
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -544,7 +610,9 @@ traits:
 - var_in: Aarea
   unit_in: umolCO2/m2/s
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 6.2
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -566,8 +634,10 @@ traits:
     from different individuals (except Exocarpos aphyllus ).
 - var_in: PsAreaUse_raw
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
-  value_type: raw_value
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -590,7 +660,9 @@ traits:
 - var_in: Amass
   unit_in: nmolCO2/g/s
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 6.2
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -612,8 +684,10 @@ traits:
     from different individuals (except Exocarpos aphyllus ).
 - var_in: PsmassUSE_raw
   unit_in: nmolCO2/g/s
-  trait_name: photosynthetic_rate_per_dry_mass_saturated
-  value_type: raw_value
+  trait_name: leaf_photosynthetic_rate_per_dry_mass_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -636,9 +710,11 @@ traits:
 - var_in: Gs
   unit_in: mmolH2O/m2/s
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 6.2
-  methods: Wright 2001; stomatal_conductance_per_area_at_Asat; Standard methods were
+  methods: Wright 2001; leaf_stomatal_conductance_per_area_at_Asat; Standard methods were
     followed for measuring leaf traits (Bassow & Bazzaz 1997; Eamus et al . 1999;
     Reich et al . 1998; Reich et al . 1999). All leaf traits were measured on young
     to medium-aged, fully expanded, outer-canopy leaves. Measurements of photosynthetic
@@ -659,8 +735,10 @@ traits:
     individuals (except Exocarpos aphyllus ).
 - var_in: GsUSE_raw
   unit_in: mmolH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: raw_value
+  trait_name: leaf_stomatal_conductance_per_area_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -683,7 +761,9 @@ traits:
 - var_in: wue
   unit_in: umolCO2/mmolH2O
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 6.2
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -705,8 +785,10 @@ traits:
     from different individuals (except Exocarpos aphyllus ).
 - var_in: wue_raw
   unit_in: umolCO2/mmolH2O
-  trait_name: water_use_efficiency_photosynthetic
-  value_type: raw_value
+  trait_name: leaf_water_use_efficiency_photosynthetic
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Wright 2001; Standard methods were followed for measuring leaf traits (Bassow
     & Bazzaz 1997; Eamus et al . 1999; Reich et al . 1998; Reich et al . 1999). All
@@ -729,7 +811,9 @@ traits:
 - var_in: RD_MASS
   unit_in: nmolCO2/g/s
   trait_name: leaf_dark_respiration_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 6.5
   methods: Wright 2001; Branches used for R d measurements were kept moist and stored
     in the dark at cool temperatures ( ~5 deg C, to minimize any decline in carbohydrate
@@ -750,7 +834,9 @@ traits:
 - var_in: TLP
   unit_in: MPa
   trait_name: leaf_turgor_loss_point
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: 'Lenz 2006; PV curves were determined for each species between July and
     October 2004, with some additional sampling in November 2004 (Appendix S1). Rainfall,
@@ -801,7 +887,9 @@ traits:
 - var_in: elast_mod
   unit_in: MPa
   trait_name: bulk_modulus_of_elasticity
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: 'Lenz 2006; P-V curves were determined for each species between July and
     October 2004, with some additional sampling in November 2004 (Appendix S1). Rainfall,
@@ -850,59 +938,77 @@ traits:
     to the slope of the change in turgor pressure with changing RWC, which increases
     with decreasing elasticity.'
 - var_in: SPo
-  unit_in: neg_MPa
+  unit_in: MPa
   trait_name: osmotic_potential_at_full_turgor
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Lenz 2006; solute potential at full turgor, calculated from PV curves
 - var_in: H2OTLP
   unit_in: '%'
   trait_name: leaf_relative_water_content_at_turgor_loss_point
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Lenz 2006; shoot water content at turgor loss point, calculated from PV
     curves
 - var_in: symH2O
   unit_in: '%'
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Lenz 2006; symplastic water fraction, calculated from PV curves
 - var_in: shootH20
   unit_in: '%'
   trait_name: leaf_relative_water_content_predawn
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Lenz 2006; water content at full hydration, calculated from PV curves
 - var_in: SWCsap
   unit_in: '%'
   trait_name: leaf_water_content_per_saturated_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: water content at full hydration
 - var_in: SWCstem
   unit_in: '%'
   trait_name: stem_water_content_per_saturated_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: stem water content at full hydration
 - var_in: SWCbark
   unit_in: '%'
   trait_name: bark_water_content_per_saturated_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: back water content at full hydration
 - var_in: BarkThick
   unit_in: mm
   trait_name: bark_thickness
-  value_type: unknown
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Wshear(Jm01)
   unit_in: J/m
   trait_name: leaf_work_to_shear
-  value_type: site_mean
-  replicates: 3-5
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_toughness
   methods: Leaf work to shear (W shear ), thickness and toughness were measured for
     one leaf from each of three-five individuals per species (generally five), except
     at the high rainfall, nutrientpoor site, for which two leaves from each of 3 individuals
@@ -938,8 +1044,10 @@ traits:
 - var_in: Toughness(Jm-2)
   unit_in: J/m2
   trait_name: leaf_work_to_shear_adjusted
-  value_type: site_mean
-  replicates: 3-5
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_toughness
   methods: Leaf work to shear (W shear ), thickness and toughness were measured for
     one leaf from each of three-five individuals per species (generally five), except
     at the high rainfall, nutrientpoor site, for which two leaves from each of 3 individuals
@@ -975,8 +1083,10 @@ traits:
 - var_in: leaf thickness
   unit_in: mm
   trait_name: leaf_thickness
-  value_type: site_mean
-  replicates: 3-5
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_toughness
   methods: Leaf work to shear (W shear ), thickness and toughness were measured for
     one leaf from each of three-five individuals per species (generally five), except
     at the high rainfall, nutrientpoor site, for which two leaves from each of 3 individuals
@@ -987,45 +1097,77 @@ traits:
     was haphazard.
 substitutions: .na
 taxonomic_updates:
-- find: Eucalyptus haemostoma
-  replace: Eucalyptus haemastoma
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Olearia pimelioides
-  replace: Olearia pimeleoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pultenea daphnoides
-  replace: Pultenaea daphnoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pultenea flexilis
-  replace: Pultenaea flexilis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Solanum ferocissium
-  replace: Solanum ferocissimum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+- find: Allocasuarina sp
+  replace: Allocasuarina sp. [Wright_2002]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Dodonaea viscosa ssp angustissima
+  replace: Dodonaea viscosa subsp. angustissima
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Dodonaea viscosa ssp cuneata
+  replace: Dodonaea viscosa subsp. cuneata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Dodonaea viscosa ssp spatulata
+  replace: Dodonaea viscosa subsp. spatulata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Dodonaea viscosa ssp.angustissima
   replace: Dodonaea viscosa subsp. angustissima
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Dodonaea viscosa ssp.cuneata
   replace: Dodonaea viscosa subsp. cuneata
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Dodonaea viscosa ssp.spatulata
-  replace: Dodonaea viscosa var. spatulata
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Allocasuarina sp
-  replace: Allocasuarina sp.
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Dodonaea viscosa subsp. spatulata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Eucalyptus haemostoma
+  replace: Eucalyptus haemastoma
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Olearia pimelioides
+  replace: Olearia pimeleoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenea daphnoides
+  replace: Pultenaea daphnoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenea flexilis
+  replace: Pultenaea flexilis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Senna artemisioides var 1lft
   replace: Senna artemisioides
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
 - find: Senna artemisioides var 3lft
   replace: Senna artemisioides
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Solanum ferocissium
+  replace: Solanum ferocissimum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Thysanotus sp
-  replace: Thysanotus sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Thysanotus sp. [Wright_2002]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
 exclude_observations: .na
 questions:
   additional_traits: additional PV curve parameters (solute potential, water content
     at turgor loss, symplastic water fraction)
-

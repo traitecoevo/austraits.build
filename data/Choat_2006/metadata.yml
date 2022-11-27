@@ -24,18 +24,43 @@ source:
     number: '3'
     pages: 305--311
     doi: 10.1007/s00468-004-0392-1
-people:
-- name: Brendan Choat
-  institution: University of Western Sydney, Hawkesbury Institute for the Environment
-  role: collector, contact
+contributors:
+  data_collectors:
+  - last_name: Choat
+    given_name: Brendan
+    ORCID: 0000-0002-9105-640X
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2000
-  year_collected_end: 2001
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      group_by(Species, Plant) %>%
+      mutate(
+        rownum = paste0("x",row_number()),
+        Plant = as.character(Plant),
+        Plant = ifelse(is.na(Plant), rownum, Plant)
+      ) %>%
+      ungroup() %>%
+      mutate(
+        Site = paste("Many Peaks site",Site), 
+        Site = stringr::str_replace(Site, "Many Peaks site NA","Many Peaks"),
+        individual_plant = paste(Species, Plant, sep ="_"),
+        Time = as.character(Time)
+      ) %>% 
+      mutate_at(vars(gs),~na_if(.,0))
+  '
+  collection_date: 2000/2001
+  taxon_name: Species
+  location_name: Site
+  individual_id: individual_plant
   description: Dataset of diurnal and seasonal patterns of leaf gas exchange and water
     relations in tree species of contrasting leaf phenology growing in a seasonally
     dry tropical rain forest in north-eastern Australia.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: 'STUDY SITE The study was undertaken in 2000 and 2001 at Many
     Peaks Range (19 deg 11min S, 145deg 45min E) on the north-eastern coast of Australia.
     The climate is characterized by marked inter- and intraannual variation in rainfall.
@@ -58,180 +83,67 @@ dataset:
   original_file: collection of 6 files in raw data folder and GoogleDrive
   notes: Data on hydraulic safety margins and water potentials at different "loss
     of conductivity" thresholds are included in Choat_2012
-sites:
+locations:
   Many Peaks site 1:
     latitude (deg): -19.19422
     longitude (deg): 146.764445
     description: region classified as semi-arid tropics and does not share the predictable
       monsoonal climate with far northern Australia
-    MAP (mm): 1100
-    rainfall notes: 80% of rainfall usually occurs during the summer wet season (December-March)
+    precipitation, MAP (mm): 1100
+    precipitation, description: 80% of rainfall usually occurs during the summer wet
+      season (December-March)
   Many Peaks site 2:
     latitude (deg): -19.19422
     longitude (deg): 146.764445
     description: region classified as semi-arid tropics and does not share the predictable
       monsoonal climate with far northern Australia
-    MAP (mm): 1100
-    rainfall notes: 80% of rainfall usually occurs during the summer wet season (December-March)
+    precipitation, MAP (mm): 1100
+    precipitation, description: 80% of rainfall usually occurs during the summer wet
+      season (December-March)
   Many Peaks:
     latitude (deg): -19.19422
     longitude (deg): 146.764445
     description: region classified as semi-arid tropics and does not share the predictable
       monsoonal climate with far northern Australia
-    MAP (mm): 1100
-    rainfall notes: 80% of rainfall usually occurs during the summer wet season (December-March)
+    precipitation, MAP (mm): 1100
+    precipitation, description: 80% of rainfall usually occurs during the summer wet
+      season (December-March)
 contexts:
-  measurements made in the Dry season at 05:00:00:
-    Time: '05:00:00'
-    Season: Dry (July-October)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Dry season at 09:00:00:
-    Time: '09:00:00'
-    Season: Dry (July-October)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Dry season at 11:00:00:
-    Time: '11:00:00'
-    Season: Dry (July-October)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Dry season at 13:00:00:
-    Time: '13:00:00'
-    Season: Dry (July-October)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Dry season at 15:00:00:
-    Time: '15:00:00'
-    Season: Dry (July-October)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Dry season at 17:00:00:
-    Time: '17:00:00'
-    Season: Dry (July-October)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Late Dry season at 05:00:00:
-    Time: '05:00:00'
-    Season: Late Dry (September)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Late Dry season at 10:00:00:
-    Time: '10:00:00'
-    Season: Late Dry (September)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Late Dry season at 15:00:00:
-    Time: '15:00:00'
-    Season: Late Dry (September)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Late Dry season at 18:00:00:
-    Time: '18:00:00'
-    Season: Late Dry (September)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  no context given:
-    Time: .na.character
-    Season: .na.character
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Wet season at 05:00:00:
-    Time: '05:00:00'
-    Season: Wet (November-March)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Wet season at 09:00:00:
-    Time: '09:00:00'
-    Season: Wet (November-March)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Wet season at 11:00:00:
-    Time: '11:00:00'
-    Season: Wet (November-March)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Wet season at 13:00:00:
-    Time: '13:00:00'
-    Season: Wet (November-March)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Wet season at 15:00:00:
-    Time: '15:00:00'
-    Season: Wet (November-March)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Wet season at 17:00:00:
-    Time: '17:00:00'
-    Season: Wet (November-March)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Wet/Dry season at 05:00:00:
-    Time: '05:00:00'
-    Season: Wet/Dry (April-June)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Wet/Dry season at 09:00:00:
-    Time: '09:00:00'
-    Season: Wet/Dry (April-June)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Wet/Dry season at 11:00:00:
-    Time: '11:00:00'
-    Season: Wet/Dry (April-June)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Wet/Dry season at 13:00:00:
-    Time: '13:00:00'
-    Season: Wet/Dry (April-June)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Wet/Dry season at 15:00:00:
-    Time: '15:00:00'
-    Season: Wet/Dry (April-June)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-  measurements made in the Wet/Dry season at 17:00:00:
-    Time: '17:00:00'
-    Season: Wet/Dry (April-June)
-    type: field
-    description: measurements made in the wet vs dry season at different times of
-      day
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: Site
-    context_name: context
-  custom_R_code: data %>% mutate(Site = paste("Many Peaks site",Site), Site = gsub("Many
-    Peaks site NA","Many Peaks",Site)) %>% mutate_at(vars(gs),~na_if(.,0))
+- context_property: sampling season
+  category: temporal
+  var_in: Season
+  values:
+  - find: Dry
+    value: dry (July-October)
+    description: Plants sampled during the dry season.
+  - find: Late Dry
+    value: late dry (September)
+    description: Plants sampled at the end of the dry season.
+  - find: Wet
+    value: wet (November-March)
+    description: Plants sampled during the wet season.
+  - find: Wet/Dry
+    value: wet/dry (April-June)
+    description: Plants sampled at end of the wet season/start of the dry season.
+- context_property: sampling time of day
+  category: temporal
+  var_in: Time
+  values:
+  - value: '05:00:00'
+  - value: '09:00:00'
+  - value: '10:00:00'
+  - value: '11:00:00'
+  - value: '13:00:00'
+  - value: '15:00:00'
+  - value: '17:00:00'
+  - value: '18:00:00'
 traits:
 - var_in: A
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_ambient
-  value_type: individual_mean
+  trait_name: leaf_photosynthetic_rate_per_area_ambient
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf gas exchange, leaf water potential and canopy area were measured in
     three seasonal periods, the wet season (November-March), the transition from wet
@@ -268,7 +180,9 @@ traits:
 - var_in: E
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf gas exchange, leaf water potential and canopy area were measured in
     three seasonal periods, the wet season (November-March), the transition from wet
@@ -304,8 +218,10 @@ traits:
     (CID, Camas, WA).
 - var_in: gs
   unit_in: molH2O/m2/s
-  trait_name: stomatal_conductance_per_area_ambient
-  value_type: individual_mean
+  trait_name: leaf_stomatal_conductance_per_area_ambient
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '5'
   methods: Leaf gas exchange, leaf water potential and canopy area were measured in
     three seasonal periods, the wet season (November-March), the transition from wet
@@ -342,7 +258,9 @@ traits:
 - var_in: WP_pre_dawn
   unit_in: MPa
   trait_name: water_potential_predawn
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '3'
   methods: Leaf gas exchange, leaf water potential and canopy area were measured in
     three seasonal periods, the wet season (November-March), the transition from wet
@@ -379,7 +297,9 @@ traits:
 - var_in: WP_midday
   unit_in: MPa
   trait_name: water_potential_midday
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: '3'
   methods: Leaf gas exchange, leaf water potential and canopy area were measured in
     three seasonal periods, the wet season (November-March), the transition from wet
@@ -415,8 +335,10 @@ traits:
     (CID, Camas, WA).
 - var_in: Ves Count
   unit_in: count/mm2
-  trait_name: vessel_density
-  value_type: raw_value
+  trait_name: stem_vessel_density
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: Sapwood characteristics were determined for branches 10-30 mm in diameter.
     Three branch samples were taken from three replicate trees of each species. Blocks
@@ -434,14 +356,18 @@ traits:
 - var_in: Phenology
   unit_in: .na.character
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert knowledge
 - var_in: Diameter
   unit_in: um
-  trait_name: vessel_diameter
-  value_type: individual_mean
-  replicates: 127-221
+  trait_name: stem_vessel_diameter
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: Ves Count
   methods: Sapwood characteristics were determined for branches 10-30 mm in diameter.
     Three branch samples were taken from three replicate trees of each species. Blocks
     of sapwood were cut from the branches and the transverse surfaces were hand planed
@@ -457,8 +383,10 @@ traits:
     the fourth power (Hagan-Poiseuille Law) and summed.
 - var_in: SLA
   unit_in: m2/kg
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: Five random pathways were determined by probability sampling for each individual
     tree. Each pathway commenced at the base of the tree and proceeded acropetally
@@ -468,13 +396,17 @@ traits:
 - var_in: Height max (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: sourced from literature
 - var_in: Ks (kg m-1 MPa-1 s-1)
   unit_in: kg/m/s/MPa
   trait_name: sapwood_specific_conductivity
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Hydraulic conductivity (Kh), specific conductivity (Ks) and leaf specific
     conductivity (KL) were determined for stem segments during the wet season using
@@ -504,7 +436,9 @@ traits:
 - var_in: KL (kg m-1 MPa-1 s-1)
   unit_in: kg/m/s/MPa
   trait_name: leaf_specific_conductivity
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Hydraulic conductivity (Kh), specific conductivity (Ks) and leaf specific
     conductivity (KL) were determined for stem segments during the wet season using
@@ -534,7 +468,9 @@ traits:
 - var_in: Kh
   unit_in: kg*m/s/MPa
   trait_name: stem_hydraulic_conductivity
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Hydraulic conductivity (Kh), specific conductivity (Ks) and leaf specific
     conductivity (KL) were determined for stem segments during the wet season using
@@ -564,7 +500,9 @@ traits:
 - var_in: Huber value
   unit_in: mm2_sapwood/mm2_leaf
   trait_name: huber_value
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Hydraulic conductivity (Kh), specific conductivity (Ks) and leaf specific
     conductivity (KL) were determined for stem segments during the wet season using
@@ -594,7 +532,9 @@ traits:
 - var_in: Max vessel length (cm)
   unit_in: cm
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: 3
   methods: vessel length; Sapwood characteristics were determined for branches 10-30
     mm in diameter. Three branch samples were taken from three replicate trees of
@@ -612,8 +552,10 @@ traits:
     Law) and summed.
 - var_in: dh mean hydraulic diameter (um)
   unit_in: um
-  trait_name: vessel_diameter_hydraulic
-  value_type: site_mean
+  trait_name: stem_vessel_diameter_hydraulic
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Sapwood characteristics were determined for branches 10-30 mm in diameter.
     Three branch samples were taken from three replicate trees of each species. Blocks
@@ -631,7 +573,9 @@ traits:
 - var_in: wood density (g/cm3)
   unit_in: g/cm3
   trait_name: wood_density
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Measurements of wood density and percentage moisture content (WC =wood
     fresh weight - dry weight/fresh weight) were made using sapwood from branch sections.
@@ -639,7 +583,7 @@ substitutions: .na
 taxonomic_updates:
 - find: Cochlospermom gillivraei
   replace: Cochlospermum gillivraei
-  reason: Alignment with existing species identified by TaxonStand (2020-06-04)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

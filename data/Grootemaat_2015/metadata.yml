@@ -21,26 +21,51 @@ source:
       assembly and leaf decomposition.'
     institution: Stanford University, California
     type: PhD
-people:
-- name: Saskia Grootemaat
-  institution: University of New South Wales
-  role: collector, contact
-- name: William Cornwell
-  institution: Macquarie University
-  role: collector
-- name: Ian Wright
-  institution: Macquarie University
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Grootemaat
+    given_name: Saskia
+    ORCID: 0000-0002-5033-5912
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Cornwell
+    given_name: William
+    ORCID: 0000-0003-4080-4073
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+  - last_name: Wright
+    given_name: Ian
+    ORCID: 0000-0001-8338-9143
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2012
-  year_collected_end: 2012
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      filter(taxon != "NA NA") %>% 
+      group_by(taxon) %>%  
+        mutate_at(vars(`N (%mass)`,`P (%mass)`,`lignin (%mass)`,`tannin (%mass)`,
+                `FMC (% odw)`,senesced_leaf_N_per_dry_mass,senesced_leaf_P_per_dry_mass),
+                ~ replace(.x, duplicated(.x),NA)) %>%
+      ungroup() %>%
+      mutate(
+        row_number = row_number(),
+        `tannin (%mass)` = ifelse(row_number == 372, NA, `tannin (%mass)`),        
+        `tannin (%mass)` = ifelse(row_number == 373, NA, `tannin (%mass)`)
+      )
+  '
+  collection_date: 2012/2012
+  taxon_name: taxon
+  location_name: site_name
   description: The aim of this study was twofold, (i) to determine which morphological
     and chemical leaf traits drive flammability and (ii) to determine whether different
     (combinations of) morphological and chemical leaf traits drive interspecific variation
     in decomposition and litter flammability and, in turn, help us understand the
     relationship between decomposability and flammability.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: SITE AND SPECIES SELECTION The leaves for this study were collected
     from four sites in New South Wales, Australia. The leaf traits related to species'
     carbon and nutrient economies are well documented for these sites (Wright, Reich
@@ -78,93 +103,95 @@ dataset:
     leaves, and senesced leaves. For leaf length, width, thickness, ... only data
     on fresh, live leaves is integrated into AusTraits, but the complete dataset is
     available in the raw data folder for the study.
-sites:
+locations:
   Kuring-gai NP hiP:
     longitude (deg): 151.2922222
     latitude (deg): -33.5788889
-    description: Kuring-gai National Park, high P site
-    vegetation: Closed forest
-    nutrient summary: hiRhiP
-    MAP (mm): 1220
-    soil_total_P (ppm): 442.3
-    soil_total_N (%): 0.256
-    soil_total_C (%): 5.91
-    soil_cation_exchange_capacity (meq/kg): 55.6
-    geology: Red-brown clay (weathered volcanic dyke)
+    locality: Kuring-gai National Park, high P site
+    description: Closed forest
+    soil nutrient summary: hiRhiP
+    precipitation, MAP (mm): 1220
+    soil P, total (mg/kg): 442.3
+    soil N, total (%): 0.256
+    soil C, total (%): 5.91
+    soil cation exchange capacity (meq/kg): 55.6
+    geology (stratigraphic map unit): Red-brown clay (weathered volcanic dyke)
   Kuring-gai NP lowP:
     longitude (deg): 151.1430556
     latitude (deg): -33.6938889
-    description: Kuring-gai National Park, low P site
-    vegetation: Low open woodland
-    nutrient summary: hiRhiP
-    MAP (mm): 1220
-    soil_total_P (ppm): 93.6
-    soil_total_N (%): 0.03
-    soil_total_C (%): 0.95
-    soil_cation_exchange_capacity (meq/kg): 9
-    geology: Yellow-grey sand (Hawkesbury sandstone)
+    locality: Kuring-gai National Park, low P site
+    description: Low open woodland
+    soil nutrient summary: hiRhiP
+    precipitation, MAP (mm): 1220
+    soil P, total (mg/kg): 93.6
+    soil N, total (%): 0.03
+    soil C, total (%): 0.95
+    soil cation exchange capacity (meq/kg): 9
+    geology (stratigraphic map unit): Yellow-grey sand (Hawkesbury sandstone)
   Round Hill woodland:
     longitude (deg): 146.1547222
     latitude (deg): -32.9666667
-    description: Round Hill Nature Reserve, woodland site
-    vegetation: Open woodland
-    nutrient summary: loRhiP
-    MAP (mm): 387
-    soil_total_P (ppm): 250.4
-    soil_total_N (%): 0.071
-    soil_total_C (%): 1.2
-    soil_cation_exchange_capacity (meq/kg): 65.8
-    geology: Light red clay (residual deposits overlying Mt Hope volcanics)
+    locality: Round Hill Nature Reserve, woodland site
+    description: Open woodland
+    soil nutrient summary: loRhiP
+    precipitation, MAP (mm): 387
+    soil P, total (mg/kg): 250.4
+    soil N, total (%): 0.071
+    soil C, total (%): 1.2
+    soil cation exchange capacity (meq/kg): 65.8
+    geology (stratigraphic map unit): Light red clay (residual deposits overlying
+      Mt Hope volcanics)
   Round Hill mallee:
     longitude (deg): 146.1458333
     latitude (deg): -32.9763889
-    description: Round Hill Nature Reserve, mallee site
-    vegetation: Open shrub mallee
-    nutrient summary: loRloP
-    MAP (mm): 387
-    soil_total_P (ppm): 132.4
-    soil_total_N (%): 0.031
-    soil_total_C (%): 0.67
-    soil_cation_exchange_capacity (meq/kg): 38.7
-    geology: Loamy red sand (Quaternary dune systems)
+    locality: Round Hill Nature Reserve, mallee site
+    description: Open shrub mallee
+    soil nutrient summary: loRloP
+    precipitation, MAP (mm): 387
+    soil P, total (mg/kg): 132.4
+    soil N, total (%): 0.031
+    soil C, total (%): 0.67
+    soil cation exchange capacity (meq/kg): 38.7
+    geology (stratigraphic map unit): Loamy red sand (Quaternary dune systems)
 contexts:
-  DRIED:
-    type: field
-    description: dry leaves
-  FRESH:
-    type: field
-    description: fresh leaves
-  SENESCED:
-    type: field
-    description: senesced leaves
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: taxon
-    site_name: site_name
-    context_name: material
-  custom_R_code: data %>% filter(taxon != "NA NA") %>% group_by(taxon) %>%  mutate_at(vars(`N
-    (%mass)`,`P (%mass)`,`lignin (%mass)`,`tannin (%mass)`,`FMC  (% odw)`,senesced_leaf_N_per_dry_mass,senesced_leaf_P_per_dry_mass),~ replace(.x, duplicated(.x),NA))
-    %>% ungroup()
+- context_property: sample moisture status
+  category: method
+  var_in: material
+  values:
+  - find: FRESH
+    value: fresh leaves
+    description: fresh leaves, indicating high leaf moisture level
+  - find: DRIED
+    value: dried leaves
+    description: dry leaves, indicating low leaf moisture level
+  - find: SENESCED
+    value: senesced leaves
+    description: senesced leaves, indicating low leaf moisture level
 traits:
 - var_in: length (mm)
   unit_in: mm
   trait_name: leaf_length
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Standard protocols were followed for measuring leaf length (mm), effective
     leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
 - var_in: width (mm)
   unit_in: mm
   trait_name: leaf_width
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Standard protocols were followed for measuring leaf length (mm), effective
     leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
 - var_in: NEWthickness (mm)
   unit_in: mm
   trait_name: leaf_thickness
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Standard protocols were followed for measuring leaf length (mm), effective
     leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
@@ -173,21 +200,27 @@ traits:
 - var_in: actual mass (g)
   unit_in: g
   trait_name: leaf_fresh_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Standard protocols were followed for measuring leaf length (mm), effective
     leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
 - var_in: dry mass (g)
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Standard protocols were followed for measuring leaf length (mm), effective
     leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
 - var_in: SA (cm2)
   unit_in: cm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Surface area (SA, in cm2) was estimated with a LI-3100C area meter (LI-COR,
     Lincoln, NE, USA). For terete leaves (e.g. Allocasuarina spp., Hakea teretifolia
@@ -196,14 +229,18 @@ traits:
 - var_in: density (dry mass) (g/cm3)
   unit_in: g/cm3
   trait_name: leaf_density
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Standard protocols were followed for measuring leaf length (mm), effective
     leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
 - var_in: SLA
   unit_in: cm2/g
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Standard protocols were followed for measuring leaf length (mm), effective
     leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
@@ -214,10 +251,12 @@ traits:
     three material types in the actual condition they were in (i.e. fresh, dried and
     senesced). We therefore named this variable, based on the actual weight, 'SLA*'.
     Data for 'SLA*' are also present in the data file but not incorporated into AusTraits.
-- var_in: FMC  (% odw)
+- var_in: FMC (% odw)
   unit_in: '%'
   trait_name: leaf_water_content_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Standard protocols were followed for measuring leaf length (mm), effective
     leaf width (mm), thickness (mm) and mass (g) (Perez-Harguindeguy et al. 2013).
@@ -229,15 +268,19 @@ traits:
 - var_in: N (%mass)
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). In brief, litter N and P were quantified by Kjeldahl digestions and colorimetric
     assays (OI Analytical, Wilsonville, OR, USA).
 - var_in: senesced_leaf_N_per_dry_mass
   unit_in: '%'
-  trait_name: senesced_leaf_N_per_dry_mass
-  value_type: site_mean
+  trait_name: leaf_senesced_N_per_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). In brief, litter N and P were quantified by Kjeldahl digestions and colorimetric
@@ -245,15 +288,19 @@ traits:
 - var_in: P (%mass)
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). In brief, litter N and P were quantified by Kjeldahl digestions and colorimetric
     assays (OI Analytical, Wilsonville, OR, USA).
 - var_in: senesced_leaf_P_per_dry_mass
   unit_in: '%'
-  trait_name: senesced_leaf_P_per_dry_mass
-  value_type: site_mean
+  trait_name: leaf_senesced_P_per_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). In brief, litter N and P were quantified by Kjeldahl digestions and colorimetric
@@ -261,7 +308,9 @@ traits:
 - var_in: lignin (%mass)
   unit_in: '%'
   trait_name: leaf_lignin_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). Lignin was calculated as the difference between the sum of non-polar,
@@ -269,7 +318,9 @@ traits:
 - var_in: tannin (%mass)
   unit_in: '%'
   trait_name: leaf_tannin_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Data on chemical leaf traits were taken from Cornwell's decomposition experiment
     (2006). Soluble polyphenols (tannins) were determined using the Folin-Denis method
@@ -277,7 +328,9 @@ traits:
 - var_in: TTI (s)
   unit_in: seconds
   trait_name: fire_time_to_ignition
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Individual leaf specimens were exposed to a temperature of 400 deg C in
     a muffle furnace with a chamber size of 15 x 10 x 23 cm (Charles Moloney, Sydney;
@@ -317,7 +370,9 @@ traits:
 - var_in: FD (s)
   unit_in: seconds
   trait_name: fire_flame_duration
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Individual leaf specimens were exposed to a temperature of 400 deg C in
     a muffle furnace with a chamber size of 15 x 10 x 23 cm (Charles Moloney, Sydney;
@@ -357,7 +412,9 @@ traits:
 - var_in: SD (s)
   unit_in: seconds
   trait_name: fire_smoulder_duration
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Individual leaf specimens were exposed to a temperature of 400 deg C in
     a muffle furnace with a chamber size of 15 x 10 x 23 cm (Charles Moloney, Sydney;
@@ -397,7 +454,9 @@ traits:
 - var_in: TBT (s)
   unit_in: seconds
   trait_name: fire_total_burn_duration
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Individual leaf specimens were exposed to a temperature of 400 deg C in
     a muffle furnace with a chamber size of 15 x 10 x 23 cm (Charles Moloney, Sydney;
@@ -437,8 +496,9 @@ traits:
 substitutions: .na
 taxonomic_updates:
 - find: Dodonaea viscosa subsp. spathulata
-  replace: Dodonaea viscosa subsp. spatulata
-  reason: Automatic alignment with name in APC list (accepted) (2021-02-09)
+  replace: Dodonaea viscosa var. spathulata
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Varietas
 exclude_observations: .na
 questions: .na
-

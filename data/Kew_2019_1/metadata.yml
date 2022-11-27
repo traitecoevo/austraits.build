@@ -6,90 +6,146 @@ source:
     year: 2019
     title: Seed Information Database (SID) and Seed Bank Database
     url: http://data.kew.org/sid/
-people:
-- name: Udayangani Liu
-  institution: Kew Botanic Gardens
-  role: contact
+contributors:
+  data_collectors:
+  - last_name: Liu
+    given_name: Udayangani
+    ORCID: 0000-0002-6192-1319
+    affiliation: Royal Botanic Gardens, Kew, United Kingdom
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: .na
-  year_collected_end: 2019
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        ref_year = stringr::str_extract(refshort, "(?<!\\d)\\d{4}(?!\\d)"),
+        ref_year = ifelse(is.na(ref_year), "2019", ref_year),
+        ref_author = ifelse(stringr::str_detect(refshort, "RBG Kew, Wakehurst Place"), "Kew", NA),
+        ref_author = ifelse(stringr::str_detect(refshort, "Baker Seed Herbarium, California") & is.na(ref_author), "JepsonHerbarium", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "von Carlowitz") & is.na(ref_author), "vonCarlowitz", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Peter Juniper") & is.na(ref_author), "Juniper", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Forest Service") & is.na(ref_author), "ForestService", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "de Taffin") & is.na(ref_author), "deTaffin", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Berry Botanic Garden") & is.na(ref_author), "BerryBotanicGarden", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "P<e9>rez-Fern<e1>ndez et al.") & is.na(ref_author), "PérezFernández", ref_author),
+        ref_author = ifelse(stringr::str_detect(refshort, "Groom") & is.na(ref_author), "Groom", ref_author),
+        ref_author = ifelse(is.na(ref_author), stringr::str_trim(word(refshort, 1)), ref_author),
+        ref_author = stringr::str_replace_all(ref_author, "[:punct:]", ""),
+        ref_author = ifelse(is.na(ref_author), "unknown", ref_author),
+        original_dataset_id = paste0(ref_author, "_", ref_year),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "Clarke, P.J. and Davison, E.A."), paste0(original_dataset_id, "_1", sep = ""), original_dataset_id)),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "Clarke, P.J., Kerrigan, R.A. and Westphal,"), paste0(original_dataset_id, "_2", sep = ""), original_dataset_id)),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "DFSC. 2000a. The Project"), paste0(original_dataset_id, "_1", sep = ""), original_dataset_id)),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "DFSC. 2000b. The Project"), paste0(original_dataset_id, "_2", sep = ""), original_dataset_id)),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "Vaughton, G. and Ramsey, M. 1998"), paste0(original_dataset_id, "_1", sep = ""), original_dataset_id)),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "Vaughton, G. 1998. Soil seed bank"), paste0(original_dataset_id, "_2", sep = ""), original_dataset_id)),
+        measurement_remarks = paste0(
+            "MATERIAL: ", materialweigheddesc, "; ",
+            "NOTES: ", seedweightnotes, "; ",
+            "REFERENCE: ", original_dataset_id
+        ),
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "MATERIAL: NA; ", ""),
+        measurement_remarks = stringr::str_replace(
+            measurement_remarks, 
+            "NOTES: NA; ", "")
+      ) %>% 
+      filter(!original_dataset_id %in% c("Jurado_1991", "Moles_2000", "Milberg_1998")) %>% 
+      arrange(taxa, materialweigheddesc, thousandseedweight, original_dataset_id) %>% 
+      group_by(taxa, materialweigheddesc, thousandseedweight, seedweightnotes, weightprecision) %>%
+      mutate(merged_ref = ifelse(length(unique(original_dataset_id)) == 1, original_dataset_id, paste0(original_dataset_id, collapse = "; "))) %>%
+      ungroup() %>% 
+      group_by(taxa, merged_ref) %>%
+      mutate(across(c(thousandseedweight, materialweigheddesc), replace_duplicates_with_NA)) %>% 
+      ungroup()
+  '
+  collection_date: unknown/2019
+  taxon_name: taxa
+  source_id: original_dataset_id
   description: all seed weights for Australian species from the Kew Botanic Gardens
     database
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: information in data.csv file
   original_file: in raw data folder
+  measurement_remarks: merged_ref
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
-    Commons licesne. Data not to be used for Commercial Purposes. data %>% subset(refshort
-    !%in% c("(Milberg et al., 1998)"))
-sites: .na
+    Commons license. Data not to be used for Commercial Purposes.
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: taxa
-  custom_R_code: .na
 traits:
 - var_in: thousandseedweight
   unit_in: mg
-  trait_name: seed_mass
-  value_type: expert_mean
-  replicates: .na
+  trait_name: seed_dry_mass
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
+  measurement_remarks: measurement_remarks
   methods: Kew Gardens collections, with details in data.csv file under columns "materialweigheddesc"
     and "seedweightnotes"
 substitutions: .na
 taxonomic_updates:
-- find: Euphrasia collina subsp. Northwest Tasmania (A.Visom 216)
-  replace: Euphrasia collina subsp. Northwest Tasmania (A.Visou 216)
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Hoya australis subsp. ormicola
-  replace: Hoya australis subsp. oramicola
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Clematis aristata var. longisepala
-  replace: Clematis aristata f. oblongisepala
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Clematis glycinoidesvar. glycinoides
-  replace: Clematis glycinoides var. glycinoides
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Clematis glycinoidesvar. submutica
-  replace: Clematis glycinoides var. submutica
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Desmodium rhytidophyllumsubsp. acutifoliolum
-  replace: Desmodium rhytidophyllum
-  reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
 - find: Acaena ovina
   replace: Acaena x ovina
-  reason: Typo picked up by data contributor
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Clematis aristata var. longisepala
+  replace: Clematis aristata f. oblongisepala
+  reason: Manual alignment with canonical name with rank forma` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Forma
+- find: Clematis glycinoidesvar. glycinoides
+  replace: Clematis glycinoides var. glycinoides
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Clematis glycinoidesvar. submutica
+  replace: Clematis glycinoides var. submutica
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Varietas
 - find: Desmodium rhytidophyllum subsp. rhytidophyllum
   replace: Desmodium rhytidophyllum
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
-- find: Glycine clandestina var .sericea
-  replace: Glycine clandestina
-  reason: Typo, align to species (D Falster)
-- find: Astrotricha asperifolia subsp. bogong (H.I.Aston 246)
-  replace: Astrotricha asperifolia subsp. Bogong (H.I.Aston 246)
-  reason: Automatic alignment with name in APNI names (2020-06-18)
-- find: Astrotricha asperifolia subsp. toolangi (N.G.Walsh 2177)
-  replace: Astrotricha asperifolia subsp. Toolangi (N.G.Walsh 2177)
-  reason: Automatic alignment with name in APNI names (2020-06-18)
-- find: Astrotricha parvifolia subsp. mt Hedrick (V.Stajsic 3710)
-  replace: Astrotricha parvifolia subsp. Mt Hedrick (V.Stajsic 3710)
-  reason: Automatic alignment with name in APNI names (2020-06-18)
-- find: Stackhousia aspericocca subsp. cylindrical inflorescence (W.R.Barker 1418)
-  replace: Stackhousia aspericocca subsp. Cylindrical inflorescence (W.R.Barker 1418)
-  reason: Automatic alignment with name in APNI names (2020-06-18)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Desmodium rhytidophyllumsubsp. acutifoliolum
+  replace: Desmodium rhytidophyllum subsp. acutifoliolum
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with known canonical name in APC
+    (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Eucalyptus communalis
+  replace: Eucalyptus communalis
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-22)
+  taxonomic_resolution: Species
 - find: Eucalyptus lateritica
   replace: Eucalyptus x lateritica
-  reason: Automatic alignment with name in APC list (2020-06-18)
-- find: Melaleuca incana subsp. gingilup (N.Gibson & M.Lyons 593)
-  replace: Melaleuca incana subsp. Gingilup (N.Gibson & M.Lyons 593)
-  reason: Automatic alignment with name in APNI names (2020-06-18)
-- find: Lambertia orbifolia subsp. scott River Plains (L.W.Sage 684)
-  replace: Lambertia orbifolia subsp. Scott River Plains (L.W.Sage 684)
-  reason: Automatic alignment with name in APNI names (2020-06-18)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Euphrasia collina subsp. Northwest Tasmania (A.Visom 216)
+  replace: Euphrasia collina subsp. Northwest Tasmania (A.Visou 216)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Glycine clandestina var .sericea
+  replace: Glycine clandestina var. sericea
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Hakea cygna subsp. needlei
+  replace: Hakea cygnus subsp. needlei
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Hoya australis subsp. ormicola
+  replace: Hoya australis subsp. oramicola
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Pimelea neo-anglica
+  replace: Pimelea neoanglica
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-22)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

@@ -1,0 +1,113 @@
+source:
+  primary:
+    key: NHNSW_2014
+    bibtype: Online
+    author: '{Royal Botanic Gardens Sydney}'
+    title: PLantNET
+    year: 2014
+    url: http://plantnet.rbgsyd.nsw.gov.au/search/simple.htm
+contributors:
+  data_collectors:
+  - last_name: Duretto
+    given_name: Marco
+    ORCID: 0000-0003-1013-4291
+    affiliation: National Herbarium of New South Wales, Australian Institute of Botanical
+      Science, Royal Botanic Gardens and Domain Trust, Sydney, Australia
+  austraits_curators: Rachael Gallagher
+dataset:
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        `flowering time` = ifelse(species_name == "Enneapogon cylindricus","mar-aug",`flowering time`),
+        `flowering time` = convert_month_range_vec_to_binary(`flowering time`),
+        ephemeral_flowering = ifelse(stringr::str_detect(`flowering time`,"ephemeral"),"ephemeral",NA)
+      )
+  '
+  collection_date: unknown/2014
+  taxon_name: species_name
+  description: grass trait data from the Royal Botanic Gardens Sydney
+  basis_of_record: preserved_specimen
+  life_stage: adult
+  sampling_strategy: herbarium specimens
+  original_file: The flowering time, growth form, and longevity data have been selected
+    from poaceae_GrassBase.xls
+  notes: Request acknowledgement of "National Herbarium of NSW and PLantNET"
+locations: .na
+contexts: .na
+traits:
+- var_in: growth habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: herbarium collections and database
+- var_in: flowering time
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: herbarium collections and database; NB Flowering time data came from a
+    file of taxon descriptions associated with species displayed on AusGrass2 created
+    by Bryan Simon, once located on the AusGrass2 website.
+- var_in: longevity
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: herbarium collections and database
+substitutions:
+- trait_name: stem_growth_habit
+  find: rhizatomous/tufted
+  replace: rhizomatous tufted
+- trait_name: stem_growth_habit
+  find: tufted/rhizatomous
+  replace: rhizomatous tufted
+- trait_name: life_history
+  find: annual/perennial
+  replace: annual perennial
+- trait_name: life_history
+  find: perennial/annual
+  replace: annual perennial
+- trait_name: life_history
+  find: annual || perennial
+  replace: annual perennial
+taxonomic_updates:
+- find: Aristida sp. 2
+  replace: Aristida sp. [Aristida sp. 2; NHNSW_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Arthraxon castratu
+  replace: Arthraxon castratus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Austrostipa juncifolia subsp. Southern
+  replace: Austrostipa juncifolia subsp. Southern River (B.J.Keighery 2160)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC known
+    names when notes are ignored (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Calyptochloa cylindropserma
+  replace: Calyptochloa cylindrosperma
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cynochloris macivorii
+  replace: x Cynochloris macivorii
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
+  taxonomic_resolution: Species
+- find: Cynochloris reynoldensis
+  replace: x Cynochloris reynoldensis
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
+  taxonomic_resolution: Species
+- find: Rytidosperma popinensis
+  replace: Rytidosperma popinense
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+exclude_observations: .na
+questions: .na

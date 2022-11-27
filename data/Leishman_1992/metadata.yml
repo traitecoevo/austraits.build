@@ -10,19 +10,35 @@ source:
     volume: 80
     pages: 417--424
     doi: 10.2307/2260687
-people:
-- name: Michelle Leishman
-  institution: Macquarie University Sydney
-  role: collector, contact
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Leishman
+    given_name: Michelle
+    ORCID: 0000-0003-4830-5797
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+    additional_role: contact
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 1996
-  year_collected_end: 1996
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        site_name = "Louth",
+        parasitic = ifelse(`growth form`=="stem parasite","stem_parasitic", NA),
+        parasitic = ifelse(`growth form`=="root parasite","root_parasitic", parasitic)
+      ) %>%
+      mutate_at(vars(`height (cm)_filtered`,`leaf area (mm2)`,`seed mass (mg)`,`diaspore weight (mg)`),~na_if(.,0))
+  '
+  collection_date: 1996/1996
+  taxon_name: SPECIES
+  location_name: site_name
   description: western NSW trait data from Michelle Leishman
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: We sought to include all species occurring on de- fined sites,
     in order to avoid bias in favour of species which were easier to collect or characterize.
     A plant species list was collated for four sites (Table 1) within the semi-arid
@@ -55,25 +71,18 @@ dataset:
     half-log classes (14) LOGSWT, log10(SWT) SD, dispersal mode MU, mucilaginous GM,
     seed germinability PH, physiology FM, fire mortality PA, palatability SP, spines
     present SC, secondary compounds
-sites:
+locations:
   Louth:
     longitude (deg): 145.1333
     latitude (deg): -30.5167
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: SPECIES
-    site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "Louth") %>% mutate_at(vars(`height (cm)_filtered`,`leaf
-    area (mm2)`,`seed mass (mg)`,`diaspore weight (mg)`),~na_if(.,0)) %>% mutate(parasitic
-    = ifelse(`growth form`=="stem parasite","stem_parasitic",NA),parasitic = ifelse(`growth
-    form`=="root parasite","root_parasitic",parasitic))
 traits:
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Data on some attributes such as growth form, leaf texture and hairiness,
     flowering characteristics, presence of spines and seed dispersal mode could be
@@ -85,14 +94,19 @@ traits:
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: height (cm)_filtered
   unit_in: cm
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
+  basis_of_record: literature
   methods: Data from published flora. Data on some attributes such as growth form,
     leaf texture and hairiness, flowering characteristics, presence of spines and
     seed dispersal mode could be collected from observations of each species in the
@@ -104,7 +118,9 @@ traits:
 - var_in: plant longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Species divided into annual, biennial/ 300 short-lived perennial, long-lived
     perennial (<20 years), long-lived perennial (>20 years); Assume a combination
@@ -112,11 +128,13 @@ traits:
 - var_in: leaf area (mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Data on some attributes such as growth form, leaf texture and hairiness,
     flowering characteristics, presence of spines and seed dispersal mode could be
-    col- lected from observations of each species in the field. Where field specimens
+    collected from observations of each species in the field. Where field specimens
     were inadequate, herbarium specimens were used. Leaf area and diaspore weight
     were measured using specimens collected from the field wherever possible, or alternatively
     from herbarium specimens and seed collections. Leaf area is a continuous variable,
@@ -124,9 +142,12 @@ traits:
     (length x width x 2/3)
 - var_in: storage organ present
   unit_in: .na
-  trait_name: regen_strategy
-  value_type: expert_mean
+  trait_name: storage_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
+  basis_of_record: literature
   methods: Data from published flora. Data on some attributes such as growth form,
     leaf texture and hairiness, flowering characteristics, presence of spines and
     seed dispersal mode could be collected from observations of each species in the
@@ -137,9 +158,11 @@ traits:
     of secondary compounds.
 - var_in: diaspore weight (mg)
   unit_in: mg
-  trait_name: diaspore_mass
-  value_type: expert_mean
-  replicates: .na
+  trait_name: diaspore_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 10
   methods: Data on some attributes such as growth form, leaf texture and hairiness,
     flowering characteristics, presence of spines and seed dispersal mode could be
     collected from observations of each species in the field. Where field specimens
@@ -149,8 +172,10 @@ traits:
     morphological descriptions of the diaspore. A minimum of 10 diaspores were sampled.)
 - var_in: seed mass (mg)
   unit_in: mg
-  trait_name: seed_mass
-  value_type: site_mean
+  trait_name: seed_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Mean of at least 10 collected seeds. Data on some attributes such as growth
     form, leaf texture and hairiness, flowering characteristics, presence of spines
@@ -164,56 +189,72 @@ substitutions:
   replace: herb
 - trait_name: plant_growth_form
   find: stem parasite
-  replace: parasite
+  replace: .na
 - trait_name: plant_growth_form
   find: root parasite
-  replace: parasite
+  replace: .na
 - trait_name: plant_growth_form
   find: grass
   replace: graminoid
-- trait_name: regen_strategy
+- trait_name: storage_organ
   find: 0
   replace: no_storage_organ
-- trait_name: regen_strategy
+- trait_name: storage_organ
   find: 1
   replace: storage_organ
 taxonomic_updates:
 - find: Capsella bursapastoris
   replace: Capsella bursa-pastoris
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Chenopodium auricomun
   replace: Chenopodium auricomum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Chenopodium desertorum var.anidiophyllum
   replace: Chenopodium desertorum subsp. anidiophyllum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Sporobolus mitchelli
-  replace: Sporobolus mitchellii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Triglochin calcitrapum
-  replace: Triglochin calcitrapa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Solanum ferrocissimum var. ferro.
-  replace: Solanum ferocissimum
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Exocarpus aphyllus
+  replace: Exocarpos aphyllus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Gnaphalium calciveps
   replace: Gnaphalium calviceps
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Gnaphalium luteo-album
   replace: Gnaphalium luteoalbum
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Homopholis (Panicum) proluta
-  replace: Walwhalleya proluta
-  reason: Change spelling to Align to APC or ALA species lists (Sam Andrew, 2018-02-07)
+  replace: Homopholis proluta
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: species
+- find: Leichardtia australis
+  replace: Leichhardtia australis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Ophioglossum lusitanicum/polyphyllum
-  replace: Ophioglossum lusitanicum
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  replace: Ophioglossum sp. [Ophioglossum lusitanicum/polyphyllum; Leishman_1992]
+  reason: match_04. Rewording taxon where `/` indicates uncertain species identification
+    to align with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Solanum ferrocissimum var. ferro.
+  replace: Solanum ferocissimum
+  reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
+    in `APC known` when everything except first 2 words ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sporobolus mitchelli
+  replace: Sporobolus mitchellii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Vittadinia triloba/cuneata complex
-  replace: Vittadinia triloba
-  reason: Aligned with APC 1 of 2 synonyms (E. Wenk, 2020-05-25)
+  replace: Vittadinia sp. [Vittadinia triloba/cuneata complex; Leishman_1992]
+  reason: match_04. Rewording taxon where `/` indicates uncertain species identification
+    to align with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
 exclude_observations: .na
 questions:
   additional_traits: study includes many additional traits
-

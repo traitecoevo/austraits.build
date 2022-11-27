@@ -11,22 +11,32 @@ source:
     number: '3'
     pages: 509--525
     doi: 10.1046/j.1469-8137.2003.00765.x
-people:
-- name: Daniel Falster
-  institution: University of New South Wales, Sydney
-  role: collector, contact
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Falster
+    given_name: Daniel
+    ORCID: 0000-0002-9814-092X
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2000
-  year_collected_end: 2001
+  data_is_long_format: no
+  custom_R_code:      data %>% mutate(site_name = ifelse(`Site LAI`=="Low","Ku-ring-gai
+    Chase National Park low nutrient","Ku-ring-gai Chase National Park high nutrient"))
+  collection_date: 2000/2001
+  taxon_name: Species
+  location_name: site_name
   description: Study relating variation in architectural properties (leaf angle and
     leaf size) to cross-species patterns of leaf display, light capture and simulated
     carbon gain in branching-units of 38 perennial species occurring at two sites
     in Australian forest.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Two sites were chosen within Ku-ring-gai Chase National Park,
     Sydney, Australia. Both were temperate forest with a high diversity of shrub species
     under a moderately open eucalypt canopy. The sites differed in soil fertility
@@ -64,43 +74,40 @@ dataset:
   original_file: Falster2003_Table4.csv and Falster2003_Table4-metadata.csv provided
     by author and archived in raw data folder and GoogleDrive folder
   notes: none
-sites:
+locations:
   Ku-ring-gai Chase National Park high nutrient:
     latitude (deg): -33.57889
     longitude (deg): 151.2922
     description: fire-sensitive closed forest, with an overstorey to 20 m
-    soil total P (mg/kg): 440
-    MAP (mm): 1220
-    soils: weathered volcanic dyke
-    LAI: low
+    soil P, total (mg/kg): 440
+    precipitation, MAP (mm): 1220
+    geology (parent material): weathered volcanic dyke
+    leaf area index: low
   Ku-ring-gai Chase National Park low nutrient:
     latitude (deg): -33.69389
     longitude (deg): 151.1431
     description: fire-prone low open sclerophyll woodland with a species rich understorey
       of woody shrubs
-    soil total P (mg/kg): 94
-    MAP (mm): 1220
-    soils: derived from Hawkesbury Sandstone
-    LAI: medium
+    soil P, total (mg/kg): 94
+    precipitation, MAP (mm): 1220
+    geology (parent material): derived from Hawkesbury Sandstone
+    leaf area index: medium
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-  custom_R_code: data %>% mutate(site_name = ifelse(`Site LAI`=="Low","Ku-ring-gai
-    Chase National Park low nutrient","Ku-ring-gai Chase National Park high nutrient"))
 traits:
 - var_in: Leaf type
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert opinion
 - var_in: MLA
   unit_in: degrees
-  trait_name: leaf_angle
-  value_type: site_mean
+  trait_name: leaf_inclination_angle
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: For each individual, architectural information about the leading vertical
     branching unit, or 'tuft', on each plant was recorded. A tuft was defined as all
@@ -131,7 +138,9 @@ traits:
 - var_in: Self-Sh
   unit_in: '%'
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: average self-shading; For each individual, architectural information about
     the leading vertical branching unit, or 'tuft', on each plant was recorded. A
@@ -162,7 +171,9 @@ traits:
 - var_in: Leaf Area
   unit_in: cm2
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: total leaf area of branch; For each individual, architectural information
     about the leading vertical branching unit, or 'tuft', on each plant was recorded.
@@ -179,7 +190,9 @@ traits:
 - var_in: Leaf Size
   unit_in: cm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: For each individual, architectural information about the leading vertical
     branching unit, or 'tuft', on each plant was recorded. A tuft was defined as all
@@ -196,7 +209,9 @@ traits:
 - var_in: Leaf No.
   unit_in: count
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: number of leaves per tuft; The three-dimensional leaf arrangement of each
     plant was recorded using a FASTRAK 3D-digitizer (Polhemus, Colchester, VT, USA),
@@ -220,7 +235,9 @@ traits:
 - var_in: MSL
   unit_in: m
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: main stem length; The three-dimensional leaf arrangement of each plant
     was recorded using a FASTRAK 3D-digitizer (Polhemus, Colchester, VT, USA), in
@@ -244,7 +261,9 @@ traits:
 - var_in: LA/VOL
   unit_in: m2/m3
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: leaf area per unit volume; The three-dimensional leaf arrangement of each
     plant was recorded using a FASTRAK 3D-digitizer (Polhemus, Colchester, VT, USA),
@@ -281,7 +300,7 @@ substitutions:
 taxonomic_updates:
 - find: Lomatia siliafolia
   replace: Lomatia silaifolia
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

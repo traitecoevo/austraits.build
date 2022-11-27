@@ -12,20 +12,34 @@ source:
     number: '3'
     pages: 635--643
     doi: 10.1111/j.1469-8137.2007.02189.x
-people:
-- name: Michelle Leishman
-  institution: Macquarie University
-  role: lab_leader, collector, contributor
-- name: Tammy Haslehurst
-  institution: Department of Physical Geography, Macquarie University
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Leishman
+    given_name: Michelle
+    ORCID: 0000-0003-4830-5797
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+    additional_role: contact
+  assistants: Tammy Haslehurst
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: unknown
-  year_collected_end: unknown
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate_at(vars(`gs (molm-2s-1)`),~na_if(.,0)) %>%
+      mutate(
+        entity_to_use = ifelse(is.na(Replicate),"population","individual"),
+        value_type_to_use = ifelse(is.na(Replicate),"mean","raw"),
+        replicates_to_use = ifelse(is.na(Replicate),"3","1")
+      )
+  '
+  collection_date: unknown/2007
+  taxon_name: Species
+  location_name: site
   description: data from a study comparing carbon uptake strategies of native versus
     invasive species
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
+  entity_type: entity_to_use
   sampling_strategy: 'All study sites were located in urban bushland remnants on Hawkesbury
     Sandstone-derived soils in the Sydney region. Average annual rainfall is 1220
     mm. These soils are quartz-rich with well-drained, acidic sandy surface textures,
@@ -40,8 +54,8 @@ dataset:
     catchments and discharges it at outlets that generally drain into previously dry
     areas of natural bushland at the edge of urban development, or directly into creeks.
     Earlier work has shown that soils receiving stormwater run-offhave average total
-    P concentrations of approximately 600 mg kg-1'' compared with background soil
-    P concentrations of 40-100 mg kg-'' and are heavily invaded by exotic plants such
+    P concentrations of approximately 600 mg kg-1 compared with background soil P
+    concentrations of 40-100 mg kg-1 and are heavily invaded by exotic plants such
     as Ligustrum sinense, Cardiospermum grandiflorum, Lantana camara and Protoasparagus
     aethiopicus (Leishman, 1990; Leishman et al., 2004).'
   original_file: Hawkesbury sandstone data.csv provided directly by Michelle Leishman
@@ -52,26 +66,23 @@ dataset:
     library from Tammy Haslehurst's honors thesis. Also, values for Acacia sp. in
     the file 'Hawkesbury sandstone data' match those for 'Acacia parramatensis' in
     the other data file I have. I've manually changed the Acacia sp. to Acacia parramatensis.
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site
-  custom_R_code: data %>% mutate_at(vars(`gs (molm-2s-1)`),~na_if(.,0))
 traits:
 - var_in: GF
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert opinion
 - var_in: SLA (cm2/g)
   unit_in: cm2/g
-  trait_name: specific_leaf_area
-  value_type: site_mean
-  replicates: 3-10
+  trait_name: leaf_mass_per_area
+  value_type: value_type_to_use
+  basis_of_value: measurement
+  replicates: replicates_to_use
   methods: Leaf traits were measured on young to medium-aged, fully expanded outer
     canopy leaves. Ten leaves from each individual were separated for calculation
     of SLA (leaf area/leaf dry weight). Projected leaf area was determined with a
@@ -81,8 +92,9 @@ traits:
 - var_in: n_mass
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
-  replicates: 10
+  value_type: value_type_to_use
+  basis_of_value: measurement
+  replicates: replicates_to_use
   methods: Leaf traits were measured on young to medium-aged, fully expanded outer
     canopy leaves. Ten leaves from each individual were separated for calculation
     of SLA (leaf area/leaf dry weight). All leaves were oven-dried at 60 deg C for
@@ -93,8 +105,9 @@ traits:
 - var_in: p_mass
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: site_mean
-  replicates: 10
+  value_type: value_type_to_use
+  basis_of_value: measurement
+  replicates: replicates_to_use
   methods: Leaf traits were measured on young to medium-aged, fully expanded outer
     canopy leaves. Ten leaves from each individual were separated for calculation
     of SLA (leaf area/leaf dry weight). All leaves were oven-dried at 60 deg C for
@@ -105,33 +118,39 @@ traits:
     species at each site.
 - var_in: amass (nmol g-1 s-1)
   unit_in: nmolCO2/g/s
-  trait_name: photosynthetic_rate_per_dry_mass_saturated
-  value_type: site_mean
-  replicates: 10
+  trait_name: leaf_photosynthetic_rate_per_dry_mass_saturated
+  value_type: value_type_to_use
+  basis_of_value: measurement
+  replicates: replicates_to_use
   methods: unknown
 - var_in: aarea (umolm-2s-1)
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
-  value_type: site_mean
-  replicates: 10
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  value_type: value_type_to_use
+  basis_of_value: measurement
+  replicates: replicates_to_use
   methods: unknown
 - var_in: gs (molm-2s-1)
   unit_in: molH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: site_mean
-  replicates: 10
+  trait_name: leaf_stomatal_conductance_per_area_at_Asat
+  value_type: value_type_to_use
+  basis_of_value: measurement
+  replicates: replicates_to_use
   methods: unknown
 - var_in: Rd (umol m-2 s-1)
   unit_in: umolCO2/m2/s
   trait_name: leaf_dark_respiration_per_area
-  value_type: site_mean
-  replicates: 10
+  value_type: value_type_to_use
+  basis_of_value: measurement
+  replicates: replicates_to_use
   methods: unknown
 - var_in: Gmass
   unit_in: molH2O/g/s
   trait_name: .na
-  value_type: site_mean
-  replicates: 10
+  entity_type: population
+  value_type: value_type_to_use
+  basis_of_value: measurement
+  replicates: replicates_to_use
   methods: unknown; stomatal conductance per dry mass at Asat
 substitutions:
 - trait_name: plant_growth_form
@@ -140,69 +159,95 @@ substitutions:
 taxonomic_updates:
 - find: Acacia parramatensis
   replace: Acacia parramattensis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Dianella caerula
-  replace: Dianella caerulea
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Dubosia myoporoides
-  replace: Duboisia myoporoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Eucalyptus seberi
-  replace: Eucalyptus sieberi
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Euclayptus piperita
-  replace: Eucalyptus piperita
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Glochidion fernandi
-  replace: Glochidion ferdinandi
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Hibbertia aspersa
-  replace: Hibbertia aspera
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Mirbelia platylaboides
-  replace: Mirbelia platylobioides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Persoonia linifolia
-  replace: Persoonia virgata
-  reason: Change spelling to align with known name in APC (E, 2020.05.22)
-- find: Pratia purpurescens
-  replace: Pratia aff. purpurascens
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Symphonemia montana
-  replace: Symphyonema montanum
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Allocasuarina (?) diminuta
   replace: Allocasuarina diminuta
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-24)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Casuarina sp
-  replace: Casuarina sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Casuarina sp. [Leishman_2007]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
 - find: Commelina sp
-  replace: Commelina sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Commelina sp. [Leishman_2007]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Dianella caerula
+  replace: Dianella caerulea
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Dodonaea spp
-  replace: Dodonaea sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Dodonaea sp. [Leishman_2007]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Dubosia myoporoides
+  replace: Duboisia myoporoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Eucalyptus seberi
+  replace: Eucalyptus sieberi
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Euclayptus piperita
+  replace: Eucalyptus piperita
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Glochidion fernandi
+  replace: Glochidion ferdinandi
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hibbertia aspersa
+  replace: Hibbertia aspera
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Juncus spp
-  replace: Juncus sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Juncus sp. [Leishman_2007]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Mirbelia platylaboides
+  replace: Mirbelia platylobioides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Notelea spp
-  replace: Notelaea sp.
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Notelaea sp. [Leishman_2007]
+  reason: match_01_fuzzy. Fuzzy match of name ending with `sp.` to an APC accepted
+    genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Persoonia linifolia
+  replace: Persoonia sp. [Persoonia linifolia; Leishman_2007]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Pratia purpurescens
+  replace: Pratia purpurascens
+  reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
+    in `APC known` when everything except first 2 words ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Smilax sp
-  replace: Smilax sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Smilax sp. [Leishman_2007]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Symphonemia montana
+  replace: Symphionema montanum
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
+    APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Xanthorrhoea sp
-  replace: Xanthorrhoea sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Xanthorrhoea sp. [Leishman_2007]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
 - find: Xanthorrhoea spp
-  replace: Xanthorrhoea sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Persoonia myrtilloides subsp. Myrtilloides
-  replace: Persoonia myrtilloides subsp. myrtilloides
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
+  replace: Xanthorrhoea sp. [Leishman_2007]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
 exclude_observations: .na
 questions: .na
-

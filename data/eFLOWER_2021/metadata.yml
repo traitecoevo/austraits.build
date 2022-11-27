@@ -3,8 +3,8 @@ source:
     key: eFLOWER_2021
     bibtype: Article
     year: '2020'
-    author: Jürg Schöenenberger and Maria Balthazar and Andrea Lopez Martinez and
-      Beatrice Albert and Charlotte Prieu and Susana Magallon and Herve Sauquet
+    author: Jürg Schönenberger and Maria Balthazar and Andrea Lopez Martinez and Beatrice
+      Albert and Charlotte Prieu and Susana Magallon and Hervé Sauquet
     journal: American Journal of Botany
     title: 'Phylogenetic analysis of fossil flowers using an angiosperm-wide data
       set: proof-of-concept and challenges ahead'
@@ -16,7 +16,7 @@ source:
     key: Sauquet_2017
     bibtype: Article
     year: '2017'
-    author: Herve Sauquet and Maria von Balthazar and Susana Magallon and James A.
+    author: Hervé Sauquet and Maria von Balthazar and Susana Magallon and James A.
       Doyle and Peter K. Endress and Emily J. Bailes and Erica Barroso de Morais and
       Kester Bull-Herenu and Laetitia Carrive and Marion Chartier and Guillaume Chomicki
       and Mario Coiro and Raphael Cornette and Juliana H. L. El Ottra and Cyril Epicoco
@@ -25,43 +25,206 @@ source:
       Javier A. Luna and Julien Massoni and Sophie Nadot and Susanne Pamperl and Charlotte
       Prieu and Elisabeth Reyes and Patricia dos Santos and Kristel M. Schoonderwoerd
       and Susanne Sontag and Anaelle Soulebeau and Yannick Staedler and Georg F. Tschan
-      and Amy Wing-Sze Leung and Jürg Schöenenberger
+      and Amy Wing-Sze Leung and Jürg Schönenberger
     journal: Nature Communications
     title: The ancestral flower of angiosperms and its early diversification
     volume: '8'
     number: '1'
     pages: 1--10
     doi: 10.1038/ncomms16047
-people:
-- name: Herve Sauquet
-  institution: National Herbarium of New South Wales and Royal Botanic Gardens and
-    Domain Trust
-  role: collector, contact
-- name: Juerg Schoenenberger
-  institution: Department of Botany and Biodiversity Research, University of Vienna
-  role: collector
-- name: Maria von Balthazar
-  institution: Department of Botany and Biodiversity Research, University of Vienna
-  role: collector
-- name: Andrea Lopez Martinez
-  institution: Universidad Nacional Autonoma de Mexico
-  role: collector
-- name: Susana Magallon
-  institution: Universidad Nacional Autonoma de Mexico
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Sauquet
+    given_name: Hervé
+    ORCID: 0000-0001-8305-3236
+    affiliation: National Herbarium of New South Wales, Australian Institute of Botanical
+      Science, Royal Botanic Gardens and Domain Trust, Sydney, Australia
+    additional_role: contact
+  - last_name: Schönenberger
+    given_name: Jürg
+    ORCID: 0000-0001-6791-2731
+    affiliation: Department of Botany and Biodiversity Research, University of Vienna,
+      Austria
+  - last_name: Balthazar
+    given_name: Maria von
+    ORCID: 0000-0001-7436-3582
+    affiliation: Department of Botany and Biodiversity Research, University of Vienna,
+      Austria
+  - last_name: López Martinez
+    given_name: Andrea
+    ORCID: 0000-0002-2027-9753
+    affiliation: Universidad Nacional Autónoma de México, Mexico
+  - last_name: Magallón
+    given_name: Susana
+    ORCID: 0000-0002-6838-7497
+    affiliation: Universidad Nacional Autónoma de México, Mexico
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2013
-  year_collected_end: 2021
+  data_is_long_format: yes
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        Date = Date %>% dmy(),
+        ref_year = stringr::str_extract(FullRef, "(?<!\\d)\\d{4}(?!\\d)"),
+        ref_year = ifelse(is.na(FullRef), ref_year, ifelse(stringr::str_detect(FullRef, "American Journal of Botany 87"), "2000", ref_year)),
+        WeblinkRef_stripped = stringr::str_replace_all(WeblinkRef,"[:punct:]",""),
+        WeblinkRef_stripped = stringr::str_replace_all(WeblinkRef_stripped,"\\/",""),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "plantnetrbgsydnswgovau"), "RBGSYD", NA),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "appskeworg") & is.na(ref_author), "KewEfloras", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "plantillustrations") & is.na(ref_author), "PlantIllustrations", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "efloras") & is.na(ref_author), "Efloras", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "eolorg") & is.na(ref_author), "EOL", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "trinorg") & is.na(ref_author), "TRIN", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "palmweb") & is.na(ref_author), "Palmweb", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "anpsaorg") & is.na(ref_author), "ANPSA", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "apsaanueduau") & is.na(ref_author), "ASPA", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "climberslsaumich") & is.na(ref_author), "UMich", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "malesiana") & is.na(ref_author), "Flora_malesiana", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "emonocotorg") & is.na(ref_author), "Emonocot", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "florachilenacl") & is.na(ref_author), "FloraChilena", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "prota4uorg") & is.na(ref_author), "PROTA", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "gobotanynewenglandwildorg") & is.na(ref_author), "NewEnglandWild", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "deltaintkeycom") & is.na(ref_author), "Dallwitz", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "telabotanicaorg") & is.na(ref_author), "Telabotanica", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "sciencemnhnfrinstitutionmnhnsearch") & is.na(ref_author), "MNFNFR", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "uraotsaccrflorula4") & is.na(ref_author), "Florula", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "canadaplantsca") & is.na(ref_author), "CanadaPlant", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "vicflorarbgvicgovauflora") & is.na(ref_author), "VicFlora", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "herbanwmexnet") & is.na(ref_author), "Herban", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "rhsorgukplants") & is.na(ref_author), "RHS", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "mobotorgMOBOTresearchAPwebwelcomehtml") & is.na(ref_author), "MOBOT", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "anbggovau") & is.na(ref_author), "ANBG", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "plantsystematicsorg") & is.na(ref_author), "PlantSystematics", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "botanyhawaiiedufacultycarrpfamilieshtm") & is.na(ref_author), "BotanyHawaii", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "nationaalherbariumnlEuphorbshomehtm") & is.na(ref_author), "NationaalHerbariumNL", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "pfaforguserdefaultaspx") & is.na(ref_author), "PFAP", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "microscopyukorguk") & is.na(ref_author), "Microscopy", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "illinoiswildflowersinfo") & is.na(ref_author), "IllinoisWildflowers", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "malpighialesmyspeciesinfo") & is.na(ref_author), "MySpecies", ref_author),
+        ref_author = ifelse(stringr::str_detect(WeblinkRef_stripped, "plantsusdagovjava") & is.na(ref_author), "USDA", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "ALINA") & is.na(ref_author), "Alina", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "apsa.anu") & is.na(ref_author), "APSA", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "van Heel") & is.na(ref_author), "vanHeel", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "van Heusden") & is.na(ref_author), "vanHeusden", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "van Steenis CGGJ. 1957.") & is.na(ref_author), "vanSteenis", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "van Steenis CGGJ. 1984.") & is.na(ref_author), "vanSteenis", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "van Steenis CGGJ 1984 ") & is.na(ref_author), "vanSteenis", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "van Houtte") & is.na(ref_author), "vanHoutte", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Van Damme") & is.na(ref_author), "vanDamme", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "von Balthazar M, Alverson WS") & is.na(ref_author), "vonBalthazar", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "von Bothmer") & is.na(ref_author), "vonBothmer", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Maiden NSW Government Printing Office") & is.na(ref_author), "Maiden", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "apsa.anu") & is.na(ref_author), "APSA", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "American Journal of Botany 87") & is.na(ref_author), "Tucker", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "B. Kasapligil 1951") & is.na(ref_author), "Kasapligil", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "C. S. Venkatesh 1956") & is.na(ref_author), "Venkatesh", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "de Carvalho MLS , Nakamura AT") & is.na(ref_author), "deCarvalho", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Elaeocarpus in Australia and New Zealand") & is.na(ref_author), "Coode", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Pollen flora of Pakistan") & is.na(ref_author), "Perveen", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "C. Montaner, E. Floris, J. M. Alvarez") & is.na(ref_author), "Montaner", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "F. B. Sampson & D. B. Foreman") & is.na(ref_author), "Sampson", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "F. B. Sampson, Variation and similarities") & is.na(ref_author), "Sampson", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Flora of Australia Online") & is.na(ref_author), "FloraOfAustralia", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "H. P. Linder, B. G. Briggs") & is.na(ref_author), "Linder", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "H Banks, F Forest, G Lewis") & is.na(ref_author), "Banks", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "anthos.es") & is.na(ref_author), "ANTHOS", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "natureloveyou") & is.na(ref_author), "NatureLoveYou", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Pollenatlas") & is.na(ref_author), "PollenAtlas", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "J.J. Skvarla & J.W. Nowicke") & is.na(ref_author), "Skvarla", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Mignot") & is.na(ref_author), "Mignot", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Airy Shaw HK.  1980.") & is.na(ref_author), "AiryShaw", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "AL-Anbari AK, Barusrux S,") & is.na(ref_author), "AlAnbari", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Arbres Reunion 2013") & is.na(ref_author), "ArbresReunion", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Ashoke Bhattacharya and Sudhendu Manda.") & is.na(ref_author), "Bhattacharya", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Boswell Syme, JT") & is.na(ref_author), "BoswellSyme", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Botanic Garden Meise.") & is.na(ref_author), "BotanicGardenMeise", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Comparative Floral Developmental Study in Pisonia") & is.na(ref_author), "Vanvinckenroye", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "David R. Smyth,") & is.na(ref_author), "Smyth", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Den Hartog C. 1957.") & is.na(ref_author), "denHartog", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Discover plants and fungi.") & is.na(ref_author), "Kew", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "s botanical register. Vol 2.") & is.na(ref_author), "Lindley", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Geoffrey A. Levin and Michael G. Simpson.") & is.na(ref_author), "Levin", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Herbarium University of Michigan.") & is.na(ref_author), "UMich", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Hugo Carl Albert Fischer,") & is.na(ref_author), "Fischer", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "IGERSHEIM A,  ENDRESS PK 1998") & is.na(ref_author), "Igersheim", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Jepson herbaria.") & is.na(ref_author), "JepsonHerbarium", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "L. W. CayzerA,C, M. D. CrispA and I. R. H. Telford") & is.na(ref_author), "Cayzer", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Paul Hermann Wilhelm Taubert 1891") & is.na(ref_author), "Taubert", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Maas-van de Kamer H, Maas PJM 2008") & is.na(ref_author), "MassvandeKamer", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Marcelo Carnier Dornelas, Adriana Pinheiro Martinelli Rodriguez;") & is.na(ref_author), "Dornelas", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Mohana Rao PR. 1986.") & is.na(ref_author), "MohanaRao", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Mu\\?ller FJH. 1861.") & is.na(ref_author), "vonMueller", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "National Herbarium of Nederland and Flora Malesiana.") & is.na(ref_author), "NationaalHerbariumNL", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Natural History Museum. The Trustees of the Natural History Museum, London.") & is.na(ref_author), "NHM", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Observation made at the RBGE July-August 2014.") & is.na(ref_author), "RBGE", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Pakistan Plant Database. 2014") & is.na(ref_author), "PPD", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "que Muséum National d") & is.na(ref_author), "MNHN", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Perrier de la Bâthie H.") & is.na(ref_author), "PerrierdelaBâthie", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Perrier de La Bâthie H.") & is.na(ref_author), "PerrierdelaBâthie", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Pinheiro Boeira AS.") & is.na(ref_author), "Boeira", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Plants of Southern Africa, an online checklist.") & is.na(ref_author), "POSA", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "pollen.usda.gov") & is.na(ref_author), "USDA", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "R. deFilipps. 1969. ") & is.na(ref_author), "DeFilipps", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "rhodes, d. g. 1975.") & is.na(ref_author), "Rhodes", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Ronse De Craene LP, Smets EF 1996") & is.na(ref_author), "RonseDeCraene", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Ronse De Craene LP, Smets EF. 1999.") & is.na(ref_author), "RonseDeCraene", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Ronse de Craene LP. 2010. Floral Diagrams.") & is.na(ref_author), "RonseDeCraene", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Seen on plants at the RBGE. Accession number 1998.0982A") & is.na(ref_author), "RBGE", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Studies in the Proteaceae I. Cytology and Floral Morphology") & is.na(ref_author), "Kausik", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Tasmanian herbarium, Tasmanian Museum and Art Gallery. ") & is.na(ref_author), "TMAG", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "The Flowering Plants and Ferns of New South Wales -") & is.na(ref_author), "Maiden", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Thome\\? OW. 1885.") & is.na(ref_author), "Thomé", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Tree SA. 2019. The Trees of Sourthern Africa") & is.na(ref_author), "TreeSA", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Wild Flower Finder by R.W.Darlington") & is.na(ref_author), "Darlington", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "William C. Dickison, Joan W.") & is.na(ref_author), "Dickison", ref_author),
+        ref_author = ifelse(stringr::str_detect(FullRef, "Watson L, Dallwitz MJ. 1992 onwards.") & is.na(ref_author), "Watson", ref_author),
+        ref_author = ifelse(is.na(FullRef), ref_author, ifelse(stringr::str_detect(FullRef, "Endlicher S. 1837-1838. "), "Endlicher", ref_author)),
+        ref_author = ifelse(is.na(FullRef), ref_author, ifelse(stringr::str_detect(FullRef, "Spach E. 1834-1847."), "Spach", ref_author)),
+        ref_author = ifelse(is.na(ref_author), stringr::str_trim(word(FullRef, 1)), ref_author),
+        ref_author = stringr::str_replace(ref_author,"[:punct:]",""),
+        year_entered = year(Date),
+        ref_year = ifelse(is.na(ref_year), year_entered, ref_year),
+        ref_year = ifelse(is.na(ref_year), 2021, ref_year),
+        ref_author = ifelse(is.na(ref_author), "unknown", ref_author),
+        source_id = paste0(ref_author, "_", ref_year),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Bertin RI. 1982. Floral biology"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Bertin RI. 1982. Paternity and"), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Endress PK. 1994. Shapes, sizes"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Endress PK. 1994. Diversity and"), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Endress PK. 1994. Evolutionary"), paste0(source_id, "_3", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Forster PI. 1997. A taxonomic revision of Austrobuxus"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Forster PI. 1997. A taxonomic revision of Dissiliaria"), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Staedler YM, Endress PK. 2009. "), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Staedler YM, Weston PH, Endress PK. 2009."), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Tsou C-H. 1994. The embryology,"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Tsou C-H. 1994.  The classification"), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "van Steenis CGGJ. 1984. A synopsis"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "van Steenis CGGJ 1984 Sphenostemonaceae."), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Salvadoraceae. In"), paste0(source_id, "_1", sep = ""), source_id)),
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Kubitzki K, Bayer C , eds. 2003. The "), paste0(source_id, "_2", sep = ""), source_id))
+      ) %>%
+      arrange(source_id, Taxon, Character, trait_value) %>%
+      group_by(source_id, Character, Taxon) %>%
+      distinct(NDat, .keep_all = TRUE) %>%
+      mutate(observation_number = row_number()) %>%
+      ungroup()
+  '
+  collection_date: Date
+  taxon_name: Taxon
+  trait_name: Character
+  value: trait_value
+  source_id: source_id
+  individual_id: NDat
   description: Updated eFLOWER-792 dataset, exported from PROTEUS on 15 Feb 2021.
     This is the same list of 792 angiosperm species used in the first eFLOWER paper
     (Sauquet et al., 2017) and the same list of 29 primary characters used in the
-    Paleo-eFLOWER pilot paper (Schoenenberger et al., 2020), but using the latest
-    data in PROTEUS. Compared to the last published version of this dataset (Appendix
-    S1 of Schoenenberger et al., 2020), this new dataset includes 608 new data records;
+    Paleo-eFLOWER pilot paper (Schönenberger et al., 2020), but using the latest data
+    in PROTEUS. Compared to the last published version of this dataset (Appendix S1
+    of Schönenberger et al., 2020), this new dataset includes 608 new data records;
     in addition, 127 records have been updated and 43 deleted. Fossil data are excluded
     as AusTraits focuses on living species.
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: All data were recorded at the species level, based on taxonomic
     and morphological studies.
   original_file: qry_Paleo-eFLOWER_Data_AusTraits_2021-02-15.xlsx;  the version of
@@ -74,22 +237,31 @@ dataset:
     in the metadata - these are non-Australian species whose names are not matched
     by APC/APNI. This list will need to be added to as new expanded versions of eFLOWER
     are submitted.
-sites: .na
-contexts: .na
-config:
-  data_is_long_format: yes
-  variable_match:
-    taxon_name: Taxon
-    trait_name: Character
-    value: trait_value
-    observation_id: NDat
-    date: Date
-  custom_R_code: .na
+locations: .na
+contexts:
+- context_property: replicate observations
+  category: temporal
+  var_in: observation_number
+  values:
+  - value: 1
+  - value: 2
+  - value: 3
+  - value: 4
+  - value: 5
+  - value: 6
+  - value: 7
+  - value: 8
+  - value: 9
+  - value: 10
+  - value: 11
+  - value: 12
 traits:
 - var_in: 100. Floral structural sex (D1)
   unit_in: .na
   trait_name: flower_structural_sex_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Flowers can be either bisexual (hermaphrodite) or unisexual. In our original
     study (Sauquet et al., 2017), we used a single character to distinguish among
@@ -109,7 +281,9 @@ traits:
 - var_in: 201. Number of perianth parts (C1)
   unit_in: count
   trait_name: flower_perianth_parts_count
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: In this character, we scored the total number of perianth parts, including
     sepals, petals, or any form of tepal. A value of zero was scored when the perianth
@@ -130,7 +304,9 @@ traits:
 - var_in: 201. Number of perianth parts (C1)_min
   unit_in: count
   trait_name: flower_perianth_parts_count
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: In this character, we scored the total number of perianth parts, including
     sepals, petals, or any form of tepal. A value of zero was scored when the perianth
@@ -151,7 +327,9 @@ traits:
 - var_in: 201. Number of perianth parts (C1)_max
   unit_in: count
   trait_name: flower_perianth_parts_count
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: In this character, we scored the total number of perianth parts, including
     sepals, petals, or any form of tepal. A value of zero was scored when the perianth
@@ -172,7 +350,9 @@ traits:
 - var_in: 204. Fusion of perianth (C1)
   unit_in: n/n
   trait_name: flower_perianth_fusion
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Fusion of perianth organs (congenital or postgenital) at anthesis, recorded
     on a continuous scale, from 0 (free parts) to 1 (parts fused along their entire
@@ -197,7 +377,9 @@ traits:
 - var_in: 204. Fusion of perianth (C1)_min
   unit_in: n/n
   trait_name: flower_perianth_fusion
-  value_type: expert_mean
+  entity_type: species
+  value_type: minimum
+  basis_of_value: expert_score
   replicates: .na
   methods: Fusion of perianth organs (congenital or postgenital) at anthesis, recorded
     on a continuous scale, from 0 (free parts) to 1 (parts fused along their entire
@@ -222,7 +404,9 @@ traits:
 - var_in: 204. Fusion of perianth (C1)_max
   unit_in: n/n
   trait_name: flower_perianth_fusion
-  value_type: expert_mean
+  entity_type: species
+  value_type: maximum
+  basis_of_value: expert_score
   replicates: .na
   methods: Fusion of perianth organs (congenital or postgenital) at anthesis, recorded
     on a continuous scale, from 0 (free parts) to 1 (parts fused along their entire
@@ -247,7 +431,9 @@ traits:
 - var_in: 301. Number of fertile stamens (C1)
   unit_in: count
   trait_name: flower_fertile_stamens_count
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Number of fertile (functional) stamens in bisexual or male flowers. Staminodes
     (co-occurring with fertile stamens) are not counted and female flowers are ignored
@@ -266,7 +452,9 @@ traits:
 - var_in: 301. Number of fertile stamens (C1)_min
   unit_in: count
   trait_name: flower_fertile_stamens_count
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Number of fertile (functional) stamens in bisexual or male flowers. Staminodes
     (co-occurring with fertile stamens) are not counted and female flowers are ignored
@@ -285,7 +473,9 @@ traits:
 - var_in: 301. Number of fertile stamens (C1)_max
   unit_in: count
   trait_name: flower_fertile_stamens_count
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Number of fertile (functional) stamens in bisexual or male flowers. Staminodes
     (co-occurring with fertile stamens) are not counted and female flowers are ignored
@@ -304,7 +494,9 @@ traits:
 - var_in: 305. Filament (D1)
   unit_in: .na
   trait_name: flower_filament
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Here we here record absence or presence of the filament, and in the latter
     case, the shape of the filament. Shape is considered in terms of length and width
@@ -316,7 +508,9 @@ traits:
 - var_in: 306. Fusion of filaments (C1)
   unit_in: n/n
   trait_name: flower_filament_fusion
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Fusion of stamen (and staminode) filaments among each other at anthesis
     (congenitally or postgenitally) is recorded on a continuous scale, from 0 (free
@@ -324,7 +518,7 @@ traits:
     recorded using an approximate number between these two extremes (e.g., 0.1 corresponds
     to basal fusion, 0.5 to fusion along half of the length of filaments). In cases
     of distal (postgenital) fusion of filaments (e.g., Impatiens, von Balthazar and
-    Schoenenberger, 2013), the length of the fused section is measured against total
+    Schönenberger, 2013), the length of the fused section is measured against total
     filament length. In cases where the filaments are proximally fused with the corolla
     (i.e., flowers with a stamen-corolla tube as present in most asterids), only the
     distal part of the filaments that are free from the corolla are considered. In
@@ -343,7 +537,9 @@ traits:
 - var_in: 306. Fusion of filaments (C1)_min
   unit_in: n/n
   trait_name: flower_filament_fusion
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Fusion of stamen (and staminode) filaments among each other at anthesis
     (congenitally or postgenitally) is recorded on a continuous scale, from 0 (free
@@ -351,7 +547,7 @@ traits:
     recorded using an approximate number between these two extremes (e.g., 0.1 corresponds
     to basal fusion, 0.5 to fusion along half of the length of filaments). In cases
     of distal (postgenital) fusion of filaments (e.g., Impatiens, von Balthazar and
-    Schoenenberger, 2013), the length of the fused section is measured against total
+    Schönenberger, 2013), the length of the fused section is measured against total
     filament length. In cases where the filaments are proximally fused with the corolla
     (i.e., flowers with a stamen-corolla tube as present in most asterids), only the
     distal part of the filaments that are free from the corolla are considered. In
@@ -370,7 +566,9 @@ traits:
 - var_in: 306. Fusion of filaments (C1)_max
   unit_in: n/n
   trait_name: flower_filament_fusion
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Fusion of stamen (and staminode) filaments among each other at anthesis
     (congenitally or postgenitally) is recorded on a continuous scale, from 0 (free
@@ -378,7 +576,7 @@ traits:
     recorded using an approximate number between these two extremes (e.g., 0.1 corresponds
     to basal fusion, 0.5 to fusion along half of the length of filaments). In cases
     of distal (postgenital) fusion of filaments (e.g., Impatiens, von Balthazar and
-    Schoenenberger, 2013), the length of the fused section is measured against total
+    Schönenberger, 2013), the length of the fused section is measured against total
     filament length. In cases where the filaments are proximally fused with the corolla
     (i.e., flowers with a stamen-corolla tube as present in most asterids), only the
     distal part of the filaments that are free from the corolla are considered. In
@@ -397,7 +595,9 @@ traits:
 - var_in: 311. Anther orientation (D1)
   unit_in: .na
   trait_name: flower_anther_orientation
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Anthers of angiosperms are rather uniform in their basic structure. They
     normally have four microsporangia (pollen sacs) that are arranged pair-wise in
@@ -415,7 +615,9 @@ traits:
 - var_in: 400. Gynoecium phyllotaxy (D1)
   unit_in: .na
   trait_name: flower_gynoecium_phyllotaxis
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gynoecium phyllotaxis may be spiral or whorled (Endress, 2014). In rare
     cases, carpels may also be arranged in an irregular fashion, but such cases are
@@ -428,7 +630,9 @@ traits:
 - var_in: 401. Number of structural carpels (C1)
   unit_in: count
   trait_name: flower_structural_carpels_count
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Number of fertile or sterile carpels in bisexual or female flowers, recorded
     as a continuous character (with integer values of 1 and above). Contrary to the
@@ -450,7 +654,9 @@ traits:
 - var_in: 401. Number of structural carpels (C1)_min
   unit_in: count
   trait_name: flower_structural_carpels_count
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Number of fertile or sterile carpels in bisexual or female flowers, recorded
     as a continuous character (with integer values of 1 and above). Contrary to the
@@ -472,7 +678,9 @@ traits:
 - var_in: 401. Number of structural carpels (C1)_max
   unit_in: count
   trait_name: flower_structural_carpels_count
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Number of fertile or sterile carpels in bisexual or female flowers, recorded
     as a continuous character (with integer values of 1 and above). Contrary to the
@@ -494,7 +702,9 @@ traits:
 - var_in: 403. Fusion of ovaries (C1)
   unit_in: n/n
   trait_name: flower_ovary_fusion
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Degree of ovary fusion expressed as a fraction of the total length of the
     ovary (from the floral base to the apex of the ovary). Fusion of styles and stigmas
@@ -502,7 +712,9 @@ traits:
 - var_in: 403. Fusion of ovaries (C1)_min
   unit_in: n/n
   trait_name: flower_ovary_fusion
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Degree of ovary fusion expressed as a fraction of the total length of the
     ovary (from the floral base to the apex of the ovary). Fusion of styles and stigmas
@@ -510,7 +722,9 @@ traits:
 - var_in: 403. Fusion of ovaries (C1)_max
   unit_in: n/n
   trait_name: flower_ovary_fusion
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Degree of ovary fusion expressed as a fraction of the total length of the
     ovary (from the floral base to the apex of the ovary). Fusion of styles and stigmas
@@ -518,7 +732,9 @@ traits:
 - var_in: 404. Style differentiation (D1)
   unit_in: .na
   trait_name: flower_style_differentiation
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Here we record absence or presence of a style. The absence of a style equals
     a sessile stigma (e.g., some Clusiaceae). When present, we also record the shape
@@ -527,7 +743,9 @@ traits:
 - var_in: 207. Symmetry of perianth (D1)
   unit_in: .na
   trait_name: flower_perianth_symmetry
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: There are many ways in which flowers can be zygomorphic (monosymmetric,
     with a single plane of bilateral symmetry). Here we record perianth symmetry,
@@ -542,7 +760,9 @@ traits:
 - var_in: 102. Ovary position (D1)
   unit_in: .na
   trait_name: flower_ovary_position
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: The ovary is the part of the gynoecium where the ovules are produced. The
     ovary may be located on the receptacle and thus be positioned above the insertion
@@ -559,7 +779,9 @@ traits:
 - var_in: 308. Fusion of filaments to inner perianth series (C1)
   unit_in: n/n
   trait_name: flower_filament_fusion_to_inner_perianth
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Here we record the fusion of filaments with the innermost perianth organs
     at anthesis on a continuous scale, from 0 (filaments completely free from perianth)
@@ -577,7 +799,9 @@ traits:
 - var_in: 308. Fusion of filaments to inner perianth series (C1)_min
   unit_in: n/n
   trait_name: flower_filament_fusion_to_inner_perianth
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Here we record the fusion of filaments with the innermost perianth organs
     at anthesis on a continuous scale, from 0 (filaments completely free from perianth)
@@ -595,7 +819,9 @@ traits:
 - var_in: 308. Fusion of filaments to inner perianth series (C1)_max
   unit_in: n/n
   trait_name: flower_filament_fusion_to_inner_perianth
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Here we record the fusion of filaments with the innermost perianth organs
     at anthesis on a continuous scale, from 0 (filaments completely free from perianth)
@@ -613,7 +839,9 @@ traits:
 - var_in: 312. Anther attachment (D1)
   unit_in: .na
   trait_name: flower_anther_attachment
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Anther attachment refers to the area of insertion of the filament on the
     anther connective (i.e. the tissue connecting the two thecae of an anther). Anthers
@@ -628,28 +856,36 @@ traits:
 - var_in: 411. Number of ovules per functional carpel (C1)
   unit_in: count
   trait_name: flower_ovules_per_functional_carpel_count
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Number of ovules per carpel recorded as a continuous character (with integer
     values of 1 and above). Reduced (sterile) carpels are not taken into account here.
 - var_in: 411. Number of ovules per functional carpel (C1)_min
   unit_in: count
   trait_name: flower_ovules_per_functional_carpel_count
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Number of ovules per carpel recorded as a continuous character (with integer
     values of 1 and above). Reduced (sterile) carpels are not taken into account here.
 - var_in: 411. Number of ovules per functional carpel (C1)_max
   unit_in: count
   trait_name: flower_ovules_per_functional_carpel_count
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Number of ovules per carpel recorded as a continuous character (with integer
     values of 1 and above). Reduced (sterile) carpels are not taken into account here.
 - var_in: 412. Placentation (D1)
   unit_in: .na
   trait_name: flower_gynoecium_placentation
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Here we record the different types of placentation in apocarpous/unicarpellate
     and in syncarpous gynoecia. In apocarpous and unicarpellate gynoecia, placentation
@@ -663,7 +899,7 @@ traits:
     to a central column that emerges from the base of the ovary and protrudes into
     the non-septate ovary. It is not unusual that syncarpous gynoecia show a transition
     from proximally axile to a distally parietal placentation (e.g., Polemoniaceae,
-    Schoenenberger, 2009). Basal and apical placentation may occur both in apocarpous/unicarpellate
+    Schönenberger, 2009). Basal and apical placentation may occur both in apocarpous/unicarpellate
     and in syncarpous gynoecia. Usually there is one longitudinal series of ovules
     attached to each carpel margin. However, both in apocarpous/unicarpellate and
     in syncarpous gynoecia there may be more than one series of ovules at the flanks
@@ -674,7 +910,9 @@ traits:
 - var_in: 313. Anther dehiscence (D1)
   unit_in: .na
   trait_name: flower_anther_dehiscence
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Anther dehiscence refers to the type of opening of the anther when releasing
     its pollen through the stomia. The most common mode of dehiscence is by longitudinal
@@ -694,7 +932,9 @@ traits:
 - var_in: 314. Connective extension (apical) (D1)
   unit_in: .na
   trait_name: flower_anther_connective_extension
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: We define apical (distal) connective extensions (also called "distal connective
     protrusions", e.g., Hufford and Endress, 1989) as sterile anther structures that
@@ -704,7 +944,7 @@ traits:
     in terms of length in relation to the length of the thecae. We refer to connective
     extensions as short if they are shorter than a third of the length of the thecae.
     Such short extensions are found in many angiosperm lineages (e.g., Daphniphyllum,
-    Hufford and Endress, 1989; Thunbergia, Schoenenberger, 1999). Connective extensions
+    Hufford and Endress, 1989; Thunbergia, Schönenberger, 1999). Connective extensions
     that are longer than a third of, but not longer than the thecal length are here
     referred to as long (e.g., Loropetalum, Hufford and Endress, 1989), while we reserve
     the state 'very long extension' for those that are longer than the thecae (e.g.,
@@ -712,7 +952,9 @@ traits:
 - var_in: 5000. Number of apertures (C1)
   unit_in: count
   trait_name: flower_pollen_apertures_count
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: A pollen aperture is a structurally delimited region of the pollen grain
     wall through which the pollen tube emerges during pollen germination and which
@@ -723,7 +965,9 @@ traits:
 - var_in: 5000. Number of apertures (C1)_min
   unit_in: count
   trait_name: flower_pollen_apertures_count
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: A pollen aperture is a structurally delimited region of the pollen grain
     wall through which the pollen tube emerges during pollen germination and which
@@ -734,7 +978,9 @@ traits:
 - var_in: 5000. Number of apertures (C1)_max
   unit_in: count
   trait_name: flower_pollen_apertures_count
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: A pollen aperture is a structurally delimited region of the pollen grain
     wall through which the pollen tube emerges during pollen germination and which
@@ -745,7 +991,9 @@ traits:
 - var_in: 5002. Aperture shape (D1)
   unit_in: .na
   trait_name: flower_pollen_aperture_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Pollen grains are often described according to the shape, structure, and
     position of their apertures. Here we score the main shape of the many described
@@ -764,7 +1012,9 @@ traits:
 - var_in: 230. Perianth phyllotaxy (D1)
   unit_in: .na
   trait_name: flower_perianth_phyllotaxis
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Perianth parts may be organized in one or more whorls or along a continuous
     spiral, usually with wide divergence angles more or less equal to 137.5 degrees
@@ -772,8 +1022,8 @@ traits:
     perianth phyllotaxis may be irregular (Zhao et al., 2012). Perianth phyllotaxis
     at anthesis may differ from phyllotaxis of perianth part primordia at their inception
     and it is not uncommon that spirally initiated perianths become whorled later
-    through development (Erbar and Leins, 1994; Schoenenberger and Grenhagen, 2005;
-    Endress, 2010, 2011; Zhang and Schoenenberger, 2014; Loefstrand et al., 2016).
+    through development (Erbar and Leins, 1994; Schönenberger and Grenhagen, 2005;
+    Endress, 2010, 2011; Zhang and Schönenberger, 2014; Loefstrand et al., 2016).
     Here we score perianth phyllotaxis only at anthesis because developmental data
     are lacking for most species in our data set (for a detailed discussion of this
     important point, see Sauquet et al., 2018; Sokoloff et al., 2018). ^p Perianth
@@ -822,7 +1072,9 @@ traits:
 - var_in: 234. Perianth differentiation (D1)
   unit_in: .na
   trait_name: flower_perianth_differentiation
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: There are many ways in which perianth organs may look different from each
     other in a given flower. Typically, outer perianth parts are sepaloid and protect
@@ -851,7 +1103,9 @@ traits:
 - var_in: 330. Androecium structural phyllotaxy (D1)
   unit_in: .na
   trait_name: flower_androecium_structural_phyllotaxis
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Androecium phyllotaxis may be spiral, whorled or irregular (Endress, 1987a).
     We call this character structural because both fertile stamens and staminodes
@@ -870,7 +1124,9 @@ traits:
 - var_in: 231. Number of perianth whorls (C1)
   unit_in: count
   trait_name: flower_perianth_whorls_count
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: The number of perianth whorls was recorded as a continuous character (with
     integer values of 1 and above). Not applicable when perianth phyllotaxis is spiral
@@ -878,7 +1134,9 @@ traits:
 - var_in: 231. Number of perianth whorls (C1)_min
   unit_in: count
   trait_name: flower_perianth_whorls_count
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: The number of perianth whorls was recorded as a continuous character (with
     integer values of 1 and above). Not applicable when perianth phyllotaxis is spiral
@@ -886,7 +1144,9 @@ traits:
 - var_in: 231. Number of perianth whorls (C1)_max
   unit_in: count
   trait_name: flower_perianth_whorls_count
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: The number of perianth whorls was recorded as a continuous character (with
     integer values of 1 and above). Not applicable when perianth phyllotaxis is spiral
@@ -894,7 +1154,9 @@ traits:
 - var_in: 232. Perianth merism (C1)
   unit_in: count
   trait_name: flower_perianth_merism
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Here we define perianth merism as the number of perianth parts in each
     whorl, recorded as a continuous character (with integer values of 1 and above).
@@ -903,7 +1165,9 @@ traits:
 - var_in: 232. Perianth merism (C1)_min
   unit_in: count
   trait_name: flower_perianth_merism
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Here we define perianth merism as the number of perianth parts in each
     whorl, recorded as a continuous character (with integer values of 1 and above).
@@ -912,7 +1176,9 @@ traits:
 - var_in: 232. Perianth merism (C1)_max
   unit_in: count
   trait_name: flower_perianth_merism
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Here we define perianth merism as the number of perianth parts in each
     whorl, recorded as a continuous character (with integer values of 1 and above).
@@ -921,7 +1187,9 @@ traits:
 - var_in: 331. Number of androecium structural whorls (C1)
   unit_in: count
   trait_name: flower_androecium_structural_whorls_count
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: The number of whorls was recorded as a continuous character (with integer
     values of 1 and above). We call this character structural because both fertile
@@ -935,7 +1203,9 @@ traits:
 - var_in: 331. Number of androecium structural whorls (C1)_min
   unit_in: count
   trait_name: flower_androecium_structural_whorls_count
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: The number of whorls was recorded as a continuous character (with integer
     values of 1 and above). We call this character structural because both fertile
@@ -949,7 +1219,9 @@ traits:
 - var_in: 331. Number of androecium structural whorls (C1)_max
   unit_in: count
   trait_name: flower_androecium_structural_whorls_count
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: The number of whorls was recorded as a continuous character (with integer
     values of 1 and above). We call this character structural because both fertile
@@ -963,7 +1235,9 @@ traits:
 - var_in: 332. Androecium structural merism (C1)
   unit_in: count
   trait_name: flower_androecium_structural_merism
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Androecium merism is defined as the number of stamens or stamen bundles
     (fascicles) in one whorl and was recorded as a continuous character (with integer
@@ -974,7 +1248,9 @@ traits:
 - var_in: 332. Androecium structural merism (C1)_min
   unit_in: count
   trait_name: flower_androecium_structural_merism
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Androecium merism is defined as the number of stamens or stamen bundles
     (fascicles) in one whorl and was recorded as a continuous character (with integer
@@ -985,7 +1261,9 @@ traits:
 - var_in: 332. Androecium structural merism (C1)_max
   unit_in: count
   trait_name: flower_androecium_structural_merism
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Androecium merism is defined as the number of stamens or stamen bundles
     (fascicles) in one whorl and was recorded as a continuous character (with integer
@@ -996,7 +1274,9 @@ traits:
 - var_in: 406. Fusion of styles (C1)
   unit_in: n/n
   trait_name: flower_style_fusion
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Here we record the degree of fusion of styles at anthesis, recorded on
     a continuous scale, from 0 (free styles) to 1 (styles fused along their entire
@@ -1007,7 +1287,9 @@ traits:
 - var_in: 406. Fusion of styles (C1)_min
   unit_in: n/n
   trait_name: flower_style_fusion
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Here we record the degree of fusion of styles at anthesis, recorded on
     a continuous scale, from 0 (free styles) to 1 (styles fused along their entire
@@ -1018,7 +1300,9 @@ traits:
 - var_in: 406. Fusion of styles (C1)_max
   unit_in: n/n
   trait_name: flower_style_fusion
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Here we record the degree of fusion of styles at anthesis, recorded on
     a continuous scale, from 0 (free styles) to 1 (styles fused along their entire
@@ -1050,6 +1334,9 @@ substitutions:
   replace: three_quarters_inferior
 - trait_name: flower_ovary_position
   find: '102. Ovary position (D1): (5) 1/4-inferior or less'
+  replace: one_quarter_inferior
+- trait_name: flower_ovary_position
+  find: '102. ovary position (d1): (4) 1/4-inferior or less'
   replace: one_quarter_inferior
 - trait_name: flower_perianth_symmetry
   find: '207. Symmetry of perianth (D1): (0) actinomorphic (strictly polysymmetric)'
@@ -1179,13 +1466,13 @@ substitutions:
   replace: ventrifixed
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (0) longitudinal slit'
-  replace: longitudinal slit
+  replace: longitudinal_slit
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (1) poricidal'
   replace: poricidal
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (2) H-valvate'
-  replace: H_valvate
+  replace: h_valvate
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (3) flap-valvate'
   replace: flap_valvate
@@ -1203,7 +1490,7 @@ substitutions:
   replace: short_apical_slits
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (A) T-valvate (T-shaped stomium)'
-  replace: T_valvate
+  replace: t_valvate
 - trait_name: flower_anther_dehiscence
   find: '313. Anther dehiscence (D1): (B) common stomium of confluent thecae'
   replace: common_stomium_confluent_thecae
@@ -1316,7 +1603,9 @@ substitutions:
 taxonomic_updates:
 - find: Brassica napus
   replace: Brassica x napus
-  reason: Automatic alignment with name in APC list (accepted) (2021-01-22)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
 exclude_observations:
 - variable: taxon_name
   find: Antirrhinum majus, Atropa belladonna, Averrhoa carambola, Byrsonima crassifolia,
@@ -1332,4 +1621,3 @@ exclude_observations:
   reason: These are 'misapplied' species that are unlikely to actually be Australian
     species
 questions: .na
-

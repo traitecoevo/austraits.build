@@ -4,23 +4,46 @@ source:
     bibtype: Unpublished
     year: 2019
     author: Daniel Jin and Dieter Hochuli
-    title: "Unpublished data: Urbanisation increases arthropod abundance and herbivory on a native weed, University of Sydney"
-people:
-- name: Daniel Jin
-  institution: School of Life and Environmental Sciences, Faculty of Science, The
-    University of Sydney
-  role: collector, contact
-- name: Dieter Hochuli
-  institution: School of Life and Environmental Sciences, Faculty of Science, The
-    University of Sydney
-  role: lab_leader
+    title: 'Unpublished data: Urbanisation increases arthropod abundance and herbivory
+      on a native weed, University of Sydney'
+contributors:
+  data_collectors:
+  - last_name: Jin
+    given_name: Daniel
+    ORCID: 0000-0001-7492-9830
+    affiliation: School of Life and Environmental Sciences, The University of Sydney,
+      Australia
+    additional_role: contact
+  - last_name: Hochuli
+    given_name: Dieter
+    ORCID: 0000-0002-6673-4475
+    affiliation: School of Life and Environmental Sciences, The University of Sydney,
+      Australia
+  austraits_curators: Caitlan Baxter
 dataset:
-  year_collected_start: 2017
-  year_collected_end: 2019
+  data_is_long_format: no
+  custom_R_code:      '
+    data_max_height <-
+      data %>%
+        summarise(max_height = max(as.numeric(`Height (m)`)));
+
+    data %>% 
+      rename(`latitude (deg)` = Latitude, `longitude (deg)` = Longitude) %>%
+      bind_rows(data_max_height) %>%
+      mutate(
+        species_name = "Pittosporum undulatum",
+        site_name = paste("site_at",`latitude (deg)`,"degS_and",
+                          `longitude (deg)`,"degE",sep = "_"),
+        site_name = stringr::str_replace(site_name, "site_at_NA_degS_and_NA_degE","NA")
+      )
+  '
+  collection_date: 2017/2019
+  taxon_name: species_name
+  location_name: site_name
   description: The purpose of this study was to investigate arthropods and their trophic
     interactions on Pittosporum undulatum.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: I selected study sites to cover a gradient of urbanisation, ranging
     from high (streets) through medium (parks and remnants) to low levels of urbanisation
     (natural bushland). Briefly, street sites were along sealed streets and roads,
@@ -30,7 +53,10 @@ dataset:
     sample from. These individuals were, when possible, at least 50 m apart.
   original_file: Daniel's pittosporum trait data.xlsx
   notes: .na
-sites:
+locations:
+  NA:
+    latitude (deg): .na
+    longitude (deg): .na
   site_at_-33.6448626_degS_and_151.1604005_degE:
     latitude (deg): -33.6448626
     longitude (deg): 151.1604005
@@ -584,21 +610,25 @@ sites:
     latitude (deg): -33.882178
     longitude (deg): 151.1137784
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-    site_name: site_name
-  custom_R_code: data %>% mutate(species_name = "Pittosporum undulatum") %>% select(`latitude
-    (deg)` = Latitude, `longitude (deg)` = Longitude, `Height (m)`, `DBH (cm)`, `Average
-    leaf area (cm2)`, species_name) %>% mutate(site_name = paste("site_at",`latitude
-    (deg)`,"degS_and",`longitude (deg)`,"degE",sep = "_"))
 traits:
 - var_in: Height (m)
   unit_in: m
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
+  methods: Height was measured by standing some distance away from the base of the
+    plant (a longer distance was used for taller plants) and using a smartphone app
+    to measure the angle from my eye height to the top of the plant. I then calculated
+    height using the angle and distance.
+- var_in: max_height
+  unit_in: m
+  trait_name: plant_height
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: 184
   methods: Height was measured by standing some distance away from the base of the
     plant (a longer distance was used for taller plants) and using a smartphone app
     to measure the angle from my eye height to the top of the plant. I then calculated
@@ -606,13 +636,17 @@ traits:
 - var_in: DBH (cm)
   unit_in: cm
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: .na
 - var_in: Average leaf area (cm2)
   unit_in: cm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Each individual measurement is the average of 20-40 leaves. When measuring
     average leaf area, many leaves had lost some area due to herbivory, in which case
@@ -621,4 +655,3 @@ substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

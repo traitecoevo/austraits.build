@@ -12,18 +12,30 @@ source:
     number: '11'
     pages: 1462--1470
     doi: 10.1016/j.agrformet.2011.01.006
-people:
-- name: Lucas Cernusak
-  institution: James Cook University
-  role: collector, contact
+contributors:
+  data_collectors:
+  - last_name: Cernusak
+    given_name: Lucas
+    ORCID: 0000-0002-7575-5526
+    affiliation: College of Science and Engineering, James Cook University, Cairns,
+      QLD, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2008
-  year_collected_end: 2008
+  data_is_long_format: no
+  custom_R_code:      data %>% mutate(Date = Date %>% dmy()) %>% mutate_at(c("initial ci/ca","J
+    at Tleaf (umol e- m-2 s-1)", "J at 25 deg C (umol e- m-2 s-1)","initial photosynthesis
+    (umol m-2 s-1)","Amax- light curve (umol m-2 s-1)","Vcmax atTleaf (umol m-2 s-1)","Vcmax
+    at 25 deg C (umol m-2 s-1)"), ~na_if(.,".")) %>% rename(measurement_remarks = context)
+  collection_date: Date
+  taxon_name: Species
+  location_name: Site
+  individual_id: leaf ID
   description: Leaf-level photosynthetic parameters of species in the closely related
     genera Eucalyptus and Corymbia were assessed along a strong rainfall gradient
     in northern Australia.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Leaf gas exchange measurements were made at six sites along a
     sub-continental rainfall gradient in northern Australia (Fig. 1). The sites covered
     a latitudinal range from approximately 12 deg S to 23 deg S, with corresponding
@@ -41,74 +53,59 @@ dataset:
   notes: The few duplicate values within this dataset, and with Schmidt_2003, Schulze_1998,
     and Schulze_2006_2 seem to all be random, independent values since many measurements
     for the same traits were made on the same species.
-sites:
+locations:
   Adelaide River:
     latitude (deg): -13.077
     longitude (deg): 131.118
     elevation (m): 75.0
-    MAP (mm): 1532.0
-    MAT (C): 27.0
+    precipitation, MAP (mm): 1532.0
+    temperature, MAT (C): 27.0
     description: eucalypt-dominated savannas
   Boulia:
     latitude (deg): -22.994
     longitude (deg): 139.945
     elevation (m): 151.0
-    MAP (mm): 291.0
-    MAT (C): 24.9
+    precipitation, MAP (mm): 291.0
+    temperature, MAT (C): 24.9
     description: Acacia-dominated shrublands
   Daly River:
     latitude (deg): -14.159
     longitude (deg): 131.388
     elevation (m): 73.0
-    MAP (mm): 1170.0
-    MAT (C): 27.2
+    precipitation, MAP (mm): 1170.0
+    temperature, MAT (C): 27.2
     description: eucalypt-dominated savannas
   Dry Creek:
     latitude (deg): -15.259
     longitude (deg): 132.371
     elevation (m): 167.0
-    MAP (mm): 958.0
-    MAT (C): 27.1
+    precipitation, MAP (mm): 958.0
+    temperature, MAT (C): 27.1
     description: eucalypt-dominated savannas
   Howard Springs:
     latitude (deg): -12.485
     longitude (deg): 131.146
     elevation (m): 37.0
-    MAP (mm): 1714.0
-    MAT (C): 27.8
+    precipitation, MAP (mm): 1714.0
+    temperature, MAT (C): 27.8
     description: eucalypt-dominated savannas
   Sturt Plains:
     latitude (deg): -17.133
     longitude (deg): 133.329
     elevation (m): 228.0
-    MAP (mm): 672.0
-    MAT (C): 26.8
+    precipitation, MAP (mm): 672.0
+    temperature, MAT (C): 26.8
     description: low woodland dominated by Acacia cowleana, Eucalyptus dichromophloia,
       and Lysophyllum cunninghamii; transition from eucalypt-dominated savannas to
       acacia-dominated shrublands
-contexts:
-  Canopy leaves sampled for A-Ci curve:
-    type: field
-    description: measurements made on canopy leaves for A-ci curve
-  Canopy leaves sampled for Temperature response curve:
-    type: field
-    description: measurements made on canopy leaves for temperature response curve
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: Site
-    context_name: context
-    date: Date
-  custom_R_code: data %>% mutate(Date = Date %>% dmy()) %>% mutate_at(c("initial ci/ca","J
-    at Tleaf (umol e- m-2 s-1)", "J at 25 deg C (umol e- m-2 s-1)","initial photosynthesis
-    (umol m-2 s-1)","Amax- light curve (umol m-2 s-1)","Vcmax atTleaf (umol m-2 s-1)","Vcmax
-    at 25 deg C (umol m-2 s-1)"), ~na_if(.,"."))
+contexts: .na
 traits:
 - var_in: Leaf area (mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At the conclusion of the gas exchange measurements, each leaf was collected
     and leaf area was determined with an image analysis system (Delta-T Scan, Delta-T
@@ -116,14 +113,18 @@ traits:
 - var_in: leaf mass (g)
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaves were dried at 70 deg C to constant mass, and leaf dry mass was determined
     to the nearest mg.
 - var_in: Specific leaf area (m2 kg-1)
   unit_in: m2/kg
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At the conclusion of the gas exchange measurements, each leaf was collected
     and leaf area was determined with an image analysis system (Delta-T Scan, Delta-T
@@ -132,7 +133,9 @@ traits:
 - var_in: d13C (per mille)
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaves were then ground to a fine, homogeneous powder. The nitrogen concentration
     and leaf carbon isotope ratio a subsample of approximately 3 mg leaf material
@@ -143,7 +146,9 @@ traits:
 - var_in: '%C'
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaves were then ground to a fine, homogeneous powder. The nitrogen concentration
     and leaf carbon isotope ratio a subsample of approximately 3 mg leaf material
@@ -154,7 +159,9 @@ traits:
 - var_in: '%N'
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaves were then ground to a fine, homogeneous powder. The nitrogen concentration
     and leaf carbon isotope ratio a subsample of approximately 3 mg leaf material
@@ -165,7 +172,9 @@ traits:
 - var_in: leaf P (mg g-1)
   unit_in: mg/g
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Phosphorus concentration was determined by ashing 100 mg of leaf dry matter
     at 550 deg C, followed by dissolution in 1 M H2SO4 and phosphate detection by
@@ -174,7 +183,9 @@ traits:
 - var_in: leaf N area (mmol m-2)
   unit_in: mmolN/m2
   trait_name: leaf_N_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaves were then ground to a fine, homogeneous powder. The nitrogen concentration
     and leaf carbon isotope ratio a subsample of approximately 3 mg leaf material
@@ -185,7 +196,9 @@ traits:
 - var_in: leaf P area (mmol m-2)
   unit_in: mmolP/m2
   trait_name: leaf_P_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Phosphorus concentration was determined by ashing 100 mg of leaf dry matter
     at 550 deg C, followed by dissolution in 1 M H2SO4 and phosphate detection by
@@ -193,8 +206,10 @@ traits:
     USA).
 - var_in: N:P ratio (g g-1)
   unit_in: g/g
-  trait_name: N_to_P_ratio
-  value_type: raw_value
+  trait_name: leaf_NP_ratio
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaves were then ground to a fine, homogeneous powder. The nitrogen concentration
     and leaf carbon isotope ratio a subsample of approximately 3 mg leaf material
@@ -208,7 +223,9 @@ traits:
 - var_in: Vcmax atTleaf (umol m-2 s-1)
   unit_in: umol/m2/s
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The A-ci curves were analysed using the spreadsheet utility (version 2007.1)
     provided by Sharkey et al. (2007). The spreadsheet utility fits the photosynthesis
@@ -221,8 +238,10 @@ traits:
     with measurements made at other leaf temperatures.
 - var_in: Vcmax at 25 deg C (umol m-2 s-1)
   unit_in: umol/m2/s
-  trait_name: Vcmax_per_area
-  value_type: raw_value
+  trait_name: leaf_fluorescence_Vcmax_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The A-ci curves were analysed using the spreadsheet utility (version 2007.1)
     provided by Sharkey et al. (2007). The spreadsheet utility fits the photosynthesis
@@ -239,7 +258,9 @@ traits:
 - var_in: J at Tleaf (umol e- m-2 s-1)
   unit_in: umol/m2/s
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The A-ci curves were analysed using the spreadsheet utility (version 2007.1)
     provided by Sharkey et al. (2007). The spreadsheet utility fits the photosynthesis
@@ -252,8 +273,10 @@ traits:
     with measurements made at other leaf temperatures.
 - var_in: J at 25 deg C (umol e- m-2 s-1)
   unit_in: umol/m2/s
-  trait_name: Jmax_per_area
-  value_type: raw_value
+  trait_name: leaf_fluorescence_Jmax_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The A-ci curves were analysed using the spreadsheet utility (version 2007.1)
     provided by Sharkey et al. (2007). The spreadsheet utility fits the photosynthesis
@@ -269,8 +292,10 @@ traits:
     during gas exchange measurements.
 - var_in: Asat_umol_m-2_s-1
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
-  value_type: raw_value
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Values used are from the first step of the A-ci curve, where CO2 was approximately
     400 ppm and PAR 1200 umol m-2 s-1. In detail, two portable photosynthesis systems
@@ -306,8 +331,10 @@ traits:
     site.'
 - var_in: g_at_Asat_mol_m-2_s-1
   unit_in: molH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: raw_value
+  trait_name: leaf_stomatal_conductance_per_area_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Values used are from the first step of the A-ci curve, where CO2 was approximately
     400 ppm and PAR 1200 umol m-2 s-1. In detail, two portable photosynthesis systems
@@ -343,8 +370,10 @@ traits:
     site.'
 - var_in: ci_over_ca_at_Asat
   unit_in: umolCO2 internal/umolCO2 ambient
-  trait_name: ci_over_ca
-  value_type: raw_value
+  trait_name: leaf_intercellular_CO2_concentration_to_atmospheric_CO2_concentration_ratio
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Values used are from the first step of the A-ci curve, where CO2 was approximately
     400 ppm and PAR 1200 umol m-2 s-1. In detail, two portable photosynthesis systems
@@ -380,8 +409,10 @@ traits:
     site.'
 - var_in: ci_at_Asat_umol_mol-1
   unit_in: umolCO2/mol
-  trait_name: ci_at_Asat
-  value_type: raw_value
+  trait_name: leaf_intercellular_CO2_concentration_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Values used are from the first step of the A-ci curve, where CO2 was approximately
     400 ppm and PAR 1200 umol m-2 s-1. In detail, two portable photosynthesis systems
@@ -418,7 +449,9 @@ traits:
 - var_in: trans_at_Asat_mmol_m-2_s-1
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Asat
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Values used are from the first step of the A-ci curve, where CO2 was approximately
     400 ppm and PAR 1200 umol m-2 s-1. In detail, two portable photosynthesis systems
@@ -454,8 +487,10 @@ traits:
     site.'
 - var_in: Amax_umol_m-2_s-1
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_maximum
-  value_type: raw_value
+  trait_name: leaf_photosynthetic_rate_per_area_maximum
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Values used are from the final step of the A-ci curve, where CO2 was approximately
     2000 ppm and PAR 1200 umol m-2 s-1. In detail, two portable photosynthesis systems
@@ -491,8 +526,10 @@ traits:
     site.'
 - var_in: g_at_Amax_mol_m-2_s-1
   unit_in: molH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Amax
-  value_type: raw_value
+  trait_name: leaf_stomatal_conductance_per_area_at_Amax
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Values used are from the final step of the A-ci curve, where CO2 was approximately
     2000 ppm and PAR 1200 umol m-2 s-1. In detail, two portable photosynthesis systems
@@ -529,7 +566,9 @@ traits:
 - var_in: trans_at_Amax_mmol_m-2_s-1
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Amax
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Values used are from the final step of the A-ci curve, where CO2 was approximately
     2000 ppm and PAR 1200 umol m-2 s-1. In detail, two portable photosynthesis systems
@@ -566,7 +605,9 @@ traits:
 - var_in: Rd- light curve (umol m-2 s-1)
   unit_in: neg_umolCO2/m2/s
   trait_name: leaf_dark_respiration_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Two portable photosynthesis systems (Li-6400, LiCor Inc., Lincoln, NE,
     USA) were used to measure the response of photosynthesis to intercellular CO2
@@ -602,7 +643,9 @@ traits:
 - var_in: Amax- light curve (umol m-2 s-1)
   unit_in: umolCO2/m2/s
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Two portable photosynthesis systems (Li-6400, LiCor Inc., Lincoln, NE,
     USA) were used to measure the response of photosynthesis to intercellular CO2
@@ -639,10 +682,11 @@ substitutions: .na
 taxonomic_updates:
 - find: Eucalyptus coolibah
   replace: Eucalyptus coolabah
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Eucalyptus tetrodonta (TR)
   replace: Eucalyptus tetrodonta
-  reason: Change spelling to Align to APC accepted name (E. Wenk, 2020-05-25)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

@@ -12,31 +12,44 @@ source:
     pages: 205--211
     publisher: Wiley-Blackwell
     doi: 10.1046/j.1365-2699.1997.00126.x
-people:
-- name: Janice Lord
-  institution: University of Otago
-  role: collector, contact
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
-- name: Judy Egan
-  institution: Conservation Commission of the Northern Territory
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Lord
+    given_name: Janice
+    ORCID: 0000-0001-8314-0428
+    affiliation: University of Otago, Dunedin, New Zealand
+    additional_role: contact
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  assistants: Judy Egan
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 1995
-  year_collected_end: 1995
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(dispersers = NA) %>% 
+      move_values_to_new_trait(
+        "dispersal mode: 1=unassisted, 2=ant, 3=vertebrate, 4=adhesion, 5=wind",
+        "dispersers",
+        c("2","3","5"),
+        c("ants","vertebrates","wind"),
+        c("2","3","5")
+      )
+  '
+  collection_date: 1995/1995
+  taxon_name: name_original
+  location_name: site_text
   description: seed and growth form data for 229 species from Eucalyptus woodland
     in Northern Territory
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Data collection for one flora as well as synthesis of data from
     other published sources.
   original_file: nteucpr.xls
   notes: none
-sites:
+locations:
   Alligator River Kakadu:
     longitude (deg): 132.5
     latitude (deg): -12.5
@@ -48,24 +61,36 @@ sites:
       was compiled by J.E. and supplemented with species lists from Taylor & Dunlop
       (1985).
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-    site_name: site_text
-  custom_R_code: .na
 traits:
 - var_in: growth form 1=tree, 2=shrub, 3=subshrub, 4=forb, 5=graminoid, 10=vine
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: 'Species were assigned to one of four growth form categories: herbs, graminoids,
     woody species (i.e. shrub and trees combined), and climbers.'
 - var_in: 'dispersal mode: 1=unassisted, 2=ant, 3=vertebrate, 4=adhesion, 5=wind'
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: For all floras, dispersal modes were inferred from external morphological
+    features of the diaspore. All species were assigned to one of five dispersal categories
+    - unassisted, vertebrate, wind, ant and adhesion. As assignment to dispersal category
+    relied on morphological features of the diaspore, following the methods of Leishman
+    & Westoby (1994), very small diaspores that might, in effect, be wind-  dispersed,
+    and seeds dispersed ballistically by structures associated with the parent plant
+    were conservatively assigned to the 'unassisted' category.
+- var_in: dispersers
+  unit_in: .na
+  trait_name: dispersers
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: For all floras, dispersal modes were inferred from external morphological
     features of the diaspore. All species were assigned to one of five dispersal categories
@@ -76,8 +101,10 @@ traits:
     were conservatively assigned to the 'unassisted' category.
 - var_in: seed mass (mg)
   unit_in: mg
-  trait_name: seed_mass
-  value_type: multisite_mean
+  trait_name: seed_dry_mass
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
   replicates: 20
   methods: Seed mass was measured to an accuracy of 0.1mg on a Mettler balance, for
     at least twenty ripe oven-diaspores per species. The five or ten diaspores closest
@@ -87,9 +114,11 @@ traits:
 - var_in: lineage
   unit_in: .na
   trait_name: .na
-  value_type: unknown
-  replicates: unknown
-  methods: unknown
+  entity_type: .na
+  value_type: .na
+  basis_of_value: .na
+  replicates: .na
+  methods: .na
 substitutions:
 - trait_name: plant_growth_form
   find: '1'
@@ -108,101 +137,138 @@ substitutions:
   replace: graminoid
 - trait_name: plant_growth_form
   find: '10'
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: dispersal_syndrome
   find: '1'
-  replace: unassisted
+  replace: barochory
 - trait_name: dispersal_syndrome
   find: '2'
   replace: myrmecochory
 - trait_name: dispersal_syndrome
   find: '3'
-  replace: vertebrate
+  replace: zoochory
 - trait_name: dispersal_syndrome
   find: '4'
-  replace: adhesion
+  replace: epizoochory
 - trait_name: dispersal_syndrome
   find: '5'
-  replace: wind
+  replace: anemochory
 taxonomic_updates:
 - find: Crotalaria novaehollandiae
   replace: Crotalaria novae-hollandiae
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Erythroxylem ellipticum
-  replace: Erythroxylum ellipticum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Mnesithia formosa
-  replace: Mnesithea formosa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Mnesithia rottboellioides
-  replace: Mnesithea rottboellioides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Sowerbaer alliacea
-  replace: Sowerbaea alliacea
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Uraria lagopodoides
-  replace: Uraria lagopodioides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Kairlasennia suffruticosa
-  replace: Kailarsenia suffruticosa
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Sauropus affin.glaucus
-  replace: Sauropus glaucus
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Vigna vex.var.ang
-  replace: Vigna vexillata var. angustifolia
-  reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Dendrolobium prostratum
-  replace: Dendrolobium sp. [Dendrolobium prostratum]
-  reason: Align to genus, as name list not in APNI or TPC lists (E. Wenk, 2020-05-26)
+  replace: Dendrolobium sp. [Dendrolobium prostratum; Lord_1997]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Desmodium clavitrichum
-  replace: Desmodium sp. [Desmodium clavitrichum]
-  reason: Species referenced in flora survey for Charles Darwin Nationap Park, but
-    not in APNI (E. Wenk, 2020-05-26)
+  replace: Desmodium sp. [Desmodium clavitrichum; Lord_1997]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Desmodium PineCreek
   replace: Desmodium sp. 'Pine Ck'
-  reason: Align to APNI phrase name; not APC accepted (E. Wenk, 2020-05-26)
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Erythroxylem ellipticum
+  replace: Erythroxylum ellipticum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Grevillea goodiissppluri
-  replace: Grevillea pluricaulis
-  reason: Change spelling to Align to APC or ALA species lists (Sam Andrew, 2018-02-07)
+  replace: Grevillea goodii subsp. pluricaulis
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Helicteres sp.Litchfield
-  replace: Helicteres tenuipila
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
+  replace: Helicteres sp. Litchfield (D.M.J.S.Bowman 185)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Hibbertia spJE243
-  replace: Hibbertia sp. [Hibbertia spJE243]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Hibbertia sp. [Hibbertia spJE243; Lord_1997]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Hibbertia spJE893
-  replace: Hibbertia sp. [Hibbertia spJE893]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Hibbertia sp. [Hibbertia spJE893; Lord_1997]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Kairlasennia suffruticosa
+  replace: Kailarsenia suffruticosa
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Mnesithia formosa
+  replace: Mnesithea formosa
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Mnesithia rottboellioides
+  replace: Mnesithea rottboellioides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Neptunia sp.Darwin
   replace: Neptunia sp. 'Darwin'
-  reason: Align to APNI phrase name; not APC accepted (E. Wenk, 2020-05-25)
+  reason: match_16_fuzzy. Fuzzy alignment with canonical name in APNI (2022-11-10)
+  taxonomic_resolution: Species
 - find: Polygala sp.1
-  replace: Polygala sp. [Polygala sp.1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Polygala sp. [Polygala sp.1; Lord_1997]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Polygala sp.2
-  replace: Polygala sp. [Polygala sp.2]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Polygala sp. [Polygala sp.2; Lord_1997]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Polygala sp.3
-  replace: Polygala sp. [Polygala sp.3]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Polygala sp. [Polygala sp.3; Lord_1997]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Sauropus affin.glaucus
+  replace: Sauropus sp. [Sauropus affin.glaucus; Lord_1997]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Sauropus Batchelor
-  replace: Sauropus sp. [Sauropus Batchelor]
-  reason: Align to genus, because unrecognised hybrid (E. Wenk, 2020-05-24)
+  replace: Sauropus sp. [Sauropus Batchelor; Lord_1997]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Sauropus Pineleaf
-  replace: Sauropus sp. [Sauropus Pineleaf]
-  reason: Align to genus, because unrecognised hybrid (E. Wenk, 2020-05-24)
+  replace: Sauropus sp. [Sauropus Pineleaf; Lord_1997]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Sowerbaer alliacea
+  replace: Sowerbaea alliacea
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Typhonium longleaf
-  replace: Typhonium sp. [Typhonium longleaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Typhonium sp. [Typhonium longleaf; Lord_1997]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Typhonium roundleaf
-  replace: Typhonium sp. [Typhonium roundleaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Typhonium sp. [Typhonium roundleaf; Lord_1997]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Uraria lagopodoides
+  replace: Uraria lagopodioides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Uraria Litchfield
   replace: Uraria sp. Litchfield (C.R.Dunlop 5220)
-  reason: Confirm alignment with accepted phrase name on APC list (E. Wenk, 2020-05-24)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Vigna vex.var.ang
+  replace: Vigna vexillata var. angustifolia
+  reason: Manual alignment with canonical name of rank `varietas` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Varietas
 exclude_observations: .na
 questions: .na
-

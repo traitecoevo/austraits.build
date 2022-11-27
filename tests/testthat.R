@@ -1,4 +1,4 @@
 library(testthat)
 library(austraits.build)
 
-test_check("austraits.build")
+testthat::test_check("austraits.build")

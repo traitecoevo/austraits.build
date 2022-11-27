@@ -11,23 +11,44 @@ source:
     number: 3
     pages: 517--524
     doi: 10.1034/j.1600-0706.2000.900310.x.
-people:
-- name: Angela Moles
-  institution: University of New South Wales
-  role: collector, contact
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Moles
+    given_name: Angela
+    ORCID: 0000-0003-2041-7762
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  austraits_curators: Caitlan Baxter
 dataset:
-  year_collected_start: 1998
-  year_collected_end: 1998
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        site_name = case_when(
+          longitude == 151.233056 ~ "heath",
+          longitude == 151.245833 ~ "terrace",
+          longitude == 151.2917 ~ "diatreme"
+        )
+      ) %>%
+      group_by(Species) %>%
+        mutate(across(c(`presence_of_hair_ on_mature_leaves`), replace_duplicates_with_NA)) %>%
+      ungroup()
+  '
+  collection_date: 1998/1998
+  taxon_name: Species
+  location_name: site_name
   description: We tested whether species with small leaves take less time to expand
     their leaves than do species with large leaves, and whether a shorter leaf expansion
     phase is associated with reduced damage incurred from herbivores. Some other relevant
     traits (leaf size, hairiness and bitterness) were measured directly, and their
     cross-correlations with leaf expansion time were assessed.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Three study sites were located in Ku-ring-gai Chase National
     Park in Sydney, Australia. Sites were chosen to include a variety of soil moisture
     and soil nutrient levels, in order to maximise species diversity. The first site
@@ -44,41 +65,36 @@ dataset:
     sampled.
   original_file: DataforAustraits_leaves_Moles.xlsx
   notes: .na
-sites:
+locations:
   heath:
     longitude (deg): 151.233056
     latitude (deg): -33.661111
-    soil_total_N (%): 0.05
+    soil N, total (%): 0.05
     description: The site 'heath' was on a sandstone ridge top. Terrace and heath
       sites had low levels of both nutrients (terrace; 144 ug g-1 total phosphorus;
       0.08% nitrogen; heath; 79 ug g-1 total phosphorus; 0.05% nitrogen).
   terrace:
     longitude (deg): 151.245833
     latitude (deg): -33.66388
-    soil_total_N (%): 0.08
+    soil N, total (%): 0.08
     description: The site 'terrace' was near a stream in a sandstone gully. Terrace
       and heath sites had low levels of both nutrients (terrace; 144 ug g-1 total
       phosphorus; 0.08% nitrogen; heath; 79 ug g-1 total phosphorus; 0.05% nitrogen).
   diatreme:
     longitude (deg): 151.2917
     latitude (deg): -33.57775
-    soil_total_N (%): 0.41
+    soil N, total (%): 0.41
     description: The first site (diatreme) was located on volcanic soils. The diatreme
       site had the highest levels of phosphorus and nitrogen (646 ug g-1 total phosphorus;
       0.41% nitrogen)
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-  custom_R_code: data %>% mutate(site_name = case_when(longitude == 151.233056 ~ "heath",
-    longitude == 151.245833 ~ "terrace", longitude == 151.2917 ~ "diatreme"))
 traits:
 - var_in: SLA
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
-  value_type: site_mean
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: SLA (specific leaf area) was determined from a sample of 25 leaves that
     had recently completed expansion for each species by dividing leaf area by dry
@@ -86,56 +102,68 @@ traits:
 - var_in: Leaf_area_(mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: Leaf area was determined by scanning 25 fully expanded leaves from each
     species, and analysing the images using Delta-T scan (Delta-T, Cambridge, UK).
 - var_in: presence_of_hair_ on_mature_leaves
   unit_in: .na
-  trait_name: leaf_hairs_adult
-  value_type: expert_mean
+  trait_name: leaf_hairs_adult_leaves
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Leaves were considered hairy if any trichomes were visible to the naked
     eye. Categorised as present or absent.
 substitutions:
-- trait_name: leaf_hairs_adult
+- trait_name: leaf_hairs_adult_leaves
   find: 'no'
-  replace: '0'
-- trait_name: leaf_hairs_adult
+  replace: glabrous
+- trait_name: leaf_hairs_adult_leaves
   find: 'yes'
-  replace: '1'
+  replace: hairy
 taxonomic_updates:
 - find: Acacia terminallis
   replace: Acacia terminalis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Dodonea triquetra
   replace: Dodonaea triquetra
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Gre6illea buxifolia
-  replace: Grevillea buxifolia
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Gre6illea sericea
-  replace: Grevillea sericea
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Gre6illea speciosa
-  replace: Grevillea speciosa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pultenea daphnoides
-  replace: Pultenaea daphnoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pultenea flexillis
-  replace: Pultenaea flexilis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Zieria lae6igata
-  replace: Zieria laevigata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pultenea elliptica
-  replace: Pultenaea elliptica
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Epacris tubiflora
   replace: Styphelia tubiflora
-  reason: Align to species by E. Wenk (2020-05-13)
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Gre6illea buxifolia
+  replace: Grevillea buxifolia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Gre6illea sericea
+  replace: Grevillea sericea
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Gre6illea speciosa
+  replace: Grevillea speciosa
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenea daphnoides
+  replace: Pultenaea daphnoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenea elliptica
+  replace: Pultenaea elliptica
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenea flexillis
+  replace: Pultenaea flexilis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Zieria lae6igata
+  replace: Zieria laevigata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

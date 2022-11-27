@@ -5,19 +5,24 @@ source:
     author: John Morgan
     year: 2011
     title: 'Unpublished data: Grassy woodland traits, La Trobe University'
-people:
-- name: John Morgan
-  institution: La Trobe University
-  role: collector, contact, lab_leader
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Morgan
+    given_name: John
+    ORCID: 0000-0003-2003-5983
+    affiliation: La Trobe University, Australia
+    additional_role: contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2011
-  year_collected_end: 2011
+  data_is_long_format: no
+  custom_R_code:      data %>% mutate(site_name = "Victoria") %>% mutate_at(c("Height (cm)"),
+    ~na_if(.,0))
+  collection_date: 2011/2011
+  taxon_name: Scientific Name
+  location_name: site_name
   description: John Morgan Grassy woodland trait database
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: This data comes from a wide variety of sites and systems across
     Vicroria including Wimmera woodlands near Natimuk, Yellow Gum woodlands in western
     Victoria,Red Gum woodlands on the Dundas Tablelands, snowgum woodlands in Alpine
@@ -30,7 +35,7 @@ dataset:
     various botanical collections; no values have been filtered, because these 68
     values are across 7 different references, with no clear pattern, suggesting they
     are coincidental duplicates.
-sites:
+locations:
   Victoria:
     description: This data comes from a wide variety of sites and systems across Vicroria
       including Wimmera woodlands near Natimuk, Yellow Gum woodlands in western Victoria,Red
@@ -39,45 +44,57 @@ sites:
     latitude (deg): .na
     longitude (deg): .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Scientific Name
-    site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "Victoria") %>% mutate_at(c("Height (cm)"),
-    ~na_if(.,0))
 traits:
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: Height (cm)
   unit_in: cm
   trait_name: plant_height
-  value_type: site_max
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: unknown
   methods: unknown
 - var_in: Seed Dispersal
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: McIntyre L.F
   unit_in: .na
   trait_name: life_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: Veg. Spread
   unit_in: .na
-  trait_name: vegetative_regeneration
-  value_type: unknown
-  replicates: unknown
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
   methods: unknown
 substitutions:
+- trait_name: dispersal_syndrome
+  find: wind
+  replace: anemochory
+- trait_name: dispersal_syndrome
+  find: adhesion
+  replace: epizoochory
+- trait_name: dispersal_syndrome
+  find: mobile
+  replace: barochory
 - trait_name: dispersal_syndrome
   find: ingestion
   replace: endozoochory
@@ -108,145 +125,232 @@ substitutions:
 - trait_name: life_form
   find: Therophyte
   replace: therophyte
-- trait_name: vegetative_regeneration
+- trait_name: vegetative_reproduction_ability
   find: 'Yes'
   replace: vegetative
-- trait_name: vegetative_regeneration
+- trait_name: vegetative_reproduction_ability
   find: 'No'
   replace: not_vegetative
 taxonomic_updates:
 - find: Acacia acinacea s.l.
   replace: Acacia acinacea
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia longifolia s.l.
   replace: Acacia longifolia
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Arthropodium milleflorum s.s.
   replace: Arthropodium milleflorum
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Arthropodium strictum s.l.
   replace: Arthropodium strictum
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Austrostipa spp.
+  replace: Austrostipa sp. [Morgan_2011_1]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Caladenia carnea sensu Willis (1970)
+  replace: Caladenia carnea
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Caladenia spp.
+  replace: Caladenia sp. [Morgan_2011_1]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
 - find: Chrysocephalum apiculatum s.l.
   replace: Chrysocephalum apiculatum
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Crassula sieberiana s.l.
-  replace: Crassula sieberiana
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Dianella revoluta s.l.
-  replace: Dianella revoluta
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Dillwynia cinerascens s.l.
-  replace: Dillwynia cinerascens
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Gamochaeta purpurea s.l.
-  replace: Gamochaeta purpurea
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Geranium retrorsum s.l.
-  replace: Geranium retrorsum
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Geranium solanderi s.l.
-  replace: Geranium solanderi
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Hibbertia sericea var. sericea s.s.
-  replace: Hibbertia sericea var. sericea
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Lachnagrostis aemula s.s.
-  replace: Lachnagrostis aemula
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Lomandra micrantha s.s.
-  replace: Lomandra micrantha
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Melicytus dentatus s.l.
-  replace: Melicytus dentatus
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Parietaria debilis s.l.
-  replace: Parietaria debilis
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Poranthera microphylla s.s.
-  replace: Poranthera microphylla
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Senecio squarrosus s.s.
-  replace: Senecio squarrosus
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Wahlenbergia gracilenta s.l.
-  replace: Wahlenbergia gracilenta
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Wahlenbergia graniticola s.l.
-  replace: Wahlenbergia graniticola
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Euchiton collinus s.l.
-  replace: Euchiton collinus
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Potamogeton tricarinatus s.l.
-  replace: Potamogeton tricarinatus f. III
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Wahlenbergia communis s.l.
-  replace: Wahlenbergia communis
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Oxalis corniculata s.l.
-  replace: Oxalis corniculata
-  reason: Alignment with existing species identified by TaxonStand (2020-05-12)
-- find: Pimelea curviflora s.s.
-  replace: Pimelea curviflora
-  reason: Alignment with existing species identified by TaxonStand (2020-05-12)
-- find: Stackhousia monogyna s.l.
-  replace: Stackhousia monogyna
-  reason: Alignment with existing species identified by TaxonStand (2020-05-12)
-- find: Stylidium graminifolium s.l.
-  replace: Stylidium graminifolium
-  reason: Alignment with existing species identified by TaxonStand (2020-05-12)
-- find: Thelymitra pauciflora s.l.
-  replace: Thelymitra pauciflora
-  reason: Alignment with existing species identified by TaxonStand (2020-05-12)
-- find: Viola hederacea sensu Willis (1972)
-  replace: Viola hederacea
-  reason: Alignment with existing species identified by TaxonStand (2020-05-12)
-- find: Viola sieberiana spp. agg.
-  replace: Viola sieberiana
-  reason: Alignment with existing species identified by TaxonStand (2020-05-12)
-- find: Austrostipa spp.
-  replace: Austrostipa sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Caladenia spp.
-  replace: Caladenia sp.
-  reason: Align with genus (E. Wenk, 2020-05-26)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Convolvulus erubescens spp. agg.
   replace: Convolvulus erubescens
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-26)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Crassula sieberiana s.l.
+  replace: Crassula sieberiana
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cynoglossum spp.
-  replace: Cynoglossum sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Cynoglossum sp. [Morgan_2011_1]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Dianella revoluta s.l.
+  replace: Dianella revoluta
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Dichelachne sciurea spp. agg.
   replace: Dichelachne sciurea
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-26)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Dillwynia cinerascens s.l.
+  replace: Dillwynia cinerascens
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Diuris lanceolata s.l.
   replace: Diuris lanceolata
-  reason: Name, as is, in current use on APNI list (E. Wenk, 2020-05-26)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Euchiton collinus s.l.
+  replace: Euchiton collinus
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Gamochaeta purpurea s.l.
+  replace: Gamochaeta purpurea
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Geranium retrorsum s.l.
+  replace: Geranium retrorsum
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Geranium solanderi s.l.
+  replace: Geranium solanderi
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hibbertia sericea var. sericea s.s.
+  replace: Hibbertia sericea var. sericea
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Lachnagrostis aemula s.s.
+  replace: Lachnagrostis aemula
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Lobelia pedunculata s.l.
   replace: Lobelia pedunculata
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lomandra micrantha s.s.
+  replace: Lomandra micrantha
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Melicytus dentatus s.l.
+  replace: Melicytus dentatus
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Microseris scapigera spp. agg.
   replace: Microseris scapigera
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Oxalis corniculata s.l.
+  replace: Oxalis corniculata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Parietaria debilis s.l.
+  replace: Parietaria debilis
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pimelea curviflora s.s.
+  replace: Pimelea curviflora
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Poranthera microphylla s.s.
+  replace: Poranthera microphylla
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Potamogeton tricarinatus s.l.
+  replace: Potamogeton tricarinatus
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Rubus fruticosus spp. agg.
   replace: Rubus fruticosus
-  reason: Align to APC accepted spelling (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Senecio squarrosus s.s.
+  replace: Senecio squarrosus
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Solenogyne spp.
-  replace: Solenogyne sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Solenogyne sp. [Morgan_2011_1]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Stackhousia monogyna s.l.
+  replace: Stackhousia monogyna
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Stylidium graminifolium s.l.
+  replace: Stylidium graminifolium
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Thelymitra pauciflora s.l.
+  replace: Thelymitra pauciflora
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Thelymitra spp.
-  replace: Thelymitra sp.
-  reason: Align to genus (E. Wenk, 2020-05-26)
+  replace: Thelymitra sp. [Morgan_2011_1]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
 - find: Tribolium acutiflorum s.l.
   replace: Tribolium acutiflorum
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Triglochin procera s.l.
   replace: Triglochin procera
-  reason: Aligned with APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Viola hederacea sensu Willis (1972)
+  replace: Viola hederacea
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Viola sieberiana spp. agg.
+  replace: Viola sieberiana
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Wahlenbergia communis s.l.
+  replace: Wahlenbergia communis
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Wahlenbergia gracilenta s.l.
+  replace: Wahlenbergia gracilenta
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Wahlenbergia graniticola s.l.
+  replace: Wahlenbergia graniticola
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

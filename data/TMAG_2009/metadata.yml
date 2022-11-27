@@ -7,282 +7,367 @@ source:
     title: Flora of Tasmania Online
     publisher: Tasmanian Museum & Art Gallery (Hobart)
     url: http://www.tmag.tas.gov.au/floratasmania
-people:
-- name: Marco Duretto
-  institution: National Herbarium of NSW
-  role: curator
-- name: Miguel de Salas
-  institution: Tasmanian Herbarium
-  role: curator
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor, contact
+contributors:
+  data_collectors:
+  - last_name: Duretto
+    given_name: Marco
+    ORCID: 0000-0003-1013-4291
+    affiliation: National Herbarium of New South Wales, Australian Institute of Botanical
+      Science, Royal Botanic Gardens and Domain Trust, Sydney, Australia
+  - last_name: de Salas
+    given_name: Miguel
+    ORCID: 0000-0002-7148-639X
+    affiliation: Tasmanian Herbarium, Australia
+    notes: no contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2009
-  year_collected_end: 2009
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        flowering = convert_month_range_vec_to_binary(flowering),
+        fruiting = convert_month_range_vec_to_binary(fruiting),
+        leaf_lobed = ifelse(`leaf type` == "lobed" | `leaf shape` == "lobed", "lobed", NA),
+        `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf type`),
+        plant_photosynthetic_organ = ifelse(`leaf shape` %in% c("articles","article"),"cladode", NA)
+      ) %>%
+      separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>%
+      separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
+      separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>%
+      separate_range("seed width (mm)", "seed_width_min", "seed_width_max") %>%
+      mutate(
+        fruit_type = NA,
+        leaf_base_shape = NA
+      ) %>%
+      move_values_to_new_trait(
+        "dispersal mode", "fruit_type",
+        "samara", "samara", "wings"
+      ) %>%
+      move_values_to_new_trait(
+        "leaf shape", "leaf_base_shape",
+        c("cuneate","hastate"), c("cuneate","hastate"), c("","")
+      )
+  '
+  collection_date: unknown/2009
+  taxon_name: taxon
   description: transposed from taxonomic descriptions in the Flora of Tasmania accessed
     online http://demo1.tmag.tas.gov.au/treatments/family_accounts.html
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: herbarium specimens
   original_file: TAS_flora.xls
   notes: The seed size values that are an order of magnitude smaller than any other
     species in AusTraits are for Lythrum salicaria; this is an accurate value. E.
     Wenk 11 Sep 2019
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: taxon
-  custom_R_code: 'data %>% mutate( flowering = convert_month_range_vec_to_binary(flowering),
-    fruiting = convert_month_range_vec_to_binary(fruiting), leaf_lobed = ifelse(`leaf
-    type` == "lobed", 1 , NA), `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf
-    type`)) %>% separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max")
-    %>% separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
-    separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>% separate_range("seed
-    width (mm)", "seed_width_min", "seed_width_max") %>% mutate(dispersal_appendage
-    = ifelse(`dispersal mode` == "samara","samara", NA)) '
 traits:
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf longevity
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: height (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: plant_photosynthetic_organ
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lobed
+  unit_in: .na
+  trait_name: leaf_lobation
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf_length_min
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf_length_max
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf_width_min
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf_width_max
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf_base_shape
+  unit_in: .na
+  trait_name: leaf_base_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf shape
   unit_in: .na
   trait_name: leaf_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: seed shape
   unit_in: .na
   trait_name: seed_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: seed_length_min
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed_length_max
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed_width_min
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed_width_max
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed breadth (mm)
   unit_in: mm
-  trait_name: seed_breadth
-  value_type: expert_mean
+  trait_name: seed_height
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: flowering
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: fruiting
   unit_in: .na
   trait_name: fruiting_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: dispersal mode
   unit_in: .na
-  trait_name: dispersal_syndrome
-  value_type: expert_mean
+  trait_name: dispersal_appendage
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: dispersal_appendage
+- var_in: fruit_type
   unit_in: .na
-  trait_name: dispersal_appendage
-  value_type: expert_mean
+  trait_name: fruit_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
-  methods: Extracted from records of dispersal syndrome.
+  methods: Extracted from records of dispersal_appendage.
 substitutions:
 - trait_name: leaf_shape
+  find: lobed
+  replace: .na
+- trait_name: leaf_shape
   find: articles
-  replace: article
+  replace: .na
 - trait_name: plant_growth_form
   find: liana
-  replace: climber_liana
+  replace: climber_woody
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
-- trait_name: dispersal_syndrome
+  replace: climber_herbaceous
+- trait_name: dispersal_appendage
   find: winged seed
-  replace: anemochory
-- trait_name: dispersal_syndrome
-  find: samara
-  replace: anemochory
+  replace: wings
 - trait_name: leaf_width
   find: '''10'
   replace: '10'
 - trait_name: leaf_shape
   find: elliptic
   replace: elliptical
+- trait_name: leaf_shape
+  find: circular
+  replace: orbicular
+- trait_name: seed_shape
+  find: turbinate
+  replace: conical
+- trait_name: seed_shape
+  find: cylindrical
+  replace: cylindrical
+- trait_name: seed_shape
+  find: flat
+  replace: discoid
+- trait_name: seed_shape
+  find: ellipsoid
+  replace: ellipsoid
+- trait_name: seed_shape
+  find: oblong
+  replace: ellipsoid
+- trait_name: seed_shape
+  find: fusiform
+  replace: fusiform
 - trait_name: seed_shape
   find: globose
   replace: globoid
 - trait_name: seed_shape
-  find: obovate
-  replace: obovoid
+  find: spherical
+  replace: globoid
 - trait_name: seed_shape
-  find: oblong
-  replace: obloid
+  find: lenticular
+  replace: lenticular
+- trait_name: seed_shape
+  find: plano-convex
+  replace: lenticular
+- trait_name: seed_shape
+  find: orbicular
+  replace: orbicular
+- trait_name: seed_shape
+  find: obovate
+  replace: ovoid
+- trait_name: seed_shape
+  find: obovoid
+  replace: ovoid
 - trait_name: seed_shape
   find: ovate
   replace: ovoid
 - trait_name: seed_shape
-  find: plano-convex
-  replace: lenticular
+  find: ovoid
+  replace: ovoid
+- trait_name: seed_shape
+  find: pyriform
+  replace: ovoid
+- trait_name: seed_shape
+  find: lachrimiform
+  replace: ovoid_elongated
+- trait_name: seed_shape
+  find: reniform
+  replace: reniform
+- trait_name: seed_shape
+  find: muricate
+  replace: .na.character
 taxonomic_updates:
 - find: Australina pusilla subsp. Pusila
   replace: Australina pusilla subsp. pusilla
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Eucryphia milliganii subsp. Pubsecens
   replace: Eucryphia milliganii subsp. pubescens
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Exocarpus syrticola
   replace: Exocarpos syrticola
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Rhagodia candolleana subp. Candolleana
   replace: Rhagodia candolleana subsp. candolleana
-  reason: Align to APC accepted spelling (E. Wenk, 2020-05-25)
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Sarcocornia quinqueflora subsp. Quinqueflora
+  replace: Salicornia quinqueflora subsp. quinqueflora
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Sarcocornia quinqueflora subsp. quinqueflora
+  replace: Salicornia quinqueflora subsp. quinqueflora
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Subspecies
 - find: Tetratheca sp. Flinders Island
   replace: Tetratheca sp. Flinders Island (T.Rudman s.n. HO510551)
-  reason: Align to name in APC (D Falster, 2020.05.23)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Tetratheca sp. Freycinet Pen. (A.C.Rozefelds 323)
   replace: Tetratheca sp. Freycinet Peninsula (A.C.Rozefelds 323)
-  reason: Align to APNI phrase name; not APC accepted (E. Wenk, 2020-05-25)
-- find: Dodonaea viscosa subsp. Spatulata
-  replace: Dodonaea viscosa subsp. spatulata
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Atriplex paludosa subsp. Paludosa
-  replace: Atriplex paludosa subsp. paludosa
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Eucryphia milliganii subsp. Milliganii
-  replace: Eucryphia milliganii subsp. milliganii
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Montia fontana subsp. Fontana
-  replace: Montia fontana subsp. fontana
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Nematolepis squamea subsp. Squamea
-  replace: Nematolepis squamea subsp. squamea
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Viola betonicifolia subsp. Betonicifolia
-  replace: Viola betonicifolia subsp. betonicifolia
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Boronia citriodora subsp. Paulwilsonii
-  replace: Boronia citriodora subsp. paulwilsonii
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Hibbertia empetrifolia subsp. Empetrifolia
-  replace: Hibbertia empetrifolia subsp. empetrifolia
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Boronia pilosa subsp. Pilosa
-  replace: Boronia pilosa subsp. pilosa
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Nematolepis squamea subsp. Retusa
-  replace: Nematolepis squamea subsp. retusa
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Boronia pilosa subsp. Tasmanensis
-  replace: Boronia pilosa subsp. tasmanensis
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Zieria arborescens subsp. Arborescens
-  replace: Zieria arborescens subsp. arborescens
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Convolvulus angustissimus subsp. Angustissimus
-  replace: Convolvulus angustissimus subsp. angustissimus
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Sarcocornia quinqueflora subsp. Quinqueflora
-  replace: Sarcocornia quinqueflora subsp. quinqueflora
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
+  reason: match_19. Automatic alignment with species-level canonical name in APNI
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Sarcocornia quinqueflora subsp. Tasmanica
   replace: Sarcocornia quinqueflora subsp. tasmanica
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Leionema bilobum subsp. Truncatum
-  replace: Leionema bilobum subsp. truncatum
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Viola hederacea subsp. Hederacea
-  replace: Viola hederacea subsp. hederacea
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Zieria veronicea subsp. Veronicea
-  replace: Zieria veronicea subsp. veronicea
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Australina pusilla subsp. Muelleri
-  replace: Australina pusilla subsp. muelleri
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Tetratheca pilosa subsp. Pilosa
-  replace: Tetratheca pilosa subsp. pilosa
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
-- find: Tetratheca pilosa subsp. Latifolia
-  replace: Tetratheca pilosa subsp. latifolia
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-23)
+  taxonomic_resolution: Subspecies
 exclude_observations: .na
 questions: .na
-

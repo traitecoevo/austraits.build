@@ -23,24 +23,42 @@ source:
     number: '4'
     pages: 924--935
     doi: 10.1890/12-0621.1
-people:
-- name: Carl Gosper
-  institution: Department of Biodiversity, Conservation and Attractions, Western Australia
-  role: contact, collector
-- name: Suzanne Prober
-  institution: CSIRO Land and Water
-  role: collector
-- name: Colin Yates
-  institution: Department of Biodiversity, Conservation and Attractions, Western Australia
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Gosper
+    given_name: Carl
+    ORCID: 0000-0002-0962-5117
+    affiliation: Biodiversity and Conservation Science, Department of Biodiversity,
+      Conservation and Attractions, WA, Australia
+    additional_role: contact
+  - last_name: Prober
+    given_name: Suzanne
+    ORCID: 0000-0002-6518-239X
+    affiliation: CSIRO Land and Water, Australia
+  - last_name: Yates
+    given_name: Colin
+    ORCID: 0000-0003-2286-8700
+    affiliation: Biodiversity and Conservation Science, Department of Biodiversity,
+      Conservation and Attractions, WA, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2007
-  year_collected_end: 2007
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        `Compeditive stratum` = ifelse(GosperJVS2012_PFT == "Ephem","post_fire_ephemeral",`Compeditive stratum`),
+        life_history = ifelse(GosperJVS2012_PFT == "Ephem","ephemeral",NA),
+        lifespan_value_type = ifelse(Longevity == "Long", "maximum", "minimum")
+      )
+  '
+  collection_date: 2007/2007
+  taxon_name: Species Name
+  location_name: Location
   description: Dataset to address if floristic composition and plant functional type
     (PFT) richness and dominance change with time since fire, considering the species'
     fire response traits?
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: The study was conducted in the south-eastern wheat belt in Western
     Australia. All nature reserves and parcels of unallocated crown land were considered
     for sampling in the 50 km x 70 km area bounded by Newdegate (33 deg 04'S, 119
@@ -80,46 +98,48 @@ dataset:
     yr post-fire) and those that do not (Table 1).
   original_file: unknown
   notes: none
-sites:
+locations:
   Newdegate area, Western Australia:
     latitude (deg): -33.067
     longitude (deg): 119.067
     description: mosaic of mallee, mallee-heath and woodland, with vegetation type
       determined by climate and especially edaphic factors
-    MAP (mm): 354
+    precipitation, MAP (mm): 354
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species Name
-    site_name: Location
-  custom_R_code: data %>% mutate(ephemeral = if_else(GosperJVS2012_PFT == "Ephem","post_fire_ephemeral","na"))
 traits:
 - var_in: Months Until First Fruiting
   unit_in: months
-  trait_name: time_from_fire_to_fruit
-  value_type: site_mean
+  trait_name: fire_time_from_fire_to_fruit
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Gosper et al. 2013 field observations.  [Number of months since fire until
     first fruiting recorded.]
 - var_in: GosperJVS2012_PFT
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Plant functional type used in Gosper et al. 2012]
-- var_in: ephemeral
+- var_in: life_history
   unit_in: .na
-  trait_name: competitive_stratum
-  value_type: expert_mean
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Plant functional type used in Gosper et al. 2012]
 - var_in: Resprouter
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Yes = most of population resprouts after fire from fire-resistant organs; No
@@ -128,14 +148,18 @@ traits:
 - var_in: Persistent canopy seedbank
   unit_in: .na
   trait_name: serotiny
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Yes = serotinous; No = non-serotinous]
 - var_in: Persistent soil seedbank
   unit_in: .na
   trait_name: soil_seedbank
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Yes = persistent soil seed bank that enables post-fire recruitment; No = does
@@ -143,15 +167,19 @@ traits:
 - var_in: Compeditive stratum
   unit_in: .na
   trait_name: competitive_stratum
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations. [Defined relative to vegetation
     communities sampled. Upper = upper (canopy) stratum of trees or shrubs; Mid =
     mid-stratum of shrubs; Ground = ground layer]
 - var_in: Longevity
-  unit_in: .na
+  unit_in: years
   trait_name: lifespan
-  value_type: expert_mean
+  entity_type: species
+  value_type: lifespan_value_type
+  basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations. [Short = post-fire ephemeral with
     post-fire individual longeivity 6 years or less; Long = individual longevity typically
@@ -162,16 +190,16 @@ substitutions:
   replace: .na
 - trait_name: lifespan
   find: Short
-  replace: <6
+  replace: 6
 - trait_name: lifespan
   find: Long
-  replace: '>6'
+  replace: 6
 - trait_name: soil_seedbank
   find: 'No'
-  replace: 0
+  replace: soil_seedbank_absent
 - trait_name: soil_seedbank
   find: 'Yes'
-  replace: 1
+  replace: soil_seedbank_present
 - trait_name: serotiny
   find: 'No'
   replace: not_serotinous
@@ -220,34 +248,51 @@ substitutions:
 taxonomic_updates:
 - find: Cassytha glabella forma dispar
   replace: Cassytha glabella f. dispar
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-26)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Forma
+- find: Eucalyptus tenera X suggrandis
+  replace: Eucalyptus x [Eucalyptus tenera X suggrandis; Gosper_2012]
+  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
+    genus-level alignment with APC accepted genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Isopogon sp. Fitzgerald River (D.B. Foreman 813)
   replace: Isopogon sp. Fitzgerald River (D.B.Foreman 813)
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Lepidosperma sp. P1 small head (M.D. Tindale 166A)
   replace: Lepidosperma sp. P1 small head (M.D.Tindale 166A)
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Leucopogon sp. Coujinup (M.A. Burgman 1085)
   replace: Leucopogon sp. Coujinup (M.A.Burgman 1085)
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Leucopogon sp. Lake King (A.J.G. Wilson 65)
   replace: Leucopogon sp. Lake King (A.J.G.Wilson 65)
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Leucopogon sp. Wheatbelt (S. Murray 257)
   replace: Leucopogon sp. Wheatbelt (S.Murray 257)
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Microcorys sp. stellate (A. Strid 21885)
   replace: Microcorys sp. stellate (A.Strid 21885)
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Petrophile squamata subsp. northern (J. Monks 40)
   replace: Petrophile squamata subsp. Northern (J.Monks 40)
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-26)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Schoenus sp. A1 Boorabbin (K.L. Wilson 2581)
   replace: Schoenus sp. A1 Boorabbin (K.L.Wilson 2581)
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Schoenus subflavus subsp. hispid culms (K.R. Newbey 8278)
   replace: Schoenus subflavus subsp. hispid culms (K.R.Newbey 8278)
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-26)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 exclude_observations: .na
 questions: .na
-

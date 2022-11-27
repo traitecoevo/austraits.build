@@ -11,25 +11,36 @@ source:
     pages: 41--52
     publisher: Elsevier BV
     doi: 10.1016/s0006-3207(02)00245-8
-people:
-- name: Anna Richards
-  institution: CSIRO
-  role: collector, contact
-- name: Susanne Schmidt
-  institution: University of Queensland
-  role: lab_leader
-- name: Alison Shapcott
-  institution: University of the Sunshine Coast
-  role: assistant
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Richards
+    given_name: Anna
+    ORCID: 0000-0002-2934-5497
+    affiliation: CSIRO Land and Water, Australia
+    additional_role: contact
+  - last_name: Schmidt
+    given_name: Susanne
+    ORCID: 0000-0001-8369-1238
+    affiliation: School of Agriculture and Food Science, The University of Queensland,
+      Australia
+  assistants: Alison Shapcott
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 1999
-  year_collected_end: 2000
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(`Ni (mg/kg)` = stringr::str_replace(`Ni (mg/kg)`,"< ","")) %>%
+      mutate_at(vars(`Stomatal conductance_HalogenLight`),~na_if(.,0)) %>%
+      group_by(Species) %>%
+        mutate_at(vars(`Nfixer`,`mycorrhizae`),replace_duplicates_with_NA) %>%
+      ungroup()
+  '
+  collection_date: 1999/2000
+  taxon_name: Species
+  location_name: site
   description: Rainforest trait data from Anna Richards
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: 'Three species pairs were studied: Gardenia actinocarpa (restricted)
     and G. ovularis (widespread); Archidendron kanisii (restricted) and A. whitei
     (widespread); Xanthostemon formosus (restricted) and X. chrysanthus (widespread).
@@ -45,63 +56,59 @@ dataset:
   original_file: Richards_2003.pdf
   notes: Anna Richards does not believe chlorophyll fluorescence data file she has
     look correct, so we're excluding those.
-sites:
+locations:
   daintree_creek_edge:
     longitude (deg): 145.433
     latitude (deg): -16.133
     description: Lowland tropical rainforest, Daintree National Park; creek edge
-    MAP (mm): 2009
+    precipitation, MAP (mm): 2009
     elevation (m): 5
   daintree_river_valley_flats:
     longitude (deg): 145.433
     latitude (deg): -16.133
     description: Lowland tropical rainforest, Daintree National Park; river valley
       flats
-    MAP (mm): 2009
+    precipitation, MAP (mm): 2009
     elevation (m): 20
   daintree_flats_above_creek:
     longitude (deg): 145.633
     latitude (deg): -17.283
     description: Tropical rainforest, Lake Eacham National Park; flats above creeks
-    MAP (mm): 1413
+    precipitation, MAP (mm): 1413
     elevation (m): 600
   daintree_creek_canopy_gap:
     longitude (deg): 145.433
     latitude (deg): -16.1
     description: Lowland tropical rainforest, Daintree National Park; canopy gaps
       on creek flats and hillsides
-    MAP (mm): 2009
+    precipitation, MAP (mm): 2009
     elevation (m): 190
   daintree_creek_edge2:
     longitude (deg): 145.4
     latitude (deg): -16.167
     description: Lowland tropical rainforest, Daintree National Park; creek edge
-    MAP (mm): 2009
+    precipitation, MAP (mm): 2009
     elevation (m): 80
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site
-  custom_R_code: data %>% mutate(`Ni (mg/kg)` = gsub("< ","",`Ni (mg/kg)`)) %>% mutate_at(vars(`Stomatal
-    conductance_HalogenLight`),~na_if(.,0)) %>% group_by(Species) %>% mutate_at(vars("Nfixer","mycorrhizae"),replace_duplicates_with_NA)
-    %>% ungroup()
 traits:
 - var_in: Leaf N %
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
-  replicates: 3-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
     5 mg of tissue was weighed into a tin capsule and %N, %C, and d13C were measured
     in a mass spectrometer (CF-IRMS, Tracer Mass, Europa Scientific, Crewe, UK).
 - var_in: SLA (cm2g)
   unit_in: cm2/g
-  trait_name: specific_leaf_area
-  value_type: site_mean
-  replicates: 3-4
+  trait_name: leaf_lamina_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: Youngest fully expanded leaves were collected. Leaf discs were removed
     with a cork borer, fresh weight and surface area recorded. Discs were stored in
     liquid nitrogen for pigment analysis (~100 mg leaf fresh weight). Additional discs
@@ -109,7 +116,9 @@ traits:
 - var_in: delta15N
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -118,7 +127,9 @@ traits:
 - var_in: delta13C
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -127,7 +138,9 @@ traits:
 - var_in: K (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_K_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -139,7 +152,9 @@ traits:
 - var_in: P (mg/ kg)
   unit_in: mg/kg
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -151,7 +166,9 @@ traits:
 - var_in: Mn (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Mn_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -163,7 +180,9 @@ traits:
 - var_in: B (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_B_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -175,7 +194,9 @@ traits:
 - var_in: Cu(mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Cu_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -187,7 +208,9 @@ traits:
 - var_in: Ni (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Ni_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -199,7 +222,9 @@ traits:
 - var_in: Zn (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Zn_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -211,7 +236,9 @@ traits:
 - var_in: Ca (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Ca_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -223,7 +250,9 @@ traits:
 - var_in: Mg (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Mg_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -235,7 +264,9 @@ traits:
 - var_in: Na (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Na_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -247,7 +278,9 @@ traits:
 - var_in: S (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_S_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -259,7 +292,9 @@ traits:
 - var_in: Al (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Al_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -271,7 +306,9 @@ traits:
 - var_in: Fe (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_Fe_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Whole dried leaves were used for stable isotope and leaf element analysis.
     Leaf material was ground in a vibratory ball mill (Retsch MM-2, Haan, Germany),
@@ -283,7 +320,9 @@ traits:
 - var_in: Nfixer
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Roots of Archidendron species were excavated to determine whether N2 fixing
     symbioses were present. Nodules found on Archidendron kanisii roots were stored
@@ -292,7 +331,9 @@ traits:
 - var_in: mycorrhizae
   unit_in: .na
   trait_name: root_structure
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Roots of Archidendron species (Mimosaceae) were excavated to assess for
     nodulation. Nodules found on an Archidendron kanisii seedling were stored on silica
@@ -305,8 +346,10 @@ traits:
     microscope lens.
 - var_in: Photosynthetic rate (micromol CO2/m2/s)_ambient
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_ambient
-  value_type: raw_value
+  trait_name: leaf_photosynthetic_rate_per_area_ambient
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All measurements were performed in the field on attached, intact, youngest
     fully expanded leaves. Leaf net C02 assimilation rate was measured using a portable
@@ -319,8 +362,10 @@ traits:
     rate and stomatal conductance were simultaneously determined.
 - var_in: Photosynthetic rate (micromol CO2/m2/s)_HalogenLight
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
-  value_type: raw_value
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All measurements were performed in the field on attached, intact, youngest
     fully expanded leaves. Leaf net C02 assimilation rate was measured using a portable
@@ -333,8 +378,10 @@ traits:
     rate and stomatal conductance were simultaneously determined.
 - var_in: Stomatal conductance_ambient
   unit_in: molH2O/m2/s
-  trait_name: stomatal_conductance_per_area_ambient
-  value_type: raw_value
+  trait_name: leaf_stomatal_conductance_per_area_ambient
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All measurements were performed in the field on attached, intact, youngest
     fully expanded leaves. Leaf net C02 assimilation rate was measured using a portable
@@ -347,8 +394,10 @@ traits:
     rate and stomatal conductance were simultaneously determined.
 - var_in: Stomatal conductance_HalogenLight
   unit_in: molH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: raw_value
+  trait_name: leaf_stomatal_conductance_per_area_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: All measurements were performed in the field on attached, intact, youngest
     fully expanded leaves. Leaf net C02 assimilation rate was measured using a portable
@@ -365,10 +414,10 @@ substitutions:
   replace: .na
 - trait_name: nitrogen_fixing
   find: 'yes'
-  replace: 1
+  replace: nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'no'
-  replace: 0
+  replace: non_nitrogen_fixer
 - trait_name: root_structure
   find: unknown
   replace: .na
@@ -381,4 +430,3 @@ substitutions:
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

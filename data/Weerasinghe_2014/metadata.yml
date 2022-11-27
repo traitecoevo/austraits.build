@@ -12,24 +12,52 @@ source:
     number: '6'
     pages: 564--584
     doi: 10.1093/treephys/tpu016
-people:
-- name: Lasantha K. Weerasinghe
-  institution: Research School of Biology, Australian National University
-  role: collector
-- name: Owen Atkin
-  institution: Research School of Biology, Australian National University
-  role: lab_leader
-- name: Kristine Crous
-  institution: Hawkesbury Institute for the Environment, Western Sydney University
-  role: collector, contact, contributor
+contributors:
+  data_collectors:
+  - last_name: Weerasinghe
+    given_name: Lasantha K.
+    ORCID: 0000-0002-5173-8000
+    affiliation: Faculty of Agriculture, University of Peradeniya, Peradeniya 20400,
+      Sri Lanka
+  - last_name: Atkin
+    given_name: Owen
+    ORCID: 0000-0003-1041-5202
+    affiliation: The Australian National University, Australia
+  - last_name: Crous
+    given_name: Kristine
+    ORCID: 0000-0001-9478-7593
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2010
-  year_collected_end: 2010
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        across(c(`Photo`,`Cond`,`Ci`,`Trmmol`,`Rdark`), ~na_if(.,"-")),
+        Date = Date %>% dmy(),
+        individual_id = paste(`Forest location`, Species, replicate, sep = "_"),
+        `replicates for columns 18 to 25` = str_replace(`replicates for columns 18 to 25`, "4-Mar","3-4")
+      ) %>%
+      arrange(`value_type for columns 18 to 25`) %>%
+      group_by(Date, Species, `Forest location`, `Canopy location`, replicate, site_name, individual_id) %>% 
+        mutate(across(c(Photo:Rdark, `LMA_g_m-2`:`N_P_ratio`, `soluble_sugars_mg_g-1`:`TNC_g_m-2`), .fns=as.numeric)) %>% 
+        summarise(
+          across(c(Photo:Rdark, `LMA_g_m-2`:`N_P_ratio`, `soluble_sugars_mg_g-1`:`TNC_g_m-2`), ~mean(.x) %>% na_if("NaN"), na.rm = TRUE),
+          across(c(`value_type for columns 18 to 25`, `replicates for columns 18 to 25`), .fns=first)
+          ) %>%
+      ungroup()
+  '
+  collection_date: Date
+  taxon_name: Species
+  location_name: site_name
+  individual_id: individual_id
   description: A study exploring the impact of canopy position on leaf respiration
     (R) and associated traits in tree and shrub species growing in a lowland tropical
     rainforest in Far North Queensland, Australia.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: 'Study site The study was carried out at the Daintree Rainforest
     Observatory (16 deg 07''S, 145 deg 27''E; 40 m above sea level) located in a lowland
     tropical wet forest ~140 km north of Cairns in Far North Queensland, Australia.
@@ -91,349 +119,343 @@ dataset:
   notes: This same data is part of Bloomfield_2018 (dry season measurements for Daintree.)
     The data are read into AusTraits through this dataset_id, but the data are present
     in both data.csv files.
-sites:
+locations:
   Daintree Rainforest Observatory at location 103-51:
-    Forest location: 103-51
+    plot code: 103-51
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 105-35:
-    Forest location: 105-35
+    plot code: 105-35
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 107-26:
-    Forest location: 107-26
+    plot code: 107-26
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 109-37:
-    Forest location: 109-37
+    plot code: 109-37
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 117-26:
-    Forest location: 117-26
+    plot code: 117-26
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 118-47:
-    Forest location: 118-47
+    plot code: 118-47
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 135-33:
-    Forest location: 135-33
+    plot code: 135-33
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 136-51:
-    Forest location: 136-51
+    plot code: 136-51
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 137-10:
-    Forest location: 137-10
+    plot code: 137-10
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 14-38:
-    Forest location: 14-38
+    plot code: 14-38
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 14-44:
-    Forest location: 14-44
+    plot code: 14-44
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 147-53:
-    Forest location: 147-53
+    plot code: 147-53
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 161-56:
-    Forest location: 161-56
+    plot code: 161-56
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 165-43:
-    Forest location: 165-43
+    plot code: 165-43
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 166-27:
-    Forest location: 166-27
+    plot code: 166-27
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 172-18:
-    Forest location: 172-18
+    plot code: 172-18
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 175-59:
-    Forest location: 175-59
+    plot code: 175-59
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 177-55:
-    Forest location: 177-55
+    plot code: 177-55
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 177-58:
-    Forest location: 177-58
+    plot code: 177-58
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 185-48:
-    Forest location: 185-48
+    plot code: 185-48
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 186-31:
-    Forest location: 186-31
+    plot code: 186-31
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 190-42:
-    Forest location: 190-42
+    plot code: 190-42
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 191-18:
-    Forest location: 191-18
+    plot code: 191-18
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 199-43:
-    Forest location: 199-43
+    plot code: 199-43
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 200-35:
-    Forest location: 200-35
+    plot code: 200-35
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 200-36:
-    Forest location: 200-36
+    plot code: 200-36
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 208-37:
-    Forest location: 208-37
+    plot code: 208-37
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 214-39:
-    Forest location: 214-39
+    plot code: 214-39
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 23-31:
-    Forest location: 23-31
+    plot code: 23-31
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 231-46:
-    Forest location: 231-46
+    plot code: 231-46
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 237-20:
-    Forest location: 237-20
+    plot code: 237-20
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 244-52:
-    Forest location: 244-52
+    plot code: 244-52
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 248-42:
-    Forest location: 248-42
+    plot code: 248-42
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 258-31:
-    Forest location: 258-31
+    plot code: 258-31
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 263-20:
-    Forest location: 263-20
+    plot code: 263-20
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 278-51:
-    Forest location: 278-51
+    plot code: 278-51
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 278-52:
-    Forest location: 278-52
+    plot code: 278-52
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 280-48:
-    Forest location: 280-48
+    plot code: 280-48
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 281-25:
-    Forest location: 281-25
+    plot code: 281-25
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 300-34:
-    Forest location: 300-34
+    plot code: 300-34
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 306-44:
-    Forest location: 306-44
+    plot code: 306-44
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 316-11:
-    Forest location: 316-11
+    plot code: 316-11
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 321-22:
-    Forest location: 321-22
+    plot code: 321-22
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 322-42:
-    Forest location: 322-42
+    plot code: 322-42
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 326-36:
-    Forest location: 326-36
+    plot code: 326-36
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 330-15:
-    Forest location: 330-15
+    plot code: 330-15
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 359-23:
-    Forest location: 359-23
+    plot code: 359-23
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 36-30:
-    Forest location: 36-30
+    plot code: 36-30
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 40-52:
-    Forest location: 40-52
+    plot code: 40-52
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 42-26:
-    Forest location: 42-26
+    plot code: 42-26
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 44-48:
-    Forest location: 44-48
+    plot code: 44-48
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 52-37:
-    Forest location: 52-37
+    plot code: 52-37
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 57-34:
-    Forest location: 57-34
+    plot code: 57-34
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 59-24:
-    Forest location: 59-24
+    plot code: 59-24
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 70-48:
-    Forest location: 70-48
+    plot code: 70-48
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 75-51:
-    Forest location: 75-51
+    plot code: 75-51
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 79-30:
-    Forest location: 79-30
+    plot code: 79-30
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 79-32:
-    Forest location: 79-32
+    plot code: 79-32
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 87-55:
-    Forest location: 87-55
+    plot code: 87-55
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 89-51:
-    Forest location: 89-51
+    plot code: 89-51
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location 94-26:
-    Forest location: 94-26
+    plot code: 94-26
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory at location Mar-36:
-    Forest location: Mar-36
+    plot code: Mar-36
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
   Daintree Rainforest Observatory:
-    Forest location: not specified
+    plot code: not specified
     latitude (deg): -16.117
     longitude (deg): 145.45
     description: lowland tropical wet forest
 contexts:
-  upper:
-    type: field
-    description: north-facing, sun-exposed leaves at the top of the canopy collected
-    natural irradiance (umol photons m-2 s-1): 2400
-  lower:
-    type: field
-    description: south-facing leaves from deep in the canopy collected
-    natural irradiance (umol photons m-2 s-1): 117
-  understory:
-    type: field
-    description: leaves collected from understory species
-    natural irradiance (umol photons m-2 s-1): 11
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-    context_name: Canopy location
-    date: Date
-  custom_R_code: data %>% mutate_at(c("Photo","Cond","Ci","Trmmol","Rdark"), ~na_if(.,"-"))
-    %>% mutate(Date = Date %>% dmy())
+- context_property: measurement irradiance
+  category: method
+  var_in: Canopy location
+  values:
+  - find: upper
+    value: 2400 PAR
+    description: Light level in the upper canopy location; 2400 PAR.
+  - find: lower
+    value: 117 PAR
+    description: Light level in the lower canopy location; 117 PAR.
+  - find: understory
+    value: 11 PAR
+    description: Light level in the understory; 11 PAR.
 traits:
 - var_in: Photo
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
-  value_type: raw_value
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: 'To assess canopy leaf gas exchange characteristics, a combination of in
     situ (using the canopy crane) and ex situ (using a laboratory at the base of the
@@ -458,8 +480,10 @@ traits:
     humidity.'
 - var_in: Cond
   unit_in: molH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: raw_value
+  trait_name: leaf_stomatal_conductance_per_area_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: 'To assess canopy leaf gas exchange characteristics, a combination of in
     situ (using the canopy crane) and ex situ (using a laboratory at the base of the
@@ -484,8 +508,10 @@ traits:
     humidity.'
 - var_in: Ci
   unit_in: umolCO2/mol
-  trait_name: ci_at_Asat
-  value_type: raw_value
+  trait_name: leaf_intercellular_CO2_concentration_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: 'To assess canopy leaf gas exchange characteristics, a combination of in
     situ (using the canopy crane) and ex situ (using a laboratory at the base of the
@@ -511,7 +537,9 @@ traits:
 - var_in: Trmmol
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Asat
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: 'To assess canopy leaf gas exchange characteristics, a combination of in
     situ (using the canopy crane) and ex situ (using a laboratory at the base of the
@@ -537,7 +565,9 @@ traits:
 - var_in: Rdark
   unit_in: neg_umolCO2/m2/s
   trait_name: leaf_dark_respiration_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: 'To assess canopy leaf gas exchange characteristics, a combination of in
     situ (using the canopy crane) and ex situ (using a laboratory at the base of the
@@ -562,9 +592,11 @@ traits:
     humidity.'
 - var_in: LMA_g_m-2
   unit_in: g/m2
-  trait_name: specific_leaf_area
-  value_type: site_mean
-  replicates: 1-4
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Initially, the fresh
     mass was measured (Mettler-Toledo Ltd, Port Melbourne, Victoria, Australia); thereafter,
@@ -575,8 +607,10 @@ traits:
 - var_in: DMC_g_g-1
   unit_in: g/g
   trait_name: leaf_dry_matter_content
-  value_type: site_mean
-  replicates: 1-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Initially, the fresh
     mass was measured (Mettler-Toledo Ltd, Port Melbourne, Victoria, Australia); thereafter,
@@ -587,8 +621,10 @@ traits:
 - var_in: Nmass_mg_g-1
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
-  replicates: 1-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
     (LI-3100 leaf area meter, LI-COR, Inc.). Subsequently, leaves were oven dried
@@ -598,8 +634,10 @@ traits:
 - var_in: Narea_g_m-2
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: site_mean
-  replicates: 1-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
     (LI-3100 leaf area meter, LI-COR, Inc.). Subsequently, leaves were oven dried
@@ -609,8 +647,10 @@ traits:
 - var_in: Pmass_mg_g-1
   unit_in: mg/g
   trait_name: leaf_P_per_dry_mass
-  value_type: site_mean
-  replicates: 1-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
     (LI-3100 leaf area meter, LI-COR, Inc.). Subsequently, leaves were oven dried
@@ -620,8 +660,10 @@ traits:
 - var_in: Parea_g_m-2
   unit_in: g/m2
   trait_name: leaf_P_per_area
-  value_type: site_mean
-  replicates: 1-4
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
     (LI-3100 leaf area meter, LI-COR, Inc.). Subsequently, leaves were oven dried
@@ -630,9 +672,11 @@ traits:
     WI, USA) using Kjeldahl acid digests (Allen 1974).
 - var_in: N_P_ratio
   unit_in: g/g
-  trait_name: N_to_P_ratio
-  value_type: site_mean
-  replicates: 1-4
+  trait_name: leaf_NP_ratio
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
     (LI-3100 leaf area meter, LI-COR, Inc.). Subsequently, leaves were oven dried
@@ -641,8 +685,10 @@ traits:
     WI, USA) using Kjeldahl acid digests (Allen 1974).
 - var_in: soluble_sugars_mg_g-1
   unit_in: mg/g
-  trait_name: leaf_soluable_starch_per_mass
-  value_type: site_mean
+  trait_name: leaf_soluble_sugars_per_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3-4
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
@@ -652,8 +698,10 @@ traits:
     (TNC) were determined, as described in Loveys et al. 2003.
 - var_in: soluble_sugars_g_m-2
   unit_in: g/m2
-  trait_name: soluable_sugars_per_area
-  value_type: site_mean
+  trait_name: leaf_soluble_sugars_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3-4
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
@@ -663,8 +711,10 @@ traits:
     (TNC) were determined, as described in Loveys et al. 2003.
 - var_in: starch_mg_g-1
   unit_in: mg/g
-  trait_name: leaf_soluable_starch_per_mass
-  value_type: site_mean
+  trait_name: leaf_soluble_starch_per_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3-4
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
@@ -674,8 +724,10 @@ traits:
     (TNC) were determined, as described in Loveys et al. 2003.
 - var_in: starch_g_m-2
   unit_in: g/m2
-  trait_name: soluable_starch_per_area
-  value_type: site_mean
+  trait_name: leaf_soluble_starch_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3-4
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
@@ -686,7 +738,9 @@ traits:
 - var_in: TNC_mg_g-1
   unit_in: mg/g
   trait_name: leaf_total_non-structural_carbohydrates_per_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3-4
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
@@ -697,7 +751,9 @@ traits:
 - var_in: TNC_g_m-2
   unit_in: g/m2
   trait_name: leaf_total_non-structural_carbohydrates_per_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3-4
   methods: After completion of the gas exchange measurements, leaves were harvested
     for the analysis of structure and chemical constituents. Leaf area was determined
@@ -709,19 +765,24 @@ substitutions: .na
 taxonomic_updates:
 - find: Cryptocarya mackionniana
   replace: Cryptocarya mackinnoniana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Gillbeea whyapallana
   replace: Gillbeea whypallana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Licuala ramsayii
   replace: Licuala ramsayi
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Myristica globosa spp. meulleri
+  replace: Myristica globosa
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Pseudovaria frogatti
   replace: Pseuduvaria froggattii
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Myristica globosa spp. meulleri
-  replace: Myristica globosa subsp. muelleri
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

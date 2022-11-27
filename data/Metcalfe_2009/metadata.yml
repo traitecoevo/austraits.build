@@ -14,19 +14,65 @@ source:
     number: '1'
     pages: 76--86
     doi: 10.1111/j.1461-0248.2009.01403.x
-people:
-- name: Daniel Metcalfe
-  institution: CSIRO
-  role: collector, contributor
+contributors:
+  data_collectors:
+  - last_name: Metcalfe
+    given_name: Daniel
+    ORCID: 0000-0001-6853-7072
+    affiliation: CSIRO Land and Water, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2005
-  year_collected_end: 2005
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        fruit_fleshiness = Fruit_type,
+        fruit_dehiscence = Fruit_type,
+        dispersal_appendage = NA_character_,
+        dispersers = NA_character_,
+        dispersal_unit = NA_character_,
+        plant_growth_substrate = NA_character_,
+        stem_growth_habit = NA_character_,
+        seed_storage_location = ifelse(stringr::str_detect(Maximum_propagule_longevity,"soil"),"soil",NA),
+        seed_longevity_numeric = Maximum_propagule_longevity,
+        parasitic = ifelse(Growth_form == "hemiparasite or holoparasite", "parasitic", NA)
+      ) %>%
+      move_values_to_new_trait(
+        "Fruit_type", "dispersal_appendage",
+        c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
+          "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)",
+          "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)"), 
+        c("fleshy_reward", "wing_or_plume", "wing_or_plume"),
+        c("Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)",
+          "Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)",
+          "Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)")
+      ) %>%
+      move_values_to_new_trait(
+        "Dispersal_mode","dispersers",
+        c("Insect","Water","Wind"),
+        c("insects","water","wind"),
+        c("Insect","water","wind")
+      ) %>%
+      move_values_to_new_trait(
+        "Fruit_type", "dispersal_unit", "Spore", "spore", ""
+      ) %>%
+      move_values_to_new_trait(
+        "Growth_form", "plant_growth_substrate", "Epiphyte", "epiphyte", ""
+      ) %>%
+      move_values_to_new_trait(
+        "Growth_form", "stem_growth_habit", "scrambler", "scrambler", "climber"
+      )
+'
+  collection_date: 2005/2005
+  taxon_name: species_name
+  location_name: site_name
   description: Part of a worldwide dataset that explores how land-use change impacts
     these attributes in plant communities, using data from 18 land-use intensity gradients
     that represent five biomes and > 2800 species. We identify functional groups using
     multivariate analysis of plant traits which influence ecosystem processes.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: This data is one of 18 datasets worldwide used in the manuscript.
     Datasets were used for the analyses if they included a survey of plant communities
     within a well-defined local geographic region, across plots representing a gradient
@@ -46,231 +92,247 @@ dataset:
     to the site name of the first site where it is present, by sequentially cycling
     through sites number 1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 4.2, 5.2. However the presence/absence
     data shows that most species are present on more than one site.
-sites:
+locations:
   Harney's:
-    Site Numbers: 1.1
-    GPS Coordinate datum: GDA94
+    site code: 1.1
+    geodetic datum: GDA94
     latitude (deg): -18.016
     longitude (deg): 145.9509
     elevation (m): 5.0
-    Landscape: Tully-Murray
-    land use intensity: 1.0
+    locality: Tully-Murray
+    land use (intensity): 1.0
     land use: Natural
     description: lightly-logged continuous rain forest
-    Distance to Forest: 0.0
-    Soil series: Timara
+    distance to forest: 0.0
+    soil series: Timara
     soil type: alluvium
-    carbon (%): 5.14
-    total nitrogen (%): 0.3
-    extractable P (ppm): 80.0
-    exchangeable Ca (m.e./100 g soil): 3.67
-    exchangeable Mg (m.e./100 g soil): 2.35
-    exchangeable K (m.e./100 g soil): 1.54
-    SumEC: 7.56
-    Date sampled: Feb-05
+    soil C, total (%): 5.14
+    soil N, total (%): 0.3
+    soil P, extractable (mg/kg): 80.0
+    soil exchangeable Ca (cmol/kg, meq/100g): 3.67
+    soil exchangeable Mg (cmol/kg, meq/100g): 2.35
+    soil exchangeable K (cmol/kg, meq/100g): 1.54
+    soil cation exchange capacity (cmol/kg): 7.56
+    date sampled: Feb-05
     species count (per plot): 39.0
     tallest tree measured in plot (m): 24.0
     no. stems >10 cm/0.1 ha: 89.0
     fragment size: '>100 ha'
   Henry's:
-    Site Numbers: 2.2
-    GPS Coordinate datum: GDA94
+    site code: 2.2
+    geodetic datum: GDA94
     latitude (deg): -18.02929
     longitude (deg): 145.86262
     elevation (m): 25.0
-    Landscape: Tully-Murray
-    land use intensity: 1.0
+    locality: Tully-Murray
+    land use (intensity): 1.0
     land use: Natural
     description: lightly-logged rain forest fragment
-    Distance to Forest: 0.0
-    Soil series: Coom
+    distance to forest: 0.0
+    soil series: Coom
     soil type: alluvium
-    carbon (%): 2.71
-    total nitrogen (%): 0.19
-    extractable P (ppm): 13.0
-    exchangeable Ca (m.e./100 g soil): 3.43
-    exchangeable Mg (m.e./100 g soil): 1.8
-    exchangeable K (m.e./100 g soil): 0.28
-    SumEC: 5.75
-    Date sampled: Sep-05
+    soil C, total (%): 2.71
+    soil N, total (%): 0.19
+    soil P, extractable (mg/kg): 13.0
+    soil exchangeable Ca (cmol/kg, meq/100g): 3.43
+    soil exchangeable Mg (cmol/kg, meq/100g): 1.8
+    soil exchangeable K (cmol/kg, meq/100g): 0.28
+    soil cation exchange capacity (cmol/kg): 5.75
+    date sampled: Sep-05
     species count (per plot): 85.0
     tallest tree measured in plot (m): 35.0
     no. stems >10 cm/0.1 ha: 108.0
     fragment size: 90 ha
   Mackay's:
-    Site Numbers: 3.1
-    GPS Coordinate datum: GDA94
+    site code: 3.1
+    geodetic datum: GDA94
     latitude (deg): -17.9531
     longitude (deg): 145.80872
     elevation (m): 15.0
-    Landscape: Tully-Murray
-    land use intensity: 2.0
+    locality: Tully-Murray
+    land use (intensity): 2.0
     land use: Natural
     description: disturbed riparian rain forest fragment
-    Distance to Forest: 0.0
-    Soil series: Innisfail
+    distance to forest: 0.0
+    soil series: Innisfail
     soil type: alluvium
-    carbon (%): 4.06
-    total nitrogen (%): 0.3
-    extractable P (ppm): 47.0
-    exchangeable Ca (m.e./100 g soil): 9.6
-    exchangeable Mg (m.e./100 g soil): 3.0
-    exchangeable K (m.e./100 g soil): 0.43
-    SumEC: 13.12
-    Date sampled: Jul-06
+    soil C, total (%): 4.06
+    soil N, total (%): 0.3
+    soil P, extractable (mg/kg): 47.0
+    soil exchangeable Ca (cmol/kg, meq/100g): 9.6
+    soil exchangeable Mg (cmol/kg, meq/100g): 3.0
+    soil exchangeable K (cmol/kg, meq/100g): 0.43
+    soil cation exchange capacity (cmol/kg): 13.12
+    date sampled: Jul-06
     species count (per plot): 125.0
     tallest tree measured in plot (m): 40.0
     no. stems >10 cm/0.1 ha: 53.0
     fragment size: 11 ha
   McDonald's:
-    Site Numbers: 1.2
-    GPS Coordinate datum: GDA94
+    site code: 1.2
+    geodetic datum: GDA94
     latitude (deg): -18.00741
     longitude (deg): 145.99097
     elevation (m): 10.0
-    Landscape: Tully-Murray
-    land use intensity: 1.0
+    locality: Tully-Murray
+    land use (intensity): 1.0
     land use: Natural
     description: lightly-logged riparian rain forest fragment
-    Distance to Forest: 0.0
-    Soil series: Tully
+    distance to forest: 0.0
+    soil series: Tully
     soil type: alluvium
-    carbon (%): 3.98
-    total nitrogen (%): 0.37
-    extractable P (ppm): 22.0
-    exchangeable Ca (m.e./100 g soil): 7.4
-    exchangeable Mg (m.e./100 g soil): 3.0
-    exchangeable K (m.e./100 g soil): 0.55
-    SumEC: 10.98
-    Date sampled: May-05
+    soil C, total (%): 3.98
+    soil N, total (%): 0.37
+    soil P, extractable (mg/kg): 22.0
+    soil exchangeable Ca (cmol/kg, meq/100g): 7.4
+    soil exchangeable Mg (cmol/kg, meq/100g): 3.0
+    soil exchangeable K (cmol/kg, meq/100g): 0.55
+    soil cation exchange capacity (cmol/kg): 10.98
+    date sampled: May-05
     species count (per plot): 100.0
     tallest tree measured in plot (m): 37.0
     no. stems >10 cm/0.1 ha: 135.0
     fragment size: 6 ha
   Shane's:
-    Site Numbers: 3.2
-    GPS Coordinate datum: GDA94
+    site code: 3.2
+    geodetic datum: GDA94
     latitude (deg): -18.0165
     longitude (deg): 145.96706
     elevation (m): 5.0
-    Landscape: Tully-Murray
-    land use intensity: 2.0
+    locality: Tully-Murray
+    land use (intensity): 2.0
     land use: Natural
     description: heavily disturbed rain forest fragment
-    Distance to Forest: 0.0
-    Soil series: Bulgun
+    distance to forest: 0.0
+    soil series: Bulgun
     soil type: organic
-    carbon (%): 4.25
-    total nitrogen (%): 0.19
-    extractable P (ppm): 14.0
-    exchangeable Ca (m.e./100 g soil): 0.13
-    exchangeable Mg (m.e./100 g soil): 0.24
-    exchangeable K (m.e./100 g soil): 0.05
-    SumEC: 0.5
-    Date sampled: Feb-05
+    soil C, total (%): 4.25
+    soil N, total (%): 0.19
+    soil P, extractable (mg/kg): 14.0
+    soil exchangeable Ca (cmol/kg, meq/100g): 0.13
+    soil exchangeable Mg (cmol/kg, meq/100g): 0.24
+    soil exchangeable K (cmol/kg, meq/100g): 0.05
+    soil cation exchange capacity (cmol/kg): 0.5
+    date sampled: Feb-05
     species count (per plot): 69.0
     tallest tree measured in plot (m): 28.0
     no. stems >10 cm/0.1 ha: 187.0
     fragment size: 2.5 ha
   Siam:
-    Site Numbers: 4.2
-    GPS Coordinate datum: GDA94
+    site code: 4.2
+    geodetic datum: GDA94
     latitude (deg): -17.97553
     longitude (deg): 145.85248
     elevation (m): 15.0
-    Landscape: Tully-Murray
-    land use intensity: 3.0
+    locality: Tully-Murray
+    land use (intensity): 3.0
     land use: Semi-natural
     description: 10 year old riparian revegetation
-    Distance to Forest: 2500.0
-    Soil series: Liverpool
+    distance to forest: 2500.0
+    soil series: Liverpool
     soil type: alluvium
-    carbon (%): 1.27
-    total nitrogen (%): 0.11
-    extractable P (ppm): 19.0
-    exchangeable Ca (m.e./100 g soil): 0.35
-    exchangeable Mg (m.e./100 g soil): 0.68
-    exchangeable K (m.e./100 g soil): 0.2
-    SumEC: 1.25
-    Date sampled: May-05
+    soil C, total (%): 1.27
+    soil N, total (%): 0.11
+    soil P, extractable (mg/kg): 19.0
+    soil exchangeable Ca (cmol/kg, meq/100g): 0.35
+    soil exchangeable Mg (cmol/kg, meq/100g): 0.68
+    soil exchangeable K (cmol/kg, meq/100g): 0.2
+    soil cation exchange capacity (cmol/kg): 1.25
+    date sampled: May-05
     species count (per plot): 73.0
     tallest tree measured in plot (m): 16.0
     no. stems >10 cm/0.1 ha: 61.0
     fragment size: <1 ha
   Weiss:
-    Site Numbers: 5.2
-    GPS Coordinate datum: GDA94
+    site code: 5.2
+    geodetic datum: GDA94
     latitude (deg): -18.00518
     longitude (deg): 145.92534
     elevation (m): 10.0
-    Landscape: Tully-Murray
-    land use intensity: 3.0
+    locality: Tully-Murray
+    land use (intensity): 3.0
     land use: Semi-natural
     description: 10 year old riparian revegetation
-    Distance to Forest: 3125.0
-    Soil series: Tully
+    distance to forest: 3125.0
+    soil series: Tully
     soil type: alluvium
-    carbon (%): 3.98
-    total nitrogen (%): 0.37
-    extractable P (ppm): 22.0
-    exchangeable Ca (m.e./100 g soil): 7.4
-    exchangeable Mg (m.e./100 g soil): 3.0
-    exchangeable K (m.e./100 g soil): 0.55
-    SumEC: 10.98
-    Date sampled: May-05
+    soil C, total (%): 3.98
+    soil N, total (%): 0.37
+    soil P, extractable (mg/kg): 22.0
+    soil exchangeable Ca (cmol/kg, meq/100g): 7.4
+    soil exchangeable Mg (cmol/kg, meq/100g): 3.0
+    soil exchangeable K (cmol/kg, meq/100g): 0.55
+    soil cation exchange capacity (cmol/kg): 10.98
+    date sampled: May-05
     species count (per plot): 83.0
     tallest tree measured in plot (m): 15.0
     no. stems >10 cm/0.1 ha: 141.0
     fragment size: <1 ha
   Zonta:
-    Site Numbers: 2.1
-    GPS Coordinate datum: GDA94
+    site code: 2.1
+    geodetic datum: GDA94
     latitude (deg): -18.02467
     longitude (deg): 145.96619
-    Altitude: 5.0
-    Landscape: Tully-Murray
-    land use intensity: 1.0
+    elevation (m): 5.0
+    locality: Tully-Murray
+    land use (intensity): 1.0
     land use: Natural
     description: lightly-logged continuous rain forest
-    Distance to Forest: 0.0
-    Soil series: Bulgun
+    distance to forest: 0.0
+    soil series: Bulgun
     soil type: organic
-    carbon (%): 4.25
-    total nitrogen (%): 0.19
-    extractable P (ppm): 14.0
-    exchangeable Ca (m.e./100 g soil): 0.13
-    exchangeable Mg (m.e./100 g soil): 0.24
-    exchangeable K (m.e./100 g soil): 0.05
-    SumEC: 0.5
-    Date sampled: Feb-05
+    soil C, total (%): 4.25
+    soil N, total (%): 0.19
+    soil P, extractable (mg/kg): 14.0
+    soil exchangeable Ca (cmol/kg, meq/100g): 0.13
+    soil exchangeable Mg (cmol/kg, meq/100g): 0.24
+    soil exchangeable K (cmol/kg, meq/100g): 0.05
+    soil cation exchange capacity (cmol/kg): 0.5
+    date sampled: Feb-05
     species count (per plot): 64.0
     tallest tree measured in plot (m): 35.0
     no. stems >10 cm/0.1 ha: 188.0
     fragment size: '>100 ha'
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-    site_name: site_name
-  custom_R_code: .na
 traits:
 - var_in: Growth_form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Raunkiaer_life_form
   unit_in: .na
   trait_name: life_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Height
   unit_in: m
   trait_name: plant_height
-  value_type: multisite_max
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Maximum recorded height, as the distance from the highest photosynthetic
     tissues to the ground surface, following Cornelissen et al 2003; some duplicates
@@ -278,33 +340,51 @@ traits:
     by the author.
 - var_in: Clonality
   unit_in: .na
-  trait_name: regen_strategy
-  value_type: expert_mean
+  trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Physical_defence
   unit_in: .na
-  trait_name: physical_defence
-  value_type: expert_mean
+  trait_name: plant_physical_defence_structures
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Photosynthetic pathway
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Laminar_unit_area
   unit_in: mm2
   trait_name: leaf_area
-  value_type: multisite_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Laminar Unit Area = area of one leaf (if simple-leaved) or one leaflet
     (if compound-leaved), following Cornelissen et al 2003
 - var_in: Wood_density
   unit_in: kg/m3
   trait_name: wood_density
-  value_type: multisite_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Oven-dry Mass per unit fresh Volume, for wood (xylem) tissue alone sometimes
     called 'Stem Specific Density' or 'Specific Gravity'; using the conversion equation
@@ -312,25 +392,49 @@ traits:
 - var_in: Nutrient_uptake_strategy
   unit_in: .na
   trait_name: root_structure
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: nitrogen_fixing
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Dispersal_mode
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: dispersers
+  unit_in: .na
+  trait_name: dispersers
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: dispersal_appendage
+  unit_in: .na
+  trait_name: dispersal_appendage
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Seed_mass_filtered
   unit_in: mg
-  trait_name: seed_mass
-  value_type: multisite_mean
+  trait_name: seed_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Oven-dry mass of the seed, including seed wall, following Cornelissen et
     al 2003; values sourced from Grubb_1996 and Grubb_1998 have been fitered out (note,
@@ -339,34 +443,108 @@ traits:
 - var_in: Resprouting_capacity
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Pollination_syndrome
   unit_in: .na
   trait_name: pollination_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Fruit_type
   unit_in: .na
   trait_name: fruit_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: dispersal_unit
+  unit_in: .na
+  trait_name: dispersal_unit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: fruit_fleshiness
+  unit_in: .na
+  trait_name: fruit_fleshiness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: fruit_dehiscence
+  unit_in: .na
+  trait_name: fruit_dehiscence
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Lifespan
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 - var_in: Maximum_propagule_longevity
   unit_in: .na
-  trait_name: propagule_longevity
-  value_type: expert_mean
+  trait_name: seed_longevity_categorical
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: seed_longevity_numeric
+  unit_in: years
+  trait_name: seed_longevity_numeric
+  entity_type: species
+  value_type: bin
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or reference book
+- var_in: seed_storage_location
+  unit_in: .na
+  trait_name: seed_storage_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 substitutions:
+- trait_name: seed_longevity_categorical
+  find: Short persistent soil (1 to 5 years)
+  replace: short_persistent
+- trait_name: seed_longevity_numeric
+  find: Short persistent soil (1 to 5 years)
+  replace: 1--5
+- trait_name: seed_longevity_categorical
+  find: Short-lived (weeks)
+  replace: transient
+- trait_name: seed_longevity_numeric
+  find: Short-lived (weeks)
+  replace: 0--0.2
+- trait_name: seed_longevity_categorical
+  find: Long persistent in soil (more than 5 years)
+  replace: long_persistent
+- trait_name: seed_longevity_numeric
+  find: Long persistent in soil (more than 5 years)
+  replace: 5--
+- trait_name: seed_longevity_categorical
+  find: Intermediate (months to less than a year)
+  replace: intermediate_longevity
+- trait_name: seed_longevity_numeric
+  find: Intermediate (months to less than a year)
+  replace: 0.2--1
 - trait_name: life_form
   find: other
   replace: .na
@@ -376,18 +554,27 @@ substitutions:
 - trait_name: leaf_area
   find: 0
   replace: .na
-- trait_name: physical_defence
+- trait_name: plant_physical_defence_structures
   find: None
-  replace: no_physical_defence
-- trait_name: physical_defence
+  replace: absent
+- trait_name: plant_physical_defence_structures
   find: Spines or thorns
-  replace: spines_or_thorns
-- trait_name: physical_defence
+  replace: sharp_pointed_defence
+- trait_name: plant_physical_defence_structures
   find: Stinging or irritant hairs
   replace: stinging_or_irritant_hairs
 - trait_name: dispersal_syndrome
   find: passive
-  replace: unassisted
+  replace: barochory
+- trait_name: dispersal_syndrome
+  find: water
+  replace: hydrochory
+- trait_name: dispersal_syndrome
+  find: wind
+  replace: anemochory
+- trait_name: dispersal_syndrome
+  find: Insect
+  replace: zoochory
 - trait_name: fire_response
   find: 'yes'
   replace: resprouts
@@ -399,31 +586,31 @@ substitutions:
   replace: tree
 - trait_name: plant_growth_form
   find: liana
-  replace: climber_liana
+  replace: climber_woody
 - trait_name: plant_growth_form
   find: short tree
-  replace: treelet
+  replace: tree
 - trait_name: plant_growth_form
   find: erect leafy
-  replace: erect_leafy
+  replace: herb
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: short basal
-  replace: short_basal
+  replace: herb
 - trait_name: plant_growth_form
   find: hemiparasite or holoparasite
-  replace: parasite hemi-parasite
+  replace: .na
 - trait_name: plant_growth_form
   find: long basal
-  replace: long_basal
+  replace: herb
 - trait_name: plant_growth_form
   find: semi basal
-  replace: semi_basal
+  replace: herb
 - trait_name: plant_growth_form
   find: scrambler
-  replace: climber_scrambler
+  replace: climber
 - trait_name: pollination_syndrome
   find: flies
   replace: fly
@@ -439,30 +626,36 @@ substitutions:
 - trait_name: pollination_syndrome
   find: hymenoptera (bees)
   replace: bee
-- trait_name: propagule_longevity
+- trait_name: seed_longevity_categorical
   find: short-lived (weeks)
-  replace: short-lived
-- trait_name: propagule_longevity
+  replace: transient
+- trait_name: seed_longevity_categorical
   find: intermediate (months to less than a year)
-  replace: intermediate
-- trait_name: propagule_longevity
+  replace: intermediate_longevity
+- trait_name: seed_longevity_categorical
   find: short persistent soil (1 to 5 years)
-  replace: short_persistent_in_soil
-- trait_name: propagule_longevity
+  replace: persistent
+- trait_name: seed_longevity_categorical
   find: long persistent in soil (more than 5 years)
-  replace: long_persistent_in_soil
-- trait_name: regen_strategy
+  replace: long_persistent
+- trait_name: clonal_spread_mechanism
   find: clonal aboveground
-  replace: aboveground
-- trait_name: regen_strategy
+  replace: aboveground_clonal
+- trait_name: clonal_spread_mechanism
   find: clonal belowground
-  replace: belowground
+  replace: belowground_clonal
+- trait_name: clonal_spread_mechanism
+  find: none
+  replace: non_clonal
+- trait_name: clonal_spread_mechanism
+  find: belowground
+  replace: belowground_clonal
 - trait_name: nitrogen_fixing
   find: 'yes'
-  replace: '1'
+  replace: nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'no'
-  replace: '0'
+  replace: non_nitrogen_fixer
 - trait_name: root_structure
   find: hairy root clusters
   replace: proteoid_root
@@ -470,44 +663,96 @@ substitutions:
   find: no obvious special uptake strategy
   replace: non_mycorrhizal
 - trait_name: fruit_type
-  find: Fleshy (berry, pome, pepo, etc.)
-  replace: fleshy
-- trait_name: fruit_type
   find: Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)
-  replace: dry_dehiscent_reward
+  replace: .na.character
+- trait_name: fruit_type
+  find: Dry dehiscent or indehsicent without attractant or wing
+  replace: .na.character
+- trait_name: fruit_type
+  find: Fleshy (berry, pome, pepo, etc.)
+  replace: .na.character
 - trait_name: fruit_type
   find: Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed
     achene, etc.)
-  replace: dry_winged
+  replace: .na.character
 - trait_name: fruit_type
-  find: dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)
-  replace: dry_winged
+  find: Spore
+  replace: .na
 - trait_name: fruit_type
+  find: fleshy (berry, pome, pepo, etc.)
+  replace: .na.character
+- trait_name: fruit_type
+  find: Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)
+  replace: dehiscent
+- trait_name: fruit_dehiscence
   find: Dry dehiscent or indehsicent without attractant or wing
-  replace: dry_not_winged
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: Fleshy (berry, pome, pepo, etc.)
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed
+    achene, etc.)
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: Spore
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: fleshy (berry, pome, pepo, etc.)
+  replace: .na.character
+- trait_name: fruit_dehiscence
+  find: Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)
+  replace: indehiscent
+- trait_name: fruit_fleshiness
+  find: Dry dehiscent with fleshy reward  (e.g. aril, funicle, elaiosome, etc.)
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: Dry dehiscent or indehsicent without attractant or wing
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: Fleshy (berry, pome, pepo, etc.)
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: Dry dehiscent or indehiscent with wing or plume (e.g. cypsela, samara, plumed
+    achene, etc.)
+  replace: dry
+- trait_name: fruit_fleshiness
+  find: Spore
+  replace: .na.character
+- trait_name: fruit_fleshiness
+  find: fleshy (berry, pome, pepo, etc.)
+  replace: fleshy
+- trait_name: fruit_fleshiness
+  find: Dry indehiscent with wing or plume (e.g. cypsela, samara, plumed achene, etc.)
+  replace: dry
 taxonomic_updates:
 - find: Casearia sp. (Mission Beach B.P.Hyland 773)
   replace: Casearia sp. Mission Beach (B.P.Hyland 773)
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Derris sp. (Claudie River L.J.Webb + 8348)
   replace: Derris sp. Claudie River (L.J.Webb+ 8348)
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Derris sp. (Daintree D.E.Boyland + 469)
   replace: Derris sp. Daintree (D.E.Boyland+ 469)
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Gynochtodes sp. (Hinchinbrook Island A.S.Thorsborne + 337)
+  replace: Gynochthodes sp. (Hinchinbrook Island A.S.Thorsborne+ 337)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Homalanthus novoguineensis
   replace: Homalanthus novo-guineensis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Pandanus solmslaubachii
   replace: Pandanus solms-laubachii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Gynochtodes sp. (Hinchinbrook Island A.S.Thorsborne + 337)
-  replace: Gynochthodes sp. Hinchinbrook Island (A.S.Thorsborne+ 337)
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Ficus congesta var. congesta
-  replace: Ficus congesta
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
-questions: .na
-
+questions:
+  additional_traits: currently excluding "spore" as a "fruit_type"

@@ -10,20 +10,29 @@ source:
     number: '3'
     pages: 341--348
     doi: 10.1111/j.1442-9993.1992.tb00816.x
-people:
-- name: Enrique Jurado
-  institution: Autonomous University of Nuevo Leon
-  role: collector, contact, contributor
-- name: Des Nelson
-  institution: CSIRO Alice Springs
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Jurado
+    given_name: Enrique
+    ORCID: 0000-0002-4043-5549
+    affiliation: Universidad Autonoma de Nuevo Leon, Mexico
+    additional_role: contact
+  - last_name: Nelson
+    given_name: Des
+    ORCID: .na.character
+    affiliation: CSIRO, Australia
+    notes: no contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: November 1987
-  year_collected_end: March 1989
+  data_is_long_format: no
+  custom_R_code: .na
+  collection_date: 1987-11/1989-03
+  taxon_name: species
+  location_name: site_name
   description: Study investigating species' germination proportions and speeds in
     arid NT environment
-  collection_type: field
-  sample_age_class: seedling
+  basis_of_record: field
+  life_stage: seedling
   sampling_strategy: Seeds were collected from an area within 100 km of Alice Springs,
     Northern Territory (23deg 42min S, 133deg 52min E), from as many individuals of
     each species as possible. Seed collection was restricted by availability in the
@@ -39,33 +48,32 @@ dataset:
     of light per day when germination was counted.
   original_file: Germination from Central Australia E Jurado.xls
   notes: none
-sites:
+locations:
   Alice Springs:
     latitude (deg): -23.7
     longitude (deg): 133.87
     notes: seeds collected within 100 km of the given lat/lon
 contexts:
-  temperature_treatment_12C:
-    description: seeds kept at 12C
-    type: treatment
-  temperature_treatment_20C:
-    description: seeds kept at 20C
-    type: treatment
-  temperature_treatment_28C:
-    description: seeds kept at 28C
-    type: treatment
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    site_name: site_name
-    context_name: temperature_treatment
-  custom_R_code: data %>% mutate(temperature_treatment = paste("temperature_treatment_",temperature_treatment,"C",sep=""))
+- context_property: seed storage temperature (deg C)
+  category: treatment
+  var_in: temperature_treatment
+  values:
+  - find: 12
+    value: 12
+    description: Seeds stored at 12 deg C.
+  - find: 20
+    value: 20
+    description: Seeds stored at 20 deg C.
+  - find: 28
+    value: 28
+    description: Seeds stored at 28 deg C.
 traits:
 - var_in: germination
   unit_in: '%'
-  trait_name: germination
-  value_type: site_mean
+  trait_name: seed_germination
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 100
   methods: Germinability was expressed as a percentage of viable seeds that germinated
     after 10 days. A period of 10 days was used to approximate the germination expected
@@ -84,33 +92,41 @@ substitutions: .na
 taxonomic_updates:
 - find: Capparis mitchelli
   replace: Capparis mitchellii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Dichantium sericeum
-  replace: Dichanthium sericeum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Senecio gregori
-  replace: Senecio gregorii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Sporobulus actinocladus
-  replace: Sporobolus actinocladus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Sporobulus caroli
-  replace: Sporobolus caroli
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Steptoglossa adora
-  replace: Streptoglossa odora
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Vittadina eremaea
-  replace: Vittadinia eremaea
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cassia nemophylla
   replace: Cassia nemophila
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Dichantium sericeum
+  replace: Dichanthium sericeum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Senecio gregori
+  replace: Senecio gregorii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Sida sp. 2
-  replace: Sida sp. [Sida sp. 2]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Sida sp. 2 (Marandoo; M.Trudgen 10976)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sporobulus actinocladus
+  replace: Sporobolus actinocladus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sporobulus caroli
+  replace: Sporobolus caroli
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Steptoglossa adora
+  replace: Streptoglossa odora
+  reason: match_22_fuzzy. Aligning name with fuzzy matches genus accepted by APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Vittadina eremaea
+  replace: Vittadinia eremaea
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions:
   additional_traits: germination speed (days to 50% germination)
-

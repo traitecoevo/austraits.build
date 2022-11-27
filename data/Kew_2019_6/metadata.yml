@@ -7,52 +7,71 @@ source:
     title: Germination data from the Seed Information Database (SID) and Seed Bank
       Database
     url: http://data.kew.org/sid/
-people:
-- name: Udayangani Liu
-  institution: Kew Botanic Gardens
-  role: contact
+contributors:
+  data_collectors:
+  - last_name: Liu
+    given_name: Udayangani
+    ORCID: 0000-0002-6192-1319
+    affiliation: Royal Botanic Gardens, Kew, United Kingdom
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: unknown
-  year_collected_end: 2019
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        germination = germination_percent/100,
+        remarks = paste0(
+          "PRE-SOW TREAT: ", presowtreat, "; ",
+          "GERMINATION COND: ", germcond
+        ),
+        remarks = stringr::str_replace(
+            remarks, 
+            "PRE-SOW TREAT: NA; ","")
+      )
+  '
+  collection_date: unknown/2019
+  taxon_name: taxa
   description: Germination data on species from Kew seed databases
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: seedling
   sampling_strategy: information in data.csv file
   original_file: in raw data folder
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
-    Commons licesne. Data not to be used for Commercial Purposes.
-sites: .na
+    Commons license. Data not to be used for Commercial Purposes.
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: taxa
-  custom_R_code: data %>% mutate(germination = germination_percent/100)
 traits:
 - var_in: germination
   unit_in: n/n
-  trait_name: germination
-  value_type: raw_value
-  replicates: .na
+  trait_name: seed_germination
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: seeds_sown
+  measurement_remarks: remarks
   methods: details given in additional columns in data file
 - var_in: germination_treatment
   unit_in: .na
-  trait_name: germination_treatment
-  value_type: raw_value
+  trait_name: .na
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: .na
   methods: details given in additional columns in data file, including more detailed
-    description of the germination treatment
+    description of the germination treatment; removing for now, since these may be
+    better characterised as methods for % germination
 substitutions: .na
 taxonomic_updates:
-- find: Euphrasia collina subsp. Northwest Tasmania (A.Visom 216)
-  replace: Euphrasia collina subsp. Northwest Tasmania (A.Visou 216)
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
 - find: Acaena ovina
   replace: Acaena x ovina
-  reason: Typo picked up by data contributor
-- find: Melaleuca incana subsp. gingilup (N.Gibson & M.Lyons 593)
-  replace: Melaleuca incana subsp. Gingilup (N.Gibson & M.Lyons 593)
-  reason: Automatic alignment with name in APNI names (2020-06-18)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Euphrasia collina subsp. Northwest Tasmania (A.Visom 216)
+  replace: Euphrasia collina subsp. Northwest Tasmania (A.Visou 216)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 exclude_observations: .na
-questions: .na
-
+questions:
+  additional_traits: seed_germination_treatment

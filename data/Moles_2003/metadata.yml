@@ -10,20 +10,29 @@ source:
     number: 5
     pages: 575--585
     doi: 10.1046/j.1442-9993.2003.01314.x
-people:
-- name: Angela Moles
-  institution: University of New South Wales
-  role: contact, collector
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Moles
+    given_name: Angela
+    ORCID: 0000-0003-2041-7762
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  austraits_curators: Caitlan Baxter
 dataset:
-  year_collected_start: 2000
-  year_collected_end: 2000
+  data_is_long_format: no
+  custom_R_code:      data %>% mutate(site_name = "Sturt National Park")
+  collection_date: 2000/2000
+  taxon_name: Species
+  location_name: site_name
   description: We investigated the relationship between seed size and seed survival
     in the soil in 67 species from arid Australia.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: This study was performed in Sturt National Park, north-west New
     South Wales, Australia. Seven sites were located within Sturt National Park, in
     order to maximize the number of species included in this study. The sites included
@@ -41,27 +50,23 @@ dataset:
     and incorporated into the soil.
   original_file: dataforAusTraits_diaspores_Moles.xlsx
   notes:
-sites:
+locations:
   Sturt National Park:
-    rainfall (mm): 230
+    precipitation, MAP (mm): 230
     latitude (deg): -29.0976
     longitude (deg): 141.4126
     description: Sturt National Park receives an average of 230 mm rain per year (Australian
       Bureau of Meteorology station in Tibooburra) and is dominated by chenopod shrublands
       and grasslands.
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "Sturt National Park")
 traits:
 - var_in: Diaspore mass (mg)
   unit_in: mg
-  trait_name: diaspore_mass
-  value_type: site_mean
-  replicates: '>5'
+  trait_name: diaspore_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 20
   methods: This is the mass of the seed and all of the accessory structures with which
     it is dispersed. Twenty diaspores of each species were oven-dried at 60 degrees
     C for at least 3 days, allowed to cool in a desiccator and then weighed on a Cahn
@@ -69,8 +74,10 @@ traits:
 - var_in: Seed viability
   unit_in: '%'
   trait_name: seed_viability
-  value_type: site_mean
-  replicates: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 45
   methods: Viability of a minimum of 45 seeds of each species was assessed within
     2 weeks of seed collection from the field using standard tetrazolium chloride
     staining techniques (Moore 1985). Where necessary, diaspores were dissected before
@@ -81,13 +88,17 @@ traits:
 - var_in: Life history
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Life history data from Cunningham et al. (1992)
 - var_in: Growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Growthform data taken from Cunningham et al. (1992)
 substitutions:
@@ -127,19 +138,24 @@ substitutions:
 taxonomic_updates:
 - find: Harmsiodoxa brevipes var. brevioes
   replace: Harmsiodoxa brevipes var. brevipes
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Varietas
 - find: Ptilotus polystachus
   replace: Ptilotus polystachyus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Sclerolaena bicornis var. horrido
   replace: Sclerolaena bicornis var. horrida
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Triraphus mollis
-  replace: Triraphis mollis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Varietas
 - find: Senna artemisioides nothossp. coriacea
   replace: Senna artemisioides subsp. x coriacea
-  reason: Align to accepted hybrid species on APC list (E. Wenk, 2020-05-25)
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Triraphus mollis
+  replace: Triraphis mollis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

@@ -3,32 +3,49 @@ source:
     key: Zieminska_2015
     bibtype: Article
     year: '2015'
-    author: Kasia Zieminska and Mark Westoby and Ian J. Wright
+    author: Kasia Ziemińska and Mark Westoby and Ian J. Wright
     journal: '{PLOS} {ONE}'
-    title: Broad anatomical variation within a narrow wood density range - A
-      study of twig wood across 69 Australian Angiosperms
+    title: Broad anatomical variation within a narrow wood density range - A study
+      of twig wood across 69 Australian Angiosperms
     volume: '10'
     number: '4'
     pages: e0124892
     doi: 10.1371/journal.pone.0124892
-people:
-- name: Kasia Zieminska
-  institution: Department of Plant Ecology and Evolution, Uppsala University, Uppsala,
-    Sweden
-  role: collector, contact
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: collector
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Ziemińska
+    given_name: Kasia
+    ORCID: 0000-0001-7750-4758
+    affiliation: AMAP (Botanique et Modélisation de l'Architecture des Plantes et
+      des Végétations), Université de Montpellier, CIRAD, CNRS, INRA, IRD, Montpellier,
+      France
+    additional_role: contact
+  - last_name: Wright
+    given_name: Ian
+    ORCID: 0000-0001-8338-9143
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: March 2012
-  year_collected_end: October 2012
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        vessel_diameter = 2*(sqrt(`vessel area (micron^2)`/3.14159)),
+        `sampling date` = `sampling date` %>% ym() %>% format.Date("%Y-%m")
+      )
+  '
+  collection_date: sampling date
+  taxon_name: species
+  location_name: site
   description: Our aim was to assess the magnitude of anatomical variation within
     a restricted range of wood density and explore its potential ecological implications.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Three sites were chosen along the east coast of Australia, in
     New South Wales (NSW) and Queensland (QLD), in such a way as to give rise to contrasts
     both of temperature and of precipitation (site details in Table 1, site photographs
@@ -93,44 +110,39 @@ dataset:
     Zieminska_2013, and unpublished wood density are under Westoby_2014, since they
     were collected as part of that field campaign
   notes: none
-sites:
+locations:
   Blencoe Falls:
     latitude (deg): -18.162
     longitude (deg): 145.49
     description: tropical woodland  (Girringun NP)
     elevation (m): 650
     sampling time: Oct-12
-    MAT (C): 22.4
-    MAP (mm): 197
+    temperature, MAT (C): 22.4
+    precipitation, MAP (mm): 197
   Cape Tribulation:
     latitude (deg): -16.104
     longitude (deg): 145.449
     description: tropical rainforest (Daintree NP)
     elevation (m): 50
     sampling time: May-12
-    MAT (C): 22.2
-    MAP (mm): 817
+    temperature, MAT (C): 22.2
+    precipitation, MAP (mm): 817
   Thredbo:
     latitude (deg): -36.482
     longitude (deg): 148.35
     description: temperate forest (Kosciuszko NP)
     elevation (m): 1300
     sampling time: Mar-12
-    MAT (C): 7.2
-    MAP (mm): 210
+    temperature, MAT (C): 7.2
+    precipitation, MAP (mm): 210
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    site_name: site
-    date: sampling date
-  custom_R_code: data %>% mutate(vessel_diameter = 2*(sqrt(`vessel area (micron^2)`/3.14159)))
 traits:
 - var_in: Specific leaf area (cm^2 g^-1)
   unit_in: cm2/g
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf traits were measured on leaves from twigs with wood diameter of c.
     0.5 cm (wood diameter measured under bark and excluding pith). For species with
@@ -149,7 +161,9 @@ traits:
 - var_in: Leaf area to sapwood area ratio (cm^2 cm^-2)
   unit_in: cm2_leaf/cm2_sapwood
   trait_name: huber_value
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf area to sapwood area ratio (LA/SA) was calculated for twigs with approximately
     0.5 cm of wood diameter (under bark and excluding pith). Two wood diameters perpendicular
@@ -164,8 +178,10 @@ traits:
     from the two diameters.
 - var_in: MOE (MPa)
   unit_in: MPa
-  trait_name: modulus_of_elasticity_xylem
-  value_type: raw_value
+  trait_name: xylem_modulus_of_elasticity
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Mechanical measurements were carried out within two weeks of collection
     (the number of replicates was as stated above except for two replicates of Pimelea
@@ -182,7 +198,9 @@ traits:
 - var_in: wood density (g cm^-1)
   unit_in: g/cm3
   trait_name: wood_density
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Wood density was measured on segments 3-5 cm long for each twig sample.
     Bark and pith were removed and measurements were carried out on xylem only. In
@@ -200,13 +218,17 @@ traits:
 - var_in: pith area (micron^2)
   unit_in: um2
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: see manuscript or methods for mapped-in traits
 - var_in: vessel_diameter
   unit_in: um
-  trait_name: vessel_diameter
-  value_type: raw_value
+  trait_name: stem_vessel_diameter
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The anatomical traits measured were average cross-sectional area of vessel
     lumens (called here 'vessel area'), pith area, and the total fractions of cross-section
@@ -285,8 +307,10 @@ traits:
     as A divided by N (mm4; [14].
 - var_in: hydraulically weighted vessel diameter (micron)
   unit_in: um
-  trait_name: vessel_diameter_hydraulic
-  value_type: raw_value
+  trait_name: stem_vessel_diameter_hydraulic
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The anatomical traits measured were average cross-sectional area of vessel
     lumens (called here 'vessel area'), pith area, and the total fractions of cross-section
@@ -365,8 +389,10 @@ traits:
     as A divided by N (mm4; [14].
 - var_in: vessel number per area (mm^-2)
   unit_in: count/mm2
-  trait_name: vessel_density
-  value_type: raw_value
+  trait_name: stem_vessel_density
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The anatomical traits measured were average cross-sectional area of vessel
     lumens (called here 'vessel area'), pith area, and the total fractions of cross-section
@@ -445,8 +471,10 @@ traits:
     as A divided by N (mm4; [14].
 - var_in: vessel lumen fraction
   unit_in: dimensionless
-  trait_name: vessel_lumen_fraction
-  value_type: raw_value
+  trait_name: stem_vessel_lumen_fraction
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The anatomical traits measured were average cross-sectional area of vessel
     lumens (called here 'vessel area'), pith area, and the total fractions of cross-section
@@ -525,8 +553,10 @@ traits:
     as A divided by N (mm4; [14].
 - var_in: vessel wall fraction
   unit_in: dimensionless
-  trait_name: vessel_wall_fraction
-  value_type: raw_value
+  trait_name: stem_vessel_wall_fraction
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The anatomical traits measured were average cross-sectional area of vessel
     lumens (called here 'vessel area'), pith area, and the total fractions of cross-section
@@ -606,7 +636,9 @@ traits:
 - var_in: axial parenchyma fraction
   unit_in: dimensionless
   trait_name: wood_axial_parenchyma_fraction
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The anatomical traits measured were average cross-sectional area of vessel
     lumens (called here 'vessel area'), pith area, and the total fractions of cross-section
@@ -686,7 +718,9 @@ traits:
 - var_in: ray fraction
   unit_in: dimensionless
   trait_name: wood_ray_fraction
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The anatomical traits measured were average cross-sectional area of vessel
     lumens (called here 'vessel area'), pith area, and the total fractions of cross-section
@@ -766,13 +800,17 @@ traits:
 - var_in: axial+ray parenchyma fraction
   unit_in: dimensionless
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: see manuscript or methods for mapped-in traits
 - var_in: fibre fraction
   unit_in: dimensionless
   trait_name: wood_fibre_fraction
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The anatomical traits measured were average cross-sectional area of vessel
     lumens (called here 'vessel area'), pith area, and the total fractions of cross-section
@@ -852,31 +890,43 @@ traits:
 - var_in: fibre wall fraction
   unit_in: dimensionless
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: see manuscript or methods for mapped-in traits
 - var_in: fibre lumen fraction
   unit_in: dimensionless
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: see manuscript or methods for mapped-in traits
 - var_in: conduits15 fraction
   unit_in: dimensionless
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: see manuscript or methods for mapped-in traits
 - var_in: mucilage canals fraction
   unit_in: dimensionless
   trait_name: .na
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: see manuscript or methods for mapped-in traits
 substitutions: .na
-taxonomic_updates: .na
+taxonomic_updates:
+- find: Eucalyptus sp.
+  replace: Eucalyptus sp. [Zieminska_2015]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
 exclude_observations: .na
 questions:
   additional_traits: additional traits including fibre lumen fraction, mucilage canal
     fraction
-

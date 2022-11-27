@@ -11,20 +11,37 @@ source:
     pages: 57--66
     publisher: Wiley-Blackwell
     doi: 10.1111/j.0030-1299.2005.13383.x
-people:
-- name: Daniel Falster
-  institution: University of New South Wales, Sydney
-  role: collector, contact
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Falster
+    given_name: Daniel
+    ORCID: 0000-0002-9814-092X
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2004
-  year_collected_end: 2004
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(`regeneration strategy` = ifelse(species == "Banksia serrata", "fire_killed resprouts", `regeneration strategy`))%>%
+      group_by(species) %>%
+      mutate_at(vars(`height (m)`,`LMA (mm2mg-1)`,`Nmass (%)`,`leaf size (mm2)`,
+        `Stem tissue density (mg mm-3)`,`seed mass (mg)`, `regeneration strategy`),
+        replace_duplicates_with_NA) %>%
+      ungroup() 
+  '
+  collection_date: 2002-09/2002-09
+  taxon_name: species
+  location_name: site
   description: Trait values for species with faster versus slower height growth following
     disturbance for Myall Lakes species.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Fire is a recurrent disturbance in the park (interval - 0-30
     years; Fox and Fox 1986). A mosaic of fire histories has facilitated previous
     use of space-for-time substitutions in studies of small mammal succession (Fox
@@ -39,12 +56,12 @@ dataset:
     (full list in Appendix 1).
   original_file: Falster & Westoby 2005 Oikos appendix.doc
   notes: none
-sites:
+locations:
   Myall_Lakes:
     latitude (deg): -32.68
     longitude (deg): 152.15
     elevation (m): 50
-    rainfall (mm): 1352
+    precipitation, MAP (mm): 1352
     description: The study was conducted in low-open sclerophyll forest situated in
       Myall Lakes National Park in southeastern Australia. Annual precipitation is
       moderate (1352 mm, 105 year average, Sugarloaf point), with some rain in all
@@ -61,32 +78,47 @@ sites:
       species is killed by fire, with regrowth from either seed or below ground reserves.
       Approximately half of all species retain some capacity to resprout after fire
       (Fox 1988).
-contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    site_name: site
-    date: date
-  custom_R_code: data %>% mutate(date = "2002-09")
+contexts:
+- context_property: sapwood sampling method
+  category: method
+  var_in: method_context
+  values:
+  - value: 10mm2 stem cross-sectional area
+    description: Leaf area was determined for a shoot whose sapwood had a cross sectional
+      area of 10 mm2.
+  - value: 250mm long branch segment
+    description: Leaf area was determined for a 250 mm branch segment and sapwood
+      cross-sectional area was determined where the branch was cut.
+  - value: 50mm long branch segment
+    description: Leaf area was determined for a 50 mm branch segment and sapwood cross-sectional
+      area was determined where the branch was cut.
+  - value: 1000mm long branch segment
+    description: Leaf area was determined for a 1000 mm branch segment and sapwood
+      cross-sectional area was determined where the branch was cut.
 traits:
 - var_in: regeneration strategy
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Identified from the literature.
 - var_in: height (m)
   unit_in: m
   trait_name: plant_height
-  value_type: site_max
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: unknown
   methods: For each species, height was recorded for the five tallest individuals
     found in each patch and age class.
 - var_in: LMA (mm2mg-1)
   unit_in: mg/mm2
-  trait_name: specific_leaf_area
-  value_type: site_mean
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: LMA was calculated as the leaf dry mass (oven-dried for 48 h at 65 deg
     C) divided by leaf area. It was determined for the first five fully expanded leaves
@@ -94,7 +126,9 @@ traits:
 - var_in: Nmass (%)
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: To determine leaf N per day mass, leaves from all individuals per species
     were  pooled and finely ground for nitrogen analysis. Total nitrogen concentration
@@ -104,7 +138,9 @@ traits:
 - var_in: leaf size (mm2)
   unit_in: mm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: Leaf area was calculated as the one sided leaf area (flat bed scanner).
     It was determined for the first five fully expanded leaves (including petioles)
@@ -112,7 +148,9 @@ traits:
 - var_in: Stem tissue density (mg mm-3)
   unit_in: mg/mm3
   trait_name: wood_density
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: Stem tissue density (dry mass fresh/volume; mg/mm3) was calculated using
     40-60 mm stem segments taken 250 mm back along a branch from the tip. Fresh samples
@@ -125,8 +163,10 @@ traits:
     then dried for 4 days at 60 deg C before weighing.
 - var_in: seed mass (mg)
   unit_in: mg
-  trait_name: seed_mass
-  value_type: expert_mean
+  trait_name: seed_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Mean oven dried seed mass was estimated for as many species as possible
     using field material supplemented with additional data from a global seed mass
@@ -134,16 +174,18 @@ traits:
 - var_in: LASA10
   unit_in: mm2_leaf/mm2_sapwood
   trait_name: huber_value
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
-  methods: 'Leaf area was determined for a shoot whose sapwood had a cross sectional
-    area of 10 mm2. In detail from Wright_2006, which used this data, No single best
-    point exists to compare traits such as LM/ SM, LA/SM and LA/SA when considering
-    a set of species that varies widely in canopy architecture and typical maximum
-    height (here, approximately 20 cm to 85 m). We have used several approaches (Table
-    1). In one study, we made measurements on the terminal twigs of each species,
-    i.e. on a relatively standard developmental unit (Westoby and Wright 2003). For
-    species at Ash, GLP, Myall and TRF, traits were measured at each of several different
+  method_context: 10mm2 stem cross-sectional area
+  methods: 'In detail from Wright_2006, which used this data, No single best point
+    exists to compare traits such as LM/ SM, LA/SM and LA/SA when considering a set
+    of species that varies widely in canopy architecture and typical maximum height
+    (here, approximately 20 cm to 85 m). We have used several approaches (Table 1).
+    In one study, we made measurements on the terminal twigs of each species, i.e.
+    on a relatively standard developmental unit (Westoby and Wright 2003). For species
+    at Ash, GLP, Myall and TRF, traits were measured at each of several different
     distances back down the stem from the branch tip (Falster and Westoby 2005a, 2005b
     and unpublished, Pickup et al. 2005). At GHP, RHM and RHW, traits were measured
     at a standard sapwood cross-sectional area (10 mm2; Pickup et al. 2005). For the
@@ -175,126 +217,132 @@ traits:
 - var_in: LASA250
   unit_in: mm2_leaf/mm2_sapwood
   trait_name: huber_value
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
-  methods: 'Leaf area was determined for a 250 mm branch segment and sapwood cross-sectional
-    area was determined where the branch was cut. In detail from Wright_2006, which
-    used this data, No single best point exists to compare traits such as LM/ SM,
-    LA/SM and LA/SA when considering a set of species that varies widely in canopy
-    architecture and typical maximum height (here, approximately 20 cm to 85 m). We
-    have used several approaches (Table 1). In one study, we made measurements on
-    the terminal twigs of each species, i.e. on a relatively standard developmental
-    unit (Westoby and Wright 2003). For species at Ash, GLP, Myall and TRF, traits
-    were measured at each of several different distances back down the stem from the
-    branch tip (Falster and Westoby 2005a, 2005b and unpublished, Pickup et al. 2005).
-    At GHP, RHM and RHW, traits were measured at a standard sapwood cross-sectional
-    area (10 mm2; Pickup et al. 2005). For the present re-analysis, we took the raw
-    data from the previous studies and, for every species possible, calculated patterns
-    of leaf and stem deployment at two standard points: at 250 mm distance from the
-    branch tip (Ash, GLP, Myall and TRF) and at 10 mm2 stem (Ash, Myall, TRF) or sapwood
-    (GHP, GLP, RHM, RHW) crosssectional area (250 mm or 10 mm2 formulation denoted
-    as subscript in trait abbreviations). This was done as follows. For each individual
-    plant, total leaf and stem dry mass at 250 mm distance was estimated by straightline
-    interpolation from values measured at the nearest sampling points on either side
-    of this distance. As the dry mass data tended to display non-linear (power) relationships
-    with distance from the branch tip, the interpolated values were calculated from
-    log10-log10- transformed data, then back-transformed to the original scale. The
-    same approach was used for interpolating data to the standard stem (or sapwood)
-    cross-sectional area. For individuals where measurements had not been made on
-    either side of the desired point but the nearest measurement had been made within
-    25 mm of 250 mm or 1 mm2 of 10 mm2 cross-section (i.e. within 10% of the desired
-    point), we extrapolated (rather than interpolated) the measured data to the standard
-    point. This allowed us to include a number of individuals and species for which
-    interpolation was not possible. Still, several large-leaved, large-stemmed species
-    from the TRF site could not be included in the 10-mm2 crosssection dataset. No
-    unusual tendencies in analyses, including the extrapolated data, were seen in
-    comparison to analyses including interpolated data only (details not shown). To
-    illustrate how species'' morphology varied at the two standard sampling points,
-    species-mean stem cross-sectional area varied between 1.2 and 258 mm2 at 250 mm
-    distance from the branch tip, while the distance from the branch tip at which
-    stem cross-sectional area reached 10 mm2 varied from 64 to 995 mm.'
+  method_context: 250mm long branch segment
+  methods: 'In detail from Wright_2006, which used this data, No single best point
+    exists to compare traits such as LM/ SM, LA/SM and LA/SA when considering a set
+    of species that varies widely in canopy architecture and typical maximum height
+    (here, approximately 20 cm to 85 m). We have used several approaches (Table 1).
+    In one study, we made measurements on the terminal twigs of each species, i.e.
+    on a relatively standard developmental unit (Westoby and Wright 2003). For species
+    at Ash, GLP, Myall and TRF, traits were measured at each of several different
+    distances back down the stem from the branch tip (Falster and Westoby 2005a, 2005b
+    and unpublished, Pickup et al. 2005). At GHP, RHM and RHW, traits were measured
+    at a standard sapwood cross-sectional area (10 mm2; Pickup et al. 2005). For the
+    present re-analysis, we took the raw data from the previous studies and, for every
+    species possible, calculated patterns of leaf and stem deployment at two standard
+    points: at 250 mm distance from the branch tip (Ash, GLP, Myall and TRF) and at
+    10 mm2 stem (Ash, Myall, TRF) or sapwood (GHP, GLP, RHM, RHW) crosssectional area
+    (250 mm or 10 mm2 formulation denoted as subscript in trait abbreviations). This
+    was done as follows. For each individual plant, total leaf and stem dry mass at
+    250 mm distance was estimated by straightline interpolation from values measured
+    at the nearest sampling points on either side of this distance. As the dry mass
+    data tended to display non-linear (power) relationships with distance from the
+    branch tip, the interpolated values were calculated from log10-log10- transformed
+    data, then back-transformed to the original scale. The same approach was used
+    for interpolating data to the standard stem (or sapwood) cross-sectional area.
+    For individuals where measurements had not been made on either side of the desired
+    point but the nearest measurement had been made within 25 mm of 250 mm or 1 mm2
+    of 10 mm2 cross-section (i.e. within 10% of the desired point), we extrapolated
+    (rather than interpolated) the measured data to the standard point. This allowed
+    us to include a number of individuals and species for which interpolation was
+    not possible. Still, several large-leaved, large-stemmed species from the TRF
+    site could not be included in the 10-mm2 crosssection dataset. No unusual tendencies
+    in analyses, including the extrapolated data, were seen in comparison to analyses
+    including interpolated data only (details not shown). To illustrate how species''
+    morphology varied at the two standard sampling points, species-mean stem cross-sectional
+    area varied between 1.2 and 258 mm2 at 250 mm distance from the branch tip, while
+    the distance from the branch tip at which stem cross-sectional area reached 10
+    mm2 varied from 64 to 995 mm.'
 - var_in: LASA50
   unit_in: mm2_leaf/mm2_sapwood
   trait_name: huber_value
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
-  methods: 'Leaf area was determined for a 50 mm branch segment and sapwood cross-sectional
-    area was determined where the branch was cut. In detail from Wright_2006, which
-    used this data, No single best point exists to compare traits such as LM/ SM,
-    LA/SM and LA/SA when considering a set of species that varies widely in canopy
-    architecture and typical maximum height (here, approximately 20 cm to 85 m). We
-    have used several approaches (Table 1). In one study, we made measurements on
-    the terminal twigs of each species, i.e. on a relatively standard developmental
-    unit (Westoby and Wright 2003). For species at Ash, GLP, Myall and TRF, traits
-    were measured at each of several different distances back down the stem from the
-    branch tip (Falster and Westoby 2005a, 2005b and unpublished, Pickup et al. 2005).
-    At GHP, RHM and RHW, traits were measured at a standard sapwood cross-sectional
-    area (10 mm2; Pickup et al. 2005). For the present re-analysis, we took the raw
-    data from the previous studies and, for every species possible, calculated patterns
-    of leaf and stem deployment at two standard points: at 250 mm distance from the
-    branch tip (Ash, GLP, Myall and TRF) and at 10 mm2 stem (Ash, Myall, TRF) or sapwood
-    (GHP, GLP, RHM, RHW) crosssectional area (250 mm or 10 mm2 formulation denoted
-    as subscript in trait abbreviations). This was done as follows. For each individual
-    plant, total leaf and stem dry mass at 250 mm distance was estimated by straightline
-    interpolation from values measured at the nearest sampling points on either side
-    of this distance. As the dry mass data tended to display non-linear (power) relationships
-    with distance from the branch tip, the interpolated values were calculated from
-    log10-log10- transformed data, then back-transformed to the original scale. The
-    same approach was used for interpolating data to the standard stem (or sapwood)
-    cross-sectional area. For individuals where measurements had not been made on
-    either side of the desired point but the nearest measurement had been made within
-    25 mm of 250 mm or 1 mm2 of 10 mm2 cross-section (i.e. within 10% of the desired
-    point), we extrapolated (rather than interpolated) the measured data to the standard
-    point. This allowed us to include a number of individuals and species for which
-    interpolation was not possible. Still, several large-leaved, large-stemmed species
-    from the TRF site could not be included in the 10-mm2 crosssection dataset. No
-    unusual tendencies in analyses, including the extrapolated data, were seen in
-    comparison to analyses including interpolated data only (details not shown). To
-    illustrate how species'' morphology varied at the two standard sampling points,
-    species-mean stem cross-sectional area varied between 1.2 and 258 mm2 at 250 mm
-    distance from the branch tip, while the distance from the branch tip at which
-    stem cross-sectional area reached 10 mm2 varied from 64 to 995 mm.'
+  method_context: 50mm long branch segment
+  methods: 'In detail from Wright_2006, which used this data, No single best point
+    exists to compare traits such as LM/ SM, LA/SM and LA/SA when considering a set
+    of species that varies widely in canopy architecture and typical maximum height
+    (here, approximately 20 cm to 85 m). We have used several approaches (Table 1).
+    In one study, we made measurements on the terminal twigs of each species, i.e.
+    on a relatively standard developmental unit (Westoby and Wright 2003). For species
+    at Ash, GLP, Myall and TRF, traits were measured at each of several different
+    distances back down the stem from the branch tip (Falster and Westoby 2005a, 2005b
+    and unpublished, Pickup et al. 2005). At GHP, RHM and RHW, traits were measured
+    at a standard sapwood cross-sectional area (10 mm2; Pickup et al. 2005). For the
+    present re-analysis, we took the raw data from the previous studies and, for every
+    species possible, calculated patterns of leaf and stem deployment at two standard
+    points: at 250 mm distance from the branch tip (Ash, GLP, Myall and TRF) and at
+    10 mm2 stem (Ash, Myall, TRF) or sapwood (GHP, GLP, RHM, RHW) crosssectional area
+    (250 mm or 10 mm2 formulation denoted as subscript in trait abbreviations). This
+    was done as follows. For each individual plant, total leaf and stem dry mass at
+    250 mm distance was estimated by straightline interpolation from values measured
+    at the nearest sampling points on either side of this distance. As the dry mass
+    data tended to display non-linear (power) relationships with distance from the
+    branch tip, the interpolated values were calculated from log10-log10- transformed
+    data, then back-transformed to the original scale. The same approach was used
+    for interpolating data to the standard stem (or sapwood) cross-sectional area.
+    For individuals where measurements had not been made on either side of the desired
+    point but the nearest measurement had been made within 25 mm of 250 mm or 1 mm2
+    of 10 mm2 cross-section (i.e. within 10% of the desired point), we extrapolated
+    (rather than interpolated) the measured data to the standard point. This allowed
+    us to include a number of individuals and species for which interpolation was
+    not possible. Still, several large-leaved, large-stemmed species from the TRF
+    site could not be included in the 10-mm2 crosssection dataset. No unusual tendencies
+    in analyses, including the extrapolated data, were seen in comparison to analyses
+    including interpolated data only (details not shown). To illustrate how species''
+    morphology varied at the two standard sampling points, species-mean stem cross-sectional
+    area varied between 1.2 and 258 mm2 at 250 mm distance from the branch tip, while
+    the distance from the branch tip at which stem cross-sectional area reached 10
+    mm2 varied from 64 to 995 mm.'
 - var_in: LASA1000
   unit_in: mm2_leaf/mm2_sapwood
   trait_name: huber_value
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
-  methods: 'Leaf area was determined for a 1000 mm branch segment and sapwood cross-sectional
-    area was determined where the branch was cut. In detail from Wright_2006, which
-    used this data, No single best point exists to compare traits such as LM/ SM,
-    LA/SM and LA/SA when considering a set of species that varies widely in canopy
-    architecture and typical maximum height (here, approximately 20 cm to 85 m). We
-    have used several approaches (Table 1). In one study, we made measurements on
-    the terminal twigs of each species, i.e. on a relatively standard developmental
-    unit (Westoby and Wright 2003). For species at Ash, GLP, Myall and TRF, traits
-    were measured at each of several different distances back down the stem from the
-    branch tip (Falster and Westoby 2005a, 2005b and unpublished, Pickup et al. 2005).
-    At GHP, RHM and RHW, traits were measured at a standard sapwood cross-sectional
-    area (10 mm2; Pickup et al. 2005). For the present re-analysis, we took the raw
-    data from the previous studies and, for every species possible, calculated patterns
-    of leaf and stem deployment at two standard points: at 250 mm distance from the
-    branch tip (Ash, GLP, Myall and TRF) and at 10 mm2 stem (Ash, Myall, TRF) or sapwood
-    (GHP, GLP, RHM, RHW) crosssectional area (250 mm or 10 mm2 formulation denoted
-    as subscript in trait abbreviations). This was done as follows. For each individual
-    plant, total leaf and stem dry mass at 250 mm distance was estimated by straightline
-    interpolation from values measured at the nearest sampling points on either side
-    of this distance. As the dry mass data tended to display non-linear (power) relationships
-    with distance from the branch tip, the interpolated values were calculated from
-    log10-log10- transformed data, then back-transformed to the original scale. The
-    same approach was used for interpolating data to the standard stem (or sapwood)
-    cross-sectional area. For individuals where measurements had not been made on
-    either side of the desired point but the nearest measurement had been made within
-    25 mm of 250 mm or 1 mm2 of 10 mm2 cross-section (i.e. within 10% of the desired
-    point), we extrapolated (rather than interpolated) the measured data to the standard
-    point. This allowed us to include a number of individuals and species for which
-    interpolation was not possible. Still, several large-leaved, large-stemmed species
-    from the TRF site could not be included in the 10-mm2 crosssection dataset. No
-    unusual tendencies in analyses, including the extrapolated data, were seen in
-    comparison to analyses including interpolated data only (details not shown). To
-    illustrate how species'' morphology varied at the two standard sampling points,
-    species-mean stem cross-sectional area varied between 1.2 and 258 mm2 at 250 mm
-    distance from the branch tip, while the distance from the branch tip at which
-    stem cross-sectional area reached 10 mm2 varied from 64 to 995 mm.'
+  method_context: 1000mm long branch segment
+  methods: 'In detail from Wright_2006, which used this data, No single best point
+    exists to compare traits such as LM/ SM, LA/SM and LA/SA when considering a set
+    of species that varies widely in canopy architecture and typical maximum height
+    (here, approximately 20 cm to 85 m). We have used several approaches (Table 1).
+    In one study, we made measurements on the terminal twigs of each species, i.e.
+    on a relatively standard developmental unit (Westoby and Wright 2003). For species
+    at Ash, GLP, Myall and TRF, traits were measured at each of several different
+    distances back down the stem from the branch tip (Falster and Westoby 2005a, 2005b
+    and unpublished, Pickup et al. 2005). At GHP, RHM and RHW, traits were measured
+    at a standard sapwood cross-sectional area (10 mm2; Pickup et al. 2005). For the
+    present re-analysis, we took the raw data from the previous studies and, for every
+    species possible, calculated patterns of leaf and stem deployment at two standard
+    points: at 250 mm distance from the branch tip (Ash, GLP, Myall and TRF) and at
+    10 mm2 stem (Ash, Myall, TRF) or sapwood (GHP, GLP, RHM, RHW) crosssectional area
+    (250 mm or 10 mm2 formulation denoted as subscript in trait abbreviations). This
+    was done as follows. For each individual plant, total leaf and stem dry mass at
+    250 mm distance was estimated by straightline interpolation from values measured
+    at the nearest sampling points on either side of this distance. As the dry mass
+    data tended to display non-linear (power) relationships with distance from the
+    branch tip, the interpolated values were calculated from log10-log10- transformed
+    data, then back-transformed to the original scale. The same approach was used
+    for interpolating data to the standard stem (or sapwood) cross-sectional area.
+    For individuals where measurements had not been made on either side of the desired
+    point but the nearest measurement had been made within 25 mm of 250 mm or 1 mm2
+    of 10 mm2 cross-section (i.e. within 10% of the desired point), we extrapolated
+    (rather than interpolated) the measured data to the standard point. This allowed
+    us to include a number of individuals and species for which interpolation was
+    not possible. Still, several large-leaved, large-stemmed species from the TRF
+    site could not be included in the 10-mm2 crosssection dataset. No unusual tendencies
+    in analyses, including the extrapolated data, were seen in comparison to analyses
+    including interpolated data only (details not shown). To illustrate how species''
+    morphology varied at the two standard sampling points, species-mean stem cross-sectional
+    area varied between 1.2 and 258 mm2 at 250 mm distance from the branch tip, while
+    the distance from the branch tip at which stem cross-sectional area reached 10
+    mm2 varied from 64 to 995 mm.'
 substitutions:
 - trait_name: fire_response
   find: reseeder
@@ -305,10 +353,11 @@ substitutions:
 taxonomic_updates:
 - find: Pomax umbellate
   replace: Pomax umbellata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Ricinocarpus pinnifolius
   replace: Ricinocarpos pinifolius
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

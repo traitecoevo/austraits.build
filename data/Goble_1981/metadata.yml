@@ -10,20 +10,24 @@ source:
     pages: 329--347
     publisher: CSIRO Publishing
     doi: 10.1071/bt9810329
-people:
-- name: Ethel Goble-Garratt
-  institution: Unknown
-  role: collector
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor, contact
+contributors:
+  data_collectors:
+  - last_name: Goble-Garratt
+    given_name: Ethel
+    ORCID: .na.character
+    affiliation: unknown
+    notes: no contact
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 1979
-  year_collected_end: 1979
+  data_is_long_format: no
+  custom_R_code: .na
+  collection_date: 1979/1979
+  taxon_name: species
+  location_name: site
   description: leaf area and other leaf characteristics of WA species along an elevation
     gradient that reflects changing soil moisture.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: A permanent transect, 67 m long, from the flats up the western
     flank of the larger of the two sand ridges was marked out by means of wooden pegs
     positioned at 1 m intervals (Fig. 1). The site of the transect was chosen arbitrarily
@@ -51,7 +55,7 @@ dataset:
     Series (Gauch 1973).  See below for leaf traits measured.
   original_file: Goble_garratt_1981.xls
   notes: none
-sites:
+locations:
   Yule Brook Botany Reserve:
     longitude (deg): 115.95
     latitude (deg): -32.0333333
@@ -69,18 +73,14 @@ sites:
       been considered a major determinant of the vegetation pattern of the Yule Brook
       Botany Reserve (Speck 1952; Baird and Speck, unpubl. data).
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    site_name: site
-  custom_R_code: .na
 traits:
 - var_in: 'TRAIT: leaf size UNITS: cm2'
   unit_in: cm2
   trait_name: leaf_area
-  value_type: .na
-  replicates: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
   methods: In order to extrapolate the species cover values recorded for the floristic
     analysis along the elevational gradient to the more functional values of total
     leaf area and leaf specific weight, a series of plants or groups of plants was
@@ -110,8 +110,10 @@ traits:
     the weights and areas of the subsample of leaves.
 - var_in: specific leaf weight (g dm-2)
   unit_in: g/dm2
-  trait_name: specific_leaf_area
-  value_type: site_mean
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Projected foliage cover was also estimated for these samples; then all
     leaves were stripped from the stems, carefully pressed and dried. After drying,
@@ -139,7 +141,9 @@ traits:
 - var_in: leaf_length (mm)
   unit_in: mm
   trait_name: leaf_length
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Measurements (to nearest 0.02 mm) of length, width at the widest part and
     thickness at the widest part between the margin and the midrib were made on fully
@@ -148,7 +152,9 @@ traits:
 - var_in: leaf_width (mm)
   unit_in: mm
   trait_name: leaf_width
-  value_type: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Measurements (to nearest 0.02 mm) of length, width at the widest part and
     thickness at the widest part between the margin and the midrib were made on fully
@@ -157,7 +163,9 @@ traits:
 - var_in: leaf_thickness (mm)
   unit_in: mm
   trait_name: leaf_thickness
-  value_type: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Measurements (to nearest 0.02 mm) of length, width at the widest part and
     thickness at the widest part between the margin and the midrib were made on fully
@@ -166,19 +174,36 @@ traits:
 - var_in: leaf_shape
   unit_in: .na
   trait_name: leaf_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation
-substitutions: .na
+substitutions:
+- trait_name: leaf_shape
+  find: narrowly_rhombic
+  replace: narrowly_rhomboidal
+- trait_name: leaf_shape
+  find: half_terete
+  replace: terete
+- trait_name: leaf_shape
+  find: linear_oblanceolate
+  replace: narrowly_oblanceolate
 taxonomic_updates:
 - find: Banksia menziesii (seedl.)
   replace: Banksia menziesii
-  reason: Align with known species (D Falster, 2019.06.03)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Nuytsia floribunda (seedl.)
   replace: Nuytsia floribunda
-  reason: Align to species (D Falster, 2019.06.03)
-exclude_observations: .na
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+exclude_observations:
+- variable: taxon_name
+  find: Unknown No. 1
+  reason: to little resolution
 questions:
   additional_traits: leaf area for a given percent ground cover, descriptive characteristics
     of cuticle, palisade and epidermal cells (no actual measurements)
-

@@ -6,82 +6,97 @@ source:
     year: 2014
     title: Seed Information Database (SID)
     url: http://data.kew.org/sid/
-people:
-- name: Udayangani Liu
-  institution: Kew Botanic Gardens
-  role: contact
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Liu
+    given_name: Udayangani
+    ORCID: 0000-0002-6192-1319
+    affiliation: Royal Botanic Gardens, Kew, United Kingdom
+    additional_role: contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2014
-  year_collected_end: 2014
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      group_by(species) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup()
+  '
+  collection_date: unknown/2014
+  taxon_name: species
   description: Seed mass data for all Australian species from KEW Botanic Gardens
     Seed Information Database
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: herbarium study
   original_file: SID_australia.xls
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons licesne. Data not to be used for Commercial Purposes.
-sites: .na
-contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-  custom_R_code: .na
+locations: .na
+contexts:
+- context_property: replicate observations
+  category: temporal
+  var_in: observation_number
+  values:
+  - value: 1
+  - value: 2
+  - value: 3
 traits:
 - var_in: seed_mass
   unit_in: mg
-  trait_name: seed_mass
-  value_type: unknown
+  trait_name: seed_dry_mass
+  entity_type: unknown
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: seed mass values not in Kew_2019_1. No notes associated with this data.
 substitutions: .na
 taxonomic_updates:
-- find: Homalanthus novoguineensis
-  replace: Homalanthus novo-guineensis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Lepidium muelleriferdinandi
-  replace: Lepidium muelleri-ferdinandi
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Micromyrtus uniovula
-  replace: Micromyrtus uniovulum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Tecticornia doleiformis
-  replace: Tecticornia doliiformis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Zieria oreocaena
-  replace: Zieria oreocena
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
 - find: Athrotaxis laxifolia
-  replace: Athrotaxis x laxifolia
-  reason: Align with APC accepted hybrid (E. Wenk, 2020-05-25)
-- find: Chrysopogon benthamianus
-  replace: Chrysopogon fallax
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
+  replace: Arthrotaxis laxifolia
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cyperus articulatus
+  replace: Cyperus articulatus
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-22)
+  taxonomic_resolution: Species
+- find: Eragrostis aspera
+  replace: Eragrostis sp. [Eragrostis aspera]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
 - find: Eucalyptus balanopelex
   replace: Eucalyptus x balanopelex
-  reason: Align to APC accepted hybrid (E. Wenk, 2020-05-22)
-- find: Ficus superba
-  replace: Ficus henneana
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
-- find: Lasiopetalum membraniflorum
-  replace: Lasiopetalum membranaceum
-  reason: Align to most likely name on APC list (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Homalanthus novoguineensis
+  replace: Homalanthus novo-guineensis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lepidium muelleriferdinandi
+  replace: Lepidium muelleri-ferdinandi
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Micromyrtus uniovula
+  replace: Micromyrtus uniovulum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
 - find: Rhynchospora rugosa
-  replace: Rhynchospora brownii
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Rourea minor
-  replace: Rourea brachyandra
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Schizachyrium brevifolium
-  replace: Schizachyrium fragile
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  replace: Rhynchospora rubra
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Tecticornia doleiformis
+  replace: Tecticornia doliiformis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Zieria oreocaena
+  replace: Zieria oreocena
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations:
 - variable: taxon_name
   find: Solanum scabrum, Chamaecrista nictitans, Solanum viarum
   reason: non-native (E Wenk, 2020.06.18)
 questions: .na
-

@@ -13,20 +13,25 @@ source:
     pages: 1379--1389
     publisher: Oxford University Press (OUP)
     doi: 10.1093/aob/mcn047
-people:
-- name: Peter Grubb
-  institution: Cambridge University
-  role: collector, lab_leader, contact
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Grubb
+    given_name: Peter
+    ORCID: .na.character
+    affiliation: Cambridge University, United Kingdom
+    notes: acknowledge only
+    additional_role: contact
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 2002
-  year_collected_end: 2002
+  data_is_long_format: no
+  custom_R_code:      data %>% mutate_at(c("SLA (cm2/g)"), ~na_if(.,0))
+  collection_date: 2002/2002
+  taxon_name: species
+  location_name: site
   description: SLA and Nmass data from unpublished manuscript provided to Ian Wright
     by Peter Grubb in 2002
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Observers walked along a path through the forest, or on a bearing
     within the understorey, making records for one individual of each species of monocot
     tested using the first individual encountered within 2 m of the centre of the
@@ -36,31 +41,27 @@ dataset:
     of each study species had been recorded.
   original_file: grubb et aL.xls
   notes: none
-sites:
+locations:
   Wongabel State Forest:
     longitude (deg): 145.4333333
     latitude (deg): -17.3
     elevation (m): 750
-    rainfall (mm): 1400
+    precipitation, MAP (mm): 1400
     description: tropical lowland rainforest
   Wooroonooran National Park:
     longitude (deg): 145.7166667
     latitude (deg): -17.3833333
     elevation (m): 800
-    rainfall (mm): 3500
+    precipitation, MAP (mm): 3500
     description: tropical lowland rainforest
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    site_name: site
-  custom_R_code: data %>% mutate_at(c("SLA (cm2/g)"), ~na_if(.,0))
 traits:
 - var_in: SLA (cm2/g)
   unit_in: cm2/mg
-  trait_name: specific_leaf_area
-  value_type: site_mean
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Fully expanded and toughened leaves were used; those used for LMA and N
     determinations were put into an oven for about 24 h within about 6 h of collection
@@ -69,7 +70,9 @@ traits:
 - var_in: Nmass (mg g-1)
   unit_in: mg/g
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Fully expanded and toughened leaves were used; those used for LMA and N
     determinations were put into an oven for about 24 h within about 6 h of collection
@@ -81,39 +84,49 @@ traits:
 - var_in: Water concentration per unit dry mass (g g-1)
   unit_in: g/g
   trait_name: leaf_water_content_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Water concentration at saturation was determined on leaves left to hydrate
     overnight in a saturated atmosphere with their bases in liquid water. In each
     case, three replicates were used to obtain a mean value unless indicated otherwise.
 substitutions: .na
 taxonomic_updates:
-- find: Cryptocarya oblata_
-  replace: Cryptocarya oblata
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Crytocarya mackinnoniana
-  replace: Cryptocarya mackinnoniana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Omalanthus novogunieensis
-  replace: Homalanthus novo-guineensis
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Sauropus macropus
-  replace: Sauropus macranthus
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Syzygium wilsonii_ssp_cryptophlebium
-  replace: Syzygium wilsonii subsp. cryptophlebium
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
 - find: Apodytes brevistylis
   replace: Apodytes brachystylis
-  reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
+    APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cryptocarya oblata_
+  replace: Cryptocarya oblata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Crytocarya mackinnoniana
+  replace: Cryptocarya mackinnoniana
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Omalanthus novogunieensis
+  replace: Omalanthus novo-guineensis
+  reason: match_16_fuzzy. Fuzzy alignment with canonical name in APNI (2022-11-10)
+  taxonomic_resolution: Species
 - find: Ptychanthus racemiger
   replace: Psychanthus racemiger
-  reason: Automatic alignment with name in APNI names (2020-06-18)
+  reason: match_16_fuzzy. Fuzzy alignment with canonical name in APNI (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sauropus macropus
+  replace: Sauropus macranthus
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with known canonical name in APC
+    (2022-11-10)
+  taxonomic_resolution: Species
+- find: Syzygium wilsonii_ssp_cryptophlebium
+  replace: Syzygium wilsonii subsp. cryptophlebium
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 exclude_observations:
 - variable: taxon_name
   find: Ptychanthus racemiger
   reason: moss (E Wenk, 2020.06.18)
 questions: .na
-

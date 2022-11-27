@@ -8,23 +8,44 @@ source:
       forests
     type: PhD
     institution: University of Otago, Dunedin, New Zealand
-    archived: http://web.nateko.lu.se/personal/benjamin.smith/thesis/thesis.html
-people:
-- name: Benjamin Smith
-  institution: Hawkesbury Institute for the Environment, Western Sydney University
-  role: collector, contact
-- name: J. Bastow Wilson
-  institution: Botany Department, University of Otago, Dunedin, NZ
-  role: lab_leader
+    url: http://web.nateko.lu.se/personal/benjamin.smith/thesis/thesis.html
+contributors:
+  data_collectors:
+  - last_name: Smith
+    given_name: Benjamin
+    ORCID: 0000-0002-6987-5337
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  - last_name: Wilson
+    given_name: J. Bastow
+    ORCID: .na.character
+    affiliation: Botany Department, University of Otago, Dunedin, New Zealand
+    notes: deceased
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: Sep-Oct 1993 for mainland sites, summer 1992-93 for Tasmanian
-    sites
-  year_collected_end: Sep-Oct 1993 for mainland sites, summer 1992-93 for Tasmanian
-    sites
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        life_stage = ifelse(contextual == "juvenile","juvenile", NA), 
+        life_stage = ifelse(contextual == "seedling","seedling", life_stage), 
+        life_stage = ifelse(contextual == "canopy","adult", life_stage),
+        life_stage = ifelse(contextual == "subcanopy sapling","sapling", life_stage),
+        canopy_position = ifelse(contextual == "canopy", "canopy", NA), 
+        canopy_position = ifelse(contextual == "subcanopy sapling", "subcanopy", canopy_position),
+        collection_date = ifelse(site2 %in% c("Cascades","Lumeah"),"1993-09/1993-10","1992-12/1993-02"),
+        row_number = row_number()
+      ) %>%
+      filter(!row_number %in% c(4751, 4746))     
+  '
+  collection_date: collection_date
+  taxon_name: species
+  location_name: site2
   description: collection of trait data from Nothofagus forests across Australia,
     New Zealand and South America
-  collection_type: field
-  sample_age_class: seedling sapling adult
+  basis_of_record: field
+  life_stage: seedling sapling adult
   sampling_strategy: '2.3.1 Selection of sites: Sampling sites were sought in Tasmania,
     mainland Australia (Australia, for brevity), New Zealand and South America. These
     four regions are referred to as landmasses throughout this report. In comparison
@@ -103,78 +124,71 @@ dataset:
     microtopography were noted.'
   original_file: A large number of files in the raw data folder and corresponding
     GoogleDrive folder
-  notes: none
-sites:
+  notes: 2 rows of data have been filtered out - they represent duplicate measures
+    for the same species x site x context for %N, %P, which are designated as being
+    population-level measures. Retaining them causes problems with `pivot_wider` functions.
+locations:
   Anne:
-    Site code: SWT1
-    State, Locality, LGA: Tasmania, Mt Anne, Derwent Valley LGA
+    site code: SWT1
+    locality: Tasmania, Mt Anne, Derwent Valley LGA
     latitude (deg): -42.9166667
     longitude (deg): 146.4333333
-    altitude (m): 600.0
+    elevation (m): 600.0
     slope angle (degrees): 19.0
     slope aspect (degrees): 344.0
-    alternate site code: T2
+    site code, alternate: T2
   Balfour:
-    Site code: NWT1
-    State, Locality, LGA: Tasmania, Balfour Forest Reserve, Circular Head LGA
+    site code: NWT1
+    locality: Tasmania, Balfour Forest Reserve, Circular Head LGA
     latitude (deg): -41.15
     longitude (deg): 144.9833333
-    altitude (m): 190.0
+    elevation (m): 190.0
     slope angle (degrees): 7.0
     slope aspect (degrees): 183.0
-    alternate site code: T1
+    site code, alternate: T1
   Cascades:
-    Site code: NEG1
-    State, Locality, LGA: NSW, Point Lookout precinct, Armidale Regional Council LGA
+    site code: NEG1
+    locality: NSW, Point Lookout precinct, Armidale Regional Council LGA
     latitude (deg): -30.5
     longitude (deg): 152.4166667
-    altitude (m): 1300.0
+    elevation (m): 1300.0
     slope angle (degrees): 11.0
     slope aspect (degrees): 158.0
-    alternate site code: A2
+    site code, alternate: A2
   Lumeah:
-    Site code: BAT1
-    State, Locality, LGA: NSW, Lumeah Forest Road, Mid-Coast Council LGA
+    site code: BAT1
+    locality: NSW, Lumeah Forest Road, Mid-Coast Council LGA
     latitude (deg): -32.1166667
     longitude (deg): 151.4166667
-    altitude (m): 930.0
+    elevation (m): 930.0
     slope angle (degrees): 12.0
     slope aspect (degrees): 251.0
-    alternate site code: A1
+    site code, alternate: A1
   Mathinna:
-    Site code: NET1
-    State, Locality, LGA: Tasmania, Mathinna Plains, Dorset LGA
+    site code: NET1
+    locality: Tasmania, Mathinna Plains, Dorset LGA
     latitude (deg): -41.3333333
     longitude (deg): 147.75
-    altitude (m): 800.0
+    elevation (m): 800.0
     slope angle (degrees): 6.0
     slope aspect (degrees): 294.0
-    alternate site code: T3
+    site code, alternate: T3
 contexts:
-  canopy:
-    description: Measurements made on canopy leaves
-    type: field
-  subcanopy sapling:
-    description: Measurements made on subcanopy sapling leaves
-    type: field
-  juvenile:
-    description: Measurements made on juvenile leaves
-    type: field
-  seedling:
-    description: Measurements made on seedling leaves
-    type: field
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    site_name: site2
-    context_name: contextual
-  custom_R_code: .na
+- context_property: canopy layer
+  category: method
+  var_in: canopy_position
+  values:
+  - value: canopy
+    description: Measurements made in the canopy.
+  - value: subcanopy
+    description: Measurements made in the subcanopy.
 traits:
 - var_in: LENGTH
   unit_in: mm
   trait_name: leaf_length
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Length in mm of up to 10 randomly chosen, representative leaves. PSU length
     and (maximum) width were determined using a ruler (nearest mm) Length was defined
@@ -182,7 +196,9 @@ traits:
 - var_in: WIDTH
   unit_in: mm
   trait_name: leaf_width
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Width in mm of up to 10 randomly chosen, representative leaves. PSU length
     and (maximum) width were determined using a ruler (nearest mm). Width was the
@@ -191,7 +207,9 @@ traits:
 - var_in: THICK
   unit_in: mm
   trait_name: leaf_thickness
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Prior to pressing, thickness was determined for one randomly selected PSU
     from each terminal shoot, or more than one PSU if fewer than 10 samples had been
@@ -201,7 +219,9 @@ traits:
 - var_in: AREA
   unit_in: cm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Area was measured using a scanning leaf area meter (LiCor Model 3100) or,
     for leaves narrower then 2 mm, by counting the number of 1 x 1 mm grid squares
@@ -209,14 +229,18 @@ traits:
     of 1 mm2.
 - var_in: INCLIN
   unit_in: degrees
-  trait_name: leaf_angle
-  value_type: raw_value
+  trait_name: leaf_inclination_angle
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: inclination in degrees from horizontal, unsigned
 - var_in: 'N'
   unit_in: ppm
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1
   methods: To determine PSU nitrogen and phosphorus concentrations, all dried PSU
     samples were pooled for each species and ground finely using a rotary grinder.
@@ -226,7 +250,9 @@ traits:
 - var_in: P
   unit_in: ppm
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 1
   methods: To determine PSU nitrogen and phosphorus concentrations, all dried PSU
     samples were pooled for each species and ground finely using a rotary grinder.
@@ -236,20 +262,26 @@ traits:
 - var_in: leaf_dry_mass
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Drying was achieved in a drying oven at c. 45 deg C (Tasmania) or in a
     fan-forced oven specialised for the drying of herbarium specimens (Australia).
 - var_in: leaf_fresh_mass
   unit_in: g
   trait_name: leaf_fresh_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Fresh mass of leaves
 - var_in: chlorophyll_A_B_ratio
   unit_in: umol/umol
-  trait_name: chlorophyll_A_B_ratio
-  value_type: raw_value
+  trait_name: leaf_chlorophyll_A_B_ratio
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Chlorophyll a and b content were determined using a method adapted from
     Moran & Porath (1980), Moran (1982) and Inskeep & Bloom (1985) by A.J. Watkins,
@@ -274,8 +306,10 @@ traits:
     A/B the ratio of chlorophyll A and B concentrations'
 - var_in: leaf_chlorophyll_per_dry_mass
   unit_in: umol/g
-  trait_name: chlorophyll_per_dry_mass
-  value_type: raw_value
+  trait_name: leaf_chlorophyll_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Chlorophyll a and b content were determined using a method adapted from
     Moran & Porath (1980), Moran (1982) and Inskeep & Bloom (1985) by A.J. Watkins,
@@ -300,8 +334,10 @@ traits:
     chlorophyll concentration the sum of these chlorophyll A and B concentrations'
 - var_in: leaf_chlorophyll_A_per_dry_mass
   unit_in: umol/g
-  trait_name: chlorophyll_A_per_dry_mass
-  value_type: raw_value
+  trait_name: leaf_chlorophyll_A_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Chlorophyll a and b content were determined using a method adapted from
     Moran & Porath (1980), Moran (1982) and Inskeep & Bloom (1985) by A.J. Watkins,
@@ -324,8 +360,10 @@ traits:
     - 2.79*A647)/FW.CHL*VOL.CHL*1E-4 (%)'
 - var_in: leaf_chlorophyll_B_per_dry_mass
   unit_in: umol/g
-  trait_name: chlorophyll_B_per_dry_mass
-  value_type: raw_value
+  trait_name: leaf_chlorophyll_B_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: 'Chlorophyll a and b content were determined using a method adapted from
     Moran & Porath (1980), Moran (1982) and Inskeep & Bloom (1985) by A.J. Watkins,
@@ -348,9 +386,11 @@ traits:
     - 4.62*A664)/FW.CHL*VOL.CHL*1E-4 (%)'
 - var_in: specific_leaf_area
   unit_in: cm2/g
-  trait_name: specific_leaf_area
-  value_type: site_mean
-  replicates: various
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 1
   methods: Drying was achieved in a drying oven at c. 45 deg C (Tasmania) or in a
     fan-forced oven specialised for the drying of herbarium specimens (Australia).
     Area was measured using a scanning leaf area meter (LiCor Model 3100) or, for
@@ -360,7 +400,9 @@ traits:
 - var_in: leaf_dry_matter_content
   unit_in: g/g
   trait_name: leaf_dry_matter_content
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf mass was determined on fresh leaves and drying was achieved in a drying
     oven at c. 45 deg C (Tasmania) or in a fan-forced oven specialised for the drying
@@ -368,79 +410,115 @@ traits:
 - var_in: leaf_water_content_per_mass
   unit_in: g/g
   trait_name: leaf_water_content_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Leaf mass was determined on fresh leaves and drying was achieved in a drying
     oven at c. 45 deg C (Tasmania) or in a fan-forced oven specialised for the drying
     of herbarium specimens (Australia).
 - var_in: support_fraction
   unit_in: g/g
-  trait_name: support_fraction
-  value_type: raw_value
+  trait_name: stem_mass_to_shoot_mass_ratio
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: This is the ratio of stem dry mass to total shoot dry mass. Drying was
     achieved in a drying oven at c. 45 deg C (Tasmania) or in a fan-forced oven specialised
     for the drying of herbarium specimens (Australia).
 substitutions: .na
 taxonomic_updates:
-- find: Trochocarpa aff cunninghamii
-  replace: Trochocarpa cunninghamii
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
 - find: Anodapetalum biglandulosum
   replace: Anodopetalum biglandulosum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Anopteris glandulosus
   replace: Anopterus glandulosus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Blechnum watsii
   replace: Blechnum wattsii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cephalaria cephalobotrys
   replace: Cephalaralia cephalobotrys
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Corybas sp
+  replace: Corybas sp. [Smith_1996]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Daphnandra 'species A'
+  replace: Daphnandra sp. A
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with known canonical name in APC
+    (2022-11-12)
+  taxonomic_resolution: Species
 - find: Drymophylla cyanocarpa
   replace: Drymophila cyanocarpa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Hyrocotyle pedicellosa
-  replace: Hydrocotyle pedicellosa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pimelia drupacea
-  replace: Pimelea drupacea
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Acianthus viridis
-  replace: Amaranthus viridis
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Lomandra cf longifolia
-  replace: Lomandra longifolia
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Graminoid no 1
+  replace: Poaceae sp. [graminoid no 1; Smith_1996]
+  reason: Manual matched to family for taxon that can't be matcheded to genus (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: family
+- find: Graminoid no 2 (Carex)
+  replace: Cyperaceae sp. [graminoid no 2 (Carex); Smith_1996]
+  reason: Manual matched to family for taxon that can't be matcheded to genus (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: family
 - find: Grammitis billardieri
   replace: Grammitis billardierei
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Corybas sp
-  replace: Corybas sp.
-  reason: Align with genus (E. Wenk, 2020-05-25)
-- find: Daphnandra 'species A'
-  replace: Daphnandra apatela
-  reason: Align previous phrase name with current APC name (E. Wenk, 2020-05-26)
-- find: graminoid no 1
-  replace: Poaceae sp.
-  reason: Align to family (E. Wenk, 2020-05-23)
-- find: graminoid no 2 (Carex)
-  replace: Cyperaceae sp.
-  reason: Align to family (E. Wenk, 2020-05-23)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Hyrocotyle pedicellosa
+  replace: Hydrocotyle pedicellosa
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lomandra cf longifolia
+  replace: Lomandra longifolia
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Luzuriaga sp.
+  replace: Geitonoplesium sp. [Smith_1996]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC known` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Pimelia drupacea
+  replace: Pimelea drupacea
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Pterostylis sp 2
   replace: Pterostylis sp. 2
-  reason: Align to APNI phrase name; not APC accepted (E. Wenk, 2020-05-26)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Trochocarpa aff cunninghamii
+  replace: Trochocarpa sp. [Trochocarpa aff. cunninghamii; Smith_1996]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Uncinia sp
-  replace: Uncinia sp.
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Uncinia sp. 1
-  replace: Uncinia sp. [sp. 1]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Carex sp. [Smith_1996]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC known` name (2022-11-10)
+  taxonomic_resolution: genus
 - find: Uncinia sp 3
-  replace: Uncinia sp. [sp. 3]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-exclude_observations: .na
+  replace: Carex sp. [Uncinia sp. 3; Smith_1996]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus known
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Uncinia sp. 1
+  replace: Carex sp. [Uncinia sp. 1; Smith_1996]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus known
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+exclude_observations:
+- variable: taxon_name
+  find: shrub no 1, shrub no 2, shrub no 3, shrub no 4 (big opp. leaf), climber no
+    1 (furry leaf), climber no 2 (wrinkle leaf), pteridophyte no 1, epiphyte no 1
+    (mega)
+  reason: to little resolution
 questions: .na
-

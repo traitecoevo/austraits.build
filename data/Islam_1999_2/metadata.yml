@@ -9,22 +9,28 @@ source:
     journal: Tropical Grasslands
     volume: 33
     pages: 193--200
-people:
-- name: Muhammad Islam
-  institution: unknown
-  role: collector
-- name: Mark Adams
-  institution: University of Western Australia
-  role: lab_leader, contact
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Islam
+    given_name: Muhammad
+    ORCID: .na.character
+    affiliation: unknown
+    notes: no contact
+  - last_name: Adams
+    given_name: Mark
+    ORCID: 0000-0002-8154-0097
+    affiliation: Swinburne University of Technology, Australia
+    additional_role: contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 1996
-  year_collected_end: 1997
+  data_is_long_format: no
+  custom_R_code: .na
+  collection_date: date
+  taxon_name: name_original
+  location_name: site
   description: leaf P and N data Islam & Adams (1999)
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: 'We established an experiment with a complete block design with
     2 treatments (control; and +200 kg!ha Pas superphosphate) and 3 replicates. The
     size of each plot was 4 m x 20 m with a onemeter buffer between control and +P
@@ -38,17 +44,17 @@ dataset:
     present in each plot.'
   original_file: Islam & Adams 1999 Trop Grass.pdf
   notes: none
-sites:
+locations:
   Hamersley station Pilbara:
     longitude (deg): 117.6166667
     latitude (deg): -22.33
-    soil_pH (mol/l): 7.1
-    OMC (%): 1.21
-    soil_total_N (mg/g): 0.99
-    soil_total_P (ug/g): 4.7
-    rainfall (mm): 354
-    min_monthly_temp: 6
-    max_monthly_temp: 36
+    soil pH (H2O): 7.1
+    soil organic content (%): 1.21
+    soil N, total (mg/g): 0.99
+    soil P, total (mg/kg): 4.7
+    precipitation, MAP (mm): 354
+    temperature, monthly min (C): 6
+    temperature, monthly max (C): 36
     description: The experiment was conducted at Hamersley Station, 40 km north-west
       of Tom Price, Western Australia, Australia (22 deg 20 'S, 117 deg 37 'E) during
       1996-97. The site has a semi-arid, subtropical climate, with hot summers and
@@ -62,25 +68,24 @@ sites:
       of 55.4 ~ -tS/cm (+/- 3.4). Further details of the climate, soils and general
       vegetation of the region may be found in Bennett and Adams (1999).
 contexts:
-  no P addition:
-    type: control
-    description: plants grown in untreated soil
-  P addition:
-    type: treatment
-    description: +200 kg/ha P as superphosphate added to soil
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name_original
-    site_name: site
-    context_name: P treatment
-    date: date
-  custom_R_code: .na
+- context_property: nutrient treatment
+  category: treatment
+  var_in: P treatment
+  values:
+  - find: no P addition
+    value: control
+    description: Plants grown in untreated soil.
+  - find: P addition
+    value: P addition
+    description: Plants grown in soil with P addition (+200 kg/ha P as superphosphate
+      added to soil).
 traits:
 - var_in: N mass %
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Samples of the foliage (only green leaves) were collected from at least
     6 individuals of each species in each plot and bulked. Plant material was stored
@@ -94,7 +99,9 @@ traits:
 - var_in: P mass %
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Samples of the foliage (only green leaves) were collected from at least
     6 individuals of each species in each plot and bulked. Plant material was stored
@@ -108,7 +115,9 @@ traits:
 - var_in: K mass %
   unit_in: '%'
   trait_name: leaf_K_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Samples of the foliage (only green leaves) were collected from at least
     6 individuals of each species in each plot and bulked. Plant material was stored
@@ -120,7 +129,9 @@ traits:
 - var_in: Ca mass %
   unit_in: '%'
   trait_name: leaf_Ca_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Samples of the foliage (only green leaves) were collected from at least
     6 individuals of each species in each plot and bulked. Plant material was stored
@@ -132,7 +143,9 @@ traits:
 - var_in: Mg mass %
   unit_in: '%'
   trait_name: leaf_Mg_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Samples of the foliage (only green leaves) were collected from at least
     6 individuals of each species in each plot and bulked. Plant material was stored
@@ -144,7 +157,9 @@ traits:
 - var_in: lignin(%)
   unit_in: '%'
   trait_name: leaf_lignin_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Samples of the foliage (only green leaves) were collected from at least
     6 individuals of each species in each plot and bulked. Plant material was stored
@@ -157,17 +172,20 @@ substitutions: .na
 taxonomic_updates:
 - find: Abutilon octocarpum
   replace: Abutilon otocarpum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cullen cinerum
   replace: Cullen cinereum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Iseilema membranaceu
   replace: Iseilema membranaceum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Paspalidium clementi
   replace: Paspalidium clementii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions:
   additional_traits: non-structural carbohydrates, dry matter digestibility
-

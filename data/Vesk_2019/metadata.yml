@@ -10,19 +10,27 @@ source:
     volume: 41
     pages: 125497
     doi: 10.1016/j.ppees.2019.125497
-people:
-- name: Peter Vesk
-  institution: University of Melbourne
-  role: collector, contact, lab_leader
-- name: Jian Yen
-  institution: University of Melbourne
-  role: assistant
+contributors:
+  data_collectors:
+  - last_name: Vesk
+    given_name: Peter
+    ORCID: 0000-0003-2008-7062
+    affiliation: University of Melbourne, Australia
+    additional_role: contact
+  assistants: Jian Yen
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2000
-  year_collected_end: 2001
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(site_name = "Round Hill-Nombinnie Nature Reserve")
+  '
+  collection_date: 2000/2001
+  taxon_name: SPECIES
+  location_name: site_name
   description: data on bud reprouting following disturbance in semi-arid NSW
-  collection_type: field_experiment
-  sample_age_class: adult
+  basis_of_record: field_experiment
+  life_stage: adult
   sampling_strategy: In this paper we use a function regression model, with a hurdle
     component, to analyse data from a field experiment of clipping and burning across
     42 plant species from semi-arid NSW, Australia. We aim to model the probability
@@ -65,18 +73,18 @@ dataset:
     success.
   original_file: 4 original files in raw data folder
   notes: none
-sites:
+locations:
   Round Hill-Nombinnie Nature Reserve:
     latitude (deg): -32.965
     longitude (deg): 146.161
-    MAP (mm): 370
-    average summer temp (C): 32.5
-    average winter temp (C): 14.2
-    soil: loamy red sands light red clays and light red browns earths
-    vegetation types: predominantly open Callitris glaucophylla - Eucalyptus populnea
-      woodland and Eucalyptus dumosa - E. socialis shrub mallee woodland
-    fire frequency: 5-20 years
-    details: A clip-and-burn experiment was conducted in the field on 46 species of
+    precipitation, MAP (mm): 370
+    temperature, summer mean (C): 32.5
+    temperature, winter mean (C): 14.2
+    soil type: loamy red sands light red clays and light red browns earths
+    description: predominantly open Callitris glaucophylla - Eucalyptus populnea woodland
+      and Eucalyptus dumosa - E. socialis shrub mallee woodland
+    fire frequency (years): 5-20 years
+    notes: A clip-and-burn experiment was conducted in the field on 46 species of
       plants across 4 growth forms in order to score resprouting success (see Vesk
       et al., 2004 for details). We included 42 of these species in the present analysis.
       The experiment took place in Round Hill-Nombinnie Nature Reserve, central NSW,
@@ -93,30 +101,27 @@ sites:
       woodland may escape leaf scorch. There is light to moderate browsing by Western
       Grey kangaroos, Macropus fuliginosus, and feral goats, Capra hircus.
 contexts:
-  clip:
-    type: treatment
-    description: plant clipped to approximately 5 mm above ground
-  clip-and-burn:
-    type: treatment
-    description: plants burnt with butane torch, resulting in an average temperatures
-      of 71 deg C at 5 mm depth, and clipped to approximately 5 mm above ground
-  control:
-    type: treatment
-    description: no burn or clip treatment applied
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: SPECIES
-    site_name: site_name
-    context_name: context
-  custom_R_code: data %>% mutate(site_name = "Round Hill-Nombinnie Nature Reserve")
-    %>% mutate(context = ifelse(treat == "b","clip-and-burn",NA),context = ifelse(treat
-    == "c2","control",context),context = ifelse(treat == "c","clip",context))
+- context_property: disturbance treatment
+  category: treatment
+  var_in: treat
+  values:
+  - find: c2
+    value: control
+    description: Control treatment, with no burn or clip treatment applied.
+  - find: c
+    value: clip
+    description: Plant clipped to approximately 5 mm above ground.
+  - find: b
+    value: clip-and-burn
+    description: Plants burnt with butane torch, resulting in an average temperatures
+      of 71 deg C at 5 mm depth, and clipped to approximately 5 mm above ground.
 traits:
 - var_in: bud_depth_mm
   unit_in: mm
   trait_name: sprout_depth
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: These are sprouts that were observed on successfully resprouting individuals
     that had experienced experimental clipping and burning treatments. PA Vesk dug
@@ -135,7 +140,9 @@ traits:
 - var_in: MAXHT_cm
   unit_in: cm
   trait_name: .na
-  value_type: site_max
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: various
   methods: Not mapped into AusTraits, because these are the same measurements that
     are in Vesk_2004. But left as part of the dataset to show their relation to this
@@ -143,13 +150,17 @@ traits:
 - var_in: GFORM
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert observation
 - var_in: STEMCATS
   unit_in: count
   trait_name: stem_count_categorical
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 30
   methods: field observation; back-calculated species level means; providing means,
     rather than individual observations, since the stem numbers plants are, by necessity,
@@ -157,7 +168,9 @@ traits:
 - var_in: specific_leaf_area_mm2/mg
   unit_in: mm2/mg
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: unknown
   methods: Not mapped into AusTraits, because these are the same measurements that
     are in Vesk_2004. But left as part of the dataset to show their relation to this
@@ -181,4 +194,3 @@ substitutions:
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

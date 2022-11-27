@@ -12,22 +12,33 @@ source:
     pages: 259--270
     publisher: Wiley-Blackwell
     doi: 10.1111/j.1365-3040.2008.01918.x
-people:
-- name: Matthew Tom Harrison
-  institution: Tasmanian Institute of Agriculture, University of Tasmania
-  role: collector, contact
-- name: John Evans
-  institution: The Australian National University
-  role: lab_leader
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Harrison
+    given_name: Matthew Tom
+    ORCID: 0000-0001-7425-452X
+    affiliation: Tasmanian Institute of Agriculture, University of Tasmania, Australia
+    additional_role: contact
+  - last_name: Evans
+    given_name: John
+    ORCID: 0000-0003-1379-3532
+    affiliation: The Australian National University, Australia
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 2006
-  year_collected_end: 2006
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        context_name = if_else(is.na(`age`), "no_context",
+        paste0(`age`,"_leaves_from_",`nitrogen treatment`,"_treatment"))
+      )
+  '
+  collection_date: 2006/2006
+  taxon_name: species
+  location_name: site_name
   description: leaf traits for scleorphyllous species in Harrison (2009)
-  collection_type: field, glasshouse
-  sample_age_class: seedling, adult
+  life_stage: seedling, adult
+  basis_of_record: field, lab
   sampling_strategy: 'Morphological and physiological measurements were obtained from
     two independent investigations: a field study comparing species pairs from eight
     genera and a greenhouse experiment that examined seven species of the genus Eucalyptus.
@@ -38,7 +49,7 @@ dataset:
     study was conducted at the Australian National University, Canberra, using 12-month-old
     seedlings of Eucalyptus bridgesiana, Eucalyptus elata, Eucalyptus mannifera, Eucalyptus
     moorei, Eucalyptus pauciflora, Eucalyptus polyanthemos and Eucalyptus rossii,which
-    were purchased from theYarralumla Nursery (Canberra).At the nursery, seedlings
+    were purchased from theYarralumla Nursery (Canberra). At the nursery, seedlings
     were grown in potting mix that contained a controlled-release fertilizer (18%
     nitrogen), applied at a rate of 3 kg m-3.All species were grown in full sunlight
     on the same site. Seedlings were transplanted from nursery tubes into large plastic
@@ -62,53 +73,76 @@ dataset:
     control of psyllids and powdery mildew.'
   original_file: Harrison et al 2009 PCE SI.xls
   notes: none
-sites:
+locations:
   Australian National Botanic Gardens:
     longitude (deg): 149.067
     latitude (deg): -35.2
+    basis_of_record: captive_cultivated
+    life_stage: adult
   ANU Greenhouse:
     longitude (deg): 149.117
     latitude (deg): -35.277
+    basis_of_record: lab
+    life_stage: seedling
 contexts:
-  no_context:
-    description: plants measured in ANU Botanic Garden
-    type: field
-  young_leaves_from_no_added_N_treatment:
-    description: young leaves on plant; treated with nutrient solution containing
-      4 mm CaCl2, instead of nitrogen-containing solution
-    type: treatment_harsh
-  old_leaves_from_no_added_N_treatment:
-    description: old leaves on plant; treated with nutrient solution containing 4
-      mm CaCl2, instead of nitrogen-containing solution
-    type: treatment_harsh
-  young_leaves_from_N_added_treatment:
-    description: young leaves on plant; treated with Rorison's nutrient solution (4
-      mm Ca(NO3)2) twice a week
-    type: treatment_favourable
-  old_leaves_from_N_added_treatment:
-    description: old leaves on plant; treated with Rorison's nutrient solution (4
-      mm Ca(NO3)2) twice a week
-    type: treatment_favourable
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species
-    site_name: site_name
-    context_name: context_name
-  custom_R_code: data %>% mutate(age = gsub("O","old",age)) %>% mutate(age = gsub("Y","young",age))
-    %>% mutate(context_name = if_else(is.na(`age`),"no_context",paste0(`age`,"_leaves_from_",`nitrogen
-    treatment`,"_treatment")))
+- context_property: nutrient treatment
+  category: treatment
+  var_in: nitrogen treatment
+  values:
+  - find: no_added_N
+    value: control
+    description: Soil treated with nutrient solution containing 4 mm CaCl2, instead
+      of nitrogen-containing solution.
+  - find: N_added
+    value: nitrogen addition
+    description: Soil treated with Rorison's nutrient solution (4 mm Ca(NO3)2) twice
+      a week.
+- context_property: leaf age
+  category: method
+  var_in: age
+  values:
+  - find: 'Y'
+    value: young leaves
+    description: Measurements made on young leaves.
+  - find: O
+    value: old leaves
+    description: Measurements made on young leaves.
+- context_property: instrument used
+  category: method
+  var_in: method_context
+  values:
+  - find: infrared gas analyser
+    value: infrared gas analyser
+    description: Photosynthetic rate determined using an infrared gas analyser.
+  - find: Farquhar model
+    value: Farquhar model
+    description: Photosynthetic rate adjusted using the model developed by Farquhar,von
+      Caemmerer & Berry (1980). The model was used to scale all Aa measurements to
+      a common intercellular CO2 partial pressure (Ci) of 300 umol mol-1 (Aa300).This
+      approach was carried out using Eqn 1 in manuscript, assuming the in vivo maximum
+      carboxylation activity of Rubisco per unit area (Vcmax) was limiting photosynthesis
+      (Aa). The kinetic constants of Rubisco (Kc and Ko, the Michaelis-Menten constants
+      for CO2 and O2, respectively, and G, the CO2 compensation point in the absence
+      of dark respiration, Rd) were adopted from von Caemmerer et al. (1994) assuming
+      infinite internal conductance, with their temperature dependence functions given
+      in von Caemmerer (2000).Rd was assumed to be 0.1 of Aa for the ANBG data.These
+      assumptions were validated from CO2 response curves measured on the eucalypt
+      leaves (data not shown).
 traits:
 - var_in: photosynthetic pathway
   unit_in: .na
   trait_name: photosynthetic_pathway
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: assume reference book
 - var_in: LMA (g m-2)
   unit_in: g/m2
-  trait_name: specific_leaf_area
-  value_type: site_mean
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: When gas exchange measurements were completed each day, leaves were detached
     and the segment used for measurement of photosynthesis was cut out and weighed.
@@ -118,7 +152,9 @@ traits:
 - var_in: Leaf [N] (mmol g-1)
   unit_in: mmolN/g
   trait_name: leaf_N_per_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: All dried leaves were ground separately in a ball mill. The nitrogen concentration
     of the photosynthetic segment was assayed using an elemental analyser (EA 1110
@@ -127,7 +163,9 @@ traits:
 - var_in: Cell wall fraction
   unit_in: dimensionless
   trait_name: leaf_cell_wall_fraction
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: A protocol was adapted from Lamport (1965) and Onoda et al. (2004) to remove
     soluble protein from the milled leaf material. Approximately 10 mg of freeze-dried
@@ -144,8 +182,10 @@ traits:
     2-5 mg of material using the elemental analyser as above.
 - var_in: Cell wall nitrogen concentration (mmol g-1)
   unit_in: mmolN/g
-  trait_name: leaf_cell_wall_N
-  value_type: site_mean
+  trait_name: leaf_cell_wall_N_per_cell_wall_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: A duplicate set of leaves, matching those used for photosynthesis measurements,
     was sampled   for cell wall nitrogen measurement, being snap-frozen in liquid
@@ -178,8 +218,10 @@ traits:
     the mesophyll cells.
 - var_in: Cell wall N fraction
   unit_in: dimensionless
-  trait_name: leaf_cell_wall_N_fraction
-  value_type: site_mean
+  trait_name: leaf_cell_wall_N_per_leaf_N
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: A duplicate set of leaves, matching those used for photosynthesis measurements,
     was sampled   for cell wall nitrogen measurement, being snap-frozen in liquid
@@ -213,7 +255,9 @@ traits:
 - var_in: Thickness (mm)
   unit_in: um
   trait_name: leaf_thickness
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: Lamina thickness (T) was measured between the midrib and leaf edge with
     a Mitutoyo (Japan) analogue thickness gauge (precision +/- 20 um). T was calculated
@@ -221,15 +265,20 @@ traits:
 - var_in: Water content (mol m-2)
   unit_in: molH2O/m2
   trait_name: leaf_water_content_per_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: Water content (WC, mol m-2) was computed as the change in leaf mass caused
     by drying, divided by leaf area.
 - var_in: Asat (mmol m-2 s-1)
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
-  value_type: site_mean
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
+  method_context: infrared gas analyser
   methods: Measurements of CO2 assimilation rate per unit area (Aa) in the ANBG were
     made at saturating irradiance (Table 1), which was determined for each species
     by first measuring a light response curve. Measurements were made on leaves for
@@ -254,33 +303,50 @@ traits:
     plants from the plus nitrogen treatment were measured.
 - var_in: A300 (Asat adjusted to Ci=300 mmol mol-1)
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
-  value_type: site_mean
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
-  methods: see previous variable for general method; The model developed by Farquhar,
-    von Caemmerer & Berry (1980) was used to scale all Aa measurements to a common
-    intercellular CO2 partial pressure (Ci) of 300 umol mol-1 (Aa300).This approach
-    was carried out using Eqn 1 in manuscript, assuming the in vivo maximum carboxylation
-    activity of Rubisco per unit area (Vcmax) was limiting photosynthesis (Aa). The
-    kinetic constants of Rubisco (Kc and Ko, the Michaelis-Menten constants for CO2
-    and O2, respectively, and G, the CO2 compensation point in the absence of dark
-    respiration, Rd) were adopted from von Caemmerer et al. (1994) assuming infinite
-    internal conductance, with their temperature dependence functions given in von
-    Caemmerer (2000).Rd was assumed to be 0.1 of Aa for theANBG data.These assumptions
-    were validated from CO2 response curves measured on the eucalypt leaves (data
-    not shown).
+  method_context: Farquhar model
+  methods: Measurements of CO2 assimilation rate per unit area (Aa) in the ANBG were
+    made at saturating irradiance (Table 1), which was determined for each species
+    by first measuring a light response curve. Measurements were made on leaves for
+    all species except Acacia, where phyllodes were used, from 28 March 2006 to 24
+    April 2006, using an infrared gas analyser (IRGA) (LI-6400, Li-Cor) open gas exchange
+    system. Where possible, a second LI-6400 was used on adjacent leaves of the same
+    plant, allowing cross-checks for consistency in measurement. Steady-state measurements
+    were made on similar fully expanded young leaves at an ambient CO2 concentration
+    (Ca) of 375umol mol-1, between 0900 and 1500 h on sunny days. Leaf temperature
+    was allowed to follow ambient conditions, which ranged between 15 and 32 deg C.   Photosynthetic
+    light response curves were measured for all seven greenhouse-grown eucalypt species.
+    A standard irradiance of 1800 umol PAR photons m-2 s-1 was adopted for all species
+    during the measurement of CO2 response curves, with the block temperature maintained
+    at 22 deg C, a flow rate of 500 umol s-1 and the relative humidity of air entering
+    the leaf chamber maintained between 70 and 80%. Following equilibration, Aa was
+    measured at ambient CO2 (375 umol mol-1) and a series of nine consecutive CO2
+    concentrations from 50 to 1300 umol mol-1.As with the ANBG measurements, two LI-6400s
+    were used.  At the time of measurement, only E. elata,E. bridgesiana, E. mannifera
+    and E. polyanthemos plants had grown fully expanded, new leaves.There were no
+    new leaves on minus nitrogen E. polyanthemos plants at this time. To allow contrasts
+    between all species, at least four pre-existing, non-necrotic leaves on different
+    plants from the plus nitrogen treatment were measured.
 - var_in: A300/Na  PNUE (mmol (mol N)-1 s-1)
   unit_in: umolCO2/molN/s
   trait_name: leaf_photosynthetic_nitrogen_use_efficiency_saturated
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: PNUE [mmol CO2 (mol N)-1 s-1] was calculated by dividing the CO2 assimilation
     rate per unit area scaled to a common Ci (Aa300), by the nitrogen content per
     unit leaf area (Na).
 - var_in: Ci (mmol mol-1)
   unit_in: umolCO2/mol
-  trait_name: ci_at_Asat
-  value_type: site_mean
+  trait_name: leaf_intercellular_CO2_concentration_at_Asat
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: Measurements of CO2 assimilation rate per unit area (Aa) in the ANBG were
     made at saturating irradiance (Table 1), which was determined for each species
@@ -306,21 +372,27 @@ traits:
     plants from the plus nitrogen treatment were measured.
 - var_in: Ci/Ca
   unit_in: umolCO2 internal/umolCO2 ambient
-  trait_name: ci_over_ca
-  value_type: site_mean
+  trait_name: leaf_intercellular_CO2_concentration_to_atmospheric_CO2_concentration_ratio
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: The ratio of internal CO2 concentration to ambient CO2 concentration.
 - var_in: Tleaf (oC)
   unit_in: C
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: Leaf temperature was allowed to follow ambient conditions, which ranged
     between 15 and 32 deg C. This is a contextual variable, not a trait.
 - var_in: Fraction of leaf N in Rubisco
   unit_in: .na
   trait_name: .na
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: We also inferred the fraction of leaf nitrogen allocated to Rubisco from
     the global relationship between photosynthetic rate per unit leaf nitrogen and
@@ -329,7 +401,9 @@ traits:
 - var_in: D (%)
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4-5
   methods: The carbon isotope composition (d13C) of leaf material sampled after gas
     exchange measurement was determined using an elemental analyser (EA 1110 CHN-O;
@@ -341,14 +415,16 @@ substitutions: .na
 taxonomic_updates:
 - find: Acacia bekleri
   replace: Acacia beckleri
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Lasiopetalum shulzenii
   replace: Lasiopetalum schulzenii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Rulingia magnifolia
-  replace: Commersonia magniflora
-  reason: Change spelling to Align to APC or ALA species lists (Sam Andrew, 2018-02-07)
+  replace: Rulingia magniflora
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions:
   additional_traits: fraction of leaf N in Rubisco
-

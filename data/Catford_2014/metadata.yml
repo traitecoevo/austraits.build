@@ -24,16 +24,44 @@ source:
     number: '2'
     pages: 432--442
     doi: 10.1111/j.1365-2664.2010.01945.x
-people:
-- name: Jane A. Catford
-  institution: King's College, London
-  role: collector, contact
+contributors:
+  data_collectors:
+  - last_name: Catford
+    given_name: Jane A.
+    ORCID: 0000-0003-0582-5960
+    affiliation: King's College London, London, United Kingdom
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2012
-  year_collected_end: 2012
+  data_is_long_format: no
+  custom_R_code:      data %>% mutate(Taxa = str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
+    %>% mutate(site_name = "Yarrawonga") %>% mutate(str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
+    %>% mutate_at(c("Plant height max (m)","plant height min (m)","Leaf size (cm^2)"),
+    ~na_if(.,0)) %>% replace_na(list(Tree = 0, Gram = 0, Forb=0, Annual=0, Biennial=0,
+    Perennial=0, rhizomes=0,stolons=0,`prostrate/decumbent`=0, Terrestrial=0, Tda=0,
+    Tdr=0, Amphibious=0, Dispersal="", `dispersal 2`="", `dispersal 3`="")) %>% mutate(
+    Tree = ifelse(Tree, "tree", ""), Gram = ifelse(Gram, "graminoid", ""), Forb =
+    ifelse(Forb, "herb", ""), Annual = ifelse(Annual, "annual", ""), Biennial = ifelse(Biennial,
+    "biennial", ""), Perennial = ifelse(Perennial, "perennial", ""), rhizomes = ifelse(rhizomes,
+    "rhizomatous", ""), stolons = ifelse(stolons, "stoloniferous", ""), `prostrate/decumbent`
+    = ifelse(`prostrate/decumbent`, "prostrate", ""), Terrestrial = ifelse(Terrestrial,
+    "terrestrial","aquatic"), Tda = ifelse(Tda, "tda",""), Tdr = ifelse(Tdr, "tdr",""),
+    Amphibious = ifelse(Amphibious, "amphibious","") ) %>% unite(col = "plant_growth_form",
+    Tree, Gram, Forb, sep = " ") %>% unite(col = "life_history", Annual, Biennial,
+    Perennial, sep = " ") %>% unite(col = "growth_habit", rhizomes, stolons, `prostrate/decumbent`,
+    sep = " ") %>% unite(col = "aquatic_terrestrial_detailed", Tda, Tdr, Amphibious,
+    sep = " ")  %>% unite(col = "dispersal_syndrome", Dispersal, `dispersal 2`, `dispersal
+    3`, sep = " ") %>% mutate( plant_growth_form = stringr::str_squish(plant_growth_form)
+    %>% na_if(""), life_history = stringr::str_squish(life_history) %>% na_if(""),
+    growth_habit = stringr::str_squish(growth_habit) %>% na_if(""), aquatic_terrestrial_detailed
+    = stringr::str_squish(aquatic_terrestrial_detailed) %>% na_if(""), dispersal_syndrome
+    = stringr::str_squish(dispersal_syndrome) %>% na_if(""))
+  collection_date: 2012/2012
+  taxon_name: Taxa
+  location_name: site_name
   description: Study of River Murray wetland plants
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Surveys were conducted in 24 floodplain wetlands a contiguous
     395 km long stretch of the regulated River Murray between Albury and Barmah, south-eastern
     Australia (see Fig. S1 in Supporting Information). In the late 19th century, small
@@ -82,8 +110,11 @@ dataset:
   original_file: Data extracted from two worksheets in the file 'Catford_River Murray
     wetland plants_260215_contributed to AusTraits.xls'. The two sheets were combined
     using some custom R code saved in the Austraits project.
-  notes: .na
-sites:
+  notes: There are a few species whose seed masses are almost certainly in grams (instead
+    of mg), as their seed mass values are on the order of 10^3 smaller than other
+    AusTraits entries. These values have been manually adjusted in AusTraits, 15-02-2022,
+    E Wenk
+locations:
   Yarrawonga:
     longitude (deg): 145.99973
     latitude (deg): -36.01923
@@ -96,38 +127,13 @@ sites:
       canopy directly above the study wetlands. All soil in the region was similar
       (~45% clay content).
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Taxa
-    site_name: site_name
-  custom_R_code: data %>% mutate(Taxa = str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
-    %>% mutate(site_name = "Yarrawonga") %>% mutate(str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
-    %>% mutate_at(c("Plant height max (m)","plant height min (m)","Leaf size (cm^2)"),
-    ~na_if(.,0)) %>% replace_na(list(Tree = 0, Gram = 0, Forb=0, Annual=0, Biennial=0,
-    Perennial=0, rhizomes=0,stolons=0,`prostrate/decumbent`=0, Terrestrial=0, Tda=0,
-    Tdr=0, Amphibious=0, Dispersal="", `dispersal 2`="", `dispersal 3`="")) %>% mutate(
-    Tree = ifelse(Tree, "tree", ""), Gram = ifelse(Gram, "graminoid", ""), Forb =
-    ifelse(Forb, "herb", ""), Annual = ifelse(Annual, "annual", ""), Biennial = ifelse(Biennial,
-    "biennial", ""), Perennial = ifelse(Perennial, "perennial", ""), rhizomes = ifelse(rhizomes,
-    "rhizomatous", ""), stolons = ifelse(stolons, "stoloniferous", ""), `prostrate/decumbent`
-    = ifelse(`prostrate/decumbent`, "prostrate", ""), Terrestrial = ifelse(Terrestrial,
-    "terrestrial","aquatic"), Tda = ifelse(Tda, "tda",""), Tdr = ifelse(Tdr, "tdr",""),
-    Amphibious = ifelse(Amphibious, "amphibious","") ) %>% unite(col = "plant_growth_form",
-    Tree, Gram, Forb, sep = " ") %>% unite(col = "life_history", Annual, Biennial,
-    Perennial, sep = " ") %>% unite(col = "growth_habit", rhizomes, stolons, `prostrate/decumbent`,
-    sep = " ") %>% unite(col = "aquatic_terrestrial_detailed", Tda, Tdr, Amphibious,
-    sep = " ")  %>% unite(col = "dispersal_syndrome", Dispersal, `dispersal 2`, `dispersal
-    3`, sep = " ") %>% mutate( plant_growth_form = stringr::str_squish(plant_growth_form)
-    %>% na_if(""), life_history = stringr::str_squish(life_history) %>% na_if(""),
-    growth_habit = stringr::str_squish(growth_habit) %>% na_if(""), aquatic_terrestrial_detailed
-    = stringr::str_squish(aquatic_terrestrial_detailed) %>% na_if(""), dispersal_syndrome
-    = stringr::str_squish(dispersal_syndrome) %>% na_if("") )
 traits:
 - var_in: Leaf size (cm^2)
   unit_in: cm2
   trait_name: leaf_area
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 2-17
   methods: A LI-3000C Portable Leaf Area Meter (LI-COR Biosciences, Lincoln, NE, USA)
     was used to scan larger leaves. Small leaves were scanned and their areas calculated
@@ -137,15 +143,19 @@ traits:
 - var_in: Mass per leaf (g)
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: site_mean
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 2-17
   methods: measured from samples collected in january 2012; 13 leaves on average from
     at least 2 plants; 6 leaves minimum; grass blades used (not sheath); one side
     of rushes and sedges
 - var_in: SLA (mm2/mg)
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
-  value_type: site_mean
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 2-17
   methods: A LI-3000C Portable Leaf Area Meter (LI-COR Biosciences, Lincoln, NE, USA)
     was used to scan larger leaves. Small leaves were scanned and their areas calculated
@@ -154,23 +164,32 @@ traits:
     6 leaves minimum; grass blades used (not sheath); one side of rushes and sedges
 - var_in: Seed mass (g)
   unit_in: mg
-  trait_name: seed_mass
-  value_type: expert_mean
+  trait_name: seed_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
   methods: Information about species' seed mass was sourced from available databases
     (Liu et al. 2008, Kew Seed Database (http://data.kew.org/sid/) or from field collections
-    (9 species). For the field collected species, 2-30 seeds were collected.
+    (9 species). For the field collected species, 2-30 seeds were collected. [Note
+    from AusTraits data processors, there are 9 species with values that seem to be
+    in grams and the remaining species are in mg. A column has been added to tentatively
+    adjust some species values.]
 - var_in: plant height min (m)
   unit_in: m
   trait_name: .na
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: Minimum plant height was based on floras (Botanic Gardens Trust 2007),
     verified by field observations.
 - var_in: Plant height max (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: Maximum plant height was based on floras (Botanic Gardens Trust 2007),
     verified by field observations. (Note, left in AusTraits, since values may have
@@ -178,33 +197,43 @@ traits:
 - var_in: dispersal_syndrome
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert opinion
 - var_in: life_history
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: annual and biennial versus perennial; Botanic Gardens Trust 2007) and whether
     they can reproduce vegetatively (clonality). Species identification follows Botanic
     Gardens Trust (2007).
 - var_in: growth_habit
   unit_in: .na
-  trait_name: growth_habit
-  value_type: expert_mean
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert opinion
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert opinion
 - var_in: Terrestrial
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Terrestrial species that inhabit dry areas of wetlands (water table below
     soil surface or soil saturated). Amphibious species inhabit wet-dry ecotone and
@@ -212,7 +241,9 @@ traits:
 - var_in: aquatic_terrestrial_detailed
   unit_in: .na
   trait_name: flood_regime_classification
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Hierarchical functional group classification scheme used to categorise
     species into seven groups based on their response to flood regime. Classification
@@ -220,13 +251,17 @@ traits:
 - var_in: Native nonweed
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: see "Native"
 - var_in: Native
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: 'Whether intentional or unintentional, human actions and activities can
     facilitate the spread and establishment of some species. Because species associated
@@ -264,206 +299,294 @@ traits:
 - var_in: Native weed
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: see "Native"
 - var_in: Exotic
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: exotic or native to Australia, based on Randall (2007).
 - var_in: clonality
   unit_in: .na
-  trait_name: vegetative_regeneration
-  value_type: expert_mean
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert opinion
 - var_in: Germination_requirement
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Germination niche was based on Brock and Casanova's (1997) species' responses
     to flooding scheme with Casanova and Brock (2000), Reid and Quinn (2004) and Porter
     et al. (2007) providing additional information regarding species classification.
 substitutions:
-- trait_name: dispersal_syndrome
-  find: animal
-  replace: animal_vector
-- trait_name: vegetative_regeneration
+- trait_name: vegetative_reproduction_ability
   find: 1
   replace: vegetative
-- trait_name: vegetative_regeneration
+- trait_name: vegetative_reproduction_ability
   find: 0
   replace: not_vegetative
+- trait_name: flood_regime_classification
+  find: tda
+  replace: terrestrial_damp
+- trait_name: flood_regime_classification
+  find: tdr
+  replace: terrestrial_dry
+- trait_name: flood_regime_classification
+  find: amphibious
+  replace: amphibious
+- trait_name: dispersal_syndrome
+  find: Animal
+  replace: zoochory
 - trait_name: dispersal_syndrome
   find: animal??
-  replace: animal_vector
+  replace: zoochory
 - trait_name: dispersal_syndrome
-  find: fleshy_wings_or_capsule
-  replace: fleshy_wings_capsule
-- trait_name: dispersal_syndrome
-  find: fleshy aril
-  replace: aril
+  find: animal
+  replace: zoochory
 - trait_name: dispersal_syndrome
   find: animal water
-  replace: animal_vector hydrochory
+  replace: zoochory hydrochory
 - trait_name: dispersal_syndrome
-  find: water animal
-  replace: animal_vector hydrochory
+  find: Water
+  replace: hydrochory
 - trait_name: dispersal_syndrome
-  find: water wind animal
-  replace: animal_vector hydrochory anemochory
+  find: wind
+  replace: anemochory
 - trait_name: dispersal_syndrome
-  find: animal wind
-  replace: animal_vector anemochory
+  find: unassisted
+  replace: barochory
 - trait_name: dispersal_syndrome
-  find: methods originating from parent plant or diaspore; explosive mechanism;
-  replace: ballistic
+  find: wind unassisted
+  replace: anemochory barochory
 - trait_name: dispersal_syndrome
-  find: methods originating from parent plant or diaspore; explosive mechanism
+  find: Methods originating from parent plant or diaspore; Explosive mechanism;
   replace: ballistic
 - trait_name: dispersal_syndrome
   find: water
   replace: hydrochory
-- trait_name: flood_regime_classification
-  find: tda
-  replace: Terrestrial_damp
-- trait_name: flood_regime_classification
-  find: tdr
-  replace: Terrestrial_dry
-- trait_name: flood_regime_classification
-  find: amphibious
-  replace: Amphibious
+- trait_name: dispersal_syndrome
+  find: water wind animal
+  replace: hydrochory anemochory zoochory
+- trait_name: dispersal_syndrome
+  find: animal wind
+  replace: zoochory anemochory
+- trait_name: dispersal_syndrome
+  find: wind water
+  replace: anemochory hydrochory
+- trait_name: dispersal_syndrome
+  find: Methods originating from parent plant or diaspore; Explosive mechanism
+  replace: ballistic
+- trait_name: dispersal_syndrome
+  find: water animal
+  replace: hydrochory zoochory
 taxonomic_updates:
-- find: Anthoxanthum odaratum
-  replace: Anthoxanthum odoratum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Echnochloa crus-galli
-  replace: Echinochloa crus-galli
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Isotoma fluviatalis subsp. australis
-  replace: Isotoma fluviatilis subsp. australis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Panicum effersum
-  replace: Panicum effusum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Persicara hydropiper
-  replace: Persicaria hydropiper
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Potamogeton sulcaltus
-  replace: Potamogeton sulcatus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Rumex acetoselin
-  replace: Rumex acetosella
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Sonchus olearaceus
-  replace: Sonchus oleraceus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Verbena banariensis
-  replace: Verbena bonariensis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Avena sativa cf
-  replace: Avena sativa
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Cyperus exaltatus cf
-  replace: Cyperus exaltatus
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Cyperus fulvus cf
-  replace: Cyperus fulvus
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Senecio tenuiflorus cf
-  replace: Senecio tenuiflorus
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Rubus fruticosus agg.
-  replace: Rubus fruticosus
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Cyperus dactylon
-  replace: Cyperus dactylotes
-  reason: Spelling mistake identified by TaxonStand (2018-11-01)
-- find: Ludwigia peploides (subsp montevidensis)
-  replace: Ludwigia peploides subsp. montevidensis
-  reason: Spelling mistake identified by TaxonStand (2018-11-01)
 - find: Acaena xanserovina
   replace: Acaena x anserovina
-  reason: Align with known species (E Wenk, 2020-05-22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Amaranth sp1
-  replace: Amaranthus sp. [Amaranth sp1]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Amaranthus sp. [Amaranth sp1; Catford_2014]
+  reason: match_22_fuzzy. Aligning name with fuzzy matches genus accepted by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Anthoxanthum odaratum
+  replace: Anthoxanthum odoratum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Avena sativa cf
+  replace: Avena sativa
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cuscuta campestris cf
   replace: Cuscuta campestris
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-24)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cyperus dactylon
+  replace: Cyperus dactylotes
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cyperus exaltatus cf
+  replace: Cyperus exaltatus
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cyperus fulvus cf
+  replace: Cyperus fulvus
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cyperus sp1
-  replace: Cyperus sp. [Cyperus sp1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Cyperus sp. [Cyperus sp1; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Deyeuxia sp1
-  replace: Deyeuxia sp. [Deyeuxia sp1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Dysphania littoralis cf
-  replace: Dysphania littoralis
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-24)
-- find: Epilobium sp1
-  replace: Epilobium sp. [Epilobium sp1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Eragrostis sp1
-  replace: Eragrostis sp. [Eragrostis sp1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Geranium sp1
-  replace: Geranium sp. [Geranium sp1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Juncus sp1
-  replace: Juncus sp. [Juncus sp1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Mentha sp1
-  replace: Mentha sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Oplismenus sp1 cf (O. aemulus)
-  replace: Oplismenus hirtellus
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Rumex sp1
-  replace: Rumex sp. [Rumex sp1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Rumex sp2
-  replace: Rumex sp. [Rumex sp2]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Rytidosperma sp1
-  replace: Rytidosperma sp. [Rytidosperma sp1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Rytidosperma sp2
-  replace: Rytidosperma sp. [Rytidosperma sp2]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Rytidosperma sp2 var. a
-  replace: Rytidosperma sp. [Rytidosperma sp2 var. a]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Rytidosperma sp2 var. b
-  replace: Rytidosperma sp. [Rytidosperma sp2 var. b]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Rytidosperma sp3
-  replace: Rytidosperma sp. [Rytidosperma sp3]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Rytidosperma sp3 var. b
-  replace: Rytidosperma sp. [Rytidosperma sp3 var. b]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Rytidosperma sp4
-  replace: Rytidosperma sp. [Rytidosperma sp4]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Rytidosperma spX
-  replace: Rytidosperma sp. [Rytidosperma spX]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Setaria sp1
-  replace: Setaria sp. [Setaria sp1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Stellaria sp1
-  replace: Stellaria sp. [Stellaria sp1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Deyeuxia sp. [Deyeuxia sp1; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Dip_uni
   replace: Diplachne uninervia
-  reason: Align to known species (E. Wenk, 2020-06-25)
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
+  taxonomic_resolution: Species
+- find: Dysphania littoralis cf
+  replace: Dysphania littoralis
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Echnochloa crus-galli
+  replace: Echinochloa crus-galli
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Epilobium sp1
+  replace: Epipogium sp. [Epilobium sp1; Catford_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
+- find: Eragrostis sp1
+  replace: Eragrostis sp. 1
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Geranium sp1
+  replace: Geranium sp. 1
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Isotoma fluviatalis subsp. australis
+  replace: Isotoma fluviatilis subsp. australis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Juncus sp1
+  replace: Juncus sp. [Juncus sp1; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Ludwigia peploides (subsp montevidensis)
+  replace: Ludwigia peploides subsp. montevidensis
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Mentha sp1
+  replace: Mentha sp. 1
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Oplismenus sp1 cf (O. aemulus)
+  replace: Oplismenus sp. [Oplismenus sp1 cf (O. aemulus); Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Panicum effersum
+  replace: Panicum effusum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Persicara hydropiper
+  replace: Persicaria hydropiper
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Potamogeton sulcaltus
+  replace: Potamogeton sulcatus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Prunus cerasifera cv. atropurpea
   replace: Prunus cerasifera
-  reason: Alignment with known name in APNI names (Elizabeth Wenk, 2020-06-25)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Rubus fruticosus agg.
+  replace: Rubus fruticosus
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Rumex acetoselin
+  replace: Rumex acetosella
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Rumex sp1
+  replace: Rumex sp. [Rumex sp1; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Rumex sp2
+  replace: Rumex sp. [Rumex sp2; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Rytidosperma sp1
+  replace: Rytidosperma sp. [Rytidosperma sp1; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Rytidosperma sp2
+  replace: Rytidosperma sp. [Rytidosperma sp2; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Rytidosperma sp2 var. a
+  replace: Rytidosperma sp. [Rytidosperma sp2 var. a; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Rytidosperma sp2 var. b
+  replace: Rytidosperma sp. [Rytidosperma sp2 var. b; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Rytidosperma sp3
+  replace: Rytidosperma sp. [Rytidosperma sp3; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Rytidosperma sp3 var. b
+  replace: Rytidosperma sp. [Rytidosperma sp3 var. b; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Rytidosperma sp4
+  replace: Rytidosperma sp. [Rytidosperma sp4; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Rytidosperma spX
+  replace: Rytidosperma sp. [Rytidosperma spX; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Senecio tenuiflorus cf
+  replace: Senecio tenuiflorus
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Setaria sp1
+  replace: Setaria sp. [Setaria sp1; Catford_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Sonchus olearaceus
+  replace: Sonchus oleraceus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Stellaria sp1
+  replace: Stellaria sp. 1
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Verbena banariensis
+  replace: Verbena bonariensis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations:
 - variable: taxon_name
   find: Ricciocarpus natans
@@ -471,4 +594,3 @@ exclude_observations:
 questions:
   additional_traits: germination conditions (wet vs. dry), native  vs. introduced,
     and detailed information on exact amounts of moisture species require/tolerate
-

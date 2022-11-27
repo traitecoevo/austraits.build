@@ -8,22 +8,28 @@ source:
       into the theory of limiting similarity.'
     institution: La Trobe University
     type: Honours
-people:
-- name: Erika Cross
-  institution: Charles Sturt University
-  role: collector, contact
-- name: John Morgan
-  institution: La Trobe University
-  role: lab_leader
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Cross
+    given_name: Erika
+    ORCID: .na.character
+    affiliation: Charles Sturt University, Australia
+    additional_role: contact
+  - last_name: Morgan
+    given_name: John
+    ORCID: 0000-0003-2003-5983
+    affiliation: La Trobe University, Australia
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2009
-  year_collected_end: 2009
+  data_is_long_format: no
+  custom_R_code:      data %>% mutate_at(c("Seed mass (mg)"), ~na_if(.,0)) %>% mutate(site_name
+    = "western Victoria")
+  collection_date: 2009/2009
+  taxon_name: Scientific Name
+  location_name: site_name
   description: Erika Cross Woodlands of western Victoria trait data
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: The traits were collected from across a number of grassy Red
     Gum woodlands in western Vicroria (between Balmoral, Coleraine and Harrow). Plant
     trait measurements were made following the protocol outlined in Cornelisson et
@@ -41,25 +47,20 @@ dataset:
     (Royal Botanic Gardens Board, Melbourne, MELISR database, 20 January 2009). Only
     Victorian records in close proximity to the study region from an altitude less
     than 400 m a.s.l. were used. (But this data isn't in AusTraits)
-sites:
+locations:
   western Victoria:
     latitude (deg): .na
     longitude (deg): .na
     description: grassy Red Gum woodlands in western Vicroria (between Balmoral, Coleraine
       and Harrow)
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Scientific Name
-    site_name: site_name
-  custom_R_code: data %>% mutate_at(c("Seed mass (mg)"), ~na_if(.,0)) %>% mutate(site_name
-    = "western Victoria")
 traits:
 - var_in: SLA (mg/mm2)
   unit_in: mm2/mg
-  trait_name: specific_leaf_area
-  value_type: site_mean
+  trait_name: leaf_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: To obtain specific leaf area (SLA) leaf wet mass was recorded for rehydrated  leaves
     using an analytical weighing balance; leaves were then scanned using a 1200 dpi  flatbed
@@ -73,20 +74,26 @@ traits:
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: Height (cm)
   unit_in: cm
   trait_name: plant_height
-  value_type: site_max
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
   replicates: 10
   methods: Plant height was recorded from field measurements. Plant trait measurements
     were made following the protocol outlined in Cornelisson et al. (2003).
 - var_in: Seed mass (mg)
   unit_in: mg
-  trait_name: seed_mass
-  value_type: site_mean
+  trait_name: seed_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Plant trait measurements were made following the protocol outlined in Cornelisson
     et al. (2003).
@@ -94,10 +101,11 @@ substitutions: .na
 taxonomic_updates:
 - find: Dichelachne crinata
   replace: Dichelachne crinita
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Poa labillardieri
   replace: Poa labillardierei
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

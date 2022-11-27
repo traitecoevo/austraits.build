@@ -12,19 +12,24 @@ source:
     pages: 1009--1020
     publisher: Wiley-Blackwell
     doi: 10.1111/j.1654-1103.2011.01323.x
-people:
-- name: Burak Pekin
-  institution: "Istanbul Technical University, Turkey"
-  role: collector, contact
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Pekin
+    given_name: Burak
+    ORCID: 0000-0002-4797-6962
+    affiliation: Istanbul Technical University, Eurasia Institute of Earth Sciences,
+      Istanbul, Turkey
+    additional_role: contact
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2007
-  year_collected_end: 2007
+  data_is_long_format: no
+  custom_R_code:      data %>% mutate(site_name = "Collis")
+  collection_date: 2007/2007
+  taxon_name: Species
+  location_name: site_name
   description: Longevity, regeneration and mycorrhiza data for 125 species
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Floral surveys were conducted in the spring of 2007 from 4 to
     26 October. A 30x30-m plot was established at each of the 16 sites. The abundance
     of each vascular plant species within each plot was estimated using the following
@@ -38,7 +43,7 @@ dataset:
   original_file: Pekin_2011.pdf
   notes: All data sourced from reference material. The data collected in the study
     were field abundances, which are not included in AusTraits.
-sites:
+locations:
   Collis:
     longitude (deg): 116.7332
     latitude (deg): -34.9759
@@ -86,23 +91,21 @@ sites:
       our sites is likely to reflect a significant variation in the availability of
       moisture for plants over the summer drought season.
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "Collis")
 traits:
 - var_in: longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: The life cycle of each species was defined as perennial or annual.
 - var_in: Regeneration strategy
   unit_in: .na
-  trait_name: regen_strategy
-  value_type: expert_mean
+  trait_name: storage_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Regeneration strategies were assigned according to the dominant method
     for regenerating after fire as either from (1) fleshy, underground storage organ
@@ -119,7 +122,9 @@ traits:
 - var_in: Root structure
   unit_in: .na
   trait_name: root_structure
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Root structure classification was made either according to the known mycorrhizal
     root association of each species, or according to specialized non-mycorrhizal
@@ -135,7 +140,9 @@ traits:
 - var_in: N_fixer
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Classification for N-fixing ability was made either as fixer or non-fixer;
     all leguminous species formerly in the families Papilionaceae Giseke and Mimosaceae
@@ -144,16 +151,19 @@ traits:
 substitutions:
 - trait_name: nitrogen_fixing
   find: 'no'
-  replace: '0'
+  replace: non_nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: 'yes'
-  replace: '1'
-- trait_name: regen_strategy
+  replace: nitrogen_fixer
+- trait_name: storage_organ
   find: fleshy organ
   replace: fleshy_underground_organ
-- trait_name: regen_strategy
+- trait_name: storage_organ
   find: woody rootstock
   replace: woody_rootstock_or_lignotuber
+- trait_name: storage_organ
+  find: seed
+  replace: .na
 - trait_name: root_structure
   find: arbuscular mycorrhizal
   replace: arbuscular_mycorrhizal
@@ -170,52 +180,77 @@ substitutions:
   find: proteoid root
   replace: proteoid_root
 taxonomic_updates:
-- find: Stylidium aff. junceum
-  replace: Stylidium junceum
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Treemandra diffusa
-  replace: Tremandra diffusa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Treemandra stelligera
-  replace: Tremandra stelligera
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Grevillea pul. subsp. ascendens
-  replace: Grevillea pulchella subsp. ascendens
-  reason: Change spelling to align with APC or ALA species lists (Sam Andrew, 2018-02-07)
 - find: Astroloma sp. unknown
-  replace: Astroloma sp.
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Astroloma sp. [Astroloma sp. unknown; Pekin_2011]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Caladenia sp. unknown
-  replace: Caladenia sp.
-  reason: Align with genus (E. Wenk, 2020-05-26)
+  replace: Caladenia sp. [Caladenia sp. unknown; Pekin_2011]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Conostylis sp. unknown
-  replace: Conostylis sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Conostylis sp. [Conostylis sp. unknown; Pekin_2011]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Grevillea pul. subsp. ascendens
+  replace: Grevillea sp. [Grevillea pul. subsp. ascendens; Pekin_2011]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Marianthus sp.Walpole
-  replace: Marianthus sylvaticus
-  reason: Change spelling to Align to APC or ALA species lists (Sam Andrew, 2018-02-07)
+  replace: Marianthus sp. Walpole (A.R.Annels 277)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Orchid sp. unknown 1
-  replace: Orchidaceae sp. 1
-  reason: Align to family (E. Wenk, 2020-05-23)
+  replace: Orchidaceae sp. [Orchid sp. unknown 1; Pekin_2011]
+  reason: Manual matched to family for taxon that can't be matcheded to genus (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: family
 - find: Orchid sp. unknown 2
-  replace: Orchidaceae sp. 2
-  reason: Align to family (E. Wenk, 2020-05-23)
+  replace: Orchidaceae sp. [Orchid sp. unknown 2; Pekin_2011]
+  reason: Manual matched to family for taxon that can't be matcheded to genus (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: family
 - find: Orchid sp. unknown 3
-  replace: Orchidaceae sp. 3
-  reason: Align to family (E. Wenk, 2020-05-23)
+  replace: Orchidaceae sp. [Orchid sp. unknown 3; Pekin_2011]
+  reason: Manual matched to family for taxon that can't be matcheded to genus (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: family
 - find: Orchid sp. unknown 4
-  replace: Orchidaceae sp. 4
-  reason: Align to family (E. Wenk, 2020-05-23)
+  replace: Orchidaceae sp. [Orchid sp. unknown 4; Pekin_2011]
+  reason: Manual matched to family for taxon that can't be matcheded to genus (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: family
 - find: Pterostylis vittatus
   replace: Pterostylis vittata
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Stylidium aff. junceum
+  replace: Stylidium sp. [Stylidium aff. junceum; Pekin_2011]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Stylidium sp. unknown
-  replace: Stylidium sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Stylidium sp. [Stylidium sp. unknown; Pekin_2011]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Thelymitra sp. unknown
-  replace: Thelymitra sp.
-  reason: Align to genus (E. Wenk, 2020-05-26)
+  replace: Thelymitra sp. [Thelymitra sp. unknown; Pekin_2011]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Treemandra diffusa
+  replace: Tremandra diffusa
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Treemandra stelligera
+  replace: Tremandra stelligera
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

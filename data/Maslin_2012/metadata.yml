@@ -3,168 +3,259 @@ source:
     key: Maslin_2012
     bibtype: Book
     author: Bruce Maslin
-    title: 'WATTLE, Interactive Identification of Australian Acacia. Version 2'
+    title: WATTLE, Interactive Identification of Australian Acacia. Version 2
     year: 2014
     publisher: Australian Biological Resources Study, Canberra
-people:
-- name: Bruce Maslin
-  institution: Macquarie University Sydney
-  role: collector, contact
-- name: Brendan Lepschi
-  institution: CSIRO
-  role: custodian
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Maslin
+    given_name: Bruce
+    ORCID: 0000-0002-3039-0973
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+    notes: acknowledge only
+    additional_role: contact
+  - last_name: Lepschi
+    given_name: Brendan
+    ORCID: 0000-0002-3281-2973
+    affiliation: Centre for Australian National Biodiversity Research (a joint venture
+      between Parks Australia and CSIRO), Canberra, ACT, Australia
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2012
-  year_collected_end: 2012
+  data_is_long_format: yes
+  custom_R_code:      '
+    traits_numeric <-
+      data %>%
+        filter(trait %in% c("leaf length maximum", "leaf length minimum", "leaf width maximum", 
+                            "leaf width minimum", "plant height maximum", "plant height minimum",
+                            "seed length minimum ", "seed length maximum", "seed width minimum",  
+                            "seed width maximum", "seed breadth minimum", "seed breadth maximum")) %>%
+        mutate(
+          units_numeric = units %>%
+            str_replace("mm","1") %>%
+            str_replace("cm","10") %>%
+            str_replace("m","1000"),
+          value = as.numeric(value) * as.numeric(units_numeric),
+          value = as.character(value)
+        );
+
+    flowering_time <- 
+      data %>%
+        filter(trait %in% c("flowering time start", "flowering time end")) %>%
+        filter(!is.na(value)) %>%
+        select(-units) %>%
+        pivot_wider(names_from = trait, values_from = value) %>%
+        mutate(flowering_time =  ifelse(is.na(`flowering time end`), `flowering time start`, 
+                              sprintf("%s-%s",`flowering time start`, 
+                                      `flowering time end`)) %>% 
+                                convert_month_range_vec_to_binary()) %>%
+        select(species_name, flowering_time) %>%
+        mutate(trait = "flowering_time") %>%
+        rename(value = flowering_time);           
+      
+    categorical_traits <-
+      data %>%
+      select(-units) %>%
+      filter(trait %in% c("longevity", "leaf type")) %>%
+      pivot_wider(names_from = trait, values_from = value) %>%
+      mutate(
+        life_history = ifelse(longevity %in% c("EP", "EDP", "P", "DP"), "perennial", NA),
+        life_history = ifelse(longevity %in% c("EAP"), "annual perennial", life_history),
+        life_history = ifelse(longevity %in% c("EPB", "EDPB"), "biennial perennial", life_history),
+        life_history = ifelse(longevity %in% c("EAPB"), "annual biennial perennial", life_history),
+        leaf_phenology = ifelse(longevity %in% c("EP", "E", "EAP", "EPB", "EAPB"), "evergreen", NA),
+        leaf_phenology = ifelse(longevity %in% c("DP"), "deciduous", leaf_phenology),
+        leaf_type = ifelse(`leaf type` == "articles","cladode", NA),
+        leaf_type = ifelse(`leaf type` %in% c("simple","compound"),"leaf", leaf_type)) %>%
+      select(-longevity, -`leaf type`) %>%
+      pivot_longer(cols = c("life_history", "leaf_phenology", "leaf_type"), names_to = "trait", values_to = "value");
+
+    data %>%
+      filter(trait %in% c("dispersal", "lifeform", "seed shape", "leaf type")) %>%
+      bind_rows(
+        traits_numeric,
+        categorical_traits,
+        flowering_time
+      )  
+  '
+  collection_date: unknown/2012
+  taxon_name: species_name
+  trait_name: trait
+  value: value
   description: Wattle dataset from Bruce Maslin treatment 2012
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: unknown
   original_file: STU
   notes: none
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: yes
-  variable_match:
-    taxon_name: species_name
-    trait_name: trait
-    value: value
-  custom_R_code: |-
-    traits <- c("leaf length maximum", "leaf length minimum", "leaf width maximum", "leaf width minimum", "plant height maximum", "plant height minimum"); a <- list(cm=10, m=1000); for(t in traits){ for(v in names(a)) { i <- which(data[["trait"]]==t & data[["units"]] == v); data[["value"]][i] <- as.character(as.numeric(data[["value"]][i]) * a[[v]]); data[["units"]][i] <- "mm"; }; };
-    i <- data$trait == "flowering time start"; data[i, "value"] <- format_flowering_months(data[i,]$value, data[data$trait == "flowering time end",]$value); data[i, "trait"] <- "flowering_time"; data <- data[!data$trait == "flowering time end",];
-    leaf_phenology <- data[data$trait == "longevity",]; life_history <- data[data$trait == "longevity",]; leaf_phenology[leaf_phenology$trait == "longevity",]$trait <- "leaf_phenology"; leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EP", "E", "EAP", "EPB", "EAPB"),]$value <- "evergreen"; leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("DP"),]$value <- "deciduous"; leaf_phenology[leaf_phenology$trait == "leaf_phenology" & leaf_phenology$value %in% c("EDP", "EDPB", "P", "ED"),]$value <- NA; leaf_phenology <- leaf_phenology[!is.na(leaf_phenology$value),];
-    life_history[life_history$trait == "longevity",]$trait <- "life_history"; life_history[life_history$trait == "life_history" & life_history$value %in% c("EP", "EDP", "P", "DP"),]$value <- "perennial"; life_history[life_history$trait == "life_history" & life_history$value %in% c("EAP"),]$value <- "annual perennial"; life_history[life_history$trait == "life_history" & life_history$value %in% c("EPB", "EDPB"),]$value <- "biennial perennial"; life_history[life_history$trait == "life_history" & life_history$value %in% c("EAPB"),]$value <- "annual biennial perennial"; life_history[life_history$trait %in% "life_history" & life_history$value %in% c("E","ED"),]$value <- NA; life_history <- life_history[!is.na(life_history$value),];
-    data <- rbind(data[!data$trait %in% "longevity",], leaf_phenology, life_history); data[data$value %in% "articles",]$value <- c("article"); data[data$value %in% "article",]$trait <- c("leaf_type");
-    data
 traits:
 - var_in: dispersal
   unit_in: .na
   trait_name: dispersal_appendage
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: lifeform
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: longevity
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf type
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: seed shape
   unit_in: .na
   trait_name: seed_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: flowering_time
   unit_in: .na
   trait_name: flowering_time
-  value_type: unknown
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: unknown
   methods: unknown
 - var_in: leaf length minimum
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf length maximum
   unit_in: mm
   trait_name: leaf_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf width minimum
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf width maximum
   unit_in: mm
   trait_name: leaf_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: plant height minimum
   unit_in: mm
   trait_name: plant_height
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: plant height maximum
   unit_in: mm
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed length minimum
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed length maximum
   unit_in: mm
   trait_name: seed_length
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed width minimum
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed width maximum
   unit_in: mm
   trait_name: seed_width
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed breadth minimum
   unit_in: mm
-  trait_name: seed_breadth
-  value_type: expert_min
+  trait_name: seed_height
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: seed breadth maximum
   unit_in: mm
-  trait_name: seed_breadth
-  value_type: expert_max
+  trait_name: seed_height
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: leaf_type
   unit_in: .na
-  trait_name: leaf_type
-  value_type: expert_mean
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf_phenology
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: life_history
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 substitutions:
@@ -188,71 +279,97 @@ substitutions:
   replace: .na
 - trait_name: plant_growth_form
   find: L
-  replace: climber_liana
+  replace: climber_woody
+- trait_name: dispersal_appendage
+  find: exarillate
+  replace: none
 - trait_name: seed_shape
   find: elliptical
   replace: ellipsoid
+- trait_name: seed_shape
+  find: orbicular
+  replace: orbicular
+- trait_name: leaf_compoundness
+  find: articles
+  replace: .na
 taxonomic_updates:
+- find: Acacia aff. retinervis
+  replace: Acacia affin retinervis
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-22)
+  taxonomic_resolution: Species
 - find: Acacia affin ancistrophylla
-  replace: Acacia ancistrophylla
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  replace: Acacia affin. ancistrophylla
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia affin baxteri
-  replace: Acacia baxteri
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  replace: Acacia affin. baxteri
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia affin jennerae
-  replace: Acacia jennerae
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  replace: Acacia affin. jennerae
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia affin microbotrya
-  replace: Acacia microbotrya
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  replace: Acacia sp. [Acacia aff. microbotrya; Maslin_2012]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia affin multispicata
-  replace: Acacia multispicata
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  replace: Acacia affin. multispicata
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia affin papyrocarpa
-  replace: Acacia papyrocarpa
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  replace: Acacia affin. papyrocarpa
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia affin quadrimarginea
-  replace: Acacia quadrimarginea
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  replace: Acacia affin. quadrimarginea
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia affin resinosa
-  replace: Acacia resinosa
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Acacia affin retinervis
-  replace: Acacia retinervis
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  replace: Acacia affin. resinosa
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia affin rigens
-  replace: Acacia rigens
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  replace: Acacia affin. rigens
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia affin trachycarpa
-  replace: Acacia trachycarpa
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Acacia verricula
-  replace: Acacia verriculum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  replace: Acacia affin. trachycarpa
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia anceps x nematophylla
-  replace: Acacia sp. [Acacia anceps x Acacia nematophylla]
-  reason: Align to genus, as unrecognised hybrid (E. Wenk, 2020-5-26)
+  replace: Acacia x [Acacia anceps x nematophylla; Maslin_2012]
+  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
+    genus-level alignment with APC accepted genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia ancistrocarpa x trachycarpa
-  replace: Acacia sp. (Acacia ancistrocarpa x Acacia trachycarpa]
-  reason: Align to genus, as unrecognised hybrid (E. Wenk, 2020-5-26)
+  replace: Acacia x [Acacia ancistrocarpa x trachycarpa; Maslin_2012]
+  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
+    genus-level alignment with APC accepted genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia dodonaeifolia x paradoxa
-  replace: Acacia dodonaeifolia x Acacia paradoxa
-  reason: Align with APC accepted hybrid (E. Wenk, 2020-05-24)
-- find: Acacia elsherana
-  replace: Acacia sp. El Sharana (N.B.Byrnes 1326)
-  reason: Align to known name in APC (D Falster, 2020.05.23)
-- find: Acacia nana
-  replace: Acacia sp. Small Red-leaved Wattle (J.B.Williams 95033)
-  reason: Align with APC accepted phrase name (E. Wenk, 2020-05-24)
-- find: Acacia newmanii
-  replace: Acacia sp. Kununurra (G.Lullfitz 6195]
-  reason: Confirm alignment with accepted name on APC list (E. Wenk, 2020-05-24)
+  replace: Acacia x [Acacia dodonaeifolia x paradoxa; Maslin_2012]
+  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
+    genus-level alignment with APC accepted genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia oxycedrus x sophorae
-  replace: Acacia longifolia subsp. sophorae x Acacia oxycedrus
-  reason: Align to known name in APC (D Falster, 2020.05.23)
+  replace: Acacia x [Acacia oxycedrus x sophorae; Maslin_2012]
+  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
+    genus-level alignment with APC accepted genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia sp. Kununurra (G.Lullfitz 6195]
   replace: Acacia sp. Kununurra (G.Lullfitz 6195)
-  reason: Automatic alignment with name in APC list (2020-06-18)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

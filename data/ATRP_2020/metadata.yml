@@ -1,0 +1,444 @@
+source:
+  primary:
+    key: ATRP_2020
+    bibtype: Online
+    year: 2020
+    author: Frank A. Zich and Bernard P.M. Hyland and Trevor Whiffin and Raelee A.
+      Kerrigan
+    title: Australian Tropical Rainforest Plants, Edition 8
+    url: https://apps.lucidcentral.org/rainforest/text/intro/index.html
+contributors:
+  data_collectors:
+  - last_name: Coleman
+    given_name: David
+    ORCID: 0000-0002-1773-6597
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    notes: Responsible for extracting data from online resource
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(       
+        plant_climbing_mechanism = ifelse(stringr::str_detect(growth_habit,"scrambling"),"scrambling", NA),
+        plant_climbing_mechanism = ifelse(stringr::str_detect(growth_habit,"twining"),"twining", plant_climbing_mechanism),
+        growth_habit = stringr::str_replace(growth_habit, "twining", "climbing"), 
+        growth_habit = stringr::str_replace(growth_habit, "scrambling", "climbing"), 
+        growth_habit = stringr::str_replace(growth_habit, "trailing", "prostrate"),        
+        growth_habit = stringr::str_replace(growth_habit, "procumbent", "prostrate"),        
+        growth_habit = stringr::str_replace(growth_habit, "scandent", "sprawling"),      
+        growth_habit = stringr::str_replace(growth_habit, "shrubby", "bushy"),        
+        growth_habit = stringr::str_replace(growth_habit, "creeper", "creeping"),          
+        growth_habit = stringr::str_replace(growth_habit, "hummock", "cushion-forming"),    
+        growth_habit = stringr::str_replace(growth_habit, "mat_forming", "mat-forming"), 
+        growth_habit2 = ifelse(str_detect(plant_growth_form, "submerged"), "submerged", NA),
+        growth_habit2 = ifelse(str_detect(plant_growth_form, "cushion"), "cushion", growth_habit2),
+        plant_growth_form = stringr::str_replace(plant_growth_form, "cushion", "herb"),
+        plant_growth_form = stringr::str_replace(plant_growth_form, "climber_vine_herbaceous", "climber_herbaceous"), 
+        plant_growth_form = stringr::str_replace(plant_growth_form, "climber_vine_woody", "climber_woody"), 
+        plant_growth_form = stringr::str_replace(plant_growth_form, "climber_shrub", "climber_woody"),  
+        plant_growth_form = stringr::str_replace(plant_growth_form, "climber_vine", "climber_herbaceous"),
+        plant_growth_form = stringr::str_replace(plant_growth_form, "climber_liana", "climber_woody"),
+        growth_habit = ifelse(is.na(growth_habit), growth_habit2, growth_habit),
+        growth_habit = ifelse(!is.na(growth_habit) & !is.na(growth_habit2), paste(growth_habit,growth_habit2),growth_habit),
+        growth_medium2 = ifelse(str_detect(plant_growth_form, "aquatic"), "aquatic", NA),
+        growth_medium = ifelse(is.na(growth_medium), growth_medium2, growth_medium),
+        growth_medium = ifelse(!is.na(growth_medium) & !is.na(growth_medium2),paste(growth_medium,growth_medium2),growth_medium)
+      )
+  '
+  collection_date: unknown/2022
+  taxon_name: taxon_name
+  description: Plant growth form data extracted from the Lucid Australian Tropical
+    Rainforest Plants online website.
+  basis_of_record: preserved_specimen
+  life_stage: adult
+  sampling_strategy: This dataset is sourced from the Australian Tropical Rainforest
+    Plants online flora (hosted by Lucid) on 6 May 2022. Briefly, the textual descriptions
+    of each taxon in were downloaded and organised into a tabular format of individual
+    taxon names and their corresponding text using R coding script. Sentences and
+    phrases were categorised using a large glossary of botanical terminology as referring
+    to one of the following, the entire organism, stem, leaf, flower, fruit/seed,
+    roots and environment/habitat. Key terms corresponding to trait values in AusTraits
+    were then extracted from these smaller chunks of text using a reference table
+    containing a) the AusTraits trait name, b) the AusTraits trait value and c) terms
+    to search for in the text. The resulting traits were then checked manually using
+    a subset of ~500 taxa to search for errors and update the reference table and
+    coding script accordingly. The process was repeated iteratively to remove any
+    wrongly classified trait values and to ensure as many correct trait values as
+    possible were captured using the algorithm. For some traits such as plant_growth_form
+    and life_history, unclassified taxa were inferred as possessing a trait value
+    from a higher-level taxonomic description e.g. all taxa in the Amyema genus were
+    classified as stem_parasitic, which was mentioned only in the genus description.
+    Specific to the plant_growth_form trait, any taxon without a growth form and that
+    was described as annual, biennial or perennial was inferred as herbaceous.
+  original_file: .na
+  notes: Copyright CANBR 2020, all rights reserved. The dataset `Hyland_2003` includes
+    other trait data from Australian Tropical Rainforest Plants, but there is no overlap
+    in traits scored between these studies.
+locations: .na
+contexts: .na
+traits:
+- var_in: plant_climbing_mechanism
+  unit_in: .na
+  trait_name: plant_climbing_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_growth_form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: regen_strategy
+  unit_in: .na
+  trait_name: storage_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: growth_medium
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: sex_type
+  unit_in: .na
+  trait_name: sex_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+substitutions:
+- trait_name: plant_growth_substrate
+  find: aquatic aquatic
+  replace: aquatic
+- trait_name: stem_growth_habit
+  find: submerged submerged
+  replace: submerged
+- trait_name: plant_growth_form
+  find: aquatic_submerged
+  replace: herb
+- trait_name: plant_growth_form
+  find: aquatic_herb aquatic_submerged
+  replace: herb
+- trait_name: plant_growth_form
+  find: aquatic_herb
+  replace: herb
+- trait_name: plant_growth_form
+  find: palm
+  replace: palmoid
+- trait_name: plant_growth_form
+  find: climber_vine_woody
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: climber_shrub
+  replace: climber_woody
+taxonomic_updates:
+- find: Abutilon sp  mataranka r m.barker 877
+  replace: Abutilon sp. Mataranka (R.M.Barker 877)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Albizia sp  sir charles hardy is b.hyland 25849rfk
+  replace: Albizia sp. (Sir Charles Hardy Is BH 25849RFK)
+  reason: match_18. Automatic alignment with infraspecific canonical name in APNI
+    when notes are ignored (2022-11-21)
+  taxonomic_resolution: Species
+- find: Albizia sp. sir charles hardy is b.hyland 25849rfk
+  replace: Albizia sp. (Sir Charles Hardy Is BH 25849RFK)
+  reason: match_18. Automatic alignment with infraspecific canonical name in APNI
+    when notes are ignored (2022-11-21)
+  taxonomic_resolution: Species
+- find: Antirhea sp  mt lewis b.gray 5733
+  replace: Antirhea sp. (Mt Lewis BG 5733)
+  reason: Manual alignment with canonical  species name in APC (Elizabeth Wenk, 2022-11-21)
+  taxonomic_resolution: Species
+- find: Antirhea sp. mt lewis b.gray 5733
+  replace: Antirhea sp. (Mt Lewis BG 5733)
+  reason: Manual alignment with canonical  species name in APC (Elizabeth Wenk, 2022-11-21)
+  taxonomic_resolution: Species
+- find: Argyrodendron sp  whitsundays w j.mcdonald 5831
+  replace: Argyrodendron sp. Whitsundays (W.J.McDonald+ 5831)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Arytera sp  dryander creek p r.sharpe 4184
+  replace: Arytera sp. Dryander Creek (P.R.Sharpe 4184)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Breynia sp  black mountain b.hyland 25658rfk
+  replace: Breynia sp. (Black Mountain BH 25658RFK)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC known
+    names when notes are ignored (2022-11-21)
+  taxonomic_resolution: Species
+- find: Capparis sp  iron range b.hyland 16395
+  replace: Capparis sp. Iron Range (B.Hyland 16395)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Cassia sp  kalpowar d g.fell df2769
+  replace: Cassia sp. Kalpowar (D.G.Fell+ DF2769)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Cassia sp  paluma range g.sankowsky 450
+  replace: Cassia sp. Paluma Range (G.Sankowsky+ 450)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Causonis maritima
+  replace: Cassinia maritima
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Cordyline mannerssuttoniae
+  replace: Cordyline manners-suttoniae
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Croton capitisyork
+  replace: Croton capitis-york
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Cyperus gunnii subsp. novaehollandiae
+  replace: Cyperus gunnii subsp. novae-hollandiae
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Subspecies
+- find: Derris sp  claudie river l j.webb 8348
+  replace: Derris sp. Claudie River (L.J.Webb+ 8348)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Derris sp  daintree d e.boyland 469
+  replace: Derris sp. Daintree (D.E.Boyland+ 469)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Derris sp  wenlock river b.hyland 21082v
+  replace: Derris sp. (Wenlock River BH 21082V)
+  reason: match_18. Automatic alignment with infraspecific canonical name in APNI
+    when notes are ignored (2022-11-21)
+  taxonomic_resolution: Species
+- find: Derris sp. wenlock river b.hyland 21082v
+  replace: Derris sp. (Wenlock River BH 21082V)
+  reason: match_18. Automatic alignment with infraspecific canonical name in APNI
+    when notes are ignored (2022-11-21)
+  taxonomic_resolution: Species
+- find: Diospyros sp  ham hill b.hyland 2941rfk
+  replace: .na.character
+  reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-21)
+  taxonomic_resolution: .na.character
+- find: Diospyros sp. ham hill b.hyland 2941rfk
+  replace: Diospyros sp. (Ham Hill B.Hyland 2941RFK)
+  reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-22)
+  taxonomic_resolution: Species
+- find: Ehretia sp  whitfield range r.jago 17
+  replace: Ehretia sp. Whitfield Range (R.Jago 17)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Epipremnum pinnatum cv. aureum
+  replace: Epipremnum pinnatum
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Erythroxylum sp  mosquito point j r.clarkson 9991
+  replace: Erythroxylum sp. Mosquito Point (J.R.Clarkson+ 9991)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Flacourtia sp  shiptons flat l w jessup gj.d3200
+  replace: Flacourtia sp. Shiptons Flat (L.W.Jessup+ GJD3200)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Freycinetia sp. claudie river rt 286
+  replace: .na.character
+  reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-21)
+  taxonomic_resolution: .na.character
+- find: Freycinetia sp. claudie river rt 286
+  replace: Freycinetia sp. (Claudie River RT 286)
+  reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-22)
+  taxonomic_resolution: Species
+- find: Galactia sp  laura j c.tothill jt53a
+  replace: Galactia sp. Laura (J.C.Tothill JT53A)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Gen  aq520454 sp  shute harbour d a.halford q811
+  replace: Gen. (AQ520454) sp. Shute Harbour (D.A.Halford Q811)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Gossia sp  green bark b.hyland 25370rfk
+  replace: .na.character
+  reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-21)
+  taxonomic_resolution: .na.character
+- find: Gossia sp. green bark b.hyland 25370rfk
+  replace: Gossia sp. Green Bark (B.Hyland 25370RFK)
+  reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-22)
+  taxonomic_resolution: Species
+- find: Gynochthodes sp. iron range b.hyland 11587
+  replace: Gynochthodes sp. [Gynochthodes sp. iron range b.hyland 11587; ATRP_2020]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-22)
+  taxonomic_resolution: genus
+- find: Homalium sp  south molle island j a.gresty aq208995
+  replace: Homalium sp. South Molle Island (J.A.Gresty AQ208995)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Ipomoea pescaprae subsp. brasiliensis
+  replace: Ipomoea pes-caprae subsp. brasiliensis
+  reason: Manual alignment with canonical  species name in APC (Elizabeth Wenk, 2022-11-21)
+  taxonomic_resolution: Subspecies
+- find: Ipomoea sp. merluna b.hyland 21374v
+  replace: Ipomoea sp. [Ipomoea sp. merluna b.hyland 21374v; ATRP_2020]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-22)
+  taxonomic_resolution: genus
+- find: Lepiderema sp  impulse creek a b.pollock 73
+  replace: Lepiderema sp. Impulse Creek (A.B.Pollock 73)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Macfadyena unguiscati
+  replace: Macfadyena unguis-cati
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Margaritaria dubiumtraceyi
+  replace: Margaritaria dubium-traceyi
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Medinilla ballsheadleyi
+  replace: Medinilla balls-headleyi
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Miconia nervosa
+  replace: Miconia sp. [Miconia nervosa; ATRP_2020]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-22)
+  taxonomic_resolution: genus
+- find: Notelaea sp  elcho island c r.dunlop 7597
+  replace: Notelaea sp. Elcho Island (C.R.Dunlop 7597)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Pandanus solmslaubachii
+  replace: Pandanus solms-laubachii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Pandanus sp. russell river
+  replace: .na.character
+  reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-21)
+  taxonomic_resolution: .na.character
+- find: Pandanus sp. russell river
+  replace: Pandanus sp. (Russell River)
+  reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-22)
+  taxonomic_resolution: Species
+- find: Phyllanthus novaehollandiae
+  replace: Phyllanthus novae-hollandiae
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Pongamia pinnata var. minor
+  replace: Pongamia pinnata var. minor
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-22)
+  taxonomic_resolution: Varietas
+- find: Psychotria sp  danbulla s t.blake 15262
+  replace: Psychotria sp. Danbulla (S.T.Blake 15262)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Psychotria sp  mt lewis v k.moriarty 2445
+  replace: Psychotria sp. Mt Lewis (V.K.Moriarty 2445)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Psychotria sp  shute harbour l j.webb 7916
+  replace: Psychotria sp. Shute Harbour (L.J.Webb+ 7916)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Psychotria sp  utchee creek h.flecker ngnc5313
+  replace: Psychotria sp. Utchee Creek (H.Flecker NQNC5313)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Randia sp  peninsula g.stocker 1321
+  replace: Randia sp. (Peninsula GS 1321)
+  reason: match_19. Automatic alignment with species-level canonical name in APNI
+    when notes are ignored (2022-11-21)
+  taxonomic_resolution: Species
+- find: Samadera sp  barong b.gray 742
+  replace: Samadera sp. Barong (B.Gray 742)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Samadera sp  tozer range l j.brass 19393
+  replace: Samadera sp. Tozer Range (L.J.Brass 19393)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Scleria novaehollandiae
+  replace: Scleria novae-hollandiae
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Sida sp  small flower b.gray 5657
+  replace: .na.character
+  reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-21)
+  taxonomic_resolution: .na.character
+- find: Smilax sp. aff. s. elliptica
+  replace: Smilax sp. [Smilax sp. aff. s. elliptica; ATRP_2020]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-22)
+  taxonomic_resolution: genus
+- find: Tasmannia sp  mt bellenden ker j r.clarkson 6571
+  replace: Tasmannia sp. Mt Bellenden Ker (J.R.Clarkson 6571)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Timonius sp  claudie river b.hyland 21096v
+  replace: Timonius sp. (Claudie River)
+  reason: match_18. Automatic alignment with infraspecific canonical name in APNI
+    when notes are ignored (2022-11-21)
+  taxonomic_resolution: Species
+- find: Timonius sp. claudie river b.hyland 21096v
+  replace: Timonius sp. (Claudie River)
+  reason: match_18. Automatic alignment with infraspecific canonical name in APNI
+    when notes are ignored (2022-11-21)
+  taxonomic_resolution: Species
+- find: Tragia novaehollandiae
+  replace: Tragia novae-hollandiae
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Vigna sp  station creek r j.lawn cq3284
+  replace: Vigna sp. Station Creek (R.J.Lawn CQ3284)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Wilkiea sp  mcdowall range j g.tracey 14552
+  replace: Wilkiea sp. McDowall Range (J.G.Tracey 14552)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Xylosma sp  mt lewis g.sankowsky 1108
+  replace: Xylosma sp. Mt Lewis (G.Sankowsky+ 1108)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Xylosma sp  temple bay p i.forster pif8980
+  replace: Xylosma sp. Temple Bay (P.I.Forster PIF8980)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+exclude_observations: .na
+questions: .na

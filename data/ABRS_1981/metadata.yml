@@ -1,0 +1,521 @@
+source:
+  primary:
+    key: ABRS_1981
+    bibtype: Online
+    author: B. A. Barlow, H. T. Clifford, A. S. George, A. Kanis A. McCusker
+    year: 1981
+    title: Flora of Australia
+    publisher: AGPS
+    url: http://www.environment.gov.au/biodiversity/abrs/online-resources/flora/main/
+contributors:
+  data_collectors:
+  - last_name: Gallagher
+    given_name: Rachael
+    ORCID: 0000-0002-4680-8115
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  austraits_curators: Rachael Gallagher
+dataset:
+  data_is_long_format: yes
+  custom_R_code:      '
+    data$i <- seq_len(nrow(data));
+
+    data_numeric <- data %>%
+      filter(!is.na(units)) %>%
+      mutate(value = as.numeric(value),
+            value = ifelse(units == "cm", value * 10, value),
+            value = ifelse(units == "m", value * 1000, value),
+            units = ifelse(units %in% c("m", "cm"), "mm", units),
+            value = as.character(value)
+      );
+      
+    data_categorical_other <- data %>%
+      filter(is.na(units) & !(trait %in% c("longevity", "flowering time start", "flowering time end"))
+            ) %>%
+        mutate(trait = ifelse(value %in% "articles", "leaf_type", trait),
+              value = ifelse(value %in% "articles", "cladode", value));
+
+    data_flowering <- data %>%
+        filter( trait %in% c("flowering time start", "flowering time end")) %>%
+        select(-i, -units) %>%
+        spread(trait, value) %>%
+        transmute(species_name, trait = "flowering_time",
+                  value = convert_month_range_vec_to_binary(sprintf("%s-%s", `flowering time start`,`flowering time end`))) %>%
+        left_join(filter(data, trait == "flowering time start") %>%
+                    select(species_name, i), by = "species_name");
+
+    data_longevity <- data %>% 
+      filter( !is.na(value) & trait == "longevity") %>%
+      mutate(trait = "leaf_phenology",
+              value = ifelse(value %in% c("EP", "E", "EAP", "EPB", "EB", "EAB", "EA"), "evergreen", value),
+              value = ifelse(value %in% c("DP", "D", "DPB"), "deciduous", value)) %>%
+      filter(value %in% c("evergreen", "deciduous"));
+    
+    data_lifehistory <- data %>%   
+      filter( !is.na(value) & trait == "longevity" &
+              value %in% c("EP", "P", "DP", "EDP", "A", "EA", "EB", "B","AB", "EAB", "AP", "EAP", "EPB", "DPB", "PB")) %>%
+        mutate(trait = "life_history", value = ifelse(value %in% c("EP", "P", "DP", "EDP"), "perennial", value),
+              value = ifelse(value %in% c("A", "EA"), "annual", value),
+              value = ifelse(value %in% c("EB", "B"), "biennial", value),
+              value = ifelse(value %in% c("AB", "EAB"), "annual biennial", value),
+              value = ifelse(value %in% c("AP", "EAP"), "annual perennial", value),
+              value = ifelse(value %in% c("EPB", "DPB", "PB"), "biennial perennial", value));
+
+    data_substrate <- data %>%
+      filter(trait == "plant_growth_form" & value %in% c("SE", "HA")) %>%
+      mutate(
+        trait = "plant_growth_substrate",
+        value = case_when(
+          value == "SE" ~ "epiphyte",
+          value == "HA" ~ "aquatic")
+      );
+
+    bind_rows(data_numeric, data_categorical_other, data_flowering, 
+      data_longevity, data_lifehistory, data_substrate) %>%
+      arrange(i) %>%
+      select(-i) %>%
+      mutate(value = ifelse(species_name %in%
+                              c("Grevillea robusta","Garuga floribunda var. floribunda", "Myristica globosa subsp. muelleri",
+                                "Pararchidendron pruinosum var. pruinosum") & trait == "lifeform","tree", value),
+            value = ifelse(species_name %in% c("Corynocarpus rupestris subsp. arborescens","Mitrephora diversifolia") &
+                              trait == "lifeform","shrub treelet",value),
+            value = ifelse(species_name %in% c("Piper hederaceum var. hederaceum") & trait == "lifeform","climber_vine_woody",value),
+            value = ifelse(species_name %in% c("Stephania japonica var. discolor") &  trait == "lifeform","vine",value),
+            value = ifelse(species_name %in% c("Caesalpinia subtropica") & trait == "lifeform","climber_woody",value),
+            trait = ifelse(value %in% c("HE", "A", "E"), "plant_growth_substrate", trait)
+      ) %>%
+      group_by(species_name, trait) %>%
+        distinct(value, .keep_all = TRUE) %>%
+      ungroup()
+  ' 
+  collection_date: unknown/2015
+  taxon_name: species_name
+  trait_name: trait
+  value: value
+  description: Flora of Australian online checked via trait corrections
+  basis_of_record: preserved_specimen
+  life_stage: adult
+  sampling_strategy: herbarium specimens
+  original_file: STU
+  notes: Request ackowledgment "Data was sourced from the Flora of Australia with
+    permission from the Australian Biological Resources Study"
+locations: .na
+contexts: .na
+traits:
+- var_in: dispersal
+  unit_in: .na
+  trait_name: dispersal_appendage
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: lifeform
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_phenology
+  unit_in: .na
+  trait_name: leaf_phenology
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf type
+  unit_in: .na
+  trait_name: leaf_compoundness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: seed shape
+  unit_in: .na
+  trait_name: seed_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: flowering_time
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf length minimum
+  unit_in: mm
+  trait_name: leaf_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf length maximum
+  unit_in: mm
+  trait_name: leaf_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf width minimum
+  unit_in: mm
+  trait_name: leaf_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf width maximum
+  unit_in: mm
+  trait_name: leaf_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: plant height minimum
+  unit_in: mm
+  trait_name: plant_height
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: plant height maximum
+  unit_in: mm
+  trait_name: plant_height
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: seed length minimum
+  unit_in: mm
+  trait_name: seed_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: seed length maximum
+  unit_in: mm
+  trait_name: seed_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: seed width minimum
+  unit_in: mm
+  trait_name: seed_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: seed width maximum
+  unit_in: mm
+  trait_name: seed_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: seed breadth minimum
+  unit_in: mm
+  trait_name: seed_height
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: seed breadth maximum
+  unit_in: mm
+  trait_name: seed_height
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf_type
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+substitutions:
+- trait_name: plant_growth_form
+  find: V
+  replace: climber_herbaceous
+- trait_name: plant_growth_form
+  find: T
+  replace: tree
+- trait_name: plant_growth_form
+  find: TS
+  replace: shrub tree
+- trait_name: plant_growth_form
+  find: H
+  replace: herb
+- trait_name: plant_growth_form
+  find: S
+  replace: shrub
+- trait_name: plant_growth_form
+  find: TV
+  replace: .na
+- trait_name: plant_growth_form
+  find: SC
+  replace: shrub climber_woody
+- trait_name: plant_growth_form
+  find: L
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: SV
+  replace: climber
+- trait_name: plant_growth_form
+  find: TH
+  replace: herb
+- trait_name: plant_growth_form
+  find: HL
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: CV
+  replace: climber_herbaceous
+- trait_name: plant_growth_form
+  find: SE
+  replace: shrub
+- trait_name: plant_growth_form
+  find: C
+  replace: climber
+- trait_name: plant_growth_form
+  find: SL
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: TSC
+  replace: .na
+- trait_name: plant_growth_form
+  find: SU
+  replace: shrub subshrub
+- trait_name: plant_growth_form
+  find: SH
+  replace: shrub herb
+- trait_name: plant_growth_form
+  find: shrub treelet
+  replace: shrub tree
+- trait_name: plant_growth_form
+  find: U
+  replace: subshrub
+- trait_name: plant_growth_form
+  find: VL
+  replace: climber_herbaceous climber_woody
+- trait_name: plant_growth_form
+  find: CP
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: climber_vine_woody
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: SUH
+  replace: shrub subshrub herb
+- trait_name: plant_growth_substrate
+  find: A
+  replace: aquatic
+- trait_name: plant_growth_form
+  find: TSV
+  replace: .na
+- trait_name: plant_growth_form
+  find: HA
+  replace: herb
+- trait_name: plant_growth_form
+  find: HV
+  replace: herb climber_herbaceous
+- trait_name: plant_growth_substrate
+  find: E
+  replace: epiphyte
+- trait_name: plant_growth_substrate
+  find: HE
+  replace: hemiepiphyte
+- trait_name: plant_growth_form
+  find: vine
+  replace: climber_herbaceous
+- trait_name: seed_shape
+  find: 'NULL'
+  replace: .na
+- trait_name: leaf_length
+  find: '14000'
+  replace: .na
+- trait_name: leaf_length
+  find: '5000'
+  replace: .na
+- trait_name: leaf_length
+  find: '10000'
+  replace: .na
+- trait_name: seed_shape
+  find: elliptical
+  replace: ellipsoid
+- trait_name: seed_shape
+  find: orbicular
+  replace: orbicular
+taxonomic_updates:
+- find: Adenanthos cunninghamii
+  replace: Adenanthos x cunninghamii
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Adenanthos pamela
+  replace: Adenanthos x pamela
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Canna generalis
+  replace: Canna x generalis
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Canna orchiodes
+  replace: Canna x orchiodes
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Dimocarpus leichhardtii
+  replace: Dimocarpus leichhardtii
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-22)
+  taxonomic_resolution: Species
+- find: Epilobium billardierianum subsp. hydrophilum
+  replace: Epilobium billardiereanum subsp. hydrophilum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Goodenia vilmorinae
+  replace: Goodenia vilmoriniae
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Grevillea bronwenae
+  replace: Grevillea bronweniae
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Hakea cygna
+  replace: Hakea cygnus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Hakea cygna subsp. needlei
+  replace: Hakea cygnus subsp. needlei
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Pimelea neo-anglica
+  replace: Pimelea neoanglica
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-22)
+  taxonomic_resolution: Species
+- find: Platanus hispanica
+  replace: Platanus x hispanica
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Rhizophora lamarckii
+  replace: Rhizophora x lamarckii
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Senna alicia
+  replace: Senna artemisioides subsp. alicia
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna chatelainiana
+  replace: Senna glutinosa subsp. chatelainiana
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna coriacea
+  replace: Senna artemisioides subsp. x coriacea
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna filifolia
+  replace: Senna artemisioides subsp. filifolia
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna gawlerensis
+  replace: Senna cardiosperma subsp. gawlerensis
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna helmsii
+  replace: Senna artemisioides subsp. helmsii
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna luerssenii
+  replace: Senna glutinosa subsp. x luerssenii
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna microphylla
+  replace: Senna cardiosperma subsp. microphylla
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna oligophylla
+  replace: Senna artemisioides subsp. oligophylla
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna petiolaris
+  replace: Senna artemisioides subsp. x petiolaris
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna pruinosa
+  replace: Senna glutinosa subsp. pruinosa
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna quadrifolia
+  replace: Senna artemisioides subsp. quadrifolia
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna sturtii
+  replace: Senna artemisioides subsp. x sturtii
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Senna zygophylla
+  replace: Senna artemisioides subsp. zygophylla
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Sonneratia gulngai
+  replace: Sonneratia x gulngai
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+exclude_observations: .na
+questions: .na

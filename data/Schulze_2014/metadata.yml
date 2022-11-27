@@ -12,18 +12,75 @@ source:
     number: '4'
     pages: 1125--1135
     doi: 10.1007/s00468-014-1023-0
-people:
-- name: Ernst-Detlef Schulze
-  institution: Max-Planck Institute for Biogeochemistry
-  role: collector, contact, lab_leader
+contributors:
+  data_collectors:
+  - last_name: Schulze
+    given_name: Ernst-Detlef
+    ORCID: 0000-0001-6188-9219
+    affiliation: Max-Planck Institute for Biogeochemistry, Germany
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk, Caitlan Baxter
 dataset:
-  year_collected_start: July 2010
-  year_collected_end: August 2010
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        Date_to_use_edited = Date_to_use_edited %>% mdy(),
+        row_number = row_number(),
+        species_name_new = case_when(
+          row_number == 293 ~ "Acacia sp. [Acacia sp. 1 minniritchi bark; Schulze_2014]",
+          row_number == 303 ~ "Acacia sp. [Acacia sp. 2 minniritchi bark; Schulze_2014)]",
+          row_number == 319 ~ "Acacia sp. [Acacia sp. 3 minniritchi bark; Schulze_2014)]",
+          row_number == 389 ~ "Acacia sp. [Acacia sp. 4 minniritchi bark; Schulze_2014]",
+          row_number == 376 ~ "Bossiaea sp. [Bossiaea sp. 1; Schulze_2014]",
+          row_number == 399 ~ "Bossiaea sp. [Bossiaea sp. 2; Schulze_2014]",
+          row_number == 394 ~ "Acacia sp. [Acacia dwarf shrub sp. 1; Schulze_2014]",
+          row_number == 407 ~ "Acacia sp. [Acacia dwarf shrub sp. 2; Schulze_2014]",
+          row_number == 90 ~ "Acacia sp. [Acacia sp. 1 at Spinifex grassland site; Schulze_2014]",
+          row_number == 94 ~ "Acacia sp. [Acacia sp. 2 at Spinifex grassland site; Schulze_2014]",
+          row_number == 107 ~ "Acacia sp. [Acacia sp. 1 at Sand after Lake Barlee, 1-2 yrs after burn site; Schulze_2014]",
+          row_number == 108 ~ "Acacia sp. [Acacia sp. 2 at Sand after Lake Barlee, 1-2 yrs after burn site; Schulze_2014]",
+          row_number == 64 ~ "Acacia sp. [Acacia sp. 1 at Sand with Casuarina site; Schulze_2014]",
+          row_number == 65 ~ "Acacia sp. [Acacia sp. 2 at Sand with Casuarina site; Schulze_2014]",
+          row_number == 66 ~ "Acacia sp. [Acacia sp. 3 at Sand with Casuarina site, phylloclade; Schulze_2014]",
+          row_number == 146 ~ "Acacia sp. [Acacia sp. 2 at Kalbarri NP Ranger track site; Schulze_2014]",
+          row_number == 42 ~ "Acacia sp. [Acacia sp. 1 at Lancelin coastal heathland site; Schulze_2014]",
+          row_number == 70 ~ "Acacia sp. [Acacia sp. 4 at Sand with Casuarina site; Schulze_2014]",
+          row_number == 181 ~ "Acacia sp. [Acacia sp. 4, site unknown; Schulze_2014]",
+          row_number == 284 ~ "Acacia sp. [Acacia sp. 1 at Southern Cross site; Schulze_2014]",
+          row_number == 285 ~ "Acacia sp. [Acacia sp. 2 at Southern Cross site; Schulze_2014]",
+          row_number == 492 ~ "Acacia sp. [Acacia sp. 5, site unknown ; Schulze_2014]",
+          row_number == 99 ~ "Acacia sp. [Acacia grey mulga sp. 1 at Mulga site; Schulze_2014]",
+          row_number == 503 ~ "Acacia sp. [Acacia grey mulga sp. 2; Schulze_2014]",
+          row_number == 86 ~ "Senna sp. [Senna sp. 1 at Road intersect, laterite site; Schulze_2014]",
+          row_number == 251 ~ "Senna sp. [Senna sp. 1 at Mt.  Nameless, 1120m site; Schulze_2014]",
+          row_number == 218 ~ "Senna sp. [Senna sp. 1 at Plateau on quartzite site; Schulze_2014]",          
+          row_number == 219 ~ "Senna sp. [Senna sp. 2 at Plateau on quartzite site; Schulze_2014]",
+          row_number == 238 ~ "Senna sp. [Senna sp. 3 at Plateau on quartzite site; Schulze_2014]",
+          row_number == 247 ~ "Senna sp. [Senna sp. 3 at North of Paraburdoo site; Schulze_2014]",
+          row_number == 41 ~ "Mimosa sp. [Mimosa sp. 1 at Lancelin coastal heathland site; Schulze_2014]"
+        ),  
+        species_name = ifelse(!is.na(species_name_new),species_name_new,species_name)
+      ) %>%
+      mutate(leaf_type = NA) %>%
+      move_values_to_new_trait(
+        "leaf type", "leaf_type",
+        c("needle like", "scale like"),c("needle","scale"),c("needle like", "scale like")
+      ) %>%
+      mutate(`leaf type` = ifelse(`leaf type` %in% c("linearly", "lanceolat"), "leaf", `leaf type`)) %>%
+      group_by(species_name) %>%
+        mutate_at(vars(`physical_defence`,`leaf type`, leaf_type, `leaf_compoundness`, `Deciduous`,
+        `Life-form`,`N2 fixing`), replace_duplicates_with_NA) %>%
+      ungroup()
+  '
+  collection_date: Date_to_use_edited
+  taxon_name: species_name
+  location_name: site_name
   description: In this study, Eucalyptus and Acacia were collected along a south-north
     gradient from winter- to summer-dominated rainfall to investigate whether trait
     values indicate why these genera dominate across different parts of Australia
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: In July and August 2010, leaves of Eucalyptus (and the closely-related
     Corymbia) and of Acacia (and the closelyrelated Vachellia, as well as associated
     woody Fabaceae) were sampled in the field along a south-north transect in Western
@@ -45,711 +102,719 @@ dataset:
   original_file: WA_Tour_2010.xls and Australia-data-eds.xls submitted by author and
     archive in the raw data folder and GoogleDrive folder.
   notes: none
-sites:
+locations:
   Currency Creek Arboretum:
-    description: Currency Creek Arboretum
+    locality: Currency Creek Arboretum
     latitude (deg): -35.42917
     longitude (deg): 138.76278
-    soil: sand-loam over clay
-    vegetation: woodland
-    habitat: gentle hillslope
+    soil type: sand-loam over clay
+    description: woodland
+    landform: gentle hillslope
     surface/groundwater access: 'no'
-    fire: unburnt
-    Rainfall: .na.real
+    fire history: unburnt
+    precipitation, MAP (mm): .na.real
+    basis_of_record: captive_cultivated
   site_1:
-    description: Lancelin coastal heathland
+    locality: Lancelin coastal heathland
     latitude (deg): -31.014
     longitude (deg): 115.33
-    soil: .na.character
-    vegetation: .na.character
-    habitat: .na.character
+    soil type: .na.character
+    description: .na.character
+    landform: .na.character
     surface/groundwater access: .na.character
-    fire: '?'
-    Rainfall: 500.0
+    fire history: '?'
+    precipitation, MAP (mm): 500.0
   site_10:
-    description: Sand
+    locality: Sand
     latitude (deg): -30.2625
     longitude (deg): 119.7813889
-    soil: sand
-    vegetation: shrubland
-    habitat: plain
+    soil type: sand
+    description: shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_11:
-    description: Pittosporum, rock
+    locality: Pittosporum, rock
     latitude (deg): -30.2055556
     longitude (deg): 119.8633333
-    soil: sandy loam
-    vegetation: shrubland
-    habitat: plain
+    soil type: sandy loam
+    description: shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_12:
-    description: Sand Acacia dominated
+    locality: Sand Acacia dominated
     latitude (deg): -30.0527778
     longitude (deg): 119.835
-    soil: sand
-    vegetation: shrubland
-    habitat: plain
+    soil type: sand
+    description: shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_13:
-    description: Sand with Casuarina
+    locality: Sand with Casuarina
     latitude (deg): -30.0063889
     longitude (deg): 119.7886111
-    soil: sandy loam
-    vegetation: open shrubland
-    habitat: slightly undulating
+    soil type: sandy loam
+    description: open shrubland
+    landform: slightly undulating
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_14:
-    description: Gravel plain, quartz
+    locality: Gravel plain, quartz
     latitude (deg): -30.0194444
     longitude (deg): 119.6788889
-    soil: loam over quartz
-    vegetation: open woodland
-    habitat: low rise
+    soil type: loam over quartz
+    description: open woodland
+    landform: low rise
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_15:
-    description: Manning Range
+    locality: Manning Range
     latitude (deg): -29.9958333
     longitude (deg): 119.6266667
-    soil: stony (ironstone)
-    vegetation: shrubland
-    habitat: hillslope
+    soil type: stony (ironstone)
+    description: shrubland
+    landform: hillslope
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_16:
-    description: Road intersect, laterite
+    locality: Road intersect, laterite
     latitude (deg): -29.9511111
     longitude (deg): 119.3983333
-    soil: clay-loam
-    vegetation: shrubland
-    habitat: plain
+    soil type: clay-loam
+    description: shrubland
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_17:
-    description: Spinifex grassland
+    locality: Spinifex grassland
     latitude (deg): -29.7483333
     longitude (deg): 119.4758333
-    soil: sand
-    vegetation: shrubland
-    habitat: broad rise
+    soil type: sand
+    description: shrubland
+    landform: broad rise
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_18:
-    description: P theory site
+    locality: P theory site
     latitude (deg): -29.7230556
     longitude (deg): 119.4891667
-    soil: gravelly sand
-    vegetation: shrubland
-    habitat: rise
+    soil type: gravelly sand
+    description: shrubland
+    landform: rise
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_19:
-    description: Mulga
+    locality: Mulga
     latitude (deg): -29.6744444
     longitude (deg): 119.3661111
-    soil: loam
-    vegetation: shrubland
-    habitat: plain
+    soil type: loam
+    description: shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_2:
-    description: Lancelin Pseudo-Pinnicals
+    locality: Lancelin Pseudo-Pinnicals
     latitude (deg): .na.real
     longitude (deg): .na.real
-    soil: .na.character
-    vegetation: .na.character
-    habitat: .na.character
+    soil type: .na.character
+    description: .na.character
+    landform: .na.character
     surface/groundwater access: .na.character
-    fire: .na.character
-    Rainfall: .na.real
+    fire history: .na.character
+    precipitation, MAP (mm): .na.real
   site_20:
-    description: Sand after Lake Barlee, 1-2 yrs after burn
+    locality: Sand after Lake Barlee, 1-2 yrs after burn
     latitude (deg): -29.015
     longitude (deg): 118.8908333
-    soil: sand
-    vegetation: open shrubland
-    habitat: plain
+    soil type: sand
+    description: open shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: burnt 2 yr ago
-    Rainfall: 300.0
+    fire history: burnt 2 yr ago
+    precipitation, MAP (mm): 300.0
   site_21:
-    description: Sand Lunch at E. orbifolia burnt
+    locality: Sand Lunch at E. orbifolia burnt
     latitude (deg): -28.7094444
     longitude (deg): 118.6205556
-    soil: gravelly loam
-    vegetation: shrubland
-    habitat: undulating
+    soil type: gravelly loam
+    description: shrubland
+    landform: undulating
     surface/groundwater access: 'no'
-    fire: recently burnt
-    Rainfall: 300.0
+    fire history: recently burnt
+    precipitation, MAP (mm): 300.0
   site_22:
-    description: 42km east of Mullewa, sand and laterite
+    locality: 42km east of Mullewa, sand and laterite
     latitude (deg): -28.4652778
     longitude (deg): 115.9163889
-    soil: gravelly sand
-    vegetation: shrubland
-    habitat: rise
+    soil type: gravelly sand
+    description: shrubland
+    landform: rise
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_23:
-    description: Mullewa - Yuna, Wheat Belt
+    locality: Mullewa - Yuna, Wheat Belt
     latitude (deg): -28.5319444
     longitude (deg): 115.2383333
-    soil: stony loam
-    vegetation: shrubland
-    habitat: low rise
+    soil type: stony loam
+    description: shrubland
+    landform: low rise
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_24:
-    description: Kalbarri NP Ranger track
+    locality: Kalbarri NP Ranger track
     latitude (deg): -27.6319444
     longitude (deg): 114.54
-    soil: sand
-    vegetation: shrubland
-    habitat: slightly undulating
+    soil type: sand
+    description: shrubland
+    landform: slightly undulating
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_25:
-    description: Hamelin Stromatolithes turnoff
+    locality: Hamelin Stromatolithes turnoff
     latitude (deg): -26.4433333
     longitude (deg): 114.1680556
-    soil: loam
-    vegetation: shrubland
-    habitat: plain
+    soil type: loam
+    description: shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: long unburnt
-    Rainfall: 150.0
+    fire history: long unburnt
+    precipitation, MAP (mm): 150.0
   site_26:
-    description: Campsite Gascoyne River
+    locality: Campsite Gascoyne River
     latitude (deg): -24.9880556
     longitude (deg): 114.8080556
-    soil: clay
-    vegetation: open shrubland
-    habitat: plain
+    soil type: clay
+    description: open shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 150.0
+    fire history: '?'
+    precipitation, MAP (mm): 150.0
   site_27:
-    description: .na.character
+    locality: .na.character
     latitude (deg): -24.9544444
     longitude (deg): 114.9386111
-    soil: sand
-    vegetation: shrubland
-    habitat: low ridge
+    soil type: sand
+    description: shrubland
+    landform: low ridge
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 150.0
+    fire history: '?'
+    precipitation, MAP (mm): 150.0
   site_28:
-    description: .na.character
+    locality: .na.character
     latitude (deg): -24.5336111
     longitude (deg): 114.9822222
-    soil: stony loam
-    vegetation: shrubland
-    habitat: plain
+    soil type: stony loam
+    description: shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 150.0
+    fire history: '?'
+    precipitation, MAP (mm): 150.0
   site_29:
-    description: Outlook sandstone + reef
+    locality: Outlook sandstone + reef
     latitude (deg): -24.4997222
     longitude (deg): 115.1405556
-    soil: sand over sandstone
-    vegetation: shrubland
-    habitat: mesa/tableland
+    soil type: sand over sandstone
+    description: shrubland
+    landform: mesa/tableland
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 150.0
+    fire history: '?'
+    precipitation, MAP (mm): 150.0
   site_3:
-    description: Banksia Woodland 90km N Perth
+    locality: Banksia Woodland 90km N Perth
     latitude (deg): .na.real
     longitude (deg): .na.real
-    soil: .na.character
-    vegetation: .na.character
-    habitat: .na.character
+    soil type: .na.character
+    description: .na.character
+    landform: .na.character
     surface/groundwater access: .na.character
-    fire: .na.character
-    Rainfall: .na.real
+    fire history: .na.character
+    precipitation, MAP (mm): .na.real
   site_30:
-    description: Campsite
+    locality: Campsite
     latitude (deg): -24.4141667
     longitude (deg): 115.1652778
-    soil: stony loam
-    vegetation: open shrubland
-    habitat: mesa/tableland
+    soil type: stony loam
+    description: open shrubland
+    landform: mesa/tableland
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 150.0
+    fire history: '?'
+    precipitation, MAP (mm): 150.0
   site_31:
-    description: Lyons River
+    locality: Lyons River
     latitude (deg): -23.9572222
     longitude (deg): 115.1266667
-    soil: sand
-    vegetation: open woodland
-    habitat: ephemeral river
+    soil type: sand
+    description: open woodland
+    landform: ephemeral river
     surface/groundwater access: possibly
-    fire: '?'
-    Rainfall: 150.0
+    fire history: '?'
+    precipitation, MAP (mm): 150.0
   site_32:
-    description: Mt. Augustus
+    locality: Mt. Augustus
     latitude (deg): -24.2772222
     longitude (deg): 116.9594444
-    soil: stony loam
-    vegetation: shrubland
-    habitat: plain
+    soil type: stony loam
+    description: shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 150.0
+    fire history: '?'
+    precipitation, MAP (mm): 150.0
   site_33:
-    description: Plateau on quartzite
+    locality: Plateau on quartzite
     latitude (deg): -24.0197222
     longitude (deg): 117.2208333
-    soil: stony loam
-    vegetation: open shrubland
-    habitat: mesa/tableland
+    soil type: stony loam
+    description: open shrubland
+    landform: mesa/tableland
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 150.0
+    fire history: '?'
+    precipitation, MAP (mm): 150.0
   site_34:
-    description: Gully
+    locality: Gully
     latitude (deg): -24.0108333
     longitude (deg): 117.2630556
-    soil: stony
-    vegetation: shrubland
-    habitat: creek gully
+    soil type: stony
+    description: shrubland
+    landform: creek gully
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 150.0
+    fire history: '?'
+    precipitation, MAP (mm): 150.0
   site_35:
-    description: Slope at Tropic of Capricorn
+    locality: Slope at Tropic of Capricorn
     latitude (deg): -23.5
     longitude (deg): 117.1605556
-    soil: stony
-    vegetation: open shrubland
-    habitat: slightly undulating
+    soil type: stony
+    description: open shrubland
+    landform: slightly undulating
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_36:
-    description: North of Paraburdoo
+    locality: North of Paraburdoo
     latitude (deg): -23.1333333
     longitude (deg): 117.8
-    soil: gravelly loam
-    vegetation: shrubland
-    habitat: slightly undulating
+    soil type: gravelly loam
+    description: shrubland
+    landform: slightly undulating
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_37:
-    description: Mt.  Nameless, 1120m
+    locality: Mt.  Nameless, 1120m
     latitude (deg): -22.7191667
     longitude (deg): 117.7613889
-    soil: rocky/stony
-    vegetation: shrubland
-    habitat: hill top
+    soil type: rocky/stony
+    description: shrubland
+    landform: hill top
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 400.0
+    fire history: '?'
+    precipitation, MAP (mm): 400.0
   site_38:
-    description: Road to Mt. Sheila
+    locality: Road to Mt. Sheila
     latitude (deg): -22.2541667
     longitude (deg): 117.6697222
-    soil: sandy loam
-    vegetation: open woodland
-    habitat: plain
+    soil type: sandy loam
+    description: open woodland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 400.0
+    fire history: '?'
+    precipitation, MAP (mm): 400.0
   site_39:
-    description: North Hamersly Range
+    locality: North Hamersly Range
     latitude (deg): -22.3213889
     longitude (deg): 118.5436111
-    soil: loam
-    vegetation: shrubland
-    habitat: plain
+    soil type: loam
+    description: shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 400.0
+    fire history: '?'
+    precipitation, MAP (mm): 400.0
   site_4:
-    description: Southern Cross
+    locality: Southern Cross
     latitude (deg): -31.2136111
     longitude (deg): 119.3455556
-    soil: loam
-    vegetation: woodland
-    habitat: plain
+    soil type: loam
+    description: woodland
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_40:
-    description: .na.character
+    locality: .na.character
     latitude (deg): -20.6636111
     longitude (deg): 120.0730556
-    soil: loam
-    vegetation: shrubland
-    habitat: plain
+    soil type: loam
+    description: shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 500.0
+    fire history: '?'
+    precipitation, MAP (mm): 500.0
   site_41:
-    description: short before Coastal Highway
+    locality: short before Coastal Highway
     latitude (deg): -19.9727778
     longitude (deg): 120.2205556
-    soil: sand
-    vegetation: shrubland
-    habitat: plain
+    soil type: sand
+    description: shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 500.0
+    fire history: '?'
+    precipitation, MAP (mm): 500.0
   site_42:
-    description: 270km South of Broome
+    locality: 270km South of Broome
     latitude (deg): -19.4555556
     longitude (deg): 121.4747222
-    soil: sand
-    vegetation: shrubland
-    habitat: plain
+    soil type: sand
+    description: shrubland
+    landform: plain
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 500.0
+    fire history: '?'
+    precipitation, MAP (mm): 500.0
   site_43:
-    description: Halfway Broome - Derby
+    locality: Halfway Broome - Derby
     latitude (deg): -17.6461111
     longitude (deg): 123.1544444
-    soil: loam
-    vegetation: open woodland
-    habitat: plain
+    soil type: loam
+    description: open woodland
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 1200.0
+    fire history: '?'
+    precipitation, MAP (mm): 1200.0
   site_44:
-    description: Plain East of Derby
+    locality: Plain East of Derby
     latitude (deg): -17.3541667
     longitude (deg): 123.7444444
-    soil: gravelly loam
-    vegetation: open woodland
-    habitat: plain
+    soil type: gravelly loam
+    description: open woodland
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_45:
-    description: Napier Range
+    locality: Napier Range
     latitude (deg): -17.2436111
     longitude (deg): 124.8761111
-    soil: clay
-    vegetation: open woodland
-    habitat: plain
+    soil type: clay
+    description: open woodland
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_46:
-    description: 40km East of Barnett River Roadhouse, road building camp, granite
-      and sand
+    locality: 40km East of Barnett River Roadhouse, road building camp, granite and
+      sand
     latitude (deg): -16.9055556
     longitude (deg): 125.7611111
-    soil: rocky (sandstone)
-    vegetation: open woodland
-    habitat: tableland
+    soil type: rocky (sandstone)
+    description: open woodland
+    landform: tableland
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_47:
-    description: Walcott Track, C. papillosa site
+    locality: Walcott Track, C. papillosa site
     latitude (deg): -16.0072222
     longitude (deg): 125.5891667
-    soil: sand
-    vegetation: open woodland
-    habitat: plain
+    soil type: sand
+    description: open woodland
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_48:
-    description: Munja Camp
+    locality: Munja Camp
     latitude (deg): .na.real
     longitude (deg): .na.real
-    soil: .na.character
-    vegetation: .na.character
-    habitat: .na.character
+    soil type: .na.character
+    description: .na.character
+    landform: .na.character
     surface/groundwater access: .na.character
-    fire: .na.character
-    Rainfall: .na.real
+    fire history: .na.character
+    precipitation, MAP (mm): .na.real
   site_49:
-    description: Near coast, table land
+    locality: Near coast, table land
     latitude (deg): -16.2672222
     longitude (deg): 125.0525
-    soil: rocky
-    vegetation: open woodland
-    habitat: low hills
+    soil type: rocky
+    description: open woodland
+    landform: low hills
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_5:
-    description: .na.character
+    locality: .na.character
     latitude (deg): -30.9955556
     longitude (deg): 119.4655556
-    soil: loam
-    vegetation: woodland
-    habitat: plain
+    soil type: loam
+    description: woodland
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_50:
-    description: Timm's creek
+    locality: Timm's creek
     latitude (deg): -16.1452778
     longitude (deg): 125.1391667
-    soil: loam
-    vegetation: woodland
-    habitat: creek flat
+    soil type: loam
+    description: woodland
+    landform: creek flat
     surface/groundwater access: possibly
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_51:
-    description: Sandstone East of Calder River, quartzite
+    locality: Sandstone East of Calder River, quartzite
     latitude (deg): -16.0275
     longitude (deg): 125.2313889
-    soil: rocky (sandstone)
-    vegetation: open woodland
-    habitat: mesa/tableland
+    soil type: rocky (sandstone)
+    description: open woodland
+    landform: mesa/tableland
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_52:
-    description: Rock surface, 100km East of Mt. Elizabeth Station
+    locality: Rock surface, 100km East of Mt. Elizabeth Station
     latitude (deg): -16.0072222
     longitude (deg): 125.4719444
-    soil: rocky (sandstone)
-    vegetation: open woodland
-    habitat: mesa/tableland
+    soil type: rocky (sandstone)
+    description: open woodland
+    landform: mesa/tableland
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_53:
-    description: Sand, 80km East of Mt. Elizabeth Station
+    locality: Sand, 80km East of Mt. Elizabeth Station
     latitude (deg): -16.0469444
     longitude (deg): 125.6641667
-    soil: sand
-    vegetation: low forest
-    habitat: plain
+    soil type: sand
+    description: low forest
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_54:
-    description: Drysdale Roadhouse
+    locality: Drysdale Roadhouse
     latitude (deg): -15.7136111
     longitude (deg): 126.3869444
-    soil: gravelly sand
-    vegetation: open woodland
-    habitat: plain
+    soil type: gravelly sand
+    description: open woodland
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_55:
-    description: 60km East of intersect
+    locality: 60km East of intersect
     latitude (deg): -15.9891667
     longitude (deg): 126.9775
-    soil: stony loam
-    vegetation: open woodland
-    habitat: plain
+    soil type: stony loam
+    description: open woodland
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_56:
-    description: River Crossing Homeland, sand trap
+    locality: River Crossing Homeland, sand trap
     latitude (deg): -15.5805556
     longitude (deg): 127.7647222
-    soil: sand (alluvial)
-    vegetation: shrubland
-    habitat: creek
+    soil type: sand (alluvial)
+    description: shrubland
+    landform: creek
     surface/groundwater access: possibly
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_57:
-    description: Return plateau, dry spot
+    locality: Return plateau, dry spot
     latitude (deg): -15.5852778
     longitude (deg): 127.7633333
-    soil: stony (sandstone)
-    vegetation: open woodland
-    habitat: rolling hills
+    soil type: stony (sandstone)
+    description: open woodland
+    landform: rolling hills
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_58:
-    description: Wyndham Five River Lookout
+    locality: Wyndham Five River Lookout
     latitude (deg): -15.4508333
     longitude (deg): 128.1202778
-    soil: rocky/stony
-    vegetation: open woodland
-    habitat: hill top
+    soil type: rocky/stony
+    description: open woodland
+    landform: hill top
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_59:
-    description: Bungle Bungle, sand / gravel
+    locality: Bungle Bungle, sand / gravel
     latitude (deg): -17.4669444
     longitude (deg): 128.4683333
-    soil: rocky (basalt)
-    vegetation: open woodland
-    habitat: low ridge
+    soil type: rocky (basalt)
+    description: open woodland
+    landform: low ridge
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 1200.0
+    fire history: '?'
+    precipitation, MAP (mm): 1200.0
   site_6:
-    description: Iron Mine Koolianobing
+    locality: Iron Mine Koolianobing
     latitude (deg): -30.7961111
     longitude (deg): 119.5363889
-    soil: clay-loam
-    vegetation: woodland
-    habitat: plain
+    soil type: clay-loam
+    description: woodland
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_60:
-    description: Bungle Bungle, sand
+    locality: Bungle Bungle, sand
     latitude (deg): -17.3991667
     longitude (deg): 128.2830556
-    soil: gravelly sand
-    vegetation: shrubland
-    habitat: undulating
+    soil type: gravelly sand
+    description: shrubland
+    landform: undulating
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_61:
-    description: Great Northern Highway
+    locality: Great Northern Highway
     latitude (deg): .na.real
     longitude (deg): .na.real
-    soil: .na.character
-    vegetation: .na.character
-    habitat: .na.character
+    soil type: .na.character
+    description: .na.character
+    landform: .na.character
     surface/groundwater access: .na.character
-    fire: .na.character
-    Rainfall: .na.real
+    fire history: .na.character
+    precipitation, MAP (mm): .na.real
   site_62:
-    description: Great Northern Highway
+    locality: Great Northern Highway
     latitude (deg): -16.0127778
     longitude (deg): 128.4247222
-    soil: '?'
-    vegetation: open woodland
-    habitat: '?'
+    soil type: '?'
+    description: open woodland
+    landform: '?'
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_63:
-    description: Great Northern Highway
+    locality: Great Northern Highway
     latitude (deg): -15.2413889
     longitude (deg): 128.4994444
-    soil: '?'
-    vegetation: open woodland
-    habitat: plain
+    soil type: '?'
+    description: open woodland
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_64:
-    description: 20km West of Kununurra
+    locality: 20km West of Kununurra
     latitude (deg): -15.7683333
     longitude (deg): 126.6069444
-    soil: sand over rock
-    vegetation: open woodland
-    habitat: undulating
+    soil type: sand over rock
+    description: open woodland
+    landform: undulating
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 1600.0
+    fire history: '?'
+    precipitation, MAP (mm): 1600.0
   site_65:
-    description: Ashburn River
+    locality: Ashburn River
     latitude (deg): .na.real
     longitude (deg): .na.real
-    soil: .na.character
-    vegetation: .na.character
-    habitat: .na.character
-    surface/groundwater access: .na.character
-    fire: .na.character
-    Rainfall: .na.real
-  site_66:
-    description: Drysdale River
-    latitude (deg): .na.real
-    longitude (deg): .na.real
-    soil: .na.character
-    vegetation: .na.character
-    habitat: .na.character
-    surface/groundwater access: .na.character
-    fire: .na.character
-    Rainfall: .na.real
-  site_7:
+    soil type: .na.character
     description: .na.character
+    landform: .na.character
+    surface/groundwater access: .na.character
+    fire history: .na.character
+    precipitation, MAP (mm): .na.real
+  site_66:
+    locality: Drysdale River
+    latitude (deg): .na.real
+    longitude (deg): .na.real
+    soil type: .na.character
+    description: .na.character
+    landform: .na.character
+    surface/groundwater access: .na.character
+    fire history: .na.character
+    precipitation, MAP (mm): .na.real
+  site_7:
+    locality: .na.character
     latitude (deg): -30.7483333
     longitude (deg): 119.5583333
-    soil: loam
-    vegetation: open woodland
-    habitat: plain
+    soil type: loam
+    description: open woodland
+    landform: plain
     surface/groundwater access: unlikely
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_8:
-    description: Sandplain with Spinifex
+    locality: Sandplain with Spinifex
     latitude (deg): -30.515
     longitude (deg): 119.5941667
-    soil: sand
-    vegetation: shrubland
-    habitat: broad rise
+    soil type: sand
+    description: shrubland
+    landform: broad rise
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
   site_9:
-    description: .na.character
+    locality: .na.character
     latitude (deg): -30.4305556
     longitude (deg): 119.6338889
-    soil: loam
-    vegetation: open shrubland
-    habitat: undulating
+    soil type: loam
+    description: open shrubland
+    landform: undulating
     surface/groundwater access: 'no'
-    fire: '?'
-    Rainfall: 300.0
+    fire history: '?'
+    precipitation, MAP (mm): 300.0
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-    site_name: site_name
-    date: Date_to_use_edited
-  custom_R_code: data %>% mutate(Date_to_use_edited = Date_to_use_edited %>% mdy())
-    %>% group_by(`species_name`) %>% mutate_at(vars(physical_defence,`leaf type`,leaf_compoundness,Deciduous,`Life-form`,`N2
-    fixing`), replace_duplicates_with_NA) %>% ungroup() %>% ungroup()
 traits:
 - var_in: leaf type
   unit_in: .na.character
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na.character
+  methods: expert observation
+- var_in: leaf_type
+  unit_in: .na.character
   trait_name: leaf_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation
 - var_in: leaf_compoundness
   unit_in: .na.character
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation
 - var_in: physical_defence
   unit_in: .na.character
-  trait_name: physical_defence
-  value_type: expert_mean
+  trait_name: plant_physical_defence_structures
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na.character
   methods: expert observation
 - var_in: leaf_area_cm2
   unit_in: cm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: '1'
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -762,19 +827,25 @@ traits:
 - var_in: Life-form
   unit_in: .na
   trait_name: woodiness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert field observation
 - var_in: Deciduous
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert field observation
 - var_in: N2 fixing
   unit_in: .na
   trait_name: nitrogen_fixing
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: The genus Acacia has been shown to be capable of fixing N2, but the rates
     depend on the environmental conditions (Brockwell et al. 2005). It may also be
@@ -784,8 +855,10 @@ traits:
     to the difficulties in terrain.
 - var_in: Specific Leaf Area (m2 kg-1)
   unit_in: m2/kg
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -798,7 +871,9 @@ traits:
 - var_in: Delta vs. PDB-corr. 13/12 C
   unit_in: per mille
   trait_name: leaf_delta13C
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -816,7 +891,9 @@ traits:
 - var_in: Delta vs. air-corr 29/28 N
   unit_in: per mille
   trait_name: leaf_delta15N
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -834,7 +911,9 @@ traits:
 - var_in: C (g/kg)
   unit_in: g/kg
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -852,7 +931,9 @@ traits:
 - var_in: N (g/kg)
   unit_in: g/kg
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -870,7 +951,9 @@ traits:
 - var_in: P (mg/kg)
   unit_in: mg/kg
   trait_name: leaf_P_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: At each site, fully-developed leaves were sampled from the sun-lit part
     of the crown. These leaves were assumed to have grown 12 months prior to the sampling.
@@ -886,414 +969,695 @@ traits:
     and phosphorous was measured using ICP-AES Optima 3300DV, Perkin-Elmer, Waltham,
     Mass., USA.
 substitutions:
-- trait_name: leaf_type
+- trait_name: plant_physical_defence_structures
+  find: spines_or_thorns
+  replace: sharp_pointed_defence
+- trait_name: plant_photosynthetic_organ
   find: phylloids
   replace: phyllode
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: phyloclades
-  replace: phyllode
-- trait_name: leaf_type
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
   find: small phyllods
   replace: phyllode
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: phylloclades
-  replace: phyllode
-- trait_name: leaf_type
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
   find: phylloid
   replace: phyllode
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: phylloclad
-  replace: phyllode
-- trait_name: leaf_type
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
   find: small phylloids
   replace: phyllode
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: scale like
-  replace: scale_leaf
-- trait_name: leaf_type
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
   find: leaf scales
-  replace: scale_leaf
-- trait_name: leaf_type
+  replace: cladode
+- trait_name: plant_photosynthetic_organ
   find: thorny scale
-  replace: scale_leaf
-- trait_name: leaf_type
+  replace: .na
+- trait_name: plant_photosynthetic_organ
   find: lancelat
-  replace: broadleaf
-- trait_name: leaf_type
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
+  find: broadleaf
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
   find: lanceolat
-  replace: broadleaf
-- trait_name: leaf_type
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
+  find: linearly
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
   find: thorny
   replace: .na
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: leaflet
-  replace: broadleaf
-- trait_name: leaf_type
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
   find: needle like
-  replace: needle
+  replace: leaf
 - trait_name: nitrogen_fixing
   find: N2 fixing
-  replace: 1
+  replace: nitrogen_fixer
 - trait_name: nitrogen_fixing
   find: non-N2 fixing
-  replace: 0
+  replace: non_nitrogen_fixer
 - trait_name: leaf_phenology
   find: semi dry season deciduous
   replace: facultative_drought_deciduous
 - trait_name: leaf_phenology
   find: dry-season deciduous
   replace: drought_deciduous
+- trait_name: leaf_compoundness
+  find: phyllode
+  replace: .na
 taxonomic_updates:
-- find: Acacia aff. holosericea
-  replace: Acacia holosericea
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Acacia tumida subsp. tumida
-  replace: Acacia tumida var. tumida
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Acacia bircittii
-  replace: Acacia burkittii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Acacia citrioviridis
-  replace: Acacia citrinoviridis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Acacia prunocarpa
-  replace: Acacia pruinocarpa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Acacia thompsonii
-  replace: Acacia thomsonii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Eucalyptus phoenicia
-  replace: Eucalyptus phoenicea
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Corymbia confertifolia
-  replace: Corymbia confertiflora
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
 - find: Acacia  1
-  replace: Acacia sp. [Acacia 1]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia 1; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  1, bubble
-  replace: Acacia sp. [Acacia  1, bubble]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia  1, bubble; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  2
-  replace: Acacia sp. [Acacia  2]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia 2; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  3 phylloclad
-  replace: Acacia sp. [Acacia  3 phylloclad]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia  3 phylloclad; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  3, semiprickly
-  replace: Acacia sp. [Acacia  3, semiprickly]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia aff. bivenosa (?sp. nov.)
-  replace: Acacia startii
-  reason: Align with accepted name on APC list (E. Wenk, 2020-05-24)
-- find: Acacia aff. seclusa (?sp. nov.)
-  replace: Acacia seclusa
-  reason: Align with accepted name on APC list (E. Wenk, 2020-05-24)
-- find: Acacia aff. translucens (?sp. nov.)
-  replace: Acacia translucens
-  reason: Align with accepted name on APC list (E. Wenk, 2020-05-24)
-- find: Acacia aneura horizontalis
-  replace: Acacia aneura
-  reason: Align to APC accepted species name (E. Wenk, 2020-05-24)
-- find: Acacia aneura var. argentea?
-  replace: Acacia caesaneura
-  reason: Align to APC accepted species name (E. Wenk, 2020-05-24)
-- find: Acacia aneura var. conifera?
-  replace: Acacia pteraneura
-  reason: Align to APC accepted species name (E. Wenk, 2020-05-24)
-- find: Acacia aneura var. microcarpa?
-  replace: Acacia incurvaneura
-  reason: Align to APC accepted species name (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia  3, semiprickly; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  aneura?
   replace: Acacia aneura
-  reason: Align to APC accepted species name (E. Wenk, 2020-05-24)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia  another big leaf
-  replace: Acacia sp. [another big leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia another big leaf; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  antenna, aireal
-  replace: Acacia sp. [antenna, aireal]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia antenna, aireal; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  big falcate
-  replace: Acacia  sp. [big falcate]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia big falcate; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  big leaf
-  replace: Acacia  sp. [big leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia big leaf; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  blue leaf
-  replace: Acacia  sp. [blue leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [blue leaf; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  blue legume, broome-like
-  replace: Acacia  sp. [blue legume, broome-like]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [blue legume, broome-like; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  boring
-  replace: Acacia  sp. [boring]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia boring; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  broad leaf
-  replace: Acacia  sp. [broad leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [broad leaf; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  broad leaf tree
-  replace: Acacia  sp. [broad leaf tree]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [broad leaf tree; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  broad pod
-  replace: Acacia  sp. [broad pod]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [broad pod; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  bungle linear
-  replace: Acacia  sp. [bungle linear]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia bungle linear; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  bungle minniritchi bark
-  replace: Acacia  sp. [bungle minniritchi bark]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia bungle minniritchi bark; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  bushy
-  replace: Acacia  sp. [bushy]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia bushy; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  Callitris-like
-  replace: Acacia  sp. [Callitris-like]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia coolgardiensis subsp. effusa?
-  replace: Acacia effusifolia
-  reason: Align with accepted name on APC list (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia Callitris-like; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  corky
-  replace: Acacia sp. [corky]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia cuthbertsonii subsp. linearis?
-  replace: Acacia cuthbertsonii subsp. linearis
-  reason: Align with accepted name on APC list (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [corky; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  dwarf shrub
-  replace: Acacia sp. [dwarf shrub]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia dwarf shrub; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  elephant ear
-  replace: Acacia sp. [elephant ear]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia elephant ear; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  falcate leaf
-  replace: Acacia sp. [falcate leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [falcate leaf; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  fine leaf
-  replace: Acacia sp. [fine leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia fine leaf; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  fine phylloids
-  replace: Acacia sp. [fine phylloids]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia fine phylloids; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  friendly
-  replace: Acacia sp. [friendly]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia friendly; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  gidgee
-  replace: Acacia sp. [gidgee]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia gidgee; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  green
-  replace: Acacia sp. [green]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia green; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  green gidgee
-  replace: Acacia sp. [gidgee]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia green gidgee; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  green shrub
-  replace: Acacia sp. [green shrub]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia green shrub; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  Grevillea-like
-  replace: Acacia sp. [Grevillea-like]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia Grevillea-like; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  grey mulga
-  replace: Acacia sp. [grey mulga]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia grey mulga; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  in Euc
-  replace: Acacia sp. [Acacia  in Euc]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia  in Euc; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  in flower
-  replace: Acacia sp. [in flower]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia  in flower; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  lanceolate leaf
-  replace: Acacia sp. [lanceolate leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [lanceolate leaf; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  leafy
-  replace: Acacia sp. [leafy]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia leptocarpa? (?sp. nov.)
-  replace: Acacia leptocarpa
-  reason: Align spelling with known name (E. Wenk, 2020-05-22)
+  replace: Acacia sp. [leafy; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  linear
-  replace: Acacia sp. [linear]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia  linear; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  linear 1
-  replace: Acacia sp. [linear 1]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia  linear 1; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  linear 1 (same as 33.1)
-  replace: Acacia sp. [linear 1 [same as 33.1]]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia linear 1 (same as 33.1); Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  linear 2
-  replace: Acacia sp. [linear 2]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia  linear 2; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  linear acuminata
-  replace: Acacia acuminata
-  reason: Species alignment by E. Wenk (2020-03-15)
+  replace: Acacia sp. [Acacia linear acuminata; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  linear, terete
-  replace: Acacia sp. [linear, terete]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia linear, terete; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  long & narrow leaf
-  replace: Acacia sp. [long & narrow leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia long & narrow leaf; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  long leaf
-  replace: Acacia sp. [long leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia long leaf; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  medium leaf
-  replace: Acacia sp. [medium leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  replace: Acacia sp. [Acacia medium leaf; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  minniritchi bark
-  replace: Acacia rhodophloia
-  reason: Align with accepted name on APC list (E. Wenk, 2020-05-24)
+  replace: Acacia rhodophloia [Acacia  minniritchi bark; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  minniritchi bark shrub
-  replace: Acacia rhodophloia
-  reason: Align with accepted name on APC list (E. Wenk, 2020-05-24)
+  replace: Acacia minniritchi
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Acacia  minniritchy bark
-  replace: Acacia rhodophloia
-  reason: Align with accepted name on APC list (E. Wenk, 2020-05-24)
+  replace: Acacia rhodophloia [Acacia  minniritchy bark; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Acacia  needle
-  replace: Acacia sp. [needle]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  oval leaf, friendly?
-  replace: Acacia sp. [oval leaf, friendly?]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  parallel vein
-  replace: Acacia sp. [parallel vein]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  phylloclade
-  replace: Acacia sp. [phylloclade]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  phyllodium
-  replace: Acacia sp. [phyllodium]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  phylloids
-  replace: Acacia sp. [phylloids]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  pindanica
-  replace: Acacia tumida
-  reason: Align with accepted name on APC list (E. Wenk, 2020-05-24)
-- find: Acacia  prickly
-  replace: Acacia sp. [prickly]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia ramulosa var. ramulosa?
-  replace: Acacia ramulosa var. ramulosa
-  reason: Align with accepted name on APC list (E. Wenk, 2020-05-24)
-- find: Acacia resinimarginea?
-  replace: Acacia resinimarginea
-  reason: Align with accepted name on APC list (E. Wenk, 2020-05-24)
-- find: Acacia rhodophloia creek minniritchy
-  replace: Acacia rhodophloia
-  reason: Align with accepted name on APC list (E. Wenk, 2020-05-24)
-- find: Acacia  ribbon
-  replace: Acacia sp. [ribbon]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  shiny green leaf
-  replace: Acacia sp. [shiny green leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  shrub linear
-  replace: Acacia sp. [shrub linear]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  shrub oval
-  replace: Acacia sp. [shrub oval]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  sickle leaf
-  replace: Acacia sp. [sickle leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  silvery new growth
-  replace: Acacia sp. [silvery new growth]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  small
-  replace: Acacia sp. [small]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  smoke bush-like
-  replace: Acacia sp. [smoke bush-like]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  sp.
-  replace: Acacia sp.
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  spatulate
-  replace: Acacia sp. [spatulate]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  strap leaf
-  replace: Acacia sp. [strap leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia suberosa larix-like
-  replace: Vachellia suberosa
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-24)
-- find: Acacia  textured leaf
-  replace: Acacia  sp. [textured leaf]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  thorny
-  replace: Acacia  sp. [thorny]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  waxy
-  replace: Acacia sp. [waxy]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  waxy falcate
-  replace: Acacia sp. [waxy falcate]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia  with thorns
-  replace: Acacia sp. [with thorns]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Acacia xinophylla
-  replace: Acacia xiphophylla
-  reason: Align to most likely name on APC list (E. Wenk, 2020-05-24)
-- find: Corymbia curtipes - byrnesii
-  replace: Corymbia curtipes
-  reason: Align with APC accepted synonym; species intergrade, selected first name
-    in list (E. Wenk, 2020-05-26)
-- find: Corymbia curtipes - byrnesii intergrade
-  replace: Corymbia curtipes
-  reason: Align with APC accepted synonym; species intergrade, selected first name
-    in list (E. Wenk, 2020-05-26)
-- find: Eucalyptus leptopoda x oldfieldii hybrid swarm
-  replace: Eucalyptus sp. [Eucalyptus leptopoda x Eucalyptus oldfieldii hybrid swarm]
-  reason: Aling to genus, because unrecognised hybrid (E. Wenk, 2020-05-26)
-- find: Eucalyptus  new
-  replace: Eucalyptus sp. [Eucalyptus  new]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Eucalyptus  new formanii
-  replace: Eucalyptus formanii
-  reason: Change spelling to Align to APC accepted name (E. Wenk, 2020-05-26)
-- find: Lysiphyllum  2, small
-  replace: Bauhinia sp. [Lysiphyllum  2, small]
-  reason: Align to genus (E. Wenk, 2020-05-26)
-- find: Lysiphyllum  cunninghamii?
-  replace: Lysiphyllum cunninghamii
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-26)
-- find: NA  Bauhinia?
-  replace: Bauhinia sp.
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: NA  pea plant
-  replace: Fabaceae
-  reason: Align to family (E. Wenk, 2020-05-23)
-- find: NA  Pea plant
-  replace: Fabaceae
-  reason: Align to family (E. Wenk, 2020-05-23)
-- find: Senna  1
-  replace: Senna sp. [Senna  1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Senna  2
-  replace: Senna sp. [Senna  2]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Senna  3
-  replace: Senna sp. [Senna  3]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Senna artemisioides subsp. artemisioides
-  replace: Senna artemisioides subsp. x artemisioides
-  reason: Align to accepted hybrid species on APC list (E. Wenk, 2020-05-25)
-- find: Senna  big leaf
-  replace: Senna sp. [big leaf]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Senna  shrub
-  replace: Senna sp. [shrub]
-  reason: Align to genus (E. Wenk, 2020-05-25)
-- find: Vachellia (Acacia) pachyphloia subsp. brevipinnula
-  replace: Vachellia pachyphloia subsp. brevipinnula
-  reason: Align to known name in APC (D Falster, 2020.05.23)
-- find: Vachellia (Acacia) suberosa
-  replace: Vachellia suberosa
-  reason: Confirm alignment with APC accepted name (E. Wenk, 2020-05-25)
-- find: Acacia oblong
-  replace: Acacia oblonga
-  reason: Automatic alignment with name in APC list (2020-06-18)
+  replace: Acacia sp. [Acacia needle; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Acacia  oblong
   replace: Acacia oblonga
-  reason: Automatic alignment with name in APC list (known names) (2020-06-25)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acacia  oval leaf, friendly?
+  replace: Acacia sp. [Acacia oval leaf, friendly?; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia  parallel vein
+  replace: Acacia sp. [Acacia parallel vein; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia  phylloclade
+  replace: Acacia sp. [Acacia phylloclade; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia  phyllodium
+  replace: Acacia sp. [Acacia phyllodium; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia  phylloids
+  replace: Acacia sp. [phylloids; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
+- find: Acacia  pindanica
+  replace: Acacia sp. [Acacia  pindanica; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
+- find: Acacia  prickly
+  replace: Acacia sp. [Acacia prickly; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia  ribbon
+  replace: Acacia sp. [ribbon; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
+- find: Acacia  shiny green leaf
+  replace: Acacia sp. [Acacia shiny green leaf; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia  shrub linear
+  replace: Acacia sp. [Acacia shrub linear; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia  shrub oval
+  replace: Acacia sp. [Acacia shrub oval; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia  sickle leaf
+  replace: Acacia sp. [Acacia sickle leaf; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia  silvery new growth
+  replace: Acacia sp. [Acacia silvery new growth; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia  small
+  replace: Acacia sp. [Acacia  small; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
+- find: Acacia  smoke bush-like
+  replace: Acacia sp. [Acacia smoke bush-like; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia sp. [Acacia  linear 1; Schulze_2014]
+  replace: Acacia sp. [Acacia  linear 1; Schulze_2014]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
+- find: Acacia sp. [Acacia  linear 2; Schulze_2014]
+  replace: Acacia sp. [Acacia  linear 2; Schulze_2014]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
+- find: Acacia sp. [Acacia  linear; Schulze_2014]
+  replace: Acacia sp. [Acacia  linear; Schulze_2014]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
+- find: Acacia sp. [Acacia  waxy; Schulze_2014]
+  replace: Acacia sp. [Acacia  waxy; Schulze_2014]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
+- find: Acacia  spatulate
+  replace: Acacia spatulata
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acacia  strap leaf
+  replace: Acacia sp. [Acacia strap leaf; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia  textured leaf
+  replace: Acacia sp. [Acacia textured leaf; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia  thorny
+  replace: Acacia sp. [thorny; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
+- find: Acacia  waxy
+  replace: Acacia sp. [Acacia  waxy; Schulze_2014]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
+- find: Acacia  waxy falcate
+  replace: Acacia sp. [waxy falcate; Schulze_2014]]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
+- find: Acacia  with thorns
+  replace: Acacia sp. [Acacia with thorns; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-12)
+  taxonomic_resolution: genus
+- find: Acacia aff. bivenosa (?sp. nov.)
+  replace: Acacia sp. [Acacia aff. bivenosa (?sp. nov.); Schulze_2014]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia aff. holosericea
+  replace: Acacia sp. [Acacia aff. holosericea; Schulze_2014]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia aff. seclusa (?sp. nov.)
+  replace: Acacia sp. [Acacia aff. seclusa (?sp. nov.); Schulze_2014]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia aff. translucens (?sp. nov.)
+  replace: Acacia sp. [Acacia aff. translucens (?sp. nov.); Schulze_2014]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia aneura horizontalis
+  replace: Acacia aneura
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acacia aneura var. argentea?
+  replace: Acacia aneura var. argentea
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Acacia aneura var. conifera?
+  replace: Acacia aneura var. conifera
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Acacia aneura var. microcarpa?
+  replace: Acacia aneura var. microcarpa
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Acacia bircittii
+  replace: Acacia burkittii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acacia citrioviridis
+  replace: Acacia citrinoviridis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acacia coolgardiensis subsp. effusa?
+  replace: Acacia coolgardiensis subsp. effusa
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Acacia cuthbertsonii subsp. linearis?
+  replace: Acacia cuthbertsonii subsp. linearis
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Acacia leptocarpa? (?sp. nov.)
+  replace: Acacia leptocarpa
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acacia oblong
+  replace: Acacia oblonga
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acacia prunocarpa
+  replace: Acacia pruinocarpa
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acacia ramulosa var. ramulosa?
+  replace: Acacia ramulosa var. ramulosa
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Acacia resinimarginea?
+  replace: Acacia resinimarginea
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acacia rhodophloia creek minniritchy
+  replace: Acacia rhodophloia
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acacia sp.
+  replace: Acacia sp. [Schulze_2014]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Acacia sp. 1
+  replace: Acacia sp. [Acacia sp. 1; Schulze_2014]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
+- find: Acacia sp. 2
+  replace: Acacia sp. [Acacia sp. 2; Schulze_2014]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
+- find: Acacia sp. 3
+  replace: Acacia sp. [Acacia sp. 3; Schulze_2014]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
+- find: Acacia sp. 4
+  replace: Acacia sp. [Acacia sp. 4; Schulze_2014]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
+- find: Acacia suberosa larix-like
+  replace: Acacia suberosa
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acacia thompsonii
+  replace: Acacia thomsonii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acacia tumida subsp. tumida
+  replace: Acacia tumida var. tumida
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Acacia xinophylla
+  replace: Acacia xiphophylla
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Corymbia confertifolia
+  replace: Corymbia confertiflora
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Corymbia curtipes - byrnesii
+  replace: Corymbia sp. [Corymbia curtipes - byrnesii; Schulze_214]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
+- find: Corymbia curtipes - byrnesii intergrade
+  replace: Corymbia sp. [Corymbia curtipes - byrnesii intergrade; Schulze_214]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
+- find: Eucalyptus  new
+  replace: Eucalyptus sp. [Eucalyptus new; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-12)
+  taxonomic_resolution: genus
+- find: Eucalyptus  new formanii
+  replace: Eucalyptus sp. [Eucalyptus new formanii; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Eucalyptus  new horistes
+  replace: Eucalyptus horistes [Eucalyptus new horistes; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Eucalyptus leptopoda x oldfieldii hybrid swarm
+  replace: Eucalyptus x [Eucalyptus leptopoda x oldfieldii hybrid swarm; Schulze_2014]
+  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
+    genus-level alignment with APC accepted genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Eucalyptus phoenicia
+  replace: Eucalyptus phoenicea
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lysiphyllum  2, small
+  replace: Bauhinia sp. [Lysiphyllum 2, small; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus known
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Lysiphyllum  cunninghamii?
+  replace: Lysiphyllum cunninghamii
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: NA Bauhinia?
+  replace: Bauhinia sp. [NA Bauhinia?; Schulze_2014]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
+- find: NA pea plant
+  replace: Fabaceae sp. [NA pea plant; Schulze_2014]
+  reason: Manual matched to family for taxon that can't be matcheded to genus (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: family
+- find: NA Pea plant
+  replace: Fabaceae sp. [NA Pea plant; Schulze_2014]
+  reason: Manual matched to family for taxon that can't be matcheded to genus (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: family
+- find: Prosopis mesquite
+  replace: Prosopis sp. [Prosopis mesquite; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-22)
+  taxonomic_resolution: genus
+- find: Senna  1
+  replace: Senna sp. [Senna 1; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Senna  2
+  replace: Senna sp. [Senna 2; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Senna  3
+  replace: Senna sp. [Senna 3; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Senna  big leaf
+  replace: Senna sp. [Senna big leaf; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Senna  shrub
+  replace: Senna sp. [Senna shrub; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Senna artemisioides subsp. artemisioides
+  replace: Senna artemisioides subsp. x artemisioides
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Vachellia (Acacia) pachyphloia subsp. brevipinnula
+  replace: Vachellia sp. [Vachellia (Acacia) pachyphloia subsp. brevipinnula; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Vachellia (Acacia) suberosa
+  replace: Vachellia sp. [Vachellia (Acacia) suberosa; Schulze_2014]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 exclude_observations: .na
 questions: .na
-

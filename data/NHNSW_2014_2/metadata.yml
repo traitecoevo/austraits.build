@@ -1,0 +1,1584 @@
+source:
+  primary:
+    key: NHNSW_2014_2
+    bibtype: Online
+    author: '{Royal Botanic Gardens Sydney}'
+    title: 'PLantNET: NSW flora online'
+    year: 2014
+    url: http://plantnet.rbgsyd.nsw.gov.au/
+contributors:
+  data_collectors:
+  - last_name: Duretto
+    given_name: Marco
+    ORCID: 0000-0003-1013-4291
+    affiliation: National Herbarium of New South Wales, Australian Institute of Botanical
+      Science, Royal Botanic Gardens and Domain Trust, Sydney, Australia
+  austraits_curators: Rachael Gallagher
+dataset:
+  data_is_long_format: yes
+  custom_R_code:      '
+    check_months <-  function(x){(1:12 %in% x %>% as.integer() %>% paste(collapse=""))};
+
+    fruiting <- 
+      data %>% 
+        filter(trait == "fruiting", lookup_id <= 13) %>% 
+        select(species, lookup_id) %>%
+        group_by(species) %>%
+        nest(months = c(lookup_id)) %>%
+        mutate(trait = "fruiting_time", lookup_data = map_chr(months, 
+            ~check_months(.x$lookup_id)) %>% convert_01_ny) %>%
+        select(-months);
+
+    flowering <- 
+      data %>% 
+        filter(trait == "flowering month", lookup_id <= 13) %>% 
+        select(species, lookup_id) %>%
+        group_by(species) %>%
+        nest(months = c(lookup_id)) %>%
+        mutate(trait = "flowering_time", lookup_data = map_chr(months, 
+            ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months);
+
+    growth_habit <-
+      data %>%
+        filter(lookup_data == "creeper rooting along stems") %>%
+        mutate(trait = "growth_habit", lookup_data = "creeping");
+    
+    clonal <-
+      data %>%
+        filter(lookup_data == "creeper rooting along stems") %>%
+        mutate(trait = "clonal_spread_mechanism", lookup_data = "aboveground_clonal");
+  
+    scales <-
+      data %>%
+        mutate(trait = ifelse(str_detect(lookup_data, "scales"), "leaf_type", trait)) %>%
+        filter(trait == "leaf_type") %>% 
+        mutate(lookup_data = "scale");
+            
+    collapsed <-
+      data %>% 
+        filter(!trait %in% c("fruiting","flowering month")) %>%
+        mutate(
+          trait = ifelse(lookup_data == "prostrate", "growth_habit", trait),
+          trait = ifelse(lookup_data == "climbing", "growth_habit", trait),
+          trait = ifelse(lookup_data == "parasitic", "parasitic", trait),
+          trait = ifelse(str_detect(lookup_data,"epiphytic"), "growth_substrate", trait),
+          trait = ifelse(lookup_data == "aquatic", "growth_substrate", trait),
+          trait = ifelse(trait == "special growth form", "growth form", trait),
+          lookup_data = str_replace(lookup_data,"toothed or lobed","toothed_or_lobed")    
+        ) %>%
+        select(species, trait, units, lookup_data) %>%
+        group_by(species, trait, units) %>% 
+          summarise(
+            lookup_data = paste0(lookup_data, collapse = " ")
+          ) %>% 
+        ungroup() %>%
+        distinct(species, trait, units, lookup_data);
+   
+    bind_rows(
+      collapsed,
+      fruiting,
+      flowering,
+      growth_habit,
+      clonal,
+      scales
+    )
+  '
+  collection_date: unknown/2014
+  taxon_name: species
+  value: lookup_data
+  trait_name: trait
+  description: Flora of NSW data from PLantNET
+  basis_of_record: preserved_specimen
+  life_stage: adult
+  sampling_strategy: herbarium specimens
+  original_file: PLantNET.xls
+  notes: Request acknowledgement of "National Herbarium of NSW and PLantNET"
+locations: .na
+contexts: .na
+traits:
+- var_in: flowering_time
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: longevity
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: clonal_spread_mechanism
+  unit_in: .na
+  trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: vegetative_reproduction_ability
+  unit_in: .na
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: woodiness
+  unit_in: .na
+  trait_name: woodiness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert observation or opinion
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: foliage
+  unit_in: .na
+  trait_name: leaf_phenology
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: flower colour
+  unit_in: .na
+  trait_name: flower_colour
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf arrangement
+  unit_in: .na
+  trait_name: leaf_phyllotaxis
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_type
+  unit_in: .na
+  trait_name: leaf_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf type
+  unit_in: .na
+  trait_name: leaf_compoundness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf margin
+  unit_in: .na
+  trait_name: leaf_margin
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: fruiting_time
+  unit_in: .na
+  trait_name: fruiting_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: local spread
+  unit_in: .na
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf length minimum
+  unit_in: mm
+  trait_name: leaf_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf length maximum
+  unit_in: mm
+  trait_name: leaf_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf width minimum
+  unit_in: mm
+  trait_name: leaf_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf width maximum
+  unit_in: mm
+  trait_name: leaf_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: plant height minimum
+  unit_in: cm
+  trait_name: plant_height
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: plant height maximum
+  unit_in: cm
+  trait_name: plant_height
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: growth form
+  unit_in: .na
+  trait_name: .na
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Plant growth form data; replaced by newly scraped data in NHNSW_2022. Since
+    there were a number of systematic mistakes in this dataset it has been removed.
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: life_form
+  unit_in: .na
+  trait_name: life_form
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: growth_habit
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: life_form
+  unit_in: .na
+  trait_name: life_form
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: growth_habit
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: height class
+  unit_in: .na
+  trait_name: .na
+  entity_type: .na
+  value_type: .na
+  basis_of_value: .na
+  replicates: .na
+  methods: .na
+- var_in: propagation
+  unit_in: .na
+  trait_name: .na
+  entity_type: .na
+  value_type: .na
+  basis_of_value: .na
+  replicates: .na
+  methods: .na
+- var_in: introduced
+  unit_in: .na
+  trait_name: .na
+  entity_type: .na
+  value_type: .na
+  basis_of_value: .na
+  replicates: .na
+  methods: .na
+substitutions:
+- trait_name: plant_growth_substrate
+  find: epiphytic
+  replace: epiphyte
+- trait_name: leaf_margin
+  find: toothed_or_lobed
+  replace: .na
+- trait_name: leaf_margin
+  find: entire toothed_or_lobed
+  replace: .na
+- trait_name: leaf_margin
+  find: toothed or lobed
+  replace: .na
+- trait_name: leaf_margin
+  find: entire toothed lobed
+  replace: .na
+- trait_name: life_history
+  find: short-lived
+  replace: short_lived_perennial
+- trait_name: life_history
+  find: long_lived
+  replace: perennial
+- trait_name: life_history
+  find: indefinite
+  replace: perennial
+- trait_name: leaf_compoundness
+  find: simple or appearing so
+  replace: simple
+- trait_name: flower_colour
+  find: yellow orange
+  replace: yellow_orange
+- trait_name: flower_colour
+  find: blue or purple
+  replace: blue_purple
+- trait_name: flower_colour
+  find: red or brown
+  replace: red_brown
+- trait_name: flower_colour
+  find: blue or purple blue or purple
+  replace: blue_purple
+- trait_name: flower_colour
+  find: blue or purple blue or purple pink
+  replace: blue_purple pink
+- trait_name: flower_colour
+  find: blue or purple blue or purple red or brown
+  replace: blue_purple red_brown
+- trait_name: flower_colour
+  find: blue or purple pink
+  replace: blue_purple pink
+- trait_name: flower_colour
+  find: blue or purple pink red or brown
+  replace: blue_purple pink red_brown
+- trait_name: flower_colour
+  find: blue or purple pink white or cream
+  replace: blue_purple pink white_cream
+- trait_name: flower_colour
+  find: blue or purple red or brown
+  replace: blue_purple red_brown
+- trait_name: flower_colour
+  find: blue or purple white or cream
+  replace: blue_purple white_cream
+- trait_name: flower_colour
+  find: blue or purple white or cream pink
+  replace: blue_purple white_cream pink
+- trait_name: flower_colour
+  find: blue or purple yellow orange
+  replace: blue_purple yellow_orange
+- trait_name: flower_colour
+  find: blue or purple yellow orange red or brown
+  replace: blue_purple yellow_orange red_brown
+- trait_name: flower_colour
+  find: green blue or purple
+  replace: green blue_purple
+- trait_name: flower_colour
+  find: green blue or purple pink
+  replace: green blue_purple pink
+- trait_name: flower_colour
+  find: green blue or purple pink red or brown
+  replace: green blue_purple pink red_brown
+- trait_name: flower_colour
+  find: green blue or purple red or brown
+  replace: green blue_purple red_brown
+- trait_name: flower_colour
+  find: green blue or purple yellow orange
+  replace: green blue_purple yellow_orange
+- trait_name: flower_colour
+  find: green pink red or brown
+  replace: green pink red_brown
+- trait_name: flower_colour
+  find: green pink white or cream
+  replace: green pink white_cream
+- trait_name: flower_colour
+  find: green red or brown
+  replace: green red_brown
+- trait_name: flower_colour
+  find: green white or cream
+  replace: green white_cream
+- trait_name: flower_colour
+  find: green yellow orange
+  replace: green yellow_orange
+- trait_name: flower_colour
+  find: green yellow orange red or brown
+  replace: green yellow_orange red_brown
+- trait_name: flower_colour
+  find: green yellow orange white or cream
+  replace: green yellow_orange white_cream
+- trait_name: flower_colour
+  find: pink blue or purple
+  replace: pink blue_purple
+- trait_name: flower_colour
+  find: pink blue or purple white or cream
+  replace: pink blue_purple white_cream
+- trait_name: flower_colour
+  find: pink red or brown
+  replace: pink red_brown
+- trait_name: flower_colour
+  find: pink white or cream
+  replace: pink white_cream
+- trait_name: flower_colour
+  find: red or brown blue or purple
+  replace: red_brown blue_purple
+- trait_name: flower_colour
+  find: red or brown blue or purple pink
+  replace: red_brown blue_purple pink
+- trait_name: flower_colour
+  find: red or brown blue or purple pink red or brown
+  replace: red_brown blue_purple pink red_brown
+- trait_name: flower_colour
+  find: red or brown blue or purple pink white or cream
+  replace: red_brown blue_purple pink white_cream
+- trait_name: flower_colour
+  find: red or brown blue or purple white or cream
+  replace: red_brown blue_purple white_cream
+- trait_name: flower_colour
+  find: red or brown blue or purple yellow orange
+  replace: red_brown blue_purple yellow_orange
+- trait_name: flower_colour
+  find: red or brown green
+  replace: red_brown green
+- trait_name: flower_colour
+  find: red or brown green blue or purple white or cream
+  replace: red_brown green blue_purple white_cream
+- trait_name: flower_colour
+  find: red or brown green blue or purple yellow orange
+  replace: red_brown green blue_purple yellow_orange
+- trait_name: flower_colour
+  find: red or brown green pink
+  replace: red_brown green pink
+- trait_name: flower_colour
+  find: red or brown green white or cream
+  replace: red_brown green white_cream
+- trait_name: flower_colour
+  find: red or brown green yellow orange
+  replace: red_brown green yellow_orange
+- trait_name: flower_colour
+  find: red or brown green yellow orange pink
+  replace: red_brown green yellow_orange pink
+- trait_name: flower_colour
+  find: red or brown pink
+  replace: red_brown pink
+- trait_name: flower_colour
+  find: red or brown pink red or brown
+  replace: red_brown pink red_brown
+- trait_name: flower_colour
+  find: red or brown red or brown
+  replace: red_brown red_brown
+- trait_name: flower_colour
+  find: red or brown white or cream
+  replace: red_brown white_cream
+- trait_name: flower_colour
+  find: red or brown yellow orange
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: red or brown yellow orange pink
+  replace: red_brown yellow_orange pink
+- trait_name: flower_colour
+  find: red or brown yellow orange pink white or cream
+  replace: red_brown yellow_orange pink white_cream
+- trait_name: flower_colour
+  find: red or brown yellow orange red or brown
+  replace: red_brown yellow_orange red_brown
+- trait_name: flower_colour
+  find: red or brown yellow orange white or cream
+  replace: red_brown yellow_orange white_cream
+- trait_name: flower_colour
+  find: white or cream blue or purple
+  replace: white_cream blue_purple
+- trait_name: flower_colour
+  find: white or cream blue or purple pink
+  replace: white_cream blue_purple pink
+- trait_name: flower_colour
+  find: white or cream blue or purple pink red or brown
+  replace: white_cream blue_purple pink red_brown
+- trait_name: flower_colour
+  find: white or cream blue or purple red or brown
+  replace: white_cream blue_purple red_brown
+- trait_name: flower_colour
+  find: white or cream blue or purple white or cream
+  replace: white_cream blue_purple white_cream
+- trait_name: flower_colour
+  find: white or cream blue or purple white or cream pink
+  replace: white_cream blue_purple white_cream pink
+- trait_name: flower_colour
+  find: white or cream blue or purple white or cream red or brown
+  replace: white_cream blue_purple white_cream red_brown
+- trait_name: flower_colour
+  find: white or cream blue or purple yellow orange
+  replace: white_cream blue_purple yellow_orange
+- trait_name: flower_colour
+  find: white or cream green
+  replace: white_cream green
+- trait_name: flower_colour
+  find: white or cream green blue or purple
+  replace: white_cream green blue_purple
+- trait_name: flower_colour
+  find: white or cream green blue or purple pink
+  replace: white_cream green blue_purple pink
+- trait_name: flower_colour
+  find: white or cream green blue or purple red or brown
+  replace: white_cream green blue_purple red_brown
+- trait_name: flower_colour
+  find: white or cream green pink
+  replace: white_cream green pink
+- trait_name: flower_colour
+  find: white or cream green pink red or brown
+  replace: white_cream green pink red_brown
+- trait_name: flower_colour
+  find: white or cream green red or brown
+  replace: white_cream green red_brown
+- trait_name: flower_colour
+  find: white or cream green yellow orange
+  replace: white_cream green yellow_orange
+- trait_name: flower_colour
+  find: white or cream green yellow orange blue or purple
+  replace: white_cream green yellow_orange blue_purple
+- trait_name: flower_colour
+  find: white or cream green yellow orange pink blue or purple
+  replace: white_cream green yellow_orange pink blue_purple
+- trait_name: flower_colour
+  find: white or cream green yellow orange red or brown blue or purple
+  replace: white_cream green yellow_orange red_brown blue_purple
+- trait_name: flower_colour
+  find: white or cream pink
+  replace: white_cream pink
+- trait_name: flower_colour
+  find: white or cream pink red or brown
+  replace: white_cream pink red_brown
+- trait_name: flower_colour
+  find: white or cream red or brown
+  replace: white_cream red_brown
+- trait_name: flower_colour
+  find: white or cream red or brown blue or purple
+  replace: white_cream red_brown blue_purple
+- trait_name: flower_colour
+  find: white or cream red or brown blue or purple yellow orange
+  replace: white_cream red_brown blue_purple yellow_orange
+- trait_name: flower_colour
+  find: white or cream red or brown green
+  replace: white_cream red_brown green
+- trait_name: flower_colour
+  find: white or cream red or brown green blue or purple pink
+  replace: white_cream red_brown green blue_purple pink
+- trait_name: flower_colour
+  find: white or cream red or brown green blue or purple yellow orange
+  replace: white_cream red_brown green blue_purple yellow_orange
+- trait_name: flower_colour
+  find: white or cream red or brown green pink
+  replace: white_cream red_brown green pink
+- trait_name: flower_colour
+  find: white or cream red or brown green yellow orange
+  replace: white_cream red_brown green yellow_orange
+- trait_name: flower_colour
+  find: white or cream red or brown green yellow orange blue or purple
+  replace: white_cream red_brown green yellow_orange blue_purple
+- trait_name: flower_colour
+  find: white or cream red or brown pink
+  replace: white_cream red_brown pink
+- trait_name: flower_colour
+  find: white or cream red or brown yellow orange
+  replace: white_cream red_brown yellow_orange
+- trait_name: flower_colour
+  find: white or cream red or brown yellow orange blue or purple
+  replace: white_cream red_brown yellow_orange blue_purple
+- trait_name: flower_colour
+  find: white or cream red or brown yellow orange pink
+  replace: white_cream red_brown yellow_orange pink
+- trait_name: flower_colour
+  find: white or cream white or cream
+  replace: white_cream white_cream
+- trait_name: flower_colour
+  find: white or cream white or cream blue or purple pink
+  replace: white_cream white_cream blue_purple pink
+- trait_name: flower_colour
+  find: white or cream white or cream blue or purple red or brown
+  replace: white_cream white_cream blue_purple red_brown
+- trait_name: flower_colour
+  find: white or cream white or cream green
+  replace: white_cream white_cream green
+- trait_name: flower_colour
+  find: white or cream white or cream green blue or purple
+  replace: white_cream white_cream green blue_purple
+- trait_name: flower_colour
+  find: white or cream white or cream green blue or purple red or brown
+  replace: white_cream white_cream green blue_purple red_brown
+- trait_name: flower_colour
+  find: white or cream white or cream pink
+  replace: white_cream white_cream pink
+- trait_name: flower_colour
+  find: white or cream white or cream pink red or brown
+  replace: white_cream white_cream pink red_brown
+- trait_name: flower_colour
+  find: white or cream white or cream red or brown
+  replace: white_cream white_cream red_brown
+- trait_name: flower_colour
+  find: white or cream white or cream yellow orange
+  replace: white_cream white_cream yellow_orange
+- trait_name: flower_colour
+  find: white or cream white or cream yellow orange blue or purple
+  replace: white_cream white_cream yellow_orange blue_purple
+- trait_name: flower_colour
+  find: white or cream white or cream yellow orange blue or purple pink red or brown
+  replace: white_cream white_cream yellow_orange blue_purple pink red_brown
+- trait_name: flower_colour
+  find: white or cream white or cream yellow orange blue or purple red or brown
+  replace: white_cream white_cream yellow_orange blue_purple red_brown
+- trait_name: flower_colour
+  find: white or cream white or cream yellow orange green
+  replace: white_cream white_cream yellow_orange green
+- trait_name: flower_colour
+  find: white or cream white or cream yellow orange green blue or purple
+  replace: white_cream white_cream yellow_orange green blue_purple
+- trait_name: flower_colour
+  find: white or cream white or cream yellow orange green blue or purple red or brown
+  replace: white_cream white_cream yellow_orange green blue_purple red_brown
+- trait_name: flower_colour
+  find: white or cream white or cream yellow orange green red or brown
+  replace: white_cream white_cream yellow_orange green red_brown
+- trait_name: flower_colour
+  find: white or cream white or cream yellow orange pink
+  replace: white_cream white_cream yellow_orange pink
+- trait_name: flower_colour
+  find: white or cream white or cream yellow orange pink red or brown
+  replace: white_cream white_cream yellow_orange pink red_brown
+- trait_name: flower_colour
+  find: white or cream white or cream yellow orange red or brown
+  replace: white_cream white_cream yellow_orange red_brown
+- trait_name: flower_colour
+  find: white or cream yellow orange
+  replace: white_cream yellow_orange
+- trait_name: flower_colour
+  find: white or cream yellow orange blue or purple
+  replace: white_cream yellow_orange blue_purple
+- trait_name: flower_colour
+  find: white or cream yellow orange blue or purple pink
+  replace: white_cream yellow_orange blue_purple pink
+- trait_name: flower_colour
+  find: white or cream yellow orange blue or purple pink red or brown
+  replace: white_cream yellow_orange blue_purple pink red_brown
+- trait_name: flower_colour
+  find: white or cream yellow orange blue or purple red or brown
+  replace: white_cream yellow_orange blue_purple red_brown
+- trait_name: flower_colour
+  find: white or cream yellow orange green
+  replace: white_cream yellow_orange green
+- trait_name: flower_colour
+  find: white or cream yellow orange green blue or purple
+  replace: white_cream yellow_orange green blue_purple
+- trait_name: flower_colour
+  find: white or cream yellow orange green blue or purple pink
+  replace: white_cream yellow_orange green blue_purple pink
+- trait_name: flower_colour
+  find: white or cream yellow orange green blue or purple pink red or brown
+  replace: white_cream yellow_orange green blue_purple pink red_brown
+- trait_name: flower_colour
+  find: white or cream yellow orange green blue or purple red or brown
+  replace: white_cream yellow_orange green blue_purple red_brown
+- trait_name: flower_colour
+  find: white or cream yellow orange green pink
+  replace: white_cream yellow_orange green pink
+- trait_name: flower_colour
+  find: white or cream yellow orange green pink red or brown
+  replace: white_cream yellow_orange green pink red_brown
+- trait_name: flower_colour
+  find: white or cream yellow orange green red or brown
+  replace: white_cream yellow_orange green red_brown
+- trait_name: flower_colour
+  find: white or cream yellow orange pink
+  replace: white_cream yellow_orange pink
+- trait_name: flower_colour
+  find: white or cream yellow orange pink red or brown
+  replace: white_cream yellow_orange pink red_brown
+- trait_name: flower_colour
+  find: white or cream yellow orange red or brown
+  replace: white_cream yellow_orange red_brown
+- trait_name: flower_colour
+  find: white or cream yellow orange yellow orange white or cream
+  replace: white_cream yellow_orange yellow_orange white_cream
+- trait_name: flower_colour
+  find: yellow orange blue or purple
+  replace: yellow_orange blue_purple
+- trait_name: flower_colour
+  find: yellow orange blue or purple pink
+  replace: yellow_orange blue_purple pink
+- trait_name: flower_colour
+  find: yellow orange blue or purple pink red or brown
+  replace: yellow_orange blue_purple pink red_brown
+- trait_name: flower_colour
+  find: yellow orange blue or purple red or brown
+  replace: yellow_orange blue_purple red_brown
+- trait_name: flower_colour
+  find: yellow orange blue or purple white or cream
+  replace: yellow_orange blue_purple white_cream
+- trait_name: flower_colour
+  find: yellow orange green
+  replace: yellow_orange green
+- trait_name: flower_colour
+  find: yellow orange green blue or purple
+  replace: yellow_orange green blue_purple
+- trait_name: flower_colour
+  find: yellow orange green blue or purple pink
+  replace: yellow_orange green blue_purple pink
+- trait_name: flower_colour
+  find: yellow orange green blue or purple pink red or brown
+  replace: yellow_orange green blue_purple pink red_brown
+- trait_name: flower_colour
+  find: yellow orange green blue or purple red or brown
+  replace: yellow_orange green blue_purple red_brown
+- trait_name: flower_colour
+  find: yellow orange green pink
+  replace: yellow_orange green pink
+- trait_name: flower_colour
+  find: yellow orange green pink red or brown
+  replace: yellow_orange green pink red_brown
+- trait_name: flower_colour
+  find: yellow orange green red or brown
+  replace: yellow_orange green red_brown
+- trait_name: flower_colour
+  find: yellow orange pink
+  replace: yellow_orange pink
+- trait_name: flower_colour
+  find: yellow orange pink red or brown
+  replace: yellow_orange pink red_brown
+- trait_name: flower_colour
+  find: yellow orange pink white or cream
+  replace: yellow_orange pink white_cream
+- trait_name: flower_colour
+  find: yellow orange red or brown
+  replace: yellow_orange red_brown
+- trait_name: flower_colour
+  find: yellow orange white or cream
+  replace: yellow_orange white_cream
+- trait_name: flower_colour
+  find: yellow orange yellow orange
+  replace: yellow_orange yellow_orange
+- trait_name: flower_colour
+  find: yellow orange yellow orange blue or purple
+  replace: yellow_orange yellow_orange blue_purple
+- trait_name: flower_colour
+  find: yellow orange yellow orange blue or purple pink red or brown
+  replace: yellow_orange yellow_orange blue_purple pink red_brown
+- trait_name: flower_colour
+  find: yellow orange yellow orange blue or purple red or brown
+  replace: yellow_orange yellow_orange blue_purple red_brown
+- trait_name: flower_colour
+  find: yellow orange yellow orange green
+  replace: yellow_orange yellow_orange green
+- trait_name: flower_colour
+  find: yellow orange yellow orange green blue or purple
+  replace: yellow_orange yellow_orange green blue_purple
+- trait_name: flower_colour
+  find: yellow orange yellow orange green blue or purple pink
+  replace: yellow_orange yellow_orange green blue_purple pink
+- trait_name: flower_colour
+  find: yellow orange yellow orange green pink
+  replace: yellow_orange yellow_orange green pink
+- trait_name: flower_colour
+  find: yellow orange yellow orange green red or brown
+  replace: yellow_orange yellow_orange green red_brown
+- trait_name: flower_colour
+  find: yellow orange yellow orange pink
+  replace: yellow_orange yellow_orange pink
+- trait_name: flower_colour
+  find: yellow orange yellow orange red or brown
+  replace: yellow_orange yellow_orange red_brown
+- trait_name: leaf_phyllotaxis
+  find: whorled, tufted or crowded
+  replace: .na
+- trait_name: leaf_phyllotaxis
+  find: alternate opposite whorled, tufted or crowded
+  replace: alternate opposite
+- trait_name: leaf_phyllotaxis
+  find: alternate reduced to scales
+  replace: alternate
+- trait_name: leaf_phyllotaxis
+  find: alternate whorled, tufted or crowded
+  replace: alternate
+- trait_name: leaf_phyllotaxis
+  find: opposite reduced to scales
+  replace: opposite
+- trait_name: leaf_phyllotaxis
+  find: opposite whorled, tufted or crowded
+  replace: opposite
+- trait_name: leaf_phyllotaxis
+  find: opposite whorled, tufted or crowded reduced to scales
+  replace: opposite
+- trait_name: leaf_compoundness
+  find: simple or appearing so compound
+  replace: simple compound
+- trait_name: leaf_length
+  find: 15 10
+  replace: '15'
+- trait_name: leaf_length
+  find: 5 4
+  replace: '5'
+- trait_name: leaf_margin
+  find: entire toothed or lobed
+  replace: .na
+- trait_name: leaf_width
+  find: 1.5 2
+  replace: '2'
+- trait_name: leaf_width
+  find: 6 5
+  replace: '6'
+- trait_name: flower_colour
+  find: white or cream
+  replace: white_cream
+- trait_name: leaf_phyllotaxis
+  find: reduced to scales
+  replace: .na
+- trait_name: life_history
+  find: long-lived
+  replace: perennial
+- trait_name: vegetative_reproduction_ability
+  find: not vegetative
+  replace: not_vegetative
+- trait_name: life_history
+  find: annual biennial short-lived
+  replace: annual biennial short_lived_perennial
+- trait_name: life_history
+  find: annual perennial short-lived
+  replace: annual perennial short_lived_perennial
+- trait_name: life_history
+  find: biennial short-lived
+  replace: biennial short_lived_perennial
+- trait_name: life_history
+  find: perennial biennial short-lived
+  replace: perennial biennial short_lived_perennial
+- trait_name: life_history
+  find: perennial indefinite
+  replace: perennial
+- trait_name: life_history
+  find: perennial long-lived
+  replace: perennial
+- trait_name: life_history
+  find: perennial short-lived
+  replace: perennial short_lived_perennial
+- trait_name: life_history
+  find: short-lived long-lived
+  replace: short_lived_perennial perennial
+- trait_name: plant_growth_substrate
+  find: epiphytic parasitic
+  replace: epiphyte
+taxonomic_updates:
+- find: Acaena ovina
+  replace: Acaena x ovina
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Acaena sp. A sensu Harden (1990)
+  replace: Acaena sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Acianthus sp. A sensu Harden (1993)
+  replace: Acianthus sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Agropogon lutosus
+  replace: x Agropogon lutosus
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Agrostis sp. B sensu Jacobs & Hastings (1993)
+  replace: Agrostis sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Alectryon coriaceous
+  replace: Alectryon coriaceus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Alternanthera sp. A sensu Harden (1990)
+  replace: Alternanthera sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Arabidella sp. A sensu Harden (1990)
+  replace: Arabidella sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Arthropodium sp. A sensu Harden (1993)
+  replace: Arthropodium sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Arthropodium sp. B sensu Harden (1993)
+  replace: Arthropodium sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Astrotricha sp. B sensu Harden (1992)
+  replace: Astrotricha sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Atriplex sp. B sensu Jacobs (1990)
+  replace: Atriplex sp. B
+  reason: match_19. Automatic alignment with species-level canonical name in APNI
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Bertya sp. D sensu Harden (1990)
+  replace: Bertya sp. D
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Bossiaea neo-anglica
+  replace: Bossiaea neoanglica
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Brachyscome sp.1 sensu PS Short 1999
+  replace: Brachyscome sp. 1
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Brassica  x juncea
+  replace: Brassica x juncea
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Brassica juncea
+  replace: Brassica x juncea
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Caladenia sp. A sensu Harden (1993)
+  replace: Caladenia sp. A
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Caladenia sp. B sensu Harden (1993)
+  replace: Caladenia sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Caladenia sp. C sensu Harden (1993)
+  replace: Caladenia sp. C
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Calamagrostis benthamiana
+  replace: Eragrostis benthamii
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Calandrinia sp. A sensu Harden (1990)
+  replace: Calandrinia sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Calandrinia sp. Nerriga (I.R.H.Telford 8677) NSW Herbarium
+  replace: Calandrinia sp. Nerriga (I.R.H.Telford 8677)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cassinia adunca
+  replace: Cassinia x adunca
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Cassinia sp. B sensu Everett (1992)
+  replace: Cassinia sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cassinia sp. C sensu Everett (1992)
+  replace: Cassinia sp. C
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cassinia sp. D sensu Everett (1992)
+  replace: Cassinia sp. D
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cenchrus species A
+  replace: Cenchrus sp. A
+  reason: match_19. Automatic alignment with species-level canonical name in APNI
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Centaurea sp. A sensu Murray (1992)
+  replace: Centaurea sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Centaurea sp. B sensu Murray (1992)
+  replace: Centaurea sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Chamaesyce sp. A sensu James & Harden (1990)
+  replace: Chamaesyce sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Chamaesyce sp. B sensu James & Harden (1990)
+  replace: Chamaesyce sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Choretrum sp. A sensu Harden (1992)
+  replace: Choretrum sp. A (aff. candollei)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Coix lachryma-jobi
+  replace: Coix lacryma-jobi
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Corybas sp. A sensu Harden (1993)
+  replace: Corybas sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Craspedia maxgrayii
+  replace: Craspedia maxgrayi
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Crepidomanes minutum
+  replace: Trichomanes minutum
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Cryptandra sp. A sensu Harden (1990)
+  replace: Cryptandra sp. A
+  reason: match_19. Automatic alignment with species-level canonical name in APNI
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cyclosorus pennigera
+  replace: Cyclosorus penniger
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cymbonotus sp. A sensu Murray (1992)
+  replace: Cymbonotus sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cyperus species A
+  replace: Cyperus sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Daphnandra sp. A sensu Harden (1990)
+  replace: Daphnandra sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Daphnandra sp. D sensu Harden (1990)
+  replace: Daphnandra sp. D
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Daphnandra sp. 'Illawarra' (Schodde 3475)
+  replace: Daphnandra sp. Illawarra (R.Schodde 3475)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Dichondra sp. A sensu Harden (1992)
+  replace: Dichondra sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Dichopogon sp. A sensu Harden (1993)
+  replace: Dichopogon sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Dillwynia rupestris)
+  replace: Dillwynia rupestris
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Diuris nebulosa
+  replace: Diuris x nebulosa
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Erigeron primulifolium
+  replace: Erigeron primulifolius
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Eriochlamys sp. A sensu Brown (1992)
+  replace: Eriochlamys sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Eucalyptus conjuncta
+  replace: Eucalyptus x conjuncta
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Frankenia sp. A sensu Harden (1990)
+  replace: Frankenia sp. A
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Gaura mollis
+  replace: Oenothera sp. [Gaura mollis; NHNSW_2014_2]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus known
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Gnaphalium sp. E sensu Everett (1992)
+  replace: Gnaphalium sp. E (aff. argentifolium)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Halosarcia pterygospermum
+  replace: Halosarcia pterygosperma
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Heliotropium sp. A sensu Harden (1992)
+  replace: Heliotropium sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hibbertia sp. B sensu Harden (1990)
+  replace: Hibbertia sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Juncus firmis
+  replace: Juncus firmus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Juncus ochrolepis
+  replace: Juncus ochrocoleus
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
+    APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Kunzea sp. 'Braidwood' (Powell 371)
+  replace: Kunzea sp. Braidwood (Powell 371)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Kunzea sp. 'Middle Brother Mtn' (Wilson 505)
+  replace: Kunzea sp. Middle Brother Mtn (Wilson 505)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Kunzea sp. 'Mt Cookem' (Benson 4470)
+  replace: Kunzea sp. Mt Cookem (Benson 4470)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Kunzea sp. 'Mt Kaputar' (Jackson 2246)
+  replace: Kunzea sp. Mt Kaputar (Jackson 2246)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Kunzea sp. 'Wadbilliga' (Rodd 6168)
+  replace: Kunzea sp. Wadbilliga (Rodd 6168)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Leionema sp. 'Hungryway Creek' (Lemberg, NSW69237)
+  replace: Leionema sp. Hungryway Creek (Lemberg NSW 69237)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lepidium sp. B sensu Harden (1990)
+  replace: Lepidium sp. B
+  reason: match_19. Automatic alignment with species-level canonical name in APNI
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lepyrodia sp. A sensu Harden (1993)
+  replace: Lepyrodia sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Leucopogon neo-anglicus
+  replace: Leucopogon neoanglicus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Leucopogon species B
+  replace: Leucopogon sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Lissanthe sp. A sensu Powell (1992)
+  replace: Lissanthe sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lissanthe sp. B sensu Powell (1992)
+  replace: Lissanthe sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Logania sp. A sensu Harden (1992)
+  replace: Logania sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Macarthuria neo-cambrica
+  replace: Macarthuria neocambrica
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Malus x domestica
+  replace: Malus x [Malus x domestica; NHNSW_2014_2]
+  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
+    genus-level alignment with APC accepted genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Malva multiflora
+  replace: Malva sp. [Malva multiflora; NHNSW_2014_2]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Melichrus hirsutus J.B.Williams ms.
+  replace: Melichrus hirsutus
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Mentha x spicata
+  replace: Mentha x [Mentha x spicata; NHNSW_2014_2]
+  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
+    genus-level alignment with APC accepted genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Muehlenbeckia costata
+  replace: Muehlenbeckia costata MS
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Myosotis caespitosa
+  replace: Myosotis cespitosa
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Notelaea sp. A sensu Harden (1992)
+  replace: Notelaea sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Ornithogalum longebracteatum
+  replace: Ornithogalum longibracteatum
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Osteocarpum scleropterum
+  replace: Osteocarpum x scleropterum
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Pelargonium  x asperum
+  replace: Pelargonium x asperum
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pelargonium asperum
+  replace: Pelargonium x asperum
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Persoonia nigrescens
+  replace: Persoonia sp. [Persoonia nigrescens; NHNSW_2014_2]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
+- find: Pimelea neo-anglica
+  replace: Pimelea neoanglica
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-22)
+  taxonomic_resolution: Species
+- find: Piptatherum miliacea
+  replace: Piptatherum miliaceum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pittosporum pauciflorum
+  replace: Citriobatus pauciflorus
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Platysace sp. A sensu Powell & Hastings (1992)
+  replace: Platysace sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Prasophyllum sp. A sensu Harden (1993)
+  replace: Prasophyllum sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Pratia sp. A sensu Harden (1992)
+  replace: Pratia sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Prostanthera sp. A sensu Conn (1992)
+  replace: Prostanthera sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Prostanthera sp. B sensu Conn (1992)
+  replace: Prostanthera sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Prostanthera sp. C sensu Conn (1992)
+  replace: Prostanthera sp. C Flora of New South Wales (R.Medd & C.Bower s.n., NSW
+    774769)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Prostanthera sp. E sensu Conn (1992)
+  replace: Prostanthera sp. E
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pseudognaphalium luteo-album
+  replace: Pseudognaphalium luteoalbum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pterostylis sp. B sensu Harden (1993)
+  replace: Pterostylis sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pterostylis sp. 'Botany Bay; (Bishop J2211-13)
+  replace: Pterostylis sp. Botany Bay (A.Bishop J221/1-13)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pterostylis sp. C sensu Harden (1993)
+  replace: Pterostylis sp. C
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pterostylis sp. D sensu Harden (1993)
+  replace: Pterostylis sp. D
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pterostylis sp. E sensu Harden (1993)
+  replace: Pterostylis sp. E
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pterostylis sp. F sensu Harden (1993)
+  replace: Pterostylis sp. F
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenaea hartmanii
+  replace: Pultenaea hartmannii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenaea sp. F sensu Weston (1991)
+  replace: Pultenaea sp. F
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenaea sp. I sensu Weston (1991)
+  replace: Pultenaea sp. I
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenaea sp. K sensu Weston (1991)
+  replace: Pultenaea sp. K
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenaea sp. 'Liverpool Range' (Johnson 963)
+  replace: Pultenaea sp. Liverpool Range (Johnson 963)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenaea sp. 'New England' (Coveny 16631)
+  replace: Pultenaea sp. New England (Coveny 16631)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenaea sp. 'Olinda' (Coveny 6616)
+  replace: Pultenaea sp. Olinda (R.Coveny 6616)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pultenaea sp. 'robusta' (Anderberg 7048)
+  replace: Pultenaea sp. robusta (Anderberg 7048)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Quassia sp. 'Mt. Nardi' (Floyd 1198)
+  replace: Quassia sp. Mt Nardi (Floyd 1198)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Rapanea sp. 'Richmond River' (Maiden s.n., Nov 1903)
+  replace: Rapanea sp. Richmond River (Maiden s.n. Nov 1903)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Salix fragilis
+  replace: Salix x fragilis
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Salix sp._hybrid
+  replace: Salix sp. [Salix sp._hybrid; NHNSW_2014_2]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Salvinia molesta
+  replace: Salvinia sp. [Salvinia molesta; NHNSW_2014_2]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Selago thunbergii
+  replace: Selago thunbergii Choisy
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Senecio sp. C sensu Harden (1992)
+  replace: Senecio sp. C f. 4
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Forma
+- find: Senecio sp. E sensu Harden (1992)
+  replace: Senecio sp. E
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Senecio sp. N sensu Harden (1992)
+  replace: Senecio sp. N
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sida abutilifolia
+  replace: Sida abutilon
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Sida sp. A sensu Harden (1990)
+  replace: Sida sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sida sp. B sensu Harden (1990)
+  replace: Sida sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sida sp. C sensu Harden (1990)
+  replace: Sida sp. C
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sisyrinchium sp. A sensu James & Brown (1993)
+  replace: Sisyrinchium sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sonchus megalocarpa
+  replace: Sonchus megalocarpus
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Spergularia sp. B sensu Doust (1990)
+  replace: Spergularia sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sporobolus diander
+  replace: Sporobolus diandrus
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Sporobolus sp. [Sporobolus diander]
+  replace: Sporobolus sp. [Sporobolus diander; NHNSW_2014_2]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Stellaria sp. B sensu Doust (1990)
+  replace: Stellaria sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Stellaria sp. D sensu Doust (1990)
+  replace: Stellaria sp. D
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Styphelia sp. A sensu Harden (1992)
+  replace: Styphelia sp. [Styphelia sp. A sensu Harden (1992); NHNSW_2014_2]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Styphelia sp. B sensu Harden (1992)
+  replace: Styphelia sp. [Styphelia sp. B sensu Harden (1992); NHNSW_2014_2]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Suaeda sp. A sensu Harden (1990)
+  replace: Suaeda sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Teucrium sp. A sensu Conn (1992)
+  replace: Teucrium sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Teucrium sp. D sensu Conn (1992)
+  replace: Teucrium sp. D Flora of New South Wales (S.A.Horton 4114)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Thelymitra  x merraniae
+  replace: Thelymitra x merraniae
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Trochocarpa sp. A sensu Wiecek (1992)
+  replace: Trochocarpa sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Veronica sp. A sensu Harden (1992)
+  replace: Veronica sp. A
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Veronica sp. B sensu Harden (1992)
+  replace: Veronica sp. B
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Veronica sp. C sensu Harden (1992)
+  replace: Veronica sp. C
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Westringia species A
+  replace: Westringia sp. [Westringia species A; NHNSW_2014_2]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
+- find: Zehneria minutiflora
+  replace: Zieria minutiflora
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+exclude_observations:
+- variable: taxon_name
+  find: Gaura mollis, Opuntia macrorhiza subsp. pottsii, Ranunculus aquatilis var.
+    diffusus
+  reason: non-native (North America)
+- variable: taxon_name
+  find: Cleome houtteana
+  reason: non-native (South America)
+questions: .na

@@ -22,7 +22,7 @@ source:
       the Northern Tablelands of New South Wales
     volume: '42'
     number: '5'
-    pages: '511--530'
+    pages: 511--530
     doi: 10.1071/bt9940511
   secondary_02:
     key: McIntyre_1995
@@ -34,22 +34,33 @@ source:
       in herbaceous vegetation'
     volume: '83'
     number: '1'
-    pages: '31--44'
+    pages: 31--44
     doi: 10.2307/2261148
-people:
-- name: Nick Williams
-  institution: University of Melbourne
-  role: collector, contact
-- name: John Morgan
-  institution: La Trobe University
-  role: collector
+contributors:
+  data_collectors:
+  - last_name: Williams
+    given_name: Nicholas
+    ORCID: 0000-0001-6291-9483
+    affiliation: University of Melbourne, Australia
+    additional_role: contact
+  - last_name: Morgan
+    given_name: John
+    ORCID: 0000-0003-2003-5983
+    affiliation: La Trobe University, Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2001
-  year_collected_end: 2001
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(site_name = "western Victoria")
+  '
+  collection_date: 2001/2001
+  taxon_name: Species
+  location_name: site_name
   description: Study to examine the probability of extinction along an urban-rural
     gradient and how it is affected by plant traits.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: STUDY AREA The remnant native temperate grasslands of western
     Victoria (south-east Australia) are dominated by the C4 tussock-forming grass
     Themeda triandra and contain distinct intertussock spaces that are occupied by
@@ -122,7 +133,7 @@ dataset:
   original_file: Grassland Species Traits.xls submitted by the author and archived
     in the raw data folder and GoogleDrive folder
   notes: none
-sites:
+locations:
   western Victoria:
     latitude (deg): .na
     longitude (deg): .na
@@ -130,17 +141,13 @@ sites:
       gradient from the inner suburbs of Melbourne, west through the fertile agricultural
       districts of western Victoria
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site_name
-  custom_R_code: data %>% mutate(site_name = "western Victoria")
 traits:
 - var_in: Major Lifeform (McIntyre et al 1995)
   unit_in: .na
   trait_name: life_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Species were classified into lifeform classes according to a modification
     of the Raunkiaer (1934) classification scheme that groups species according to
@@ -152,8 +159,10 @@ traits:
     expert botanists.
 - var_in: Hemicryptophyte type Pr = protohemicrytophyte, P= partial rosette
   unit_in: .na
-  trait_name: life_form
-  value_type: expert_mean
+  trait_name: .na
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Species were classified into lifeform classes according to a modification
     of the Raunkiaer (1934) classification scheme that groups species according to
@@ -166,14 +175,18 @@ traits:
 - var_in: Disperal Unit
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Species were allocated to one of six classes of seed dispersal following
     McIntyre et al. (1995) based on the morphology of their seeds.
 - var_in: Vegetative Spread
   unit_in: .na
-  trait_name: vegetative_regeneration
-  value_type: expert_mean
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Species were classified into lifeform classes according to a modification
     of the Raunkiaer (1934) classification scheme that groups species according to
@@ -186,7 +199,9 @@ traits:
 - var_in: Life Cycle (Tremont 1994)
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Species were classified into lifeform classes according to a modification
     of the Raunkiaer (1934) classification scheme that groups species according to
@@ -199,7 +214,9 @@ traits:
 - var_in: Growth Form (Tremont 1994)
   unit_in: .na
   trait_name: .na
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Species were classified into lifeform classes according to a modification
     of the Raunkiaer (1934) classification scheme that groups species according to
@@ -211,9 +228,11 @@ traits:
     expert botanists.
 - var_in: Seed Weight (mg)_filtered
   unit_in: mg
-  trait_name: seed_mass
-  value_type: expert_mean
-  replicates: various
+  trait_name: seed_dry_mass
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
   methods: Seed mass data were obtained from the literature and unpublished sources.
     Quantities of seed held by nurseries specializing in the propagation of Victorian
     grassland flora were weighed to obtain mean seed mass for some further species,
@@ -222,7 +241,9 @@ traits:
 - var_in: Present in soil seedbank
   unit_in: .na
   trait_name: soil_seedbank
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Data on the ability of seeds of each species to form a persistent soil
     seed bank were obtained from published studies of Australian grasslands or grassy
@@ -253,28 +274,28 @@ substitutions:
   replace: phanerophyte
 - trait_name: life_form
   find: V
-  replace: hemicryptophyte_flat_rosette
+  replace: hemicryptophyte
 - trait_name: life_form
   find: E
-  replace: hemicryptophyte_erect_rosette
+  replace: hemicryptophyte
 - trait_name: life_form
   find: P
-  replace: hemicryptophyte_partial_rosette
+  replace: hemicryptophyte
 - trait_name: life_form
   find: Pr
-  replace: hemicryptophyte_proto-rosette
+  replace: hemicryptophyte
 - trait_name: dispersal_syndrome
   find: I
   replace: endozoochory
 - trait_name: dispersal_syndrome
   find: A
-  replace: adhesion
+  replace: epizoochory
 - trait_name: dispersal_syndrome
   find: M
-  replace: unassisted
+  replace: barochory
 - trait_name: dispersal_syndrome
   find: U
-  replace: undefined
+  replace: .na
 - trait_name: dispersal_syndrome
   find: h2o
   replace: hydrochory
@@ -284,10 +305,10 @@ substitutions:
 - trait_name: dispersal_syndrome
   find: W
   replace: anemochory
-- trait_name: vegetative_regeneration
+- trait_name: vegetative_reproduction_ability
   find: 'N'
   replace: not_vegetative
-- trait_name: vegetative_regeneration
+- trait_name: vegetative_reproduction_ability
   find: 'Y'
   replace: vegetative
 - trait_name: life_history
@@ -298,127 +319,184 @@ substitutions:
   replace: perennial
 - trait_name: soil_seedbank
   find: A
-  replace: '0'
+  replace: soil_seedbank_absent
 - trait_name: soil_seedbank
   find: P
-  replace: '1'
+  replace: soil_seedbank_present
 taxonomic_updates:
-- find: Oxalis perrennans
-  replace: Oxalis perennans
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+- find: Acaena echinata/agnipila/ovina
+  replace: Acaena sp. [Acaena echinata/agnipila/ovina; Williams_2005]
+  reason: match_04. Rewording taxon where `/` indicates uncertain species identification
+    to align with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Arthropodium strictum s.l.
   replace: Arthropodium strictum
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Asperula conferta / scoparia
+  replace: Asperula sp. [Asperula conferta / scoparia; Williams_2005]
+  reason: match_04. Rewording taxon where `/` indicates uncertain species identification
+    to align with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Brachyscome sp. aff. cuneifolia
+  replace: Brachyscome sp. [Brachyscome sp. aff. cuneifolia; Williams_2005]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Bursaria spinosa ssp. spinosa
+  replace: Bursaria spinosa subsp. spinosa
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Centrolepis strigosa ssp. strigosa
+  replace: Centrolepis strigosa subsp. strigosa
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Chrysocephalum apiculatum s.l.
   replace: Chrysocephalum apiculatum
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Cryptandra amara s.l.
-  replace: Cryptandra amara
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Dianella revoluta s.l.
-  replace: Dianella revoluta
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Geranium retrorsum s.l.
-  replace: Geranium retrorsum
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Geranium solanderi s.l.
-  replace: Geranium solanderi
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Lomandra micrantha s.l.
-  replace: Lomandra micrantha
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Podolepis jaceoides s.l.
-  replace: Podolepis jaceoides
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Stackhousia subterannean
-  replace: Stackhousia subterranea
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Helichrysum rutidolepis s.l.
-  replace: Helichrysum rutidolepis
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Hymenanthera dentata s.l.
-  replace: Hymenanthera dentata
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Stylidium graminifolium s.l.
-  replace: Stylidium graminifolium
-  reason: Alignment with existing species identified by TaxonStand (2020-05-12)
-- find: Acaena echinata/agnipila/ovina
-  replace: Acaena sp. [Acaena echinata or Acaena agnipila or Acaena ovina]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Asperula conferta / scoparia
-  replace: Asperula conferta var. scoparioides
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-24)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Craspedia glauca spp. agg. (variablis)
   replace: Craspedia glauca
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-24)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
 - find: Craspedia sp. 2 (Derrinallum)
-  replace: Craspedia sp. Derrinallum (N.G.Walsh 5591) Vic. Herbarium
-  reason: Align with accepted phrase name on APC list (E. Wenk, 2020-05-24)
+  replace: Craspedia sp. 2
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cryptandra amara s.l.
+  replace: Cryptandra amara
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Dianella revoluta s.l.
+  replace: Dianella revoluta
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Drosera peltata ssp. peltata
+  replace: Drosera peltata subsp. peltata
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Drosera whittakeri ssp. aberrans
+  replace: Drosera whittakeri subsp. aberrans
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Einadia nutans ssp. nutans
+  replace: Einadia nutans subsp. nutans
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Euchiton involucratus s.s.
   replace: Euchiton involucratus
-  reason: Align to APC accepted spelling (E. Wenk, 2020-05-25)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Geranium retrorsum s.l.
+  replace: Geranium retrorsum
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Geranium solanderi s.l.
+  replace: Geranium solanderi
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Glycine tabacina s.l.
   replace: Glycine tabacina
-  reason: Align to APC accepted spelling (E. Wenk, 2020-05-25)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Helichrysum rutidolepis s.l.
+  replace: Helichrysum rutidolepis
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hymenanthera dentata s.l.
+  replace: Hymenanthera dentata
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Isotoma fluviatilis ssp. australis
+  replace: Isotoma fluviatilis subsp. australis
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Ixiolaena sp. 1 Leptorrynchos panetiodes
   replace: Leiocarpa panaetioides
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
 - find: Leptorhynchos squamatus s.l.
   replace: Leptorhynchos squamatus
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lissanthe strigosa ssp. subulata
+  replace: Lissanthe strigosa subsp. subulata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Lomandra micrantha s.l.
+  replace: Lomandra micrantha
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Oxalis perrennans
+  replace: Oxalis perennans
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Pimelea curviflora s.l.
   replace: Pimelea curviflora
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pimelea spinescens ssp. spinescens
+  replace: Pimelea spinescens subsp. spinescens
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Podolepis jaceoides s.l.
+  replace: Podolepis jaceoides
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Pultanea laxiflora / mollis
-  replace: Pultenaea sp. (laxiflora or mollis)
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Pultenaea sp. [Pultanea laxiflora / mollis; Williams_2005]
+  reason: match_04_fuzzy. Rewording taxon where `/` indicates uncertain species identification
+    & genus aligned to APC accepted genus via fuzzy match (2022-11-10)
+  taxonomic_resolution: genus
+- find: Stackhousia subterannean
+  replace: Stackhousia subterranea
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Stylidium graminifolium s.l.
+  replace: Stylidium graminifolium
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Vittadinia dissecta s.l.
   replace: Vittadinia dissecta
-  reason: Aligned with APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Wahlenbergia communis s.l./ luteola
   replace: Wahlenbergia communis
-  reason: Aligned with APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Wahlenbergia spp.(gracilenta, gracilis, mualticaulis, stricta)
-  replace: Wahlenbergia gracilis f. multicaulis
-  reason: Align to known name in APC (D Falster, 2020.05.23)
-- find: Craspedia sp. Derrinallum (N.G.Walsh 5591) Vic. Herbarium
-  replace: Craspedia sp. Derrinallum (N.G.Walsh 5591)
-  reason: Alignment with known species (Elizabeth Wenk, 2020-06-12)
-- find: Pultenaea sp. (laxiflora or mollis)
-  replace: Pultenaea laxiflora
-  reason: Alignment with known species (Elizabeth Wenk, 2020-06-12)
-- find: Elymus scaber var. scaber
-  replace: Elymus scabrus
-  reason: Alignment with existing species identified by TaxonStand (2020-06-17)
-- find: Epilobium billardierianum
-  replace: Epilobium billardierianum subsp. billardierianum
-  reason: Alignment with existing species identified by TaxonStand (2020-06-17)
-- find: Homopholis proluta
-  replace: Panicum prolutum
-  reason: Alignment with existing species identified by TaxonStand (2020-06-17)
-- find: Asperula conferta var. scoparioides
-  replace: Asperula conferta
-  reason: Synonym reported by TaxonStand (2020-06-17)
-- find: Drosera peltata subsp. peltata
-  replace: Drosera peltata
-  reason: Synonym reported by TaxonStand (2020-06-17)
-- find: Drosera whittakeri subsp. aberrans
-  replace: Drosera aberrans
-  reason: Synonym reported by TaxonStand (2020-06-17)
-- find: Hypoxis glabella var. glabella
-  replace: Hypoxis glabella
-  reason: Synonym reported by TaxonStand (2020-06-17)
-- find: Isolepis nodosa
-  replace: Ficinia nodosa
-  reason: Synonym reported by TaxonStand (2020-06-17)
-- find: Wahlenbergia communis
-  replace: Wahlenbergia capillaris
-  reason: Synonym reported by TaxonStand (2020-06-17)
-- find: Wahlenbergia gracilis f. multicaulis
-  replace: Wahlenbergia multicaulis
-  reason: Synonym reported by TaxonStand (2020-06-17)
+  replace: Wahlenbergia sp. [Wahlenbergia spp.(gracilenta, gracilis, mualticaulis,
+    stricta); Williams_2005]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 exclude_observations: .na
 questions:
   contributor: Would it be appropriate to include Tremont_1994 and McIntyre_1995 as
@@ -430,4 +508,3 @@ questions:
     We also have lots of Angela Moles' datasets - it is odd that none are explicitly
     showing up as duplicates, but probably because we have raw values from her. I'll
     check that separately.
-

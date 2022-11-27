@@ -9,23 +9,40 @@ source:
       CO2 and temperature affect leaf function in Eucalyptus sideroxylon
     volume: '39'
     number: '4'
-    pages: '285--296'
+    pages: 285--296
     doi: 10.1071/fp11238
-people:
-- name: Renee Smith
-  institution: Hawkesbury Institute for the Environment, Western Sydney University
-  role: collector, contact
-- name: David Tissue
-  institution: Hawkesbury Institute for the Environment, Western Sydney University
-  role: lab_leader
+contributors:
+  data_collectors:
+  - last_name: Smith
+    given_name: Renee
+    ORCID: .na.character
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+    additional_role: contact
+  - last_name: Tissue
+    given_name: David
+    ORCID: 0000-0002-8497-2047
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2007
-  year_collected_end: 2008
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(site = "University of Western Sydney") %>%
+      group_by(Species, Potnum, Temp, CO2, context, site) %>%
+        summarise_all(.funs = mean, na.rm = TRUE) %>%
+      ungroup()
+  '
+  collection_date: 2007/2008
+  taxon_name: Species
+  location_name: site
+  individual_id: Potnum
   description: We examined the interactive effects of [CO2] (290, 400 and 650 mLL-1)
     and temperature (ambient, ambient +4 deg C) on leaf structural and chemical traits
     that regulate photosynthesis in Eucalyptus sideroxylon
-  collection_type: glasshouse
-  sample_age_class: seedling
+  basis_of_record: lab
+  life_stage: seedling
   sampling_strategy: 'Growth conditions Detailed experimental set-up is described
     by Ghannoum et al. (2010a). Briefly, 9 kg of air-dried loamy-sand field soil was
     added to 10-L PVC pots, which were transferred to six adjacent, naturally-lit
@@ -57,61 +74,43 @@ dataset:
     period. Five pots from each treatment were randomly selected for this study.'
   original_file: 3 data files and 3 metadata files in folder on Google Drive
   notes: none
-sites:
+locations:
   University of Western Sydney:
     latitude (deg): -33.61
     longitude (deg): 150.7407
     description: naturally sun-lit and C/T-controlled glasshouse
 contexts:
-  Amb_temperature_and_280_ppm_CO2:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2 (ppm): 280 (pre-industrial)
-    type: treatment
-    description: Plants grown factorially at two temperatures and three CO2 concentrations;
-      details specified under each context variable
-  Amb_temperature_and_400_ppm_CO2:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2 (ppm): 400 (ambient)
-    type: treatment
-    description: Plants grown factorially at two temperatures and three CO2 concentrations;
-      details specified under each context variable
-  Amb_temperature_and_640_ppm_CO2:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2 (ppm): 640 (elevated)
-    type: treatment
-    description: Plants grown factorially at two temperatures and three CO2 concentrations;
-      details specified under each context variable
-  Elv_temperature_and_280_ppm_CO2:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2 (ppm): 280 (pre-industrial)
-    type: treatment
-    description: Plants grown factorially at two temperatures and three CO2 concentrations;
-      details specified under each context variable
-  Elv_temperature_and_400_ppm_CO2:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2 (ppm): 400 (ambient)
-    type: treatment
-    description: Plants grown factorially at two temperatures and three CO2 concentrations;
-      details specified under each context variable
-  Elv_temperature_and_640_ppm_CO2:
-    growing temperature: Ambient (26/18 deg C (day/night))
-    growing CO2 (ppm): 640 (elevated)
-    type: treatment
-    description: Plants grown factorially at two temperatures and three CO2 concentrations;
-      details specified under each context variable
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Species
-    site_name: site
-    observation_id: Potnum
-    context_name: context
-  custom_R_code: data %>% mutate(site = "University of Western Sydney")
+- context_property: CO2 treatment
+  category: treatment
+  var_in: CO2
+  values:
+  - find: 400
+    value: 400 ppm
+    description: Plants grown at ambient CO2 (400 ppm).
+  - find: 280
+    value: 280 ppm
+    description: Plants grown at sub-ambient, pre-industrial CO2 (280 ppm); 120 ppm
+      below ambient.
+  - find: 640
+    value: 640 ppm
+    description: Plants grown at elevated CO2 (640 ppm); 240 ppm above ambient.
+- context_property: temperature treatment
+  category: treatment
+  var_in: Temp
+  values:
+  - find: Amb
+    value: ambient
+    description: Plants grown at ambient temperatures (26/18 deg C (day/night)).
+  - find: Elv
+    value: elevated
+    description: Plants grown at elevated temperatures (30/22 deg C (day/night)).
 traits:
 - var_in: EpiT (um)
   unit_in: um
-  trait_name: epidermis_thickness
-  value_type: individual_mean
+  trait_name: leaf_epidermis_thickness
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 2
   methods: Duplicate 1.0x0.5 cm sections were collected, after 7 months of growth,
     on opposite sides of the midvein in the mid region of the lamina; one leaf was
@@ -131,7 +130,9 @@ traits:
 - var_in: LaminaT (um)
   unit_in: um
   trait_name: leaf_thickness
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 2
   methods: Duplicate 1.0x0.5 cm sections were collected, after 7 months of growth,
     on opposite sides of the midvein in the mid region of the lamina; one leaf was
@@ -150,8 +151,10 @@ traits:
     by palisade cells and intercellular air space respectively.
 - var_in: PaliCellL (um)
   unit_in: um
-  trait_name: palisade_cell_length
-  value_type: individual_mean
+  trait_name: leaf_palisade_cell_length
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 2
   methods: Duplicate 1.0x0.5 cm sections were collected, after 7 months of growth,
     on opposite sides of the midvein in the mid region of the lamina; one leaf was
@@ -170,8 +173,10 @@ traits:
     by palisade cells and intercellular air space respectively.
 - var_in: PaliCellW (um)
   unit_in: um
-  trait_name: palisade_cell_width
-  value_type: individual_mean
+  trait_name: leaf_palisade_cell_width
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 2
   methods: Duplicate 1.0x0.5 cm sections were collected, after 7 months of growth,
     on opposite sides of the midvein in the mid region of the lamina; one leaf was
@@ -190,9 +195,11 @@ traits:
     by palisade cells and intercellular air space respectively.
 - var_in: PaliLayNum
   unit_in: count
-  trait_name: palisade_layer_number
-  value_type: individual_mean
-  replicates: various
+  trait_name: leaf_palisade_layer_number
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 10
   methods: Duplicate 1.0x0.5 cm sections were collected, after 7 months of growth,
     on opposite sides of the midvein in the mid region of the lamina; one leaf was
     used per pot. The leaf tissue was immediately fixed in double aldehyde fixative
@@ -210,9 +217,11 @@ traits:
     by palisade cells and intercellular air space respectively.
 - var_in: EpiDen (mm-2)
   unit_in: count/mm2
-  trait_name: epidermal_cell_density_both_sides
-  value_type: individual_mean
-  replicates: 6
+  trait_name: leaf_epidermal_cell_density_both_sides
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 12
   methods: 'Two 1-cm2 sections per plant were taken from the mid-lamina region of
     recently fully expanded mature leaves after 7 months of growth. Epidermal peels
     were made using a method adapted from Jain (1976). The epidermal peels were stained
@@ -225,9 +234,11 @@ traits:
     where SF is stomatal frequency mm-2 and EF is epidermal cell frequency mm-2.'
 - var_in: StomDen (mm-2)
   unit_in: count/mm2
-  trait_name: stomatal_density_abaxial
-  value_type: individual_mean
-  replicates: 6
+  trait_name: leaf_stomatal_density_abaxial
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 12
   methods: 'Two 1-cm2 sections per plant were taken from the mid-lamina region of
     recently fully expanded mature leaves after 7 months of growth. Epidermal peels
     were made using a method adapted from Jain (1976). The epidermal peels were stained
@@ -241,7 +252,9 @@ traits:
 - var_in: LeafpercentN (%)
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The leaf used for gas-exchange measurements was immediately harvested from
     the plant and snap frozen in liquid nitrogen for analysis of leaf [N]. Leaves
@@ -250,7 +263,9 @@ traits:
 - var_in: LeafNarea (g m-2)
   unit_in: g/m2
   trait_name: leaf_N_per_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The leaf used for gas-exchange measurements was immediately harvested from
     the plant and snap frozen in liquid nitrogen for analysis of leaf [N]. Leaves
@@ -259,7 +274,9 @@ traits:
 - var_in: LeafpercentC (%)
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: The leaf used for gas-exchange measurements was immediately harvested from
     the plant and snap frozen in liquid nitrogen for analysis of leaf [N]. Leaves
@@ -267,8 +284,10 @@ traits:
     using a CHN analyser (LECO TruSpec, LECO Corporation, St Joseph, MI).
 - var_in: LSolSugA (g m-2)
   unit_in: g/m2
-  trait_name: soluable_sugars_per_area
-  value_type: individual_mean
+  trait_name: leaf_soluble_sugars_per_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Three leaves per plant were harvested on a sunny day during the gas-exchange
     campaign, between 1100 and 1300 hours, for carbohydrate and cell wall content
@@ -281,8 +300,10 @@ traits:
     sum of soluble sugar and starch.
 - var_in: LStarchA (g m-2)
   unit_in: g/m2
-  trait_name: starch_per_area
-  value_type: individual_mean
+  trait_name: leaf_starch_per_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Three leaves per plant were harvested on a sunny day during the gas-exchange
     campaign, between 1100 and 1300 hours, for carbohydrate and cell wall content
@@ -295,8 +316,10 @@ traits:
     sum of soluble sugar and starch.
 - var_in: LSolProA (g m-2)
   unit_in: g/m2
-  trait_name: soluable_protein_per_area
-  value_type: individual_mean
+  trait_name: leaf_soluble_protein_per_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Three leaves per plant were harvested on a sunny day during the gas-exchange
     campaign, between 1100 and 1300 hours, for carbohydrate and cell wall content
@@ -309,8 +332,10 @@ traits:
     sum of soluble sugar and starch.
 - var_in: LInsolProA (g m-2)
   unit_in: g/m2
-  trait_name: insoluable_protein_per_area
-  value_type: individual_mean
+  trait_name: leaf_insoluble_protein_per_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Three leaves per plant were harvested on a sunny day during the gas-exchange
     campaign, between 1100 and 1300 hours, for carbohydrate and cell wall content
@@ -323,8 +348,10 @@ traits:
     sum of soluble sugar and starch.
 - var_in: ChlAandB (umol m-2)
   unit_in: umol/m2
-  trait_name: chlorophyll_per_area
-  value_type: individual_mean
+  trait_name: leaf_chlorophyll_per_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: Four leaf disks from recently fully expanded leaves were collected from
     each plant, in conjunction with samples collected for carbohydrate analyses, for
@@ -340,8 +367,10 @@ traits:
     Brisbane, Qld).
 - var_in: ChlAB
   unit_in: umol/umol
-  trait_name: chlorophyll_A_B_ratio
-  value_type: individual_mean
+  trait_name: leaf_chlorophyll_A_B_ratio
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 4
   methods: Four leaf disks from recently fully expanded leaves were collected from
     each plant, in conjunction with samples collected for carbohydrate analyses, for
@@ -358,7 +387,9 @@ traits:
 - var_in: percentCellWall (%)
   unit_in: '%'
   trait_name: leaf_cell_wall_fraction
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 3
   methods: Three leaves per plant were harvested on a sunny day during the gas-exchange
     campaign, between 1100 and 1300 hours, for carbohydrate and cell wall content
@@ -377,8 +408,10 @@ traits:
     the leaf structural biomass.
 - var_in: LMA (g m-2)
   unit_in: g/m2
-  trait_name: specific_leaf_area
-  value_type: individual_mean
+  trait_name: leaf_lamina_mass_per_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 8-10
   methods: Leaf mass per area (LMA) was measured in conjunction with gas-exchange
     measurements. A minimum of 40 leaf disks from 8-10 recently fully expanded leaves
@@ -388,7 +421,9 @@ traits:
 - var_in: Density (g cm-3)
   unit_in: g/cm3
   trait_name: leaf_density
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 2
   methods: Duplicate 1.0x0.5 cm sections were collected, after 7 months of growth,
     on opposite sides of the midvein in the mid region of the lamina; one leaf was
@@ -407,8 +442,10 @@ traits:
     by palisade cells and intercellular air space respectively.
 - var_in: Photo_Amax_umol_per_m2_s
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_maximum
-  value_type: individual_mean
+  trait_name: leaf_photosynthetic_rate_per_area_maximum
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Net photosynthesis at saturating light (Asat) and near-saturating CO2 (Amax),
     stomatal conductance (gs), the ratio of intercellular to ambient [CO2] (Ci/Ca)
@@ -422,8 +459,10 @@ traits:
     before measurements were taken.
 - var_in: gs_at_Amax_mol_per_m2_s
   unit_in: molH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Amax
-  value_type: individual_mean
+  trait_name: leaf_stomatal_conductance_per_area_at_Amax
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Net photosynthesis at saturating light (Asat) and near-saturating CO2 (Amax),
     stomatal conductance (gs), the ratio of intercellular to ambient [CO2] (Ci/Ca)
@@ -437,8 +476,10 @@ traits:
     before measurements were taken.
 - var_in: ci_at_Amax_umol_per_mol
   unit_in: umolCO2/mol
-  trait_name: ci_at_Amax
-  value_type: individual_mean
+  trait_name: leaf_intercellular_CO2_concentration_at_Amax
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Net photosynthesis at saturating light (Asat) and near-saturating CO2 (Amax),
     stomatal conductance (gs), the ratio of intercellular to ambient [CO2] (Ci/Ca)
@@ -453,7 +494,9 @@ traits:
 - var_in: transpiration_at_A_max_mmol_per_m2_s
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Amax
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Net photosynthesis at saturating light (Asat) and near-saturating CO2 (Amax),
     stomatal conductance (gs), the ratio of intercellular to ambient [CO2] (Ci/Ca)
@@ -467,8 +510,10 @@ traits:
     before measurements were taken.
 - var_in: Photo_Asat_umol_per_m2_s
   unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
-  value_type: individual_mean
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Net photosynthesis at saturating light (Asat) and near-saturating CO2 (Amax),
     stomatal conductance (gs), the ratio of intercellular to ambient [CO2] (Ci/Ca)
@@ -482,8 +527,10 @@ traits:
     before measurements were taken.
 - var_in: gs_at_Asat_mol_per_m2_s
   unit_in: molH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Asat
-  value_type: individual_mean
+  trait_name: leaf_stomatal_conductance_per_area_at_Asat
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Net photosynthesis at saturating light (Asat) and near-saturating CO2 (Amax),
     stomatal conductance (gs), the ratio of intercellular to ambient [CO2] (Ci/Ca)
@@ -497,8 +544,10 @@ traits:
     before measurements were taken.
 - var_in: ci_at_Asat_umol_per_mol
   unit_in: umolCO2/mol
-  trait_name: ci_at_Asat
-  value_type: individual_mean
+  trait_name: leaf_intercellular_CO2_concentration_at_Asat
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Net photosynthesis at saturating light (Asat) and near-saturating CO2 (Amax),
     stomatal conductance (gs), the ratio of intercellular to ambient [CO2] (Ci/Ca)
@@ -513,7 +562,9 @@ traits:
 - var_in: transpiration_at_A_sat_mmol_per_m2_s
   unit_in: mmolH2O/m2/s
   trait_name: leaf_transpiration_at_Asat
-  value_type: individual_mean
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
   replicates: 10
   methods: Net photosynthesis at saturating light (Asat) and near-saturating CO2 (Amax),
     stomatal conductance (gs), the ratio of intercellular to ambient [CO2] (Ci/Ca)
@@ -527,21 +578,25 @@ traits:
     before measurements were taken.
 substitutions: .na
 taxonomic_updates:
-- find: Uncinia sp.
-  replace: Carex sp.
-  reason: Align to current genus (E. Wenk, 2020-06-26)
-- find: Uncinia sp. [sp. 1] 
-  replace: Carex sp. [Uncinia sp. 1] 
-  reason: Align to current genus (E. Wenk, 2020-06-26)
-- find: Uncinia sp. [sp. 3] 
-  replace: Carex sp.[Uncinia sp. 3] 
-  reason: Align to current genus (E. Wenk, 2020-06-26)
 - find: Luzuriaga sp.
-  replace: Geitonoplesium sp. [Luzuriaga sp.]
-  reason: Align to current genus (E. Wenk, 2020-06-26)
-- find: Acianthus viridis
-  replace: Townsonia viridis
-  reason: Align to current genus (E. Wenk, 2020-06-26)
+  replace: Geitonoplesium sp. [Smith_2012]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC known` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Uncinia sp.
+  replace: Carex sp. [Smith_2012]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC known` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Uncinia sp. [sp. 1]
+  replace: Carex sp. [Uncinia sp. [sp. 1]; Smith_2012]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus known
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Uncinia sp. [sp. 3]
+  replace: Carex sp. [Uncinia sp. [sp. 3]; Smith_2012]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus known
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 exclude_observations: .na
 questions: .na
-

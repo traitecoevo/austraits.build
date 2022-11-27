@@ -4,59 +4,91 @@ source:
     bibtype: Unpublished
     year: 2020
     author: James Kirkpatrick
-    title: "Unpublished data: Fire response traits for woody Tasmanian endemic species, University of Tasmania"
-people:
-- name: James Kirkpatrick
-  institution: University of Tasmania
-  role: collector, contact
+    title: 'Unpublished data: Fire response traits for woody Tasmanian endemic species,
+      University of Tasmania'
+contributors:
+  data_collectors:
+  - last_name: Kirkpatrick
+    given_name: James
+    ORCID: 0000-0003-2763-2692
+    affiliation: University of Tasmania, Australia
+    notes: acknowledge only
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
 dataset:
-  year_collected_start: 2020
-  year_collected_end: 2020
-  description: Jamie Kirkpatrick's knwledge of fire response traits for woody Tasmanian
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>% 
+      mutate(
+        Wind = stringr::str_replace(Wind,"y", "xxx"),
+        `Bird/mammal` = stringr::str_replace(`Bird/mammal`, "y", "birds mammals"),
+        Wind = stringr::str_replace(Wind,"n", "NA"),
+        `Bird/mammal` = stringr::str_replace(`Bird/mammal`,"n", "NA"),
+        Wind = stringr::str_replace(Wind,"xxx", "wind"),
+        dispersers = coalesce(
+          as.character(Wind),
+          as.character(`Bird/mammal`)),
+        dispersal_syndrome = NA,
+        dispersers = dispersers %>% na_if(.,"NA")
+      ) %>% 
+        move_values_to_new_trait(
+          "dispersers", "dispersal_syndrome", 
+          c("wind", "birds mammals"),
+          c("anemochory", "zoochory"),
+          c("wind", "birds mammals")
+        )
+  '
+  collection_date: 2020/2020
+  taxon_name: species_name
+  description: Jamie Kirkpatrick's knowledge of fire response traits for woody Tasmanian
     endemics
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: Jamie Kirkpatrick manually filled in fire response trait data
     for woody Tasmanian endemics.
   original_file: endemic species traits related to fire.csv submitted by the contributor
   notes: none
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: species_name
-  custom_R_code: data %>% mutate(Wind = ifelse(Wind == "y","wind",NA), 'Bird/mammal'
-    = ifelse('Bird/mammal' == "y","bird mammal",NA))
 traits:
 - var_in: Resprout
   unit_in: .na
   trait_name: fire_response
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: author knowledge
 - var_in: Soil seed bank
   unit_in: .na
   trait_name: soil_seedbank
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: author knowledge
-- var_in: Wind
+- var_in: dispersal_syndrome
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: author knowledge
-- var_in: Bird/mammal
+- var_in: dispersers
   unit_in: .na
-  trait_name: dispersal_syndrome
-  value_type: expert_mean
+  trait_name: dispersers
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: author knowledge
 - var_in: Canopy seed storage
   unit_in: .na
   trait_name: serotiny
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: author knowledge
 substitutions:
@@ -68,17 +100,22 @@ substitutions:
   replace: fire_killed
 - trait_name: soil_seedbank
   find: 'y'
-  replace: '1'
+  replace: soil_seedbank_present
 - trait_name: soil_seedbank
   find: 'n'
-  replace: '0'
+  replace: soil_seedbank_absent
 - trait_name: serotiny
   find: 'y'
   replace: serotinous
 - trait_name: serotiny
   find: 'n'
   replace: not_serotinous
+- trait_name: dispersal_syndrome
+  find: neither
+  replace: .na
+- trait_name: dispersers
+  find: neither
+  replace: .na
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
-

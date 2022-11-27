@@ -10,106 +10,163 @@ source:
   secondary:
     key: Paczkowska_2000
     bibtype: Book
-    author: Paczkowska G, Chapman A. R. 
+    author: Paczkowska G, Chapman A. R.
     year: 2000
-    title: "The Western Australian flora: A descriptive catalogue"
-    publisher: CALM, Kings Park and Botanic Gardens & Wildflower Society of Western Australia
+    title: 'The Western Australian flora: A descriptive catalogue'
+    publisher: CALM, Kings Park and Botanic Gardens & Wildflower Society of Western
+      Australia
     place: Nedlands
     pages: 652
-    isbn: '0646401009'    
-people:
-- name: Grazyna Paczkowska
-  institution: Western Australian Herbarium
-  role: collector
-- name: Alex Chapman
-  institution: Western Australian Herbarium, Gaia Resources, Environmental Technology
-    Consultants
-  role: collector
-- name: John Huisman
-  institution: Western Australian Herbarium
-  role: curator, contact
-- name: Ben Richardson
-  institution: Western Australian Herbarium
-  role: curator
-- name: Amanda Spooner
-  institution: Western Australian Herbarium
-  role: curator
-- name: Helen Coleman
-  institution: Western Australian Herbarium
-  role: curator
-- name: Rachael Gallagher
-  institution: Macquarie University Sydney
-  role: contributor
+    isbn: 0646401009
+contributors:
+  data_collectors:
+  - last_name: Paczkowska
+    given_name: Grazyna
+    ORCID: .na.character
+    affiliation: Western Australian Herbarium, Keiran McNamara Conservation Science
+      Centre, Department of Biodiversity, Conservation and Attractions, Western Australia,
+      Australia
+  - last_name: Chapman
+    given_name: Alex
+    ORCID: .na.character
+    affiliation: Western Australian Herbarium, Keiran McNamara Conservation Science
+      Centre, Department of Biodiversity, Conservation and Attractions, Western Australia,
+      Australia
+  - last_name: Huisman
+    given_name: John
+    ORCID: 0000-0002-5255-8423
+    affiliation: Western Australian Herbarium, Biodiversity and Conservation Science,
+      Department of Biodiversity, Conservation and Attractions, Western Australia,
+      Australia
+    additional_role: contact
+  - last_name: Richardson
+    given_name: Ben
+    ORCID: 0000-0002-6108-0572
+    affiliation: Western Australian Herbarium, Department of Biodiversity, Conservation
+      and Attractions, Western Australia, Australia
+  - last_name: Spooner
+    given_name: Amanda
+    ORCID: .na.character
+    affiliation: Western Australian Herbarium, Keiran McNamara Conservation Science
+      Centre, Department of Biodiversity, Conservation and Attractions, Western Australia,
+      Australia
+    notes: no contact
+  - last_name: Coleman
+    given_name: Helen
+    ORCID: .na.character
+    affiliation: Western Australian Herbarium, Keiran McNamara Conservation Science
+      Centre, Department of Biodiversity, Conservation and Attractions, Western Australia,
+      Australia
+  austraits_curators: Rachael Gallagher
 dataset:
-  year_collected_start: 2015
-  year_collected_end: 2015
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(flowering_time = sprintf("%s-%s", `flowering start (month)`, `flowering finish (month)`) %>% convert_month_range_vec_to_binary()) %>%
+      mutate(flowering_time2 = format_flowering_months(`flowering start (month)`, `flowering finish (month)`)) %>%
+      mutate(leaf_type = NA) %>%
+      move_values_to_new_trait(
+        "leaf type (compound/simple)", "leaf_type",
+        "leafless", "leafless", ""
+      )
+  '
+  collection_date: unknown/1998
+  taxon_name: SPECIES
   description: Scraped from Florabase website https://florabase.dpaw.wa.gov.au/
-  collection_type: botanical_collection
-  sample_age_class: adult
+  basis_of_record: preserved_specimen
+  life_stage: adult
   sampling_strategy: herbarium specimens
   original_file: florabase_complete.xls
   notes: none
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: SPECIES
-  custom_R_code: data %>% mutate(flowering_time = sprintf("%s-%s", `flowering start
-    (month)`, `flowering finish (month)`) %>% convert_month_range_vec_to_binary())
 traits:
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: plant longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: extreme min height (m)
   unit_in: m
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: unknown
   methods: unknown
 - var_in: min height (m)
   unit_in: m
   trait_name: .na
-  value_type: expert_min
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: max height (m)
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: extreme max height (m)
   unit_in: m
   trait_name: .na
+  entity_type: .na
   value_type: .na
+  basis_of_value: .na
   replicates: unknown
   methods: unknown
 - var_in: flowering_time
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: flowering_time2
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf type (compound/simple)
   unit_in: .na
   trait_name: leaf_compoundness
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_type
+  unit_in: .na
+  trait_name: leaf_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: leaf longevity (evergreen/deciduous)
   unit_in: .na
   trait_name: leaf_phenology
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 substitutions:
@@ -145,19 +202,19 @@ substitutions:
   replace: annual biennial perennial
 - trait_name: plant_growth_form
   find: climber/shrub
-  replace: climber_shrub
+  replace: climber_woody
 - trait_name: plant_growth_form
   find: climber/herb
-  replace: climber_herb
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: climber/tree
-  replace: climber_tree
+  replace: climber_woody
 - trait_name: plant_growth_form
   find: climber/herb/shrub
-  replace: climber_herb climber_shrub
+  replace: climber_herbaceous climber_woody
 - trait_name: plant_growth_form
   find: climber/shrub/tree
-  replace: climber_shrub climber_tree
+  replace: climber_woody
 - trait_name: life_history
   find: perennial assumed
   replace: perennial
@@ -165,271 +222,393 @@ substitutions:
   find: semi-deciduous
   replace: semi_deciduous
 taxonomic_updates:
-- find: Pterostylis aspera
-  replace: Pterostylis aff. aspera
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Diuris laevis
-  replace: Diuris brevis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Grevillea bronwenae
-  replace: Grevillea bronweniae
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Micromyrtus uniovula
-  replace: Micromyrtus uniovulum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Stylidium planirosulum
-  replace: Stylidium planirosula
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
 - find: Acianthus huegelii (Cyrtostylis huegelii Endl. )
-  replace: Cyrtostylis huegelii
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  replace: Acianthus huegelii
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
 - find: Acianthus tenuissimus ( Cyrtostylis tenuissima (Nicholls & Goadby) D.L.Jones
     & M.A.Clem.)
-  replace: Cyrtostylis tenuissima
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  replace: Acianthus tenuissimus
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
 - find: Adenanthos velutinus (Adenanthos velutinus Meisn.)
   replace: Adenanthos velutinus
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-24)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Allocasuarina eriochlamys ( Allocasuarina eriochlamys (L.A.S.Johnson) L.A.S.Johnson
     )
   replace: Allocasuarina eriochlamys
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-24)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Amyema eburna (Amyema eburna (Barlow) Barlow )
+  replace: Amyema eburna
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Angianthus brachypappus (Angianthus conocephalus (J.M.Black) )
   replace: Angianthus brachypappus
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
 - find: Aponogeton elongatus (Aponogeton euryspermus )
   replace: Aponogeton elongatus
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-24)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Blumea mollis ( Blumea axillaris (Lam.) DC. )
-  replace: Blumea axillaris
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-25)
+  replace: Blumea mollis
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
 - find: Boronia spathulata (Boronia anceps Paul G.Wilson)
   replace: Boronia spathulata
-  reason: Align to most likely name on APC list (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Varietas
 - find: Caladenia amplexans (Cyanicula amplexans (A.S.George) Hopper & A.P.Br. )
-  replace: Cyanicula amplexans
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  replace: Caladenia amplexans
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
 - find: Caladenia aphylla (Praecoxanthus aphyllus (Benth.) Hopper & A.P.Br. )
-  replace: Praecoxanthus aphyllus
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
-- find: 'Caladenia deformis (Cyanicula deformis (R.Br.) Hopper & A.P.Br. ) more recently:  Pheladenia
-    deformis (R.Br.) D.L.Jones & M.A.Clem.'
-  replace: Pheladenia deformis
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  replace: Caladenia aphylla
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: 'Caladenia deformis (Cyanicula deformis (R.Br.) Hopper & A.P.Br. ) more recently:
+    Pheladenia deformis (R.Br.) D.L.Jones & M.A.Clem.'
+  replace: Caladenia deformis
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
 - find: Caladenia eminens (Caladenia longicauda subsp. eminens (Domin) Hopper & A.P.Br.)
-  replace: Caladenia longicauda subsp. eminens
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  replace: Caladenia eminens
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Caladenia ericksoniae
+  replace: Caladenia ericksonae
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Caladenia gemmata (Cyanicula gemmata (Lindl.) Hopper & A.P.Br. )
-  replace: Cyanicula gemmata
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  replace: Caladenia gemmata
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
 - find: Caladenia ixioides (Cyanicula ixioides (Lindl.) Hopper & A.P.Br. subsp. ixioides
     )
-  replace: Cyanicula ixioides
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  replace: Caladenia ixioides
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Caladenia menziesii (Leptoceras menziesii (R.Br.) Lindl. )
-  replace: Leptoceras menziesii
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  replace: Caladenia menziesii
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Caladenia pulchra (Caladenia pulchra Hopper & A.P.Br. )
+  replace: Caladenia pulchra
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Caladenia sericea (Cyanicula sericea (Lindl.) Hopper & A.P.Br. )
-  replace: Cyanicula sericea
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
-- find: Caladenia unita
-  replace: Caladenia nana subsp. unita
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  replace: Caladenia sericea
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Caladenia triangularis
+  replace: Caladenia x triangularis
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Caladenia variegata (Caladenia occidentalis Hopper & A.P.Br.)
+  replace: Caladenia variegata
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
 - find: Caleana nigrita (Paracaleana nigrita (Lindl.) Blaxell )
-  replace: Paracaleana nigrita
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  replace: Caleana nigrita
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cheiranthera simplicifolia (Cheiranthera simplicifolia (E.M.Benn.) L.Cayzer
     & Crisp )
   replace: Cheiranthera simplicifolia
-  reason: Confirm alignment with accepted on APC list (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Conospermum sigmoideum (Conospermum sigmoideum E.M.Benn. )
   replace: Conospermum sigmoideum
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Conospermum undulatum (Conospermum undulatum Lindl.)
   replace: Conospermum undulatum
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Corunastylis tepperi
-  replace: Prasophyllum tepperi
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Crassula tetramera (Crassula tetramera (Toelken) A.Druce & Sykes )
   replace: Crassula tetramera
-  reason: Change spelling to align with APC accepted name (E. Wenk, 2020-05-25)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cryptandra intermedia (Cryptandra intermedia (Rye) Rye )
   replace: Cryptandra intermedia
-  reason: Align with APC accepted synonym (E. Wenk, 2020-05-24)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cyanicula deformis (Pheladenia deformis (R.Br.) D.L.Jones & M.A.Clem. )
-  replace: Pheladenia deformis
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-25)
-- find: Cyanicula gertrudiae
-  replace: Cyanicula sp. [Cyanicula gertrudiae or Cyanicula gertrudeae]
-  reason: Align to genus, as name listed as invalid of APNI list and alternate spelling
-    without links in TPL (E. Wenk, 2020-05-26)
+  replace: Cyanicula deformis
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
 - find: Cyperus rigidellus (Cyperus rigidellus (Benth.) J.M.Black )
   replace: Cyperus rigidellus
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-24)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Dendrobium dicuphum (Dendrobium affine (Decne.) Steud.)
   replace: Dendrobium dicuphum
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Varietas
 - find: Dicliptera glabra (Dicliptera armata F.Muell)
   replace: Dicliptera glabra
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-24)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
 - find: Drakaea fitzgeraldii (Drakaea livida J.Drumm. )
-  replace: Drakaea livida
-  reason: Name, as is, in current use on APNI list (E. Wenk, 2020-05-26)
-- find: Eriochilus multiflorus
-  replace: Eriochilus dilatatus subsp. multiflorus
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-25)
-- find: Fimbristylis quinquangularis (Fimbristylis miliacea Vahl)
-  replace: Fimbristylis quinquangularis
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
-- find: Fimbristylis squarrulosa (Abildgaardia schoenoides R.Br.)
-  replace: Fimbristylis squarrulosa
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
-- find: Geodorum neocaledonicum
-  replace: Geodorum densiflorum
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-25)
-- find: Grevillea dolichopoda (Grevillea dolichopoda (McGill.) Olde & Marriott)
-  replace: Grevillea dolichopoda
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Grevillea shuttleworthiana ( Grevillea shuttleworthiana Meisn. )
-  replace: Grevillea shuttleworthiana subsp. shuttleworthiana
-  reason: Align to name in APC (D Falster, 2020.05.23)
-- find: Hibbertia ulicifolia (Hibbertia ulicifolia (Benth.) J.R.Wheeler )
-  replace: Hibbertia ulicifolia
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
-- find: Hibiscus vitifolius (Fioria vitifolia (L.) Mattei )
-  replace: Hibiscus vitifolius
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Isolepis nodosa (Ficinia nodosa (Rottb.) Goetgh., Muasya & D.A.Simpson )
-  replace: Ficinia nodosa
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Jacquemontia browniana (Jacquemontia pannosa (R.Br.) Mabb. )
-  replace: Jacquemontia browniana
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
-- find: Lasiopetalum membraniflorum
-  replace: Lasiopetalum membranaceum
-  reason: Align to most likely name on APC list (E. Wenk, 2020-05-25)
-- find: Lemna minor (Lemna disperma Hegelm)
-  replace: Lemna disperma
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Lepidium leptopetalum (Lepidium platypetalum Hewson)
-  replace: Lepidium platypetalum
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Leptoceras fimbriata ( Leporella fimbriata (Lindl.) A.S.George )
-  replace: Leporella fimbriata
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-25)
-- find: Leucopogon corifolius ( Leucopogon reflexus R.Br. )
-  replace: Leucopogon reflexus
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
-- find: Lyperanthus forrestii (Pyrorchis forrestii (F.Muell.) D.L.Jones & M.A.Clem.)
-  replace: Pyrorchis forrestii
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
-- find: Lyperanthus nigricans (Pyrorchis nigricans (R.Br.) D.L.Jones & M.A.Clem.)
-  replace: Pyrorchis nigricans
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
-- find: Marianthus bicolor (Marianthus bicolor (Putt.) F.Muell. )
-  replace: Marianthus bicolor
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
-- find: Pandorea doratoxylon (Pandorea pandorana (Andrews) Steenis )
-  replace: Pandorea doratoxylon
-  reason: Confirm alignment with APC accepted species (E. Wenk, 2020-05-25)
-- find: Pheladenia deformis
-  replace: Cyanicula deformis
-  reason: Align to seemingly preferred, but still unaccepted name in APC list (E.
-    Wenk, 2020-05-24)
-- find: Phyllanthus ciccoides (Phyllanthus reticulatus Poir. )
-  replace: Phyllanthus reticulatus
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Phyllanthus minutiflorus (Phyllanthus virgatus G.Forst. )
-  replace: Phyllanthus virgatus
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Phyllanthus trachygyne (Phyllanthus virgatus G.Forst. )
-  replace: Phyllanthus virgatus
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Prasophyllum grimwadeanum (Prasophyllum giganteum Lindl.)
-  replace: Prasophyllum giganteum
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
-- find: Prasophyllum ringens (Prasophyllum gracile Lindl. )
-  replace: Prasophyllum gracile
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
-- find: Pterostylis brevisepala
-  replace: Diplodium brevisepalum
-  reason: Align to APNI currently used name within Orchidaceae; not APC accepted (E.
-    Wenk, 2020-05-26)
-- find: Ptilotus caespitulosus (presumed extinct)
-  replace: Ptilotus caespitulosus
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Schoenus tenellus (Schoenus tenellus Benth. )
-  replace: Schoenus tenellus
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Scirpus mucronatus (Schoenoplectus mucronatus (L.) A.Kern.)
-  replace: Schoenoplectus mucronatus
-  reason: Align to name in APC (D Falster, 2020.05.23)
-- find: Senecio picridioides ( Senecio picridioides (Turcz.) M.E.Lawr)
-  replace: Senecio picridioides
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Sida corrugata (Sida spodochroma F.Muell. )
-  replace: Sida corrugata
-  reason: Confirm alignment with APC accepted name (E. Wenk, 2020-05-25)
-- find: Stackhousia georgei (Stackhousia monogyna Labill.)
-  replace: Stackhousia georgei
-  reason: Confirm alignment with APC accepted name (E. Wenk, 2020-05-25)
-- find: Stylidium ciliatum (Stylidium cilium Lowrie, A.H.Burb. & Kenneally )
-  replace: Stylidium ciliatum
-  reason: Confirm alignment with APC accepted name (E. Wenk, 2020-05-25)
-- find: Stylidium sidjamesii (Stylidium inundatum R.Br. )
-  replace: Stylidium inundatum
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Terminalia volucris (Terminalia volucris Benth. )
-  replace: Terminalia volucris
-  reason: Confirm alignment with APC accepted name (E. Wenk, 2020-05-25)
-- find: Thysanotus tuberosus (Thysanotus banksii R.Br.)
-  replace: Thysanotus tuberosus
-  reason: Confirm alignment with APC accepted name (E. Wenk, 2020-05-25)
-- find: Vigna mungo (Vigna radiata (L.) Wilczek)
-  replace: Vigna mungo
-  reason: Confirm alignment with APC accepted name (E. Wenk, 2020-05-25)
-- find: Caladenia ericksoniae
-  replace: Caladenia ericksonae
-  reason: Automatic alignment with name in APNI names (2020-06-18)
-- find: Caladenia triangularis
-  replace: Caladenia x triangularis
-  reason: Automatic alignment with name in APNI names (2020-06-18)
+  replace: Drakaea fitzgeraldii
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Drummondita rubroviridis
+  replace: Drummondita rubriviridis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
 - find: Elythranthera intermedia
   replace: Elythranthera x intermedia
-  reason: Automatic alignment with name in APNI names (2020-06-18)
-- find: Amyema eburna (Amyema eburna (Barlow) Barlow )
-  replace: Amyema bifurcata var. eburna
-  reason: Alignment with known name in APC list (Elizabeth Wenk, 2020-06-18)
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Euphorbia macgillivrayi (Euphorbia bifida Hook. & Arn. )
+  replace: Euphorbia macgillivrayi
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Fimbristylis quinquangularis (Fimbristylis miliacea Vahl)
+  replace: Fimbristylis quinquangularis
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Fimbristylis squarrulosa (Abildgaardia schoenoides R.Br.)
+  replace: Fimbristylis squarrulosa
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Grevillea bronwenae
+  replace: Grevillea bronweniae
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Grevillea dolichopoda (Grevillea dolichopoda (McGill.) Olde & Marriott)
+  replace: Grevillea dolichopoda
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Grevillea shuttleworthiana ( Grevillea shuttleworthiana Meisn. )
+  replace: Grevillea shuttleworthiana
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Guichenotia basivirida
+  replace: Guichenotia basiviridis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Hakea cygna
+  replace: Hakea cygnus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Heliotropium discorde
+  replace: Heliotropium discors
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Hemigenia pimelifolia
+  replace: Hemigenia pimeleifolia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Hibbertia ulicifolia (Hibbertia ulicifolia (Benth.) J.R.Wheeler )
+  replace: Hibbertia ulicifolia
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hibiscus vitifolius (Fioria vitifolia (L.) Mattei )
+  replace: Hibiscus vitifolius subsp. vitifolius
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Isolepis nodosa (Ficinia nodosa (Rottb.) Goetgh., Muasya & D.A.Simpson )
+  replace: Isolepis nodosa
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Jacquemontia browniana (Jacquemontia pannosa (R.Br.) Mabb. )
+  replace: Jacquemontia browniana var. browniana
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Lemna minor (Lemna disperma Hegelm)
+  replace: Lemna minor
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lepidium leptopetalum (Lepidium platypetalum Hewson)
+  replace: Lepidium leptopetalum
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Leptoceras fimbriata ( Leporella fimbriata (Lindl.) A.S.George )
+  replace: Leptoceras fimbriata
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Leucopogon corifolius ( Leucopogon reflexus R.Br. )
+  replace: Leucopogon corifolius
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lyperanthus forrestii (Pyrorchis forrestii (F.Muell.) D.L.Jones & M.A.Clem.)
+  replace: Lyperanthus forrestii
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Lyperanthus nigricans (Pyrorchis nigricans (R.Br.) D.L.Jones & M.A.Clem.)
+  replace: Lyperanthus nigricans
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Marianthus bicolor (Marianthus bicolor (Putt.) F.Muell. )
+  replace: Marianthus bicolor
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Micromyrtus uniovula
+  replace: Micromyrtus uniovulum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
 - find: Microtis densiflora (Microtis media subsp. densiflora (Benth.) R.J.Bates)
-  replace: Microtis media subsp. densiflora
-  reason: Alignment with known name in APNI names (Elizabeth Wenk, 2020-06-18)
+  replace: Microtis densiflora
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pandorea doratoxylon (Pandorea pandorana (Andrews) Steenis )
+  replace: Pandorea doratoxylon
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Phyllanthus ciccoides (Phyllanthus reticulatus Poir. )
+  replace: Phyllanthus ciccoides
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Phyllanthus minutiflorus (Phyllanthus virgatus G.Forst. )
+  replace: Phyllanthus minutiflorus
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Phyllanthus trachygyne (Phyllanthus virgatus G.Forst. )
+  replace: Phyllanthus trachygyne
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pileanthus rubronitidus
+  replace: Pileanthus rubrinitidus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Prasophyllum grimwadeanum (Prasophyllum giganteum Lindl.)
+  replace: Prasophyllum grimwadeanum
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
 - find: Prasophyllum lanceolatum (Prasophyllum triangulare Fitzg.)
   replace: Prasophyllum lanceolatum
-  reason: Alignment with known name in APNI names (Elizabeth Wenk, 2020-06-18)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Prasophyllum ringens (Prasophyllum gracile Lindl. )
+  replace: Prasophyllum ringens
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Ptilotus caespitulosus (presumed extinct)
+  replace: Ptilotus caespitulosus
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Schoenus tenellus (Schoenus tenellus Benth. )
+  replace: Schoenus tenellus
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Scirpus mucronatus (Schoenoplectus mucronatus (L.) A.Kern.)
+  replace: Scirpus mucronatus
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Senecio picridioides ( Senecio picridioides (Turcz.) M.E.Lawr)
+  replace: Senecio picridioides
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Sida corrugata (Sida spodochroma F.Muell. )
+  replace: Sida corrugata
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Stackhousia georgei (Stackhousia monogyna Labill.)
+  replace: Stackhousia georgei
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Stylidium ciliatum (Stylidium cilium Lowrie, A.H.Burb. & Kenneally )
+  replace: Stylidium ciliatum
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Stylidium perizostera
+  replace: Stylidium perizoster
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Stylidium planirosulum
+  replace: Stylidium planirosula
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Stylidium sidjamesii (Stylidium inundatum R.Br. )
+  replace: Stylidium sidjamesii
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: Species
+- find: Terminalia volucris (Terminalia volucris Benth. )
+  replace: Terminalia volucris
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Varietas
+- find: Thysanotus tuberosus (Thysanotus banksii R.Br.)
+  replace: Thysanotus tuberosus
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Vigna mungo (Vigna radiata (L.) Wilczek)
+  replace: Vigna mungo
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Xyris atrovirida
+  replace: Xyris atroviridis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-

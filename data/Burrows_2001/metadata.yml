@@ -11,20 +11,41 @@ source:
     pages: 411--430
     publisher: University of Chicago Press
     doi: 10.1086/319579
-people:
-- name: Geoff Burrows
-  institution: Charles Sturt University
-  role: collector, contact
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Burrows
+    given_name: Geoff
+    ORCID: .na.character
+    affiliation: Charles Sturt University, Australia
+    additional_role: contact
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 2001
-  year_collected_end: 2001
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      na_if(".na") %>%
+      group_by("Genus_species","SITE_text") %>%
+        mutate(across(c(leaf_type,leaf_shape), replace_duplicates_with_NA)) %>%
+      ungroup() %>%
+      mutate(
+        leaf_base_shape = ifelse(leaf_shape %in% c("cuneate", "narrow cuneate"),"cuneate",NA),
+        leaf_lamina_division = NA,
+        leaf_type = NA
+      ) %>%
+      move_values_to_new_trait(
+        "leaf_type", "leaf_lamina_division",
+        "trifoliate_leaves","trifoliate_leaves","trifoliate_leaves") %>%
+      move_values_to_new_trait(
+        "leaf_type", "leaf_type",
+        "scale_leaf","scale","")
+  '
+  collection_date: unknown/2001
+  taxon_name: Genus_species
+  location_name: SITE_text
   description: Anatomy of photosynthetic organs of 39 xeromorphic species from subhumid
     NSW.
-  collection_type: field
-  sample_age_class: adult
+  basis_of_record: field
+  life_stage: adult
   sampling_strategy: The photosynthetic organs (leaves, phyllodes, cladodes, and phyllichnia)
     of 39 species from 19 families, consisting of four species of perennial herb,
     22 shrub species,and 13 tree species, were collected for anatomical and scanning
@@ -32,11 +53,11 @@ dataset:
   original_file: Burrows 2007.xls
   notes: The few duplicate values within this dataset and with Roderick dataset seem
     to all be coincidental - they are independent measurements.
-sites:
+locations:
   The Rock:
     latitude (deg): -35.2666667
     longitude (deg): 147.0666667
-    rainfall (mm): 585
+    precipitation, MAP (mm): 585
     description: The Rock Nature Reserve (lat. 357169S, long. 1477049E), South Western
       Slopes, New South Wales, is a small (341 ha) island of remnant vegetation surrounded
       by an extensively modified agricultural landscape. A north-south ridge, the
@@ -51,32 +72,31 @@ sites:
       in leaf during summer. Thus, only ca. 25% of the recorded species remain in
       leaf, or equivalent, for the whole year.
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: Genus_species
-    site_name: SITE_text
-  custom_R_code: data %>% na_if(".na") %>% group_by("Genus_species","SITE_text") %>%
-    mutate_at(vars(leaf_type,leaf_shape), replace_duplicates_with_NA) %>% ungroup()
 traits:
 - var_in: Leaf_area_cm2
   unit_in: cm2
   trait_name: leaf_area
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to six leaves or the equivalent were collected from at least two
     plants of most species. Measured with a Licor leaf area meter.
 - var_in: Leaf_weight_g
   unit_in: g
   trait_name: leaf_dry_mass
-  value_type: raw_value
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to six leaves or the equivalent were collected from at least two
     plants of most species. Oven dried and weighed.
 - var_in: LMA_g_m2
   unit_in: g/m2
-  trait_name: specific_leaf_area
-  value_type: raw_value
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
   replicates: 1
   methods: Three to six leaves or the equivalent were collected from at least two
     plants of most species. Leaf area measured with a Licor leaf area meter. Leaves
@@ -84,29 +104,65 @@ traits:
 - var_in: lamina_depth_um
   unit_in: um
   trait_name: leaf_thickness
-  value_type: site_mean
-  replicates: 3-6
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 2-6
   methods: Three to six leaves or the equivalent were collected from at least two
     plants of most species. Material was fixed in 50% formalin
 - var_in: leaf_type
   unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert identification
+- var_in: leaf_lamina_division
+  unit_in: .na
+  trait_name: leaf_lamina_division
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert identification
+- var_in: leaf_type
+  unit_in: .na
   trait_name: leaf_type
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: expert identification
+- var_in: leaf_base_shape
+  unit_in: .na
+  trait_name: leaf_base_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert identification
 - var_in: leaf_shape
   unit_in: .na
   trait_name: leaf_shape
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: expert identification
 substitutions:
-- trait_name: leaf_type
+- trait_name: plant_photosynthetic_organ
   find: decurrent leaf base
-  replace: scale_leaf
-- trait_name: leaf_type
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
   find: trifoliolate leaves
-  replace: broadleaf
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
+  find: broadleaf
+  replace: leaf
+- trait_name: plant_photosynthetic_organ
+  find: article
+  replace: cladode
 - trait_name: leaf_shape
   find: elliptic
   replace: elliptical
@@ -124,7 +180,7 @@ substitutions:
   replace: ovate elliptical
 - trait_name: leaf_shape
   find: broad lanceolate
-  replace: broadly_lanceolate
+  replace: narrowly_ovate
 - trait_name: leaf_shape
   find: oblong elliptic
   replace: elliptical oblong
@@ -136,21 +192,26 @@ substitutions:
   replace: elliptical oblong
 - trait_name: leaf_shape
   find: narrow cuneate
-  replace: narrowly_cuneate
+  replace: triangular
+- trait_name: leaf_shape
+  find: cuneate
+  replace: .na
 - trait_name: leaf_shape
   find: obovate-elliptic
   replace: obovate elliptical
 taxonomic_updates:
 - find: Ameyma miquelii
   replace: Amyema miquelii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Dodonea viscosa subsp. cuneata
   replace: Dodonaea viscosa subsp. cuneata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
 - find: Zieria cystisoides
   replace: Zieria cytisoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions:
   additional_traits: detailed anatomy of photosynthetic organs.
-

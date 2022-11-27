@@ -1,2 +1,3 @@
-library(testthat)
-library(austraits.build)
+ library(austraits.build)
+ source("functions.R")
+

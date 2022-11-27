@@ -5,101 +5,164 @@ source:
     author: Lesley Hughes, Barbara Rice
     year: 1992
     title: 'Unpublished data: Traits data for 643 species, Macquarie University'
-people:
-- name: Lesley Hughes
-  institution: Macquarie University Sydney
-  role: collector
-- name: Barbara Rice
-  institution: Macquarie University Sydney
-  role: collector
-- name: Mark Westoby
-  institution: Macquarie University Sydney
-  role: lab_leader, contact
-- name: Ian Wright
-  institution: Macquarie University Sydney
-  role: contributor
+contributors:
+  data_collectors:
+  - last_name: Hughes
+    given_name: Lesley
+    ORCID: 0000-0003-0313-9780
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+  - last_name: Rice
+    given_name: Barbara
+    ORCID: .na.character
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+    notes: deceased
+  - last_name: Westoby
+    given_name: Mark
+    ORCID: 0000-0001-7690-4530
+    affiliation: Department of Biological Sciences, Macquarie University, Australia
+    additional_role: contact
+  austraits_curators: Ian Wright
 dataset:
-  year_collected_start: 1992
-  year_collected_end: 1992
+  data_is_long_format: no
+  custom_R_code:      '
+    data %>%
+      mutate(
+        `flowering duration` = convert_month_range_vec_to_binary(`flowering duration`),
+        growth_habit = ifelse(`growth form` == "Herb, cree", "creeper", NA),
+        `growth form` = ifelse(`name original` == "Commelina cyanea", "herb",`growth form`),
+        `growth form` = ifelse(`name original` == "Hibbertia dentata", "climber_herbaceous",`growth form`),
+        `growth form` = ifelse(`name original` == "Xanthosia tridentata", "subshrub",`growth form`),
+        parasitic = ifelse(`growth form`== "para"| `growth form`=="PARA","parasitic", NA),
+        plant_heterotrophy = ifelse(`growth form`== "saprophyte","saprophyte", NA),
+        plant_growth_substrate = ifelse(`growth form`== "Epiphyte", "epiphyte", NA),  
+        growth_habit = NA,
+        plant_climbing_mechanism = NA
+      ) %>%
+      move_values_to_new_trait(
+        "growth form", "plant_climbing_mechanism",
+        c("Twiner"), c("twining"), c("Twiner")
+      ) %>%
+      move_values_to_new_trait(
+        "growth form", "growth_habit",
+        c("Herb, cree", "Floater", "Trailer", "Twiner"),        
+        c("creeping", "floating", "prostrate", "climbing"),
+        c("herb", "herb", "climber", "climber")
+      ) 
+  '
+  collection_date: 1992/1992
+  taxon_name: name original
   description: trait data for 643 species
-  collection_type: literature
-  sample_age_class: adult
+  basis_of_record: literature
+  life_stage: adult
   sampling_strategy: unknown
   original_file: KUPR.xls
   notes: none
-sites: .na
+locations: .na
 contexts: .na
-config:
-  data_is_long_format: no
-  variable_match:
-    taxon_name: name original
-  custom_R_code: data %>% mutate(`flowering duration` = convert_month_range_vec_to_binary(`flowering
-    duration`)) %>% mutate(parasitic = ifelse(`growth form`=="para"|`growth form`=="PARA","parasitic",NA))
 traits:
 - var_in: growth form
   unit_in: .na
   trait_name: plant_growth_form
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: published literature
+- var_in: growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: published literature
+- var_in: plant_climbing_mechanism
+  unit_in: .na
+  trait_name: plant_climbing_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: published literature
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: published literature
+- var_in: plant_heterotrophy
+  unit_in: .na
+  trait_name: .na
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: flowering duration
   unit_in: .na
   trait_name: flowering_time
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: published literature
 - var_in: maximum height (m)_filtered
   unit_in: m
   trait_name: plant_height
-  value_type: expert_max
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
   replicates: .na
   methods: published literature
 - var_in: dispersal mode
   unit_in: .na
   trait_name: dispersal_syndrome
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: published literature
 - var_in: seritony
   unit_in: .na
   trait_name: serotiny
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: published literature
 - var_in: plant longevity
   unit_in: .na
   trait_name: life_history
-  value_type: expert_mean
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: published literature
 substitutions:
 - trait_name: plant_growth_form
-  find: Floater
-  replace: aquatic
-- trait_name: plant_growth_form
-  find: Trailer
-  replace: climber
-- trait_name: plant_growth_form
-  find: Twiner
-  replace: climber_twiner
+  find: epiphyte
+  replace: .na
 - trait_name: plant_growth_form
   find: Vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: vine
-  replace: climber_vine
+  replace: climber_herbaceous
 - trait_name: plant_growth_form
   find: Grass
   replace: graminoid
 - trait_name: plant_growth_form
   find: Reed
-  replace: reed
+  replace: graminoid
 - trait_name: plant_growth_form
   find: Sedge
   replace: graminoid
@@ -108,28 +171,25 @@ substitutions:
   replace: graminoid
 - trait_name: plant_growth_form
   find: Herb, cree
-  replace: creeper
+  replace: herb
 - trait_name: plant_growth_form
   find: Herb, Pere
   replace: herb
 - trait_name: plant_growth_form
-  find: Herb, wood
-  replace: subshrub herb
-- trait_name: plant_growth_form
   find: Woody herb
-  replace: subshrub herb
+  replace: herb
 - trait_name: plant_growth_form
   find: PARA
-  replace: parasite
+  replace: .na
 - trait_name: plant_growth_form
   find: para
-  replace: parasite
-- trait_name: plant_growth_form
-  find: mallee
-  replace: treelet
+  replace: .na
 - trait_name: plant_growth_form
   find: shrub/tree
   replace: shrub tree
+- trait_name: plant_growth_form
+  find: saprophyte
+  replace: .na
 - trait_name: serotiny
   find: 'no'
   replace: not_serotinous
@@ -141,121 +201,149 @@ substitutions:
   replace: ballistic myrmecochory
 - trait_name: dispersal_syndrome
   find: exo-zoochory
-  replace: exozoochory
+  replace: epizoochory
 taxonomic_updates:
-- find: Pimelea latifolia hirsuta
-  replace: Pimelea latifolia subsp. hirsuta
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Dillwynia sericea ssp B
-  replace: Dillwynia sericea subsp. B
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
 - find: Ampera xiphoclada
   replace: Amperea xiphoclada
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Baeckia brevifolia
-  replace: Baeckea brevifolia
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Baeckia diosmifolia
-  replace: Baeckea diosmifolia
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Baeckia imbricata
-  replace: Baeckea imbricata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Baeckia linifolia
-  replace: Baeckea linifolia
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Calytix tetragona
-  replace: Calytrix tetragona
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Carpobrotus glaucesens
-  replace: Carpobrotus glaucescens
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Dicanthium sericeum
-  replace: Dichanthium sericeum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Doryanthes exelsa
-  replace: Doryanthes excelsa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Eucalyptus botyroides
-  replace: Eucalyptus botryoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Gonocarpus micrantha
-  replace: Gonocarpus micranthus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Juncus krausii
-  replace: Juncus kraussii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Lepidosperma longitudinal
-  replace: Lepidosperma longitudinale
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Lepidosperma viscidium
-  replace: Lepidosperma viscidum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Leptospermum polygalifoli
-  replace: Leptospermum polygalifolium
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Leptospermum rotundifoliu
-  replace: Leptospermum rotundifolium
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pseuderantheum variabile
-  replace: Pseuderanthemum variabile
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Ranunculus plebius
-  replace: Ranunculus plebeius
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Sueda australis
-  replace: Suaeda australis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Tetragonia tetragoniodes
-  replace: Tetragonia tetragonoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Ziera laevigata
-  replace: Zieria laevigata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Ziera pilosa
-  replace: Zieria pilosa
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Ziera smithii
-  replace: Zieria smithii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Baeckea ramossissima
   replace: Baeckea ramosissima
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Baeckia brevifolia
+  replace: Baeckea brevifolia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Baeckia densifolia
   replace: Baeckea densifolia
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Baeckia diosmifolia
+  replace: Baeckea diosmifolia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Baeckia imbricata
+  replace: Baeckea imbricata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Baeckia linifolia
+  replace: Baeckea linifolia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Banksia asplenifolia
   replace: Banksia aspleniifolia
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Calytix tetragona
+  replace: Calytrix tetragona
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Carpobrotus glaucesens
+  replace: Carpobrotus glaucescens
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Dicanthium sericeum
+  replace: Dichanthium sericeum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Dillwynia sericea ssp B
+  replace: Dillwynia sericea subsp. B
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Doryanthes exelsa
+  replace: Doryanthes excelsa
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Eucalyptus botyroides
+  replace: Eucalyptus botryoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Gonocarpus micrantha
+  replace: Gonocarpus micranthus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Juncus krausii
+  replace: Juncus kraussii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lepidosperma longitudinal
+  replace: Lepidosperma longitudinale
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Lepidosperma viscidium
+  replace: Lepidosperma viscidum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Leptospermum polygalifoli
+  replace: Leptospermum polygalifolium
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Leptospermum rotundifoliu
+  replace: Leptospermum rotundifolium
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Oplismenus imbecillus
   replace: Oplismenus imbecillis
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Pratia pendunculata
-  replace: Pratia pedunculata
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Pratia purpurescens
-  replace: Pratia aff. purpurascens
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Rapana variabilis
-  replace: Rapanea variabilis
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Rhodamnia rubescens (tri)
-  replace: Rhodamnia rubescens
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
-- find: Senecio lautus ssp dissec
-  replace: Senecio spanomerus
-  reason: Align to most likely name on APC list (E. Wenk, 2020-05-25)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Patersonia sericea  var
   replace: Patersonia sericea
-  reason: Automatic alignment with name in APC list (accepted) (2020-06-24)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pimelea latifolia hirsuta
+  replace: Pimelea latifolia subsp. hirsuta
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Pratia pendunculata
+  replace: Pratia pedunculata
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pratia purpurescens
+  replace: Pratia purpurascens
+  reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
+    in `APC known` when everything except first 2 words ignored (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pseuderantheum variabile
+  replace: Pseuderanthemum variabile
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Ranunculus plebius
+  replace: Ranunculus plebeius
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Rapana variabilis
+  replace: Rapanea variabilis
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Rhodamnia rubescens (tri)
+  replace: Rhodamnia rubescens
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
+    APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Senecio lautus ssp dissec
+  replace: Senecio lautus subsp. dissectifolius
+  reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Sueda australis
+  replace: Suaeda australis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Ziera laevigata
+  replace: Zieria laevigata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Ziera pilosa
+  replace: Zieria pilosa
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Ziera smithii
+  replace: Zieria smithii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na
-
