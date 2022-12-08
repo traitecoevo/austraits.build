@@ -1506,22 +1506,22 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
       # if no taxonomic resolution is specified, then the name's taxonomic resolution is the taxon_rank for the taxon name
       taxon_rank = ifelse(!is.na(.data$taxonomic_resolution), .data$taxonomic_resolution, .data$taxon_rank),
       # field trinomial is only filled in if taxonomic resolution is an infraspecific name 
-      trinomial = ifelse(.data$taxon_rank %in% c("trinomial", "Subspecies", "Forma", "Varietas"),             
+      trinomial = ifelse(.data$taxon_rank %in% c("Subspecies", "Forma", "Varietas"),             
                         stringr::str_split_fixed(.data$taxon_name, "\\[",2)[,1] %>% stringr::str_trim(), NA),
       # field binomial is filled in if taxonomic resolution is an infraspecific name or a binomial
       # all taxon names that have "extra" information (beyond the actual name) have been formatted to have that information in square brackets '[]',
       # so these can be used as a delimitor to extract the actual name
-      binomial = ifelse(.data$taxon_rank %in% c("binomial", "Species"), 
+      binomial = ifelse(.data$taxon_rank %in% c("Species"), 
                         stringr::str_split_fixed(.data$taxon_name, "\\[",2)[,1] %>% stringr::str_trim(), NA),
-      binomial = ifelse(.data$taxon_rank %in% c("trinomial", "Subspecies", "Forma", "Varietas", "Series"), 
+      binomial = ifelse(.data$taxon_rank %in% c("Subspecies", "Forma", "Varietas", "Series"), 
                         stringr::word(.data$taxon_name, start = 1, end = 2), .data$binomial),
       binomial = stringr::str_trim(.data$binomial),
       # genus filled in for all names that have a taxonomic of genus or more detailed
       genus = ifelse(!.data$taxon_rank %in% c("Familia", "family"), ifelse(stringr::word(.data$taxon_name, 1) == "x", stringr::word(.data$taxon_name, start = 1, end = 2), stringr::word(.data$taxon_name, 1)), NA),
       family = ifelse(.data$taxon_rank %in% c("Familia", "family"), stringr::word(.data$taxon_name, 1), .data$family),
       # identify which name is to be matched to the various identifiers, distribution information, etc. in the taxa file
-      name_to_match_to = ifelse(.data$taxon_rank %in% c("trinomial", "Subspecies", "Forma", "Varietas"), .data$trinomial, NA),
-      name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("binomial", "Species"), .data$binomial, .data$name_to_match_to),
+      name_to_match_to = ifelse(.data$taxon_rank %in% c("Subspecies", "Forma", "Varietas"), .data$trinomial, NA),
+      name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("Species"), .data$binomial, .data$name_to_match_to),
       name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("genus", "Genus"), .data$genus, .data$name_to_match_to),
       name_to_match_to = ifelse(is.na(.data$name_to_match_to) & is.na(.data$taxon_rank), .data$genus, .data$name_to_match_to),
       name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("family", "Familia"), .data$family, .data$name_to_match_to)
