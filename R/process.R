@@ -1458,9 +1458,14 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
     austraits_raw$taxonomic_updates %>%
     dplyr::left_join(by = "cleaned_name",
               taxa %>% dplyr::select(.data$cleaned_name, .data$cleaned_scientific_name_id, .data$cleaned_name_taxonomic_status,
-                                      .data$cleaned_name_alternative_taxonomic_status, .data$taxon_id, .data$taxon_name)
+                                      .data$cleaned_name_alternative_taxonomic_status, .data$taxon_id, .data$taxon_name, .data$taxon_rank)
               ) %>%
+    dplyr::mutate(
+      taxonomic_resolution = ifelse(!is.na(.data$taxonomic_resolution) & .data$taxonomic_resolution != .data$taxon_rank, .data$taxon_rank, .data$taxonomic_resolution),
+      taxonomic_resolution = ifelse(is.na(.data$taxonomic_resolution), .data$taxon_rank, .data$taxonomic_resolution)
+    ) %>%
     dplyr::distinct() %>%
+    dplyr::select(-taxon_rank) %>%
     dplyr::arrange(.data$cleaned_name)
 
 
@@ -1468,11 +1473,13 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
     austraits_raw$traits %>%
     dplyr::rename(cleaned_name = .data$taxon_name) %>%
     dplyr::left_join(by = "cleaned_name",
-              taxa %>% dplyr::select(.data$cleaned_name, .data$taxon_name)
+              taxa %>% dplyr::select(.data$cleaned_name, .data$taxon_name, .data$taxon_rank)
               ) %>%
     dplyr::select(.data$dataset_id, .data$taxon_name, dplyr::everything()) %>%
-    dplyr::mutate(taxon_name = ifelse(is.na(.data$taxon_name), .data$cleaned_name, .data$taxon_name)) %>%
-    dplyr::mutate(taxon_name = ifelse(stringr::str_detect(.data$cleaned_name, "\\["), .data$cleaned_name, .data$taxon_name)) %>%
+    dplyr::mutate(
+      taxon_name = ifelse(is.na(.data$taxon_name), .data$cleaned_name, .data$taxon_name),
+      taxon_name = ifelse(stringr::str_detect(.data$cleaned_name, "\\["), .data$cleaned_name, .data$taxon_name)
+    ) %>%
     dplyr::select(-.data$cleaned_name)
   
 # names, identifiers for all genera
@@ -1501,10 +1508,12 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
                      taxa %>% dplyr::select(.data$taxon_name, .data$taxon_rank, .data$family) %>% dplyr::distinct() %>% util_df_convert_character()
     ) 
 
+
   species_tmp <- species_tmp %>%  
-    dplyr::mutate(    
+    dplyr::mutate(
       # if no taxonomic resolution is specified, then the name's taxonomic resolution is the taxon_rank for the taxon name
-      taxon_rank = ifelse(!is.na(.data$taxonomic_resolution), .data$taxonomic_resolution, .data$taxon_rank),
+      taxonomic_resolution = ifelse(.data$taxon_name %in% taxa$cleaned_name, taxa$taxon_rank[match(.data$taxon_name, taxa$cleaned_name)], taxonomic_resolution),
+      taxon_rank = ifelse(!is.na(.data$taxon_rank), .data$taxonomic_resolution, .data$taxon_rank),
       # field trinomial is only filled in if taxonomic resolution is an infraspecific name 
       trinomial = ifelse(.data$taxon_rank %in% c("Subspecies", "Forma", "Varietas"),             
                         stringr::str_split_fixed(.data$taxon_name, "\\[",2)[,1] %>% stringr::str_trim(), NA),
@@ -1525,7 +1534,7 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
       name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("genus", "Genus"), .data$genus, .data$name_to_match_to),
       name_to_match_to = ifelse(is.na(.data$name_to_match_to) & is.na(.data$taxon_rank), .data$genus, .data$name_to_match_to),
       name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("family", "Familia"), .data$family, .data$name_to_match_to)
-      ) %>%
+      ) %>% 
       # remove family, taxon_rank; they are about to be merged back in, but matches will now be possible to more rows
       select(-.data$taxon_rank, - .data$taxonomic_resolution) %>%
       rename(family_tmp = .data$family) %>%
@@ -1558,10 +1567,8 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
                     .data$taxonomic_status, .data$scientific_name, .data$scientific_name_authorship, .data$taxon_id, 
                     .data$scientific_name_id)
 
-
   austraits_raw$taxa <-
     species_tmp %>%
-    dplyr::bind_rows() %>%
     dplyr::arrange(.data$taxon_name) %>%
     dplyr::distinct(.data$taxon_name, .keep_all = TRUE)
 
