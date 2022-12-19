@@ -183,7 +183,7 @@ dataset_process <- function(filename_data_raw,
             lapply(util_list_to_bib) %>% purrr::reduce(c)
 
   # record methods
-  methods <- process_format_methods(metadata, dataset_id, sources, contributors, context_ids)
+  methods <- process_format_methods(metadata, dataset_id, sources, contributors)
  
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
@@ -1190,7 +1190,7 @@ process_format_contributors <- function(my_list, dataset_id, schema) {
   contributors
 }
 
-process_format_methods <- function(metadata, dataset_id, sources, contributors, context_ids) {
+process_format_methods <- function(metadata, dataset_id, sources, contributors) {
 
   # identify sources as being `primary`, `secondary` or `original`
   # secondary datasets are additional publications associated with the primary citation
@@ -1225,7 +1225,7 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors, 
         util_list_to_df2() %>%
         dplyr::filter(!is.na(.data$trait_name)) %>%
         dplyr::mutate(dataset_id = dataset_id) %>%
-        dplyr::select(dataset_id, .data$trait_name, .data$methods, dplyr::any_of("method_context"))
+        dplyr::select(dataset_id, .data$trait_name, .data$methods)
       ,
       # study methods
       metadata$dataset %>%
@@ -1262,29 +1262,9 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors, 
       assistants = ifelse(is.null(metadata$contributors$assistants), NA_character_,
                                       metadata$contributors$assistants),
       austraits_curators = metadata$contributors$austraits_curators
-    )
+      )
 
-  method_contexts <- 
-    context_ids$contexts %>%
-      filter(category == "method", link_id == "method_id") %>%
-      rename(method_context = value, method_id = link_vals) %>%
-      select(method_context, method_id)
-
-#  browser()
-  if(nrow(method_contexts) > 0 ) {
-    methods <-
-      methods %>%
-      left_join(by = "method_context", method_contexts) %>% 
-      select(c("dataset_id", "trait_name", "method_id", "method_context", "methods"), everything())
-  } else {
-    methods <-
-      methods %>%
-      mutate(method_id = NA_character_)
-  }
-
-  methods %>% 
-  select(-any_of(c("method_context"))) %>%
-  select(c("dataset_id", "trait_name", "method_id", "methods"), everything())
+  methods
 }
 
 #' Standardise species names
