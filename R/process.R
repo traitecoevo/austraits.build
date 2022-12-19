@@ -183,7 +183,7 @@ dataset_process <- function(filename_data_raw,
             lapply(util_list_to_bib) %>% purrr::reduce(c)
 
   # record methods
-  methods <- process_format_methods(metadata, dataset_id, sources, contributors, context_ids, contexts)
+  methods <- process_format_methods(metadata, dataset_id, sources, contributors, context_ids)
  
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
@@ -1190,7 +1190,7 @@ process_format_contributors <- function(my_list, dataset_id, schema) {
   contributors
 }
 
-process_format_methods <- function(metadata, dataset_id, sources, contributors, context_ids, contexts) {
+process_format_methods <- function(metadata, dataset_id, sources, contributors, context_ids) {
 
   # identify sources as being `primary`, `secondary` or `original`
   # secondary datasets are additional publications associated with the primary citation
@@ -1218,39 +1218,6 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors, 
                           paste0(" (", contributors$additional_role, ")"),
                           ""))  %>% paste(collapse = ", ")
 
-  # contexts that are of category = method
- # browser()
-  if(nrow(contexts) > 0) {
-     if(nrow(contexts %>% filter(category == "method")) > 0) {
-    method_contexts_tmp <-
-      contexts %>%
-        filter(category == "method") %>% 
-        distinct(var_in)
-     } else {
-       method_contexts_tmp <- tibble::tibble(var_in = "XX")
-     }
-  } else {
-    method_contexts_tmp <- tibble::tibble(var_in = "XX")
-  }
-  
-  # identify which method contexts come from metadata[["traits"]]
-  # XXXX But I know it can't just be searching for method_contexts_tmp$var_in[[1]] - needs a seq_along, but this is a start
-  
-  if(nrow(contexts) > 0) { 
-    traits_columns <-  metadata[["traits"]] %>%
-      util_list_to_df2() %>% dplyr::select(dplyr::any_of(method_contexts_tmp$var_in[[1]]))
-  } else {
-    traits_columns <- tibble::tibble()
-  }
-    
-  # TRUE/FALSE variable, which is TRUE if there are method contexts keyed in through metadata[["traits]] and FALSE if all metadata contexts come from columns
-  # if FALSE, then there is no need for those method_ids to be in the methods tables and in fact they can't be in the methods table, because they are likely
-  # to vary across rows of data, not simply across trait entries
-  
-  traits_columns_tmp <- ifelse(ncol(traits_columns) == 0 | is.null(traits_columns), FALSE, TRUE)
-  
-  #browser()
-  
   methods <-
     dplyr::full_join( by = "dataset_id",
       # methods used to collect each trait
@@ -1258,8 +1225,7 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors, 
         util_list_to_df2() %>%
         dplyr::filter(!is.na(.data$trait_name)) %>%
         dplyr::mutate(dataset_id = dataset_id) %>%
-  #      dplyr::select(dataset_id, .data$trait_name, .data$methods, dplyr::any_of("method_context"))
-        dplyr::select(dataset_id, .data$trait_name, .data$methods, dplyr::any_of(method_contexts_tmp$var_in[[1]]))
+        dplyr::select(dataset_id, .data$trait_name, .data$methods, dplyr::any_of("method_context"))
       ,
       # study methods
       metadata$dataset %>%
@@ -1298,13 +1264,13 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors, 
       austraits_curators = metadata$contributors$austraits_curators
     )
 
-
   method_contexts <- 
     context_ids$contexts %>%
-      filter(category == "method", link_id == "method_id", var_in %in% traits_columns) %>%
+      filter(category == "method", link_id == "method_id") %>%
       rename(method_context = value, method_id = link_vals) %>%
       select(method_context, method_id)
 
+#  browser()
   if(nrow(method_contexts) > 0 ) {
     methods <-
       methods %>%
