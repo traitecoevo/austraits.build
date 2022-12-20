@@ -1465,7 +1465,7 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
       taxonomic_resolution = ifelse(is.na(.data$taxonomic_resolution), .data$taxon_rank, .data$taxonomic_resolution)
     ) %>%
     dplyr::distinct() %>%
-    dplyr::select(-taxon_rank) %>%
+    dplyr::select(-.data$taxon_rank) %>%
     dplyr::arrange(.data$cleaned_name)
 
 
@@ -1569,14 +1569,15 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
 
   austraits_raw$taxa <-
     species_tmp %>%
+    dplyr::bind_rows() %>%
     dplyr::arrange(.data$taxon_name) %>%
     dplyr::distinct(.data$taxon_name, .keep_all = TRUE)
 
   # only now, at the very end, can `taxonomic_resolution` be removed from the traits table
-  
+
   austraits_raw$traits <-
     austraits_raw$traits %>%
-      dplyr::select(-.data$taxonomic_resolution)
+      dplyr::select(-.data$taxonomic_resolution, -.data$taxon_rank)
 
   austraits_raw$excluded_data <-
     austraits_raw$excluded_data %>%
