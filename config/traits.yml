@@ -30,7 +30,7 @@ traits:
       label: Bark nitrogen (N) isotope signature (delta 15N)
       allowed_values_min: -25.0
       allowed_values_max: 75.0
-    bark_mass_area:
+    bark_dry_mass_per_surface_area:
       description: Bark mass per unit surface area of stem
       type: numeric
       units: g/cm2
@@ -210,7 +210,7 @@ traits:
       label: Depth below ground (negative number) or height above ground (positive number) from which buds emerge following a disturbance (i.e. fire)
       allowed_values_min: -100
       allowed_values_max: 100
-    calcicole_status:
+    plant_tolerance_calcicole:
       description: Dichotonmous variable, defining plants as calcifuge (intolerant of basic soils) versus calcicole (tolerant of basic soils, such as calcareous sands and limestone derived soils)
       type: categorical
       label: Calcicole versus calcifuge status
@@ -1044,35 +1044,35 @@ traits:
         sulcus: Pollen aperture shape is elongate and grooved and positioned at the pole
         syncolpus: Pollen grain with two or more simple (or compound) colpi, the ends of which join at the pole
         ulcus: Pollen aperture shape is round and pore-like and positioned at the pole
-    leaf_fluorescence_Jmax_per_mass:
+    leaf_photosynthesis_Jmax_per_mass:
       description: Capacity for photosynthetic electron transport, measured through chlorophyll fluorescence, on a per mass basis
       type: numeric
       units: umol/g/s
       label: Capacity for photosynthetic electron transport, measured through chlorophyll fluorescence, on a per mass basis
       allowed_values_min: 0
       allowed_values_max: 3
-    leaf_fluorescence_Vcmax_per_mass:
+    leaf_photosynthesis_Vcmax_per_mass:
       description: Maximum carboxylase activity of ribulose 1,5-bisphosphate carboxylase/oxygenase (Rubisco), measured through chlorophyll fluorescence, on a per mass basis
       type: numeric
-      units: umol/g
+      units: umol/g/s
       label: Maximum carboxylase activity of ribulose 1,5-bisphosphate carboxylase/oxygenase (Rubisco), measured through chlorophyll fluorescence, on a per mass basis
       allowed_values_min: 0
       allowed_values_max: 1
-    leaf_fluorescence_Jmax_over_Vcmax:
+    leaf_photosynthesis_Jmax_over_Vcmax:
       description: Ratio of photosynthetic electron transport capacity to maximum Rubisco activity, measured through chlorophyll fluorescence; this is  the maximum quantum yield of PSII (Maxwell & Johnson 2000, doi.org/10.1093/jexbot/51.345.659)
       type: numeric
       units: dimensionless
       label: Ratio of photosynthetic electron transport capacity to maximum Rubisco activity, measured through chlorophyll fluorescence
       allowed_values_min: 0
       allowed_values_max: 5
-    leaf_fluorescence_Jmax_per_area:
+    leaf_photosynthesis_Jmax_per_area:
       description: Capacity for photosynthetic electron transport, calculated from an A-Ci response curve, on an area basis
       type: numeric
       units: umol/m2/s
       label: Capacity for photosynthetic electron transport, calculated from an A-Ci response curve, on an area basis
       allowed_values_min: 1
       allowed_values_max: 500
-    leaf_fluorescence_Vcmax_per_area:
+    leaf_photosynthesis_Vcmax_per_area:
       description: Maximum carboxylase activity of ribulose 1,5-bisphosphate carboxylase/oxygenase (Rubisco), calculated from an A-Ci response curve, on an area basis
       type: numeric
       units: umol/m2/s
@@ -1334,7 +1334,7 @@ traits:
       label: Huber value
       allowed_values_min: 0.000001
       allowed_values_max: 0.2
-    hypocotyl_type:
+    seedling_hypocotyl_hairs:
       description: Binary variable distinguishing between glabrous versus hairy hypocotyls (the embryonic axis to which the cotyeledons are attached).
       type: categorical
       label: Hypocotyl type
@@ -1355,7 +1355,7 @@ traits:
       label: Lower hypodermis thickness
       allowed_values_min: 1.0
       allowed_values_max: 100.0
-    inundation_tolerance:
+    plant_tolerance_inundation:
       description: Ability of taxon to tolerate being under water
       type: categorical
       label: Inundation tolerance
@@ -1728,7 +1728,7 @@ traits:
       allowed_values_levels:
         glabrous: Juvenile phase leaves do not have hairs (trichomes).
         hairy: Juvenile phase leaves have hairs (trichomes).
-    leaf_hydraulic_conductivity:
+    leaf_specific_conductance:
       description: Measure of how efficiently water is transported through the leaf, determined as the ratio of water flow rate through the leaf to the difference in water potential across the leaf, standardised to leaf area.
       type: numeric
       units: mmol/m2/s/MPa
@@ -2874,8 +2874,8 @@ traits:
       label: Root wood density
       allowed_values_min: 0.05
       allowed_values_max: 10.0
-    salt_tolerance:
-      description: Salt-tolerance categories; Also see 'soil_salinity_tolerance' for studies reporting actual soil salinity levels taxa can tolerate. Kew data on salt tolerance included in 'water_tolerance' trait
+    plant_tolerance_salt:
+      description: Salt-tolerance categories; Also see 'plant_tolerance_soil_salinity' for studies reporting actual soil salinity levels taxa can tolerate. Kew data on salt tolerance included in 'water_tolerance' trait
       type: categorical
       label: Salt tolerance strategies
       allowed_values_levels:
@@ -2900,7 +2900,7 @@ traits:
       label: Theoretical sapwood specific conductivity (Ks)
       allowed_values_min: 0.05
       allowed_values_max: 5000
-    stem_transverse_branch_area_specific_conductivity:
+    stem_specific_conductivity:
       description: Describes the flow rate of water (kg/s) along a stem for a given drop in pressure (1/MPa), normalised to the length of the segment (1/m). Calculated as hydraulic conductivity divided by the transverse branch area where the measurement is taken.
       type: numeric
       units: kg/m/s/MPa
@@ -3128,14 +3128,14 @@ traits:
         serotiny_low: Plant displays a low level of serotiny
         serotiny_moderate: Plant displays a moderate level of serotiny
         serotiny_high: Plant displays a high level of serotiny
-    seedling_first_leaf:
+    seedling_first_node_leaf_type:
       description: Binary variable distinguishing between seedlings where the first leaf is scale-like (cataphyll) versus leaf-like.
       type: categorical
       label: First leaf style
       allowed_values_levels:
         scale-like: When the first leaf at germination is scale-like, also referred to as a cataphyll
         leaf-like: When the first leaf at germination is leaf-like
-    seedling_first_node:
+    seedling_first_node_leaf_count:
       description: Binary variable distinguishing between seedlings where the leaves at the first node are single versus paired.
       type: categorical
       label: Leaf count at first node
@@ -3254,17 +3254,17 @@ traits:
       label: Senesced leaf zinc (Zn) content per unit leaf dry mass
       allowed_values_min: 0
       allowed_values_max: 100.0
-    snow_tolerance:
+    plant_tolerance_snow:
       description: Description of a taxon's tolerance to snow cover
       type: categorical
       label: Snow tolerance
       allowed_values_levels:
-        not_applicable: Taxa is virtually never confronted with snow in nature and the response is unknown
-        intolerant: Taxa is frost tender and known to be killed by any snow
-        days: Taxa can tolerate snow for days (typically less than 1 week)
-        weeks: Taxa can tolerate snow for weeks (typically less than 1 month)
-        months: Taxa can tolerate snow for months
-    soil_salinity_tolerance:
+        not_applicable: Taxa is virtually never confronted with snow in nature and the response is unknown.
+        intolerant: Taxa is frost tender and known to be killed by any snow.
+        days: Taxa can tolerate being covered by snow for days (typically less than 1 week).
+        weeks: Taxa can tolerate being covered by snow for weeks (typically less than 1 month).
+        months: Taxa can tolerate being covered by snow for months.
+    plant_tolerance_soil_salinity:
       description: Maximum salinity tolerated by a taxon, reported as the conductivity of the soil
       type: numeric
       units: dS/m
@@ -3445,14 +3445,14 @@ traits:
       label: Stem Count, categorical
       allowed_values_min: 0
       allowed_values_max: 5
-    stem_cross_section_area:
+    stem_cross_sectional_area:
       description: Cross-sectional area of the stem
       type: numeric
       units: mm2
       label: Stem cross-sectional area
       allowed_values_min: 1.0
       allowed_values_max: 1000.0
-    stem_cross_section_area_no_bark:
+    sapwood_cross_sectional_area:
       description: Cross-sectional area of the stem once bark is removed
       type: numeric
       units: mm2
@@ -3466,7 +3466,7 @@ traits:
       label: Stem dry mass per unit stem fresh mass (Stem dry matter content)
       allowed_values_min: 100.0
       allowed_values_max: 1000.0
-    stem_hydraulic_conductivity:
+    stem_hydraulic_conductance:
       description: Kh; Measure of how efficiently water is transported through the leaf, determined as the ratio of water flow rate through the leaf to the difference in water potential across the leaf, standardised to leaf area; units same as mg*m/s/MPa
       type: numeric
       units: 10^6 x kg*m/s/MPa
@@ -3487,7 +3487,7 @@ traits:
       label: Stem nitrogen (N) content per unit stem dry mass
       allowed_values_min: 0.1
       allowed_values_max: 1000.0
-    stem_basal_diameter:
+    plant_diameter_breast_height:
       description: Diameter at the base of the plant, usually "DBH" except in short plants; only "maximum" values are included
       type: numeric
       units: mm
@@ -3566,7 +3566,7 @@ traits:
       labels: Fraction of shoot dry mass that is stems (versus leaves)
       allowed_values_min: 0
       allowed_values_max: 1
-    root_tap_root_status:
+    root_system_type:
       description: Binary variable describing whether or not a plant has a tap root
       type: categorical
       label: Tap root
@@ -3581,14 +3581,14 @@ traits:
       label: Thickest root diameter
       allowed_values_min: 0.01
       allowed_values_max: 1000
-    twig_area:
+    branch_terminal_twig_cross_sectional_area:
       description: Cross-sectional area of the terminal twig
       type: numeric
       units: mm2
       label: Terminal twig cross-sectional area
       allowed_values_min: 0.05
       allowed_values_max: 50
-    twig_length:
+    branch_terminal_twig_length:
       description: Length of the terminal twig
       type: numeric
       units: mm
@@ -3679,7 +3679,7 @@ traits:
       label: Ratio of vessel diameter to vessel density
       allowed_values_min: 0.05
       allowed_values_max: 1000.0
-    water_logging_tolerance:
+    plant_tolerance_water_logged_soils:
       description: Ability of taxon to tolerate water-logged soils
       type: categorical
       label: Water-logging tolerance
@@ -3710,7 +3710,7 @@ traits:
       label: Fraction of wood comprised of fibres
       allowed_values_min: 0.01
       allowed_values_max: 1.0
-    wood_ray_fraction:
+    wood_ray_parenchyma_fraction:
       description: Fraction of wood comprised of rays
       type: numeric
       units: dimensionless
