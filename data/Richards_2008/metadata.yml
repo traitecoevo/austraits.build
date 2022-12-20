@@ -230,7 +230,10 @@ dataset:
   custom_R_code: '
     data %>%
       group_by(name_original) %>%
-        mutate(across(c(`GF`, `LfForm`,`LfType`,`DecEv`,`Nfixer`,`photosynthetic pathway`), replace_duplicates_with_NA)) %>%
+        mutate(
+          across(c(`GF`, `LfForm`,`LfType`,`DecEv`,`Nfixer`,`photosynthetic pathway`), replace_duplicates_with_NA),
+          `SLA (cm2/g)` = ifelse(!is.na(`LMA (g/m2)`), 1/(`LMA (g/m2)`*10000), `SLA (cm2/g)`)
+        ) %>%
       ungroup()
   '
   collection_date: unknown/2009
@@ -854,18 +857,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
-  methods: From Leigh_2003, Leigh_2006, Leunig_1991, Richards_2008_2 (unpublished),
-    and Schortemeyer_0000; See original references, listed alphabetically under 'additional
-    references'
-- var_in: LMA (g/m2)
-  unit_in: g/m2
-  trait_name: leaf_mass_per_area
-  entity_type: population
-  value_type: mean
-  basis_of_value: measurement
-  replicates: unknown
-  methods: From Pearcy 1987; See original references, listed alphabetically under
-    'additional references'
+  methods: unknown
 - var_in: leaf longevity
   unit_in: month
   trait_name: leaf_lifespan
