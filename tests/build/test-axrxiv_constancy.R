@@ -62,14 +62,18 @@ test_that("constancy of with version 3.0.2", {
     gsub("seed_breadth", "seed_height", .)  %>%
     gsub("growth_habit", "stem_growth_habit", .) %>%
     gsub("vessel_density_leaves", "leaf_vessel_density", .) %>%
-    gsub("vessel_diameter_leaves", "leaf_vessel_diameter", .)
+    gsub("vessel_diameter_leaves", "leaf_vessel_diameter", .) %>%
+    gsub("flood_regime_classification", "plant_flood_regime_classification", .) %>%
+    gsub("leaf_hydraulic_conductivity", "leaf_specific_conductance", .)
   
   austraits_raw_comparison$methods$trait_name <- austraits_raw_comparison$methods$trait_name %>%
     gsub("seed_mass", "seed_dry_mass", . ) %>%
     gsub("seed_breadth", "seed_height", .) %>%
     gsub("growth_habit", "stem_growth_habit", .) %>%
     gsub("vessel_density_leaves", "leaf_vessel_density", .) %>%
-    gsub("vessel_diameter_leaves", "leaf_vessel_diameter", .)
+    gsub("vessel_diameter_leaves", "leaf_vessel_diameter", .) %>%
+    gsub("flood_regime_classification", "plant_flood_regime_classification", .) %>%
+    gsub("leaf_hydraulic_conductivity", "leaf_specific_conductance", .)
   
   austraits_raw_comparison$traits$replicates <- austraits_raw_comparison$traits$replicates %>%
     gsub("3 replicates on 1 individual per species or 1 replicate on each individual", "3",. )
@@ -81,10 +85,10 @@ test_that("constancy of with version 3.0.2", {
   v <- "traits"
   vv <- c("dataset_id", "taxon_name", "trait_name", "value", "unit", "original_name")
   # these traits have known changes in names or values
-  trait_to_check <- c("flood_regime_classification", "life_history", "plant_growth_form", "plant_height", "growth_habit", "leaf_area", 
+  trait_to_check <- c("plant_flood_regime_classification", "life_history", "plant_growth_form", "plant_height", "growth_habit", "leaf_area", 
                       "leaf_dry_mass", "root_shoot_ratio", "leaf_compoundness", "leaf_length", "leaf_width", "seed_shape", "seed_width", 
                       "leaf_phenology", "huber_value", "leaf_B_per_dry_mass", "water_potential_predawn", "vessel_density_leaves", 
-                      "vessel_diameter_leaves", "wood_density", "leaf_hydraulic_conductivity", "water_potential_50percent_lost_conductivity",
+                      "vessel_diameter_leaves", "wood_density", "leaf_specific_conductance", "water_potential_50percent_lost_conductivity",
                       "water_potential_88percent_lost_conductivity")
 
 
