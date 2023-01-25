@@ -1201,14 +1201,15 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors) 
       type = str_replace_all(.data$source_key, "_[:digit:]+", ""),
       source_id = metadata$source %>%
         util_list_to_df2() %>%
-        dplyr::select(.data$key)
-    ) 
+        purrr::pluck("key")
+    )
 
   source_primary_key <- metadata$source$primary$key
-  source_secondary_keys <- citation_types %>% dplyr::filter(.data$type == "secondary") %>% dplyr::select(.data$source_id) %>% as.vector() 
-  source_secondary_keys <- source_secondary_keys$source_id$key %>% as.vector()
-  source_original_dataset_keys <- citation_types %>% dplyr::filter(.data$type == "original") %>% dplyr::select(.data$source_id) %>% as.vector()
-  source_original_dataset_keys <- source_original_dataset_keys$source_id$key %>% as.vector()
+  source_secondary_keys <- citation_types %>%
+    dplyr::filter(.data$type == "secondary") %>%
+    purrr::pluck("source_id")
+
+  source_original_dataset_keys <- citation_types %>% dplyr::filter(.data$type == "original") %>% purrr::pluck("source_id")
   
   # combine collectors to add into the methods table
   collectors_tmp <-
@@ -1247,12 +1248,12 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors) 
           source_primary_citation = bib_print(sources[[source_primary_key]]),
           source_secondary_key = source_secondary_keys %>% paste(collapse = "; "),
           source_secondary_citation = ifelse(length(source_secondary_keys) == 0, NA_character_,
-            purrr::map_chr(sources[source_secondary_keys], bib_print) %>% paste(collapse = "; ") %>%
+            purrr::map_chr(source_secondary_keys, ~sources[[.x]] %>% bib_print) %>% paste(collapse = "; ") %>%
               stringr::str_replace_all("\\.;", ";")
             ),                    
           source_original_dataset_key = source_original_dataset_keys %>% paste(collapse = "; "),
           source_original_dataset_citation = ifelse(length(source_original_dataset_keys) == 0, NA_character_,
-            purrr::map_chr(sources[source_original_dataset_keys], bib_print) %>% paste(collapse = "; ") %>%
+            purrr::map_chr(source_original_dataset_keys, ~sources[[.x]] %>% bib_print) %>% paste(collapse = "; ") %>%
             stringr::str_replace_all("\\.;", ";")
           )
         )
