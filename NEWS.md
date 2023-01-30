@@ -1,4 +1,116 @@
 
+# AusTraits v4.1.0
+
+This is major/minor release of the AusTraits database.
+
+  - austraits-4.1.0.zip: contains the compiled dataset and detailed of
+    structure
+  - austraits-4.1.0.rds: contains a version of the dataset for direct
+    loading in R
+  - source code v4.1.0.zip: contains the source materials used to build
+    the compiled dataset
+
+For details on access, structure and usage please visit
+<https://doi.org/10.5281/zenodo.3568417>
+
+This release was generated from source materials available at
+<https://github.com/traitecoevo/austraits.build/releases/tag/v4.1.0> A
+full set of changes in the source can be viewed at:
+<https://github.com/traitecoevo/austraits.build/compare/v4.0.0>…v4.1.0
+
+Compared to the last version, this release contains substantial
+additions of new data and improvement of old data.
+
+| version | dataset\_id |  taxa | locations | traits | records |
+| :------ | ----------: | ----: | --------: | -----: | ------: |
+| 4.0.0   |         296 | 34028 |      2697 |    470 | 1257443 |
+| 4.1.0   |         296 | 34017 |      2697 |    464 | 1253250 |
+
+This release contains:
+
+  - Align units with UCUM standards
+  - Correct small mistakes in plant woodiness and life history in datasets extracted from national and state floras (ABS_2022; WAH_2022_1; WAH_2022_2; NHNSW_2022; RBGV_2022; SAH_2022; NTH_2022)
+  - Remove a small number of duplicate taxa from taxon.csv
+  - Fix mistake in process.R script that was duplicating methods for some dataset by trait combinations
+  - Further standardise trait names
+
+# AusTraits v4.0.0
+
+
+This is major/minor release of the AusTraits database.
+-   austraits-4.0.0.zip: contains the compiled dataset and detailed of
+    structure
+-   austraits-4.0.0.rds: contains a version of the dataset for direct
+    loading in R
+-   source code v4.0.0.zip: contains the source materials used to build
+    the compiled dataset
+
+For details on access, structure and usage please visit
+<https://doi.org/10.5281/zenodo.3568417>
+
+This release was generated from source materials available at <https://github.com/traitecoevo/austraits.build/releases/tag/v4.0.0>. 
+
+A full set of changes in the source can be viewed at: <https://github.com/traitecoevo/austraits.build/compare/v3.0.2…v4.0.0>
+
+Compared to the last version, this release contains substantial additions of new data and improvement of old data.
+
+| version | dataset_id |  taxa | locations | traits | records |
+|:--------|-----------:|------:|----------:|-------:|--------:|
+| 3.0.2   |        283 | 28640 |      4721 |    448 |  997808 |
+| 4.0.0   |        296 | 34028 |      2697 |    470 | 1257443 |
+
+Changes for this release include:
+
+* Established code as a standalone package
+* Align variables (column names) with Darwin Core, Dublin Core, and the Ecological Trait-data Standard
+* Allowing more metadata to be associated with individual trait measurements instead of traits or the dataset (e.g. life stage, replicates, entity type)
+* Rework context, so that multiple context properties can be read in
+* Reworked identifiers, including 5 separate context property identifiers and location id
+* Add source_id, such that individual rows of data can be attributed to a specific source
+* Merge different date fields into `collection_date`
+* Work from two separate vocabulary workshops merged in (`Seed Traits` & `Whole Plant and Leaf Vegetative Traits`). Also some work realigning traits related to fire response.
+* Rename other traits to have more consistent naming
+* Added entity_type, reflecting the entity being measured
+* Added scraped data from online floras for 7 traits related to plant growth form. For `plant_growth_form` and `woodiness` manually gap-filled from the taxonomic literature to have complete data coverage
+* Reworked how taxonomic names are processed, such that submitted taxon names are now aligning to the most specific taxon name possible, with separate columns for `family`; `genus`; `binomial`; `trinomial`, filled in as appropriate.
+* New taxonomic updates added, based on updated algorithms that do a much better job of capturing phrase names and submitted taxon names that include notes. In addition, algorithms automatically identify names that can only be aligned to genus.
+* Removed taxon matching code from austraits.build (to become part of a separate package)
+* Add database metadata into the build process
+
+This release contains:
+
+-   **14 new sources added to the dataset**: ABRS_2022,
+    ATRP_2020, Campbell_2006, Clarke_2009,
+    NHNSW_2022, Nolan_2022, NTH_2022, RBGV_2022, SAH_2022, WAH_2022_1,
+    WAH_2022_2, Wenk_2022, Williams_2012
+-   **12 new contributors:** Alastair Robinson,
+    Andre Messina, Daniel Ohlsen, David Coleman, Elizabeth Wenk,
+    Matthias M. Boer, Monica Campbell, Neville Walsh, Niels Klazenga,
+    Paul R. Williams, Rachael Nolan, Val Stajsic
+-   **3 sources renamed** : Barlow_1981 -> ABRS_1981, RBGSYD_2014 -> NHNSW_2014, RBGSYD_2014_2 -> NHNSW_2014_2
+
+Details on new studies:
+
+| dataset_id    |  taxa | locations | traits | records |
+|:--------------|------:|----------:|-------:|--------:|
+| ABRS_2022     | 13988 |         1 |      7 |   48353 |
+| ATRP_2020     |  1490 |         1 |      8 |    1831 |
+| Campbell_2006 |    65 |         3 |      6 |     390 |
+| Clarke_2009   |   469 |         6 |      7 |    1824 |
+| NHNSW_2022    |  7913 |         1 |      7 |   28354 |
+| Nolan_2022    |    18 |         8 |     10 |     606 |
+| NTH_2022      |  2451 |         1 |      7 |    8183 |
+| RBGV_2022     |  5368 |         1 |      7 |   19060 |
+| SAH_2022      |  3499 |         1 |      7 |   11905 |
+| WAH_2022_1    |   683 |         1 |      7 |    2254 |
+| WAH_2022_2    | 13331 |         1 |      7 |   48703 |
+| Wenk_2022     | 30280 |         1 |      2 |   60309 |
+| Williams_2012 |    79 |         1 |      6 |     206 |
+
+
+**Full Changelog**: https://github.com/traitecoevo/austraits.build/compare/v3.0.2...v4.0.0
+
+
 # AusTraits v3.0.2
 
 This is minor release of the AusTraits database.
