@@ -77,7 +77,9 @@ test_that("constancy of with version 3.0.2", {
 
     austraits_raw_comparison$traits$unit <- austraits_raw_comparison$traits$unit %>%
     gsub("dimensionless", "{dimensionless}", . ) %>%
-    gsub("mm2_leaf/mm2_sapwood", "mm2{leaf}/mm2{sapwood}", . ) 
+    gsub("mg_root/mg_shoot", "mg{root}/mg{shoot}", . ) %>%
+    gsub("mmol/m2/s/MPa", "mmol/m2/MPa/s", . ) %>%
+    gsub("mm2_sapwood/mm2_leaf", "mm2{sapwood}/mm2{leaf}", . ) 
   
   austraits_raw_comparison$traits$replicates <- austraits_raw_comparison$traits$replicates %>%
     gsub("3 replicates on 1 individual per species or 1 replicate on each individual", "3",. )
