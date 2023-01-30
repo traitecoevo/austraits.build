@@ -31,7 +31,8 @@ dataset:
       group_by(taxon_name) %>%
         mutate(
           across(c(`life_history_a`, `woodiness_a`, `plant_growth_form_a`, `stem_growth_habit_a`, `parasitic_a`,
-         `plant_growth_substrate_a`, `sex_type_a`), replace_duplicates_with_NA)
+         `plant_growth_substrate_a`, `sex_type_a`), replace_duplicates_with_NA),
+         woodiness_a = stringr::str_replace(woodiness_a, "soft_wood", "semi_woody")
         ) %>%
       ungroup()
   '
@@ -221,10 +222,6 @@ taxonomic_updates:
   reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
     by APC (2022-11-22)
   taxonomic_resolution: genus
-- find: Cyrtomium falcatum  ;qu;Rochfordii;qu;
-  replace: Cyrtomium falcatum 'Rochfordii'
-  reason: Manual alignment with canonical  species name in APC (Elizabeth Wenk, 2022-11-21)
-  taxonomic_resolution: Species
 - find: Dillwynia sp. Ebor (P.C.Jobson 5318 ;amp; S.A.Mills)
   replace: Dillwynia sp. Ebor (P.C.Jobson 5318 & S.A.Mills)
   reason: match_17_fuzzy. Imprecise fuzzy alignment with canonical name in APNI (2022-11-21)
@@ -454,14 +451,6 @@ taxonomic_updates:
   replace: Rubus loganubaccus
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-21)
   taxonomic_resolution: Species
-- find: Salix humboldtiana cv. ;qu;Pyramidalis;qu;
-  replace: Salix humboldtiana 'Pyramidalis'
-  reason: Manual alignment with canonical  species name in APC (Elizabeth Wenk, 2022-11-21)
-  taxonomic_resolution: Species
-- find: Salix matsudana cv. ;qu;Tortuosa;qu;
-  replace: Salix matsudana 'Tortuosa'
-  reason: Manual alignment with canonical  species name in APC (Elizabeth Wenk, 2022-11-21)
-  taxonomic_resolution: Species
 - find: Salix matsudana x alba
   replace: Salix matsudana x Salix alba
   reason: Manual alignment with canonical hybrid species name in APC (Elizabeth Wenk,
@@ -473,11 +462,11 @@ taxonomic_updates:
     2022-11-21)
   taxonomic_resolution: Species
 - find: Salix x sepulcralis var. chrysocoma
-  replace: Salix x sepulcralis nothovar. chrysocoma
+  replace: Salix x sepulcralis
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: Species
 - find: Salix x sepulcralis var. sepulcralis
-  replace: Salix x sepulcralis nothovar. sepulcralis
+  replace: Salix x sepulcralis
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
   taxonomic_resolution: Varietas
 - find: Salvinia molesta
@@ -555,5 +544,8 @@ taxonomic_updates:
   reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
     Wenk, 2022-11-22)
   taxonomic_resolution: genus
-exclude_observations: .na
+exclude_observations:
+- variable: taxon_name
+  find: Salix humboldtiana cv. ;qu;Pyramidalis;qu;, Salix matsudana cv. ;qu;Tortuosa;qu;, Cyrtomium falcatum  ;qu;Rochfordii;qu;
+  reason: excluding cultivars
 questions: .na

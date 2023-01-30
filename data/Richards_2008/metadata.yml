@@ -230,7 +230,10 @@ dataset:
   custom_R_code: '
     data %>%
       group_by(name_original) %>%
-        mutate(across(c(`GF`, `LfForm`,`LfType`,`DecEv`,`Nfixer`,`photosynthetic pathway`), replace_duplicates_with_NA)) %>%
+        mutate(
+          across(c(`GF`, `LfForm`,`LfType`,`DecEv`,`Nfixer`,`photosynthetic pathway`), replace_duplicates_with_NA),
+          `SLA (cm2/g)` = ifelse(!is.na(`LMA (g/m2)`), 1/(`LMA (g/m2)`*10000), `SLA (cm2/g)`)
+        ) %>%
       ungroup()
   '
   collection_date: unknown/2009
@@ -854,20 +857,9 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
-  methods: From Leigh_2003, Leigh_2006, Leunig_1991, Richards_2008_2 (unpublished),
-    and Schortemeyer_0000; See original references, listed alphabetically under 'additional
-    references'
-- var_in: LMA (g/m2)
-  unit_in: g/m2
-  trait_name: leaf_mass_per_area
-  entity_type: population
-  value_type: mean
-  basis_of_value: measurement
-  replicates: unknown
-  methods: From Pearcy 1987; See original references, listed alphabetically under
-    'additional references'
+  methods: unknown
 - var_in: leaf longevity
-  unit_in: month
+  unit_in: mo
   trait_name: leaf_lifespan
   entity_type: population
   value_type: mean
@@ -929,7 +921,7 @@ traits:
     and Turner_1983; See original references, listed alphabetically under 'additional
     references'
 - var_in: amass (nmol g-1 s-1)
-  unit_in: nmolCO2/g/s
+  unit_in: nmol{CO2}/g/s
   trait_name: leaf_photosynthetic_rate_per_dry_mass_saturated
   entity_type: population
   value_type: mean
@@ -938,7 +930,7 @@ traits:
   methods: From Leigh_2006 and Schortemeyer_0000 (unpublished); See original references,
     listed alphabetically under 'additional references'
 - var_in: aarea (umolm-2s-1)
-  unit_in: umolCO2/m2/s
+  unit_in: umol{CO2}/m2/s
   trait_name: leaf_photosynthetic_rate_per_area_saturated
   entity_type: population
   value_type: mean
@@ -947,7 +939,7 @@ traits:
   methods: From Leigh_2006, Pearcy_1987 and Richards_2008_2 (unpublished); See original
     references, listed alphabetically under 'additional references'
 - var_in: gs (molm-2s-1)
-  unit_in: mmolH2O/m2/s
+  unit_in: mmol{H2O}/m2/s
   trait_name: leaf_stomatal_conductance_per_area_at_Asat
   entity_type: population
   value_type: mean
@@ -956,7 +948,7 @@ traits:
   methods: From Pearcy_1987 and Richards_2008_2 (unpublished); See original references,
     listed alphabetically under 'additional references'
 - var_in: 13-C
-  unit_in: per mille
+  unit_in: '{delta}[ppth]'
   trait_name: leaf_delta13C
   entity_type: population
   value_type: mean
