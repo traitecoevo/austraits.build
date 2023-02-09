@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 library(knitr)
+#library(yaml)
 library(kableExtra)
 library(austraits.build)
 
@@ -49,14 +50,15 @@ if (knitr::is_html_output()) {
   my_kable_styling <- kableExtra::kable
 }
 
-definitions <- austraits:::austraits_lite$definitions
+definitions <- yaml::read_yaml("config/traits.yml")
+metadata <- yaml::read_yaml("config/metadata.yml")
 ```
 
 
-This document provides a full list of trait definitions used in AusTraits version `r desc::desc_get_field("Version")`, as defined in the file configuration files [`config/traits.yml`](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml).
+This document provides a full list of trait definitions used in AusTraits version `r metadata$metadata$version`, as defined in the file configuration files [`config/traits.yml`](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml).
 
 ```{r, results="asis"}
-for (trait in names(definitions$traits$elements)) {
+for (trait in names(definitions$traits$elements) %>% sort()) {
   elements <- definitions$traits$elements[[trait]]
 
   #  data_trait <- austraits$traits %>% filter(trait_name == trait)
@@ -72,8 +74,8 @@ for (trait in names(definitions$traits$elements)) {
       ifelse(elements$type == "numeric", sprintf("\n- units: %s", elements$units), "")
     ),
     ifelse(elements$type == "numeric",
-      sprintf("- allowable range: %s - %s %s", elements$values$minimum, elements$values$maximum, elements$units),
-      sprintf("- allowable values:\n%s\n", paste0("    - *", elements$values %>% names(), "*: ", elements$values %>% unlist(), collapse = "\n"))
+      sprintf("- allowable range: %s - %s %s", elements$allowed_values_min, elements$allowed_values_max, elements$units),
+      sprintf("- allowable values:\n%s\n", paste0("    - *", elements$allowed_values_levels %>% names(), "*: ", elements$allowed_values_levels %>% unlist(), collapse = "\n"))
     ),
     ""
   ) %>%
