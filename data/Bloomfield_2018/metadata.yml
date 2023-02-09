@@ -51,10 +51,11 @@ dataset:
         Replicate = stringr::str_replace(Replicate,"-B1",""),
         Replicate = stringr::str_replace(Replicate,"-B2",""),
         Replicate = stringr::str_replace(Replicate,"-B3",""),
+        across(where(is.character), ~na_if(., "NaN"))
       ) %>% 
-      select(-Tree.id, -replicate_original, - Branch) %>% 
+      select(-Tree.id, -replicate_original, - Branch) %>%
       group_by(context, Site, Visit, Replicate, Species, Family, Genus, PFT) %>%
-      summarise(across(c(`A400.a_with_Weerasinghe_2014`:`wue1500`), ~mean(.x) %>% na_if("NaN"), na.rm = TRUE),
+      summarise(across(c(`A400.a_with_Weerasinghe_2014`:`wue1500`), ~mean(.x, na.rm = TRUE)),
                 across(Date, first),
                 count = n()) %>%
       mutate(value_type_column = ifelse(count == 1,"raw","mean")) %>%

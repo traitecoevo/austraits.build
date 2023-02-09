@@ -31,9 +31,9 @@ dataset:
         parasitic = ifelse(`growth form`=="parasitic","parasitic", NA),
         plant_photosynthetic_organ = ifelse(`leaf shape`=="articles","cladode", NA)
       )
-    %>% mutate_at(vars(`min leaf length (mm)`,`max leaf length (mm)`,
-                      `min leaf width (mm)`,`max leaf width (mm)`), ~na_if(.,0)) %>% 
-        mutate_at(vars(`min leaf width (mm)`), ~na_if(.,"`"))
+    %>% mutate(across(all_of(c(`min leaf length (mm)`,`max leaf length (mm)`,
+                      `min leaf width (mm)`,`max leaf width (mm)`)), ~na_if(.,0))) %>% 
+        mutate(across(all_of(`min leaf width (mm)`), ~na_if(.,"`")))
   '
   collection_date: 2014/2014
   taxon_name: binomial

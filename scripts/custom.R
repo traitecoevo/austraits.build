@@ -274,14 +274,16 @@ move_values_to_new_trait <- function(data, original_trait, new_trait, original_v
        for (j in 1:length(original_values)) {
             
             i <- data[[original_trait]] == original_values[[j]]
+            i <- ifelse(is.na(i),"FALSE",i)
             
             data[[new_trait]] = ifelse(i, values_for_new_trait[[j]], data[[new_trait]])
             data[[original_trait]] = ifelse(i, values_to_keep[[j]], data[[original_trait]])
             data
        }
          
-  data = data %>% mutate_all(na_if,"")
-
+  #data = data %>% mutate_all(na_if,"")
+  data %>% mutate(across(where(is.character), ~na_if(., "")))
+  
   return(data)
 
 }

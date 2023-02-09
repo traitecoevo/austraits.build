@@ -32,11 +32,12 @@ dataset:
       group_by(Species) %>% 
       mutate_at(vars(`Nmass (%)`,`Narea (g/m2)`,`Pmass (%)`,`LeafP_mass`,`Parea (g/m2)`),
                 replace_duplicates_with_NA) %>%
-      ungroup() %>%
+      ungroup() %>%    
+      mutate(across(where(is.character), ~na_if(.,"NaN"))) %>%
       group_by(ID) %>% 
         summarise(
           across(c(Owner:Species), .fns = first),
-          across(c(`Asat_area (micromol/m2/s)`:`Parea (g/m2)`), ~mean(.x) %>% na_if("NaN"), na.rm = TRUE)
+          across(c(`Asat_area (micromol/m2/s)`:`Parea (g/m2)`), ~mean(.x, na.rm = TRUE))
           ) %>%
       ungroup()
   '
