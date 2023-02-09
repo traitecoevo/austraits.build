@@ -36,9 +36,12 @@ dataset:
         root_dry_matter_content = coalesce(
               as.character(`Root Dry Matter Content (RDMC dry mass / fresh mass)`),
               as.character(`Root Dry Matter Content (RDMC)`)),
-        specific_root_area = coalesce(
-              as.character(`Specific Root Area (SRA root surface area / dry mass) (mm2.g-1)`),
-              as.character(`Specific Root Area (SRA) (m2.kg-1)`))
+        specific_root_area = ifelse(
+          !is.na(`Specific Root Area (SRA root surface area / dry mass) (mm2.g-1)`),
+                `Specific Root Area (SRA root surface area / dry mass) (mm2.g-1)`, NA),
+        specific_root_area = ifelse(
+          !is.na(`Specific Root Area (SRA) (m2.kg-1)`),`Specific Root Area (SRA) (m2.kg-1)`*1000,
+                `Specific Root Area (SRA root surface area / dry mass) (mm2.g-1)`)
       )
   '
   collection_date: Date_plant_traits
