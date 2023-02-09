@@ -80,7 +80,7 @@
       <a href="../articles/adding_data.html">Adding new datasets into `AusTraits`</a>
     </li>
     <li>
-      <a href="../articles/Docker.html">Docker for reproducible compute environment</a>
+      <a href="../articles/docker.html">Docker for reproducible compute environment</a>
     </li>
   </ul>
 </li>
@@ -116,56 +116,39 @@
             
             <h4 data-toc-skip class="date">2023-02-09</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/traitecoevo/austraits.build/blob/HEAD/vignettes/Docker.Rmd" class="external-link"><code>vignettes/Docker.Rmd</code></a></small>
-      <div class="hidden name"><code>Docker.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/traitecoevo/austraits.build/blob/HEAD/vignettes/docker.Rmd" class="external-link"><code>vignettes/docker.Rmd</code></a></small>
+      <div class="hidden name"><code>docker.Rmd</code></div>
 
     </div>
 
     
     
 <!-- TipsTricks.md is generated from TipsTricks.Rmd Please edit that file -->
-<p>As the R compute environment and packages change over time, we have
-created a Docker container to ensure all our builds are reproducible
-into the future.</p>
-<p>If you have <a href="https://hub.docker.com" class="external-link">Docker installed</a>,
-you can recreate the compute environment as follows. For more
-instructions on running docker, see the info from the R docker project
-<a href="https://hub.docker.com/r/rocker/rstudio" class="external-link">rocker</a>. Our docker
-container is build off the <a href="https://hub.docker.com/r/rocker/verse" class="external-link">rocker/verse</a> container.
-This includes</p>
+<p>As the R compute environment and packages change over time, we have created a Docker container to ensure all our builds are reproducible into the future.</p>
+<p>If you have <a href="https://hub.docker.com" class="external-link">Docker installed</a>, you can recreate the compute environment as follows. For more instructions on running docker, see the info from the R docker project <a href="https://hub.docker.com/r/rocker/rstudio" class="external-link">rocker</a>. Our docker container is build off the <a href="https://hub.docker.com/r/rocker/verse" class="external-link">rocker/verse</a> container. This includes</p>
 <ul>
 <li>R version</li>
 <li>rstudio</li>
 <li>tidyverse &amp; devtools</li>
 <li>tex &amp; publishing-related packages</li>
 </ul>
-<p>On top of that, we install everything needed to build AusTraits and
-the reports.</p>
+<p>On top of that, we install everything needed to build AusTraits and the reports.</p>
 <div class="section level2">
 <h2 id="running-via-docker">Running via Docker<a class="anchor" aria-label="anchor" href="#running-via-docker"></a>
 </h2>
 <p>First fetch the container:</p>
 <pre><code>docker pull traitecoevo/austraits.build:latest</code></pre>
-<p>(instead of latest, you can indicate a specific tag, .e.g. 3.6.1, or
-4.1.2)</p>
+<p>(instead of latest, you can indicate a specific tag, .e.g. 3.6.1, or 4.1.2)</p>
 <p>Then launch it via:</p>
 <pre><code>docker run --user root -v $(pwd):/home/rstudio/ -p 8787:8787 -e DISABLE_AUTH=true traitecoevo/austraits.build:latest</code></pre>
-<p>Adding a <code>-d</code> into the command above will cause the image
-to run in the background.</p>
-<p>The code above initialises a docker container, which runs an rstudio
-session, which is accessed by pointing your browser to <a href="http://localhost:8787" class="external-link">localhost:8787</a>.</p>
-<p>Note, this container does not contain the actual github repo, only
-the software environment. If you run the above command from within your
-downloaded repo, it will map the working directory as the current
-working directory inside the docker container.</p>
+<p>Adding a <code>-d</code> into the command above will cause the image to run in the background.</p>
+<p>The code above initialises a docker container, which runs an rstudio session, which is accessed by pointing your browser to <a href="http://localhost:8787" class="external-link">localhost:8787</a>.</p>
+<p>Note, this container does not contain the actual github repo, only the software environment. If you run the above command from within your downloaded repo, it will map the working directory as the current working directory inside the docker container.</p>
 </div>
 <div class="section level2">
 <h2 id="building-docker-container">Building Docker container<a class="anchor" aria-label="anchor" href="#building-docker-container"></a>
 </h2>
-<p>The recipe used to build the docker container is included in the
-Dockerfile in this repo. Our image builds off <a href="https://hub.docker.com/r/rocker/verse" class="external-link"><code>rocker/verse</code>
-container</a> via the following command, in a terminal contained within
-the downloaded repo:</p>
+<p>The recipe used to build the docker container is included in the Dockerfile in this repo. Our image builds off <a href="https://hub.docker.com/r/rocker/verse" class="external-link"><code>rocker/verse</code> container</a> via the following command, in a terminal contained within the downloaded repo:</p>
 <pre><code>docker build -t traitecoevo/austraits.build:4.1.2 .</code></pre>
 <p>Images are pushed to dockerhub (<a href="https://cloud.docker.com/u/traitecoevo/repository/docker/traitecoevo/austraits.build" class="external-link">here</a>):</p>
 <pre><code>docker push traitecoevo/austraits.build:4.1.2</code></pre>
