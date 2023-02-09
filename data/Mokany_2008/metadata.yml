@@ -28,8 +28,8 @@ dataset:
   data_is_long_format: no
   custom_R_code:      '
     data %>% 
-      mutate_at(vars(`Root:Shoot ratio`),~na_if(.,0)) %>% 
       mutate(
+        across(c(`Root:Shoot ratio`), ~na_if(.x, 0)),
         Date_plant_traits = Date_plant_traits %>% dmy(),
         entity_type_column = ifelse(is.na(Replicate),"population","individual"),
         value_type_column = ifelse(is.na(Replicate),"mean","raw"),

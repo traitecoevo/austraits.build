@@ -40,10 +40,10 @@ dataset:
   data_is_long_format: no
   custom_R_code:      '
     data %>%
-      mutate_at(vars(`TRAIT Leaf Dry Mass UNITS g`), ~na_if(.,0)) %>%
+      mutate(across(c(`TRAIT Leaf Dry Mass UNITS g`), ~na_if(.x,0))) %>%
       group_by(name_original) %>%
-        mutate_at(vars(`TRAIT Growth Form CATEGORICAL EP epiphyte (mistletoe) F fern G grass H herb S shrub T tree V vine`),
-        replace_duplicates_with_NA) %>%
+        mutate(across(c(`TRAIT Growth Form CATEGORICAL EP epiphyte (mistletoe) F fern G grass H herb S shrub T tree V vine`),
+        replace_duplicates_with_NA)) %>%
       ungroup() %>%
       mutate(
         leaflet_area = ifelse(name_original %in% c("Acacia deanei",

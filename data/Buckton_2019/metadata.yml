@@ -35,11 +35,11 @@ dataset:
         collection_date = ifelse(is.na(collection_date),"2014/2014", collection_date)
       ) %>%
       group_by(Tree) %>%
-        mutate_at(vars(`Density`), replace_duplicates_with_NA) %>%
+        mutate(across(c(`Density`), replace_duplicates_with_NA)) %>%
         mutate(observation_num = row_number()) %>%
       ungroup() %>%
       group_by(Species_name) %>%
-        mutate_at(vars(`Growth.Form`), replace_duplicates_with_NA) %>%
+        mutate(across(c(`Growth.Form`), replace_duplicates_with_NA)) %>%
       ungroup()
   '
   collection_date: collection_date

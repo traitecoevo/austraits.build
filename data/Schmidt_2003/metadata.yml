@@ -63,10 +63,10 @@ dataset:
         phenology = ifelse(species_name == "Petalostigma quadriloculare", "facultative_drought_deciduous evergreen", phenology),
         root_structure = ifelse(species_name == "Lophostemon lactifluus", "ectomycorrhizal arbuscular_mycorrhizal", root_structure),
         root_structure = ifelse(species_name == "Cartonema spicatum", "non_mycorrhizal", root_structure),
-        TRIP = ifelse(is.na(TRIP),1,TRIP)
-      ) %>% 
-      mutate_at(vars(`life_history`,`regen_strategy`), ~na_if(.,"")) %>%
-      mutate_at(vars(`leaf_water_content`), ~na_if(.,0)) %>%
+        TRIP = ifelse(is.na(TRIP),1,TRIP),
+        across(c(`life_history`,`regen_strategy`), ~na_if(.x, "")),
+        across(c(`leaf_water_content`), ~na_if(.x, 0))
+      ) %>%
       group_by(species_name) %>%
         mutate(
           across(c(`regen_strategy`,`root_structure`,`C3C4`,`Nfixer`,`plant_growth_form`,

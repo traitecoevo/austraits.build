@@ -29,8 +29,7 @@ dataset:
   custom_R_code:      '
     data %>% 
       mutate(
-        individual_plant = paste(species, Ind_ID, sep = "_"),
-        across(where(is.character), ~na_if(.,"NaN"))
+        individual_plant = paste(species, Ind_ID, sep = "_")
       ) %>%
       group_by(individual_plant, species, Ind_ID, .drop = FALSE) %>%
         summarise(
@@ -38,7 +37,10 @@ dataset:
           wd_notes = last(wd_notes)
         ) %>%
       ungroup() %>%
-      mutate(site_name = "Bulli State Forest")
+      mutate(
+        across(where(is.character), ~na_if(.x,"NaN")),
+        site_name = "Bulli State Forest"
+      )
   '
   collection_date: 2015/2015
   taxon_name: species

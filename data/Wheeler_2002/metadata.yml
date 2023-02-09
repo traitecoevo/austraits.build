@@ -24,16 +24,14 @@ dataset:
     data %>% 
       mutate(
         leaf_lobation = ifelse(`leaf type` == "lobed" | `leaf shape` == "lobed",
-                      "lobed", "unlobed"), 
+                              "lobed", "unlobed"), 
         `leaf shape` = ifelse(`leaf shape` == "lobed", NA, `leaf shape`),
         `leaf type` = ifelse(`leaf type` == "lobed", NA, `leaf type`),
         plant_growth_substrate = ifelse(`growth form`=="aquatic","aquatic",NA),
         parasitic = ifelse(`growth form`=="parasitic","parasitic", NA),
-        plant_photosynthetic_organ = ifelse(`leaf shape`=="articles","cladode", NA)
+        plant_photosynthetic_organ = ifelse(`leaf shape`=="articles","cladode", NA),
+        across(c(`min leaf length (mm)`,`max leaf length (mm)`,`max leaf width (mm)`,`min leaf width (mm)`), ~na_if(.x, 0))
       )
-    %>% mutate(across(all_of(c(`min leaf length (mm)`,`max leaf length (mm)`,
-                      `min leaf width (mm)`,`max leaf width (mm)`)), ~na_if(.,0))) %>% 
-        mutate(across(all_of(`min leaf width (mm)`), ~na_if(.,"`")))
   '
   collection_date: 2014/2014
   taxon_name: binomial

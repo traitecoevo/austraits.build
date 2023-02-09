@@ -32,11 +32,11 @@ dataset:
       mutate(
         n_fixer = stringr::str_extract(strategy, "[Nn]itrogen fixer"),
         roots = stringr::str_replace(strategy, ", Nitrogen fixer", ""),
-        collection.date = collection.date %>% dmy()
-      ) %>% 
-      mutate_at(vars(`Mo_mature`), ~na_if(.,0)) %>%
+        collection.date = collection.date %>% dmy(),
+        across(c(`Mo_mature`), ~na_if(.x, 0))
+      ) %>%
       group_by(species) %>%
-        mutate_at(vars(`growthform`,`n_fixer`,`roots`), replace_duplicates_with_NA) %>%
+        mutate(across(c(`growthform`,`n_fixer`,`roots`), replace_duplicates_with_NA)) %>%
       ungroup()
   '
   collection_date: collection.date

@@ -28,8 +28,10 @@ dataset:
   data_is_long_format: no
   custom_R_code:      '
     data %>% 
-      mutate(rainfall = Site) %>%
-      mutate_at(vars(`reserve_M (mg)`), ~na_if(.,0)) %>%
+      mutate(
+        rainfall = Site,
+        across(c(`reserve_M (mg)`), ~na_if(.x, 0))
+      ) %>%
       group_by(spp, Site) %>%
         mutate(observation_num = dplyr::row_number()) %>%
       ungroup()

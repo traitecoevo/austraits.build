@@ -31,7 +31,7 @@ dataset:
     data %>% 
       mutate(`DATE OF COLLECTION` = `DATE OF COLLECTION` %>% dmy()) %>% 
       group_by(SPECIES) %>%
-        mutate_at(vars(DORM_TYPE), replace_duplicates_with_NA) %>%
+        mutate(across(c(DORM_TYPE), replace_duplicates_with_NA)) %>%
       ungroup() %>%
       mutate(
         `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(4603, 4673, 8936, 12050, 12283, 12576, 14503), NA, 1),
