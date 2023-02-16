@@ -92,13 +92,14 @@ config
 └── unit_conversions.csv
 ```
 
-The file `traits.yml` provides the trait definitions used to compile AusTraits, including allowable trait values. The [trait definitions](http://traitecoevo.github.io/austraits.build/articles/definitions.html) are fully described in an additional vignette. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). 
+The file `traits.yml` provides the trait definitions used to compile AusTraits, including allowable trait values. The [trait definitions](http://traitecoevo.github.io/austraits.build/articles/trait_definitions.html) are fully described in an additional vignette. A `.yml` file is a structured data file where information is presented in a hierarchical format (see [appendix for details](#yaml)). 
 
 The file `taxon_list.csv` is our master list of known taxa. Each species is listed once, with links to species' identifiers provided by the Australian Plant Name Index (APNI). The file `taxon_list.csv` is added to if a study includes taxa not previously represented in AusTraits. These can be names included in either the APC/APNI, compilations of taxonomic concepts (APC) or names (APNI) for plants that are either native to or naturalised in Australia, or taxa without recognised names.  
 
 ```{r, results='show'}
 read_csv("config/taxon_list.csv", show_col_types = FALSE) %>%
-  select(taxon_name, family, scientificNameAuthorship, source, taxonomicStatusClean, taxonIDClean) %>%
+  select(taxon_name, family, scientific_name_authorship, taxonomic_reference, cleaned_name_taxonomic_status, cleaned_scientific_name_id
+) %>%
   slice(1:10) %>%
   my_kable_styling()
 ```
@@ -414,7 +415,7 @@ for (value in names(values)) {
 }
 ```
 
-The elements `trait_name`, `entity_type`, `value_type`, `basis_of_record`, and `basis of value` are controlled vocabularies; the values for these elements must be from the list of allowable values. Those for traits are listed in the `traits.yml` [file](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml) or [vignette](http://traitecoevo.github.io/austraits.build/articles/definitions.html). For the other elements, see the [database structure](http://traitecoevo.github.io/austraits.build/articles/austraits_database_structure.html) vignette.
+The elements `trait_name`, `entity_type`, `value_type`, `basis_of_record`, and `basis of value` are controlled vocabularies; the values for these elements must be from the list of allowable values. Those for traits are listed in the `traits.yml` [file](https://github.com/traitecoevo/austraits.build/blob/master/config/traits.yml) or [vignette](http://traitecoevo.github.io/austraits.build/articles/trait_definitions.html). For the other elements, see the [database structure](http://traitecoevo.github.io/austraits.build/articles/austraits_database_structure.html) vignette.
 
 The fields `replicates`, `basis_of_value`, `value_type`, `life_stage`, `basis_of_record`, and `measurement_remarks` can all be specified at the dataset level or the traits level (which overrides a dataset-level entry). In each case, they can be a fixed text value or indicate a column (within the `data.csv` file or generated through `custom_R_code`) that includes the relevant information. In addition, fields can be added to specify a specific context (most commonly a `method context`, but occasionally a `temporal context`). If such a field is added, the same name must appear in both the contexts section and for some (or all) of the traits.
 
@@ -501,16 +502,24 @@ for (value in names(values)) {
 
 Algorithms within AusTraits automatically align outdated taxonomy and taxonomic synonyms to their currently accepted scientific name, so such adjustments are not documented as substitutions.
 
-An example is as follows:
+Some examples of taxonomic updates are as follows:
 
 ```
 taxonomic_updates:
-- find: Eucalyptus albens X crebra
-  replace: Eucalyptus albens x Eucalyptus crebra
-  reason: Change wording for hybrid species (Elizabeth Wenk, 2020-06-30)
-- find: Eucalyptus albens x moluccana
-  replace: Eucalyptus albens x  Eucalyptus moluccana
-  reason: Change wording for hybrid species (Elizabeth Wenk, 2020-06-30)
+- find: Drummondita rubroviridis
+  replace: Drummondita rubriviridis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+- find: Acacia ancistrophylla/sclerophylla
+  replace: Acacia sp. [Acacia ancistrophylla/sclerophylla; White_2020]
+  reason: match_04. Rewording taxon where `/` indicates uncertain species identification
+    to align with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Polyalthia (Wyvur)
+  replace: Polyalthia sp. (Wyvuri B.P.Hyland RFK2632)
+  reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
+    in `APC known` when everything except first 2 words ignored (2022-11-10)
+  taxonomic_resolution: Species
 ```
 
 #### Questions

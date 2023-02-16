@@ -62,7 +62,7 @@ You can then rebuild AusTraits, including your dataset.
 9. Return to step 6 if changes are made to the `data.csv` or `metadata.yml` files.
 10. Push the GitHub branch.
 
-It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) to use as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), particularly the `definitions` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/definitions.html).
+It may help to download one of the [existing datasets](https://github.com/traitecoevo/austraits.build/tree/master/data) to use as a template for your own files and a guide on required content. You should look at the files in the [config folder](https://github.com/traitecoevo/austraits.build/tree/master/config), particularly the `definitions` file for the list of traits we cover and the supported trait values for each trait. The GitHub repository also hosts a compiled [trait definitions table](http://traitecoevo.github.io/austraits.build/articles/trait_definitions.html).
 
 
 The remainder of this vignette provides incredibly detailed instructions for steps 4-8 above. It is intended for anyone wishing to add datasets to either AusTraits itself or to use the austraits.build workflow to create a separate database.  
@@ -962,6 +962,49 @@ substitutions_to_add <-
   read_csv("data/dataset_id/raw/substitutions_required_after_editing.csv")
 
 metadata_add_substitutions_list(dataset_id, substitutions_to_add)
+```
+## Add taxonomic updates
+
+The function `add_taxonomic_updates` allows you to manually align submitted taxon names (the `original_name`) with the taxon names in the taxonomic resource.
+
+```{r, eval=FALSE, echo=TRUE}
+  metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason, taxonomic_resolution)
+```
+- **find** is the name in the taxon name column in the dataset
+- **replace** is the equivalent taxon name in the taxonomic resource
+- **reason** provides information about why the taxonomic update is required
+- **taxonomic_resolution** indicates the most specific taxon rank that the name in `replace` aligns to
+
+As examples:
+
+A simple fix correcting a minor typo to align with an accepted taxon name:
+
+```{r, eval=FALSE, echo=TRUE}
+taxonomic_updates:
+- find: Drummondita rubroviridis
+  replace: Drummondita rubriviridis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
+  taxonomic_resolution: Species
+```
+
+An example of a taxon name that can only be aligned to genus. The `taxonomic_resolution` is therefore specified as `genus`. The portion of the name that can be aligned to the taxonomic resource must be before the square brackets. Any information within the square brackets is important for uniquely identifying this entry within AusTraits, but does not provide additional taxonomic information.
+
+```{r, eval=FALSE, echo=TRUE}
+- find: Acacia ancistrophylla/sclerophylla
+  replace: Acacia sp. [Acacia ancistrophylla/sclerophylla; White_2020]
+  reason: match_04. Rewording taxon where `/` indicates uncertain species identification
+    to align with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
+```
+
+A taxonomic update that aligns a name to the most similar taxon_name within a taxonomic resource (the APC), but this is a taxonomic synonym and the austraits workflow will update it to its currently accepted name (since this is documented within the `taxon_list.csv` file):
+
+```{r, eval=FALSE, echo=TRUE}
+- find: Polyalthia (Wyvur)
+  replace: Polyalthia sp. (Wyvuri B.P.Hyland RFK2632)
+  reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
+    in `APC known` when everything except first 2 words ignored (2022-11-10)
+  taxonomic_resolution: Species
 ```
 
 ## Check if AusTraits pivots wider

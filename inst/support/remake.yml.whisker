@@ -15,7 +15,7 @@ targets:
     command: saveRDS(austraits, target_name)
 
   version_number: 
-    command: util_get_version("config/traits.yml")
+    command: util_get_version("config/metadata.yml")
     
   git_SHA:
     command: util_get_SHA()
@@ -24,6 +24,9 @@ targets:
 
   schema:
     command: get_schema()
+
+  resource_metadata:
+    command: get_schema("config/metadata.yml",  I("metadata"))
 
   definitions:
     command: get_schema("config/traits.yml", I("traits"))
@@ -45,7 +48,8 @@ targets:
     command: >
       dataset_process("{{path}}/{{dataset_id}}/data.csv",
                   {{dataset_id}}_config,
-                  schema
+                  schema,
+                  resource_metadata
                  )
   {{dataset_id}}:
     command: >

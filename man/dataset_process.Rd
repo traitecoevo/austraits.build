@@ -8,6 +8,7 @@ dataset_process(
   filename_data_raw,
   config_for_dataset,
   schema,
+  resource_metadata,
   filter_missing_values = TRUE
 )
 }

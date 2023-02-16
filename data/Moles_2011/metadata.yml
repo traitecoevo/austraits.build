@@ -34,7 +34,7 @@ contributors:
   austraits_curators: Caitlan Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code:     '
+  custom_R_code:      '
     data %>% 
       mutate(
         site_name = case_when(
@@ -61,7 +61,10 @@ dataset:
           longitude == 139.5025833 ~ "Adelaide - Brookfield mallee", 
           longitude == 138.7398333 ~ "Adelaide - Coxs Scrub"
         )
-      )
+      ) %>%
+      group_by(species) %>%
+        mutate(across(c(`Growth form`,`presence of hair on adult leaves`, `presence of spines on vegetative parts of plant`, `presence of hair on juvenile leaves`), replace_duplicates_with_NA)) %>%
+      ungroup()
   '
   collection_date: 2004-07/2006-06
   taxon_name: species
@@ -277,42 +280,56 @@ substitutions:
   find: 1
   replace: hairy
 taxonomic_updates:
-- find: Eucalyptus radiata radiata
-  replace: Eucalyptus radiata subsp. radiata
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
-- find: Doryphora sassafrass
-  replace: Doryphora sassafras
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Eucalyptus gammophylla
-  replace: Eucalyptus gamophylla
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Nothofagus cuninghamii
-  replace: Nothofagus cunninghamii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Paraneurachne mueleri
-  replace: Paraneurachne muelleri
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pultenea daphnoides
-  replace: Pultenaea daphnoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Heritiera trifoliatum
-  replace: Heritiera trifoliolata
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+- find: Capparis sp
+  replace: Capparis sp. [Moles_2011]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
 - find: Darwinia fasciculata
   replace: Darwinia fascicularis
-  reason: Typo found by E. Wenk (2020-05-13)
-- find: Capparis sp
-  replace: Capparis sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Doryphora sassafrass
+  replace: Doryphora sassafras
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Eucalyptus gammophylla
+  replace: Eucalyptus gamophylla
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Eucalyptus oblongifolia
-  replace: Eucalyptus globoidea
-  reason: Aign to synonym for 'Eucalyptus oblonga' (E. Wenk, 2020-05-26)
+  replace: Eucalyptus longifolia
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Eucalyptus radiata radiata
+  replace: Eucalyptus radiata subsp. radiata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Subspecies
+- find: Heritiera trifoliatum
+  replace: Heritiera trifoliolata
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
+- find: Nothofagus cuninghamii
+  replace: Nothofagus cunninghamii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Paraneurachne mueleri
+  replace: Paraneurachne muelleri
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Polyalthia sp
-  replace: Polyalthia sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Polyalthia sp. [Moles_2011]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Pultenea daphnoides
+  replace: Pultenaea daphnoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Zygophyllum aeremeum
   replace: Zygophyllum eremaeum
-  reason: Confirm alignment with accepted on APC list (E. Wenk, 2020-05-25)
+  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na

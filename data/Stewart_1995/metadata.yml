@@ -26,7 +26,7 @@ contributors:
   austraits_curators: Ian Wright, Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:     '
+  custom_R_code:      '
     data %>% 
       mutate(
         date = ifelse(site == "Loganholme","1992-12",NA), 
@@ -39,7 +39,11 @@ dataset:
       ) %>%
       move_values_to_new_trait(
         "plant_growth_form", "plant_growth_substrate", "O (mistletoe)", "epiphyte", ""
-      )      
+      ) %>%
+      group_by(name_edited) %>%
+        mutate(across(c(`N-fixer (Y/N)` ,`leaf_type(B/N)`, `plant_growth_form`, `plant_growth_substrate`,
+        `evergreen/deciduous(E/D)`, `photosynthetic_pathway`), replace_duplicates_with_NA)) %>%
+      ungroup()     
   '
   collection_date: date
   taxon_name: name_edited
@@ -173,7 +177,7 @@ traits:
   replicates: .na
   methods: expert knowledge or reference book
 - var_in: delta_13C
-  unit_in: per mille
+  unit_in: '{delta}[ppth]'
   trait_name: leaf_delta13C
   entity_type: individual
   value_type: raw
@@ -251,97 +255,134 @@ substitutions:
   find: s or t (root parasite, at least early on in life)
   replace: shrub tree
 taxonomic_updates:
-- find: Adianthum formosum
-  replace: Adiantum formosum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Argyrodendron trifoliatum
-  replace: Argyrodendron trifoliolatum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Atriplex lindegi
-  replace: Atriplex lindleyi
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Callistemon saligna
-  replace: Callistemon salignus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Dubosia myoporoides
-  replace: Duboisia myoporoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Exocarpus latifolius
-  replace: Exocarpos latifolius
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Gallium migrans
-  replace: Galium migrans
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Geranium solandre
-  replace: Geranium solanderi
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Gmelina leichhardii
-  replace: Gmelina leichhardtii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Melaleuca quinquinervia
-  replace: Melaleuca quinquenervia
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Neobasia proseriflora
-  replace: Neobassia proceriflora
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Pennatia cunninghamii
-  replace: Pennantia cunninghamii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Tasmania insipida
-  replace: Tasmannia insipida
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+- find: Acacia harpophylla Host
+  replace: Acacia harpophylla
+  reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
+    APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Achmena ingens
   replace: Acmena ingens
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Adianthum formosum
+  replace: Adiantum formosum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Arachodendropsis Host
+  replace: Archidendropsis sp. [Arachodendropsis Host; Stewart_1995]
+  reason: match_22_fuzzy. Aligning name with fuzzy matches genus accepted by APC (2022-11-10)
+  taxonomic_resolution: genus
+- find: Argyrodendron trifoliatum
+  replace: Argyrodendron trifoliolatum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Atriplex lindegi
+  replace: Atriplex lindleyi
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Callistemon saligna
+  replace: Callistemon salignus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Cassia nemophylla var. nemophylla
   replace: Cassia nemophila var. nemophila
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: Manual alignment with canonical name of rank `varietas` in APC (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Varietas
 - find: Cassia nemophylla var. zygophylla
   replace: Cassia nemophila var. zygophylla
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Varietas
 - find: Cassia phylodinia
   replace: Cassia phyllodinea
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Acacia harpophylla Host
-  replace: Acacia sp. [Acacia harpophylla Host]
-  reason: Align to genus (E. Wenk, 2020-05-24)
-- find: Arachodendropsis Host
-  replace: Archidendropsis sp. [Arachodendropsis Host]
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Cedrela aclerata
+  replace: Cedrela sp. [Cedrela aclerata; Stewart_1995]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus in APNI
+    (2022-11-10)
+  taxonomic_resolution: genus
+- find: Dubosia myoporoides
+  replace: Duboisia myoporoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Eremophila sp.1
-  replace: Eremophila sp. [Eremophila sp.1]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Eremophila sp. [Eremophila sp.1; Stewart_1995]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Eremophila sp.2
-  replace: Eremophila sp. [Eremophila sp.2]
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Eremophila sp. [Eremophila sp.2; Stewart_1995]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: Genus
 - find: Erimophylla sp.1
-  replace: Eremophila sp. 1
-  reason: Align to genus (E. Wenk, 2020-05-23)
+  replace: Eremophila sp. [Erimophylla sp.1; Stewart_1995]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
 - find: Erimophylla sp.2
-  replace: Eremophila sp. 2
-  reason: Align to genus (E. Wenk, 2020-05-23)
+  replace: Eremophila sp. [Erimophylla sp.2; Stewart_1995]
+  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
+    Wenk, 2022-11-22)
+  taxonomic_resolution: genus
+- find: Exocarpus latifolius
+  replace: Exocarpos latifolius
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Gallium migrans
+  replace: Galium migrans
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Geranium solandre
+  replace: Geranium solanderi
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Gmelina leichhardii
+  replace: Gmelina leichhardtii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Maireana tomentosa ?
   replace: Maireana tomentosa
-  reason: Align to APC accepted synonym (E. Wenk, 2020-05-25)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Melaleuca quinquinervia
+  replace: Melaleuca quinquenervia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Neobasia proseriflora
+  replace: Neobassia proceriflora
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Pandorea jasminoides ?
   replace: Pandorea jasminoides
-  reason: Change spelling to Align to APC accepted name (E. Wenk, 2020-05-26)
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Pennatia cunninghamii
+  replace: Pennantia cunninghamii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Senna artemisioides subsp. artemisioides
   replace: Senna artemisioides subsp. x artemisioides
-  reason: Align to accepted hybrid species on APC list (E. Wenk, 2020-05-25)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Subspecies
 - find: Senna artemisioides subsp. coriacea
   replace: Senna artemisioides subsp. x coriacea
-  reason: Align to accepted hybrid species on APC list (E. Wenk, 2020-05-25)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Subspecies
 - find: Senna artemisioides subsp. petiolaris
   replace: Senna artemisioides subsp. x petiolaris
-  reason: Align to APC accepted hybrid (E. Wenk, 2020-05-25)
-- find: Cedrela aclerata
-  replace: Toona sp.
-  reason: Align to current genus (E. Wenk, 2020-06-26)
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: Subspecies
+- find: Tasmania insipida
+  replace: Tasmannia insipida
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations:
 - variable: taxon_name
   find: Khaya nyasica, Khaya nyastica

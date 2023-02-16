@@ -227,7 +227,15 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      group_by(name_original) %>%
+        mutate(
+          across(c(`GF`, `LfForm`,`LfType`,`DecEv`,`Nfixer`,`photosynthetic pathway`), replace_duplicates_with_NA),
+          `SLA (cm2/g)` = ifelse(!is.na(`LMA (g/m2)`), 1/(`LMA (g/m2)`*10000), `SLA (cm2/g)`)
+        ) %>%
+      ungroup()
+  '
   collection_date: unknown/2009
   taxon_name: name_original
   measurement_remarks: context
@@ -849,20 +857,9 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
-  methods: From Leigh_2003, Leigh_2006, Leunig_1991, Richards_2008_2 (unpublished),
-    and Schortemeyer_0000; See original references, listed alphabetically under 'additional
-    references'
-- var_in: LMA (g/m2)
-  unit_in: g/m2
-  trait_name: leaf_mass_per_area
-  entity_type: population
-  value_type: mean
-  basis_of_value: measurement
-  replicates: unknown
-  methods: From Pearcy 1987; See original references, listed alphabetically under
-    'additional references'
+  methods: unknown
 - var_in: leaf longevity
-  unit_in: month
+  unit_in: mo
   trait_name: leaf_lifespan
   entity_type: population
   value_type: mean
@@ -924,8 +921,8 @@ traits:
     and Turner_1983; See original references, listed alphabetically under 'additional
     references'
 - var_in: amass (nmol g-1 s-1)
-  unit_in: nmolCO2/g/s
-  trait_name: photosynthetic_rate_per_dry_mass_saturated
+  unit_in: nmol{CO2}/g/s
+  trait_name: leaf_photosynthetic_rate_per_dry_mass_saturated
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -933,8 +930,8 @@ traits:
   methods: From Leigh_2006 and Schortemeyer_0000 (unpublished); See original references,
     listed alphabetically under 'additional references'
 - var_in: aarea (umolm-2s-1)
-  unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
+  unit_in: umol{CO2}/m2/s
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -942,8 +939,8 @@ traits:
   methods: From Leigh_2006, Pearcy_1987 and Richards_2008_2 (unpublished); See original
     references, listed alphabetically under 'additional references'
 - var_in: gs (molm-2s-1)
-  unit_in: mmolH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Asat
+  unit_in: mmol{H2O}/m2/s
+  trait_name: leaf_stomatal_conductance_per_area_at_Asat
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -951,7 +948,7 @@ traits:
   methods: From Pearcy_1987 and Richards_2008_2 (unpublished); See original references,
     listed alphabetically under 'additional references'
 - var_in: 13-C
-  unit_in: per mille
+  unit_in: '{delta}[ppth]'
   trait_name: leaf_delta13C
   entity_type: population
   value_type: mean
@@ -970,7 +967,7 @@ traits:
     references'
 - var_in: leaf_chlorophyll_umol_per_m2
   unit_in: umol/m2
-  trait_name: chlorophyll_per_area
+  trait_name: leaf_chlorophyll_per_area
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1146,7 +1143,7 @@ traits:
   methods: unknown
 - var_in: N_mass_senesced_leaves_%
   unit_in: '%'
-  trait_name: senesced_leaf_N_per_dry_mass
+  trait_name: leaf_senesced_N_per_dry_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1154,7 +1151,7 @@ traits:
   methods: unknown
 - var_in: P_mass_senesced_leaves_%
   unit_in: '%'
-  trait_name: senesced_leaf_P_per_dry_mass
+  trait_name: leaf_senesced_P_per_dry_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1162,7 +1159,7 @@ traits:
   methods: unknown
 - var_in: K_mass_senesced_leaves_%
   unit_in: '%'
-  trait_name: senesced_leaf_K_per_dry_mass
+  trait_name: leaf_senesced_K_per_dry_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1170,7 +1167,7 @@ traits:
   methods: unknown
 - var_in: Ca_mass_senesced_leaves_%
   unit_in: '%'
-  trait_name: senesced_leaf_Ca_per_dry_mass
+  trait_name: leaf_senesced_Ca_per_dry_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1178,7 +1175,7 @@ traits:
   methods: unknown
 - var_in: Mg_mass_senesced_leaves_%
   unit_in: '%'
-  trait_name: senesced_leaf_Mg_per_dry_mass
+  trait_name: leaf_senesced_Mg_per_dry_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1186,7 +1183,7 @@ traits:
   methods: unknown
 - var_in: N_mass_dead_wood_g_per_kg
   unit_in: g/kg
-  trait_name: dead_wood_N_per_dry_mass
+  trait_name: wood_dead_N_per_dry_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1194,7 +1191,7 @@ traits:
   methods: unknown
 - var_in: P_mass_dead_wood_g_per_kg
   unit_in: g/kg
-  trait_name: dead_wood_P_per_dry_mass
+  trait_name: wood_dead_P_per_dry_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1202,7 +1199,7 @@ traits:
   methods: unknown
 - var_in: K_mass_dead_wood_g_per_kg
   unit_in: g/kg
-  trait_name: dead_wood_K_per_dry_mass
+  trait_name: wood_dead_K_per_dry_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1210,7 +1207,7 @@ traits:
   methods: unknown
 - var_in: Ca_mass_dead_wood_g_per_kg
   unit_in: g/kg
-  trait_name: dead_wood_Ca_per_dry_mass
+  trait_name: wood_dead_Ca_per_dry_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1218,7 +1215,7 @@ traits:
   methods: unknown
 - var_in: Mg_mass_dead_wood_g_per_kg
   unit_in: g/kg
-  trait_name: dead_wood_Mg_per_dry_mass
+  trait_name: wood_dead_Mg_per_dry_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1226,7 +1223,7 @@ traits:
   methods: unknown
 - var_in: Na_mass_dead_wood_g_per_kg
   unit_in: g/kg
-  trait_name: dead_wood_Na_per_dry_mass
+  trait_name: wood_dead_Na_per_dry_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -1258,19 +1255,24 @@ substitutions:
   find: 'y'
   replace: nitrogen_fixer
 taxonomic_updates:
+- find: Acacia spp
+  replace: Acacia sp. [Richards_2008]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Casuarina leuhmanii
+  replace: Casuarina sp. [Casuarina leuhmanii; Richards_2008]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2022-11-10)
+  taxonomic_resolution: genus
 - find: Eucalyptus camadulensis
   replace: Eucalyptus camaldulensis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Eucalyptus rossi
   replace: Eucalyptus rossii
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Casuarina leuhmanii
-  replace: Casuarina luehmannii
-  reason: Change spelling to align with known name (synonym or other) in APC (Daniel
-    Falster, 2020.05.22)
-- find: Acacia spp
-  replace: Acacia sp.
-  reason: Align to genus (E. Wenk, 2020-05-24)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions:
   additional_traits: Birk_1992 - has all reported values for nutrient addition treatments

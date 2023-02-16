@@ -26,7 +26,7 @@ contributors:
   austraits_curators: Elizabeth Wenk, Caitlan Baxter
 dataset:
   data_is_long_format: no
-  custom_R_code:     '
+  custom_R_code:      '
     data %>% 
       mutate_at(vars(`Root:Shoot ratio`),~na_if(.,0)) %>% 
       mutate(
@@ -118,7 +118,7 @@ traits:
   methods: Obtained from various literature sources.
 - var_in: tap_root2
   unit_in: .na
-  trait_name: tap_root
+  trait_name: root_system_type
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -194,7 +194,7 @@ traits:
     indicate root biomass allocated deeper in the soil).
 - var_in: leaf_mass_to_stem_mass
   unit_in: g/g
-  trait_name: leaf_mass_to_stem_mass
+  trait_name: leaf_mass_to_stem_mass_ratio
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -210,7 +210,7 @@ traits:
     coefficient for pot grown plants ('B' from Gale & Grigal (1987), where high values
     indicate root biomass allocated deeper in the soil).
 - var_in: Root:Shoot ratio
-  unit_in: mg_root/mg_shoot
+  unit_in: mg{root}/mg{shoot}
   trait_name: root_shoot_ratio
   entity_type: individual
   value_type: raw
@@ -272,7 +272,7 @@ traits:
   methods: Trait measurements were made using standard methods (Cornelissen et al.
     2003b).
 - var_in: leaf angle (degrees from horizontal)
-  unit_in: degrees
+  unit_in: deg
   trait_name: leaf_inclination_angle
   entity_type: individual
   value_type: raw
@@ -299,7 +299,7 @@ traits:
     2003b).
 - var_in: specific_root_area
   unit_in: mm2/g
-  trait_name: specific_root_area
+  trait_name: root_specific_root_area
   value_type: value_type_column
   basis_of_value: measurement
   replicates: 1
@@ -343,7 +343,7 @@ traits:
     total volume, length, surface area, and average diameter.
 - var_in: 'Specific Root Length (SRL: root length/root dry weight) (cm.g-1)'
   unit_in: cm/g
-  trait_name: specific_root_length
+  trait_name: root_specific_root_length
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -401,7 +401,7 @@ traits:
     using WinRhizo 3.9f Pro (Regent Instruments, Quebec) to determine the root sample's
     total volume, length, surface area, and average diameter.
 - var_in: B (root biomass depth distribution coefficient (Gale and Grigal 1987))
-  unit_in: dimensionless
+  unit_in: '{dimensionless}'
   trait_name: root_distribution_coefficient
   entity_type: population
   value_type: mean
@@ -414,9 +414,9 @@ traits:
     (1987), where high values indicate root biomass allocated deeper in the soil).
 - var_in: Diameter of the thickest root (mm)
   unit_in: mm
-  trait_name: thickest_root_diameter
+  trait_name: root_diameter
   entity_type: individual
-  value_type: raw
+  value_type: maximum
   basis_of_value: measurement
   replicates: 1
   methods: Diameter of the thickest root measured at it's thickest point. For each
@@ -460,13 +460,13 @@ substitutions:
 - trait_name: photosynthetic_pathway
   find: '3'
   replace: cam
-- trait_name: tap_root
+- trait_name: root_system_type
   find: '0'
   replace: tap_root_absent
-- trait_name: tap_root
+- trait_name: root_system_type
   find: '1'
   replace: tap_root_present
-- trait_name: tap_root
+- trait_name: root_system_type
   find: '2'
   replace: tap_root_sometimes_present
 - trait_name: life_form
@@ -485,47 +485,63 @@ substitutions:
   find: '5'
   replace: therophyte
 taxonomic_updates:
-- find: Bromus horeaceus
-  replace: Bromus hordeaceus
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Davesia mimosoides
-  replace: Daviesia mimosoides
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Drosera pelata
-  replace: Drosera peltata
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Hypericum graminium
-  replace: Hypericum gramineum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Liniaria pelisserana
-  replace: Linaria pelisseriana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Luzula merionalis
-  replace: Luzula meridionalis
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Moenchia erectus
-  replace: Moenchia erecta
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Panicum effusium
-  replace: Panicum effusum
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Poa labillardieri
-  replace: Poa labillardierei
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Tricoryne elator
-  replace: Tricoryne elatior
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Wurmbia dioica
-  replace: Wurmbea dioica
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
-- find: Hibbertia obtusiflora
-  replace: Hibbertia obtusifolia
-  reason: Change spelling to align with known species in APC (Daniel Falster, 2020.05.22)
 - find: Acaena ovina
   replace: Acaena x ovina
-  reason: Typo picked up by data contributor
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-12)
+  taxonomic_resolution: Species
+- find: Bromus horeaceus
+  replace: Bromus hordeaceus
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Davesia mimosoides
+  replace: Daviesia mimosoides
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Drosera pelata
+  replace: Drosera peltata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Euchiton spp
-  replace: Euchiton sp.
-  reason: Align to genus (E. Wenk, 2020-05-25)
+  replace: Euchiton sp. [Mokany_2008]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2022-11-10)
+  taxonomic_resolution: genus
+- find: Hibbertia obtusiflora
+  replace: Hibbertia obtusifolia
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Hypericum graminium
+  replace: Hypericum gramineum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Liniaria pelisserana
+  replace: Linaria pelisseriana
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Luzula merionalis
+  replace: Luzula meridionalis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Moenchia erectus
+  replace: Moenchia erecta
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Panicum effusium
+  replace: Panicum effusum
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Poa labillardieri
+  replace: Poa labillardierei
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: Species
+- find: Tricoryne elator
+  replace: Tricoryne elatior
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
+- find: Wurmbia dioica
+  replace: Wurmbea dioica
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions: .na

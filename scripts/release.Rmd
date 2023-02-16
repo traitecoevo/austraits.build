@@ -1,0 +1,125 @@
+
+---
+title: Instructiosn for creating a new data release
+output: [github_document, html_document]
+---
+
+This document describes how to create a new release of AusTraits on GitHub (https://github.com/traitecoevo/austraits.build/releases/tag/v4.1.0) and Zenodo (https://doi.org/10.5281/zenodo.3568417). 
+
+Below we're going to use this code in R to create a set of files for release.
+
+```{r}
+
+#' Create release
+#'
+#' Builds various files to go with the release of a new AusTraits version. Including
+#' austraits.rds, a readme file, dictionary.rmd file, plain text files with csv, and
+#' a NEWS.md file.
+#'
+#' @param austraits AusTraits database object
+#' @param v_prev specify whether to update the NEWS.md file, default = NULL
+#' @export
+create_release <- function(austraits, v_prev= NULL) {
+  version_number <- austraits$build_info$version
+
+  export_dir <- sprintf("export/data/austraits-%s", version_number)
+  unlink(export_dir, recursive = TRUE)
+  dir.create(export_dir, FALSE, TRUE)
+
+  # RDS file
+  filename <- sprintf(I("%s/austraits-%s.rds"), export_dir, version_number)
+  saveRDS(austraits, filename)
+
+  # readme
+  rmarkdown::render(
+    "scripts/README.Rmd", 
+    output_format = "all",
+    output_dir = export_dir, 
+    params = list(version_number = version_number)
+  )
+
+  # dictionary_target:
+  rmarkdown::render(
+    "scripts/dictionary.Rmd", 
+    output_format = "all",
+    output_dir = export_dir,
+    params = list(austraits = austraits), 
+  )
+
+  # plaintext_target:
+  path <- sprintf("%s/austraits-%s", export_dir, version_number)
+  write_plaintext(austraits, path)
+
+  # News
+  if (!is.null(v_prev)) {
+    rmarkdown::render(
+      "scripts/news.Rmd",
+      output_format = "all",
+      output_dir = export_dir,
+      params = list(v_prev = v_prev, v_curr = version_number),
+    )
+
+  file.copy(sprintf("%s/NEWS.md", export_dir), "NEWS.md")
+  }
+
+  # Go to directory and zip
+  # remove existing file
+  wd <- setwd(dirname(path))
+  on.exit(setwd(wd))
+
+  filename <- sprintf("%s.zip", basename(path))
+  unlink(filename)
+  utils::zip(filename, basename(path))
+  unlink(path, recursive = TRUE)
+
+  message("Export created at ", export_dir)
+
+}
+```
+
+Then follow these steps. We assume you have a branch `develop`q
+
+1. Prepare `develop` for release. On `develop` branch, 
+  - bump version number
+  - Submit a PR to `master`
+
+2. Update `master`. On `master` branch,
+  - merge PR from `develop`
+  - rebuild repo, then create an export. Files are saved in `export/data/austraits-4.1.0/`:
+
+```
+remake::make("austraits") -> austraits 
+source("scripts//release.r") 
+create_release(austraits, "4.0.0") 
+```
+ - Manually review and updates news.md
+
+3. Create a new tag on `master`
+```
+git tag v4.1.0
+git push origin v4.1.0
+```
+
+4. Create a release - go to releases to create a new release
+
+- use version number in style v.4.1.0
+- copy "news" as release text
+- drags files: `dictionary.html`, `austraits-4.1.0.rds`, `austraits-4.1.0.zip`
+
+5. Update Zenodo
+
+- add new version
+- replace binary files (austraits-4.1.0.zip, austraits-4.1.0.rds, news.md, README.md, dictionary.html)
+- change bits in pages
+  - version number
+  - date
+  - Related identifiers -> compiled by
+- in intro page, number for files
+
+6. On `develop` 
+
+- merge `master` into `develop` 
+  - in terminal ` git merge master --no-ff`  (no-ff forces a merge commit)
+  - in GH desktop XXXXX
+- add `.9000` to end of version number to indicate that we have diverged from previous version and now in development again
+

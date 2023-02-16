@@ -37,14 +37,14 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code:     '
+  custom_R_code:      '
     data %>% 
       mutate(
         individual_id = paste(Species, Tree, sep = "_"),
         Species = recode(Species, "Melaleuca DMF" = "Melaleuca leucadendra", 
         "Melaleuca W" = "Melaleuca viridiflora", "Melaleuca Sw" = "Melaleuca viridiflora"),
         leaf_density = 10/(`SLA (cm2/g)`*`Leaf thickness (mm)`),
-        `chlorophyll_per_area_umol/m2`= (10000*`leaf chlorophyll (umol/g)`)/`SLA (cm2/g)`,
+        `leaf_chlorophyll_per_area_umol/m2`= (10000*`leaf chlorophyll (umol/g)`)/`SLA (cm2/g)`,
         leaf_dry_matter_content = 1 - `water%`
       ) %>% 
       group_by(Species) %>%
@@ -267,7 +267,7 @@ traits:
   replicates: .na
   methods: expert observation or opinion
 - var_in: leaf longevity (months)
-  unit_in: month
+  unit_in: mo
   trait_name: leaf_lifespan
   entity_type: individual
   value_type: raw
@@ -407,8 +407,8 @@ traits:
     branchlets, leaf area was estimated from total branchlet length and average branchlet
     diameter.
 - var_in: Amass
-  unit_in: nmolCO2/g/s
-  trait_name: photosynthetic_rate_per_dry_mass_saturated
+  unit_in: nmol{CO2}/g/s
+  trait_name: leaf_photosynthetic_rate_per_dry_mass_saturated
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -428,8 +428,8 @@ traits:
     weighed to determine saturated mass. Dry mass was determined after leaves were
     dried for a minimum of 48 h at 70degC."
 - var_in: Aarea
-  unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
+  unit_in: umol{CO2}/m2/s
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -451,7 +451,7 @@ traits:
     dried for a minimum of 48 h at 70degC
 - var_in: leaf chlorophyll (umol/g)
   unit_in: umol/g
-  trait_name: chlorophyll_per_dry_mass
+  trait_name: leaf_chlorophyll_per_dry_mass
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -459,9 +459,9 @@ traits:
   methods: Two readings were then taken on each leaf with a chlorophyll meter (SPAD-502;
     Minolta, Osaka, Japan), which was calibrated for each species individually using
     the extraction method of Coombs et al. (1985).
-- var_in: chlorophyll_per_area_umol/m2
+- var_in: leaf_chlorophyll_per_area_umol/m2
   unit_in: umol/m2
-  trait_name: chlorophyll_per_area
+  trait_name: leaf_chlorophyll_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -488,16 +488,20 @@ substitutions:
 taxonomic_updates:
 - find: Planchonia careya A
   replace: Planchonia careya
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Planchonia careya C
   replace: Planchonia careya
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Terminalia ferdinandiana A
   replace: Terminalia ferdinandiana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 - find: Terminalia ferdinandiana C
   replace: Terminalia ferdinandiana
-  reason: Change spelling to align with known name in APC (Daniel Falster, 2020.05.22)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: Species
 exclude_observations: .na
 questions:
   additional_traits: DBH increment

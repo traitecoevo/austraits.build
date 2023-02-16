@@ -437,7 +437,7 @@ if(nrow(subset(data_study$excluded_data,error!="Missing value")) > 0 ) {
     writeLines()
 
   writeLines(ifelse(nrow(subset(data_study$excluded_data, error == "Unsupported trait value")) > 0,
-    "In particular, the following data points were excluded because the supplied trait value could not be aligned with the allowable values in AusTraits (error = `Unsupported trait value`). The allowable values for each trait are listed in the [definitions file](http://traitecoevo.github.io/austraits.build/articles/definitions.html) and lower in this report.",""))
+    "In particular, the following data points were excluded because the supplied trait value could not be aligned with the allowable values in AusTraits (error = `Unsupported trait value`). The allowable values for each trait are listed in the [definitions file](http://traitecoevo.github.io/austraits.build/articles/trait_definitions.html) and lower in this report.",""))
 
 
   if(nrow(subset(data_study$excluded_data,error == "Unsupported trait value")) > 0 ) {
@@ -555,12 +555,12 @@ for(trait in traits_numeric) {
 
 if(nrow(filter(data_study$excluded_data, error == "Value out of allowable range" & trait_name == trait)) > 0 ) {
   data_study$excluded_data %>% filter(error == "Value out of allowable range" & trait_name == trait) %>%
-    select(observation_id, taxon_name, location_name, value, unit) %>%
+    select(observation_id, taxon_name, location_id, value, unit) %>%
     my_kable_styling() %>%
     writeLines()
 }
 
- # austraits::plot_trait_distribution_beeswarm(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
+ austraits::plot_trait_distribution_beeswarm(austraits, trait, "dataset_id", highlight=dataset_id, hide_ids = TRUE)
 
   writeLines(c(""))
 
@@ -719,8 +719,7 @@ data_study$taxa %>%
 if(nrow(tmp) < 10000 ){
   tmp %>%
   mutate(
-    taxon_name = as_link(acceptedNameUsageID, taxon_name)) %>%
-  select(-acceptedNameUsageID, -ccAttributionIRI) %>%
+    taxon_name = as_link(taxon_id, taxon_name)) %>%
   mutate_all(replace_na, "") %>%
   my_kable_styling()
 } else{
@@ -731,7 +730,6 @@ if(nrow(tmp) < 10000 ){
 }
 ```
 
-## Taxonomic changes
 
 To create the list of aligned taxa, we needed to make some taxonomic changes. This involved two stages. 
 
@@ -746,10 +744,10 @@ data_study$taxonomic_updates %>% select(-dataset_id) %>%
   mutate(
     d1 = purrr::map2_dbl(original_name, cleaned_name, ~adist(.x, .y)) %>% as.character() %>% str_replace("0", ""),
     d2 = purrr::map2_dbl(taxon_name, cleaned_name, ~adist(.x, .y)) %>% as.character() %>% str_replace("0", ""),
-    cleaned_name = as_link(taxonIDClean, cleaned_name),
-    taxon_name = as_link(acceptedNameUsageID, taxon_name),
-    alternativeTaxonomicStatusClean = replace_na(alternativeTaxonomicStatusClean, ""),
-    `status cleaned name` = sprintf("%s %s", taxonomicStatusClean, ifelse(alternativeTaxonomicStatusClean=="", "", paste("(", alternativeTaxonomicStatusClean, ")")))
+    cleaned_name = as_link(cleaned_scientific_name_id, cleaned_name),
+    taxon_name = as_link(taxon_id, taxon_name),
+    cleaned_name_alternative_taxonomic_status = replace_na(cleaned_name_alternative_taxonomic_status, ""),
+    `status cleaned name` = sprintf("%s %s", cleaned_name_taxonomic_status, ifelse(cleaned_name_alternative_taxonomic_status=="", "", paste("(", cleaned_name_alternative_taxonomic_status, ")")))
     ) %>% 
   select(original_name, d1, cleaned_name, d2, taxon_name, `status cleaned name`) %>%
   mutate_all(replace_na, "") %>% 
@@ -762,9 +760,9 @@ We were unable to find taxonomic matches for the following taxa in the data. Whe
 
 ```{r taxa_list3, results='asis', echo=FALSE}
 data_study$taxa %>%
-  filter(is.na(acceptedNameUsageID)) %>%
+  filter(is.na(taxon_id)) %>%
   select(one_of(names(schema$austraits$elements$taxa$elements))) %>%
-  select(-acceptedNameUsageID, -ccAttributionIRI, -taxonDistribution) %>%
+  select(-taxon_id, -scientific_name_id, -taxon_distribution, -establishment_means) %>%
   mutate_all(replace_na, "") %>%
   my_kable_styling()
 ```

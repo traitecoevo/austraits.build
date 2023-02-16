@@ -23,7 +23,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:       '
+  custom_R_code:      '
     data %>%
       rename(season = date) %>%
       mutate(
@@ -39,8 +39,11 @@ dataset:
         across(everything(), ~na_if(.,"NaN"))
       ) %>%
         select(-date_by_month, -new_date, -date_WD, -sample_date, - notes, -spp, -`Pith diam (mm)`, -context) %>% 
-        group_by(date_merged, site_name, season, Species, age, Rep, individual) %>% 
-          summarise_at(vars(`WD kg/m3`:`gas_ d13C_leaf`), ~mean(.x) %>% na_if("NaN"), na.rm = TRUE) %>% 
+        group_by(site_name, season, Species, age, Rep, individual) %>% 
+          summarise(
+            across(c(`WD kg/m3`:`gas_ d13C_leaf`), ~mean(.x), na.rm = TRUE),
+            date_merged = first(date_merged)
+          ) %>% 
         ungroup()
   '
   collection_date: date_merged
@@ -110,12 +113,18 @@ contexts:
   category: method
   var_in: method_context
   values:
-  - find: leaf morphology sample
-    value: leaf morphology sample
-    description: Leaf samples collected for leaf morphology measurements.
-  - find: gas exchange sample
-    value: gas exchange sample
-    description: Leaf samples collected for gas exchange measurements.
+  - value: leaf morphology sample
+    description: Measurements made on leaf samples collected for leaf morphology measurements. Five recently-matured, fully-expanded and undamaged leaves (including petioles) were collected from each individual
+  - value: gas exchange sample
+    description: Measurements made on leaf samples collected for gas exchange measurements.
+- context_property: nitrogen sample type
+  category: method
+  var_in: method_context2
+  values:
+  - value: Leaf N associated with isotope samples
+    description: Leaf lamina material used in photosynthetic measurements was oven-dried and pooled per species/age class, then analysed for 13C/12C and 15N/14N stable isotope composition at the Stable Isotopes Laboratory, Australian National University, Canberra.
+  - value: Leaf N analysed with a LECO TruSpec CHN analyser
+    description: Total N concentration of leaf and soil samples was measured with a LECO TruSpec CHN analyser; total P by ICP-OES, on nitric acid digests (analyses run at Appleton Lab, University of Queensland). Area-based leaf N and P concentrations were calculated from mass-based concentrations and the mean SLA value for each species/age class.
 traits:
 - var_in: WD kg/m3
   unit_in: kg/m3
@@ -141,10 +150,9 @@ traits:
   basis_of_value: measurement
   replicates: 1
   method_context: leaf morphology sample
-  methods: Five recently-matured, fully-expanded and undamaged leaves (including petioles)
-    were collected from each individual for determination of one-sided projected leaf
-    area (flatbed scanner), oven-dried mass (70 deg C for at least 48 h) and thus
-    SLA (area per dry mass; cm2 g-1).
+  methods: One-sided projected leaf area was determined (flatbed scanner),
+    oven-dried mass (70 deg C for at least 48 h) and thus SLA (area per dry mass;
+    cm2 g-1).
 - var_in: C%
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
@@ -164,11 +172,8 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  methods: Total N concentration of leaf and soil samples was measured with a LECO
-    TruSpec CHN analyser; total P by ICP-OES, on nitric acid digests (analyses run
-    at Appleton Lab, University of Queensland). Area-based leaf N and P concentrations
-    were calculated from mass-based concentrations and the mean SLA value for each
-    species/age class.
+  method_context2: Leaf N analysed with a LECO TruSpec CHN analyser
+  methods: Area-based leaf N calculated from mass-based concentrations.
 - var_in: P%
   unit_in: '%'
   trait_name: leaf_P_per_dry_mass
@@ -194,7 +199,7 @@ traits:
     SLA (area per dry mass; cm2 g-1).
 - var_in: LM/SM80
   unit_in: g/g
-  trait_name: leaf_mass_to_stem_mass
+  trait_name: leaf_mass_to_stem_mass_ratio
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -278,8 +283,8 @@ traits:
     per species/age class. Sample volumes were measured using standard procedure (via
     displacement), and dry masses after oven-drying at 70 deg C for 7 days.
 - var_in: Asat_area (micromol/m2/s)
-  unit_in: umolCO2/m2/s
-  trait_name: photosynthetic_rate_per_area_saturated
+  unit_in: umol{CO2}/m2/s
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -295,8 +300,8 @@ traits:
     only loosely controlled, averaging 1.22 kPa across all measurements (standard
     deviation 0.28).
 - var_in: gsw (mol/m2/s)
-  unit_in: mmolH2O/m2/s
-  trait_name: stomatal_conductance_per_area_at_Asat
+  unit_in: mmol{H2O}/m2/s
+  trait_name: leaf_stomatal_conductance_per_area_at_Asat
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -312,8 +317,8 @@ traits:
     only loosely controlled, averaging 1.22 kPa across all measurements (standard
     deviation 0.28).
 - var_in: Ci
-  unit_in: umolCO2/mol
-  trait_name: ci_at_Asat
+  unit_in: umol{CO2}/mol
+  trait_name: leaf_intercellular_CO2_concentration_at_Asat
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -329,8 +334,8 @@ traits:
     only loosely controlled, averaging 1.22 kPa across all measurements (standard
     deviation 0.28).
 - var_in: Ca
-  unit_in: umolCO2/mol
-  trait_name: ca
+  unit_in: umol{CO2}/mol
+  trait_name: atmospheric_CO2_concentration
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -346,8 +351,8 @@ traits:
     only loosely controlled, averaging 1.22 kPa across all measurements (standard
     deviation 0.28).
 - var_in: CiCa ratio
-  unit_in: umolCO2 internal/umolCO2 ambient
-  trait_name: ci_over_ca
+  unit_in: umol{CO2_internal}/umol{CO2_ambient}
+  trait_name: leaf_intercellular_CO2_concentration_to_atmospheric_CO2_concentration_ratio
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -387,8 +392,8 @@ traits:
   replicates: 1
   methods: circumference at breast height
 - var_in: Amass
-  unit_in: nmolCO2/g/s
-  trait_name: photosynthetic_rate_per_dry_mass_saturated
+  unit_in: nmol{CO2}/g/s
+  trait_name: leaf_photosynthetic_rate_per_dry_mass_saturated
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -411,8 +416,7 @@ traits:
   basis_of_value: measurement
   replicates: 1
   method_context: gas exchange sample
-  methods: Specific leaf area (SLA) measurements made on the leaves on which photosynthesis
-    was measured. One-sided projected leaf area was determined (flatbed scanner),
+  methods: One-sided projected leaf area was determined (flatbed scanner),
     oven-dried mass (70 deg C for at least 48 h) and thus SLA (area per dry mass;
     cm2 g-1).
 - var_in: Al
@@ -504,7 +508,7 @@ traits:
   replicates: 1
   methods: P and other elemental results obtained by ICPOES on nitric acid digests
 - var_in: gas_d15N_leaf
-  unit_in: per mille
+  unit_in: '{delta}[ppth]'
   trait_name: leaf_delta15N
   entity_type: individual
   value_type: raw
@@ -517,7 +521,7 @@ traits:
     during photosynthesis (Farquhar et al. 1982). We also measured d13C on representative
     whole-leaf (including petiole) samples collected during September 2010 (dry season).
 - var_in: gas_ d13C_leaf
-  unit_in: per mille
+  unit_in: '{delta}[ppth]'
   trait_name: leaf_delta13C
   entity_type: individual
   value_type: raw
@@ -548,15 +552,10 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
-  methods: Leaf N associated with isotope samples. Leaf lamina material used in photosynthetic
-    measurements was oven-dried and pooled per species/age class, then analysed for
-    13C/12C and 15N/14N stable isotope composition at the Stable Isotopes Laboratory,
-    Australian National University, Canberra. The d13C provides an integrated measure
-    of the extent of CO2 drawdown during photosynthesis (Farquhar et al. 1982). We
-    also measured d13C on representative whole-leaf (including petiole) samples collected
-    during September 2010 (dry season).
+  method_context2: Leaf N associated with isotope samples
+  methods: Area-based leaf N calculated from mass-based concentrations.
 - var_in: d15N_bark
-  unit_in: per mille
+  unit_in: '{delta}[ppth]'
   trait_name: bark_delta15N
   entity_type: individual
   value_type: raw
@@ -565,7 +564,7 @@ traits:
   methods: Bark was analysed for 15N/14N stable isotope composition at the Stable
     Isotopes Laboratory, Australian National University, Canberra.
 - var_in: d13C_bark
-  unit_in: per mille
+  unit_in: '{delta}[ppth]'
   trait_name: bark_delta13C
   entity_type: individual
   value_type: raw
@@ -574,7 +573,7 @@ traits:
   methods: Bark was analysed for 13C/12C stable isotope composition at the Stable
     Isotopes Laboratory, Australian National University, Canberra.
 - var_in: d15N_wood
-  unit_in: per mille
+  unit_in: '{delta}[ppth]'
   trait_name: wood_delta15N
   entity_type: individual
   value_type: raw
@@ -583,7 +582,7 @@ traits:
   methods: Wood was analysed for 15N/14N stable isotope composition at the Stable
     Isotopes Laboratory, Australian National University, Canberra.
 - var_in: d13C_wood
-  unit_in: per mille
+  unit_in: '{delta}[ppth]'
   trait_name: wood_delta13C
   entity_type: individual
   value_type: raw
@@ -632,10 +631,6 @@ traits:
     Isotopes Laboratory, Australian National University, Canberra. These are the simultaneously
     determined %N values.
 substitutions: .na
-taxonomic_updates:
-- find: Erythrophloem chlorostachys
-  replace: Erythrophleum chlorostachys
-  reason: match_3a. Automatic alignment with name in APC list (accepted) (2022-10-24)
-  taxonomic_resolution: Species
+taxonomic_updates: .na
 exclude_observations: .na
 questions: .na

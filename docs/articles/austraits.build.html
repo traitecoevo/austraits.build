@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">austraits.build</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.0</span>
       </span>
     </div>
 
@@ -48,7 +50,7 @@
   <a href="../articles/austraits.build.html">Get started</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fas fa-book"></span>
      
     Details
@@ -60,13 +62,16 @@
       <a href="../articles/austraits_overview.html">Overview of `AusTraits` workflow</a>
     </li>
     <li>
+      <a href="../articles/austraits.build.html">Getting started with austraits.build</a>
+    </li>
+    <li>
       <a href="../articles/austraits_database_structure.html">Structure of `AusTraits` data compilation</a>
     </li>
     <li>
-      <a href="../articles/Trait_definitions.html">Definitions for traits in `AusTraits`</a>
+      <a href="../articles/trait_definitions.html">Definitions for traits in `AusTraits`</a>
     </li>
     <li>
-      <a href="../articles/austraits_file_structure.html">File structure of `AusTraits` repo</a>
+      <a href="../articles/austraits_file_structure.html">Repository file structure</a>
     </li>
     <li>
       <a href="../articles/contributing_data.html">Contributing data to `AusTraits`</a>
@@ -75,7 +80,7 @@
       <a href="../articles/adding_data.html">Adding new datasets into `AusTraits`</a>
     </li>
     <li>
-      <a href="../articles/Docker.html">Docker for reproducible compute environment</a>
+      <a href="../articles/docker.html">Docker for reproducible compute environment</a>
     </li>
   </ul>
 </li>
@@ -89,7 +94,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/traitecoevo/austraits.build">
+  <a href="https://github.com/traitecoevo/austraits.build" class="external-link">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -104,111 +109,119 @@
 
       
 
-      </header><script src="austraits.build_files/header-attrs-2.10/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Getting started with austraits.build</h1>
             
-            <h4 class="date">2021-10-01</h4>
+            <h4 data-toc-skip class="date">2023-02-09</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/traitecoevo/austraits.build/blob/master/vignettes/austraits.build.Rmd"><code>vignettes/austraits.build.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/traitecoevo/austraits.build/blob/HEAD/vignettes/austraits.build.Rmd" class="external-link"><code>vignettes/austraits.build.Rmd</code></a></small>
       <div class="hidden name"><code>austraits.build.Rmd</code></div>
 
     </div>
 
     
     
-<p><img src="../docs/figures/logo.png"></p>
-<div id="what-type-of-repository-is-this-and-who-is-it-for" class="section level1">
-<h1 class="hasAnchor">
-<a href="#what-type-of-repository-is-this-and-who-is-it-for" class="anchor"></a>What type of repository is this and who is it for?</h1>
-<p>The main purpose of this repo is to build <code>AusTraits</code>, a curated database of traits for the Australian flora. It contains code and data to build the harmonised AusTraits database outputs. So, the intended audiences are those who are interested in building AusTraits from scratch, or contributing data to AusTraits.</p>
-<p>Those interested in simply using data from AusTraits, should visit and download the compiled resource from the versioned releases archived on Zenodo at doi: <a href="http://doi.org/https://doi.org/10.5281/zenodo.3568417">10.5281/zenodo.3568417</a>.</p>
+<p><img src="figures/logo.png"></p>
+<div class="section level2">
+<h2 id="what-type-of-repository-is-this-and-who-is-it-for">What type of repository is this and who is it for?<a class="anchor" aria-label="anchor" href="#what-type-of-repository-is-this-and-who-is-it-for"></a>
+</h2>
+<p>The main purpose of this repo is to build <code>AusTraits</code>, a curated database of traits for Australian flora. It contains code and data to build the harmonised AusTraits database outputs. The intended audiences are those who are interested in building AusTraits from scratch, or contributing data to AusTraits.</p>
+<p>Those interested in simply using data from AusTraits should visit and download the compiled resource from the versioned releases archived on Zenodo at doi: <a href="http://doi.org/https://doi.org/10.5281/zenodo.3568417" class="external-link">10.5281/zenodo.3568417</a>.</p>
 <p>The repo is partway between a compendium and an R package. It is structured like an R package, and contains code that can be installed as a package. This allows us to use some of R’s package management tools:</p>
 <ul>
 <li>use a DESCRIPTION file to document our dependencies</li>
-<li>create our documentation, using the package pkgdown</li>
+<li>create our documentation using the package pkgdown</li>
 <li>run tests on our datasets (using testthat)</li>
 <li>manage and build vignettes</li>
 <li>use the devtools function to load functions.</li>
 </ul>
-<p>It also contains data for rebuilding AusTraits. A key goal for us was to make the process for harmonising different datasets as transparent as possible. Our workflow is therefore fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset (Figure 1); and can also be rerun by others.</p>
-<p><img src="../docs/figures/Workflow.png"></p>
+<p>It also contains data for rebuilding AusTraits. A key goal for us was to make the process of harmonising different datasets as transparent as possible. Our workflow is, therefore, fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset (Figure 1); and can also be rerun by others.</p>
+<p><img src="figures/Workflow.png"></p>
 </div>
-<div id="ways-to-contribute" class="section level1">
-<h1 class="hasAnchor">
-<a href="#ways-to-contribute" class="anchor"></a>Ways to contribute</h1>
+<div class="section level2">
+<h2 id="ways-to-contribute">Ways to contribute<a class="anchor" aria-label="anchor" href="#ways-to-contribute"></a>
+</h2>
 <p>We envision AusTraits as an ongoing collaborative community resource that:</p>
 <ol style="list-style-type: decimal">
-<li>Increases our collective understanding of the Australian flora; and</li>
-<li>Facilitates the accumulation and sharing of trait data;</li>
-<li>Builds a sense of community among contributors and users; and</li>
-<li>Aspires to fully transparent and reproducible research of the highest standard.</li>
+<li>Increases our collective understanding of the Australian flora</li>
+<li>Facilitates the accumulation and sharing of trait data</li>
+<li>Builds a sense of community among contributors and users</li>
+<li>Aspires to be fully transparent and reproducible research of the highest standard.</li>
 </ol>
 <p>Below are some of the ways you can contribute.</p>
 <p>*Please note that the AusTraits project is released with a <a href="http://traitecoevo.github.io/austraits.build/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project you agree to abide by its terms.</p>
-<div id="contributing-new-data" class="section level2">
-<h2 class="hasAnchor">
-<a href="#contributing-new-data" class="anchor"></a>Contributing new data</h2>
+<div class="section level3">
+<h3 id="contributing-new-data">Contributing new data<a class="anchor" aria-label="anchor" href="#contributing-new-data"></a>
+</h3>
 <p>We gladly accept new data contributions to AusTraits. If you would like to contribute data, the requirements are:</p>
 <ul>
-<li>Data were collected for Australian plant species growing in Australia</li>
-<li>You collected data on one of the traits listed in the <a href="http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html">trait definitions table</a>
+<li>Data was collected for Australian plant species growing in Australia</li>
+<li>You collected data on one of the traits listed in the <a href="http://traitecoevo.github.io/austraits.build/articles/trait_definitions.html">trait definitions table</a>
 </li>
 <li>You are willing to release the data under an open license for reuse by the scientific community</li>
 <li>You make it is as easy as possible for us to incorporate your data by following the instructions.</li>
 </ul>
 <p>If you want to contribute data, please review the instructions <a href="http://traitecoevo.github.io/austraits.build/articles/contributing_data.html">here on how to contribute data</a>.</p>
 </div>
-<div id="reporting-errors-and-improving-documentation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#reporting-errors-and-improving-documentation" class="anchor"></a>Reporting errors and improving documentation</h2>
+<div class="section level3">
+<h3 id="reporting-errors-and-improving-documentation">Reporting errors and improving documentation<a class="anchor" aria-label="anchor" href="#reporting-errors-and-improving-documentation"></a>
+</h3>
 <p>Data contributors and data users who are less familiar with the AusTraits format and code than the custodians may determine that important descriptions or steps are omitted from this documentation file. We welcome additions and edits that make using the existing data or adding new data easier for the community.</p>
-<p>If you notice a possible error in AusTraits, please <a href="https://github.com/traitecoevo/austraits.build/issues">post an issue on GitHub</a>. If you can, please provide code illustrating the problem.</p>
+<p>If you notice a possible error in AusTraits, please <a href="https://github.com/traitecoevo/austraits.build/issues" class="external-link">post an issue on GitHub</a>. If you can, please provide code illustrating the problem.</p>
 <p>If you would like to value-add to AusTraits in some other way, please get in contact with an idea or offer of time.</p>
 </div>
-<div id="improving-data-quality" class="section level2">
-<h2 class="hasAnchor">
-<a href="#improving-data-quality" class="anchor"></a>Improving data quality</h2>
+<div class="section level3">
+<h3 id="improving-data-quality">Improving data quality<a class="anchor" aria-label="anchor" href="#improving-data-quality"></a>
+</h3>
 <p>A core initiative of AusTraits from 2021-2023 is to refine and better document the trait names, definitions, and values that are the direct link from each contributor’s dataset to the harmonised database. This effort is funded by an Australian Research Data Commons (ARDC) grant through their Australian Data Partnerships program. It includes both a review of definitions by the core AusTraits team and a series of workshops to discuss clusters of related trait definitions.</p>
-<p>The goal is to link as many trait names as possible to established, published definitions (e.g. in traits handbook, review paper on a method, manuscripts regularly cited as the standard for a specific trait). In addition, the list of allowable values for each categorical trait will be reviewed and revised.</p>
+<p>The goal is to link as many trait names as possible to established, published definitions (e.g. in the traits handbook, a review paper on a method or manuscripts regularly cited as the standard for a specific trait). In addition, the list of allowable values for each categorical trait will be reviewed and revised.</p>
 <p>If you are interested in contributing expertise to the revision of a given trait (or cluster of related traits), please contact us.</p>
 </div>
 </div>
-<div id="compiling-austraits" class="section level1">
-<h1 class="hasAnchor">
-<a href="#compiling-austraits" class="anchor"></a>Compiling AusTraits</h1>
-<p>In this section we describe how to build the harmonised dataset. By “compiling” we mean transforming data from all the different studies into a harmonised common format. As described above and depicted in Figure 1, AusTraits is built so that you can rebuild the database from its parts at any time. This means that decisions made along the way, in how data are transformed or encoded, can be inspected and modified. And new data is easily incorporated.</p>
-<p>The first step to compile AusTraits is to download a copy of the <a href="https://github.com/traitecoevo/austraits.build/">austraits.build</a> repository from Github. Then open up the Rstudio project, or open R into the right repo directory.</p>
-<div id="dependencies" class="section level2">
-<h2 class="hasAnchor">
-<a href="#dependencies" class="anchor"></a>Dependencies</h2>
-<p>To check you have the right packages installed, you can use the <a href="https://devtools.r-lib.org"><code>devtools</code></a> package to run:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("devtools)  # install devtools if needed</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/install_deps.html">install_deps</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>This command checks that the required packages, listed in the file <code>DESCRIPTION</code>, are available in your local machine.</p>
-</div>
-<div id="compile-via-remake" class="section level2">
-<h2 class="hasAnchor">
-<a href="#compile-via-remake" class="anchor"></a>Compile via <code>remake</code>
+<div class="section level2">
+<h2 id="compiling-austraits">Compiling AusTraits<a class="anchor" aria-label="anchor" href="#compiling-austraits"></a>
 </h2>
-<p>One of the packages that will be installed with the above is <a href="https://github.com/richfitz/remake"><code>remake</code></a>. This package manages the compiling, and also helps streamline the amount of recompiling needed when new sources are added.</p>
-<p>Running the following command will rebuild AusTraits and save the assembled database into an RDS file located in <code>export/data/curr/austraits.rds</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remake</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/remake/man/make.html">make</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>Remake can also load the compiled dataset directly into R by calling:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">austraits</span> <span class="op">&lt;-</span> <span class="fu">remake</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/remake/man/make.html">make</a></span><span class="op">(</span><span class="st">"austraits"</span><span class="op">)</span></code></pre></div>
+<p>In this section, we describe how to build the harmonised dataset. By “compiling” we mean transforming data from all the different studies into a harmonised common format. As described above, and depicted in Figure 1, AusTraits is built so that the database can be rebuilt from its parts at any time. This means that decisions made along the way (in how data is transformed or encoded) can be inspected and modified, and new data can be easily incorporated.</p>
+<p>The first step to compile AusTraits is to download a copy of the <a href="https://github.com/traitecoevo/austraits.build/" class="external-link">austraits.build</a> repository from Github. Then open the Rstudio project, or open R into the right repo directory.</p>
+<div class="section level3">
+<h3 id="dependencies">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies"></a>
+</h3>
+<p>To check you have the right packages installed, you can use the <a href="https://devtools.r-lib.org" class="external-link"><code>devtools</code></a> package to run:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#install.packages("devtools")  # install devtools if needed</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install.html" class="external-link">install</a></span><span class="op">(</span>quick<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="developing-austraits" class="section level2">
-<h2 class="hasAnchor">
-<a href="#developing-austraits" class="anchor"></a>Developing AusTraits</h2>
+<div class="section level3">
+<h3 id="source-functions">Source functions<a class="anchor" aria-label="anchor" href="#source-functions"></a>
+</h3>
+<p>To successfully compile AusTraits you need to load the package</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="http://traitecoevo.github.io/austraits.build/">"austraits.build"</a></span><span class="op">)</span></code></pre></div>
+<p>and source some custom functions written explicitly for this database:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"scripts/custom.R"</span><span class="op">)</span>        <span class="co"># functions used in custom_R_code</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="compile-via-remake">Compile via <code>remake</code><a class="anchor" aria-label="anchor" href="#compile-via-remake"></a>
+</h3>
+<p>One of the packages that will be installed with the above is <a href="https://github.com/richfitz/remake" class="external-link"><code>remake</code></a>. This package manages the compiling, and also helps streamline the amount of recompiling needed when new sources are added.</p>
+<p>Running the following command will rebuild AusTraits and save the assembled database into an RDS file located in <code>export/data/curr/austraits.rds</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">remake</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/remake/man/make.html" class="external-link">make</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>Remake can also load the compiled dataset directly into R by calling:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">austraits</span> <span class="op">&lt;-</span> <span class="fu">remake</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/remake/man/make.html" class="external-link">make</a></span><span class="op">(</span><span class="st">"austraits"</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="developing-austraits">Developing AusTraits<a class="anchor" aria-label="anchor" href="#developing-austraits"></a>
+</h3>
 <p>For those working with AusTraits code base or data, you may want to read about</p>
 <ul>
 <li>the <a href="http://traitecoevo.github.io/austraits.build/articles/austraits_database_structure.html">structure of the compiled AusTraits database</a>, and</li>
 <li>the <a href="http://traitecoevo.github.io/austraits.build/articles/austraits_file_structure.html">structure of the raw data files</a>,</li>
-<li>the <a href="http://traitecoevo.github.io/austraits.build/articles/Trait_definitions.html">list of trait definitions</a>
+<li>the <a href="http://traitecoevo.github.io/austraits.build/articles/trait_definitions.html">list of trait definitions</a>
 </li>
 </ul>
 </div>
@@ -226,11 +239,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Daniel Falster, Rachael Gallagher, Elizabeth Wenk, Ian Wright, Sam Andrew, Caitlin Baxter, ARDC, ARC.</p>
+  <p></p>
+<p>Developed by Daniel Falster, Elizabeth Wenk, Rachael Gallagher, ARDC, ARC.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
@@ -238,6 +253,8 @@
 
   
 
+
+  
 
   </body>
 </html>
