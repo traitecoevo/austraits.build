@@ -29,9 +29,10 @@ dataset:
       mutate(
         site_name = "Louth",
         parasitic = ifelse(`growth form`=="stem parasite","stem_parasitic", NA),
-        parasitic = ifelse(`growth form`=="root parasite","root_parasitic", parasitic)
-      ) %>%
-      mutate_at(vars(`height (cm)_filtered`,`leaf area (mm2)`,`seed mass (mg)`,`diaspore weight (mg)`),~na_if(.,0))
+        parasitic = ifelse(`growth form`=="root parasite","root_parasitic", parasitic),
+        across(c(`height (cm)_filtered`,`leaf area (mm2)`,`seed mass (mg)`,
+        `diaspore weight (mg)`), ~na_if(.x, 0))
+      )
   '
   collection_date: 1996/1996
   taxon_name: SPECIES

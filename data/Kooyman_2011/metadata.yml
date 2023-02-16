@@ -24,9 +24,9 @@ dataset:
   custom_R_code:      '
     data %>% 
       group_by(`Species_reconciled with updates and additions`) %>%
-        mutate_at(vars(`seed length maximum (mm)`,`seed length minimum (mm)`,
+        mutate(across(c(`seed length maximum (mm)`,`seed length minimum (mm)`,
         `seed width maximum (mm)`,`seed width minimum (mm)`,`leaves lobed`), 
-        list(~ replace(.,duplicated(.),NA))) %>%
+        list(~ replace(.,duplicated(.),NA)))) %>%
       ungroup() %>%
       mutate(
         `Height (m)` = ifelse(is.na(plant_height_duplicate),`Height (m)`,NA), 

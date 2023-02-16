@@ -32,8 +32,8 @@ dataset:
   data_is_long_format: yes
   custom_R_code:      '
     data %>% 
-      mutate_at(c("Value"), ~na_if(.,0)) %>% 
       mutate(
+        across(c("Value"), ~na_if(.x, 0)),
         replicates = 1,
         individual_identifier = paste(Species, site_name, Individual,sep="_")
       ) %>%

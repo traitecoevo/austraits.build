@@ -26,15 +26,15 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:      '
+  custom_R_code: '
     data %>% 
       mutate(
         root_mass_fraction = Root_Weight / (ABG_Weight + Root_Weight), 
         root_shoot_ratio = Root_Weight / ABG_Weight,
         leaf_area_ratio = Total_Leaf_Area / (ABG_Weight + Root_Weight),
-        Trip_Date = Trip_Date %>% my() %>% format.Date("%Y-%m") 
-      ) %>% 
-      mutate_at(vars(SLA),~na_if(.,0))
+        Trip_Date = Trip_Date %>% my() %>% format.Date("%Y-%m"),
+        across(c(SLA),~na_if(.x, 0))
+      )
   '
   collection_date: Trip_Date
   taxon_name: species

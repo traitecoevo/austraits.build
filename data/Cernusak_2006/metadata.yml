@@ -30,7 +30,7 @@ dataset:
         date = date %>% mdy()
       ) %>%  
       group_by(species) %>% 
-        mutate_at(vars(`specific leaf area (m2 kg-1)`), replace_duplicates_with_NA) %>% 
+        mutate(across(c(`specific leaf area (m2 kg-1)`), replace_duplicates_with_NA)) %>% 
       ungroup() %>%
       group_by(species, Tree, site_name, `burn_status`, `sampling_period`) %>%
         mutate(observation_number = row_number()) %>%

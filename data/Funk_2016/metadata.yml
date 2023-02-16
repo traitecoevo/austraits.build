@@ -30,8 +30,8 @@ dataset:
 data %>%
   mutate(
     `Nut acq strat` = stringr::str_replace(`Nut acq strat`, "Nfixer/",""),
-    across(c(`Nut acq strat`, `Rt tp cat`, `Root depth (cm)`, `Height (mm)`,
-        `Aarea`, `Amass`, `PNUE`, `PPUE`, `WUE`, `Root type`), ~na_if(.,"MD")),
+    across(everything(), ~as.character(.x)),
+    across(everything(), ~na_if(.x,"MD")),
     Date = ifelse(Site == "Banksia woodland","2011-09/2011-11",NA),
     Date = ifelse(Site == "Coastal banksia woodland","2012-09/2012-11",Date)
   )
