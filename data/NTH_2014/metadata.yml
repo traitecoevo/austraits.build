@@ -72,12 +72,15 @@ dataset:
         c("succulent", "succulent"),
         c("herb", "herb")
       ) %>%
-      mutate(across(everything(), ~na_if(.x, ""))) %>%
       separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>% 
       separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
       separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>% 
       separate_range("seed diameter (mm)", "seed_width_min", "seed_width_max") %>% 
-      separate_range("seed depth (mm)", "seed_depth_min", "seed_depth_max")
+      separate_range("seed depth (mm)", "seed_depth_min", "seed_depth_max") %>%
+      mutate(
+        across(everything(), ~as.character(.x)),
+        across(everything(), ~na_if(.x, ""))
+      )
   '    
   collection_date: unknown/2014
   taxon_name: species_name
