@@ -32,8 +32,8 @@ dataset:
   data_is_long_format: no
   custom_R_code:      '
     data %>% 
-      mutate_at(vars(`Rdark.a`), ~ na_if(., 0)) %>% 
       mutate(
+        across(`Rdark.a`, ~na_if(.x, 0)),
         Date = Date %>% dmy(), 
         context = ifelse(Site %in% c("Calperum mallee", "Great Western Woodlands", "Alice Mulga") & 
                           Visit == "Summer", "Summer_unfavourable", Visit),
@@ -50,14 +50,18 @@ dataset:
         Replicate = stringr::str_replace(Replicate,"-H-","-"),
         Replicate = stringr::str_replace(Replicate,"-B1",""),
         Replicate = stringr::str_replace(Replicate,"-B2",""),
-        Replicate = stringr::str_replace(Replicate,"-B3",""),
+        Replicate = stringr::str_replace(Replicate,"-B3","")
       ) %>% 
-      select(-Tree.id, -replicate_original, - Branch) %>% 
+      select(-Tree.id, -replicate_original, - Branch) %>%
       group_by(context, Site, Visit, Replicate, Species, Family, Genus, PFT) %>%
-      summarise(across(c(`A400.a_with_Weerasinghe_2014`:`wue1500`), ~mean(.x) %>% na_if("NaN"), na.rm = TRUE),
+      summarise(across(c(`A400.a_with_Weerasinghe_2014`:`wue1500`), ~mean(.x, na.rm = TRUE)),
                 across(Date, first),
                 count = n()) %>%
-      mutate(value_type_column = ifelse(count == 1,"raw","mean")) %>%
+      mutate(
+        value_type_column = ifelse(count == 1,"raw","mean"),
+        across(c(`A400.a_with_Weerasinghe_2014`:`wue1500`), ~as.character(.x)),
+        across(c(`A400.a_with_Weerasinghe_2014`:`wue1500`), ~na_if(.x, "NaN"))
+      ) %>%
       ungroup()
   '
   collection_date: Date

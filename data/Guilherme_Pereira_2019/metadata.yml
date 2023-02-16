@@ -44,10 +44,14 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:      data %>% mutate_at(c("N (mature) (mg/g)"), ~na_if(.,0)) %>% mutate(site_name
-    = ifelse(Stage == "Stage_1","Quindalup Young",Stage), site_name = ifelse(site_name
-    == "Stage_3","Quindalup Old",site_name),site_name = ifelse(site_name == "Stage_4","Spearwood
-    West",site_name))
+  custom_R_code: '
+    data %>%
+      mutate(across(c("N (mature) (mg/g)"), ~na_if(.x, 0)),
+        site_name = ifelse(Stage == "Stage_1", "Quindalup Young", Stage),
+        site_name = ifelse(site_name == "Stage_3", "Quindalup Old", site_name),
+        site_name = ifelse(site_name == "Stage_4", "Spearwood West", site_name)
+      )
+  '
   collection_date: 2011-11-11/2011-11-17
   taxon_name: Species
   location_name: site_name
