@@ -46,9 +46,9 @@ dataset:
     data %>% 
       filter(taxon != "NA NA") %>% 
       group_by(taxon) %>%  
-        mutate_at(vars(`N (%mass)`,`P (%mass)`,`lignin (%mass)`,`tannin (%mass)`,
-                `FMC (% odw)`,senesced_leaf_N_per_dry_mass,senesced_leaf_P_per_dry_mass),
-                ~ replace(.x, duplicated(.x),NA)) %>%
+        mutate(across(c(`N (%mass)`, `P (%mass)`, `lignin (%mass)`, `tannin (%mass)`,
+                `FMC (% odw)`, senesced_leaf_N_per_dry_mass, senesced_leaf_P_per_dry_mass),
+                ~ replace(.x, duplicated(.x), NA))) %>%
       ungroup() %>%
       mutate(
         row_number = row_number(),

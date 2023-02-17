@@ -385,9 +385,16 @@ config:
     taxon_name: species_name
     site_name: site_name
     date: date_sampled
-  custom_R_code: data %>% mutate(date_sampled = date_sampled %>% mdy()) %>% group_by(`species_name`)
-    %>% mutate_at(vars(physical_defence,`leaf type`,leaf_compoundness),funs(replace(.,duplicated(.),NA)))
-    %>% ungroup()
+  custom_R_code: '
+    data %>% 
+      mutate(
+        date_sampled = date_sampled %>% mdy()
+      ) %>%
+      group_by(`species_name`) %>%
+        mutate(across(c(physical_defence,`leaf type`,leaf_compoundness),
+          replace_duplicates_with_NA))) %>%
+      ungroup()
+    '
 traits:
 - var_in: leaf type
   unit_in: .na
