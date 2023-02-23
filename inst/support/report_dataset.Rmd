@@ -168,7 +168,7 @@ To aid your review, we have attached the following files:
 ```{r, results='asis', echo=FALSE}
 # Any additional questions from metadata
 
-if(!is.null(metadata$questions) & !is.na(metadata$questions)) {
+if(!is.null(metadata$questions) & !is.na(metadata$questions[1])) {
 
   x <- names(metadata$questions)[ !(names(metadata$questions) %in% c(
                                       "additional_traits", "austraits") 
@@ -333,7 +333,7 @@ if(nrow(locations) > 0 ) {
 new_question("(section `locations`) Do site details look complete and accurate? As a minimum we would like `latitude`, `longitude`, `description`.")
 ```
 
-## Additional site data (optional)
+## Additional location data (optional)
 
 The following variables have been recorded for the locations included in the study:
 
@@ -368,13 +368,15 @@ data_study$contexts %>%
   group_split() -> context_properties
 
 if(length(context_properties) > 0 ) {
-  
-    for (i in seq_along(context_properties)) {      
-        paste("The column titled, `r metadata$contexts[[i]]$var_in`, in your dataset was mapped to context property, `r metadata$contexts[[i]]$context_property`, within the category, `r metadata$contexts[[i]]$category`") %>% writeLines()
+    for (i in seq_along(context_properties)) { 
+      var_in <- context_properties[[i]][["var_in"]][1]
 
-      writeLines("The following values exist for this context: ")
+      writeLines(paste0("**", context_properties[[i]]$context_property[1], "**:", ifelse(is.null(var_in), "Added ",         
+        paste0("Mapped from the column titled **", var_in, "** in your dataset ")), "with the category *", context_properties[[i]]$category[1], "*."))
 
-      context_properties[[i]] %>% select(dplyr::any_of(c("find", "value", "description"))) %>%
+      writeLines("\n\nThe following values exist for this context:\n")
+
+      context_properties[[i]] %>% dplyr::select(dplyr::any_of(c("find", "value", "description")))  %>%
         my_kable_styling() %>%
         writeLines()
     }
@@ -635,7 +637,7 @@ for(trait in traits_categorical) {
     sprintf("We aligned the variable called `%s`in the data you supplied with the trait `%s` in the AusTraits database.\n\nThe contributed data has the following properties:", transforms$var_in, trait),
     "",
     sprintf("- **standardised name**: %s", trait ),
-    sprintf("- **standardised description**: %s", definitions$elements[[trait]]$description ),
+    sprintf("- **standardised description**: %s", elements$description ),
     sprintf("- **label**: %s", elements$label ),
     sprintf("- **records**: %s in this study (of %s in AusTraits)", data_trait_study %>% nrow(), data_trait_all %>% nrow() ),
     "", 
