@@ -37,9 +37,9 @@ dataset:
     data %>% 
       mutate(
         site = "University of Western Sydney",
-        Date = Date %>% dmy()
+        Date = Date %>% dmy(),
+        across(c("Cond (mol m-2 s-1)"), ~na_if(.x,0))
       ) %>% 
-      mutate_at(c("Cond (mol m-2 s-1)"), ~na_if(.,0)) %>% 
       subset(Day < 88) %>% 
       arrange(Potnum, Day) %>%
       group_by(Potnum, Temp, CO2, Water) %>%

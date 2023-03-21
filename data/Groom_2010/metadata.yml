@@ -56,11 +56,11 @@ dataset:
                             0, seed_dry_mass_mg), 
         `P_content_mg_g-1` = if_else(source %in% c("Kuo_1982","Denton_2007",
                             "Milberg_1998","Milberg_1997","Hocking_1982","Hocking_1986"),
-                            0, `P_content_mg_g-1`)
+                            0, `P_content_mg_g-1`),
+        across(c(`seed_dry_mass_mg`,`P_content_mg_g-1`), ~na_if(.x, 0))
       ) %>%
-      mutate_at(vars(`seed_dry_mass_mg`,`P_content_mg_g-1`), ~na_if(.,0)) %>%
       group_by(species) %>%
-        mutate_at(vars(`fire_response`, `serotiny`), replace_duplicates_with_NA) %>%
+        mutate(across(c(`fire_response`, `serotiny`), replace_duplicates_with_NA)) %>%
       ungroup()
   '
   collection_date: unknown/2010

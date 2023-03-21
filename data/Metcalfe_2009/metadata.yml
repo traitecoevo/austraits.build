@@ -62,7 +62,8 @@ dataset:
       ) %>%
       move_values_to_new_trait(
         "Growth_form", "stem_growth_habit", "scrambler", "scrambler", "climber"
-      )
+      ) %>%      
+      mutate(across(c(Fruit_type, Growth_form), ~na_if(.x,"")))
 '
   collection_date: 2005/2005
   taxon_name: species_name
@@ -626,6 +627,9 @@ substitutions:
 - trait_name: pollination_syndrome
   find: hymenoptera (bees)
   replace: bee
+- trait_name: pollination_syndrome
+  find: none
+  replace: .na
 - trait_name: seed_longevity_categorical
   find: short-lived (weeks)
   replace: transient

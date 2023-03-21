@@ -37,7 +37,7 @@ dataset:
       distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`, `Conserved R+`, `Conserved S+`) %>%
   group_by(`species records`, Ecosystem) %>%
     mutate(
-      across(c(`R+`,`S+`,`resp.type`), ~na_if(., "X")),
+      across(c(`R+`,`S+`,`resp.type`), ~na_if(.x, "X")),
       `R+` = paste(`R+`, collapse = " "),
       `S+` = paste(`S+`, collapse = " "),
       `resp.type` = paste(`resp.type`, collapse = " ")
@@ -49,9 +49,7 @@ dataset:
     `S+` = str_replace(`S+`, "no NA", "no"),
     `S+` = ifelse(`S+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `S+`),
     storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA),
-    resp.type = resp.type %>% na_if(.,"NA"),
-    `R+` = `R+` %>% na_if(.,"NA"),
-    `S+` = `S+` %>% na_if(.,"NA")
+    across(c(`R+`,`S+`,`resp.type`), ~na_if(.x,"NA"))
     )
   '
   collection_date: unknown/2015

@@ -173,8 +173,8 @@ traits:
       type: numeric
       units: g/g
       label: Bark ash content per dry mass
-      allowed_values_min: 0.01
-      allowed_values_max: 100.0
+      allowed_values_min: 0.0001
+      allowed_values_max: 1.0
     bark_cellulose_per_dry_mass:
       description: Bark cellulose per unit bark dry mass
       type: numeric
@@ -320,8 +320,8 @@ traits:
       type: numeric
       units: g/g
       label: Percentage of N accounted for by Rubisco
-      allowed_values_min: 5
-      allowed_values_max: 50
+      allowed_values_min: 0.01
+      allowed_values_max: 0.50
     leaf_sclerenchyma_P_per_fresh_mass:
       description: P content of sclerenchyma cells
       type: numeric
@@ -341,8 +341,8 @@ traits:
       type: numeric
       units: g/g
       label: Percentage of N accounted for by thylakoid proteins
-      allowed_values_min: 5
-      allowed_values_max: 30
+      allowed_values_min: 0.01
+      allowed_values_max: 0.30
     leaf_chlorophyll_per_area:
       description: Sum of chlorophyll A and B per leaf area
       type: numeric
@@ -742,8 +742,8 @@ traits:
       type: numeric
       units: g/g
       label: Proportion of fuel that was consumed by fire
-      allowed_values_min: 1
-      allowed_values_max: 100
+      allowed_values_min: .01
+      allowed_values_max: 1
     fire_rate_of_spread:
       description: Rate of spread. How fast the fire moves across the landscape.
       type: numeric
@@ -1251,12 +1251,19 @@ traits:
       type: categorical
       label: Range of fruiting time
     fire_time_from_fire_to_fruit:
-      description: Elapsed time from fire to fruiting
+      description: The time interval from a fire until a plant produces a mature fruit.
       type: numeric
       units: mo
-      label: Elapsed time from fire to fruiting
+      label: Time from fire to fruiting
       allowed_values_min: 1
-      allowed_values_max: 500
+      allowed_values_max: 500    
+    fire_time_from_fire_to_50_percent_fruit:
+      description: The time interval from a fire until 50% of the individuals in a population produce mature fruit.
+      type: numeric
+      units: mo
+      label: Time from fire until 50% of individuals are fruiting
+      allowed_values_min: 1
+      allowed_values_max: 500   
     leaf_fluorescence_fv_over_fm:
       description: Chlorophyll fluorescence measurement that indicates whether plant stress affects photo-system II in a dark adapted state
       type: numeric
@@ -1476,8 +1483,8 @@ traits:
       type: numeric
       units: g/g
       label: Leaf ash content per dry mass
-      allowed_values_min: 0.01
-      allowed_values_max: 100.0
+      allowed_values_min: 0.0001
+      allowed_values_max: 1.0
     leaf_Al_per_dry_mass:
       description: Leaf aluminium (Al) content per unit leaf dry mass
       type: numeric
@@ -1721,8 +1728,8 @@ traits:
       type: numeric
       units: MPa
       label: Leaf hydraulic vulnerability
-      allowed_values_min: .001
-      allowed_values_max: 40
+      allowed_values_min: -40.0
+      allowed_values_max: -0.001
     leaf_K_per_area:
       description: Leaf potassium (K) content per unit leaf area
       type: numeric
@@ -2104,8 +2111,8 @@ traits:
       type: numeric
       units: MPa
       label: Leaf turgor loss point
-      allowed_values_min: .01
-      allowed_values_max: 100
+      allowed_values_min: -100
+      allowed_values_max: -.01
     leaf_relative_water_content_at_turgor_loss_point:
       description: Ratio of water in a fresh leaf to water in a leaf at turgor loss; calculated from a pressure-volume curve.
       type: numeric
@@ -2418,10 +2425,10 @@ traits:
         not_parasitic: In the context of this trait, a plant that does not acquire energy, mineral nutrition, and/or water via haustoria connected to another plant. It can include species that form a symbiosis, including a parasitic interaction, with a fungal partner. 
         root_parasitic: Parasitic plant whose haustoria penetrate the root of a host plant.
         stem_parasitic: Parasitic plant whose haustoria penetrate the stem of a host plant.
-    plant_energy_aquisition_strategy:
+    plant_energy_acquisition_strategy:
       description: Trait indicating non-photosynthetic strategies plants use to acquire energy.
       type: categorical
-      label: Plant energy aquisition strategy
+      label: Plant energy acquisition strategy
       allowed_values_levels:
         saprophyte: Plant that acquires nutrients from decaying matter.
     bark_photosynthetic_status:
@@ -2613,34 +2620,53 @@ traits:
       allowed_values_max: 4
     pollination_syndrome:
       description: Pollination syndrome
-      notes: Specific animal taxa or abiotic forces that are the plant's primary pollinators (pollen vectors), generally classified based on suites of floral traits. // Specific [NCIT:C38024] animal taxa [NCIT:C25341] or abiotic forces that are the plant's primary pollinators (pollen vectors), generally classified based on suites of floral traits (floral phenotype [NCIT:C16977]).
+      notes: For a given taxon, the biotic vectors (including explicit taxa) or abiotic mechanisms that are most likely to pollinate its flowers, based on the taxon's flower morphology.
       type: categorical
       label: Pollination syndrome
       allowed_values_levels:
-        abiotic: Pollination occurs through wind, water, or collision of free-floating particles
-        animal: Generic catch-all for any form of animal pollination; change to biotic
-        bat: Bat-pollinated
-        bee: Bee-pollinated
-        beetle: Beetle-pollinated
-        bird: Bird-pollinated
-        butterfly: Butterfly-pollinated
-        fly: Fly-pollinated
-        insect: Insect-pollinated, type of insect not specified
-        moth: Moth-pollinated
-        none: Spore-producing plants
-        vertebrate: Vertebrate-pollinated, broadly defined
-        wind: wind-pollinated
-        pollination_rare: plants mostly reproduce through vegetative spread and flowering is rare
+        abiotic: Floral syndrome indicates pollination occurs through wind, water, or collision of free-floating particles.
+        biotic: Floral syndrome suggests flowers are pollinated by a biotic agent.
+        animal: Floral syndrome suggests flowers are animal-pollinated.
+        bat: Floral syndrome suggests flowers are bat-pollinated.
+        bee: Floral syndrome suggests flowers are bee-pollinated.
+        beetle: Floral syndrome suggests flowers are beetle-pollinated.
+        bird: Floral syndrome suggests flowers are bird-pollinated.
+        butterfly: Floral syndrome suggests flowers are butterfly-pollinated.
+        fly: Floral syndrome suggests flowers are fly-pollinated.
+        insect: Floral syndrome suggests flowers are insect-pollinated, type of insect not specified.
+        mammal: Floral syndrome suggests flowers are mammal-pollinated.
+        moth: Floral syndrome suggests flowers are moth-pollinated.
+        thrip: Floral syndrome suggests flowers are thrip-pollinated.
+        vertebrate: Floral syndrome suggests flowers are vertebrate-pollinated (bats, birds, mammals or lizards).
+        wasp: Floral syndrome suggests flowers are wasp-pollinated.
+        water: Floral syndrome suggests flowers are water-pollinated.
+        wind: Floral syndrome suggests flowers are wind-pollinated.
+        self: Floral syndrome suggests flowers are primarily self-pollinating.
+        pollination_rare: Plants mostly reproduce through vegetative spread and flowering is rare.
     pollination_system:
-      description: Pollination system
-      notes: 
+      description: For a given taxon, the biotic vectors (including explicit taxa) or abiotic mechanisms that are most likely to pollinate its flowers, based on explicit field studies of pollination in the taxon's native range (preferred) or else a combination of possible pollinators observed visiting a taxon's flowers and the taxon's flower morphology.
       type: categorical
       label: Pollination system
       allowed_values_levels:
-        abiotic: Taxa use nonliving methods such as wind and water for pollen transfer
-        biotic_unspecialised: Taxa use living methods for pollen transfer, but do not have a specialist pollinator
-        biotic_specialised: Taxa depend upon a specialist pollinator for pollen transfer
-        self_pollination: Flowers are self-pollinated or pollinated by another flower on the same plant
+        abiotic: Observations indicate pollination occurs through wind, water, or collision of free-floating particles.
+        biotic_unspecialised: Taxa are pollinated by a biotic agent, but do not have a specialist pollinator.
+        biotic_specialised: Taxa depend upon a specialist pollinator for pollen transfer.
+        animal: Flowers are observed to be animal-pollinated.
+        bat: Flowers are observed to be bat-pollinated.
+        bee: Flowers are observed to be bee-pollinated.
+        beetle: Flowers are observed to be beetle-pollinated.
+        bird: Flowers are observed to be bird-pollinated.
+        butterfly: Flowers are observed to be butterfly-pollinated.
+        fly: Flowers are observed to be fly-pollinated.
+        insect: Flowers are observed to be insect-pollinated, type of insect not specified.
+        mammal: Flowers are observed to be mammal-pollinated.
+        moth: Flowers are observed to be moth-pollinated.
+        thrip: Flowers are observed to be thrip-pollinated.
+        vertebrate: Flowers are observed to be vertebrate-pollinated (bats, birds, mammals or lizards).
+        wasp: Flowers are observed to be wasp-pollinated.
+        water: Flowers are observed to be water-pollinated.
+        wind: Flowers are observed to be wind-pollinated.
+        self: Flowers are self-pollinated.
     bud_bank_location:
       description: Location of resprouting buds following a fire. The trait `vegetative_regeneration_or_reproduction_strategy` captures the explicit tissue types that  provides a more detailed list of species' ability to regenerate vegetatively and their bud locations. See Pausus, Lamont et al. 2018, doi.org/10.1111/nph.14982 for trait values used and detailed desciptions of recolonization ability and level of fire protection provided by each regeneration strategy. See also the trait `storage_organ`.
       type: categorical
@@ -3162,8 +3188,8 @@ traits:
       type: numeric
       units: g/g
       label: Senesced leaf carbon (C) content per unit leaf dry mass
-      allowed_values_min: 10.0
-      allowed_values_max: 100.0
+      allowed_values_min: 0.01
+      allowed_values_max: 1.0
     leaf_senesced_Ca_per_dry_mass:
       description: Senesced leaf calcium (Ca) content per unit leaf dry mass
       type: numeric

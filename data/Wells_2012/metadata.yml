@@ -68,9 +68,9 @@ dataset:
       leaf_vs_leaflet = case_when(
         `L1Lflt2` == "1" ~ "measurements made on leaves",
         `L1Lflt2` == "2" ~ "measurements made on leaflets"
-      )                       
-    ) %>% 
-        mutate_at(vars(`LA`,`LtLeaf`,`LMA`,`LWC`), ~na_if(.,0)) %>%
+      ),
+      across(c(`LA`,`LtLeaf`,`LMA`,`LWC`), ~na_if(.x, 0))
+    ) %>%
         bind_rows(seedling_traits) %>%
         bind_rows(adult_traits) %>%
         mutate(
@@ -1015,6 +1015,9 @@ substitutions:
 - trait_name: pollination_syndrome
   find: butterflies
   replace: butterfly
+- trait_name: pollination_syndrome
+  find: none
+  replace: .na
 - trait_name: plant_height
   find: 0.4 - 53m
   replace: 53
