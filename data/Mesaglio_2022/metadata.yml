@@ -21,8 +21,8 @@ dataset:
     data %>% 
       mutate(
         location_name = "Duck River",
-        year2 = stringr::str_replace(Year, "/", "-"),
-        Notes = if_else(is.na(Notes), "normal flowering", Notes),
+        Year2 = Year,
+        Notes = if_else(is.na(Notes), "widespread flowering", Notes),
         month_start = match(`Month start`, month.name),
         month_end = match(`Month end`, month.name),
         flowering_time = case_when(
@@ -35,7 +35,7 @@ dataset:
         )
       )
   '
-  collection_date: year2
+  collection_date: Year
   taxon_name: canonical_name
   location_name: location_name
   description: A comprehensive biodiversity survey of Wategora Reserve and Everley
@@ -76,17 +76,18 @@ locations:
       of Cumberland Council. It is in a highly urbanised area, and is surrounded by
       sporting fields, a golf course, and industrial estates and commercial properties.
 contexts:
-- context_property: spot flowering
+- context_property: flowering extent
   category: temporal
   var_in: Notes
   values:
   - value: spot flowering
-    description: Plants noted as spot flowering.
-  - value: normal flowering
     description: Plants noted as normal flowering, as opposed to spot flowering.
+    description: Just a few individuals in the population flowering.
+  - value: widespread flowering
+    description: Many to all individuals in the population flowering.
 - context_property: sampling year
   category: temporal
-  var_in: Year
+  var_in: Year2
   values:
   - value: 2020
     description: Flowering time observed in year 2020.
@@ -124,6 +125,18 @@ traits:
     but otherwise did not list flowering times for 2022 here due to conducting far
     fewer and more inconsistent (timewise) surveys during this year compared to 2021.
 substitutions: .na
-taxonomic_updates: .na
+taxonomic_updates:
+- find: Hippeastrum hybrid
+  replace: Hippeastrum x
+  reason: Manual alignment to genus level taxon (E. Wenk, 2023-03-23)
+  taxonomic_resolution: genus
+- find: Taraxacum officinale F.H.Wigg.
+  replace: Taraxacum officinale
+  reason: Manual alignment to APC accepted taxon (E. Wenk, 2023-03-23)
+  taxonomic_resolution: Species
+- find: Freesia hybrid
+  replace: Freesia x
+  reason: Manual alignment to genus level taxon (E. Wenk, 2023-03-23)
+  taxonomic_resolution: genus
 exclude_observations: .na
 questions: .na
