@@ -99,7 +99,7 @@ library(kableExtra)
 my_kable_styling <- util_kable_styling_html
 
 definitions <- austraits$definitions
-data_study <- extract_dataset(austraits, dataset_id)
+data_study <- extract_dataset(austraits, "vanderMoezel_1987")
 metadata <- read_metadata(file.path("data", dataset_id, "metadata.yml"))
 schema <- austraits$schema
 
@@ -616,7 +616,7 @@ for(trait in traits_categorical) {
  
   transforms <- metadata$traits %>% util_list_to_df2() %>% filter(trait_name == trait)
   
-  if(is.na(metadata$substitutions)) {
+  if(is.na(metadata$substitutions[1])) {
     substitutions_for_trait <- tibble
   } else {
     substitutions_for_trait <- metadata$substitutions %>% util_list_to_df2() %>% filter(trait_name == trait)
