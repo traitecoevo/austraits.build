@@ -14,20 +14,25 @@ contributors:
   data_collectors:
   - last_name: van der Moezel
     given_name: Paul
-    ORCID: 
-    affiliation: 
+    ORCID:
+    affiliation:
   - last_name: Loneragan
     given_name: William
-    ORCID: 
-    affiliation: 
+    ORCID:
+    affiliation:
   - last_name: Bell
     given_name: David
-    ORCID: 
-    affiliation: 
+    ORCID:
+    affiliation:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>% 
+      mutate(
+        post_fire_recruitment = if_else(fire_response == "Seed", "post_fire_recruitment", NA_character_),
+        reproductive_maturity = if_else(fire_response == "Seed", juvenile_period, NA_character_),
+        reproductive_maturity_secondary_after_fire = if_else(fire_response == "Sprout", juvenile_period, NA_character_))'
   collection_date: '1981'
   taxon_name: species
   location_name: site
@@ -38,7 +43,7 @@ dataset:
   sampling_strategy: Twenty-six permanently marked 20 m x 10 m plots were established
     in Northern Sandplain shrublands near Badgingarra, Western Australia (30°16'S,
     115°26'E). The sites were representative of a range of topographic sites and ages-since-last-fire.
-    Each site was initially categorized as lateritic upland or deep sand slope as 
+    Each site was initially categorized as lateritic upland or deep sand slope as
     these edaphic conditions have proved to produce the major floristic differences
     in the vegetation of this region (Bell and Loneragan 1985). The ages of more recently
     burned sites were determined by records of the Western Australian Bush Fire Board.
@@ -53,13 +58,141 @@ locations:
     longitude (deg): 115.433
     latitude (deg): -30.267
     notes: Sites located near Badgingarra, Western Australia. Prior to European settlement,
-      the region probably received fires on a cycle of some 25 years (Bell 1985). Today
-      fire frequencies are higher due to man-caused fires (Bell et al. 1984) and a 
-      controlled-burning regime must be imposed on certain regions under management
-      (Bell and Loneragan 1985). 
+      the region probably received fires on a cycle of some 25 years (Bell 1985).
+      Today fire frequencies are higher due to man-caused fires (Bell et al. 1984)
+      and a controlled-burning regime must be imposed on certain regions under management
+      (Bell and Loneragan 1985).
 contexts: .na
-traits: .na
-substitutions: .na
+traits:
+- var_in: fire_response
+  unit_in: .na
+  trait_name: fire_response
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Post-fire regeneration strategies were determined from recently burnt sites. 
+    Obligate seed regenerating species could be recognized because they initially 
+    have only a single erect stem. These seedlings were clearly differentiated from 
+    resprouting species which tend to be multi-stemmed. Geophytes were classed as 
+    sprouters since they regenerate after fire by producing new shoots from underground 
+    storage organs. 
+- var_in: post_fire_recruitment
+  unit_in: .na
+  trait_name: post_fire_recruitment
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Post-fire regeneration strategies were determined from recently burnt sites. 
+    Obligate seed regenerating species could be recognized because they initially 
+    have only a single erect stem. These seedlings were clearly differentiated from 
+    resprouting species which tend to be multi-stemmed. Geophytes were classed as 
+    sprouters since they regenerate after fire by producing new shoots from underground 
+    storage organs. 
+- var_in: reproductive_maturity
+  unit_in: a
+  trait_name: reproductive_maturity
+  entity_type: population
+  value_type: mode
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire regeneration strategies were determined from recently burnt sites. 
+    The time required for plants to reach reproductive maturity after fire was recorded 
+    for 108 species. Since all species were not present at every site, and sites of
+    one and three years-since-last-fire were not available, the exact number of years
+    to reach reproductive maturity could not be assigned to most species. Many species,
+    therefore, were given values of <2, <4>2, etc. A value of <4>2 means that the 
+    species was seen flowering in a four-year-old site, was not seen flowering in 
+    a two-year-old site and was not recorded in a three-year-old site, so therefore
+    it flowers within three or four years after a fire. 
+- var_in: reproductive_maturity_secondary_after_fire
+  unit_in: a
+  trait_name: reproductive_maturity_secondary_after_fire
+  entity_type: population
+  value_type: mode
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire regeneration strategies were determined from recently burnt sites. 
+    The time required for plants to reach reproductive maturity after fire was recorded 
+    for 108 species. Since all species were not present at every site, and sites of
+    one and three years-since-last-fire were not available, the exact number of years
+    to reach reproductive maturity could not be assigned to most species. Many species,
+    therefore, were given values of <2, <4>2, etc. A value of <4>2 means that the 
+    species was seen flowering in a four-year-old site, was not seen flowering in 
+    a two-year-old site and was not recorded in a three-year-old site, so therefore
+    it flowers within three or four years after a fire. 
+- var_in: flowering_time
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: population
+  value_type: mode
+  basis_of_value: measurement
+  replicates: .na
+  methods: Twenty-six permanently marked 20 m x 10 m plots were established, which 
+    were representative of a range of topographic sites and ages-since-last-fire. 
+    Each site was visited monthly from March 1981 till December 1981 and a list of 
+    species in flower was compiled. As sites were not visited from January to March,
+    flowering times for those months were listed as no flowering; however, flowering
+    may have been present. 
+substitutions:
+- trait_name: fire_response
+  find: Sprout
+  replace: resprouts
+- trait_name: fire_response
+  find: Seed
+  replace: fire_killed
+- trait_name: reproductive_maturity
+  find: '≤2'
+  replace: '--2'
+- trait_name: reproductive_maturity
+  find: '<2'
+  replace: '--1'
+- trait_name: reproductive_maturity
+  find: '≤4'
+  replace: '--4'
+- trait_name: reproductive_maturity
+  find: '≤5'
+  replace: '--5'
+- trait_name: reproductive_maturity
+  find: '≤5>2'
+  replace: '3--5'
+- trait_name: reproductive_maturity
+  find: '<4'
+  replace: '--3'
+- trait_name: reproductive_maturity
+  find: '≤4>2'
+  replace: '3--4'
+- trait_name: reproductive_maturity
+  find: '≤6'
+  replace: '--6'
+- trait_name: reproductive_maturity_secondary_after_fire
+  find: '≤2'
+  replace: '--2'
+- trait_name: reproductive_maturity_secondary_after_fire
+  find: '<2'
+  replace: '--1'
+- trait_name: reproductive_maturity_secondary_after_fire
+  find: '≤4'
+  replace: '--4'
+- trait_name: reproductive_maturity_secondary_after_fire
+  find: '≤5'
+  replace: '--5'
+- trait_name: reproductive_maturity_secondary_after_fire
+  find: '≤5>2'
+  replace: '3--5'
+- trait_name: reproductive_maturity_secondary_after_fire
+  find: '<4>2'
+  replace: 3
+- trait_name: reproductive_maturity_secondary_after_fire
+  find: '<4'
+  replace: '--3'
+- trait_name: reproductive_maturity_secondary_after_fire
+  find: '≤4>2'
+  replace: '3--4'
+- trait_name: reproductive_maturity_secondary_after_fire
+  find: '<5'
+  replace: '--4'
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
