@@ -15,7 +15,7 @@ contributors:
   - last_name: Rumman
     given_name: Rizwana
     ORCID: 0000-0002-8094-5631
-    affiliation: University of Technology, Sydney
+    affiliation: WaterNSW
     additional_role: contact
   austraits_curators: Sophie Yang, Elizabeth Wenk
 dataset:
@@ -23,8 +23,12 @@ dataset:
   custom_R_code:       '
     data %>% 
       mutate(
-        leaf_delta13C = str_extract(delta13C_full, ".+(?=±)"),
-        measurement_error = str_extract(delta13C_full, "(?<=±).+")
+        leaf_D13C = str_extract(D13C_full, ".+(?=±)") %>% as.numeric(),
+        leaf_d13C = (-8-leaf_D13C)/(1 + leaf_D13C/1000),
+        leaf_type = case_when(functional_type %in% c("BIT", "BlT") ~ "broadleaf",
+                              functional_type == "NlT" ~ "needle",
+                              TRUE ~ NA_character_),
+        measurement_error = str_extract(D13C_full, "(?<=±).+")
       )'
   collection_date: 2016/2016
   taxon_name: species
@@ -199,13 +203,21 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
+- var_in: leaf_type
+  unit_in: .na
+  trait_name: leaf_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
 - var_in: calculated_WUEi
   unit_in: umol{CO2}/mol{H2O}
   trait_name: leaf_water_use_efficiency_intrinsic
   entity_type: population
   value_type: mean
-  basis_of_value: measurement
-  replicates: unknown
+  basis_of_value: model_derived
+  replicates: 4--6
   methods: Identical measurements were made of foliar d13C on four to six selected
     individuals of each species, from which D13C was calculated. Mature, healthy,
     upper canopy, sunlit leaves were collected in the wet/dry or summer/winter seasons
@@ -222,12 +234,12 @@ traits:
     ca -25ppth to ca -37ppth with a measurement error (standard deviation) of 0.5ppth.
     Species-mean values (obtained from leaves sampled from four to six individuals)
     for the dominant overstorey species for each SuperSite were calculated for each
-    trait to account for interspecies variability. Discrimination was calculated from
+    trait to account for intraspecific variability. Discrimination was calculated from
     the isotopic ratio of 13C to 12C in leaves as per Farquhar and Richards (1984).
     Leaf intrinsic water-use efficiency (WUEi) was calculated using the species mean
     D13C based on a leaf-scale model of C3 photosynthetic isotope discrimination (Farquhar
-    et al., 1989).
-- var_in: leaf_delta13C
+    et al., 1989) (see manuscript for formula).
+- var_in: leaf_d13C
   unit_in: '{delta}[ppth]'
   trait_name: leaf_delta13C
   entity_type: population
@@ -250,8 +262,9 @@ traits:
     ca -25ppth to ca -37ppth with a measurement error (standard deviation) of 0.5ppth.
     Species-mean values (obtained from leaves sampled from four to six individuals)
     for the dominant overstorey species for each SuperSite were calculated for each
-    trait to account for interspecies variability. Discrimination was calculated from
-    the isotopic ratio of 13C to 12C in leaves as per Farquhar and Richards (1984).
+    trait to account for intraspecific variability. Discrimination was calculated from
+    the isotopic ratio of 13C to 12C in leaves as per Farquhar and Richards (1984)
+    (see manuscript for formula).
 substitutions:
 - trait_name: plant_growth_form
   find: NlT
