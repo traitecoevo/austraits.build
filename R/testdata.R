@@ -525,12 +525,14 @@ dataset_test_worker <-
           info = paste0(f, "-value types")
         )
         
-        if(length(value_type_cols) > 0)
-        expect_isin(
-          data[[value_type_cols]] %>% unique(),
-          schema$value_type$values %>% names,
-          info = paste0(f, "-value types columns")
-        )
+        if(length(value_type_cols) > 0){
+          for(v in value_type_cols)
+            expect_isin(
+              data[[v]] %>% unique(),
+              schema$value_type$values %>% names,
+              info = paste(f, v, "- value types columns")
+            )
+        }
         
         # Substitutions
         if (!is.na(metadata[["substitutions"]][1])) {

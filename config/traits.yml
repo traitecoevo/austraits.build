@@ -648,6 +648,8 @@ traits:
       allowed_values_levels: 
         fire_not_relevant: Plant never affected by fire (for aquatic taxon).
         fire_avoidance_among_rocks: Plants rarely experience fires because their habitat is restricted to rocky outcrops or rock pavement.
+        fire_avoidance_near_water: Plants rarely or never experience fires because their habitat is close to a body of water.
+        fire_avoidance_in_water: Plants rarely or never experience fires because they are aquatic.
     fire_response:
       description: Distinguishes between mature plants that are killed versus resprout. Species where at least 70% of plants resprout following a fire that causes 100% leaf scorch are designated `resprouters`, while those where fewer than 30% of plants resprout are designated as `fire killed`. Species with an intermediate response have a mixed fire response, and are coded as `fire_killed resprouts`. (Gill & Bradstock 1992, Clarke 2015). This trait is narrowly applicable only to taxa that experience fire; see the trait `fire_exposure_level` for trait values related to species whose `fire strategy` is to avoid fire.
       type: categorical
@@ -700,6 +702,22 @@ traits:
         fire_enhanced_flowering: Flowering is enhanced after a fire, with plants flowering more prolifically for the first 1-2 growing seasons following the fire.
         fire_independent_flowering: Flowering is independent of fire, with the magnitude of flowers produced by plants unchanged following a fire.
         fire_suppressed_flowering: Flowering is suppressed or absent after a fire, with plants producing fewer flowers for at least the first 1-2 growing seasons following the fire.
+    plant_influence_on_fire_risk:
+      description: Indication of how the presence of a taxon in a given location changes the risk of fire in that location.
+      type: categorical
+      label: Plants' influence on fire risk
+      allowed_values_levels:
+        fire_risk_decreased: Presence of plant decreases the local fire risk.
+        fire_risk_increased: Presence of plant increases the local fire risk.
+        fire_risk_unchanged: Presence of plant has no effect on the local fire risk.
+    plant_tolerance_fire:
+      description: Classification scheme of plant fire tolerance, indicating morphological characteristics plants use to survive fire. 
+      type: categorical
+      label: Plant fire tolerance strategy
+      allowed_values_levels:
+        fire_retardant: Plants protected from fire by fire retardant in their bark, stems, or other tissues.
+        fire_retardant_bark: Plants protected from fire by fire retardant in their bark.
+        thick_bark: Plants protected from fire by thick bark.
     fire_and_establishing:
       description: Trait capturing post-fire time frame during which species establishes. The selection of trait values does not distinguish between intermediate age and mature vegetation, as this level of detail is rarely provide in datasets.
       type: categorical
@@ -2277,7 +2295,17 @@ traits:
         annual: A plant that lives for up to one year after germinating, completing its life cycle in a single growing season.
         biennial: A plant that lives for up to two years after germinating, requiring two growing seasons to complete its life cycle and dying following the second growing season.
         perennial: A plant that lives for three or more growing seasons, with an exact lifespan that is indeterminate.
-        short_lived_perennial: A perennial whose lifespan is less than approximately five years, with the exact lifespan generally dependent on environmental conditions.
+        short_lived_perennial: A perennial whose lifespan is less than approximately five years, with the exact lifespan generally dependent on environmental conditions.    
+    life_history_ephemeral_class:
+      description: For taxa that display an ephemeral life history, the environmental conditions associated with seed germination and seedling establishment.
+      type: categorical
+      label: Ephemeral life history class
+      allowed_values_levels:
+        disturbance_ephemeral: Ephemeral plant the germinates and establishes following disturbance, but the type of disturbance is not specified.
+        rain_ephemeral: Ephemeral plant that germinates and establishes following rain or flood events.
+        fire_ephemeral: Ephemeral plant that germinates and establishes following fire, where it is unknown if the plant is an obligate or facultative fire ephemeral.
+        fire_ephemeral_facultative: Ephemeral plant that increases its germination and establishment following fire, but can also germinate and establish without fire.
+        fire_ephemeral_obligate: Ephemeral plant that only germinates and establishes following fire.
     lifespan:
       description: Broad categories of plant life span, in years
       type: numeric
@@ -2654,28 +2682,40 @@ traits:
       type: categorical
       label: Location of resprouting buds following a fire.
       allowed_values_levels:
-        apical_buds: Plant resprouts from above-ground apical meristems. Also termed a caudex. Term refers to palm-like plants with aerial buds that resprout, including grass trees, palms, tree ferns, and pandanus.
-        basal_buds: Plant resprouts from its base, with basal stem versus underground buds not distinguished between. Most buds designated as `basal_buds` likely to be resprouts from a lignotuber, but this trait value is used if the dataset reported `basal buds` rather than `basal stem buds` or `lignotuber`.
-        basal_stem_buds: Plants resprout from the base of the stem following a fire. Australian plants with basal stem buds usually have a lignotuber; see the trait `storage_organ`.
-        bud-bearing_root: Root buds produce vertical suckers (from root crown) or adventitious roots following a fire.
+        apical_buds: Plants resprout from above-ground apical meristems. Also termed a caudex. Term refers to palm-like plants with aerial buds that resprout, including grass trees, palms, tree ferns, and pandanus.
+        basal_buds: Plants resprout from its base, with buds originating from stem tissue (e.g. lignotuber) and root tissue (root crown) not distinguished between. Most buds designated as being basal are likely to be resprouts from a lignotuber, but this trait value is used if the dataset reported `basal buds` or `basal burl` rather than `basal stem buds` or `lignotuber`. (Synonym, rootstock)
+        basal_stem_buds: Plants resprout from the base of the stem following a fire. Australian plants with basal stem buds usually have a lignotuber, documented in the trait `storage_organ`.
         epicormic_buds: Plants resprout from the stem or trunk following a fire.
-        rhizome: Plants reprout from a rhizome.
-        stem_buds: Plant resprouts from stem buds (separate to epicormic buds)
-        stem_tuber: Plant resprouts from buds on a stem tuber
-        stolon: Plants resprouts from buds on horizontal branches (stems) growing from the base of the plant.
+        fleshy_underground_organ: Plants resprouts from buds on a fleshy underground organ that is a taproot tuber, bulb, corm, stem tuber, root tuber, or belowground caudex.
+        root_crown: Plants resprout from the root crown, the root tissue at the root-stem transition.
+        bud-bearing_root: Root buds produce vertical suckers (from root crown) or adventitious roots following a fire.
+        rhizome: Plants resprout from buds on a rhizome, where it is not specified if the rhizome is woody or non-woody.
+        rhizome_woody: Plants resprout from buds on a woody rhizome.
+        rhizome_non_woody: Plants resprout from buds on a fleshy rhizome, rhizophore, or fibrous rhizome.
+        stem_buds: Plants resprout from stem buds; this trait value is separate to epicormic buds.
+        stem_tuber: Plants resprout from buds on a stem tuber.        
+        stolon: Horizontal branches (stems) resprout from the base of the plant.
         underground_buds: Plants that resprout from underground organ, but the type of organ isn't specified.
-        none: Plant lacks regenerative buds.
+        none: Plants lack regenerative buds.
     storage_organ:
       description: Storage organ
       type: categorical
       label: Storage organ, either for post-fire regeneration or general energy storage. Trait values include both generic terms and quite specific ones. See Pausus, Lamont et al. 2018, doi.org/10.1111/nph.14982 for trait values used and detailed desciptions of recolonization ability and level of fire protection provided by each regeneration strategy. See also the trait `bud_bank_location`.
       allowed_values_levels:      
-        bulb: Below ground storage organ derived from stem (and sometimes leaf) tissue.
-        fleshy_underground_organ: Plants that use fleshy, generally underground organs (swellings) to regenerate; examples include corms, tubers, bulbs, and caudex
+        bulb: Below ground storage organ derived from stem and usually leaf tissue.
+        corm: Below ground storage organ that is a short, rounded, vertical, fleshy, underground stem.
+        caudex: Swollen stem that usually functions in water storage, although the term can also apply to below ground structures or to swollen roots. 
+        fleshy_underground_organ: Plants that use fleshy, generally underground organs (swellings) to regenerate, but the type of organ is not specified; examples include corms, tubers, bulbs, and caudex.
         lignotuber: Swollen woody structures are located at the transition between the stem base and root crown of woody shrubs, mallees and small trees, and are formed from stem tissues. Buds are located over the entire structure. No colonisation ability.
-        rhizome: Plant has an underground stem; this stem may be woody or non-woody. Rhizomes are both a mechanism for vegetative spread and a strategy to survive fire.
-        storage_organ: Storage organ present, but the type is unknown
-        woody_rootstock_or_lignotuber: Plant that regenerates by resprouting from either a woody rootstock or lignotuber.
+        pseudobulb: An above ground storage organ present in many terrestrial and epiphytic orchids created throough the thickening of the stem between leaf nodes. 
+        rhizome: A type of continually growing or creeping underground stem, but it is not specified if the rhizome is woody or non-woody. 
+        rhizome_woody: A type of continually growing or creeping woody underground stem.
+        rhizome_fleshy: A type of continually growing or creeping fleshy, non-woody underground stem.
+        rhizome_fibrous: A type of continually growing or creeping fibrous, non-woody underground stem.
+        root_tuber: A swollen root the stores nutrients, carbohydrates and water. (Synonym, taproot tuber)
+        stem_tuber: A swollen underground stem that stores nutrients, carbohydrates and water. 
+        storage_organ: Plant has a storage organ, but the type is unknown.
+        tuber: A swollen underground organ that stores nutrients, carbohydrates and water, where it is not specified if the tuber develops from root or stem tissue. 
         no_storage_organ: No storage organ present
     regeneration_non_fire_disturbance:
       description: An indication of whether a plant is able to regenerate from a disturbance other than fire.
@@ -2689,17 +2729,17 @@ traits:
       label: Clonal growth mechanisms
       allowed_values_levels:
         aboveground_clonal: Vegetative buds or plant fragments that can disperse and produce new plants (including axillary buds, bulbils and turions).
-        adventitious_root_buds: Adventitious root buds on main root or lateral roots      
+        adventitious_roots: Adventitious roots can form at nodes on the main roots or aboveground from nodes on stems.      
         bulb: Below ground storage organ derived from stem (and sometimes leaf) tissue, that divides into new individuals.
         belowground_clonal: Plants use an unspecified underground organ for clonal spread.
         corm: Below ground organ derived from stem tissue that can function either for vegetative spread or to regenerate following a disturbance.
-        rhizome: Plant has an underground stem; this stem may be woody or non-woody. Rhizomes are both a mechanism for vegetative spread and a strategy to survive fire.
-        root_buds: Lateral root that produces vertical suckers, adventitious roots       
-        root_tuber: Below ground storage organ derived from root tissue.
-        stem_tuber: Below ground storage organ derived from stem tissue.
-        stolon: Plants having horizontal branches (stems) from the base of the plant that produce new plants from buds at its tip or nodes
+        rhizome: Plant has an underground stem that has stem buds and forms adventitious roots at nodes; this stem may be woody or non-woody. Rhizomes are both a mechanism for vegetative spread and a strategy to survive fire.
+        root_buds: Root buds that produce vertical suckers.       
+        root_tuber: A swollen root that functions as a storage organ and has buds that allow clonal growth. 
+        stem_tuber: A swollen underground stem that functions as a storage organ and has buds that allow clonal growth.
+        stolon: Plants having horizontal branches (stems) from the base of the plant that produce new plants from buds at its tip or nodes.
         viviparous: Plant produces clonal offspring that grow while still attached to the parent plant. 
-        non_clonal: Plant does not display clonal growth
+        non_clonal: Plant does not display clonal growth.
     reproductive_maturity:
       description: Age of plants at reproductive maturity.
       type: numeric
