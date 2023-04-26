@@ -469,7 +469,8 @@ if(nrow(subset(data_study$excluded_data,error!="Missing value")) > 0 ) {
 ```
 
 ```{r, echo=FALSE, message=FALSE}
-traits <- data_study$traits$trait_name %>% unique() %>% sort()
+tmp <- data_study$traits %>% filter(!trait_name %in% c("flowering_time", "fruiting_time")) 
+traits <- tmp$trait_name %>% unique() %>% sort()
 traits_numeric <- traits[util_extract_list_element(traits, definitions, "type") == "numeric"]
 traits_categorical <- traits[util_extract_list_element(traits, definitions, "type") != "numeric"]
 ```
@@ -614,8 +615,7 @@ writeLines(
 for(trait in traits_categorical) {
  
   transforms <- metadata$traits %>% util_list_to_df2() %>% filter(trait_name == trait)
-  
-  if(is.na(metadata$substitutions)) {
+  if(is.na(metadata$substitutions[1])) {
     substitutions_for_trait <- tibble
   } else {
     substitutions_for_trait <- metadata$substitutions %>% util_list_to_df2() %>% filter(trait_name == trait)
