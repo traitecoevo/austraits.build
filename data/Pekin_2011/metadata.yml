@@ -23,7 +23,13 @@ contributors:
   austraits_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code:      data %>% mutate(site_name = "Collis")
+  custom_R_code: '
+    data %>%
+      mutate(
+        site_name = "Collis",
+        fire_response = `Regeneration strategy`
+      )
+  '
   collection_date: 2007/2007
   taxon_name: Species
   location_name: site_name
@@ -102,7 +108,26 @@ traits:
   methods: The life cycle of each species was defined as perennial or annual.
 - var_in: Regeneration strategy
   unit_in: .na
-  trait_name: storage_organ
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Regeneration strategies were assigned according to the dominant method
+    for regenerating after fire as either from (1) fleshy, underground storage organ
+    (including bulbs, corms, rhizomes and tubers), (2) woody rootstock/lignotuber,
+    or (3) seed, which was derived from the database developed by Burrows et al. (2008).
+    Seeders included both obligate seeders as well as those species that primarily
+    regenerate from seed but may also have the potential to resprout. Although the
+    dominant tree species, E. marginata and C. calophylla, in our study sites often
+    regenerate from seed, they can survive and resprout epicormically even after intense
+    fires that result in full canopy scorch (Bell & Koch 1980). Hence, they were excluded
+    from regeneration strategy classification because their ability to survive fires
+    with their above-ground biomass intact is likely to make them insensitive to a
+    depletion of their seed banks.
+- var_in: fire_response
+  unit_in: .na
+  trait_name: fire_response
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -155,15 +180,24 @@ substitutions:
 - trait_name: nitrogen_fixing
   find: 'yes'
   replace: nitrogen_fixer
-- trait_name: storage_organ
+- trait_name: bud_bank_location
   find: fleshy organ
   replace: fleshy_underground_organ
-- trait_name: storage_organ
+- trait_name: bud_bank_location
   find: woody rootstock
-  replace: woody_rootstock_or_lignotuber
-- trait_name: storage_organ
+  replace: basal_buds
+- trait_name: bud_bank_location
   find: seed
   replace: .na
+- trait_name: fire_response
+  find: fleshy organ
+  replace: resprouts
+- trait_name: fire_response
+  find: woody rootstock
+  replace: resprouts
+- trait_name: fire_response
+  find: seed
+  replace: fire_killed
 - trait_name: root_structure
   find: arbuscular mycorrhizal
   replace: arbuscular_mycorrhizal
