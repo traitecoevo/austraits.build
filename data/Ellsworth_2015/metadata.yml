@@ -35,9 +35,13 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:   '
+  custom_R_code: '
     data %>%
-      mutate(Species = stringr::str_replace(Species, "_", " "))
+      mutate(
+        Species = stringr::str_replace(Species, "_", " "),
+        Date = lubridate::parse_date_time(Date, orders = "mdy") %>%
+      format.Date("%Y-%m-%d")
+      )
   '
   collection_date: Date
   taxon_name: Species
@@ -898,6 +902,7 @@ traits:
   value_type: raw
   basis_of_value: measurement
   replicates: 1
+  measurement_remarks: LMA measured on leaf lamina without the petiole.
   methods: All measurements were made on attached, intact leaves at the top of the
     crown or the outer shell of the crown when open-grown, which meant accessing leaves
     from 1 m up to 25 m high (Table 1). For tall species, access to the upper parts
