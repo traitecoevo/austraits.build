@@ -48,8 +48,8 @@ data %>%
 patterns_dispersal <-
   c("(?i)passive", "(?i)ingest", "(?i)moisture", "(?i)water", "(?i)adhesion", "(?i)biotic",
     "(?i)abiotic", "(?i)attach", "(?i)wind", "(?i)gravity", "(?i)unassisted", "(?i)ants", 
-    "(?i)livestock", "(?i)bird", "(?i)ballistic", "(?i)animal", "(?i)fish", "(?i)vivipary", 
-    "(?i)gut", "(?i)brush")
+    "(?i)livestock", "(?i)bird", "(?i)ballistic", "animals \\(ref for genus\\)", "(?i)fish", "(?i)vivipary", 
+    "(?i)gut", "(?i)brush", "(?i)passing")
 
 data_pollination %>% 
   rowwise() %>% 
@@ -64,6 +64,52 @@ data_pollination %>%
   ) %>% 
   distinct(Species, .keep_all = TRUE) %>% 
   select(-pollination_extracted, -seed_dispersal_extracted) -> data_full
+
+data_full %>% 
+  mutate(dispersal_syndrome = seed_dispersal_new,
+         dispersers = seed_dispersal_new,
+         pollination_syndrome = pollination_new) %>% 
+  mutate(dispersal_syndrome = str_replace_all(dispersal_syndrome, "passive", "barochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "ingest", "endozoochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "moisture", "hydrochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "water", "hydrochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "adhesion", "epizoochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "(?<!a)biotic", "zoochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "abiotic", ""),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "attach", "epizoochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "wind", "anemochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "gravity", "barochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "unassisted", "barochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "ants", "myrmecochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "livestock", "zoochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "bird", "zoochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "animals \\(ref for genus\\)", "zoochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "fish", "zoochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "vivipary", "autochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "gut", "endozoochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "brush", "epizoochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "passing", "epizoochory")) %>% 
+  mutate(dispersers = str_replace_all(dispersers, "ingest", "vertebrates"),
+         dispersers = str_replace_all(dispersers, "moisture", "water"),
+         dispersers = str_replace_all(dispersers, "adhesion", ""),
+         dispersers = str_replace_all(dispersers, "(?<!a)biotic", "invertebrates vertebrates"),
+         dispersers = str_replace_all(dispersers, "attach", "vertebrates"),
+         dispersers = str_replace_all(dispersers, "gravity", "passive"),
+         dispersers = str_replace_all(dispersers, "unassisted", "passive"),
+         dispersers = str_replace_all(dispersers, "livestock", "mammals_domestic"),
+         dispersers = str_replace_all(dispersers, "bird", "birds"),
+         dispersers = str_replace_all(dispersers, "animals \\(ref for genus\\)", "invertebrates vertebrates"),
+         dispersers = str_replace_all(dispersers, "vivipary", ""),
+         dispersers = str_replace_all(dispersers, "gut", "vertebrates"),
+         dispersers = str_replace_all(dispersers, "brush", "vertebrates"),
+         dispersers = str_replace_all(dispersers, "passing", "vertebrates")) -> data_final
+
+data_final <-
+  data_final %>% 
+  mutate(dispersal_syndrome = str_squish(dispersal_syndrome),
+         dispersers = str_squish(dispersers),
+         dispersal_syndrome = paste(unique(unlist(strsplit(dispersal_syndrome, split = " "))), collapse = " "),
+         dispersers = paste(unique(unlist(strsplit(dispersers, split = " "))), collapse = " "))
 
 
 # Join max DBH and height to trait data
