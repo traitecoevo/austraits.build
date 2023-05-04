@@ -22,11 +22,13 @@ contributors:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: no
-  custom_R_code:                       '
+  custom_R_code:                           '
     data %>% 
       mutate(
         location_name = "Mt Reynard Plateau",
-        life_history = "perennial"
+        life_history = "perennial",
+        root_woodiness = ifelse(stringr::str_detect(root_morphology, "woody"), "woody_root", NA),
+        across(c(ES, WS, AS), ~na_if(.x, 0))
       )
     '
   collection_date: 2001-01
@@ -38,7 +40,7 @@ dataset:
   basis_of_record: field
   life_stage: adult juvenile
   sampling_strategy: This research was undertaken on the Mt Reynard Plateau within
-    Victoria’s Alpine National Park (Fig. 1). In January 1998, following severe drought,
+    Victoria's Alpine National Park (Fig. 1). In January 1998, following severe drought,
     a wildfire termed the Caledonia Fire had burnt the Mt Reynard Plateau for the
     first time since 1967. Three years later, grassland species were regenerating
     vigorously across the plateau, assisted by summer rainfall close to the estimated
@@ -68,13 +70,25 @@ locations:
     precipitation, MAP (mm): 1100
     description: The area is below the altitudinal tree limit of ~1830 m at this latitude
       (Costin 1970), but most of the plateau is treeless and the vegetation is considered
-      alpine, as local temperatures fall as low as –15°C in winter (Tolsma 2002).
+      alpine, as local temperatures fall as low as -15°C in winter (Tolsma 2002).
       Average daily minimum and maximum temperatures are ~7°C and 22°C respectively
-      in February (summer), and –4°C and 6°C in July (winter) (Tolsma 2002). The vegetation
+      in February (summer), and -4°C and 6°C in July (winter) (Tolsma 2002). The vegetation
       on Mt Reynard comprises low shrublands, heathlands and herb-rich grasslands,
       with herbaceous members of the Asteraceae family making a major contribution
       to the latter.
-contexts: .na
+contexts:
+- context_property: chemical extraction method
+  category: method
+  var_in: method_context
+  values:
+  - value: water extraction
+    description: Chemical extraction for water-soluble carbohydrates, which is fructan
+  - value: ethanol extraction
+    description: Chemical extraction for ethanol-soluble carbohydrates, which are
+      low-molecular-weight sugars
+  - value: amylase extraction
+    description: Chemical extraction for amylase-soluble carbohydrates, which are
+      glucose equivalents
 traits:
 - var_in: growth_form
   unit_in: .na
@@ -84,12 +98,41 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
+- var_in: post_fire_regeneration_strategy
+  unit_in: .na
+  trait_name: fire_response
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
 - var_in: root_morphology
   unit_in: .na
   trait_name: .na
   entity_type: population
   value_type: mode
-  basis_of_value: measurement
+  basis_of_value: expert_score
+  replicates: 3
+  methods: During January 2001 (mid-summer), samples of root tissue were taken from
+    37 perennial monocotyledonous and dicotyledonous grassland species common on the
+    plateau (Table 1), including small shrubs scattered within the grassland. Most
+    species were in flower, allowing accurate identification, and were assumed to
+    be at a similar phenological stage. All samples were taken from an area regenerating
+    after the Caledonia Fire 3 years previously, and so reseeding species were 3 years
+    old or younger, while resprouting species had regenerated from basal or root buds.
+    No plants were more than 30 cm high. Collection of root material occurred between
+    1200 and 1400 hours on days of similar weather condition (sunny, and ~20°C). Three
+    plants of each species were gently levered out of the ground sufficiently to characterise
+    their root morphology and average maximum root diameter. Plants were allocated
+    to four categories of root morphology, based on increasing fleshiness -- (a) strong
+    woody, (b) firm, (c) thin fleshy (soft, ≤3 mm average diameter), and (d) thick
+    fleshy (soft, ≥4 mm average diameter).
+- var_in: root_woodiness
+  unit_in: .na
+  trait_name: woodiness_detailed
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
   replicates: 3
   methods: During January 2001 (mid-summer), samples of root tissue were taken from
     37 perennial monocotyledonous and dicotyledonous grassland species common on the
@@ -124,12 +167,13 @@ traits:
     plants of each species were gently levered out of the ground sufficiently to characterise
     their root morphology and average maximum root diameter.
 - var_in: ES
-  unit_in: g/g
-  trait_name:
+  unit_in: '%'
+  trait_name: root_soluble_sugars_per_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
   replicates: 3
+  method_context: ethanol extraction
   methods: During January 2001 (mid-summer), samples of root tissue were taken from
     37 perennial monocotyledonous and dicotyledonous grassland species common on the
     plateau (Table 1), including small shrubs scattered within the grassland. Most
@@ -141,10 +185,10 @@ traits:
     1200 and 1400 hours on days of similar weather condition (sunny, and ~20°C). Three
     plants of each species were gently levered out of the ground sufficiently to characterise
     their root morphology and average maximum root diameter. Representative pieces
-    of the main roots, 2–3 cm long, were cut as close as possible to the point of
+    of the main roots, 2-3 cm long, were cut as close as possible to the point of
     attachment. The samples from the three plants of each species were pooled, wrapped
-    in aluminium foil, frozen (–10°C) on return from the field (within 2–3 h), then
-    transferred to a –80°C freezer before freeze-drying. ^p Extraction of soluble
+    in aluminium foil, frozen (-10°C) on return from the field (within 2-3 h), then
+    transferred to a -80°C freezer before freeze-drying. ^p Extraction of soluble
     carbohydrates ^p Preliminary analyses using thin-layer chromatography (Chiba and
     Shimomura 1965) and HCl-resorcinol assays (McRary and Slattery 1945) determined
     that soluble carbohydrates in a cross-section of alpine species separated almost
@@ -154,27 +198,28 @@ traits:
     2002). Therefore, a two-stage extraction process was developed. For each species,
     a freeze-dried and coarsely ground subsample of roots of ~200 mg DW was suspended
     in 10 mL of ethanol (80%), and homogenised with an Ultra-Turrax T25 homogeniser
-    at 13–500 rpm. Homogenised suspensions were transferred to screw-top polypropylene
+    at 13-500 rpm. Homogenised suspensions were transferred to screw-top polypropylene
     centrifuge tubes, placed in a 60°C water bath for 15 min with occasional shaking,
     then centrifuged (2250g, 10 min) and the supernatant decanted. The pellet was
     re-extracted in 10 mL of 80% ethanol (60°C, 15 min) and the two supernatants pooled
     as ethanol-soluble carbohydrates (ES). The pellet was then extracted twice in
     10 mL distilled water (95°C, 15 min), centrifuged (2250g, 10 min), and the two
     aqueous supernatants pooled as water-soluble carbohydrates (WS). Both types of
-    extracts were diluted to 20–80 ug mL–1 carbohydrate before analysis. ^p Soluble
+    extracts were diluted to 20-80 ug mL-1 carbohydrate before analysis. ^p Soluble
     carbohydrate analysis ^p Analysis of soluble carbohydrates (ES and WS) was performed
-    according to the phenol–sulfuric acid method (Dubois et al. 1956) modified to
+    according to the phenol-sulfuric acid method (Dubois et al. 1956) modified to
     use 18% (w/v) rather than 5% (w/v) phenol (Buysse and Merckx 1993), a modification
     that gave the same colour yields at 490 nm for pentose and hexose sugars. Samples
     (0.5 mL) were analysed in triplicate and compared with a standard curve produced
-    for 0–100 ug mL–1 glucose at 490 nm.
+    for 0-100 ug mL-1 glucose at 490 nm.
 - var_in: WS
-  unit_in: g/g
-  trait_name:
+  unit_in: '%'
+  trait_name: root_soluble_sugars_per_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
   replicates: 3
+  method_context: water extraction
   methods: During January 2001 (mid-summer), samples of root tissue were taken from
     37 perennial monocotyledonous and dicotyledonous grassland species common on the
     plateau (Table 1), including small shrubs scattered within the grassland. Most
@@ -186,10 +231,10 @@ traits:
     1200 and 1400 hours on days of similar weather condition (sunny, and ~20°C). Three
     plants of each species were gently levered out of the ground sufficiently to characterise
     their root morphology and average maximum root diameter. Representative pieces
-    of the main roots, 2–3 cm long, were cut as close as possible to the point of
+    of the main roots, 2-3 cm long, were cut as close as possible to the point of
     attachment. The samples from the three plants of each species were pooled, wrapped
-    in aluminium foil, frozen (–10°C) on return from the field (within 2–3 h), then
-    transferred to a –80°C freezer before freeze-drying. ^p Extraction of soluble
+    in aluminium foil, frozen (-10°C) on return from the field (within 2-3 h), then
+    transferred to a -80°C freezer before freeze-drying. ^p Extraction of soluble
     carbohydrates ^p Preliminary analyses using thin-layer chromatography (Chiba and
     Shimomura 1965) and HCl-resorcinol assays (McRary and Slattery 1945) determined
     that soluble carbohydrates in a cross-section of alpine species separated almost
@@ -199,27 +244,28 @@ traits:
     2002). Therefore, a two-stage extraction process was developed. For each species,
     a freeze-dried and coarsely ground subsample of roots of ~200 mg DW was suspended
     in 10 mL of ethanol (80%), and homogenised with an Ultra-Turrax T25 homogeniser
-    at 13–500 rpm. Homogenised suspensions were transferred to screw-top polypropylene
+    at 13-500 rpm. Homogenised suspensions were transferred to screw-top polypropylene
     centrifuge tubes, placed in a 60°C water bath for 15 min with occasional shaking,
     then centrifuged (2250g, 10 min) and the supernatant decanted. The pellet was
     re-extracted in 10 mL of 80% ethanol (60°C, 15 min) and the two supernatants pooled
     as ethanol-soluble carbohydrates (ES). The pellet was then extracted twice in
     10 mL distilled water (95°C, 15 min), centrifuged (2250g, 10 min), and the two
     aqueous supernatants pooled as water-soluble carbohydrates (WS). Both types of
-    extracts were diluted to 20–80 ug mL–1 carbohydrate before analysis. ^p Soluble
+    extracts were diluted to 20-80 ug mL-1 carbohydrate before analysis. ^p Soluble
     carbohydrate analysis ^p Analysis of soluble carbohydrates (ES and WS) was performed
-    according to the phenol–sulfuric acid method (Dubois et al. 1956) modified to
+    according to the phenol-sulfuric acid method (Dubois et al. 1956) modified to
     use 18% (w/v) rather than 5% (w/v) phenol (Buysse and Merckx 1993), a modification
     that gave the same colour yields at 490 nm for pentose and hexose sugars. Samples
     (0.5 mL) were analysed in triplicate and compared with a standard curve produced
-    for 0–100 ug mL–1 glucose at 490 nm.
+    for 0-100 ug mL-1 glucose at 490 nm.
 - var_in: AS
-  unit_in: g/g
-  trait_name:
+  unit_in: '%'
+  trait_name: root_soluble_starch_per_mass
   entity_type: population
   value_type: mean
   basis_of_value: measurement
   replicates: 3
+  method_context: amylase extraction
   methods: During January 2001 (mid-summer), samples of root tissue were taken from
     37 perennial monocotyledonous and dicotyledonous grassland species common on the
     plateau (Table 1), including small shrubs scattered within the grassland. Most
@@ -231,10 +277,10 @@ traits:
     1200 and 1400 hours on days of similar weather condition (sunny, and ~20°C). Three
     plants of each species were gently levered out of the ground sufficiently to characterise
     their root morphology and average maximum root diameter. Representative pieces
-    of the main roots, 2–3 cm long, were cut as close as possible to the point of
+    of the main roots, 2-3 cm long, were cut as close as possible to the point of
     attachment. The samples from the three plants of each species were pooled, wrapped
-    in aluminium foil, frozen (–10°C) on return from the field (within 2–3 h), then
-    transferred to a –80°C freezer before freeze-drying. ^p Extraction of soluble
+    in aluminium foil, frozen (-10°C) on return from the field (within 2-3 h), then
+    transferred to a -80°C freezer before freeze-drying. ^p Extraction of soluble
     carbohydrates ^p Preliminary analyses using thin-layer chromatography (Chiba and
     Shimomura 1965) and HCl-resorcinol assays (McRary and Slattery 1945) determined
     that soluble carbohydrates in a cross-section of alpine species separated almost
@@ -244,14 +290,14 @@ traits:
     2002). Therefore, a two-stage extraction process was developed. For each species,
     a freeze-dried and coarsely ground subsample of roots of ~200 mg DW was suspended
     in 10 mL of ethanol (80%), and homogenised with an Ultra-Turrax T25 homogeniser
-    at 13–500 rpm. Homogenised suspensions were transferred to screw-top polypropylene
+    at 13-500 rpm. Homogenised suspensions were transferred to screw-top polypropylene
     centrifuge tubes, placed in a 60°C water bath for 15 min with occasional shaking,
     then centrifuged (2250g, 10 min) and the supernatant decanted. The pellet was
     re-extracted in 10 mL of 80% ethanol (60°C, 15 min) and the two supernatants pooled
     as ethanol-soluble carbohydrates (ES). The pellet was then extracted twice in
     10 mL distilled water (95°C, 15 min), centrifuged (2250g, 10 min), and the two
     aqueous supernatants pooled as water-soluble carbohydrates (WS). Both types of
-    extracts were diluted to 20–80 ug mL–1 carbohydrate before analysis. ^p Starch
+    extracts were diluted to 20-80 ug mL-1 carbohydrate before analysis. ^p Starch
     analysis ^p Material insoluble in ethanol and water was resuspended in 12 mL distilled
     water, heated (121°C, 160 min with occasional shaking) to gelatinise the starch
     (Stitt et al. 1978), cooled and made up to 12 mL with distilled water. Triplicate
@@ -262,12 +308,12 @@ traits:
     no-enzyme controls were also prepared. Samples were incubated (37°C, 120 min)
     then centrifuged (2250g, 10 min), and glucose release was measured with a glucose
     detection kit (Sigma, Kit 510-A) and compared with a standard curve produced for
-    0–100 ug mL–1 glucose. Mean no-enzyme values for each sample were subtracted from
+    0-100 ug mL-1 glucose. Mean no-enzyme values for each sample were subtracted from
     the mean enzyme values to give the amount of glucose liberated from starch as
     amylase-soluble carbohydrate (AS).
 - var_in: WS_AS
-  unit_in: g/g
-  trait_name:
+  unit_in: '%'
+  trait_name: .na
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -283,10 +329,10 @@ traits:
     1200 and 1400 hours on days of similar weather condition (sunny, and ~20°C). Three
     plants of each species were gently levered out of the ground sufficiently to characterise
     their root morphology and average maximum root diameter. Representative pieces
-    of the main roots, 2–3 cm long, were cut as close as possible to the point of
+    of the main roots, 2-3 cm long, were cut as close as possible to the point of
     attachment. The samples from the three plants of each species were pooled, wrapped
-    in aluminium foil, frozen (–10°C) on return from the field (within 2–3 h), then
-    transferred to a –80°C freezer before freeze-drying. ^p Extraction of soluble
+    in aluminium foil, frozen (-10°C) on return from the field (within 2-3 h), then
+    transferred to a -80°C freezer before freeze-drying. ^p Extraction of soluble
     carbohydrates ^p Preliminary analyses using thin-layer chromatography (Chiba and
     Shimomura 1965) and HCl-resorcinol assays (McRary and Slattery 1945) determined
     that soluble carbohydrates in a cross-section of alpine species separated almost
@@ -296,14 +342,14 @@ traits:
     2002). Therefore, a two-stage extraction process was developed. For each species,
     a freeze-dried and coarsely ground subsample of roots of ~200 mg DW was suspended
     in 10 mL of ethanol (80%), and homogenised with an Ultra-Turrax T25 homogeniser
-    at 13–500 rpm. Homogenised suspensions were transferred to screw-top polypropylene
+    at 13-500 rpm. Homogenised suspensions were transferred to screw-top polypropylene
     centrifuge tubes, placed in a 60°C water bath for 15 min with occasional shaking,
     then centrifuged (2250g, 10 min) and the supernatant decanted. The pellet was
     re-extracted in 10 mL of 80% ethanol (60°C, 15 min) and the two supernatants pooled
     as ethanol-soluble carbohydrates (ES). The pellet was then extracted twice in
     10 mL distilled water (95°C, 15 min), centrifuged (2250g, 10 min), and the two
     aqueous supernatants pooled as water-soluble carbohydrates (WS). Both types of
-    extracts were diluted to 20–80 ug mL–1 carbohydrate before analysis. ^p Starch
+    extracts were diluted to 20-80 ug mL-1 carbohydrate before analysis. ^p Starch
     analysis ^p Material insoluble in ethanol and water was resuspended in 12 mL distilled
     water, heated (121°C, 160 min with occasional shaking) to gelatinise the starch
     (Stitt et al. 1978), cooled and made up to 12 mL with distilled water. Triplicate
@@ -314,18 +360,18 @@ traits:
     no-enzyme controls were also prepared. Samples were incubated (37°C, 120 min)
     then centrifuged (2250g, 10 min), and glucose release was measured with a glucose
     detection kit (Sigma, Kit 510-A) and compared with a standard curve produced for
-    0–100 ug mL–1 glucose. Mean no-enzyme values for each sample were subtracted from
+    0-100 ug mL-1 glucose. Mean no-enzyme values for each sample were subtracted from
     the mean enzyme values to give the amount of glucose liberated from starch as
     amylase-soluble carbohydrate (AS). ^p Soluble carbohydrate analysis ^p Analysis
-    of soluble carbohydrates (ES and WS) was performed according to the phenol–sulfuric
+    of soluble carbohydrates (ES and WS) was performed according to the phenol-sulfuric
     acid method (Dubois et al. 1956) modified to use 18% (w/v) rather than 5% (w/v)
     phenol (Buysse and Merckx 1993), a modification that gave the same colour yields
     at 490 nm for pentose and hexose sugars. Samples (0.5 mL) were analysed in triplicate
-    and compared with a standard curve produced for 0–100 ug mL–1 glucose at 490 nm.
+    and compared with a standard curve produced for 0-100 ug mL-1 glucose at 490 nm.
     The sum of WS and AS carbohydrates was calculated, to give the total reserve polysaccharide.
 - var_in: ES_WS_AS
-  unit_in: g/g
-  trait_name:
+  unit_in: '%'
+  trait_name: .na
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -341,10 +387,10 @@ traits:
     1200 and 1400 hours on days of similar weather condition (sunny, and ~20°C). Three
     plants of each species were gently levered out of the ground sufficiently to characterise
     their root morphology and average maximum root diameter. Representative pieces
-    of the main roots, 2–3 cm long, were cut as close as possible to the point of
+    of the main roots, 2-3 cm long, were cut as close as possible to the point of
     attachment. The samples from the three plants of each species were pooled, wrapped
-    in aluminium foil, frozen (–10°C) on return from the field (within 2–3 h), then
-    transferred to a –80°C freezer before freeze-drying. ^p Extraction of soluble
+    in aluminium foil, frozen (-10°C) on return from the field (within 2-3 h), then
+    transferred to a -80°C freezer before freeze-drying. ^p Extraction of soluble
     carbohydrates ^p Preliminary analyses using thin-layer chromatography (Chiba and
     Shimomura 1965) and HCl-resorcinol assays (McRary and Slattery 1945) determined
     that soluble carbohydrates in a cross-section of alpine species separated almost
@@ -354,14 +400,14 @@ traits:
     2002). Therefore, a two-stage extraction process was developed. For each species,
     a freeze-dried and coarsely ground subsample of roots of ~200 mg DW was suspended
     in 10 mL of ethanol (80%), and homogenised with an Ultra-Turrax T25 homogeniser
-    at 13–500 rpm. Homogenised suspensions were transferred to screw-top polypropylene
+    at 13-500 rpm. Homogenised suspensions were transferred to screw-top polypropylene
     centrifuge tubes, placed in a 60°C water bath for 15 min with occasional shaking,
     then centrifuged (2250g, 10 min) and the supernatant decanted. The pellet was
     re-extracted in 10 mL of 80% ethanol (60°C, 15 min) and the two supernatants pooled
     as ethanol-soluble carbohydrates (ES). The pellet was then extracted twice in
     10 mL distilled water (95°C, 15 min), centrifuged (2250g, 10 min), and the two
     aqueous supernatants pooled as water-soluble carbohydrates (WS). Both types of
-    extracts were diluted to 20–80 ug mL–1 carbohydrate before analysis. ^p Starch
+    extracts were diluted to 20-80 ug mL-1 carbohydrate before analysis. ^p Starch
     analysis ^p Material insoluble in ethanol and water was resuspended in 12 mL distilled
     water, heated (121°C, 160 min with occasional shaking) to gelatinise the starch
     (Stitt et al. 1978), cooled and made up to 12 mL with distilled water. Triplicate
@@ -372,14 +418,14 @@ traits:
     no-enzyme controls were also prepared. Samples were incubated (37°C, 120 min)
     then centrifuged (2250g, 10 min), and glucose release was measured with a glucose
     detection kit (Sigma, Kit 510-A) and compared with a standard curve produced for
-    0–100 ug mL–1 glucose. Mean no-enzyme values for each sample were subtracted from
+    0-100 ug mL-1 glucose. Mean no-enzyme values for each sample were subtracted from
     the mean enzyme values to give the amount of glucose liberated from starch as
     amylase-soluble carbohydrate (AS). ^p Soluble carbohydrate analysis ^p Analysis
-    of soluble carbohydrates (ES and WS) was performed according to the phenol–sulfuric
+    of soluble carbohydrates (ES and WS) was performed according to the phenol-sulfuric
     acid method (Dubois et al. 1956) modified to use 18% (w/v) rather than 5% (w/v)
     phenol (Buysse and Merckx 1993), a modification that gave the same colour yields
     at 490 nm for pentose and hexose sugars. Samples (0.5 mL) were analysed in triplicate
-    and compared with a standard curve produced for 0–100 ug mL–1 glucose at 490 nm.
+    and compared with a standard curve produced for 0-100 ug mL-1 glucose at 490 nm.
     The sum of ES, WS and AS carbohydrates was calculated, to give total non-structural
     carbohydrates (NSC).
 - var_in: life_history
@@ -397,6 +443,24 @@ substitutions:
 - trait_name: plant_growth_form
   find: Shrub
   replace: shrub
-taxonomic_updates: .na
+- trait_name: fire_response
+  find: Both
+  replace: partial_resprouting
+- trait_name: fire_response
+  find: Seed
+  replace: fire_killed
+- trait_name: fire_response
+  find: Sprout
+  replace: resprouts
+taxonomic_updates:
+- find: Aciphylla galcialis
+  replace: Aciphylla glacialis
+  reason: Correct typo manually (E. Wenk, 2023-05-04)
+  taxonomic_resolution: Species
+- find: Erigeron nitidus
+  replace: Pappochroma nitidum
+  reason: Align to current APC-accepted name (E. Wenk, 2023-05-04)
+  taxonomic_resolution: Species
 exclude_observations: .na
-questions: .na
+questions:
+  additional_traits: root_fleshiness
