@@ -5,15 +5,16 @@ read_csv("data/Draper_2023/raw/allometric_traits_1.csv") %>%
   filter(!Sex %in% c("J", "I")) %>%
   group_by(Site) %>%
   mutate(
-    `latitude (deg)` = mean(`latitude (deg)`),
-    `longitude (deg)` = mean(`longitude (deg)`),
+    `latitude (deg)` = first(`latitude (deg)`),
+    `longitude (deg)` = first(`longitude (deg)`),
     Date = first(Date)
     ) %>% 
   ungroup() %>% 
   group_by(Site, Sex) %>% 
   mutate(
     `Height (cm)` = max(`Height (cm)`),
-    `Diameter (cm)` = max(`Diameter (cm)`)
+    `Diameter (cm)` = max(`Diameter (cm)`),
+    replicates = n()
   ) %>% 
   ungroup() %>% 
   distinct(.keep_all = TRUE) -> max_height_diameter
@@ -75,7 +76,7 @@ data_full %>%
          dispersers = seed_dispersal_new) %>% 
   mutate(dispersal_syndrome = str_replace_all(dispersal_syndrome, "passive", "barochory"),
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "ingest", "endozoochory"),
-         dispersal_syndrome = str_replace_all(dispersal_syndrome, "moisture", "hydrochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "moisture", "barochory"),
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "water", "hydrochory"),
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "adhesion", "epizoochory"),
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "(?<!a)biotic", "zoochory"),
@@ -89,14 +90,14 @@ data_full %>%
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "bird", "zoochory"),
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "animals \\(ref for genus\\)", "zoochory"),
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "fish", "zoochory"),
-         dispersal_syndrome = str_replace_all(dispersal_syndrome, "vivipary", "autochory"),
+         dispersal_syndrome = str_replace_all(dispersal_syndrome, "vivipary", ""),
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "gut", "endozoochory"),
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "brush", "epizoochory"),
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "passing", "epizoochory")) %>% 
   mutate(dispersers = str_replace_all(dispersers, "ingest", "vertebrates"),
-         dispersers = str_replace_all(dispersers, "moisture", "water"),
+         dispersers = str_replace_all(dispersers, "moisture", "passive"),
          dispersers = str_replace_all(dispersers, "adhesion", ""),
-         dispersers = str_replace_all(dispersers, "(?<!a)biotic", "invertebrates vertebrates"),
+         dispersers = str_replace_all(dispersers, "(?<!a)biotic", "animals"),
          dispersers = str_replace_all(dispersers, "attach", "vertebrates"),
          dispersers = str_replace_all(dispersers, "gravity", "passive"),
          dispersers = str_replace_all(dispersers, "unassisted", "passive"),
@@ -106,7 +107,8 @@ data_full %>%
          dispersers = str_replace_all(dispersers, "vivipary", ""),
          dispersers = str_replace_all(dispersers, "gut", "vertebrates"),
          dispersers = str_replace_all(dispersers, "brush", "vertebrates"),
-         dispersers = str_replace_all(dispersers, "passing", "vertebrates")) -> data_final
+         dispersers = str_replace_all(dispersers, "passing", "vertebrates")) %>% 
+  mutate(dispersal_unit = if_else(str_detect(seed_dispersal_new, "vivipary"), "plant", NA_character_)) -> data_final
 
 data_final <-
   data_final %>% 
