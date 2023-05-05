@@ -110,7 +110,7 @@ data_full %>%
          dispersers = str_replace_all(dispersers, "gut", "vertebrates"),
          dispersers = str_replace_all(dispersers, "brush", "vertebrates"),
          dispersers = str_replace_all(dispersers, "passing", "vertebrates")) %>% 
-  mutate(dispersal_unit = if_else(str_detect(seed_dispersal_new, "vivipary"), "plant", NA_character_)) -> data_final
+  mutate(dispersal_unit = if_else(str_detect(seed_dispersal_new, "vivipary"), "seedling", NA_character_)) -> data_final
 
 data_final <-
   data_final %>% 
