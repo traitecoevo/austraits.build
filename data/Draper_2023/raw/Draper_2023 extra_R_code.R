@@ -97,6 +97,7 @@ data_full %>%
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "passing", "epizoochory")) %>% 
   mutate(dispersers = str_replace_all(dispersers, "ingest", "vertebrates"),
          dispersers = str_replace_all(dispersers, "moisture", "passive"),
+         dispersers = str_replace_all(dispersers, "ballistic", ""),
          dispersers = str_replace_all(dispersers, "adhesion", ""),
          dispersers = str_replace_all(dispersers, "(?<!a)biotic", "animals"),
          dispersers = str_replace_all(dispersers, "attach", "vertebrates"),
