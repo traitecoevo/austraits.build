@@ -17,7 +17,8 @@ read_csv("data/Draper_2023/raw/allometric_traits_1.csv") %>%
     replicates = n()
   ) %>% 
   ungroup() %>% 
-  distinct(.keep_all = TRUE) -> max_height_diameter
+  distinct(.keep_all = TRUE) %>% 
+  mutate(Site = if_else(Site == "Baron'", "Baron", Site)) -> max_height_diameter
 
 
 # Read trait data
