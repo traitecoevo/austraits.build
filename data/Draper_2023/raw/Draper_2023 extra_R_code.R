@@ -2,16 +2,21 @@
 # Extract max height and max DBH from allometric traits
 read_csv("data/Draper_2023/raw/allometric_traits_1.csv") %>%
   rename(`latitude (deg)` = Latitude, `longitude (deg)` = Longitude) %>%
-  filter(Sex != "J") %>%
-  group_by(Site, Sex) %>%
+  filter(!Sex %in% c("J", "I")) %>%
+  group_by(Site) %>%
   mutate(
-    `Height (cm)` = max(`Height (cm)`),
-    `Diameter (cm)` = max(`Diameter (cm)`),
     `latitude (deg)` = mean(`latitude (deg)`),
-    `longitude (deg)` = mean(`latitude (deg)`),
+    `longitude (deg)` = mean(`longitude (deg)`),
     Date = first(Date)
     ) %>% 
-  ungroup() -> max_height_diameter
+  ungroup() %>% 
+  group_by(Site, Sex) %>% 
+  mutate(
+    `Height (cm)` = max(`Height (cm)`),
+    `Diameter (cm)` = max(`Diameter (cm)`)
+  ) %>% 
+  ungroup() %>% 
+  distinct(.keep_all = TRUE) -> max_height_diameter
 
 
 # Read trait data
@@ -67,8 +72,7 @@ data_pollination %>%
 
 data_full %>% 
   mutate(dispersal_syndrome = seed_dispersal_new,
-         dispersers = seed_dispersal_new,
-         pollination_syndrome = pollination_new) %>% 
+         dispersers = seed_dispersal_new) %>% 
   mutate(dispersal_syndrome = str_replace_all(dispersal_syndrome, "passive", "barochory"),
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "ingest", "endozoochory"),
          dispersal_syndrome = str_replace_all(dispersal_syndrome, "moisture", "hydrochory"),
@@ -113,5 +117,9 @@ data_final <-
 
 
 # Join max DBH and height to trait data
+max_height_diameter %>% 
+  mutate(Species = "Pimelea microcephala subsp. microcephala") -> max_height_diameter
 
+full_join(data_final, max_height_diameter, by = "Species") -> data_final
 
+data_final %>% write_csv("data/Draper_2023/data.csv")
