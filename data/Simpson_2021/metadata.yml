@@ -53,6 +53,136 @@ source:
     number: '1'
     pages: 1--10
     doi: 10.1111/j.1442-9993.2012.02364.x
+  original_05:
+    key: Benson_2005
+    bibtype: Article
+    year: 2005
+    author: D. Benson and L. McDougall
+    journal: Cunninghamia
+    title: 'Ecology of Sydney plant species part 10: monocotyledon families Lemnaceae
+      to Zosteraceae'
+    volume: 9
+    number: 1
+    pages: 16--212
+  original_06:
+    key: Brown_2009
+    bibtype: Online
+    year: 2009
+    author: K. L. Brown and K. A. Bettink
+    title: 'Swan Weeds: Management Notes, Florabase—the Western Australian Flora.'
+    publisher: Department of Biodiversity, Conservation and Attractions
+    url: https://florabase.dpaw.wa.gov.au/projects/swanweeds/
+  original_07:
+    key: Setterfield_2005
+    bibtype: Article
+    year: '2005'
+    author: S. A. Setterfield and M. M. Douglas and L. B. Hutley and M. A. Welch
+    journal: Biotropica
+    title: Effects of canopy cover and ground disturbance on establishment of an invasive
+      grass in an Australia savanna
+    volume: '37'
+    pages: 25--31
+    doi: 10.1111/j.1744-7429.2005.03034.x
+  original_08:
+    key: NPWS_2004
+    bibtype: Online
+    year: 2004
+    author: NGH Environmental
+    title: Vegetation Response to Fire Monitoring in Narrawallee Creek Nature Reserve,
+      Conjola and Morton National Parks
+    publisher: NSW National Parks and Wildlife Service
+    url: https://www.environment.nsw.gov.au/resources/nature/UlladullaVegetationResponse.pdf
+  original_09:
+    key: GrassBase_2006
+    bibtype: Online
+    year: 2006
+    author: W. D. Clayton, M. S. Vorontsova, K. T. Harman and H. Williamson
+    title: GrassBase - the online world grass flora.
+    url: http://www.kew.org/data/grasses-db.html
+  original_10:
+    key: Paula_2009
+    bibtype: Article
+    year: '2009'
+    author: S. Paula and M. Arianoutsou and D. Kazanis and Ç Tavsanoglu and F. Lloret
+      and C. Buhk and F. Ojeda and B. Luna and J. M. Moreno and A. Rodrigo and J.
+      M. Espelta and S. Palacio and B. Fernández-Santos and P. M. Fernandes and J.
+      G. Pausas
+    journal: Ecology
+    title: Fire-related traits for plant species of the Mediterranean Basin
+    volume: '90'
+    number: '5'
+    pages: 1420--1420
+    doi: 10.1890/08-1309.1
+    editor: W. K. Michener
+  original_11:
+    key: Cook_2005
+    bibtype: Online
+    year: 2005
+    author: Bruce Cook, Bruce Pengelly, Rainer Schultze-Kraft, Matt Taylor, Stefan
+      Burkart, Juan Andrés Cardoso Arango, Juan José González Guzmán, Kendrick Cox,
+      Chris Jones and Michael Peters
+    title: 'Tropical Forages: An interactive selection tool.'
+    publisher: International Center for Tropical Agriculture (CIAT), Cali, Colombia
+      and International Livestock Research Institute (ILRI), Nairobi, Kenya.
+    url: www.tropicalforages.info
+  original_12:
+    key: Wapstra_2003
+    bibtype: Article
+    year: 2003
+    author: M. Wapstra, B. French and T. Ashlin
+    journal: Tasforests
+    title: Distribution, habitat characteristics and conservation status of the forest
+      wire-grass Ehrharta juncea (R. Br.) Sprengel (Poaceae) in Tasmania
+    volume: 14
+    pages: 77--92
+  original_13:
+    key: Crowley_2007
+    bibtype: Online
+    title: Directory of fire responses of plants in the Tropical Savannas
+    url: www.landmanager.org.au
+  original_14:
+    key: FEIS
+    bibtype: Online
+    title: Fire Effects Information System
+    publisher: U.S. Department of Agriculture, Forest Service, Rocky Mountain Research
+      Station, Missoula Fire Sciences Laboratory
+    url: https://www.feis-crs.org/feis/
+  original_15:
+    key: Walsh_2004
+    bibtype: Article
+    year: 2004
+    author: Neville G. Walsh and Keith L. McDougall
+    journal: Cunninghamia
+    title: Progress in the recovery of the flora of treeless subalpine vegetation
+      in Kosciuszko National Park after the 2003 fires
+    volume: 8
+    number: 4
+    pages: 439--452
+  original_16:
+    key: Tolsma_2002
+    bibtype: Thesis
+    year: 2002
+    author: Arn D. Tolsma
+    title: The effects of fire and grazing on the energy reserves of resprouting plants
+      in Victoria's alpine grasslands
+    type: PhD
+    institution: School of Resource Management, Forestry and Amenity Horticulture,
+      The University of Melbourne
+  original_17:
+    key: ISSG_2000
+    bibtype: Online
+    author: Invasive Species Specialist Group
+    title: Global Invasive Species Database
+    year: 2000
+    url: http://www.iucngisd.org/gisd/
+  original_18:
+    key: Seager_2004
+    bibtype: Article
+    year: 2004
+    author: P. G. Seager, A. J. Willson, and C. Ray
+    journal: Proceedings of the National Malleefowl Forum
+    title: Mallee fires and malleefowl–seeking a balance
+    pages: 76--86
 contributors:
   data_collectors:
   - last_name: Simpson
@@ -64,10 +194,12 @@ contributors:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: no
-  custom_R_code:           '
+  custom_R_code: '
     data %>% 
       mutate(
-        source_id = str_replace(`Citation code`, " ", "_")
+        source_id = str_replace_all(`Citation code`, "(?<=[:alpha:]) ", "_"),
+        source_id = if_else(source_id == "OEH_2004", "NPWS_2004", source_id),
+        source_id = if_else(source_id == "Clayton_2006", "GrassBase_2006", source_id)
       ) %>%
       filter(!source_id %in% c("Pekin_2010", "Moore_2018"))
     '
@@ -237,4 +369,4 @@ taxonomic_updates:
   reason: Manual change to align to APC-accepted genus. (E. Wenk 2023-05-04)
   taxonomic_resolution: Genus
 exclude_observations: .na
-questions: .na  
+questions: .na
