@@ -25,7 +25,6 @@ character_values %>%
   bind_rows(min_values) %>%
   bind_rows(max_values) %>% 
   rename(Taxon = Species) %>%
-  left_join(taxa_in_Austraits) %>%
   group_by(NDat,Taxon,Character,trait_value) %>%
   mutate_at(vars(trait_value),funs(replace(.,duplicated(.),NA))) %>%
   ungroup() %>%
