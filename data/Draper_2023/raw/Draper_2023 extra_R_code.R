@@ -48,7 +48,8 @@ data %>%
   mutate(
     pollination_new = tolower(pollination_new),
     pollination_new = str_replace_all(pollination_new, "buzz", "bee"),
-    pollination_new = str_replace_all(pollination_new, "plant physical contact", "abiotic")
+    pollination_new = str_replace_all(pollination_new, "plant physical contact", "abiotic"),
+    pollination_new = str_replace_all(pollination_new, "ballistic", "insect")
   ) %>% 
   distinct(Species, .keep_all = TRUE) -> data_pollination
 
