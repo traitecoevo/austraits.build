@@ -2,7 +2,7 @@
 # Extract max height and max DBH from allometric traits
 read_csv("data/Draper_2023/raw/allometric_traits_1.csv") %>%
   rename(`latitude (deg)` = Latitude, `longitude (deg)` = Longitude) %>%
-  filter(!Sex %in% c("J", "I")) %>%
+  filter(!Sex %in% c("J")) %>%
   group_by(Site) %>%
   mutate(
     `latitude (deg)` = first(`latitude (deg)`),
