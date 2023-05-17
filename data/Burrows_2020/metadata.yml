@@ -21,12 +21,13 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:           '
+  custom_R_code:             '
    data %>%
     mutate(
       location = "Western Australia",
       taxon_name = stringr::str_replace(`Species Name`, "[:space:]\\(.+", ""),
       taxon_name = stringr::str_replace(taxon_name, "^[:space:]", ""),
+      reproductive_maturity_primary = ifelse(`Response To Fire` %in% c(1,2,3,8), `Months Until First Flowering`, NA),
       seed_storage_location = NA,
       bud_bank_location = NA,
       dispersal_unit = NA,
@@ -129,9 +130,25 @@ traits:
     Malcolm Gill; TAY - Banksia Atlas Taylor & Hopper; UKN - Unknown; BEL - David
     Bell; GWJ - Grant Wardell-Johnson; MUI - Barry Muir; VDM - (1987) J. Royal Soc.
     WA Van Der Moezel
-- var_in: Months Until First Flowering
+- var_in: reproductive_maturity_primary
   unit_in: mo
   trait_name: reproductive_maturity
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: This trait includes data from the `Months Until First Flowering` column
+    for fire-killed species. Since germination does not occur immediately following
+    a fire, these values will be slight overestimates of the age at primary reproductive
+    maturity. The column `Months Until First Flowering Auth` in the data file indicates
+    the researcher or reference that was the source of this information, as follows,
+    LMC - Lachie McCaw; TM - Ted Middelton; RTW - Ray Wills; KA - Ken Atkins; ARA
+    - Tony Annels; NDB - Neil Burrows; AGM - Malcolm Gill; TAY - Banksia Atlas Taylor
+    & Hopper; UKN - Unknown; BEL - David Bell; GWJ - Grant Wardell-Johnson; MUI -
+    Barry Muir; VDM - (1987) J. Royal Soc. WA Van Der Moezel.
+- var_in: Months Until First Flowering
+  unit_in: mo
+  trait_name: fire_time_from_fire_to_flowering
   entity_type: species
   value_type: mean
   basis_of_value: measurement
@@ -144,7 +161,7 @@ traits:
     Barry Muir; VDM - (1987) J. Royal Soc. WA Van Der Moezel
 - var_in: Months Until Peak Flowering
   unit_in: mo
-  trait_name: reproductive_maturity_peak
+  trait_name: reproductive_maturity_time_to_peak
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -157,7 +174,7 @@ traits:
     Barry Muir; VDM - (1987) J. Royal Soc. WA Van Der Moezel
 - var_in: Months To Flowering Decline
   unit_in: mo
-  trait_name: reproductive_maturity_decline
+  trait_name: reproductive_maturity_time_to_decline
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
