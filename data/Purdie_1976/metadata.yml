@@ -18,13 +18,14 @@ contributors:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: no
-  custom_R_code:                                 '
+  custom_R_code:                                       '
     data %>% 
       mutate(
         location_name = "near Canberra",
         life_history = if_else(therophytes == "therophyte", "annual", NA_character_),
         dispersal_syndrome = if_else(dispersers == "wind", "anemochory", NA_character_),
-        dispersal_syndrome = if_else(dispersers == "birds", "zoochory", dispersal_syndrome)
+        dispersal_syndrome = if_else(dispersers == "birds", "zoochory", dispersal_syndrome),
+        reproductive_maturity = time_from_fire_to_flowering
       )'
   collection_date: 1972/1975
   taxon_name: taxon_name
@@ -99,7 +100,15 @@ locations:
       the year, but temperatures vary widely from summer to winter. Soil water is
       usually adequate for plant growth from April to November, but growth is suppressed
       by frequent frosts in most winters.
-contexts: .na
+contexts:
+- context_property: fire response type
+  category: entity_context
+  var_in: entity_context
+  values:
+  - value: resprouting individual
+    description: value is recorded for resprouting individuals
+  - value: seedling regeneration
+    description: value is recorded for seedling regeneration
 traits:
 - var_in: vegetation stratum
   unit_in: .na
@@ -264,7 +273,7 @@ traits:
   methods: unknown
 - var_in: reproductive_maturity_secondary_after_fire
   unit_in: a
-  trait_name: reproductive_maturity_secondary_after_fire
+  trait_name: fire_time_from_fire_to_flowering
   entity_type: species
   value_type: minimum
   basis_of_value: measurement
@@ -307,9 +316,58 @@ traits:
     quadrats were re-examined, and surviving seedlings from the first year populations,
     plus surviving seedlings which had germinated during the second year, were identified
     and recorded. These values are the reported growing season in which flowering
-    and seed-set was first recorded for vegetative regrowth (V) and seedlings (S)
-    in the first three years after burning.
+    and seed-set was first recorded for vegetative regrowth (V) in the first three
+    years after burning.
+  entity_context: resprouting individual
 - var_in: time_from_fire_to_flowering
+  unit_in: a
+  trait_name: fire_time_from_fire_to_flowering
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: Preburn methods ^p Square quadrats with sides 1 -2 m long were set out
+    for sampling the preburn vegetation and for studying vegetative regrowth after
+    burning. Smaller plots 0.6 m square, and nested in one corner of the large quadrats,
+    were used to examine seedling populations. Each quadrat was located where there
+    was a uniform litter cover sufficient to carry a fire, and its position marked
+    with 15 cm long aluminium pegs driven 13 cm into the soil at each corner. At each
+    of the three sites sixty quadrats were set out with a minimum of disturbance to
+    the vegetation and litter. Thirty were located in an area to be experimentally
+    burnt and the remainder in the adjacent control, unburnt area. In November-December
+    1972, each quadrat was examined and the total numbers of individuals (or shoots,
+    for species with underground rhizomes) of all species growing within the plots
+    recorded. ^p Experimental burn treatments ^p The experimental burns at sites A
+    and C, and at site B, were carried out on 2 February and 18 January 1973, respectively,
+    by staff of the C.S.I.R.O. Division of Forest Research, according to their standard
+    procedures for control burning. Because the areas to be burnt were relatively
+    small ( < 1.0 ha), each burn was initiated from a line of ignition points in order
+    to obtain a more uniform treatment. Fire behaviour and weather data were recorded
+    for as long as it took the fires to burn the entire areas in which the quadrats
+    were located. Due to differences in the amount and distribution of fuel, weather
+    conditions and other factors influencing burning, the fire intensities at sites
+    A, B and C differed, being respectively 1834, 827, and 4205 kw/m. As experimental
+    treatments, the burns at sites A and C were more uniform than at site B, where
+    changing wind conditions caused highly erratic fire behaviour. ^p Postburn data
+    collection ^p In burnt areas the large quadrats were examined for regrowth at
+    monthly intervals for the first year after burning, and again at the end of the
+    second year. The total number of plants producing regrowth (or shoots) per species
+    was recorded for each plot, while the times of first appearance of regrowth, flowering
+    and fruiting, and grazing of foliage were noted. In the adjacent unburnt areas
+    all quadrats were examined at the end of one and two years after the burn treatments,
+    and the total number of individuals per species per quadrat recorded. In both
+    burnt and unburnt areas at each site, the small quadrats were examined every second
+    day until the end of the main flush of germination (July), and thereafter weekly
+    until the end of one year after the burn treatments. Each seedling in every quadrat
+    was identified, and the dates of germination and death, and cause of mortality
+    (where determinable) were recorded. At the end of two years after burning, all
+    quadrats were re-examined, and surviving seedlings from the first year populations,
+    plus surviving seedlings which had germinated during the second year, were identified
+    and recorded. These values are the reported growing season in which flowering
+    and seed-set was first recorded for seedlings (S) in the first three years after
+    burning.
+  entity_context: seedling regeneration
+- var_in: reproductive_maturity
   unit_in: a
   trait_name: reproductive_maturity
   entity_type: species
@@ -354,8 +412,8 @@ traits:
     quadrats were re-examined, and surviving seedlings from the first year populations,
     plus surviving seedlings which had germinated during the second year, were identified
     and recorded. These values are the reported growing season in which flowering
-    and seed-set was first recorded for vegetative regrowth (V) and seedlings (S)
-    in the first three years after burning.
+    and seed-set was first recorded for seedlings (S) in the first three years after
+    burning.
 - var_in: dispersers
   unit_in: .na
   trait_name: dispersers
