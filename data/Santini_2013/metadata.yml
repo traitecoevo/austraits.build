@@ -21,10 +21,16 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
-  collection_date: 2010-07-20/2010-07-30
-  taxon_name: species
-  location_name: location
+  custom_R_code:   '
+    data %>%
+      mutate(
+        CollectionDate = CollectionDate %>% dmy(),
+        CollectionDate = ifelse(is.na(CollectionDate),"2010-07-20/2010-07-30", CollectionDate)
+        )
+  '
+  collection_date: CollectionDate
+  taxon_name: Species
+  location_name: Location
   description: Study investigating how mechanical strength, assessed as the modulus
     of elasticity (MOE) and the modulus of rupture (MOR), and density relate to the
     anatomical characteristics of intact mangrove branches from southeast Queensland
@@ -90,26 +96,26 @@ locations:
     salinity (ppt): 44
 contexts: .na
 traits:
-- var_in: fibre wall thickness (um)
+- var_in: Fibre wall thickness (u)
   unit_in: um
   trait_name: .na
-  entity_type: population
-  value_type: mean
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: 5
+  replicates: 1
   methods: To assess the anatomical characteristics of the xylem, we made transverse
     sections of 25 um thickness with a Reichert-Jung sliding microtome (Reichert-Jung,
     Heidelburg, Germany). We photographed the sections using a BX61 microscope (Olympus,
     Tokyo, Japan). From the photographs, we measured 100-200 xylem vessels and 100-200
     fibres for each stem. Fibre wall thickness was calculated as double fibre wall
     thickness dividing the total distance by two.
-- var_in: total vessel lumen area (um2)
-  unit_in: um2
-  trait_name: .na
-  entity_type: population
-  value_type: mean
+- var_in: Vessel diameter (u)
+  unit_in: um
+  trait_name: stem_vessel_diameter
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: 5
+  replicates: 1
   methods: To assess the anatomical characteristics of the xylem, we made transverse
     sections of 25 um thickness with a Reichert-Jung sliding microtome (Reichert-Jung,
     Heidelburg, Germany). We photographed the sections using a BX61 microscope (Olympus,
@@ -117,64 +123,26 @@ traits:
     fibres for each stem. We calculated the total vessel lumen area (XA) considering
     the vessel area (VA) and the vessel density (VD), following Lewis (1992), where
     a and b are the short and the long axes of each vessel. (see manuscript for equations)
-- var_in: branch pith content (%)
-  unit_in: '%'
-  trait_name: .na
-  entity_type: population
-  value_type: mean
-  basis_of_value: measurement
-  replicates: 5
-  methods: For pith and bark measurements, we first smoothed the branch transversal
-    surface with a blade, removing any protrusions. The proportions of pith and bark
-    were determined as the width of the pith and the mean width of the bark (measured
-    at three different points around the branch circumference) divided by the total
-    branch diameter. We measured all xylem and branch anatomical characteristics using
-    Image Pro Plus ver. 5.0.1 (MediaCybernetics, Rockville, MD, USA).
-- var_in: branch bark content (%)
-  unit_in: '%'
-  trait_name: .na
-  entity_type: population
-  value_type: mean
-  basis_of_value: measurement
-  replicates: 5
-  methods: For pith and bark measurements, we first smoothed the branch transversal
-    surface with a blade, removing any protrusions. The proportions of pith and bark
-    were determined as the width of the pith and the mean width of the bark (measured
-    at three different points around the branch circumference) divided by the total
-    branch diameter. We measured all xylem and branch anatomical characteristics using
-    Image Pro Plus ver. 5.0.1 (MediaCybernetics, Rockville, MD, USA).
-- var_in: wood density (g/cm3) - including bark + pith
+- var_in: Wood density (g/cm3)
   unit_in: g/cm3
   trait_name: wood_density
-  entity_type: population
-  value_type: mean
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: 5
+  replicates: 1
   methods: We measured the density of intact branches from the 7 cm long subsamples
     of the collected branches (van Gelder et al. 2006; Onoda et al. 2010). We determined
     the mass of water displaced by the green volume of the intact branches, then dried
     the subsamples in an oven at 60°C for 5 days(until constant weight was attained.
     Finally, we calculated the density of intact branches as the ratio of dry mass
     over green volume following Chave et al. (2006).
-- var_in: modulus of elasticity (MOE) (Mpa)
+- var_in: Flex modulus (MPa)
   unit_in: MPa
   trait_name: xylem_modulus_of_elasticity
-  entity_type: population
-  value_type: mean
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: 5
-  methods: We measured the MOR and the MOE of the intact branches using an electromechanical
-    testing machine (INSTRON 5584, Chicago, IL, USA). The mechanical properties of
-    branches can be described by measuring their MOR and their MOE. The MOR measures
-    the maximum load that branches can resist, depending on their circular cross-sectional
-    area (Gere and Goodno 2009) (see manuscript for equations).
-- var_in: modulus of rupture (MOR) (Mpa)
-  unit_in: MPa
-  trait_name: modulus_of_rupture
-  entity_type: population
-  value_type: mean
-  basis_of_value: measurement
-  replicates: 5
+  replicates: 1
   methods: We measured the MOR and the MOE of the intact branches using an electromechanical
     testing machine (INSTRON 5584, Chicago, IL, USA). The mechanical properties of
     branches can be described by measuring their MOR and their MOE. The MOE indicates
@@ -188,24 +156,20 @@ traits:
     calculate the MOE of xylem tissue (i.e. branches excluding the contributions from
     pith and bark) are also available in the supplementary online material (Methods
     section). (see manuscript for equations)
-- var_in: vessel density
-  unit_in: '{count}/mm2'
-  trait_name: stem_vessel_density
-  entity_type: population
-  value_type: mean
+- var_in: Maximum stress (MPa)
+  unit_in: MPa
+  trait_name: modulus_of_rupture
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: 5
-  methods: To assess the anatomical characteristics of the xylem, we made transverse
-    sections of 25 um thickness with a Reichert-Jung sliding microtome (Reichert-Jung,
-    Heidelburg, Germany). We photographed the sections using a BX61 microscope (Olympus,
-    Tokyo, Japan). From the photographs, we measured 100-200 xylem vessels and 100-200
-    fibres for each stem. We calculated the total vessel lumen area (XA) considering
-    the vessel area (VA) and the vessel density (VD), following Lewis (1992), where
-    a and b are the short and the long axes of each vessel. (see manuscript for equations)
+  replicates: 1
+  methods: We measured the MOR and the MOE of the intact branches using an electromechanical
+    testing machine (INSTRON 5584, Chicago, IL, USA). The mechanical properties of
+    branches can be described by measuring their MOR and their MOE. The MOR measures
+    the maximum load that branches can resist, depending on their circular cross-sectional
+    area (Gere and Goodno 2009) (see manuscript for equations).
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
 questions:
-  additional_traits: The study also collected data for modulus of elasticity (MOE)
-    (Mpa), modulus of rupture (MOR) (Mpa), and vessel density, but there are not yet
-    even species means for (most) of this data.
+  additional_traits: In the future, add data for fibre wall thickness to AusTraits.
