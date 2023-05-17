@@ -855,7 +855,7 @@ traits:
         ballistic: Seeds are launched away from the plant by explosion as soon as
           the seed capsule opens.
         barochory: Diaspores are dispersed without assistance. (Synonyms, gravity,
-          mobile, unassisted)
+          mobile, unassisted, passive)
         chamaechory: Diaspore is dispersed by being rolled along ground surface by
           wind.
         endozoochory: Diaspore is ingested by animals, either intentionally or accidentally,
@@ -882,6 +882,7 @@ traits:
         fruit: Dispersal unit is a fruit.
         seed: Dispersal unit is a seed.
         spore: Dispersal unit is a spore.
+        seedling: Dispersal unit is a seedling. (Synonyms, viviparous)
     dispersers:
       description: 'The taxa [NCIT:C40098] (biotic vectors) and abiotic mechanisms
         [NCIT:C25343] that disperse [OMIT: 0027297] seeds [PO:0009010] and fruit [PO:0009001]
@@ -892,12 +893,15 @@ traits:
       label: Diaspore dispersal agents
       allowed_values_levels:
         indigenous_people: Indigenous people disperse the fruit through traditional
-          practises.
+          practices.
+        abiotic: Fruits are dispersed by unspecified abiotic mechanisms.
         ants: Ants are an important fruit dispersal agent.
+        animals: Animals are an important fruit dispersal agent.
         bats: Bats are an important fruit dispersal agent.
         birds: Birds are an important fruit dispersal agent.
         cassowaries: Cassowaries, in contrast to smaller flying birds, are an important
           fruit dispersal agent.
+        fish: Fish are an important fruit dispersal agent.
         floods: Floods are an important fruit dispersal agent.
         flying_vertebrates: Flying birds and bats are important fruit dispersal agents.
         flying_foxes: Flying foxes are an important fruit dispersal agent.
@@ -905,6 +909,7 @@ traits:
         insects: Insects are an important fruit dispersal agent.
         invertebrates: Invertebrates are an important fruit dispersal agent.
         mammals: Mammals are an important fruit dispersal agent.
+        mammals_domestic: Domesticated ammals are an important fruit dispersal agent.
         non-flying_vertebrates: Mammals and non-flying birds (i.e. cassowary, emu)
           are important fruit dispersal agents.
         passive: There is no special dispersal agent.
@@ -1128,14 +1133,14 @@ traits:
       type: categorical
       label: Post-fire flowering
       allowed_values_levels:
-        fire_dependent_flowering: Plants only flower after a fire, usually within
-          the first 1-2 growing seasons following the fire.
+        fire_dependent_flowering: Plants predominantly flower after a fire, usually within
+          the first 1-4 growing seasons following the fire.
         fire_enhanced_flowering: Flowering is enhanced after a fire, with plants flowering
-          more prolifically for the first 1-2 growing seasons following the fire.
+          more prolifically for the first 1-4 growing seasons following the fire.
         fire_independent_flowering: Flowering is independent of fire, with the magnitude
           of flowers produced by plants unchanged following a fire.
         fire_suppressed_flowering: Flowering is suppressed or absent after a fire,
-          with plants producing fewer flowers for at least the first 1-2 growing seasons
+          with plants producing fewer flowers for at least the first 1-4 growing seasons
           following the fire.
     plant_influence_on_fire_risk:
       description: NA; Indication of how the presence of a taxon in a given location
@@ -2335,7 +2340,21 @@ traits:
       type: categorical
       label: Fruiting time, by month
       comments: Trait keyed as a sequences of 12 Ns (not flowering) and Ys (flowering),
-        representing the 12 months, starting with January.
+        representing the 12 months, starting with January.    	
+    fire_time_from_fire_to_flowering_decline:
+      description: A fire response trait which is the time interval (duration) [PATO:0001309] after a fire [ENVO:01000786] until the individuals [EFO:0000542] of a taxon [NCIT:C40098] in a population  [PCO:0000001] begin to decrease their level of flowering [PO_0007016].
+      type: numeric
+      units: mo
+      label: Time from fire until flowering declines
+      allowed_values_min: 1
+      allowed_values_max: 1000    	
+    fire_time_from_fire_to_peak_flowering:
+      description: A fire response trait which is the time interval (duration) [PATO:0001309] after a fire [ENVO:01000786] until the individuals [EFO:0000542] of a taxon [NCIT:C40098] in a population  [PCO:0000001] reach maximum flowering [PO_0007016] levels.
+      type: numeric
+      units: mo
+      label: Time from fire to peak flowering
+      allowed_values_min: 1
+      allowed_values_max: 1000
     fire_time_from_fire_to_flowering:
       description: The time interval from a fire until a plant begins flowering.
       type: numeric
@@ -4346,6 +4365,13 @@ traits:
         trioecious: Taxa where plants in a population have either hermaphroditic (bisexual)
           flowers, pistillate (female) flowers, or staminate (male) flowers.
         unknown: Inadequate information to assign a sex type.
+    leaf_chlorophyll_index_modified_ND705:
+      description: 'A remote sensing [EnvThes:21762] index [NCIT:C25390] of chlorophyll [CHEBI:28966] absorption [SWEET:procWave/Absorption], which is a ratio [PATO:0001470] that considers the relative reflectance [EnvThes:21580] of different wavelengths off the plant canopy [ENVO:01001242], where a higher value indicates greater chlorophyll absorption. The formula is: (R750-R705)/(R750+R705+2(R445)).'
+      type: numeric
+      units: '{dimensionless}'
+      label: Modified chlorophyll absorption ratio index 705
+      allowed_values_min: 0.1
+      allowed_values_max: 1.0
     modified_NDVI:
       description: 'A remote sensing [EnvThes:21762] index [NCIT:C25390] of whole
         plant [PO:0000003] vegetation status, which is a ratio [PATO:0001470] that
@@ -4753,7 +4779,7 @@ traits:
           lignotuber. They have multiple stems arising at or near ground level and
           regenerate from the lignotuber following fire.
         tree: A tall, woody, perennial plant, usually with a single main trunk, and
-          its leaves predominately elevated above the ground surface.
+          its leaves predominantly elevated above the ground surface.
         graminoid: Herbaceous plant with a grass-like morphology that is within the
           order Poales. Taxa both with and without a tussock form are mapped to this
           term. This term is most frequently applied to three large monocot families,
@@ -4966,9 +4992,11 @@ traits:
       allowed_values_min: 0.001
       allowed_values_max: 130.0
     plant_width:
-      description: A whole plant morphology trait [TO:0000398] which is the larger
-        [NCIT:C49508] width [PATO:0000600] dimension of a plant canopy [ENVO:01001242].;
-        Longest width dimension of a plant's vegetative canopy; orthogonal to its
+      description: A whole plant morphology trait [TO:0000398] which is the maximum
+        [NCIT:C25564] width [PATO:0000600] dimension of a plant canopy [ENVO:01001242] for a taxon [NCIT:C40098] in a given population
+        [PCO:0000001] or location [NCIT:C25341]. This is a plant's larger
+        [NCIT:C49508] width dimension and is orthogonal to its height and breadth.;
+        Maximum width dimension of a plant's vegetative canopy for a taxon in a given location; this is the larger width dimension and is orthogonal to its
         height and breadth.
       type: numeric
       units: m
@@ -5016,6 +5044,7 @@ traits:
           or collision of free-floating particles.
         biotic: Floral syndrome suggests flowers are pollinated by a biotic agent.
         animal: Floral syndrome suggests flowers are animal-pollinated.
+        ballistic: Floral syndrome suggests pollen is launched away from the plant by explosion.
         bat: Floral syndrome suggests flowers are bat-pollinated.
         bee: Floral syndrome suggests flowers are bee-pollinated.
         beetle: Floral syndrome suggests flowers are beetle-pollinated.
@@ -5056,6 +5085,7 @@ traits:
           a specialist pollinator.
         biotic_specialised: Taxa depend upon a specialist pollinator for pollen transfer.
         animal: Flowers are observed to be animal-pollinated.
+        ballistic: Pollen is observed to be launched away from the plant by explosion.
         bat: Flowers are observed to be bat-pollinated.
         bee: Flowers are observed to be bee-pollinated.
         beetle: Flowers are observed to be beetle-pollinated.
@@ -6364,7 +6394,7 @@ traits:
       units: mg/g
       label: Root soluble starch content per unit root dry mass
       allowed_values_min: 0.1
-      allowed_values_max: 100.0
+      allowed_values_max: 500.0
     root_soluble_sugars_per_mass:
       description: The ratio [PATO:0001470] of the mass [PATO:0000125] of sugar [APD:glossary/40106]
         in roots [PO:0009005] to root dry mass, where 'sugar' refers to an informal
@@ -6375,7 +6405,7 @@ traits:
       units: mg/g
       label: Root soluble sugar content per unit root dry mass
       allowed_values_min: 1.0
-      allowed_values_max: 200.0
+      allowed_values_max: 500.0
     leaf_mass_per_area:
       description: A leaf morphology trait [TO:0000748] which is the ratio [PATO:0001470]
         of the leaf dry [PATO:0001824] mass [PATO:0000125] to the leaf [PO:0025034]
