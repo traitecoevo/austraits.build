@@ -37,7 +37,6 @@ dataset:
     data %>% 
       mutate(
         seed_longevity_categorical = `Seed storage`,
-        fire_response_detailed = Fireresponse,
         flowering_time_edited = convert_month_range_vec_to_binary(flowering_time_edited),
         fruiting_time_edited = convert_month_range_vec_to_binary(fruiting_time_edited),
         stem_growth_habit = ifelse(`Life form` == "P", "prostrate", NA),
@@ -96,26 +95,7 @@ traits:
     list.
 - var_in: Fireresponse
   unit_in: .na
-  trait_name: fire_response
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: S=seeder, R=resprouter. r=usually killed but sometimes resprouts, s=usually
-    resprouts but sometimes killed; these may indicate a variable response seen by
-    one observer, or a conflict between different observers (see comments column).
-    When an equal number of references list the species as seeder or resprouter, this
-    column reads as 'S/R' and details are given in the comments cloumn. Ideally fire
-    response should be defined by mortality >70%=seeder, mortality <30%=resprouter
-    [Gill & Bradstock, 1992]. Notes on conflicting or variable regeneration information.
-    May indicate response to various fire intensity levels; level of mortality seen;
-    a variable fire response seen by one observer within the same species. Some species
-    with distinct recordings for both resprouter and seeder have been listed separately
-    as 'fire sensitive/tolerant variety'. See original file in raw data folder for
-    extensive reference list.
-- var_in: fire_response_detailed
-  unit_in: .na
-  trait_name: fire_response_detailed
+  trait_name: resprouting_capacity
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -330,36 +310,21 @@ substitutions:
 - trait_name: reproductive_maturity_secondary_after_fire
   find: <1
   replace: 0--1
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: R
   replace: resprouts
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: Rs
   replace: resprouts fire_killed
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: S
   replace: fire_killed
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: S/R
   replace: partial_resprouting
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: Sr
   replace: partial_resprouting
-- trait_name: fire_response_detailed
-  find: R
-  replace: strong_resprouting
-- trait_name: fire_response_detailed
-  find: Rs
-  replace: intermediate_resprouting
-- trait_name: fire_response_detailed
-  find: S
-  replace: fire_killed
-- trait_name: fire_response_detailed
-  find: S/R
-  replace: strong_resprouting fire_killed
-- trait_name: fire_response_detailed
-  find: Sr
-  replace: weak_resprouting
 - trait_name: plant_growth_form
   find: S
   replace: shrub
