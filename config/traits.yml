@@ -1024,13 +1024,11 @@ traits:
       type: categorical
       label: Fire exposure level
       allowed_values_levels:
-        fire_not_relevant: Plant never affected by fire (for aquatic taxon).
-        fire_avoidance_among_rocks: Plants rarely experience fires because their habitat
-          is restricted to rocky outcrops or rock pavement.
-        fire_avoidance_near_water: Plants rarely or never experience fires because
-          their habitat is close to a body of water.
-        fire_avoidance_in_water: Plants rarely or never experience fires because they
-          are aquatic.
+        aquatic_taxon: Plants rarely or never experience fires because they are aquatic.
+        fire_avoidance_among_rocks: Plants rarely experience fires because their habitat is restricted to rocky outcrops or rock pavement.
+        fire_avoidance_near_water: Plants rarely or never experience fires because their habitat is close to a body of water.
+        fire_avoidance_in_swamp: Plants rarely experience fires because their habitat is usually saturated, but populations can be catastrophically impacted during severe droughts when the swamps dry out.
+        seasonal_fire_avoidance: Plants avoid fire by only have above-ground parts during seasons when fire is rare or absent, but populations can be catastrophically impacted if fire occurs during an atypical season.
     resprouting_capacity:
       description: A fire response trait which indicates whether mature [PATO:0001701]
         plants [PO:0000003] from a taxon [NCIT:C40098] or population [PCO:0000001]
@@ -1046,43 +1044,32 @@ traits:
       type: categorical
       label: Fire response
       allowed_values_levels:
-        fire_killed: Fewer than 30% of plants resprout following 100% leaf scorch.
-        resprouts: More than 70% of plants resprout following 100% leaf scorch.
-        partial_resprouting: Between 30-70% of plants resprout following 100% leaf scorch.
-        no_significant_resprouting_capacity: Plants are rarely killed by a moderate-intensity
-          fire but also do not resprout.
+        fire_killed: Fewer than 30% of plants resprout following a fire with 100% leaf scorch.
+        resprouts: More than 70% of plants resprout following a fire with 100% leaf scorch.
+        partial_resprouting: Between 30-70% of plants resprout following a fire with 100% leaf scorch.
       comments: This trait is narrowly applicable only to taxa that experience fire;
         see the trait `fire_exposure_level` for trait values related to species whose
         strategy is to avoid fire.
     resprouting_capacity_juvenile:
-      description: A fire response trait which indicates whether juvenile [PATO:0001190]
-        plants [PO:0000003] from a taxon [NCIT:C40098] or population [PCO:0000001]
-        are killed or have vegetative meristematic tissue [PO:0006079] (buds [PO:0000055])
-        that resprouts [Cerrado:fire#PlantResprout] following a fire [ENVO:01000786],
-        with fire severity index [EnvThes:22120] an important contextual variable.;
-        Trait indicating whether juvenile individuals of a taxon are killed, resprout,
-        or have a mixed survival response when exposed to fire.
+      description: A fire response trait which indicates whether juvenile [PATO:0001190] plants [PO:0000003] from a taxon [NCIT:C40098] or population [PCO:0000001] are killed or have vegetative meristematic tissue [PO:0006079] (buds [PO:0000055]) that resprouts [Cerrado:fire#PlantResprout] following a fire [ENVO:01000786] with 100% leaf scorch.; Trait indicating whether juvenile phase individuals of a taxon are killed, resprout, or have a mixed survival response when exposed to a fire with 100% leaf scorch.
       type: categorical
       label: Fire response, juvenile plants
       allowed_values_levels:
-        juvenile_fire_killed: Few to no juvenile plants resprout following fire.
+        juvenile_fire_killed: Few to no juvenile plants resprout following fire with 100% leaf scorch.
         juvenile_resprout: More than 50% of juvenile plants survive and resprout following
-          fire.
+          fire with 100% leaf scorch.
         juvenile_moderate_fire_killed: 25-50% of juvenile plants resprout following
-          fire.
-    fire_response_on_maturity:
-      description: A fire response trait which indicates whether the maturity [PATO:0000261]
-        status of plants [PO:0000003] changes following a fire [ENVO:01000786], with
-        plants being killed, surviving and remaining mature [PATO:0001701], or surviving
-        and reverting to juvenile [PATO:0001190].; Trait indicating if a plant remains
-        reproductively mature following a fire or if the plant reverts to a juvenile
-        life stage following a fire.
+          fire with 100% leaf scorch.
+    seedling_establishment_conditions:
+      description: The environmental conditions [ENVO:01000203] under which a taxon [NCIT:C40098] displays seed [PO:0009010] germination [GO:0009845] and seedling establishment [EnvThes:20410], with trait values reflecting successional changes to the vegetation community.; The environmental conditions [ENVO:01000203] under which a taxon's seedlings can establish, with trait values reflecting successional changes to the vegetation community.
+      comments: The selection of trait values does not distinguish between the ability to establish in intermediate age versus mature vegetation, as this level of detail is rarely provided in datasets.
       type: categorical
-      label: Fire response on plant maturity
+      label: Seedling establishment conditions
       allowed_values_levels:
-        remain_mature: Mature plants remain mature following fire.
-        mature_to_juvenile: Mature plants become juvenile following fire.
-        mature_do_not_resprout: Mature plants do not resprout following fire.
+        establish_post_fire: Seedling establishment occurs following fire.
+        establish_post_disturbance: Seedling establishment occurs following disturbances that increase light levels at the ground surface, but the type of disturbance is not documented.
+        establish_anytime: Seedlings can establish immediately following a disturbance and in later years as vegetation ages, right thru to mature and over-mature vegetation
+        establish_intermediate_to_mature_vegetation: Seedlings require some environmental characteristics not found in vegetation straight after fires to establish, for they cannot establish within the first season or two after fire but can establish in older vegetation (including mature to over-mature vegetation). 
     post_fire_recruitment:
       description: A fire response trait which is the magnitude [NCIT:C49158] of seed
         [PO:0009010] germination [GO:0009845] and seedling establishment [EnvThes:20410]
@@ -1091,9 +1078,7 @@ traits:
       type: categorical
       label: Post-fire recruitment
       allowed_values_levels:
-        post_fire_recruitment: Plants that germinate robustly post-fire.
-        post_fire_recruitment_moderate: Plants with a moderate number of seedlings
-          present post-fire.
+        post_fire_recruitment: Plants that germinate post-fire.
         post_fire_recruitment_absent: Plants that do not show increased seeding following
           fire.
     post_fire_flowering:
@@ -1175,7 +1160,7 @@ traits:
       type: numeric
       units: g/g
       label: Fuel consumption by fire
-      allowed_values_min: 1.0
+      allowed_values_min: 0.1
       allowed_values_max: 100.0
       comments: In wildland environments it will be difficult to measure this trait
         on an individual taxon; it will instead be a "community level" trait. Therefore,
@@ -1285,6 +1270,16 @@ traits:
         rain_spring: Plants increase flowering in response to spring rains.
         floods: Plants increase flowering in response to floods.
         fire: Plants increase flowering in response to fires.
+    recruitment_season:
+      description: The season during which seed [PO:0009010] germination [GO:0009845] and seedling establishment [EnvThes:20410] occurs.; The season during which seed germination and seedling establishment occurs.
+      comments: This trait is relevant for a population's fire response.
+      type: categorical
+      label: Seedling recruitment season
+      allowed_values_labels:
+        spring: Seed germination and seedling establishment occurs in spring.
+        summer: Seed germination and seedling establishment occurs in summer.
+        autumn: Seed germination and seedling establishment occurs in autumn.
+        winter: Seed germination and seedling establishment occurs in winter.
     flower_structural_sex_type:
       description: A floral organ morphology trait [TO:0000862] which is the phenotypic
         sex [PATO:0001894] of a flower [PO:0009046], indicating whether individual
@@ -2305,12 +2300,13 @@ traits:
       allowed_values_max: 1000
     fire_time_from_fire_to_flowering:
       description: The time interval from a fire until a plant begins flowering.
+      comments: This trait can include data that documents the time from a fire until either a resprouter or a fire-killed species first begins flowering, as both have important regeneration and conservation implications. Whenever available, a context property should be added to indicate if data are scoring the time from seed germination or post-fire resprouting to the onset of flowering.
       type: numeric
       units: mo
       label: Time from fire to flowering
       allowed_values_min: 1
       allowed_values_max: 500
-    fire_time_from_fire_to_fruit:
+    fire_time_from_fire_to_fruiting:
       description: A fire response trait which is the time interval (duration) [PATO:0001309]
         after a fire [ENVO:01000786] until one individual [EFO:0000542] of a taxon
         [NCIT:C40098] in a population  [PCO:0000001] produces mature [PATO:0001701]
@@ -2321,7 +2317,14 @@ traits:
       label: Time from fire to fruiting
       allowed_values_min: 1.0
       allowed_values_max: 500.0
-    fire_time_from_fire_to_50_percent_fruit:
+    fire_time_from_fire_to_50_percent_flowering:
+      description: A fire response trait which is the time interval (duration) [PATO:0001309] after a fire [ENVO:01000786] until one individual [EFO:0000542] of a taxon [NCIT:C40098] in a population  [PCO:0000001] reaches whole plant flowering stage [PO_0007016].
+      type: numeric
+      units: mo
+      label: Time from fire until 50% of individuals are flowering
+      allowed_values_min: 1.0
+      allowed_values_max: 500.0
+    fire_time_from_fire_to_50_percent_fruiting:
       description: A fire response trait which is the time interval (duration) [PATO:0001309]
         after a fire [ENVO:01000786] until a 50% of the individuals  [EFO:0000542]
         of a taxon [NCIT:C40098] in a population  [PCO:0000001] produce mature [PATO:0001701]
@@ -5276,17 +5279,21 @@ traits:
       description: A fire response trait which is the ratio [PATO:0001470] of the
         count [NCIT:C25463] of stems [PO:0009047] per individual [EFO:0000542] following
         a fire [ENVO:01000786] to the count of stems per individual before the fire,
-        recorded for taxa that have multiple stems emerging from the ground [SWEET:realmSoil/Ground].;
-        Ratio of stem count post-fire to stem count pre-fire at an individual or population
-        level. This trait is appropriate to score for plants that have many stems
-        from the base (shrubs, herbs, graminoids) where the number of stems before
-        and after fire is censused. It is a continuous measure of resprouting strength
-        conditioned on initial size.
+        recorded for taxa that have multiple stems emerging from the ground [SWEET:realmSoil/Ground].; Ratio of stem count post-fire to basal stem count (e.g. grass tillers) pre-fire at an individual or population level. This trait is appropriate to score for plants that have many stems from the base (shrubs, herbs, graminoids) where the number of stems is censused both before and after the fire. It is a continuous measure of resprouting strength conditioned on initial size.
+      comments: This trait will usually be recorded in natural or experimental systems subjected to a controlled burn, where stem counts can be censused both before and after a fire. However, it is appropriate to include data for any plants subjected to fire where the dead stems can still be counted post-fire.
       type: numeric
       units: '{count}/{count}'
-      label: Fire response, stem count ratio
+      label: Post-fire to pre-fire stem ratio
       allowed_values_min: 0.0
-      allowed_values_max: 4.0
+      allowed_values_max: 10.0
+    resprouting_capacity_time_from_germination:
+      description: A fire response trait which is the time interval (duration) [PATO:0001309] from seed germination [GO:0009845] until individuals [EFO:0000542] are able to survive [EnvThes:21064] and resprout [PlantResprout] following a fire where 100% of the leaves [PO:0025034] in the canopy [ENVO:01001242] are scorched.; A fire response trait which is the time from seed germination until individuals are able to survive and resprout following a fire where 100% of the leaves in the canopy are scorched.
+      comments: An essential context property to map for this trait is the population survival metric. For instance, is this trait scored based on the youngest individual to survive a fire or the age at which 50% of individuals survive and resprout following a fire.
+      type: numeric
+      units: a
+      label: Time from seedling germination until individuals survive a fire
+      allowed_values_min: 0.1
+      allowed_values_max: 100.0    
     root_C_per_dry_mass:
       description: The ratio [PATO:0001470] of the mass [PATO:0000125] of carbon [CHEBI:27594]
         in roots [PO:0009005] to root dry mass.
