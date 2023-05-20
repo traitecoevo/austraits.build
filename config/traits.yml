@@ -3145,17 +3145,17 @@ traits:
       allowed_values_levels:
         glabrous: Juvenile phase leaves do not have hairs (trichomes).
         hairy: Juvenile phase leaves have hairs (trichomes).
-    leaf_specific_conductance:
+    leaf_specific_hydraulic_conductance:
       description: A leaf [PO:0025034] water transport [GO:0006833] trait which is
         a measure of the rate [PATO:0000161] of water [CHEBI:15377] movement [NCIT:C37994]
         through a leaf under a specific [NCIT:C38024] driving force [PATO:0001035]
         (water potential [EnvThes:22311] gradient [NCIT:C70693]), normalised to the
         leaf area [PATO:0001323]. It is calculated as the ratio [PATO:0001470] of
-        the water flow rate through the leaf (mmol/s)  to the decrease in water potential
-        across the length of the leaf (MPa), divided by the leaf area (m2).; ks; Measure
+        the water flow rate through the leaf (mmol/s) to the decrease in water potential
+        gradient from the petiole [PO:0020038] to mesophyll [PO:0006070] substomatal cavities (MPa), divided by the leaf area (m2).; ks; Measure
         of how efficiently water is transported through a leaf. It is calculated as
         the ratio of water flow rate through the leaf (mmol/s) to the decrease in
-        water potential along the leaf axis (MPa), divided by the leaf area (1/m2).
+        water potential gradient from the petiole to mesophyll substomatal cavities  (MPa), divided by the leaf area (1/m2).
         As this is a measure of "conductance" not "conductivity" the measurement is
         not normalised to the path length (the leaf length).
       type: numeric
@@ -3765,7 +3765,7 @@ traits:
         rounded: Basal leaf margin is rounded.
         sagittate: Basal leaf margin with two lobes oriented downward, away from apex.
           The petiole attaches in the concave region between the lobes.
-    leaf_specific_conductivity:
+    leaf_specific_hydraulic_conductivity:
       description: A stem [PO:0009047] water transport [GO:0006833] trait which is
         a measure of the rate [PATO:0000161] of water [CHEBI:15377] movement [NCIT:C37994]
         through a stem under a specific [NCIT:C38024] driving force [PATO:0001035]
@@ -3883,7 +3883,7 @@ traits:
       type: numeric
       units: MPa
       label: Leaf turgor loss point
-      allowed_values_min: -100.0
+      allowed_values_min: -5.0
       allowed_values_max: 0.0
     leaf_relative_water_content_at_turgor_loss_point:
       description: A parameter [STATO:0000034] calculated from a pressure-volume curve
@@ -5544,7 +5544,7 @@ traits:
         tolerances/requirements, while this trait focuses on terms associated with
         salinity tolerances/requirements. The trait `plant_tolerance_soil_salinity`
         offers numeric soil salinity levels a taxon can tolerate.
-    sapwood_specific_conductivity:
+    sapwood_specific_hydraulic_conductivity:
       description: A stem [PO:0009047] water transport [GO:0006833] trait which is
         a measure of the rate [PATO:0000161] of water [CHEBI:15377] movement [NCIT:C37994]
         through a stem under a specific [NCIT:C38024] driving force [PATO:0001035]
@@ -5565,7 +5565,7 @@ traits:
       label: Sapwood specific conductivity (Ks)
       allowed_values_min: 0.01
       allowed_values_max: 500.0
-    sapwood_specific_conductivity_theoretical:
+    sapwood_specific_hydraulic_conductivity_theoretical:
       description: A stem [PO:0009047] water transport [GO:0006833] trait which is
         a theoretical [MESH:D008962] measure of the rate [PATO:0000161] of water [CHEBI:15377]
         movement [NCIT:C37994] through a stem under a specific [NCIT:C38024] driving
@@ -5585,7 +5585,7 @@ traits:
       label: Theoretical sapwood specific conductivity (Ks)
       allowed_values_min: 0.05
       allowed_values_max: 5000.0
-    stem_specific_conductivity:
+    stem_specific_hydraulic_conductivity:
       description: A stem [PO:0009047] water transport [GO:0006833] trait which is
         a measure of the rate [PATO:0000161] of water [CHEBI:15377] movement [NCIT:C37994]
         through a stem under a specific [NCIT:C38024] driving force [PATO:0001035]
@@ -6567,12 +6567,23 @@ traits:
         stem length (m).
       type: numeric
       units: 10^6.kg.m/MPa/s
-      label: Hydraulic conductivity (Kh)
+      label: Stem hydraulic conductivity (Kh)
       allowed_values_min: 0.01
       allowed_values_max: 2000.0
       comments: This trait should not be confused with hydraulic conductance (kh),
         which is the ratio of water flow flow rate to the decrease in water potential
-        across the stem segment, but IS NOT normalised to the stem length and has
+        across the stem segment, but IS NOT normalised to the path length and has
+        units kg/MPa/s.
+    root_hydraulic_conductivity:
+      description: A root [PO:0009005] water transport [GO:0006833] trait which is a measure of the rate [PATO:0000161] of water [CHEBI:15377] movement [NCIT:C37994] through a root under a specific [NCIT:C38024] driving force [PATO:0001035] (water potential [EnvThes:22311] gradient [NCIT:C70693]), accounting for the root length [PATO:0000122]. It is calculated as the ratio [PATO:0001470] of the water flow [NCIT:C41141] rate through the root segment (kg/s) to the decrease in water potential across the root segment (MPa), multiplied by the path length measured (m).
+      type: numeric
+      units: 10^6.kg.m/MPa/s
+      label: Root hydraulic conductivity (Kh)
+      allowed_values_min: 0.01
+      allowed_values_max: 2000.0
+      comments: This trait should not be confused with hydraulic conductance (kh),
+        which is the ratio of water flow flow rate to the decrease in water potential
+        across the root segment, but IS NOT normalised to the path length and has
         units kg/MPa/s.
     stem_mass_fraction:
       description: A plant dry mass trait [TO:0000352] which is the ratio [PATO:0001470]
@@ -6809,7 +6820,7 @@ traits:
       units: kPa
       label: Vapor pressure deficit
       allowed_values_min: 0.0
-      allowed_values_max: 5.0
+      allowed_values_max: 8.0
     vegetative_reproduction_ability:
       description: A whole plant [PO:0000003] life history [ECOCORE:00000018] trait
         which is the ability [NCIT:C78209] of individual [EFO:0000542] plants to reproduce
@@ -7101,31 +7112,27 @@ traits:
       allowed_values_min: 1.0
       allowed_values_max: 1.1
     water_potential_midday:
-      description: The shoot system [PO:0009006] water potential [EnvThes:22311] during
-        the heat of the day and assumed to be the plant's daily minimum [NCIT:C25570]
-        water potential.; The water potential of a plant's shoot system during the
-        middle of the day, the time of day when the plant is most water stressed and
-        has the lowest (most negative) water potential.
+      description: TThe average water potential [EnvThes:22311] of a plant's  leaf [PO:0025034] and shoot [PO:0009006] mesophyll [PO:0006070] tissue [CARO:0000043] during maximum midday transpiration [ENVO:02500035] and assumed to be the plant's daily minimum [NCIT:C25570] water potential.; The water potential of a plant's leaf or shoot photosynthetic tissue during maximum midday transpiration, the time of day when the plant is most water stressed and has the lowest (most negative) water potential.
       type: numeric
       units: MPa
       label: Midday water potential
-      allowed_values_min: -10.0
+      allowed_values_min: -20.0
       allowed_values_max: 0.0
     water_potential_predawn:
       description: The shoot system [PO:0009006] water potential [EnvThes:22311] just
-        before sunrise, an index for soil water potential [EnvThes:22283] and representing
+        before sunrise, a proxy for soil water potential [EnvThes:22283] and representing
         the plant's daily maximum [NCIT:C25564] (least negative) water potential.;
-        The water potential of a plant's shoot system just before sunrise, an index
+        The water potential of a plant's shoot system just before sunrise, a proxy
         for soil water potential and the plant's highest (least negative) water potential
         for the day.
       type: numeric
       units: MPa
       label: Pre-dawn water potential
-      allowed_values_min: -8.0
+      allowed_values_min: -20.0
       allowed_values_max: 0.0
       comments: Predawn water potential is often assumed to equal the soil water potential,
         but the plant's water potential does not necessarily equilibrate with soil
-        water potential overnight. It is therefore better considered an "index" of
+        water potential overnight. It is therefore better considered a "proxy" of
         soil water potential.
     leaf_relative_water_content_predawn:
       description: The ratio [PATO:0001470] of the mass [PATO:0000125] of water [CHEBI:15377]
@@ -7149,7 +7156,7 @@ traits:
       type: numeric
       units: MPa
       label: Stem xylem pressure, 50% lost conductivity
-      allowed_values_min: -15.0
+      allowed_values_min: -20.0
       allowed_values_max: 0.0
     water_potential_88percent_lost_conductivity:
       description: The tension [PATO:0002284] (water pressure) (water potential [EnvThes:22311])  in
@@ -7160,7 +7167,7 @@ traits:
       type: numeric
       units: MPa
       label: Stem xylem pressure, 88% lost conductivity
-      allowed_values_min: -15.0
+      allowed_values_min: -20.0
       allowed_values_max: 0.0
     hydraulic_safety_margin_50:
       description: The difference between the minimum [NCIT:C25570] (most negative)
