@@ -1,20 +1,20 @@
-read_csv("data/eFLOWER_Dun_2022/raw/data_raw.csv") %>%
+read_csv("data/eFLOWER_Dun_2022/raw/qry_Lily_Data_AusTraits_2023-05-21.csv") %>%
   subset(!is.na(Character_state)) %>% 
   mutate(trait_value = Character_state) -> character_values
 
-read_csv("data/eFLOWER_Dun_2022/raw/data_raw.csv") %>%
+read_csv("data/eFLOWER_Dun_2022/raw/qry_Lily_Data_AusTraits_2023-05-21.csv") %>%
   subset(!is.na(Value)) %>% 
   subset(is.na(Max)) %>%
   mutate(trait_value = Value) %>%
   mutate(trait_value = as.character(trait_value)) -> mean_values
 
-read_csv("data/eFLOWER_Dun_2022/raw/data_raw.csv") %>%
+read_csv("data/eFLOWER_Dun_2022/raw/qry_Lily_Data_AusTraits_2023-05-21.csv") %>%
   subset(!is.na(Min)) %>% 
   mutate(trait_value = Min) %>%
   mutate(Character = paste0(Character,"_min")) %>%
   mutate(trait_value = as.character(trait_value)) -> min_values
 
-read_csv("data/eFLOWER_Dun_2022/raw/data_raw.csv") %>%
+read_csv("data/eFLOWER_Dun_2022/raw/qry_Lily_Data_AusTraits_2023-05-21.csv") %>%
   subset(!is.na(Max)) %>% 
   mutate(trait_value = Max) %>%
   mutate(Character = paste0(Character,"_max")) %>%
