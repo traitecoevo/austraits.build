@@ -29,6 +29,7 @@ dataset:
       filter(!is.na(taxon_name)) %>%
       filter(str_detect(taxon_name, " ")) %>%
       mutate(
+        trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "semi-orbicular", "orbicular"), trait_value),
         trait_value = ifelse(trait_name == "seed_shape", stringr::str_replace(trait_value, "obovate", "ovoid"), trait_value),
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "widely_lanceolate", "narrowly_ovate"), trait_value),
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "clavate", "spathulate"), trait_value),
@@ -39,10 +40,23 @@ dataset:
   taxon_name: taxon_name
   trait_name: trait_name
   value: trait_value
-  description: Plant growth form data extracted from the NT Flora Online
+  description: Plant growth form data extracted from the SA electronic flora
   basis_of_record: literature
   life_stage: adult
-  sampling_strategy: XXX
+  sampling_strategy: This dataset is sourced from the Electronic Flora of South Australia
+    online website (version date 2022-05-06). Briefly, the textual descriptions of
+    each taxon in were downloaded and organised into a tabular format of individual
+    taxon names and their corresponding text using R coding script. Sentences and
+    phrases were categorised using a large glossary of botanical terminology as referring
+    to one of the following, the entire organism, stem, leaf, flower, fruit/seed,
+    roots and environment/habitat. Key terms corresponding to trait values in AusTraits
+    were then extracted from these smaller chunks of text using a reference table
+    containing a) the AusTraits trait name, b) the AusTraits trait value and c) terms
+    to search for in the text. The resulting traits were then checked manually using
+    a subset of ~500 taxa to search for errors and update the reference table and
+    coding script accordingly. The process was repeated iteratively to remove any
+    wrongly classified trait values and to ensure as many correct trait values as
+    possible were captured using the algorithm.
   original_file: .na
   notes: Data supplied by the Department of Land Resource Management, Northern Territory
     of Australia.
@@ -289,7 +303,19 @@ traits:
   basis_of_value: measurement
   replicates: .na
   methods: unknown
-substitutions: .na
+substitutions:
+- trait_name: leaf_shape
+  find: linear elliptical lanceolate ovate spathulate narrowly_spathulate
+  replace: linear elliptical lanceolate ovate spathulate
+- trait_name: leaf_shape
+  find: elliptical spathulate narrowly_spathulate
+  replace: elliptical spathulate
+- trait_name: storage_organ
+  find: rhizome_tuberous
+  replace: rhizome_fleshy
+- trait_name: storage_organ
+  find: rhizome_woody rhizome_tuberous
+  replace: rhizome_woody rhizome_fleshy
 taxonomic_updates:
 - find: Abutilon oxycarpum incanum
   replace: Abutilon oxycarpum var. incanum
