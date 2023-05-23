@@ -75,6 +75,25 @@ targets:
                   taxon_list
                  )
 
+  ABRS_2023_config:
+    command: >
+      dataset_configure("data/ABRS_2023/metadata.yml",
+                 definitions,
+                 unit_conversions
+                 )
+  ABRS_2023_raw:
+    command: >
+      dataset_process("data/ABRS_2023/data.csv",
+                  ABRS_2023_config,
+                  schema,
+                  resource_metadata
+                 )
+  ABRS_2023:
+    command: >
+      build_update_taxonomy(ABRS_2023_raw,
+                  taxon_list
+                 )
+
   Ahrens_2019_config:
     command: >
       dataset_configure("data/Ahrens_2019/metadata.yml",
@@ -6028,6 +6047,7 @@ targets:
       build_combine(
         ABRS_1981,
         ABRS_2022,
+        ABRS_2023,
         Ahrens_2019,
         ANBG_2019,
         Angevin_2011,
