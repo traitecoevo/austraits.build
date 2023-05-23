@@ -939,10 +939,11 @@ traits:
       type: categorical
       label: Dormancy type
       allowed_values_levels:
-        morphophysiological_dormancy: Seeds exhibit morphophysiological dormancy.
+        morphophysiological_dormancy: Seeds exhibit morphophysiological dormancy, with both morphological and physiological dormancy mechanisms that must be overcome.
+        morphological_dormancy: Seeds exhibit morphological dormancy, generally because an underdeveloped embryo needs to grow.
         non_dormant: Seeds are non-dormant.
-        physical_dormancy: Seeds exhibit physical dormancy.
-        physiological_dormancy: Seeds exhibit physiological dormancy.
+        physical_dormancy: Seeds exhibit physical dormancy, due to one or more water-impermeable layers in the seed coat.
+        physiological_dormancy: Seeds exhibit physiological dormancy, whereby chemical changes are required within the seed to break dormancy, including temperature stratification and after-ripening. 
     embryo_colour:
       description: A plant embryo cotyledon morphology trait [TO:0000775] which is
         the colour [PATO:0000014] of the plant embryo cotyledon [PO:0025470].; Binary
@@ -2709,10 +2710,12 @@ traits:
           to the pair above or below.
         distichous: When alternate or opposite leaves are arranged in two opposite
           rows.
+        scattered: When leaves are attached along the entire length of stem.
         spiral: When alternate leaves are attached in a progressive spiral pattern
           along the stem.
         fasciculate: A tight bundle or cluster of leaves attached to the stem in a single location, generally due to the shortening of internodes. (Synonym, clustered)
         clustered: When leaves are in any type of cluster, where the type of cluster is not further specified. The leaves may be clustered toward the base of the plant (a rosette), toward the top of the plant, toward the end of branches, or in distinct tuft (fascicles), but more information is not provided.
+        clustered_basal: When leaves are clustered or crowded to the base of the stem, arranged in a rosette or other basal clustering. (Synonym, rosette)
         crowded: When internode length varies considerably along a stem, such that leaves appear crowded or tufted. (Synonym, congested)
         imbricate: When leaves lay tightly against the stem and are overlapping.
     leaf_phyllotaxis:
@@ -3662,6 +3665,9 @@ traits:
         oblate: A 2-dimensional shape that is a broad oval, with curved margins, lacking
           a distinct point, and a length:width ratio of approximately 5:6. The petiole
           attaches along the broader side.
+        narrowly_lanceolate: A 2-dimensional shape that is very narrowly egg-shaped or teardrop-shaped,
+          with a length:width ratio between 12:1 and 6:1. The petiole attaches near
+          the wide, curved portion of the leaf lamina.
         lanceolate: A 2-dimensional shape that is narrowly egg-shaped or teardrop-shaped,
           with a length:width ratio between 6:1 and 3:1. The petiole attaches near
           the wide, curved portion of the leaf lamina.
@@ -3723,7 +3729,7 @@ traits:
           round in cross-section, with margins straight and parallel, and a length:width
           ratio greater than 12:1. (Synonyms, needle-shaped)
         terete: A 3-dimensional shape that is a long, narrow cylinder approximately
-          circular in cross-section. Terete leaves often taper toward the tip.
+          circular in cross-section. Terete leaves often taper toward the tip. (Synonym, cylindrical)
         cordate: A 2-dimensional heart shape, approximately ovate with a cordate base,
           with the petiole attaching at the notch between the lobes. (Synonyms, cordiform)
         obcordate: A 2-dimensional heart shape, approximately ovate with a cordate
@@ -3735,7 +3741,9 @@ traits:
           concave at their intersection. (Synonyms, kidney-shaped)
         spathulate: A 2-dimensional shape that can be approximately oblong, obovate,
           or oblanceolate in outline with a long attenuate base, like a spoon. (Synonyms,
-          spoon-shaped)
+          spoon-shaped, clavate)
+        strap-shaped: A 2-dimensional shape that is strap-shaped with a rounded tip and a length:width ratio greater than 12:1
+        ensiform: A 2-dimensional shape that is sword-shaped with a pointed tip and a length:width ratio greater than 12:1 (Synonyms, sword-shaped)
         subulate: A 2-dimensional shape that is awl-shaped, approximately narrowly
           oblong to narrowly triangular with a broad base. (Synonyms, awl-shaped).
         peltate: A 2-dimensional orbicular shape, distinguished by the petiole attaching
@@ -3750,6 +3758,7 @@ traits:
       type: categorical
       label: Leaf base shape
       allowed_values_levels:
+        acute: Two sides of the leaf meet at an angle that is less than 90°.
         attenuate: Basal leaf margin abruptly incurved (concave), the two sides intersecting
           at an angle of less than 45°.
         auriculate: Basal leaf margin with two rounded lobes. The leaf margin above
@@ -3762,9 +3771,13 @@ traits:
         hastate: Basal leaf margin with two lobes oriented outward, such that they
           are at approximately 90° relative to the central axis and the leaf margin
           is fairly flat at the base.
+        oblique: XXX
+        obtuse: Two sides of the leaf meet at an angle that is greater than 90°.
         rounded: Basal leaf margin is rounded.
         sagittate: Basal leaf margin with two lobes oriented downward, away from apex.
           The petiole attaches in the concave region between the lobes.
+        sheathing: XXX
+        truncate: XXX
     leaf_specific_hydraulic_conductivity:
       description: A stem [PO:0009047] water transport [GO:0006833] trait which is
         a measure of the rate [PATO:0000161] of water [CHEBI:15377] movement [NCIT:C37994]
@@ -4070,6 +4083,23 @@ traits:
       label: Leaf width
       allowed_values_min: 0.01
       allowed_values_max: 100000.0
+    petiole_length:
+      description: Length [PATO:0000122] of the petiole
+        [PO:0020038]), from the leaf base [PO:0020040] to the leaf axil [PO:0009023].; Length of the petiole from the leaf base to the leaf axil.
+      comments: none
+      type: numeric
+      units: cm
+      label: Leaf length
+      allowed_values_min: 0
+      allowed_values_max: 1000.0
+    petiole_width:
+      description: Width [PATO:0000921] of the petiole [PO:0020038].; Width of the petiole.
+      comments: none.
+      type: numeric
+      units: mm
+      label: Leaf width
+      allowed_values_min: 0
+      allowed_values_max: 100.0
     leaf_work_to_punch:
       description: A leaf lamina [PO:0025060] strength [PATO:0001230] trait which
         is a measure of a leaf's [PO:0025034] compressive strength [SWEET:propPressure/CompressiveStrength;
@@ -5886,6 +5916,7 @@ traits:
       allowed_values_levels:
         bumpy: Seed surface covered with minute, rounded protuberances. (Synonyms,
           colliculate, verrucate, papillate, tuberculate, undulate)
+        grooved: Seed surface covered with grooves.
         netted: Seed surface covered with raised, reticulate, interconnected ridges.
           (Synonyms, reticulate, honey-combed)
         papery: Seed surface with a thin and papery texture. (Synonyms, chartaceous)
@@ -6025,9 +6056,9 @@ traits:
       allowed_values_levels:
         not_serotinous: Plant does not display serotiny.
         serotinous: Plant serotinous, level not specified.
-        serotiny_low: Plant displays a low level of serotiny.
-        serotiny_moderate: Plant displays a moderate level of serotiny.
-        serotiny_high: Plant displays a high level of serotiny.
+        serotiny_low: Plant displays a high level of serotiny, indicating it releases most of its seeds gradually, with only a small proportion of the seeds retained as a canopy seedbank until an environmental cue triggers the release of the entire seedbank.
+        serotiny_moderate: Plant displays a high level of serotiny, indicating it releases some of its seeds gradually, with the remainder retained as a canopy seedbank until an environmental cue triggers the release of the entire seedbank.
+        serotiny_high: Plant displays a high level of serotiny, indicating all seeds are retained as a canopy seedbank until an environmental cue triggers their release.
     seedling_first_node_leaf_type:
       description: A plant embryo true leaf formation stage [PO:0001095] morphology
         trait which is whether the leaf [PO:0025034] at the first stem node [PO:0020141]
