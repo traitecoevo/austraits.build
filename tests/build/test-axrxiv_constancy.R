@@ -73,7 +73,7 @@ test_that("constancy of with version 3.0.2", {
     gsub("vessel_density_leaves", "leaf_vessel_density", .) %>%
     gsub("vessel_diameter_leaves", "leaf_vessel_diameter", .) %>%
     gsub("flood_regime_classification", "plant_flood_regime_classification", .) %>%
-    gsub("leaf_hydraulic_conductivity", "leaf_specific_conductance", .)
+    gsub("leaf_hydraulic_conductivity", "leaf_specific_hydraulic_conductance", .)
 
     austraits_raw_comparison$traits$unit <- austraits_raw_comparison$traits$unit %>%
     gsub("dimensionless", "{dimensionless}", . ) %>%
