@@ -4,7 +4,7 @@ read_csv("data/eFLOWER_Dun_2022/raw/qry_Lily_Data_AusTraits_2023-05-21.csv") %>%
 
 read_csv("data/eFLOWER_Dun_2022/raw/qry_Lily_Data_AusTraits_2023-05-21.csv") %>%
   subset(!is.na(Value)) %>% 
-  subset(is.na(Max)) %>%
+  subset(Value != Max | is.na(Max)) %>%
   mutate(trait_value = Value) %>%
   mutate(trait_value = as.character(trait_value)) -> mean_values
 
