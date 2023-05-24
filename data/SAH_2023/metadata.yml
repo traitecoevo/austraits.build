@@ -24,7 +24,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code: '
+  custom_R_code:       '
     data %>%
       filter(!is.na(taxon_name)) %>%
       filter(str_detect(taxon_name, " ")) %>%
@@ -33,13 +33,15 @@ dataset:
         trait_value = ifelse(trait_name == "seed_shape", stringr::str_replace(trait_value, "obovate", "ovoid"), trait_value),
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "widely_lanceolate", "narrowly_ovate"), trait_value),
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "clavate", "spathulate"), trait_value),
-        trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "cylindrical", "terete"), trait_value)
+        trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "cylindrical", "terete"), trait_value),
+        measurement_remarks = paste0("Trait value refers to ", category)
       )
   '
   collection_date: unknown/2022
   taxon_name: taxon_name
   trait_name: trait_name
   value: trait_value
+  measurement_remarks: measurement_remarks
   description: Plant growth form data extracted from the SA electronic flora
   basis_of_record: literature
   life_stage: adult
@@ -56,7 +58,10 @@ dataset:
     a subset of ~500 taxa to search for errors and update the reference table and
     coding script accordingly. The process was repeated iteratively to remove any
     wrongly classified trait values and to ensure as many correct trait values as
-    possible were captured using the algorithm.
+    possible were captured using the algorithm. Where possible, unclassified taxa
+    were inferred as possessing a trait value from a higher-level taxonomic description
+    e.g. the fruit type of all taxa in the Adenanthos genus were scored as `achene`,
+    which was mentioned only in the genus description.
   original_file: .na
   notes: Data supplied by the Department of Land Resource Management, Northern Territory
     of Australia.
@@ -70,7 +75,9 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: When specified in the taxon description, only the colours of the fruit
+    at maturity or the dominant colours of the fruit exterior were scored. If neither
+    were specified, all colours associated with the fruit were scored.
 - var_in: fruit_dehiscence
   unit_in: .na
   trait_name: fruit_dehiscence
@@ -78,7 +85,8 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Taxa were scored as dehiscent from a variety of terms in the text including
+    the kind of dehiscence e.g. scepticidal, loculicidal or possessing valves.
 - var_in: fruit_type
   unit_in: .na
   trait_name: fruit_type
@@ -86,7 +94,8 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Taxa were scored as possessing a fruit type based on the presence of terms
+    and synonyms in the taxon description, as defined in the Austraits Plant Dictionary.
 - var_in: root_system_type
   unit_in: .na
   trait_name: root_system_type
@@ -94,7 +103,8 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Taxa were scored as "taproot_present taproot_not_present" if the taproot
+    was described as weak or not always present.
 - var_in: storage_organ
   unit_in: .na
   trait_name: storage_organ
@@ -102,7 +112,8 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Taxa were scored as possessing these storage organs if mentioned in the
+    taxon description.
 - var_in: seed_shape
   unit_in: .na
   trait_name: seed_shape
@@ -110,7 +121,9 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: There were a wide variety of terms used to describe seed shapes across
+    the taxon descriptions from this source and a list of common synonyms of the trait
+    values listed here are available in the Austraits Plant Dictionary.
 - var_in: seed_surface_reflectivity
   unit_in: .na
   trait_name: seed_surface_reflectivity
@@ -118,7 +131,8 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Taxa were scored as as reflective if described as shiny or reflective in
+    the taxon description.
 - var_in: seed_surface_hairs
   unit_in: .na
   trait_name: seed_surface_hairs
@@ -126,7 +140,8 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Taxa were scored as possessing seed hairs if any portion of the seed surface
+    was described as possessing hairs.
 - var_in: seed_surface_texture
   unit_in: .na
   trait_name: seed_surface_texture
@@ -134,7 +149,9 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: There were a wide variety of terms used to describe seed textures across
+    this the taxon descriptions of this source and a list of common synonyms of the
+    trait values are available in the Austraits Plant Dictionary.
 - var_in: leaf_compoundness
   unit_in: .na
   trait_name: leaf_compoundness
@@ -142,7 +159,9 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Leaves of taxa were scored as simple or compound from the presence of these
+    terms in the taxon description, but also inferred from the presence of words such
+    as "pinnate" or "foliolate" or the words "leaflet" or "pinnae" in some cases.
 - var_in: leaf_glaucousness
   unit_in: .na
   trait_name: leaf_glaucousness
@@ -150,7 +169,8 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Taxa were scored as "glaucous non_glaucous" if the word "glaucous" described
+    only one side of the leaf or only one of the possible colours of the leaves.
 - var_in: leaf_lobation
   unit_in: .na
   trait_name: leaf_lobation
@@ -158,7 +178,10 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Taxa were scored as possessing lobed leaves from mentions of leaf lobes
+    in the taxon description or inferred from the use of leaf division terms such
+    as "pinnatifid" or "pinnapartite". Leaves of taxa were scored as "lobed unlobed"
+    if the margin was described as "entire" in combination with some mention of lobes.
 - var_in: leaf_pendulousness
   unit_in: .na
   trait_name: leaf_pendulousness
@@ -166,7 +189,8 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Taxa were scored as "pendulous not_pendulous" if two leaf states were mentioned
+    e.g. "leaves erect to pendulous".
 - var_in: leaf_arrangement
   unit_in: .na
   trait_name: leaf_arrangement
@@ -174,7 +198,9 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Taxa were scored as possessing a particular leaf arrangement if mentioned
+    in the taxon description. Contrasting leaf arrangements could be present on the
+    same plant at different locations on the stem or branches or on different individuals.
 - var_in: leaf_base_shape
   unit_in: .na
   trait_name: leaf_base_shape
@@ -182,7 +208,9 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Taxa were scored as possessing leaf base shapes when taxon descriptions
+    explicitly described the leaf base, except for words such as "saggitate" or "auriculate"
+    which were interpreted as always referring to the leaf base.
 - var_in: leaf_margin
   unit_in: .na
   trait_name: leaf_margin
@@ -190,7 +218,9 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Taxa were scored as possessing teeth on the margins of leaves from the
+    taxon descriptions. This was the case even if the trait was only occasionally
+    present or only on some leaves. The term "entire" was treated similarly.
 - var_in: leaf_phyllotaxis
   unit_in: .na
   trait_name: leaf_phyllotaxis
@@ -198,7 +228,9 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Leaves of taxa were scored as opposite, alternate or whorled from the presence
+    of these terms in the taxon descriptions. Where possible, leaflet phyllotaxis
+    was entered separately from leaf phyllotaxis.
 - var_in: leaf_shape
   unit_in: .na
   trait_name: leaf_shape
@@ -206,7 +238,10 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: There were a wide variety of terms used to describe leaf shapes across
+    the taxon descriptions and a list of synonyms of the trait values are available
+    in the Austraits Plant Dictionary. Where possible, the shape of leaflets and leaf
+    lobes were separated from the overall leaf shape.
 - var_in: plant_growth_habit
   unit_in: .na
   trait_name: stem_growth_habit
@@ -214,7 +249,8 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
+  methods: Stem growth habit includes terms to describe a plant's three-dimensional
+    structure.
 - var_in: fruit_length
   unit_in: mm
   trait_name: fruit_length
@@ -222,7 +258,9 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: The term used to describe the fruit length was stored in the notes section
+    for greater clarity e.g. fruit, achene, capsule. Fruits which were spherical or
+    round in shape were inferred as possessing the same dimensions in other planes.
 - var_in: fruit_width
   unit_in: mm
   trait_name: fruit_width
@@ -230,7 +268,9 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: The term used to describe the fruit width was stored in the notes section
+    for greater clarity e.g. fruit, achene, capsule. Fruits which were spherical or
+    round in shape were inferred as possessing the same dimensions in other planes.
 - var_in: fruit_breadth
   unit_in: mm
   trait_name: fruit_height
@@ -238,7 +278,10 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: The term used to describe the fruit breadth or thickness was stored in
+    the notes section for greater clarity e.g. fruit, achene, capsule. Fruits which
+    were spherical or round in shape were inferred as possessing the same dimensions
+    in other planes.
 - var_in: leaf_length
   unit_in: mm
   trait_name: leaf_length
@@ -246,7 +289,8 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: The term used to describe the length of the leaf or leaf analogue was stored
+    in the notes section for greater clarity, e.g. lamina, leaflet, blade etc.
 - var_in: leaf_width
   unit_in: mm
   trait_name: leaf_width
@@ -254,7 +298,8 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: The term used to describe the width of the leaf or leaf analogue was stored
+    in the notes section for greater clarity, e.g. lamina, leaflet, blade etc.
 - var_in: petiole_length
   unit_in: mm
   trait_name: petiole_length
@@ -262,7 +307,7 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: This data records the length of the petiole as recorded in the taxon description.
 - var_in: petiole_width
   unit_in: mm
   trait_name: petiole_width
@@ -270,7 +315,7 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: This data records the width of the petiole as recorded in the taxon description.
 - var_in: seed_length
   unit_in: mm
   trait_name: seed_length
@@ -278,7 +323,9 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: This data records seed length as described in the taxon description. Seeds
+    which were spherical or round in shape were inferred as possessing the same dimensions
+    in other planes.
 - var_in: seed_width
   unit_in: mm
   trait_name: seed_width
@@ -286,7 +333,9 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: This data records the seed width as described in the text. Seeds which
+    were spherical or round in shape were inferred as possessing the same dimensions
+    in other planes.
 - var_in: seed_breadth
   unit_in: mm
   trait_name: seed_height
@@ -294,7 +343,9 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: This data records the seed breadth as described in the text. Seeds which
+    were spherical or round in shape were inferred as possessing the same dimensions
+    in other planes.
 - var_in: plant_height
   unit_in: mm
   trait_name: plant_height
@@ -302,7 +353,7 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: unknown
+  methods: Maximum plant vegetative height of a mature individual.
 substitutions:
 - trait_name: leaf_shape
   find: linear elliptical lanceolate ovate spathulate narrowly_spathulate
@@ -317,6 +368,381 @@ substitutions:
   find: rhizome_woody rhizome_tuberous
   replace: rhizome_woody rhizome_fleshy
 taxonomic_updates:
+- find: Allium scorodoprasum rotundum
+  replace: Allium scorodoprasum subsp. rotundum
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Argyranthemum frutescens foeniculaceum
+  replace: Argyranthemum frutescens subsp. foeniculaceum
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Argyranthemum frutescens frutescens
+  replace: Argyranthemum frutescens subsp. frutescens
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Atriplex acutibractea acutibractea
+  replace: Atriplex acutibractea subsp. acutibractea
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Atriplex acutibractea karoniensis
+  replace: Atriplex acutibractea subsp. karoniensis
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Atriplex lindleyi inflata
+  replace: Atriplex lindleyi subsp. inflata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Atriplex lindleyi lindleyi
+  replace: Atriplex lindleyi subsp. lindleyi
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Atriplex lindleyi quadripartita
+  replace: Atriplex lindleyi subsp. quadripartita
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Atriplex quadrivalvata quadrivalvata
+  replace: Atriplex quadrivalvata var. quadrivalvata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Atriplex quadrivalvata sessilifolia
+  replace: Atriplex quadrivalvata var. sessilifolia
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Atriplex vesicaria calcicola
+  replace: Atriplex vesicaria subsp. calcicola
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Callistemon rugulosus laevifolius
+  replace: Callistemon rugulosus
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Cassia desolata planipes
+  replace: Senna artemisioides subsp. x petiolaris
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Cassia nemophila coriacea
+  replace: Cassia nemophila var. coriacea
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Cassia nemophila nemophila
+  replace: Cassia nemophila var. nemophila
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Cassia nemophila platypoda
+  replace: Senna artemisioides subsp. x petiolaris
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Cassia nemophila zygophylla
+  replace: Cassia nemophila var. zygophylla
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Crotalaria eremaea eremaea
+  replace: Crotalaria eremaea subsp. eremaea
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Crotalaria eremaea strehlowii
+  replace: Crotalaria eremaea subsp. strehlowii
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Daviesia asperula asperula
+  replace: Daviesia asperula subsp. asperula
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Daviesia asperula obliqua
+  replace: Daviesia asperula subsp. obliqua
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Dipteracanthus australasicus glabratus
+  replace: Dipteracanthus australasicus subsp. glabratus
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Eremophila maculata brevifolia
+  replace: Eremophila maculata subsp. brevifolia
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Eremophila maculata maculata
+  replace: Eremophila maculata subsp. maculata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Eucalyptus camaldulensis camaldulensis
+  replace: Eucalyptus camaldulensis subsp. camaldulensis
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Eucalyptus camaldulensis obtusa
+  replace: Eucalyptus camaldulensis subsp. obtusa
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Eucalyptus incrassata angulosa
+  replace: Eucalyptus angulosa
+  reason: Manual alignment with synonymous term among known canonical names APC (E.
+    Wenk, 2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Eucalyptus lansdowneana albopurpurea
+  replace: Eucalyptus lansdowneana subsp. albopurpurea
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Eucalyptus obliqua megacarpa
+  replace: Eucalyptus obliqua
+  reason: Manual alignment with synonymous term among known canonical names APC (E.
+    Wenk, 2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Eucalyptus viminalis cygnetensis
+  replace: Eucalyptus viminalis subsp. cygnetensis
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Eucalyptus yumbarrana striata
+  replace: Eucalyptus yumbarrana subsp. x striata
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC known
+    names when notes are ignored (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Eucalyptus yumbarrana yumbarrana
+  replace: Eucalyptus yumbarrana subsp. yumbarrana
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Euphrasia collina collina
+  replace: Euphrasia collina subsp. collina
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Euphrasia collina muelleri
+  replace: Euphrasia collina subsp. muelleri
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Euphrasia collina osbornii
+  replace: Euphrasia collina subsp. osbornii
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Euphrasia collina paludosa
+  replace: Euphrasia collina subsp. paludosa
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Euphrasia collina tetragona
+  replace: Euphrasia collina subsp. tetragona
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Euphrasia collina trichocalycina
+  replace: Euphrasia collina subsp. trichocalycina
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Hibiscus sturtii grandiflorus
+  replace: Hibiscus sturtii var. grandiflorus
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Hibiscus sturtii sturtii
+  replace: Hibiscus sturtii var. sturtii
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Hibiscus trionum trionum
+  replace: Hibiscus trionum var. trionum
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Hibiscus trionum vesicarius
+  replace: Hibiscus trionum var. vesicarius
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Olearia ciliata ciliata
+  replace: Olearia ciliata var. ciliata
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Olearia ciliata squamifolia
+  replace: Olearia ciliata var. squamifolia
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Olearia pannosa cardiophylla
+  replace: Olearia pannosa subsp. cardiophylla
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Olearia pannosa pannosa
+  replace: Olearia pannosa subsp. pannosa
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Olearia passerinoides glutescens
+  replace: Olearia passerinoides subsp. glutescens
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Olearia pimeleoides incana
+  replace: Olearia incana
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Olearia pimeleoides pimeleoides
+  replace: Olearia pimeleoides var. pimeleoides
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Pimelea microcephala glabra
+  replace: Pimelea microcephala subsp. glabra
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Pimelea simplex continua
+  replace: Pimelea simplex subsp. continua
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Pimelea simplex simplex
+  replace: Pimelea simplex subsp. simplex
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Ptilotus aristatus eichlerianus
+  replace: Ptilotus aristatus subsp. aristatus
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Ptilotus helipteroides helipteroides
+  replace: Ptilotus helipteroides var. helipteroides
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Ptilotus helipteroides minor
+  replace: Ptilotus helipteroides var. minor
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Ptilotus incanus incanus
+  replace: Ptilotus incanus var. incanus
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Ptilotus murrayi major
+  replace: Ptilotus murrayi
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Ptilotus murrayi murrayi
+  replace: Ptilotus murrayi var. murrayi
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Ptilotus obovatus griseus
+  replace: Ptilotus obovatus var. griseus
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Ptilotus obovatus obovatus
+  replace: Ptilotus obovatus var. obovatus
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Ptilotus parvifolius laetus
+  replace: Ptilotus parvifolius var. laetus
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Ptilotus parvifolius parvifolius
+  replace: Ptilotus parvifolius
+  reason: Manual alignment with synonymous term among known canonical names APC (E.
+    Wenk, 2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Ptilotus polystachyus polystachyus
+  replace: Ptilotus polystachyus
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Forma
+- find: Ptilotus spathulatus angustatus
+  replace: Ptilotus spathulatus f. angustatus
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Forma
+- find: Ptilotus spathulatus spathulatus
+  replace: Ptilotus spathulatus f. spathulatus
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Forma
+- find: Scaevola linearis linearis
+  replace: Scaevola linearis subsp. linearis
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
+- find: Senecio cunninghamii cunninghamii
+  replace: Senecio cunninghamii var. cunninghamii
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Senecio cunninghamii serratus
+  replace: Senecio lanibracteus
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Villarsia umbricola beaugleholei
+  replace: Villarsia umbricola var. beaugleholei
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Villarsia umbricola umbricola
+  replace: Villarsia umbricola var. umbricola
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Vittadinia australasica oricola
+  replace: Vittadinia australasica var. oricola
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Vittadinia australasica subglabra
+  replace: Vittadinia australasica var. subglabra
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Vittadinia cuneata cuneata
+  replace: Vittadinia cuneata var. cuneata
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Vittadinia cuneata murrayensis
+  replace: Vittadinia cuneata var. murrayensis
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Varietas
+- find: Zostera muelleri muelleri
+  replace: Zostera muelleri subsp. muelleri
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2023-05-24)
+  taxonomic_resolution: Subspecies
 - find: Abutilon oxycarpum incanum
   replace: Abutilon oxycarpum var. incanum
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
@@ -1564,6 +1990,40 @@ taxonomic_updates:
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-22)
   taxonomic_resolution: Varietas
+- find: Brachycome ciliaris brachyglossa
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  replace: Brachycome ciliaris var. brachyglossa
+  taxonomic_resolution: Varietas
+- find: Brachycome ciliaris ciliaris
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2023-05-24)
+  replace: Brachyscome ciliaris var. ciliaris
+  taxonomic_resolution: Varietas
+- find: Brachycome ciliaris lyrifolia
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  replace: Brachycome ciliaris var. lyrifolia
+  taxonomic_resolution: Varietas
+- find: Brachycome ciliaris subintegrifolia
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  replace: Brachycome ciliaris var. subintegrifolia
+  taxonomic_resolution: Varietas
+- find: Halosarcia halocnemoides halocnemoides
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  replace: Halosarcia halocnemoides subsp. halocnemoides
+  taxonomic_resolution: Subspecies
+- find: Halosarcia halocnemoides longispicata
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  replace: Halosarcia halocnemoides subsp. longispicata
+  taxonomic_resolution: Subspecies
+- find: Halosarcia halocnemoides tenuis
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-24)
+  replace: Halosarcia halocnemoides subsp. tenuis
+  taxonomic_resolution: Subspecies
 exclude_observations:
 - variable: taxon_name
   find: Riccia corrugata
