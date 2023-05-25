@@ -67,4 +67,11 @@ data %>%
   mutate(taxon_name = paste(genus, species)) %>% 
   relocate(taxon_name, .before = genus) -> data
 
+data %>% 
+  group_by(taxon_name) %>% 
+  mutate(
+    soilCanopy = replace_duplicates_with_NA(soilCanopy),
+    resprouter = replace_duplicates_with_NA(resprouter)
+    ) %>% ungroup() -> data
+
 data %>% write_csv("data/Enright_2014/data.csv")
