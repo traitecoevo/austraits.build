@@ -51,7 +51,12 @@ dataset:
         life_history = ifelse(`Growth form` == "Annual", "annual", "perennial"),
         life_form = `Growth form`,
         parasitic = ifelse(`Growth form` == "Aerial parasite", "parasitic", NA),
-        plant_growth_substrate = ifelse(`Growth form` == "Aerial parasite", "epiphyte", NA)
+        plant_growth_substrate = ifelse(`Growth form` == "Aerial parasite", "epiphyte", NA),
+        `Persistent soil seedbank` = stringr::str_replace(`Persistent soil seedbank`, "Yes", "soil_seedbank"),
+        `Persistent soil seedbank` = stringr::str_replace(`Persistent soil seedbank`, "No", "soil_seedbank_absent"),
+        seed_storage_location = stringr::str_replace(`Persistent canopy seedbank`, "Yes", "canopy_seedbank"),
+        seed_storage_location = stringr::str_replace(`Persistent canopy seedbank`, "No", "canopy_seedbank_absent"),
+        seed_storage_location = ifelse(is.na(`Persistent soil seedbank`), seed_storage_location, paste(seed_storage_location,`Persistent soil seedbank`))
     )
   '
   collection_date: 2010/2011
@@ -157,9 +162,9 @@ traits:
     sources and field observations, field responses were used, as resprouting capacity
     can vary between populations and age cohorts in some species (Bond and van Wilgen
     1996, Vivian et al. 2010).
-- var_in: Persistent soil seedbank
+- var_in: seed_storage_location
   unit_in: .na
-  trait_name: soil_seedbank
+  trait_name: seed_storage_location
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -264,12 +269,6 @@ substitutions:
 - trait_name: plant_growth_form
   find: hemicryptophyte
   replace: .na
-- trait_name: soil_seedbank
-  find: 'No'
-  replace: soil_seedbank_absent
-- trait_name: soil_seedbank
-  find: 'Yes'
-  replace: soil_seedbank_present
 - trait_name: serotiny
   find: 'No'
   replace: not_serotinous

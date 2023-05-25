@@ -25,7 +25,10 @@ dataset:
   custom_R_code: '
     data %>%
       mutate(
-        Time_from_fire_to_fruit = ifelse(`Species Name` == "Eucalyptus salubris", NA, Time_from_fire_to_fruit)
+        Time_from_fire_to_fruit = ifelse(`Species Name` == "Eucalyptus salubris", NA, Time_from_fire_to_fruit),
+        `seed_storage_location` = stringr::str_replace(`seed_storage_location`, "No", "soil_seedbank_absent"),
+        seed_storage_location = stringr::str_replace(`serotiny`, "Yes", "canopy_seedbank"),
+        seed_storage_location = ifelse(is.na(`seed_storage_location`), seed_storage_location, paste(seed_storage_location,`seed_storage_location`))
       )
   '
   collection_date: 2012-09/2012-11
@@ -82,9 +85,9 @@ traits:
   basis_of_value: expert_score
   replicates: replicates
   methods: Repeat field observations post-fire. 
-- var_in: soil_seedbank
+- var_in: seed_storage_location
   unit_in: .na
-  trait_name: soil_seedbank
+  trait_name: seed_storage_location
   entity_type: population
   value_type: mode
   basis_of_value: expert_score
@@ -110,9 +113,6 @@ substitutions:
 - trait_name: lifespan
   find: Long
   replace: 6
-- trait_name: soil_seedbank
-  find: 'No'
-  replace: soil_seedbank_absent
 - trait_name: serotiny
   find: 'Yes'
   replace: serotinous

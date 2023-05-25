@@ -29,7 +29,12 @@ dataset:
           as.character(Wind),
           as.character(`Bird/mammal`)),
         dispersal_syndrome = NA,
-        across(c(dispersers), ~na_if(.x, "NA"))
+        across(c(dispersers), ~na_if(.x, "NA")),
+        `Soil seed bank` = stringr::str_replace(`Soil seed bank`, "y", "soil_seedbank"),
+        `Soil seed bank` = stringr::str_replace(`Soil seed bank`, "n", "soil_seedbank_absent"),
+        seed_storage_location = stringr::str_replace(`Canopy seed storage`, "y", "canopy_seedbank"),
+        seed_storage_location = stringr::str_replace(`Canopy seed storage`, "n", "canopy_seedbank_absent"),
+        seed_storage_location = ifelse(is.na(`Soil seed bank`), seed_storage_location, paste(seed_storage_location,`Soil seed bank`))
       ) %>% 
         move_values_to_new_trait(
           "dispersers", "dispersal_syndrome", 
@@ -59,9 +64,9 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: author knowledge
-- var_in: Soil seed bank
+- var_in: seed_storage_location
   unit_in: .na
-  trait_name: soil_seedbank
+  trait_name: seed_storage_location
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -98,12 +103,6 @@ substitutions:
 - trait_name: resprouting_capacity
   find: 'n'
   replace: fire_killed
-- trait_name: soil_seedbank
-  find: 'y'
-  replace: soil_seedbank_present
-- trait_name: soil_seedbank
-  find: 'n'
-  replace: soil_seedbank_absent
 - trait_name: serotiny
   find: 'y'
   replace: serotinous
