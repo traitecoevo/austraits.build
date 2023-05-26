@@ -20,10 +20,13 @@ contributors:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: no
-  custom_R_code:                   '
+  custom_R_code: '
     data %>% 
       mutate(
-        location = "Southern region of the Northern Territory"
+        location = "Southern region of the Northern Territory",
+        seed_longevity_categorical = if_else(`Propagule persistence` == "P+", "persistent", NA_character_),
+        seedling_establishment_conditions = if_else(`Propagule persistence` == "P+", "establish_post_fire", NA_character_),
+        fire_time_from_fire_to_flowering = if_else(`Propagule persistence` == "P+", "--120", NA_character_),
       )'
   collection_date: unknown/2011
   taxon_name: Taxon
@@ -145,18 +148,99 @@ traits:
     aneura face an immaturity risk in Triodia grassland because their primary juvenile
     period far exceeds average fire-return intervals in that habitat (Nano and Clarke
     2010).
+- var_in: seed_longevity_categorical
+  unit_in: .na
+  trait_name: seed_longevity_categorical
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Persistence traits ^p Persistence trait data were collated for all of the
+    woody species that were recorded from the 385 sites. Population-level data were
+    derived from published (e.g. Crowley et al. 2007) and unpublished databases (e.g.
+    NT Ecological Attributes Database, Northern Territory Government), the scientific
+    literature and our own field records. Similarly, for each species, we compiled
+    all available records (from the same sources outlined above) relating to propagule
+    persistence (P+, following Pausas and Bradstock 2007). Following Pausas et al.
+    (2004), we used three explicit criteria for propagule persistence - the species
+    needed to have a seed bank that (1) is long-lived, (2) is stimulated to germinate
+    by fire and (3) can be established within the fire cycle—in this case within 10
+    years, which is the spatially averaged return interval for the region (Allan and
+    Southgate 2002). Criteria i and ii were determined mainly from the seed biology
+    literature that provided experimental results relating to seed bank dynamics,
+    seed storage behaviour, physical dormancy and positive germination heat responses.
+    Criterion ii was also determined from field observation records (extracted from
+    the NT Ecological Attributes Database) of post-fire responses. Criterion iii had
+    the inbuilt factor of time-to-maturation. In this region, species such as Acacia
+    aneura face an immaturity risk in Triodia grassland because their primary juvenile
+    period far exceeds average fire-return intervals in that habitat (Nano and Clarke
+    2010).
+- var_in: seedling_establishment_conditions
+  unit_in: .na
+  trait_name: seedling_establishment_conditions
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Persistence traits ^p Persistence trait data were collated for all of the
+    woody species that were recorded from the 385 sites. Population-level data were
+    derived from published (e.g. Crowley et al. 2007) and unpublished databases (e.g.
+    NT Ecological Attributes Database, Northern Territory Government), the scientific
+    literature and our own field records. Similarly, for each species, we compiled
+    all available records (from the same sources outlined above) relating to propagule
+    persistence (P+, following Pausas and Bradstock 2007). Following Pausas et al.
+    (2004), we used three explicit criteria for propagule persistence - the species
+    needed to have a seed bank that (1) is long-lived, (2) is stimulated to germinate
+    by fire and (3) can be established within the fire cycle—in this case within 10
+    years, which is the spatially averaged return interval for the region (Allan and
+    Southgate 2002). Criteria i and ii were determined mainly from the seed biology
+    literature that provided experimental results relating to seed bank dynamics,
+    seed storage behaviour, physical dormancy and positive germination heat responses.
+    Criterion ii was also determined from field observation records (extracted from
+    the NT Ecological Attributes Database) of post-fire responses. Criterion iii had
+    the inbuilt factor of time-to-maturation. In this region, species such as Acacia
+    aneura face an immaturity risk in Triodia grassland because their primary juvenile
+    period far exceeds average fire-return intervals in that habitat (Nano and Clarke
+    2010).
+- var_in: fire_time_from_fire_to_flowering
+  unit_in: mo
+  trait_name: fire_time_from_fire_to_flowering
+  entity_type: species
+  value_type: bin
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Persistence traits ^p Persistence trait data were collated for all of the
+    woody species that were recorded from the 385 sites. Population-level data were
+    derived from published (e.g. Crowley et al. 2007) and unpublished databases (e.g.
+    NT Ecological Attributes Database, Northern Territory Government), the scientific
+    literature and our own field records. Similarly, for each species, we compiled
+    all available records (from the same sources outlined above) relating to propagule
+    persistence (P+, following Pausas and Bradstock 2007). Following Pausas et al.
+    (2004), we used three explicit criteria for propagule persistence - the species
+    needed to have a seed bank that (1) is long-lived, (2) is stimulated to germinate
+    by fire and (3) can be established within the fire cycle—in this case within 10
+    years, which is the spatially averaged return interval for the region (Allan and
+    Southgate 2002). Criteria i and ii were determined mainly from the seed biology
+    literature that provided experimental results relating to seed bank dynamics,
+    seed storage behaviour, physical dormancy and positive germination heat responses.
+    Criterion ii was also determined from field observation records (extracted from
+    the NT Ecological Attributes Database) of post-fire responses. Criterion iii had
+    the inbuilt factor of time-to-maturation. In this region, species such as Acacia
+    aneura face an immaturity risk in Triodia grassland because their primary juvenile
+    period far exceeds average fire-return intervals in that habitat (Nano and Clarke
+    2010).
 substitutions:
 - trait_name: fire_response
-  find: 'R-'
+  find: R-
   replace: fire_killed
 - trait_name: fire_response
-  find: 'R+'
+  find: R+
   replace: resprouts
 - trait_name: post_fire_recruitment
-  find: 'P+'
+  find: P+
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
-  find: 'P-'
+  find: P-
   replace: post_fire_recruitment_absent
 taxonomic_updates:
 - find: Indigofera sp. MacDonnell Ranges (P.K.Latz 11587) Peter Wilson
