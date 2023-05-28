@@ -48,12 +48,13 @@ dataset:
       mutate(
         `Compeditive stratum` = ifelse(GosperJVS2012_PFT == "Ephem","post_fire_ephemeral",`Compeditive stratum`),
         lifespan_value_type = ifelse(Longevity == "Long", "maximum", "minimum"),
+        seed_storage_location = `Persistent soil seedbank`,
         `Persistent soil seedbank` = stringr::str_replace(`Persistent soil seedbank`, "Yes", "soil_seedbank"),
         `Persistent soil seedbank` = stringr::str_replace(`Persistent soil seedbank`, "No", "soil_seedbank_absent"),
-        seed_storage_location = stringr::str_replace(`Persistent canopy seedbank`, "Yes", "canopy_seedbank"),
-        seed_storage_location = stringr::str_replace(`Persistent canopy seedbank`, "No", "canopy_seedbank_absent"),
+        seed_storage_location = stringr::str_replace(seed_storage_location, "Yes", "canopy_seedbank"),
+        seed_storage_location = stringr::str_replace(seed_storage_location, "No", "canopy_seedbank_absent"),
         seed_storage_location = ifelse(is.na(`Persistent soil seedbank`), seed_storage_location, paste(seed_storage_location,`Persistent soil seedbank`))
-      )
+    )
   '
   collection_date: 2007/2007
   taxon_name: Species Name
