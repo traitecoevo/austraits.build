@@ -30,10 +30,11 @@ dataset:
           as.character(`Bird/mammal`)),
         dispersal_syndrome = NA,
         across(c(dispersers), ~na_if(.x, "NA")),
-        `Soil seed bank` = stringr::str_replace(`Soil seed bank`, "y", "soil_seedbank"),
+        seed_storage_location = `Canopy seed storage`,
         `Soil seed bank` = stringr::str_replace(`Soil seed bank`, "n", "soil_seedbank_absent"),
-        seed_storage_location = stringr::str_replace(`Canopy seed storage`, "y", "canopy_seedbank"),
-        seed_storage_location = stringr::str_replace(`Canopy seed storage`, "n", "canopy_seedbank_absent"),
+        `Soil seed bank` = stringr::str_replace(`Soil seed bank`, "y", "soil_seedbank"),
+        seed_storage_location = stringr::str_replace(seed_storage_location, "n", "canopy_seedbank_absent"),
+        seed_storage_location = ifelse(seed_storage_location == "y", "canopy_seedbank", seed_storage_location),
         seed_storage_location = ifelse(is.na(`Soil seed bank`), seed_storage_location, paste(seed_storage_location,`Soil seed bank`))
       ) %>% 
         move_values_to_new_trait(
@@ -115,6 +116,9 @@ substitutions:
 - trait_name: dispersers
   find: neither
   replace: .na
+- trait_name: seed_storage_location
+  find: na soil_seedbank
+  replace: soil_seedbank
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
