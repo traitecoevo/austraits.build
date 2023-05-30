@@ -24,8 +24,9 @@ dataset:
       mutate(
         post_fire_recruitment = if_else(fire_response == "Seed", "post_fire_recruitment", NA_character_),
         reproductive_maturity = if_else(fire_response == "Seed", juvenile_period, NA_character_),
-        reproductive_maturity_secondary_after_fire = if_else(fire_response == "Sprout", juvenile_period, NA_character_),
-        post_fire_flowering = if_else(!is.na(flowering_notes), "fire_dependent_flowering" , NA_character_)
+        fire_time_from_fire_to_flowering = if_else(fire_response == "Sprout", juvenile_period, NA_character_),
+        post_fire_flowering = if_else(!is.na(flowering_notes), "fire_dependent_flowering" , NA_character_),
+        fire_response_context = fire_response
       )
   '
   collection_date: '1981'
@@ -72,10 +73,26 @@ contexts:
   - find: Laterite
     value: laterite
     description: found in lateritic upland sites
+- context_property: time to flowering type
+  category: entity_context
+  var_in: fire_response_context
+  values:
+  - find: Seed
+    value: fire_killed
+    description: Time from fire to flowering measured on plants that germinated post-fire.
+  - find: Sprout
+    value: resprouts
+    description: Time from fire to flowering measured on resprouting shoots.
+  - find: Sprout and seed
+    value: mixed response
+    description: Time from fire to flowering measured on either resprouting shoots or newly germinated plants.
+  - find: Seed and sprout
+    value: mixed response
+    description: Time from fire to flowering measured on either resprouting shoots or newly germinated plants.
 traits:
 - var_in: fire_response
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: population
   value_type: mode
   basis_of_value: expert_score
@@ -115,9 +132,9 @@ traits:
     species was seen flowering in a four-year-old site, was not seen flowering in
     a two-year-old site and was not recorded in a three-year-old site, so therefore
     it flowers within three or four years after a fire.
-- var_in: reproductive_maturity_secondary_after_fire
+- var_in: juvenile_period
   unit_in: a
-  trait_name: reproductive_maturity_secondary_after_fire
+  trait_name: fire_time_from_fire_to_flowering
   entity_type: population
   value_type: juvenile_period_value_type
   basis_of_value: measurement
@@ -160,16 +177,16 @@ traits:
     may have been present.
   measurement_remarks: flowering_notes
 substitutions:
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: Sprout
   replace: resprouts
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: Seed
   replace: fire_killed
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: Sprout and Seed
   replace: resprouts fire_killed
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: Seed and Sprout
   replace: resprouts fire_killed
 - trait_name: reproductive_maturity
@@ -196,31 +213,31 @@ substitutions:
 - trait_name: reproductive_maturity
   find: ≤6
   replace: 0--6
-- trait_name: reproductive_maturity_secondary_after_fire
+- trait_name: fire_time_from_fire_to_flowering
   find: ≤2
   replace: 0--2
-- trait_name: reproductive_maturity_secondary_after_fire
+- trait_name: fire_time_from_fire_to_flowering
   find: <2
   replace: 0--2
-- trait_name: reproductive_maturity_secondary_after_fire
+- trait_name: fire_time_from_fire_to_flowering
   find: ≤4
   replace: 0--4
-- trait_name: reproductive_maturity_secondary_after_fire
+- trait_name: fire_time_from_fire_to_flowering
   find: ≤5
   replace: 0--5
-- trait_name: reproductive_maturity_secondary_after_fire
+- trait_name: fire_time_from_fire_to_flowering
   find: ≤5>2
   replace: 3--5
-- trait_name: reproductive_maturity_secondary_after_fire
+- trait_name: fire_time_from_fire_to_flowering
   find: <4>2
   replace: 3--4
-- trait_name: reproductive_maturity_secondary_after_fire
+- trait_name: fire_time_from_fire_to_flowering
   find: <4
   replace: 0--4
-- trait_name: reproductive_maturity_secondary_after_fire
+- trait_name: fire_time_from_fire_to_flowering
   find: ≤4>2
   replace: 3--4
-- trait_name: reproductive_maturity_secondary_after_fire
+- trait_name: fire_time_from_fire_to_flowering
   find: <5
   replace: 0--5
 taxonomic_updates:
