@@ -37,12 +37,13 @@ dataset:
           ifelse(fire_response %in% c("fire_not_relevant", "fire_not_relevant fire_killed",
           "fire_killed fire_not_relevant", "fire_not_relevant resprouts","
           fire_not_relevant not_fire_killed_does_not_resprout"),
-          "fire_not_relevant", NA),
+          "aquatic_taxon", NA),
         stem_growth_habit = NA,
         plant_climbing_mechanism = NA,
         plant_growth_substrate = ifelse(str_detect(plant_growth_form, "epiphyte"), "epiphyte", NA),
         plant_growth_form = str_replace(plant_growth_form, "epiphyte_", ""),
-        plant_growth_form = str_replace(plant_growth_form, "epiphyte", "")  %>% str_squish()
+        plant_growth_form = str_replace(plant_growth_form, "epiphyte", "")  %>% str_squish(),
+        seedbank_longevity_class = propagule_longevity
       ) %>%
       move_values_to_new_trait(
         "plant_growth_form","stem_growth_habit",
@@ -146,7 +147,7 @@ traits:
   methods: compilation from diverse sources and expert opinion
 - var_in: fire_response
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -209,8 +210,16 @@ traits:
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: propagule_longevity
+  unit_in: 'a'
+  trait_name: seedbank_longevity
+  entity_type: species
+  value_type: bin
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
+- var_in: seedbank_longevity_class
   unit_in: .na
-  trait_name: seed_longevity_categorical
+  trait_name: seedbank_longevity_class
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -225,7 +234,7 @@ traits:
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: lifespan
-  unit_in: a
+  unit_in: 'a'
   trait_name: lifespan
   entity_type: species
   value_type: bin
@@ -242,15 +251,15 @@ traits:
   methods: compilation from diverse sources and expert opinion
 - var_in: seed_release
   unit_in: .na
-  trait_name: seed_release
+  trait_name: .na
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: compilation from diverse sources and expert opinion
+  methods: compilation from diverse sources and expert opinion; this is the trait `seed_release_timing` which needs to be refined before being mapped into AusTraits.
 - var_in: regen_strategy
   unit_in: .na
-  trait_name: regeneration_non_fire_disturbance
+  trait_name: resprouting_capacity_non_fire_disturbance
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -265,7 +274,7 @@ traits:
   replicates: .na
   methods: compilation from diverse sources and expert opinion
 - var_in: reproductive_maturity
-  unit_in: a
+  unit_in: 'a'
   trait_name: reproductive_maturity
   entity_type: species
   value_type: bin
@@ -349,27 +358,27 @@ substitutions:
 - trait_name: nitrogen_fixing
   find: '0'
   replace: non_nitrogen_fixer
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: fire_killed resprouts
   replace: partial_resprouting
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: fire_not_relevant
   replace: .na
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: fire_not_relevant fire_killed
   replace: fire_killed
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: fire_killed fire_not_relevant
   replace: fire_killed
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: fire_not_relevant resprouts
   replace: resprouts
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: fire_not_relevant not_fire_killed_does_not_resprout
-  replace: no_significant_fire_response
-- trait_name: fire_response
+  replace: .na
+- trait_name: resprouting_capacity
   find: not_fire_killed_does_not_resprout
-  replace: no_significant_fire_response
+  replace: .na
 - trait_name: plant_physical_defence_structures
   find: 0
   replace: absent
@@ -379,13 +388,22 @@ substitutions:
 - trait_name: plant_physical_defence_structures
   find: 1
   replace: sharp_pointed_defence  
-- trait_name: seed_longevity_categorical
-  find: 10
-  replace: short_persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity
+  find: '10'
+  replace: --2
+- trait_name: seedbank_longevity
   find: '01'
-  replace: long_persistent
-- trait_name: seed_longevity_categorical
+  replace: 2--
+- trait_name: seedbank_longevity
+  find: '00'
+  replace: .na  
+- trait_name: seedbank_longevity_class
+  find: '10'
+  replace: transient
+- trait_name: seedbank_longevity_class
+  find: '01'
+  replace: persistent
+- trait_name: seedbank_longevity_class
   find: '00'
   replace: .na
 - trait_name: plant_tolerance_calcicole
@@ -457,7 +475,7 @@ substitutions:
 - trait_name: vegetative_reproduction_ability
   find: 0
   replace: not_vegetative
-- trait_name: regeneration_non_fire_disturbance
+- trait_name: resprouting_capacity_non_fire_disturbance
   find: resprouts
   replace: resprouts_non_fire_disturbance
 - trait_name: parasitic

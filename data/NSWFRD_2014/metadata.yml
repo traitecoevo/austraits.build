@@ -33,24 +33,18 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:      '
+  custom_R_code: '
     data %>% 
       mutate(
         seed_longevity_categorical = `Seed storage`,
-        fire_response_detailed = Fireresponse,
         flowering_time_edited = convert_month_range_vec_to_binary(flowering_time_edited),
         fruiting_time_edited = convert_month_range_vec_to_binary(fruiting_time_edited),
         stem_growth_habit = ifelse(`Life form` == "P", "prostrate", NA),
         dispersers = `Seed dispersal mechanism`,
-        `Minimum maturity` = str_extract(`Minimum maturity`,"[:digit:]"),
-        `Maximum maturity` = str_extract(`Maximum maturity`,"[:digit:]"),
-        `Lifespan > than` = str_extract(`Lifespan > than`,"[:digit:]"),
-        `Lifespan < than` = str_extract(`Lifespan < than`,"[:digit:]"),
         growth_habit = ifelse(`Life form` == "P", "prostrate", NA),
         `Life form` = ifelse(`Life form` == "P", NA, `Life form`),
         storage_organ = ifelse(stringr::str_detect(`Resprout location`, "lignotuber"), "lignotuber", NA),
-        serotiny = ifelse(stringr::str_detect(`Seed storage`, "serotinous"), "serotinous", NA),
-        `Secondary juvenile period` = stringr::str_replace(`Secondary juvenile period`,"-","--")
+        serotiny = ifelse(stringr::str_detect(`Seed storage`, "serotinous"), "serotinous", NA)
       ) %>%
       group_by(`Current Scientific Name`) %>%
         mutate(observation_num = row_number()) %>%
@@ -64,7 +58,8 @@ dataset:
   sampling_strategy: unknown
   original_file: AULD-NSWFFRDv2.1.xls
   notes: unpubl. database held by NSW DPIE. The raw data file includes multiple worksheets
-    with references and notes.
+    with references and notes. Secondary juvenile period was manually transcribed
+    into columns (see substitutions_for_time_from_fire_to_flowering.csv and NSWFRD_2014_custom_R_code.R).
 locations: .na
 contexts:
 - context_property: replicate observations
@@ -73,6 +68,12 @@ contexts:
   values:
   - value: 1
   - value: 2
+- context_property: time to flowering type
+  category: entity_context
+  var_in: entity_context
+  values:
+  - value: resprouts
+    description: Time from fire to flowering measured on resprouting shoots.
 traits:
 - var_in: Life form
   unit_in: .na
@@ -96,26 +97,7 @@ traits:
     list.
 - var_in: Fireresponse
   unit_in: .na
-  trait_name: fire_response
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: S=seeder, R=resprouter. r=usually killed but sometimes resprouts, s=usually
-    resprouts but sometimes killed; these may indicate a variable response seen by
-    one observer, or a conflict between different observers (see comments column).
-    When an equal number of references list the species as seeder or resprouter, this
-    column reads as 'S/R' and details are given in the comments cloumn. Ideally fire
-    response should be defined by mortality >70%=seeder, mortality <30%=resprouter
-    [Gill & Bradstock, 1992]. Notes on conflicting or variable regeneration information.
-    May indicate response to various fire intensity levels; level of mortality seen;
-    a variable fire response seen by one observer within the same species. Some species
-    with distinct recordings for both resprouter and seeder have been listed separately
-    as 'fire sensitive/tolerant variety'. See original file in raw data folder for
-    extensive reference list.
-- var_in: fire_response_detailed
-  unit_in: .na
-  trait_name: fire_response_detailed
+  trait_name: resprouting_capacity
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -164,7 +146,7 @@ traits:
     data folder for extensive reference list.
 - var_in: Seed storage
   unit_in: .na
-  trait_name: seed_storage_location
+  trait_name: seedbank_location
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -180,7 +162,7 @@ traits:
     See original file in raw data folder for extensive reference list.
 - var_in: seed_longevity_categorical
   unit_in: .na
-  trait_name: seed_longevity_categorical
+  trait_name: seedbank_longevity_class
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -281,10 +263,10 @@ traits:
   value_type: minimum
   basis_of_value: expert_score
   replicates: .na
-  methods: Waiting to map in later; Summary of life history categories. Minimum value
-    from primary juvenile period, seed set, secondary juvenile period, fire tolerance,
-    and 'maturity'. Secondary juvenile and fire tolerance values are not included
-    for species that are predominately seeders.
+  methods: Summary of life history categories. Minimum value from primary juvenile
+    period, seed set, secondary juvenile period, fire tolerance, and 'maturity'. Secondary
+    juvenile and fire tolerance values are not included for species that are predominately
+    seeders.
 - var_in: Maximum maturity
   unit_in: a
   trait_name: reproductive_maturity
@@ -292,10 +274,10 @@ traits:
   value_type: maximum
   basis_of_value: expert_score
   replicates: .na
-  methods: Waiting to map in later; Summary of life history categories. Minimum value
-    from primary juvenile period, seed set, secondary juvenile period, fire tolerance,
-    and 'maturity'. Secondary juvenile and fire tolerance values are not included
-    for species that are predominately seeders.
+  methods: Summary of life history categories. Minimum value from primary juvenile
+    period, seed set, secondary juvenile period, fire tolerance, and 'maturity'. Secondary
+    juvenile and fire tolerance values are not included for species that are predominately
+    seeders.
 - var_in: Lifespan > than
   unit_in: a
   trait_name: lifespan
@@ -318,48 +300,96 @@ traits:
     is a fairly broad range, based on plant life form & structure. May be post-fire
     age at which a species is no longer found in a community where it was known or
     assumed to occur in.
-- var_in: Secondary juvenile period
+- var_in: time_to_flowering_min
   unit_in: a
-  trait_name: reproductive_maturity_secondary_after_fire
+  trait_name: fire_time_from_fire_to_flowering
   entity_type: species
-  value_type: bin
+  value_type: minimum
   basis_of_value: measurement
   replicates: .na
   methods: Post-fire age at which flowering first occurs from resprouting material
+  entity_context: resprouts
+- var_in: time_to_flowering_max
+  unit_in: a
+  trait_name: fire_time_from_fire_to_flowering
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which flowering first occurs from resprouting material
+  entity_context: resprouts
+- var_in: time_to_flowering_mean
+  unit_in: a
+  trait_name: fire_time_from_fire_to_flowering
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which flowering first occurs from resprouting material
+  entity_context: resprouts
+- var_in: peak_flowering_min
+  unit_in: a
+  trait_name: fire_time_from_fire_to_peak_flowering
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which most individuals are flowering from resprouting
+    material
+  entity_context: resprouts
+- var_in: peak_flowering_max
+  unit_in: a
+  trait_name: fire_time_from_fire_to_peak_flowering
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which most individuals are flowering from resprouting
+    material
+  entity_context: resprouts
+- var_in: time_to_fruiting_min
+  unit_in: a
+  trait_name: fire_time_from_fire_to_fruiting
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which fruiting first occurs from resprouting material
+  entity_context: resprouts
+- var_in: time_to_fruiting_max
+  unit_in: a
+  trait_name: fire_time_from_fire_to_fruiting
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which fruiting first occurs from resprouting material
+  entity_context: resprouts
+- var_in: time_to_fruiting_mean
+  unit_in: a
+  trait_name: fire_time_from_fire_to_fruiting
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which fruiting first occurs from resprouting material
+  entity_context: resprouts
 substitutions:
-- trait_name: reproductive_maturity_secondary_after_fire
-  find: <1
-  replace: 0--1
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: R
   replace: resprouts
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: Rs
   replace: resprouts fire_killed
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: S
   replace: fire_killed
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: S/R
   replace: partial_resprouting
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: Sr
   replace: partial_resprouting
-- trait_name: fire_response_detailed
-  find: R
-  replace: strong_resprouting
-- trait_name: fire_response_detailed
-  find: Rs
-  replace: intermediate_resprouting
-- trait_name: fire_response_detailed
-  find: S
-  replace: fire_killed
-- trait_name: fire_response_detailed
-  find: S/R
-  replace: strong_resprouting fire_killed
-- trait_name: fire_response_detailed
-  find: Sr
-  replace: weak_resprouting
 - trait_name: plant_growth_form
   find: S
   replace: shrub
@@ -419,7 +449,7 @@ substitutions:
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: 'no'
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: recruitment mostly after fire (126)
   replace: post_fire_recruitment
@@ -431,28 +461,28 @@ substitutions:
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: <1 seedling per adult
-  replace: no_post_fire_recruitment
-- trait_name: seed_storage_location
+  replace: post_fire_recruitment_absent
+- trait_name: seedbank_location
   find: persistent soil
-  replace: soil
+  replace: soil_seedbank
 - trait_name: post_fire_recruitment
   find: <1 seedling per adult
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: <1 seedling per adult (100), prolific (105)
-  replace: no_post_fire_recruitment post_fire_recruitment
+  replace: post_fire_recruitment_absent post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: '>1 seedling per adult'
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: '>1 seedling per adult (100), high (105)'
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: absent-infrequent
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: absent-infrequent / no
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: abundant
   replace: post_fire_recruitment
@@ -470,13 +500,13 @@ substitutions:
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: few seedlings
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: few seedlings seen
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: few with low-intensity, prolific with high intensity
-  replace: no_post_fire_recruitment post_fire_recruitment
+  replace: post_fire_recruitment_absent post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: frequent seedlings 5 months post intense fire
   replace: post_fire_recruitment
@@ -488,7 +518,7 @@ substitutions:
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: high (95) / <1 seedling per adult (100)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: high, better after autumn burn cf spring
   replace: post_fire_recruitment
@@ -497,82 +527,82 @@ substitutions:
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: low
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: low (69) / >1 seedling per adult (100)
-  replace: post_fire_recruitment_moderate
+  replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: low levels of emergence
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: may be poor
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: minimal
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: minor (79) / no
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: minor (79) / none observed (78)
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: minor (79) / yes / no
-  replace: no_post_fire_recruitment post_fire_recruitment
+  replace: post_fire_recruitment_absent post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: minor (79), high (105)
-  replace: no_post_fire_recruitment post_fire_recruitment
+  replace: post_fire_recruitment_absent post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: moderate
-  replace: post_fire_recruitment_moderate
+  replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: moderate (57)  <1 seedling per adult (100)
-  replace: post_fire_recruitment_moderate no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: moderate after spring burn, high after autumn burn
-  replace: post_fire_recruitment_moderate post_fire_recruitment
+  replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: moderate-high (57) / no
-  replace: post_fire_recruitment_moderate no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: most recruitment postfire
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: no / present at all sites (78)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: no / weak (hg)
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: no / yes
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: no / yes (10) / <1 seedling per adult (100)
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: no / yes (10) / none observed (78)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: no / yes (r42)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: no, recruitment mostly post-fire (126)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: none after autumn burn, moderate after spring burn
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: none observed
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: none observed (69) / <1 seedlingper adult (100)
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: none observed (78)
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: none observed (78) / minor (79)
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: only a few seedlings between fires, best recruitment after moderate to high
     intensity fire
@@ -591,19 +621,19 @@ substitutions:
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: prolific (fo1) / moderate (hg)
-  replace: post_fire_recruitment_moderate post_fire_recruitment
+  replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: rare
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: rare (m)
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: rare (m), few seedlings (105)
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: 'rare: 5 seedlings/ha'
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: recruitment mainly after fire
   replace: post_fire_recruitment
@@ -624,10 +654,10 @@ substitutions:
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: seedlings rare after fire
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: some
-  replace: post_fire_recruitment_moderate
+  replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: strong post-fire pulse
   replace: post_fire_recruitment
@@ -645,16 +675,16 @@ substitutions:
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: weak
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (10) / 43.2 seedlings/10m2 in wsf, 2.2 seedlings/10m2 in rf (m)
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: yes (29, bn) / low (57)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (33) / present at 4% of sites (78)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (33) / present at all sites (78)
   replace: post_fire_recruitment
@@ -663,13 +693,13 @@ substitutions:
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: yes (52) / none observed (78) / <1 seedling per adult (100)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (52), prolific (105)
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: yes (57) / <1 seedling per adult (100)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (69) / >1 seedling per adult (100)
   replace: post_fire_recruitment
@@ -678,40 +708,40 @@ substitutions:
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: yes (74) / <1 seedling per adult (100)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (78) / <1 seedling per adult (100)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (78) / minor (79) / no
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (95) / <1 seedling per adult (100)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (95) / >1 seedling per adult (100)
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: yes (bn) / <1 seedling per adult (100)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (fo1) / no
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (fo1) / none observed (78)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (fo1) / weak (hg)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (p) / <1 seedling per adult (100)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes (p) / high (57)
   replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: yes (r42) / 40 seedlings/ha (ct) / <1 seedling per adult (100)
-  replace: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: yes, but generally in autumn regardless of fire season
   replace: post_fire_recruitment
@@ -937,271 +967,271 @@ substitutions:
 - trait_name: bud_bank_location
   find: tuber
   replace: stem_tuber
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: a-canopy
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: a-persistent soil
-  replace: soil
-- trait_name: seed_storage_location
+  replace: soil_seedbank
+- trait_name: seedbank_location
   find: canopy - transient
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: canopy (>1y) & soil
-  replace: canopy soil
-- trait_name: seed_storage_location
+  replace: canopy_seedbank soil_seedbank
+- trait_name: seedbank_location
   find: canopy (1; 9) / soil (6)
-  replace: canopy soil
-- trait_name: seed_storage_location
+  replace: canopy_seedbank soil_seedbank
+- trait_name: seedbank_location
   find: canopy (released before next flowering period)
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: canopy (remains on stem for several years)
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: canopy (retained several years, very low density of seed in soil; 32)
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: canopy / persistent soil
-  replace: canopy soil
-- trait_name: seed_storage_location
+  replace: canopy_seedbank soil_seedbank
+- trait_name: seedbank_location
   find: canopy / persistent soil (84)
-  replace: canopy soil
-- trait_name: seed_storage_location
+  replace: canopy_seedbank soil_seedbank
+- trait_name: seedbank_location
   find: canopy / released at maturity (1)
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: canopy / released regularly without fire (1)
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: canopy?
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: not canopy
-  replace: not_canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank_absent
+- trait_name: seedbank_location
   find: not known to set seed
   replace: .na
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: peristent
   replace: .na
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: persistent
   replace: .na
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: persistent (6) / transient (49)
   replace: .na
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: persistent soil
-  replace: soil
-- trait_name: seed_storage_location
+  replace: soil_seedbank
+- trait_name: seedbank_location
   find: persistent soil / canopy
-  replace: canopy soil
-- trait_name: seed_storage_location
+  replace: canopy_seedbank soil_seedbank
+- trait_name: seedbank_location
   find: persistent soil / transient
-  replace: soil
-- trait_name: seed_storage_location
+  replace: soil_seedbank
+- trait_name: seedbank_location
   find: persistent soil / transient (38)
-  replace: soil
-- trait_name: seed_storage_location
+  replace: soil_seedbank
+- trait_name: seedbank_location
   find: persistent soil, exhausted by disturbance
-  replace: soil
-- trait_name: seed_storage_location
+  replace: soil_seedbank
+- trait_name: seedbank_location
   find: persistent soil?
-  replace: soil
-- trait_name: seed_storage_location
+  replace: soil_seedbank
+- trait_name: seedbank_location
   find: released at maturity
   replace: .na
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: requires recolonisation from unburnt sites
   replace: .na
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: serotinous canopy
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: serotinous canopy (11% follicles open without fire; 73)
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: serotinous canopy (4% follicles open without fire; 73)
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: serotinous canopy (max retention 15y)
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: serotinous canopy (retention >8y; 20)
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: sets no seed
   replace: .na
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: shed annually; transient
   replace: .na
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: shed at maturity
   replace: .na
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: short-lived persistent soil
-  replace: soil
-- trait_name: seed_storage_location
+  replace: soil_seedbank
+- trait_name: seedbank_location
   find: short-lived soil
-  replace: soil
-- trait_name: seed_storage_location
+  replace: soil_seedbank
+- trait_name: seedbank_location
   find: short-lived soil, exhausted by disturbance
-  replace: soil
-- trait_name: seed_storage_location
+  replace: soil_seedbank
+- trait_name: seedbank_location
   find: transient
   replace: .na
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: transient / persistent soil
-  replace: soil
-- trait_name: seed_storage_location
+  replace: soil_seedbank
+- trait_name: seedbank_location
   find: transient or canopy?
-  replace: canopy
-- trait_name: seed_storage_location
+  replace: canopy_seedbank
+- trait_name: seedbank_location
   find: transient; requires reinvasion from unburnt sites
   replace: .na
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: transient?
   replace: .na
-- trait_name: seed_storage_location
+- trait_name: seedbank_location
   find: viviparous
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: none
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: canopy
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: a-canopy
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: a-persistent soil
   replace: persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: canopy - transient
   replace: transient
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: canopy (>1y) & soil
   replace: persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: canopy (1; 9) / soil (6)
   replace: persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: canopy (released before next flowering period)
-  replace: short_persistent
-- trait_name: seed_longevity_categorical
+  replace: transient
+- trait_name: seedbank_longevity_class
   find: canopy (remains on stem for several years)
   replace: short_persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: canopy (retained several years, very low density of seed in soil; 32)
   replace: short_persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: canopy / persistent soil
   replace: persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: canopy / persistent soil (84)
   replace: persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: canopy / released at maturity (1)
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: canopy / released regularly without fire (1)
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: canopy?
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: not canopy
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: not known to set seed
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: peristent
   replace: persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: persistent
   replace: persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: persistent (6) / transient (49)
   replace: persistent transient
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: persistent soil
   replace: persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: persistent soil / canopy
   replace: persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: persistent soil / transient
   replace: persistent transient
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: persistent soil / transient (38)
   replace: persistent transient
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: persistent soil, exhausted by disturbance
   replace: persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: persistent soil?
   replace: persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: released at maturity
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: requires recolonisation from unburnt sites
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: serotinous canopy
   replace: long_persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: serotinous canopy (11% follicles open without fire; 73)
   replace: long_persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: serotinous canopy (4% follicles open without fire; 73)
   replace: long_persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: serotinous canopy (max retention 15y)
   replace: long_persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: serotinous canopy (retention >8y; 20)
   replace: long_persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: sets no seed
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: shed annually; transient
   replace: transient
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: shed at maturity
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: short-lived persistent soil
-  replace: short_persistent
-- trait_name: seed_longevity_categorical
+  replace: transient persistent
+- trait_name: seedbank_longevity_class
   find: short-lived soil
-  replace: short_persistent
-- trait_name: seed_longevity_categorical
+  replace: transient
+- trait_name: seedbank_longevity_class
   find: short-lived soil, exhausted by disturbance
-  replace: short_persistent
-- trait_name: seed_longevity_categorical
+  replace: transient
+- trait_name: seedbank_longevity_class
   find: soil
   replace: .na
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: transient
   replace: transient
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: transient / persistent soil
   replace: transient persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: transient or canopy?
   replace: transient
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: transient; requires reinvasion from unburnt sites
   replace: transient
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: transient?
   replace: transient
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: viviparous
   replace: .na
 - trait_name: dispersal_syndrome
@@ -1953,6 +1983,27 @@ substitutions:
 - trait_name: seed_germination_treatment
   find: cold stratification
   replace: stratification_cold
+- trait_name: seedbank_location
+  find: canopy
+  replace: canopy_seedbank
+- trait_name: seedbank_location
+  find: soil
+  replace: soil_seedbank
+- trait_name: reproductive_maturity
+  find: '2-Jan'
+  replace: '1.5'
+- trait_name: lifespan
+  find: S
+  replace: 10
+- trait_name: lifespan
+  find: L
+  replace: 25
+- trait_name: lifespan
+  find: M
+  replace: 60
+- trait_name: lifespan
+  find: I
+  replace: 100
 taxonomic_updates:
 - find: Acacia capitata
   replace: Acacia sp. [Acacia capitata; NSWFRD_2014]
