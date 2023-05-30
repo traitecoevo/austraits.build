@@ -21,7 +21,8 @@ dataset:
   custom_R_code:      '
     data %>%
       mutate(
-        fire_response = ifelse(`Post-fire regeneration` %in% c("Fire killed, abundant seedlings", 
+        fire_time_from_fire_to_fruiting = `Reproductive maturity`,
+        resprouting_capacity = ifelse(`Post-fire regeneration` %in% c("Fire killed, abundant seedlings", 
         "Fire killed, abundant seedlings; very occasional coppice from base of stem", 
         "Only seedlings observed"), "fire_killed", "resprouts")
       )
@@ -121,9 +122,9 @@ traits:
     seedlings from existing plants and whether post-fire resprouting originated from
     along sub-soil roots, at the base of stems or epicormically from branches and
     trunks above ground level.
-- var_in: fire_response
+- var_in: resprouting_capacity
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: population
   value_type: mode
   basis_of_value: expert_score
@@ -151,7 +152,7 @@ traits:
   life_stage: seedling
 - var_in: Juvenile fire response
   unit_in: .na
-  trait_name: fire_response_juvenile
+  trait_name: resprouting_capacity_juvenile
   entity_type: population
   value_type: mode
   basis_of_value: expert_score
@@ -162,6 +163,22 @@ traits:
     survival of the most abundantly germinating sclerophyll (Acacia cincinnata) and
     rainforest species (Alphitonia petrei) were recorded.
   life_stage: seedling
+- var_in: fire_time_from_fire_to_fruiting
+  unit_in: a
+  trait_name: fire_time_from_fire_to_fruiting
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: A total of 85 surveys were undertaken across 13 permanent 100-m2 plots
+    over 14 years. Each plot was burnt between 0 to 5 times, and surveyed 2 to 10
+    times over 5 to 14 years during the period 1996 to 2009 (see Appendix S1). During
+    each survey, all individuals of shrubs and tree species, both sclerophyll and
+    rainforest, were counted, including newly emerged seedlings. Data of recently
+    emerged seedlings from all 85 surveys of the 13 plots were combined to examine
+    the timing of seedling recruitment with respect to years since fire. The numbers
+    of newly emerged seedlings per plot, documented during each of the 85 plot surveys,
+    were used as replicates in the analysis.
 - var_in: Reproductive maturity
   unit_in: a
   trait_name: reproductive_maturity
@@ -181,7 +198,7 @@ traits:
   life_stage: adult
 - var_in: Fire and establishing
   unit_in: .na
-  trait_name: fire_and_establishing
+  trait_name: seedling_establishment_conditions
   entity_type: population
   value_type: mode
   basis_of_value: expert_score
@@ -236,19 +253,19 @@ substitutions:
 - trait_name: post_fire_recruitment
   find: Apparent seedlings typically root coppice shoots
   replace: post_fire_recruitment
-- trait_name: fire_response_juvenile
+- trait_name: resprouting_capacity_juvenile
   find: 9% survive being burnt in their 2nd year
   replace: juvenile_fire_killed
-- trait_name: fire_response_juvenile
+- trait_name: resprouting_capacity_juvenile
   find: 33% survive being burnt in their 2nd year
   replace: juvenile_moderate_fire_killed
-- trait_name: fire_response_juvenile
+- trait_name: resprouting_capacity_juvenile
   find: 27% survive being burnt in their 2nd year
   replace: juvenile_moderate_fire_killed
-- trait_name: fire_response_juvenile
+- trait_name: resprouting_capacity_juvenile
   find: 56% survive being burnt in their 2nd year
   replace: juvenile_resprout
-- trait_name: fire_response_juvenile
+- trait_name: resprouting_capacity_juvenile
   find: 29% survive being burnt in their 2nd year
   replace: juvenile_moderate_fire_killed
 - trait_name: reproductive_maturity
@@ -263,13 +280,25 @@ substitutions:
 - trait_name: reproductive_maturity
   find: Begin producing seed in 9th year when 3 m tall
   replace: 9
-- trait_name: fire_and_establishing
+- trait_name: fire_time_from_fire_to_fruiting
+  find: Begin producing seed by 12th year
+  replace: 12
+- trait_name: fire_time_from_fire_to_fruiting
+  find: 8% begin producing seed in 3rd year; 60% in 4th year
+  replace: 3
+- trait_name: fire_time_from_fire_to_fruiting
+  find: Begin producing seed in 10th year, when 6 m tall
+  replace: 10
+- trait_name: fire_time_from_fire_to_fruiting
+  find: Begin producing seed in 9th year when 3 m tall
+  replace: 9
+- trait_name: seedling_establishment_conditions
   find: Some germination later during intervals between fires
   replace: establish_anytime
-- trait_name: fire_and_establishing
+- trait_name: seedling_establishment_conditions
   find: Germination after grass layer converted to leaf litter many years after fire
-  replace: establish_intermediate_to_mature_vegetation_only
-- trait_name: fire_and_establishing
+  replace: establish_intermediate_to_mature_vegetation
+- trait_name: seedling_establishment_conditions
   find: Post-fire & later in fire interval seedlings
   replace: establish_anytime
 taxonomic_updates:
