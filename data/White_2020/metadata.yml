@@ -42,7 +42,8 @@ dataset:
         plant_climbing_mechanism = NA,
         plant_growth_substrate = ifelse(str_detect(plant_growth_form, "epiphyte"), "epiphyte", NA),
         plant_growth_form = str_replace(plant_growth_form, "epiphyte_", ""),
-        plant_growth_form = str_replace(plant_growth_form, "epiphyte", "")  %>% str_squish()
+        plant_growth_form = str_replace(plant_growth_form, "epiphyte", "")  %>% str_squish(),
+        seedbank_longevity_class = propagule_longevity
       ) %>%
       move_values_to_new_trait(
         "plant_growth_form","stem_growth_habit",
@@ -216,6 +217,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
+- var_in: seedbank_longevity_class
+  unit_in: .na
+  trait_name: seedbank_longevity
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
 - var_in: life_form
   unit_in: .na
   trait_name: life_form
@@ -386,6 +395,15 @@ substitutions:
   find: '01'
   replace: 2--
 - trait_name: seedbank_longevity
+  find: '00'
+  replace: .na  
+- trait_name: seedbank_longevity_class
+  find: '10'
+  replace: transient
+- trait_name: seedbank_longevity_class
+  find: '01'
+  replace: persistent
+- trait_name: seedbank_longevity_class
   find: '00'
   replace: .na
 - trait_name: plant_tolerance_calcicole
