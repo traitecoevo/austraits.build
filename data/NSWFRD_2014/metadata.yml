@@ -48,10 +48,7 @@ dataset:
         growth_habit = ifelse(`Life form` == "P", "prostrate", NA),
         `Life form` = ifelse(`Life form` == "P", NA, `Life form`),
         storage_organ = ifelse(stringr::str_detect(`Resprout location`, "lignotuber"), "lignotuber", NA),
-        serotiny = ifelse(stringr::str_detect(`Seed storage`, "serotinous"), "serotinous", NA),
-        time_from_fire_flowering_max = stringr::str_extract(`Secondary juvenile period`, "[:digit:]+$|"[:digit:]\\.[:digit:]+$"),
-        time_from_fire_flowering_min = stringr::str_extract(`Secondary juvenile period`, "^[:digit:]+"|"^[:digit:]\\.[:digit:]+"),
-        time_from_fire_flowering_min = ifelse(time_from_fire_flowering_min == time_from_fire_flowering_max, NA, time_from_fire_flowering_min)
+        serotiny = ifelse(stringr::str_detect(`Seed storage`, "serotinous"), "serotinous", NA)
       ) %>%
       group_by(`Current Scientific Name`) %>%
         mutate(observation_num = row_number()) %>%
@@ -65,7 +62,8 @@ dataset:
   sampling_strategy: unknown
   original_file: AULD-NSWFFRDv2.1.xls
   notes: unpubl. database held by NSW DPIE. The raw data file includes multiple worksheets
-    with references and notes.
+    with references and notes. Secondary juvenile period was manually transcribed
+    into columns (see substitutions_for_time_from_fire_to_flowering.csv and NSWFRD_2014_custom_R_code.R).
 locations: .na
 contexts:
 - context_property: replicate observations
@@ -306,7 +304,7 @@ traits:
     is a fairly broad range, based on plant life form & structure. May be post-fire
     age at which a species is no longer found in a community where it was known or
     assumed to occur in.
-- var_in: time_from_fire_flowering_min
+- var_in: time_to_flowering_min
   unit_in: a
   trait_name: fire_time_from_fire_to_flowering
   entity_type: species
@@ -315,7 +313,7 @@ traits:
   replicates: .na
   methods: Post-fire age at which flowering first occurs from resprouting material
   entity_context: resprouts
-- var_in: time_from_fire_flowering_max
+- var_in: time_to_flowering_max
   unit_in: a
   trait_name: fire_time_from_fire_to_flowering
   entity_type: species
@@ -323,6 +321,69 @@ traits:
   basis_of_value: measurement
   replicates: .na
   methods: Post-fire age at which flowering first occurs from resprouting material
+  entity_context: resprouts
+- var_in: time_to_flowering_mean
+  unit_in: a
+  trait_name: fire_time_from_fire_to_flowering
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which flowering first occurs from resprouting material
+  entity_context: resprouts
+- var_in: peak_flowering_min
+  unit_in: a
+  trait_name: fire_time_from_fire_to_peak_flowering
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which most individuals are flowering from resprouting material
+  entity_context: resprouts
+- var_in: peak_flowering_max
+  unit_in: a
+  trait_name: fire_time_from_fire_to_peak_flowering
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which most individuals are flowering from resprouting material
+  entity_context: resprouts
+- var_in: peak_flowering_mean
+  unit_in: a
+  trait_name: fire_time_from_fire_to_peak_flowering
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which most individuals are flowering from resprouting material
+  entity_context: resprouts
+- var_in: time_to_fruiting_min
+  unit_in: a
+  trait_name: fire_time_from_fire_to_fruiting
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which fruiting first occurs from resprouting material
+  entity_context: resprouts
+- var_in: time_to_fruiting_max
+  unit_in: a
+  trait_name: fire_time_from_fire_to_fruiting
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which fruiting first occurs from resprouting material
+  entity_context: resprouts
+- var_in: time_to_fruiting_mean
+  unit_in: a
+  trait_name: fire_time_from_fire_to_fruiting
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire age at which fruiting first occurs from resprouting material
   entity_context: resprouts
 substitutions:
 - trait_name: resprouting_capacity
