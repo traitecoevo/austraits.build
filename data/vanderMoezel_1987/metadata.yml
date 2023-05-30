@@ -25,7 +25,8 @@ dataset:
         post_fire_recruitment = if_else(fire_response == "Seed", "post_fire_recruitment", NA_character_),
         reproductive_maturity = if_else(fire_response == "Seed", juvenile_period, NA_character_),
         reproductive_maturity_secondary_after_fire = if_else(fire_response == "Sprout", juvenile_period, NA_character_),
-        post_fire_flowering = if_else(!is.na(flowering_notes), "fire_dependent_flowering" , NA_character_)
+        post_fire_flowering = if_else(!is.na(flowering_notes), "fire_dependent_flowering" , NA_character_),
+        fire_response_context = fire_response
       )
   '
   collection_date: '1981'
@@ -72,6 +73,22 @@ contexts:
   - find: Laterite
     value: laterite
     description: found in lateritic upland sites
+- context_property: time to flowering type
+  category: entity_context
+  var_in: fire_response_context
+  values:
+  - find: Seed
+    value: fire_killed
+    description: Time from fire to flowering measured on plants that germinated post-fire.
+  - find: Sprout
+    value: resprouts
+    description: Time from fire to flowering measured on resprouting shoots.
+  - find: Sprout and seed
+    value: mixed response
+    description: Time from fire to flowering measured on either resprouting shoots or newly germinated plants.
+  - find: Seed and sprout
+    value: mixed response
+    description: Time from fire to flowering measured on either resprouting shoots or newly germinated plants.
 traits:
 - var_in: fire_response
   unit_in: .na
