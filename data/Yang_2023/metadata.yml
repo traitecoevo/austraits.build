@@ -81,7 +81,12 @@ contributors:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      mutate(
+        seedbank_longevity = seed_longevity_categorical
+      )
+  '
   collection_date: unknown/2022
   taxon_name: taxon_name
   source_id: source_id
@@ -155,10 +160,18 @@ contexts:
     description: open habitat conditions
   - value: overgrown
     description: overgrown habitat conditions
+- context_property: time to flowering type
+  category: entity_context
+  var_in: time_to_flowering_type
+  values:
+  - value: resprouts
+    description: Time from fire to flowering measured on resprouting shoots.
+  - value: fire_killed
+    description: Time from fire to flowering measured on plants that germinated post-fire.
 traits:
 - var_in: fire_response
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -178,15 +191,6 @@ traits:
 - var_in: bud_bank_location
   unit_in: .na
   trait_name: bud_bank_location
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: The trait value is manually scored from the textual taxon description in
-    the source (Flora of Australia, a state flora, or the taxonomic literature).
-- var_in: canopy_seedbank
-  unit_in: .na
-  trait_name: canopy_seedbank
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -222,7 +226,7 @@ traits:
     the source (Flora of Australia, a state flora, or the taxonomic literature).
 - var_in: fire_and_establishing
   unit_in: .na
-  trait_name: fire_and_establishing
+  trait_name: seedling_establishment_conditions
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -247,9 +251,9 @@ traits:
   replicates: .na
   methods: The trait value is manually scored from the textual taxon description in
     the source (Flora of Australia, a state flora, or the taxonomic literature).
-- var_in: fire_response_juvenile
+- var_in: resprouting_capacity_juvenile
   unit_in: .na
-  trait_name: fire_response_juvenile
+  trait_name: resprouting_capacity_juvenile
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -259,7 +263,7 @@ traits:
     the source (Flora of Australia, a state flora, or the taxonomic literature).
 - var_in: fire_response_on_maturity
   unit_in: .na
-  trait_name: fire_response_on_maturity
+  trait_name: .na
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -277,7 +281,7 @@ traits:
     the source (Flora of Australia, a state flora, or the taxonomic literature).
 - var_in: time_from_fire_to_fruit
   unit_in: a
-  trait_name: fire_time_from_fire_to_fruit
+  trait_name: fire_time_from_fire_to_fruiting
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -313,7 +317,7 @@ traits:
     the source (Flora of Australia, a state flora, or the taxonomic literature).
 - var_in: reproductive_maturity_secondary_after_fire
   unit_in: a
-  trait_name: reproductive_maturity_secondary_after_fire
+  trait_name: fire_time_from_fire_to_flowering
   entity_type: reproductive_maturity_secondary_entity_type
   value_type: reproductive_maturity_secondary_value_type
   basis_of_value: expert_score
@@ -322,25 +326,34 @@ traits:
     the source (Flora of Australia, a state flora, or the taxonomic literature).
 - var_in: seed_longevity_categorical
   unit_in: .na
-  trait_name: seed_longevity_categorical
+  trait_name: seedbank_longevity_class
   entity_type: species
   value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The trait value is manually scored from the textual taxon description in
+    the source (Flora of Australia, a state flora, or the taxonomic literature).
+- var_in: seedbank_longevity
+  unit_in: a
+  trait_name: seedbank_longevity
+  entity_type: species
+  value_type: bin
   basis_of_value: expert_score
   replicates: .na
   methods: The trait value is manually scored from the textual taxon description in
     the source (Flora of Australia, a state flora, or the taxonomic literature).
 - var_in: seed_release
   unit_in: .na
-  trait_name: seed_release
+  trait_name: .na
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
   methods: The trait value is manually scored from the textual taxon description in
-    the source (Flora of Australia, a state flora, or the taxonomic literature).
+    the source (Flora of Australia, a state flora, or the taxonomic literature). (unmapping, because identical scoring to the trait serotinous)
 - var_in: seed_storage_location
   unit_in: .na
-  trait_name: seed_storage_location
+  trait_name: seedbank_location
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -350,15 +363,6 @@ traits:
 - var_in: serotiny
   unit_in: .na
   trait_name: serotiny
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: The trait value is manually scored from the textual taxon description in
-    the source (Flora of Australia, a state flora, or the taxonomic literature).
-- var_in: soil_seedbank
-  unit_in: .na
-  trait_name: soil_seedbank
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -384,6 +388,15 @@ traits:
   methods: The trait value is manually scored from the textual taxon description in
     the source (Flora of Australia, a state flora, or the taxonomic literature).
 substitutions:
+- trait_name: seedbank_location
+  find: canopy
+  replace: canopy_seedbank
+- trait_name: seedbank_location
+  find: soil
+  replace: soil_seedbank  
+- trait_name: seedbank_longevity
+  find: short_persistent
+  replace: 2--3
 - trait_name: reproductive_maturity
   find: '>3'
   replace: 3
@@ -408,6 +421,33 @@ substitutions:
 - trait_name: storage_organ
   find: lignotuber none
   replace: lignotuber no_storage_organ
+- trait_name: resprouting_capacity
+  find: unknown
+  replace: .na
+- trait_name: resprouting_capacity
+  find: no_significant_fire_response
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: unknown resprouts
+  replace: resprouts
+- trait_name: post_fire_recruitment
+  find: post_fire_recruitment_moderate
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
+- trait_name: post_fire_recruitment
+  find: post_fire_recruitment no_post_fire_recruitment
+  replace: post_fire_recruitment_absent post_fire_recruitment
+- trait_name: seedling_establishment_conditions
+  find: establish_just_after_fire_only
+  replace: establish_post_fire
+- trait_name: fire_exposure_level
+  find: fire_not_relevant
+  replace: aquatic_taxon
+- trait_name: fire_exposure_level
+  find: fire_avoidance_in_water
+  replace: aquatic_taxon
 taxonomic_updates:
 - find: Dryandra lindleyana subsp. lindleyana var. lindleyana
   replace: Dryandra lindleyana subsp. lindleyana

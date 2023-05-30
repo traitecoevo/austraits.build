@@ -30,7 +30,16 @@ dataset:
   data_is_long_format: no
   custom_R_code:   '
     data %>%
-      mutate(Comeditive_stratum = ifelse(PFT_Gosper2012 == "Ephem","post_fire_ephemeral",Comeditive_stratum))
+      mutate(
+        Comeditive_stratum = ifelse(PFT_Gosper2012 == "Ephem","post_fire_ephemeral",Comeditive_stratum),
+        seed_storage_location =  Serotiny,
+        Soil_seedbank = stringr::str_replace(Soil_seedbank, "Yes", "soil_seedbank"),
+        Soil_seedbank = stringr::str_replace(Soil_seedbank, "No", "soil_seedbank_absent"),
+        seed_storage_location = stringr::str_replace(seed_storage_location, "Yes", "canopy_seedbank"),
+        seed_storage_location = stringr::str_replace(seed_storage_location, "No", "canopy_seedbank_absent"),
+        seed_storage_location = ifelse(is.na(Soil_seedbank), seed_storage_location, 
+        paste(seed_storage_location,Soil_seedbank))
+        )
   '
   collection_date: 1985/2015
   taxon_name: Species name
@@ -109,7 +118,7 @@ traits:
     recruits for non-resprouters and post-fire resprouts for resprouters.
 - var_in: Fire_response
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: population
   value_type: mode
   basis_of_value: expert_score
@@ -139,9 +148,9 @@ traits:
     and 2000. Within each plot, the fire-response (resprouter versus non-resprouter)
     of each species was determined together with the reproductive status of post-fire
     recruits for non-resprouters and post-fire resprouts for resprouters.
-- var_in: Soil_seedbank
+- var_in: seed_storage_location
   unit_in: .na
-  trait_name: soil_seedbank
+  trait_name: seedbank_location
   entity_type: population
   value_type: mode
   basis_of_value: expert_score
@@ -188,13 +197,13 @@ traits:
     of each species was determined together with the reproductive status of post-fire
     recruits for non-resprouters and post-fire resprouts for resprouters.
 substitutions:
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: Geophyte
   replace: resprouts
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: Resprout
   replace: resprouts
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: Killed
   replace: fire_killed
 - trait_name: serotiny
@@ -203,12 +212,6 @@ substitutions:
 - trait_name: serotiny
   find: 'yes'
   replace: serotinous
-- trait_name: soil_seedbank
-  find: 'no'
-  replace: soil_seedbank_absent
-- trait_name: soil_seedbank
-  find: 'yes'
-  replace: soil_seedbank_present
 - trait_name: lifespan
   find: short
   replace: 0--6
