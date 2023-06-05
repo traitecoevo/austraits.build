@@ -43,8 +43,8 @@ dataset:
   custom_R_code:      '
     data %>% 
       mutate(
-        fire_response = ifelse(life_history == "r", "resprouts", NA),
-        fire_response = ifelse(life_history == "o", "fire_killed", fire_response),
+        resprouting_capacity = ifelse(life_history == "r", "resprouts", NA),
+        resprouting_capacity = ifelse(life_history == "o", "fire_killed", resprouting_capacity),
         leaf_water_content = (100 - leaf_water_content),
         life_history = ifelse(life_history=="r","p",life_history),
         regen_strategy = ifelse(life_history=="o","seed",""),
@@ -70,7 +70,7 @@ dataset:
       group_by(species_name) %>%
         mutate(
           across(c(`regen_strategy`,`root_structure`,`C3C4`,`Nfixer`,`plant_growth_form`,
-          `life_history`,`phenology`, fire_response), replace_duplicates_with_NA)
+          `life_history`,`phenology`, resprouting_capacity), replace_duplicates_with_NA)
         ) %>%
       ungroup()
   '
@@ -395,9 +395,9 @@ traits:
   replicates: 1
   methods: Healthy mature leaves, twigs and roots were oven-dried at 60degC on the
     day of collection.
-- var_in: fire_response
+- var_in: resprouting_capacity
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
