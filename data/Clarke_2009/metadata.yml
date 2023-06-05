@@ -42,10 +42,12 @@ dataset:
           habitat == "WSF" ~ "wet sclerophyll forest in New England Tableland Bioregion",
           habitat == "DSF" ~ "dry sclerophyll forests in New England Tableland Bioregion"
         ),
-        fire_response = ifelse(not_in_Clarke_2015 == "x",fire_response,NA),
+        resprouting_capacity = ifelse(not_in_Clarke_2015 == "x",resprouting_capacity,NA),
         bud_bank_location = ifelse(not_in_Clarke_2015 == "x",regen_strategy,NA),
         plant_climbing_mechanism = ifelse(`Growth form` == "Twinner", "twining", NA),
-        bud_bank_location = ifelse(not_in_Clarke_2015 == "x",regen_strategy,NA)
+        bud_bank_location = ifelse(not_in_Clarke_2015 == "x",regen_strategy,NA),
+        time_from_fire_to_fruiting = ifelse(resprouting_capacity == "fire_killed", `Primary juvenile period`,`Secondary juvenile period`),
+        time_to_flowering_type = resprouting_capacity
       ) %>%
       group_by(Species) %>%
         mutate(
@@ -159,6 +161,14 @@ contexts:
   values:
   - value: 1
   - value: 2
+- context_property: time to flowering type
+  category: entity_context
+  var_in: time_to_flowering_type
+  values:
+  - value: resprouts
+    description: Time from fire to flowering measured on resprouting shoots.
+  - value: fire_killed
+    description: Time from fire to flowering measured on plants that germinated post-fire.
 traits:
 - var_in: Gill category
   unit_in: .na
@@ -183,9 +193,9 @@ traits:
     the position of resprouting and the type of seed bank was assessed for each species
     so they could be placed into one of the seven fire functional groups or syndromes
     of Gill and Bradstock (1992).
-- var_in: fire_response
+- var_in: resprouting_capacity
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: population
   value_type: mode
   basis_of_value: expert_score
@@ -233,7 +243,7 @@ traits:
   life_stage: adult
 - var_in: seed_storage_location
   unit_in: .na
-  trait_name: seed_storage_location
+  trait_name: seedbank_location
   entity_type: population
   value_type: mode
   basis_of_value: expert_score
@@ -270,9 +280,9 @@ traits:
     from tagging seedling recruits in the post-fire environment or from observations
     of flowering and fruiting of species after fire.
   life_stage: adult
-- var_in: Secondary juvenile period
+- var_in: time_from_fire_to_fruiting
   unit_in: a
-  trait_name: reproductive_maturity_secondary_after_fire
+  trait_name: fire_time_from_fire_to_fruiting
   entity_type: population
   value_type: minimum
   basis_of_value: measurement
@@ -335,6 +345,12 @@ substitutions:
 - trait_name: bud_bank_location
   find: basal_stem_buds stem_buds
   replace: basal_stem_buds epicormic_buds
+- trait_name: seedbank_location
+  find: canopy
+  replace: canopy_seedbank
+- trait_name: seedbank_location
+  find: soil
+  replace: soil_seedbank 
 taxonomic_updates:
 - find: Acacia venulosa (obligate seeding pop.)
   replace: Acacia venulosa
