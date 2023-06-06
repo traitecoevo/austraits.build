@@ -41,8 +41,8 @@ metadata_create_template <- function(dataset_id,
   collectors <- c("last_name", "given_name", "ORCID", "affiliation")
 
   out$contributors <- out$contributors$elements
-  out$contributors$data_collectors <- out$contributors$data_collectors$elements[collectors]
-  out$contributors$data_collectors[] <- "unknown"
+  out$contributors$data_collectors <- list(out$contributors$data_collectors$elements[collectors])
+  out$contributors$data_collectors[[1]][] <- "unknown"
   out$contributors[c("assistants", "austraits_curators")] <- "unknown"
 
   out$dataset <- out$dataset$values[c("data_is_long_format", "custom_R_code", "collection_date", "taxon_name", "location_name",
