@@ -209,14 +209,14 @@ dataset_process <- function(filename_data_raw,
 
   # combine for final output
   list(
-       traits     = traits %>% dplyr::filter(is.na(.data$error)) %>% dplyr::select(-.data$error),
+       traits     = traits %>% dplyr::filter(is.na(.data$error)) %>% dplyr::select(-error),
        locations  = locations,
-       contexts   = context_ids$contexts %>% dplyr::select(-.data$var_in, -.data$find),
+       contexts   = context_ids$contexts %>% dplyr::select(-var_in, -find),
        methods    = methods,
        excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% 
-              dplyr::select(.data$error, everything()),
+              dplyr::select(error, everything()),
        taxonomic_updates = taxonomic_updates,
-       taxa       = taxonomic_updates %>% dplyr::select(taxon_name = .data$cleaned_name) %>% dplyr::distinct(),
+       taxa       = taxonomic_updates %>% dplyr::select(taxon_name = cleaned_name) %>% dplyr::distinct(),
        contributors = contributors,
        sources    = sources,
        definitions = definitions,
@@ -378,7 +378,7 @@ process_create_observation_id <- function(data) {
     dplyr::ungroup() 
   
   data %>%
-    dplyr::select(-.data$check_for_ind)
+    dplyr::select(-check_for_ind)
 }
 
 #' Function to generate seuqnece of integer ids from vector of names
@@ -429,7 +429,7 @@ process_format_contexts <- function(my_list, dataset_id) {
        purrr::map_df(f) %>%
        dplyr::mutate(dataset_id = dataset_id) %>%
        dplyr::select(
-         .data$dataset_id, .data$context_property, .data$category, .data$var_in,
+         dataset_id, context_property, category, var_in,
          dplyr::any_of(c("find", "value", "description"))
        )
 
@@ -453,11 +453,11 @@ process_format_contexts <- function(my_list, dataset_id) {
 process_create_context_ids <- function(data, contexts) {
   # select context_cols
   tmp <- contexts %>%
-    dplyr::select(.data$context_property, .data$var_in) %>%
+    dplyr::select(context_property, var_in) %>%
     dplyr::distinct()
 
   # Extract context columns
-  context_cols <- data %>% dplyr::select(tmp$var_in)
+  context_cols <- data %>% dplyr::select(var_in)
   names(context_cols) <- tmp$context_property
 
   # Find and replace values for each context property
@@ -483,7 +483,7 @@ process_create_context_ids <- function(data, contexts) {
   tmp <-
     contexts %>%
     #  dplyr::filter(category == v) %>%
-    dplyr::select(.data$context_property, .data$category, .data$value) %>%
+    dplyr::select(context_property, category, value) %>%
     dplyr::distinct()
 
   categories <- c("plot", "treatment", "entity_context", "temporal", "method") %>% subset(., . %in% tmp$category)
@@ -516,7 +516,7 @@ process_create_context_ids <- function(data, contexts) {
         id = .data$combined %>%
           as.factor() %>% as.integer() %>% make_id()
       ) %>%
-      dplyr::select(-.data$combined)
+      dplyr::select(-combined)
 
     ## store ids
     ids[[paste0(w, "_id")]] <- xxx[["id"]]
@@ -525,7 +525,7 @@ process_create_context_ids <- function(data, contexts) {
     for (v in vars) {
       id_link[[v]] <-
         xxx %>%
-        dplyr::select(dplyr::all_of(v), .data$id) %>%
+        dplyr::select(dplyr::all_of(v), id) %>%
         dplyr::filter(!is.na(.data$id)) %>%
         dplyr::distinct() %>%
         dplyr::rename(find = v) %>%
@@ -599,7 +599,7 @@ process_format_locations <- function(my_list, dataset_id, schema) {
         TRUE ~ 4)
     ) %>%
     dplyr::arrange(.data$location_id, .data$location_name, .data$i, .data$location_property) %>%
-    dplyr::select(-.data$i)
+    dplyr::select(-i)
   
   out
 }
@@ -1010,7 +1010,7 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
                 parsing_id = parsing_id_tmp %>% as.character() %>% 
                 process_generate_id(prefix)
                     ) %>%
-              dplyr::select(-.data$parsing_id_tmp)
+              dplyr::select(-parsing_id_tmp)
   }
 
 
@@ -1226,7 +1226,7 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors) 
         util_list_to_df2() %>%
         dplyr::filter(!is.na(.data$trait_name)) %>%
         dplyr::mutate(dataset_id = dataset_id) %>%
-        dplyr::select(dataset_id, .data$trait_name, .data$methods)
+        dplyr::select(dataset_id, trait_name, methods)
       ,
       # study methods
       metadata$dataset %>%
@@ -1458,15 +1458,15 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
   austraits_raw$taxonomic_updates <-
     austraits_raw$taxonomic_updates %>%
     dplyr::left_join(by = "cleaned_name",
-              taxa %>% dplyr::select(.data$cleaned_name, .data$cleaned_scientific_name_id, .data$cleaned_name_taxonomic_status,
-                                      .data$cleaned_name_alternative_taxonomic_status, .data$taxon_id, .data$taxon_name, .data$taxon_rank)
+              taxa %>% dplyr::select(cleaned_name, cleaned_scientific_name_id, cleaned_name_taxonomic_status,
+                                      cleaned_name_alternative_taxonomic_status, taxon_id, taxon_name, taxon_rank)
               ) %>%
     dplyr::mutate(
       taxonomic_resolution = ifelse(!is.na(.data$taxonomic_resolution) & .data$taxonomic_resolution != .data$taxon_rank, .data$taxon_rank, .data$taxonomic_resolution),
       taxonomic_resolution = ifelse(is.na(.data$taxonomic_resolution), .data$taxon_rank, .data$taxonomic_resolution)
     ) %>%
     dplyr::distinct() %>%
-    dplyr::select(-.data$taxon_rank) %>%
+    dplyr::select(-taxon_rank) %>%
     dplyr::arrange(.data$cleaned_name)
 
 
@@ -1474,14 +1474,14 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
     austraits_raw$traits %>%
     dplyr::rename(cleaned_name = .data$taxon_name) %>%
     dplyr::left_join(by = "cleaned_name",
-              taxa %>% dplyr::select(.data$cleaned_name, .data$taxon_name, .data$taxon_rank)
+              taxa %>% dplyr::select(cleaned_name, taxon_name, taxon_rank)
               ) %>%
-    dplyr::select(.data$dataset_id, .data$taxon_name, dplyr::everything()) %>%
+    dplyr::select(dataset_id, taxon_name, dplyr::everything()) %>%
     dplyr::mutate(
       taxon_name = ifelse(is.na(.data$taxon_name), .data$cleaned_name, .data$taxon_name),
       taxon_name = ifelse(stringr::str_detect(.data$cleaned_name, "\\["), .data$cleaned_name, .data$taxon_name)
     ) %>%
-    dplyr::select(-.data$cleaned_name)
+    dplyr::select(-cleaned_name)
   
 # names, identifiers for all genera
   genera_tmp <- taxa %>% 
