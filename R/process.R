@@ -145,8 +145,8 @@ dataset_process <- function(filename_data_raw,
   if( nrow(locations) > 0 ) {
     traits <- 
       traits %>% 
-      dplyr::select(-location_id) %>%
-      dplyr::left_join(by = c("location_name"), locations %>% dplyr::select(location_name, location_id) %>% dplyr::distinct())
+      dplyr::select(-c("location_id")) %>%
+      dplyr::left_join(by = c("location_name"), locations %>% dplyr::select(dplyr::all_of(c("location_name", "location_id"))) %>% dplyr::distinct())
   }
 
   # Where missing, fill variables in traits table with values from locations
@@ -161,7 +161,7 @@ dataset_process <- function(filename_data_raw,
           dplyr::left_join(by = "location_id",
                             locations %>% 
                             tidyr::pivot_wider(names_from = "location_property", values_from = "value") %>%
-                            dplyr::select(location_id, col_tmp = dplyr::any_of(v)) %>%
+                            dplyr::select(c("location_id", col_tmp = dplyr::any_of(v))) %>%
                             stats::na.omit()
                           )
       # Use location level value if present
@@ -188,7 +188,7 @@ dataset_process <- function(filename_data_raw,
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
     traits %>%
-    dplyr::select(dataset_id, original_name, cleaned_name = taxon_name, taxonomic_resolution = taxonomic_resolution) %>%
+    dplyr::select(dplyr::all_of(c("dataset_id", "original_name", cleaned_name = "taxon_name", taxonomic_resolution = "taxonomic_resolution"))) %>%
     dplyr::distinct() %>%
     dplyr::arrange(.data$cleaned_name)
 
@@ -209,14 +209,14 @@ dataset_process <- function(filename_data_raw,
 
   # combine for final output
   list(
-       traits     = traits %>% dplyr::filter(is.na(.data$error)) %>% dplyr::select(-error),
+       traits     = traits %>% dplyr::filter(is.na(.data$error)) %>% dplyr::select(-c("error")),
        locations  = locations,
-       contexts   = context_ids$contexts %>% dplyr::select(-var_in, -find),
+       contexts   = context_ids$contexts %>% dplyr::select(-c("var_in", "find")),
        methods    = methods,
        excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% 
-              dplyr::select(error, everything()),
+              dplyr::select(c("error"), everything()),
        taxonomic_updates = taxonomic_updates,
-       taxa       = taxonomic_updates %>% dplyr::select(taxon_name = cleaned_name) %>% dplyr::distinct(),
+       taxa       = taxonomic_updates %>% dplyr::select(dplyr::all_of(c(taxon_name = "cleaned_name"))) %>% dplyr::distinct(),
        contributors = contributors,
        sources    = sources,
        definitions = definitions,
@@ -378,7 +378,7 @@ process_create_observation_id <- function(data) {
     dplyr::ungroup() 
   
   data %>%
-    dplyr::select(-check_for_ind)
+    dplyr::select(-c("check_for_ind"))
 }
 
 #' Function to generate seuqnece of integer ids from vector of names
@@ -428,10 +428,10 @@ process_format_contexts <- function(my_list, dataset_id) {
        my_list %>%
        purrr::map_df(f) %>%
        dplyr::mutate(dataset_id = dataset_id) %>%
-       dplyr::select(
-         dataset_id, context_property, category, var_in,
-         dplyr::any_of(c("find", "value", "description"))
-       )
+       dplyr::select(dplyr::all_of(
+         c("dataset_id", "context_property", "category", "var_in",
+         "find", "value", "description"))
+         )
 
      if(is.null(contexts[["description"]]) ) {
       contexts[["description"]] <- NA_character_
@@ -453,11 +453,11 @@ process_format_contexts <- function(my_list, dataset_id) {
 process_create_context_ids <- function(data, contexts) {
   # select context_cols
   tmp <- contexts %>%
-    dplyr::select(context_property, var_in) %>%
+    dplyr::select(dplyr::all_of(c("context_property", "var_in"))) %>%
     dplyr::distinct()
 
   # Extract context columns
-  context_cols <- data %>% dplyr::select(tmp$var_in)
+  context_cols <- data %>% dplyr::select(dplyr::all_of(c(tmp$var_in)))
   names(context_cols) <- tmp$context_property
 
   # Find and replace values for each context property
@@ -483,7 +483,7 @@ process_create_context_ids <- function(data, contexts) {
   tmp <-
     contexts %>%
     #  dplyr::filter(category == v) %>%
-    dplyr::select(context_property, category, value) %>%
+    dplyr::select(dplyr::all_of(c("context_property", "category", "value"))) %>%
     dplyr::distinct()
 
   categories <- c("plot", "treatment", "entity_context", "temporal", "method") %>% subset(., . %in% tmp$category)
@@ -516,7 +516,7 @@ process_create_context_ids <- function(data, contexts) {
         id = .data$combined %>%
           as.factor() %>% as.integer() %>% make_id()
       ) %>%
-      dplyr::select(-combined)
+      dplyr::select(-c("combined"))
 
     ## store ids
     ids[[paste0(w, "_id")]] <- xxx[["id"]]
@@ -599,7 +599,7 @@ process_format_locations <- function(my_list, dataset_id, schema) {
         TRUE ~ 4)
     ) %>%
     dplyr::arrange(.data$location_id, .data$location_name, .data$i, .data$location_property) %>%
-    dplyr::select(-i)
+    dplyr::select(-c("i"))
   
   out
 }
@@ -1010,7 +1010,7 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
                 parsing_id = parsing_id_tmp %>% as.character() %>% 
                 process_generate_id(prefix)
                     ) %>%
-              dplyr::select(-parsing_id_tmp)
+              dplyr::select(dplyr::all_of(-c("parsing_id_tmp")))
   }
 
 
@@ -1226,7 +1226,7 @@ process_format_methods <- function(metadata, dataset_id, sources, contributors) 
         util_list_to_df2() %>%
         dplyr::filter(!is.na(.data$trait_name)) %>%
         dplyr::mutate(dataset_id = dataset_id) %>%
-        dplyr::select(dataset_id, trait_name, methods)
+        dplyr::select(dplyr::all_of(c("dataset_id", "trait_name", "methods")))
       ,
       # study methods
       metadata$dataset %>%
@@ -1458,43 +1458,45 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
   austraits_raw$taxonomic_updates <-
     austraits_raw$taxonomic_updates %>%
     dplyr::left_join(by = "cleaned_name",
-              taxa %>% dplyr::select(cleaned_name, cleaned_scientific_name_id, cleaned_name_taxonomic_status,
-                                      cleaned_name_alternative_taxonomic_status, taxon_id, taxon_name, taxon_rank)
+              taxa %>% dplyr::select(dplyr::all_of(c("cleaned_name", "cleaned_scientific_name_id", "cleaned_name_taxonomic_status",
+                                      "cleaned_name_alternative_taxonomic_status", "taxon_id", "taxon_name", "taxon_rank")))
               ) %>%
     dplyr::mutate(
       taxonomic_resolution = ifelse(!is.na(.data$taxonomic_resolution) & .data$taxonomic_resolution != .data$taxon_rank, .data$taxon_rank, .data$taxonomic_resolution),
       taxonomic_resolution = ifelse(is.na(.data$taxonomic_resolution), .data$taxon_rank, .data$taxonomic_resolution)
     ) %>%
     dplyr::distinct() %>%
-    dplyr::select(-taxon_rank) %>%
+    dplyr::select(-c("taxon_rank")) %>%
     dplyr::arrange(.data$cleaned_name)
 
 
   austraits_raw$traits <-
     austraits_raw$traits %>%
-    dplyr::rename(cleaned_name = .data$taxon_name) %>%
+    dplyr::rename(cleaned_name = taxon_name) %>%
     dplyr::left_join(by = "cleaned_name",
-              taxa %>% dplyr::select(cleaned_name, taxon_name, taxon_rank)
+              taxa %>% dplyr::select(dplyr::all_of(c("cleaned_name", "taxon_name", "taxon_rank")))
               ) %>%
-    dplyr::select(dataset_id, taxon_name, dplyr::everything()) %>%
+    dplyr::select(c("dataset_id", "taxon_name"), dplyr::everything()) %>%
     dplyr::mutate(
       taxon_name = ifelse(is.na(.data$taxon_name), .data$cleaned_name, .data$taxon_name),
       taxon_name = ifelse(stringr::str_detect(.data$cleaned_name, "\\["), .data$cleaned_name, .data$taxon_name)
     ) %>%
-    dplyr::select(-cleaned_name)
+    dplyr::select(-c("cleaned_name"))
   
 # names, identifiers for all genera
   genera_tmp <- taxa %>% 
     dplyr::filter(.data$taxon_rank %in% c("Genus", "genus")) %>%
-    dplyr::select(name_to_match_to = taxon_name, family, taxonomic_reference_genus = taxonomic_reference, taxon_id_genus = taxon_id,
+    dplyr::select(dplyr::all_of(c("taxon_name", "family", "taxonomic_reference", "taxon_id",
+                  "scientific_name_id", "taxonomic_status"))) %>%
+    dplyr::rename(name_to_match_to = taxon_name, taxonomic_reference_genus = taxonomic_reference, taxon_id_genus = taxon_id,
                   scientific_name_id_genus = scientific_name_id, taxonomic_status_genus = taxonomic_status) %>%
     dplyr::distinct()
   
 # names, identifiers for all families in APC
   families_tmp <- taxa %>% 
     dplyr::filter(.data$taxon_rank %in% c("Familia", "family")) %>%
-    dplyr::select(name_to_match_to = taxon_name, taxonomic_reference_family = taxonomic_reference, taxon_id_family = taxon_id,
-    scientific_name_id_family = scientific_name_id, taxonomic_status_family = taxonomic_status) %>%
+    dplyr::select(dplyr::all_of(c(name_to_match_to = "taxon_name", taxonomic_reference_family = "taxonomic_reference", taxon_id_family = "taxon_id",
+    scientific_name_id_family = "scientific_name_id", taxonomic_status_family = "taxonomic_status"))) %>%
     dplyr::distinct()
   
 ### Fill in columns for trinomial, binomial, genus, and family, as appropriate 
@@ -1502,11 +1504,11 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
 
   species_tmp <-
     austraits_raw$traits %>%
-    dplyr::select(taxon_name, taxonomic_resolution) %>%
+    dplyr::select(dplyr::all_of(c("taxon_name", "taxonomic_resolution"))) %>%
     dplyr::distinct() %>% 
     util_df_convert_character() %>%
     dplyr::left_join(by = "taxon_name",
-                     taxa %>% dplyr::select(taxon_name, taxon_rank, family) %>% dplyr::distinct() %>% util_df_convert_character()
+                     taxa %>% dplyr::select(dplyr::all_of(c("taxon_name", "taxon_rank", "family"))) %>% dplyr::distinct() %>% util_df_convert_character()
     ) 
 
 
@@ -1537,8 +1539,8 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
       name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("family", "Familia"), .data$family, .data$name_to_match_to)
       ) %>% 
       # remove family, taxon_rank; they are about to be merged back in, but matches will now be possible to more rows
-      select(-.data$taxon_rank, - .data$taxonomic_resolution) %>%
-      rename(family_tmp = .data$family) %>%
+      select(-c("taxon_rank","taxonomic_resolution")) %>%
+      rename(family_tmp = family) %>%
       util_df_convert_character() %>%
       # merge in all data from taxa 
       dplyr::left_join(by = c("name_to_match_to" = "taxon_name"),
@@ -1560,13 +1562,10 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
         taxon_distribution = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), NA, .data$taxon_distribution),
         establishment_means = ifelse(.data$taxon_rank %in% c("Familia", "family", "Genus", "genus"), NA, .data$establishment_means)
       ) %>% 
-      dplyr::select(-taxon_id_genus, -taxon_id_family, -scientific_name_id_genus, -scientific_name_id_family, 
-                    -taxonomic_status_genus, -taxonomic_status_family, -taxonomic_reference_genus, -taxonomic_reference_family,
-                    -name_to_match_to, -family_tmp) %>%
-      dplyr::select(taxon_name, taxonomic_reference, taxon_rank, trinomial, binomial, 
-                    genus, family, taxon_distribution, establishment_means, 
-                    taxonomic_status, scientific_name, scientific_name_authorship, taxon_id, 
-                    scientific_name_id)
+      dplyr::select(dplyr::all_of(c("taxon_name", "taxonomic_reference", "taxon_rank", "trinomial", "binomial", 
+                    "genus", "family", "taxon_distribution", "establishment_means", 
+                    "taxonomic_status", "scientific_name", "scientific_name_authorship", "taxon_id", 
+                    "scientific_name_id")))
 
   austraits_raw$taxa <-
     species_tmp %>%
@@ -1578,11 +1577,11 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
 
   austraits_raw$traits <-
     austraits_raw$traits %>%
-      dplyr::select(-taxonomic_resolution, -taxon_rank)
+      dplyr::select(-c("taxonomic_resolution", "taxon_rank"))
 
   austraits_raw$excluded_data <-
     austraits_raw$excluded_data %>%
-      dplyr::select(-taxonomic_resolution)
+      dplyr::select(-c("taxonomic_resolution"))
 
   austraits_raw  
 }
