@@ -814,11 +814,11 @@ build_find_taxon <- function(taxon_name, austraits, original_name = FALSE) {
 
   if (!original_name) {
     data <- data %>%
-      dplyr::select(name = taxon_name, .data$dataset_id) %>%
+      dplyr::select(name = taxon_name, dataset_id) %>%
       dplyr::distinct()
   } else {
     data <- data %>%
-      dplyr::select(name = original_name, .data$dataset_id) %>%
+      dplyr::select(name = original_name, dataset_id) %>%
       dplyr::distinct()
   }
 

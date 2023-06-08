@@ -457,7 +457,7 @@ process_create_context_ids <- function(data, contexts) {
     dplyr::distinct()
 
   # Extract context columns
-  context_cols <- data %>% dplyr::select(var_in)
+  context_cols <- data %>% dplyr::select(tmp$var_in)
   names(context_cols) <- tmp$context_property
 
   # Find and replace values for each context property
