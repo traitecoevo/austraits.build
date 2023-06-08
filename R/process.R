@@ -145,8 +145,8 @@ dataset_process <- function(filename_data_raw,
   if( nrow(locations) > 0 ) {
     traits <- 
       traits %>% 
-      dplyr::select(-.data$location_id) %>%
-      dplyr::left_join(by = c("location_name"), locations %>% dplyr::select(.data$location_name, .data$location_id) %>% dplyr::distinct())
+      dplyr::select(-location_id) %>%
+      dplyr::left_join(by = c("location_name"), locations %>% dplyr::select(location_name, location_id) %>% dplyr::distinct())
   }
 
   # Where missing, fill variables in traits table with values from locations
@@ -161,7 +161,7 @@ dataset_process <- function(filename_data_raw,
           dplyr::left_join(by = "location_id",
                             locations %>% 
                             tidyr::pivot_wider(names_from = "location_property", values_from = "value") %>%
-                            dplyr::select(.data$location_id, col_tmp = dplyr::any_of(v)) %>%
+                            dplyr::select(location_id, col_tmp = dplyr::any_of(v)) %>%
                             stats::na.omit()
                           )
       # Use location level value if present
@@ -188,7 +188,7 @@ dataset_process <- function(filename_data_raw,
   # Retrieve taxonomic details for known species
   taxonomic_updates <-
     traits %>%
-    dplyr::select(dataset_id, .data$original_name, cleaned_name = .data$taxon_name, taxonomic_resolution = .data$taxonomic_resolution) %>%
+    dplyr::select(dataset_id, original_name, cleaned_name = taxon_name, taxonomic_resolution = taxonomic_resolution) %>%
     dplyr::distinct() %>%
     dplyr::arrange(.data$cleaned_name)
 
