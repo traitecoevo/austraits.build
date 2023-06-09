@@ -23,11 +23,18 @@ contributors:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: yes
-  custom_R_code:       '
+  custom_R_code:                   '
     data %>% 
       mutate(
-        location = "Mediterranean-type ecosystems in south-western Australia"
-      )'
+        location = "Mediterranean-type ecosystems in south-western Australia",
+        value = if_else(
+          trait_name == "shoot_root_ratio", as.character(1/as.numeric(value)), value
+          ),
+        total_dry_weight = if_else(
+          is.na(total_dry_weight), "unknown", as.character(total_dry_weight)
+          )
+        )
+    '
   collection_date: 1987/1989
   taxon_name: taxon_name
   trait_name: trait_name
@@ -74,80 +81,246 @@ locations:
       at Eneabba (29°49'S, 115°61'E).
     fire history (years since fire): 2--4
 contexts:
-- context_property: unknown
+- context_property: plant age
   category: entity_context
   var_in: plant_age
   values:
   - value: 2.5
-    description: unknown
+    description: in years
   - value: 3.0
-    description: unknown
+    description: in years
   - value: 2.0
+    description: in years
+  - value: unknown
     description: unknown
-- context_property: unknown
+- context_property: total dry mass
   category: entity_context
   var_in: total_dry_weight
   values:
   - value: 19.0
-    description: unknown
+    description: in grams
   - value: 6.1
-    description: unknown
+    description: in grams
   - value: 25.1
-    description: unknown
+    description: in grams
   - value: 22.1
-    description: unknown
+    description: in grams
   - value: 0.7
-    description: unknown
+    description: in grams
   - value: 4.4
-    description: unknown
+    description: in grams
   - value: 1.5
-    description: unknown
+    description: in grams
   - value: 5.5
-    description: unknown
+    description: in grams
   - value: 2.6
-    description: unknown
+    description: in grams
   - value: 3.1
-    description: unknown
+    description: in grams
   - value: 2.3
-    description: unknown
+    description: in grams
   - value: 1.3
-    description: unknown
+    description: in grams
   - value: 2.9
-    description: unknown
+    description: in grams
   - value: 10.5
-    description: unknown
+    description: in grams
   - value: 1.1
-    description: unknown
+    description: in grams
   - value: 12.9
-    description: unknown
+    description: in grams
   - value: 23.3
-    description: unknown
+    description: in grams
   - value: 28.8
-    description: unknown
+    description: in grams
   - value: 4.0
-    description: unknown
+    description: in grams
   - value: 7.0
-    description: unknown
+    description: in grams
   - value: 3.8
-    description: unknown
+    description: in grams
   - value: 1.2
-    description: unknown
+    description: in grams
   - value: 8.4
-    description: unknown
+    description: in grams
   - value: 7.2
-    description: unknown
+    description: in grams
   - value: 7.5
-    description: unknown
+    description: in grams
   - value: 14.2
-    description: unknown
+    description: in grams
   - value: 1.4
-    description: unknown
+    description: in grams
   - value: 10.4
-    description: unknown
+    description: in grams
   - value: 2.4
+    description: in grams
+  - value: .na.real
     description: unknown
-traits: .na
+traits:
+- var_in: shoot_root_ratio
+  unit_in: mg{root}/mg{shoot}
+  trait_name: root_shoot_ratio
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 10
+  methods: Sampling of shoot and root biomass ^p This involved harvesting ten randomly
+    selected individuals of 32 selected species. Each seedling was excavated to its
+    full rooting depth, and all of the rooting catchment was progressively sieved
+    and carefully examined to recover root biomass. In most cases, relatively small
+    excavations were required, since root depth was less than 075 m and lateral roots
+    extended only to 0-25 m radius around the main seedling root. In other large shrub
+    and tree species (e.g. members of the Proteaceae in the deep sands at the Yanchep
+    site) rooting depths were up to 3 m and laterals radiated up to 05 m. Extraction
+    of roots then required deep access pits at an appropriate distance from the plants
+    in question, followed by systematic recovery of root biomass from the pit walls.
+- var_in: resprouting_capacity
+  unit_in: .na
+  trait_name: resprouting_capacity
+  entity_type: metapopulation
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: literature, expert knowledge, field observations; the taxa investigated
+    totalled 66 species, 27 seeders, 37 resprouters and two species initially classified
+    as facultative seeder/resprouters. One of the latter (Acacia extensa) typically
+    failed to survive fire in the habitats examined in this study, and so was grouped
+    with the seeders, while the ecotype studied of the second species (Conospermum
+    triplinervium) was classified for present purposes as a resprouter species in
+    showing generally high resistance to fire at its study site. Elsewhere this species
+    has been regarded as a seeder (Dixon, 1987).
+- var_in: stem_soluble_starch_per_mass
+  unit_in: mg/g
+  trait_name: stem_soluble_starch_per_mass
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: Sampling for root anatomy and for concentrations of starch and macronutrient
+    elements in shoot and root ^p Five individuals of each of the 66 species were
+    excavated to 300 mm depth and separated into root and shoot biomass. All harvests
+    were taken in November or December. Transverse sections of root of 5 mm thickness
+    were cut from the middle of the principal (tap) root of each seedling and immediately
+    fixed in 5% glutaraldehyde (in buffered 01 M phosphate, pH 70) to await embedding
+    and sectioning. The shoot and remaining root material were dried at 90 °C in a
+    forceddraught oven, weighed and then finely ground (01 -mm mesh) in preparation
+    for mineral and starch analysis. ^p Starch analyses. Concentrations of starch
+    in shoots and roots of all study species were determined by extracting Ol-g aliquots
+    of dry matter in perchloric acid and precipitating the solubilized starch with
+    iodine (Pucher, Leavenworth, and Vickery, 1948). The starch was then redissolved
+    in dilute perchloric acid and assayed by the phenol method (Dubois et al., 1956).
+    Each determination involved at least two replicate assays, and each batch of determinations
+    was calibrated against a new set of starch standards.
+- var_in: root_soluble_starch_per_mass
+  unit_in: mg/g
+  trait_name: root_soluble_starch_per_mass
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: Sampling for root anatomy and for concentrations of starch and macronutrient
+    elements in shoot and root ^p Five individuals of each of the 66 species were
+    excavated to 300 mm depth and separated into root and shoot biomass. All harvests
+    were taken in November or December. Transverse sections of root of 5 mm thickness
+    were cut from the middle of the principal (tap) root of each seedling and immediately
+    fixed in 5% glutaraldehyde (in buffered 01 M phosphate, pH 70) to await embedding
+    and sectioning. The shoot and remaining root material were dried at 90 °C in a
+    forceddraught oven, weighed and then finely ground (01 -mm mesh) in preparation
+    for mineral and starch analysis. ^p Starch analyses. Concentrations of starch
+    in shoots and roots of all study species were determined by extracting Ol-g aliquots
+    of dry matter in perchloric acid and precipitating the solubilized starch with
+    iodine (Pucher, Leavenworth, and Vickery, 1948). The starch was then redissolved
+    in dilute perchloric acid and assayed by the phenol method (Dubois et al., 1956).
+    Each determination involved at least two replicate assays, and each batch of determinations
+    was calibrated against a new set of starch standards.
+- var_in: ray_percentage_root_transection
+  unit_in: '%'
+  trait_name: .na
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: Sampling for root anatomy and for concentrations of starch and macronutrienl
+    elements in shoot and root ^p Five individuals of each of the 66 species were
+    excavated to 300 mm depth and separated into root and shoot biomass. All harvests
+    were taken in November or December. Transverse sections of root of 5 mm thickness
+    were cut from the middle of the principal (tap) root of each seedling and immediately
+    fixed in 5% glutaraldehyde (in buffered 01 M phosphate, pH 70) to await embedding
+    and sectioning. ^p Anatomical investigations of starch distribution in roots.
+    The sections of root material (see above) were prepared for embedding in gjycol
+    methacrylate, as described by O'Brien and McCully (1981), and the resulting blocks
+    cut transversely at 2-fim thickness. Sections were treated with periodic acid-Schiffs
+    reagent, counterstained with Toluidine Blue O (pH 4-6), and then examined and
+    photographed using a Zeiss light microscope. Sections from roots of each species
+    were examined to determine where, and at what packing density (a visually-based
+    score of 0-10), starch grains were present. Proportional areas of root comprised
+    of cortex, rays and xylem parenchyma (between rays) were assessed from photomicrographs
+    of the sections.
+- var_in: xylem_parenchyma_percentage_root_transection
+  unit_in: '%'
+  trait_name: .na
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: Sampling for root anatomy and for concentrations of starch and macronutrienl
+    elements in shoot and root ^p Five individuals of each of the 66 species were
+    excavated to 300 mm depth and separated into root and shoot biomass. All harvests
+    were taken in November or December. Transverse sections of root of 5 mm thickness
+    were cut from the middle of the principal (tap) root of each seedling and immediately
+    fixed in 5% glutaraldehyde (in buffered 01 M phosphate, pH 70) to await embedding
+    and sectioning. ^p Anatomical investigations of starch distribution in roots.
+    The sections of root material (see above) were prepared for embedding in gjycol
+    methacrylate, as described by O'Brien and McCully (1981), and the resulting blocks
+    cut transversely at 2-fim thickness. Sections were treated with periodic acid-Schiffs
+    reagent, counterstained with Toluidine Blue O (pH 4-6), and then examined and
+    photographed using a Zeiss light microscope. Sections from roots of each species
+    were examined to determine where, and at what packing density (a visually-based
+    score of 0-10), starch grains were present. Proportional areas of root comprised
+    of cortex, rays and xylem parenchyma (between rays) were assessed from photomicrographs
+    of the sections.
+- var_in: cortex_percentage_root_transection
+  unit_in: '%'
+  trait_name: .na
+  entity_type: metapopulation
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 5
+  methods: Sampling for root anatomy and for concentrations of starch and macronutrienl
+    elements in shoot and root ^p Five individuals of each of the 66 species were
+    excavated to 300 mm depth and separated into root and shoot biomass. All harvests
+    were taken in November or December. Transverse sections of root of 5 mm thickness
+    were cut from the middle of the principal (tap) root of each seedling and immediately
+    fixed in 5% glutaraldehyde (in buffered 01 M phosphate, pH 70) to await embedding
+    and sectioning. ^p Anatomical investigations of starch distribution in roots.
+    The sections of root material (see above) were prepared for embedding in gjycol
+    methacrylate, as described by O'Brien and McCully (1981), and the resulting blocks
+    cut transversely at 2-fim thickness. Sections were treated with periodic acid-Schiffs
+    reagent, counterstained with Toluidine Blue O (pH 4-6), and then examined and
+    photographed using a Zeiss light microscope. Sections from roots of each species
+    were examined to determine where, and at what packing density (a visually-based
+    score of 0-10), starch grains were present. Proportional areas of root comprised
+    of cortex, rays and xylem parenchyma (between rays) were assessed from photomicrographs
+    of the sections.
+- var_in: post_fire_recruitment
+  unit_in: .na
+  trait_name: post_fire_recruitment
+  entity_type: metapopulation
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: literature, expert knowledge, field observations; examined common seeder
+    and resprouter species recruiting together from seed in habitats recently exposed
+    to fire. The taxa investigated totalled 66 species, 27 seeders, 37 resprouters
+    and two species initially classified as facultative seeder/resprouters. One of
+    the latter (Acacia extensa) typically failed to survive fire in the habitats examined
+    in this study, and so was grouped with the seeders, while the ecotype studied
+    of the second species (Conospermum triplinervium) was classified for present purposes
+    as a resprouter species in showing generally high resistance to fire at its study
+    site. Elsewhere this species has been regarded as a seeder (Dixon, 1987).
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
-questions: .na
+questions:
+  additional traits: root wood parenchyma fractions
