@@ -1,6 +1,6 @@
 library(tidyverse)
 
-data_long <- read_csv("data/Pate_1990/raw/data_long.csv")
+data_long <- read_csv("data/Pate_1990/raw/long_data.csv")
 data_long %>% 
   pivot_wider(
     names_from = trait_name, 
@@ -23,4 +23,4 @@ data_wide %>%
   left_join(extra_context_columns, by = "taxon_name") %>% 
   relocate(authority, .after = taxon_name) -> data_wide_full
 
-data_wide_full %>% write_csv("data/Pate_1990/raw/data_wide.csv")
+data_wide_full %>% write_csv("data/Pate_1990/raw/wide_data.csv")
