@@ -2283,10 +2283,9 @@ traits:
         involute: Leaf margins along the side of the leaf are rolled upward, such
           that the margin of the adaxial (upper) leaf surface is rolled inward. (Synonym,
           inrolled, incurved)
-        recurved: Leaf tip is curved outward or downward. [PATO:0002211]
         revolute: Leaf margins along the side of the leaf are rolled under or downward,
           such that the margin of the abaxial (lower) leaf surface is rolled inward.
-          [PATO:0001963]
+          [PATO:0001963] (Synonym, recurved)
         undulate: Leaf margins are wavy in their 2-dimensional plane. (Synonyms, wavy,
           rippled, sinuate)
       entity_URI: https://w3id.org/APD/traits/trait_0011314
@@ -2401,18 +2400,20 @@ traits:
       type: categorical
       allowed_values_levels:
         concave: A longitudinal posture term indicating the leaf lamina is curved
-          upward along the central axis.
+          upward along the central axis, such that the upper leaf lamina surface is
+          concave.
         conduplicate: A longitudinal posture term indicating the leaf lamina is folded
           upward along the central axis. (Synonym, folded)
         convex: A longitudinal posture term indicating the leaf lamina is curved downward
-          along the central axis. (Synonym, concavoconvex, planoconvex)
+          along the central axis, such that the lower leaf lamina surface is concave.
+          (Synonym, concavoconvex, planoconvex)
         convolute: Leaf lamina is contorted. (Synonym, twisted)
         flat: The leaf lamina is a 2-dimensional plane.
+        incurved: Leaf tip is curved upward.
         involute: A longitudinal posture term indicating the outer portions of the
           leaf lamina are rolled inward or upward.
         plicate: Leaf margin is pleated, with a series of longitudinal folds.
-        recurved: A transverse posture term indicating the leaf tip curved outward
-          to downward. (Synonym, squarrose)
+        recurved: Leaf tip is curved outward or downward. [PATO:0002211]
         revolute: A longitudinal posture term indicating the outer portions of the
           leaf lamina are rolled outward or downward.
         undulate: The leaf lamina surface is rippled or wavy in its 2-dimensional
@@ -3095,7 +3096,7 @@ traits:
       type: numeric
       units: mm
       allowed_values_min: 0.01
-      allowed_values_max: 50.0
+      allowed_values_max: 200.0
       entity_URI: https://w3id.org/APD/traits/trait_0012011
     bark_thickness_index:
       label: Scaled bark thickness
@@ -3571,7 +3572,7 @@ traits:
         [PO:0030112].;The length of the flower.
       type: numeric
       units: cm
-      allowed_values_min: 0.1
+      allowed_values_min: 0.01
       allowed_values_max: 200.0
       entity_URI: https://w3id.org/APD/traits/trait_0012419
     flower_diameter:
@@ -6152,6 +6153,28 @@ traits:
       allowed_values_min: 0.01
       allowed_values_max: 2000.0
       entity_URI: https://w3id.org/APD/traits/trait_0021021
+    root_specific_hydraulic_conductivity:
+      label: Root specific hydraulic conductivity
+      description: A root [PO:0009005] water transport [GO:0006833] trait which is
+        a measure of the rate [PATO:0000161] of water [CHEBI:15377] movement [NCIT:C37994]
+        through a root under a specific [NCIT:C38024] driving force [PATO:0001035]
+        (water potential [EnvThes:22311] gradient [NCIT:C70693]), normalised to the
+        diameter [PATO:0001334] of water transport tissues [CARO:0000043] and accounting
+        for the root length [PATO:0000122]. It is calculated as the ratio [PATO:0001470]
+        of the water flow [NCIT:C41141] rate through the root segment (kg/s) to the
+        water potential gradient across the root segment (MPa), divided by the root
+        [PO:0004513] cross-sectional [NCIT:C63795] area [PATO:0001323] (m2), then
+        multiplied by the path length measured (m).;Measure of the efficiency of water
+        flow through a root segment normalised to the root cross-sectional area across
+        which the flow is measured. It is calculated as the ratio of the water flow
+        rate (kg/s) to the water potential gradient across the root segment (MPa),
+        divided by the root cross sectional area (1/m2), then multiplied by the root
+        length (m).
+      type: numeric
+      units: kg/m/MPa/s
+      allowed_values_min: 0.01
+      allowed_values_max: 500.0
+      entity_URI: https://w3id.org/APD/traits/trait_0021022
     water_potential_predawn:
       label: Pre-dawn water potential
       description: The shoot system [PO:0009006] water potential [EnvThes:22311] just
@@ -6183,16 +6206,40 @@ traits:
       allowed_values_min: -20.0
       allowed_values_max: 0.0
       entity_URI: https://w3id.org/APD/traits/trait_0021031
-    whole_plant_intrinsic_capacitance:
-      label: Whole plant intrinsic capacitance (C)
-      description: The ratio  [PATO:0001470] of the change in tissue [CARO:0000043]
-        water [CHEBI:15377] volume to the change in tissue water potential [EnvThes:22311].;The
-        ratio of the change in tissue water volume to the change in tissue water potential.
+    stem_sapwood_capacitance:
+      label: Stem sapwood capacitance (C)
+      description: The ratio  [PATO:0001470] of the change in stem [PO:0009047] tissue
+        [CARO:0000043] water [CHEBI:15377] volume to the change in stem tissue water
+        potential [EnvThes:22311].;The ratio of the change in stem tissue water volume
+        to the change in stem tissue water potential.
       type: numeric
-      units: kg/m3/MPa
-      allowed_values_min: -5.0
-      allowed_values_max: 5.0
+      units: kg{H20}/m3/MPa
+      allowed_values_min: 0.0
+      allowed_values_max: 700.0
       entity_URI: https://w3id.org/APD/traits/trait_0021032
+    leaf_capacitance:
+      label: Leaf capacitance (Cleaf)
+      description: The ratio  [PATO:0001470] of the change in leaf [PO:0025034] tissue
+        [CARO:0000043] water [CHEBI:15377] volume to the change in leaf tissue water
+        potential [EnvThes:22311].;The ratio of the change in leaf tissue water volume
+        to the change in leaf tissue water potential.
+      comments: This trait is derived from pressure-volume curves.
+      type: numeric
+      units: 1/MPa
+      allowed_values_min: 0.0
+      allowed_values_max: 70.0
+      entity_URI: https://w3id.org/APD/traits/trait_0021033
+    root_sapwood_capacitance:
+      label: Root sapwood capacitance (C)
+      description: The ratio  [PATO:0001470] of the change in root [PO:0009005] tissue
+        [CARO:0000043] water [CHEBI:15377] volume to the change in root tissue water
+        potential [EnvThes:22311].;The ratio of the change in root tissue water volume
+        to the change in root tissue water potential.
+      type: numeric
+      units: kg{H20}/m3/MPa
+      allowed_values_min: 0.0
+      allowed_values_max: 700.0
+      entity_URI: https://w3id.org/APD/traits/trait_0021034
     leaf_hydraulic_vulnerability:
       label: Leaf xylem pressure, 50% lost conductance
       description: The tension [PATO:0002284] (water pressure) (water potential [EnvThes:22311])  in
@@ -6378,6 +6425,18 @@ traits:
       allowed_values_min: 0.1
       allowed_values_max: 1.0
       entity_URI: https://w3id.org/APD/traits/trait_0021061
+    root_water_potential_50percent_lost_conductivity:
+      label: Root xylem pressure, 50% lost conductivity
+      description: The tension [PATO:0002284] (water pressure) (water potential [EnvThes:22311])
+        in root [PO:0009005] xylem vessels [PO:0025417] at which the hydraulic conductivity
+        [EnvThes:22133] has declined by 50% from the mean maximum [NCIT:C25564] rate
+        [PATO:0000161].;Root xylem water pressure value at which root hydraulic conductivity
+        has declined by 50% from the mean maximum rate of hydraulic conductivity.
+      type: numeric
+      units: MPa
+      allowed_values_min: -20.0
+      allowed_values_max: 0.0
+      entity_URI: https://w3id.org/APD/traits/trait_0021062
     leaf_N_resorption:
       label: Leaf nitrogen resorption
       description: A leaf [PO:0025034] nutrient recycling trait which is one minus
@@ -7555,6 +7614,16 @@ traits:
       allowed_values_min: 0.0
       allowed_values_max: 1.0
       entity_URI: https://w3id.org/APD/traits/trait_0030418
+    seed_germination_time:
+      label: Seed germination time
+      description: The time interval (duration) [PATO:0001309] from when a seed [PO:0009010]
+        is exposed to suitable [NCIT:C116358] environmental conditions [ENVO:01000203]
+        or experimental conditions [XCO:0000000] for germinating  [GO:0009845] until
+        it germinates.;The time interval from when a seed is exposed to suitable conditions
+        for germinating until it germinates.
+      type: numeric
+      units: d
+      entity_URI: https://w3id.org/APD/traits/trait_0030419
     vegetative_reproduction_ability:
       label: Vegetative reproduction ability
       description: A whole plant [PO:0000003] life history [ECOCORE:00000018] trait
