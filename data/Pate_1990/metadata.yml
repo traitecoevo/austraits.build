@@ -19,17 +19,14 @@ contributors:
     ORCID: .na
     affiliation: School of Plant Biology, The University of Western Australia, Crawley,
       Western Australia, Australia
-  assistants: .na
   austraits_curators: Sophie Yang
 dataset:
-  data_is_long_format: yes
+  data_is_long_format: no
   custom_R_code:                   '
     data %>% 
       mutate(
         location = "Mediterranean-type ecosystems in south-western Australia",
-        value = if_else(
-          trait_name == "shoot_root_ratio", as.character(1/as.numeric(value)), value
-          ),
+        shoot_root_ratio = 1/shoot_root_ratio,
         total_dry_weight = if_else(
           is.na(total_dry_weight), "unknown", as.character(total_dry_weight)
           )
@@ -37,8 +34,6 @@ dataset:
     '
   collection_date: 1987/1989
   taxon_name: taxon_name
-  trait_name: trait_name
-  value: value
   location_name: location
   description: A study examining the growth and storage traits of seedlings growing
     after recent fires in fire-prone, Mediterranean-type ecosystems in south-western
@@ -79,7 +74,7 @@ locations:
       on deep leached sands at Yanchep (31°31'S, 115°41'E). (4) Banksia shrublands
       (B. hookeriana, B. attentuata, B. menziesii) on deep, heavily leached sands
       at Eneabba (29°49'S, 115°61'E).
-    fire history (years since fire): 2--4
+    fire history (years since fire): 2-4
 contexts:
 - context_property: plant age
   category: entity_context
@@ -91,7 +86,7 @@ contexts:
     description: in years
   - value: 2.0
     description: in years
-  - value: unknown
+  - value: .na.real
     description: unknown
 - context_property: total dry mass
   category: entity_context
@@ -155,7 +150,7 @@ contexts:
     description: in grams
   - value: 2.4
     description: in grams
-  - value: .na.real
+  - value: unknown
     description: unknown
 traits:
 - var_in: shoot_root_ratio
@@ -182,7 +177,7 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: literature, expert knowledge, field observations; the taxa investigated
+  methods: Literature, expert knowledge, field observations; the taxa investigated
     totalled 66 species, 27 seeders, 37 resprouters and two species initially classified
     as facultative seeder/resprouters. One of the latter (Acacia extensa) typically
     failed to survive fire in the habitats examined in this study, and so was grouped
@@ -310,7 +305,7 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: literature, expert knowledge, field observations; examined common seeder
+  methods: Literature, expert knowledge, field observations; examined common seeder
     and resprouter species recruiting together from seed in habitats recently exposed
     to fire. The taxa investigated totalled 66 species, 27 seeders, 37 resprouters
     and two species initially classified as facultative seeder/resprouters. One of
