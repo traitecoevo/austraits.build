@@ -205,7 +205,8 @@ dataset:
         source_id = if_else(source_id == "Clayton_2006", "GrassBase_2006", source_id),
         source_id = if_else(source_id == "FEIS", "FEIS_2021", source_id)
       ) %>%
-      filter(!source_id %in% c("Pekin_2010", "Moore_2018"))
+      filter(!source_id %in% c("Pekin_2010", "Moore_2018")) %>% 
+      filter(!(str_detect(source_id, "Crowley") & is.na(species_not_to_filter)))
     '
   collection_date: unknown
   taxon_name: Species_name
@@ -228,10 +229,11 @@ dataset:
     search engines (to incorporate both the primary and grey literature) for the term
     '[species name] fire response'.
   original_file: Located in raw folder and archived on Google Drive
-  notes: other sources are, Wapstra, M., B. French, and T. Ashlin. "Distribution,
+  notes: Other sources are, Wapstra, M., B. French, and T. Ashlin. "Distribution,
     habitat characteristics and conservation status of the forest wire-grass Ehrharta
     juncea (R. Br.) Sprengel (Poaceae) in Tasmania." TASFORESTS-HOBART- 14 (2003)
-    77-92.;
+    77-92. Most data from Crowley_2007 has been filtered out in custom_R_code, except
+    for some that are not present in Crowley_2007. 
 locations: .na
 contexts: .na
 traits:
