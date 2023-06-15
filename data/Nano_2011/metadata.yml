@@ -10,13 +10,20 @@ source:
     volume: 212
     pages: 2095--2110
     doi: 10.1007/s11258-011-9988-x
-  original:
+  original_01:
     key: Crowley_2007
     author: G. Crowley, M. Gardener, M. Marrinan
     year: 2007
     bibtype: Online
     title: Tropical savannas fire response database
     publisher: Tropical Savannas Cooperative Research Centre, Darwin
+  original_02:
+    key: NTH_2011
+    author: Northern Territory Herbarium
+    year: 2011
+    bibtype: Online
+    title: Northern Territory Ecological Attributes Database
+    publisher: Northern Territory Government
 contributors:
   data_collectors:
   - last_name: Nano
@@ -27,14 +34,18 @@ contributors:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: no
-  custom_R_code:     '
+  custom_R_code:                                                                                                                                                           '
     data %>% 
       mutate(
         location = "Southern region of the Northern Territory",
         seedbank_longevity_categorical = if_else(`Propagule persistence` == "P+", "persistent", NA_character_),
         seedling_establishment_conditions = if_else(`Propagule persistence` == "P+", "establish_post_fire", NA_character_),
         fire_time_from_fire_to_flowering = if_else(`Propagule persistence` == "P+", "--120", NA_character_),
-      )'
+        serotiny = `Seed Bank`,
+        post_fire_recruitment = `Fire Response Adult`,
+        source_id = str_replace_all(`Eco Source`, " (?=\\d{4})", "_")
+      )
+    '
   collection_date: unknown/2011
   taxon_name: Taxon
   description: Study examining how resprouting and propagule persistence are associated
@@ -44,6 +55,7 @@ dataset:
   location_name: location
   basis_of_record: literature field
   life_stage: adult
+  source_id: source_id
   sampling_strategy: Site selection ^p We selected 385 sites from a database of Northern
     Territory quadrat-based vegetation surveys (NT government unpublished data). All
     of the included sites had floristic and environmental data that had been recorded
@@ -116,7 +128,7 @@ traits:
     woody species that were recorded from the 385 sites. Population-level data were
     derived from published (e.g. Crowley et al. 2007) and unpublished databases (e.g.
     NT Ecological Attributes Database, Northern Territory Government), the scientific
-    literature and our own field records. We complied all records relating to vegetative
+    literature and our own field records. We compiled all records relating to vegetative
     fire response to enable us to categorise species either as a resprouter (R+) or
     as a non-resprouter (R-), following the approach of Pausas and Bradstock (2007).
     This categorisation was thus based on each species’ overall tendency across multiple
@@ -236,30 +248,86 @@ traits:
     aneura face an immaturity risk in Triodia grassland because their primary juvenile
     period far exceeds average fire-return intervals in that habitat (Nano and Clarke
     2010).
-- var_in: Fire_Response_Adult
+- var_in: Fire Response Adult
   unit_in: .na
   trait_name: resprouting_capacity
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: unknown
-- var_in: Resprout_Type
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  methods: Persistence traits ^p Persistence trait data were collated for all of the
+    woody species that were recorded from the 385 sites. Population-level data were
+    derived from published (e.g. Crowley et al. 2007) and unpublished databases (e.g.
+    NT Ecological Attributes Database, Northern Territory Government), the scientific
+    literature and our own field records. Similarly, for each species, we compiled
+    all available records (from the same sources outlined above) relating to propagule
+    persistence (P+, following Pausas and Bradstock 2007).
+- var_in: post_fire_recruitment
+  unit_in: .na
+  trait_name: post_fire_recruitment
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Persistence traits ^p Persistence trait data were collated for all of the
+    woody species that were recorded from the 385 sites. Population-level data were
+    derived from published (e.g. Crowley et al. 2007) and unpublished databases (e.g.
+    NT Ecological Attributes Database, Northern Territory Government), the scientific
+    literature and our own field records. Similarly, for each species, we compiled
+    all available records (from the same sources outlined above) relating to propagule
+    persistence (P+, following Pausas and Bradstock 2007).
+- var_in: Resprout Type
+  unit_in: .na
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Persistence traits ^p Persistence trait data were collated for all of the
+    woody species that were recorded from the 385 sites. Population-level data were
+    derived from published (e.g. Crowley et al. 2007) and unpublished databases (e.g.
+    NT Ecological Attributes Database, Northern Territory Government), the scientific
+    literature and our own field records.
+- var_in: Seed Bank
+  unit_in: .na
+  trait_name: seedbank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Persistence traits ^p Persistence trait data were collated for all of the
+    woody species that were recorded from the 385 sites. Population-level data were
+    derived from published (e.g. Crowley et al. 2007) and unpublished databases (e.g.
+    NT Ecological Attributes Database, Northern Territory Government), the scientific
+    literature and our own field records. Similarly, for each species, we compiled
+    all available records (from the same sources outlined above) relating to propagule
+    persistence (P+, following Pausas and Bradstock 2007).
+- var_in: serotiny
+  unit_in: .na
+  trait_name: serotiny
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Persistence traits ^p Persistence trait data were collated for all of the
+    woody species that were recorded from the 385 sites. Population-level data were
+    derived from published (e.g. Crowley et al. 2007) and unpublished databases (e.g.
+    NT Ecological Attributes Database, Northern Territory Government), the scientific
+    literature and our own field records. Similarly, for each species, we compiled
+    all available records (from the same sources outlined above) relating to propagule
+    persistence (P+, following Pausas and Bradstock 2007).
 - var_in: stem buds
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: .na
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Persistence traits ^p Persistence trait data were collated for all of the
+    woody species that were recorded from the 385 sites. Population-level data were
+    derived from published (e.g. Crowley et al. 2007) and unpublished databases (e.g.
+    NT Ecological Attributes Database, Northern Territory Government), the scientific
+    literature and our own field records.
 substitutions:
 - trait_name: resprouting_capacity
   find: R-
@@ -273,6 +341,107 @@ substitutions:
 - trait_name: post_fire_recruitment
   find: P-
   replace: post_fire_recruitment_absent
+- trait_name: resprouting_capacity
+  find: Resprouter
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: Seeder
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: Seeder, Faculative resprouter
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: Seeder, Resprouter
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: Faculative resprouter
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: Resprouter, Faculative resprouter
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: Seeder, Resprouter, Faculative resprouter
+  replace: resprouts
+- trait_name: post_fire_recruitment
+  find: Resprouter
+  replace: .na.character
+- trait_name: post_fire_recruitment
+  find: Seeder
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: Seeder, Faculative resprouter
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: Seeder, Resprouter
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: Faculative resprouter
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: Resprouter, Faculative resprouter
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: Seeder, Resprouter, Faculative resprouter
+  replace: post_fire_recruitment
+- trait_name: bud_bank_location
+  find: Underground storage organs (bulbs/tubers)
+  replace: fleshy_underground_organ
+- trait_name: bud_bank_location
+  find: None
+  replace: none
+- trait_name: bud_bank_location
+  find: Basal stem buds (includes lignotuber and basal stem)
+  replace: basal_stem_buds
+- trait_name: bud_bank_location
+  find: Basal stem buds (includes lignotuber and basal stem), Epicormic shoots
+  replace: basal_stem_buds epicormic_buds
+- trait_name: bud_bank_location
+  find: Root suckers or rhizomes
+  replace: bud-bearing_root rhizome
+- trait_name: bud_bank_location
+  find: Basal stem buds (includes lignotuber and basal stem), None
+  replace: basal_stem_buds none
+- trait_name: bud_bank_location
+  find: Epicormic shoots
+  replace: epicormic_buds
+- trait_name: bud_bank_location
+  find: Root suckers or rhizomes, Basal stem buds (includes lignotuber and basal stem)
+  replace: bud-bearing_root rhizome basal_stem_buds
+- trait_name: bud_bank_location
+  find: Root suckers or rhizomes, Underground storage organs (bulbs/tubers)
+  replace: bud-bearing_root rhizome fleshy_underground_organ
+- trait_name: bud_bank_location
+  find: Basal stem buds (includes lignotuber and basal stem), Underground storage
+    organs (bulbs/tubers)
+  replace: basal_stem_buds fleshy_underground_organ
+- trait_name: bud_bank_location
+  find: Root suckers or rhizomes, Basal stem buds (includes lignotuber and basal stem),
+    Epicormic shoots, None
+  replace: bud-bearing_root rhizome basal_stem_buds epicormic_buds none
+- trait_name: bud_bank_location
+  find: Root suckers or rhizomes, Epicormic shoots
+  replace: bud-bearing_root rhizome epicormic_buds
+- trait_name: bud_bank_location
+  find: Basal stem buds (includes lignotuber and basal stem), Epicormic shoots, None
+  replace: basal_stem_buds epicormic_buds none
+- trait_name: bud_bank_location
+  find: Epicormic shoots, Underground storage organs (bulbs/tubers)
+  replace: epicormic_buds fleshy_underground_organ
+- trait_name: seedbank_location
+  find: Dispersal reliant
+  replace: none
+- trait_name: seedbank_location
+  find: Strictly serotinous
+  replace: canopy_seedbank soil_seedbank_absent
+- trait_name: serotiny
+  find: Dispersal reliant
+  replace: not_serotinous
+- trait_name: serotiny
+  find: Strictly serotinous
+  replace: serotiny_high
+- trait_name: bud_bank_location
+  find: VI
+  replace: epicormic_buds
 taxonomic_updates:
 - find: Indigofera sp. MacDonnell Ranges (P.K.Latz 11587) Peter Wilson
   replace: Indigofera cornuligera
