@@ -8,7 +8,8 @@ wide_data %>%
     c(fire_response_LCR, fire_response_NL, seedlings_first_observed, first_flowering_resp,
       first_flowering_seed, first_flowering_unknown, first_fruiting_resp, first_fruiting_seed, 
       first_fruiting_unknown, primary_juvenile_period, secondary_juvenile_period, 
-      peak_flowering, peak_fruiting),
+      peak_flowering_resp, peak_flowering_seed, peak_flowering_unknown, peak_fruiting_resp, 
+      peak_fruiting_seed, peak_fruiting_unknown),
     names_to = "trait_name",
     values_to = "value"
   ) -> long_data
