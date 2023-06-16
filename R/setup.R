@@ -594,17 +594,24 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason, tax
 #' @return yml file with multiple taxonmic updates added
 #' @export
 metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
-  
-  # read metadata
-  metadata <- read_metadata_dataset(dataset_id)
-  
-  #read in dataframe of taxonomic changes, split into single-row lists, and add to metadata file
-  metadata$taxonomic_updates <- 
-    taxonomic_updates %>%
-    dplyr::group_split(.data$find) %>% lapply(as.list)
-  
-  # write metadata
-  write_metadata_dataset(metadata, dataset_id)
+    
+    # read metadata
+    metadata <- read_metadata_dataset(dataset_id)
+    
+    #read in dataframe of taxonomic changes, split into single-row lists, and add to metadata file
+    
+    if(is.na(metadata$taxonomic_updates)) {
+        metadata$taxonomic_updates <- 
+            taxonomic_updates %>%
+            dplyr::group_split(.data$find) %>% lapply(as.list)
+    } else {
+        metadata$taxonomic_updates <- 
+            taxonomic_updates %>%
+            dplyr::group_split(.data$find) %>% lapply(as.list) %>% 
+            bind_rows(metadata$taxonomic_updates)
+    }
+    # write metadata
+    write_metadata_dataset(metadata, dataset_id)
 }
 
 #' Exclude observations in a yaml file for a dataset_id
