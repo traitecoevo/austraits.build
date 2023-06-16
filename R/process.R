@@ -1059,11 +1059,8 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
         # get value
         value <- traits_table[i,v, drop=TRUE]
         # Check if it is a column in data or not and process accordingly
-
-        # Question: Why can't `entity_type`, `basis_of_value` come in as column of data?
-
         if(!is.na(value)) {
-          if(!is.null(data[[value]]) && !(v %in% c("entity_type", "basis_of_value")) ) {
+          if(!is.null(data[[value]])) {
             out[[i]][[v]] <- data[[value]] %>% as.character()
           } else {
             out[[i]][[v]] <- value %>% as.character()
