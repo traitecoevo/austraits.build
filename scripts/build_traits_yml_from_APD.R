@@ -11,7 +11,7 @@ library(stringr)
 library(austraits.build)
 
 
-path_APD <- "export/data/"
+path_APD <- "https://raw.githubusercontent.com/traitecoevo/APD/master/data/"
 
 APD <- 
   read_csv(file.path(path_APD, "APD_traits.csv"), show_col_types = FALSE) %>%
