@@ -145,7 +145,7 @@ dataset_process <- function(filename_data_raw,
   if( nrow(locations) > 0 ) {
     traits <- 
       traits %>% 
-      dplyr::select(-c("location_id")) %>%
+      dplyr::select(-dplyr::all_of(c("location_id"))) %>%
       dplyr::left_join(by = c("location_name"), locations %>% dplyr::select(dplyr::all_of(c("location_name", "location_id"))) %>% dplyr::distinct())
   }
 
@@ -161,7 +161,8 @@ dataset_process <- function(filename_data_raw,
           dplyr::left_join(by = "location_id",
                             locations %>% 
                             tidyr::pivot_wider(names_from = "location_property", values_from = "value") %>%
-                            dplyr::select(c("location_id", col_tmp = dplyr::any_of(v))) %>%
+                            mutate(col_tmp = .data[[v]]) %>%
+                            dplyr::select(dplyr::any_of(c("location_id", "col_tmp"))) %>%
                             stats::na.omit()
                           )
       # Use location level value if present
@@ -209,12 +210,12 @@ dataset_process <- function(filename_data_raw,
 
   # combine for final output
   list(
-       traits     = traits %>% dplyr::filter(is.na(.data$error)) %>% dplyr::select(-c("error")),
+       traits     = traits %>% dplyr::filter(is.na(.data$error)) %>% dplyr::select(-dplyr::all_of(c("error"))),
        locations  = locations,
        contexts   = context_ids$contexts %>% dplyr::select(-c("var_in", "find")),
        methods    = methods,
        excluded_data = traits %>% dplyr::filter(!is.na(.data$error)) %>% 
-              dplyr::select(c("error"), everything()),
+              dplyr::select(dplyr::all_of(c("error")), everything()),
        taxonomic_updates = taxonomic_updates,
        taxa       = taxonomic_updates %>% dplyr::select(dplyr::all_of(c(taxon_name = "cleaned_name"))) %>% dplyr::distinct(),
        contributors = contributors,
@@ -378,7 +379,7 @@ process_create_observation_id <- function(data) {
     dplyr::ungroup() 
   
   data %>%
-    dplyr::select(-c("check_for_ind"))
+    dplyr::select(-dplyr::all_of(c("check_for_ind")))
 }
 
 #' Function to generate seuqnece of integer ids from vector of names
@@ -516,7 +517,7 @@ process_create_context_ids <- function(data, contexts) {
         id = .data$combined %>%
           as.factor() %>% as.integer() %>% make_id()
       ) %>%
-      dplyr::select(-c("combined"))
+      dplyr::select(-dplyr::all_of(c("combined")))
 
     ## store ids
     ids[[paste0(w, "_id")]] <- xxx[["id"]]
@@ -525,10 +526,10 @@ process_create_context_ids <- function(data, contexts) {
     for (v in vars) {
       id_link[[v]] <-
         xxx %>%
-        dplyr::select(dplyr::all_of(v), id) %>%
+        dplyr::rename(c(find = v)) %>% 
+        dplyr::select(dplyr::all_of(c("find", "id"))) %>%
         dplyr::filter(!is.na(.data$id)) %>%
         dplyr::distinct() %>%
-        dplyr::rename(find = v) %>%
         util_df_convert_character() %>%
         dplyr::group_by(.data$find) %>%
         dplyr::summarise(
@@ -599,7 +600,7 @@ process_format_locations <- function(my_list, dataset_id, schema) {
         TRUE ~ 4)
     ) %>%
     dplyr::arrange(.data$location_id, .data$location_name, .data$i, .data$location_property) %>%
-    dplyr::select(-c("i"))
+    dplyr::select(-dplyr::all_of(c("i")))
   
   out
 }
@@ -1010,7 +1011,7 @@ process_parse_data <- function(data, dataset_id, metadata, contexts) {
                 parsing_id = parsing_id_tmp %>% as.character() %>% 
                 process_generate_id(prefix)
                     ) %>%
-              dplyr::select(dplyr::all_of(-c("parsing_id_tmp")))
+              dplyr::select(-dplyr::all_of(c("parsing_id_tmp")))
   }
 
 
@@ -1466,7 +1467,7 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
       taxonomic_resolution = ifelse(is.na(.data$taxonomic_resolution), .data$taxon_rank, .data$taxonomic_resolution)
     ) %>%
     dplyr::distinct() %>%
-    dplyr::select(-c("taxon_rank")) %>%
+    dplyr::select(-dplyr::all_of(c("taxon_rank"))) %>%
     dplyr::arrange(.data$cleaned_name)
 
 
@@ -1476,12 +1477,12 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
     dplyr::left_join(by = "cleaned_name",
               taxa %>% dplyr::select(dplyr::all_of(c("cleaned_name", "taxon_name", "taxon_rank")))
               ) %>%
-    dplyr::select(c("dataset_id", "taxon_name"), dplyr::everything()) %>%
+    dplyr::select(dplyr::all_of(c("dataset_id", "taxon_name")), dplyr::everything()) %>%
     dplyr::mutate(
       taxon_name = ifelse(is.na(.data$taxon_name), .data$cleaned_name, .data$taxon_name),
       taxon_name = ifelse(stringr::str_detect(.data$cleaned_name, "\\["), .data$cleaned_name, .data$taxon_name)
     ) %>%
-    dplyr::select(-c("cleaned_name"))
+    dplyr::select(-dplyr::all_of(c("cleaned_name")))
   
 # names, identifiers for all genera
   genera_tmp <- taxa %>% 
@@ -1539,7 +1540,7 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
       name_to_match_to = ifelse(is.na(.data$name_to_match_to) & .data$taxon_rank %in% c("family", "Familia"), .data$family, .data$name_to_match_to)
       ) %>% 
       # remove family, taxon_rank; they are about to be merged back in, but matches will now be possible to more rows
-      select(-c("taxon_rank","taxonomic_resolution")) %>%
+      select(-dplyr::all_of(c("taxon_rank","taxonomic_resolution"))) %>%
       rename(family_tmp = family) %>%
       util_df_convert_character() %>%
       # merge in all data from taxa 
@@ -1577,11 +1578,11 @@ build_update_taxonomy <- function(austraits_raw, taxa) {
 
   austraits_raw$traits <-
     austraits_raw$traits %>%
-      dplyr::select(-c("taxonomic_resolution", "taxon_rank"))
+      dplyr::select(-dplyr::all_of(c("taxonomic_resolution", "taxon_rank")))
 
   austraits_raw$excluded_data <-
     austraits_raw$excluded_data %>%
-      dplyr::select(-c("taxonomic_resolution"))
+      dplyr::select(-dplyr::all_of(c("taxonomic_resolution")))
 
   austraits_raw  
 }
