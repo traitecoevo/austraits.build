@@ -20,11 +20,17 @@ test_that("metadata_create_template is working",{
   metadata_names <- c("source", "contributors", "dataset", "locations", "contexts", "traits",
                       "substitutions", "taxonomic_updates", "exclude_observations",
                       "questions")
+
+  collectors_names <- c("last_name", "given_name", "ORCID", "affiliation")
   ## Test metadata exists with correct names
   expect_named(test_metadata)
   expect_equal(names(test_metadata), metadata_names)
   expect_equal(length(test_metadata$source$primary), 10)
   expect_isin(names(test_metadata$dataset), schema$metadata$elements$dataset$values %>% names())
+  expect_type(test_metadata$contributors$data_collectors, "list")
+  expect_equal(test_metadata$contributors$data_collectors %>% length(), 1L)
+  expect_equal(names(test_metadata$contributors$data_collectors[[1]]), collectors_names)
+  expect_equal((test_metadata$contributors$data_collectors[[1]] %>% unique)[[1]], "unknown")
  })
 
 test_that("metadata_path_dataset_id is working",{
