@@ -66,6 +66,8 @@ dataset:
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "widely_lanceolate", "narrowly_ovate"), trait_value),
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "clavate", "spathulate"), trait_value),
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "cylindrical", "terete"), trait_value),
+        trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "recurved", "revolute"), trait_value),
+        trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "incurved", "involute"), trait_value),
         measurement_remarks = ifelse(is.na(category), NA, paste0("Trait value refers to ", category))
       )
   '
@@ -80,7 +82,7 @@ dataset:
   life_stage: adult
   sampling_strategy: This dataset is sourced from the longer taxon profiles on the
     Florabase online website (version date 2022-09-14). Briefly, the textual descriptions
-    of each taxon in were downloaded and organised into a tabular format of individual
+    of each taxon were downloaded and organised into a tabular format of individual
     taxon names and their corresponding text using R coding script. Sentences and
     phrases were categorised using a large glossary of botanical terminology as referring
     to one of the following, the entire organism, stem, leaf, flower, fruit/seed,
@@ -387,7 +389,40 @@ traits:
   basis_of_value: measurement
   replicates: .na
   methods: Maximum plant vegetative height of a mature individual.
-substitutions: .na
+- var_in: plant_photosynthetic_organ
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The dominant photosynthetic organ was scored as leaf, phyllode or cladode
+    based on use of these terms in the text. Plants described as leafless or in some
+    cases as possessing leaves reduced to scales or caducous leaves were scored as
+    cladode.
+- var_in: leaf_lamina_posture
+  unit_in: mm
+  trait_name: leaf_lamina_posture
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: Taxa were scored as possessing a leaf lamina posture if a descriptor of
+    posture was used to describe the blade, lamina or adaxial surface of the leaf,
+    without referring to the margin.
+- var_in: leaf_margin_posture
+  unit_in: mm
+  trait_name: leaf_margin_posture
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: Taxa were scored as possessing a leaf margin posture if the word "margin"
+    was used, as well as some descriptor of posture.
+substitutions:
+- trait_name: leaf_lamina_posture
+  find: folded
+  replace: conduplicate
 taxonomic_updates:
 - find: Abutilon sp. Cape Range (A.S. George 1312)
   replace: Abutilon sp. Cape Range (A.S.George 1312)
