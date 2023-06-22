@@ -134,7 +134,9 @@ wide_data %>%
       str_detect(large_prop_flowering_unknown, "y"),
       str_extract(large_prop_flowering_unknown, "[0-9][0-9\\-\\.]*(?=y)"),
       str_extract(large_prop_flowering_unknown, "[0-9\\-]+(?=w)")
-    )
+    ),
+    advanced_seedlings = if_else(is.na(advanced_seedlings) & !is.na(seedlings_first_observed), 
+                                 "just germinated seedlings", advanced_seedlings)
   ) -> wide_data
 
 wide_data %>% 
