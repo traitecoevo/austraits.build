@@ -17,11 +17,17 @@ contributors:
     given_name: John
     ORCID: unkown
     affiliation: Department of Botany, The University of Western Australia, Nedlands
-  assistants: unknown
   austraits_curators: Gillian Kowalick
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code:                 '
+    data %>%
+      group_by(Species) %>%
+      mutate(
+        across(c("plant_growth_form", "life_history", "photosynthetic_pathway", "nitrogen_fixing", "plant_succulence"), replace_duplicates_with_NA)
+      ) %>%
+      ungroup()
+  '
   collection_date: 1994-07/1995-09
   taxon_name: Species
   location_name: mulga_sites
@@ -44,7 +50,7 @@ dataset:
     collected from winter active ephemerals, whereas harvests were restricted to recently
     extended leafy shoot material of herbaceous perennial, woody shrub and tree species.
     All material was oven-dried at 60-80 °C.
-  original_file: unknown
+  original_file: none, data extracted from paper.
   notes: Data extracted from paper, not raw data.
 locations:
   Eastern mulga:
@@ -53,14 +59,14 @@ locations:
     description: The Queensland site was within Currawinya National Park 100km west
       of Brisbane, Queensland, Australia. The site comprised mulga vegetation typical
       of the eastern biogeographic region.
-    MAP (mm): 294
+    precipitation, MAP (mm): 294
   Western mulga:
     latitude (deg): -28.893333
     longitude (deg): 117.129167
     description: The Western Australia site was in Thundelarra Station around 500km
       north of Perth and in the Murchison Region of Western Australia. The site was
       equivalently representative mulga flora of the western counterpart.
-    MAP (mm): 262
+    precipitation, MAP (mm): 262
   Lake Mongers:
     latitude (deg): -28.893333
     longitude (deg): 117.129167
@@ -70,21 +76,8 @@ locations:
       mostly the same species as the surrounding soft mulga, the open-textured, heavily
       leached sands of the dune were clearly highly atypical of mulga generally within
       the region.
-    MAP (mm): 262
+    precipitation, MAP (mm): 262
 contexts:
-- context_property: vegetation community
-  category: plot
-  var_in: vegetation_type
-  values:
-  - value: Ephemerals (non-succulent)
-  - value: C3/CAM succulent ephemerals or perennials
-  - value: C4 Ephemerals or herbaceous perennials
-  - value: Herbaceous perennials (non-succulent)
-  - value: Woody shrubs
-  - value: Woody trees
-  - value: Ephemerals
-  - value: C4 ephemeral
-  - value: Herbaceous perennials
 - context_property: soil community typings
   category: plot
   var_in: Hard_Soft
@@ -99,12 +92,12 @@ contexts:
     value: hard/soft mulga
     description: Site includes both 'soft mulga', typical of red earths or deep sands,
       and 'hard mulga' which occupies rocky dissected tablelands.
-  - find: Not recorded
-    description: soil community typing not recorded.
+  - value: wind-blown sand
+    description: Site comprised of wind-blown sand, atypical for mulga vegetation.
 traits:
 - var_in: delta13C
   unit_in: '{delta}[ppth]'
-  trait_name: stem_delta13C
+  trait_name: leaf_delta13C
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -126,7 +119,7 @@ traits:
     hydrocarbon delta13C standard, NBS-22.
 - var_in: delta15N
   unit_in: '{delta}[ppth]'
-  trait_name: stem_delta15N
+  trait_name: leaf_delta15N
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -141,7 +134,232 @@ traits:
     potential errors of measurement involved in each were as detailed by Unkovich
     et al.(1993). The compounded error of measurement of delta15N between assays on
     replicate samples of plant material was <U+00B1> 0.2permille (SD).
+- var_in: plant_growth_form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknownEach site, including the dune at Lake Mongers, Western Australia,
+    was first surveyed floristically to establish which common species collectively
+    comprised 80% or more of the standing plant biomass, represented, respectively,
+    by life and growth types comprising herbaceous winter (wet season) ephemerals,
+    herbaceous perennials, woody shrubs and trees.
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknownEach site, including the dune at Lake Mongers, Western Australia,
+    was first surveyed floristically to establish which common species collectively
+    comprised 80% or more of the standing plant biomass, represented, respectively,
+    by life and growth types comprising herbaceous winter (wet season) ephemerals,
+    herbaceous perennials, woody shrubs and trees.
+- var_in: plant_succulence
+  unit_in: .na
+  trait_name: plant_succulence
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknownEach site, including the dune at Lake Mongers, Western Australia,
+    was first surveyed floristically to establish which common species collectively
+    comprised 80% or more of the standing plant biomass, represented, respectively,
+    by life and growth types comprising herbaceous winter (wet season) ephemerals,
+    herbaceous perennials, woody shrubs and trees.
+- var_in: photosynthetic_pathway
+  unit_in: .na
+  trait_name: photosynthetic_pathway
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknownEach site, including the dune at Lake Mongers, Western Australia,
+    was first surveyed floristically to establish which common species collectively
+    comprised 80% or more of the standing plant biomass, represented, respectively,
+    by life and growth types comprising herbaceous winter (wet season) ephemerals,
+    herbaceous perennials, woody shrubs and trees.
+- var_in: nitrogen_fixing
+  unit_in: .na
+  trait_name: nitrogen_fixing
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknownEach site, including the dune at Lake Mongers, Western Australia,
+    was first surveyed floristically to establish which common species collectively
+    comprised 80% or more of the standing plant biomass, represented, respectively,
+    by life and growth types comprising herbaceous winter (wet season) ephemerals,
+    herbaceous perennials, woody shrubs and trees.
 substitutions: .na
-taxonomic_updates: .na
+taxonomic_updates:
+- find: Brachycome sp. 1
+  replace: Brachyscome sp. [Brachycome sp. 1; Pate_1998]
+  reason: Rewrite genus-level taxon name to include dataset_id (E. Wenk, 2023-06-22)
+  taxonomic_resolution: Genus
+- find: Brachycome sp. 2
+  replace: Brachyscome sp. [Brachycome sp. 1; Pate_1998]
+  reason: Rewrite genus-level taxon name to include dataset_id (E. Wenk, 2023-06-22)
+  taxonomic_resolution: Genus
+- find: S.artemisioides subsp. Oligophylla
+  replace: Senna artemisioides subsp. oligophylla
+  reason: Align to APC accepted taxon name (E. Wenk, 2023-06-22)
+  taxonomic_resolution: Species
+- find: Abutilon sp.
+  replace: Abutilon sp. [Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: genus
+- find: Acacia farnesii
+  replace: Acacia farnesiana
+  reason: Align to APC accepted taxon name (E. Wenk, 2023-06-22)
+  taxonomic_resolution: Species
+- find: Acacia quadrimarginata
+  replace: Acacia quadrimarginea
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2023-06-22)
+  taxonomic_resolution: Species
+- find: Acacia sp. 3
+  replace: Acacia sp. [Acacia sp. 3; Pate_1998]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2023-06-22)
+  taxonomic_resolution: Genus
+- find: Acacia sp. 4
+  replace: Acacia sp. [Acacia sp. 4; Pate_1998]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2023-06-22)
+  taxonomic_resolution: Genus
+- find: Amaranthus sp.
+  replace: Amaranthus sp. [Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: genus
+- find: Asclepias sp.
+  replace: Asclepias sp. [Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: genus
+- find: Calandrinia sp.
+  replace: Calandrinia sp. [Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: genus
+- find: Comesperma sp.
+  replace: Comesperma sp. [Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: genus
+- find: Dodonaea sp.
+  replace: Dodonaea sp. [Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: genus
+- find: Dysphania sp.
+  replace: Dysphania sp. [Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: genus
+- find: Eremophila bomanii
+  replace: Eremophila bowmanii
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2023-06-22)
+  taxonomic_resolution: Species
+- find: Eremophila latrobel
+  replace: Eremophila latrobei
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2023-06-22)
+  taxonomic_resolution: Species
+- find: Eremophila sp. 2
+  replace: Eremophila sp. [Eremophila sp. 2; Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: Genus
+- find: Eremophila sp. 3
+  replace: Eremophila sp. [Eremophila sp. 3; Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: Genus
+- find: Erodium botyris
+  replace: Erodium botrys
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2023-06-22)
+  taxonomic_resolution: Species
+- find: Jacksonia sp.
+  replace: Jacksonia sp. [Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: genus
+- find: Maireana camosa
+  replace: Maireana carnosa
+  reason: Align to APC accepted taxon name (E. Wenk, 2023-06-22)
+  taxonomic_resolution: Species
+- find: Nicotiana sp.
+  replace: Nicotiana sp. [Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: genus
+- find: Senna artemisioides subsp. Artemisioides
+  replace: Senna artemisioides subsp. x artemisioides
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2023-06-22)
+  taxonomic_resolution: Subspecies
+- find: Senna artemisioides subsp. Circinnata
+  replace: Senna artemisioides subsp. circinnata
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-06-22)
+  taxonomic_resolution: Subspecies
+- find: Senna desolata
+  replace: Cassia desolata
+  reason: Align to APC accepted taxon name (E. Wenk, 2023-06-22)
+  taxonomic_resolution: Species
+- find: Senna nemophila
+  replace: Cassia nemophila
+  reason: Align to APC accepted taxon name (E. Wenk, 2023-06-22)
+  taxonomic_resolution: Species  
+- find: Asteraceae
+  replace: Asteraceae sp. [Pate_1998]
+  reason: Rewrite family-level taxon name to include dataset_id (E. Wenk, 2023-06-22)
+  taxonomic_resolution: Family
+- find: Chenopodiaceae
+  replace: Chenopodiaceae sp. [Pate_1998]
+  reason: Rewrite family-level taxon name to include dataset_id (E. Wenk, 2023-06-22)
+  taxonomic_resolution: Family
+- find: Senna sp. 1
+  replace: Senna sp. [Senna sp. 1; Pate_1998]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2023-06-22)
+  taxonomic_resolution: genus
+- find: Senna sp. 2
+  replace: Senna sp. [Senna sp. 2; Pate_1998]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2023-06-22)
+  taxonomic_resolution: genus
+- find: Senna sp. 3
+  replace: Senna sp. [Senna sp. 3; Pate_1998]
+  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
+    by APC (2023-06-22)
+  taxonomic_resolution: genus
+- find: Sida sp.
+  replace: Sida sp. [Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: genus
+- find: Solanum sp 1.
+  replace: Solanum sp. 1
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2023-06-22)
+  taxonomic_resolution: Species
+- find: Solanum sp 2.
+  replace: Solanum sp. 2
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2023-06-22)
+  taxonomic_resolution: Species
+- find: Solanum sp 3.
+  replace: Solanum sp. 3
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2023-06-22)
+  taxonomic_resolution: Species
+- find: Swainsona sp.
+  replace: Swainsona sp. [Pate_1998]
+  reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
+    alignment with `APC accepted` name (2023-06-22)
+  taxonomic_resolution: genus
 exclude_observations: .na
 questions: .na
