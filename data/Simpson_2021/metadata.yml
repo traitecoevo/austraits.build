@@ -198,12 +198,50 @@ contributors:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: no
-  custom_R_code: '
+  custom_R_code:     '
     data %>% 
       mutate(
         source_id = str_replace_all(`Citation code`, "(?<=[:alpha:]) ", "_"),
         source_id = if_else(source_id == "Clayton_2006", "GrassBase_2006", source_id),
-        source_id = if_else(source_id == "FEIS", "FEIS_2021", source_id)
+        source_id = if_else(source_id == "FEIS", "FEIS_2021", source_id),        
+        Resprouter = ifelse(
+          Species_name %in% c("Aristida biglandulosa", "Aristida holathera", "Arundo donax", "Urochloa holosericea", 
+            "Urochloa piligera", "Urochloa polyphylla", "Urochloa praetervisa", "Urochloa pubigera", "Cenchrus setiger", "Mnesithea rottboellioides", 
+            "Dichanthium sericeum", "Ectrosia leporina", "Ectrosia schultzii", "Eriachne glauca", "Pseudopogonatherum contortum", 
+            "Pseudopogonatherum irritans", "Oplismenus burmanni", "Panicum decompositum", "Cenchrus pedicellatus", "Phragmites karka", 
+            "Paractaenum refractum", "Sorghum plumosum", "Sorghum timorense", "Austrostipa aquarii", "Alloteropsis semialata", 
+            "Aristida arida", "Aristida capillifolia", "Aristida contorta", "Aristida dominii", "Aristida exserta", "Aristida hygrometrica", 
+            "Aristida inaequiglumis", "Aristida latifolia", "Aristida latzii", "Aristida nitidula", "Aristida obscura", "Aristida pruinosa", 
+            "Aristida strigosa", "Aristida superpendens", "Arundinella nepalensis", "Astrebla elymoides", "Astrebla lappacea", "Astrebla pectinata", 
+            "Astrebla squarrosa", "Bambusa arnhemica", "Bothriochloa ewartiana", "Brachyachne convergens", "Capillipedium parviflorum", "Cenchrus echinatus", 
+            "Chionachne cyathopoda", "Chloris pectinata", "Chloris virgata", "Chrysopogon latifolius", "Chrysopogon oliganthus", "Chrysopogon pallidus", 
+            "Cymbopogon ambiguus", "Cymbopogon bombycinus", "Cymbopogon obtectus", "Cymbopogon procerus", "Cynodon radiatus", "Dactyloctenium radulans", 
+            "Dichanthium annulatum", "Digitaria ammophila", "Digitaria bicornis", "Digitaria brownii", "Digitaria ciliaris", "Digitaria coenicola", 
+            "Digitaria ctenantha", "Digitaria gibbosa", "Digitaria longiflora", "Echinochloa colona", "Elytrophorus spicatus", "Enneapogon avenaceus", 
+            "Enneapogon cylindricus", "Enneapogon purpurascens", "Enteropogon acicularis", "Enteropogon ramosus", "Eragrostis australasica", 
+            "Eragrostis confertiflora", "Eragrostis cumingii", "Eragrostis desertorum", "Eragrostis dielsii", "Eragrostis eriopoda", 
+            "Eragrostis lanicaulis", "Eragrostis laniflora", "Eragrostis leptocarpa", "Eragrostis olida", "Eragrostis setifolia", 
+            "Eragrostis spartinoides", "Eragrostis sterilis", "Eragrostis tenellula", "Eragrostis xerophila", "Eriachne agrostidea", 
+            "Eriachne aristidea", "Eriachne avenacea", "Eriachne basedowii", "Eriachne burkittii", "Eriachne capillaris", "Eriachne ciliata", 
+            "Eriachne fastigiata", "Eriachne filiformis", "Eriachne helmsii", "Eriachne mucronata", "Eriachne obtusa", "Eriachne sulcata", 
+            "Eriachne triseta", "Eriochloa procera", "Eulalia aurea", "Eulalia mackinlayi", "Germainia grandiflora", "Germainia truncatiglumis", 
+            "Heteropogon contortus", "Heteropogon triticeus", "Isachne confusa", "Ischaemum decumbens", "Iseilema dolichotrichum", "Iseilema eremaeum", 
+            "Iseilema membranaceum", "Iseilema vaginiflorum", "Leersia hexandra", "Leptochloa digitata", "Leptochloa neesii", "Melinis repens", 
+            "Micraira dentata", "Micraira tenuis", "Monachather paradoxus", "Neurachne munroi", "Neurachne tenuifolia", "Ophiuros exaltatus", 
+            "Oplismenus compositus", "Oryza australiensis", "Panicum mindanaense", "Panicum seminudum", "Panicum trachyrhachis", "Panicum trichoides", 
+            "Paraneurachne muelleri", "Paspalidium clementii", "Paspalidium constrictum", "Paspalidium jubiflorum", "Paspalidium rarum", 
+            "Paspalum scrobiculatum", "Perotis rara", "Phragmites australis", "Polypogon monspeliensis", "Pseudoraphis spinescens", 
+            "Sacciolepis myosuroides", "Schismus barbatus", "Schizachyrium fragile", "Schizachyrium pseudeulalia", "Sehima nervosum", 
+            "Setaria apiculata", "Setaria surgens", "Sporobolus actinocladus", "Sporobolus australasicus", "Sporobolus mitchellii", 
+            "Sporobolus pulchellus", "Sporobolus virginicus", "Symplectrodia gracilis", "Thaumastochloa major", "Themeda arguens", 
+            "Themeda avenacea", "Thyridolepis mitchelliana", "Thyridolepis xerophila", "Triodia basedowii", "Triodia bitextura", "Triodia brizoides", 
+            "Triodia bynoei", "Triodia hubbardii", "Triodia longiceps", "Triodia melvillei", "Triodia microstachya", "Triodia plectrachnoides", 
+            "Triodia pungens", "Triodia schinzii", "Triodia spicata", "Triodia stenostachya", "Triraphis mollis", "Whiteochloa capillipes", 
+            "Xerochloa imberbis", "Xerochloa laniflora", "Yakirra majuscula", "Yakirra pauciflora", "Zygochloa paradoxa", "Brachiaria holosericea", 
+            "Brachiaria piligera", "Brachiaria polyphylla", "Brachiaria praetervisa", "Brachiaria pubigera", "Cenchrus setigerus", 
+            "Coelorachis rottboellioides", "Enneapogon robustissimus", "Eulalia contorta", "Eulalia irritans", "Imperata cylindrica", 
+            "Oplismenus burmannii", "Pennisetum pedicellatum", "Phragmites vallatorius", "Plagiosetum refractum", "Stipa aquarii"), 
+            NA, Resprouter)
       ) %>%
       filter(!source_id %in% c("Pekin_2010", "Moore_2018"))
     '
@@ -228,16 +266,19 @@ dataset:
     search engines (to incorporate both the primary and grey literature) for the term
     '[species name] fire response'.
   original_file: Located in raw folder and archived on Google Drive
-  notes: other sources are, Wapstra, M., B. French, and T. Ashlin. "Distribution,
+  notes: Other sources are, Wapstra, M., B. French, and T. Ashlin. "Distribution,
     habitat characteristics and conservation status of the forest wire-grass Ehrharta
     juncea (R. Br.) Sprengel (Poaceae) in Tasmania." TASFORESTS-HOBART- 14 (2003)
-    77-92.;
+    77-92. Resprouting capacity data for ~180 taxa from Crowley_2007 have been filtered
+    out in custom_R_code, as these are also present in Crowley_2007. Oddly the other
+    taxa sourced from Crowley_2007 are not present in Crowley_2007 and therefore have
+    been left in this dataset.
 locations: .na
 contexts: .na
 traits:
 - var_in: Resprouter
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -292,10 +333,10 @@ traits:
     (species with stolons or crown resprouters, defined as caespitose species with
     neither rhizomes nor stolons).
 substitutions:
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: 'Yes'
   replace: resprouts
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: 'No'
   replace: fire_killed
 - trait_name: life_history
