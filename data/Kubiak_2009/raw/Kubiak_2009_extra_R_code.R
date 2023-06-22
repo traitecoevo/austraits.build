@@ -78,6 +78,21 @@ wide_data %>%
       str_detect(peak_fruiting_unknown, "\\+"),
       str_extract(peak_fruiting_unknown, "[0-9\\-]+(?=\\+)"),
       str_extract(peak_fruiting_unknown, "[0-9][0-9\\-\\.]*(?=y)")    
+    ),
+    large_prop_flowering_resp = if_else(
+      str_detect(large_prop_flowering_resp, "y"),
+      str_extract(large_prop_flowering_resp, "[0-9][0-9\\-\\.]*(?=y)"),
+      str_extract(large_prop_flowering_resp, "[0-9\\-]+(?=w)")
+    ),
+    large_prop_flowering_seed = if_else(
+      str_detect(large_prop_flowering_seed, "y"),
+      str_extract(large_prop_flowering_seed, "[0-9][0-9\\-\\.]*(?=y)"),
+      str_extract(large_prop_flowering_seed, "[0-9\\-]+(?=w)")
+    ),
+    large_prop_flowering_unknown = if_else(
+      str_detect(large_prop_flowering_unknown, "y"),
+      str_extract(large_prop_flowering_unknown, "[0-9][0-9\\-\\.]*(?=y)"),
+      str_extract(large_prop_flowering_unknown, "[0-9\\-]+(?=w)")
     )
   ) -> wide_data
 
@@ -87,7 +102,8 @@ wide_data %>%
       first_flowering_seed, first_flowering_unknown, first_fruiting_resp, first_fruiting_seed, 
       first_fruiting_unknown, primary_juvenile_period, secondary_juvenile_period, 
       peak_flowering_resp, peak_flowering_seed, peak_flowering_unknown, peak_fruiting_resp, 
-      peak_fruiting_seed, peak_fruiting_unknown),
+      peak_fruiting_seed, peak_fruiting_unknown, large_prop_flowering_resp, large_prop_flowering_seed,
+      large_prop_flowering_unknown, dispersal_unit),
     names_to = "trait_name",
     values_to = "value"
   ) %>% 
