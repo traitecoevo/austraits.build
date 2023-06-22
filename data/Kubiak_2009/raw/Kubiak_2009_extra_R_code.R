@@ -4,7 +4,8 @@ library(tidyverse)
 wide_data <- read_csv("data/Kubiak_2009/raw/wide_data.csv")
 
 # Find values with 'y' to add substitutions
-#unique(wide_data$first_flowering_resp)[wide_data$first_flowering_resp %>% unique() %>% str_detect("y")]
+wide_data$first_flowering_seed %>% unique -> unique
+unique[unique %>% str_detect("y")]
 
 wide_data %>% 
   mutate(
@@ -146,34 +147,34 @@ wide_data %>%
 # Move ranges to min and max columns and remove from original columns
 wide_data %>% 
   mutate(
-    first_flowering_resp_min = str_extract(first_flowering_resp, "[0-9](?=-)"),
-    first_flowering_resp_max = str_extract(first_flowering_resp, "(?<=-)[0-9]"),
-    first_flowering_seed_min = str_extract(first_flowering_seed, "[0-9](?=-)"),
-    first_flowering_seed_max = str_extract(first_flowering_seed, "(?<=-)[0-9]"),
-    first_flowering_unknown_min = str_extract(first_flowering_unknown, "[0-9](?=-)"),
-    first_flowering_unknown_max = str_extract(first_flowering_unknown, "(?<=-)[0-9]"),
-    first_fruiting_resp_min = str_extract(first_fruiting_resp, "[0-9](?=-)"),
-    first_fruiting_resp_max = str_extract(first_fruiting_resp, "(?<=-)[0-9]"),
-    first_fruiting_seed_min = str_extract(first_fruiting_seed, "[0-9](?=-)"),
-    first_fruiting_seed_max = str_extract(first_fruiting_seed, "(?<=-)[0-9]"),
-    primary_juvenile_period_min = str_extract(primary_juvenile_period, "[0-9](?=-)"),
-    primary_juvenile_period_max = str_extract(primary_juvenile_period, "(?<=-)[0-9]"),
-    secondary_juvenile_period_min = str_extract(secondary_juvenile_period, "[0-9](?=-)"),
-    secondary_juvenile_period_max = str_extract(secondary_juvenile_period, "(?<=-)[0-9]"),
-    peak_flowering_resp_min = str_extract(peak_flowering_resp, "[0-9](?=-)"),
-    peak_flowering_resp_max = str_extract(peak_flowering_resp, "(?<=-)[0-9]"),
-    peak_flowering_seed_min = str_extract(peak_flowering_seed, "[0-9](?=-)"),
-    peak_flowering_seed_max = str_extract(peak_flowering_seed, "(?<=-)[0-9]"),
-    peak_flowering_unknown_min = str_extract(peak_flowering_unknown, "[0-9](?=-)"),
-    peak_flowering_unknown_max = str_extract(peak_flowering_unknown, "(?<=-)[0-9]"),
-    peak_fruiting_resp_min = str_extract(peak_fruiting_resp, "[0-9](?=-)"),
-    peak_fruiting_resp_max = str_extract(peak_fruiting_resp, "(?<=-)[0-9]"),
-    peak_fruiting_seed_min = str_extract(peak_fruiting_seed, "[0-9](?=-)"),
-    peak_fruiting_seed_max = str_extract(peak_fruiting_seed, "(?<=-)[0-9]"),
-    peak_fruiting_unknown_min = str_extract(peak_fruiting_unknown, "[0-9](?=-)"),
-    peak_fruiting_unknown_max = str_extract(peak_fruiting_unknown, "(?<=-)[0-9]"),
-    fire_time_from_fire_to_flowering_min = str_extract(fire_time_from_fire_to_flowering, "[0-9](?=-)"),
-    fire_time_from_fire_to_flowering_max = str_extract(fire_time_from_fire_to_flowering, "(?<=-)[0-9]"),
+    first_flowering_resp_min = str_extract(first_flowering_resp, "[0-9]+(?=-)"),
+    first_flowering_resp_max = str_extract(first_flowering_resp, "(?<=-)[0-9]+"),
+    first_flowering_seed_min = str_extract(first_flowering_seed, "[0-9]+(?=-)"),
+    first_flowering_seed_max = str_extract(first_flowering_seed, "(?<=-)[0-9]+"),
+    first_flowering_unknown_min = str_extract(first_flowering_unknown, "[0-9]+(?=-)"),
+    first_flowering_unknown_max = str_extract(first_flowering_unknown, "(?<=-)[0-9]+"),
+    first_fruiting_resp_min = str_extract(first_fruiting_resp, "[0-9]+(?=-)"),
+    first_fruiting_resp_max = str_extract(first_fruiting_resp, "(?<=-)[0-9]+"),
+    first_fruiting_seed_min = str_extract(first_fruiting_seed, "[0-9]+(?=-)"),
+    first_fruiting_seed_max = str_extract(first_fruiting_seed, "(?<=-)[0-9]+"),
+    primary_juvenile_period_min = str_extract(primary_juvenile_period, "[0-9]+(?=-)"),
+    primary_juvenile_period_max = str_extract(primary_juvenile_period, "(?<=-)[0-9]+"),
+    secondary_juvenile_period_min = str_extract(secondary_juvenile_period, "[0-9]+(?=-)"),
+    secondary_juvenile_period_max = str_extract(secondary_juvenile_period, "(?<=-)[0-9]+"),
+    peak_flowering_resp_min = str_extract(peak_flowering_resp, "[0-9]+(?=-)"),
+    peak_flowering_resp_max = str_extract(peak_flowering_resp, "(?<=-)[0-9]+"),
+    peak_flowering_seed_min = str_extract(peak_flowering_seed, "[0-9]+(?=-)"),
+    peak_flowering_seed_max = str_extract(peak_flowering_seed, "(?<=-)[0-9]+"),
+    peak_flowering_unknown_min = str_extract(peak_flowering_unknown, "[0-9]+(?=-)"),
+    peak_flowering_unknown_max = str_extract(peak_flowering_unknown, "(?<=-)[0-9]+"),
+    peak_fruiting_resp_min = str_extract(peak_fruiting_resp, "[0-9]+(?=-)"),
+    peak_fruiting_resp_max = str_extract(peak_fruiting_resp, "(?<=-)[0-9]+"),
+    peak_fruiting_seed_min = str_extract(peak_fruiting_seed, "[0-9]+(?=-)"),
+    peak_fruiting_seed_max = str_extract(peak_fruiting_seed, "(?<=-)[0-9]+"),
+    peak_fruiting_unknown_min = str_extract(peak_fruiting_unknown, "[0-9]+(?=-)"),
+    peak_fruiting_unknown_max = str_extract(peak_fruiting_unknown, "(?<=-)[0-9]+"),
+    fire_time_from_fire_to_flowering_min = str_extract(fire_time_from_fire_to_flowering, "[0-9]+(?=-)"),
+    fire_time_from_fire_to_flowering_max = str_extract(fire_time_from_fire_to_flowering, "(?<=-)[0-9]+"),
     first_flowering_resp = if_else(str_detect(first_flowering_resp, "-"), NA_character_, first_flowering_resp),
     first_flowering_seed = if_else(str_detect(first_flowering_seed, "-"), NA_character_, first_flowering_seed),
     first_flowering_unknown = if_else(str_detect(first_flowering_unknown, "-"), NA_character_, first_flowering_unknown),
@@ -189,6 +190,37 @@ wide_data %>%
     peak_fruiting_unknown = if_else(str_detect(peak_fruiting_unknown, "-"), NA_character_, peak_fruiting_unknown),
     fire_time_from_fire_to_flowering = if_else(str_detect(fire_time_from_fire_to_flowering, "-"), NA_character_, fire_time_from_fire_to_flowering)
   ) -> wide_data
+
+# Changes units from years to weeks (a few exceptions, beware)
+wide_data %>% 
+  mutate(across(c(4:19, 24:55), as.numeric)) %>% # Convert to numeric columns
+  mutate(
+    first_flowering_resp_min = first_flowering_resp_min*52,
+    first_flowering_resp_max = first_flowering_resp_max*52,
+    first_flowering_seed = if_else(first_flowering_seed < 5, first_flowering_seed*52, first_flowering_seed),
+    first_flowering_seed_min = first_flowering_seed_min*52,
+    first_flowering_seed_max = first_flowering_seed_max*52,
+    first_flowering_unknown_min = if_else(first_flowering_unknown_min < 10, first_flowering_unknown_min*52, first_flowering_unknown_min),
+    first_flowering_unknown_max = if_else(first_flowering_unknown_max < 10, first_flowering_unknown_max*52, first_flowering_unknown_max),
+    first_fruiting_resp = if_else(first_fruiting_resp < 5, first_fruiting_resp*52, first_fruiting_resp),
+    first_fruiting_resp_min = first_fruiting_resp_min*52,
+    first_fruiting_resp_max = first_fruiting_resp_max*52,
+    first_fruiting_seed = if_else(first_fruiting_seed < 7, first_fruiting_seed*52, first_fruiting_seed),
+    first_fruiting_seed_min = first_fruiting_seed_min*52,
+    first_fruiting_seed_max = first_fruiting_seed_max*52,
+    first_fruiting_unknown = if_else(first_fruiting_unknown < 6, first_fruiting_unknown*52, first_fruiting_unknown),
+    primary_juvenile_period = if_else(primary_juvenile_period < 7, primary_juvenile_period*52, primary_juvenile_period),
+    primary_juvenile_period_min = if_else(primary_juvenile_period_min < 10, primary_juvenile_period_min*52, primary_juvenile_period_min),
+    primary_juvenile_period_max = if_else(primary_juvenile_period_max < 10, primary_juvenile_period_max*52, primary_juvenile_period_max),
+    fire_time_from_fire_to_flowering = if_else(fire_time_from_fire_to_flowering < 7, fire_time_from_fire_to_flowering*52, fire_time_from_fire_to_flowering),
+    fire_time_from_fire_to_flowering_min = if_else(fire_time_from_fire_to_flowering_min < 10, fire_time_from_fire_to_flowering_min*52, fire_time_from_fire_to_flowering_min),
+    fire_time_from_fire_to_flowering_max = if_else(fire_time_from_fire_to_flowering_max < 10, fire_time_from_fire_to_flowering_max*52, fire_time_from_fire_to_flowering_max),
+    secondary_juvenile_period = if_else(secondary_juvenile_period < 6, secondary_juvenile_period*52, secondary_juvenile_period),
+    secondary_juvenile_period_min = if_else(secondary_juvenile_period_min < 10, secondary_juvenile_period_min*52, secondary_juvenile_period_min),
+    secondary_juvenile_period_max = if_else(secondary_juvenile_period_max < 10, secondary_juvenile_period_max*52, secondary_juvenile_period_max),
+    large_prop_flowering_seed = if_else(large_prop_flowering_seed < 4, large_prop_flowering_seed*52, large_prop_flowering_seed),
+  ) %>% 
+  mutate(across(c(4:19, 24:55), as.character)) -> wide_data # Convert back to character to enable pivot_longer
 
 wide_data %>% 
   pivot_longer(
