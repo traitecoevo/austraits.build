@@ -12,6 +12,21 @@ source:
     number: '1'
     pages: '57'
     doi: 10.1071/pc140057
+  original_01:
+    key: Mickle_2009
+    bibtype: Unpublished
+    year: '2009'
+    author: D.A. Mickle and L.E. Valentine and J.M. Kuehs
+    title: 'Unpublished data: Patterns of floristic diversity in the Gnangara Sustainability
+      Strategy study area. Unpublished report prepared for the Department of Environment
+      and Conservation and the Gnangara Sustainability Strategy, Perth, Australia.'
+  original_02:
+    key: DEC_2008
+    bibtype: Unpublished
+    year: '2008'
+    author: WA Department of Environment and Conservation
+    title: 'Vegetation Species List and Response Database V990419. WA Department of
+      Environment and Conservation, Perth, Australia. Accessed: 16.10.2008.'
 contributors:
   data_collectors:
   - last_name: Wilson
@@ -23,9 +38,15 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code:   '
+    data %>%
+      group_by(Species) %>%
+        mutate(across(c(resprouting_capacity), replace_duplicates_with_NA)) %>%
+      ungroup()
+  '
   collection_date: unknown/2004
   taxon_name: Species
+  source_id: source_id
   location_name: location_name
   description: The aim of this paper was to develop guidelines for ecological fire
     regimes using the Banksia woodland on the Gnangara Groundwater System in Western
@@ -85,12 +106,14 @@ locations:
     notes: A distinct water catchment of approximately 220,000 ha and is located on
       the Swan Coastal Plain just north of Perth.
 contexts:
-- context_property: replicate observations
-  category: temporal
-  var_in: observation_number
+- context_property: scoring method
+  category: method
+  var_in: context
   values:
-  - value: 1
-  - value: 2
+  - value: scored at this location
+    description: scored at this location
+  - value: inferred
+    description: inferred information based on taxa in the same genera from FloraBase
 traits:
 - var_in: resprouting_capacity
   unit_in: .na
@@ -110,7 +133,7 @@ traits:
     of flora species during post-fire and chronosequence floristic surveys conducted
     in the Banksia woodlands (Mickle et al., 2010a, 2010b, 2009; Valentine et al.,
     2009a; Wilson et al., 2010a).
-- var_in: juvenile_period_years_Mickle_2009
+- var_in: juvenile_period_years
   unit_in: a
   trait_name: fire_time_from_fire_to_50_percent_flowering
   entity_type: population
@@ -139,46 +162,10 @@ traits:
     1998).The juvenile period was defined as the time for at least 50% of a population
     of a species to have flowered following fire because this level of flowering is
     considered sufficient for viable reproduction (Burrows et al., 2008).
-  observation_number: 1
-  measurement_remarks: data from Mickle 2009
-- var_in: juvenile_period_years_DEC_2008
-  unit_in: a
-  trait_name: fire_time_from_fire_to_50_percent_flowering
-  entity_type: population
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: Information on post-fire responses was obtained from the Vegetation Species
-    List and Response Database (DEC, 2008), FloraBase (Western Australian Herbarium,
-    1998-2009), from recovery plans for threatened species and Threatened Ecological
-    Communities of the area that are covered by State and Commonwealth legislation
-    and require specific fire regimes for protection (Brown et al., 1998; Evans et
-    al., 2003). As species responses vary from site to site (Vivian et al., 2010)
-    and as most of the plant post-fire responses were obtained from the northern Jarrah
-    forest, we supplemented this data by recording the post-fire responses of a number
-    of flora species during post-fire and chronosequence floristic surveys conducted
-    in the Banksia woodlands (Mickle et al., 2010a, 2010b, 2009; Valentine et al.,
-    2009a; Wilson et al., 2010a). The data were collated and key fire response species
-    (i.e., species most likely to be affected by long or short intervals between fires)
-    were then selected based on vital attribute criteria including regeneration strategy
-    (species killed by fire and relying of seeds for reproduction), juvenile period
-    (greater than 48 months), conservation status (Declared Rare Flora) and endemism
-    (endemic to the GGS). The definition of minimum fire interval used in this paper
-    is based on Burrows (2008). The minimum fire interval is approximately twice the
-    juvenile period of the slowest maturing species. The maximum fire interval was
-    taken as the senescence time for the longer lived woody species (Enright et al.,
-    1998).The juvenile period was defined as the time for at least 50% of a population
-    of a species to have flowered following fire because this level of flowering is
-    considered sufficient for viable reproduction (Burrows et al., 2008).
-  observation_number: 2
-  measurement_remarks: data from Vegetation Species List and Response Database (DEC_2008)
 substitutions:
 - trait_name: resprouting_capacity
   find: Seeders
   replace: fire_killed
-- trait_name: resprouting_capacity
-  find: Resprouters
-  replace: resprouts
 - trait_name: resprouting_capacity
   find: Resprouters
   replace: resprouts
