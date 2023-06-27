@@ -51,18 +51,20 @@ dataset:
         entity_measured = ifelse(category %in% c("submerged_leaf", "submerged_lamina", "submerged_leaves","submerged_leaves_blade", "submerged_blade"), "submerged_leaf", entity_measured),
         entity_measured = ifelse(category %in% c("sterile_leaf", "sterile_lamina", "sterile_fronds", "sterile_leaves"), "sterile_leaf", entity_measured),
         entity_measured = ifelse(category %in% c("fertile_leaf", "fertile_fronds", "fertile_lamina", "fertile_frond", "fertile_leaves"), "fertile_leaf", entity_measured),
-        entity_measured = ifelse(category %in% c("leaflets", "trifoliate_leaves", "laminae", "leaflet", "lateral_leaflets", "terminal_leaflets", "simple_leaves_and_leaflets",  "terminal_leaflets_simple_leaves", "leaves_simple_leaflets", "leafletlamina", "terminal_leaflet", "lateral_leaflet" , "basal_leaflets", "sterile_leaflets", "fertile_leaflets", "upper_leaflets", "lower_leaflets", "segmented_leaves", "floating_leaflets", "primary_leaflets", "secondary_leaflets", "submerged_leaflets"), "leaflet", entity_measured),
-        entity_measured = ifelse(category %in% c("primary_pinnae", "longest_primary_pinnae"), "primary_pinnae", entity_measured),
-        entity_measured = ifelse(category %in% c("secondary_pinnae", "longest_secondary_pinnae"), "secondary_pinnae", entity_measured),
+        entity_measured = ifelse(category %in% c("leaflets", "trifoliate_leaves", "laminae", "leaflet", "lateral_leaflets", "terminal_leaflets", "simple_leaves_and_leaflets",  "terminal_leaflets_simple_leaves", "leaves_simple_leaflets", "leafletlamina", "terminal_leaflet", "lateral_leaflet" , "basal_leaflets", "upper_leaflets", "lower_leaflets", "segmented_leaves", "floating_leaflets", "primary_leaflets", "secondary_leaflets", "submerged_leaflets"), "leaflet", entity_measured),
+        entity_measured = ifelse(category %in% c( "pinnule", "pinnules", "secondary_pinnae", "longest_secondary_pinnae"), "secondary_pinnae", entity_measured),
         entity_measured = ifelse(category %in% c("tertiary_pinnae"), "tertiary_pinnae", entity_measured),
         entity_measured = ifelse(category %in% c("quaternary_pinnae"), "quaternary_pinnae", entity_measured),
-        entity_measured = ifelse(category %in% c("largest_pinnae", "pinnae", "pinnules", "pinnae or pinnule", "pinnule", "longest_pinnae","lateral_pinnae", "terminal_pinnae"), "pinnae", entity_measured),
+        entity_measured = ifelse(category %in% c("primary_pinnae", "longest_primary_pinnae", "largest_pinnae", "pinnae", "pinnae or pinnule", "longest_pinnae", "lateral_pinnae", "terminal_pinnae"), "pinnae", entity_measured),
         entity_measured = ifelse(category %in% c("proximal_pinnae"), "proximal_pinnule", entity_measured),
         entity_measured = ifelse(category %in% c("distal_pinnae"), "distal_pinnule", entity_measured),
         entity_measured = ifelse(category %in% c("upper_pinnae"), "upper_pinnae", entity_measured), 
         entity_measured = ifelse(category %in% c("apical_pinnules"), "apical_pinnule", entity_measured), 
         entity_measured = ifelse(category %in% c("lower_pinnae", "basal_pinnae", "lowest_pinnae"), "basal_pinnae", entity_measured),         
         entity_measured = ifelse(category %in% c("fertile_pinnae", "fertile_pinnules"), "fertile_pinnule", entity_measured),
+        entity_measured = ifelse(category %in% c("sterile_pinnules", "sterile_pinnae"), "sterile_pinnule", entity_measured),  
+        entity_measured = ifelse(category %in% c("fertile_leaflets"), "fertile_leaflet", entity_measured),
+        entity_measured = ifelse(category %in% c("sterile_leaflets"), "sterile_leaflet", entity_measured),
         entity_measured = ifelse(category %in% c("sterile_pinnules", "sterile_pinnae"), "sterile_pinnule", entity_measured),
         entity_measured = ifelse(category %in% c("scale_leaf", "scale_leaves", "cataphylllamina", "involucral_lamina"), "scale_leaf", entity_measured),
         entity_measured = ifelse(category %in% c("lower_leaf", "lower_leaves", "lower_leaf_lamina", "lower_lamina", "lowest_leaves"), "lower_leaf", entity_measured),
@@ -83,7 +85,7 @@ dataset:
         entity_measured = ifelse(category %in% c("disc_achenes"), "disc_achenes", entity_measured),
         entity_measured = ifelse(category %in% c("ray_achenes"), "ray_achenes", entity_measured),      
         entity_measured = ifelse(category %in% c("valve", "valves"), "valve", entity_measured),
-        entity_measured = ifelse(category %in% c("capsule", "silicula"), "fruit", entity_measured),
+        entity_measured = ifelse(category %in% c("capsule", "silicula", "mericarp", "schizocarp", "cypselas"), "fruit", entity_measured)
       )  %>%
       distinct(source, taxon_name, trait_name, category, trait_value, units, value_type, inferred, .keep_all = TRUE) %>%
       group_by(taxon_name, trait_name, entity_measured, value_type) %>%
@@ -169,10 +171,11 @@ contexts:
   - value: fertile_leaf
   - value: sterile_leaf
   - value: cladode
-  - value: primary_pinnae
   - value: scale_leaf
   - value: fertile_pinnule
   - value: sterile_pinnule
+  - value: fertile_leaflet
+  - value: sterile_leaflet
   - value: basal_pinnae
 traits:
 - var_in: fruit_colour
