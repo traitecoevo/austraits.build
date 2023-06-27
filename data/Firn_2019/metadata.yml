@@ -35,11 +35,12 @@ dataset:
   custom_R_code:      '
     data %>% 
       mutate(
-        trt = ifelse(trt == "N", "nitrogen",trt),
-        fence_treatment = ifelse(stringr::str_detect(trt,"Fence"),"fence","control"),
-        nutrient_treatment = ifelse(trt=="Fence","control",trt),
-        nutrient_treatment = ifelse(nutrient_treatment == "NPK+Fence","NPK",nutrient_treatment),
-        blocks = paste(trt, block, sep = "-")
+        trt = ifelse(trt == "N", "nitrogen", trt),
+        fence_treatment = ifelse(stringr::str_detect(trt, "Fence"), "fence", "control"),
+        nutrient_treatment = ifelse(trt == "Fence", "control", trt),
+        nutrient_treatment = ifelse(nutrient_treatment == "NPK+Fence", "NPK", nutrient_treatment),
+        nutrient_treatment = ifelse(nutrient_treatment == "Control", "control", nutrient_treatment),
+        blocks = paste(trt, block, sep = "-"),
       ) %>% 
       group_by(Taxon) %>% 
         mutate(across(c(functional_group), replace_duplicates_with_NA)) %>% 
@@ -171,9 +172,6 @@ contexts:
   var_in: nutrient_treatment
   values:
   - value: control
-    description: No nutrient addition.
-  - find: Control
-    value: control
     description: No nutrient addition.
   - value: nitrogen
     description: Added 10 gN m-2 yr-1 as timed-release urea.

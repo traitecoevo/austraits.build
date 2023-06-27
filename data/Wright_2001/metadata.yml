@@ -29,7 +29,14 @@ dataset:
   custom_R_code:      '
     data %>% 
       mutate(
-        rainfall = Site,
+        rainfall = case_when(
+          str_detect(Site, "loR") ~ "low rainfall",
+          str_detect(Site, "hiR") ~ "high rainfall"
+        ),
+        phosphorus_level = case_when(
+          str_detect(Site, "loP") ~ "low phosphorus",
+          str_detect(Site, "hiP") ~ "high phosphorus"
+        ),
         across(c(`reserve_M (mg)`), ~na_if(.x, 0))
       ) %>%
       group_by(spp, Site) %>%
@@ -65,35 +72,19 @@ contexts:
   - value: 3
 - context_property: phosphorus level
   category: plot
-  var_in: Site
+  var_in: phosphorus_level
   values:
-  - find: loRloP
-    value: low phosphorus
-    description: Seeds sourced from a low phorphorus location.
-  - find: loRhiP
-    value: high phosphorus
-    description: Seeds sourced from a high phorphorus location.
-  - find: hiRloP
-    value: low phosphorus
-    description: Seeds sourced from a low phorphorus location.
-  - find: hiRhiP
-    value: high phosphorus
-    description: Seeds sourced from a high phorphorus location.
+  - value: low phosphorus
+    description: Seeds sourced from a low phosphorus location.
+  - value: high phosphorus
+    description: Seeds sourced from a high phosphorus location.
 - context_property: precipitation
   category: plot
   var_in: rainfall
   values:
-  - find: loRloP
-    value: low rainfall
+  - value: low rainfall
     description: Seeds sourced from a low rainfall location.
-  - find: loRhiP
-    value: low rainfall
-    description: Seeds sourced from a low rainfall location.
-  - find: hiRloP
-    value: high rainfall
-    description: Seeds sourced from a high rainfall location.
-  - find: hiRhiP
-    value: high rainfall
+  - value: high rainfall
     description: Seeds sourced from a high rainfall location.
 - context_property: seed provenance
   category: treatment
