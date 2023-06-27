@@ -123,7 +123,10 @@ dataset:
         entity_measured = ifelse(category %in% c("capsule", "silicula"), "fruit", entity_measured),
       )  %>%
       distinct(source, taxon_name, trait_name, trait_value, units, value_type, inferred, category, .keep_all = TRUE) %>%
-      mutate(entity_measured = ifelse(is.na(entity_measured), "unknown", entity_measured))
+      mutate(entity_measured = ifelse(is.na(entity_measured), "unknown", entity_measured)) %>%
+      group_by(taxon_name, trait_name, entity_measured, value_type) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup()
   '
   collection_date: unknown/2022
   taxon_name: taxon_name
@@ -182,6 +185,15 @@ contexts:
   - value: phyllode
   - value: leaf
   - value: leaflet
+- context_property: replicate observations
+  category: temporal
+  var_in: observation_number
+  values:
+  - value: 1
+  - value: 2
+  - value: 3
+  - value: 4
+  - value: 5
 traits:
 - var_in: fruit_colour
   unit_in: .na
