@@ -17,7 +17,7 @@ contributors:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: no
-  custom_R_code:              '
+  custom_R_code:                  '
     data %>% 
       mutate(
         location_name = "Duck River",
@@ -33,7 +33,10 @@ dataset:
           is.na(month_end) ~
             format_flowering_months(month_start, month_start)
         )
-      )
+      ) %>%
+      group_by(canonical_name) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup()
   '
   collection_date: Year
   taxon_name: canonical_name
@@ -84,24 +87,15 @@ contexts:
     description: Just a few individuals in the population flowering.
   - value: widespread flowering
     description: Many to all individuals in the population flowering.
-- context_property: sampling year
+- context_property: replicate observations
   category: temporal
-  var_in: Year2
+  var_in: observation_number
   values:
-  - value: 2020
-    description: Flowering time observed in year 2020.
-  - value: 2020/2021
-    description: Flowering time observed across years 2020 and 2021.
-  - value: 2021
-    description: Flowering time observed in year 2021.
-  - value: 2021/2022
-    description: Flowering time observed across years 2021 and 2022.
-  - value: 2022
-    description: Flowering time observed in 2022.
-  - value: 2022/2023
-    description: Flowering time observed across years 2022 and 2023.
-  - value: 2023
-    description: Flowering time observed in 2023.
+  - value: 1
+  - value: 2
+  - value: 3
+  - value: 4
+  - value: 5
 traits:
 - var_in: flowering_time
   unit_in: .na

@@ -25,14 +25,19 @@ contributors:
   austraits_curators: Sophie Yang
 dataset:
   data_is_long_format: no
-  custom_R_code:                           '
+  custom_R_code: '
     data %>% 
       mutate(
         location_name = "Tasmanian dry sclerophyll woodland",
         taxon_name = str_replace_all(Species, "_", " "),
         HSM_50 = MinLWP_Mpa - P50_MPa,
         HSM_88 = MinLWP_Mpa - P88_Mpa,
-      )'
+        StemLength_cm = round(StemLength_cm, 0) %>% as.character()
+      ) %>%
+      group_by(taxon_name) %>%
+        mutate(across(c(Type), replace_duplicates_with_NA)) %>%
+      ungroup()
+  '
   collection_date: 2015/2018
   taxon_name: taxon_name
   location_name: location_name
@@ -102,40 +107,23 @@ contexts:
   category: method
   var_in: StemLength_cm
   values:
-  - value: 151.0
-    description: unknown
-  - value: 190.0
-    description: unknown
-  - value: 165.0
-    description: unknown
-  - value: 170.0
-    description: unknown
-  - value: 201.0
-    description: unknown
-  - value: 113.0
-    description: unknown
-  - value: 112.0
-    description: unknown
-  - value: 100.0
-    description: unknown
-  - value: 105.0
-    description: unknown
-  - value: 208.0
-    description: unknown
-  - value: 209.0
-    description: unknown
-  - value: 204.0
-    description: unknown
-  - value: 186.0
-    description: unknown
-  - value: .na.real
-    description: unknown
-  - value: 179.0
-    description: unknown
-  - value: 207.0
-    description: unknown
-  - value: 163.0
-    description: unknown
+  - value: .na.character
+  - value: 151
+  - value: 190
+  - value: 165
+  - value: 170
+  - value: 201
+  - value: 113
+  - value: 112
+  - value: 100
+  - value: 105
+  - value: 208
+  - value: 209
+  - value: 204
+  - value: 186
+  - value: 179
+  - value: 207
+  - value: 163
 traits:
 - var_in: Type
   unit_in: .na
