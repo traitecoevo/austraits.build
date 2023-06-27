@@ -28,7 +28,13 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      group_by(canonicalName, trait_name) %>%
+        mutate(value = paste(value, collapse = " ")) %>%
+      ungroup() %>%
+      distinct(canonicalName, trait_name, value, .keep_all = TRUE)
+  '
   collection_date: 2022/2023
   taxon_name: canonicalName
   trait_name: trait_name
