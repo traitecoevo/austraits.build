@@ -33,10 +33,10 @@ testthat::test_that("test datasets", {
   expect_equal(Ex2$traits$basis_of_record %>% unique, c("field", "lab"))
   expect_equal(Ex2$traits %>% filter(basis_of_record == "field") %>% nrow(), 361)
   expect_equal(Ex2$traits %>% filter(basis_of_record == "lab") %>% nrow(), 45)
-  expect_equal(Ex2$traits %>% select(trait_name, basis_of_record) %>% 
+  expect_equal(Ex2$traits %>% select(dplyr::all_of(c("trait_name", "basis_of_record"))) %>% 
                  filter(trait_name == "leaf_N_per_dry_mass") %>%
                  pull(basis_of_record) %>% unique, "lab")
-  expect_equal(Ex2$traits %>% select(trait_name, basis_of_record) %>% 
+  expect_equal(Ex2$traits %>% select(dplyr::all_of(c("trait_name", "basis_of_record"))) %>% 
                  filter(trait_name == "leaf_N_per_dry_mass") %>%
                  pull(basis_of_record) %>% length, 45)
   
@@ -66,23 +66,23 @@ testthat::test_that("test datasets", {
   expect_equal(Ex4$traits %>% filter(basis_of_record == "lab") %>% nrow(), 45)
   expect_equal(Ex4$traits %>% filter(basis_of_record == "wild") %>% nrow(), 9)
   
-  expect_equal(Ex4$traits %>% select(trait_name, basis_of_record) %>% 
+  expect_equal(Ex4$traits %>% select(dplyr::all_of(c("trait_name", "basis_of_record"))) %>% 
                  filter(trait_name == "leaf_N_per_dry_mass") %>%
                  pull(basis_of_record) %>% unique, c("lab"))
-  expect_equal(Ex4$traits %>% select(trait_name, basis_of_record) %>% 
+  expect_equal(Ex4$traits %>% select(dplyr::all_of(c("trait_name", "basis_of_record"))) %>% 
                  filter(trait_name == "leaf_N_per_dry_mass") %>%
                  pull(basis_of_record) %>% grep(pattern = "lab") %>% length , 45)
-  expect_equal(Ex4$traits %>% select(trait_name, basis_of_record) %>% 
+  expect_equal(Ex4$traits %>% select(dplyr::all_of(c("trait_name", "basis_of_record"))) %>% 
                  filter(trait_name == "leaf_N_per_dry_mass") %>%
                  pull(basis_of_record) %>% grep(pattern = "wild") %>% length , 0)
   
-  expect_equal(Ex4$traits %>% select(trait_name, basis_of_record) %>% 
+  expect_equal(Ex4$traits %>% select(dplyr::all_of(c("trait_name", "basis_of_record"))) %>% 
                  filter(trait_name == "seed_dry_mass") %>%
                  pull(basis_of_record) %>% unique, c(NA, "wild"))
-  expect_equal(Ex4$traits %>% select(trait_name, basis_of_record) %>% 
+  expect_equal(Ex4$traits %>% select(dplyr::all_of(c("trait_name", "basis_of_record"))) %>% 
                  filter(trait_name == "seed_dry_mass") %>%
                  pull(basis_of_record) %>% is.na %>% sum, 28)
-  expect_equal(Ex4$traits %>% select(trait_name, basis_of_record) %>% 
+  expect_equal(Ex4$traits %>% select(dplyr::all_of(c("trait_name", "basis_of_record"))) %>% 
                  filter(trait_name == "seed_dry_mass") %>%
                  pull(basis_of_record) %>% grep(pattern = "wild") %>% length , 1)
   
@@ -98,40 +98,40 @@ testthat::test_that("test datasets", {
   expect_equal(Ex5$traits %>% filter(basis_of_record == "lab") %>% nrow(), 10)
   expect_equal(Ex5$traits %>% filter(basis_of_record == "wild") %>% nrow(), 0)
   
-  expect_equal(Ex5$traits %>% select(taxon_name, basis_of_record) %>% 
+  expect_equal(Ex5$traits %>% select(c("taxon_name", "basis_of_record")) %>% 
                  filter(taxon_name == "Trema aspera") %>% pull(basis_of_record) %>% unique, c("Cape_Tribulation"))
-  expect_equal(Ex5$traits %>% select(taxon_name, basis_of_record) %>% 
+  expect_equal(Ex5$traits %>% select(c("taxon_name", "basis_of_record")) %>% 
                  filter(taxon_name == "Trema aspera") %>% pull(basis_of_record) %>% length, 10)
   
-  expect_equal(Ex5$traits %>% select(trait_name, basis_of_record) %>% 
+  expect_equal(Ex5$traits %>% select(c("trait_name", "basis_of_record")) %>% 
                  filter(trait_name == "leaf_N_per_dry_mass") %>%
                  pull(basis_of_record) %>% grep(pattern ="lab") %>% length, 10)
-  expect_equal(Ex5$traits %>% select(trait_name, basis_of_record) %>% 
+  expect_equal(Ex5$traits %>% select(c("trait_name", "basis_of_record")) %>% 
                  filter(trait_name == "leaf_N_per_dry_mass") %>%
                  pull(basis_of_record) %>% grep(pattern ="wild") %>% length, 0)
   
-  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "01") %>%
+  expect_equal(Ex5$traits %>% select(c("location_id", "basis_of_record")) %>% filter(location_id == "01") %>%
                  pull(basis_of_record) %>% unique, c(NA, "lab"))
-  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "01") %>%
+  expect_equal(Ex5$traits %>% select(c("location_id", "basis_of_record")) %>% filter(location_id == "01") %>%
                  pull(basis_of_record) %>% length, 91)
-  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "01") %>%
+  expect_equal(Ex5$traits %>% select(c("location_id", "basis_of_record")) %>% filter(location_id == "01") %>%
                  pull(basis_of_record) %>% is.na %>% sum, 81)
-  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "01") %>%
+  expect_equal(Ex5$traits %>% select(c("location_id", "basis_of_record")) %>% filter(location_id == "01") %>%
                  pull(basis_of_record) %>% grep(pattern = "lab") %>% length, 10)
   
-  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
+  expect_equal(Ex5$traits %>% select(c("location_id", "basis_of_record")) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% unique, c("Cape_Tribulation"))
-  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
+  expect_equal(Ex5$traits %>% select(c("location_id", "basis_of_record")) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% length, 315)
-  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
+  expect_equal(Ex5$traits %>% select(c("location_id", "basis_of_record")) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% grep(pattern = "Cape_Tribulation") %>% length, 315)
-  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
+  expect_equal(Ex5$traits %>% select(c("location_id", "basis_of_record")) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% grep(pattern = "lab") %>% length, 0)
-  expect_equal(Ex5$traits %>% select(location_id, basis_of_record) %>% filter(location_id == "02") %>%
+  expect_equal(Ex5$traits %>% select(c("location_id", "basis_of_record")) %>% filter(location_id == "02") %>%
                  pull(basis_of_record) %>% grep(pattern = "wild") %>% length, 0)
   
   expect_equal(Ex5$traits %>% pull(location_id) %>% unique, Ex5$locations %>% pull(location_id) %>% unique)
-  expect_equal(Ex5$traits %>% select(location_id) %>% unique() %>% nrow(), Ex5$locations %>% select(location_name) %>% unique() %>% nrow())
+  expect_equal(Ex5$traits %>% select(c("location_id")) %>% unique() %>% nrow(), Ex5$locations %>% select(c("location_name")) %>% unique() %>% nrow())
 
   # Example 6 - Tests focus on context and the various context identifiers
   # Based on Crous_2013
