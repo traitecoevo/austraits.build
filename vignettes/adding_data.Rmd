@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-library(austraits.build)
+library(traits.build)
 
 my_kable_styling <- util_kable_styling_html
 ```
@@ -69,13 +69,13 @@ The remainder of this vignette provides incredibly detailed instructions for ste
 
 # Getting started 
 
-The `austraits.build` repository includes a selection of functions that help build the repository. To use these, you'll need to make them available. 
+The `traits.build` repository includes a selection of functions that help build the repository. To use these, you'll need to make them available. 
 
 The easiest way to load the functions into your workspace is to run the following (from within the repository)
 
 ```{r, echo=TRUE, eval=FALSE}
 source("scripts/custom.R")            # source functions written for use within custom_R_code
-library(austraits.build)              # open the austraits.build package that provides the pipeline to build AusTraits
+library(traits.build)              # open the traits.build package that provides the pipeline to build AusTraits
 ```
 
 # Inputting data
@@ -183,7 +183,7 @@ To assist you in constructing the `metadata.yml` file, we have developed functio
 First run the following to make the functions available
 
 ```{r, eval=FALSE, echo=TRUE}
-library(austraits.build)
+library(traits.build)
 ```
 
 The functions for populating the metadata file all begin with `metadata_`. A list of the available functions is automatically generated within the `man/` folder within the `austraits.build` directory.
@@ -513,7 +513,7 @@ The `dataset` section is a mix of fields that are filled in automatically during
 
 - **description:** 1-2 sentence description of the study's goals. The abstract of a manuscript usually includes some good sentences/phrases to borrow.  
 
-- **basis_of_record:**  Allowable values include: field, field_experiment, captive_cultivated, lab, preserved_specimen, and literature. See the top of `system.file("support", "austraits.build_schema.yml", package = "austraits.build"` or [database structure vignette](http://traitecoevo.github.io/austraits.build/articles/austraits_database_structure.html) for definitions of these accepted basis_of_record values. This field can also be read in from a column or can be specified at the location or trait level, as described below. Entries under `metadata$locations` or `metadata$traits` (which apply to only that specific location or trait) override the global value entered under `metadata$dataset`.
+- **basis_of_record:**  Allowable values include: field, field_experiment, captive_cultivated, lab, preserved_specimen, and literature. See the top of `system.file("support", "traits.build_schema.yml", package = "traits.build"` or [database structure vignette](http://traitecoevo.github.io/traits.build/articles/austraits_database_structure.html) for definitions of these accepted basis_of_record values. This field can also be read in from a column or can be specified at the location or trait level, as described below. Entries under `metadata$locations` or `metadata$traits` (which apply to only that specific location or trait) override the global value entered under `metadata$dataset`.
 
 - **life_stage:**   Allowable values include: adult, sapling, seedling, juvenile. This field can also be read in from a column or can be specified at the location or trait level, as described below. Entries under `metadata$locations` or `metadata$traits` (which apply to only that specific location or trait) override the global value entered under `metadata$dataset`.
 
@@ -555,11 +555,11 @@ The trait details then need to be filled in manually.
 
 - **trait_name**: This is the appropriate trait name from `config/traits.yml`. If no appropriate trait exists in AusTraits, a new trait can often be added - just ensure it is a `trait` where data will be comparable across studies and has been measured for a fair number (~>50) species. For currently unsupported traits, we leave this as `.na` but then fill in the rest of the data and flag this study as having a potential new trait. Then in the future, when this trait is added to the `traits.yml` file, the data can be read into AusTraits by simply replacing the `.na` with a trait name. 
 
-- **entity_type**: Entity types indicate the taxonomic/ecological hierarchical level corresponding to the trait value. Entity types can be individual, population, species, genus, family or order. Metapopulation-level measurements are coded as `population` and infraspecific taxon-level measurements are coded as `species`. See the top of `system.file("support", "austraits.build_schema.yml", package = "austraits.build")` for definitions of these accepted entity types. *Note: entity_type is about the hierarchical level to which the trait measurement refers; this is separate from the taxonomic resolution of the entity's name.*
+- **entity_type**: Entity types indicate the taxonomic/ecological hierarchical level corresponding to the trait value. Entity types can be individual, population, species, genus, family or order. Metapopulation-level measurements are coded as `population` and infraspecific taxon-level measurements are coded as `species`. See the top of `system.file("support", "traits.build_schema.yml", package = "traits.build")` for definitions of these accepted entity types. *Note: entity_type is about the hierarchical level to which the trait measurement refers; this is separate from the taxonomic resolution of the entity's name.*
 
-- **value_type**: Allowable value types are mean, minimum, maximum, mode, range, raw, and bin. See the top of `system.file("support", "austraits.build_schema.yml", package = "austraits.build")` for definitions of these accepted value types. All categorical traits are generally scored as being a `mode`, the most commonly observed value. Note that for values that are `bins`, the two numbers are separated by a double-hyphen, `1 -- 10`.
+- **value_type**: Allowable value types are mean, minimum, maximum, mode, range, raw, and bin. See the top of `system.file("support", "traits.build_schema.yml", package = "traits.build")` for definitions of these accepted value types. All categorical traits are generally scored as being a `mode`, the most commonly observed value. Note that for values that are `bins`, the two numbers are separated by a double-hyphen, `1 -- 10`.
 
-- **basis_of_value**: Basis of value indicates how a value was determined. Allowable terms are measurement, expert_score, model_derived, and literature. See the top of `system.file("support", "austraits.build_schema.yml", package = "austraits.build")` for definitions of these accepted value types, but in general most categorical traits are values that have been scored by an expert (expert_score) and more numeric trait values are measurements.  
+- **basis_of_value**: Basis of value indicates how a value was determined. Allowable terms are measurement, expert_score, model_derived, and literature. See the top of `system.file("support", "traits.build_schema.yml", package = "traits.build")` for definitions of these accepted value types, but in general most categorical traits are values that have been scored by an expert (expert_score) and more numeric trait values are measurements.  
 
 - **replicates**: Fill in with the appropriate value. For categorical variables, leave this as `.na`. If there is a column that specifies replicate number, you can list the column name in the field.
 
@@ -842,7 +842,7 @@ To run the tests, the variable `dataset_ids` must be defined in the global names
 
 ```{r, eval=FALSE, echo=TRUE}
 # load relevant functions
-library(austraits.build)
+library(traits.build)
 
 # Tests run test on one study
 dataset_ids <- "Bragg_2002"

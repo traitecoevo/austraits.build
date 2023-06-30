@@ -1,3 +1,3 @@
- library(austraits.build)
+ library(traits.build)
  source("functions.R")
 

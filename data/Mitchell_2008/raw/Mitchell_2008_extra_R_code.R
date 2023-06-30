@@ -1,6 +1,6 @@
 library(dplyr)
 library(austraits)
-library(austraits.build)
+library(traits.build)
 
 # Load in raw data
 
