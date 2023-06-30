@@ -814,11 +814,13 @@ build_find_taxon <- function(taxon_name, austraits, original_name = FALSE) {
 
   if (!original_name) {
     data <- data %>%
-      dplyr::select(dplyr::all_of(name = "taxon_name", "dataset_id")) %>%
+      dplyr::select(dplyr::all_of("taxon_name", "dataset_id")) %>%
+      rename(name = taxon_name) %>%
       dplyr::distinct()
   } else {
     data <- data %>%
-      dplyr::select(dplyr::all_of(name = "original_name", "dataset_id")) %>%
+      dplyr::select(dplyr::all_of("original_name", "dataset_id")) %>%
+      dplyr::rename(name = original_name) %>%
       dplyr::distinct()
   }
 
