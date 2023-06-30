@@ -246,11 +246,11 @@ metadata_add_locations <- function(dataset_id, location_data) {
   location_name <- metadata_user_select_column("location_name", names(location_data))
 
   # From remaining variables, choose those to keep
-  location_sub <- dplyr::select(location_data, -!!location_name)
+  location_sub <- dplyr::select(dplyr::all_of(c("location_data"), -!!location_name))
   keep <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct location_properties in ", dataset_id), names(location_sub))
 
   # Save and notify
-  metadata$locations <- dplyr::select(location_data, tidyr::one_of(keep)) %>%
+  metadata$locations <- dplyr::select(dplyr::all_of(c("location_data"), tidyr::one_of(keep))) %>%
             split(location_data[[location_name]]) %>% lapply(as.list)
 
   cat(sprintf("Following locations added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$locations), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
@@ -814,11 +814,13 @@ build_find_taxon <- function(taxon_name, austraits, original_name = FALSE) {
 
   if (!original_name) {
     data <- data %>%
-      dplyr::select(name = taxon_name, .data$dataset_id) %>%
+      dplyr::select(dplyr::all_of("taxon_name", "dataset_id")) %>%
+      rename(name = taxon_name) %>%
       dplyr::distinct()
   } else {
     data <- data %>%
-      dplyr::select(name = original_name, .data$dataset_id) %>%
+      dplyr::select(dplyr::all_of("original_name", "dataset_id")) %>%
+      dplyr::rename(name = original_name) %>%
       dplyr::distinct()
   }
 
