@@ -429,7 +429,7 @@ process_format_contexts <- function(my_list, dataset_id) {
        my_list %>%
        purrr::map_df(f) %>%
        dplyr::mutate(dataset_id = dataset_id) %>%
-       dplyr::select(dplyr::all_of(
+       dplyr::select(dplyr::any_of(
          c("dataset_id", "context_property", "category", "var_in",
          "find", "value", "description"))
          )
