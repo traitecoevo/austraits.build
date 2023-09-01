@@ -33,7 +33,10 @@ dataset:
           is.na(month_end) ~
             format_flowering_months(month_start, month_start)
         )
-      )
+      ) %>%
+      group_by(canonical_name) %>%
+        mutate(repeat_measurement = row_number()) %>%
+      ungroup()
   '
   collection_date: Year
   taxon_name: canonical_name
@@ -102,6 +105,13 @@ contexts:
     description: Flowering time observed across years 2022 and 2023.
   - value: 2023
     description: Flowering time observed in 2023.
+- context_property: repeat measurements
+  category: temporal
+  var_in: repeat_measurement
+  values:
+  - value: 1
+  - value: 2
+  - value: 3
 traits:
 - var_in: flowering_time
   unit_in: .na
