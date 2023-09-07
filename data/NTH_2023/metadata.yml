@@ -19,7 +19,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code:   '
+  custom_R_code:           '
     data %>%
       filter(!is.na(taxon_name)) %>%
       filter(str_detect(taxon_name, " ")) %>%
@@ -28,20 +28,81 @@ dataset:
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "widely_lanceolate", "narrowly_ovate"), trait_value),
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "clavate", "spathulate"), trait_value),
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "cylindrical", "terete"), trait_value),
-        measurement_remarks = ifelse(is.na(category), NA, paste0("Trait value refers to ", category))
-      )
+        trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "recurved", "revolute"), trait_value),
+        trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "incurved", "involute"), trait_value),
+        measurement_remarks = ifelse(is.na(category), NA, paste0("Trait value refers to ", category)),
+        inferred = ifelse(stringr::str_detect(flora_value, "inferred"), flora_value, NA),
+        inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_species"), "inferred_from_species", inferred),
+        inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_genus"), "inferred_from_genus", inferred),
+        inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_family"), "inferred_from_family", inferred),
+        inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_taxonomy"), "inferred_from_taxonomy", inferred),
+        inferred = ifelse(!inferred %in% c("inferred_from_species", "inferred_from_taxonomy", "inferred_from_genus", "inferred_from_family") & !is.na(inferred), "inferred_from_trait", inferred),
+        inferred = ifelse(is.na(inferred),"scored from text", inferred),
+        entity_measured = ifelse(category %in% c("adultleaves", "leaves", "fronds", "lamina", "simple_leaves", "leafblade", "median_leaves", "lobed_lamina", "lobed_leaves",
+         "blade", "blades", "leaf", "leafblades", "frond", "caducous_leaves", "entire_leaves", "entire_leaves_lamina",
+         "subtending_leaves", "axillary_leaves", "lobed_leaves_lamina", "pinnate_leaves", "erect_leaves", "prostrate_leaves",
+         "leaves_southern", "leaves_northern", "adultleaves_high_altitudes","petiole", "dissected_fronds", "simple_fronds", "sessile_leaves",
+         "petiolate_leaves", "intermediateleaves", "crownleaves", "unifacial_leaves", "dorsiventral_leaves", "vegetative_branch_leaves",
+         "flowering_branch_leaves", "divided_leaves", "terete_leaves", "flat_leaves","clustered_leaves","single_leaves",
+         "entire_lamina", "outer_leaves", "inner_leaves", "pinnate_lamina", "simple_lamina", "foliage_fronds", "nest_fronds",
+         "pinnate_fronds","leaves_branches", "leaves_climbing_stems", "freelamina", "rolled_blade","flat_blade",  "middle_leaves",
+         "undivided_leaves", "raylet_leaves", "flattened_blade", "distal_leaves", "terrestrial _plant_leaves", "inflorescence_leaves"), "leaf", NA),
+        entity_measured = ifelse(category %in% c("emergent_leaf", "floating_leaves_blade", "emergent_lamina", "aerial_leaves", "emergent_leaves", "floating_blade", "floating_leaves", "floating_lamina"), "emergent_leaf", entity_measured),
+        entity_measured = ifelse(category %in% c("submerged_leaf", "submerged_lamina", "submerged_leaves","submerged_leaves_blade", "submerged_blade"), "submerged_leaf", entity_measured),
+        entity_measured = ifelse(category %in% c("sterile_leaf", "sterile_lamina", "sterile_fronds", "sterile_leaves"), "sterile_leaf", entity_measured),
+        entity_measured = ifelse(category %in% c("fertile_leaf", "fertile_fronds", "fertile_lamina", "fertile_frond", "fertile_leaves"), "fertile_leaf", entity_measured),
+        entity_measured = ifelse(category %in% c("leaflets", "trifoliate_leaves", "laminae", "leaflet", "lateral_leaflets", "terminal_leaflets", "simple_leaves_and_leaflets",  "terminal_leaflets_simple_leaves", "leaves_simple_leaflets", "leafletlamina", "terminal_leaflet", "lateral_leaflet" , "basal_leaflets", "upper_leaflets", "lower_leaflets", "segmented_leaves", "floating_leaflets", "primary_leaflets", "secondary_leaflets", "submerged_leaflets"), "leaflet", entity_measured),
+        entity_measured = ifelse(category %in% c( "pinnule", "pinnules", "secondary_pinnae", "longest_secondary_pinnae"), "secondary_pinnae", entity_measured),
+        entity_measured = ifelse(category %in% c("tertiary_pinnae"), "tertiary_pinnae", entity_measured),
+        entity_measured = ifelse(category %in% c("quaternary_pinnae"), "quaternary_pinnae", entity_measured),
+        entity_measured = ifelse(category %in% c("primary_pinnae", "longest_primary_pinnae", "largest_pinnae", "pinnae", "pinnae or pinnule", "longest_pinnae", "lateral_pinnae", "terminal_pinnae"), "pinnae", entity_measured),
+        entity_measured = ifelse(category %in% c("proximal_pinnae"), "proximal_pinnule", entity_measured),
+        entity_measured = ifelse(category %in% c("distal_pinnae"), "distal_pinnule", entity_measured),
+        entity_measured = ifelse(category %in% c("upper_pinnae"), "upper_pinnae", entity_measured),
+        entity_measured = ifelse(category %in% c("apical_pinnules"), "apical_pinnule", entity_measured),
+        entity_measured = ifelse(category %in% c("lower_pinnae", "basal_pinnae", "lowest_pinnae"), "basal_pinnae", entity_measured),
+        entity_measured = ifelse(category %in% c("fertile_pinnae", "fertile_pinnules"), "fertile_pinnule", entity_measured),
+        entity_measured = ifelse(category %in% c("sterile_pinnules", "sterile_pinnae"), "sterile_pinnule", entity_measured),  
+        entity_measured = ifelse(category %in% c("fertile_leaflets"), "fertile_leaflet", entity_measured),
+        entity_measured = ifelse(category %in% c("sterile_leaflets"), "sterile_leaflet", entity_measured),
+        entity_measured = ifelse(category %in% c("sterile_pinnules", "sterile_pinnae"), "sterile_pinnule", entity_measured),
+        entity_measured = ifelse(category %in% c("scale_leaf", "scale_leaves", "cataphylllamina", "involucral_lamina"), "scale_leaf", entity_measured),
+        entity_measured = ifelse(category %in% c("lower_leaf", "lower_leaves", "lower_leaf_lamina", "lower_lamina", "lowest_leaves"), "lower_leaf", entity_measured),
+        entity_measured = ifelse(category %in% c("upper_leaf", "upper_leaves", "upper_leaf_lamina", "laminas", "upper_lamina"), "upper_leaf", entity_measured),
+        entity_measured = ifelse(category %in% c("stemleaves", "lateral_stem_leaves", "main_stem_leaves","stem_leaves","flowerin_stem_leaves","vegetative_stem_leaves", "erect_stem_leaves", "stem_lamina", "fruiting_stem_leaves", "lateral_stemleaf_lamina"), "stem_leaf", entity_measured),
+        entity_measured = ifelse(category %in% c("lateral_leaf", "lateral_leaves", "axillary_shoot_leaves", "axillary_stem_leaves"), "lateral_leaf", entity_measured),
+        entity_measured = ifelse(category %in% c("cauline_leaves", "cauline_lamina", "caulineleaves", "cauline_leaf"), "cauline_leaf", entity_measured),
+        entity_measured = ifelse(category %in% c("basal_leaves", "radical_leaves", "basal_eaves", "nest_fronds", "radical_leaf", "basal_lamina","basal_leaf", "rosette_leaves"), "basal_leaf", entity_measured),
+        entity_measured = ifelse(category %in% c("phyllode", "phyllodes"), "phyllode", entity_measured),
+        entity_measured = ifelse(category %in% c("cladode", "cladodes", "phylloclades"), "cladode", entity_measured),
+        entity_measured = ifelse(category %in% c("leafsegments"), "lobes", entity_measured),
+        entity_measured = ifelse(category %in% c("fruits", "fruit"), "fruit", entity_measured),
+        entity_measured = ifelse(category %in% c("infructescence"), "infructescence", entity_measured),
+        entity_measured = ifelse(category %in% c("apiculum"), "apiculum", entity_measured),
+        entity_measured = ifelse(category %in% c("male_cones"), "male_cones", entity_measured),
+        entity_measured = ifelse(category %in% c("female_cones"), "female_cones", entity_measured),
+        entity_measured = ifelse(category %in% c("disc_achenes"), "disc_achenes", entity_measured),
+        entity_measured = ifelse(category %in% c("ray_achenes"), "ray_achenes", entity_measured),
+        entity_measured = ifelse(category %in% c("valve", "valves"), "valve", entity_measured),
+        entity_measured = ifelse(category %in% c("capsule", "silicula", "mericarp", "schizocarp", "cypselas"), "fruit", entity_measured)
+      )  %>%
+      distinct(source, taxon_name, trait_name, category, trait_value, units, value_type, inferred, .keep_all = TRUE) %>%
+      group_by(taxon_name, trait_name, entity_measured, value_type) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup()
   '
   collection_date: unknown/2022
   taxon_name: taxon_name
   trait_name: trait_name
   value: trait_value
+  value_type: value_type
   measurement_remarks: measurement_remarks
   description: Plant growth form data extracted from the NT Flora Online
   basis_of_record: literature
   life_stage: adult
   sampling_strategy: This dataset is sourced from the online NT Flora (version date
-    2022-05-06). Briefly, the textual descriptions of each taxon in were downloaded
-    and organised into a tabular format of individual taxon names and their corresponding
+    2022-05-06). Briefly, the textual descriptions of each taxon were downloaded and
+    organised into a tabular format of individual taxon names and their corresponding
     text using R coding script. Sentences and phrases were categorised using a large
     glossary of botanical terminology as referring to one of the following, the entire
     organism, stem, leaf, flower, fruit/seed, roots and environment/habitat. Key terms
@@ -59,13 +120,67 @@ dataset:
   notes: Data supplied by the Department of Land Resource Management, Northern Territory
     of Australia.
 locations: .na
-contexts: .na
+contexts:
+- context_property: trait scoring method
+  category: method
+  var_in: inferred
+  values:
+  - value: scored from text
+    description: Trait value scored directly from taxon description.
+  - value: inferred_from_species
+    description: Trait value inferred from species-level taxon description.
+  - value: inferred_from_genus
+    description: Trait value inferred from genus-level taxon description.
+  - value: inferred_from_family
+    description: Trait value inferred from family-level taxon description.
+  - value: inferred_from_trait
+    description: Trait value inferred from the value of a different trait.
+  - value: inferred_from_taxonomy
+    description: Trait value inferred from a higher level taxon description.
+- context_property: replicate observations
+  category: temporal
+  var_in: observation_number
+  values:
+  - value: 1
+  - value: 2
+  - value: 3
+  - value: 4
+- context_property: entity measured
+  category: entity_context
+  var_in: entity_measured
+  values:
+  - value: .na.character
+  - value: leaflet
+  - value: pinnae
+  - value: all
+  - value: fruit
+  - value: infructescence
+  - value: valve
+  - value: male_cones
+  - value: female_cones
+  - value: leaf
+  - value: submerged_leaf
+  - value: secondary_pinnae
+  - value: phyllode
+  - value: emergent_leaf
+  - value: lateral_leaf
+  - value: basal_leaf
+  - value: cauline_leaf
+  - value: stem_leaf
+  - value: fertile_leaf
+  - value: sterile_leaf
+  - value: cladode
+  - value: scale_leaf
+  - value: fertile_pinnule
+  - value: sterile_pinnule
+  - value: fertile_leaflet
+  - value: sterile_leaflet
+  - value: basal_pinnae
 traits:
 - var_in: fruit_colour
   unit_in: .na
   trait_name: fruit_colour
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: When specified in the taxon description, only the colours of the fruit
@@ -75,7 +190,6 @@ traits:
   unit_in: .na
   trait_name: fruit_dehiscence
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as dehiscent from a variety of terms in the text including
@@ -84,7 +198,6 @@ traits:
   unit_in: .na
   trait_name: fruit_type
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing a fruit type based on the presence of terms
@@ -93,7 +206,6 @@ traits:
   unit_in: .na
   trait_name: root_system_type
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as "taproot_present taproot_not_present" if the taproot
@@ -102,7 +214,6 @@ traits:
   unit_in: .na
   trait_name: storage_organ
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing these storage organs if mentioned in the
@@ -111,7 +222,6 @@ traits:
   unit_in: .na
   trait_name: seed_shape
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: There were a wide variety of terms used to describe seed shapes across
@@ -121,7 +231,6 @@ traits:
   unit_in: .na
   trait_name: seed_surface_reflectivity
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as as reflective if described as shiny or reflective in
@@ -130,7 +239,6 @@ traits:
   unit_in: .na
   trait_name: seed_surface_hairs
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing seed hairs if any portion of the seed surface
@@ -139,7 +247,6 @@ traits:
   unit_in: .na
   trait_name: seed_surface_texture
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: There were a wide variety of terms used to describe seed textures across
@@ -149,7 +256,6 @@ traits:
   unit_in: .na
   trait_name: leaf_compoundness
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Leaves of taxa were scored as simple or compound from the presence of these
@@ -159,7 +265,6 @@ traits:
   unit_in: .na
   trait_name: leaf_glaucousness
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as "glaucous non_glaucous" if the word "glaucous" described
@@ -168,7 +273,6 @@ traits:
   unit_in: .na
   trait_name: leaf_lobation
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing lobed leaves from mentions of leaf lobes
@@ -179,7 +283,6 @@ traits:
   unit_in: .na
   trait_name: leaf_pendulousness
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as "pendulous not_pendulous" if two leaf states were mentioned
@@ -188,7 +291,6 @@ traits:
   unit_in: .na
   trait_name: leaf_arrangement
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing a particular leaf arrangement if mentioned
@@ -198,7 +300,6 @@ traits:
   unit_in: .na
   trait_name: leaf_base_shape
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing leaf base shapes when taxon descriptions
@@ -208,7 +309,6 @@ traits:
   unit_in: .na
   trait_name: leaf_margin
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing teeth on the margins of leaves from the
@@ -218,7 +318,6 @@ traits:
   unit_in: .na
   trait_name: leaf_phyllotaxis
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Leaves of taxa were scored as opposite, alternate or whorled from the presence
@@ -228,7 +327,6 @@ traits:
   unit_in: .na
   trait_name: leaf_shape
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: There were a wide variety of terms used to describe leaf shapes across
@@ -239,7 +337,6 @@ traits:
   unit_in: .na
   trait_name: stem_growth_habit
   entity_type: species
-  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Stem growth habit includes terms to describe a plant's three-dimensional
@@ -248,17 +345,15 @@ traits:
   unit_in: mm
   trait_name: fruit_length
   entity_type: species
-  value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: The term used to describe the fruit length was stored as a measurement remark
-    for greater clarity e.g. fruit, achene, capsule. Fruits which were spherical or
-    round in shape were inferred as possessing the same dimensions in other planes.
+  methods: The term used to describe the fruit length was stored as a measurement
+    remark for greater clarity e.g. fruit, achene, capsule. Fruits which were spherical
+    or round in shape were inferred as possessing the same dimensions in other planes.
 - var_in: fruit_width
   unit_in: mm
   trait_name: fruit_width
   entity_type: species
-  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: The term used to describe the fruit width was stored as a measurement remark
@@ -268,7 +363,6 @@ traits:
   unit_in: mm
   trait_name: fruit_height
   entity_type: species
-  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: The term used to describe the fruit breadth or thickness was stored as
@@ -279,7 +373,6 @@ traits:
   unit_in: mm
   trait_name: leaf_length
   entity_type: species
-  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: The term used to describe the length of the leaf or leaf analogue was stored
@@ -288,7 +381,6 @@ traits:
   unit_in: mm
   trait_name: leaf_width
   entity_type: species
-  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: The term used to describe the width of the leaf or leaf analogue was stored
@@ -297,7 +389,6 @@ traits:
   unit_in: mm
   trait_name: petiole_length
   entity_type: species
-  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: This data records the length of the petiole as recorded in the taxon description.
@@ -305,7 +396,6 @@ traits:
   unit_in: mm
   trait_name: petiole_width
   entity_type: species
-  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: This data records the width of the petiole as recorded in the taxon description.
@@ -313,7 +403,6 @@ traits:
   unit_in: mm
   trait_name: seed_length
   entity_type: species
-  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: This data records seed length as described in the taxon description. Seeds
@@ -323,7 +412,6 @@ traits:
   unit_in: mm
   trait_name: seed_width
   entity_type: species
-  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: This data records the seed width as described in the text. Seeds which
@@ -333,7 +421,6 @@ traits:
   unit_in: mm
   trait_name: seed_height
   entity_type: species
-  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: This data records the seed breadth as described in the text. Seeds which
@@ -343,11 +430,40 @@ traits:
   unit_in: mm
   trait_name: plant_height
   entity_type: species
-  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: Maximum plant vegetative height of a mature individual.
-substitutions: .na
+- var_in: plant_photosynthetic_organ
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The dominant photosynthetic organ was scored as leaf, phyllode or cladode
+    based on use of these terms in the text. Plants described as leafless or in some
+    cases as possessing leaves reduced to scales or caducous leaves were scored as
+    cladode.
+- var_in: leaf_lamina_posture
+  unit_in: mm
+  trait_name: leaf_lamina_posture
+  entity_type: species
+  basis_of_value: measurement
+  replicates: .na
+  methods: Taxa were scored as possessing a leaf lamina posture if a descriptor of
+    posture was used to describe the blade, lamina or adaxial surface of the leaf,
+    without referring to the margin.
+- var_in: leaf_margin_posture
+  unit_in: mm
+  trait_name: leaf_margin_posture
+  entity_type: species
+  basis_of_value: measurement
+  replicates: .na
+  methods: Taxa were scored as possessing a leaf margin posture if the word "margin"
+    was used, as well as some descriptor of posture.
+substitutions:
+- trait_name: leaf_lamina_posture
+  find: folded
+  replace: conduplicate
 taxonomic_updates:
 - find: Abutilon sp. Mataranka
   replace: Abutilon sp. (Mataranka)
