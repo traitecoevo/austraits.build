@@ -87,7 +87,7 @@ test_build_dataset <- function(path_metadata, path_data, info, definitions, unit
   expect_no_error({
     build_config <- dataset_configure(path_metadata, definitions, unit_conversions)
   }, info = paste(info, " config"))
-  
+
   expect_no_error({
     build_dataset_raw <- dataset_process(path_data, build_config, schema, resource_metadata)
   }, info = paste(info, " dataset_process"))
@@ -95,7 +95,7 @@ test_build_dataset <- function(path_metadata, path_data, info, definitions, unit
   expect_no_error({
     build_dataset <- build_update_taxonomy(build_dataset_raw, taxon_list)
   }, info = paste(info, " update taxonomy"))
-  
+
   test_structure(build_dataset, info, schema, definitions, single_dataset = TRUE)
   
   build_dataset
