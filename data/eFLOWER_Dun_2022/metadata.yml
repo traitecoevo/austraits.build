@@ -25,7 +25,12 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      group_by(Taxon, Character) %>%
+        mutate(replicate_observation = row_number()) %>%
+      ungroup()
+  '
   collection_date: Date
   taxon_name: Taxon
   trait_name: Character
@@ -44,7 +49,17 @@ dataset:
     folder
   notes: none
 locations: .na
-contexts: .na
+contexts:
+- context_property: replicate observations
+  category: temporal
+  var_in: replicate_observation
+  values:
+  - value: 1
+  - value: 2
+  - value: 3
+  - value: 4
+  - value: 5
+  - value: 6
 traits:
 - var_in: 103. Flower length (C1)
   unit_in: cm
