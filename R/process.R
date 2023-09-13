@@ -292,11 +292,11 @@ process_create_observation_id <- function(data) {
   data <- data %>%
     dplyr::mutate(
               pop_id_segment = ifelse(
-                (!is.na(.data$location_name)|!is.na(.data$treatment_id)|!is.na(.data$plot_id)) & .data$entity_type %in% c("individual", "population"),
+                (!is.na(.data$location_name)|!is.na(.data$treatment_id)|!is.na(.data$plot_id)) & .data$entity_type %in% c("individual", "population", "metapopulation"),
                 process_generate_id(.data$population_id, "", sort = TRUE), 
                 NA),
               pop_id_segment = ifelse(is.na(.data$pop_id_segment)  & 
-                                        .data$entity_type %in% c("individual", "population"), 
+                                        .data$entity_type %in% c("individual", "population", "metapopulation"), 
                                         "pop_unk", .data$pop_id_segment),
               population_id = .data$pop_id_segment
             )
@@ -373,7 +373,7 @@ process_create_observation_id <- function(data) {
     dplyr::group_by(.data$dataset_id) %>%
     dplyr::mutate(
       observation_id = 
-        paste(.data$taxon_name, .data$population_id, .data$individual_id, .data$temporal_id, .data$entity_type, sep="-") %>%  
+        paste(.data$taxon_name, .data$population_id, .data$individual_id, .data$temporal_id, .data$entity_type, .data$life_stage, sep="-") %>%  
         process_generate_id("", sort = TRUE)
     ) %>%
     dplyr::ungroup() 
@@ -514,8 +514,8 @@ process_create_context_ids <- function(data, contexts) {
       tidyr::unite("combined", remove = FALSE) %>%
       dplyr::mutate(
         combined = ifelse(.data$combined == NAs, NA, .data$combined),  
-        id = .data$combined %>%
-          as.factor() %>% as.integer() %>% make_id()
+        id = ifelse(!is.na(.data$combined), .data$combined %>%
+                      as.factor() %>% as.integer() %>% make_id(), NA)
       ) %>%
       dplyr::select(-dplyr::all_of(c("combined")))
 
