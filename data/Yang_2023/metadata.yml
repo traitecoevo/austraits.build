@@ -84,16 +84,23 @@ dataset:
   custom_R_code: '
     data %>%
       mutate(
-        seedbank_longevity = seed_longevity_categorical
+        seedbank_longevity = seed_longevity_categorical,
+        entity_type = "species",
+        entity_type = ifelse(!is.na(fire_severity), "population", entity_type),
+        entity_type = ifelse(!is.na(fire_intensity), "population", entity_type),
+        entity_type = ifelse(!is.na(habitat_conditions), "population", entity_type),
+        entity_type = ifelse(taxon_name %in% c("Banksia ashbyi", "Grevillea pteridifolia", "Hakea marginata", "Paraprasophyllum constrictum"), "population", entity_type)
       )
   '
   collection_date: unknown/2022
   taxon_name: taxon_name
+  location_name: site
   source_id: source_id
   description: Plant fire response and other related trait data scored from Australia's
     online state and national floras and the taxonomic literature.
   basis_of_record: field
   life_stage: adult
+  entity_type: entity_type
   sampling_strategy: This dataset is sourced from Australia's online state and national
     floras and the taxonomic literature. Briefly, the textual descriptions of each
     taxon were downloaded and organised into a tabular format of individual taxon
@@ -108,7 +115,37 @@ dataset:
   original_file: .na
   notes: References for additional source_id's available in a column in the data.csv
     file, 'references'
-locations: .na
+locations:
+  South of Shark Bay:
+    longitude (deg): .na.character
+    latitude (deg): .na.character
+  North of Carnarvon:
+    longitude (deg): .na.character
+    latitude (deg): .na.character
+  QLD, NT:
+    longitude (deg): .na.character
+    latitude (deg): .na.character
+  Northern NT, WA:
+    longitude (deg): .na.character
+    latitude (deg): .na.character
+  Southern population:
+    longitude (deg): .na.character
+    latitude (deg): .na.character
+  Northern population:
+    longitude (deg): .na.character
+    latitude (deg): .na.character
+  Adelaide Hills:
+    longitude (deg): .na.character
+    latitude (deg): .na.character
+  Locations other than Adelaide Hills:
+    longitude (deg): .na.character
+    latitude (deg): .na.character
+  Providence Ponds:
+    longitude (deg): .na.character
+    latitude (deg): .na.character
+  NT:
+    longitude (deg): .na.character
+    latitude (deg): .na.character
 contexts:
 - context_property: fire severity
   category: plot
@@ -164,15 +201,16 @@ contexts:
   category: entity_context
   var_in: time_to_flowering_type
   values:
-  - value: resprouts
+  - find: resprouts
+    value: from resprouting
     description: Time from fire to flowering measured on resprouting shoots.
-  - value: fire_killed
-    description: Time from fire to flowering measured on plants that germinated post-fire.
+  - find: fire_killed
+    value: from seed
+    description: Time from fire to flowering measured on plants that germinated post-fire. 
 traits:
 - var_in: fire_response
   unit_in: .na
   trait_name: resprouting_capacity
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -181,17 +219,14 @@ traits:
 - var_in: post_fire_recruitment
   unit_in: .na
   trait_name: post_fire_recruitment
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
   methods: The trait value is manually scored from the textual taxon description in
     the source (Flora of Australia, a state flora, or the taxonomic literature).
-  measurement_remarks: post_fire_recruitment_measurement_remarks
 - var_in: bud_bank_location
   unit_in: .na
   trait_name: bud_bank_location
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -200,7 +235,6 @@ traits:
 - var_in: clonal_spread_mechanism
   unit_in: .na
   trait_name: clonal_spread_mechanism
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -209,7 +243,6 @@ traits:
 - var_in: dispersal_syndrome
   unit_in: .na
   trait_name: dispersal_syndrome
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -218,7 +251,6 @@ traits:
 - var_in: dispersers
   unit_in: .na
   trait_name: dispersers
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -227,7 +259,6 @@ traits:
 - var_in: fire_and_establishing
   unit_in: .na
   trait_name: seedling_establishment_conditions
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -236,7 +267,6 @@ traits:
 - var_in: fire_ephemeral
   unit_in: .na
   trait_name: life_history_ephemeral_class
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -245,7 +275,6 @@ traits:
 - var_in: fire_exposure_level
   unit_in: .na
   trait_name: fire_exposure_level
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -254,7 +283,6 @@ traits:
 - var_in: resprouting_capacity_juvenile
   unit_in: .na
   trait_name: resprouting_capacity_juvenile
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -264,7 +292,6 @@ traits:
 - var_in: fire_response_on_maturity
   unit_in: .na
   trait_name: .na
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -273,7 +300,6 @@ traits:
 - var_in: changes_fire_regime
   unit_in: .na
   trait_name: .na
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -282,7 +308,6 @@ traits:
 - var_in: time_from_fire_to_fruit
   unit_in: a
   trait_name: fire_time_from_fire_to_fruiting
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -291,7 +316,6 @@ traits:
 - var_in: fire_tolerance
   unit_in: .na
   trait_name: .na
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -300,7 +324,6 @@ traits:
 - var_in: post_fire_flowering
   unit_in: .na
   trait_name: post_fire_flowering
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -327,7 +350,6 @@ traits:
 - var_in: seed_longevity_categorical
   unit_in: .na
   trait_name: seedbank_longevity_class
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -336,7 +358,6 @@ traits:
 - var_in: seedbank_longevity
   unit_in: a
   trait_name: seedbank_longevity
-  entity_type: species
   value_type: bin
   basis_of_value: expert_score
   replicates: .na
@@ -345,7 +366,6 @@ traits:
 - var_in: seed_release
   unit_in: .na
   trait_name: .na
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -354,7 +374,6 @@ traits:
 - var_in: seed_storage_location
   unit_in: .na
   trait_name: seedbank_location
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -363,7 +382,6 @@ traits:
 - var_in: serotiny
   unit_in: .na
   trait_name: serotiny
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -372,7 +390,6 @@ traits:
 - var_in: storage_organ
   unit_in: .na
   trait_name: storage_organ
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -381,7 +398,6 @@ traits:
 - var_in: threats
   unit_in: .na
   trait_name: .na
-  entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na

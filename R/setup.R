@@ -246,11 +246,11 @@ metadata_add_locations <- function(dataset_id, location_data) {
   location_name <- metadata_user_select_column("location_name", names(location_data))
 
   # From remaining variables, choose those to keep
-  location_sub <- dplyr::select(location_data, -!!location_name)
+  location_sub <- dplyr::select(dplyr::all_of(c("location_data"), -!!location_name))
   keep <- metadata_user_select_names(paste("Indicate all columns you wish to keep as distinct location_properties in ", dataset_id), names(location_sub))
 
   # Save and notify
-  metadata$locations <- dplyr::select(location_data, tidyr::one_of(keep)) %>%
+  metadata$locations <- dplyr::select(dplyr::all_of(c("location_data"), tidyr::one_of(keep))) %>%
             split(location_data[[location_name]]) %>% lapply(as.list)
 
   cat(sprintf("Following locations added to metadata for %s: %s\n\twith variables %s.\n\tPlease complete information in %s.\n\n", dataset_id, crayon::red(paste(names( metadata$locations), collapse = ", ")), crayon::red(paste(keep, collapse = ", ")), dataset_id %>% metadata_path_dataset_id()))
@@ -594,16 +594,44 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason, tax
 #' @return yml file with multiple taxonmic updates added
 #' @export
 metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
-  
-  # read metadata
+
+  # Read metadata
   metadata <- read_metadata_dataset(dataset_id)
-  
-  #read in dataframe of taxonomic changes, split into single-row lists, and add to metadata file
-  metadata$taxonomic_updates <- 
-    taxonomic_updates %>%
-    dplyr::group_split(.data$find) %>% lapply(as.list)
-  
-  # write metadata
+
+  if (!all(is.na(metadata[["taxonomic_updates"]]))) {
+
+    existing_updates <- metadata[["taxonomic_updates"]] %>% util_list_to_df2()
+    already_exist <- c()
+
+    for (i in seq_len(nrow(taxonomic_updates))) {
+      # Check if the taxonomic update already exists
+      if (taxonomic_updates[i,]$find %in% existing_updates$find) {
+        # Overwrite existing taxonomic update if TRUE
+        existing_updates[which(existing_updates$find == taxonomic_updates[i,]$find),] <- taxonomic_updates[i,]
+        already_exist <- c(already_exist, taxonomic_updates[i,]$find)
+      } else {
+        # Otherwise, bind to end of existing taxonomic updates
+        existing_updates <- existing_updates %>% bind_rows(taxonomic_updates[i,])
+      }
+    }
+
+    if (length(already_exist) > 0) {
+      message(
+        sprintf(
+          green("%s") %+% red(" already exist(s) in `taxonomic_updates` and is being overwritten"),
+          paste(already_exist, collapse = ", ")
+      ))
+    }
+    # Write new taxonomic updates to metadata
+    metadata$taxonomic_updates <- existing_updates %>% dplyr::group_split(.data$find) %>% lapply(as.list)
+  } else {
+
+    # Read in dataframe of taxonomic changes, split into single-row lists, and add to metadata file
+    metadata$taxonomic_updates <- taxonomic_updates %>% dplyr::group_split(.data$find) %>% lapply(as.list)
+
+  }
+
+  # Write metadata
   write_metadata_dataset(metadata, dataset_id)
 }
 
@@ -814,11 +842,13 @@ build_find_taxon <- function(taxon_name, austraits, original_name = FALSE) {
 
   if (!original_name) {
     data <- data %>%
-      dplyr::select(name = taxon_name, .data$dataset_id) %>%
+      dplyr::select(dplyr::all_of("taxon_name", "dataset_id")) %>%
+      rename(name = taxon_name) %>%
       dplyr::distinct()
   } else {
     data <- data %>%
-      dplyr::select(name = original_name, .data$dataset_id) %>%
+      dplyr::select(dplyr::all_of("original_name", "dataset_id")) %>%
+      dplyr::rename(name = original_name) %>%
       dplyr::distinct()
   }
 
