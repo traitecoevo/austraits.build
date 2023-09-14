@@ -594,16 +594,44 @@ metadata_add_taxonomic_change <- function(dataset_id, find, replace, reason, tax
 #' @return yml file with multiple taxonmic updates added
 #' @export
 metadata_add_taxonomic_changes_list <- function(dataset_id, taxonomic_updates) {
-  
-  # read metadata
+
+  # Read metadata
   metadata <- read_metadata_dataset(dataset_id)
-  
-  #read in dataframe of taxonomic changes, split into single-row lists, and add to metadata file
-  metadata$taxonomic_updates <- 
-    taxonomic_updates %>%
-    dplyr::group_split(.data$find) %>% lapply(as.list)
-  
-  # write metadata
+
+  if (!all(is.na(metadata[["taxonomic_updates"]]))) {
+
+    existing_updates <- metadata[["taxonomic_updates"]] %>% util_list_to_df2()
+    already_exist <- c()
+
+    for (i in seq_len(nrow(taxonomic_updates))) {
+      # Check if the taxonomic update already exists
+      if (taxonomic_updates[i,]$find %in% existing_updates$find) {
+        # Overwrite existing taxonomic update if TRUE
+        existing_updates[which(existing_updates$find == taxonomic_updates[i,]$find),] <- taxonomic_updates[i,]
+        already_exist <- c(already_exist, taxonomic_updates[i,]$find)
+      } else {
+        # Otherwise, bind to end of existing taxonomic updates
+        existing_updates <- existing_updates %>% bind_rows(taxonomic_updates[i,])
+      }
+    }
+
+    if (length(already_exist) > 0) {
+      message(
+        sprintf(
+          green("%s") %+% red(" already exist(s) in `taxonomic_updates` and is being overwritten"),
+          paste(already_exist, collapse = ", ")
+      ))
+    }
+    # Write new taxonomic updates to metadata
+    metadata$taxonomic_updates <- existing_updates %>% dplyr::group_split(.data$find) %>% lapply(as.list)
+  } else {
+
+    # Read in dataframe of taxonomic changes, split into single-row lists, and add to metadata file
+    metadata$taxonomic_updates <- taxonomic_updates %>% dplyr::group_split(.data$find) %>% lapply(as.list)
+
+  }
+
+  # Write metadata
   write_metadata_dataset(metadata, dataset_id)
 }
 
