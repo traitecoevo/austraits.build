@@ -80,16 +80,15 @@ create_release <- function(austraits, v_prev= NULL) {
 Then follow these steps. We assume you have a branch `develop`q
 
 1. Prepare `develop` for release. On `develop` branch, 
-  - bump version number
-  - Submit a PR to `master`
+  - Bump version number: change the version number in file ` config/metadata.yml`, commit and push
+  - Submit a Pull Request (PR) from `develop` to `master`: <https://github.com/traitecoevo/austraits.build/compare/master...develop>
 
 2. Update `master`. On `master` branch,
   - merge PR from `develop`
   - rebuild repo, then create an export. Files are saved in `export/data/austraits-4.1.0/`:
 
 ```
-remake::make("austraits") -> austraits 
-source("scripts//release.r") 
+austraits <- remake::make("austraits")
 create_release(austraits, "4.0.0") 
 ```
  - Manually review and updates news.md
@@ -116,10 +115,11 @@ git push origin v4.1.0
   - Related identifiers -> compiled by
 - in intro page, number for files
 
-6. On `develop` 
+6. Update `develop`. On the `develop` branch
 
-- merge `master` into `develop` 
-  - in terminal ` git merge master --no-ff`  (no-ff forces a merge commit)
-  - in GH desktop XXXXX
+- merge `master` into `develop`, via any of the following 
+  - Create a PR via browser: <https://github.com/traitecoevo/austraits.build/compare/develop...master>
+  - Terminal: ` git merge master --no-ff`  (no-ff forces a merge commit)
+  - GitHub Desktop: choose "Branch -> Merge into current Branch", then choose "master" as the branch to merge
 - add `.9000` to end of version number to indicate that we have diverged from previous version and now in development again
 

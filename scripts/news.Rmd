@@ -36,6 +36,8 @@ austraits_curr <- readRDS(filename(v_curr))
 if(v_prev <= "3.0.2") {
     austraits_prev$traits[["location_id"]] <- austraits_prev$traits[["site_name"]]
 }
+
+austraits_prev$contributors <- austraits_prev$contributors %>% mutate(name = paste(given_name, last_name))
 austraits_curr$contributors <- austraits_curr$contributors %>% mutate(name = paste(given_name, last_name))
 
 ```
@@ -43,16 +45,16 @@ austraits_curr$contributors <- austraits_curr$contributors %>% mutate(name = pas
 
 # AusTraits v`r v_curr`
 
-This is major/minor release of the AusTraits database. 
+This is a major/minor release of the AusTraits database. 
 
-- `r sprintf("austraits-%s.zip", v_curr)`: contains the compiled dataset and detailed of structure
+- `r sprintf("austraits-%s.zip", v_curr)`: contains the compiled dataset and details of structure
 - `r sprintf("austraits-%s.rds", v_curr)`: contains a version of the dataset for direct loading in R
 - source code `r sprintf("v%s.zip", v_curr)`: contains the source materials used to build the compiled dataset
 
-For details on access, structure and usage please visit <https://doi.org/10.5281/zenodo.3568417>
+For details on access, structure, and usage please visit <https://doi.org/10.5281/zenodo.3568417>.
 
-This release was generated from source materials available at `r sprintf("https://github.com/traitecoevo/austraits.build/releases/tag/v%s", v_curr)`
-A full set of changes in the source can be viewed at: `r sprintf("https://github.com/traitecoevo/austraits.build/compare/v%s...v%s", v_prev, v_curr)` 
+This release was generated from source materials available at `r sprintf("<https://github.com/traitecoevo/austraits.build/releases/tag/v%s>", v_curr)`
+A full set of changes in the source can be viewed at: `r sprintf("<https://github.com/traitecoevo/austraits.build/compare/v%s...v%s>", v_prev, v_curr)` 
 
 Compared to the last version, this release contains substantial additions of new data and improvement of old data. 
 
@@ -60,10 +62,11 @@ Compared to the last version, this release contains substantial additions of new
 
 f_summarise <- function(data, v) { 
   data$traits %>% 
+  mutate(locations = ifelse(!is.na(location_id), paste(dataset_id, location_id), NA)) %>%
   summarise(version = data$build_info$version %>% as.character,
             dataset_id = n_distinct(dataset_id),
             taxa = n_distinct(taxon_name),
-            locations = n_distinct(location_id),
+            locations = n_distinct(locations),
             traits = n_distinct(trait_name),
             records= n()
   )
