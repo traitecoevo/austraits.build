@@ -36,6 +36,8 @@ austraits_curr <- readRDS(filename(v_curr))
 if(v_prev <= "3.0.2") {
     austraits_prev$traits[["location_id"]] <- austraits_prev$traits[["site_name"]]
 }
+
+austraits_prev$contributors <- austraits_prev$contributors %>% mutate(name = paste(given_name, last_name))
 austraits_curr$contributors <- austraits_curr$contributors %>% mutate(name = paste(given_name, last_name))
 
 ```
@@ -60,10 +62,11 @@ Compared to the last version, this release contains substantial additions of new
 
 f_summarise <- function(data, v) { 
   data$traits %>% 
+  mutate(locations = ifelse(!is.na(location_id), paste(dataset_id, location_id), NA)) %>%
   summarise(version = data$build_info$version %>% as.character,
             dataset_id = n_distinct(dataset_id),
             taxa = n_distinct(taxon_name),
-            locations = n_distinct(location_id),
+            locations = n_distinct(locations),
             traits = n_distinct(trait_name),
             records= n()
   )
