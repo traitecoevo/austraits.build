@@ -7,7 +7,7 @@ library(traits.build)
 source("../testthat/functions.R")
 
 root.dir <- rprojroot::find_package_root_file()
-source(file.path(root.dir, "scripts/custom.R"))
+source(file.path(root.dir, "R/custom.R"))
 
 schema <- get_schema()
 resource_metadata <- get_schema(file.path(root.dir, "config/metadata.yml"), "metadata")
