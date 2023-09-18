@@ -33,11 +33,15 @@ dataset:
       ) %>%
       group_by(individual_plant, species, Ind_ID, .drop = FALSE) %>%
         summarise(
-          across(c(sla, stem_specific_density), ~mean(.x) %>% na_if("NaN"), na.rm=TRUE),
+          across(c(sla, stem_specific_density), ~mean(.x, na.rm=TRUE)),
           wd_notes = last(wd_notes)
         ) %>%
       ungroup() %>%
-      mutate(site_name = "Bulli State Forest")
+      mutate(      
+        across(c(sla, stem_specific_density), ~as.character(.x)),
+        across(c(sla, stem_specific_density), ~na_if(.x,"NaN")),
+        site_name = "Bulli State Forest"
+      )
   '
   collection_date: 2015/2015
   taxon_name: species

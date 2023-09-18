@@ -22,14 +22,14 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code:      '
+  custom_R_code:        '
     data %>% 
       mutate(
         `%N` = na_if(`%N`, "no sample vial"),
         date_sampled = ifelse(Date == "Feb","1998-02","1998-11")
       ) %>%
       group_by(name_matched) %>%
-        mutate_at(vars(`C3C4`, `Nfixer`, `growth form`, `leaf_type`, `deciduous/evergreen`), replace_duplicates_with_NA) %>%
+        mutate(across(c(`C3C4`, `Nfixer`, `growth form`, `leaf_type`, `deciduous/evergreen`), replace_duplicates_with_NA)) %>%
       ungroup()
   '
   collection_date: date_sampled
@@ -394,6 +394,18 @@ substitutions:
   find: S or H
   replace: herb shrub
 taxonomic_updates:
+- find: Acacia sp.
+  replace: Acacia sp. [Schmidt_2010]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Hakea sp.
+  replace: Hakea sp. [Schmidt_2010]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Triodia sp.
+  replace: Triodia sp. [Schmidt_2010]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
 - find: Cenchus ciliaris
   replace: Cenchrus ciliaris
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)

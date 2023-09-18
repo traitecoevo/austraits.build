@@ -30,9 +30,9 @@ dataset:
     data %>%
       mutate(`regeneration strategy` = ifelse(species == "Banksia serrata", "fire_killed resprouts", `regeneration strategy`))%>%
       group_by(species) %>%
-      mutate_at(vars(`height (m)`,`LMA (mm2mg-1)`,`Nmass (%)`,`leaf size (mm2)`,
+      mutate(across(c(`height (m)`,`LMA (mm2mg-1)`,`Nmass (%)`,`leaf size (mm2)`,
         `Stem tissue density (mg mm-3)`,`seed mass (mg)`, `regeneration strategy`),
-        replace_duplicates_with_NA) %>%
+        replace_duplicates_with_NA)) %>%
       ungroup() 
   '
   collection_date: 2002-09/2002-09
@@ -98,7 +98,7 @@ contexts:
 traits:
 - var_in: regeneration strategy
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: population
   value_type: mode
   basis_of_value: expert_score
@@ -344,10 +344,10 @@ traits:
     the distance from the branch tip at which stem cross-sectional area reached 10
     mm2 varied from 64 to 995 mm.'
 substitutions:
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: reseeder
   replace: fire_killed
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: resprouter
   replace: resprouts
 taxonomic_updates:

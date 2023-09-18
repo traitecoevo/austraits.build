@@ -35,7 +35,7 @@ dataset:
         plant_growth_substrate = NA_character_,
         stem_growth_habit = NA_character_,
         seed_storage_location = ifelse(stringr::str_detect(Maximum_propagule_longevity,"soil"),"soil",NA),
-        seed_longevity_numeric = Maximum_propagule_longevity,
+        seedbank_longevity = Maximum_propagule_longevity,
         parasitic = ifelse(Growth_form == "hemiparasite or holoparasite", "parasitic", NA)
       ) %>%
       move_values_to_new_trait(
@@ -62,7 +62,8 @@ dataset:
       ) %>%
       move_values_to_new_trait(
         "Growth_form", "stem_growth_habit", "scrambler", "scrambler", "climber"
-      )
+      ) %>%      
+      mutate(across(c(Fruit_type, Growth_form), ~na_if(.x,"")))
 '
   collection_date: 2005/2005
   taxon_name: species_name
@@ -442,7 +443,7 @@ traits:
     with RBGK_2014 has not been filtered - it is assumed to be an independent measurement.
 - var_in: Resprouting_capacity
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -498,15 +499,15 @@ traits:
   methods: expert observation or reference book
 - var_in: Maximum_propagule_longevity
   unit_in: .na
-  trait_name: seed_longevity_categorical
+  trait_name: seedbank_longevity_class
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
-- var_in: seed_longevity_numeric
+- var_in: seedbank_longevity
   unit_in: a
-  trait_name: seed_longevity_numeric
+  trait_name: seedbank_longevity
   entity_type: species
   value_type: bin
   basis_of_value: expert_score
@@ -514,35 +515,41 @@ traits:
   methods: expert observation or reference book
 - var_in: seed_storage_location
   unit_in: .na
-  trait_name: seed_storage_location
+  trait_name: seedbank_location
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
   methods: expert observation or reference book
 substitutions:
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_location
+  find: canopy
+  replace: canopy_seedbank
+- trait_name: seedbank_location
+  find: soil
+  replace: soil_seedbank 
+- trait_name: seedbank_longevity_class
   find: Short persistent soil (1 to 5 years)
   replace: short_persistent
-- trait_name: seed_longevity_numeric
+- trait_name: seedbank_longevity
   find: Short persistent soil (1 to 5 years)
   replace: 1--5
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: Short-lived (weeks)
   replace: transient
-- trait_name: seed_longevity_numeric
+- trait_name: seedbank_longevity
   find: Short-lived (weeks)
   replace: 0--0.2
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: Long persistent in soil (more than 5 years)
   replace: long_persistent
-- trait_name: seed_longevity_numeric
+- trait_name: seedbank_longevity
   find: Long persistent in soil (more than 5 years)
   replace: 5--
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: Intermediate (months to less than a year)
-  replace: intermediate_longevity
-- trait_name: seed_longevity_numeric
+  replace: transient
+- trait_name: seedbank_longevity
   find: Intermediate (months to less than a year)
   replace: 0.2--1
 - trait_name: life_form
@@ -575,10 +582,10 @@ substitutions:
 - trait_name: dispersal_syndrome
   find: Insect
   replace: zoochory
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: 'yes'
   replace: resprouts
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: 'no'
   replace: fire_killed
 - trait_name: plant_growth_form
@@ -626,16 +633,19 @@ substitutions:
 - trait_name: pollination_syndrome
   find: hymenoptera (bees)
   replace: bee
-- trait_name: seed_longevity_categorical
+- trait_name: pollination_syndrome
+  find: none
+  replace: .na
+- trait_name: seedbank_longevity_class
   find: short-lived (weeks)
   replace: transient
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: intermediate (months to less than a year)
-  replace: intermediate_longevity
-- trait_name: seed_longevity_categorical
+  replace: transient
+- trait_name: seedbank_longevity_class
   find: short persistent soil (1 to 5 years)
   replace: persistent
-- trait_name: seed_longevity_categorical
+- trait_name: seedbank_longevity_class
   find: long persistent in soil (more than 5 years)
   replace: long_persistent
 - trait_name: clonal_spread_mechanism

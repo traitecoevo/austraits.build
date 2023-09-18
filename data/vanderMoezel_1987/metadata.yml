@@ -1,0 +1,242 @@
+source:
+  primary:
+    key: vanderMoezel_1987
+    bibtype: Article
+    year: 1987
+    author: Paul G. van der Moezel, William A. Loneragan and David T. Bell
+    title: Northern Sandplain Kwongan - regeneration following fire, juvenile period
+      and flowering phenology
+    journal: Journal of the Royal Society of Western Australia
+    volume: 69
+    number: 4
+    pages: 123-132
+contributors:
+  data_collectors:
+  - last_name: van der Moezel
+    given_name: Paul
+    ORCID: .na
+    affiliation: PGV Environmental
+  austraits_curators: Sophie Yang
+dataset:
+  data_is_long_format: no
+  custom_R_code:       '
+    data %>%
+      mutate(
+        juvenile_period = case_when(
+          str_detect(juvenile_period, "(\U2264)5>2") ~ "3--5",
+          str_detect(juvenile_period, "(\U2264)4>2") ~ "3--4",
+          str_detect(juvenile_period, "\U2264") ~ str_replace(juvenile_period, "\U2264", "0--"),
+          TRUE ~ juvenile_period
+        ),
+        post_fire_recruitment = if_else(fire_response == "Seed", "post_fire_recruitment", NA_character_),
+        reproductive_maturity = if_else(fire_response == "Seed", juvenile_period, NA_character_),
+        fire_time_from_fire_to_flowering = if_else(fire_response == "Sprout", juvenile_period, NA_character_),
+        post_fire_flowering = if_else(!is.na(flowering_notes), "fire_dependent_flowering" , NA_character_),
+        fire_response_context = fire_response
+      )
+  '
+  collection_date: '1981'
+  taxon_name: species
+  location_name: site
+  description: The study contains data on fire response, juvenile periods and flowering
+    phenology of species in the Northern Sandplain shrublands of western Australia.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: Twenty-six permanently marked 20 m x 10 m plots were established
+    in Northern Sandplain shrublands near Badgingarra, Western Australia (30°16'S,
+    115°26'E). The sites were representative of a range of topographic sites and ages-since-last-fire.
+    Each site was initially categorized as lateritic upland or deep sand slope as
+    these edaphic conditions have proved to produce the major floristic differences
+    in the vegetation of this region (Bell and Loneragan 1985). The ages of more recently
+    burned sites were determined by records of the Western Australian Bush Fire Board.
+    Sites burned before 11 years ago could not be exactly documented and were grouped
+    as >11 years. Each site was visited monthly from March 1981 till December 1981
+    and a list of species in flower was compiled. Post-fire regeneration strategies
+    were determined from recently burnt sites.
+  measurement_remarks: other_notes
+  original_file: Original journal article is archived in Google Drive.
+  notes: .na
+locations:
+  Northern Sandplain shrublands:
+    longitude (deg): 115.433
+    latitude (deg): -30.267
+    description: Sites located near Badgingarra, Western Australia. Prior to European
+      settlement, the region probably received fires on a cycle of some 25 years (Bell
+      1985). Today fire frequencies are higher due to man-caused fires (Bell et al.
+      1984) and a controlled-burning regime must be imposed on certain regions under
+      management (Bell and Loneragan 1985).
+contexts:
+- context_property: edaphic preference
+  category: plot
+  var_in: edaphic_preference
+  values:
+  - find: Generalist
+    value: generalist
+    description: present in both lateritic upland and deep sand slope sites
+  - find: Sand
+    value: sand
+    description: found in deep sand slope sites
+  - find: Laterite
+    value: laterite
+    description: found in lateritic upland sites
+- context_property: time to flowering type
+  category: entity_context
+  var_in: fire_response_context
+  values:
+  - find: Seed
+    value: from seed
+    description: Time from fire to flowering measured on plants that germinated post-fire.
+  - find: Sprout
+    value: from resprouting
+    description: Time from fire to flowering measured on resprouting shoots.
+  - find: Sprout and seed
+    value: unknown
+    description: Unclear whether plants grew from seed or resprouted.
+  - find: Seed and sprout
+    value: unknown
+    description: Unclear whether plants grew from seed or resprouted.
+traits:
+- var_in: fire_response
+  unit_in: .na
+  trait_name: resprouting_capacity
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Post-fire regeneration strategies were determined from recently burnt sites.
+    Obligate seed regenerating species could be recognized because they initially
+    have only a single erect stem. These seedlings were clearly differentiated from
+    resprouting species which tend to be multi-stemmed. Geophytes were classed as
+    sprouters since they regenerate after fire by producing new shoots from underground
+    storage organs.
+- var_in: post_fire_recruitment
+  unit_in: .na
+  trait_name: post_fire_recruitment
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Post-fire regeneration strategies were determined from recently burnt sites.
+    Obligate seed regenerating species could be recognized because they initially
+    have only a single erect stem. These seedlings were clearly differentiated from
+    resprouting species which tend to be multi-stemmed. Geophytes were classed as
+    sprouters since they regenerate after fire by producing new shoots from underground
+    storage organs.
+- var_in: reproductive_maturity
+  unit_in: a
+  trait_name: reproductive_maturity
+  entity_type: population
+  value_type: juvenile_period_value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire regeneration strategies were determined from recently burnt sites.
+    The time required for plants to reach reproductive maturity after fire was recorded
+    for 108 species. Since all species were not present at every site, and sites of
+    one and three years-since-last-fire were not available, the exact number of years
+    to reach reproductive maturity could not be assigned to most species. Many species,
+    therefore, were given values of <2, <4>2, etc. A value of <4>2 means that the
+    species was seen flowering in a four-year-old site, was not seen flowering in
+    a two-year-old site and was not recorded in a three-year-old site, so therefore
+    it flowers within three or four years after a fire.
+- var_in: juvenile_period
+  unit_in: a
+  trait_name: fire_time_from_fire_to_flowering
+  entity_type: population
+  value_type: juvenile_period_value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: Post-fire regeneration strategies were determined from recently burnt sites.
+    The time required for plants to reach reproductive maturity after fire was recorded
+    for 108 species. Since all species were not present at every site, and sites of
+    one and three years-since-last-fire were not available, the exact number of years
+    to reach reproductive maturity could not be assigned to most species. Many species,
+    therefore, were given values of <2, <4>2, etc. A value of <4>2 means that the
+    species was seen flowering in a four-year-old site, was not seen flowering in
+    a two-year-old site and was not recorded in a three-year-old site, so therefore
+    it flowers within three or four years after a fire.
+- var_in: flowering_time
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: population
+  value_type: mode
+  basis_of_value: measurement
+  replicates: .na
+  methods: Twenty-six permanently marked 20 m x 10 m plots were established, which
+    were representative of a range of topographic sites and ages-since-last-fire.
+    Each site was visited monthly from March 1981 till December 1981 and a list of
+    species in flower was compiled. As sites were not visited from January to March,
+    flowering times for those months were listed as no flowering; however, flowering
+    may have been present.
+  measurement_remarks: flowering_notes
+- var_in: post_fire_flowering
+  unit_in: .na
+  trait_name: post_fire_flowering
+  entity_type: population
+  value_type: mode
+  basis_of_value: measurement
+  replicates: .na
+  methods: Twenty-six permanently marked 20 m x 10 m plots were established, which
+    were representative of a range of topographic sites and ages-since-last-fire.
+    Each site was visited monthly from March 1981 till December 1981 and a list of
+    species in flower was compiled. As sites were not visited from January to March,
+    flowering times for those months were listed as no flowering; however, flowering
+    may have been present.
+  measurement_remarks: flowering_notes
+substitutions:
+- trait_name: resprouting_capacity
+  find: Sprout
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: Seed
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: Sprout and Seed
+  replace: resprouts fire_killed
+- trait_name: resprouting_capacity
+  find: Seed and Sprout
+  replace: resprouts fire_killed
+- trait_name: reproductive_maturity
+  find: <2
+  replace: 0--2
+- trait_name: reproductive_maturity
+  find: <4
+  replace: 0--4
+- trait_name: fire_time_from_fire_to_flowering
+  find: <2
+  replace: 0--2
+- trait_name: fire_time_from_fire_to_flowering
+  find: <4>2
+  replace: 3--4
+- trait_name: fire_time_from_fire_to_flowering
+  find: <4
+  replace: 0--4
+- trait_name: fire_time_from_fire_to_flowering
+  find: <5
+  replace: 0--5
+taxonomic_updates:
+- find: Alexgeorgia arenicola
+  replace: Alexgeorgea arenicola
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2023-03-30)
+  taxonomic_resolution: Species
+- find: Anigozanthus humilis
+  replace: Anigozanthos humilis
+  reason: Manual alignment with known name - somehow wasn't matching (E. Wenk, 2023-03-30)
+  taxonomic_resolution: Species
+- find: Glisschrocaryon aureum var. aureum
+  replace: Glischrocaryon aureum var. aureum
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2023-03-30)
+  taxonomic_resolution: Varietas
+- find: Lyginea barbata
+  replace: Lyginia barbata
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2023-03-30)
+  taxonomic_resolution: Species
+- find: Synaphaea petiolaris
+  replace: Synaphea petiolaris
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2023-03-30)
+  taxonomic_resolution: Species
+- find: Synaphaea polymorpha
+  replace: Synaphea polymorpha
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2023-03-30)
+  taxonomic_resolution: Species
+exclude_observations: .na
+questions: .na

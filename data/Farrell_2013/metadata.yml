@@ -32,7 +32,12 @@ dataset:
   data_is_long_format: no
   custom_R_code:      '
     data %>%
-      mutate(across(.cols = everything(), ~na_if(.,"*")))
+      mutate(
+        across(everything(), ~as.character(.x)),        
+        across(everything(), ~na_if(.x,"*")),
+        across(c(`Stem mass fraction (SMF) g/g`), ~na_if(.x,"0"))
+      )
+
   '
   collection_date: 2011-02/2011-03
   taxon_name: Species
@@ -214,7 +219,7 @@ traits:
     used to determine root mass fraction (RMF, g root g-1 total plant), leaf area
     ratio (LAR, m2 leaf kg-1 plant) and specific leaf area (SLA m2 kg-1 leaf).
 - var_in: WUE
-  unit_in: g{H2O}/g{biomass}
+  unit_in: g{biomass}/g{H2O}
   trait_name: leaf_water_use_efficiency_integrated
   entity_type: individual
   value_type: raw
@@ -245,8 +250,8 @@ traits:
     used to determine root mass fraction (RMF, g root g-1 total plant), leaf area
     ratio (LAR, m2 leaf kg-1 plant) and specific leaf area (SLA m2 kg-1 leaf).
 - var_in: Daily transpiration g H20/leaf area cm2
-  unit_in: g/cm2/d
-  trait_name: whole_plant_transpiration
+  unit_in: g/cm2{leaf}/d
+  trait_name: integrated_plant_transpiration
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -256,9 +261,7 @@ traits:
     from substrate only pots) from total water lost from each pot at each weighing
     event. Cumulative transpiration was calculated as the sum of transpiration over
     the 50 days of the experiment. Daily transpiration per pot and per unit final
-    leaf area were then calculated from cumulative transpiration. (Not mapping into
-    AusTraits, because whole plant, long-term transpiration won't be comparable to
-    instantaneous IRGA measurements.)
+    leaf area were then calculated from cumulative transpiration.
 - var_in: LMA kg/m2
   unit_in: kg/m2
   trait_name: leaf_mass_per_area

@@ -37,9 +37,9 @@ dataset:
     data %>% 
       mutate(
         site = "University of Western Sydney",
-        Date = Date %>% dmy()
+        Date = Date %>% dmy(),
+        across(c("Cond (mol m-2 s-1)"), ~na_if(.x,0))
       ) %>% 
-      mutate_at(c("Cond (mol m-2 s-1)"), ~na_if(.,0)) %>% 
       subset(Day < 88) %>% 
       arrange(Potnum, Day) %>%
       group_by(Potnum, Temp, CO2, Water) %>%
@@ -244,7 +244,7 @@ traits:
     the glasshouse during the day.
 - var_in: Trmmol (mmol m-2 s-1)
   unit_in: mmol{H2O}/m2/s
-  trait_name: leaf_transpiration_at_Asat
+  trait_name: leaf_transpiration_per_area_at_Asat
   entity_type: individual
   value_type: raw
   basis_of_value: measurement

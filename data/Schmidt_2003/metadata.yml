@@ -40,11 +40,11 @@ contributors:
   austraits_curators: Ian Wright
 dataset:
   data_is_long_format: no
-  custom_R_code:      '
+  custom_R_code:        '
     data %>% 
       mutate(
-        fire_response = ifelse(life_history == "r", "resprouts", NA),
-        fire_response = ifelse(life_history == "o", "fire_killed", fire_response),
+        resprouting_capacity = ifelse(life_history == "r", "resprouts", NA),
+        resprouting_capacity = ifelse(life_history == "o", "fire_killed", resprouting_capacity),
         leaf_water_content = (100 - leaf_water_content),
         life_history = ifelse(life_history=="r","p",life_history),
         regen_strategy = ifelse(life_history=="o","seed",""),
@@ -63,14 +63,14 @@ dataset:
         phenology = ifelse(species_name == "Petalostigma quadriloculare", "facultative_drought_deciduous evergreen", phenology),
         root_structure = ifelse(species_name == "Lophostemon lactifluus", "ectomycorrhizal arbuscular_mycorrhizal", root_structure),
         root_structure = ifelse(species_name == "Cartonema spicatum", "non_mycorrhizal", root_structure),
-        TRIP = ifelse(is.na(TRIP),1,TRIP)
-      ) %>% 
-      mutate_at(vars(`life_history`,`regen_strategy`), ~na_if(.,"")) %>%
-      mutate_at(vars(`leaf_water_content`), ~na_if(.,0)) %>%
+        TRIP = ifelse(is.na(TRIP),1,TRIP),
+        across(c(`life_history`,`regen_strategy`), ~na_if(.x, "")),
+        across(c(`leaf_water_content`), ~na_if(.x, 0))
+      ) %>%
       group_by(species_name) %>%
         mutate(
           across(c(`regen_strategy`,`root_structure`,`C3C4`,`Nfixer`,`plant_growth_form`,
-          `life_history`,`phenology`, fire_response), replace_duplicates_with_NA)
+          `life_history`,`phenology`, resprouting_capacity), replace_duplicates_with_NA)
         ) %>%
       ungroup()
   '
@@ -395,9 +395,9 @@ traits:
   replicates: 1
   methods: Healthy mature leaves, twigs and roots were oven-dried at 60degC on the
     day of collection.
-- var_in: fire_response
+- var_in: resprouting_capacity
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -626,6 +626,126 @@ substitutions:
   find: a/p
   replace: annual perennial
 taxonomic_updates:
+- find: Acacia sp.
+  replace: Acacia sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Bruguiera sp.
+  replace: Bruguiera sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Cayratia sp.
+  replace: Cayratia sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Centipeda sp.
+  replace: Centipeda sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Commelina sp.
+  replace: Commelina sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Cyperus sp.
+  replace: Cyperus sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Dampiera sp.
+  replace: Dampiera sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Dianella sp.
+  replace: Dianella sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Dunbaria sp.
+  replace: Dunbaria sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Euphorbia sp.
+  replace: Euphorbia sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Excoecaria sp.
+  replace: Excoecaria sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Fimbristylis sp.
+  replace: Fimbristylis sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Glinus sp.
+  replace: Glinus sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Gmelina sp.
+  replace: Gmelina sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Goodenia sp.
+  replace: Goodenia sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Hyptis sp.
+  replace: Hyptis sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Limnophila sp.
+  replace: Limnophila sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Lindsaea sp.
+  replace: Lindsaea sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Livistona sp.
+  replace: Livistona sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Lomandra sp.
+  replace: Lomandra sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Lumnitzera sp.
+  replace: Lumnitzera sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Pluchea sp.
+  replace: Pluchea sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Polygala sp.
+  replace: Polygala sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Sauropus sp.
+  replace: Sauropus sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Scleria sp.
+  replace: Scleria sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Senna sp.
+  replace: Senna sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Thecanthes sp.
+  replace: Pimelea sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Thespesia sp.
+  replace: Thespesia sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Uraria sp.
+  replace: Uraria sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Waltheria sp.
+  replace: Waltheria sp. [Schmidt_2003]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
 - find: Acacia aulac
   replace: Acacia aulacocarpa
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)

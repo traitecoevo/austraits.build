@@ -34,9 +34,9 @@ dataset:
     data %>% 
       mutate(
         site_name = "La Trobe University (Bundoora) Glasshouse",
-        fire_response = ifelse(resprouting_proportion_individuals > 0.7,"resprouts", NA),
-        fire_response = ifelse(resprouting_proportion_individuals < 0.3,"fire_killed", fire_response), 
-        fire_response = ifelse(is.na(fire_response),"partial_resprouting",fire_response)
+        resprouting_capacity = ifelse(resprouting_proportion_individuals > 0.7,"resprouts", NA),
+        resprouting_capacity = ifelse(resprouting_proportion_individuals < 0.3,"fire_killed", resprouting_capacity), 
+        resprouting_capacity = ifelse(is.na(resprouting_capacity),"partial_resprouting",resprouting_capacity)
       )
   '
   collection_date: 2014-06/2015-03
@@ -206,7 +206,7 @@ traits:
   methods: expert observation or reference book
 - var_in: resprout_prop
   unit_in: '{count}/{count}'
-  trait_name: fire_response_stem_ratio
+  trait_name: resprouting_capacity_stem_ratio
   entity_type: individual
   value_type: mean
   basis_of_value: measurement
@@ -215,7 +215,7 @@ traits:
     and the number of post-fire tillers per plant were recorded.
 - var_in: resprouting_proportion_individuals
   unit_in: '{count}/{count}'
-  trait_name: fire_response_numeric
+  trait_name: resprouting_capacity_proportion_individuals
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -223,22 +223,19 @@ traits:
   methods: Tillers were counted before the fire treatment. After 10 wk, plant survival
     and the number of post-fire tillers per plant were recorded. This variable is
     the proportion of plants within a treatment that displayed any resprouting.
-- var_in: fire_response
+- var_in: resprouting_capacity
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: individual
   value_type: raw
   basis_of_value: expert_score
   replicates: .na
-  methods: Assigned the value 'resprouts' if the trait 'fire_response_numeric' is
+  methods: Assigned the value 'resprouts' if the trait 'resprouting_capacity_proportion_individuals' is
     non-zero; else 'fire_killed'
 substitutions:
 - trait_name: bud_bank_location
   find: crown
   replace: bud-bearing_root
-- trait_name: bud_bank_location
-  find: stolon
-  replace: stolon
 - trait_name: life_history
   find: annual/perennial
   replace: annual perennial

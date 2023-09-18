@@ -28,7 +28,7 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:      '
+  custom_R_code:        '
     data %>%
       mutate(
         `species records` = str_replace_all(`species records`, "_", " "),
@@ -37,7 +37,7 @@ dataset:
       distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`, `Conserved R+`, `Conserved S+`) %>%
   group_by(`species records`, Ecosystem) %>%
     mutate(
-      across(c(`R+`,`S+`,`resp.type`), ~na_if(., "X")),
+      across(c(`R+`,`S+`,`resp.type`), ~na_if(.x, "X")),
       `R+` = paste(`R+`, collapse = " "),
       `S+` = paste(`S+`, collapse = " "),
       `resp.type` = paste(`resp.type`, collapse = " ")
@@ -49,9 +49,7 @@ dataset:
     `S+` = str_replace(`S+`, "no NA", "no"),
     `S+` = ifelse(`S+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `S+`),
     storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA),
-    resp.type = resp.type %>% na_if(.,"NA"),
-    `R+` = `R+` %>% na_if(.,"NA"),
-    `S+` = `S+` %>% na_if(.,"NA")
+    across(c(`R+`,`S+`,`resp.type`), ~na_if(.x,"NA"))
     )
   '
   collection_date: unknown/2015
@@ -174,7 +172,7 @@ traits:
     was recorded.'
 - var_in: R+
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: population
   value_type: mode
   basis_of_value: expert_score
@@ -235,23 +233,167 @@ substitutions:
   replace: epicormic_buds
 - trait_name: bud_bank_location
   find: Lignotuber
-  replace: basal_buds
-- trait_name: fire_response
+  replace: basal_stem_buds
+- trait_name: resprouting_capacity
   find: 'no'
   replace: fire_killed
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: 'yes'
   replace: resprouts
 - trait_name: post_fire_recruitment
   find: 'no'
-  replace: no_post_fire_recruitment
+  replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: no yes
-  replace: no_post_fire_recruitment post_fire_recruitment
+  replace: post_fire_recruitment_absent post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: 'yes'
   replace: post_fire_recruitment
 taxonomic_updates:
+- find: Acacia sp.
+  replace: Acacia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Astroloma sp.
+  replace: Astroloma sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Baeckea sp.
+  replace: Baeckea sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Brachychiton sp.
+  replace: Brachychiton sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Calothamnus sp.
+  replace: Calothamnus sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Calytrix sp.
+  replace: Calytrix sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Cassinia sp.
+  replace: Cassinia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Cassytha sp.
+  replace: Cassytha sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Celastrus sp.
+  replace: Celastrus sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: 'Chenopodium sp. '
+  replace: Chenopodium sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Corymbia sp.
+  replace: Corymbia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Desmodium sp.
+  replace: Desmodium sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Dillwynia sp.
+  replace: Dillwynia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Dodonaea sp.
+  replace: Dodonaea sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Einadia sp.
+  replace: Einadia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Eremaea sp.
+  replace: Eremaea sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Eucalyptus sp.
+  replace: Eucalyptus sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Eutaxia sp.
+  replace: Eutaxia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Gardenia sp.
+  replace: Gardenia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Gompholobium sp.
+  replace: Gompholobium sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Hibiscus sp.
+  replace: Hibiscus sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Hypocalymma sp.
+  replace: Hypocalymma sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Kunzea sp
+  replace: Kunzea sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Leptospermum sp.
+  replace: Leptospermum sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Leucopogon sp.
+  replace: Leucopogon sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Melaleuca sp.
+  replace: Melaleuca sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Parsonsia sp.
+  replace: Parsonsia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Pimelea sp.
+  replace: Pimelea sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Pomaderris sp.
+  replace: Pomaderris sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Psydrax sp.
+  replace: Psydrax sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Pultenaea sp.
+  replace: Pultenaea sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Rubus sp.
+  replace: Rubus sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Scholtzia sp.
+  replace: Scholtzia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Sida sp.
+  replace: Sida sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Syzygium sp.
+  replace: Syzygium sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
+- find: Tarenna sp.
+  replace: Tarenna sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: Genus
 - find: Abutilon oxycarpum f. oxycarpum
   replace: Abutilon oxycarpum var. oxycarpum
   reason: match_06. Automatic alignment with synonymous term among accepted canonical

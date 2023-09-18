@@ -35,7 +35,9 @@ dataset:
       mutate(
         stomatal_conductance_per_area_ambient = `gs (stomatal conductance, cm.s-1)`*10*38.97,
         individual_plant = paste(species,Site,`Tree #`, sep = "_"),
-        collection_date = `Sampling period`
+        collection_date = `Sampling period`,
+        across(c(`stomatal_conductance_per_area_ambient`,`gs (stomatal conductance, cm.s-1)`), ~as.character(.x)),
+        across(c(`stomatal_conductance_per_area_ambient`,`gs (stomatal conductance, cm.s-1)`), ~na_if(.x, "0"))
       )
   '
   collection_date: collection_date
@@ -203,7 +205,7 @@ traits:
     station for measurement.
 - var_in: gs (stomatal conductance, cm.s-1)
   unit_in: cm/s
-  trait_name: leaf_stomatal_resistance_conductance_ambient
+  trait_name: leaf_stomatal_resistance_ambient
   entity_type: individual
   value_type: mean
   basis_of_value: measurement

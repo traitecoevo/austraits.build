@@ -1,0 +1,307 @@
+source:
+  primary:
+    key: Burrows_2020
+    bibtype: Misc
+    year: 2020
+    author: Neil Burrows
+    title: Data from 'Plant Ecological Attributes' theme, NatureMap, DBCA, WA
+contributors:
+  data_collectors:
+  - last_name: Burrows
+    given_name: Neil
+    ORCID: 0000-0001-8689-564X
+    affiliation: Biodiversity and Conservation Science, Department of Biodiversity,
+      Conservation and Attractions, WA, Australia
+  - last_name: Gosper
+    given_name: Carl
+    ORCID: 0000-0002-0962-5117
+    affiliation: Biodiversity and Conservation Science, Department of Biodiversity,
+      Conservation and Attractions, WA, Australia
+    additional_role: contact
+  austraits_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code:     '
+    data %>%
+      mutate(
+        location = "Western Australia",
+        taxon_name = stringr::str_replace(`Species Name`, "[:space:]\\(.+", ""),
+        taxon_name = stringr::str_replace(taxon_name, "^[:space:]", ""),
+        reproductive_maturity_primary = ifelse(`Response To Fire` %in% c(1,2,3,8), `Months Until First Flowering`, NA),
+        seed_storage_location = NA,
+        bud_bank_location = NA,
+        dispersal_unit = NA,
+        seed_storage_location = case_when(
+          `Response To Fire` == "1" ~ "canopy",
+          `Response To Fire` == "2" ~ "soil",
+          `Response To Fire` == "3" ~ "none"
+        ),
+        bud_bank_location = case_when(
+          `Response To Fire` == "4" ~ "bud-bearing_root",
+          `Response To Fire` == "5" ~ "basal_buds",
+          `Response To Fire` == "6" ~ "epicormic_buds",
+          `Response To Fire` == "7" ~ "apical_buds",
+          `Response To Fire` == "11" ~ "fleshy_underground_organ"
+        ),
+        dispersal_unit = case_when(
+          `Response To Fire` == "10" ~ "spore"
+        )
+      )
+  '
+  collection_date: unknown/2020
+  taxon_name: taxon_name
+  location_name: location
+  description: Plant ecological attribute data compiled by Neil Burrows for inclusion
+    in the WA DBCA NatureMap Portal.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: unknown
+  original_file: Plant_Ecological_Attributes_Burrows_202002.xls in raw data folder
+  notes: none
+locations:
+  Western Australia:
+    description: unknown locations in Western Australia
+    latitude (deg): .na
+    longitude (deg): .na
+contexts: .na
+traits:
+- var_in: Response To Fire
+  unit_in: .na
+  trait_name: resprouting_capacity
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The column `Response To Fire Auth` in the data file indicates the researcher
+    or reference that was the source of this information, as follows, LMC - Lachie
+    McCaw; TM - Ted Middelton; RTW - Ray Wills; KA - Ken Atkins; ARA - Tony Annels;
+    NDB - Neil Burrows; AGM - Malcolm Gill; TAY - Banksia Atlas Taylor & Hopper; UKN
+    - Unknown; BEL - David Bell; GWJ - Grant Wardell-Johnson; MUI - Barry Muir; VDM
+    - (1987) J. Royal Soc. WA Van Der Moezel
+- var_in: seed_storage_location
+  unit_in: .na
+  trait_name: seedbank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The column `Response To Fire Auth` in the data file indicates the researcher
+    or reference that was the source of this information, as follows, LMC - Lachie
+    McCaw; TM - Ted Middelton; RTW - Ray Wills; KA - Ken Atkins; ARA - Tony Annels;
+    NDB - Neil Burrows; AGM - Malcolm Gill; TAY - Banksia Atlas Taylor & Hopper; UKN
+    - Unknown; BEL - David Bell; GWJ - Grant Wardell-Johnson; MUI - Barry Muir; VDM
+    - (1987) J. Royal Soc. WA Van Der Moezel
+- var_in: bud_bank_location
+  unit_in: .na
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The column `Response To Fire Auth` in the data file indicates the researcher
+    or reference that was the source of this information, as follows, LMC - Lachie
+    McCaw; TM - Ted Middelton; RTW - Ray Wills; KA - Ken Atkins; ARA - Tony Annels;
+    NDB - Neil Burrows; AGM - Malcolm Gill; TAY - Banksia Atlas Taylor & Hopper; UKN
+    - Unknown; BEL - David Bell; GWJ - Grant Wardell-Johnson; MUI - Barry Muir; VDM
+    - (1987) J. Royal Soc. WA Van Der Moezel
+- var_in: dispersal_unit
+  unit_in: .na
+  trait_name: dispersal_unit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The column `Response To Fire Auth` in the data file indicates the researcher
+    or reference that was the source of this information, as follows, LMC - Lachie
+    McCaw; TM - Ted Middelton; RTW - Ray Wills; KA - Ken Atkins; ARA - Tony Annels;
+    NDB - Neil Burrows; AGM - Malcolm Gill; TAY - Banksia Atlas Taylor & Hopper; UKN
+    - Unknown; BEL - David Bell; GWJ - Grant Wardell-Johnson; MUI - Barry Muir; VDM
+    - (1987) J. Royal Soc. WA Van Der Moezel
+- var_in: Flowering Month
+  unit_in: .na
+  trait_name: .na
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Unclear if this is the month of peak flowering or the month when flowering
+    commences, so not mapping it into AusTraits at this time;  The column `Flowering
+    Month Auth` in the data file indicates the researcher or reference that was the
+    source of this information, as follows, LMC - Lachie McCaw; TM - Ted Middelton;
+    RTW - Ray Wills; KA - Ken Atkins; ARA - Tony Annels; NDB - Neil Burrows; AGM -
+    Malcolm Gill; TAY - Banksia Atlas Taylor & Hopper; UKN - Unknown; BEL - David
+    Bell; GWJ - Grant Wardell-Johnson; MUI - Barry Muir; VDM - (1987) J. Royal Soc.
+    WA Van Der Moezel
+- var_in: reproductive_maturity_primary
+  unit_in: mo
+  trait_name: reproductive_maturity
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: This trait includes data from the `Months Until First Flowering` column
+    for fire-killed species. Since germination does not occur immediately following
+    a fire, these values will be slight overestimates of the age at primary reproductive
+    maturity. The column `Months Until First Flowering Auth` in the data file indicates
+    the researcher or reference that was the source of this information, as follows,
+    LMC - Lachie McCaw; TM - Ted Middelton; RTW - Ray Wills; KA - Ken Atkins; ARA
+    - Tony Annels; NDB - Neil Burrows; AGM - Malcolm Gill; TAY - Banksia Atlas Taylor
+    & Hopper; UKN - Unknown; BEL - David Bell; GWJ - Grant Wardell-Johnson; MUI -
+    Barry Muir; VDM - (1987) J. Royal Soc. WA Van Der Moezel.
+- var_in: Months Until First Flowering
+  unit_in: mo
+  trait_name: fire_time_from_fire_to_flowering
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: The column `Months Until First Flowering Auth` in the data file indicates
+    the researcher or reference that was the source of this information, as follows,
+    LMC - Lachie McCaw; TM - Ted Middelton; RTW - Ray Wills; KA - Ken Atkins; ARA
+    - Tony Annels; NDB - Neil Burrows; AGM - Malcolm Gill; TAY - Banksia Atlas Taylor
+    & Hopper; UKN - Unknown; BEL - David Bell; GWJ - Grant Wardell-Johnson; MUI -
+    Barry Muir; VDM - (1987) J. Royal Soc. WA Van Der Moezel
+- var_in: Months Until Peak Flowering
+  unit_in: mo
+  trait_name: fire_time_from_fire_to_peak_flowering
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The column `Months Until Peak Flowering Auth` in the data file indicates
+    the researcher or reference that was the source of this information, as follows,
+    LMC - Lachie McCaw; TM - Ted Middelton; RTW - Ray Wills; KA - Ken Atkins; ARA
+    - Tony Annels; NDB - Neil Burrows; AGM - Malcolm Gill; TAY - Banksia Atlas Taylor
+    & Hopper; UKN - Unknown; BEL - David Bell; GWJ - Grant Wardell-Johnson; MUI -
+    Barry Muir; VDM - (1987) J. Royal Soc. WA Van Der Moezel
+- var_in: Months To Flowering Decline
+  unit_in: mo
+  trait_name: fire_time_from_fire_to_flowering_decline
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The column `Months To Flowering Decline Auth` in the data file indicates
+    the researcher or reference that was the source of this information, as follows,
+    LMC - Lachie McCaw; TM - Ted Middelton; RTW - Ray Wills; KA - Ken Atkins; ARA
+    - Tony Annels; NDB - Neil Burrows; AGM - Malcolm Gill; TAY - Banksia Atlas Taylor
+    & Hopper; UKN - Unknown; BEL - David Bell; GWJ - Grant Wardell-Johnson; MUI -
+    Barry Muir; VDM - (1987) J. Royal Soc. WA Van Der Moezel
+- var_in: Response To Dieback
+  unit_in: .na
+  trait_name: .na
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Values scores are, 01. Good evidence of resistance; 02. Some evidence of
+    resistance; 03. Inferred evidence of resistance; 04. Inferred variable susceptibility;
+    05. Some evidence of variable susceptibility; 06. Good evidence of variable susceptibility;
+    07. Inferred moderate susceptibility; 08. Some evidence of moderate susceptibility;
+    09. Good evidence of moderate susceptibility; 10. Inferred high susceptibility;
+    11. Some evidence of high susceptibility; 12. Good evidence of high susceptibility;
+    The column `Response To Dieback Auth` in the data file indicates the researcher
+    or reference that was the source of this information, as follows, LMC - Lachie
+    McCaw; TM - Ted Middelton; RTW - Ray Wills; KA - Ken Atkins; ARA - Tony Annels;
+    NDB - Neil Burrows; AGM - Malcolm Gill; TAY - Banksia Atlas Taylor & Hopper; UKN
+    - Unknown; BEL - David Bell; GWJ - Grant Wardell-Johnson; MUI - Barry Muir; VDM
+    - (1987) J. Royal Soc. WA Van Der Moezel
+- var_in: Longevity
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The column `Longevity Auth` in the data file indicates the researcher or
+    reference that was the source of this information, as follows, LMC - Lachie McCaw;
+    TM - Ted Middelton; RTW - Ray Wills; KA - Ken Atkins; ARA - Tony Annels; NDB -
+    Neil Burrows; AGM - Malcolm Gill; TAY - Banksia Atlas Taylor & Hopper; UKN - Unknown;
+    BEL - David Bell; GWJ - Grant Wardell-Johnson; MUI - Barry Muir; VDM - (1987)
+    J. Royal Soc. WA Van Der Moezel
+substitutions:
+- trait_name: resprouting_capacity
+  find: 1
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: 2
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: 3
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: 8
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: 4
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: 5
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: 6
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: 7
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: 9
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: 10
+  replace: .na
+- trait_name: resprouting_capacity
+  find: 11
+  replace: resprouts
+- trait_name: life_history
+  find: 1
+  replace: annual
+- trait_name: life_history
+  find: 2
+  replace: biennial
+- trait_name: life_history
+  find: 3
+  replace: short_lived_perennial
+- trait_name: life_history
+  find: 4
+  replace: perennial
+- trait_name: seedbank_location
+  find: canopy
+  replace: canopy_seedbank
+- trait_name: seedbank_location
+  find: soil
+  replace: soil_seedbank 
+taxonomic_updates:
+- find: Apium prostratum subsp. prostratum var. prostratum
+  replace: Apium prostratum subsp. prostratum
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2023-05-08)
+  taxonomic_resolution: Subspecies
+- find: Boronia crenulata subsp. crenulata var. crenulata
+  replace: Boronia crenulata var. crenulata
+  reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
+    when notes are ignored (2023-05-08)
+  taxonomic_resolution: Varietas
+- find: Eucalyptus tetragona
+  replace: Eucalyptus tetrodonta
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2023-05-08)
+  taxonomic_resolution: Species
+- find: Pseudoloxocarya grossa
+  replace: Pseudoloxocarya grossa MS
+  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2023-05-08)
+  taxonomic_resolution: Species
+- find: Rumex acetosa
+  replace: Rumex acetosa
+  reason: match_06. Automatic alignment with synonymous term among known canonical
+    names APC (2023-05-08)
+  taxonomic_resolution: Species
+- find: Stylidium brunonianum var. brunonianum
+  replace: Stylidium brunonianum
+  reason: Manual alignment with accepted APC name (E. Wenk, 2023-05-08)
+  taxonomic_resolution: Species
+- find: Pseudoloxocarya grossa MS
+  replace: Taraxis grossa
+  reason: Manual alignment with accepted APC name (E. Wenk, 2023-05-08)
+  taxonomic_resolution: Species
+exclude_observations: .na
+questions: .na

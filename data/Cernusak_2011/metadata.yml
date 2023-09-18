@@ -23,10 +23,15 @@ contributors:
   austraits_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:      data %>% mutate(Date = Date %>% dmy()) %>% mutate_at(c("initial ci/ca","J
-    at Tleaf (umol e- m-2 s-1)", "J at 25 deg C (umol e- m-2 s-1)","initial photosynthesis
-    (umol m-2 s-1)","Amax- light curve (umol m-2 s-1)","Vcmax atTleaf (umol m-2 s-1)","Vcmax
-    at 25 deg C (umol m-2 s-1)"), ~na_if(.,".")) %>% rename(measurement_remarks = context)
+  custom_R_code: '
+    data %>%
+      mutate(
+        Date = Date %>% dmy(),
+        across(c(`Leaf area (mm2)`:`trans_at_Amax_mmol_m-2_s-1`), ~as.character(.x)),
+        across(c(`Leaf area (mm2)`:`trans_at_Amax_mmol_m-2_s-1`), ~na_if(.x,"."))
+      ) %>%
+      rename(measurement_remarks = context)
+  '
   collection_date: Date
   taxon_name: Species
   location_name: Site
@@ -273,7 +278,7 @@ traits:
     with measurements made at other leaf temperatures.
 - var_in: J at 25 deg C (umol e- m-2 s-1)
   unit_in: umol/m2/s
-  trait_name: leaf_photosynthesis_Jmax_per_area
+  trait_name: leaf_photosynthesis_Jmax_per_area_25C
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -448,7 +453,7 @@ traits:
     site.'
 - var_in: trans_at_Asat_mmol_m-2_s-1
   unit_in: mmol{H2O}/m2/s
-  trait_name: leaf_transpiration_at_Asat
+  trait_name: leaf_transpiration_per_area_at_Asat
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -565,7 +570,7 @@ traits:
     site.'
 - var_in: trans_at_Amax_mmol_m-2_s-1
   unit_in: mmol{H2O}/m2/s
-  trait_name: leaf_transpiration_at_Amax
+  trait_name: leaf_transpiration_per_area_at_Amax
   entity_type: individual
   value_type: raw
   basis_of_value: measurement

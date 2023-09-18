@@ -47,9 +47,14 @@ dataset:
     data %>% 
       mutate(
         `Compeditive stratum` = ifelse(GosperJVS2012_PFT == "Ephem","post_fire_ephemeral",`Compeditive stratum`),
-        life_history = ifelse(GosperJVS2012_PFT == "Ephem","ephemeral",NA),
-        lifespan_value_type = ifelse(Longevity == "Long", "maximum", "minimum")
-      )
+        lifespan_value_type = ifelse(Longevity == "Long", "maximum", "minimum"),
+        seed_storage_location = `Persistent canopy seedbank`,
+        `Persistent soil seedbank` = stringr::str_replace(`Persistent soil seedbank`, "Yes", "soil_seedbank"),
+        `Persistent soil seedbank` = stringr::str_replace(`Persistent soil seedbank`, "No", "soil_seedbank_absent"),
+        seed_storage_location = stringr::str_replace(seed_storage_location, "Yes", "canopy_seedbank"),
+        seed_storage_location = stringr::str_replace(seed_storage_location, "No", "canopy_seedbank_absent"),
+        seed_storage_location = ifelse(is.na(`Persistent soil seedbank`), seed_storage_location, paste(seed_storage_location,`Persistent soil seedbank`))
+    )
   '
   collection_date: 2007/2007
   taxon_name: Species Name
@@ -109,7 +114,7 @@ contexts: .na
 traits:
 - var_in: Months Until First Fruiting
   unit_in: mo
-  trait_name: fire_time_from_fire_to_fruit
+  trait_name: fire_time_from_fire_to_fruiting
   entity_type: population
   value_type: mean
   basis_of_value: measurement
@@ -125,18 +130,9 @@ traits:
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Plant functional type used in Gosper et al. 2012]
-- var_in: life_history
-  unit_in: .na
-  trait_name: life_history
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: Gosper et al. 2012 field observations supplemented by literature sources.
-    [Plant functional type used in Gosper et al. 2012]
 - var_in: Resprouter
   unit_in: .na
-  trait_name: fire_response
+  trait_name: resprouting_capacity
   entity_type: population
   value_type: mode
   basis_of_value: expert_score
@@ -154,16 +150,14 @@ traits:
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
     [Yes = serotinous; No = non-serotinous]
-- var_in: Persistent soil seedbank
+- var_in: seed_storage_location
   unit_in: .na
-  trait_name: soil_seedbank
+  trait_name: seedbank_location
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
   methods: Gosper et al. 2012 field observations supplemented by literature sources.
-    [Yes = persistent soil seed bank that enables post-fire recruitment; No = does
-    not have a persistent soil seed bank enabling post-fire recruitment]
 - var_in: Compeditive stratum
   unit_in: .na
   trait_name: competitive_stratum
@@ -194,22 +188,16 @@ substitutions:
 - trait_name: lifespan
   find: Long
   replace: 6
-- trait_name: soil_seedbank
-  find: 'No'
-  replace: soil_seedbank_absent
-- trait_name: soil_seedbank
-  find: 'Yes'
-  replace: soil_seedbank_present
 - trait_name: serotiny
   find: 'No'
   replace: not_serotinous
 - trait_name: serotiny
   find: 'Yes'
   replace: serotinous
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: 'No'
   replace: fire_killed
-- trait_name: fire_response
+- trait_name: resprouting_capacity
   find: 'Yes'
   replace: resprouts
 - trait_name: plant_growth_form

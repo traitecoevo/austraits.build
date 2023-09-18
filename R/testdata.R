@@ -187,7 +187,7 @@ dataset_test_worker <-
       # allow some utf8 characters, those with accents over letters for foreign names
       # list of codes is here: http://www.utf8-chartable.de/
       # note c3 is needed because this is prefix for allowed UTF8 chars
-      exceptions <- c("ÁÅÀÂÄÆÃĀâíåæäãàáíčóöøéèłńl°êÜüùúû±µµ“”‘’-–—≈˜×")
+      exceptions <- c("ÁÅÀÂÄÆÃĀâíåæäãàáíÇčóöøéèłńl°êÜüùúû±µµ“”‘’-–—≈˜×")
       
       is_allowed <- i %in% charToRaw(exceptions)
       ! (is_ascii | is_allowed)
@@ -525,12 +525,14 @@ dataset_test_worker <-
           info = paste0(f, "-value types")
         )
         
-        if(length(value_type_cols) > 0)
-        expect_isin(
-          data[[value_type_cols]] %>% unique(),
-          schema$value_type$values %>% names,
-          info = paste0(f, "-value types columns")
-        )
+        if(length(value_type_cols) > 0){
+          for(v in value_type_cols)
+            expect_isin(
+              data[[v]] %>% unique(),
+              schema$value_type$values %>% names,
+              info = paste(f, v, "- value types columns")
+            )
+        }
         
         # Substitutions
         if (!is.na(metadata[["substitutions"]][1])) {
