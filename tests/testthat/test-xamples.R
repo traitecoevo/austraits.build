@@ -6,7 +6,7 @@ testthat::test_that("test datasets", {
   schema <- get_schema()
   resource_metadata <- get_schema("config/metadata.yml",  "metadata")
   definitions <- get_schema("config/traits.yml", "traits")
-  unit_conversions <- austraits.build:::get_unit_conversions("config/unit_conversions.csv")
+  unit_conversions <- traits.build:::get_unit_conversions("config/unit_conversions.csv")
   taxon_list <- read_csv_char("config/taxon_list.csv")
 
 

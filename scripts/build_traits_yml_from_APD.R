@@ -8,7 +8,7 @@ library(purrr)
 library(dplyr)
 library(readr)
 library(stringr)
-library(austraits.build)
+library(traits.build)
 
 
 path_APD <- "https://raw.githubusercontent.com/traitecoevo/APD/master/data/"
