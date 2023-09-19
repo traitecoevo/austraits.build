@@ -672,7 +672,7 @@ The function first displays a list of all data columns (from the data.csv file) 
 
 ```
 - context_property: unknown
-  category: temporal
+  category: temporal_context
   var_in: month
   values:
   - find: AUG
@@ -685,7 +685,7 @@ The function first displays a list of all data columns (from the data.csv file) 
     value: unknown
     description: unknown
 - context_property: unknown
-  category: treatment
+  category: treatment_context
   var_in: Temp-trt
   values:
   - value: ambient
@@ -693,7 +693,7 @@ The function first displays a list of all data columns (from the data.csv file) 
   - value: elevated
     description: unknown
 - context_property: unknown
-  category: treatment
+  category: treatment_context
   var_in: CO2_Treat
   values:
   - find: ambient CO2
@@ -710,7 +710,7 @@ If there are additional context properties that were designated in the traits se
 
 ```
 - context_property: sampling season
-  category: temporal
+  category: temporal_context
   var_in: month
   values:
   - find: AUG
@@ -723,7 +723,7 @@ If there are additional context properties that were designated in the traits se
     value: February
     description: February (late summer)
 - context_property: temperature treatment
-  category: treatment
+  category: treatment_context
   var_in: Temp-trt
   values:
   - value: ambient
@@ -732,7 +732,7 @@ If there are additional context properties that were designated in the traits se
   - value: elevated
     description: Plants grown 3 deg C above ambient temperatures.
 - context_property: CO2 treatment
-  category: treatment
+  category: treatment_context
   var_in: CO2_Treat
   values:
   - find: ambient CO2
@@ -1010,13 +1010,13 @@ A taxonomic update that aligns a name to the most similar taxon_name within a ta
 ## Check if AusTraits pivots wider
 AusTraits users want to be able to "pivot" between long and wide formats. 
 Each row of data should have a unique combination of the following fields:
-  `trait_name`, `dataset_id`, `observation_id`, `source_id`, `taxon_name`, `population_id`, `individual_id`, `temporal_id`, `method_id`, `value_type`, and `original_name`
+  `trait_name`, `dataset_id`, `observation_id`, `source_id`, `taxon_name`, `population_id`, `individual_id`, `temporal_context_id`, `method_context_id`, `value_type`, and `original_name`
 
 Therefore, the dataset should be able to pivot wider and the following code should have a `1` in every cell.
 
 ```{r, eval=FALSE, echo=TRUE}
 austraits$traits %>%
-  select(dataset_id, trait_name, value, observation_id, source_id, taxon_name, population_id, individual_id, temporal_id, method_id, value_type, original_name) %>%
+  select(dataset_id, trait_name, value, observation_id, source_id, taxon_name, population_id, individual_id, temporal_context_id, method_context_id, value_type, original_name) %>%
   pivot_wider(names_from = trait_name, values_from = value, values_fn = length) %>% View()
 ```
 
@@ -1029,7 +1029,7 @@ If AusTraits fails to `pivot_wider`, likely problems are:
       mutate(observation_number = dplyr::row_number()) %>%
     ungroup()'
 ```
-  Then add `observation_number` as a context with `category: temporal`
+  Then add `observation_number` as a context with `category: temporal_context`
 
 ## Check for duplicates  
 
