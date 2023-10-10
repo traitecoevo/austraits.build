@@ -29,7 +29,9 @@ Definitions for the traits are described the AusTraits Plant Dictionary (APD), a
 
 ## Citation
 
-XXX
+Users of AusTraits are requested to cite the source publication, which documents the dataset and approach:
+
+> Falster D, Gallagher R, Wenk, E et al. (2021) AusTraits, a curated plant trait database for the Australian flora. Scientific Data 8: 254.  DOI: [10.1038/s41597-021-01006-6](http://doi.org/10.1038/s41597-021-01006-6)
 
 ## Rebuilding AusTraits from source
 
@@ -43,18 +45,18 @@ We use the [`traits.build`](https://traitecoevo.github.io/traits.build/)  R pack
 
 To build the database follows these steps
 
-### Install `traits.build`
+***Install `traits.build`***
 
 The first step is to install a copy of [traits.build]](https://github.com/traitecoevo/austraits.build/): 
 
 ```{r, eval=FALSE, echo=TRUE}
 remotes::install_github("traitecoevo/traits.build", quick = TRUE)
 ```
-### Clone repository
+***Clone repository***
 
 Next you need to download a copy of this repository from Github. Then open the Rstudio project, or open R into the right repo directory.
 
-### Compile via `remake`
+***Compile via `remake`***
 
 One of the packages that will be installed with the `traits.build` is [`remake`](https://github.com/richfitz/remake). This package manages the compiling, and also helps streamline the amount of recompiling needed when new sources are added.
 
@@ -82,10 +84,10 @@ We envision AusTraits as an ongoing collaborative community resource that:
 
 We'd love for you to contribute to the projects. Below are some ways you can contribute:
 
-- contributing new data
-- Reporting errors and improving documentation
-- Improving data quality
-- development of `traits.build`` workflow
+- Contributing new data
+- Improving data quality and reporting errors 
+- Improving documentation
+- Development of `traits.build`` workflow
 
 For details on on how to contribute, please see the file [CONTRIBUTING.md](https://github.com/traitecoevo/austraits.build/blob/develop/.github/CONTRIBUTING.md)
 
@@ -95,15 +97,13 @@ The AusTraits project is released with a [Contributor Code of Conduct](https://g
 **Funding**: This work was supported via the following investments:
 
 - Investment (https://doi.org/10.47486/TD044, https:// doi.org/10.47486/DP720) from the Australian Research Data Commons (ARDC). The ARDC is funded by the National Collaborative Research Infrastructure Strategy (NCRIS).
-- Fellowship grants from Australian Research Council to Falster (FT160100113), Gallagher (DE170100208) and Wright (FT100100910), 
-- A grant from Macquarie University to Gallagher
+- Fellowship from the Australian Research Council to Falster (FT160100113), Gallagher (DE170100208) and Wright (FT100100910),
+- A UNSW Research Infrastructure Grant to Falster, and
+- A grant from Macquarie University to Gallagher.
 
-**Recognition**: Many people have contributed to AusTraits. A list of contributors 
-is provdied on the on Zenodo at doi:
+**Recognition**: Many people have contributed to AusTraits. A list of contributors  is provided on the on Zenodo at DOI:
     [10.5281/zenodo.3568417](https://doi.org/10.5281/zenodo.3568417).
 
 Further information about the AusTraits project is available at the project website [austraits.org](https://austraits.org).
 
 **Resuse**: At this stage, only the compiled AusTraits dataset is available for reuse,  via Zenodo. The raw data sources provided in this repository are not available for reuse in their current form, without further discussion from data contributors.
-
-
