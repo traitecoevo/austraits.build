@@ -31,7 +31,7 @@ All users can contribute to continual improvement of AusTraits documentation, by
 If you have a suggestion, please [post an issue on GitHub](https://github.com/traitecoevo/austraits.build/issues). 
 ## Development of `traits.build`` workflow
 
-AusTraits uses the `traits.build` package to haronise different sources. Interested users can help us develop this package at the package website <https://github.com/traitecoevo/traits.build/>
+AusTraits uses the `traits.build` package to harmonise different sources. Interested users can help us develop this package at the package website <https://github.com/traitecoevo/traits.build/>
 
 ## Contributing new data {#data}
 
@@ -44,9 +44,9 @@ If you would like to contribute data, the requirements are:
 -   You are willing to release the data under an open license for reuse by the scientific community
 -   You make it is as easy as possible for us to incorporate your data by following the instructions.
 
-### What do i need to do?
+### What do I need to do?
 
-The AusTraits curtaors will merge each dataset into AusTraits. For each study we carefully check to ensure units are accurate, continuous trait values map in the expected range, categorical trait values map onto sensible terms, location data are accurate, taxon names are aligned to current standards, and all metadata are recorded. 
+The AusTraits curators will merge each dataset into AusTraits. For each study we carefully check to ensure units are accurate, continuous trait values map in the expected range, categorical trait values map onto sensible terms, location data are accurate, taxon names are aligned to current standards, and all metadata are recorded. 
 
 
 

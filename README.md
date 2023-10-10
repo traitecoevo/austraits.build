@@ -20,7 +20,7 @@ AusTraits is continually evolving, as new datasets are contributed. As such, the
 
 Those interested in simply using data from AusTraits, should visit download the compiled resource from the versioned releases archived on Zenodo at DOI: [10.5281/zenodo.3568417](https://doi.org/10.5281/zenodo.3568417).
 
-Users will want to read up on the [database structure, described in the `traits.build` manual](https://traitecoevo.github.io/traits.build-book/tutorial_datasets.html).
+Users will want to read up on the [database structure, described in the `traits.build` manual](https://traitecoevo.github.io/traits.build-book/database_structure.html).
 
 Definitions for the traits are described the AusTraits Plant Dictionary (APD), at
 
@@ -37,17 +37,17 @@ Users of AusTraits are requested to cite the source publication, which documents
 
 This repository (`austraits.build`) contains the raw data and code used to compile AusTraits from diverse, original sources. 
 
-To handle the harmonising of diverse data sources, we use a reproducible workflow to implement the various changes required for each source to reformat it suitable for incorporation in AusTraits. Such changes include restructuring datasets, renaming variables, changing variable units, changing taxon names. For the sake of transparency and continuing development, the entire workflow is made available here.
+To handle the harmonising of diverse data sources, we use a reproducible workflow to implement the various changes required for each source to reformat it into a form suitable for incorporation in AusTraits. Such changes include restructuring datasets, renaming variables, changing variable units, changing taxon names. For the sake of transparency and continuing development, the entire workflow is made available here.
 
 ![](inst/figures/Workflow.png)
 
-We use the [`traits.build`](https://traitecoevo.github.io/traits.build/)  R package and workflow to harmonise  > 300 different asources into a unified dataset. The workflow is fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset and can also be rerun by others. AusTraits is built so that the database can be rebuilt from its parts at any time. This means that decisions made along the way (in how data is transformed or encoded) can be inspected and modified, and new data can be easily incorporated.
+We use the [`traits.build`](https://traitecoevo.github.io/traits.build/)  R package and workflow to harmonise  > 300 different sources into a unified dataset. The workflow is fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset and can also be rerun by others. AusTraits is built so that the database can be rebuilt from its parts at any time. This means that decisions made along the way (in how data is transformed or encoded) can be inspected and modified, and new data can be easily incorporated.
 
 To build the database follows these steps
 
 ***Install `traits.build`***
 
-The first step is to install a copy of [traits.build]](https://github.com/traitecoevo/austraits.build/): 
+The first step is to install a copy of [traits.build](https://github.com/traitecoevo/austraits.build/): 
 
 ```{r, eval=FALSE, echo=TRUE}
 remotes::install_github("traitecoevo/traits.build", quick = TRUE)
@@ -106,4 +106,4 @@ The AusTraits project is released with a [Contributor Code of Conduct](https://g
 
 Further information about the AusTraits project is available at the project website [austraits.org](https://austraits.org).
 
-**Resuse**: At this stage, only the compiled AusTraits dataset is available for reuse,  via Zenodo. The raw data sources provided in this repository are not available for reuse in their current form, without further discussion from data contributors.
+**Resuse**: At this stage, only the compiled AusTraits dataset is available for reuse, via Zenodo. The raw data sources provided in this repository are not available for reuse in their current form, without further discussion from data contributors.
