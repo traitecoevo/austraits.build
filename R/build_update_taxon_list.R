@@ -1,6 +1,4 @@
-build_update_taxon_list <- function(austraits, taxon_list) {
-
-  library(APCalign)
+build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
   
   resources <- APCalign::load_taxonomic_resources()
   
@@ -60,7 +58,7 @@ build_update_taxon_list <- function(austraits, taxon_list) {
     # Remove taxa that are excluded in metadata
     dplyr::filter(!(original_name %in% excluded_in_metadata$original_name & is.na(taxon_rank)))
   
-  # XX For now filter out taxa that need to be run through `APCalign::align_taxa()`
+  # Filter out taxa that need to be run through `APCalign::align_taxa()` first
   taxa_for_taxon_list <- all_taxa %>% 
     filter(!is.na(taxon_rank) | !is.na(taxonomic_dataset)) %>%
     select(original_name, aligned_name, taxon_rank, taxonomic_dataset) %>%
@@ -78,17 +76,20 @@ build_update_taxon_list <- function(austraits, taxon_list) {
         "cleaned_name" = "aligned_name",
         "taxonomic_reference" = "taxonomic_dataset",
         "taxon_id" = "taxon_ID",
-        "scientific_name_id" = "scientific_name_ID"
+        "cleaned_scientific_name_id" = "scientific_name_ID"
       ))) %>%
     # In AusTraits we also want to document identifiers for `aligned_names`, not just for the final `taxon_name`
     # We do this by rejoining columns from APC, but now to the aligned_names, not the taxon_names
     # XX These are currently all prefixed with "cleaned"
     dplyr::left_join(by = c("cleaned_name", "taxon_name"),
       resources$APC %>% 
-        dplyr::mutate(accepted_name = resources$`APC list (accepted)`$canonical_name[match(accepted_name_usage_ID, resources$`APC list (accepted)`$taxon_ID)]) %>%
-        dplyr::select(dplyr::all_of(c("canonical_name", "scientific_name_ID", "taxonomic_status", "taxon_ID", "accepted_name"))) %>%
+        dplyr::mutate(
+          accepted_name = resources$`APC list (accepted)`$canonical_name[match(accepted_name_usage_ID, resources$`APC list (accepted)`$taxon_ID)],
+          scientific_name_id = resources$`APC list (accepted)`$scientific_name_ID[match(accepted_name_usage_ID, resources$`APC list (accepted)`$taxon_ID)],
+          taxon_name = accepted_name
+          ) %>%
+        dplyr::select(dplyr::all_of(c("scientific_name_id", "taxonomic_status", "taxon_ID", "accepted_name", "taxon_name", "canonical_name"))) %>%
         dplyr::rename(dplyr::all_of(c(
-          "cleaned_scientific_name_id" = "scientific_name_ID",
           "cleaned_name_taxonomic_status" = "taxonomic_status",
           "cleaned_name_taxon_id" = "taxon_ID",
           "cleaned_name" = "canonical_name",
@@ -98,12 +99,18 @@ build_update_taxon_list <- function(austraits, taxon_list) {
     # For taxon names that are aligned at the genus- or family-level, we need to replace the taxon & scientific name identifiers
     # with those for the relevent genus or family.
     dplyr::mutate(
-      taxon_id = ifelse(taxon_rank %in% c("genus"), taxon_ID_genus, taxon_id),
-      taxon_id = ifelse(taxon_rank %in% c("family"), resources$family_accepted$taxon_ID[match(updated$family, resources$family_accepted$canonical_name)], taxon_id),
-      scientific_name_id = ifelse(taxon_rank %in% c("genus", "Genus"), resources$genera_accepted$scientific_name_ID[match(updated$genus, resources$genera_accepted$canonical_name)], scientific_name_id),
-      scientific_name_id = ifelse(taxon_rank %in% c("family"), resources$family_accepted$scientific_name_ID[match(updated$family, resources$family_accepted$canonical_name)], scientific_name_id),
-    ) %>% 
-    dplyr::select(-taxon_ID_genus) %>%
+      taxon_rank = ifelse(
+        taxon_rank %in% c("genus", "family"),
+        taxon_rank,
+        ifelse(
+          taxonomic_reference == "APC",
+          resources$`APC list (accepted)`$taxon_rank[match(taxon_id, resources$`APC list (accepted)`$taxon_ID)],
+          taxon_rank
+        )),
+      taxon_id_family = resources$family_accepted$taxon_ID[match(updated$family, resources$family_accepted$canonical_name)],
+      taxon_id = ifelse(taxon_rank %in% c("genus", "family"), NA, taxon_id),
+      scientific_name_id = ifelse(taxon_rank %in% c("genus", "family"), NA, scientific_name_id)
+    ) %>%
     # The function `APCalign::update_taxonomy` includes alternative possible names as part of the taxon name.
     # We want this information in a separate column.
     dplyr::mutate(
@@ -123,52 +130,23 @@ build_update_taxon_list <- function(austraits, taxon_list) {
       establishment_means = ifelse(.data$count_naturalised == 0 & .data$count_n_and_n == 0, "native", .data$establishment_means),
     ) %>%
     dplyr::select(-dplyr::all_of(c("count_naturalised", "count_n_and_n", "count_states")))
-
-  # Confirm all information previously filled in is accurate - which it currently isn't
-  # XX 840 taxon_id's have changed
-  # XX Could redo with a for loop - but wanted this for now
     
-    taxon_list_with_replacements <- taxon_list %>%
-      mutate(
-        #scientific_name = NA,
-        #cleaned_name_taxon_id = NA,
-        taxon_id = ifelse(taxon_id != taxon_list_new$taxon_id[match(cleaned_name, taxon_list_new$cleaned_name)] & 
-                                 !is.na(taxon_list_new$taxon_id[match(cleaned_name, taxon_list_new$cleaned_name)]),
-                          taxon_list_new$taxon_id[match(cleaned_name, taxon_list_new$cleaned_name)],
-                          taxon_id),
-        #scientific_name = ifelse(scientific_name != taxon_list_new$scientific_name[match(cleaned_name, taxon_list_new$cleaned_name)] & 
-        #                              !is.na(taxon_list_new$scientific_name[match(cleaned_name, taxon_list_new$cleaned_name)]),
-        #                            taxon_list_new$scientific_name[match(cleaned_name, taxon_list_new$cleaned_name)],
-        #                         scientific_name),
-        scientific_name_id = ifelse(scientific_name_id != taxon_list_new$scientific_name_id[match(cleaned_name, taxon_list_new$cleaned_name)] & 
-                            !is.na(taxon_list_new$scientific_name_id[match(cleaned_name, taxon_list_new$cleaned_name)]),
-                          taxon_list_new$scientific_name_id[match(cleaned_name, taxon_list_new$cleaned_name)],
-                          scientific_name_id),
-        #cleaned_name_taxon_id = ifelse(cleaned_name_taxon_id != taxon_list_new$cleaned_name_taxon_id[match(cleaned_name, taxon_list_new$cleaned_name)] & 
-        #                    !is.na(taxon_list_new$cleaned_name_taxon_id[match(cleaned_name, taxon_list_new$cleaned_name)]),
-        #                  taxon_list_new$cleaned_name_taxon_id[match(cleaned_name, taxon_list_new$cleaned_name)],
-        #                  cleaned_name_taxon_id),
-        cleaned_scientific_name_id = ifelse(cleaned_scientific_name_id != taxon_list_new$cleaned_scientific_name_id[match(cleaned_name, taxon_list_new$cleaned_name)] & 
-                                      !is.na(taxon_list_new$cleaned_scientific_name_id[match(cleaned_name, taxon_list_new$cleaned_name)]),
-                                    taxon_list_new$cleaned_scientific_name_id[match(cleaned_name, taxon_list_new$cleaned_name)],
-                                    cleaned_scientific_name_id),
-        cleaned_name_taxonomic_status = ifelse(cleaned_name_taxonomic_status != taxon_list_new$cleaned_name_taxonomic_status[match(cleaned_name, taxon_list_new$cleaned_name)] & 
-                                              !is.na(taxon_list_new$cleaned_name_taxonomic_status[match(cleaned_name, taxon_list_new$cleaned_name)]),
-                                            taxon_list_new$cleaned_name_taxonomic_status[match(cleaned_name, taxon_list_new$cleaned_name)],
-                                          cleaned_name_taxonomic_status),
-        taxonomic_status = ifelse(taxonomic_status != taxon_list_new$taxonomic_status[match(cleaned_name, taxon_list_new$cleaned_name)] & 
-                                            !is.na(taxon_list_new$taxonomic_status[match(cleaned_name, taxon_list_new$cleaned_name)]),
-                                          taxon_list_new$taxonomic_status[match(cleaned_name, taxon_list_new$cleaned_name)],
-                                  taxonomic_status)
-        )
-
-    # New taxon list
-    taxon_list_replace <- taxon_list %>%
-      # First bind rows for cleaned names not yet in AusTraits taxon_list.csv file
-      bind_rows(taxon_list_new %>% filter(!cleaned_name %in% taxon_list$cleaned_name)) #%>%
-      # Arrange by names - hopefully this will be best solution for keeping changes clean
-      #arrange(taxon_name, cleaned_name)
+  # New taxon list  
+   if (replace = TRUE) {
+      taxon_list_replace <- taxon_list_new %>% 
+        arrange(taxon_name, cleaned_name) %>%
+        distinct(taxon_name, cleaned_name, .keep_all = TRUE)
+     
+   } else {
+     
+      taxon_list_replace <- taxon_list %>%
+        # First bind rows for cleaned names not yet in AusTraits taxon_list.csv file
+        bind_rows(taxon_list_new %>% filter(!cleaned_name %in% taxon_list$cleaned_name)) %>%
+        # Arrange by names - hopefully this will be best solution for keeping GitHub commits more transparent
+        arrange(taxon_name, cleaned_name) %>%
+        distinct(taxon_name, cleaned_name, .keep_all = TRUE)
+   }
   
-    taxon_list_replace %>% 
+  taxon_list_replace %>% 
       write_csv("config/taxon_list.csv")
 }
