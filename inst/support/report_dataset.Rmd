@@ -738,23 +738,23 @@ if(nrow(tmp) < 10000 ){
 
 To create the list of aligned taxa, we needed to make some taxonomic changes. This involved two stages. 
 
-* **Stage 1**: Where possible (i.e. there was no or only a few characters difference), the name you supplied was matched automatically with a known name in APC or APNI. In other cases we may have aligned the taxa by searching for an appropriate match. Such changes are documented in the study metadata file.  The variable `cleaned_name` shows the updated name. The variable `d1` shows the number of characters difference between the `original_name` and `cleaned_name`. 
-* **Stage 2**: Once aligned with a known name, we used the APC to update the `cleaned_name` to an accepted name. The taxonomic status of the cleaned name is indicated in column `status cleaned name`. If accepted, no change was made. If it is a synonym or otherwise, the name was changed according to the recommendation given in the APC. Where they existed, we preferred to take the accepted status of an `cleaned_name`, if it existed. Alternative status values are indicated in brackets. This indicate if alternative uses of the name were ever applied. 
+* **Stage 1**: Where possible (i.e. there was no or only a few characters difference), the name you supplied was matched automatically with a known name in APC or APNI. In other cases we may have aligned the taxa by searching for an appropriate match. Such changes are documented in the study metadata file.  The variable `aligned_name` shows the updated name. The variable `d1` shows the number of characters difference between the `original_name` and `aligned_name`. 
+* **Stage 2**: Once aligned with a known name, we used the APC to update the `aligned_name` to an accepted name. The taxonomic status of the cleaned name is indicated in column `status cleaned name`. If accepted, no change was made. If it is a synonym or otherwise, the name was changed according to the recommendation given in the APC. Where they existed, we preferred to take the accepted status of an `aligned_name`, if it existed. Alternative status values are indicated in brackets. This indicate if alternative uses of the name were ever applied. 
 
-Links on `cleaned_name` and `taxon_name` take you to the APC or APNI record for that name.
+Links on `aligned_name` and `taxon_name` take you to the APC or APNI record for that name.
 
 ```{r}
 data_study$taxonomic_updates %>% select(-dataset_id) %>% 
   filter(original_name !=taxon_name) %>% 
   mutate(
-    d1 = purrr::map2_dbl(original_name, cleaned_name, ~adist(.x, .y)) %>% as.character() %>% str_replace("0", ""),
-    d2 = purrr::map2_dbl(taxon_name, cleaned_name, ~adist(.x, .y)) %>% as.character() %>% str_replace("0", ""),
-    cleaned_name = as_link(cleaned_scientific_name_id, cleaned_name),
+    d1 = purrr::map2_dbl(original_name, aligned_name, ~adist(.x, .y)) %>% as.character() %>% str_replace("0", ""),
+    d2 = purrr::map2_dbl(taxon_name, aligned_name, ~adist(.x, .y)) %>% as.character() %>% str_replace("0", ""),
+    aligned_name = as_link(aligned_scientific_name_id, aligned_name),
     taxon_name = as_link(taxon_id, taxon_name),
-    cleaned_name_alternative_taxonomic_status = replace_na(cleaned_name_alternative_taxonomic_status, ""),
-    `status cleaned name` = sprintf("%s %s", cleaned_name_taxonomic_status, ifelse(cleaned_name_alternative_taxonomic_status=="", "", paste("(", cleaned_name_alternative_taxonomic_status, ")")))
+    aligned_name_alternative_taxonomic_status = replace_na(aligned_name_alternative_taxonomic_status, ""),
+    `status cleaned name` = sprintf("%s %s", aligned_name_taxonomic_status, ifelse(aligned_name_alternative_taxonomic_status=="", "", paste("(", aligned_name_alternative_taxonomic_status, ")")))
     ) %>% 
-  select(original_name, d1, cleaned_name, d2, taxon_name, `status cleaned name`) %>%
+  select(original_name, d1, aligned_name, d2, taxon_name, `status cleaned name`) %>%
   mutate_all(replace_na, "") %>% 
   my_kable_styling()
 ```

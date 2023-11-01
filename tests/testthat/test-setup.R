@@ -169,7 +169,7 @@ test_that("test build_setup_pipeline is working",{
   expect_true(file.exists("config/taxon_list.csv"))
   expect_silent(taxa1 <- read_csv_char("config/taxon_list.csv"))
 
-  vars <-  c('cleaned_name', 'taxonomic_reference', 'cleaned_scientific_name_id', 'cleaned_name_taxonomic_status', 'cleaned_name_alternative_taxonomic_status', 'taxon_name', 'taxon_id', 'scientific_name_authorship', 'taxon_rank', 'taxonomic_status', 'family', 'taxon_distribution', 'establishment_means', 'scientific_name', 'scientific_name_id') 
+  vars <-  c('aligned_name', 'taxonomic_dataset', 'aligned_scientific_name_id', 'aligned_name_taxonomic_status', 'aligned_name_alternative_taxonomic_status', 'taxon_name', 'taxon_id', 'scientific_name_authorship', 'taxon_rank', 'taxonomic_status', 'family', 'taxon_distribution', 'establishment_means', 'scientific_name', 'scientific_name_id') 
 
   expect_named(taxa1, vars)
   expect_length(taxa1, 15)
