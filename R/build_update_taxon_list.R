@@ -24,13 +24,12 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
     rename(aligned_name = canonical_name, taxon_rank_APNI = taxon_rank)
   
   # List of taxa that are explicitly excluded in metadata - don't want these in the taxon_list
-  # These should now be being excluded from `taxonomic_updates` table during processing, but good to check
+  # These should be excluded from `taxonomic_updates` table during processing, but good to check
   excluded_in_metadata <- austraits$excluded_data %>% filter(error == "Observation excluded in metadata") %>% distinct(original_name)
   
   # Start with taxonomic_updates table, which is all original names, aligned names, by dataset
   all_taxa <- 
     austraits$taxonomic_updates %>%
-    #filter(str_detect(aligned_name, "Cynochloris")) %>% ##temporary
     dplyr::select(dplyr::all_of(c("original_name", "aligned_name", "taxonomic_resolution"))) %>%
     # In case the same `original_name`, `aligned_name` combination occurs twice, but only once with `taxonomic_resolution` attached, arrange names, taxon_ranks
     dplyr::arrange(aligned_name, taxonomic_resolution) %>%
