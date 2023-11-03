@@ -29,6 +29,7 @@ dataset:
     data %>%
       filter(!is.na(taxon_name)) %>%
       filter(str_detect(taxon_name, " ")) %>%
+      filter(!str_detect(taxon_name, "Rochfordii")) %>%
       filter(!category %in% c("pappus")) %>%
       mutate(
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "semi-orbicular", "orbicular"), trait_value),
@@ -610,10 +611,6 @@ taxonomic_updates:
   replace: Hoffmannseggia glauca
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
   taxonomic_resolution: species
-- find: Houttuynia cordata
-  replace: Houttuynia cordata
-  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: species
 - find: Impatiens balfouri
   replace: Impatiens balfourii
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
@@ -741,10 +738,6 @@ taxonomic_updates:
   replace: Quassia sp. 'Moonee Creek' (King s.n., Nov 1949)
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-21)
   taxonomic_resolution: species
-- find: Radermachera sinica
-  replace: Radermachera sinica
-  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: species
 - find: Rotheca myricoides subsp. myricoides
   replace: Rotheca myricoides
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
@@ -849,8 +842,7 @@ taxonomic_updates:
   taxonomic_resolution: genus
 exclude_observations:
 - variable: taxon_name
-  find: Salix humboldtiana cv. ;qu;Pyramidalis;qu;, Salix matsudana cv. ;qu;Tortuosa;qu;,
-    Cyrtomium falcatum  ;qu;Rochfordii;qu;
+  find: Salix humboldtiana cv. ;qu;Pyramidalis;qu;, Salix matsudana cv. ;qu;Tortuosa;qu;
   reason: excluding cultivars
 - variable: taxon_name
   find: Cipadessa baccifera, Hoffmannseggia glauca, Houttuynia cordata, Margyricarpus
