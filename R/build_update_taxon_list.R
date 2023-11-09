@@ -181,9 +181,12 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
       establishment_means = ifelse(.data$taxon_rank %in% higher_ranks, NA, .data$establishment_means),
       taxon_distribution = ifelse(.data$taxon_rank %in% higher_ranks, NA, .data$taxon_distribution)
       ) %>%
-    dplyr::select(-dplyr::all_of(c("count_naturalised", "count_n_and_n", "count_states", "accepted_name")))
-    
-  # New taxon list  
+    #dplyr::select(-dplyr::all_of(c("count_naturalised", "count_n_and_n", "count_states", "accepted_name"))) %>%
+    dplyr::select(dplyr::all_of(c("original_name", "aligned_name", "taxon_name", "taxon_rank", "taxonomic_status", "taxonomic_dataset", "taxon_name_alternatives",
+                                  "genus", "family", "binomial", "trinomial", "taxon_distribution", "establishment_means", "scientific_name",
+                                  "taxon_id", "taxon_ID_genus", "taxon_id_family", "scientific_name_id", "aligned_name_taxon_id", "aligned_name_taxonomic_status")))
+
+    # New taxon list  
   
    if (replace == TRUE) {
       taxon_list_replace <- taxon_list_new %>% 
@@ -201,5 +204,5 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
    }
   
   taxon_list_replace %>% 
-      write_csv("config/taxon_list.csv")
+      readr::write_csv("config/taxon_list.csv", na = "")
 }
