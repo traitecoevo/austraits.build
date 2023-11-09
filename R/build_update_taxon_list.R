@@ -86,11 +86,11 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
         "aligned_name" = "aligned_name",
         "taxonomic_dataset" = "taxonomic_dataset",
         "taxon_id" = "taxon_ID",
-        "scientific_name_id" = "scientific_name_ID"
+        "scientific_name_id" = "scientific_name_ID",
+        "taxon_id_genus" = "taxon_ID_genus"
       ))) %>%
     # In AusTraits we also want to document identifiers for `aligned_names`, not just for the final `taxon_name`
     # We do this by rejoining columns from APC, but now to the aligned_names, not the taxon_names
-    # XX These are currently all prefixed with "cleaned"
     dplyr::left_join(by = c("aligned_name", "taxon_name"),
       resources$APC %>% 
         dplyr::mutate(
@@ -130,17 +130,17 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
           taxon_rank
         )),
       # For taxon names that are valid names (per herbarium standards) or repeatedly reported invasives, but not in APC/APNI, map on families, genus_ids - APCalign doesn't do this
-      taxon_ID_genus = ifelse(
+      taxon_id_genus = ifelse(
         taxonomic_status == "unknown" & aligned_name %in% austraits$taxonomic_updates$aligned_name,
         resources$genera_all$taxon_ID[match(genus, resources$genera_all$genus)],
-        taxon_ID_genus
+        taxon_id_genus
       ),
       family = ifelse(
         taxonomic_status == "unknown" & aligned_name %in% austraits$taxonomic_updates$aligned_name,
         resources$APC$family[match(genus, resources$APC$genus)],
         family
       ),
-      taxon_id_family = resources$family_accepted$taxon_ID[match(updated$family, resources$family_accepted$canonical_name)],
+      taxon_id_family = resources$family_accepted$taxon_ID[match(family, resources$family_accepted$canonical_name)],
       taxon_id = ifelse(taxon_rank %in% c("genus", "family"), NA, taxon_id),
       scientific_name_id = ifelse(taxonomic_dataset == "APC", resources$`APC list (accepted)`$scientific_name_ID[match(scientific_name, resources$`APC list (accepted)`$scientific_name)], scientific_name_id),
       scientific_name_id = ifelse(taxon_rank %in% c("genus", "family"), NA, scientific_name_id)
@@ -181,10 +181,9 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
       establishment_means = ifelse(.data$taxon_rank %in% higher_ranks, NA, .data$establishment_means),
       taxon_distribution = ifelse(.data$taxon_rank %in% higher_ranks, NA, .data$taxon_distribution)
       ) %>%
-    #dplyr::select(-dplyr::all_of(c("count_naturalised", "count_n_and_n", "count_states", "accepted_name"))) %>%
-    dplyr::select(dplyr::all_of(c("original_name", "aligned_name", "taxon_name", "taxon_rank", "taxonomic_status", "taxonomic_dataset", "taxon_name_alternatives",
+    dplyr::select(dplyr::all_of(c("aligned_name", "taxon_name", "taxon_rank", "taxonomic_status", "taxonomic_dataset", "taxon_name_alternatives",
                                   "genus", "family", "binomial", "trinomial", "taxon_distribution", "establishment_means", "scientific_name",
-                                  "taxon_id", "taxon_ID_genus", "taxon_id_family", "scientific_name_id", "aligned_name_taxon_id", "aligned_name_taxonomic_status")))
+                                  "taxon_id", "taxon_id_genus", "taxon_id_family", "scientific_name_id", "aligned_name_taxon_id", "aligned_name_taxonomic_status")))
 
     # New taxon list  
   
