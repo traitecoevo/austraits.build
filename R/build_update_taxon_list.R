@@ -86,11 +86,11 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
         "aligned_name" = "aligned_name",
         "taxonomic_dataset" = "taxonomic_dataset",
         "taxon_id" = "taxon_ID",
-        "scientific_name_id" = "scientific_name_ID"
+        "scientific_name_id" = "scientific_name_ID",
+        "taxon_id_genus" = "taxon_ID_genus"
       ))) %>%
     # In AusTraits we also want to document identifiers for `aligned_names`, not just for the final `taxon_name`
     # We do this by rejoining columns from APC, but now to the aligned_names, not the taxon_names
-    # XX These are currently all prefixed with "cleaned"
     dplyr::left_join(by = c("aligned_name", "taxon_name"),
       resources$APC %>% 
         dplyr::mutate(
@@ -109,6 +109,18 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
     # For taxon names that are aligned at the genus- or family-level, we need to replace the taxon & scientific name identifiers
     # with those for the relevant genus or family.
     dplyr::mutate(
+      # Genus filled in for all names that have a taxonomic of genus or more detailed
+      genus = ifelse(
+        !.data$taxon_rank %in% c("family", "order", "class", "phylum", "kingdom"),
+        ifelse(stringr::word(.data$taxon_name, 1) == "x",
+               stringr::word(.data$taxon_name, start = 1, end = 2),
+               stringr::word(.data$taxon_name, 1)),
+        NA),
+      taxon_rank = ifelse(
+        taxonomic_status == "unknown" & aligned_name %in% austraits$taxonomic_updates$aligned_name,
+        austraits$taxonomic_updates$taxonomic_resolution[match(aligned_name, austraits$taxonomic_updates$aligned_name)],
+        taxon_rank
+        ),
       taxon_rank = ifelse(
         taxon_rank %in% c("genus", "family"),
         taxon_rank,
@@ -117,7 +129,18 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
           resources$`APC list (accepted)`$taxon_rank[match(taxon_id, resources$`APC list (accepted)`$taxon_ID)],
           taxon_rank
         )),
-      taxon_id_family = resources$family_accepted$taxon_ID[match(updated$family, resources$family_accepted$canonical_name)],
+      # For taxon names that are valid names (per herbarium standards) or repeatedly reported invasives, but not in APC/APNI, map on families, genus_ids - APCalign doesn't do this
+      taxon_id_genus = ifelse(
+        taxonomic_status == "unknown" & aligned_name %in% austraits$taxonomic_updates$aligned_name,
+        resources$genera_all$taxon_ID[match(genus, resources$genera_all$genus)],
+        taxon_id_genus
+      ),
+      family = ifelse(
+        taxonomic_status == "unknown" & aligned_name %in% austraits$taxonomic_updates$aligned_name,
+        resources$APC$family[match(genus, resources$APC$genus)],
+        family
+      ),
+      taxon_id_family = resources$family_accepted$taxon_ID[match(family, resources$family_accepted$canonical_name)],
       taxon_id = ifelse(taxon_rank %in% c("genus", "family"), NA, taxon_id),
       scientific_name_id = ifelse(taxonomic_dataset == "APC", resources$`APC list (accepted)`$scientific_name_ID[match(scientific_name, resources$`APC list (accepted)`$scientific_name)], scientific_name_id),
       scientific_name_id = ifelse(taxon_rank %in% c("genus", "family"), NA, scientific_name_id)
@@ -143,14 +166,7 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
                         stringr::str_split_fixed(.data$taxon_name, "\\[", 2)[, 1] %>% stringr::str_trim(), NA),
       binomial = ifelse(.data$taxon_rank %in% c("subspecies", "form", "variety", "series"),
                         stringr::word(.data$taxon_name, start = 1, end = 2), .data$binomial),
-      binomial = stringr::str_trim(.data$binomial),
-      # Genus filled in for all names that have a taxonomic of genus or more detailed
-      genus = ifelse(
-        !.data$taxon_rank %in% c("family", "order", "class", "phylum", "kingdom"),
-        ifelse(stringr::word(.data$taxon_name, 1) == "x",
-               stringr::word(.data$taxon_name, start = 1, end = 2),
-               stringr::word(.data$taxon_name, 1)),
-        NA)
+      binomial = stringr::str_trim(.data$binomial)
     ) %>%
     # Add in `establishment_means`, indicating if a taxon is native, naturalised or both
     # This code is based on the exact syntax for taxon_distribution in APC; 
@@ -165,9 +181,11 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
       establishment_means = ifelse(.data$taxon_rank %in% higher_ranks, NA, .data$establishment_means),
       taxon_distribution = ifelse(.data$taxon_rank %in% higher_ranks, NA, .data$taxon_distribution)
       ) %>%
-    dplyr::select(-dplyr::all_of(c("count_naturalised", "count_n_and_n", "count_states", "accepted_name")))
-    
-  # New taxon list  
+    dplyr::select(dplyr::all_of(c("aligned_name", "taxon_name", "taxon_rank", "taxonomic_status", "taxonomic_dataset", "taxon_name_alternatives",
+                                  "genus", "family", "binomial", "trinomial", "taxon_distribution", "establishment_means", "scientific_name",
+                                  "taxon_id", "taxon_id_genus", "taxon_id_family", "scientific_name_id", "aligned_name_taxon_id", "aligned_name_taxonomic_status")))
+
+    # New taxon list  
   
    if (replace == TRUE) {
       taxon_list_replace <- taxon_list_new %>% 
@@ -185,5 +203,5 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
    }
   
   taxon_list_replace %>% 
-      write_csv("config/taxon_list.csv")
+      readr::write_csv("config/taxon_list.csv", na = "")
 }
