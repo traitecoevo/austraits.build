@@ -18,10 +18,14 @@ leaf_data %>% rowwise() %>%
     dry_minor_vein_transmitted_mean_frequency = mean(c(d.mivc1, d.mivc2, d.mivc3, d.mivc4), na.rm=TRUE)/8,
     dry_major_vein_reflected_mean_frequency = mean(c(d.mavc1r, d.mavc2r, d.mavc3r, d.mavc4r), na.rm=TRUE)/8,
     dry_minor_vein_reflected_mean_frequency = mean(c(d.mivc1r, d.mivc2r, d.mivc3r, d.mivc4r), na.rm=TRUE)/8,
+    wet_total_vein_transmitted_mean_frequency = wet_major_vein_transmitted_mean_frequency + wet_minor_vein_transmitted_mean_frequency,
+    dry_total_vein_transmitted_mean_frequency = dry_major_vein_transmitted_mean_frequency + dry_minor_vein_transmitted_mean_frequency,
+    dry_total_vein_reflected_mean_frequency = dry_major_vein_reflected_mean_frequency + dry_minor_vein_reflected_mean_frequency,
     treeid = as.character(treeid),
-    across(c("wet_major_vein_transmitted_mean_frequency", "wet_minor_vein_transmitted_mean_frequency",
-             "dry_major_vein_transmitted_mean_frequency", "dry_minor_vein_transmitted_mean_frequency", 
-             "dry_major_vein_reflected_mean_frequency", "dry_minor_vein_reflected_mean_frequency"), ~na_if(.x, NaN))
+    across(c("wet_major_vein_transmitted_mean_frequency", "wet_minor_vein_transmitted_mean_frequency", "wet_total_vein_transmitted_mean_frequency",
+             "dry_major_vein_transmitted_mean_frequency", "dry_minor_vein_transmitted_mean_frequency", "dry_total_vein_transmitted_mean_frequency",
+             "dry_major_vein_reflected_mean_frequency", "dry_minor_vein_reflected_mean_frequency", "dry_total_vein_reflected_mean_frequency"),
+           ~na_if(.x, NaN))
   ) %>%
   select(-all_of(c(10:34))) %>%
   mutate(
@@ -30,20 +34,26 @@ leaf_data %>% rowwise() %>%
     drymass_replicates = ifelse(!is.na(drymass), 1, 0),
     wet_major_vein_transmitted_mean_frequency_replicates = ifelse(!is.na(wet_major_vein_transmitted_mean_frequency), 1, 0),
     wet_minor_vein_transmitted_mean_frequency_replicates = ifelse(!is.na(wet_minor_vein_transmitted_mean_frequency), 1, 0),
+    wet_total_vein_transmitted_mean_frequency_replicates = ifelse(!is.na(wet_total_vein_transmitted_mean_frequency), 1, 0),
     dry_major_vein_transmitted_mean_frequency_replicates = ifelse(!is.na(dry_major_vein_transmitted_mean_frequency), 1, 0),
     dry_minor_vein_transmitted_mean_frequency_replicates = ifelse(!is.na(dry_minor_vein_transmitted_mean_frequency), 1, 0),
+    dry_total_vein_transmitted_mean_frequency_replicates = ifelse(!is.na(dry_total_vein_transmitted_mean_frequency), 1, 0),
     dry_major_vein_reflected_mean_frequency_replicates = ifelse(!is.na(dry_major_vein_reflected_mean_frequency), 1, 0),
-    dry_minor_vein_reflected_mean_frequency_replicates = ifelse(!is.na(dry_minor_vein_reflected_mean_frequency), 1, 0)
+    dry_minor_vein_reflected_mean_frequency_replicates = ifelse(!is.na(dry_minor_vein_reflected_mean_frequency), 1, 0),
+    dry_total_vein_reflected_mean_frequency_replicates = ifelse(!is.na(dry_total_vein_reflected_mean_frequency), 1, 0)
     ) %>%
   group_by(treeid, species,	leaftype,	sampletype,	days) %>%
     mutate(
-      across(c("wetarea_replicates", "dryarea_replicates", "drymass_replicates", "wet_major_vein_transmitted_mean_frequency_replicates", 
-               "wet_minor_vein_transmitted_mean_frequency_replicates",
-               "dry_major_vein_transmitted_mean_frequency_replicates", "dry_minor_vein_transmitted_mean_frequency_replicates", 
-               "dry_major_vein_reflected_mean_frequency_replicates", "dry_minor_vein_reflected_mean_frequency_replicates"), ~sum(.x)),
-      across(c("wetarea", "dryarea", "drymass", "wet_major_vein_transmitted_mean_frequency", "wet_minor_vein_transmitted_mean_frequency",
-                    "dry_major_vein_transmitted_mean_frequency", "dry_minor_vein_transmitted_mean_frequency", 
-                    "dry_major_vein_reflected_mean_frequency", "dry_minor_vein_reflected_mean_frequency"), ~mean(.x, na.rm = TRUE))
+      across(c("wetarea_replicates", "dryarea_replicates", "drymass_replicates", 
+               "wet_major_vein_transmitted_mean_frequency_replicates", "wet_minor_vein_transmitted_mean_frequency_replicates", "wet_total_vein_transmitted_mean_frequency",
+               "dry_major_vein_transmitted_mean_frequency_replicates", "dry_minor_vein_transmitted_mean_frequency_replicates", "dry_total_vein_transmitted_mean_frequency",
+               "dry_major_vein_reflected_mean_frequency_replicates", "dry_minor_vein_reflected_mean_frequency_replicates", "dry_total_vein_reflected_mean_frequency"), 
+             ~sum(.x)),
+      across(c("wetarea", "dryarea", "drymass", 
+               "wet_major_vein_transmitted_mean_frequency", "wet_minor_vein_transmitted_mean_frequency", "wet_total_vein_transmitted_mean_frequency",
+               "dry_major_vein_transmitted_mean_frequency", "dry_minor_vein_transmitted_mean_frequency", "dry_total_vein_transmitted_mean_frequency",
+                "dry_major_vein_reflected_mean_frequency", "dry_minor_vein_reflected_mean_frequency", "dry_total_vein_reflected_mean_frequency"), 
+             ~mean(.x, na.rm = TRUE))
       ) %>% 
   ungroup() %>%
   select(-all_of("leafid")) %>%
