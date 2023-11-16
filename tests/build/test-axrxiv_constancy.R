@@ -10,9 +10,9 @@ build_comparison_set <- function(root.dir, definitions, unit_conversions, schema
 #  Tomlinson_2019 - complete taxonomic changes
   
   f_build <- function(x, definitions, unit_conversions, schema, resource_metadata, taxon_list) {
-    config <-  dataset_configure(file.path(root.dir, "data", x, "metadata.yml"), definitions, unit_conversions)
-    data <-  dataset_process(file.path(root.dir, "data", x, "data.csv"), config, schema, resource_metadata)
-    data <- build_update_taxonomy(data, taxon_list)
+    config <-  dataset_configure(file.path(root.dir, "data", x, "metadata.yml"), definitions)
+    data <- dataset_process(file.path(root.dir, "data", x, "data.csv"), config, schema, resource_metadata, unit_conversions)
+    data <- dataset_update_taxonomy(data, taxon_list)
     
     data
   }

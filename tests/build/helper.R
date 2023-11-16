@@ -1,10 +1,7 @@
 requireNamespace("testthat", quietly = TRUE)
 
-
-
-
 library(traits.build)
-source("../testthat/functions.R")
+source("../functions.R")
 
 root.dir <- rprojroot::find_package_root_file()
 source(file.path(root.dir, "R/custom_R_code.R"))
