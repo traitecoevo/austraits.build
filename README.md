@@ -58,7 +58,7 @@ Next you need to download a copy of this repository from GitHub. Then open the R
 
 ***Build***
 
-Building the database should then be as easily as running the code in the file `build.R`. Note this code can use multiple CPUs, to do this, change the number of workers to > 1.
+Building the database should then be as easy as running the code in the file `build.R`. Note this code can use multiple CPUs, to do this, change the number of workers to > 1.
 
 ```
 source("build.R")
