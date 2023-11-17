@@ -35,23 +35,23 @@ dataset:
         storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA)
       ) %>%
       distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`, `Conserved R+`, `Conserved S+`) %>%
-  group_by(`species records`, Ecosystem) %>%
-    mutate(
-      across(c(`R+`,`S+`,`resp.type`), ~na_if(.x, "X")),
-      `R+` = paste(`R+`, collapse = " "),
-      `S+` = paste(`S+`, collapse = " "),
-      `resp.type` = paste(`resp.type`, collapse = " ")
-    ) %>%
-  ungroup() %>%
-  distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`,`Conserved R+`, `Conserved S+`) %>%
-  mutate(
-    `R+` = ifelse(`R+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `R+`),
-    `S+` = str_replace(`S+`, "no NA", "no"),
-    `S+` = ifelse(`S+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `S+`),
-    storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA),
-    across(c(`R+`,`S+`,`resp.type`), ~na_if(.x,"NA"))
-    )
-  '
+      group_by(`species records`, Ecosystem) %>%
+      mutate(
+        across(c(`R+`,`S+`,`resp.type`), ~na_if(.x, "X")),
+        `R+` = paste(`R+`, collapse = " "),
+        `S+` = paste(`S+`, collapse = " "),
+        `resp.type` = paste(`resp.type`, collapse = " ")
+      ) %>%
+      ungroup() %>%
+      distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`,`Conserved R+`, `Conserved S+`) %>%
+      mutate(
+        `R+` = ifelse(`R+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `R+`),
+        `S+` = str_replace(`S+`, "no NA", "no"),
+        `S+` = ifelse(`S+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `S+`),
+        storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA),
+        across(c(`R+`,`S+`,`resp.type`), ~na_if(.x,"NA"))
+        )
+    '
   collection_date: unknown/2015
   taxon_name: species records
   location_name: Ecosystem
@@ -235,22 +235,22 @@ substitutions:
   find: Lignotuber
   replace: basal_stem_buds
 - trait_name: resprouting_capacity
-  find: no'
+  find: 'no'
   replace: fire_killed
 - trait_name: resprouting_capacity
-  find: yes'
+  find: 'yes'
   replace: resprouts
 - trait_name: post_fire_recruitment
-  find: no'
+  find: 'no'
   replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: no yes
   replace: post_fire_recruitment_absent post_fire_recruitment
 - trait_name: post_fire_recruitment
-  find: yes'
+  find: 'yes'
   replace: post_fire_recruitment
 taxonomic_updates:
-- find: Abutilon oxycarpum f. oxycarpum
+- find: Abutilon oxycarpum forma oxycarpum
   replace: Abutilon oxycarpum var. oxycarpum
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
@@ -809,11 +809,6 @@ taxonomic_updates:
   replace: Leptospermum sp. [Clarke_2015]
   reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
   taxonomic_resolution: genus
-- find: Leptospermum sp. aff. grandifolium
-  replace: Leptospermum sp. [Leptospermum sp. aff. grandifolium; Clarke_2015]
-  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
-    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
-  taxonomic_resolution: genus
 - find: Leptospermum spp aff grandifolium
   replace: Leptospermum sp. [Leptospermum sp. aff. grandifolium; Clarke_2015]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -876,10 +871,6 @@ taxonomic_updates:
   replace: Lissanthe strigosa subsp. subulata
   reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
     APC (2022-11-10)
-  taxonomic_resolution: subspecies
-- find: Lissanthe strigosa subsp. subuluta
-  replace: Lissanthe strigosa subsp. subulata
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
   taxonomic_resolution: subspecies
 - find: Livistona humilis X inermis
   replace: Livistona x [Livistona humilis x Livistona inermis]
