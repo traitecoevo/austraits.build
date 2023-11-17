@@ -28,10 +28,10 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:            '
+  custom_R_code: '
     data %>%
       mutate(
-        `species records` = str_replace_all(`species records`, "_", " "),
+        `species records` = str_replace_all(`species records`, "_", " ") %>% stringr::str_trim(),
         storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA)
       ) %>%
       distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`, `Conserved R+`, `Conserved S+`) %>%
@@ -235,19 +235,19 @@ substitutions:
   find: Lignotuber
   replace: basal_stem_buds
 - trait_name: resprouting_capacity
-  find: 'no'
+  find: no'
   replace: fire_killed
 - trait_name: resprouting_capacity
-  find: 'yes'
+  find: yes'
   replace: resprouts
 - trait_name: post_fire_recruitment
-  find: 'no'
+  find: no'
   replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: no yes
   replace: post_fire_recruitment_absent post_fire_recruitment
 - trait_name: post_fire_recruitment
-  find: 'yes'
+  find: yes'
   replace: post_fire_recruitment
 taxonomic_updates:
 - find: Abutilon oxycarpum f. oxycarpum
@@ -487,7 +487,7 @@ taxonomic_updates:
   replace: Celastrus sp. [Clarke_2015]
   reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
   taxonomic_resolution: genus
-- find: 'Chenopodium sp. '
+- find: Chenopodium sp.
   replace: Chenopodium sp. [Clarke_2015]
   reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
   taxonomic_resolution: genus
@@ -515,11 +515,6 @@ taxonomic_updates:
   replace: Coprosma sp. [Coprosma juniperina; Clarke_2015]
   reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
     by APC (2022-11-22)
-  taxonomic_resolution: genus
-- find: 'Coprosma juniperina '
-  replace: Coprosma sp. [Coprosma juniperina; Clarke_2015]
-  reason: Exact match of the first word of the taxon name to an APC-accepted genus
-    (2023-11-02)
   taxonomic_resolution: genus
 - find: Corymbia dolicharpa juvenile
   replace: Corymbia dolichocarpa
@@ -603,15 +598,6 @@ taxonomic_updates:
 - find: Endiandra crassifolia
   replace: Endiandra crassiflora
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: species
-- find: Endiandra crassifolia
-  replace: Endiandra crassiflora
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-22)
-  taxonomic_resolution: species
-- find: 'Endiandra crassifolia '
-  replace: Endiandra crassiflora
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2023-11-02)
   taxonomic_resolution: species
 - find: Eremaea sp.
   replace: Eremaea sp. [Clarke_2015]
@@ -900,12 +886,6 @@ taxonomic_updates:
   reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
     genus-level alignment with APC accepted genus (2022-11-10)
   taxonomic_resolution: genus
-- find: Livistona sp. [Livistona humilis x Livistona inermis hybrid]
-  replace: Livistona x [Livistona humilis x Livistona inermis]
-    Clarke_2015]
-  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
-    genus-level alignment with APC accepted genus (2022-11-10)
-  taxonomic_resolution: genus
 - find: Lophostemon suaveolans
   replace: Lophostemon suaveolens
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
@@ -946,17 +926,6 @@ taxonomic_updates:
   replace: Melaleuca sp. [Melaleuca sp. aff. comboynensis; Clarke_2015]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
     to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
-  taxonomic_resolution: genus
-- find: Melaleuca sp. aff. comboynensis
-  replace: Melaleuca sp. [Melaleuca sp. aff. comboynensis; Clarke_2015]
-  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
-    to indicate a genus-level alignment with `APC accepted` genus (2022-11-22)
-  taxonomic_resolution: genus
-- find: 'Melaleuca sp. aff. comboynensis '
-  replace: Melaleuca sp. [Melaleuca sp. aff. comboynensis; Clarke_2015]
-  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
-    an unknown taxon that bears an affinity to a different taxon in the same genus
-    and taxon can only be aligned to genus-rank (2023-11-02)
   taxonomic_resolution: genus
 - find: Melicytus dentata
   replace: Melicytus dentatus
