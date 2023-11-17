@@ -17,13 +17,13 @@ contributors:
 dataset:
   data_is_long_format: no
   custom_R_code:     '
-    data %>% 
+    data %>%
       mutate(
-        `flowering time` = convert_month_range_vec_to_binary(`flowering time`), 
-        `fruiting` = convert_month_range_vec_to_binary(`fruiting`), 
-        leaf_type = ifelse(`leaf type` == "articles", "cladode", NA), 
-        `leaf type` = ifelse(`leaf type` == "articles", NA, `leaf type`), 
-        leaf_lobed = ifelse(`leaf type` == "l", "lobed", NA), 
+        `flowering time` = convert_month_range_vec_to_binary(`flowering time`),
+        `fruiting` = convert_month_range_vec_to_binary(`fruiting`),
+        leaf_type = ifelse(`leaf type` == "articles", "cladode", NA),
+        `leaf type` = ifelse(`leaf type` == "articles", NA, `leaf type`),
+        leaf_lobed = ifelse(`leaf type` == "l", "lobed", NA),
         GF = ifelse(aquatic %in% c("yes","y"),"herb", GF),
         GF = ifelse(succulent %in% c("yes","y"),"succulent_short herb", GF),
         parasitic = ifelse(GF=="parasite","parasitic",NA),
@@ -35,7 +35,7 @@ dataset:
         plant_photosynthetic_organ3 = NA
       ) %>%
       move_values_to_new_trait(
-        "dispersal appendage", "fruit_type", 
+        "dispersal appendage", "fruit_type",
         c("drupe", "samara"),
         c("drupe", "samara"),
         c("NA", "wings")
@@ -44,11 +44,11 @@ dataset:
       `dispersal appendage` = ifelse(`dispersal appendage` == "NA", NA, `dispersal appendage`)
       ) %>%
       move_values_to_new_trait(
-        "leaf shape", "leaf_lobation", 
+        "leaf shape", "leaf_lobation",
         c("lobed"), c("lobed"), c("")
       ) %>%
       move_values_to_new_trait(
-        "leaf shape", "leaf_lamina_division", 
+        "leaf shape", "leaf_lamina_division",
         "palmately lobed", "palmately_lobed", ""
       ) %>%
       move_values_to_new_trait(
@@ -72,16 +72,16 @@ dataset:
         c("succulent", "succulent"),
         c("herb", "herb")
       ) %>%
-      separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>% 
+      separate_range("leaf length (mm)", "leaf_length_min", "leaf_length_max") %>%
       separate_range("leaf width (mm)", "leaf_width_min", "leaf_width_max") %>%
-      separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>% 
-      separate_range("seed diameter (mm)", "seed_width_min", "seed_width_max") %>% 
+      separate_range("seed length (mm)", "seed_length_min", "seed_length_max") %>%
+      separate_range("seed diameter (mm)", "seed_width_min", "seed_width_max") %>%
       separate_range("seed depth (mm)", "seed_depth_min", "seed_depth_max") %>%
       mutate(
         across(everything(), ~as.character(.x)),
         across(everything(), ~na_if(.x, ""))
       )
-  '    
+  '
   collection_date: unknown/2014
   taxon_name: species_name
   description: 'Transposed from species descriptions in Flora of the Darwin Region
@@ -412,9 +412,6 @@ substitutions:
 - trait_name: dispersal_appendage
   find: winged seed
   replace: wings
-- trait_name: leaf_shape
-  find: linear-oblanceolate
-  replace: narrowly_oblanceolate
 - trait_name: leaf_shape
   find: palmately lobed
   replace: .na
