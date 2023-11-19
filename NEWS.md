@@ -1,3 +1,52 @@
+
+# AusTraits v5.0.0
+
+This is a major release of the AusTraits database.
+
+- austraits-5.0.0.zip: contains the compiled dataset and details of
+  structure
+- austraits-5.0.0.rds: contains a version of the dataset for direct
+  loading in R
+- source code v5.0.0.zip: contains the source materials used to build
+  the compiled dataset
+
+For details on access, structure, and usage please visit
+<https://doi.org/10.5281/zenodo.3568417>.
+
+This release was generated from source materials available at
+<https://github.com/traitecoevo/austraits.build/releases/tag/v5.0.0> A
+full set of changes in the source can be viewed at:
+<https://github.com/traitecoevo/austraits.build/compare/v4.2.0...v5.0.0>
+
+
+Compared to the last version, this release contains substantial
+additions of new data and improvement of old data.
+
+| version | dataset_id |  taxa | locations | traits | records |
+|:--------|-----------:|------:|----------:|-------:|--------:|
+| 4.2.0   |        363 | 34262 |      5176 |    494 | 1848570 |
+| 5.0.0   |        363 | 33402 |      4894 |    494 | 1813897 |
+
+This release contains:
+
+
+- **34673 records removed from the dataset**: these datapoints were previously excluded (e.g. because they are exotics or poor quality), but that were inadvertently added into v 4.2.0. Now removed again. - restructruign of columns, as noted below.
+
+This is the first AusTraits release to be compiled using the `{traits.build}` R package, available at https://github.com/traitecoevo/traits.build. The workflow is a refined version of the R-scripted pipeline previously used to compile AusTraits and the output structure has not changed, other than on-going minor fine-tuning, as detailed below.
+
+**Taxonomy**: New AusTraits-specific functions relating to taxonomy have been written that utilise the package `{APCalign}`. One new function, `build_align_taxon_names` uses the function `APCalign::align_taxa()` to standardise syntax, correct typos, and ensure taxon names are aligned with some name on the APC or APNI lists. The second function, `build_update_taxon_list` uses the function APCalign:update_taxonomy to build a new `taxon_list.csv` file for the config/ folder. This file is then used by `traits.build::dataset_update_taxonomy` to update names to their currently accepted taxon name, when possible.
+
+Edits were made to many dataset metadata files to align with these changes.
+
+**Changes to table structure**:
+
+- `method_id` was added, so that when the same trait was measured using multiple methods, these could be distinguished between
+- the context identifiers were renamed to `method_context_id`, `temporal_context_id`, `entity_context_id`, `plot_context_id`, `treatment_context_id` to be more explicit
+- `austraits_curators` became `dataset_curators`
+- added `repeat_measurements_id` for trait measurements that are response curves, both to unify the repeated measurements that comprise a single "measurement" and also to capture the order of the measurements
+
+No datasets have been added for this release. However, some metadata file changes exist, in particular to metadata[["taxonomic_updates"]], including removing duplicate taxonomic_updates or unneeded taxonomic updates and continued standardisation of taxonomic updates. All original_names in the taxonomic_updates tibble are now aligned to a specified taxon_name - either an informal name assigned through metadata[["taxonomic_updates"]] or a match to a name on the taxon_list.
+
 # AusTraits v4.2.0
 
 This is a minor release of the AusTraits database.
