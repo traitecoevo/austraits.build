@@ -25,33 +25,33 @@ contributors:
     ORCID: .na.character
     affiliation: University of New England, Australia
     notes: deceased
-  austraits_curators: Elizabeth Wenk
+  dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:        '
+  custom_R_code: '
     data %>%
       mutate(
-        `species records` = str_replace_all(`species records`, "_", " "),
+        `species records` = str_replace_all(`species records`, "_", " ") %>% stringr::str_trim(),
         storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA)
       ) %>%
       distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`, `Conserved R+`, `Conserved S+`) %>%
-  group_by(`species records`, Ecosystem) %>%
-    mutate(
-      across(c(`R+`,`S+`,`resp.type`), ~na_if(.x, "X")),
-      `R+` = paste(`R+`, collapse = " "),
-      `S+` = paste(`S+`, collapse = " "),
-      `resp.type` = paste(`resp.type`, collapse = " ")
-    ) %>%
-  ungroup() %>%
-  distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`,`Conserved R+`, `Conserved S+`) %>%
-  mutate(
-    `R+` = ifelse(`R+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `R+`),
-    `S+` = str_replace(`S+`, "no NA", "no"),
-    `S+` = ifelse(`S+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `S+`),
-    storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA),
-    across(c(`R+`,`S+`,`resp.type`), ~na_if(.x,"NA"))
-    )
-  '
+      group_by(`species records`, Ecosystem) %>%
+      mutate(
+        across(c(`R+`,`S+`,`resp.type`), ~na_if(.x, "X")),
+        `R+` = paste(`R+`, collapse = " "),
+        `S+` = paste(`S+`, collapse = " "),
+        `resp.type` = paste(`resp.type`, collapse = " ")
+      ) %>%
+      ungroup() %>%
+      distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`,`Conserved R+`, `Conserved S+`) %>%
+      mutate(
+        `R+` = ifelse(`R+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `R+`),
+        `S+` = str_replace(`S+`, "no NA", "no"),
+        `S+` = ifelse(`S+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `S+`),
+        storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA),
+        across(c(`R+`,`S+`,`resp.type`), ~na_if(.x,"NA"))
+        )
+    '
   collection_date: unknown/2015
   taxon_name: species records
   location_name: Ecosystem
@@ -250,175 +250,26 @@ substitutions:
   find: 'yes'
   replace: post_fire_recruitment
 taxonomic_updates:
-- find: Acacia sp.
-  replace: Acacia sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Astroloma sp.
-  replace: Astroloma sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Baeckea sp.
-  replace: Baeckea sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Brachychiton sp.
-  replace: Brachychiton sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Calothamnus sp.
-  replace: Calothamnus sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Calytrix sp.
-  replace: Calytrix sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Cassinia sp.
-  replace: Cassinia sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Cassytha sp.
-  replace: Cassytha sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Celastrus sp.
-  replace: Celastrus sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: 'Chenopodium sp. '
-  replace: Chenopodium sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Corymbia sp.
-  replace: Corymbia sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Desmodium sp.
-  replace: Desmodium sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Dillwynia sp.
-  replace: Dillwynia sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Dodonaea sp.
-  replace: Dodonaea sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Einadia sp.
-  replace: Einadia sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Eremaea sp.
-  replace: Eremaea sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Eucalyptus sp.
-  replace: Eucalyptus sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Eutaxia sp.
-  replace: Eutaxia sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Gardenia sp.
-  replace: Gardenia sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Gompholobium sp.
-  replace: Gompholobium sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Hibiscus sp.
-  replace: Hibiscus sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Hypocalymma sp.
-  replace: Hypocalymma sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Kunzea sp
-  replace: Kunzea sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Leptospermum sp.
-  replace: Leptospermum sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Leucopogon sp.
-  replace: Leucopogon sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Melaleuca sp.
-  replace: Melaleuca sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Parsonsia sp.
-  replace: Parsonsia sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Pimelea sp.
-  replace: Pimelea sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Pomaderris sp.
-  replace: Pomaderris sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Psydrax sp.
-  replace: Psydrax sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Pultenaea sp.
-  replace: Pultenaea sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Rubus sp.
-  replace: Rubus sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Scholtzia sp.
-  replace: Scholtzia sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Sida sp.
-  replace: Sida sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Syzygium sp.
-  replace: Syzygium sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Tarenna sp.
-  replace: Tarenna sp. [Clarke_2015]
-  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
-  taxonomic_resolution: Genus
-- find: Abutilon oxycarpum f. oxycarpum
-  replace: Abutilon oxycarpum var. oxycarpum
-  reason: match_06. Automatic alignment with synonymous term among accepted canonical
-    names in APC (2022-11-10)
-  taxonomic_resolution: Varietas
 - find: Abutilon oxycarpum forma oxycarpum
   replace: Abutilon oxycarpum
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Acacia deanii
   replace: Acacia deanei
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Acacia deanii ssp deanii
   replace: Acacia deanei subsp. deanei
   reason: match_13_fuzzy. Fuzzy match alignment with infraspecific canonical name
     in APC accepted when notes are ignored (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Acacia holocersea
   replace: Acacia holosericea
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Acacia irrorata x parvipinnula
-  replace: Acacia x [Acacia irrorata x parvipinnula; Clarke_2015]
+  replace: Acacia x [Acacia irrorata x Acacia parvipinnula]
   reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
     genus-level alignment with APC accepted genus (2022-11-10)
   taxonomic_resolution: genus
@@ -426,64 +277,68 @@ taxonomic_updates:
   replace: Acacia macdonnellensis subsp. macdonnellensis
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Acacia mucronata var longifolia
   replace: Acacia mucronata subsp. longifolia
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Acacia myrifolia
   replace: Acacia myrtifolia
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Acacia sp.
+  replace: Acacia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Acacia sp. narrow phyllode (B.R. Maslin 7831)
   replace: Acacia sp. Narrow phyllode (B.R.Maslin 7831)
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Acacia terminalis ssp angustifolia
   replace: Acacia terminalis subsp. angustifolia
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Acacia terminalis subsp. terminalis
   replace: Acacia terminalis
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Albizia lebek
   replace: Albizia lebbeck
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Alectryon diversifolium
   replace: Alectryon diversifolius
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Alectryon subdentata
   replace: Alectryon subdentatus
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Allocasuarina leuhmanii
   replace: Allocasuarina luehmannii
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Allocasuarina muellerana
   replace: Allocasuarina muelleriana
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Amyema cambegi
   replace: Amyema cambagei
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Amyema sp. 1
   replace: Amyema sp. 1 (Alligator; J.Russell-Smith 5448)
   reason: match_19. Automatic alignment with species-level canonical name in APNI
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Amyema sp. 2
   replace: Amyema sp. 2 (Fortescue; M.Trudgen 5358)
   reason: match_19. Automatic alignment with species-level canonical name in APNI
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Amyema sp. indet. 105/22
   replace: Amyema sp. [Amyema sp. indet. 105/22; Clarke_2015]
   reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
@@ -493,76 +348,88 @@ taxonomic_updates:
   replace: Angophora floribunda
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Anodopetalum biglandolosum
   replace: Anodopetalum biglandulosum
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Astroloma conostephoides
   replace: Astroloma conostephioides
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Astroloma sp.
+  replace: Astroloma sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Astrotricha longifolia s.l.
   replace: Astrotricha longifolia
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Atriplex spp.
   replace: Atriplex sp. [Clarke_2015]
   reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
     alignment with `APC accepted` name (2022-11-10)
   taxonomic_resolution: genus
+- find: Baeckea sp.
+  replace: Baeckea sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Banksia marginata GR
   replace: Banksia marginata
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Bauhinia cunninghammii
   replace: Bauhinia cunninghamii
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Billardiera cymposa
   replace: Billardiera cymosa
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Billardiera dummondii
   replace: Billardiera drummondii
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Billardiera longifolia
   replace: Billardiera longiflora
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Boerhavia sp. (Bargara L.Pedley 5382)
   replace: Boerhavia sp. Bargara (L.Pedley 5382)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Boerhavia sp. (St George A.Hill AQ399299)
   replace: Boerhavia sp. St George (A.Hill AQ399299)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Boronia anemonifolia var. anemonifolia
   replace: Boronia anemonifolia subsp. anemonifolia
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Bossiaea foliosa sens lat
   replace: Bossiaea foliosa
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Bossiaea neo-anglica
   replace: Bossiaea neoanglica
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Brachychiton sp.
+  replace: Brachychiton sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Brachyloma moolya
   replace: Brachyloma moolya MS
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Calectasia grandiflora subsp. wheatbelt (A.M. Coates 4315)
   replace: Calectasia grandiflora subsp. Wheatbelt (A.M.Coates 4315)
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Callistemon sp. aff. flavovirens
   replace: Callistemon sp. [Callistemon sp. aff. flavovirens; Clarke_2015]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -571,50 +438,74 @@ taxonomic_updates:
 - find: Callitris acuminatus
   replace: Callitris acuminata
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Callitris endlicheri juvenile
   replace: Callitris endlicheri
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Calothamnus sp.
+  replace: Calothamnus sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
+- find: Calytrix sp.
+  replace: Calytrix sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Capparis lasianthera
   replace: Capparis lasiantha
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Cassinia adunca
   replace: Cassinia x adunca
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-12)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Cassinia sp.
+  replace: Cassinia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Cassinia sp. indet. 79/42
   replace: Cassinia sp. [Cassinia sp. indet. 79/42; Clarke_2015]
   reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
     by APC (2022-11-10)
   taxonomic_resolution: genus
+- find: Cassytha sp.
+  replace: Cassytha sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Casuarina cunninghammiana
   replace: Casuarina cunninghamiana
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Celastrus sp.
+  replace: Celastrus sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
+- find: Chenopodium sp.
+  replace: Chenopodium sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Cinnamonum virens
   replace: Cinnamomum virens
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Coelospermum reticulatus
   replace: Coelospermum reticulatum
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Commersonia brevicata
   replace: Commersonia breviseta
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Conospermum stoechedis
   replace: Conospermum stoechadis
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Conospermum wycherlyi
   replace: Conospermum wycherleyi
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Coprosma juniperina
   replace: Coprosma sp. [Coprosma juniperina; Clarke_2015]
   reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
@@ -624,42 +515,58 @@ taxonomic_updates:
   replace: Corymbia dolichocarpa
   reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
     in `APC known` when everything except first 2 words ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Corymbia maculata-variegata intergrade
   replace: Corymbia maculata
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Corymbia sp.
+  replace: Corymbia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Crotalaria cunninghamii subsp  cunninghamii
   replace: Crotalaria cunninghamii subsp. cunninghamii
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Daphnandra sp.A
   replace: Daphnandra sp. A
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Daviesia quadrilaters
   replace: Daviesia quadrilatera
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Desmodium brachypodium
   replace: Desmodium brachypodum
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Desmodium sp.
+  replace: Desmodium sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
+- find: Dillwynia sp.
+  replace: Dillwynia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Dipteracanthus australasicus subsp  australasicus
   replace: Dipteracanthus australasicus subsp. australasicus
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Dodonaea arnhemicus
   replace: Dodonaea arnhemica
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Dodonaea hispidulus
   replace: Dodonaea hispidula
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Dodonaea sp.
+  replace: Dodonaea sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Dodonaea sp. aff. triquetra
   replace: Dodonaea sp. [Dodonaea sp. aff. triquetra; Clarke_2015]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -669,128 +576,153 @@ taxonomic_updates:
   replace: Drypetes australasica
   reason: match_10_fuzzy. Imprecise fuzzy alignment with known canonical name in APC
     (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Einadia sp.
+  replace: Einadia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Elaeodendron australis var. angustifolia
   replace: Elaeodendron australe var. angustifolia
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Elaeodendron australisvar. australis
   replace: Elaeodendron australe var. australe
   reason: Manual alignment with canonical name of rank `varietas` in APC (Elizabeth
     Wenk, 2022-11-12)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Endiandra crassifolia
   replace: Endiandra crassiflora
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
-- find: Endiandra crassifolia
-  replace: Endiandra crassiflora
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Eremaea sp.
+  replace: Eremaea sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Erythroxylum sp. (Splityard Creek L.Pedley 5360)
   replace: Erythroxylum sp. Splityard Creek (L.Pedley 5360)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Eucalyptus apothalasica
   replace: Eucalyptus apothalassica
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Eucalyptus resiniferasubsp. hemilampra
   replace: Eucalyptus resinifera subsp. hemilampra
   reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
     APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Eucalyptus saligna X botryoides
-  replace: Eucalyptus x [Eucalyptus saligna X botryoides; Clarke_2015]
+  replace: Eucalyptus x [Eucalyptus saligna x Eucalyptus botryoides]
   reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
     genus-level alignment with APC accepted genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp.
+  replace: Eucalyptus sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
   taxonomic_resolution: genus
 - find: Eucalyptus sp. Cattai
   replace: Eucalyptus sp. Cattai (Gregson s.n. 28 Aug 1954)
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Eucalyptus spp.
   replace: Eucalyptus sp. [Clarke_2015]
   reason: match_01. Rewording taxon with ending with `sp.` to indicate a genus-level
     alignment with `APC accepted` name (2022-11-10)
   taxonomic_resolution: genus
 - find: Eucalyptus tenera X suggrandis
-  replace: Eucalyptus x [Eucalyptus tenera X suggrandis; Clarke_2015]
+  replace: Eucalyptus x [Eucalyptus tenera x Eucalyptus suggrandis]
   reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
     genus-level alignment with APC accepted genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Eutaxia sp.
+  replace: Eutaxia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
   taxonomic_resolution: genus
 - find: Flueggea virosa ss. melanthesoides
   replace: Flueggea virosa subsp. melanthesoides
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-12)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
+- find: Gardenia sp.
+  replace: Gardenia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Glochidion ferdenandi var ferdenandi
   replace: Glochidion ferdinandi var. ferdinandi
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Glycine crytoloba
   replace: Glycine cyrtoloba
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Glycine sp. 3
   replace: Glycine sp. 3 (Mitchell Plateau)
   reason: match_19. Automatic alignment with species-level canonical name in APNI
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Glycine sp. 4
   replace: Glycine sp. 4 (Mitchell Plateau)
   reason: match_19. Automatic alignment with species-level canonical name in APNI
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Glycine sp.1
   replace: Glycine sp. 1 (Bonny Hills; R.Pullen 13337)
   reason: match_19. Automatic alignment with species-level canonical name in APNI
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Glycine sp.2
   replace: Glycine sp. 2 (Howard Springs)
   reason: match_19. Automatic alignment with species-level canonical name in APNI
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Glycine sp.A
   replace: Glycine sp. A Kimberley Flora (B.J.Carter 634)
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Glycine varians
   replace: Glycine sp. [Glycine varians; Clarke_2015]
   reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
     by APC (2022-11-10)
   taxonomic_resolution: genus
+- find: Gompholobium sp.
+  replace: Gompholobium sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Gompholobium virgatum  var. virgatum
   replace: Gompholobium virgatum var. virgatum
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-10)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Grevillea friternata
   replace: Grevillea triternata
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Grevillea preisii
   replace: Grevillea preissii
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Hakea decurrens var phys
   replace: Hakea decurrens
   reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
     APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Halgania anagalloides var. Southern (A.E. Orchard 1609)
   replace: Halgania anagalloides var. Southern (A.E.Orchard 1609)
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Harnieria kempeana subsp  kempeana
   replace: Harnieria kempeana subsp. kempeana
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
+- find: Hibbertia sp. Woolaning
+  replace: Hibbertia sp. Woolaning (L.A.Craven 6657)
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-10)
+  taxonomic_resolution: species
 - find: Hibbertia sp. aff.  rufa
   replace: Hibbertia sp. [Hibbertia sp. aff. rufa; Clarke_2015]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -800,22 +732,21 @@ taxonomic_updates:
   replace: Hibbertia sp. Fine pedicels (R.Schodde 83)
   reason: match_12. Automatic alignment with infraspecific canonical name in APC known
     names when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
-- find: Hibbertia sp. Woolaning
-  replace: Hibbertia sp. Woolaning (L.A.Craven 6657)
-  reason: match_14. Automatic alignment with species-level name known by APC when
-    notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Hibiscus heterophyllussubsp. heterophyllus
   replace: Hibiscus heterophyllus subsp. heterophyllus
   reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
     APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
+- find: Hibiscus sp.
+  replace: Hibiscus sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Homoranthus sp. nov.
   replace: Homoranthus sp. [Homoranthus sp. nov.; Clarke_2015]
   reason: Manual match to genus for taxon that can't be match to species (Elizabeth
     Wenk, 2022-11-12)
-  taxonomic_resolution: Genus
+  taxonomic_resolution: genus
 - find: Hovea aff heterophylla
   replace: Hovea sp. [Hovea aff. heterophylla; Clarke_2015]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -825,46 +756,53 @@ taxonomic_updates:
   replace: Hovea sp. 1
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-12)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Hypocalymma sp.
+  replace: Hypocalymma sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Indigofera sp  MacDonnell Ranges (P K Latz 11587) Peter Wilson
   replace: Indigofera sp. MacDonnell Ranges (P.K.Latz 11587)
   reason: match_12. Automatic alignment with infraspecific canonical name in APC known
     names when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Isopogon sp. Fitzgerald River (D.B. Foreman 813)
   replace: Isopogon sp. Fitzgerald River (D.B.Foreman 813)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Isopogon sp. Newdegate (D.B. Foreman 771)
   replace: Isopogon sp. Newdegate (D.B.Foreman 771)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Jacquemontia sp. (Fairview R.W.Johnson 4026)
   replace: Jacquemontia sp. Fairview (R.W.Johnson 4026)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Jasminum didymum ss. racemosa
   replace: Jasminum didymum subsp. racemosum
   reason: match_13_fuzzy. Fuzzy match alignment with infraspecific canonical name
     in APC accepted when notes are ignored (2022-11-12)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
+- find: Kunzea sp
+  replace: Kunzea sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Lagunaria patersonii ss. bracteata
   replace: Lagunaria patersonii var. bracteata
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-12)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Leptospermum juniperinium
   replace: Leptospermum juniperinum
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Leptospermum polygalifolia
   replace: Leptospermum polygalifolium
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
-- find: Leptospermum sp. aff. grandifolium
-  replace: Leptospermum sp. [Leptospermum sp. aff. grandifolium; Clarke_2015]
-  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
-    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: species
+- find: Leptospermum sp.
+  replace: Leptospermum sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
   taxonomic_resolution: genus
 - find: Leptospermum spp aff grandifolium
   replace: Leptospermum sp. [Leptospermum sp. aff. grandifolium; Clarke_2015]
@@ -874,87 +812,81 @@ taxonomic_updates:
 - find: Leptsopermum microcarpum
   replace: Leptospermum microcarpum
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Leucopogon compressicarpus
   replace: Leucopogon compressicarpus MS
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Leucopogon lanceolatus var. lanceolatus
   replace: Leucopogon lanceolatus
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Leucopogon neo-anglicus
   replace: Leucopogon neoanglicus
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
-- find: Leucopogon sp. aff. appressus
-  replace: Leucopogon sp. [Leucopogon sp. aff. appressus; Clarke_2015]
-  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
-    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: species
+- find: Leucopogon sp.
+  replace: Leucopogon sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
+- find: Leucopogon sp. 'Hairy'
+  replace: Leucopogon sp. [Leucopogon sp. 'Hairy'; Clark_2015]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
   taxonomic_resolution: genus
 - find: Leucopogon sp. Bifid Eneabba
   replace: Leucopogon sp. Bifid Eneabba (M.Hislop 1927)
   reason: match_12. Automatic alignment with infraspecific canonical name in APC known
     names when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Leucopogon sp. Coujinup (M.A. Burgman 1085)
   replace: Leucopogon sp. Coujinup (M.A.Burgman 1085)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
-- find: Leucopogon sp. 'Hairy'
-  replace: Leucopogon sp. [Leucopogon sp. 'Hairy'; Clark_2015]
-  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
-    Wenk, 2022-11-12)
-  taxonomic_resolution: Genus
+  taxonomic_resolution: species
 - find: Leucopogon sp. Lake King (A.J.G. Wilson 65)
   replace: Leucopogon sp. Lake King (A.J.G.Wilson 65)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Leucopogon sp. Wheatbelt (S. Murray 257)
+  replace: Leucopogon sp. Wheatbelt (S.Murray 257)
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
+  taxonomic_resolution: species
+- find: Leucopogon sp. aff. appressus
+  replace: Leucopogon sp. [Leucopogon sp. aff. appressus; Clarke_2015]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Leucopogon sp. lesueur
   replace: Leucopogon sp. Lesueur (B.Evans 530)
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
-- find: Leucopogon sp. Wheatbelt (S. Murray 257)
-  replace: Leucopogon sp. Wheatbelt (S.Murray 257)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Lissanthe strigosa ssp subuluta
   replace: Lissanthe strigosa subsp. subulata
   reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
     APC (2022-11-10)
-  taxonomic_resolution: Subspecies
-- find: Lissanthe strigosa subsp. subuluta
-  replace: Lissanthe strigosa subsp. subulata
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Livistona humilis X inermis
-  replace: Livistona x [Livistona humilis X inermis; Clarke_2015]
-  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
-    genus-level alignment with APC accepted genus (2022-11-10)
-  taxonomic_resolution: genus
-- find: Livistona sp. [Livistona humilis x Livistona inermis hybrid]
-  replace: Livistona x [Livistona sp. [Livistona humilis x Livistona inermis hybrid];
-    Clarke_2015]
+  replace: Livistona x [Livistona humilis x Livistona inermis]
   reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
     genus-level alignment with APC accepted genus (2022-11-10)
   taxonomic_resolution: genus
 - find: Lophostemon suaveolans
   replace: Lophostemon suaveolens
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Macrozamia  pauli-guilielmi subsp. plurinervia
   replace: Macrozamia pauli-guilielmi subsp. plurinervia
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Maireana decalvens
   replace: Maireana decalvans
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Malus X domestica
-  replace: Malus x [Malus X domestica; Clarke_2015]
+  replace: Malus x [Malus x domestica]
   reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
     genus-level alignment with APC accepted genus (2022-11-10)
   taxonomic_resolution: genus
@@ -962,57 +894,56 @@ taxonomic_updates:
   replace: Melaleuca pallida
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Melaleuca scabrum
   replace: Melaleuca scabra
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
-- find: Melaleuca sp. aff. comboynensis
-  replace: Melaleuca sp. [Melaleuca sp. aff. comboynensis; Clarke_2015]
-  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
-    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
-  taxonomic_resolution: genus
-- find: Melaleuca sp. aff. comboynensis
-  replace: Melaleuca sp. [Melaleuca sp. aff. comboynensis; Clarke_2015]
-  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
-    to indicate a genus-level alignment with `APC accepted` genus (2022-11-22)
+  taxonomic_resolution: species
+- find: Melaleuca sp.
+  replace: Melaleuca sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
   taxonomic_resolution: genus
 - find: Melaleuca sp. 'pungent TH02'
   replace: Melaleuca sp. [Melaleuca sp. 'pungent TH02'; Clarke_2015]
   reason: Manual match to genus for taxon that can't be match to species (Elizabeth
     Wenk, 2022-11-12)
-  taxonomic_resolution: Genus
+  taxonomic_resolution: genus
+- find: Melaleuca sp. aff. comboynensis
+  replace: Melaleuca sp. [Melaleuca sp. aff. comboynensis; Clarke_2015]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
+  taxonomic_resolution: genus
 - find: Melicytus dentata
   replace: Melicytus dentatus
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Microcorys sp. stellate (A. Strid 21885)
   replace: Microcorys sp. stellate (A.Strid 21885)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Micromyrtus triptycha subsp. triptycha
   replace: Micromyrtus triptycha
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-12)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Monotoca albens MS
   replace: Monotoca albens
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Monotoca eliptica
   replace: Monotoca elliptica
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Monotoca procumbens
   replace: Moonia procumbens
   reason: match_10_fuzzy. Imprecise fuzzy alignment with known canonical name in APC
     (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Nematolepis squameum ssp squameum
   replace: Nematolepis squamea subsp. squamea
   reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
     Wenk, 2022-11-12)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Olearia sp. aff. elliptica
   replace: Olearia sp. [Olearia sp. aff. elliptica; Clarke_2015]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -1027,15 +958,19 @@ taxonomic_updates:
   replace: Ozothamnus cupressoides MS
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Parsonsia sp.
+  replace: Parsonsia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Passiflora aurantiavar. aurantia
   replace: Passiflora aurantia var. aurantia
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Persoonia fastigata
   replace: Persoonia fastigiata
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Persoonia hybrid sp. indet. 121/46
   replace: Persoonia sp. [Persoonia hybrid sp. indet. 121/46; Clarke_2015]
   reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
@@ -1045,15 +980,15 @@ taxonomic_updates:
   replace: Petrophile squamata subsp. Northern (J.Monks 40)
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Phebalium sqamulosum subsp alpinum
   replace: Phebalium squamulosum subsp. alpinum
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Phyllanthus gunii
   replace: Phyllanthus gunnii
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Phyllanthus sp. 3
   replace: Phyllanthus sp. [Phyllanthus sp. 3; Clarke_2015]
   reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
@@ -1067,38 +1002,42 @@ taxonomic_updates:
 - find: Phyllota phyllicoides
   replace: Phyllota phylicoides
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pimelea drupaceae
   replace: Pimelea drupacea
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pimelea neo-anglica
   replace: Pimelea neoanglica
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Pimelea sp.
+  replace: Pimelea sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Pittosporum pauciflorus
   replace: Citriobatus pauciflorus
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
-  taxonomic_resolution: Species
-- find: Pittosporum pauciflorus
-  replace: Pittosporum parviflorum
-  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Polyscias sambucifolius subsp. A
   replace: Polyscias sambucifolia subsp. A
   reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
     Wenk, 2022-11-12)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Pomaderris elliptica subsp. elliptica
   replace: Pomaderris elliptica var. elliptica
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
+- find: Pomaderris sp.
+  replace: Pomaderris sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Pomaderris species C
   replace: Pomaderris sp. C
   reason: match_10_fuzzy. Imprecise fuzzy alignment with known canonical name in APC
     (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Prostanthera sp. aff. howelliae
   replace: Prostanthera sp. [Prostanthera sp. aff. howelliae; Clarke_2015]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -1113,110 +1052,138 @@ taxonomic_updates:
   replace: Psychotria daphnoides f. 'large-leaved'
   reason: match_10_fuzzy. Imprecise fuzzy alignment with known canonical name in APC
     (2022-11-10)
-  taxonomic_resolution: Forma
+  taxonomic_resolution: form
 - find: Psychotria sp. (Shute Harbour L.J.Webb+ 7916)
   replace: Psychotria sp. Shute Harbour (L.J.Webb+ 7916)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Psydrax buxifolium
   replace: Psydrax odorata subsp. buxifolia
   reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
     Wenk, 2022-11-12)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Psydrax odoratum
   replace: Psydrax odorata
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Psydrax oleifolium
   replace: Psydrax oleifolia
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Psydrax sp.
+  replace: Psydrax sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Pultenaea parrisiae ssp parrisiae
   replace: Pultenaea parrisiae subsp. parrisiae
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
+- find: Pultenaea sp.
+  replace: Pultenaea sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Rubus fruticosa species agg.
   replace: Rubus fruticosus
   reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
     in `APC known` when everything except first 2 words ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Rubus moluccanussubsp. moluccanus
   replace: Rubus moluccanus var. moluccanus
   reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
     APC (2022-11-10)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
+- find: Rubus sp.
+  replace: Rubus sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Sarcostemma viminale subsp  australe
   replace: Sarcostemma viminale subsp. australe
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
+- find: Scholtzia sp.
+  replace: Scholtzia sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Senna artemisioides nothosubsp  artemisioides
   replace: Senna artemisioides subsp. x artemisioides
   reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
     Wenk, 2022-11-12)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Senna artemisioides nothosubsp  coriacea
   replace: Senna artemisioides subsp. x coriacea
   reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
     Wenk, 2022-11-12)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Senna artemisioides nothosubsp  sturtii
   replace: Senna artemisioides subsp. x sturtii
   reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
     Wenk, 2022-11-12)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Senna artemisioides subsp  petiolaris
   replace: Senna artemisioides subsp. x petiolaris
   reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
     when notes are ignored (2022-11-12)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Senna artemisioides subsp. petiolaris
   replace: Senna artemisioides subsp. x petiolaris
   reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
     when notes are ignored (2022-11-12)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Sida (Indet
   replace: Sida sp. [Sida (Indet; Clarke_2015]
   reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
     by APC (2022-11-10)
   taxonomic_resolution: genus
+- find: Sida sp.
+  replace: Sida sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Solanum betacea
   replace: Solanum betaceum
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Solanum orbiculatum subsp  macrophyllum
   replace: Solanum orbiculatum subsp. macrophyllum
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Solanum orbiculatum subsp  orbiculatum
   replace: Solanum orbiculatum subsp. orbiculatum
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Spyridium vexiliferum
   replace: Spyridium vexilliferum
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Syzygium eucalyptoides subsp.bleeseri
   replace: Syzygium eucalyptoides subsp. bleeseri
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Syzygium eucalyptoides subsp.eucalyptoides
   replace: Syzygium eucalyptoides subsp. eucalyptoides
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
+- find: Syzygium sp.
+  replace: Syzygium sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
+- find: Tarenna sp.
+  replace: Tarenna sp. [Clarke_2015]
+  reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
+  taxonomic_resolution: genus
 - find: Tasmannia xerophylla
   replace: Tasmannia xerophila
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Tetratheca ciliatum
   replace: Tetratheca ciliata
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Triumfetta sp.shrubby
   replace: Triumfetta sp. [Triumfetta sp.shrubby; Clarke_2015]
   reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
@@ -1241,12 +1208,12 @@ taxonomic_updates:
   replace: Zieria smithii subsp. A
   reason: match_13_fuzzy. Fuzzy match alignment with infraspecific canonical name
     in APC known when notes are ignored (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Zieria arborescenssubsp. arborescens
   replace: Zieria arborescens subsp. arborescens
   reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
     APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Zieria sp. aff. aspalathoides
   replace: Zieria sp. [Zieria sp. aff. aspalathoides; Clarke_2015]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -1261,11 +1228,11 @@ taxonomic_updates:
   replace: Zieria sp. [Zieria sp. nov. NSW escarpment; Clarke_2015]
   reason: Manual match to genus for taxon that can't be match to species (Elizabeth
     Wenk, 2022-11-12)
-  taxonomic_resolution: Genus
+  taxonomic_resolution: genus
 - find: Zygophyllum apiculata
   replace: Zygophyllum apiculatum
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 exclude_observations:
 - variable: taxon_name
   find: Cryptandra/Mirbelia sp.

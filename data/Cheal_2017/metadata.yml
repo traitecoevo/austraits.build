@@ -29,22 +29,22 @@ contributors:
     given_name: Michele
     ORCID: 0000-0001-6739-505X
     affiliation: Department of Environment, Land, Water and Planning, Victoria, Australia
-  austraits_curators: Elizabeth Wenk
+  dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:        '
+  custom_R_code:            '
     data %>%
       mutate(
         resprouting_capacity_juvenile = `PERVEG V, U, W, N, X (F=inadequate data)`,
         resprouting_capacity = `PERVEG V, U, W, N, X (F=inadequate data)`,
         seedbank_longevity_categorical = ifelse(`PERSEED D, S, G, C, Z (F=inadequate data)` %in% c("S","G","C","D"),
-          `PERSEED D, S, G, C, Z (F=inadequate data)`, NA),      
+          `PERSEED D, S, G, C, Z (F=inadequate data)`, NA),
         seedbank_longevity = ifelse(`PERSEED D, S, G, C, Z (F=inadequate data)` %in% c("S","G","C"),
           `PERSEED D, S, G, C, Z (F=inadequate data)`, NA),
-        fire_cued_seeding = ifelse(`PERSEED D, S, G, C, Z (F=inadequate data)` %in% c("S","G","C"), 
-          "fire_cued_seeding",NA), 
+        fire_cued_seeding = ifelse(`PERSEED D, S, G, C, Z (F=inadequate data)` %in% c("S","G","C"),
+          "fire_cued_seeding",NA),
         fire_cued_seeding = ifelse(`T, I, R, M, K (F=inadequate data)` %in% c("I","T"),
-          "fire_cued_seeding",fire_cued_seeding), 
+          "fire_cued_seeding",fire_cued_seeding),
         fire_cued_seeding = ifelse(`PERSEED D, S, G, C, Z (F=inadequate data)` %in% c("Z"),
           "no_fire_cued_seeding",fire_cued_seeding),
         fire_cued_seeding = ifelse(`T, I, R, M, K (F=inadequate data)` %in% c("R","M"),
@@ -53,7 +53,7 @@ dataset:
       group_by(Species) %>%
         mutate(across(c(`GEOPHYTE Y, N`), replace_duplicates_with_NA)) %>%
       ungroup()
-  '
+    '
   collection_date: unknown/2017
   taxon_name: Species
   description: Compilation of fire response and ecological attribute data for many
@@ -208,7 +208,8 @@ traits:
   methods: compilation from diverse sources and expert opinion; this trait collapses
     the data recorded under "PERVEG" (perennial vegetation) into the binary "fire-killed"
     vs "resprouts". More detailed information on plant fire response that is coded
-    in "PERVEG" is now included under `resprouting_capacity_juvenile`. How a fire affects the "maturity status" of a plant is not mapped into AusTraits.
+    in "PERVEG" is now included under `resprouting_capacity_juvenile`. How a fire
+    affects the "maturity status" of a plant is not mapped into AusTraits.
 - var_in: T, I, R, M, K (F=inadequate data)
   unit_in: .na
   trait_name: seedling_establishment_conditions
@@ -421,9 +422,6 @@ substitutions:
   find: F
   replace: .na
 - trait_name: post_fire_recruitment
-  find: Z
-  replace: .na
-- trait_name: post_fire_recruitment
   find: perveg
   replace: .na
 - trait_name: resprouting_capacity_juvenile
@@ -442,21 +440,26 @@ substitutions:
   find: perseed
   replace: .na
 taxonomic_updates:
+- find: Acacia X grayana
+  replace: Acacia x grayana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
 - find: Acacia longifolia s.l.
   replace: Acacia longifolia
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Acaena X anserovina
+  replace: Acaena x anserovina
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
 - find: Acaena ovina
   replace: Acaena x ovina
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-12)
-  taxonomic_resolution: Species
-- find: Agrostis aff. hiemalis
-  replace: Agrostis sp. [Agrostis aff. hiemalis; Cheal_2017]
-  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
-    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
-  taxonomic_resolution: genus
+  taxonomic_resolution: species
 - find: Agrostis spp. agg. aff. hiemalis
   replace: Agrostis sp. [Agrostis sp. agg. aff. hiemalis; Cheal_2017]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -466,27 +469,27 @@ taxonomic_updates:
   replace: Allocasuarina pusilla
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Amyema pendula subsp. pendula (s.s.)
   replace: Amyema pendula subsp. pendula
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Arthropodium milleflorum s.l.
   replace: Arthropodium milleflorum
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Arthropodium milleflorum s.s.
   replace: Arthropodium milleflorum
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Arthropodium sp. 1 (robust glaucous)
   replace: Arthropodium sp. 1
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Arthropodium sp. 3 (aff. strictum)
   replace: Arthropodium sp. [Arthropodium sp. 3 (aff. strictum); Cheal_2017]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -496,12 +499,17 @@ taxonomic_updates:
   replace: Brachyscome aff. formosa 'entity 2'
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Bromus catharticus var. catharticus
   replace: Bromus catharticus
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-12)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Caladenia X variabilis
+  replace: Caladenia x variabilis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
 - find: Caladenia aff. catenata (South Gippsland)
   replace: Caladenia sp. [Caladenia aff. catenata (South Gippsland); Cheal_2017]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -521,12 +529,12 @@ taxonomic_updates:
   replace: Caladenia carnea
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Caladenia carnea sensu Willis (1970)
   replace: Caladenia carnea
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Caladenia sp. aff. fragrantissima (Central Victoria)
   replace: Caladenia sp. [Caladenia sp. aff. fragrantissima (Central Victoria); Cheal_2017]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -536,7 +544,12 @@ taxonomic_updates:
   replace: Caladenia testacea
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Chiloglottis X pescottiana
+  replace: Chiloglottis x pescottiana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
 - find: Chiloglottis aff. valida (Alpine)
   replace: Chiloglottis sp. [Chiloglottis aff. valida (Alpine); Cheal_2017]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -551,12 +564,17 @@ taxonomic_updates:
   replace: Commersonia breviseta
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Convolvulus erubescens spp. agg.
   replace: Convolvulus erubescens
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Corybas X miscellus
+  replace: Corybas x miscellus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
 - find: Corybas sp. aff. diemenicus (Wilsons Promontory)
   replace: Corybas sp. [Corybas sp. aff. diemenicus (Wilsons Promontory); Cheal_2017]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -566,32 +584,52 @@ taxonomic_updates:
   replace: Craspedia glauca
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-12)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Crocosmia X crocosmiiflora
+  replace: Crocosmia x crocosmiiflora
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
+- find: Cyathea X marcescens
+  replace: Cyathea x marcescens
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
 - find: Dianella longifolia var. longifolia s.l.
   replace: Dianella longifolia var. longifolia
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Dianella revoluta s.l.
   replace: Dianella revoluta
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Dianella revoluta var. revoluta s.l.
   replace: Dianella revoluta var. revoluta
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Dianella tasmanica s.l.
   replace: Dianella tasmanica
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Dichelachne sciurea spp. agg.
   replace: Dichelachne sciurea
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Diuris X fastidiosa
+  replace: Diuris x fastidiosa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
+- find: Diuris X palachila
+  replace: Diuris x palachila
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
 - find: Diuris aff. pardina (Western Goldfields)
   replace: Diuris sp. [Diuris aff. pardina (Western Goldfields); Cheal_2017]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -601,91 +639,96 @@ taxonomic_updates:
   replace: Diuris lanceolata
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Diuris pedunculata s.s.
   replace: Diuris pedunculata
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Drosera peltata s.l.
   replace: Drosera peltata
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Eucalyptus odorata s.l.
   replace: Eucalyptus odorata
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Eucalyptus radiata s.l.
   replace: Eucalyptus radiata
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Hordeum murinum s.l.
   replace: Hordeum murinum
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Kunzea ericoides spp. agg.
   replace: Kunzea ericoides
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Leucochrysum albicans subsp. albicans var. albicans
   replace: Leucochrysum albicans var. albicans
   reason: match_12. Automatic alignment with infraspecific canonical name in APC known
     names when notes are ignored (2022-11-10)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Leucochrysum albicans subsp. albicans var. tricolor
   replace: Leucochrysum albicans subsp. tricolor
   reason: Manual alignment with canonical name with rank `subspecies` in APC (Elizabeth
     Wenk, 2022-11-12)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Leucopogon lanceolatus var. lanceolatus
   replace: Leucopogon lanceolatus
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Mentha satureoides
   replace: Mentha satureioides
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Microseris scapigera spp. agg.
   replace: Microseris scapigera
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Muehlenbeckia diclina subsp. diclina
   replace: Muehlenbeckia diclina
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Persoonia X lucida
+  replace: Persoonia x lucida
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
 - find: Pinus radiata var. binata
   replace: Pinus radiata
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pinus radiata var. radiata
   replace: Pinus radiata
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Podolepis jaceoides s.l.
   replace: Podolepis jaceoides
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Podolepis jaceoides s.s.
   replace: Podolepis jaceoides
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Potamogeton tricarinatus s.l.
   replace: Potamogeton tricarinatus
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Prasophyllum aff. frenchii (Wilsons Promontory)
   replace: Prasophyllum sp. [Prasophyllum aff. frenchii (Wilsons Promontory); Cheal_2017]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -715,32 +758,47 @@ taxonomic_updates:
   replace: Prasophyllum alpinum
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Prasophyllum odoratum s.l.
   replace: Prasophyllum odoratum
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Prasophyllum patens s.l.
   replace: Prasophyllum patens
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Prasophyllum pyriforme s.l.
   replace: Prasophyllum pyriforme
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Prasophyllum pyriforme s.s.
   replace: Prasophyllum pyriforme
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Prasophyllum suttonii s.s.
   replace: Prasophyllum suttonii
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Pterostylis X aenigma
+  replace: Pterostylis x aenigma
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
+- find: Pterostylis X ingens
+  replace: Pterostylis x ingens
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
+- find: Pterostylis X toveyana
+  replace: Pterostylis x toveyana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
 - find: Pterostylis aff. aciculiformis (Beechworth)
   replace: Pterostylis sp. [Pterostylis aff. aciculiformis (Beechworth); Cheal_2017]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -755,52 +813,52 @@ taxonomic_updates:
   replace: Pterostylis alata
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pterostylis alpina s.l.
   replace: Pterostylis alpina
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pterostylis alpina s.s.
   replace: Pterostylis alpina
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pterostylis biseta s.l.
   replace: Pterostylis biseta
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pterostylis cucullata (coastal form)
   replace: Pterostylis cucullata
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pterostylis cucullata (montane form)
   replace: Pterostylis cucullata
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pterostylis falcata s.l.
   replace: Pterostylis falcata
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pterostylis falcata s.s.
   replace: Pterostylis falcata
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pterostylis longifolia s.l.
   replace: Pterostylis longifolia
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pterostylis plumosa s.l.
   replace: Pterostylis plumosa
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pterostylis sp. aff. boormanii (Beechworth)
   replace: Pterostylis sp. [Pterostylis sp. aff. boormanii (Beechworth); Cheal_2017]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -811,78 +869,78 @@ taxonomic_updates:
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
     to indicate a genus-level alignment with `APC accepted` genus (2022-11-22)
   taxonomic_resolution: genus
+- find: Rubus X novus
+  replace: Rubus x novus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
 - find: Rubus fruticosus spp. agg.
   replace: Rubus fruticosus
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Rytidosperma caespitosa
   replace: Rytidosperma caespitosum
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Rytidosperma carphoidesum
   replace: Rytidosperma carphoides
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Rytidosperma setaceium
   replace: Rytidosperma setaceum
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Sclerolaena X caput-casuarii
+  replace: Sclerolaena x [Sclerolaena X caput-casuarii; Cheal_2017]
+  reason: Exact match to APC genus. Taxon name includes ' x ' indicating a hybrid
+    taxon and taxon can only be aligned to genus-rank (2023-11-02)
+  taxonomic_resolution: genus
 - find: Sclerolaena diacantha (erect shrubby form)
   replace: Sclerolaena diacantha
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Sclerolaena diacantha (prostrate herbaceous form)
   replace: Sclerolaena diacantha
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Senecio X orarius
+  replace: Senecio x orarius
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
+- find: Spyridium X ramosissimum
+  replace: Spyridium x ramosissimum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
 - find: Taraxacum officinale spp. agg.
   replace: Taraxacum officinale
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
-- find: Thelymitra aff. ixioides (Western Victoria)
-  replace: Thelymitra sp. [Thelymitra aff. ixioides (Western Victoria); Cheal_2017]
-  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
-    to indicate a genus-level alignment with `APC accepted` genus (2022-11-22)
-  taxonomic_resolution: genus
-- find: Thelymitra antennifera x gregaria
-  replace: Thelymitra x [Thelymitra antennifera x gregaria; Cheal_2017]
-  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
-    genus-level alignment with APC accepted genus (2022-11-10)
-  taxonomic_resolution: genus
-- find: Thelymitra antennifera x luteocilium
-  replace: Thelymitra x [Thelymitra antennifera x luteocilium; Cheal_2017]
-  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
-    genus-level alignment with APC accepted genus (2022-11-10)
-  taxonomic_resolution: genus
-- find: Thelymitra ixioides s.l.
-  replace: Thelymitra ixioides
-  reason: match_06. Automatic alignment with synonymous term among accepted canonical
-    names in APC (2022-11-10)
-  taxonomic_resolution: Species
-- find: Thelymitra ixioides s.s.
-  replace: Thelymitra ixioides
-  reason: match_06. Automatic alignment with synonymous term among accepted canonical
-    names in APC (2022-11-10)
-  taxonomic_resolution: Species
-- find: Thelymitra media s.l.
-  replace: Thelymitra media
-  reason: match_06. Automatic alignment with synonymous term among accepted canonical
-    names in APC (2022-11-10)
-  taxonomic_resolution: Species
-- find: Thelymitra media s.s.
-  replace: Thelymitra media
-  reason: match_06. Automatic alignment with synonymous term among accepted canonical
-    names in APC (2022-11-10)
-  taxonomic_resolution: Species
-- find: Thelymitra nuda-pauciflora complex
-  replace: Thelymitra sp. [Thelymitra nuda - Thelymitra pauciflora complex; Cheal_2017]
-  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
-    Wenk, 2022-11-12)
-  taxonomic_resolution: Genus
+  taxonomic_resolution: species
+- find: Thelymitra X chasmogama
+  replace: Thelymitra x chasmogama
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
+- find: Thelymitra X irregularis
+  replace: Thelymitra x irregularis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
+- find: Thelymitra X macmillanii
+  replace: Thelymitra x macmillanii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
+- find: Thelymitra X merraniae
+  replace: Thelymitra x merraniae
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
 - find: Thelymitra X truncata complex
   replace: Thelymitra x [Thelymitra X truncata complex; Cheal_2017]
   reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
@@ -892,30 +950,70 @@ taxonomic_updates:
   replace: Thelymitra x truncata
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
+- find: Thelymitra aff. ixioides (Western Victoria)
+  replace: Thelymitra sp. [Thelymitra aff. ixioides (Western Victoria); Cheal_2017]
+  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
+    to indicate a genus-level alignment with `APC accepted` genus (2022-11-22)
+  taxonomic_resolution: genus
+- find: Thelymitra antennifera x gregaria
+  replace: Thelymitra x [Thelymitra antennifera x Thelymitra gregaria]
+  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
+    genus-level alignment with APC accepted genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Thelymitra antennifera x luteocilium
+  replace: Thelymitra x [Thelymitra antennifera x Thelymitra luteocilium]
+  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
+    genus-level alignment with APC accepted genus (2022-11-10)
+  taxonomic_resolution: genus
+- find: Thelymitra ixioides s.l.
+  replace: Thelymitra ixioides
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: species
+- find: Thelymitra ixioides s.s.
+  replace: Thelymitra ixioides
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: species
+- find: Thelymitra media s.l.
+  replace: Thelymitra media
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: species
+- find: Thelymitra media s.s.
+  replace: Thelymitra media
+  reason: match_06. Automatic alignment with synonymous term among accepted canonical
+    names in APC (2022-11-10)
+  taxonomic_resolution: species
+- find: Thelymitra nuda-pauciflora complex
+  replace: Thelymitra sp. [Thelymitra nuda - Thelymitra pauciflora complex; Cheal_2017]
+  reason: Manual match to genus for taxon that can't be match to species (Elizabeth
+    Wenk, 2022-11-12)
+  taxonomic_resolution: genus
 - find: Viola hederacea sensu Willis (1972)
   replace: Viola hederacea
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-12)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Viola sieberiana spp. agg.
   replace: Viola sieberiana
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Vittadinia dissecta s.s.
   replace: Vittadinia dissecta
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Walwalleya proluta
   replace: Walwhalleya proluta
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Xerochrysum leucopsideum
   replace: Helichrysum leucopsideum
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 exclude_observations:
 - variable: taxon_name
   find: Sphagnum subsecundum, Sphagnum cristatum

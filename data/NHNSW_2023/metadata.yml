@@ -22,13 +22,14 @@ contributors:
       and Environmental Sciences, UNSW Sydney, Australia
     additional_role: .na
     notes: Responsible for extracting data from online resource
-  austraits_curators: Elizabeth Wenk
+  dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code:     '
+  custom_R_code:       '
     data %>%
       filter(!is.na(taxon_name)) %>%
       filter(str_detect(taxon_name, " ")) %>%
+      filter(!str_detect(taxon_name, "Rochfordii")) %>%
       filter(!category %in% c("pappus")) %>%
       mutate(
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "semi-orbicular", "orbicular"), trait_value),
@@ -59,7 +60,7 @@ dataset:
         entity_measured = ifelse(category %in% c("submerged_leaf", "submerged_lamina", "submerged_leaves","submerged_leaves_blade", "submerged_blade"), "submerged_leaf", entity_measured),
         entity_measured = ifelse(category %in% c("sterile_leaf", "sterile_lamina", "sterile_fronds", "sterile_leaves"), "sterile_leaf", entity_measured),
         entity_measured = ifelse(category %in% c("fertile_leaf", "fertile_fronds", "fertile_lamina", "fertile_frond", "fertile_leaves"), "fertile_leaf", entity_measured),
-        entity_measured = ifelse(category %in% c("leaflets", "trifoliate_leaves", "laminae", "leaflet", "lateral_leaflets", "terminal_leaflets", "simple_leaves_and_leaflets",  "terminal_leaflets_simple_leaves", "leaves_simple_leaflets", "leafletlamina", "terminal_leaflet", "lateral_leaflet" , "basal_leaflets", "sterile_leaflets", "fertile_leaflets", "upper_leaflets", "lower_leaflets", "segmented_leaves", "floating_leaflets", "primary_leaflets", "secondary_leaflets", "submerged_leaflets"), "leaflet", entity_measured),        
+        entity_measured = ifelse(category %in% c("leaflets", "trifoliate_leaves", "laminae", "leaflet", "lateral_leaflets", "terminal_leaflets", "simple_leaves_and_leaflets",  "terminal_leaflets_simple_leaves", "leaves_simple_leaflets", "leafletlamina", "terminal_leaflet", "lateral_leaflet" , "basal_leaflets", "sterile_leaflets", "fertile_leaflets", "upper_leaflets", "lower_leaflets", "segmented_leaves", "floating_leaflets", "primary_leaflets", "secondary_leaflets", "submerged_leaflets"), "leaflet", entity_measured),
         entity_measured = ifelse(category %in% c("pinnule", "pinnules", "secondary_pinnae", "longest_secondary_pinnae"), "secondary_pinnae", entity_measured),
         entity_measured = ifelse(category %in% c("tertiary_pinnae"), "tertiary_pinnae", entity_measured),
         entity_measured = ifelse(category %in% c("quaternary_pinnae"), "quaternary_pinnae", entity_measured),
@@ -89,7 +90,7 @@ dataset:
         entity_measured = ifelse(category %in% c("disc_achenes"), "disc_achenes", entity_measured),
         entity_measured = ifelse(category %in% c("ray_achenes"), "ray_achenes", entity_measured),
         entity_measured = ifelse(category %in% c("valve", "valves"), "valve", entity_measured),
-        entity_measured = ifelse(category %in% c("pappus"), "pappus", entity_measured),      
+        entity_measured = ifelse(category %in% c("pappus"), "pappus", entity_measured),
         entity_measured = ifelse(category %in% c("capsule", "silicula", "nut", "utricles", "pyrenes", "berry", "achenes"), "fruit", entity_measured),
       )  %>%
       arrange(category) %>%
@@ -98,12 +99,11 @@ dataset:
       group_by(taxon_name, trait_name, entity_measured, value_type) %>%
         mutate(observation_number = row_number()) %>%
       ungroup()
-  '
+    '
   collection_date: unknown/2022
   taxon_name: taxon_name
   trait_name: trait_name
   value: trait_value
-  value_type: value_type
   measurement_remarks: measurement_remarks
   description: Plant growth form data extracted from the NT Flora Online
   basis_of_record: literature
@@ -129,7 +129,7 @@ dataset:
 locations: .na
 contexts:
 - context_property: trait scoring method
-  category: method
+  category: method_context
   var_in: inferred
   values:
   - value: scored from text
@@ -145,48 +145,17 @@ contexts:
   - value: inferred_from_taxonomy
     description: Trait value inferred from a higher level taxon description.
 - context_property: entity measured
-  category: entity_context
+  category: method_context
   var_in: entity_measured
-  values:
-  - value: unknown
-  - value: leaflet
-  - value: pinnae
-  - value: all
-  - value: fruit
-  - value: infructescence
-  - value: valve
-  - value: female_cones
-  - value: disc_achenes
-  - value: ray_achenes
-  - value: leaf
-  - value: fertile_leaf
-  - value: sterile_leaf
-  - value: cauline_leaf
-  - value: basal_leaf
-  - value: upper_leaf
-  - value: stem_leaf
-  - value: basal_pinnae
-  - value: phyllode
-  - value: cladode
-  - value: fertile_pinnule
-  - value: sterile_pinnule
-  - value: lower_leaf
-  - value: lateral_leaf
-  - value: emergent_leaf
-  - value: submerged_leaf
-  - value: upper_pinnae
-  - value: scale_leaf
 - context_property: replicate observations
-  category: temporal
+  category: temporal_context
   var_in: observation_number
-  values:
-  - value: 1
-  - value: 2
 traits:
 - var_in: fruit_colour
   unit_in: .na
   trait_name: fruit_colour
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: When specified in the taxon description, only the colours of the fruit
@@ -196,6 +165,7 @@ traits:
   unit_in: .na
   trait_name: fruit_dehiscence
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as dehiscent from a variety of terms in the text including
@@ -204,6 +174,7 @@ traits:
   unit_in: .na
   trait_name: fruit_type
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing a fruit type based on the presence of terms
@@ -212,6 +183,7 @@ traits:
   unit_in: .na
   trait_name: root_system_type
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as "taproot_present taproot_not_present" if the taproot
@@ -220,6 +192,7 @@ traits:
   unit_in: .na
   trait_name: storage_organ
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing these storage organs if mentioned in the
@@ -228,6 +201,7 @@ traits:
   unit_in: .na
   trait_name: seed_shape
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: There were a wide variety of terms used to describe seed shapes across
@@ -237,6 +211,7 @@ traits:
   unit_in: .na
   trait_name: seed_surface_reflectivity
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as as reflective if described as shiny or reflective in
@@ -245,6 +220,7 @@ traits:
   unit_in: .na
   trait_name: seed_surface_hairs
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing seed hairs if any portion of the seed surface
@@ -253,6 +229,7 @@ traits:
   unit_in: .na
   trait_name: seed_surface_texture
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: There were a wide variety of terms used to describe seed textures across
@@ -262,6 +239,7 @@ traits:
   unit_in: .na
   trait_name: leaf_compoundness
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Leaves of taxa were scored as simple or compound from the presence of these
@@ -271,6 +249,7 @@ traits:
   unit_in: .na
   trait_name: leaf_glaucousness
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as "glaucous non_glaucous" if the word "glaucous" described
@@ -279,6 +258,7 @@ traits:
   unit_in: .na
   trait_name: leaf_lobation
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing lobed leaves from mentions of leaf lobes
@@ -289,6 +269,7 @@ traits:
   unit_in: .na
   trait_name: leaf_pendulousness
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as "pendulous not_pendulous" if two leaf states were mentioned
@@ -297,6 +278,7 @@ traits:
   unit_in: .na
   trait_name: leaf_arrangement
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing a particular leaf arrangement if mentioned
@@ -306,6 +288,7 @@ traits:
   unit_in: .na
   trait_name: leaf_base_shape
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing leaf base shapes when taxon descriptions
@@ -315,6 +298,7 @@ traits:
   unit_in: .na
   trait_name: leaf_margin
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Taxa were scored as possessing teeth on the margins of leaves from the
@@ -324,6 +308,7 @@ traits:
   unit_in: .na
   trait_name: leaf_phyllotaxis
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Leaves of taxa were scored as opposite, alternate or whorled from the presence
@@ -333,6 +318,7 @@ traits:
   unit_in: .na
   trait_name: leaf_shape
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: There were a wide variety of terms used to describe leaf shapes across
@@ -343,6 +329,7 @@ traits:
   unit_in: .na
   trait_name: stem_growth_habit
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: Stem growth habit includes terms to describe a plant's three-dimensional
@@ -351,6 +338,7 @@ traits:
   unit_in: mm
   trait_name: fruit_length
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: The term used to describe the fruit length was stored  as a measurement
@@ -360,6 +348,7 @@ traits:
   unit_in: mm
   trait_name: fruit_width
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: The term used to describe the fruit width was stored  as a measurement
@@ -369,6 +358,7 @@ traits:
   unit_in: mm
   trait_name: fruit_height
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: The term used to describe the fruit breadth or thickness was stored as
@@ -379,6 +369,7 @@ traits:
   unit_in: mm
   trait_name: leaf_length
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: The term used to describe the length of the leaf or leaf analogue was stored
@@ -387,6 +378,7 @@ traits:
   unit_in: mm
   trait_name: leaf_width
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: The term used to describe the width of the leaf or leaf analogue was stored
@@ -395,6 +387,7 @@ traits:
   unit_in: mm
   trait_name: petiole_length
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: This data records the length of the petiole as recorded in the taxon description.
@@ -402,6 +395,7 @@ traits:
   unit_in: mm
   trait_name: petiole_width
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: This data records the width of the petiole as recorded in the taxon description.
@@ -409,6 +403,7 @@ traits:
   unit_in: mm
   trait_name: seed_length
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: This data records seed length as described in the taxon description. Seeds
@@ -418,6 +413,7 @@ traits:
   unit_in: mm
   trait_name: seed_width
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: This data records the seed width as described in the text. Seeds which
@@ -427,6 +423,7 @@ traits:
   unit_in: mm
   trait_name: seed_height
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: This data records the seed breadth as described in the text. Seeds which
@@ -436,6 +433,7 @@ traits:
   unit_in: mm
   trait_name: plant_height
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: Maximum plant vegetative height of a mature individual.
@@ -443,6 +441,7 @@ traits:
   unit_in: .na
   trait_name: plant_photosynthetic_organ
   entity_type: species
+  value_type: value_type
   basis_of_value: expert_score
   replicates: .na
   methods: The dominant photosynthetic organ was scored as leaf, phyllode or cladode
@@ -453,6 +452,7 @@ traits:
   unit_in: mm
   trait_name: leaf_lamina_posture
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: Taxa were scored as possessing a leaf lamina posture if a descriptor of
@@ -462,6 +462,7 @@ traits:
   unit_in: mm
   trait_name: leaf_margin_posture
   entity_type: species
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: Taxa were scored as possessing a leaf margin posture if the word "margin"
@@ -501,29 +502,29 @@ substitutions:
   find: rhizome_woody rhizome_tuberous
   replace: rhizome_woody rhizome_fleshy
 taxonomic_updates:
+- find: Acacia melvillei-homalophylla
+  replace: Acacia melvillei-homalophylla
+  reason: maintaining phrase name not yet in APC (E. Wenk, 2023-11-03)
+  taxonomic_resolution: species
 - find: Acaena anserovina
   replace: Acaena x anserovina
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Acaena ovina
   replace: Acaena x ovina
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Acaena sp. Thredbo River Gorge (L.A.S.Johnson ;amp; E.F.Constable s.n., 19
     Jan 1951)
   replace: Acaena sp. Thredbo River Gorge (L.A.S.Johnson & E.F.Constable s.n., 19
     Jan 1951)
   reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
     APC (2022-11-21)
-  taxonomic_resolution: Species
-- find: Alstonia constricta f. Pubescent form
-  replace: Alstonia constricta Pubescent form
-  reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Arthropteris beckleri x tenella
-  replace: Arthropteris x [Arthropteris beckleri x tenella; NHNSW_2022]
+  replace: Arthropteris x [Arthropteris beckleri x tenella]
   reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
     genus-level alignment with APC accepted genus (2022-11-22)
   taxonomic_resolution: genus
@@ -531,362 +532,330 @@ taxonomic_updates:
   replace: Atriplex sp. B
   reason: match_19. Automatic alignment with species-level canonical name in APNI
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Banksia spinulosa var. collina-spinulosa intergrade
   replace: Banksia spinulosa var. collina
   reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Bertya tasmanica variant ;qu;Glabrous ovary;qu;
   replace: Bertya tasmanica var. Glabrous ovary (T.A.James 527 & M.J.Taylor)
   reason: Manual alignment with canonical  species name in APC (Elizabeth Wenk, 2022-11-21)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Blechnum fullagarii
   replace: Blechnum fullagari
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Caladenia sp. A sensu Harden (1993)
   replace: Caladenia sp. A
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Centaurea sp. A sensu Murray (1992)
   replace: Centaurea sp. A
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Cephalomanes atrovirens subsp. atrovirens
   replace: Cephalomanes atrovirens
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Choretrum sp. Coxs Gap (B.J.Lepschi 4218 ;amp; T.R.Lally)
   replace: Choretrum sp. Coxs Gap (B.J.Lepschi 4218 & T.R.Lally)
   reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
     APC (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Cipadessa baccifera
   replace: Cipadessa baccifera
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Crocosmia crocosmiiflora
   replace: Crocosmia x crocosmiiflora
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Cyperus bowmannii
   replace: Cyperus bowmanni
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Cyperus sp. Stockton (K.L.Wilson 10541)
-  replace: Cyperus sp. [Cyperus sp. Stockton (K.L.Wilson 10541); NHNSW_2022]
-  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
-    by APC (2022-11-22)
-  taxonomic_resolution: genus
+  replace: Cyperus sp. Stockton (K.L.Wilson 10541)
+  reason: maintaining phrase name not yet in APC (E. Wenk, 2023-11-03)
+  taxonomic_resolution: species
 - find: Dillwynia sp. Ebor (P.C.Jobson 5318 ;amp; S.A.Mills)
   replace: Dillwynia sp. Ebor (P.C.Jobson 5318 & S.A.Mills)
   reason: match_17_fuzzy. Imprecise fuzzy alignment with canonical name in APNI (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Epidendrum radicans x secundum hybrid complex
   replace: Epidendrum radicans x Epidendrum secundum
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Eriochilus cucullatus complex
   replace: Eriochilus cucullatus
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Eucalyptus conjuncta
   replace: Eucalyptus x conjuncta
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Eucalyptus dealbata subsp. dealbata
   replace: Eucalyptus dealbata var. dealbata
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-21)
-  taxonomic_resolution: Varietas
-- find: Flacourtia sp. shiptons flat l w jessup gj.d3200
-  replace: Flacourtia sp. Shiptons Flat (L.W.Jessup+ GJD3200)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: variety
 - find: Genoplesium cuspidatum
   replace: Genoplesium sp. Cuspidata (L.M.Copeland 3858)
   reason: match_15_fuzzy. Fuzzy match alignment with species-level canonical name
     in `APC known` when everything except first 2 words ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Genoplesium sp. Charmhaven (NSW896673)
   replace: Genoplesium sp. Charmhaven (NSW 896673)
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Glycine pacifica
   replace: Glycine pacifica (Grace 946)
   reason: match_19. Automatic alignment with species-level canonical name in APNI
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Hibbertia sp. B sensu Harden (1990)
   replace: Hibbertia sp. B
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Hibbertia stricta subsp. stricta
   replace: Hibbertia stricta var. stricta
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-21)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Hoffmannseggia glauca
   replace: Hoffmannseggia glauca
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: Species
-- find: Houttuynia cordata
-  replace: Houttuynia cordata
-  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Impatiens balfouri
   replace: Impatiens balfourii
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Kunzea capitata subsp. capitata
   replace: Kunzea capitata var. capitata
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-21)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Lenwebbia sp. Main Range (P.R.Sharpe  4877)
   replace: Lenwebbia sp. Main Range (P.R.Sharpe+ 4877)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Lepidium sp. Cooma (J.H.Maiden NSW642748)
-  replace: Lepidium sp. [Lepidium sp. Cooma (J.H.Maiden NSW642748); NHNSW_2022]
-  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
-    by APC (2022-11-22)
-  taxonomic_resolution: genus
+  replace: Lepidium sp. Cooma (J.H.Maiden NSW642748)
+  reason: maintaining phrase name not yet in APC (E. Wenk, 2023-11-03)
+  taxonomic_resolution: species
 - find: Leucopogon lanceolatus var. lanceolatus
   replace: Leucopogon lanceolatus
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Luzula densiflora subsp. densiflora
   replace: Luzula densiflora
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Luzula flaccida subsp. flaccida
   replace: Leucas flaccida var. flaccida
   reason: match_10_fuzzy. Imprecise fuzzy alignment with known canonical name in APC
     (2022-11-21)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Margyricarpus pinnatus
   replace: Margyricarpus pinnatus
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Muehlenbeckia diclina subsp. Gippsland (R.O.Makinson 1007) Makinson
   replace: Muehlenbeckia diclina subsp. Gippsland (R.O.Makinson 1007)
   reason: match_05. Automatic alignment with scientific name in APC accepted list
     (2022-11-21)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Muehlenbeckia diclina subsp. Pooncarie (W.E. Mulham W811)
   replace: Muehlenbeckia diclina subsp. Pooncarie (W.E.Mulham W811)
   reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-21)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Myosotis laxa subsp. caespitosa
   replace: Myosotis laxa subsp. cespitosa
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Netrostylis sp. East Coast (D.E. Albrecht 597)
-  replace: Netrostylis sp. [Netrostylis sp. East Coast (D.E. Albrecht 597); NHNSW_2022]
-  reason: match_20. Rewording name to be recognised as genus rank, with genus in APNI
-    (2022-11-22)
-  taxonomic_resolution: genus
+  replace: Netrostylis sp. East Coast (D.E. Albrecht 597)
+  reason: maintaining phrase name not yet in APC (E. Wenk, 2023-11-03)
+  taxonomic_resolution: species
 - find: Notelaea sp. A sensu Harden (1992)
   replace: Notelaea sp. A
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Opuntia sp. sensu I.Telford (1984)
-  replace: Opuntia sp. [Opuntia sp. sensu I.Telford (1984); NHNSW_2022]
-  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
-    by APC (2022-11-22)
-  taxonomic_resolution: genus
+  replace: Opuntia sp. sensu I.Telford (1984)
+  reason: maintaining phrase name not yet in APC (E. Wenk, 2023-11-03)
+  taxonomic_resolution: species
 - find: Owenia reliqua
   replace: Owenia x reliqua
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pelargonium asperum
   replace: Pelargonium x asperum
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pimelea neo-anglica
   replace: Pimelea neoanglica
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-22)
-  taxonomic_resolution: Species
-- find: Polyscias sambucifolia subsp. Long leaflets (P.G.Neish 208) Vic. Herbarium
-  replace: Polyscias sambucifolia subsp. Long leaflets (P.G.Neish 208)
-  reason: match_05. Automatic alignment with scientific name in APC accepted list
-    (2022-11-21)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: species
 - find: Pomaderris andromedifolia f. ;qu;andromedifolia;qu;
   replace: Pomaderris andromedifolia subsp. andromedifolia
   reason: Manual alignment with canonical  species name in APC (Elizabeth Wenk, 2022-11-21)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Pomaderris andromedifolia f. ;qu;narrow-leaved;qu;
   replace: Pomaderris andromedifolia f. 'narrow-leaved'
   reason: Manual alignment with canonical  species name in APC (Elizabeth Wenk, 2022-11-21)
-  taxonomic_resolution: Forma
+  taxonomic_resolution: form
 - find: Pomaderris andromedifolia f. ;qu;small-leaved;qu;
   replace: Pomaderris andromedifolia subsp. andromedifolia
   reason: Manual alignment with canonical  species name in APC (Elizabeth Wenk, 2022-11-21)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Potamogeton tricarinatus auct. non F.Muell. ;amp; A.Benn. ex A.Benn.
   replace: Potamogeton tricarinatus
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Prasophyllum sp. A sensu Harden (1993)
   replace: Prasophyllum sp. A
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pultenaea sp. Dingo Creek (M.A.M.Renner 9176 ;amp; J.M.Cohen)
   replace: Pultenaea sp. Dingo Creek (M.A.M.Renner 9176 & J.M.Cohen)
   reason: match_17_fuzzy. Imprecise fuzzy alignment with canonical name in APNI (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pultenaea sp. Narrabri (R.G.Coveny 8811 ;amp; S.K.Roy)
   replace: Pultenaea sp. (Narrabri R.G.Coveny+ 8811)
   reason: match_12. Automatic alignment with infraspecific canonical name in APC known
     names when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pultenaea sp. Newnes (I.R.Telford 5072 ;amp; M.D.Crisp)
   replace: Pultenaea sp. Newnes (I.R.Telford 5072 & M.D.Crisp)
   reason: match_17_fuzzy. Imprecise fuzzy alignment with canonical name in APNI (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pultenaea sp. Shadowgraph Bluff (T. ;amp; J.Whaite 3455)
   replace: Pultenaea sp. Shadowgraph Bluff (T. & J.Whaite 3455)
   reason: match_17_fuzzy. Imprecise fuzzy alignment with canonical name in APNI (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Quassia sp. Moonee Creek (King s.n., Nov 1949)
   replace: Quassia sp. 'Moonee Creek' (King s.n., Nov 1949)
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-21)
-  taxonomic_resolution: Species
-- find: Radermachera sinica
-  replace: Radermachera sinica
-  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Rotheca myricoides subsp. myricoides
   replace: Rotheca myricoides
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Rubus loganobaccus
   replace: Rubus loganubaccus
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Salix matsudana x alba
   replace: Salix matsudana x Salix alba
   reason: Manual alignment with canonical hybrid species name in APC (Elizabeth Wenk,
     2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Salix x fragilis var. fragilis
   replace: Salix x fragilis
   reason: Manual alignment with canonical hybrid species name in APC (Elizabeth Wenk,
     2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Salix x sepulcralis var. chrysocoma
   replace: Salix x sepulcralis
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Salix x sepulcralis var. sepulcralis
   replace: Salix x sepulcralis
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: Varietas
+  taxonomic_resolution: variety
 - find: Salvinia molesta
   replace: Salvinia x molesta
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Sarcocornia quinqueflora subsp. quinqueflora
   replace: Salicornia quinqueflora subsp. quinqueflora
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Scleranthus sp. Fitz;qu;s Hill (J.G.West 5342)
   replace: Scleranthus sp. Fitz's Hill (J.G.West 5342)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Sebaea zeyheri subsp. cleistantha
   replace: Sebaea zeyheri
   reason: match_19. Automatic alignment with species-level canonical name in APNI
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Sida sp. B sensu Harden (1990)
   replace: Sida sp. B
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Sida sp. C sensu Harden (1990)
   replace: Sida sp. C
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Sorghum almum
   replace: Sorghum x almum
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Sorghum bicolor subsp. almum
   replace: Sorghum bicolor subsp. x almum
   reason: match_08. Automatic alignment with synonymous name in APNI (2022-11-22)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Sorghum bicolor subsp. drummondii
   replace: Sorghum bicolor subsp. x drummondii
   reason: match_12. Automatic alignment with infraspecific canonical name in APC known
     names when notes are ignored (2022-11-22)
-  taxonomic_resolution: Subspecies
+  taxonomic_resolution: subspecies
 - find: Spiraea x billiardii
   replace: Spiraea x billardii
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Suaeda sp. A sensu Harden (1990)
   replace: Suaeda sp. A
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Teucrium sp. D sensu Conn (1992)
   replace: Teucrium sp. D Flora of New South Wales (S.A.Horton 4114)
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-22)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Thelymitra irregularis
   replace: Thelymitra x irregularis
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Thelymitra merraniae
   replace: Thelymitra merranae
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-21)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Thelymitra truncata
   replace: Thelymitra x truncata
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-21)
-  taxonomic_resolution: Species
-- find: X Triticosecale
-  replace: x Triticosecale
-  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
-    Wenk, 2022-11-22)
-  taxonomic_resolution: genus
-- find: Acacia melvillei-homalophylla
-  replace: Acacia sp. [Acacia melvillei-homalophylla; NHNSW_2023]
-  reason: Manual matched to genus for taxon that can't be matched to species (Elizabeth
-    Wenk, 2023-05-24)
-  taxonomic_resolution: genus
+  taxonomic_resolution: species
 exclude_observations:
 - variable: taxon_name
-  find: Salix humboldtiana cv. ;qu;Pyramidalis;qu;, Salix matsudana cv. ;qu;Tortuosa;qu;,
-    Cyrtomium falcatum  ;qu;Rochfordii;qu;
+  find: Salix humboldtiana cv. ;qu;Pyramidalis;qu;, Salix matsudana cv. ;qu;Tortuosa;qu;
   reason: excluding cultivars
 - variable: taxon_name
   find: Cipadessa baccifera, Hoffmannseggia glauca, Houttuynia cordata, Margyricarpus
-    pinnatus, Radermachera sinica, x Triticosecale, Euryops virgineus, Fraxinus chinensis,
+    pinnatus, Radermachera sinica, X Triticosecale, Euryops virgineus, Fraxinus chinensis,
     Ipomoea fimbriosepala, Persicaria chinensis, Pteris nipponica, Passiflora miniata
   reason: non-native, non-naturalised species
 questions: .na

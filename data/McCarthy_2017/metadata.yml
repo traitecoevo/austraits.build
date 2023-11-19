@@ -27,10 +27,10 @@ contributors:
     ORCID: 0000-0003-4199-3697
     affiliation: CSIRO Land and Water, Australia
   assistants: Mike Olsen, Timothy Staples
-  austraits_curators: Elizabeth Wenk
+  dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code:      '
+  custom_R_code:        '
     data %>% 
       mutate(
         across(c("Value"), ~na_if(.x, 0)),
@@ -42,7 +42,8 @@ dataset:
       summarise(
         Value = mean(Value),
         replicates = sum(replicates)
-      ) %>% ungroup()     
+      ) %>% ungroup() %>%
+      dplyr::filter(!is.na(Species))    
   '
   collection_date: 2015/2017
   taxon_name: Species
@@ -481,16 +482,16 @@ taxonomic_updates:
 - find: Citrus australia
   replace: Citrus australis
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Leucopogon sp. (Burrum Heads A.R.Bean 7802)
   replace: Leucopogon sp. Burrum Heads (A.R.Bean 7802)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 - find: Pultenaea sp. Maryborough
   replace: Pultenaea sp. 'Maryborough' (T.D.Stanley 87)
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: Species
+  taxonomic_resolution: species
 exclude_observations:
 - variable: taxon_name
   find: Boehmeria platanifolia
