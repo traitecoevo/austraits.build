@@ -22,27 +22,27 @@ contributors:
 dataset:
   data_is_long_format: no
   custom_R_code:          '
-    data %>% 
+    data %>%
       group_by(`Species_reconciled with updates and additions`) %>%
         mutate(across(c(`seed length maximum (mm)`,`seed length minimum (mm)`,
-        `seed width maximum (mm)`,`seed width minimum (mm)`,`leaves lobed`), 
+        `seed width maximum (mm)`,`seed width minimum (mm)`,`leaves lobed`),
         list(~ replace(.,duplicated(.),NA)))) %>%
       ungroup() %>%
       mutate(
-        `Height (m)` = ifelse(is.na(plant_height_duplicate),`Height (m)`,NA), 
-        `wood density species` = ifelse(is.na(wood_density_duplicate),`wood density species`,NA), 
-        `seed width minimum (mm)` = ifelse(is.na(seed_width_min_duplicate),`seed width minimum (mm)`,NA), 
-        `seed width maximum (mm)` = ifelse(is.na(seed_width_max_duplicate),`seed width maximum (mm)`,NA), 
-        `seed length minimum (mm)` = ifelse(is.na(seed_length_min_duplicate),`seed length minimum (mm)`,NA), 
-        `seed length maximum (mm)` = ifelse(is.na(seed_length_max_duplicate),`seed length maximum (mm)`,NA), 
-        `leaf width minimum (mm)` = ifelse(is.na(leaf_width_min_duplicate),`leaf width minimum (mm)`,NA), 
-        `leaf width maximum (mm)` = ifelse(is.na(leaf_width_max_duplicate),`leaf width maximum (mm)`,NA), 
-        `leaf length minimum (mm)` = ifelse(is.na(leaf_length_min_duplicate),`leaf length minimum (mm)`,NA), 
+        `Height (m)` = ifelse(is.na(plant_height_duplicate),`Height (m)`,NA),
+        `wood density species` = ifelse(is.na(wood_density_duplicate),`wood density species`,NA),
+        `seed width minimum (mm)` = ifelse(is.na(seed_width_min_duplicate),`seed width minimum (mm)`,NA),
+        `seed width maximum (mm)` = ifelse(is.na(seed_width_max_duplicate),`seed width maximum (mm)`,NA),
+        `seed length minimum (mm)` = ifelse(is.na(seed_length_min_duplicate),`seed length minimum (mm)`,NA),
+        `seed length maximum (mm)` = ifelse(is.na(seed_length_max_duplicate),`seed length maximum (mm)`,NA),
+        `leaf width minimum (mm)` = ifelse(is.na(leaf_width_min_duplicate),`leaf width minimum (mm)`,NA),
+        `leaf width maximum (mm)` = ifelse(is.na(leaf_width_max_duplicate),`leaf width maximum (mm)`,NA),
+        `leaf length minimum (mm)` = ifelse(is.na(leaf_length_min_duplicate),`leaf length minimum (mm)`,NA),
         `leaf length maximum (mm)` = ifelse(is.na(leaf_length_max_duplicate),`leaf length maximum (mm)`,NA)
       ) %>%
-      select(-`seed size categorical: <10mm`,-`seed size categorical: >10mm`, 
+      select(-`seed size categorical: <10mm`,-`seed size categorical: >10mm`,
       `wood density genus`, `wood density family`, -seed_width_min_duplicate, - seed_width_max_duplicate,
-      -seed_length_min_duplicate, -seed_length_max_duplicate, -leaf_width_min_duplicate, 
+      -seed_length_min_duplicate, -seed_length_max_duplicate, -leaf_width_min_duplicate,
       -leaf_width_max_duplicate, -leaf_length_min_duplicate, -leaf_length_max_duplicate,
       -plant_height_duplicate, -wood_density_duplicate) %>%
       group_by(`Species_reconciled with updates and additions`) %>%
@@ -69,12 +69,12 @@ dataset:
     mutate(
       `leaves lobed` = ifelse(`leaves lobed` %in% c("no NA", "no NA NA", "no NA NA NA"), "unlobed", `leaves lobed`),
       `growth form` = str_replace_all(`growth form`," NA",""),
-      `growth form` = na_if(`growth form`,"NA"), 
-      `leaf type` = str_replace_all(`leaf type`," NA",""),  
+      `growth form` = na_if(`growth form`,"NA"),
+      `leaf type` = str_replace_all(`leaf type`," NA",""),
       `leaf longevity` = str_replace_all(`leaf longevity`," NA",""),
       `leaf longevity` = na_if(`leaf longevity`,"NA"),
       )
-  '
+    '
   collection_date: 2010/2010
   taxon_name: Species_reconciled with updates and additions
   description: Rainforest species traits
@@ -343,9 +343,6 @@ substitutions:
   find: shrub shrub vine vine
   replace: shrub climber_herbaceous
 - trait_name: plant_growth_form
-  find: shrub shrub vine vine
-  replace: shrub climber_herbaceous
-- trait_name: plant_growth_form
   find: NA
   replace: .na
 taxonomic_updates:
@@ -539,18 +536,6 @@ taxonomic_updates:
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
   taxonomic_resolution: subspecies
-- find: Argyrodendron sp. Kin Kin (W.D.Francis AQ 81198)
-  replace: Argyrodendron sp. Kin Kin (W.D.Francis AQ81198)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: species
-- find: Argyrodendron sp. Mt Haig ( L.S.Smith+ 14307)
-  replace: Argyrodendron sp. Mt Haig (L.S.Smith+ 14307)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: species
-- find: Argyrodendron sp. Whyanbeel (B.P.Hyland RFK 1106)
-  replace: Argyrodendron sp. Whyanbeel (B.P.Hyland RFK1106)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: species
 - find: Aristolochia pubera_aromatica
   replace: Aristolochia pubera var. aromatica
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
@@ -1025,11 +1010,6 @@ taxonomic_updates:
   reason: match_20. Rewording name to be recognised as genus rank, with genus known
     by APC (2022-11-10)
   taxonomic_resolution: genus
-- find: Fitzalania sp. [Fitzalania Gregory_River]
-  replace: Meiogyne sp. [Fitzalania sp. [Fitzalania Gregory_River]; Kooyman_2011]
-  reason: match_20. Rewording name to be recognised as genus rank, with genus known
-    by APC (2022-11-10)
-  taxonomic_resolution: genus
 - find: Flacourtia Shiptons-Flat
   replace: Flacourtia sp. Shiptons Flat (L.W.Jessup+ GJD3200)
   reason: match_12. Automatic alignment with infraspecific canonical name in APC accepted
@@ -1063,10 +1043,6 @@ taxonomic_updates:
   replace: Garcinia sp. (Mossman)
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: species
-- find: Garcinia sp. Davies Creek (JGT 14745)
-  replace: Garcinia sp. (Davies Creek JGT 14745)
-  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
   taxonomic_resolution: species
 - find: Geijera salicifolia-latifolia
   replace: Geijera salicifolia var. latifolia
@@ -1258,10 +1234,6 @@ taxonomic_updates:
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
   taxonomic_resolution: subspecies
-- find: Leucopogon sp. Lamington (G.Leiper AQ 633386)
-  replace: Leucopogon sp. Lamington (G.Leiper AQ633386)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: species
 - find: Macaranga involucrata_mallotoides
   replace: Macaranga involucrata var. mallotoides
   reason: match_06. Automatic alignment with synonymous term among known canonical
@@ -1321,11 +1293,6 @@ taxonomic_updates:
   reason: match_06. Automatic alignment with synonymous term among known canonical
     names APC (2022-11-10)
   taxonomic_resolution: subspecies
-- find: Meiogyne sp. [Fitzalania Gregory_River]
-  replace: Meiogyne sp. [Meiogyne sp. [Fitzalania Gregory_River]; Kooyman_2011]
-  reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
-    by APC (2022-11-10)
-  taxonomic_resolution: genus
 - find: Melaleuca recurvus
   replace: Melaleuca recurva
   reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
@@ -1351,10 +1318,6 @@ taxonomic_updates:
   replace: Mesua sp. (Boonjee AKI 1218)
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: species
-- find: Mesua sp. Boonjee (A.K. Irvine 1218)
-  replace: Mesua sp. Boonjie (A.K.Irvine 1218)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
   taxonomic_resolution: species
 - find: Millettia McIlwraith
   replace: Millettia sp. (McIlwraith)
@@ -1427,10 +1390,6 @@ taxonomic_updates:
   reason: match_12. Automatic alignment with infraspecific canonical name in APC known
     names when notes are ignored (2022-11-10)
   taxonomic_resolution: species
-- find: Notelaea sp. Elcho Island (C. R. Dunlop 7597)
-  replace: Notelaea sp. Elcho Island (C.R.Dunlop 7597)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: species
 - find: Notelaea venosava
   replace: Notelaea venosa
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
@@ -1499,10 +1458,6 @@ taxonomic_updates:
   replace: Polyosma sp. Mt Lewis (B.P.Hyland RFK25241)
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
   taxonomic_resolution: species
-- find: Polyosma sp. Mt Lewis (B.Hyland RFK25241)
-  replace: Polyosma sp. Mt Lewis (B.P.Hyland RFK25241)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: species
 - find: Pseuduvaria mulgraveana-glabrescens
   replace: Pseuduvaria mulgraveana var. glabrescens
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
@@ -1541,11 +1496,6 @@ taxonomic_updates:
   replace: Psychotria sp. (Utchee Creek)
   reason: match_12. Automatic alignment with infraspecific canonical name in APC known
     names when notes are ignored (2022-11-10)
-  taxonomic_resolution: species
-- find: Psychotria sp. (Daintree N.P.)
-  replace: Psychotria sp. Daintree NP (P.I.Forster+ PIF21974)
-  reason: match_13_fuzzy. Fuzzy match alignment with infraspecific canonical name
-    in APC accepted when notes are ignored (2022-11-10)
   taxonomic_resolution: species
 - find: Psydrax Berrigurra-Station
   replace: Canthium sp. (Berrigurra Station E.R.Anderson 2829)
@@ -1640,10 +1590,6 @@ taxonomic_updates:
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
   taxonomic_resolution: subspecies
-- find: Rubiaceae Gen. Nov. sp. (Shute Harbour DAH Q811)
-  replace: Gen. (AQ520454) sp. Shute Harbour (D.A.Halford Q811)
-  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
-  taxonomic_resolution: species
 - find: Rubiaceae Shute-Harbour
   replace: Gen. (AQ520454) sp. Shute Harbour (D.A.Halford Q811)
   reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-12)
@@ -1658,10 +1604,6 @@ taxonomic_updates:
   reason: match_06. Automatic alignment with synonymous term among accepted canonical
     names in APC (2022-11-10)
   taxonomic_resolution: variety
-- find: Samadera sp. Mt Goonanaman (J.Randall 738)
-  replace: Samadera sp. Mt Goonaneman (J.Randall 738)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: species
 - find: Sarcopteryx McIlwraith-Range
   replace: Sarcopteryx sp. (McIlwraith Range BH 3261RFK)
   reason: match_12. Automatic alignment with infraspecific canonical name in APC known
@@ -1714,10 +1656,6 @@ taxonomic_updates:
   replace: Stenocarpus sp. (Hinchinbrook Island F.D.Hockings AQ229860)
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
-  taxonomic_resolution: species
-- find: Stenocarpus sp. Hinchinbrook Is. (F.D.Hocking AQ229860)
-  replace: Stenocarpus sp. Hinchinbrook Is. (F.D.Hockings AQ229860)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
   taxonomic_resolution: species
 - find: Stephania japonica-discolor
   replace: Stephania japonica var. discolor
@@ -1772,21 +1710,6 @@ taxonomic_updates:
   replace: Symplocos sp. [Symplocos cochinchinensis-thwaitesii-pilosiuscula; Kooyman_2011]
   reason: Manual match to genus for taxon that can't be match to species (Elizabeth
     Wenk, 2022-11-12)
-  taxonomic_resolution: genus
-- find: Symplocos gittinsii / Symplocos thwaitesii
-  replace: Symplocos sp. [Symplocos gittinsii / Symplocos thwaitesii; Kooyman_2011]
-  reason: match_04. Rewording taxon where `/` indicates uncertain species identification
-    to align with `APC accepted` genus (2022-11-10)
-  taxonomic_resolution: genus
-- find: Symplocos glabra / Symplocos thwaitesii
-  replace: Symplocos sp. [Symplocos glabra / Symplocos thwaitesii; Kooyman_2011]
-  reason: match_04. Rewording taxon where `/` indicates uncertain species identification
-    to align with `APC accepted` genus (2022-11-10)
-  taxonomic_resolution: genus
-- find: Symplocos puberula / Symplocos thwaitesii
-  replace: Symplocos sp. [Symplocos puberula / Symplocos thwaitesii; Kooyman_2011]
-  reason: match_04. Rewording taxon where `/` indicates uncertain species identification
-    to align with `APC accepted` genus (2022-11-10)
   taxonomic_resolution: genus
 - find: Symplocos stawellii-montana
   replace: Symplocos stawellii var. montana
@@ -1983,10 +1906,6 @@ taxonomic_updates:
   replace: Xylosma sp. (Temple Bay P.I.Forster PIF8980)
   reason: match_12. Automatic alignment with infraspecific canonical name in APC known
     names when notes are ignored (2022-11-10)
-  taxonomic_resolution: species
-- find: Xylosma sp. Mt Lewis (G.Sankowsky 1108)
-  replace: Xylosma sp. Mt Lewis (G.Sankowsky+ 1108)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
   taxonomic_resolution: species
 - find: Zieria Binjour
   replace: Zieria sp. (Binjour P.I.Forster PIF14134)

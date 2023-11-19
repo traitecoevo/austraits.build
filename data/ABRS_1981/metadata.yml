@@ -28,7 +28,7 @@ dataset:
             units = ifelse(units %in% c("m", "cm"), "mm", units),
             value = as.character(value)
       );
-      
+
     data_categorical_other <- data %>%
       filter(is.na(units) & !(trait %in% c("longevity", "flowering time start", "flowering time end"))
             ) %>%
@@ -44,14 +44,14 @@ dataset:
         left_join(filter(data, trait == "flowering time start") %>%
                     select(species_name, i), by = "species_name");
 
-    data_longevity <- data %>% 
+    data_longevity <- data %>%
       filter( !is.na(value) & trait == "longevity") %>%
       mutate(trait = "leaf_phenology",
               value = ifelse(value %in% c("EP", "E", "EAP", "EPB", "EB", "EAB", "EA"), "evergreen", value),
               value = ifelse(value %in% c("DP", "D", "DPB"), "deciduous", value)) %>%
       filter(value %in% c("evergreen", "deciduous"));
-    
-    data_lifehistory <- data %>%   
+
+    data_lifehistory <- data %>%
       filter( !is.na(value) & trait == "longevity" &
               value %in% c("EP", "P", "DP", "EDP", "A", "EA", "EB", "B","AB", "EAB", "AP", "EAP", "EPB", "DPB", "PB")) %>%
         mutate(trait = "life_history", value = ifelse(value %in% c("EP", "P", "DP", "EDP"), "perennial", value),
@@ -70,7 +70,7 @@ dataset:
           value == "HA" ~ "aquatic")
       );
 
-    bind_rows(data_numeric, data_categorical_other, data_flowering, 
+    bind_rows(data_numeric, data_categorical_other, data_flowering,
       data_longevity, data_lifehistory, data_substrate) %>%
       arrange(i) %>%
       select(-i) %>%
@@ -87,7 +87,7 @@ dataset:
       group_by(species_name, trait) %>%
         distinct(value, .keep_all = TRUE) %>%
       ungroup()
-  ' 
+  '
   collection_date: unknown/2015
   taxon_name: species_name
   trait_name: trait
@@ -517,8 +517,5 @@ taxonomic_updates:
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-12)
   taxonomic_resolution: species
-exclude_observations:
-- variable: taxon_name
-  find: Platanus x hispanica 'Acerifolia'
-  reason: excluding cultivars
+exclude_observations: .na
 questions: .na
