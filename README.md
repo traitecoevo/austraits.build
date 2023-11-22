@@ -41,7 +41,7 @@ To handle the harmonising of diverse data sources, we use a reproducible workflo
 
 ![](inst/figures/Workflow.png)
 
-We use the [`traits.build`](https://traitecoevo.github.io/traits.build/)  R package and workflow to harmonise  > 300 different sources into a unified dataset. The workflow is fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset and can also be rerun by others. AusTraits is built so that the database can be rebuilt from its parts at any time. This means that decisions made along the way (in how data is transformed or encoded) can be inspected and modified, and new data can be easily incorporated.
+We use the [`traits.build`](https://traitecoevo.github.io/traits.build/)  R package and workflow to harmonise > 300 different sources into a unified dataset. The workflow is fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset and can also be rerun by others. AusTraits is built so that the database can be rebuilt from its parts at any time. This means that decisions made along the way (in how data is transformed or encoded) can be inspected and modified, and new data can be easily incorporated.
 
 To build the database follows these steps
 
@@ -54,23 +54,24 @@ remotes::install_github("traitecoevo/traits.build", quick = TRUE)
 ```
 ***Clone repository***
 
-Next you need to download a copy of this repository from Github. Then open the Rstudio project, or open R into the right repo directory.
+Next you need to download a copy of this repository from GitHub. Then open the Rstudio project, or open R into the right repo directory.
 
-***Compile via `remake`***
+***Build***
 
-One of the packages that will be installed with the `traits.build` is [`remake`](https://github.com/richfitz/remake). This package manages the compiling, and also helps streamline the amount of recompiling needed when new sources are added.
+Building the database should then be as easy as running the code in the file `build.R`. Note this code can use multiple CPUs, to do this, change the number of workers to > 1.
 
-Running the following command will rebuild AusTraits and save the assembled database into an RDS file located in `export/data/curr/austraits.rds`.
-
-```{r, eval=FALSE, echo=TRUE}
-remake::make()
-austraits <- readRDS("export/data/curr/austraits.rds")
+```
+source("build.R")
 ```
 
-Remake can also load the compiled dataset directly into R by calling:
+After running, you should have an object `austraits` available in your workspace, as well as a version saved in `export/data`.
 
-```{r, eval=FALSE, echo=TRUE}
-austraits <- remake::make("austraits")
+## Updating the build script
+
+To update the build process
+
+```
+traits.build::build_setup_pipeline(method="furrr", database_name = "austraits", workers = 1)
 ```
 
 ## Contributing to AusTraits

@@ -28,30 +28,30 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:            '
+  custom_R_code: '
     data %>%
       mutate(
-        `species records` = str_replace_all(`species records`, "_", " "),
+        `species records` = str_replace_all(`species records`, "_", " ") %>% stringr::str_trim(),
         storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA)
       ) %>%
       distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`, `Conserved R+`, `Conserved S+`) %>%
-  group_by(`species records`, Ecosystem) %>%
-    mutate(
-      across(c(`R+`,`S+`,`resp.type`), ~na_if(.x, "X")),
-      `R+` = paste(`R+`, collapse = " "),
-      `S+` = paste(`S+`, collapse = " "),
-      `resp.type` = paste(`resp.type`, collapse = " ")
-    ) %>%
-  ungroup() %>%
-  distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`,`Conserved R+`, `Conserved S+`) %>%
-  mutate(
-    `R+` = ifelse(`R+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `R+`),
-    `S+` = str_replace(`S+`, "no NA", "no"),
-    `S+` = ifelse(`S+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `S+`),
-    storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA),
-    across(c(`R+`,`S+`,`resp.type`), ~na_if(.x,"NA"))
-    )
-  '
+      group_by(`species records`, Ecosystem) %>%
+      mutate(
+        across(c(`R+`,`S+`,`resp.type`), ~na_if(.x, "X")),
+        `R+` = paste(`R+`, collapse = " "),
+        `S+` = paste(`S+`, collapse = " "),
+        `resp.type` = paste(`resp.type`, collapse = " ")
+      ) %>%
+      ungroup() %>%
+      distinct(`species records`, Ecosystem, `R+`,`S+`,`resp.type`,`Conserved R+`, `Conserved S+`) %>%
+      mutate(
+        `R+` = ifelse(`R+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `R+`),
+        `S+` = str_replace(`S+`, "no NA", "no"),
+        `S+` = ifelse(`S+` %in% c("yes NA", "NA yes", "yes yes"), "yes", `S+`),
+        storage_organ = ifelse(`resp.type` == "Lignotuber","lignotuber", NA),
+        across(c(`R+`,`S+`,`resp.type`), ~na_if(.x,"NA"))
+        )
+    '
   collection_date: unknown/2015
   taxon_name: species records
   location_name: Ecosystem
@@ -250,11 +250,6 @@ substitutions:
   find: 'yes'
   replace: post_fire_recruitment
 taxonomic_updates:
-- find: Abutilon oxycarpum f. oxycarpum
-  replace: Abutilon oxycarpum var. oxycarpum
-  reason: match_06. Automatic alignment with synonymous term among accepted canonical
-    names in APC (2022-11-10)
-  taxonomic_resolution: variety
 - find: Abutilon oxycarpum forma oxycarpum
   replace: Abutilon oxycarpum
   reason: match_14. Automatic alignment with species-level name known by APC when
@@ -487,7 +482,7 @@ taxonomic_updates:
   replace: Celastrus sp. [Clarke_2015]
   reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
   taxonomic_resolution: genus
-- find: 'Chenopodium sp. '
+- find: Chenopodium sp.
   replace: Chenopodium sp. [Clarke_2015]
   reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
   taxonomic_resolution: genus
@@ -515,11 +510,6 @@ taxonomic_updates:
   replace: Coprosma sp. [Coprosma juniperina; Clarke_2015]
   reason: match_20. Rewording name to be recognised as genus rank, with genus accepted
     by APC (2022-11-22)
-  taxonomic_resolution: genus
-- find: 'Coprosma juniperina '
-  replace: Coprosma sp. [Coprosma juniperina; Clarke_2015]
-  reason: Exact match of the first word of the taxon name to an APC-accepted genus
-    (2023-11-02)
   taxonomic_resolution: genus
 - find: Corymbia dolicharpa juvenile
   replace: Corymbia dolichocarpa
@@ -603,15 +593,6 @@ taxonomic_updates:
 - find: Endiandra crassifolia
   replace: Endiandra crassiflora
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: species
-- find: Endiandra crassifolia
-  replace: Endiandra crassiflora
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-22)
-  taxonomic_resolution: species
-- find: 'Endiandra crassifolia '
-  replace: Endiandra crassiflora
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2023-11-02)
   taxonomic_resolution: species
 - find: Eremaea sp.
   replace: Eremaea sp. [Clarke_2015]
@@ -823,11 +804,6 @@ taxonomic_updates:
   replace: Leptospermum sp. [Clarke_2015]
   reason: Adding dataset_id to genus-level taxon names. (E. Wenk, 2023-06-16)
   taxonomic_resolution: genus
-- find: Leptospermum sp. aff. grandifolium
-  replace: Leptospermum sp. [Leptospermum sp. aff. grandifolium; Clarke_2015]
-  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
-    to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
-  taxonomic_resolution: genus
 - find: Leptospermum spp aff grandifolium
   replace: Leptospermum sp. [Leptospermum sp. aff. grandifolium; Clarke_2015]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
@@ -891,18 +867,8 @@ taxonomic_updates:
   reason: match_10_fuzzy. Imprecise fuzzy alignment with accepted canonical name in
     APC (2022-11-10)
   taxonomic_resolution: subspecies
-- find: Lissanthe strigosa subsp. subuluta
-  replace: Lissanthe strigosa subsp. subulata
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: subspecies
 - find: Livistona humilis X inermis
   replace: Livistona x [Livistona humilis x Livistona inermis]
-  reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
-    genus-level alignment with APC accepted genus (2022-11-10)
-  taxonomic_resolution: genus
-- find: Livistona sp. [Livistona humilis x Livistona inermis hybrid]
-  replace: Livistona x [Livistona humilis x Livistona inermis]
-    Clarke_2015]
   reason: match_11. Rewording hybrid species name not in APC or APNI to indicate a
     genus-level alignment with APC accepted genus (2022-11-10)
   taxonomic_resolution: genus
@@ -946,17 +912,6 @@ taxonomic_updates:
   replace: Melaleuca sp. [Melaleuca sp. aff. comboynensis; Clarke_2015]
   reason: match_09. Rewording taxon with term `affinis` preceding species epithet
     to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
-  taxonomic_resolution: genus
-- find: Melaleuca sp. aff. comboynensis
-  replace: Melaleuca sp. [Melaleuca sp. aff. comboynensis; Clarke_2015]
-  reason: match_09. Rewording taxon with term `affinis` preceding species epithet
-    to indicate a genus-level alignment with `APC accepted` genus (2022-11-22)
-  taxonomic_resolution: genus
-- find: 'Melaleuca sp. aff. comboynensis '
-  replace: Melaleuca sp. [Melaleuca sp. aff. comboynensis; Clarke_2015]
-  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
-    an unknown taxon that bears an affinity to a different taxon in the same genus
-    and taxon can only be aligned to genus-rank (2023-11-02)
   taxonomic_resolution: genus
 - find: Melicytus dentata
   replace: Melicytus dentatus

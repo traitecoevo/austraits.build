@@ -30,14 +30,6 @@ create_release <- function(austraits, v_prev= NULL) {
   filename <- sprintf(I("%s/austraits-%s.rds"), export_dir, version_number)
   saveRDS(austraits, filename)
 
-  # readme
-  rmarkdown::render(
-    "scripts/README.Rmd", 
-    output_format = "all",
-    output_dir = export_dir, 
-    params = list(version_number = version_number)
-  )
-
   # dictionary_target:
   rmarkdown::render(
     "scripts/dictionary.Rmd", 
@@ -48,7 +40,7 @@ create_release <- function(austraits, v_prev= NULL) {
 
   # plaintext_target:
   path <- sprintf("%s/austraits-%s", export_dir, version_number)
-  write_plaintext(austraits, path)
+  traits.build::write_plaintext(austraits, path)
 
   # News
   if (!is.null(v_prev)) {
@@ -88,7 +80,7 @@ Then follow these steps. We assume you have a branch `develop`q
   - rebuild repo, then create an export. Files are saved in `export/data/austraits-4.1.0/`:
 
 ```
-austraits <- remake::make("austraits")
+source("build.R")
 create_release(austraits, "4.0.0") 
 ```
  - Manually review and updates news.md
