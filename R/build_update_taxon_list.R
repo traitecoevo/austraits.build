@@ -11,23 +11,23 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
 
   # Create reduced APC list, just including a few columns and taxon ranks relevant to AusTraits
   APC_tmp <- resources$APC %>%
-    select(canonical_name, taxon_rank) %>%
-    mutate(taxonomic_dataset_APC = "APC") %>%
+    dplyr::select(dplyr::all_of(c("canonical_name", "taxon_rank"))) %>%
+    dplyr::mutate(taxonomic_dataset_APC = "APC") %>%
     dplyr::filter(taxon_rank %in% c("family", "genus", "species", "form", "subspecies", "variety", "series")) %>%
-    rename(aligned_name = canonical_name, taxon_rank_APC = taxon_rank)
+    dplyr::rename(dplyr::all_of(c("aligned_name" = "canonical_name", "taxon_rank_APC" = "taxon_rank")))
 
   # Create reduced APNI list, just including a few columns and taxon ranks relevant to AusTraits
   APNI_tmp <- resources$APNI %>%
-    select(canonical_name, taxon_rank) %>%
-    mutate(taxonomic_dataset_APNI = "APNI") %>%
+    dplyr::select(dplyr::all_of(c("canonical_name", "taxon_rank"))) %>%
+    dplyr::mutate(taxonomic_dataset_APNI = "APNI") %>%
     dplyr::filter(taxon_rank %in% c("family", "genus", "species", "form", "subspecies", "variety", "series")) %>%
-    rename(aligned_name = canonical_name, taxon_rank_APNI = taxon_rank)
+    dplyr::rename(dplyr::all_of(c("aligned_name" = "canonical_name", "taxon_rank_APNI" = "taxon_rank")))
 
   # List of taxa that are explicitly excluded in metadata - don't want these in the taxon_list
   # These should be excluded from `taxonomic_updates` table during processing, but good to check
   excluded_in_metadata <- austraits$excluded_data %>%
     dplyr::filter(error == "Observation excluded in metadata") %>%
-    distinct(original_name)
+    dplyr::distinct(original_name)
 
   # Start with taxonomic_updates table, which is all original names, aligned names, by dataset
   all_taxa <-
@@ -43,9 +43,9 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
       by = "aligned_name",
       austraits$taxa %>%
         dplyr::select(dplyr::all_of(c("taxon_name", "taxon_rank"))) %>%
-        dplyr::rename(aligned_name = taxon_name, taxon_rank_taxa = taxon_rank) %>%
-        arrange(aligned_name, taxon_rank_taxa) %>%
-        distinct(aligned_name, .keep_all = TRUE)
+        dplyr::rename(dplyr::all_of(c("aligned_name" = "taxon_name", "taxon_rank_taxa" = "taxon_rank"))) %>%
+        dplyr::arrange(aligned_name, taxon_rank_taxa) %>%
+        dplyr::distinct(aligned_name, .keep_all = TRUE)
     ) %>%
     # For taxa with: 1) taxon_rank = genus, family, or 2) notes in []
     # Need to mutate a separate column with `name_to_match_to` for joining in other columns
@@ -71,10 +71,10 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
       ) %>%
     # Merge in taxon_ranks & taxonomic_dataset for all aligned name; this information not yet present for
     # most names where original_name = aligned_name
-    dplyr::left_join(APC_tmp %>% rename(name_to_match_to = aligned_name) %>%
-    distinct(name_to_match_to, .keep_all = TRUE)) %>%
-    dplyr::left_join(APNI_tmp %>% rename(name_to_match_to = aligned_name) %>%
-    distinct(name_to_match_to, .keep_all = TRUE)) %>%
+    dplyr::left_join(APC_tmp %>% dplyr::rename("name_to_match_to" = "aligned_name") %>%
+    dplyr::distinct(name_to_match_to, .keep_all = TRUE)) %>%
+    dplyr::left_join(APNI_tmp %>% dplyr::rename("name_to_match_to" = "aligned_name") %>%
+    dplyr::distinct(name_to_match_to, .keep_all = TRUE)) %>%
     dplyr::mutate(
       taxon_rank = taxon_rank_APC,
       taxon_rank = ifelse(is.na(taxon_rank), taxon_rank_APNI, taxon_rank),
@@ -88,8 +88,8 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
   # Filter out taxa that need to be run through `APCalign::align_taxa()` first
   taxa_for_taxon_list <- all_taxa %>%
     dplyr::filter(!(is.na(taxon_rank) & is.na(taxonomic_dataset))) %>%
-    select(original_name, aligned_name, taxon_rank, taxonomic_dataset) %>%
-    mutate(aligned_reason = NA)
+    dplyr::select(dplyr::all_of(c("original_name", "aligned_name", "taxon_rank", "taxonomic_dataset"))) %>%
+    dplyr::mutate(aligned_reason = NA)
 
   # Use function `APCalign::update_taxonomy` to update names and add identifier columns
   updated <- APCalign::update_taxonomy(taxa_for_taxon_list, resources = resources)
@@ -173,7 +173,7 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
     # We want this information in a separate column.
     dplyr::mutate(taxon_name = stringr::str_split(taxon_name, "\\[alternative possible names\\:")) %>%
     tidyr::unnest_wider(taxon_name, names_sep = "_") %>%
-    dplyr::rename(taxon_name = taxon_name_1, taxon_name_alternatives = taxon_name_2) %>%
+    dplyr::rename(dplyr::all_of(c("taxon_name" = "taxon_name_1", "taxon_name_alternatives" = "taxon_name_2"))) %>%
     dplyr::mutate(taxon_name_alternatives = stringr::str_replace(taxon_name_alternatives, "\\]$", "")) %>%
     # Add in data for genus, binomial and trinomial, as appropriate.
     dplyr::mutate(
@@ -220,17 +220,17 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
    if (replace == TRUE) {
 
       taxon_list_replace <- taxon_list_new %>%
-        arrange(taxon_name, aligned_name) %>%
-        distinct(taxon_name, aligned_name, .keep_all = TRUE)
+        dplyr::arrange(taxon_name, aligned_name) %>%
+        dplyr::distinct(taxon_name, aligned_name, .keep_all = TRUE)
 
    } else {
 
       taxon_list_replace <- taxon_list %>%
         # First bind rows for cleaned names not yet in AusTraits taxon_list.csv file
-        bind_rows(taxon_list_new %>% dplyr::filter(!aligned_name %in% taxon_list$aligned_name)) %>%
+        dplyr::bind_rows(taxon_list_new %>% dplyr::filter(!aligned_name %in% taxon_list$aligned_name)) %>%
         # Arrange by names - hopefully this will be best solution for keeping GitHub commits more transparent
-        arrange(taxon_name, aligned_name) %>%
-        distinct(taxon_name, aligned_name, .keep_all = TRUE)
+        dplyr::arrange(taxon_name, aligned_name) %>%
+        dplyr::distinct(taxon_name, aligned_name, .keep_all = TRUE)
 
    }
 
