@@ -46,21 +46,21 @@ dataset:
             "REFERENCE: ", original_dataset_id
         ),
         measurement_remarks = stringr::str_replace(
-            measurement_remarks, 
+            measurement_remarks,
             "MATERIAL: NA; ", ""),
         measurement_remarks = stringr::str_replace(
-            measurement_remarks, 
+            measurement_remarks,
             "NOTES: NA; ", "")
-      ) %>% 
-      filter(!original_dataset_id %in% c("Jurado_1991", "Moles_2000", "Milberg_1998")) %>% 
-      arrange(taxa, materialweigheddesc, thousandseedweight, original_dataset_id) %>% 
+      ) %>%
+      filter(!original_dataset_id %in% c("Jurado_1991", "Moles_2000", "Milberg_1998")) %>%
+      arrange(taxa, materialweigheddesc, thousandseedweight, original_dataset_id) %>%
       group_by(taxa, materialweigheddesc, thousandseedweight, seedweightnotes, weightprecision) %>%
       mutate(merged_ref = ifelse(length(unique(original_dataset_id)) == 1, original_dataset_id, paste0(original_dataset_id, collapse = "; "))) %>%
-      ungroup() %>% 
+      ungroup() %>%
       group_by(taxa, merged_ref) %>%
-      mutate(across(c(thousandseedweight, materialweigheddesc), replace_duplicates_with_NA)) %>% 
+      mutate(across(c(thousandseedweight, materialweigheddesc), replace_duplicates_with_NA)) %>%
       ungroup()
-  '
+    '
   collection_date: unknown/2019
   taxon_name: taxa
   source_id: original_dataset_id
