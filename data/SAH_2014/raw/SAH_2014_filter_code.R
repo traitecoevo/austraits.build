@@ -7,14 +7,12 @@ austraits$traits %>%
   mutate(value = paste(value, collapse = " ")) %>%
   ungroup() -> SAH_old
 
-
 tmp <- austraits %>%
   austraits::extract_dataset(c("SAH_2022", "SAH_2023")) %>%
   austraits::join_contexts()
   
 tmp$traits %>%
   select(taxon_name, trait_name, value_type, value, `entity measured`) %>%
-  filter(!`entity measured` %in% c("cauline leaf", "leaflet", "pinnae")) %>% #100+ more unmatched if you remove this
   select(-`entity measured`) %>%
   group_by(taxon_name, trait_name, value_type) %>%
   mutate(value = paste(value, collapse = " ")) %>%
