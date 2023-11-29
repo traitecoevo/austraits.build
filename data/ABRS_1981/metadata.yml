@@ -82,7 +82,9 @@ dataset:
             value = ifelse(species_name %in% c("Piper hederaceum var. hederaceum") & trait == "lifeform","climber_vine_woody",value),
             value = ifelse(species_name %in% c("Stephania japonica var. discolor") &  trait == "lifeform","vine",value),
             value = ifelse(species_name %in% c("Caesalpinia subtropica") & trait == "lifeform","climber_woody",value),
-            trait = ifelse(value %in% c("HE", "A", "E"), "plant_growth_substrate", trait)
+            trait = ifelse(value %in% c("HE", "A", "E"), "plant_growth_substrate", trait),
+            value = ifelse(stringr::str_detect(species_name, "^Xanthorrhoea") & 
+            stringr::str_detect(trait, "^leaf length"), NA, value)
       ) %>%
       group_by(species_name, trait) %>%
         distinct(value, .keep_all = TRUE) %>%
