@@ -16,7 +16,7 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:        '
+  custom_R_code: '
     data %>%
       mutate(
         ref_year = stringr::str_extract(refshort, "(?<!\\d)\\d{4}(?!\\d)"),
@@ -50,7 +50,17 @@ dataset:
             "MATERIAL: NA; ", ""),
         measurement_remarks = stringr::str_replace(
             measurement_remarks,
-            "NOTES: NA; ", "")
+            "NOTES: NA; ", ""),
+        seed_mass_method = case_when(
+          stringr::str_detect(seedweightnotes, "wet mass") ~ "Weight refers to wet mass of mature seed.",
+          stringr::str_detect(seedweightnotes, "air-dry|air dry|Air-dry") ~ "Weight refers to the air-dried mass of mature seed.",
+          stringr::str_detect(seedweightnotes, "oven dry|dried at|dried to|dried in|dried for") ~ "Weight refers to the oven-dried mass of mature seed.",
+          stringr::str_detect(seedweightnotes, "fresh|Fresh") ~ "Weight refers to fresh mass of mature seed.",
+          stringr::str_detect(seedweightnotes, "mean weight of 20 dry seeds|Dired seed") ~ "Weight refers to dry mass of mature seed.",
+          stringr::str_detect(seedweightnotes, "dry weight") & stringr::str_detect(seedweightnotes, "SE=") ~ "Weight refers to dry mass of mature seed.",
+          seedweightnotes %in% c("Dry weight", "Dry weight.", "dry", "Weight refers to seed dry mass", "Seed dry-weight.") ~ "Weight refers to dry mass of mature seed.",
+          TRUE ~ "Weight probably refers to dry mass (see measurement remarks)."
+        )
       ) %>%
       filter(!original_dataset_id %in% c("Jurado_1991", "Moles_2000", "Milberg_1998")) %>%
       arrange(taxa, materialweigheddesc, thousandseedweight, original_dataset_id) %>%
@@ -74,7 +84,29 @@ dataset:
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons license. Data not to be used for Commercial Purposes.
 locations: .na
-contexts: .na
+contexts:
+- context_property: seed mass method
+  category: method_context
+  var_in: seed_mass_method
+  values:
+  - find: Weight probably refers to dry mass (see measurement remarks).
+    value: dry mass (assumed)
+    description: Weight probably refers to dry mass (see measurement remarks).
+  - find: Weight refers to the air-dried mass of mature seed.
+    value: air-dried mass
+    description: Weight refers to the air-dried mass of mature seed.
+  - find: Weight refers to the oven-dried mass of mature seed.
+    value: oven-dried mass
+    description: Weight refers to the oven-dried mass of mature seed.
+  - find: Weight refers to dry mass of mature seed.
+    value: dry mass
+    description: Weight refers to dry mass of mature seed.
+  - find: Weight refers to fresh mass of mature seed.
+    value: fresh mass
+    description: Weight refers to fresh mass of mature seed.
+  - find: Weight refers to wet mass of mature seed.
+    value: wet mass
+    description: Weight refers to wet mass of mature seed.
 traits:
 - var_in: thousandseedweight
   unit_in: mg
