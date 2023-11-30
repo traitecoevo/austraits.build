@@ -59,12 +59,23 @@ contributors:
       Australia
   dataset_curators: Rachael Gallagher
 dataset:
-  data_is_long_format: yes
-  custom_R_code: .na
+  data_is_long_format: no
+  custom_R_code:          '
+    data %>%
+      mutate(flowering_time = sprintf("%s-%s", `flowering start (month)`, `flowering finish (month)`) %>% convert_month_range_vec_to_binary()) %>%
+      mutate(flowering_time2 = format_flowering_months(`flowering start (month)`, `flowering finish (month)`)) %>%
+      mutate(leaf_type = NA) %>%
+      move_values_to_new_trait(
+        "leaf type (compound/simple)", "leaf_type",
+        "leafless", "leafless", ""
+      ) %>%
+      mutate(
+        across(everything(), ~as.character(.x)),
+        across(everything(), ~na_if(.x, ""))
+      )
+  '
   collection_date: unknown/1998
-  taxon_name: original_name
-  trait_name: trait_name
-  value: value
+  taxon_name: SPECIES
   description: Scraped from Florabase website https://florabase.dpaw.wa.gov.au/
   basis_of_record: preserved_specimen
   life_stage: adult
@@ -74,13 +85,53 @@ dataset:
 locations: .na
 contexts: .na
 traits:
-- var_in: plant_height
-  unit_in: unit
-  trait_name: plant_height
+- var_in: growth form
+  unit_in: .na
+  trait_name: plant_growth_form
   entity_type: species
-  value_type: value_type
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant longevity
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: extreme min height (m)
+  unit_in: m
+  trait_name: .na
+  entity_type: .na
+  value_type: .na
+  basis_of_value: .na
+  replicates: unknown
+  methods: unknown
+- var_in: min height (m)
+  unit_in: m
+  trait_name: .na
+  entity_type: species
+  value_type: minimum
   basis_of_value: measurement
   replicates: .na
+  methods: unknown
+- var_in: max height (m)
+  unit_in: m
+  trait_name: plant_height
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: extreme max height (m)
+  unit_in: m
+  trait_name: .na
+  entity_type: .na
+  value_type: .na
+  basis_of_value: .na
+  replicates: unknown
   methods: unknown
 - var_in: flowering_time
   unit_in: .na
@@ -90,7 +141,15 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf_compoundness
+- var_in: flowering_time2
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf type (compound/simple)
   unit_in: .na
   trait_name: leaf_compoundness
   entity_type: species
@@ -106,7 +165,7 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf_phenology
+- var_in: leaf longevity (evergreen/deciduous)
   unit_in: .na
   trait_name: leaf_phenology
   entity_type: species
@@ -114,7 +173,58 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-substitutions: .na
+substitutions:
+- trait_name: plant_growth_form
+  find: herb/shrub
+  replace: herb shrub
+- trait_name: plant_growth_form
+  find: shrub/tree
+  replace: shrub tree
+- trait_name: life_history
+  find: biennial/perennial
+  replace: biennial perennial
+- trait_name: plant_height
+  find: 2-Jan
+  replace: '2'
+- trait_name: plant_height
+  find: 2 long
+  replace: .na.character
+- trait_name: plant_height
+  find: to 0.05
+  replace: '0.05'
+- trait_name: plant_height
+  find: to 0.3
+  replace: '0.3'
+- trait_name: plant_height
+  find: to 1
+  replace: '1'
+- trait_name: plant_height
+  find: to 1m long
+  replace: '1'
+- trait_name: life_history
+  find: annual biennial/perennial
+  replace: annual biennial perennial
+- trait_name: plant_growth_form
+  find: climber/shrub
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: climber/herb
+  replace: climber_herbaceous
+- trait_name: plant_growth_form
+  find: climber/tree
+  replace: climber_woody
+- trait_name: plant_growth_form
+  find: climber/herb/shrub
+  replace: climber_herbaceous climber_woody
+- trait_name: plant_growth_form
+  find: climber/shrub/tree
+  replace: climber_woody
+- trait_name: life_history
+  find: perennial assumed
+  replace: perennial
+- trait_name: leaf_phenology
+  find: semi-deciduous
+  replace: semi_deciduous
 taxonomic_updates:
 - find: Acianthus huegelii (Cyrtostylis huegelii Endl. )
   replace: Acianthus huegelii
@@ -152,6 +262,11 @@ taxonomic_updates:
   replace: Aponogeton elongatus
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
+  taxonomic_resolution: species
+- find: Blumea mollis ( Blumea axillaris (Lam.) DC. )
+  replace: Blumea mollis
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
   taxonomic_resolution: species
 - find: Boronia spathulata (Boronia anceps Paul G.Wilson)
   replace: Boronia spathulata
@@ -209,8 +324,24 @@ taxonomic_updates:
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
   taxonomic_resolution: species
+- find: Caladenia triangularis
+  replace: Caladenia x triangularis
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: species
+- find: Caladenia variegata (Caladenia occidentalis Hopper & A.P.Br.)
+  replace: Caladenia variegata
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: species
 - find: Caleana nigrita (Paracaleana nigrita (Lindl.) Blaxell )
   replace: Caleana nigrita
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: species
+- find: Cheiranthera simplicifolia (Cheiranthera simplicifolia (E.M.Benn.) L.Cayzer
+    & Crisp )
+  replace: Cheiranthera simplicifolia
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
   taxonomic_resolution: species
@@ -223,6 +354,21 @@ taxonomic_updates:
   replace: Conospermum undulatum
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
+  taxonomic_resolution: species
+- find: Crassula tetramera (Crassula tetramera (Toelken) A.Druce & Sykes )
+  replace: Crassula tetramera
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: species
+- find: Cryptandra intermedia (Cryptandra intermedia (Rye) Rye )
+  replace: Cryptandra intermedia
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: species
+- find: Cyanicula deformis (Pheladenia deformis (R.Br.) D.L.Jones & M.A.Clem. )
+  replace: Cyanicula deformis
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
   taxonomic_resolution: species
 - find: Cyperus rigidellus (Cyperus rigidellus (Benth.) J.M.Black )
   replace: Cyperus rigidellus
@@ -244,8 +390,27 @@ taxonomic_updates:
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-22)
   taxonomic_resolution: species
+- find: Drummondita rubroviridis
+  replace: Drummondita rubriviridis
+  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: species
+- find: Elythranthera intermedia
+  replace: Elythranthera x intermedia
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-12)
+  taxonomic_resolution: species
+- find: Euphorbia macgillivrayi (Euphorbia bifida Hook. & Arn. )
+  replace: Euphorbia macgillivrayi
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: species
 - find: Fimbristylis quinquangularis (Fimbristylis miliacea Vahl)
   replace: Fimbristylis quinquangularis
+  reason: match_14. Automatic alignment with species-level canonical name in APC accepted
+    when notes are ignored (2022-11-10)
+  taxonomic_resolution: species
+- find: Fimbristylis squarrulosa (Abildgaardia schoenoides R.Br.)
+  replace: Fimbristylis squarrulosa
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
   taxonomic_resolution: species
@@ -289,6 +454,16 @@ taxonomic_updates:
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-10)
   taxonomic_resolution: subspecies
+- find: Hypocalymma linifolium
+  replace: Hypocalimna linifolium
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2023-11-02)
+  taxonomic_resolution: species
+- find: Isolepis nodosa (Ficinia nodosa (Rottb.) Goetgh., Muasya & D.A.Simpson )
+  replace: Isolepis nodosa
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: species
 - find: Jacquemontia browniana (Jacquemontia pannosa (R.Br.) Mabb. )
   replace: Jacquemontia browniana var. browniana
   reason: match_14. Automatic alignment with species-level name known by APC when
@@ -303,6 +478,11 @@ taxonomic_updates:
   replace: Lepidium leptopetalum
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
+  taxonomic_resolution: species
+- find: Leptoceras fimbriata ( Leporella fimbriata (Lindl.) A.S.George )
+  replace: Leptoceras fimbriata
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
   taxonomic_resolution: species
 - find: Leucopogon corifolius ( Leucopogon reflexus R.Br. )
   replace: Leucopogon corifolius
@@ -357,8 +537,18 @@ taxonomic_updates:
   replace: Pileanthus rubrinitidus
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
   taxonomic_resolution: species
+- find: Prasophyllum grimwadeanum (Prasophyllum giganteum Lindl.)
+  replace: Prasophyllum grimwadeanum
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: species
 - find: Prasophyllum lanceolatum (Prasophyllum triangulare Fitzg.)
   replace: Prasophyllum lanceolatum
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
+  taxonomic_resolution: species
+- find: Prasophyllum ringens (Prasophyllum gracile Lindl. )
+  replace: Prasophyllum ringens
   reason: match_14. Automatic alignment with species-level name known by APC when
     notes are ignored (2022-11-22)
   taxonomic_resolution: species
@@ -371,6 +561,11 @@ taxonomic_updates:
   replace: Schoenus tenellus
   reason: match_14. Automatic alignment with species-level canonical name in APC accepted
     when notes are ignored (2022-11-10)
+  taxonomic_resolution: species
+- find: Scirpus mucronatus (Schoenoplectus mucronatus (L.) A.Kern.)
+  replace: Scirpus mucronatus
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
   taxonomic_resolution: species
 - find: Senecio picridioides ( Senecio picridioides (Turcz.) M.E.Lawr)
   replace: Senecio picridioides
@@ -399,6 +594,11 @@ taxonomic_updates:
 - find: Stylidium planirosulum
   replace: Stylidium planirosula
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-12)
+  taxonomic_resolution: species
+- find: Stylidium sidjamesii (Stylidium inundatum R.Br. )
+  replace: Stylidium sidjamesii
+  reason: match_14. Automatic alignment with species-level name known by APC when
+    notes are ignored (2022-11-22)
   taxonomic_resolution: species
 - find: Terminalia volucris (Terminalia volucris Benth. )
   replace: Terminalia volucris
