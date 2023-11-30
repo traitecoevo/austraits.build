@@ -29,15 +29,26 @@ counts_diff <- NTH_old %>%
   group_by(trait_name) %>% mutate(n_taxa = n()) %>% ungroup() %>% distinct(trait_name, n_taxa) %>%
   arrange(n_taxa)
 
-#APCalign::create_species_state_origin_matrix(resources = resources) %>% filter(NT == "not present") -> not_in_NT
+retain_Trichosanthes_cucu_cucu <-
+  austraits$traits %>% 
+  filter(dataset_id == "NTH_2014") %>% 
+  filter(taxon_name == "Trichosanthes cucumerina var. cucumerina") %>% 
+  select(taxon_name, trait_name, value_type, value, unit, original_name, observation_id)
 
-#NTH_old %>% filter(!taxon_name %in% not_in_NT$species) -> NTH_old2
+
+retain_Synostemon_glaucus <-
+  austraits$traits %>% 
+  filter(dataset_id == "NTH_2014") %>% 
+  filter(taxon_name == "Synostemon glaucus") %>% 
+  filter(trait_name == "flowering_time") %>%
+  select(taxon_name, trait_name, value_type, value, unit, original_name, observation_id) 
 
 retain_1 <- NTH_old %>%
   distinct(taxon_name, trait_name, value_type, value, unit, .keep_all = TRUE) %>%
   left_join(NTH_new) %>%
   filter(is.na(value_new)) %>%
-  filter(!trait_name %in% c("woodiness", "woodiness_detailed", "life_history", "plant_growth_form"))
+  filter(!trait_name %in% c("woodiness", "woodiness_detailed", "life_history", "plant_growth_form")) %>%
+  filter(taxon_name != "Trichosanthes cucumerina var. cucumerina")
 
 retain_missing_taxa <- retain_1 %>% filter(!taxon_name %in% NTH_new$taxon_name)
 
@@ -64,16 +75,16 @@ missing_seed_heights <-
   filter(trait_name == "seed_height")
 
 retain_missing_seed_heights <- 
-NTH_old %>%
-  filter(trait_name %in% c("seed_height", "seed_width")) %>%
-  select(taxon_name, trait_name, value_type, value, unit, observation_id, original_name) %>%
-  pivot_wider(names_from = trait_name, values_from = value) %>%
-  filter(seed_height != seed_width) %>%
-  filter(observation_id %in% missing_seed_heights$observation_id) %>%
-  rename(value = seed_height) %>%
-  select(-seed_width) %>%
-  mutate(trait_name = "seed_height") %>%
-  distinct(taxon_name, trait_name, value, unit, observation_id, original_name, .keep_all = TRUE) #remove min = max
+  NTH_old %>%
+    filter(trait_name %in% c("seed_height", "seed_width")) %>%
+    select(taxon_name, trait_name, value_type, value, unit, observation_id, original_name) %>%
+    pivot_wider(names_from = trait_name, values_from = value) %>%
+    filter(seed_height != seed_width) %>%
+    filter(observation_id %in% missing_seed_heights$observation_id) %>%
+    rename(value = seed_height) %>%
+    select(-seed_width) %>%
+    mutate(trait_name = "seed_height") %>%
+    distinct(taxon_name, trait_name, value, unit, observation_id, original_name, .keep_all = TRUE) #remove min = max
 
 retain_trustworthy_traits <-
   retain_2 %>%
@@ -91,7 +102,11 @@ NTH_retain <-
   bind_rows(retain_missing_taxa) %>%
   bind_rows(retain_trustworthy_traits) %>%
   bind_rows(NTH_old %>% filter(trait_name %in% c("seed_height", "seed_width")) %>% filter(taxon_name == "Acacia gonocarpa")) %>%
-  bind_rows(NTH_old %>% filter(trait_name %in% c("leaf_length", "leaf_width")) %>% filter(taxon_name %in% c("Nelumbo nucifera", "Ficus carpentariensis")))
+  bind_rows(NTH_old %>% filter(trait_name %in% c("leaf_length", "leaf_width")) %>% filter(taxon_name %in% c("Nelumbo nucifera", "Ficus carpentariensis"))) %>%
+  bind_rows(retain_Trichosanthes_cucu_cucu) %>%
+  bind_rows(retain_Synostemon_glaucus) %>%
+  filter(value != "yyyyynnyyyyy yyyyynnnyyyy") %>%
+  filter(!trait_name %in% c("life_history", "plant_growth_form"))
 
 NTH_retain %>% select(-value_new) %>% write_csv("data/NTH_2014/data.csv")
 
