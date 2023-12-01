@@ -41,7 +41,7 @@ retain_2 <- retain_1 %>% anti_join(retain_missing_taxa)
 retain_trustworthy_traits <-
   retain_2 %>%
   filter(trait_name %in% c("leaf_phenology", "flowering_time", "leaf_compoundness", "dispersal_appendage", "plant_growth_substrate", "seed_shape"))
-      
+
 retain_seed_traits <-
   retain_2 %>%
   filter(trait_name %in% c("seed_length", "seed_width", "seed_height"))
