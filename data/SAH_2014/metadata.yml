@@ -17,9 +17,10 @@ contributors:
   dataset_curators: Rachael Gallagher
 dataset:
   data_is_long_format: no
-  custom_R_code:        '
+  custom_R_code: '
     data %>%
       mutate(
+        leaf_width_max = ifelse(species == "Eucalyptus porosa", leaf_width_max/10, leaf_width_max),
         leaf_length_unit_numeric = ifelse(leaf_length_unit == "cm", 10, NA),
         leaf_length_unit_numeric = ifelse(leaf_length_unit == "mm", 1, leaf_length_unit_numeric),
         leaf_length_max = leaf_length_max * leaf_length_unit_numeric,
@@ -34,7 +35,7 @@ dataset:
         plant_height_max = plant_height_max * plant_height_unit_numeric,
         plant_height_min = plant_height_min * plant_height_unit_numeric
       )
-  '
+    '
   collection_date: unknown/1986
   taxon_name: species
   description: Taxonomic treatment - Flora of South Australia
@@ -43,7 +44,9 @@ dataset:
   sampling_strategy: Herbarium specimens and other herbarium curated data from South
     Australia
   original_file: .na
-  notes: Request acknowledgement of "State Herbarium of South Australia"
+  notes: Request acknowledgement of "State Herbarium of South Australia"; Eucalyptus
+    porosa `leaf_width` value has been modified from 25 cm to 2.5, due to likely typo,
+    in custom_R_code.
 locations: .na
 contexts: .na
 traits:
