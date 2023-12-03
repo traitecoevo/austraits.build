@@ -15,17 +15,12 @@ contributors:
       Science, Royal Botanic Gardens and Domain Trust, Sydney, Australia
   dataset_curators: Rachael Gallagher
 dataset:
-  data_is_long_format: no
-  custom_R_code:            '
-    data %>% 
-      mutate(
-        `flowering time` = ifelse(species_name == "Enneapogon cylindricus","mar-aug",`flowering time`),
-        `flowering time` = convert_month_range_vec_to_binary(`flowering time`),
-        ephemeral_flowering = ifelse(stringr::str_detect(`flowering time`,"ephemeral"),"ephemeral",NA)
-      )
-  '
-  collection_date: unknown/2014
-  taxon_name: species_name
+  data_is_long_format: yes
+  custom_R_code: .na
+  collection_date: unknown/2014  
+  taxon_name: original_name
+  value: value
+  trait_name: trait_name
   description: grass trait data from the Royal Botanic Gardens Sydney
   basis_of_record: preserved_specimen
   life_stage: adult
@@ -36,7 +31,7 @@ dataset:
 locations: .na
 contexts: .na
 traits:
-- var_in: growth habit
+- var_in: stem_growth_habit
   unit_in: .na
   trait_name: stem_growth_habit
   entity_type: species
@@ -44,7 +39,7 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: herbarium collections and database
-- var_in: flowering time
+- var_in: flowering_time
   unit_in: .na
   trait_name: flowering_time
   entity_type: species
@@ -54,30 +49,7 @@ traits:
   methods: herbarium collections and database; NB Flowering time data came from a
     file of taxon descriptions associated with species displayed on AusGrass2 created
     by Bryan Simon, once located on the AusGrass2 website.
-- var_in: longevity
-  unit_in: .na
-  trait_name: life_history
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: herbarium collections and database
-substitutions:
-- trait_name: stem_growth_habit
-  find: rhizatomous/tufted
-  replace: rhizomatous tufted
-- trait_name: stem_growth_habit
-  find: tufted/rhizatomous
-  replace: rhizomatous tufted
-- trait_name: life_history
-  find: annual/perennial
-  replace: annual perennial
-- trait_name: life_history
-  find: perennial/annual
-  replace: annual perennial
-- trait_name: life_history
-  find: annual || perennial
-  replace: annual perennial
+substitutions: .na
 taxonomic_updates:
 - find: Aristida sp.
   replace: Aristida sp. [NHNSW_2014]
@@ -92,11 +64,6 @@ taxonomic_updates:
   replace: Arthraxon castratus
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
   taxonomic_resolution: species
-- find: Austrostipa juncifolia subsp. Southern
-  replace: Austrostipa juncifolia subsp. Southern River (B.J.Keighery 2160)
-  reason: match_12. Automatic alignment with infraspecific canonical name in APC known
-    names when notes are ignored (2022-11-10)
-  taxonomic_resolution: subspecies
 - find: Austrostipa scabra subsp. Scabra
   replace: Austrostipa scabra subsp. scabra
   reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
@@ -105,14 +72,6 @@ taxonomic_updates:
 - find: Calyptochloa cylindropserma
   replace: Calyptochloa cylindrosperma
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-10)
-  taxonomic_resolution: species
-- find: Cynochloris macivorii
-  replace: x Cynochloris macivorii
-  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
-  taxonomic_resolution: species
-- find: Cynochloris reynoldensis
-  replace: x Cynochloris reynoldensis
-  reason: Manual alignment with canonical species name in APC (Elizabeth Wenk, 2022-11-22)
   taxonomic_resolution: species
 - find: Rytidosperma popinensis
   replace: Rytidosperma popinense

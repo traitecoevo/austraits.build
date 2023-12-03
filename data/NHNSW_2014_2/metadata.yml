@@ -16,77 +16,11 @@ contributors:
   dataset_curators: Rachael Gallagher
 dataset:
   data_is_long_format: yes
-  custom_R_code:        '
-    check_months <-  function(x){(1:12 %in% x %>% as.integer() %>% paste(collapse=""))};
-
-    fruiting <-
-      data %>%
-        filter(trait == "fruiting", lookup_id <= 13) %>%
-        select(species, lookup_id) %>%
-        group_by(species) %>%
-        nest(months = c(lookup_id)) %>%
-        mutate(trait = "fruiting_time", lookup_data = map_chr(months,
-            ~check_months(.x$lookup_id)) %>% convert_01_ny) %>%
-        select(-months);
-
-    flowering <-
-      data %>%
-        filter(trait == "flowering month", lookup_id <= 13) %>%
-        select(species, lookup_id) %>%
-        group_by(species) %>%
-        nest(months = c(lookup_id)) %>%
-        mutate(trait = "flowering_time", lookup_data = map_chr(months,
-            ~check_months(.x$lookup_id)) %>% convert_01_ny) %>% select(-months);
-
-    growth_habit <-
-      data %>%
-        filter(lookup_data == "creeper rooting along stems") %>%
-        mutate(trait = "growth_habit", lookup_data = "creeping");
-
-    clonal <-
-      data %>%
-        filter(lookup_data == "creeper rooting along stems") %>%
-        mutate(trait = "clonal_spread_mechanism", lookup_data = "aboveground_clonal");
-
-    scales <-
-      data %>%
-        mutate(trait = ifelse(str_detect(lookup_data, "scales"), "leaf_type", trait)) %>%
-        filter(trait == "leaf_type") %>%
-        mutate(lookup_data = "scale");
-
-    collapsed <-
-      data %>%
-        filter(!trait %in% c("fruiting","flowering month")) %>%
-        mutate(
-          trait = ifelse(lookup_data == "prostrate", "growth_habit", trait),
-          trait = ifelse(lookup_data == "climbing", "growth_habit", trait),
-          trait = ifelse(lookup_data == "parasitic", "parasitic", trait),
-          trait = ifelse(str_detect(lookup_data,"epiphytic"), "growth_substrate", trait),
-          trait = ifelse(lookup_data == "aquatic", "growth_substrate", trait),
-          trait = ifelse(trait == "special growth form", "growth form", trait),
-          lookup_data = str_replace(lookup_data,"toothed or lobed","toothed_or_lobed")
-        ) %>%
-        select(species, trait, units, lookup_data) %>%
-        group_by(species, trait, units) %>%
-          summarise(
-            lookup_data = paste0(lookup_data, collapse = " ")
-          ) %>%
-        ungroup() %>%
-        distinct(species, trait, units, lookup_data);
-
-    bind_rows(
-      collapsed,
-      fruiting,
-      flowering,
-      growth_habit,
-      clonal,
-      scales
-    )
-  '
+  custom_R_code: .na
   collection_date: unknown/2014
-  taxon_name: species
-  value: lookup_data
-  trait_name: trait
+  taxon_name: original_name
+  value: value
+  trait_name: trait_name
   description: Flora of NSW data from PLantNET
   basis_of_record: preserved_specimen
   life_stage: adult
@@ -99,14 +33,6 @@ traits:
 - var_in: flowering_time
   unit_in: .na
   trait_name: flowering_time
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
-- var_in: longevity
-  unit_in: .na
-  trait_name: life_history
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -128,14 +54,6 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: woodiness
-  unit_in: .na
-  trait_name: woodiness
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: expert observation or opinion
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
@@ -144,7 +62,7 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: foliage
+- var_in: leaf_phenology
   unit_in: .na
   trait_name: leaf_phenology
   entity_type: species
@@ -152,7 +70,7 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: flower colour
+- var_in: flower_colour
   unit_in: .na
   trait_name: flower_colour
   entity_type: species
@@ -160,7 +78,7 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf arrangement
+- var_in: leaf_phyllotaxis
   unit_in: .na
   trait_name: leaf_phyllotaxis
   entity_type: species
@@ -176,7 +94,7 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf type
+- var_in: leaf_compoundness
   unit_in: .na
   trait_name: leaf_compoundness
   entity_type: species
@@ -184,7 +102,7 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf margin
+- var_in: leaf_margin
   unit_in: .na
   trait_name: leaf_margin
   entity_type: species
@@ -200,7 +118,7 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: local spread
+- var_in: vegetative_reproduction_ability
   unit_in: .na
   trait_name: vegetative_reproduction_ability
   entity_type: species
@@ -208,64 +126,31 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf length minimum
-  unit_in: mm
+- var_in: leaf_length
+  unit_in: unit
   trait_name: leaf_length
   entity_type: species
-  value_type: minimum
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: unknown
-- var_in: leaf length maximum
-  unit_in: mm
-  trait_name: leaf_length
-  entity_type: species
-  value_type: maximum
-  basis_of_value: measurement
-  replicates: .na
-  methods: unknown
-- var_in: leaf width minimum
-  unit_in: mm
+- var_in: leaf_width
+  unit_in: unit
   trait_name: leaf_width
   entity_type: species
-  value_type: minimum
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: unknown
-- var_in: leaf width maximum
-  unit_in: mm
-  trait_name: leaf_width
-  entity_type: species
-  value_type: maximum
-  basis_of_value: measurement
-  replicates: .na
-  methods: unknown
-- var_in: plant height minimum
-  unit_in: cm
+- var_in: plant_height
+  unit_in: unit
   trait_name: plant_height
   entity_type: species
-  value_type: minimum
+  value_type: value_type
   basis_of_value: measurement
   replicates: .na
   methods: unknown
-- var_in: plant height maximum
-  unit_in: cm
-  trait_name: plant_height
-  entity_type: species
-  value_type: maximum
-  basis_of_value: measurement
-  replicates: .na
-  methods: unknown
-- var_in: growth form
-  unit_in: .na
-  trait_name: .na
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: Plant growth form data; replaced by newly scraped data in NHNSW_2022. Since
-    there were a number of systematic mistakes in this dataset it has been removed.
-- var_in: growth_habit
+- var_in: stem_growth_habit
   unit_in: .na
   trait_name: stem_growth_habit
   entity_type: species
@@ -273,7 +158,7 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: growth_substrate
+- var_in: plant_growth_substrate
   unit_in: .na
   trait_name: plant_growth_substrate
   entity_type: species
@@ -288,592 +173,7 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: introduced
-  unit_in: .na
-  trait_name: .na
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
-- var_in: height class
-  unit_in: .na
-  trait_name: .na
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
-- var_in: propagation
-  unit_in: .na
-  trait_name: .na
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
-substitutions:
-- trait_name: plant_growth_substrate
-  find: epiphytic
-  replace: epiphyte
-- trait_name: leaf_margin
-  find: toothed_or_lobed
-  replace: .na
-- trait_name: leaf_margin
-  find: entire toothed_or_lobed
-  replace: .na
-- trait_name: leaf_margin
-  find: toothed or lobed
-  replace: .na
-- trait_name: leaf_margin
-  find: entire toothed lobed
-  replace: .na
-- trait_name: life_history
-  find: short-lived
-  replace: short_lived_perennial
-- trait_name: life_history
-  find: long_lived
-  replace: perennial
-- trait_name: life_history
-  find: indefinite
-  replace: perennial
-- trait_name: leaf_compoundness
-  find: simple or appearing so
-  replace: simple
-- trait_name: flower_colour
-  find: yellow orange
-  replace: yellow_orange
-- trait_name: flower_colour
-  find: blue or purple
-  replace: blue_purple
-- trait_name: flower_colour
-  find: red or brown
-  replace: red_brown
-- trait_name: flower_colour
-  find: blue or purple blue or purple
-  replace: blue_purple
-- trait_name: flower_colour
-  find: blue or purple blue or purple pink
-  replace: blue_purple pink
-- trait_name: flower_colour
-  find: blue or purple blue or purple red or brown
-  replace: blue_purple red_brown
-- trait_name: flower_colour
-  find: blue or purple pink
-  replace: blue_purple pink
-- trait_name: flower_colour
-  find: blue or purple pink red or brown
-  replace: blue_purple pink red_brown
-- trait_name: flower_colour
-  find: blue or purple pink white or cream
-  replace: blue_purple pink white_cream
-- trait_name: flower_colour
-  find: blue or purple red or brown
-  replace: blue_purple red_brown
-- trait_name: flower_colour
-  find: blue or purple white or cream
-  replace: blue_purple white_cream
-- trait_name: flower_colour
-  find: blue or purple white or cream pink
-  replace: blue_purple white_cream pink
-- trait_name: flower_colour
-  find: blue or purple yellow orange
-  replace: blue_purple yellow_orange
-- trait_name: flower_colour
-  find: blue or purple yellow orange red or brown
-  replace: blue_purple yellow_orange red_brown
-- trait_name: flower_colour
-  find: green blue or purple
-  replace: green blue_purple
-- trait_name: flower_colour
-  find: green blue or purple pink
-  replace: green blue_purple pink
-- trait_name: flower_colour
-  find: green blue or purple pink red or brown
-  replace: green blue_purple pink red_brown
-- trait_name: flower_colour
-  find: green blue or purple red or brown
-  replace: green blue_purple red_brown
-- trait_name: flower_colour
-  find: green blue or purple yellow orange
-  replace: green blue_purple yellow_orange
-- trait_name: flower_colour
-  find: green pink red or brown
-  replace: green pink red_brown
-- trait_name: flower_colour
-  find: green pink white or cream
-  replace: green pink white_cream
-- trait_name: flower_colour
-  find: green red or brown
-  replace: green red_brown
-- trait_name: flower_colour
-  find: green white or cream
-  replace: green white_cream
-- trait_name: flower_colour
-  find: green yellow orange
-  replace: green yellow_orange
-- trait_name: flower_colour
-  find: green yellow orange red or brown
-  replace: green yellow_orange red_brown
-- trait_name: flower_colour
-  find: green yellow orange white or cream
-  replace: green yellow_orange white_cream
-- trait_name: flower_colour
-  find: pink blue or purple
-  replace: pink blue_purple
-- trait_name: flower_colour
-  find: pink blue or purple white or cream
-  replace: pink blue_purple white_cream
-- trait_name: flower_colour
-  find: pink red or brown
-  replace: pink red_brown
-- trait_name: flower_colour
-  find: pink white or cream
-  replace: pink white_cream
-- trait_name: flower_colour
-  find: red or brown blue or purple
-  replace: red_brown blue_purple
-- trait_name: flower_colour
-  find: red or brown blue or purple pink
-  replace: red_brown blue_purple pink
-- trait_name: flower_colour
-  find: red or brown blue or purple pink red or brown
-  replace: red_brown blue_purple pink red_brown
-- trait_name: flower_colour
-  find: red or brown blue or purple pink white or cream
-  replace: red_brown blue_purple pink white_cream
-- trait_name: flower_colour
-  find: red or brown blue or purple white or cream
-  replace: red_brown blue_purple white_cream
-- trait_name: flower_colour
-  find: red or brown blue or purple yellow orange
-  replace: red_brown blue_purple yellow_orange
-- trait_name: flower_colour
-  find: red or brown green
-  replace: red_brown green
-- trait_name: flower_colour
-  find: red or brown green blue or purple white or cream
-  replace: red_brown green blue_purple white_cream
-- trait_name: flower_colour
-  find: red or brown green blue or purple yellow orange
-  replace: red_brown green blue_purple yellow_orange
-- trait_name: flower_colour
-  find: red or brown green pink
-  replace: red_brown green pink
-- trait_name: flower_colour
-  find: red or brown green white or cream
-  replace: red_brown green white_cream
-- trait_name: flower_colour
-  find: red or brown green yellow orange
-  replace: red_brown green yellow_orange
-- trait_name: flower_colour
-  find: red or brown green yellow orange pink
-  replace: red_brown green yellow_orange pink
-- trait_name: flower_colour
-  find: red or brown pink
-  replace: red_brown pink
-- trait_name: flower_colour
-  find: red or brown pink red or brown
-  replace: red_brown pink red_brown
-- trait_name: flower_colour
-  find: red or brown red or brown
-  replace: red_brown red_brown
-- trait_name: flower_colour
-  find: red or brown white or cream
-  replace: red_brown white_cream
-- trait_name: flower_colour
-  find: red or brown yellow orange
-  replace: red_brown yellow_orange
-- trait_name: flower_colour
-  find: red or brown yellow orange pink
-  replace: red_brown yellow_orange pink
-- trait_name: flower_colour
-  find: red or brown yellow orange pink white or cream
-  replace: red_brown yellow_orange pink white_cream
-- trait_name: flower_colour
-  find: red or brown yellow orange red or brown
-  replace: red_brown yellow_orange red_brown
-- trait_name: flower_colour
-  find: red or brown yellow orange white or cream
-  replace: red_brown yellow_orange white_cream
-- trait_name: flower_colour
-  find: white or cream blue or purple
-  replace: white_cream blue_purple
-- trait_name: flower_colour
-  find: white or cream blue or purple pink
-  replace: white_cream blue_purple pink
-- trait_name: flower_colour
-  find: white or cream blue or purple pink red or brown
-  replace: white_cream blue_purple pink red_brown
-- trait_name: flower_colour
-  find: white or cream blue or purple red or brown
-  replace: white_cream blue_purple red_brown
-- trait_name: flower_colour
-  find: white or cream blue or purple white or cream
-  replace: white_cream blue_purple white_cream
-- trait_name: flower_colour
-  find: white or cream blue or purple white or cream pink
-  replace: white_cream blue_purple white_cream pink
-- trait_name: flower_colour
-  find: white or cream blue or purple white or cream red or brown
-  replace: white_cream blue_purple white_cream red_brown
-- trait_name: flower_colour
-  find: white or cream blue or purple yellow orange
-  replace: white_cream blue_purple yellow_orange
-- trait_name: flower_colour
-  find: white or cream green
-  replace: white_cream green
-- trait_name: flower_colour
-  find: white or cream green blue or purple
-  replace: white_cream green blue_purple
-- trait_name: flower_colour
-  find: white or cream green blue or purple pink
-  replace: white_cream green blue_purple pink
-- trait_name: flower_colour
-  find: white or cream green blue or purple red or brown
-  replace: white_cream green blue_purple red_brown
-- trait_name: flower_colour
-  find: white or cream green pink
-  replace: white_cream green pink
-- trait_name: flower_colour
-  find: white or cream green pink red or brown
-  replace: white_cream green pink red_brown
-- trait_name: flower_colour
-  find: white or cream green red or brown
-  replace: white_cream green red_brown
-- trait_name: flower_colour
-  find: white or cream green yellow orange
-  replace: white_cream green yellow_orange
-- trait_name: flower_colour
-  find: white or cream green yellow orange blue or purple
-  replace: white_cream green yellow_orange blue_purple
-- trait_name: flower_colour
-  find: white or cream green yellow orange pink blue or purple
-  replace: white_cream green yellow_orange pink blue_purple
-- trait_name: flower_colour
-  find: white or cream green yellow orange red or brown blue or purple
-  replace: white_cream green yellow_orange red_brown blue_purple
-- trait_name: flower_colour
-  find: white or cream pink
-  replace: white_cream pink
-- trait_name: flower_colour
-  find: white or cream pink red or brown
-  replace: white_cream pink red_brown
-- trait_name: flower_colour
-  find: white or cream red or brown
-  replace: white_cream red_brown
-- trait_name: flower_colour
-  find: white or cream red or brown blue or purple
-  replace: white_cream red_brown blue_purple
-- trait_name: flower_colour
-  find: white or cream red or brown blue or purple yellow orange
-  replace: white_cream red_brown blue_purple yellow_orange
-- trait_name: flower_colour
-  find: white or cream red or brown green
-  replace: white_cream red_brown green
-- trait_name: flower_colour
-  find: white or cream red or brown green blue or purple pink
-  replace: white_cream red_brown green blue_purple pink
-- trait_name: flower_colour
-  find: white or cream red or brown green blue or purple yellow orange
-  replace: white_cream red_brown green blue_purple yellow_orange
-- trait_name: flower_colour
-  find: white or cream red or brown green pink
-  replace: white_cream red_brown green pink
-- trait_name: flower_colour
-  find: white or cream red or brown green yellow orange
-  replace: white_cream red_brown green yellow_orange
-- trait_name: flower_colour
-  find: white or cream red or brown green yellow orange blue or purple
-  replace: white_cream red_brown green yellow_orange blue_purple
-- trait_name: flower_colour
-  find: white or cream red or brown pink
-  replace: white_cream red_brown pink
-- trait_name: flower_colour
-  find: white or cream red or brown yellow orange
-  replace: white_cream red_brown yellow_orange
-- trait_name: flower_colour
-  find: white or cream red or brown yellow orange blue or purple
-  replace: white_cream red_brown yellow_orange blue_purple
-- trait_name: flower_colour
-  find: white or cream red or brown yellow orange pink
-  replace: white_cream red_brown yellow_orange pink
-- trait_name: flower_colour
-  find: white or cream white or cream
-  replace: white_cream white_cream
-- trait_name: flower_colour
-  find: white or cream white or cream blue or purple pink
-  replace: white_cream white_cream blue_purple pink
-- trait_name: flower_colour
-  find: white or cream white or cream blue or purple red or brown
-  replace: white_cream white_cream blue_purple red_brown
-- trait_name: flower_colour
-  find: white or cream white or cream green
-  replace: white_cream white_cream green
-- trait_name: flower_colour
-  find: white or cream white or cream green blue or purple
-  replace: white_cream white_cream green blue_purple
-- trait_name: flower_colour
-  find: white or cream white or cream green blue or purple red or brown
-  replace: white_cream white_cream green blue_purple red_brown
-- trait_name: flower_colour
-  find: white or cream white or cream pink
-  replace: white_cream white_cream pink
-- trait_name: flower_colour
-  find: white or cream white or cream pink red or brown
-  replace: white_cream white_cream pink red_brown
-- trait_name: flower_colour
-  find: white or cream white or cream red or brown
-  replace: white_cream white_cream red_brown
-- trait_name: flower_colour
-  find: white or cream white or cream yellow orange
-  replace: white_cream white_cream yellow_orange
-- trait_name: flower_colour
-  find: white or cream white or cream yellow orange blue or purple
-  replace: white_cream white_cream yellow_orange blue_purple
-- trait_name: flower_colour
-  find: white or cream white or cream yellow orange blue or purple pink red or brown
-  replace: white_cream white_cream yellow_orange blue_purple pink red_brown
-- trait_name: flower_colour
-  find: white or cream white or cream yellow orange blue or purple red or brown
-  replace: white_cream white_cream yellow_orange blue_purple red_brown
-- trait_name: flower_colour
-  find: white or cream white or cream yellow orange green
-  replace: white_cream white_cream yellow_orange green
-- trait_name: flower_colour
-  find: white or cream white or cream yellow orange green blue or purple
-  replace: white_cream white_cream yellow_orange green blue_purple
-- trait_name: flower_colour
-  find: white or cream white or cream yellow orange green blue or purple red or brown
-  replace: white_cream white_cream yellow_orange green blue_purple red_brown
-- trait_name: flower_colour
-  find: white or cream white or cream yellow orange green red or brown
-  replace: white_cream white_cream yellow_orange green red_brown
-- trait_name: flower_colour
-  find: white or cream white or cream yellow orange pink
-  replace: white_cream white_cream yellow_orange pink
-- trait_name: flower_colour
-  find: white or cream white or cream yellow orange pink red or brown
-  replace: white_cream white_cream yellow_orange pink red_brown
-- trait_name: flower_colour
-  find: white or cream white or cream yellow orange red or brown
-  replace: white_cream white_cream yellow_orange red_brown
-- trait_name: flower_colour
-  find: white or cream yellow orange
-  replace: white_cream yellow_orange
-- trait_name: flower_colour
-  find: white or cream yellow orange blue or purple
-  replace: white_cream yellow_orange blue_purple
-- trait_name: flower_colour
-  find: white or cream yellow orange blue or purple pink
-  replace: white_cream yellow_orange blue_purple pink
-- trait_name: flower_colour
-  find: white or cream yellow orange blue or purple pink red or brown
-  replace: white_cream yellow_orange blue_purple pink red_brown
-- trait_name: flower_colour
-  find: white or cream yellow orange blue or purple red or brown
-  replace: white_cream yellow_orange blue_purple red_brown
-- trait_name: flower_colour
-  find: white or cream yellow orange green
-  replace: white_cream yellow_orange green
-- trait_name: flower_colour
-  find: white or cream yellow orange green blue or purple
-  replace: white_cream yellow_orange green blue_purple
-- trait_name: flower_colour
-  find: white or cream yellow orange green blue or purple pink
-  replace: white_cream yellow_orange green blue_purple pink
-- trait_name: flower_colour
-  find: white or cream yellow orange green blue or purple pink red or brown
-  replace: white_cream yellow_orange green blue_purple pink red_brown
-- trait_name: flower_colour
-  find: white or cream yellow orange green blue or purple red or brown
-  replace: white_cream yellow_orange green blue_purple red_brown
-- trait_name: flower_colour
-  find: white or cream yellow orange green pink
-  replace: white_cream yellow_orange green pink
-- trait_name: flower_colour
-  find: white or cream yellow orange green pink red or brown
-  replace: white_cream yellow_orange green pink red_brown
-- trait_name: flower_colour
-  find: white or cream yellow orange green red or brown
-  replace: white_cream yellow_orange green red_brown
-- trait_name: flower_colour
-  find: white or cream yellow orange pink
-  replace: white_cream yellow_orange pink
-- trait_name: flower_colour
-  find: white or cream yellow orange pink red or brown
-  replace: white_cream yellow_orange pink red_brown
-- trait_name: flower_colour
-  find: white or cream yellow orange red or brown
-  replace: white_cream yellow_orange red_brown
-- trait_name: flower_colour
-  find: white or cream yellow orange yellow orange white or cream
-  replace: white_cream yellow_orange yellow_orange white_cream
-- trait_name: flower_colour
-  find: yellow orange blue or purple
-  replace: yellow_orange blue_purple
-- trait_name: flower_colour
-  find: yellow orange blue or purple pink
-  replace: yellow_orange blue_purple pink
-- trait_name: flower_colour
-  find: yellow orange blue or purple pink red or brown
-  replace: yellow_orange blue_purple pink red_brown
-- trait_name: flower_colour
-  find: yellow orange blue or purple red or brown
-  replace: yellow_orange blue_purple red_brown
-- trait_name: flower_colour
-  find: yellow orange blue or purple white or cream
-  replace: yellow_orange blue_purple white_cream
-- trait_name: flower_colour
-  find: yellow orange green
-  replace: yellow_orange green
-- trait_name: flower_colour
-  find: yellow orange green blue or purple
-  replace: yellow_orange green blue_purple
-- trait_name: flower_colour
-  find: yellow orange green blue or purple pink
-  replace: yellow_orange green blue_purple pink
-- trait_name: flower_colour
-  find: yellow orange green blue or purple pink red or brown
-  replace: yellow_orange green blue_purple pink red_brown
-- trait_name: flower_colour
-  find: yellow orange green blue or purple red or brown
-  replace: yellow_orange green blue_purple red_brown
-- trait_name: flower_colour
-  find: yellow orange green pink
-  replace: yellow_orange green pink
-- trait_name: flower_colour
-  find: yellow orange green pink red or brown
-  replace: yellow_orange green pink red_brown
-- trait_name: flower_colour
-  find: yellow orange green red or brown
-  replace: yellow_orange green red_brown
-- trait_name: flower_colour
-  find: yellow orange pink
-  replace: yellow_orange pink
-- trait_name: flower_colour
-  find: yellow orange pink red or brown
-  replace: yellow_orange pink red_brown
-- trait_name: flower_colour
-  find: yellow orange pink white or cream
-  replace: yellow_orange pink white_cream
-- trait_name: flower_colour
-  find: yellow orange red or brown
-  replace: yellow_orange red_brown
-- trait_name: flower_colour
-  find: yellow orange white or cream
-  replace: yellow_orange white_cream
-- trait_name: flower_colour
-  find: yellow orange yellow orange
-  replace: yellow_orange yellow_orange
-- trait_name: flower_colour
-  find: yellow orange yellow orange blue or purple
-  replace: yellow_orange yellow_orange blue_purple
-- trait_name: flower_colour
-  find: yellow orange yellow orange blue or purple pink red or brown
-  replace: yellow_orange yellow_orange blue_purple pink red_brown
-- trait_name: flower_colour
-  find: yellow orange yellow orange blue or purple red or brown
-  replace: yellow_orange yellow_orange blue_purple red_brown
-- trait_name: flower_colour
-  find: yellow orange yellow orange green
-  replace: yellow_orange yellow_orange green
-- trait_name: flower_colour
-  find: yellow orange yellow orange green blue or purple
-  replace: yellow_orange yellow_orange green blue_purple
-- trait_name: flower_colour
-  find: yellow orange yellow orange green blue or purple pink
-  replace: yellow_orange yellow_orange green blue_purple pink
-- trait_name: flower_colour
-  find: yellow orange yellow orange green pink
-  replace: yellow_orange yellow_orange green pink
-- trait_name: flower_colour
-  find: yellow orange yellow orange green red or brown
-  replace: yellow_orange yellow_orange green red_brown
-- trait_name: flower_colour
-  find: yellow orange yellow orange pink
-  replace: yellow_orange yellow_orange pink
-- trait_name: flower_colour
-  find: yellow orange yellow orange red or brown
-  replace: yellow_orange yellow_orange red_brown
-- trait_name: leaf_phyllotaxis
-  find: whorled, tufted or crowded
-  replace: .na
-- trait_name: leaf_phyllotaxis
-  find: alternate opposite whorled, tufted or crowded
-  replace: alternate opposite
-- trait_name: leaf_phyllotaxis
-  find: alternate reduced to scales
-  replace: alternate
-- trait_name: leaf_phyllotaxis
-  find: alternate whorled, tufted or crowded
-  replace: alternate
-- trait_name: leaf_phyllotaxis
-  find: opposite reduced to scales
-  replace: opposite
-- trait_name: leaf_phyllotaxis
-  find: opposite whorled, tufted or crowded
-  replace: opposite
-- trait_name: leaf_phyllotaxis
-  find: opposite whorled, tufted or crowded reduced to scales
-  replace: opposite
-- trait_name: leaf_compoundness
-  find: simple or appearing so compound
-  replace: simple compound
-- trait_name: leaf_length
-  find: 15 10
-  replace: '15'
-- trait_name: leaf_length
-  find: 5 4
-  replace: '5'
-- trait_name: leaf_margin
-  find: entire toothed or lobed
-  replace: .na
-- trait_name: leaf_width
-  find: 1.5 2
-  replace: '2'
-- trait_name: leaf_width
-  find: 6 5
-  replace: '6'
-- trait_name: flower_colour
-  find: white or cream
-  replace: white_cream
-- trait_name: leaf_phyllotaxis
-  find: reduced to scales
-  replace: .na
-- trait_name: life_history
-  find: long-lived
-  replace: perennial
-- trait_name: vegetative_reproduction_ability
-  find: not vegetative
-  replace: not_vegetative
-- trait_name: life_history
-  find: annual biennial short-lived
-  replace: annual biennial short_lived_perennial
-- trait_name: life_history
-  find: annual perennial short-lived
-  replace: annual perennial short_lived_perennial
-- trait_name: life_history
-  find: biennial short-lived
-  replace: biennial short_lived_perennial
-- trait_name: life_history
-  find: perennial biennial short-lived
-  replace: perennial biennial short_lived_perennial
-- trait_name: life_history
-  find: perennial indefinite
-  replace: perennial
-- trait_name: life_history
-  find: perennial long-lived
-  replace: perennial
-- trait_name: life_history
-  find: perennial short-lived
-  replace: perennial short_lived_perennial
-- trait_name: life_history
-  find: short-lived long-lived
-  replace: short_lived_perennial perennial
-- trait_name: plant_growth_substrate
-  find: epiphytic parasitic
-  replace: epiphyte
+substitutions: .na
 taxonomic_updates:
 - find: Acaena ovina
   replace: Acaena x ovina
@@ -1034,10 +334,6 @@ taxonomic_updates:
   replace: Cryptandra sp. A
   reason: match_19. Automatic alignment with species-level canonical name in APNI
     when notes are ignored (2022-11-10)
-  taxonomic_resolution: species
-- find: Cyclosorus pennigera
-  replace: Cyclosorus penniger
-  reason: match_07_fuzzy. Fuzzy alignment with known canonical name in APC (2022-11-10)
   taxonomic_resolution: species
 - find: Cymbonotus sp. A sensu Murray (1992)
   replace: Cymbonotus sp. A
