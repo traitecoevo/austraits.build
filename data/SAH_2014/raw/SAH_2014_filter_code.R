@@ -19,16 +19,20 @@ tmp$traits %>%
   ungroup() %>%
   rename(value_new = value) -> SAH_new
 
-SAH_old %>% 
+counts_diff <- SAH_old %>% 
+  distinct(taxon_name, trait_name, value_type, value, unit, .keep_all = TRUE) %>% 
   left_join(SAH_new) %>%
   filter(is.na(value_new)) %>%
-  group_by(trait_name) %>% mutate(n_taxa = n()) %>% ungroup() %>% distinct(trait_name, n_taxa) %>% View()
+  filter(!trait_name %in% c("woodiness", "woodiness_detailed", "life_history", "plant_growth_form")) %>%
+  group_by(trait_name) %>% mutate(n_taxa = n()) %>% ungroup() %>% distinct(trait_name, n_taxa) %>%
+  arrange(n_taxa)
 
-SAH_old %>%
-  distinct(taxon_name, trait_name, value_type, value, unit, .keep_all = TRUE) %>%
-  distinct() %>%
-  left_join(SAH_new) %>%
-  filter(is.na(value_new)) %>%
-  select(-value_new) -> SAH_2014_retain
+SAH_2014_retain <-
+  SAH_old %>%
+    distinct(taxon_name, trait_name, value_type, value, unit, .keep_all = TRUE) %>%
+    distinct() %>%
+    left_join(SAH_new) %>%
+    filter(is.na(value_new)) %>%
+    select(-value_new)
 
 SAH_2014_retain %>% write_csv("data/SAH_2014/data.csv")

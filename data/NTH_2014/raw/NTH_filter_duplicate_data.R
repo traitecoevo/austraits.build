@@ -90,6 +90,12 @@ retain_trustworthy_traits <-
   retain_2 %>%
   filter(trait_name %in% c("plant_photosynthetic_organ", "leaf_compoundness", "parasitic", "leaf_glaucousness"))
 
+excluded_numeric <- 
+  retain_2 %>%
+    filter(trait_name %in% c("seed_length", "seed_width", "seed_height", "leaf_width", "leaf_length", "plant_height"))
+
+excluded_numeric %>% write_csv("data/NTH_2014/raw/excluded_numeric_data.csv")
+
 retain_3 <-
   retain_2 %>%
     filter(!trait_name %in% c("seed_length", "seed_width", "seed_height", "leaf_width", "leaf_length", "plant_height")) %>%
@@ -109,5 +115,3 @@ NTH_retain <-
   filter(!trait_name %in% c("life_history", "plant_growth_form"))
 
 NTH_retain %>% select(-value_new) %>% write_csv("data/NTH_2014/data.csv")
-
-#
