@@ -54,3 +54,15 @@ ABRS_retain <-
   bind_rows(retain_seed_traits)
 
 ABRS_retain %>% select(-value_new) %>% write_csv("data/ABRS_1981/data.csv")
+
+split_sentences_Flora_of_Australia
+
+austraits$traits %>% filter(dataset_id %in% c("ABRS_1981")) %>% filter(!is.na(unit)) %>% 
+  select(taxon_name, trait_name, value_type, value, unit, original_name, observation_id) -> currently_in_ABRS_1981
+
+read_csv("data/ABRS_1981/raw/excluded_data.csv") %>% 
+  select(-value_new) %>%
+  bind_rows(currently_in_ABRS_1981) %>%
+  left_join(split_sentences_Flora_of_Australia %>% select(taxon_name, form, leaf, seed, original_text)) %>%
+  write_csv("data/ABRS_1981/raw/numeric_to_check.csv")
+
