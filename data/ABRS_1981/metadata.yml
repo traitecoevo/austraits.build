@@ -17,7 +17,13 @@ contributors:
   dataset_curators: Rachael Gallagher
 dataset:
   data_is_long_format: yes
-  custom_R_code: .na
+  custom_R_code: '
+   data %>%
+      distinct(taxon_name, trait_name, value_type, value, unit, original_name, entity_measured, inferred, .keep_all = TRUE) %>%
+      group_by(taxon_name, trait_name, value_type, original_name, entity_measured, inferred) %>%
+        mutate(observation_number = row_number()) %>%
+      ungroup()
+  '
   collection_date: unknown/2015
   taxon_name: original_name
   trait_name: trait_name
@@ -27,10 +33,22 @@ dataset:
   life_stage: adult
   sampling_strategy: herbarium specimens
   original_file: STU
-  notes: Request ackowledgment "Data was sourced from the Flora of Australia with
-    permission from the Australian Biological Resources Study"
+  notes: Request acknowledgment "Data was sourced from the Flora of Australia with
+    permission from the Australian Biological Resources Study". Dataset was rechecked in Jan 2024 and a number of numeric trait values removed that represented different traits than what they were mapped as. 
 locations: .na
-contexts: .na
+contexts:
+- context_property: trait scoring method
+  category: method_context
+  var_in: inferred
+  values:
+  - value: inferred_from_species
+    description: Trait value inferred from species-level taxon description.
+- context_property: entity_measured
+  category: method_context
+  var_in: entity_measured
+- context_property: replicate observations
+  category: temporal_context
+  var_in: observation_number
 traits:
 - var_in: dispersal_appendage
   unit_in: .na
@@ -134,6 +152,46 @@ traits:
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_diameter
+  unit_in: unit
+  trait_name: plant_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: fruit_length
+  unit_in: unit
+  trait_name: fruit_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: fruit_width
+  unit_in: unit
+  trait_name: fruit_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: fruit_height
+  unit_in: unit
+  trait_name: fruit_height
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: petiole_length
+  unit_in: unit
+  trait_name: petiole_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
   replicates: .na
   methods: unknown
 substitutions: .na
