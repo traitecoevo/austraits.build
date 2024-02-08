@@ -1,4 +1,4 @@
-# extract authors from current NTH download
+# extract authors from current SAH download
 
 read_csv("data/SAH_2014/raw/SA_raw.csv") %>%
   select(taxon_name, author, citation) %>%
@@ -22,10 +22,11 @@ read_csv("data/SAH_2014/data.csv") %>%
   left_join(authors) %>%
   write_csv("data/SAH_2014/data.csv") 
 
-read_csv("data/SAH_2014/data.csv") %>%
+read_csv("data/SAH_2022/data.csv") %>%
   left_join(authors) %>%
-  write_csv("data/SAH_2014/data.csv") 
+  write_csv("data/SAH_2022/data.csv") 
 
-read_csv("data/SAH_2014/data.csv") %>%
+read_csv("data/SAH_2023/data.csv") %>%
   left_join(authors) %>%
-  write_csv("data/SAH_2014/data.csv") 
+  write_csv("data/SAH_2023/data.csv") 
+
