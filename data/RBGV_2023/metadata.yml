@@ -48,7 +48,7 @@ dataset:
     data %>%
       filter(!is.na(taxon_name)) %>%
       filter(str_detect(taxon_name, " ")) %>%
-      filter(!category %in% c("petiole")) %>%
+      filter(!category %in% c("petiole", "rachis")) %>%
       mutate(
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "semi-orbicular", "orbicular"), trait_value),
         trait_value = ifelse(trait_name == "seed_shape", stringr::str_replace(trait_value, "obovate", "ovoid"), trait_value),
@@ -57,7 +57,6 @@ dataset:
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "cylindrical", "terete"), trait_value),
         trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "recurved", "revolute"), trait_value),
         trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "incurved", "involute"), trait_value),
-        trait_value = ifelse(category =="rachis", NA, trait_value),
         measurement_remarks = ifelse(is.na(category), NA, paste0("Trait value refers to ", category)),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred"), flora_value, NA),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_species"), "inferred_from_species", inferred),
@@ -122,6 +121,7 @@ dataset:
   trait_name: trait_name
   value: trait_value
   measurement_remarks: measurement_remarks
+  source_id: created_by
   description: Plant morphology data extracted from VicFlora, the Victorian online
     flora.
   basis_of_record: literature
