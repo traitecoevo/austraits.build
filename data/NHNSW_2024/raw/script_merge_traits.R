@@ -147,14 +147,28 @@ leaf_width <- read_csv("data/NHNSW_2024/raw/leaf_dims-checked.csv") %>%
       TRUE ~ category
     )
   ) %>% 
-  filter(!category %in% c("crownshaft", "sheathing_base", "stipules", "segments", "petioles", "petiolules")) %>%
+  filter(!category %in% c("crownshaft", "sheathing_base", "stipules", "segments")) %>%
   pivot_longer(cols = 3:6) %>%
   filter(!is.na(value)) %>%
   rename(units = w_units, value_type = name, entity_measured = category) %>%
   mutate(
     name = "leaf_width",
-    value_type = stringr::str_replace(value_type, "w_", "")
+    value_type = stringr::str_replace(value_type, "w_", ""),
+    name = ifelse(entity_measured %in% c("petioles", "petiolules"), "petiole_width", name)
   )
+
+# extract authors from current NHNSW download; but don't keep copy of file here, since in NHNSW_2023
+
+read_csv("data/NHNSW_2023/raw/PlantNET_raw.csv") %>%
+  select(taxon_name, Source) %>%
+  mutate(
+    Source = stringr::str_replace(Source, "Taxon concept:$",""),
+    Source = stringr::str_replace(Source, "Taxon concept","; Taxon concept")) %>% 
+  filter(!(is.na(Source))) %>%
+  group_by(taxon_name) %>%
+  mutate(Source = paste0(Source, collapse = "; ")) %>%
+  ungroup() %>%
+  distinct() -> authors
 
 fruit_length %>%
   bind_rows(fruit_width, height, leaf_length, leaf_width, seed_length, seed_thickness, seed_width) %>%
@@ -164,8 +178,28 @@ fruit_length %>%
     value = as.character(value)
     ) %>%
   bind_rows(fruits, leaves1, leaves2, leaves3, root, seeds) %>%
+  mutate(
+    name = stringr::str_replace(name, "_a$", ""),
+    value_type = ifelse(is.na(value_type), "mode", value_type)
+  ) %>%
   rename(trait_name = name, trait_value = value) %>%
-  select(taxon_name, trait_name, entity_measured, trait_value, units, value_type) %>%
-  write_csv("data/NHNSW_2024/data.csv")
+  select(taxon_name, trait_name, category = entity_measured, trait_value, units, value_type) %>%
+  left_join(authors) %>%
+  filter(!taxon_name %in% c("Pultenaea juniperina", "Pultenaea spinosa")) %>%
+  write_csv("data/NHNSW_2024/data.csv") -> data
 
+# tests to verify these really are separate taxa
+# they are - only overlap is c("Pultenaea juniperina", "Pultenaea spinosa"), so filtering these out
 
+NHNSW_David <-
+  austraits$traits %>%
+  filter(dataset_id %in% c("NHNSW_2023", "NHNSW_2022")) %>%
+  select(taxon_name, trait_name, value, value_type)
+
+NHNSW_extras <-
+  austraits$traits %>%
+  filter(dataset_id %in% c("NHNSW_2024")) %>%
+  select(taxon_name, trait_name, value, value_type)
+NHNSW_extras %>%
+  rename(value2 = value) %>%
+  left_join(NHNSW_David, by = c("taxon_name", "trait_name", "value_type")) %>% View()
