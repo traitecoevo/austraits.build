@@ -1,3 +1,5 @@
+# Juvenile leaf data from Euclid
+
 juvenile_leaves <- 
   read_csv("data/Stephens_2024/raw/euclid_juvenile_leaf_dimensions_checked_matchedAPC.csv") %>%
   mutate(
@@ -6,12 +8,18 @@ juvenile_leaves <-
   ) %>%
   select(-extra)
 
+# Other trait data from Euclid
+
 other_traits <- 
   read_csv("data/Stephens_2024/raw/RS_euc_traits_nosubsp.csv") %>% 
   rename(accepted_name = apc_nosubsp)
 
+# Merge together tables
+
 data_new <- other_traits %>%
   full_join(juvenile_leaves)
+
+# Extract Euclid leaf dimension data that is already in AusTraits
 
 Euclid_2002 <- austraits$traits %>%
   filter(dataset_id == "CPBR_2002") %>%
@@ -23,7 +31,8 @@ Euclid_2002 <- austraits$traits %>%
   pivot_wider(names_from = name, values_from = value) %>%
   rename(accepted_name = taxon_name)
            
-#remove leaf dimension values that are also in CPBR_2002, previous Euclid extraction.
+# Remove leaf dimension values that are also in CPBR_2002, previous Euclid extraction.
+
 data_new %>%
   left_join(Euclid_2002) %>%
   mutate(
