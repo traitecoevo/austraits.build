@@ -47,3 +47,15 @@ data_new %>%
     ) %>%
   write_csv("data/Stephens_2024/data.csv")
 
+
+read_csv("data/Stephens_2024/data.csv") %>% 
+  mutate(
+    euclid_name = stringr::str_replace_all(euclid_name, "_", " "),
+    euclid_name = stringr::str_to_sentence(euclid_name)
+    ) %>%
+  filter(euclid_name != accepted_name) %>% 
+  select(find = euclid_name, replace = accepted_name) %>%
+  mutate(
+    reason = "Align EUCLID name with APC accepted name.", 
+    taxonomic_resolution = ifelse(stringr::str_count(replace, " ") == 1, "species", "subspecies")
+  ) -> replacements
