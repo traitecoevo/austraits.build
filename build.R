@@ -1209,6 +1209,10 @@ Stephens_2023_config <- dataset_configure("data/Stephens_2023/metadata.yml", def
 Stephens_2023_raw <- dataset_process("data/Stephens_2023/data.csv", Stephens_2023_config, schema, resource_metadata, unit_conversions)
 Stephens_2023 <- dataset_update_taxonomy(Stephens_2023_raw, taxon_list)
 
+Stephens_2024_config <- dataset_configure("data/Stephens_2024/metadata.yml", definitions)
+Stephens_2024_raw <- dataset_process("data/Stephens_2024/data.csv", Stephens_2024_config, schema, resource_metadata, unit_conversions)
+Stephens_2024 <- dataset_update_taxonomy(Stephens_2024_raw, taxon_list)
+
 Stewart_1995_config <- dataset_configure("data/Stewart_1995/metadata.yml", definitions)
 Stewart_1995_raw <- dataset_process("data/Stewart_1995/data.csv", Stewart_1995_config, schema, resource_metadata, unit_conversions)
 Stewart_1995 <- dataset_update_taxonomy(Stewart_1995_raw, taxon_list)
@@ -1770,6 +1774,7 @@ austraits_raw <- build_combine(
   Staples_2019,
   Stephens_2021,
   Stephens_2023,
+  Stephens_2024,
   Stewart_1995,
   Sweedman_2006,
   Taseski_2017,
