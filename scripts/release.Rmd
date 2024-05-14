@@ -69,7 +69,7 @@ create_release <- function(austraits, v_prev= NULL) {
 }
 ```
 
-Then follow these steps. We assume you have a branch `develop`q
+Then follow these steps. We assume you have a branch `develop`.
 
 1. Prepare `develop` for release. On `develop` branch, 
   - Bump version number: change the version number in file ` config/metadata.yml`, commit and push
@@ -79,16 +79,20 @@ Then follow these steps. We assume you have a branch `develop`q
   - merge PR from `develop`
   - rebuild repo, then create an export. Files are saved in `export/data/austraits-4.1.0/`:
 
-```
+```{r}
 source("build.R")
-create_release(austraits, "4.0.0") 
+create_release(austraits, v_prev = "5.0.0")
 ```
- - Manually review and updates news.md
+ - the function above creates a set of files for release, including `austraits-X.X.X.rds`, `austraits-X.X.X.zip`, `dictionary.html`, `news.md`
+ - Manually review and updates news.md as needed.
+ - Add this version's news to the NEWS.md file in root
+ - push updates to `master`
 
 3. Create a new tag on `master`
+
 ```
-git tag v4.1.0
-git push origin v4.1.0
+git tag v6.0.0
+git push origin v6.0.0
 ```
 
 4. Create a release - go to releases to create a new release

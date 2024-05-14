@@ -1,3 +1,56 @@
+# AusTraits v6.0.0
+
+This is a major release of the AusTraits database.
+
+- austraits-6.0.0.zip: contains the compiled dataset and details of
+  structure
+- austraits-6.0.0.rds: contains a version of the dataset for direct
+  loading in R
+- source code v6.0.0.zip: contains the source materials used to build
+  the compiled dataset
+
+For details on access, structure, and usage please visit
+<https://doi.org/10.5281/zenodo.3568417>.
+
+This release was generated from source materials available at
+<https://github.com/traitecoevo/austraits.build/releases/tag/v6.0.0> A
+full set of changes in the source can be viewed at:
+<https://github.com/traitecoevo/austraits.build/compare/v5.0.0...v6.0.0>
+
+Compared to the last version, this release contains substantial
+additions of new data and improvement of old data.
+
+| version | dataset_id |  taxa | locations | traits | records |
+|:--------|-----------:|------:|----------:|-------:|--------:|
+| 5.0.0   |        363 | 33402 |      4894 |    494 | 1813897 |
+| 6.0.0   |        364 | 33494 |      4894 |    497 | 1726024 |
+
+This is a major release of AusTraits as it involves removal of some old error-prone data. Additionally, we've added new traits and metadata.
+
+- **2 new sources added to the dataset**: NHNSW_2024, Stephens_2024
+  - Stephen_2024: additional trait data from EUCLID
+  - NHNSW_2024: 597 taxa had previously been missing from the PlantNet datasets
+
+- **1 sources removed**– most replaced by corrected or updated sources
+  above: WAH_2016
+
+- **15095 new or updated records for 35 existing traits**
+  - Adding more specific references:
+    - Add species-level authorship to all flora data, as designated in the floras.
+    - For `Wenk_2022` and `Wenk_2023`, the two “Complete Traits” datasets, add in the references for the manually looked-up taxa.
+
+  - Fixing errors, removing outdated data
+    - Mainly removing duplicate and outdated trait data from floras that were scraped once when AusTraits was first being developed and were scraped again in 2022/2023. This removes trait values that were duplicated between the two scrapings, with the newer values being preferentially retained. All non-duplicate values were manually checked and removed if the original values was determined to be an error.
+
+- **4705 new records for 3 new traits:** bud_length, bud_width,
+  buds_per_inflorescence
+
+Details on new studies:
+
+| dataset_id    | taxa | locations | traits | records |
+|:--------------|-----:|----------:|-------:|--------:|
+| NHNSW_2024    |  597 |         1 |     33 |    6371 |
+| Stephens_2024 |  981 |         1 |      9 |   13429 |
 
 # AusTraits v5.0.0
 
