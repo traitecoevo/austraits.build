@@ -1317,10 +1317,6 @@ WAH_1998_config <- dataset_configure("data/WAH_1998/metadata.yml", definitions)
 WAH_1998_raw <- dataset_process("data/WAH_1998/data.csv", WAH_1998_config, schema, resource_metadata, unit_conversions)
 WAH_1998 <- dataset_update_taxonomy(WAH_1998_raw, taxon_list)
 
-WAH_2016_config <- dataset_configure("data/WAH_2016/metadata.yml", definitions)
-WAH_2016_raw <- dataset_process("data/WAH_2016/data.csv", WAH_2016_config, schema, resource_metadata, unit_conversions)
-WAH_2016 <- dataset_update_taxonomy(WAH_2016_raw, taxon_list)
-
 WAH_2022_1_config <- dataset_configure("data/WAH_2022_1/metadata.yml", definitions)
 WAH_2022_1_raw <- dataset_process("data/WAH_2022_1/data.csv", WAH_2022_1_config, schema, resource_metadata, unit_conversions)
 WAH_2022_1 <- dataset_update_taxonomy(WAH_2022_1_raw, taxon_list)
@@ -1801,7 +1797,6 @@ austraits_raw <- build_combine(
   Vesk_2019,
   Vlasveld_2018,
   WAH_1998,
-  WAH_2016,
   WAH_2022_1,
   WAH_2022_2,
   WAH_2023_1,
