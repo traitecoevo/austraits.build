@@ -1,5 +1,4 @@
 
-# XXX need to source APD_traits.csv and APD_categorical_values.csv from APD/data
 # XXX need to change triple quotes (''') to single quotes ('). During read/write, '{count}/{count}' becomes '''{count}/{count}'''
 # XXX flowering_time, fruiting_time and recruitment_time are categorical traits but without any set categorical trait values. 
 # XXX       Therefore an empty value for allowed_values_levels is created that breaks AusTraits
@@ -38,9 +37,14 @@ APD <-
   )
 
 value_levels <- read_csv(file.path(path_APD,"APD_categorical_values.csv"), show_col_types = FALSE) %>%
+  mutate(
+    description = ifelse(is.na(categorical_trait_synonyms),
+                         categorical_trait_description,
+                         paste0(categorical_trait_description, " (Synonyms, ", categorical_trait_synonyms, ")"))
+  ) %>%
   select(trait_cat = trait,
          label = allowed_values_levels,
-         description = categorical_trait_description
+         description
   )
 
 traits <- get_schema("config/traits.yml", I("traits"))
@@ -66,7 +70,7 @@ all.equal(names(traits$elements), APD$entity_URI)
 names(traits$elements) <- APD$trait
 
 
-# for add categorical traits, add allowable values
+# for categorical traits, add allowable values
 for(trait in names(traits$elements)) {
   if(traits$elements[[trait]][["type"]] == "categorical") {  
     
