@@ -877,6 +877,10 @@ NHNSW_2023_config <- dataset_configure("data/NHNSW_2023/metadata.yml", definitio
 NHNSW_2023_raw <- dataset_process("data/NHNSW_2023/data.csv", NHNSW_2023_config, schema, resource_metadata, unit_conversions)
 NHNSW_2023 <- dataset_update_taxonomy(NHNSW_2023_raw, taxon_list)
 
+NHNSW_2024_config <- dataset_configure("data/NHNSW_2024/metadata.yml", definitions)
+NHNSW_2024_raw <- dataset_process("data/NHNSW_2024/data.csv", NHNSW_2024_config, schema, resource_metadata, unit_conversions)
+NHNSW_2024 <- dataset_update_taxonomy(NHNSW_2024_raw, taxon_list)
+
 Nicholson_2017_config <- dataset_configure("data/Nicholson_2017/metadata.yml", definitions)
 Nicholson_2017_raw <- dataset_process("data/Nicholson_2017/data.csv", Nicholson_2017_config, schema, resource_metadata, unit_conversions)
 Nicholson_2017 <- dataset_update_taxonomy(Nicholson_2017_raw, taxon_list)
@@ -1204,6 +1208,10 @@ Stephens_2021 <- dataset_update_taxonomy(Stephens_2021_raw, taxon_list)
 Stephens_2023_config <- dataset_configure("data/Stephens_2023/metadata.yml", definitions)
 Stephens_2023_raw <- dataset_process("data/Stephens_2023/data.csv", Stephens_2023_config, schema, resource_metadata, unit_conversions)
 Stephens_2023 <- dataset_update_taxonomy(Stephens_2023_raw, taxon_list)
+
+Stephens_2024_config <- dataset_configure("data/Stephens_2024/metadata.yml", definitions)
+Stephens_2024_raw <- dataset_process("data/Stephens_2024/data.csv", Stephens_2024_config, schema, resource_metadata, unit_conversions)
+Stephens_2024 <- dataset_update_taxonomy(Stephens_2024_raw, taxon_list)
 
 Stewart_1995_config <- dataset_configure("data/Stewart_1995/metadata.yml", definitions)
 Stewart_1995_raw <- dataset_process("data/Stewart_1995/data.csv", Stewart_1995_config, schema, resource_metadata, unit_conversions)
@@ -1679,6 +1687,7 @@ austraits_raw <- build_combine(
   NHNSW_2016,
   NHNSW_2022,
   NHNSW_2023,
+  NHNSW_2024,
   Nicholson_2017,
   Nicolle_2006,
   Niinemets_2009,
@@ -1761,6 +1770,7 @@ austraits_raw <- build_combine(
   Staples_2019,
   Stephens_2021,
   Stephens_2023,
+  Stephens_2024,
   Stewart_1995,
   Sweedman_2006,
   Taseski_2017,
