@@ -18,6 +18,7 @@ APD <-
     description = ifelse(is.na(description), description_encoded, paste0(description_encoded, ";", description)),
     units = ifelse(str_starts(units, fixed("{")), sprintf("'%s'", units),units),
     Entity_URI = paste0("https://w3id.org/APD/traits/", identifier),
+    trait_type = ifelse(grepl("continuous variable", trait_type), "numeric", "categorical"),
     allowed_values_levels = ifelse(trait_type == "categorical", "add_in", NA),
   ) %>%
   select(trait,
@@ -31,10 +32,7 @@ APD <-
          allowed_values_levels,
          entity_URI = Entity
   ) %>%
-  arrange(entity_URI) %>%
-  mutate(
-    type = ifelse(grepl("continuous variable", type), "numeric", "categorical")
-  )
+  arrange(entity_URI)
 
 value_levels <- read_csv(file.path(path_APD,"APD_categorical_values.csv"), show_col_types = FALSE) %>%
   mutate(
@@ -69,7 +67,6 @@ traits$elements <-
 all.equal(names(traits$elements), APD$entity_URI)
 names(traits$elements) <- APD$trait
 
-
 # for categorical traits, add allowable values
 for(trait in names(traits$elements)) {
   if(traits$elements[[trait]][["type"]] == "categorical") {  
@@ -86,6 +83,11 @@ for(trait in names(traits$elements)) {
         allowed_values_levels %>% as.list()
     }
   }
+}
+
+# Delete allowed_values_levels for items where no values are available or suitable
+for(v in c("recruitment_time", "fruiting_time", "flowering_time")) {
+  traits$elements[[v]]$allowed_values_levels <- NULL
 }
 
 yaml::write_yaml(list(traits = traits), "config/traits.yml")
