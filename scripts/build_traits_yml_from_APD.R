@@ -11,7 +11,7 @@ library(stringr)
 library(traits.build)
 
 
-path_APD <- "https://raw.githubusercontent.com/traitecoevo/APD/master/data/"
+path_APD <- "https://raw.githubusercontent.com/traitecoevo/APD/master"
 
 APD <- 
   read_csv(file.path(path_APD, "APD_traits.csv"), show_col_types = FALSE) %>%
@@ -19,25 +19,28 @@ APD <-
     description = ifelse(is.na(description), description_encoded, paste0(description_encoded, ";", description)),
     units = ifelse(str_starts(units, fixed("{")), sprintf("'%s'", units),units),
     Entity_URI = paste0("https://w3id.org/APD/traits/", identifier),
-    allowed_values_levels = ifelse(type_x == "categorical", "add_in", NA),
+    allowed_values_levels = ifelse(trait_type == "categorical", "add_in", NA),
   ) %>%
   select(trait,
          label,
          description,
          comments,
-         type = type_x,
+         type = trait_type,
          units,
-         allowed_values_min = min,
-         allowed_values_max = max,
+         allowed_values_min,
+         allowed_values_max,
          allowed_values_levels,
-         entity_URI = Entity_URI
+         entity_URI = Entity
   ) %>%
-  arrange(entity_URI)
+  arrange(entity_URI) %>%
+  mutate(
+    type = ifelse(grepl("continuous variable", type), "numeric", "categorical")
+  )
 
 value_levels <- read_csv(file.path(path_APD,"APD_categorical_values.csv"), show_col_types = FALSE) %>%
-  select(trait_cat = trait_name,
-         label,
-         description
+  select(trait_cat = trait,
+         label = allowed_values_levels,
+         description = categorical_trait_description
   )
 
 traits <- get_schema("config/traits.yml", I("traits"))
