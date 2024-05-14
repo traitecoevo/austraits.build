@@ -32,7 +32,7 @@ dataset:
         trait_value = ifelse(trait_name == "leaf_shape", stringr::str_replace(trait_value, "cylindrical", "terete"), trait_value),
         trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "recurved", "revolute"), trait_value),
         trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "incurved", "involute"), trait_value),
-        measurement_remarks = ifelse(is.na(category), NA, paste0("Trait value refers to ", category)),
+        measurement_remarks = ifelse(is.na(category), joined, paste0(joined, "; Trait value refers to ", category)),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred"), flora_value, NA),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_species"), "inferred_from_species", inferred),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_genus"), "inferred_from_genus", inferred),
@@ -83,7 +83,7 @@ dataset:
         entity_measured = ifelse(category %in% c("disc_achenes"), "disc_achenes", entity_measured),
         entity_measured = ifelse(category %in% c("ray_achenes"), "ray_achenes", entity_measured),
         entity_measured = ifelse(category %in% c("valve", "valves"), "valve", entity_measured),
-        entity_measured = ifelse(category %in% c("capsule", "silicula"), "fruit", entity_measured),
+        entity_measured = ifelse(category %in% c("capsule", "silicula"), "fruit", entity_measured)
       )  %>%
       distinct(source, taxon_name, trait_name, category, trait_value, units, value_type, inferred, .keep_all = TRUE) %>%
       group_by(taxon_name, trait_name, entity_measured, value_type) %>%
@@ -136,7 +136,7 @@ contexts:
     description: Trait value inferred from the value of a different trait.
   - value: inferred_from_taxonomy
     description: Trait value inferred from a higher level taxon description.
-- context_property: entity_measured
+- context_property: entity measured
   category: method_context
   var_in: entity_measured
 - context_property: replicate observations
