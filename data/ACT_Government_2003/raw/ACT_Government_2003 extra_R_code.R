@@ -1,5 +1,5 @@
-read_csv("data/ACT_Government_2003/data.csv") %>% 
-  tidyr::separate_longer_delim(`Regenerative Mechanisms`, delim = ",") %>%
+read_csv("data/ACT_Government_2003/raw/raw_data.csv") %>%
+  tidyr::separate_longer_delim(`Regenerative Mechanisms`, delim = ", ") %>%
   dplyr::mutate(
     bud_bank_location = case_when(
       `Regenerative Mechanisms` == "C" ~ "root_crown",
@@ -52,8 +52,14 @@ read_csv("data/ACT_Government_2003/data.csv") %>%
   mutate(
     bud_bank_location = ifelse(`Regenerative Mechanisms` == "N", stringr::str_replace(bud_bank_location, " none", ""), bud_bank_location)
   ) %>%
-  tidyr::separate_longer_delim(resprouting_capacity, delim = " ") %>%
   distinct() %>%
+  mutate(
+    across(c(bud_bank_location, resprouting_capacity, post_fire_recruitment), ~ str_replace(.x, " NA", ""))
+  ) %>%
   write_csv("data/ACT_Government_2003/data.csv")
+
+(austraits %>% extract_dataset("ACT_Government_2003"))$traits %>% distinct(taxon_name) -> ACT_taxa
+align_taxa(ACT_taxa$taxon_name, identifier = "ACT_Government_2003", resources = resources) -> ACT_aligned
+ACT_aligned %>% select(find = original_name, replace = aligned_name, reason = aligned_reason, taxonomic_rank = taxon_rank) -> to_add
 
   
