@@ -30,9 +30,11 @@ dataset:
     data %>%
       mutate(
         leaf_position = "sun-exposed",
-        location_name = "southeast Queensland",
-        across(c(red_book_hmax_m, deciduous), replace_duplicates_with_NA)
-        )
+        location_name = "southeast Queensland"
+        ) %>%
+      group_by(current_taxon) %>%
+        mutate(across(c(red_book_hmax_m, deciduous, leaflets), replace_duplicates_with_NA)) %>%
+      ungroup()
   '
   collection_date: 2023/2023
   taxon_name: current_taxon
@@ -77,12 +79,12 @@ dataset:
     species. We also opportunistically sampled sun-exposed branches from healthy,
     mature cultivated individuals. Trait values measured on cultivated individuals
     did not differ systematically from naturally occurring individuals (Table S4).
-  original_file: data files in raw data folder, supplied by data contributor
+  original_file: data files in raw data folder, supplied by data collector
   notes: none
 identifiers: .na
 locations:
   southeast Queensland:
-    latitude (deg): -28
+    latitude (deg): -28.5
     longitude (deg): 153
     description: subtropical rainforest
     state: QLD, NSW
