@@ -85,3 +85,13 @@ data <- conduit_data %>%
   left_join(species_names)
 
 data %>% write_csv("data/RadfordSmith_2024/data.csv", na="")
+
+data <- read_csv("data/RadfordSmith_2024/data.csv")
+
+diaspore_data <- read_csv("data/RadfordSmith_2024/raw/Species_diaspore_data.csv") %>%
+  rename(current_taxon = species)
+
+data <- data %>% 
+  left_join(diaspore_data)
+
+data %>% write_csv("data/RadfordSmith_2024/data.csv", na="")
