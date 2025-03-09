@@ -105,6 +105,10 @@ Brodribb_2000_config <- dataset_configure("data/Brodribb_2000/metadata.yml", def
 Brodribb_2000_raw <- dataset_process("data/Brodribb_2000/data.csv", Brodribb_2000_config, schema, resource_metadata, unit_conversions)
 Brodribb_2000 <- dataset_update_taxonomy(Brodribb_2000_raw, taxon_list)
 
+Bryant_2021_3_config <- dataset_configure("data/Bryant_2021_3/metadata.yml", definitions)
+Bryant_2021_3_raw <- dataset_process("data/Bryant_2021_3/data.csv", Bryant_2021_3_config, schema, resource_metadata, unit_conversions)
+Bryant_2021_3 <- dataset_update_taxonomy(Bryant_2021_3_raw, taxon_list)
+
 Buckton_2019_config <- dataset_configure("data/Buckton_2019/metadata.yml", definitions)
 Buckton_2019_raw <- dataset_process("data/Buckton_2019/data.csv", Buckton_2019_config, schema, resource_metadata, unit_conversions)
 Buckton_2019 <- dataset_update_taxonomy(Buckton_2019_raw, taxon_list)
@@ -877,6 +881,10 @@ NHNSW_2023_config <- dataset_configure("data/NHNSW_2023/metadata.yml", definitio
 NHNSW_2023_raw <- dataset_process("data/NHNSW_2023/data.csv", NHNSW_2023_config, schema, resource_metadata, unit_conversions)
 NHNSW_2023 <- dataset_update_taxonomy(NHNSW_2023_raw, taxon_list)
 
+NHNSW_2024_config <- dataset_configure("data/NHNSW_2024/metadata.yml", definitions)
+NHNSW_2024_raw <- dataset_process("data/NHNSW_2024/data.csv", NHNSW_2024_config, schema, resource_metadata, unit_conversions)
+NHNSW_2024 <- dataset_update_taxonomy(NHNSW_2024_raw, taxon_list)
+
 Nicholson_2017_config <- dataset_configure("data/Nicholson_2017/metadata.yml", definitions)
 Nicholson_2017_raw <- dataset_process("data/Nicholson_2017/data.csv", Nicholson_2017_config, schema, resource_metadata, unit_conversions)
 Nicholson_2017 <- dataset_update_taxonomy(Nicholson_2017_raw, taxon_list)
@@ -972,6 +980,10 @@ Pollock_2012 <- dataset_update_taxonomy(Pollock_2012_raw, taxon_list)
 Pollock_2018_config <- dataset_configure("data/Pollock_2018/metadata.yml", definitions)
 Pollock_2018_raw <- dataset_process("data/Pollock_2018/data.csv", Pollock_2018_config, schema, resource_metadata, unit_conversions)
 Pollock_2018 <- dataset_update_taxonomy(Pollock_2018_raw, taxon_list)
+
+Portelli_2023_config <- dataset_configure("data/Portelli_2023/metadata.yml", definitions)
+Portelli_2023_raw <- dataset_process("data/Portelli_2023/data.csv", Portelli_2023_config, schema, resource_metadata, unit_conversions)
+Portelli_2023 <- dataset_update_taxonomy(Portelli_2023_raw, taxon_list)
 
 Prior_2003_config <- dataset_configure("data/Prior_2003/metadata.yml", definitions)
 Prior_2003_raw <- dataset_process("data/Prior_2003/data.csv", Prior_2003_config, schema, resource_metadata, unit_conversions)
@@ -1313,10 +1325,6 @@ WAH_1998_config <- dataset_configure("data/WAH_1998/metadata.yml", definitions)
 WAH_1998_raw <- dataset_process("data/WAH_1998/data.csv", WAH_1998_config, schema, resource_metadata, unit_conversions)
 WAH_1998 <- dataset_update_taxonomy(WAH_1998_raw, taxon_list)
 
-WAH_2016_config <- dataset_configure("data/WAH_2016/metadata.yml", definitions)
-WAH_2016_raw <- dataset_process("data/WAH_2016/data.csv", WAH_2016_config, schema, resource_metadata, unit_conversions)
-WAH_2016 <- dataset_update_taxonomy(WAH_2016_raw, taxon_list)
-
 WAH_2022_1_config <- dataset_configure("data/WAH_2022_1/metadata.yml", definitions)
 WAH_2022_1_raw <- dataset_process("data/WAH_2022_1/data.csv", WAH_2022_1_config, schema, resource_metadata, unit_conversions)
 WAH_2022_1 <- dataset_update_taxonomy(WAH_2022_1_raw, taxon_list)
@@ -1470,7 +1478,7 @@ Zieminska_2015_raw <- dataset_process("data/Zieminska_2015/data.csv", Zieminska_
 Zieminska_2015 <- dataset_update_taxonomy(Zieminska_2015_raw, taxon_list)
 
 
-austraits_raw <- build_combine(
+austraits_base_raw <- austraits::bind_databases(
   ABRS_1981,
   ABRS_2022,
   ABRS_2023,
@@ -1494,6 +1502,7 @@ austraits_raw <- build_combine(
   Britton_1994,
   Brock_1993,
   Brodribb_2000,
+  Bryant_2021_3,
   Buckton_2019,
   Burrows_2001,
   Burrows_2008,
@@ -1687,6 +1696,7 @@ austraits_raw <- build_combine(
   NHNSW_2016,
   NHNSW_2022,
   NHNSW_2023,
+  NHNSW_2024,
   Nicholson_2017,
   Nicolle_2006,
   Niinemets_2009,
@@ -1711,6 +1721,7 @@ austraits_raw <- build_combine(
   Pirralho_2014,
   Pollock_2012,
   Pollock_2018,
+  Portelli_2023,
   Prior_2003,
   Prior_2016,
   Prior_2022,
@@ -1796,7 +1807,6 @@ austraits_raw <- build_combine(
   Vesk_2019,
   Vlasveld_2018,
   WAH_1998,
-  WAH_2016,
   WAH_2022_1,
   WAH_2022_2,
   WAH_2023_1,
@@ -1842,8 +1852,8 @@ version_number <- util_get_version("config/metadata.yml")
 git_SHA <- util_get_SHA()
 
 # Combine all the source into one resource
-austraits <- build_add_version(austraits_raw, version_number, git_SHA)
+austraits_base <- build_add_version(austraits_base_raw, version_number, git_SHA)
 
 # Save to file
 dir.create("export/data/curr", FALSE, TRUE)
-saveRDS(austraits, "export/data/curr/austraits.rds")
+saveRDS(austraits_base, "export/data/curr/austraits_base.rds")
