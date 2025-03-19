@@ -1,0 +1,632 @@
+source:
+  primary:
+    key: Radfordsmith_2024
+    bibtype: Article
+    year: '2024'
+    author: Julian Radford-Smith and Hao Ran Lai and Ella Cathcart-Van Weeren and
+      John M. Dwyer
+    journal: Ecology Letters
+    title: A Functional Basis for the Assembly of Australian Subtropical Rainforest
+      Tree Communities
+    volume: '27'
+    number: '11'
+    doi: 10.1111/ele.70014
+    issn: 1461-0248
+  secondary_01:
+    key: Harden_2018
+    bibtype: Book
+    year: '2018'
+    author: Gwen Harden and Bill McDonald and John Williams
+    title: Rainforest Trees and Shrubs. 2nd ed.
+    pages: 318
+    publisher: Gwen Harden Publishing
+  secondary_02:
+    key: Butler_2007
+    bibtype: Article
+    year: '2007'
+    author: D. W. Butler and R. J. Green and D. Lamb and W. J. F. Mcdonald and P.
+      I. Forster
+    journal: Journal of Biogeography
+    title: Biogeography of seed-dispersal syndromes, life-forms and seed sizes among
+      woody rain-forest plants in Australia's subtropics
+    volume: '34'
+    number: '10'
+    pages: 1736--1750
+    doi: 10.1111/j.1365-2699.2007.01734.x
+    issn: 1365-2699
+contributors:
+  data_collectors:
+  - last_name: Radford-Smith
+    given_name: Julian
+    ORCID: 0000-0001-6949-9469
+    additional_role: contact
+    affiliation: School of Biological Sciences, The University of Queensland, Australia
+  - last_name: Dwyer
+    given_name: John M.
+    ORCID: 0000-0001-7389-5528
+    affiliation: School of Biological Sciences, The University of Queensland, Australia
+  - last_name: Cathcart-Van Weeren
+    given_name: Ella
+    ORCID: 0009-0004-2209-114X
+    affiliation: School of Biological Sciences, The University of Queensland, Australia
+  - last_name: Brown
+    given_name: Alison
+    ORCID: unknown
+    affiliation: School of Biological Sciences, The University of Queensland, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        leaf_position = "sun-exposed",
+        location_name = "southeast Queensland",
+        leaflet_area = ifelse(leaflets > 1, leaf_area_mm2, NA),
+        leaf_area_mm2_v2 = leaf_area_mm2*leaflets,
+        source_id = "RadfordSmith_2024",
+        across(c(diaspore_diam_mm_lower, diaspore_diam_mm_upper, mean_diaspore_diam_mm), 
+                  ~ifelse(diaspore_measurement_notes == "used Butler", NA, .x)),
+        dispersal_appendage = ifelse(stringr::str_detect(diaspore_notes, "aril"), "aril", NA),
+        seed_colour = diaspore_notes
+        ) %>%
+      group_by(current_taxon) %>%
+        mutate(
+          across(c(red_book_hmax_m, deciduous, leaflets, 
+                  diaspore_diam_mm_lower, diaspore_diam_mm_upper, mean_diaspore_diam_mm, 
+                  fruit_type, fruit_diam_mm_lower, fruit_diam_mm_upper,
+                  dispersal_appendage, dispersal_mode, seed_colour), 
+                  replace_duplicates_with_NA)
+        ) %>%
+      ungroup()
+  '
+  collection_date: 2023/2023
+  taxon_name: current_taxon
+  location_name: location_name
+  individual_id: individual_id
+  source_id: source_id
+  description: A survey of rainforest tree communities across the Australian subtropics
+    (spanning 600 to 2500 mm rainfall year-1), including the measurement of functional
+    traits on 285 (91%) of all recorded species.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: 2.1 Study System ^p This study was undertaken in subtropical
+    rainforest and dry forest between Ballina in New South Wales (NSW) and Gladstone
+    in Queensland, Australia (Figure S1). At the time of European colonisation, rainforest
+    and dry forest was patchily distributed throughout the subtropics of Australia
+    within a matrix of pyric vegetation (Figure S1) that was actively managed by the
+    region's Indigenous Peoples using fire for thousands of years (Fensham and Fairfax
+    1996; Butler et al. 2014). Emerging evidence indicates that culturally important
+    rainforest tree species were also translocated by Indigenous Peoples (Rossetto
+    et al. 2017; Fahey et al. 2024), though the proportion of potentially translocated
+    species in each rainforest or dry forest assemblage is likely to be small. Remaining
+    rainforests and dry forests form distinct assemblages across topographic (Laidlaw
+    et al. 2016) and regional (Shapcott et al. 2017) climate gradients and have been
+    classified into sub-formations (Table S1) based on physiognomy (Webb 1959; Queensland
+    Herbarium 2023). ^p 2.2 Survey Design and Methodology ^p From February 2021 to
+    July 2023, we surveyed 40 forest tree communities (i.e., sites), distributed across
+    the region's major climate gradients and combined these with five sites surveyed
+    previously at the Bunya Mountains using the same methodology (Brown et al. 2022)
+    (Figure S1). Sampled communities were located on soils derived from basalt or
+    granite (Wilson and Taylor 2012), the most widespread substrates that support
+    rainforests and dry forests in the region. Within each site, four 25 x 25 m plots
+    were established across 1-2 ha of homogeneous forest, and the stem diameter (DBH)
+    and species identity of all self-supporting woody individuals ≥ 3 cm were recorded.
+    We avoided large canopy gaps and areas with signs of historical logging to capture
+    climax assemblages across the region. ^p 2.5 Trait Sampling and Measurement ^p
+    We measured morphological and anatomical traits that are well-understood proxies
+    for direct physiological processes of tree hydraulic and light utilisation strategies
+    (Table 1). Between 2019 and 2023 we sampled individuals from multiple locations
+    per species to enable robust estimates of species-level means (refer to Table
+    S3 for sample sizes by trait and species). Sampling in the field focused on north-facing
+    forest edges where sun-exposed branches of mature individuals were accessible
+    using telescopic pole pruners for most species including many obligate understory
+    species. We also opportunistically sampled sun-exposed branches from healthy,
+    mature cultivated individuals. Trait values measured on cultivated individuals
+    did not differ systematically from naturally occurring individuals (Table S4).
+  original_file: data files in raw data folder, supplied by data collector
+  notes: none
+identifiers: .na
+locations:
+  southeast Queensland:
+    latitude (deg): -28.27
+    longitude (deg): 152.61
+    description: subtropical rainforest
+    state: QLD, NSW
+    notes: latitude/longitude represent a generic location within the Border Ranges.
+contexts:
+- context_property: leaf position
+  category: entity_context
+  var_in: leaf_position
+- context_property: leaf type
+  category: entity_context
+  var_in: leaf_type
+  values:
+  - value: leaf
+  - value: leaflet
+- context_property: seed type
+  category: entity_context
+  var_in: seed_type
+  values:
+  - value: diaspore
+    description: seed measurements refer to a diaspore (seed + dispersal appendages)
+traits:
+- var_in: max_lumen_width
+  unit_in: mm
+  trait_name: leaf_vessel_diameter
+  entity_type: individual
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: replicates_conduit
+  methods: We used microscopy on petioles to measure average xylem vessel lumen diameter
+    (lumen breadth; b) and vessel wall thickness (t) to describe hydraulic efficiency
+    and vessel reinforcement, respectively (Blackman et al. 2018). Petioles were collected
+    from an average of three individuals per species. Sections were made at 10 um
+    thickness using a cryostat (CryoStar NX70, Thermo Fisher Scientific), then stained
+    with 0.1% toluidine blue in 1% sodium acetate buffer solution and mounted with
+    coverslips. While replicate petioles were sampled from most individual plants,
+    we selected the best quality section per individual for measurement (Table S3).
+    Using a light microscope at 40x magnification, three distinct bundles of five
+    xylem vessels were identified for each section, with vessel wall thickness and
+    lumen diameter measured in ImageJ (Schneider, Rasband, and Eliceiri 2012). For
+    each vessel, lumen breadth was calculated as the average of the widest and narrowest
+    diameters, and vessel wall thickness (t) was calculated as the average of three
+    measurements for each vessel wall. Refer to Supporting Information and Figure
+    S3 for further details.
+- var_in: min_lumen_width
+  unit_in: mm
+  trait_name: leaf_vessel_diameter
+  entity_type: individual
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: replicates_conduit
+  methods: We used microscopy on petioles to measure average xylem vessel lumen diameter
+    (lumen breadth; b) and vessel wall thickness (t) to describe hydraulic efficiency
+    and vessel reinforcement, respectively (Blackman et al. 2018). Petioles were collected
+    from an average of three individuals per species. Sections were made at 10 um
+    thickness using a cryostat (CryoStar NX70, Thermo Fisher Scientific), then stained
+    with 0.1% toluidine blue in 1% sodium acetate buffer solution and mounted with
+    coverslips. While replicate petioles were sampled from most individual plants,
+    we selected the best quality section per individual for measurement (Table S3).
+    Using a light microscope at 40x magnification, three distinct bundles of five
+    xylem vessels were identified for each section, with vessel wall thickness and
+    lumen diameter measured in ImageJ (Schneider, Rasband, and Eliceiri 2012). For
+    each vessel, lumen breadth was calculated as the average of the widest and narrowest
+    diameters, and vessel wall thickness (t) was calculated as the average of three
+    measurements for each vessel wall. Refer to Supporting Information and Figure
+    S3 for further details.
+- var_in: wall_thickness
+  unit_in: mm
+  trait_name: leaf_vessel_wall_thickness
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_conduit
+  methods: We used microscopy on petioles to measure average xylem vessel lumen diameter
+    (lumen breadth; b) and vessel wall thickness (t) to describe hydraulic efficiency
+    and vessel reinforcement, respectively (Blackman et al. 2018). Petioles were collected
+    from an average of three individuals per species. Sections were made at 10 um
+    thickness using a cryostat (CryoStar NX70, Thermo Fisher Scientific), then stained
+    with 0.1% toluidine blue in 1% sodium acetate buffer solution and mounted with
+    coverslips. While replicate petioles were sampled from most individual plants,
+    we selected the best quality section per individual for measurement (Table S3).
+    Using a light microscope at 40x magnification, three distinct bundles of five
+    xylem vessels were identified for each section, with vessel wall thickness and
+    lumen diameter measured in ImageJ (Schneider, Rasband, and Eliceiri 2012). For
+    each vessel, lumen breadth was calculated as the average of the widest and narrowest
+    diameters, and vessel wall thickness (t) was calculated as the average of three
+    measurements for each vessel wall. Refer to Supporting Information and Figure
+    S3 for further details.
+- var_in: wood_density
+  unit_in: g/cm3
+  trait_name: wood_density
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_wood
+  methods: A single branch (5-7 cm long, 2-7 cm diameter) was sampled from an average
+    of three individuals per species (Table S3) to measure wood density (dry mass/fresh
+    volume; g cm-3). After removing the bark, fresh volume was measured via water
+    displacement and dry mass was measured after samples were dried for 3 days at
+    105°C (Williamson and Wiemann 2010).
+  leaf_type: .na.character
+- var_in: leaflet_area
+  unit_in: mm2
+  trait_name: leaflet_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_leaf
+  methods: A sunlit branch was collected from an average of four individuals per species
+    (Table S3). To prevent desiccation, cut branches were stored in wet plastic bags
+    during transport to the laboratory. To rehydrate leaves, branches were recut in
+    deionised water and covered with a black plastic bag until the following day.
+    Four undamaged, fully expanded leaves were selected from each branch following
+    rehydration and weighed with an analytical balance (GR-200, A&D Company Ltd.,
+    Tokyo, Japan) to obtain fresh mass, then scanned through a leaf area meter (LI-3100C
+    Area Meter, LI-COR Biosciences, Lincoln, USA) to measure lamina area. For compound
+    leaves, at least half of the leaflets were selected per leaf, and measurements
+    were performed on individual leaflets. After drying leaves at 70°C for 3 days,
+    specific leaf area (SLA; lamina area/dry mass; mm2/mg) and leaf dry matter content
+    (LDMC; dry mass/fresh mass; proportion) were calculated for each individual leaf
+    or leaflet (Perez-Harguindeguy et al. 2013).
+- var_in: leaf_area_mm2_v2
+  unit_in: mm2
+  trait_name: leaf_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_leaf
+  methods: A sunlit branch was collected from an average of four individuals per species
+    (Table S3). To prevent desiccation, cut branches were stored in wet plastic bags
+    during transport to the laboratory. To rehydrate leaves, branches were recut in
+    deionised water and covered with a black plastic bag until the following day.
+    Four undamaged, fully expanded leaves were selected from each branch following
+    rehydration and weighed with an analytical balance (GR-200, A&D Company Ltd.,
+    Tokyo, Japan) to obtain fresh mass, then scanned through a leaf area meter (LI-3100C
+    Area Meter, LI-COR Biosciences, Lincoln, USA) to measure lamina area. For compound
+    leaves, at least half of the leaflets were selected per leaf, and measurements
+    were performed on individual leaflets. After drying leaves at 70°C for 3 days,
+    specific leaf area (SLA; lamina area/dry mass; mm2/mg) and leaf dry matter content
+    (LDMC; dry mass/fresh mass; proportion) were calculated for each individual leaf
+    or leaflet (Perez-Harguindeguy et al. 2013).
+  leaf_type: leaf
+- var_in: leaf_fresh_mass_g
+  unit_in: g
+  trait_name: leaf_fresh_mass
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_leaf
+  methods: A sunlit branch was collected from an average of four individuals per species
+    (Table S3). To prevent desiccation, cut branches were stored in wet plastic bags
+    during transport to the laboratory. To rehydrate leaves, branches were recut in
+    deionised water and covered with a black plastic bag until the following day.
+    Four undamaged, fully expanded leaves were selected from each branch following
+    rehydration and weighed with an analytical balance (GR-200, A&D Company Ltd.,
+    Tokyo, Japan) to obtain fresh mass, then scanned through a leaf area meter (LI-3100C
+    Area Meter, LI-COR Biosciences, Lincoln, USA) to measure lamina area. For compound
+    leaves, at least half of the leaflets were selected per leaf, and measurements
+    were performed on individual leaflets. After drying leaves at 70°C for 3 days,
+    specific leaf area (SLA; lamina area/dry mass; mm2/mg) and leaf dry matter content
+    (LDMC; dry mass/fresh mass; proportion) were calculated for each individual leaf
+    or leaflet (Perez-Harguindeguy et al. 2013).
+- var_in: leaf_dry_mass_g
+  unit_in: g
+  trait_name: leaf_dry_mass
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_leaf
+  methods: A sunlit branch was collected from an average of four individuals per species
+    (Table S3). To prevent desiccation, cut branches were stored in wet plastic bags
+    during transport to the laboratory. To rehydrate leaves, branches were recut in
+    deionised water and covered with a black plastic bag until the following day.
+    Four undamaged, fully expanded leaves were selected from each branch following
+    rehydration and weighed with an analytical balance (GR-200, A&D Company Ltd.,
+    Tokyo, Japan) to obtain fresh mass, then scanned through a leaf area meter (LI-3100C
+    Area Meter, LI-COR Biosciences, Lincoln, USA) to measure lamina area. For compound
+    leaves, at least half of the leaflets were selected per leaf, and measurements
+    were performed on individual leaflets. After drying leaves at 70°C for 3 days,
+    specific leaf area (SLA; lamina area/dry mass; mm2/mg) and leaf dry matter content
+    (LDMC; dry mass/fresh mass; proportion) were calculated for each individual leaf
+    or leaflet (Perez-Harguindeguy et al. 2013).
+- var_in: leaf_dry_matter_content
+  unit_in: g/g
+  trait_name: leaf_dry_matter_content
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_leaf
+  methods: A sunlit branch was collected from an average of four individuals per species
+    (Table S3). To prevent desiccation, cut branches were stored in wet plastic bags
+    during transport to the laboratory. To rehydrate leaves, branches were recut in
+    deionised water and covered with a black plastic bag until the following day.
+    Four undamaged, fully expanded leaves were selected from each branch following
+    rehydration and weighed with an analytical balance (GR-200, A&D Company Ltd.,
+    Tokyo, Japan) to obtain fresh mass, then scanned through a leaf area meter (LI-3100C
+    Area Meter, LI-COR Biosciences, Lincoln, USA) to measure lamina area. For compound
+    leaves, at least half of the leaflets were selected per leaf, and measurements
+    were performed on individual leaflets. After drying leaves at 70°C for 3 days,
+    specific leaf area (SLA; lamina area/dry mass; mm2/mg) and leaf dry matter content
+    (LDMC; dry mass/fresh mass; proportion) were calculated for each individual leaf
+    or leaflet (Perez-Harguindeguy et al. 2013).
+- var_in: leaf_mass_per_area_g_m2
+  unit_in: g/m2
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates_leaf
+  methods: A sunlit branch was collected from an average of four individuals per species
+    (Table S3). To prevent desiccation, cut branches were stored in wet plastic bags
+    during transport to the laboratory. To rehydrate leaves, branches were recut in
+    deionised water and covered with a black plastic bag until the following day.
+    Four undamaged, fully expanded leaves were selected from each branch following
+    rehydration and weighed with an analytical balance (GR-200, A&D Company Ltd.,
+    Tokyo, Japan) to obtain fresh mass, then scanned through a leaf area meter (LI-3100C
+    Area Meter, LI-COR Biosciences, Lincoln, USA) to measure lamina area. For compound
+    leaves, at least half of the leaflets were selected per leaf, and measurements
+    were performed on individual leaflets. After drying leaves at 70°C for 3 days,
+    specific leaf area (SLA; lamina area/dry mass; mm2/mg) and leaf dry matter content
+    (LDMC; dry mass/fresh mass; proportion) were calculated for each individual leaf
+    or leaflet (Perez-Harguindeguy et al. 2013).
+- var_in: deciduous
+  unit_in: .na.character
+  trait_name: leaf_phenology
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na.character
+  methods: Leaf phenology and species' maximum heights (Hmax) were obtained from Harden,
+    McDonald, and Williams (2018), and revised in rare instances based on field observations.
+    We acknowledge that there are several forms of deciduousness (Eamus 1999), but
+    given the small number of deciduous species in our dataset (~6%), we opted for
+    a simple binary classification.
+- var_in: red_book_hmax_m
+  unit_in: m
+  trait_name: plant_height
+  entity_type: species
+  value_type: maximum
+  basis_of_value: expert_score
+  replicates: .na.character
+  methods: Leaf phenology and species' maximum heights (Hmax) were obtained from Harden,
+    McDonald, and Williams (2018), and revised in rare instances based on field observations.
+  leaf_type: .na.character
+  source_id: Harden_2018
+- var_in: leaflets
+  unit_in: '{count}'
+  trait_name: leaflet_count
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na.character
+  methods: Count of leaflets per species
+  leaf_type: .na.character
+- var_in: dispersal_mode
+  unit_in: .na
+  trait_name: dispersal_syndrome
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Expert knowledge, supported by information in Butler (2004) and Harden,
+    McDonald, and Williams (2018).
+  leaf_type: .na.character
+- var_in: dispersal_appendage
+  unit_in: .na
+  trait_name: dispersal_appendage
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Expert knowledge, supported by information in Butler (2004) and Harden,
+    McDonald, and Williams (2018).
+  leaf_type: .na.character
+- var_in: diaspore_diam_mm_lower
+  unit_in: mm
+  trait_name: seed_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  seed_type: diaspore
+  methods: Diaspore size data was sourced from Butler and Harden et al.. In instances
+    where it would be required to ingest the whole fruit to disperse seed(s) (e.g.
+    drupes and berries), we used the minimum reported diameter of the whole fruit.
+    For soft fruits containing many, small seeds that can be dispersed without whole
+    fruit consumption (e.g. Ficus species), the diameter of individual seeds was used.
+    For dehiscent fruits with arillate seeds (e.g. most Sapindaceae species), diaspore
+    diameter was estimated as the diameter of an individual seed plus the aril. Here,
+    we added between 1-2 mm to the diameter of the seed to estimate diaspore size,
+    depending on whether the aril had been described as fleshy or dry. For anemochorous
+    species with large wings (e.g. Flindersia, Argyrodendron and Stenocarpus species),
+    we excluded wing size from the diaspore size estimate.  (In AusTraits, values
+    from Butler are excluded, as they are mapped in as their own dataset.)
+- var_in: diaspore_diam_mm_upper
+  unit_in: mm
+  trait_name: seed_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  seed_type: diaspore
+  methods: Diaspore size data was sourced from Butler and Harden et al.. In instances
+    where it would be required to ingest the whole fruit to disperse seed(s) (e.g.
+    drupes and berries), we used the minimum reported diameter of the whole fruit.
+    For soft fruits containing many, small seeds that can be dispersed without whole
+    fruit consumption (e.g. Ficus species), the diameter of individual seeds was used.
+    For dehiscent fruits with arillate seeds (e.g. most Sapindaceae species), diaspore
+    diameter was estimated as the diameter of an individual seed plus the aril. Here,
+    we added between 1-2 mm to the diameter of the seed to estimate diaspore size,
+    depending on whether the aril had been described as fleshy or dry. For anemochorous
+    species with large wings (e.g. Flindersia, Argyrodendron and Stenocarpus species),
+    we excluded wing size from the diaspore size estimate.  (In AusTraits, values
+    from Butler are excluded, as they are mapped in as their own dataset.)
+- var_in: mean_diaspore_diam_mm
+  unit_in: mm
+  trait_name: seed_width
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  seed_type: diaspore
+  methods: Diaspore size data was sourced from Butler and Harden et al.. In instances
+    where it would be required to ingest the whole fruit to disperse seed(s) (e.g.
+    drupes and berries), we used the minimum reported diameter of the whole fruit.
+    For soft fruits containing many, small seeds that can be dispersed without whole
+    fruit consumption (e.g. Ficus species), the diameter of individual seeds was used.
+    For dehiscent fruits with arillate seeds (e.g. most Sapindaceae species), diaspore
+    diameter was estimated as the diameter of an individual seed plus the aril. Here,
+    we added between 1-2 mm to the diameter of the seed to estimate diaspore size,
+    depending on whether the aril had been described as fleshy or dry. For anemochorous
+    species with large wings (e.g. Flindersia, Argyrodendron and Stenocarpus species),
+    we excluded wing size from the diaspore size estimate.  (In AusTraits, values
+    from Butler are excluded, as they are mapped in as their own dataset.)
+- var_in: fruit_type
+  unit_in: .na
+  trait_name: fruit_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Expert knowledge, supported by information in Butler (2004) and Harden,
+    McDonald, and Williams (2018).
+  leaf_type: .na.character
+- var_in: fruit_diam_mm_lower
+  unit_in: mm
+  trait_name: fruit_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: Diaspore size data was sourced from Butler and Harden et al.. In instances
+    where it would be required to ingest the whole fruit to disperse seed(s) (e.g.
+    drupes and berries), we used the minimum reported diameter of the whole fruit.
+    For soft fruits containing many, small seeds that can be dispersed without whole
+    fruit consumption (e.g. Ficus species), the diameter of individual seeds was used.
+    For dehiscent fruits with arillate seeds (e.g. most Sapindaceae species), diaspore
+    diameter was estimated as the diameter of an individual seed plus the aril. Here,
+    we added between 1-2 mm to the diameter of the seed to estimate diaspore size,
+    depending on whether the aril had been described as fleshy or dry. For anemochorous
+    species with large wings (e.g. Flindersia, Argyrodendron and Stenocarpus species),
+    we excluded wing size from the diaspore size estimate.  (In AusTraits, values
+    from Butler are excluded, as they are mapped in as their own dataset.)
+  leaf_type: .na.character
+- var_in: fruit_diam_mm_upper
+  unit_in: mm
+  trait_name: fruit_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: Diaspore size data was sourced from Butler and Harden et al.. In instances
+    where it would be required to ingest the whole fruit to disperse seed(s) (e.g.
+    drupes and berries), we used the minimum reported diameter of the whole fruit.
+    For soft fruits containing many, small seeds that can be dispersed without whole
+    fruit consumption (e.g. Ficus species), the diameter of individual seeds was used.
+    For dehiscent fruits with arillate seeds (e.g. most Sapindaceae species), diaspore
+    diameter was estimated as the diameter of an individual seed plus the aril. Here,
+    we added between 1-2 mm to the diameter of the seed to estimate diaspore size,
+    depending on whether the aril had been described as fleshy or dry. For anemochorous
+    species with large wings (e.g. Flindersia, Argyrodendron and Stenocarpus species),
+    we excluded wing size from the diaspore size estimate.  (In AusTraits, values
+    from Butler are excluded, as they are mapped in as their own dataset.)
+  leaf_type: .na.character
+- var_in: seed_colour
+  unit_in: .na
+  trait_name: seed_colour
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Expert knowledge, supported by information in Butler (2004) and Harden,
+    McDonald, and Williams (2018).
+  leaf_type: .na.character
+substitutions:
+- trait_name: dispersal_syndrome
+  find: ballistichory
+  replace: ballistic
+- trait_name: dispersal_syndrome
+  find: exozoochory
+  replace: epizoochory
+- trait_name: dispersal_syndrome
+  find: hoarding
+  replace: .na.character
+- trait_name: dispersal_syndrome
+  find: unknown
+  replace: undefined
+- trait_name: fruit_type
+  find: cone
+  replace: strobilus
+- trait_name: fruit_type
+  find: fig
+  replace: syconium
+- trait_name: fruit_type
+  find: hypanthium
+  replace: .na.character
+- trait_name: fruit_type
+  find: pedicel
+  replace: .na.character
+- trait_name: fruit_type
+  find: pod
+  replace: legume
+- trait_name: fruit_width
+  find: '0'
+  replace: .na.character
+- trait_name: leaf_phenology
+  find: '0'
+  replace: evergreen
+- trait_name: leaf_phenology
+  find: '1'
+  replace: deciduous
+- trait_name: seed_colour
+  find: aril-like funicle
+  replace: .na.character
+- trait_name: seed_colour
+  find: berry like; red
+  replace: red
+- trait_name: seed_colour
+  find: black aril
+  replace: black
+- trait_name: seed_colour
+  find: capsule-like; black
+  replace: black
+- trait_name: seed_colour
+  find: drupaceous
+  replace: .na.character
+- trait_name: seed_colour
+  find: drupaceous, orange
+  replace: orange
+- trait_name: seed_colour
+  find: drupaceous, red
+  replace: red
+- trait_name: seed_colour
+  find: drupaceous; blue
+  replace: blue
+- trait_name: seed_colour
+  find: drupaceous; red
+  replace: red
+- trait_name: seed_colour
+  find: drupe like
+  replace: .na.character
+- trait_name: seed_colour
+  find: orange aril
+  replace: orange
+- trait_name: seed_colour
+  find: pale green
+  replace: green
+- trait_name: seed_colour
+  find: red aril
+  replace: red
+- trait_name: seed_colour
+  find: samara-like mericarp
+  replace: .na.character
+- trait_name: seed_colour
+  find: white aril
+  replace: white
+- trait_name: seed_colour
+  find: white funicle
+  replace: white
+- trait_name: seed_colour
+  find: wing
+  replace: .na.character
+- trait_name: seed_colour
+  find: yellow aril
+  replace: yellow
+taxonomic_updates:
+- find: Argyrodendron sp. Kin Kin
+  replace: Argyrodendron sp. Kin Kin (W.D.Francis AQ81198)
+  reason: Exact match of the first three words of the taxon name to an APC-accepted
+    canonical name (2025-02-21)
+  taxonomic_resolution: species
+- find: Erythroxylum sp. Splityard Creek
+  replace: Erythroxylum sp. Splityard Creek (L.Pedley 5360)
+  reason: Exact match of the first three words of the taxon name to an APC-accepted
+    canonical name (2025-02-21)
+  taxonomic_resolution: species
+- find: Rhodamnia sp. Glastonbury
+  replace: Rhodamnia sp. Glastonbury
+  reason: Retain original phrase name, as not in APC/APNI yet (E. Wenk, 2025-02-21)
+  taxonomic_resolution: species
+exclude_observations: .na
+questions: .na
