@@ -10,217 +10,464 @@ source:
       stem hydraulic safety during seasonal atmospheric drought
     volume: '44'
     number: '9'
-    pages: 2898–2911
+    pages: 2898--2911
     doi: 10.1111/pce.14080
     issn: 1365-3040
 contributors:
   data_collectors:
-  - last_name: unknown
-    given_name: unknown
-    ORCID: unknown
-    affiliation: unknown
-  assistants: unknown
-  dataset_curators: unknown
+  - last_name: Bryant
+    given_name: Callum
+    ORCID: 0000-0002-8035-9157
+    affiliation: The Australian National University, Australia
+    additional_role: contact
+  - last_name: Ball
+    given_name: Marilyn
+    ORCID: 0000-0001-9170-940X
+    affiliation: The Australian National University, Australia
+  dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
-  collection_date: xx
+  custom_R_code: '
+    data %>%
+      mutate(
+        Date = lubridate::ym(Date),
+        location_name = "Daintree River",
+        psi_leaf_pd = ifelse(Time == 5 | Time == 6, psileaf.mean, NA), 
+        psi_stem_pd = ifelse(Time == 5 | Time == 6, psistem.mean, NA),
+        psi_leaf_md = ifelse(is.na(psi_leaf_pd), psileaf.mean, NA),
+        psi_stem_md = ifelse(is.na(psi_stem_pd), psistem.mean, NA),
+      )'
+  collection_date: Date
   taxon_name: Species
-  location_name: unknown
-  description: unknown
-  basis_of_record: unknown
-  life_stage: unknown
-  sampling_strategy: unknown
-  original_file: unknown
-  notes: unknown
+  location_name: location_name
+  description: An investigation of seasonal acclimation of traits that improve drought
+    tolerance in trees remains poorly resolved to improve understanding how plants
+    acclimate to drought is crucial for predicting future vulnerability.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: 2.1 Study site and sampling design ^p The study site on the Daintree
+    River, Daintree National Park, Far North Queensland (16°17'24.8″S 145°24'36.8″E),
+    has a tropical monsoonal climate. Long-term monthly rainfall and temperature data
+    were obtained from the Low Isles meteorological station (1968-2017; http://bom.gov.au/climate/data/
+    accessed March, 2019). Mean annual precipitation for the Daintree region is 2,168
+    ± 468 mm y-1 with ~80% of the rainfall occurring from December through May. Peak
+    mean daily maximum and minimum air temperatures occur in December (32.5 ± 0.9°C)
+    and July (20.5 ± 0.7°C), respectively. Temperature increases and infrequent rainfall
+    over the dry season are associated with progressive increases in daily average
+    vapour pressure deficit (VPD). ^p Seasonal measurements were conducted early and
+    late in the dry season, 13-25 August and 13-25 November 2018, respectively. Micrometeorological
+    measurements of temperature and relative humidity were recorded at 10 min intervals
+    at the study site during the study period using a portable weather station (Kestrel
+    3500 Delta T Meter, Neilsen-Kellerman Co., Boothwyn, PA) mounted 3 m above water
+    level at high tide. Shoots with intact healthy, fully expanded foliage, were collected
+    from the same stand of Sonneratia alba trees, ~ 6-7 m in height and statistical
+    comparisons were made of mean values. Shoots were sampled at a height ranging
+    from 1.5 to 3 m above high-tide and were transported to the lab in plastic bags
+    with moistened paper towel. ^p As S. alba predominantly grows in loosely consolidated
+    sediments along the estuary margin, the surface water salinities are representative
+    of those experienced by their shallow root systems (Ball & Pidsley, 1995). To
+    assess the estuarine osmotic potentials (psi-est) experienced by S. alba, a handheld
+    refractometer (A.S.T. Co. Ltd., Japan) was used to measure salinity of estuary
+    surface water at high tide. Salinities were averaged from three salinity measurements
+    per day, repeated for each of 5 days during each of the early and late dry season
+    sampling periods. Osmotic potentials of estuarine water were calculated based
+    on the fraction of seawater, where standard seawater has a salinity of 35 ppt
+    and an osmotic potential of -2.4 MPa at 25°C (Harvey, 1966).
+  original_file: files from data contributor in raw data folder
+  notes: none
 identifiers: .na
-locations: .na
-contexts: .na
+locations:
+  Daintree River:
+    latitude (deg): -16.2902
+    longitude (deg): 145.4102
+    description: tropical monsoonal climate
+    state: QLD
+    locality: Daintree River, Daintree National Park
+contexts:
+- context_property: sampling season
+  category: temporal_context
+  var_in: Season
+- context_property: plant tissue sampled
+  category: entity_context
+  var_in: tissue_type
+  values:
+  - value: leaf
+  - value: stem
+- context_property: sampling time
+  category: temporal_context
+  var_in: Time
 traits:
 - var_in: gmin_mmol m-2 s-1
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: mmol/m2/s
+  trait_name: leaf_cuticular_conductance
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Minimum leaf conductance (gmin), was determined for leaves from each of
+    nine trees in the early dry season and five in the late dry season. Minimal leaf
+    conductance, gmin, was determined by methods previously described (Kerstiens,
+    1996; Sack et al., 2003) as the cuticular transpiration, per two sided area, per
+    mole fraction difference in water vapour between leaf and air, where air inside
+    the leaf was assumed saturated with water vapour (Pearcy et al., 2000; Supporting
+    Information).
 - var_in: WC Sat.g
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: g
+  trait_name: leaf_fresh_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Measured using standard techniques.
 - var_in: Leaf Area (m2)
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: m2
+  trait_name: leaf_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: 1-sided projected leaf area measured using standard techniques.
 - var_in: DW (g)
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: g
+  trait_name: leaf_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Measured using standard techniques.
 - var_in: LMA g/m2
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: g/m2
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Measured using standard techniques.
 - var_in: Wcsat.g.m2
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: g/m2
+  trait_name: .na
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Measured using standard techniques.
 - var_in: Wcsat.g.g
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: g/g
+  trait_name: leaf_water_content_per_saturated_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Measured using standard techniques.
 - var_in: TLP.psi
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: MPa
+  trait_name: leaf_turgor_loss_point
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaf water relations were determined from pressure-volume (p-v) curves,
+    that is, plots of leaf water potential versus relative water content (RWC). A
+    p-v curve was constructed for one mature leaf from each of seven trees in the
+    early dry season (n = 7) and six trees in the late dry season (n = 6) with the
+    bench drying method (Tyree & Hammel, 1972) using a Scholander pressure chamber
+    (1050D, PMS Instrument Albany; Supporting Information). Key leaf traits and water
+    relations parameters were determined, including leaf dry mass per area (LMA),
+    saturated water content (SWC), bulk osmotic potential at turgor loss point (psi-TLP),
+    relative water content at turgor loss point (RWCat TLP), osmotic potential at
+    full hydration (psi-O), leaf bulk modulus of elasticity (e), symplastic modulus
+    of elasticity (e-symplast), and fractions of leaf water held in the apoplast (Af)
+    and symplast (Sf) were calculated from the p-v curves (Bartlett et al., 2012).
 - var_in: TLP.RWC
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: tlp.rwc
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: '%'
+  trait_name: leaf_relative_water_content_at_turgor_loss_point
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaf water relations were determined from pressure-volume (p-v) curves,
+    that is, plots of leaf water potential versus relative water content (RWC). A
+    p-v curve was constructed for one mature leaf from each of seven trees in the
+    early dry season (n = 7) and six trees in the late dry season (n = 6) with the
+    bench drying method (Tyree & Hammel, 1972) using a Scholander pressure chamber
+    (1050D, PMS Instrument Albany; Supporting Information). Key leaf traits and water
+    relations parameters were determined, including leaf dry mass per area (LMA),
+    saturated water content (SWC), bulk osmotic potential at turgor loss point (psi-TLP),
+    relative water content at turgor loss point (RWCat TLP), osmotic potential at
+    full hydration (psi-O), leaf bulk modulus of elasticity (e), symplastic modulus
+    of elasticity (e-symplast), and fractions of leaf water held in the apoplast (Af)
+    and symplast (Sf) were calculated from the p-v curves (Bartlett et al., 2012).
 - var_in: Osmotic.FT.psi
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: MPa
+  trait_name: osmotic_potential_at_full_turgor
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaf water relations were determined from pressure-volume (p-v) curves,
+    that is, plots of leaf water potential versus relative water content (RWC). A
+    p-v curve was constructed for one mature leaf from each of seven trees in the
+    early dry season (n = 7) and six trees in the late dry season (n = 6) with the
+    bench drying method (Tyree & Hammel, 1972) using a Scholander pressure chamber
+    (1050D, PMS Instrument Albany; Supporting Information). Key leaf traits and water
+    relations parameters were determined, including leaf dry mass per area (LMA),
+    saturated water content (SWC), bulk osmotic potential at turgor loss point (psi-TLP),
+    relative water content at turgor loss point (RWCat TLP), osmotic potential at
+    full hydration (psi-O), leaf bulk modulus of elasticity (e), symplastic modulus
+    of elasticity (e-symplast), and fractions of leaf water held in the apoplast (Af)
+    and symplast (Sf) were calculated from the p-v curves (Bartlett et al., 2012).
 - var_in: C.leaf.RWC
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: g/g/MPa
+  trait_name: leaf_capacitance
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaf water relations were determined from pressure-volume (p-v) curves,
+    that is, plots of leaf water potential versus relative water content (RWC). A
+    p-v curve was constructed for one mature leaf from each of seven trees in the
+    early dry season (n = 7) and six trees in the late dry season (n = 6) with the
+    bench drying method (Tyree & Hammel, 1972) using a Scholander pressure chamber
+    (1050D, PMS Instrument Albany; Supporting Information). Key leaf traits and water
+    relations parameters were determined, including leaf dry mass per area (LMA),
+    saturated water content (SWC), bulk osmotic potential at turgor loss point (psi-TLP),
+    relative water content at turgor loss point (RWCat TLP), osmotic potential at
+    full hydration (psi-O), leaf bulk modulus of elasticity (e), symplastic modulus
+    of elasticity (e-symplast), and fractions of leaf water held in the apoplast (Af)
+    and symplast (Sf) were calculated from the p-v curves (Bartlett et al., 2012).
+    Capacitance between full turgor and turgor loss (Cleaf), for leaves was calculated
+    as, (100 - RWC-TLP) / (0-psi-TLP)
 - var_in: EM
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: MPa
+  trait_name: bulk_modulus_of_elasticity
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaf water relations were determined from pressure-volume (p-v) curves,
+    that is, plots of leaf water potential versus relative water content (RWC). A
+    p-v curve was constructed for one mature leaf from each of seven trees in the
+    early dry season (n = 7) and six trees in the late dry season (n = 6) with the
+    bench drying method (Tyree & Hammel, 1972) using a Scholander pressure chamber
+    (1050D, PMS Instrument Albany; Supporting Information). Key leaf traits and water
+    relations parameters were determined, including leaf dry mass per area (LMA),
+    saturated water content (SWC), bulk osmotic potential at turgor loss point (psi-TLP),
+    relative water content at turgor loss point (RWCat TLP), osmotic potential at
+    full hydration (psi-O), leaf bulk modulus of elasticity (e), symplastic modulus
+    of elasticity (e-symplast), and fractions of leaf water held in the apoplast (Af)
+    and symplast (Sf) were calculated from the p-v curves (Bartlett et al., 2012).
 - var_in: RWCs TLP
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: psileaf.mean
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: psistem.mean
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
-- var_in: psi Gradient
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: '%'
+  trait_name: .na
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Duplicate column, but slightly different values; Leaf water relations were determined from pressure-volume (p-v) curves,
+    that is, plots of leaf water potential versus relative water content (RWC). A
+    p-v curve was constructed for one mature leaf from each of seven trees in the
+    early dry season (n = 7) and six trees in the late dry season (n = 6) with the
+    bench drying method (Tyree & Hammel, 1972) using a Scholander pressure chamber
+    (1050D, PMS Instrument Albany; Supporting Information). Key leaf traits and water
+    relations parameters were determined, including leaf dry mass per area (LMA),
+    saturated water content (SWC), bulk osmotic potential at turgor loss point (psi-TLP),
+    relative water content at turgor loss point (RWCat TLP), osmotic potential at
+    full hydration (psi-O), leaf bulk modulus of elasticity (e), symplastic modulus
+    of elasticity (e-symplast), and fractions of leaf water held in the apoplast (Af)
+    and symplast (Sf) were calculated from the p-v curves (Bartlett et al., 2012).
+- var_in: psi_leaf_pd
+  unit_in: MPa
+  trait_name: water_potential_predawn
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Diurnal measurements of psi-leaf and stem water potential (psi-stem) were
+    measured over three clear sunny days (with no leaf wetting on the preceding evening)
+    in the early dry season (August 19-21) at 6:00 (predawn; psi-pd), 9:00 (morning),
+    12:00 (midday), and 15:00 h (afternoon), and on one clear sunny day in the late
+    dry season (November 22) at 5:00 (predawn; psi-pd), 8:00 (morning), 11:00 (midday),
+    14:00 (afternoon) and 17:00 h. Sampling times were shifted forward 1 h between
+    seasons to standardize comparisons of morning, midday and afternoon measurements
+    based on hours from sunrise, which differed between seasons. Sunrise occurred
+    at 6:35 a.m. and 5:38 a.m. for early and late dry season respectively. psi-stem
+    was determined in leaves wrapped in plastic film and aluminium foil and allowed
+    to equilibrate with the stem (Melcher, Meinzer, Yount, Goldstein, & Zimmermann,
+    1998; Supporting Information).
+  tissue_type: leaf
+- var_in: psi_stem_pd
+  unit_in: MPa
+  trait_name: water_potential_predawn
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Diurnal measurements of psi-leaf and stem water potential (psi-stem) were
+    measured over three clear sunny days (with no leaf wetting on the preceding evening)
+    in the early dry season (August 19-21) at 6:00 (predawn; psi-pd), 9:00 (morning),
+    12:00 (midday), and 15:00 h (afternoon), and on one clear sunny day in the late
+    dry season (November 22) at 5:00 (predawn; psi-pd), 8:00 (morning), 11:00 (midday),
+    14:00 (afternoon) and 17:00 h. Sampling times were shifted forward 1 h between
+    seasons to standardize comparisons of morning, midday and afternoon measurements
+    based on hours from sunrise, which differed between seasons. Sunrise occurred
+    at 6:35 a.m. and 5:38 a.m. for early and late dry season respectively. psi-stem
+    was determined in leaves wrapped in plastic film and aluminium foil and allowed
+    to equilibrate with the stem (Melcher, Meinzer, Yount, Goldstein, & Zimmermann,
+    1998; Supporting Information).
+  tissue_type: stem
+- var_in: psi_leaf_md
+  unit_in: MPa
+  trait_name: water_potential_midday
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Diurnal measurements of psi-leaf and stem water potential (psi-stem) were
+    measured over three clear sunny days (with no leaf wetting on the preceding evening)
+    in the early dry season (August 19-21) at 6:00 (predawn; psi-pd), 9:00 (morning),
+    12:00 (midday), and 15:00 h (afternoon), and on one clear sunny day in the late
+    dry season (November 22) at 5:00 (predawn; psi-pd), 8:00 (morning), 11:00 (midday),
+    14:00 (afternoon) and 17:00 h. Sampling times were shifted forward 1 h between
+    seasons to standardize comparisons of morning, midday and afternoon measurements
+    based on hours from sunrise, which differed between seasons. Sunrise occurred
+    at 6:35 a.m. and 5:38 a.m. for early and late dry season respectively. psi-stem
+    was determined in leaves wrapped in plastic film and aluminium foil and allowed
+    to equilibrate with the stem (Melcher, Meinzer, Yount, Goldstein, & Zimmermann,
+    1998; Supporting Information).
+  tissue_type: leaf
+- var_in: psi_stem_md
+  unit_in: MPa
+  trait_name: water_potential_midday
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Diurnal measurements of psi-leaf and stem water potential (psi-stem) were
+    measured over three clear sunny days (with no leaf wetting on the preceding evening)
+    in the early dry season (August 19-21) at 6:00 (predawn; psi-pd), 9:00 (morning),
+    12:00 (midday), and 15:00 h (afternoon), and on one clear sunny day in the late
+    dry season (November 22) at 5:00 (predawn; psi-pd), 8:00 (morning), 11:00 (midday),
+    14:00 (afternoon) and 17:00 h. Sampling times were shifted forward 1 h between
+    seasons to standardize comparisons of morning, midday and afternoon measurements
+    based on hours from sunrise, which differed between seasons. Sunrise occurred
+    at 6:35 a.m. and 5:38 a.m. for early and late dry season respectively. psi-stem
+    was determined in leaves wrapped in plastic film and aluminium foil and allowed
+    to equilibrate with the stem (Melcher, Meinzer, Yount, Goldstein, & Zimmermann,
+    1998; Supporting Information).
+  tissue_type: stem
 - var_in: Kleaf
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: mmol/m2/MPa/s
+  trait_name: leaf_specific_hydraulic_conductance
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Diurnal changes in stem and leaf water status, gas exchange and leaf hydraulic
+    conductance were monitored in five co-occurring trees in both the early and late
+    dry season. Gas exchange measurements were made using a portable photosynthesis
+    system (LI-COR 6400XT, LI-COR Biosciences, Nebraska).  Photosynthetically active
+    radiation was standardized at 1000 umol photons m-2 s-1 and the flow rate was
+    set to 500 umol s-1, and all other parameters (CO2, temperature, humidity) were
+    left at ambient levels. After attaching the gas analyser head, measurements were
+    logged after photosynthetic rate and stomatal conductance stabilized (usually
+    2-3 min). The time elapsed between the first tree and last tree during a measurement
+    cycle was <45 min. After gas exchange measurements, the exposed and the wrapped
+    leaves were harvested, placed into zip-lock bags and their water potentials measured
+    in the lab within 90 min. Leaf hydraulic conductance (Kleaf) was calculated from
+    diurnal gas exchange and water potential measurements on an area basis as, E/(psi-stem
+    - psi-leaf). where E is the transpiration rate and psi-stem - psi-leaf represents
+    the water potential gradient between the transpiring leaf and stem.nknown
 - var_in: Kplant
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: mmol/m2/MPa
+  trait_name: .na
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Diurnal changes in stem and leaf water status, gas exchange and leaf hydraulic
+    conductance were monitored in five co-occurring trees in both the early and late
+    dry season. Gas exchange measurements were made using a portable photosynthesis
+    system (LI-COR 6400XT, LI-COR Biosciences, Nebraska).  Photosynthetically active
+    radiation was standardized at 1000 umol photons m-2 s-1 and the flow rate was
+    set to 500 umol s-1, and all other parameters (CO2, temperature, humidity) were
+    left at ambient levels. After attaching the gas analyser head, measurements were
+    logged after photosynthetic rate and stomatal conductance stabilized (usually
+    2-3 min). The time elapsed between the first tree and last tree during a measurement
+    cycle was <45 min. After gas exchange measurements, the exposed and the wrapped
+    leaves were harvested, placed into zip-lock bags and their water potentials measured
+    in the lab within 90 min. Leaf hydraulic conductance (Kleaf) was calculated from
+    diurnal gas exchange and water potential measurements on an area basis as, E/(estuarine
+    water potential - psi-leaf). where E is the transpiration rate and psi-stem -
+    psi-leaf represents the water potential gradient between the transpiring leaf
+    and stem.
 - var_in: Photo
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: umol{CO2}/m2/s
+  trait_name: leaf_photosynthetic_rate_per_area_maximum
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Diurnal changes in stem and leaf water status, gas exchange and leaf hydraulic
+    conductance were monitored in five co-occurring trees in both the early and late
+    dry season. Gas exchange measurements were made using a portable photosynthesis
+    system (LI-COR 6400XT, LI-COR Biosciences, Nebraska).  Photosynthetically active
+    radiation was standardized at 1000 umol photons m-2 s-1 and the flow rate was
+    set to 500 umol s-1, and all other parameters (CO2, temperature, humidity) were
+    left at ambient levels. After attaching the gas analyser head, measurements were
+    logged after photosynthetic rate and stomatal conductance stabilized (usually
+    2-3 min). The time elapsed between the first tree and last tree during a measurement
+    cycle was <45 min.
 - var_in: Cond
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: mmol{H2O}/m2/s
+  trait_name: leaf_stomatal_conductance_per_area_at_Amax
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Diurnal changes in stem and leaf water status, gas exchange and leaf hydraulic
+    conductance were monitored in five co-occurring trees in both the early and late
+    dry season. Gas exchange measurements were made using a portable photosynthesis
+    system (LI-COR 6400XT, LI-COR Biosciences, Nebraska).  Photosynthetically active
+    radiation was standardized at 1000 umol photons m-2 s-1 and the flow rate was
+    set to 500 umol s-1, and all other parameters (CO2, temperature, humidity) were
+    left at ambient levels. After attaching the gas analyser head, measurements were
+    logged after photosynthetic rate and stomatal conductance stabilized (usually
+    2-3 min). The time elapsed between the first tree and last tree during a measurement
+    cycle was <45 min
 - var_in: Ci
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: umol{CO2}/mol
+  trait_name: leaf_intercellular_CO2_concentration_at_Amax
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Diurnal changes in stem and leaf water status, gas exchange and leaf hydraulic
+    conductance were monitored in five co-occurring trees in both the early and late
+    dry season. Gas exchange measurements were made using a portable photosynthesis
+    system (LI-COR 6400XT, LI-COR Biosciences, Nebraska). Photosynthetically active
+    radiation was standardized at 1000 umol photons m-2 s-1 and the flow rate was
+    set to 500 umol s-1, and all other parameters (CO2, temperature, humidity) were
+    left at ambient levels. After attaching the gas analyser head, measurements were
+    logged after photosynthetic rate and stomatal conductance stabilized (usually
+    2-3 min). The time elapsed between the first tree and last tree during a measurement
+    cycle was <45 min
 - var_in: Ci/Ca
-  unit_in: unknown
-  trait_name: unknown
-  entity_type: unknown
-  value_type: unknown
-  basis_of_value: unknown
-  replicates: unknown
-  methods: unknown
+  unit_in: umol{CO2_internal}/umol{CO2_ambient}
+  trait_name: leaf_intercellular_CO2_concentration_to_atmospheric_CO2_concentration_ratio
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Diurnal changes in stem and leaf water status, gas exchange and leaf hydraulic
+    conductance were monitored in five co-occurring trees in both the early and late
+    dry season. Gas exchange measurements were made using a portable photosynthesis
+    system (LI-COR 6400XT, LI-COR Biosciences, Nebraska).  Photosynthetically active
+    radiation was standardized at 1000 umol photons m-2 s-1 and the flow rate was
+    set to 500 umol s-1, and all other parameters (CO2, temperature, humidity) were
+    left at ambient levels. After attaching the gas analyser head, measurements were
+    logged after photosynthetic rate and stomatal conductance stabilized (usually
+    2-3 min). The time elapsed between the first tree and last tree during a measurement
+    cycle was <45 min
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
