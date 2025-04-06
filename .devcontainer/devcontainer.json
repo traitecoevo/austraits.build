@@ -1,45 +1,39 @@
 {
 	"name": "R Data Science Environment",
 
-	"build": {
-		// Use existing docker image 
-		"image": "ghcr.io/rocker-org/devcontainer/tidyverse:4.4"
-	},
-
-	// Install Dev Container Features. More info: https://containers.dev/features
+	"image": "ghcr.io/rocker-org/devcontainer/tidyverse:4.4",
+	
+	// Dev Container Features. More info: https://containers.dev/features
 	"features": {
 		// Quarto
 		"ghcr.io/rocker-org/devcontainer-features/quarto-cli:1": {},
-		// "ghcr.io/rocker-org/devcontainer-features/rstudio-server": 0,
 		// R packages (via pak)
 		"ghcr.io/rocker-org/devcontainer-features/r-packages:1": {
 			"packages": [
+				// Generally useful packages
 				"rmarkdown",
 				"markdown",
 				"devtools",
         "janitor",
         "skimr",
-				"furrr"
 				// better vscode support
         "httpgd",
         "languageserver"
 			],
 			"extra-packages": [
-				"remotes::install_github('traitecoevo/traits.build')",
 				"remotes::install_github('manuelhentschel/vscdebugger/')"
 			]
 		},
-		// radian
-		"ghcr.io/rocker-org/devcontainer-features/radian:1": {
-			"radian-version": "latest",
-			"r-version": "4.4"
-		},
+		// Dependent R packages from DESCRIPTION file 
+		"ghcr.io/rocker-org/devcontainer-features/r-dependent-packages:latest": {},
 	},
+	// Enable radian for Python
+	"postCreateCommand": "pip install radian",
 
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-python.python",				
+				"ms-python.python",
 				"vsls-contrib.codetour",
 				"GitHub.copilot",
 				"GitHub.copilot-chat",
@@ -48,7 +42,6 @@
 				"george-alisson.html-preview-vscode",
 				"quarto.quarto",
 				"GrapeCity.gc-excelviewer",
-				"ivan-bocharov.stan-vscode",
 				"aaron-bond.better-comments",
 				"mechatroner.rainbow-csv"
 			]
