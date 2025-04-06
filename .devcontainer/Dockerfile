@@ -8,7 +8,8 @@ FROM ghcr.io/rocker-org/devcontainer/tidyverse:${VARIANT}
 #     && R -q -e 'install.packages("vscDebugger", repos = "https://manuelhentschel.r-universe.dev")'
 
 # Install Python packages
-RUN python3 -m pip --disable-pip-version-check --no-cache-dir install \
+RUN python3 -m pip --disable-pip-version-check --no-cache-dir install --break-system-packages \
         radian \
         language-server-protocol \
     && python3 -m pip cache purge
+
