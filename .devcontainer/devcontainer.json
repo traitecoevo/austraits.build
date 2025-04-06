@@ -1,36 +1,44 @@
 {
 	"name": "R Data Science Environment",
+
 	"build": {
-		"dockerfile": "Dockerfile",
-		// Update VARIANT to pick a specific R version: 4, 4.1, 4.0
-		// More info: https://github.com/rocker-org/devcontainer-images/pkgs/container/devcontainer%2Ftidyverse
-		"args": { "VARIANT": "4.4" }
+		// Use existing docker image 
+		"image": "ghcr.io/rocker-org/devcontainer/tidyverse:4.4"
 	},
 
 	// Install Dev Container Features. More info: https://containers.dev/features
 	"features": {
+		// Quarto
 		"ghcr.io/rocker-org/devcontainer-features/quarto-cli:1": {},
-		"ghcr.io/rocker-org/devcontainer-features/rstudio-server": 0,
-		// // R packages from the DESCRIPTION file (via pak)
-		// "ghcr.io/rocker-org/devcontainer-features/r-packages:0": {},
+		// "ghcr.io/rocker-org/devcontainer-features/rstudio-server": 0,
 		// R packages (via pak)
 		"ghcr.io/rocker-org/devcontainer-features/r-packages:1": {
 			"packages": [
 				"rmarkdown",
+				"markdown",
 				"devtools",
         "janitor",
         "skimr",
-        "markdown",
+				"furrr"
+				// better vscode support
         "httpgd",
         "languageserver"
+			],
+			"extra-packages": [
+				"remotes::install_github('traitecoevo/traits.build')",
+				"remotes::install_github('manuelhentschel/vscdebugger/')"
 			]
-		}
+		},
+		// radian
+		"ghcr.io/rocker-org/devcontainer-features/radian:1": {
+			"radian-version": "latest",
+			"r-version": "4.4"
+		},
 	},
 
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				// Add Jupyter and Python vscode extensions
 				"ms-python.python",				
 				"vsls-contrib.codetour",
 				"GitHub.copilot",
@@ -41,24 +49,9 @@
 				"quarto.quarto",
 				"GrapeCity.gc-excelviewer",
 				"ivan-bocharov.stan-vscode",
-				"aaron-bond.better-comments"
+				"aaron-bond.better-comments",
+				"mechatroner.rainbow-csv"
 			]
 		}
-	},
-
-	// Forward Jupyter and RStudio ports
-	"forwardPorts": [8787],
-	"portsAttributes": {
-		"8787": {
-			"label": "Rstudio",
-			"requireLocalPort": true,
-			"onAutoForward": "ignore"
-		}
-	},
-
-	// Use 'postAttachCommand' to run commands after the container is started.
-	"postAttachCommand": "sudo rstudio-server start"
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root
-	// "remoteUser": "root"
+	}
 }
