@@ -27,8 +27,17 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: ' data %>% mutate( species = "Wahlenbergia ceracea" )'
-  collection_date: unknown/2022
+  custom_R_code: '
+    data %>%
+      mutate(
+        species = "Wahlenbergia ceracea",
+        collection_date = case_when(
+          experiment == "germination_experiment" ~ "2018-04/2018-10",
+          experiment == "growth_experiment" & Block == "1" ~ "2019-03/2019-12",
+          experiment == "growth_experiment" & Block == "2" ~ "2019-08/2020-03"
+          )
+      )'
+  collection_date: collection_date
   taxon_name: species
   location_name: location
   individual_id: unique_ID
@@ -505,6 +514,4 @@ traits:
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
-questions:
-  question1: In what year(s) (or months) did this experiment take place?
-  question2:
+questions: .na
