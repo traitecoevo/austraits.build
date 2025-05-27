@@ -757,6 +757,10 @@ Lim_2017_config <- dataset_configure("data/Lim_2017/metadata.yml", definitions)
 Lim_2017_raw <- dataset_process("data/Lim_2017/data.csv", Lim_2017_config, schema, resource_metadata, unit_conversions)
 Lim_2017 <- dataset_update_taxonomy(Lim_2017_raw, taxon_list)
 
+Liu_2023_config <- dataset_configure("data/Liu_2023/metadata.yml", definitions)
+Liu_2023_raw <- dataset_process("data/Liu_2023/data.csv", Liu_2023_config, schema, resource_metadata, unit_conversions)
+Liu_2023 <- dataset_update_taxonomy(Liu_2023_raw, taxon_list)
+
 Lord_1997_config <- dataset_configure("data/Lord_1997/metadata.yml", definitions)
 Lord_1997_raw <- dataset_process("data/Lord_1997/data.csv", Lord_1997_config, schema, resource_metadata, unit_conversions)
 Lord_1997 <- dataset_update_taxonomy(Lord_1997_raw, taxon_list)
@@ -1713,6 +1717,7 @@ austraits_raw <- build_combine(
   Lemmens_1994,
   Lewis_2015,
   Lim_2017,
+  Liu_2023,
   Lord_1997,
   Lunt_2012,
   Lusk_2010,
