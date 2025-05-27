@@ -105,9 +105,21 @@ Brodribb_2000_config <- dataset_configure("data/Brodribb_2000/metadata.yml", def
 Brodribb_2000_raw <- dataset_process("data/Brodribb_2000/data.csv", Brodribb_2000_config, schema, resource_metadata, unit_conversions)
 Brodribb_2000 <- dataset_update_taxonomy(Brodribb_2000_raw, taxon_list)
 
+Bryant_2021_config <- dataset_configure("data/Bryant_2021/metadata.yml", definitions)
+Bryant_2021_raw <- dataset_process("data/Bryant_2021/data.csv", Bryant_2021_config, schema, resource_metadata, unit_conversions)
+Bryant_2021 <- dataset_update_taxonomy(Bryant_2021_raw, taxon_list)
+
+Bryant_2021_2_config <- dataset_configure("data/Bryant_2021_2/metadata.yml", definitions)
+Bryant_2021_2_raw <- dataset_process("data/Bryant_2021_2/data.csv", Bryant_2021_2_config, schema, resource_metadata, unit_conversions)
+Bryant_2021_2 <- dataset_update_taxonomy(Bryant_2021_2_raw, taxon_list)
+
 Bryant_2021_3_config <- dataset_configure("data/Bryant_2021_3/metadata.yml", definitions)
 Bryant_2021_3_raw <- dataset_process("data/Bryant_2021_3/data.csv", Bryant_2021_3_config, schema, resource_metadata, unit_conversions)
 Bryant_2021_3 <- dataset_update_taxonomy(Bryant_2021_3_raw, taxon_list)
+
+Bryant_2024_config <- dataset_configure("data/Bryant_2024/metadata.yml", definitions)
+Bryant_2024_raw <- dataset_process("data/Bryant_2024/data.csv", Bryant_2024_config, schema, resource_metadata, unit_conversions)
+Bryant_2024 <- dataset_update_taxonomy(Bryant_2024_raw, taxon_list)
 
 Buckton_2019_config <- dataset_configure("data/Buckton_2019/metadata.yml", definitions)
 Buckton_2019_raw <- dataset_process("data/Buckton_2019/data.csv", Buckton_2019_config, schema, resource_metadata, unit_conversions)
@@ -125,6 +137,10 @@ Burrows_2020_config <- dataset_configure("data/Burrows_2020/metadata.yml", defin
 Burrows_2020_raw <- dataset_process("data/Burrows_2020/data.csv", Burrows_2020_config, schema, resource_metadata, unit_conversions)
 Burrows_2020 <- dataset_update_taxonomy(Burrows_2020_raw, taxon_list)
 
+Butler_2004_config <- dataset_configure("data/Butler_2004/metadata.yml", definitions)
+Butler_2004_raw <- dataset_process("data/Butler_2004/data.csv", Butler_2004_config, schema, resource_metadata, unit_conversions)
+Butler_2004 <- dataset_update_taxonomy(Butler_2004_raw, taxon_list)
+
 Caldwell_2016_config <- dataset_configure("data/Caldwell_2016/metadata.yml", definitions)
 Caldwell_2016_raw <- dataset_process("data/Caldwell_2016/data.csv", Caldwell_2016_config, schema, resource_metadata, unit_conversions)
 Caldwell_2016 <- dataset_update_taxonomy(Caldwell_2016_raw, taxon_list)
@@ -140,6 +156,10 @@ Canham_2009 <- dataset_update_taxonomy(Canham_2009_raw, taxon_list)
 Canham_2023_config <- dataset_configure("data/Canham_2023/metadata.yml", definitions)
 Canham_2023_raw <- dataset_process("data/Canham_2023/data.csv", Canham_2023_config, schema, resource_metadata, unit_conversions)
 Canham_2023 <- dataset_update_taxonomy(Canham_2023_raw, taxon_list)
+
+Carey_2003_config <- dataset_configure("data/Carey_2003/metadata.yml", definitions)
+Carey_2003_raw <- dataset_process("data/Carey_2003/data.csv", Carey_2003_config, schema, resource_metadata, unit_conversions)
+Carey_2003 <- dataset_update_taxonomy(Carey_2003_raw, taxon_list)
 
 Catford_2014_config <- dataset_configure("data/Catford_2014/metadata.yml", definitions)
 Catford_2014_raw <- dataset_process("data/Catford_2014/data.csv", Catford_2014_config, schema, resource_metadata, unit_conversions)
@@ -1001,6 +1021,10 @@ Purdie_1976_config <- dataset_configure("data/Purdie_1976/metadata.yml", definit
 Purdie_1976_raw <- dataset_process("data/Purdie_1976/data.csv", Purdie_1976_config, schema, resource_metadata, unit_conversions)
 Purdie_1976 <- dataset_update_taxonomy(Purdie_1976_raw, taxon_list)
 
+RadfordSmith_2024_config <- dataset_configure("data/RadfordSmith_2024/metadata.yml", definitions)
+RadfordSmith_2024_raw <- dataset_process("data/RadfordSmith_2024/data.csv", RadfordSmith_2024_config, schema, resource_metadata, unit_conversions)
+RadfordSmith_2024 <- dataset_update_taxonomy(RadfordSmith_2024_raw, taxon_list)
+
 RBGK_2014_config <- dataset_configure("data/RBGK_2014/metadata.yml", definitions)
 RBGK_2014_raw <- dataset_process("data/RBGK_2014/data.csv", RBGK_2014_config, schema, resource_metadata, unit_conversions)
 RBGK_2014 <- dataset_update_taxonomy(RBGK_2014_raw, taxon_list)
@@ -1478,7 +1502,7 @@ Zieminska_2015_raw <- dataset_process("data/Zieminska_2015/data.csv", Zieminska_
 Zieminska_2015 <- dataset_update_taxonomy(Zieminska_2015_raw, taxon_list)
 
 
-austraits_base_raw <- austraits::bind_databases(
+austraits_raw <- build_combine(
   ABRS_1981,
   ABRS_2022,
   ABRS_2023,
@@ -1502,15 +1526,20 @@ austraits_base_raw <- austraits::bind_databases(
   Britton_1994,
   Brock_1993,
   Brodribb_2000,
+  Bryant_2021,
+  Bryant_2021_2,
   Bryant_2021_3,
+  Bryant_2024,
   Buckton_2019,
   Burrows_2001,
   Burrows_2008,
   Burrows_2020,
+  Butler_2004,
   Caldwell_2016,
   Campbell_2006,
   Canham_2009,
   Canham_2023,
+  Carey_2003,
   Catford_2014,
   Cernusak_2006,
   Cernusak_2011,
@@ -1726,6 +1755,7 @@ austraits_base_raw <- austraits::bind_databases(
   Prior_2016,
   Prior_2022,
   Purdie_1976,
+  RadfordSmith_2024,
   RBGK_2014,
   RBGV_2022,
   RBGV_2023,
@@ -1852,8 +1882,8 @@ version_number <- util_get_version("config/metadata.yml")
 git_SHA <- util_get_SHA()
 
 # Combine all the source into one resource
-austraits_base <- build_add_version(austraits_base_raw, version_number, git_SHA)
+austraits <- build_add_version(austraits_raw, version_number, git_SHA)
 
 # Save to file
 dir.create("export/data/curr", FALSE, TRUE)
-saveRDS(austraits_base, "export/data/curr/austraits_base.rds")
+saveRDS(austraits, "export/data/curr/austraits.rds")
