@@ -125,6 +125,22 @@ Brodribb_2000_config <- dataset_configure("data/Brodribb_2000/metadata.yml", def
 Brodribb_2000_raw <- dataset_process("data/Brodribb_2000/data.csv", Brodribb_2000_config, schema, resource_metadata, unit_conversions)
 Brodribb_2000 <- dataset_update_taxonomy(Brodribb_2000_raw, taxon_list)
 
+Bryant_2021_config <- dataset_configure("data/Bryant_2021/metadata.yml", definitions)
+Bryant_2021_raw <- dataset_process("data/Bryant_2021/data.csv", Bryant_2021_config, schema, resource_metadata, unit_conversions)
+Bryant_2021 <- dataset_update_taxonomy(Bryant_2021_raw, taxon_list)
+
+Bryant_2021_2_config <- dataset_configure("data/Bryant_2021_2/metadata.yml", definitions)
+Bryant_2021_2_raw <- dataset_process("data/Bryant_2021_2/data.csv", Bryant_2021_2_config, schema, resource_metadata, unit_conversions)
+Bryant_2021_2 <- dataset_update_taxonomy(Bryant_2021_2_raw, taxon_list)
+
+Bryant_2021_3_config <- dataset_configure("data/Bryant_2021_3/metadata.yml", definitions)
+Bryant_2021_3_raw <- dataset_process("data/Bryant_2021_3/data.csv", Bryant_2021_3_config, schema, resource_metadata, unit_conversions)
+Bryant_2021_3 <- dataset_update_taxonomy(Bryant_2021_3_raw, taxon_list)
+
+Bryant_2024_config <- dataset_configure("data/Bryant_2024/metadata.yml", definitions)
+Bryant_2024_raw <- dataset_process("data/Bryant_2024/data.csv", Bryant_2024_config, schema, resource_metadata, unit_conversions)
+Bryant_2024 <- dataset_update_taxonomy(Bryant_2024_raw, taxon_list)
+
 Buckton_2019_config <- dataset_configure("data/Buckton_2019/metadata.yml", definitions)
 Buckton_2019_raw <- dataset_process("data/Buckton_2019/data.csv", Buckton_2019_config, schema, resource_metadata, unit_conversions)
 Buckton_2019 <- dataset_update_taxonomy(Buckton_2019_raw, taxon_list)
@@ -1021,10 +1037,6 @@ Portelli_2023_config <- dataset_configure("data/Portelli_2023/metadata.yml", def
 Portelli_2023_raw <- dataset_process("data/Portelli_2023/data.csv", Portelli_2023_config, schema, resource_metadata, unit_conversions)
 Portelli_2023 <- dataset_update_taxonomy(Portelli_2023_raw, taxon_list)
 
-Prior_2000_config <- dataset_configure("data/Prior_2000/metadata.yml", definitions)
-Prior_2000_raw <- dataset_process("data/Prior_2000/data.csv", Prior_2000_config, schema, resource_metadata, unit_conversions)
-Prior_2000 <- dataset_update_taxonomy(Prior_2000_raw, taxon_list)
-
 Prior_2003_config <- dataset_configure("data/Prior_2003/metadata.yml", definitions)
 Prior_2003_raw <- dataset_process("data/Prior_2003/data.csv", Prior_2003_config, schema, resource_metadata, unit_conversions)
 Prior_2003 <- dataset_update_taxonomy(Prior_2003_raw, taxon_list)
@@ -1559,6 +1571,10 @@ austraits_raw <- build_combine(
   Britton_1994,
   Brock_1993,
   Brodribb_2000,
+  Bryant_2021,
+  Bryant_2021_2,
+  Bryant_2021_3,
+  Bryant_2024,
   Buckton_2019,
   Burrows_2001,
   Burrows_2008,
@@ -1783,7 +1799,6 @@ austraits_raw <- build_combine(
   Pollock_2012,
   Pollock_2018,
   Portelli_2023,
-  Prior_2000,
   Prior_2003,
   Prior_2016,
   Prior_2022,
