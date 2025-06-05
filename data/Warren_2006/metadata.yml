@@ -25,7 +25,7 @@ dataset:
   custom_R_code:        '
     data %>% 
       mutate(
-        `carotenoid_content(mmol g-1)` = `Carot/Chl(mmol mol-1)`*`[Chl](mmol g-1)`/1000,
+        `carotenoid_content(mmol g-1)` = `Carot/Chl(mmol mol-1)`*`[Chl](mmol g-1)`/1000000000,
         leaf_dry_matter_content = 1/`FW/DW`,
         context = paste0(`Annual rainfall(mm a-1)`,"MAP_",`Driest quarter rainfall(mm a-1)`,"driestQ_",`Evaporation (mm a-1)`,"ET"),
         context = ifelse(context == "NAMAP_NAdriestQ_NAET", NA, context)
@@ -307,7 +307,7 @@ traits:
     (Warren et al. 2000b). The fraction of N present as Rubisco was calculated assuming
     that Rubisco is 16.7% N by weight.
 - var_in: '[Chl](mmol g-1)'
-  unit_in: mmol{chlorophyll}/g
+  unit_in: umol{chlorophyll}/kg
   trait_name: leaf_chlorophyll_per_dry_mass
   entity_type: population
   value_type: mean
@@ -318,7 +318,7 @@ traits:
     (1994). Thylakoid N was calculated from chlorophyll concentrations using an empirical
     relationship (Evans 1989): 50 mol thylakoid N mol-1 chlorophyll. This relationship
     is widely used and varies little among species or as a function of rainfall (Evans
-    1989).'
+    1989). (Units off by 1000000, so made an assumption)'
 - var_in: Chl a /b(mol mol-1)
   unit_in: mol{chlorophyllA}/mol{chlorophyllB}
   trait_name: leaf_chlorophyll_A_B_ratio
@@ -381,7 +381,7 @@ traits:
     is widely used and varies little among species or as a function of rainfall (Evans
     1989). The paper reports `Carot/Chl(mmol mol-1)`, which was converted to carotenoid
     content as follows: carotenoid_content(mmol g-1) = `Carot/Chl(mmol mol-1)`*`[Chl](mmol
-    g-1)`/1000'
+    g-1)`/1000, but then corrected for error in chlorophyll units.'
 substitutions: .na
 taxonomic_updates:
 - find: Eucalyptus badgensis
