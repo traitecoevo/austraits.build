@@ -1610,7 +1610,7 @@ Zolfaghar_2015_raw <- dataset_process("data/Zolfaghar_2015/data.csv", Zolfaghar_
 Zolfaghar_2015 <- dataset_update_taxonomy(Zolfaghar_2015_raw, taxon_list)
 
 
-austraits_raw <- austraits::bind_databases(
+austraits_raw <- build_combine(
   ABRS_1981,
   ABRS_2022,
   ABRS_2023,
