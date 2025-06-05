@@ -253,6 +253,22 @@ Clarke_2015_config <- dataset_configure("data/Clarke_2015/metadata.yml", definit
 Clarke_2015_raw <- dataset_process("data/Clarke_2015/data.csv", Clarke_2015_config, schema, resource_metadata, unit_conversions)
 Clarke_2015 <- dataset_update_taxonomy(Clarke_2015_raw, taxon_list)
 
+Cochrane_2001_config <- dataset_configure("data/Cochrane_2001/metadata.yml", definitions)
+Cochrane_2001_raw <- dataset_process("data/Cochrane_2001/data.csv", Cochrane_2001_config, schema, resource_metadata, unit_conversions)
+Cochrane_2001 <- dataset_update_taxonomy(Cochrane_2001_raw, taxon_list)
+
+Cochrane_2017_config <- dataset_configure("data/Cochrane_2017/metadata.yml", definitions)
+Cochrane_2017_raw <- dataset_process("data/Cochrane_2017/data.csv", Cochrane_2017_config, schema, resource_metadata, unit_conversions)
+Cochrane_2017 <- dataset_update_taxonomy(Cochrane_2017_raw, taxon_list)
+
+Cochrane_2018_config <- dataset_configure("data/Cochrane_2018/metadata.yml", definitions)
+Cochrane_2018_raw <- dataset_process("data/Cochrane_2018/data.csv", Cochrane_2018_config, schema, resource_metadata, unit_conversions)
+Cochrane_2018 <- dataset_update_taxonomy(Cochrane_2018_raw, taxon_list)
+
+Cochrane_2019_config <- dataset_configure("data/Cochrane_2019/metadata.yml", definitions)
+Cochrane_2019_raw <- dataset_process("data/Cochrane_2019/data.csv", Cochrane_2019_config, schema, resource_metadata, unit_conversions)
+Cochrane_2019 <- dataset_update_taxonomy(Cochrane_2019_raw, taxon_list)
+
 Collette_2021_config <- dataset_configure("data/Collette_2021/metadata.yml", definitions)
 Collette_2021_raw <- dataset_process("data/Collette_2021/data.csv", Collette_2021_config, schema, resource_metadata, unit_conversions)
 Collette_2021 <- dataset_update_taxonomy(Collette_2021_raw, taxon_list)
@@ -948,6 +964,10 @@ Morgan_2014 <- dataset_update_taxonomy(Morgan_2014_raw, taxon_list)
 Morgan_2021_config <- dataset_configure("data/Morgan_2021/metadata.yml", definitions)
 Morgan_2021_raw <- dataset_process("data/Morgan_2021/data.csv", Morgan_2021_config, schema, resource_metadata, unit_conversions)
 Morgan_2021 <- dataset_update_taxonomy(Morgan_2021_raw, taxon_list)
+
+Mott_1978_config <- dataset_configure("data/Mott_1978/metadata.yml", definitions)
+Mott_1978_raw <- dataset_process("data/Mott_1978/data.csv", Mott_1978_config, schema, resource_metadata, unit_conversions)
+Mott_1978 <- dataset_update_taxonomy(Mott_1978_raw, taxon_list)
 
 Muir_2014_config <- dataset_configure("data/Muir_2014/metadata.yml", definitions)
 Muir_2014_raw <- dataset_process("data/Muir_2014/data.csv", Muir_2014_config, schema, resource_metadata, unit_conversions)
@@ -1671,6 +1691,10 @@ austraits_raw <- build_combine(
   Choat_2012,
   Clarke_2009,
   Clarke_2015,
+  Cochrane_2001,
+  Cochrane_2017,
+  Cochrane_2018,
+  Cochrane_2019,
   Collette_2021,
   Cooper_2004,
   Cooper_2013,
@@ -1845,6 +1869,7 @@ austraits_raw <- build_combine(
   Morgan_2011_2,
   Morgan_2014,
   Morgan_2021,
+  Mott_1978,
   Muir_2014,
   Munroe_2019,
   Myers_1997,
