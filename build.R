@@ -301,6 +301,10 @@ Creek_2018_config <- dataset_configure("data/Creek_2018/metadata.yml", definitio
 Creek_2018_raw <- dataset_process("data/Creek_2018/data.csv", Creek_2018_config, schema, resource_metadata, unit_conversions)
 Creek_2018 <- dataset_update_taxonomy(Creek_2018_raw, taxon_list)
 
+Crisp_2003_config <- dataset_configure("data/Crisp_2003/metadata.yml", definitions)
+Crisp_2003_raw <- dataset_process("data/Crisp_2003/data.csv", Crisp_2003_config, schema, resource_metadata, unit_conversions)
+Crisp_2003 <- dataset_update_taxonomy(Crisp_2003_raw, taxon_list)
+
 Crisp_2017_config <- dataset_configure("data/Crisp_2017/metadata.yml", definitions)
 Crisp_2017_raw <- dataset_process("data/Crisp_2017/data.csv", Crisp_2017_config, schema, resource_metadata, unit_conversions)
 Crisp_2017 <- dataset_update_taxonomy(Crisp_2017_raw, taxon_list)
@@ -1061,6 +1065,10 @@ Osborne_2014_config <- dataset_configure("data/Osborne_2014/metadata.yml", defin
 Osborne_2014_raw <- dataset_process("data/Osborne_2014/data.csv", Osborne_2014_config, schema, resource_metadata, unit_conversions)
 Osborne_2014 <- dataset_update_taxonomy(Osborne_2014_raw, taxon_list)
 
+Pate_1989_config <- dataset_configure("data/Pate_1989/metadata.yml", definitions)
+Pate_1989_raw <- dataset_process("data/Pate_1989/data.csv", Pate_1989_config, schema, resource_metadata, unit_conversions)
+Pate_1989 <- dataset_update_taxonomy(Pate_1989_raw, taxon_list)
+
 Pate_1990_config <- dataset_configure("data/Pate_1990/metadata.yml", definitions)
 Pate_1990_raw <- dataset_process("data/Pate_1990/data.csv", Pate_1990_config, schema, resource_metadata, unit_conversions)
 Pate_1990 <- dataset_update_taxonomy(Pate_1990_raw, taxon_list)
@@ -1703,6 +1711,7 @@ austraits_raw <- build_combine(
   Craven_1987,
   Craven_2010,
   Creek_2018,
+  Crisp_2003,
   Crisp_2017,
   Cross_2009,
   Crous_2013,
@@ -1893,6 +1902,7 @@ austraits_raw <- build_combine(
   Ooi_2018,
   OReillyNugent_2018,
   Osborne_2014,
+  Pate_1989,
   Pate_1990,
   Pate_1998,
   Peeters_2002,
