@@ -64,7 +64,7 @@ traits <- get_schema("config/traits.yml", I("traits"))
 
 
 
-vars <- c("label", "description", "comments", "type", "units", "allowed_values_min", "allowed_values_max", "allowed_values_levels", "structure_measured", "keywords", "trait_group", "characteristic_measured", "entity_URI")
+vars <- c("entity_URI", "label", "description", "comments", "type", "units", "allowed_values_min", "allowed_values_max", "allowed_values_levels", "structure_measured", "keywords", "trait_group", "characteristic_measured")
 
 traits <- list()
 traits$description <- "Names and details of plant traits included in the AusTraits compilation"
@@ -106,6 +106,17 @@ for(trait in names(traits$elements)) {
     }
   }
 }
+
+# This code is not being used, because it makes the traits.yml file too long
+# Retaining code for possible use when traits.yml is read into 
+# the AusTraits Data Portal and we want to be able to separate the information
+# in these fields into the individual values.  
+#
+# for(trait in names(traits$elements)) {
+#  for(v in c("keywords", "structure_measured", "characteristic_measured", "trait_group"))
+#    traits$elements[[trait]][[v]] <- traits$elements[[trait]][[v]] 
+#    %>% str_split(";") %>% map(~ str_trim(.x)) %>%  unlist()
+#}
 
 # Delete allowed_values_levels for items where no values are available or suitable
 for(v in c("recruitment_time", "fruiting_time", "flowering_time", "foliage_time")) {
