@@ -301,6 +301,10 @@ Creek_2018_config <- dataset_configure("data/Creek_2018/metadata.yml", definitio
 Creek_2018_raw <- dataset_process("data/Creek_2018/data.csv", Creek_2018_config, schema, resource_metadata, unit_conversions)
 Creek_2018 <- dataset_update_taxonomy(Creek_2018_raw, taxon_list)
 
+Crisp_2003_config <- dataset_configure("data/Crisp_2003/metadata.yml", definitions)
+Crisp_2003_raw <- dataset_process("data/Crisp_2003/data.csv", Crisp_2003_config, schema, resource_metadata, unit_conversions)
+Crisp_2003 <- dataset_update_taxonomy(Crisp_2003_raw, taxon_list)
+
 Crisp_2017_config <- dataset_configure("data/Crisp_2017/metadata.yml", definitions)
 Crisp_2017_raw <- dataset_process("data/Crisp_2017/data.csv", Crisp_2017_config, schema, resource_metadata, unit_conversions)
 Crisp_2017 <- dataset_update_taxonomy(Crisp_2017_raw, taxon_list)
@@ -656,6 +660,10 @@ Hughes_1992 <- dataset_update_taxonomy(Hughes_1992_raw, taxon_list)
 Hughes_2005_config <- dataset_configure("data/Hughes_2005/metadata.yml", definitions)
 Hughes_2005_raw <- dataset_process("data/Hughes_2005/data.csv", Hughes_2005_config, schema, resource_metadata, unit_conversions)
 Hughes_2005 <- dataset_update_taxonomy(Hughes_2005_raw, taxon_list)
+
+Hutton_1994_config <- dataset_configure("data/Hutton_1994/metadata.yml", definitions)
+Hutton_1994_raw <- dataset_process("data/Hutton_1994/data.csv", Hutton_1994_config, schema, resource_metadata, unit_conversions)
+Hutton_1994 <- dataset_update_taxonomy(Hutton_1994_raw, taxon_list)
 
 Hyland_2003_config <- dataset_configure("data/Hyland_2003/metadata.yml", definitions)
 Hyland_2003_raw <- dataset_process("data/Hyland_2003/data.csv", Hyland_2003_config, schema, resource_metadata, unit_conversions)
@@ -1061,6 +1069,10 @@ Osborne_2014_config <- dataset_configure("data/Osborne_2014/metadata.yml", defin
 Osborne_2014_raw <- dataset_process("data/Osborne_2014/data.csv", Osborne_2014_config, schema, resource_metadata, unit_conversions)
 Osborne_2014 <- dataset_update_taxonomy(Osborne_2014_raw, taxon_list)
 
+Pate_1989_config <- dataset_configure("data/Pate_1989/metadata.yml", definitions)
+Pate_1989_raw <- dataset_process("data/Pate_1989/data.csv", Pate_1989_config, schema, resource_metadata, unit_conversions)
+Pate_1989 <- dataset_update_taxonomy(Pate_1989_raw, taxon_list)
+
 Pate_1990_config <- dataset_configure("data/Pate_1990/metadata.yml", definitions)
 Pate_1990_raw <- dataset_process("data/Pate_1990/data.csv", Pate_1990_config, schema, resource_metadata, unit_conversions)
 Pate_1990 <- dataset_update_taxonomy(Pate_1990_raw, taxon_list)
@@ -1092,6 +1104,10 @@ Pickup_2002 <- dataset_update_taxonomy(Pickup_2002_raw, taxon_list)
 Pickup_2005_config <- dataset_configure("data/Pickup_2005/metadata.yml", definitions)
 Pickup_2005_raw <- dataset_process("data/Pickup_2005/data.csv", Pickup_2005_config, schema, resource_metadata, unit_conversions)
 Pickup_2005 <- dataset_update_taxonomy(Pickup_2005_raw, taxon_list)
+
+Pickup_2021_config <- dataset_configure("data/Pickup_2021/metadata.yml", definitions)
+Pickup_2021_raw <- dataset_process("data/Pickup_2021/data.csv", Pickup_2021_config, schema, resource_metadata, unit_conversions)
+Pickup_2021 <- dataset_update_taxonomy(Pickup_2021_raw, taxon_list)
 
 Pirralho_2014_config <- dataset_configure("data/Pirralho_2014/metadata.yml", definitions)
 Pirralho_2014_raw <- dataset_process("data/Pirralho_2014/data.csv", Pirralho_2014_config, schema, resource_metadata, unit_conversions)
@@ -1703,6 +1719,7 @@ austraits_raw <- build_combine(
   Craven_1987,
   Craven_2010,
   Creek_2018,
+  Crisp_2003,
   Crisp_2017,
   Cross_2009,
   Crous_2013,
@@ -1792,6 +1809,7 @@ austraits_raw <- build_combine(
   Huang_2015,
   Hughes_1992,
   Hughes_2005,
+  Hutton_1994,
   Hyland_2003,
   Ilic_2000,
   Islam_1999_1,
@@ -1893,6 +1911,7 @@ austraits_raw <- build_combine(
   Ooi_2018,
   OReillyNugent_2018,
   Osborne_2014,
+  Pate_1989,
   Pate_1990,
   Pate_1998,
   Peeters_2002,
@@ -1901,6 +1920,7 @@ austraits_raw <- build_combine(
   Pickering_2014,
   Pickup_2002,
   Pickup_2005,
+  Pickup_2021,
   Pirralho_2014,
   Pollock_2012,
   Pollock_2018,
