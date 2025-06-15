@@ -1,0 +1,543 @@
+source:
+  primary:
+    key: Dilly_2025
+    bibtype: Article
+    year: '2025'
+    author: Megan Dilly and Sarah Barrett and Sarah Comer and Allan H. Burbidge and
+      Alan Danks and Judith M. Harvey and Angas J. M. Hopkins and Graeme T. Smith
+    journal: Pacific Conservation Biology
+    title: A review of 60 years of fire management for threatened fauna and flora
+      at Two Peoples Bay Nature Reserve, Western Australia
+    volume: '31'
+    number: '2'
+    doi: 10.1071/pc25014
+    issn: 2204-4604
+    editor: Mike Calver
+contributors:
+  data_collectors:
+  - last_name: Dilly
+    given_name: Megan
+    ORCID: unknown
+    affiliation: Western Australia Department of Biodiversity, Conservation and Attractions
+  - last_name: Barrett
+    given_name: Sarah
+    ORCID: 0000-0003-2790-992X
+    affiliation: Western Australia Department of Biodiversity, Conservation and Attractions
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        taxon_name = paste(Genus, Species), 
+        life_history = Fire_response,
+        post_fire_recruitment = Fire_response,
+        seedbank_location = Fire_response,
+        resprouting_capacity = Fire_response,
+        location_name = "Two Peoples Bay Nature Reserve",
+        certainty = ifelse(stringr::str_detect(Fire_response, "\\?"), "uncertain value", "certain value"),
+        Thickets = ifelse(Thickets == "x", "thickets", NA),        
+        Sandplains = ifelse(Sandplains == "x", "sandplains", NA),
+        Granites = ifelse(Granites == "x", "outcrops", NA),
+        habitat = paste(Thickets, Sandplains, Granites),
+        habitat = str_replace_all(habitat, "NA", "") %>% str_trim()
+      ) %>%
+      group_by(taxon_name) %>%
+        mutate(obs_number = row_number()) %>%
+      ungroup()'
+  collection_date: 2015/2025
+  taxon_name: taxon_name
+  location_name: location_name
+  description: To review the fire history of the Reserve and the complexity of managing
+    fire for the conservation of threatened species and communities.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: History of fire ^p The fire history of Two Peoples Bay Nature
+    Reserve since European settlement was compiled from Department of Conservation
+    and Land Management records and the Department of Biodiversity, Conservation and
+    Attractions (DBCA) GIS fire history database (accessed January and February 2024).
+    These records include delineation of fire scars on aerial photography and the
+    personal records and accounts of local people and agency staff responsible for
+    managing the Reserve (see Supplementary material Table S1). In addition, on the
+    earliest available aerial photography of the area, which was taken in March 1946
+    by the Department of Defence for mapping purposes, patterns of small mosaic burning
+    can be seen. This photography shows the scars of numerous small fires along the
+    coast and between the granite outcrops throughout Maardjitup Gurlin/Gardner headland.
+    Larger fire scars are evident in the isthmus and western boundary areas (Fig.
+    2). This pre-1960 fire history is considered in the context of Djimaalup/noisy
+    scrub-bird habitat. ^p Fire response of flora ^p Floristic composition was documented
+    in 27 10 m x 10 m quadrats on the Maardjitup Gurlin/Mt Gardner headland. Five
+    of these quadrats were established in the spring prior to the November 2015 fire
+    and had pre-fire floristic data. Immediately after the 2015 fire, an additional
+    22 quadrats were established in the areas of previously long unburnt vegetation
+    that burnt in the fire (Fig. 3). The 27 quadrats were stratified across three
+    habitats (1) shrublands on granite outcrops; (2) shrublands/thickets on the slopes
+    below the granite outcrops; and (3) heath/sedgelands on plains in deep sands,
+    with nine quadrats in each of the three habitats.
+  original_file: in raw data folder, submitted by author
+  notes: none
+locations:
+  Two Peoples Bay Nature Reserve:
+    latitude (deg): -34.98389
+    longitude (deg): 118.17913
+    state: WA
+    biological_habitat: outcrops dunes wetlands
+    description: granite outcrops and dune and wetland lowlands
+    notes: Two Peoples Bay Nature Reserve occupies 4774.7 ha on the south coast of
+      Western Australia, east of Albany. Physiographically, it is dominated by the
+      granite inselberg Maardjitup Gurlin (Noongar name for Mt Gardner), attaining
+      408 m in height at the end of the eastern peninsula (Fig. 1). An isthmus to
+      the west gives way to lowlands of dunes and wetlands, with a low lateritic plateau
+      in the north west (Smith 1987). Much of the western south coast is flanked by
+      limestone rocks and platform reefs (Sinker Reef). Four islands are included
+      in the Reserve (Fig. 1), which receives approximately 800 mm of rainfall each
+      year.
+contexts:
+- context_property: certainty of trait value
+  category: method_context
+  var_in: certainty
+- context_property: observation number
+  category: temporal_context
+  var_in: obs_number
+traits:
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Through the use of published information sources (Supplementary material
+    file S1) and field observations, the species were classified according to their
+    fire response (Miller and Dixon 2014), into the following categories, Annual;
+    Fire-ephemeral annual (also known as monocarpic fire ephemerals); Fire-ephemeral
+    perennial (also known as polycarpic fire ephemerals);Non-sprouter with non-persistent
+    seed; Non-sprouter (also referred to as obligate seeders) with soil stored seed;
+    Non-sprouter with canopy stored seed; Resprouter with non-persistent seed; Resprouter
+    with soil stored seed; and Resprouter with canopy stored seed.
+- var_in: post_fire_recruitment
+  unit_in: .na
+  trait_name: post_fire_recruitment
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Through the use of published information sources (Supplementary material
+    file S1) and field observations, the species were classified according to their
+    fire response (Miller and Dixon 2014), into the following categories, Annual;
+    Fire-ephemeral annual (also known as monocarpic fire ephemerals); Fire-ephemeral
+    perennial (also known as polycarpic fire ephemerals);Non-sprouter with non-persistent
+    seed; Non-sprouter (also referred to as obligate seeders) with soil stored seed;
+    Non-sprouter with canopy stored seed; Resprouter with non-persistent seed; Resprouter
+    with soil stored seed; and Resprouter with canopy stored seed.
+- var_in: seedbank_location
+  unit_in: .na
+  trait_name: seedbank_location
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Through the use of published information sources (Supplementary material
+    file S1) and field observations, the species were classified according to their
+    fire response (Miller and Dixon 2014), into the following categories, Annual;
+    Fire-ephemeral annual (also known as monocarpic fire ephemerals); Fire-ephemeral
+    perennial (also known as polycarpic fire ephemerals);Non-sprouter with non-persistent
+    seed; Non-sprouter (also referred to as obligate seeders) with soil stored seed;
+    Non-sprouter with canopy stored seed; Resprouter with non-persistent seed; Resprouter
+    with soil stored seed; and Resprouter with canopy stored seed.
+- var_in: resprouting_capacity
+  unit_in: .na
+  trait_name: resprouting_capacity
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Through the use of published information sources (Supplementary material
+    file S1) and field observations, the species were classified according to their
+    fire response (Miller and Dixon 2014), into the following categories, Annual;
+    Fire-ephemeral annual (also known as monocarpic fire ephemerals); Fire-ephemeral
+    perennial (also known as polycarpic fire ephemerals);Non-sprouter with non-persistent
+    seed; Non-sprouter (also referred to as obligate seeders) with soil stored seed;
+    Non-sprouter with canopy stored seed; Resprouter with non-persistent seed; Resprouter
+    with soil stored seed; and Resprouter with canopy stored seed.
+- var_in: Fire induced flowering
+  unit_in: .na
+  trait_name: flowering_cues
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Information on fire-stimulated flowering came from a number of sources,
+    but predominantly Lamont and Downes 2011.
+- var_in: Geophyte
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Expert knowledge and floras.
+substitutions:
+- trait_name: flowering_cues
+  find: x
+  replace: fire
+- trait_name: flowering_cues
+  find: x (o)
+  replace: fire
+- trait_name: life_history
+  find: '?'
+  replace: .na
+- trait_name: life_history
+  find: ?nss
+  replace: perennial
+- trait_name: life_history
+  find: ?nss*
+  replace: perennial
+- trait_name: life_history
+  find: ?rss
+  replace: perennial
+- trait_name: life_history
+  find: a
+  replace: annual
+- trait_name: life_history
+  find: fe
+  replace: annual
+- trait_name: life_history
+  find: fp
+  replace: perennial
+- trait_name: life_history
+  find: nsc
+  replace: perennial
+- trait_name: life_history
+  find: nss
+  replace: perennial
+- trait_name: life_history
+  find: nss*
+  replace: perennial
+- trait_name: life_history
+  find: nss+
+  replace: perennial
+- trait_name: life_history
+  find: rsc
+  replace: perennial
+- trait_name: life_history
+  find: rsc+
+  replace: perennial
+- trait_name: life_history
+  find: rss
+  replace: perennial
+- trait_name: life_history
+  find: rss*
+  replace: perennial
+- trait_name: life_history
+  find: rss+
+  replace: perennial
+- trait_name: life_history
+  find: rss++mostly seen as seedlings
+  replace: perennial
+- trait_name: plant_growth_form
+  find: '?'
+  replace: .na
+- trait_name: plant_growth_form
+  find: x
+  replace: geophyte
+- trait_name: post_fire_recruitment
+  find: '?'
+  replace: .na
+- trait_name: post_fire_recruitment
+  find: ?nss
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: ?nss*
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: ?rss
+  replace: post_fire_recruitment_absent
+- trait_name: post_fire_recruitment
+  find: a
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: fe
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: fp
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: nsc
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: nss
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: nss*
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: nss+
+  replace: post_fire_recruitment
+- trait_name: post_fire_recruitment
+  find: rsc
+  replace: post_fire_recruitment_absent
+- trait_name: post_fire_recruitment
+  find: rsc+
+  replace: post_fire_recruitment_absent
+- trait_name: post_fire_recruitment
+  find: rss
+  replace: post_fire_recruitment_absent
+- trait_name: post_fire_recruitment
+  find: rss*
+  replace: post_fire_recruitment_absent
+- trait_name: post_fire_recruitment
+  find: rss+
+  replace: post_fire_recruitment_absent
+- trait_name: post_fire_recruitment
+  find: rss++mostly seen as seedlings
+  replace: post_fire_recruitment_absent
+- trait_name: resprouting_capacity
+  find: '?'
+  replace: .na
+- trait_name: resprouting_capacity
+  find: ?nss
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: ?nss*
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: ?rss
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: a
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: fe
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: fp
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: nsc
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: nss
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: nss*
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: nss+
+  replace: fire_killed
+- trait_name: resprouting_capacity
+  find: rsc
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: rsc+
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: rss
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: rss*
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: rss+
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: rss++mostly seen as seedlings
+  replace: resprouts
+- trait_name: seedbank_location
+  find: '?'
+  replace: .na
+- trait_name: seedbank_location
+  find: ?nss
+  replace: soil_seedbank
+- trait_name: seedbank_location
+  find: ?nss*
+  replace: soil_seedbank
+- trait_name: seedbank_location
+  find: ?rss
+  replace: soil_seedbank
+- trait_name: seedbank_location
+  find: a
+  replace: soil_seedbank
+- trait_name: seedbank_location
+  find: fe
+  replace: soil_seedbank
+- trait_name: seedbank_location
+  find: fp
+  replace: soil_seedbank
+- trait_name: seedbank_location
+  find: nsc
+  replace: canopy_seedbank
+- trait_name: seedbank_location
+  find: nss
+  replace: soil_seedbank
+- trait_name: seedbank_location
+  find: nss*
+  replace: soil_seedbank
+- trait_name: seedbank_location
+  find: nss+
+  replace: soil_seedbank
+- trait_name: seedbank_location
+  find: rsc
+  replace: canopy_seedbank
+- trait_name: seedbank_location
+  find: rsc+
+  replace: canopy_seedbank
+- trait_name: seedbank_location
+  find: rss
+  replace: soil_seedbank
+- trait_name: seedbank_location
+  find: rss*
+  replace: soil_seedbank
+- trait_name: seedbank_location
+  find: rss+
+  replace: soil_seedbank
+- trait_name: seedbank_location
+  find: rss++mostly seen as seedlings
+  replace: soil_seedbank
+taxonomic_updates:
+- find: Caladenia sp.
+  replace: Caladenia sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Calandrinia sp.
+  replace: Calandrinia sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Carpobrotus sp.
+  replace: Carpobrotus sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Cassytha sp.
+  replace: Cassytha sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Centrolepis sp.
+  replace: Centrolepis sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Chorizema sp.
+  replace: Chorizema sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Hypochaeris sp.
+  replace: Hypochaeris sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Isolepis sp.
+  replace: Isolepis sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Johnsonia sp.
+  replace: Johnsonia sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Lepidosperma sp.
+  replace: Lepidosperma sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Leptomeria sp.
+  replace: Leptomeria sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Lobelia sp.
+  replace: Lobelia sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Lomandra sp.
+  replace: Lomandra sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Lysinema sp.
+  replace: Lysinema sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Prasophyllum sp.
+  replace: Prasophyllum sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Pterostylis sp.
+  replace: Pterostylis sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Rytidosperma sp.
+  replace: Rytidosperma sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Scaevola sp.
+  replace: Scaevola sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Schoenus sp.
+  replace: Schoenus sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Thelymitra sp.
+  replace: Thelymitra sp. [Dilly_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
+  taxonomic_resolution: genus
+- find: Adenanthos cuneatos
+  replace: Adenanthos cuneatus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2025-06-15)
+  taxonomic_resolution: species
+- find: Drosera erythrohiza
+  replace: Drosera erythrorhiza
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2025-06-15)
+  taxonomic_resolution: species
+- find: Kennedia glabratum
+  replace: Kennedia glabrata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2025-06-15)
+  taxonomic_resolution: species
+- find: Mesomelaena gracilipes
+  replace: Mesomelaena graciliceps
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2025-06-15)
+  taxonomic_resolution: species
+- find: Drosera menziesii subsp. Penicillaris
+  replace: Drosera menziesii subsp. penicillaris
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2025-06-15)
+  taxonomic_resolution: subspecies
+- find: Lepidosperma aff. angustatum
+  replace: Lepidosperma sp. [Lepidosperma aff. angustatum; Dilly_2024]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2025-06-15)
+  taxonomic_resolution: genus
+- find: Lepidosperma aff. drummondii
+  replace: Lepidosperma sp. [Lepidosperma aff. drummondii; Dilly_2024]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2025-06-15)
+  taxonomic_resolution: genus
+- find: Lepidosperma aff. gracile
+  replace: Lepidosperma sp. [Lepidosperma aff. gracile; Dilly_2024]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2025-06-15)
+  taxonomic_resolution: genus
+- find: Lepidosperma aff. squamatum
+  replace: Lepidosperma sp. [Lepidosperma aff. squamatum; Dilly_2024]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2025-06-15)
+  taxonomic_resolution: genus
+- find: Thysanotus dichotomus - not flowering
+  replace: Thysanotus dichotomus
+  reason: Fuzzy match of the first two words of the taxon name to an APC-accepted
+    canonical name (2025-06-15)
+  taxonomic_resolution: species
+- find: Netrostylis sp. Jarrah Forest
+  replace: Netrostylis sp. Jarrah Forest (R.Davis 7391)
+  reason: Exact match of the first three words of the taxon name to an APNI-listed
+    canonical name (2025-06-15)
+  taxonomic_resolution: species
+- find: Lepidosperma sp. 2
+  replace: Lepidosperma sp. [Lepidosperma sp. 2; Dilly_2024]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-06-15)
+  taxonomic_resolution: genus
+exclude_observations: .na
+questions: .na
