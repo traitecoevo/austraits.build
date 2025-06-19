@@ -1109,6 +1109,10 @@ Pickup_2021_config <- dataset_configure("data/Pickup_2021/metadata.yml", definit
 Pickup_2021_raw <- dataset_process("data/Pickup_2021/data.csv", Pickup_2021_config, schema, resource_metadata, unit_conversions)
 Pickup_2021 <- dataset_update_taxonomy(Pickup_2021_raw, taxon_list)
 
+Pinkard_2011_config <- dataset_configure("data/Pinkard_2011/metadata.yml", definitions)
+Pinkard_2011_raw <- dataset_process("data/Pinkard_2011/data.csv", Pinkard_2011_config, schema, resource_metadata, unit_conversions)
+Pinkard_2011 <- dataset_update_taxonomy(Pinkard_2011_raw, taxon_list)
+
 Pirralho_2014_config <- dataset_configure("data/Pirralho_2014/metadata.yml", definitions)
 Pirralho_2014_raw <- dataset_process("data/Pirralho_2014/data.csv", Pirralho_2014_config, schema, resource_metadata, unit_conversions)
 Pirralho_2014 <- dataset_update_taxonomy(Pirralho_2014_raw, taxon_list)
@@ -1352,6 +1356,10 @@ Soliveres_2012 <- dataset_update_taxonomy(Soliveres_2012_raw, taxon_list)
 Soper_2014_config <- dataset_configure("data/Soper_2014/metadata.yml", definitions)
 Soper_2014_raw <- dataset_process("data/Soper_2014/data.csv", Soper_2014_config, schema, resource_metadata, unit_conversions)
 Soper_2014 <- dataset_update_taxonomy(Soper_2014_raw, taxon_list)
+
+SPRAT_2025_2_config <- dataset_configure("data/SPRAT_2025_2/metadata.yml", definitions)
+SPRAT_2025_2_raw <- dataset_process("data/SPRAT_2025_2/data.csv", SPRAT_2025_2_config, schema, resource_metadata, unit_conversions)
+SPRAT_2025_2 <- dataset_update_taxonomy(SPRAT_2025_2_raw, taxon_list)
 
 Standish_2019_config <- dataset_configure("data/Standish_2019/metadata.yml", definitions)
 Standish_2019_raw <- dataset_process("data/Standish_2019/data.csv", Standish_2019_config, schema, resource_metadata, unit_conversions)
@@ -1646,7 +1654,7 @@ Zolfaghar_2015_raw <- dataset_process("data/Zolfaghar_2015/data.csv", Zolfaghar_
 Zolfaghar_2015 <- dataset_update_taxonomy(Zolfaghar_2015_raw, taxon_list)
 
 
-austraits_raw <- build_combine(
+austraits_raw <- austraits::bind_databases(
   ABRS_1981,
   ABRS_2022,
   ABRS_2023,
@@ -1921,6 +1929,7 @@ austraits_raw <- build_combine(
   Pickup_2002,
   Pickup_2005,
   Pickup_2021,
+  Pinkard_2011,
   Pirralho_2014,
   Pollock_2012,
   Pollock_2018,
@@ -1982,6 +1991,7 @@ austraits_raw <- build_combine(
   SmithMartin_2020,
   Soliveres_2012,
   Soper_2014,
+  SPRAT_2025_2,
   Standish_2019,
   Staples_2019,
   Stephens_2021,
