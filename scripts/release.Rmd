@@ -77,13 +77,19 @@ Then follow these steps. We assume you have a branch `develop`.
 
 2. Update `master`. On `master` branch,
   - merge PR from `develop`
+  - use `merge commit` NOT `squash and merge` for the merge into master
   - rebuild repo, then create an export. Files are saved in `export/data/austraits-4.1.0/`:
 
 ```{r}
 source("build.R")
-create_release(austraits, v_prev = "6.0.0")
+
+austraits::flatten_database(austraits) %>% readr::write_rds(austraits_flattened-X.X.X.rds)
+
+austraits_flattened %>% arrow::write_parquet(austraits_flattened-X.X.X.parquet)
+
+create_release(austraits, v_prev = "7.0.0")
 ```
- - the function above creates a set of files for release, including `austraits-X.X.X.rds`, `austraits-X.X.X.zip`, `dictionary.html`, `news.md`
+ - the function above creates a set of files for release, including `austraits-X.X.X.rds`, `austraits_flattened-X.X.X.rds`, `austraits_flattened-X.X.X.parquet`, `austraits-X.X.X.zip`, `dictionary.html`, `news.md`
  - Manually review and updates news.md as needed.
  - Add this version's news to the NEWS.md file in root
  - push updates to `master`
