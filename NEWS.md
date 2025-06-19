@@ -26,7 +26,7 @@ additions of new data.
 | version | dataset_id |  taxa | locations | traits | records |
 |:--------|-----------:|------:|----------:|-------:|--------:|
 | 6.0.0   |        364 | 33494 |      4894 |    497 | 1726024 |
-| 7.0.0   |        409 | 33710 |      6528 |    530 | 1798209 |
+| 7.0.0   |        410 | 33710 |      6528 |    530 | 1798209 |
 
 This is a major release, as it includes two derived outputs, a flattened database (merging together the core traits table and relational data tables) as both an RDS file (for use in R) and in parquet format.
 
