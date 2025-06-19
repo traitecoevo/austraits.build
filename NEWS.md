@@ -1,3 +1,76 @@
+# AusTraits v7.0.0
+
+This is a major release of the AusTraits database.
+
+- austraits-7.0.0.zip: contains the compiled dataset and details of
+  structure
+- austraits-7.0.0.rds: contains a version of the dataset for direct
+  loading in R
+- austraits_flattened-7.0.0.rds: contains a flattened version of the dataset for direct
+  loading in R; all data tables are joined into a wider format in this version
+- austraits_parquet-7.0.0.parquet: contains the flattened version of the dataset saved in parquet format
+- source code v7.0.0.zip: contains the source materials used to build
+  the compiled dataset
+
+For details on access, structure, and usage please visit
+<https://doi.org/10.5281/zenodo.3568417>.
+
+This release was generated from source materials available at
+<https://github.com/traitecoevo/austraits.build/releases/tag/v7.0.0> A
+full set of changes in the source can be viewed at:
+<https://github.com/traitecoevo/austraits.build/compare/v6.0.0...v7.0.0>
+
+Compared to the last version, this release contains substantial
+additions of new data.
+
+| version | dataset_id |  taxa | locations | traits | records |
+|:--------|-----------:|------:|----------:|-------:|--------:|
+| 6.0.0   |        364 | 33494 |      4894 |    497 | 1726024 |
+| 7.0.0   |        409 | 33710 |      6528 |    530 | 1798209 |
+
+This is a major release, as it includes two derived outputs, a flattened database (merging together the core traits table and relational data tables) as both an RDS file (for use in R) and in parquet format.
+
+- **46 new sources added to the database**:  Andrew_2022, Arnold_2021, Arnold_2022, Arnold_2024, Barrett_2009, Bebawi_2015, Benwell_2024, Blackman_2019, Blackman_2023, Bourne_2017, Bryant_2021, Bryant_2021_2, Bryant_2021_3, Bryant_2024, Burrows_2008_2, Butler_2004, Carey_2003, Cochrane_2001, Cochrane_2017, Cochrane_2018, Cochrane_2019, Creek_2018, Crisp_2003, Detombeur_2025, Doherty_2021, Drake_2011, Hanley_2001, Hanley_2002, Hutton_1994, Li_2018, Li_2019, Liu_2023, Mott_1978, Myers_1997, Pate_1989, Pickup_2021, Pinkard_2011, Portelli_2023, Prior_2000, RadfordSmith_2024, SPRAT_2025_2, Shedley_2007, Stuart_2007, Tsujii_2023, Zeppel_2008, Zolfaghar_2015
+
+- **72185 new or updated records for 175 traits**
+
+ Details on new studies:
+
+| dataset_id    | taxa | locations | traits | records |
+|:--------------|-----:|----------:|-------:|--------:|
+
+- **Notable studies**
+As noted below, sourcing large datasets that recording plant fire response traits was a key initiative over the past year, including the total coverage of species with `resprouting_capacity` scored from 11470 APC-accepted species (v6) to 12325 APC-accepted species (v7).
+
+  - Barrett_2009
+    - Fire response traits for 1218 Western Australian taxa, including `resprouting_capacity`, `seed_bank_location`, and `post_fire_recruitment`
+
+  - Burrows_2008_2
+    - Fire response traits for 1180 Western Australian taxa, including `resprouting_capacity`, `seed_bank_location`, and `post_fire_recruitment`
+
+  - Pickup_2021
+    - Fire response traits for 671 New South Wales taxa, including `resprouting_capacity`, `seed_bank_location`, and `post_fire_recruitment`
+
+  - Butler_2004
+    - Data on `dispersal_syndrome` and `dispersers` for 568 species in souther Queensland.
+
+  - Doherty_2021
+    - Fire response traits for 435 taxa from the Brindabella region including `resprouting_capacity`, `seedbank_location`, and `bud_bank_location`.
+  
+  - RadfordSmith_2024
+    - Functional trait data for 307 species in far northern NSW and southern Queensland.
+    
+  - Benwell_2024
+    - Fire response traits for 254 northern New South Wales including rainforest taxa, including `resprouting_capacity`, `seedbank_location`, and `post_fire_recruitment`.
+
+  - Portelli_2023
+    - Functional trait data for 157 Eucalyptus species, mostly from Victoria.
+
+  - SPRAT_2025_2 
+    - Gap fills plant height for all threatened species for which there wasn't already data.
+    - Gap fills leaf length for all but 80 threatened species.
+    - Some data for 62 additional traits.
+
 # AusTraits v6.0.0
 
 This is a major release of the AusTraits database.
