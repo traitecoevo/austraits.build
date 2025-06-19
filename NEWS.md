@@ -28,6 +28,12 @@ additions of new data.
 | 6.0.0   |        364 | 33494 |      4894 |    497 | 1726024 |
 | 7.0.0   |        410 | 33710 |      6528 |    530 | 1798209 |
 
+- The traits.yml file now brings in additional metadata from the AusTraits Plant Dictionary (APD) to better trait findability. These fields are: `trait_group`, `keywords`, `structure_measured` and `characteristic_measured`.
+
+- The taxon list has been updated to reflect names accepted by the Australian Plant Census as of May 2025.
+
+- The database is being built using traits.build v2.1.0 which supports specimen identifiers and specimen identifiers have been added to previously added datasets as appropriate.
+
 This is a major release, as it includes two derived outputs, a flattened database (merging together the core traits table and relational data tables) as both an RDS file (for use in R) and in parquet format.
 
 - **47 new sources added to the dataset**: Andrew_2022, Arnold_2021,
