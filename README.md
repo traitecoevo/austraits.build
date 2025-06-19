@@ -43,7 +43,7 @@ This repository (`austraits.build`) contains the raw data to compile AusTraits f
 We use the [`traits.build`](https://traitecoevo.github.io/traits.build/)  R package and workflow to harmonise > 400 different sources into a unified dataset. The workflow is fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset and can also be rerun by others. AusTraits is built so that the database can be rebuilt from its parts at any time. This means that decisions made along the way (in how data is transformed or encoded) can be inspected and modified, and new data can be easily incorporated.
 
 A publication describes the `traits.build` workflow:
-> Wenk EH, Bal P, Coleman D, Gallagher RG, Yang S, Falster DS, (2024) Traits.build: A data model, workflow and R package for building harmonised ecological trait databases. Ecological Informatics 83: 102773. DOI: [10.1016/j.ecoinf.2024.102773](https://doi.org/10.1016/j.ecoinf.2024.102773)
+> Wenk EH, Bal P, Coleman D, Gallagher RG, Yang S, Falster DS, (2024) Traits.build: A data model, workflow and R package for building harmonised ecological trait databases. *Ecological Informatics* 83: 102773. DOI: [10.1016/j.ecoinf.2024.102773](https://doi.org/10.1016/j.ecoinf.2024.102773)
 
 To build the database follows these steps
 
