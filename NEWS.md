@@ -30,41 +30,135 @@ additions of new data.
 
 This is a major release, as it includes two derived outputs, a flattened database (merging together the core traits table and relational data tables) as both an RDS file (for use in R) and in parquet format.
 
-- **46 new sources added to the database**:  Andrew_2022, Arnold_2021, Arnold_2022, Arnold_2024, Barrett_2009, Bebawi_2015, Benwell_2024, Blackman_2019, Blackman_2023, Bourne_2017, Bryant_2021, Bryant_2021_2, Bryant_2021_3, Bryant_2024, Burrows_2008_2, Butler_2004, Carey_2003, Cochrane_2001, Cochrane_2017, Cochrane_2018, Cochrane_2019, Creek_2018, Crisp_2003, Detombeur_2025, Doherty_2021, Drake_2011, Hanley_2001, Hanley_2002, Hutton_1994, Li_2018, Li_2019, Liu_2023, Mott_1978, Myers_1997, Pate_1989, Pickup_2021, Pinkard_2011, Portelli_2023, Prior_2000, RadfordSmith_2024, SPRAT_2025_2, Shedley_2007, Stuart_2007, Tsujii_2023, Zeppel_2008, Zolfaghar_2015
+- **47 new sources added to the dataset**: Andrew_2022, Arnold_2021,
+  Arnold_2022, Arnold_2024, Barrett_2009, Bebawi_2015, Benwell_2024,
+  Blackman_2019, Blackman_2023, Bourne_2017, Bryant_2021, Bryant_2021_2,
+  Bryant_2021_3, Bryant_2024, Burrows_2008_2, Butler_2004, Carey_2003,
+  Cochrane_2001, Cochrane_2017, Cochrane_2018, Cochrane_2019,
+  Creek_2018, Crisp_2003, Detombeur_2025, Doherty_2021, Drake_2011,
+  Hanley_2001, Hanley_2002, Hutton_1994, Li_2018, Li_2019, Liu_2023,
+  Mott_1978, Myers_1997, Pate_1989, Pickup_2021, Pinkard_2011,
+  Portelli_2023, Prior_2000, RadfordSmith_2024, SPRAT_2025_2,
+  Shedley_2007, Stuart_2007, Tsujii_2023, Zeppel_2008,
+  Zolfaghar_2015
 
-- **72185 new or updated records for 175 traits**
+- **38 new contributors:** Aimee E. Bourne, Alison Brown, Amanda Carey,
+  Andrew Benwell, Anne Cochrane, Antoinette Portelli, B.J. Hutton, Baoli
+  Fan, Brian Atwell, Bronwyn Myers, Callum Bryant, Danielle Creek,
+  Elizabeth Pinkard, Ella Cathcart-Van Weeren, Erica Frances Shedley,
+  Faiz Bebawi, Gordon Duff, J.J. Mott, Julian Radford-Smith, Kosala
+  Ranathunge, Marilyn Ball, Melanie Zeppel, Michael Doherty, Mick
+  Hanley, Patrick Finnegan, Paul Drake, Pieter Arnold, Rohan Khot,
+  Samuel Andrew, Sarah Barrett, Saras Windecker, Sepideh Zolfaghar, Shu
+  Tong Liu, Stephanie Stuart, Will Neal, Ximeng Li, Yuki Tsujii,
+  Zhangying Lei
 
- Details on new studies:
+- **1 sources updated** – Taseski_2017 to Taseski_2021 (updating to published source, adding raw data)
 
-| dataset_id    | taxa | locations | traits | records |
-|:--------------|-----:|----------:|-------:|--------:|
+- **63322 new or updated records for 138 existing traits**
+
+- **8752 new records for 37 new traits:** foliage_time,
+  leaf_capacitance, leaf_chlorophyll_content_SPAD,
+  leaf_conductance_surface_water, leaf_critical_temperature_maximum,
+  leaf_critical_temperature_minimum, leaf_cuticular_conductance,
+  leaf_foliar_water_uptake_rate, leaf_gas_exchange_quantum_yield,
+  leaf_ice_nucleation_temperature, leaf_inorganic_P_per_dry_mass,
+  leaf_lipid_P_per_dry_mass, leaf_maximum_temperature,
+  leaf_metabolite_P_per_dry_mass, leaf_nucleic_acid_P_per_dry_mass,
+  leaf_residual_P_per_dry_mass, leaf_surface_reflectivity,
+  leaf_vessel_wall_thickness,
+  leaf_water_potential_12percent_lost_conductivity,
+  leaf_water_potential_50percent_lost_conductivity,
+  leaf_water_potential_88percent_lost_conductivity, leaflet_count,
+  plant_height_climbing_plant, plant_height_reproductive,
+  root_vascular_anatomy,
+  root_water_potential_12percent_lost_conductivity,
+  root_water_potential_50percent_lost_conductivity,
+  root_water_potential_88percent_lost_conductivity, seed_colour,
+  stem_length, stem_saturated_water_content_per_dry_mass,
+  stem_water_potential_12percent_lost_conductivity,
+  stem_water_potential_50percent_lost_conductivity,
+  stem_water_potential_88percent_lost_conductivity,
+  storage_organ_diameter, storage_organ_length, xylem_to_leaf_area_ratio
+
+Details on new studies:
+
+| dataset_id        | taxa | locations | traits | records |
+|:------------------|-----:|----------:|-------:|--------:|
+| Andrew_2022       |   15 |        16 |      7 |     135 |
+| Arnold_2021       |    3 |         3 |      3 |    1967 |
+| Arnold_2022       |    1 |         2 |     11 |    3330 |
+| Arnold_2024       |    1 |         1 |      7 |    4882 |
+| Barrett_2009      | 1218 |        17 |      7 |    7721 |
+| Bebawi_2015       |    2 |         2 |      6 |       8 |
+| Benwell_2024      |  254 |         2 |      5 |    1047 |
+| Blackman_2019     |    8 |         1 |      8 |     174 |
+| Blackman_2023     |   21 |        19 |      8 |     148 |
+| Bourne_2017       |    6 |         1 |      9 |      54 |
+| Bryant_2021       |    1 |         1 |      4 |     630 |
+| Bryant_2021_2     |    1 |         1 |     17 |     263 |
+| Bryant_2021_3     |   12 |        17 |      7 |     969 |
+| Bryant_2024       |    3 |       894 |     16 |    4340 |
+| Burrows_2008_2    | 1180 |         1 |      7 |    4949 |
+| Butler_2004       |  568 |         1 |      5 |    2793 |
+| Carey_2003        |  216 |         1 |      3 |     651 |
+| Cochrane_2001     |   22 |        40 |      2 |      90 |
+| Cochrane_2017     |   26 |         2 |      4 |     208 |
+| Cochrane_2018     |   20 |         2 |      5 |     291 |
+| Cochrane_2019     |    8 |         2 |      5 |      55 |
+| Creek_2018        |    3 |         1 |     10 |      30 |
+| Crisp_2003        |   54 |         1 |      3 |     154 |
+| Detombeur_2025    |   17 |        10 |     13 |     924 |
+| Doherty_2021      |  435 |         1 |      3 |     993 |
+| Drake_2011        |    1 |         1 |      4 |      20 |
+| Hanley_2001       |   11 |         2 |      5 |      60 |
+| Hanley_2002       |   14 |         2 |      7 |      97 |
+| Hutton_1994       |   14 |         8 |      1 |      15 |
+| Li_2018           |   12 |         1 |      9 |     108 |
+| Li_2019           |   10 |         1 |      3 |      30 |
+| Liu_2023          |   18 |         2 |     15 |    2620 |
+| Mott_1978         |    5 |         3 |      1 |     180 |
+| Myers_1997        |    8 |         1 |      8 |     213 |
+| Pate_1989         |   25 |         1 |      1 |      25 |
+| Pickup_2021       |  671 |        19 |      5 |    4903 |
+| Pinkard_2011      |    1 |         1 |     12 |     174 |
+| Portelli_2023     |  157 |       313 |     11 |    7467 |
+| Prior_2000        |    2 |         2 |      5 |      15 |
+| RadfordSmith_2024 |  307 |         2 |     18 |   11681 |
+| SPRAT_2025_2      |  503 |         1 |     64 |    2650 |
+| Shedley_2007      |  171 |         4 |      6 |    1691 |
+| Stuart_2007       |    3 |         2 |      2 |       6 |
+| Taseski_2021      |   22 |        19 |      9 |    2713 |
+| Tsujii_2023       |   36 |         3 |     13 |     364 |
+| Zeppel_2008       |    2 |         1 |      3 |      20 |
+| Zolfaghar_2015    |    5 |         1 |      8 |     216 |
 
 - **Notable studies**
 As noted below, sourcing large datasets that recording plant fire response traits was a key initiative over the past year, including the total coverage of species with `resprouting_capacity` scored from 11470 APC-accepted species (v6) to 12325 APC-accepted species (v7).
 
   - Barrett_2009
     - Fire response traits for 1218 Western Australian taxa, including `resprouting_capacity`, `seed_bank_location`, and `post_fire_recruitment`
+    
+  - Benwell_2024
+    - Fire response traits for 254 northern New South Wales including rainforest taxa, including `resprouting_capacity`, `seedbank_location`, and `post_fire_recruitment`.
 
   - Burrows_2008_2
     - Fire response traits for 1180 Western Australian taxa, including `resprouting_capacity`, `seed_bank_location`, and `post_fire_recruitment`
-
-  - Pickup_2021
-    - Fire response traits for 671 New South Wales taxa, including `resprouting_capacity`, `seed_bank_location`, and `post_fire_recruitment`
 
   - Butler_2004
     - Data on `dispersal_syndrome` and `dispersers` for 568 species in souther Queensland.
 
   - Doherty_2021
     - Fire response traits for 435 taxa from the Brindabella region including `resprouting_capacity`, `seedbank_location`, and `bud_bank_location`.
-  
-  - RadfordSmith_2024
-    - Functional trait data for 307 species in far northern NSW and southern Queensland.
-    
-  - Benwell_2024
-    - Fire response traits for 254 northern New South Wales including rainforest taxa, including `resprouting_capacity`, `seedbank_location`, and `post_fire_recruitment`.
+
+  - Pickup_2021
+    - Fire response traits for 671 New South Wales taxa, including `resprouting_capacity`, `seed_bank_location`, and `post_fire_recruitment`
 
   - Portelli_2023
     - Functional trait data for 157 Eucalyptus species, mostly from Victoria.
+  
+  - RadfordSmith_2024
+    - Functional trait data for 307 species in far northern NSW and southern Queensland.
 
   - SPRAT_2025_2 
     - Gap fills plant height for all threatened species for which there wasn't already data.
