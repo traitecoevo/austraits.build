@@ -25,7 +25,8 @@ Users will want to read up on the [database structure, described in the `traits.
 Definitions for the traits are described the AusTraits Plant Dictionary (APD), at
 
 - Formalised vocabulary at <http://w3id.org/APD/>
-- preprint Wenk et al 2023, DOI: [10.1101/2023.06.16.545047](https://doi.org/10.1101/2023.06.16.545047)
+
+> A publication describes this vocabulary: Wenk EH, Sauquet H, Gallagher RV, Brownlee R, Boettiger C, Coleman D, Yang S, Auld T, Barrett RL, Brodribb T, Choat B, Dun L, Ellsworth D, Gosper C, Guja L, Jordan GJ, Breton T, Leigh A, Irving P, Medlyn B, Nolan R, Ooi M, Sommerville KD, Vesk P, White M, Wright IJ, Falster DS (2024) The AusTraits Plant Dictionary. *Scientific Data* 11:537. DOI: [10.1038/s41597-024-03368-z](http://doi.org/10.1038/s41597-024-03368-z)
 
 ## Citation
 
@@ -35,13 +36,14 @@ Users of AusTraits are requested to cite the source publication, which documents
 
 ## Rebuilding AusTraits from source
 
-This repository (`austraits.build`) contains the raw data and code used to compile AusTraits from diverse, original sources. 
-
-To handle the harmonising of diverse data sources, we use a reproducible workflow to implement the various changes required for each source to reformat it into a form suitable for incorporation in AusTraits. Such changes include restructuring datasets, renaming variables, changing variable units, changing taxon names. For the sake of transparency and continuing development, the entire workflow is made available here.
+This repository (`austraits.build`) contains the raw data to compile AusTraits from diverse, original sources. 
 
 ![](inst/figures/Workflow.png)
 
-We use the [`traits.build`](https://traitecoevo.github.io/traits.build/)  R package and workflow to harmonise > 300 different sources into a unified dataset. The workflow is fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset and can also be rerun by others. AusTraits is built so that the database can be rebuilt from its parts at any time. This means that decisions made along the way (in how data is transformed or encoded) can be inspected and modified, and new data can be easily incorporated.
+We use the [`traits.build`](https://traitecoevo.github.io/traits.build/)  R package and workflow to harmonise > 400 different sources into a unified dataset. The workflow is fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset and can also be rerun by others. AusTraits is built so that the database can be rebuilt from its parts at any time. This means that decisions made along the way (in how data is transformed or encoded) can be inspected and modified, and new data can be easily incorporated.
+
+A publication describes the `traits.build` workflow:
+> Wenk EH, Bal P, Coleman D, Gallagher RG, Yang S, Falster DS, (2024) Traits.build: A data model, workflow and R package for building harmonised ecological trait databases. *Ecological Informatics* 83: 102773. DOI: [10.1016/j.ecoinf.2024.102773](https://doi.org/10.1016/j.ecoinf.2024.102773)
 
 To build the database follows these steps
 

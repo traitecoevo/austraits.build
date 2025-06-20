@@ -329,3 +329,113 @@ move_values_to_new_trait_long <-
 
     data
   }
+
+
+#' New taxa added by a dataset
+#'
+#' Function to indicate how many new taxa by trait combinations are added with a new dataset.
+#' 
+#' @param database traits.build database
+#' @param current_study dataset_id for dataset of interest 
+#'
+#' @returns table with number of new taxa added for each trait
+#'
+#' @examples
+#' \dontrun{
+#' check_new_taxa(austraits, "Falster_2003")
+#' }
+check_new_taxa <- function(database, current_study) {
+  
+  # extract new dataset
+  new_data <- (database %>% extract_dataset(current_study))$traits %>% 
+    distinct(dataset_id, taxon_name, trait_name) %>% 
+    mutate(combined = paste0(taxon_name,"_", trait_name))
+  
+  # taxa present in new dataset
+  traits_to_check <- new_data %>% distinct(trait_name)
+  
+  # data in database prior to new dataset
+  preexisting_data <- (database %>% extract_trait(traits_to_check$trait_name))$traits %>% 
+    filter(dataset_id != current_study) %>%
+    distinct(taxon_name, trait_name) %>% 
+    mutate(combined = paste0(taxon_name,"_", trait_name))
+  
+  # counts of taxa per trait prior to new dataset
+  preexisting_taxa <- preexisting_data %>%
+    select(-taxon_name, -combined) %>%
+    group_by(trait_name) %>%
+    mutate(existing_taxa = n()) %>%
+    ungroup() %>%
+    distinct()
+  
+  # number of new taxa added per trait once the new dataset is added
+  new_taxa <- new_data %>% filter(!combined %in% preexisting_data$combined) %>%
+    select(-taxon_name, -combined) %>%
+    group_by(dataset_id, trait_name) %>%
+    mutate(new_taxa = n()) %>%
+    ungroup() %>%
+    distinct() %>%
+    left_join(preexisting_taxa)
+  
+  new_taxa
+  
+}
+
+
+#' New taxa added by a dataset
+#'
+#' Function to indicate how many new taxa by trait combinations are added with a new dataset.
+#' 
+#' @param database traits.build database
+#' @param current_study dataset_id for dataset of interest 
+#'
+#' @returns table with number of new taxa added for each trait
+#'
+#' @examples
+#' \dontrun{
+#' check_new_taxa(austraits, "Falster_2003")
+#' }
+check_new_taxa_accepted <- function(database, current_study, resources) {
+  
+  # extract accepted species from APC
+  accepted_species <- resources$APC %>%
+    filter(taxonomic_status == "accepted") %>%
+    filter(taxon_rank %in% c("species", "subspecies", "varietas", "forma")) %>%
+    select(taxon_name = canonical_name)
+  
+  # extract new dataset
+  new_data <- (database %>% extract_dataset(current_study))$traits %>% 
+    distinct(dataset_id, taxon_name, trait_name) %>% 
+    mutate(combined = paste0(taxon_name,"_", trait_name)) %>%
+    filter(taxon_name %in% accepted_species$taxon_name)
+  
+  # taxa present in new dataset
+  traits_to_check <- new_data %>% distinct(trait_name)
+  
+  # data in database prior to new dataset
+  preexisting_data <- (database %>% extract_trait(traits_to_check$trait_name))$traits %>% 
+    filter(dataset_id != current_study) %>%
+    distinct(taxon_name, trait_name) %>% 
+    mutate(combined = paste0(taxon_name,"_", trait_name)) %>%
+    filter(taxon_name %in% accepted_species$taxon_name)
+  
+  # counts of taxa per trait prior to new dataset
+  preexisting_taxa <- preexisting_data %>%
+    select(-taxon_name, -combined) %>%
+    group_by(trait_name) %>%
+    mutate(existing_taxa = n()) %>%
+    ungroup() %>%
+    distinct()
+  
+  # number of new taxa added per trait once the new dataset is added
+  new_taxa <- new_data %>% filter(!combined %in% preexisting_data$combined) %>%
+    select(-taxon_name, -combined) %>%
+    group_by(dataset_id, trait_name) %>%
+    mutate(new_taxa = n()) %>%
+    ungroup() %>%
+    distinct() %>%
+    left_join(preexisting_taxa)
+  
+  new_taxa
+  
+}
