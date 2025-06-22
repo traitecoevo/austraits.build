@@ -1,0 +1,229 @@
+---
+title: "AusTraits release"
+format: html
+toc: true
+toc-depth: 4
+editor: visual
+embed-resources: true
+editor_options: 
+  chunk_output_type: console
+---
+
+## Release
+
+Orchestrating an AusTraits release has become more difficult as building the database now draws upon resources from 5 separate GitHub repositories (R packages, vocabularies, and data repositories) and we need to ensure that the releases use the more current version of each repo *AND* that necessary releases of these related R packages and vocabularies occur in advance of the AusTraits release.
+
+Briefly, AusTraits depends upon:
+
+-   Data and metadata file that comprise AusTraits: [`austraits.build`](https://traitecoevo/austraits.build)
+
+-   Workflow to build AusTraits: [`traits.build`](https://traitecoevo/traits.build)
+
+-   Functions required by `traits.build`: [`austraits`](http://traitecoevo/austraits)
+
+-   Information for taxonomic configuration file: [`APCalign`](https://traitecoevo/APCalign)
+
+-   Information for traits configuration file: [`APD`](https://traitecoevo/APD)
+
+
+### 1. Update the APD
+
+All trait information used for an AusTraits release should be identical to what is specified in an APD release. This includes the trait concepts, categorical trait values, and other trait metadata such as allowable ranges for numeric traits, units for numeric traits, and definitions.
+
+#### Files to update, scripts to run for a release
+
+1. Any changes made on austraits.build branches bes://traitecoevo/austraits)
+tween releases need to be transferred to the APD input files: [traits_input.csv](https://traitecoevo/APD) and [categorical_trait_values_input.yml](https://traitecoevo/APD). Other files within the data folder may also need to be updated if additional references or published classes are used when updating trait metadata.
+
+2. Update the version number in the `DESCRIPTION` file and `index.html`. 
+
+3. Render `build.qmd` to generate a new version of the many output versions of the APD.
+
+4. Add a section to `NEWS.md` documenting changes associated with the new release.
+
+5. **Merge commit** `develop` into `master`.
+
+6. **Merge commit** `master` into `develop`.
+
+7. Bump the version number in `DESCRIPTION` by x.x.x.900, merge into develop.
+
+8. Create release on GitHub, flag as "latest release" and add tag.
+
+#### Update version at other locations
+
+1.  Upload a new version to Zenodo
+
+2.  Upload a new version to Research Vocabularies Australia
+
+#### Generate a new version of `config/traits.yml`
+
+1.  The function `build_traits_yml_from_APD()` rebuilds the traits config file from the new APD outputs. (`source(scripts/build_traits_yml_from_APD.R)`)
+
+2. Simply run the function and spot check the resultant file.
+
+#### Hiccups and past errors
+
+- Every code used in the columns for keywords, measured characteristics, and measured structures needs to be included in either `data/published_classes` (terms published in other vocabularies/ontologies) or `data/APD_glossary.csv` (terms not in those resources). Spot check the ttl, json, and html output to ensure cross-mappings are occurring as anticipated. Other columns in the traits input file link to other data input files. If you add new values, spot check them.
+
+- For release v2.1.0, `index.html` (the website) did not render properly because the function `print_list2` included syntaxa that was no longer supported. This should be fixed going forward, but is a place to check if the TOC doesn't generate properly or there was warnings about "unclosed" lines.
+ 
+- We are now going to "store" the trait input data as a yml file to be able to better trace additions and changes and avoid conflicts. Previously if there were multiple branches with changes to `traits_input.csv` there would be conflicts that were impossible to resolve. The function `XX-TODO-XX()` converts `traits_input.yml` into a csv format for editing, then back to yml format for commits.
+
+### 2. Update the taxon list
+
+The R package `APCalign` offers a current version of the Australian Plant Census (APC) and functions to align and update taxon names to those currently accepted by the APC. AusTraits requires these resources/packages to run the function `build_update_taxon_list` to ensure the file `config/taxon_list.csv` is up to date.
+
+Updates to `APCalign` are ongoing and do not need to be explicitly synchronised with AusTraits releases, but a new version of the taxon list is required for all AusTraits releases, as taxonomy changes rapidly and without updates, 100's of taxa end up with outdated names each year.
+
+#### Generate a new version of `config/taxon_list.csv`
+
+1.  The function `build_update_taxon_list()` rebuilds the taxon_list config file from the current version of APCalign (`source(R/build_update_taxon_list)`).
+
+2. The function requires a current version of the `taxon_list` (`taxon_list <- readr::read_csv("config/taxon_list.csv")`) and a build version of `austraits`.
+
+3. The function needs to be run with the argument `replace = TRUE` to ensure taxon names that have a new `taxonomic_status` (or other changed metadata) are updated.
+
+4. Run the function: `(build_update_taxon_list(austraits, taxon_list, replace = TRUE))`.
+
+5. Rebuild AusTraits, to make sure taxon names are updated to currently accepted names and informal names (e.g. `Acacia sp. [Falster_2003]` are linked to the appropriate genus and family identifiers).
+
+6. Reread in the taxon_list, `taxon_list <- readr::read_csv("config/taxon_list.csv")`, now with the newly added and updated rows of information from rebuilding the taxon_list in step 4.
+
+7. Rebuild the taxon list a second time, to remove any rows of information not being used (after rebuilding austraits with the new names added): `(build_update_taxon_list(austraits, taxon_list, replace = TRUE))`.
+
+8. Rebuild AusTraits again.
+
+9. That shoud be enough times, and if you were to cycle through the 3 steps again there would be no further changes, but you can check.
+
+#### Hiccups and past errors
+
+- As described above it is essential that you run through the read rsc, rebuild taxon list, rebuild AusTraits **twice** to fully update the taxon list.
+
+- If any of the species within a higher-level taxon have changed (e.g. a new species is described within a genus or family; or if a genus or family has been split) the genus/family is assigned a new `taxon_id`. This repeatedly leads to huge components of the taxon_list.csv being overwritten while updating the taxon list. You can run the function without `replace = FALSE` to avoid this, BUT then species with changed `taxonomic_status` aren't updated either, failing to capture when a previously `accepted` name becomes a `synonym` because a new name is `accepted`. This defeats the ability of names to automatically update within the traits.build work flow, necessitating `replace = TRUE` and the mass-changes/
+
+- We used to update `taxon_list.csv` on every branch, to immediately capture informal `genus sp.` names and because we so often had to bring in a new line of information from the APC with information on synonyms. However the threat of conflicts and problems with too many lines changing means we now generally just update `taxon_list.csv` just prior to releases on its own branch that can be easily reverted.
+
+### 3. Update austraits
+
+The R package `austraits` includes functions to wrangle and explore traits.build databases. Some of these functions are also used by the `traits.build` workflow, including `austraits::bind_databases` and util functions to convert between yml lists and dataframes.
+
+`austraits` functions need to be tweaked if any changes are made to the `traits.build` output format.
+
+If such changes have been made, ensure `austraits`, `traits.build` and `austraits.build` are all on their respective branches with such changes implemented and test that all functions/workflows function as expected and austraits.build builds are expected.
+
+#### Files to update for a release
+
+1. Update the version number in the `DESCRIPTION` file. 
+
+2. Add a section to `NEWS.md` documenting changes associated with the new release.
+
+3. **Merge commit** `develop` into `master`.
+
+4. **Merge commit** `master` into `develop`.
+
+5. Bump the version number in `DESCRIPTION` by x.x.x.900, merge into develop.
+
+6. Create release on GitHub, flag as "latest release" and add tag.
+
+7. The file `austraits.Rmd` requires further changes after the `austraits.build` release to ensure it includes the newest release in its list of Zenodo doi's.
+
+
+### 4. Update traits.build
+
+`traits.build` is an R package that is the workflow that builds `austraits.build`. Releases of `austraits.build` should adhere to the latest versions of `traits.build`.
+
+#### Files to update, scripts to run for a release
+
+1.  If any changes have been made to the ontology:
+
+  * create a branch to update the ontology  
+  * update the version number in `ontology/index.qmd`   
+  * render `ontology/index.qmd`.  
+  * ensure the resultant html file is as expected.  
+
+2. Create a branch `prepare for release`: 
+
+  DESCRIPTION edits
+  
+  * Update version number  
+  * Ensure the proper version of traits.build is listed under Depends (e.g. `austraits`)  
+  * Ensure the proper version of traits.build is listed under Remotes (e.g. `traitecoevo/austraits@master`)  
+
+  NEWS updates
+  
+  * Add a section to NEWS for the latest release  
+
+3. **Merge commit** `develop` into `master`.
+
+4. **Merge commit** `master` into `develop`.
+
+5. Bump the version number in `DESCRIPTION` by x.x.x.900, merge into develop.
+
+6. Create release on GitHub, flag as "latest release" and add tags
+
+#### Hiccups and past errors
+
+- If there are any syntax discrepancies in `ontology/data/traits.build_ontology.csv`, the ontology won't build.
+
+- Previously, the ontology was sourcing the names of tables within the `traits.build` data object from the schema of the previous version, causing any new tables to be omitted from `index.html` (the website). We've added lots of warning to this section, should these be further problems.
+
+- For release v2.1.0, `index.html` (the website) did not render properly because the function `print_list2` included syntaxa that was no longer supported. This should be fixed going forward, but is a place to check if the TOC doesn't generate properly or there was warnings about "unclosed" lines.
+
+### 5. austraits.build release
+
+As a final step, we are ready for the actual austraits.build release!
+
+1.  Ensure all previous branches are merged in: those for new datasets ready to add for the release; one on which `traits.yml` has been updated; and one on which `taxon_list.csv` has been updated.
+
+2.  Build a new version of AusTraits.
+
+3.  Create a branch `prepare for release` and:
+  
+  `config/metadata.yml` edits  
+  
+  * ensure the proper version of APD, austraits, APCalign, and traits.build are referenced in the metadata file  
+  
+  DESCRIPTION edits
+  
+  * Update version number  
+  * Ensure the proper version of traits.build is listed under Depends (e.g. `traits.build (>= 2.1.0)`)  
+  * Ensure the proper version of traits.build is listed under Remotes (e.g. `traitecoevo/traits.build@v2.1.0`)  
+  
+  NEWS updates
+  
+  * Render `scripts/news.Rmd` to generate the automated components of the NEWS for the new release; you need an old and new version of austraits built or downloads.  
+  * Integrate the automated information into personalised details in `NEWS.md`.  
+  
+  README
+  
+  * Confirm all citations and other information are up-to-date.  
+  
+  LICENSE:
+  
+  * Confirm all citations and other information are up-to-date.   
+  
+4. Merge branch to `develop`
+
+5. **Merge commit** `develop` to `master`
+
+6. **Merge commit** `master` to `develop`
+
+7. Generate derived outputs: 
+
+  `austraits_flattened_vx.x.x.rds <- austraits_vx.x.x. %>% autraits::flatten_database()`
+  
+  `austraits_flattened_vx.x.x.parquet <- austraits_flattened_vx.x.x.rds %>% arrow::write_parquet()`
+
+8. Create release on GitHub, paste in NEWS, flag as "latest release" and add tag.
+
+9. Link outputs, including derived outputs, to release.
+
+10. Add release files to Zenodo.
+
+11. Bump the version number in `DESCRIPTION` by x.x.x.900, merge into `develop`.
+
+#### Hiccups and past errors
+
+- Mainly problems with all the leadup steps! 
+
+- Be absolutely sure that you have an updated version of the `build.R` pre-release.
