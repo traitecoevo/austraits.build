@@ -22,10 +22,19 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
-  collection_date: 2018-05
-  taxon_name: Plant species
-  location_name: Site number
+  custom_R_code: '
+    data %>%
+      mutate(
+        taxon_name = paste0(Genus, " ", species),
+        Site_number = paste0("site_", stringr::str_pad(`Site no.`, width = 2, pad = "0")),
+        `P %` = `P %`/10,
+        NP = `N(%)`/`P %`,
+        storage = ortho + phytate,
+        across(c(`Plant [K]`:`Plant [P]`), ~na_if(.x, 0))
+      )'
+  collection_date: sampleDate
+  taxon_name: taxon_name
+  location_name: Site_number
   description: Study to explore how the P concentration in leaves of common Australian
     native plant species varies across a broad geographic region that includes naturally
     low to naturally high P status soils; and (ii) investigate whether there is a
@@ -75,119 +84,355 @@ dataset:
 identifiers: .na
 locations:
   site_01:
-    locality: Goobang NP
     site type: TERN
-    latitude (deg): -32.8818
-    longitude (deg): 148.4047
+    description: Mugga Ironbark - Western Grey Box - cypress pine tall woodland on
+      footslope of low hill
+    longitude (deg): 148.34748
+    latitude (deg): -32.749786
+    temperature, MAT (C): 15.661
+    precipitation, MAP (mm): 669.671
+    elevation (m): 572.058
+    soil P, total (mg/kg): 348.0
+    soil exchangeable S (mg/kg): 241.0
+    soil exchangeable Zn (mg/kg): 21.0
+    soil exchangeable Cu (mg/kg): 13.0
+    soil exchangeable Mn (mg/kg): 782.0
+    soil exchangeable Fe (mg/kg): 21361.0
+    soil exchangeable Al (mg/kg): 29272.0
+    soil P, Collwell: 9.379228
   site_02:
-    locality: Goobang NP
     site type: TERN
-    latitude (deg): -32.8818
-    longitude (deg): 148.4047
+    description: Neofabricia myrtifolia +/- Jacksonia thesioides open to closed heath
+      on dunefields
+    longitude (deg): 148.323975
+    latitude (deg): -32.835232
+    temperature, MAT (C): 16.6
+    precipitation, MAP (mm): 604.909
+    elevation (m): 406.352
+    soil P, total (mg/kg): 68.0
+    soil exchangeable S (mg/kg): 26.0
+    soil exchangeable Zn (mg/kg): 5.0
+    soil exchangeable Cu (mg/kg): 3.0
+    soil exchangeable Mn (mg/kg): 78.0
+    soil exchangeable Fe (mg/kg): 8787.0
+    soil exchangeable Al (mg/kg): 6160.0
+    soil P, Collwell: 0.6413065
   site_03:
-    locality: Goobang NP
     site type: roadside
-    latitude (deg): -32.8818
-    longitude (deg): 148.4047
+    description: Near gooband NP Trewilga
+    longitude (deg): 148.238733
+    latitude (deg): -32.799645
+    temperature, MAT (C): 17.342
+    precipitation, MAP (mm): 566.791
+    elevation (m): 303.725
+    soil P, total (mg/kg): 245.0
+    soil exchangeable S (mg/kg): 73.0
+    soil exchangeable Zn (mg/kg): 51.0
+    soil exchangeable Cu (mg/kg): 21.0
+    soil exchangeable Mn (mg/kg): 87.0
+    soil exchangeable Fe (mg/kg): 23329.0
+    soil exchangeable Al (mg/kg): 11124.0
+    soil P, Collwell: 5.1438274
   site_04:
-    locality: south of Dubbo
     site type: roadside
-    latitude (deg): -32.8818
-    longitude (deg): 148.4047
+    description: On road to Dubbo half way from Tomingley
+    longitude (deg): 148.367118
+    latitude (deg): -32.437231
+    temperature, MAT (C): 17.029
+    precipitation, MAP (mm): 598.395
+    elevation (m): 350.768
+    soil P, total (mg/kg): 133.0
+    soil exchangeable S (mg/kg): 144.0
+    soil exchangeable Zn (mg/kg): 8.0
+    soil exchangeable Cu (mg/kg): 6.0
+    soil exchangeable Mn (mg/kg): 86.0
+    soil exchangeable Fe (mg/kg): 9582.0
+    soil exchangeable Al (mg/kg): 12001.0
+    soil P, Collwell: 5.6643357
   site_05:
-    locality: north of Dubbo
     site type: roadside
-    latitude (deg): -32.8818
-    longitude (deg): 148.4047
+    description: North of Dubbo by Coolbaggle creek
+    longitude (deg): 148.582896
+    latitude (deg): -31.981823
+    temperature, MAT (C): 17.398
+    precipitation, MAP (mm): 582.957
+    elevation (m): 288.934
+    soil P, total (mg/kg): 130.0
+    soil exchangeable S (mg/kg): 81.0
+    soil exchangeable Zn (mg/kg): 17.0
+    soil exchangeable Cu (mg/kg): 10.0
+    soil exchangeable Mn (mg/kg): 167.0
+    soil exchangeable Fe (mg/kg): 15284.0
+    soil exchangeable Al (mg/kg): 12058.0
+    soil P, Collwell: 6.4317005
   site_06:
-    locality: Gilgandra
     site type: roadside
-    latitude (deg): -32.8818
-    longitude (deg): 148.4047
+    description: State forrest Gilgandra
+    longitude (deg): 148.650338
+    latitude (deg): -31.717113
+    temperature, MAT (C): 17.667
+    precipitation, MAP (mm): 563.847
+    elevation (m): 275.966
+    soil P, total (mg/kg): 77.0
+    soil exchangeable S (mg/kg): 69.0
+    soil exchangeable Zn (mg/kg): 12.0
+    soil exchangeable Cu (mg/kg): 4.0
+    soil exchangeable Mn (mg/kg): 121.0
+    soil exchangeable Fe (mg/kg): 3577.0
+    soil exchangeable Al (mg/kg): 2913.0
+    soil P, Collwell: 4.9830305
   site_07:
-    locality: south of Warrumbungle NP
     site type: roadside
-    latitude (deg): -31.2811
-    longitude (deg): 149.0135
+    description: on road near Tooraweenah
+    longitude (deg): 148.903256
+    latitude (deg): -31.472063
+    temperature, MAT (C): 17.101
+    precipitation, MAP (mm): 627.978
+    elevation (m): 407.502
+    soil P, total (mg/kg): 396.0
+    soil exchangeable S (mg/kg): 139.0
+    soil exchangeable Zn (mg/kg): 35.0
+    soil exchangeable Cu (mg/kg): 22.0
+    soil exchangeable Mn (mg/kg): 599.0
+    soil exchangeable Fe (mg/kg): 51609.0
+    soil exchangeable Al (mg/kg): 16725.0
+    soil P, Collwell: 23.6450648
   site_08:
-    locality: Warrumbungle NP
     site type: roadside
-    latitude (deg): -31.2811
-    longitude (deg): 149.0135
+    description: Next to creek in valley in Warumbungles (maybe picture or screenshot)
+    longitude (deg): 149.023159
+    latitude (deg): -31.303521
+    temperature, MAT (C): 16.539
+    precipitation, MAP (mm): 749.195
+    elevation (m): 538.438
+    soil P, total (mg/kg): 230.0
+    soil exchangeable S (mg/kg): 136.0
+    soil exchangeable Zn (mg/kg): 61.0
+    soil exchangeable Cu (mg/kg): 10.0
+    soil exchangeable Mn (mg/kg): 1192.0
+    soil exchangeable Fe (mg/kg): 19259.0
+    soil exchangeable Al (mg/kg): 11076.0
+    soil P, Collwell: 6.3727255
   site_09:
-    locality: Warrumbungle NP
-    site type: TERN
-    latitude (deg): -31.2811
-    longitude (deg): 149.0135
+    site type: roadside
+    description: Warrumbungles national park, near camp blackman (phone point) (still
+      on site) road side
+    longitude (deg): 148.977137
+    latitude (deg): -31.279982
+    temperature, MAT (C): 17.056
+    precipitation, MAP (mm): 674.485
+    elevation (m): 433.88
+    soil P, total (mg/kg): 283.0
+    soil exchangeable S (mg/kg): 70.0
+    soil exchangeable Zn (mg/kg): 96.0
+    soil exchangeable Cu (mg/kg): 7.0
+    soil exchangeable Mn (mg/kg): 802.0
+    soil exchangeable Fe (mg/kg): 31333.0
+    soil exchangeable Al (mg/kg): 14896.0
+    soil P, Collwell: 4.870052
   site_10:
-    locality: Warrumbungle NP
     site type: TERN
-    latitude (deg): -31.2811
-    longitude (deg): 149.0135
+    description: Narrow-leaved Ironbark - White Cypress Pine - Buloke tall open forest
+    longitude (deg): 148.992445
+    latitude (deg): -31.279436
+    temperature, MAT (C): 16.984
+    precipitation, MAP (mm): 687.707
+    elevation (m): 448.874
+    soil P, total (mg/kg): 441.0
+    soil exchangeable S (mg/kg): 192.0
+    soil exchangeable Zn (mg/kg): 123.0
+    soil exchangeable Cu (mg/kg): 14.0
+    soil exchangeable Mn (mg/kg): 1202.0
+    soil exchangeable Fe (mg/kg): 46036.0
+    soil exchangeable Al (mg/kg): 33350.0
+    soil P, Collwell: 41.5212617
   site_11:
-    locality: south of Pilliga Nature Reserve
     site type: roadside
-    latitude (deg): -30.3518
-    longitude (deg): 148.8886
+    description: on edge of pilliga near Baradine
+    longitude (deg): 149.064179
+    latitude (deg): -30.915473
+    temperature, MAT (C): 17.886
+    precipitation, MAP (mm): 615.005
+    elevation (m): 278.202
+    soil P, total (mg/kg): 226.0
+    soil exchangeable S (mg/kg): 101.0
+    soil exchangeable Zn (mg/kg): 19.0
+    soil exchangeable Cu (mg/kg): 8.0
+    soil exchangeable Mn (mg/kg): 463.0
+    soil exchangeable Fe (mg/kg): 17757.0
+    soil exchangeable Al (mg/kg): 10572.0
+    soil P, Collwell: 17.3043131
   site_12:
-    locality: south of Pilliga Nature Reserve
     site type: roadside
-    latitude (deg): -30.3518
-    longitude (deg): 148.8886
+    description: Road side sample in ETOO Creek 30 - 50 min into Pilliga
+    longitude (deg): 149.112171
+    latitude (deg): -30.749201
+    temperature, MAT (C): 18.142
+    precipitation, MAP (mm): 605.009
+    elevation (m): 254.657
+    soil P, total (mg/kg): 43.0
+    soil exchangeable S (mg/kg): 40.0
+    soil exchangeable Zn (mg/kg): 3.0
+    soil exchangeable Cu (mg/kg): 3.0
+    soil exchangeable Mn (mg/kg): 76.0
+    soil exchangeable Fe (mg/kg): 3311.0
+    soil exchangeable Al (mg/kg): 1976.0
+    soil P, Collwell: 1.2112732
   site_13:
-    locality: Pilliga Nature Reserve
     site type: TERN
-    latitude (deg): -30.3518
-    longitude (deg): 148.8886
+    description: Narrow-leaved Ironbark - White Cypress Pine - Buloke tall open forest
+    longitude (deg): 149.267298
+    latitude (deg): -30.510293
+    temperature, MAT (C): 18.696
+    precipitation, MAP (mm): 609.549
+    elevation (m): 210.531
+    soil P, total (mg/kg): 165.0
+    soil exchangeable S (mg/kg): 166.0
+    soil exchangeable Zn (mg/kg): 4.0
+    soil exchangeable Cu (mg/kg): 3.0
+    soil exchangeable Mn (mg/kg): 299.0
+    soil exchangeable Fe (mg/kg): 6036.0
+    soil exchangeable Al (mg/kg): 5303.0
+    soil P, Collwell: 4.3756244
   site_14:
-    locality: Mount Kaputar NP
-    site type: roadside
-    latitude (deg): -30.3518
-    longitude (deg): 148.8886
-  site_15:
-    locality: Mount Kaputar NP
     site type: TERN
-    latitude (deg): -30.277
-    longitude (deg): 150.1636
+    description: Mountain Gum - Snow Gum grassy open forest- Unburnt
+    longitude (deg): 150.152671
+    latitude (deg): -30.283666
+    temperature, MAT (C): 12.001
+    precipitation, MAP (mm): 1207.19
+    elevation (m): 1433.73
+    soil P, total (mg/kg): 1562.0
+    soil exchangeable S (mg/kg): 271.0
+    soil exchangeable Zn (mg/kg): 137.0
+    soil exchangeable Cu (mg/kg): 18.0
+    soil exchangeable Mn (mg/kg): 5345.0
+    soil exchangeable Fe (mg/kg): 120483.0
+    soil exchangeable Al (mg/kg): 55969.0
+    soil P, Collwell: 94.9172483
+  site_15:
+    site type: roadside
+    description: on the way down Mt Kaputar
+    longitude (deg): 150.09586
+    latitude (deg): -30.272981
+    temperature, MAT (C): 14.708
+    precipitation, MAP (mm): 999.563
+    elevation (m): 949.239
+    soil P, total (mg/kg): 1860.0
+    soil exchangeable S (mg/kg): 215.0
+    soil exchangeable Zn (mg/kg): 76.0
+    soil exchangeable Cu (mg/kg): 21.0
+    soil exchangeable Mn (mg/kg): 931.0
+    soil exchangeable Fe (mg/kg): 79298.0
+    soil exchangeable Al (mg/kg): 52179.0
+    soil P, Collwell: 221.1900958
   site_16:
-    locality: Mount Kaputar NP
     site type: roadside
-    latitude (deg): -30.277
-    longitude (deg): 150.1636
+    description: Base of Mt Kaputar near creek, near house, near road works, house
+      number 2370
+    longitude (deg): 150.020358
+    latitude (deg): -30.279577
+    temperature, MAT (C): 18.167
+    precipitation, MAP (mm): 698.309
+    elevation (m): 358.548
+    soil P, total (mg/kg): 221.0
+    soil exchangeable S (mg/kg): 119.0
+    soil exchangeable Zn (mg/kg): 20.0
+    soil exchangeable Cu (mg/kg): 7.0
+    soil exchangeable Mn (mg/kg): 322.0
+    soil exchangeable Fe (mg/kg): 11975.0
+    soil exchangeable Al (mg/kg): 8087.0
+    soil P, Collwell: 11.0871303
   site_17:
-    locality: Mount Kaputar NP
     site type: roadside
-    latitude (deg): -30.277
-    longitude (deg): 150.1636
+    description: Near Kaputar, near narrabri street number 1324
+    longitude (deg): 149.929378
+    latitude (deg): -30.323808
+    temperature, MAT (C): 18.687
+    precipitation, MAP (mm): 654.579
+    elevation (m): 276.939
+    soil P, total (mg/kg): 677.0
+    soil exchangeable S (mg/kg): 186.0
+    soil exchangeable Zn (mg/kg): 52.0
+    soil exchangeable Cu (mg/kg): 11.0
+    soil exchangeable Mn (mg/kg): 454.0
+    soil exchangeable Fe (mg/kg): 26769.0
+    soil exchangeable Al (mg/kg): 11063.0
+    soil P, Collwell: 59.6274158
   site_18:
-    locality: Mount Kaputar NP
     site type: roadside
-    latitude (deg): -30.277
-    longitude (deg): 150.1636
+    description: Road side sample near Mt Kaputar, near Killarney callitris state
+      forrest
+    longitude (deg): 149.872697
+    latitude (deg): -30.251787
+    temperature, MAT (C): 18.856
+    precipitation, MAP (mm): 649.293
+    elevation (m): 259.02
+    soil P, total (mg/kg): 153.0
+    soil exchangeable S (mg/kg): 80.0
+    soil exchangeable Zn (mg/kg): 6.0
+    soil exchangeable Cu (mg/kg): 5.0
+    soil exchangeable Mn (mg/kg): 341.0
+    soil exchangeable Fe (mg/kg): 4126.0
+    soil exchangeable Al (mg/kg): 3721.0
+    soil P, Collwell: 23.8187637
   site_19:
-    locality: Mount Kaputar NP
     site type: roadside
-    latitude (deg): -30.277
-    longitude (deg): 150.1636
+    description: Road side sample from Mt Kaputar to Torrington near craigdon BnB
+    longitude (deg): 150.028833
+    latitude (deg): -30.14466
+    temperature, MAT (C): 17.895
+    precipitation, MAP (mm): 753.141
+    elevation (m): 414.117
+    soil P, total (mg/kg): 1159.0
+    soil exchangeable S (mg/kg): 124.0
+    soil exchangeable Zn (mg/kg): 90.0
+    soil exchangeable Cu (mg/kg): 32.0
+    soil exchangeable Mn (mg/kg): 766.0
+    soil exchangeable Fe (mg/kg): 55960.0
+    soil exchangeable Al (mg/kg): 23307.0
+    soil P, Collwell: 106.2278077
   site_20:
-    locality: northeast of Mount Kaputar NP
     site type: roadside
-    latitude (deg): -30.277
-    longitude (deg): 150.1636
+    description: near ancient geological site, table lands
+    longitude (deg): 150.309776
+    latitude (deg): -30.041527
+    temperature, MAT (C): 17.907
+    precipitation, MAP (mm): 767.635
+    elevation (m): 379.998
+    soil P, total (mg/kg): 271.0
+    soil exchangeable S (mg/kg): 169.0
+    soil exchangeable Zn (mg/kg): 29.0
+    soil exchangeable Cu (mg/kg): 18.0
+    soil exchangeable Mn (mg/kg): 437.0
+    soil exchangeable Fe (mg/kg): 24020.0
+    soil exchangeable Al (mg/kg): 13282.0
+    soil P, Collwell: 12.9922047
   site_21:
-    locality: Bingara
     site type: roadside
-    latitude (deg): -30.277
-    longitude (deg): 150.1636
+    description: AUS012364
+    longitude (deg): 150.580421
+    latitude (deg): -29.802859
+    temperature, MAT (C): 18.092
+    precipitation, MAP (mm): 716.809
+    elevation (m): 328.284
+    soil P, total (mg/kg): 414.0
+    soil exchangeable S (mg/kg): 167.0
+    soil exchangeable Zn (mg/kg): 35.0
+    soil exchangeable Cu (mg/kg): 22.0
+    soil exchangeable Mn (mg/kg): 1031.0
+    soil exchangeable Fe (mg/kg): 31896.0
+    soil exchangeable Al (mg/kg): 20576.0
+    soil P, Collwell: 23.7902905
 contexts: .na
 traits:
-- var_in: C (%)
+- var_in: C(%)
   unit_in: '%'
   trait_name: leaf_C_per_dry_mass
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
-  replicates: 1
+  replicates: '1'
   methods: During collection, care was taken to prevent moisture from affecting the
     collected material while in the field by placing samples in paper bags to air
     dry and storing them within a rain-proof container that was left open to the atmosphere
@@ -201,13 +446,13 @@ traits:
     by Dumas combustion by APAL (Australian Precision Ag Laboratory), Hindmarsh, SA,
     using an Elementar Variomax XN analyser with the combustion chamber at 900 °C
     and an oxygen flow rate of 125 mL min-1.
-- var_in: N (%)
+- var_in: N(%)
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
-  replicates: 1
+  replicates: '1'
   methods: During collection, care was taken to prevent moisture from affecting the
     collected material while in the field by placing samples in paper bags to air
     dry and storing them within a rain-proof container that was left open to the atmosphere
@@ -221,13 +466,13 @@ traits:
     by Dumas combustion by APAL (Australian Precision Ag Laboratory), Hindmarsh, SA,
     using an Elementar Variomax XN analyser with the combustion chamber at 900 °C
     and an oxygen flow rate of 125 mL min-1.
-- var_in: P (mg kg-1)
-  unit_in: mg/kg
+- var_in: P %
+  unit_in: '%'
   trait_name: leaf_P_per_dry_mass
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
-  replicates: 1
+  replicates: '1'
   methods: During collection, care was taken to prevent moisture from affecting the
     collected material while in the field by placing samples in paper bags to air
     dry and storing them within a rain-proof container that was left open to the atmosphere
@@ -249,12 +494,12 @@ traits:
     200).
 - var_in: NP
   unit_in: mg/mg
-  trait_name: .na
+  trait_name: leaf_NP_ratio
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
-  replicates: 1
-  methods: leaf_N_to_P_ratio; During collection, care was taken to prevent moisture
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture
     from affecting the collected material while in the field by placing samples in
     paper bags to air dry and storing them within a rain-proof container that was
     left open to the atmosphere to air-dry the leaf material as much as possible.
@@ -276,9 +521,345 @@ traits:
     by APAL (Australian Precision Ag Laboratory), Hindmarsh, SA, using an Elementar
     Variomax XN analyser with the combustion chamber at 900 °C and an oxygen flow
     rate of 125 mL min-1.
+- var_in: Plant [K]
+  unit_in: ppm
+  trait_name: leaf_K_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
+- var_in: Plant [Ca]
+  unit_in: ppm
+  trait_name: leaf_Ca_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
+- var_in: Plant [Mg]
+  unit_in: ppm
+  trait_name: leaf_Mg_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
+- var_in: Plant [S]
+  unit_in: ppm
+  trait_name: leaf_S_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
+- var_in: Fe(mg/kg)
+  unit_in: mg/kg
+  trait_name: leaf_Fe_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
+- var_in: Plant [Zn]
+  unit_in: ppm
+  trait_name: leaf_Zn_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
+- var_in: Plant [Cu]
+  unit_in: ppm
+  trait_name: leaf_Cu_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
+- var_in: Plant [Mn]
+  unit_in: ppm
+  trait_name: leaf_Mn_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
+- var_in: ortho
+  unit_in: ppm
+  trait_name: .na
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
+- var_in: lipid
+  unit_in: ppm
+  trait_name: leaf_lipid_P_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
+- var_in: phytate
+  unit_in: ppm
+  trait_name: .na
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
+- var_in: storage
+  unit_in: ppm
+  trait_name: leaf_residual_P_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
+- var_in: RNA
+  unit_in: ppm
+  trait_name: leaf_nucleic_acid_P_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: '1'
+  methods: During collection, care was taken to prevent moisture from affecting the
+    collected material while in the field by placing samples in paper bags to air
+    dry and storing them within a rain-proof container that was left open to the atmosphere
+    to air-dry the leaf material as much as possible. Upon returning to the University
+    of Adelaide, plant samples were transferred to a plant press and left to air dry
+    for 3.5 months, while soil samples were oven-dried at 40 °C for 48 h. ^p After
+    oven-drying, soil samples were ground and sieved to <2 mm. Plant material was
+    subsampled from the plant press and oven-dried for 1 h at 60 °C before leaves
+    were separated from twigs and branches and ground with a puck mill to a fine powder
+    suitable for extraction and subsequent chemical analysis. Total P concentrations
+    in plant and soil samples were determined using the method of Zarcinas et al.
+    (1996). In brief, for plant samples, dried and ground leaf biomass (0.25 g) was
+    cold-digested overnight in a 2 mL 70% nitric acid and 0.5 mL 30% hydrogen peroxide
+    mixture. For soils, samples (0.25 g) were cold-digested overnight in 4 mL of aqua
+    regia (3:1 mixture of 37% hydrochloric acid and 70% nitric acid). The following
+    day, the acid digests were heated to 125 °C for 3.5 h. The digests were allowed
+    to cool, diluted to 20 mL through the addition of Milli-Q water, filtered with
+    Whatman Grade 42, ashless filter paper and analysed by ICP-OES (Perkin Elmer Avio
+    200).
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
-questions:
-  additional_traits: leaf_N_to_P_ratio
-  information_needs: site coordinates; site soil chemistry
+questions: .na
