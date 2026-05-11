@@ -1,0 +1,568 @@
+source:
+  primary:
+    key: ANBG_2025
+    bibtype: Online
+    author: '{Australian National Botanic Gardens}'
+    year: 2018
+    title: The National Seed Bank
+    url: xxx
+contributors:
+  data_collectors:
+  - last_name: unknown
+    given_name: unknown
+    ORCID: unknown
+    affiliation: unknown
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        Date = ifelse(is.na(`Collection Date`), `Date Tested`, `Collection Date`),
+        Date = lubridate::mdy(Date),
+        measurement_remarks = ifelse(!is.na(Collector), paste0("Collector: ", Collector), "Collector not recorded"),
+        basis_of_record = ifelse(Cultivated %in% c("Z", "cultivated"), "captive_cultivated", "field"),
+        basis_of_record = ifelse(is.na(basis_of_record), "field", basis_of_record),
+        seed_weight = `Thousand Seed Weight`/1000,
+        seed_weight = na_if(seed_weight, 0),
+        Adjusted_Germination_calculated = `Number Germinated` / (`Number Germinated` + `Number Full`)
+      ) %>%
+      filter(!is.na(`Scientific Name`))'  
+  collection_date: Date
+  taxon_name: Scientific Name
+  location_name: Locality
+  description: Seed trait data from the National Seedbank, including seed mass of
+    collected seeds and data on germination trials.
+  life_stage: adult
+  measurement_remarks: measurement_remarks
+  sampling_strategy: No information available.
+  original_file: Data downloaded from https://seedbank.ala.org.au on 19 Feb 2025.
+    Data downloaded by Order, for all vascular plants.
+  notes: none
+identifiers:
+- var_in: Accession Number
+  identifier_type: catalogNumber
+  institution_code: Australian National Botanic Gardens
+locations: .na
+contexts:
+- context_property: seed purity (%)
+  category: entity_context
+  var_in: Purity
+- context_property: storage temperature (C)
+  category: treatment_context
+  var_in: Storage Temperature
+- context_property: storage seed bank
+  category: treatment_context
+  var_in: Storage Seed Bank
+- context_property: seed collection fill rate
+  category: treatment_context
+  var_in: Collection Fill Rate / X-Ray
+traits:
+- var_in: seed_weight
+  unit_in: g
+  trait_name: seed_dry_mass
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: Quantity (count)
+  basis_of_record: basis_of_record
+  methods: The mass of 1000 pure seeds or fruits.
+- var_in: Viability
+  unit_in: '%'
+  trait_name: seed_viability
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: Number Tested
+  basis_of_record: captive_cultivated
+  methods: The proportion of viable seeds in a germination test, determined by the
+    number of germinated seeds and those that appear viable from a post-germination
+    cut test.
+- var_in: Adjusted_Germination_calculated
+  unit_in: '%'
+  trait_name: seed_germination
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: Number Tested
+  methods: The proportion of seeds germinated, expressed as a percentage of the total
+    viable seeds tested.
+substitutions: .na
+taxonomic_updates:
+- find: Myosotis laxa subsp. caespitosa
+  replace: Myosotis laxa subsp. cespitosa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2025-02-20)
+  taxonomic_resolution: subspecies
+- find: Abutilon
+  replace: Abutilon sp. [Abutilon; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Agrostis
+  replace: Agrostis sp. [Agrostis; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Astartea
+  replace: Astartea sp. [Astartea; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Asterolasia
+  replace: Asterolasia sp. [Asterolasia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Astroloma
+  replace: Astroloma sp. [Astroloma; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Austrostipa
+  replace: Austrostipa sp. [Austrostipa; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Banksia
+  replace: Banksia sp. [Banksia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Beaufortia
+  replace: Beaufortia sp. [Beaufortia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Billardiera
+  replace: Billardiera sp. [Billardiera; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Brachyscome
+  replace: Brachyscome sp. [Brachyscome; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Buchnera
+  replace: Buchnera sp. [Buchnera; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Cajanus
+  replace: Cajanus sp. [Cajanus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Calocephalus
+  replace: Calocephalus sp. [Calocephalus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Calothamnus
+  replace: Calothamnus sp. [Calothamnus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Carex
+  replace: Carex sp. [Carex; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Carpobrotus
+  replace: Carpobrotus sp. [Carpobrotus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Casuarina
+  replace: Casuarina sp. [Casuarina; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Celmisia
+  replace: Celmisia sp. [Celmisia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Celmisia holosericea
+  replace: Celmisia sp. [Celmisia holosericea; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Centipeda
+  replace: Centipeda sp. [Centipeda; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Cleome
+  replace: Cleome sp. [Cleome; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Cochlospermum
+  replace: Cochlospermum sp. [Cochlospermum; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Corymbia
+  replace: Corymbia sp. [Corymbia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Craspedia
+  replace: Craspedia sp. [Craspedia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Cryptocarya
+  replace: Cryptocarya sp. [Cryptocarya; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Cyperus
+  replace: Cyperus sp. [Cyperus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Deyeuxia
+  replace: Deyeuxia sp. [Deyeuxia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Dianella nigra
+  replace: Dianella sp. [Dianella nigra; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Dicliptera
+  replace: Dicliptera sp. [Dicliptera; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Dodonaea
+  replace: Dodonaea sp. [Dodonaea; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Enneapogon
+  replace: Enneapogon sp. [Enneapogon; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Epacris
+  replace: Epacris sp. [Epacris; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Eremophila
+  replace: Eremophila sp. [Eremophila; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Erigeron
+  replace: Erigeron sp. [Erigeron; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Erythrina
+  replace: Erythrina sp. [Erythrina; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Eucalyptus
+  replace: Eucalyptus sp. [Eucalyptus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Euphrasia
+  replace: Euphrasia sp. [Euphrasia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Ficus
+  replace: Ficus sp. [Ficus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Fimbristylis
+  replace: Fimbristylis sp. [Fimbristylis; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Gahnia
+  replace: Gahnia sp. [Gahnia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Galium
+  replace: Galium sp. [Galium; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Gastrolobium
+  replace: Gastrolobium sp. [Gastrolobium; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Gentianella
+  replace: Gentianella sp. [Gentianella; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Gompholobium
+  replace: Gompholobium sp. [Gompholobium; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Goodenia
+  replace: Goodenia sp. [Goodenia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Grevillea
+  replace: Grevillea sp. [Grevillea; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Hakea
+  replace: Hakea sp. [Hakea; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Hibiscus
+  replace: Hibiscus sp. [Hibiscus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Hovea
+  replace: Hovea sp. [Hovea; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Ipomoea
+  replace: Ipomoea sp. [Ipomoea; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Isolepis
+  replace: Isolepis sp. [Isolepis; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Isopogon
+  replace: Isopogon sp. [Isopogon; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Juncus
+  replace: Juncus sp. [Juncus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Laccospadix
+  replace: Laccospadix sp. [Laccospadix; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Lawrencia
+  replace: Lawrencia sp. [Lawrencia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Lepidosperma
+  replace: Lepidosperma sp. [Lepidosperma; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Maireana
+  replace: Maireana sp. [Maireana; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Maytenus
+  replace: Maytenus sp. [Maytenus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Micromyrtus
+  replace: Micromyrtus sp. [Micromyrtus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Olearia
+  replace: Olearia sp. [Olearia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Olearia arborescens
+  replace: Olearia sp. [Olearia arborescens; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Olearia semidentata
+  replace: Olearia sp. [Olearia semidentata; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Oreobolus
+  replace: Oreobolus sp. [Oreobolus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Pandorea
+  replace: Pandorea sp. [Pandorea; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Pelargonium
+  replace: Pelargonium sp. [Pelargonium; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Persoonia
+  replace: Persoonia sp. [Persoonia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Phebalium
+  replace: Phebalium sp. [Phebalium; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Pimelea
+  replace: Pimelea sp. [Pimelea; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Pittosporum obcordatum
+  replace: Pittosporum sp. [Pittosporum obcordatum; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Podotheca
+  replace: Podotheca sp. [Podotheca; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Polyscias
+  replace: Polyscias sp. [Polyscias; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Pultenaea
+  replace: Pultenaea sp. [Pultenaea; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Ranunculus
+  replace: Ranunculus sp. [Ranunculus; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Rytidosperma
+  replace: Rytidosperma sp. [Rytidosperma; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Senecio
+  replace: Senecio sp. [Senecio; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Seringia
+  replace: Seringia sp. [Seringia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Sida
+  replace: Sida sp. [Sida; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Solanum
+  replace: Solanum sp. [Solanum; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Spyridium
+  replace: Spyridium sp. [Spyridium; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Stylidium
+  replace: Stylidium sp. [Stylidium; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Swainsona
+  replace: Swainsona sp. [Swainsona; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Tacca
+  replace: Tacca sp. [Tacca; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Thomasia
+  replace: Thomasia sp. [Thomasia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Trianthema
+  replace: Trianthema sp. [Trianthema; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Vachellia
+  replace: Vachellia sp. [Vachellia; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Wurmbea
+  replace: Wurmbea sp. [Wurmbea; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Xanthorrhoea
+  replace: Xanthorrhoea sp. [Xanthorrhoea; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Xerochrysum
+  replace: Xerochrysum sp. [Xerochrysum; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Xyris
+  replace: Xyris sp. [Xyris; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Zieria
+  replace: Zieria sp. [Zieria; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Asteraceae
+  replace: Asteraceae sp. [Asteraceae; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted family
+    (2025-02-20)
+  taxonomic_resolution: family
+- find: Ericaceae
+  replace: Ericaceae sp. [Ericaceae; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted family
+    (2025-02-20)
+  taxonomic_resolution: family
+- find: Fabaceae
+  replace: Fabaceae sp. [Fabaceae; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted family
+    (2025-02-20)
+  taxonomic_resolution: family
+- find: Geraniaceae
+  replace: Geraniaceae sp. [Geraniaceae; ANBG_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted family
+    (2025-02-20)
+  taxonomic_resolution: family
+exclude_observations: .na
+questions: .na

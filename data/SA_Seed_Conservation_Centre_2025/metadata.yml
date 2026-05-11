@@ -1,0 +1,105 @@
+source:
+  primary:
+    key: SA_Seed_Conservation_Centre_2025
+    bibtype: Online
+    author: South Australian Seed Conservation Centre
+    year: 2025
+    title:  South Australian Seed Conservation Centre data from Australian Virtual Seed Bank
+    publisher: Australian Virtual Seed Bank
+    url: https://seedbank.ala.org.au
+contributors:
+  data_collectors:
+  - last_name: unknown
+    given_name: unknown
+    ORCID: unknown
+    affiliation: unknown
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        `Collection Date` = lubridate::parse_date_time(`Collection Date`, orders = "mdy"),
+        measurement_remarks = paste0("Collector: ", Collector),
+        basis_of_record = ifelse(Cultivated %in% c("Z", "cultivated"), "captive_cultivated", "field"),
+        basis_of_record = ifelse(is.na(basis_of_record), "field", basis_of_record),
+        seed_weight = `Thousand Seed Weight`/1000,
+        seed_weight = na_if(seed_weight, 0),
+        gm_per_seed = 1/`Seed/gm`,
+        gm_per_seed = ifelse(!is.na(seed_weight), NA, gm_per_seed),
+      ) %>%
+      filter(!is.na(`Scientific Name`))'
+  collection_date: Collection Date
+  taxon_name: Scientific Name
+  location_name: Locality
+  description: Seed trait data from the South Australia Seed Conservation Centre,
+    including seed mass of collected seeds and data on germination trials.
+  life_stage: adult
+  measurement_remarks: measurement_remarks
+  sampling_strategy: Established in 2002, the South Australian Seed Conservation Centre helps to protect the state's threatened plant species from extinction, while supporting the restoration of habitats around South Australia. Throughout the Centre's program, wild provenance seeds have been collected from regions across the state and safeguarded in long term storage at sub-zero temperatures. Approximately half the species in the state (about 2,000) and nearly 70 per cent of the state's threatened species are currently stored in the seed bank, forming part of the living collections at the Adelaide Botanic Garden.
+  original_file: Data downloaded from https://seedbank.ala.org.au on 19 Feb 2025.
+    Data downloaded by Order, for all vascular plants.
+  notes: none
+identifiers:
+- var_in: Accession Number
+  identifier_type: catalogNumber
+  institution_code: South Australia Seed Conservation Centre
+locations: .na
+contexts:
+- context_property: storage seed bank
+  category: treatment_context
+  var_in: Storage Seed Bank
+- context_property: seed collection fill rate
+  category: treatment_context
+  var_in: Collection Fill Rate / X-Ray
+traits:
+- var_in: seed_weight
+  unit_in: g
+  trait_name: seed_dry_mass
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  basis_of_record: basis_of_record
+  replicates: Quantity (count)
+  methods: The mass of 1000 pure seeds or fruits.
+- var_in: Adjusted Germination
+  unit_in: '%'
+  trait_name: seed_germination
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: Number Tested
+  basis_of_record: captive_cultivated
+  methods: The proportion of seeds germinated, expressed as a percentage of the total
+    viable seeds tested.
+- var_in: Viability
+  unit_in: '%'
+  trait_name: seed_viability
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: Number Tested
+  basis_of_record: captive_cultivated
+  methods: The proportion of viable seeds in a germination test, determined by the
+    number of germinated seeds and those that appear viable from a post-germination
+    cut test.
+substitutions: .na
+taxonomic_updates:
+- find: Callitris
+  replace: Callitris sp. [Callitris; SA_Seed_Conservation_Centre_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Lobelia
+  replace: Lobelia sp. [Lobelia; SA_Seed_Conservation_Centre_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Tephrosia
+  replace: Tephrosia sp. [Tephrosia; SA_Seed_Conservation_Centre_2025]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+exclude_observations: .na
+questions: .na
+identifier: .na
