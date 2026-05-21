@@ -1,0 +1,136 @@
+source:
+  primary:
+    key: Stephens_2022
+    bibtype: Unpublished
+    year: 2022
+    author: Ruby E. Stephens
+    title: 'Unpublished data: Pollination syndrome and pollination system data for the Australian flora,
+      University of New South Wales, Australia'
+contributors:
+  data_collectors:
+  - last_name: Stephens
+    given_name: Ruby
+    ORCID: 0000-0002-3767-2690
+    affiliation: School of Natural Sciences, Macquarie University, Australia
+    additional_role: contact
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data |>
+      mutate(
+        across(c("pollination", "pollination_reward"), ~ str_replace_all(.x, " and ", " ")),
+        across(c("pollination", "pollination_reward"), ~ str_replace_all(.x, ", ", " ")),
+        pollination_reward = str_replace_all(pollination_reward, " exudate", "_exudate"),
+        pollination_system = ifelse(syndrome_or_system == "system", pollination, NA),
+        pollination_syndrome = ifelse(syndrome_or_system == "syndrome", pollination, NA)
+      )
+  '
+  collection_date: 2021/2021
+  taxon_name: taxon_name
+  description: Compilation of pollination syndrome/pollination system from the literature, including data on pollinator reward when available.
+  basis_of_record: literature
+  life_stage: adult
+  sampling_strategy: Literature survey.
+  measurement_remarks: reference
+  original_file: pollination_macroevolution_datatopublish_20221125.csv in raw data
+    folder
+  notes: none
+identifiers: .na
+locations: .na
+contexts:
+- context_property: Wind pollination explicitly tested
+  category: method_context
+  var_in: wind_pollination_explicitly_tested
+  values:
+  - value: 'yes'
+    description: Wind pollination explicitly tested
+  - value: 'no'
+    description: Wind pollination not explicitly tested
+- context_property: Confidence in pollination syndrome or system score
+  category: method_context
+  var_in: confidence_score
+traits:
+- var_in: pollination_system
+  unit_in: .na
+  trait_name: pollination_system
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Literature survey.
+- var_in: pollination_syndrome
+  unit_in: .na
+  trait_name: pollination_syndrome
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Literature survey.
+- var_in: pollination_reward
+  unit_in: .na
+  trait_name: flower_pollinator_reward
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Literature survey.
+- var_in: nectar
+  unit_in: .na
+  trait_name: flower_nectar_production
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Literature survey.
+- var_in: scent
+  unit_in: .na
+  trait_name: flower_scent_production
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Literature survey.
+substitutions:
+- trait_name: flower_nectar_production
+  find: 'yes'
+  replace: nectar_produced
+- trait_name: flower_nectar_production
+  find: 'no'
+  replace: nectar_absent
+- trait_name: flower_scent_production
+  find: 'yes'
+  replace: scent_produced
+- trait_name: flower_scent_production
+  find: 'no'
+  replace: scent_absent
+- trait_name: pollination_syndrome
+  find: hymenoptera
+  replace: bee
+- trait_name: pollination_syndrome
+  find: lepidoptera
+  replace: butterfly
+- trait_name: pollination_system
+  find: bat hummingbird moth
+  replace: bat bird moth
+- trait_name: pollination_system
+  find: gall midge
+  replace: midge
+- trait_name: pollination_system
+  find: hymenoptera
+  replace: bee
+- trait_name: pollination_system
+  find: lepidoptera
+  replace: butterfly
+- trait_name: pollination_system
+  find: rodent insect bird
+  replace: mammal bird insect
+- trait_name: pollination_system
+  find: small mammal insect
+  replace: mammal insect
+- trait_name: pollination_system
+  find: wasp cricket cockroach
+  replace: wasp insect
+taxonomic_updates: .na
+exclude_observations: .na
+questions: .na
