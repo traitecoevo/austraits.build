@@ -2568,24 +2568,29 @@ traits:
       characteristic_measured: width; size
     leaf_length_type:
       label: Leaf length type
-      description: A trait to indicate when `leaf_length` is not the appropriate trait under which to record the maximum length of a leaf, and to indicate the appropriate trait under which to record the maximum length of a leaf. For instance, this trait can be used to document that a plant lacks leaves, has compound leaves (and therefore dimensions are recorded for leaflets rather than leaves).
+      description: A trait to indicate when `leaf_length` is not the appropriate trait under which to record the maximum length of a leaf, and to indicate the appropriate trait under which to record the maximum length of a leaf.
       type: categorical
       allowed_values_levels:
-        na_leafless: XX
-        na_compound: XX
-        na_bladeless: XX
-        na_reduced: XX
-        na_reduced_to_sheath: XX
-        na_reduced_to_scales: XX
-        na_scale_leaves: XX
-        na_not_given: XX
-        na_not_given_flora: XX
-        na_not_given_taxon_description: XX
-        na_unknown: XX
-        na_todo: XX
+        na_leafless: A leafless plant, which lacks leaves and therefore has no leaf
+          length to record.
+        na_compound: A plant with compound leaves, for which leaflet_length, not leaf_length,
+          is the appropriate trait under which to record the maximum length of the
+          leaf unit.
+        na_bladeless: A plant whose leaves lack a distinct blade (lamina), such that
+          leaf_length is not the appropriate trait under which to record leaf dimensions.
+        na_scale_leaves: A plant with scale leaves, such that leaf_length is not the
+          appropriate trait under which to record leaf dimensions. (Synonyms, na_reduced_to_scales)
+        na_reduced: A plant whose leaves are reduced, such that leaf_length is not
+          the appropriate trait under which to record leaf dimensions, but their form is not specified.
+        na_reduced_to_sheath: A plant whose leaves are reduced to a sheath, such that
+          leaf_length is not the appropriate trait under which to record leaf dimensions.
+        na_not_given: A leaf length was not given in the data source consulted.
+        na_not_given_flora: A leaf length was not given in the flora consulted.
+        na_not_given_taxon_description: A leaf length was not given in the taxon description
+          consulted.
     plant_height_type:
       label: Plant height type
-      description: A trait to indicate when `plant_height` is not the appropriate trait under which to record the maximum vegetative extent of a plant, and to indicate the appropriate trait under which to record the maximum vegetative extent of the plant. This trait should be used when the main stem of the plant is not self-supporting, extends horizontally rather than vertically, or when the reproductive shoots exceed the vegetative shoots in height.
+      description: A trait to indicate when `plant_height` is not the appropriate trait under which to record the maximum extent of a plant. This trait should be used when the main stem of the plant is not self-supporting, extends horizontally rather than vertically, or when the reproductive shoots signficantly exceed the vegetative shoots in height.
       type: categorical
       allowed_values_levels:
         na_aquatic: An aquatic plant, which may be submerged or floating, but which is not self-supporting and therefore stem_length, not plant_height, is the appropriate trait under which to record the length of the vegetative shoot system.
@@ -2594,18 +2599,23 @@ traits:
         na_climbing: A climbing plant, which is not self-supporting and therefore stem_length or plant_height_climbing, not plant_height, is the appropriate trait under which to record the length of the vegetative shoot system.
         na_epiphyte: An epiphyte, which is not rooted in soil and therefore stem_length, not plant_height, is the appropriate trait under which to record the length of the vegetative shoot system.
         na_geophyte: A geophyte, which lacks a permanent aboveground shoot system, such that the height of the reproductive shoot system (plant_height_reproductive) is the appropriate trait under which to record the maximum height of the plant.
-        na_lithophyte: XX
+        na_lithophyte: A lithophyte, which grows on the surface of rocks rather than
+          rooted in soil, and therefore stem_length, not plant_height, is the appropriate
+          trait under which to record the length of the vegetative shoot system.
         na_mat-forming: A mat-forming plant, which is a low-growing plant with prostrate stems that root at the nodes, and while it will have a height of a few cm, plant_width or stem_length are often the only plant dimensions reported. (Synonyms, na_cushion)
-        na_marine: XX
+        na_marine: A marine plant, which grows submerged in seawater and is not self-supporting,
+          and therefore stem_length, not plant_height, is the appropriate trait under
+          which to record the length of the vegetative shoot system.
         na_rosette: A plant whose leaves are arranged in a ring (rosette) on the ground surface and only has a flowering stem that elongates, such that plant_height_reproductive, not plant_height, is the appropriate trait under which to record the maximum height of the plant.
         na_leaf_tuft: A plant whose leaves are arranged in a tuft on the ground surface and only has a flowering stem that elongates, such that plant_height_reproductive, not plant_height, is the appropriate trait under which to record the maximum height of the plant.
         na_prostrate: A prostrate plant, whose stems grow along the ground surface, generally rising just slightly, and therefore stem_length, gives a better indication of the length of the vegetative shoot system than does plant_height, although both maybe recorded. (Synonyms, na_trailing, na_creeping, na_decumbent)
-        na_rhizome: XX
-        na_not_given_taxon_description: XX
-        na_not_given_flora: XX
-        na_not_given: XX
-        na_todo: XX
-        na_unknown: XX
+        na_rhizome: A plant whose main stem is a horizontal rhizome, and therefore
+          stem_length, not plant_height, is the appropriate trait under which to record
+          the length of the vegetative shoot system.
+        na_not_given_taxon_description: A plant height was not given in the taxon description
+          consulted.
+        na_not_given_flora: A plant height was not given in the Flora consulted.
+        na_not_given: A plant height was not given in the data source consulted.
     plant_height:
       entity_URI: https://w3id.org/APD/traits/trait_0010023
       label: Plant vegetative height
@@ -2702,16 +2712,20 @@ traits:
       characteristic_measured: height; size
     plant_height_epiphyte:
       entity_URI: XXX
-      label: XX
-      description: XX
-      comments: 
+      label: Height of an epiphyte
+      description: A whole plant [PO:0000003] life history [ECOCORE:00000018] trait which is the maximum
+        [NCIT:C25564] vertical [PATO:0001854] height [PATO:0000119] above the ground
+        surface at which an epiphyte grows on its host.;Maximum vertical
+        height above the ground surface at which an epiphyte grows on its host plant.
+      comments: All heights reported for this trait depend on the height of the host
+        plant on which the epiphyte grows.
       type: numeric
       units: m
       allowed_values_min: 0.1
       allowed_values_max: 100.0
       structure_measured: whole plant
       keywords: canopy; vegetation; vegetative shoot system
-      trait_group: whole plant morphology trait; plant morphology trait
+      trait_group: whole plant morphology trait; plant morphology trait; life history trait
       characteristic_measured: height; size
     plant_height_reproductive:
       entity_URI: https://w3id.org/APD/traits/trait_0010027
@@ -3580,17 +3594,33 @@ traits:
       trait_group: leaf shape trait; leaf morphology trait; plant morphology trait
       characteristic_measured: shape; curvature
     leaf_tip_shape:
-      description: XX
+      entity_URI: XXX
+      label: Leaf tip shape
+      description: A leaf shape trait [TO:0000492] which is the shape [PATO:0000052]
+        of the leaf apex [PO:0020137], the tip of the leaf lamina [PO:0020039] furthest
+        from the petiole.;Shape of the leaf tip (apex).
       type: categorical
       allowed_values_levels:
-        acuminate: Leaf tip with a long, narrow, tapering point. XX
+        acuminate: Leaf tip with a long, narrow, tapering point.
+      structure_measured: leaf
+      keywords: leaf shape; leaf tip
+      trait_group: leaf shape trait; leaf morphology trait; plant morphology trait
+      characteristic_measured: shape; curvature
     petiole_shape:
-      description: XX
+      entity_URI: XXX
+      label: Petiole shape
+      description: A leaf shape trait [TO:0000492] which is the shape [PATO:0000052]
+        of the petiole [PO:0020038], the stalk that attaches the leaf lamina [PO:0020039]
+        to the stem.;Shape of the petiole, the leaf stalk.
       type: categorical
       allowed_values_levels:
-        decurrent: Petiole with a winged extension that extends down the stem. (Synonyms, winged, clasping) XX
-        not_decurrent: Petiole without a winged extension that extends down the stem. XX
-        slender: Petiole that is long and thin. XX
+        decurrent: Petiole with a winged extension that extends down the stem. (Synonyms, winged, clasping)
+        not_decurrent: Petiole without a winged extension that extends down the stem.
+        slender: Petiole that is long and thin.
+      structure_measured: leaf
+      keywords: leaf shape; leaf base; petiole
+      trait_group: leaf shape trait; leaf morphology trait; plant morphology trait
+      characteristic_measured: shape; curvature
     leaf_margin:
       entity_URI: https://w3id.org/APD/traits/trait_0011313
       label: Leaf margin
@@ -3837,7 +3867,8 @@ traits:
       allowed_values_levels:
         glabrous: Mature (fully expanded) leaves on adult plants do not have hairs
           (trichomes).
-        glandular_pubescent: XX
+        glandular_pubescent: Mature (fully expanded) leaves on adult plants have glandular
+          hairs (trichomes tipped with a secretory gland).
         hairy: Mature (fully expanded) leaves on adult plants have hairs (trichomes).
       structure_measured: leaf
       keywords: leaf pubescence; leaf trichome; leaf lamina; vestiture; hairy; adult
@@ -4989,31 +5020,42 @@ traits:
         has a tap root.
       type: categorical
       allowed_values_levels:
-        tap_root_absent: Tap root not present.
-        tap_root_present: Tap root present.
-        tap_root_sometimes_present: Tap root sometimes present.
-        taproot: XX
-        taproot_slender: XX
-        taproot_stout: XX
-        taproot_fleshy: XX
-        taproot_branched: XX
-        taproot_unbranched: XX
-        aquatic_rooted: XX
-        adventitious_roots: XX
-        coralloid_roots: XX
-        sand-binding_roots: XX
-        stilt_roots: XX
-        stilt_roots_absent: XX
-        prop_roots: XX
-        prop_roots_absent: XX
-        aerial_roots: XX
-        aerial_roots_absent: XX
-        fibrous_roots: XX
-        fleshy_roots: XX
-        napiform_roots: XX
-        non-tuberous_roots: XX
-        deep_rooted: XX
-        shallow_rooted: XX
+        taproot: Taproot, where the primary root remains dominant and
+          grows downward as a single thick main root.
+        taproot_absent: Tap root not present.
+        taproot_sometimes_present: Tap root sometimes present.
+        taproot_slender: Slender, thin taproot.
+        taproot_stout: Stout, thick, robust taproot.
+        taproot_fleshy: Fleshy, swollen taproot.
+        taproot_branched: Taproot that bears prominent lateral branches.
+        taproot_unbranched: Unbranched taproot.
+        aquatic_rooted: Aquatic plant that is rooted in the substrate rather than
+          free-floating.
+        adventitious_roots: Adventitious roots, which arise from stems,
+          leaves, or other tissues rather than from the primary root.
+        coralloid_roots: Coralloid roots, short, branched, coral-like
+          roots.
+        sand-binding_roots: Sand-binding roots, which are sheathed in
+          sand grains held in place by root hairs and mucilage.
+        stilt_roots: Stilt roots, adventitious roots that arise from
+          the lower stem and reach the ground, providing additional support.
+        stilt_roots_absent: A plant that explicitly lacks stilt roots.
+        prop_roots: Prop roots, adventitious roots that arise from the
+          stem above ground and brace the plant.
+        prop_roots_absent: A plant that explicitly lacks prop roots.
+        aerial_roots: Aerial roots, roots that grow above the ground
+          or water surface.
+        aerial_roots_absent: A plant that explicitly lacks aerial roots.
+        fibrous_roots: A fibrous root system, in which many roots of
+          similar size arise.
+        fleshy_roots: Fleshy, thickened roots that store water or nutrients.
+        napiform_roots: Napiform (turnip-shaped) roots, swollen and
+          rounded above and tapering abruptly below.
+        non-tuberous_roots: A plant whose roots are not swollen into storage tubers.
+        deep_rooted: Deep root system that extends well below the soil
+          surface.
+        shallow_rooted: Shallow root system concentrated near the soil
+          surface.
       structure_measured: root
       keywords: root system; primary root; lateral root; root branchiness
       trait_group: root system morphology trait; plant morphology trait
@@ -5295,7 +5337,10 @@ traits:
     peduncle_length:
       entity_URI: XXX
       label: Peduncle length
-      description: XX
+      description: A shoot system morphology trait [TO:0000077] which is the length
+        [PATO:0000122] of the peduncle [PO:0009053], the stalk that supports an inflorescence [PO:0009049]
+        or a solitary flower [PO:0009046].;Length of the peduncle, the stalk supporting
+        an inflorescence or a solitary flower.
       type: numeric
       units: cm
       allowed_values_min: 0.01
@@ -9909,10 +9954,11 @@ traits:
         leaf: A true leaf, including both laminar and needle-shaped leaves.
         non-photosynthetic_plant: A plant that lacks any photosynthetic organs (Synonyms, achlorophyllous).
         phyllode: A flattened bladelike petiole. (Synonyms, switch plant)
-        root: XX
-        stem: XX
-      structure_measured: leaf; whole plant; stem
-      keywords: plant organ; photosynthesis; cladode; phyllode; growth
+        root: A root that functions as the plant's primary photosynthetic organ.
+        stem: A stem that functions as the plant's primary photosynthetic organ.
+      structure_measured: leaf; whole plant; stem; root
+      keywords: plant organ; photosynthesis; cladode; phyllode
+      trait_group: plant morphology trait; leaf morphology trait; root morphology trait
       characteristic_measured: structure; organismal quality
     plant_alternative_energy_and_nutrient_acquisition_strategy:
       entity_URI: https://w3id.org/APD/traits/trait_0030017
@@ -10027,7 +10073,7 @@ traits:
           petioles, midribs, secondary veins, leaflets, or stipules.
         stinging_or_irritant_hairs: Trichomes that sting or irritate, by injecting
           a toxin.
-        subspinescent: XX
+        subspinescent: A plant bearing weakly or partially developed spine-like structures.
         thorn: A sharp-pointed, stiff, woody modified stem.
       structure_measured: leaf; stem; bark; whole plant
       keywords: spine leaf; spine stipule; thorn; prickle; defense; spine petiole
@@ -10099,10 +10145,12 @@ traits:
         trait values predominantly adjectives that modify the core plant growth forms.
       type: categorical
       allowed_values_levels:
-        acaulescent: XX
+        acaulescent: Plant lacking an obvious aboveground stem, or with a very short
+          one, such that the leaves appear to arise at or near ground level. (Synonyms, stemless)
         arborescent: Tree-like growth habit.
         bushy: Plant with much-branched branches. (Synonyms, shrubby)
-        suffrutescent: XX (Synonyms, suffruticose)
+        suffrutescent: Plant that is woody only at the base, with the upper stems
+          herbaceous and dying back periodically. (Synonyms, suffruticose)
         caespitose: Multiple short-shoots arise from the base of the plant forming
           a dense tuft, as in a bunch-grass. (Synonyms, cespitose, bunch-grass, tussock, hummocky)
         climbing: Stem that does not have a self-supporting structure and ascends
@@ -10120,20 +10168,20 @@ traits:
           of a waterbody.
         erect: Stems that grow upright. (Synonyms, virgate, upright)
         floating: Plant where most of the leaves are floating on water.
-        lax: XX
-        low-growing: XX
+        lax: Plant with loose, open, or limp growth, lacking rigidity.
+        low-growing: Plant of low stature that grows close to the ground.
         mat-forming: Multiple stems that are mostly horizontal and are densely packed
           but open enough that there are still a few gaps between them.
         open: Plant with an open architecture of branches.
         pendulous: Stems that hang downwards. (Synonyms, weeping, arching, drooping, pendant)
         prostrate: Stems lie flat on the ground but do not root at nodes. (Synonyms,
           procumbent, reclining, trailing)
-        pseudostem: XX
+        pseudostem: Plant with a false stem formed by other plant tissues, most frequently leaves.
         rhizomatous: Plants with short horizontal underground stems from which shoots
           emerge.
         rosette: Plants whose leaves radiate from a central point at or near ground
           level. (Synonyms, rosulate)
-        slender: XX
+        slender: Plant with notably slim, thin stems.
         sprawling: Stem that sprawls across other plants or objects but lacks specialised
           climbing structures or mechanisms. (Synonyms, clambering, scandent, straggling)
         spreading: Plants with a notable horizontal extent, referring either to a
@@ -10167,12 +10215,12 @@ traits:
         for the rigidity and texture of stems.
       type: categorical
       allowed_values_levels:
-        single-stemmed: A plant with a single stem that does not branch, including
-          references to fern rhizomes. (Synonyms, single-stem, unbranched)
+        unbranched: A single stem that does not branch, including
+          references to fern rhizomes. (Synonyms, single-stemmed)
+        branched: A plant whose stem divides into branches.
         few-stemmed: A plant with a few stems.
         multi-stemmed: A plant with several stems. (Synonyms, multiple_stems, several-stemmed)
         many-stemmed: A plant with numerous stems.
-        branched: A plant whose stem divides into branches.
         single_basal_stem: A plant with a single stem at ground level.
         multiple_basal_stems: A plant with multiple stems arising at ground level.
         multiple_near_basal_stems: A plant with multiple stems arising a little above
@@ -10196,7 +10244,7 @@ traits:
         virgate: A plant composed of straight, slender, wand-like stems. (Synonyms,
           wand-like)
       structure_measured: whole plant; stem
-      keywords: vegetative shoot system; branchiness; branch; stem number
+      keywords: vegetative shoot system; branchiness; branch
       trait_group: stem morphology trait; plant morphology trait
       characteristic_measured: has number of; structure; spatial pattern, distribution;
         shape
@@ -10207,18 +10255,18 @@ traits:
         of the base [XX:XX] of a plant's main stem or trunk [PO:0009047].;The form of the base of a plant's trunk or main stem.
       type: categorical
       allowed_values_levels:
-        buttressed: A plant with a stem that has a flared shape at the base.
+        buttressed: A stem that has a flared shape at its base.
         fluted: A stem with vertical grooves and ridges along its base.
       structure_measured: stem
-      keywords: stem base; trunk; buttress
+      keywords: stem; trunk
       trait_group: stem morphology trait; plant morphology trait
       characteristic_measured: shape; structure
     stem_constitution:
       entity_URI: XXX
       label: Stem constitution
       description: A stem morphology trait [TO:0000361] which describes the mechanical [XX:XX]
-        constitution and texture [PATO:0000150] of a plant's stems [PO:0009047], in
-        particular their strength [PATO:0001230] and how readily they bend [PATO:0001031].;The mechanical character
+        constitution and elasticity [PATO:0001031] of a plant's stems [PO:0009047], in
+        particular their strength [PATO:0001230] and how readily they bend.;The mechanical character
         of a plant's stems, describing how rigid, sturdy, slender, or flexible they
         are.
       comments: This trait describes the physical character of stems, rather than
@@ -10242,12 +10290,10 @@ traits:
       entity_URI: XXX
       label: Canopy form
       description: A whole plant [PO:0000003] phenotype [NCIT:C16977] trait that describes
-        the overall shape [PATO:0000052] and 3-dimensional extent [PATO:0001710] of
-        a plant's canopy [ENVO:01001242], the aggregate outline formed by its branches
-        [PO:0025073] and foliage [PO:0025034], including the density [PATO:0001019]
-        of the canopy.;The characteristic shape of a plant's canopy or crown, describing
-        the silhouette formed by its branches and foliage and how dense or open the
-        canopy is.
+        the overall shape [PATO:0000052] and the 3-dimensional extent [PATO:0001710] of
+        the plant's canopy [ENVO:01001242], and the outline formed by its branches
+        [PO:0025073] and leaves [PO:0025034].;The characteristic shape of a plant's canopy or crown, describing
+        the silhouette formed by its branches.
       comments: Canopy form describes the silhouette of an individual plant's crown,
         rather than the architecture of its stems (`stem_growth_habit`) or its broad
         growth-form category (`plant_growth_form`). Some values describe the outline
@@ -10287,15 +10333,23 @@ traits:
     rhizome_form:
       entity_URI: XXX
       label: Rhizome form
-      description: XX
+      description: A stem morphology trait [TO:0000361] which is the form of a rhizome
+        [PO:0004542], a horizontal, usually underground stem [PO:0009047].;The form of the rhizome, a horizontal
+        (usually underground) stem.
       type: categorical
       allowed_values_levels:
-        woody: XX
-        stout: XX
-        branched: XX
-        slender: XX
-        short_creeping: XX
-        long_creeping: XX
+        woody: A woody rhizome.
+        stout: A stout, thick, robust rhizome.
+        branched: A branched rhizome.
+        slender: A slender, thin rhizome.
+        short_creeping: A short-creeping rhizome that spreads only a short distance
+          horizontally.
+        long_creeping: A long-creeping rhizome that spreads a considerable distance
+          horizontally.
+      structure_measured: stem
+      keywords: rhizome; vegetative shoot system
+      trait_group:
+      characteristic_measured: length; shape; 3-D extent
     leaf_heterogeneity:
       entity_URI: XXX
       label: Leaf heterogeneity
@@ -10317,9 +10371,9 @@ traits:
           shapes or sizes, at a single node, along a shoot, or across
           developmental stages or environments.
       structure_measured: leaf
-      keywords: leaf shape; isophylly; anisophylly; heterophylly; leaf dimorphism
+      keywords: leaf shape; heterophylly
       trait_group: leaf shape trait; leaf morphology trait; plant morphology trait
-      characteristic_measured: shape; size; organismal quality
+      characteristic_measured: shape; size
     leaf_phenology:
       entity_URI: https://w3id.org/APD/traits/trait_0030024
       label: Leaf phenology
@@ -11301,7 +11355,7 @@ traits:
           the stem base and root crown of woody shrubs, mallees and small trees, and
           are formed from stem tissues. Buds are located over the entire structure.
           No colonisation ability.
-        lignotuber_absent: XX
+        lignotuber_absent: A plant that explicitly lacks a lignotuber.
         no_storage_organ: No storage organ present
         pseudobulb: An above ground storage organ present in many terrestrial and
           epiphytic orchids created throough the thickening of the stem between leaf
