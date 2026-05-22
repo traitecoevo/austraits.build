@@ -28,7 +28,9 @@ dataset:
       mutate(
         plant.genus_species = stringr::str_replace(plant.genus_species, "_", " "),
         site = paste0("site_", site),
-        Date = lubridate::dmy(Date)
+        Date = lubridate::dmy(Date),
+        Time = lubridate::hm(`Survey time`),
+        flower_pollinator_possible = pollinator.common
       )
   '
   collection_date: Date
@@ -210,9 +212,9 @@ contexts:
     value: summer
   - find: win
     value: winter
-- context_property: survey time of day
+- context_property: time of day
   category: temporal_context
-  var_in: Survey time
+  var_in: Time
 - context_property: floral visitor behaviour
   category: entity_context
   var_in: Behaviour
@@ -230,9 +232,22 @@ contexts:
   category: treatment_context
   var_in: freq
 traits:
+- var_in: flower_pollinator_possible
+  unit_in: .na
+  trait_name: flower_pollinator_possible
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: During a 20-min walk along a 100-m transect, we recorded all interactions
+    between insects and plants within 2.5 m of the transect line. An interaction between
+    an insect and a plant was defined by either an insect making contact with the
+    plant (flowers and vegetative parts) or by hover flies hovering immediately above
+    the plant at a distance ≤10 cm for more than 2 s. We identified the plant species
+    in situ, or by photographing specimens if not identifiable in the field.
 - var_in: pollinator.common
   unit_in: .na
-  trait_name: floral_visitor
+  trait_name: flower_visitor
   entity_type: individual
   value_type: mode
   basis_of_value: expert_score
