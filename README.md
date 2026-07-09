@@ -32,7 +32,15 @@ Definitions for the traits are described the AusTraits Plant Dictionary (APD), a
 
 Users of AusTraits are requested to cite the source publication, which documents the dataset and approach:
 
-> Falster D, Gallagher R, Wenk, E et al. (2021) AusTraits, a curated plant trait database for the Australian flora. Scientific Data 8: 254.  DOI: [10.1038/s41597-021-01006-6](http://doi.org/10.1038/s41597-021-01006-6)
+> Falster D, Gallagher R, Wenk, E et al. (2021) AusTraits, a curated plant trait database for the Australian flora. Scientific Data 8: 254.  DOI: [10.1038/s41597-021-01006-6](https://doi.org/10.1038/s41597-021-01006-6)
+
+AusTraits is built on two companion resources you may also wish to cite — the AusTraits Plant Dictionary (trait definitions) and APCalign (taxonomy alignment):
+
+> Wenk EH, Sauquet H, Gallagher RV, Brownlee R, Boettiger C, Coleman D, *et al.* (2024) The AusTraits Plant Dictionary. *Scientific Data* 11:537. DOI: [10.1038/s41597-024-03368-z](https://doi.org/10.1038/s41597-024-03368-z)
+
+> Wenk EH, Cornwell WK, Fuchs A, Kar F, Monro AM, Sauquet H, Stephens RE, Falster DS (2024) APCalign: An R package workflow and app for aligning and updating flora names to the Australian Plant Census. *Australian Journal of Botany* 72(4):BT24014. DOI: [10.1071/BT24014](https://doi.org/10.1071/BT24014)
+
+**Related work**: the textual-extraction workflow (Coleman D, Gallagher RV, Falster DS, Sauquet H, Wenk E (2023) A workflow to create trait databases from collections of textual taxonomic descriptions. *Ecological Informatics* 78:102312. DOI: [10.1016/j.ecoinf.2023.102312](https://doi.org/10.1016/j.ecoinf.2023.102312)) and the gap-filled growth-form, life-history and woodiness dataset (Wenk EH, Coleman D, Gallagher RV, Falster DS (2024) A near-complete dataset of plant growth form, life history, and woodiness for all Australian plants. *Australian Journal of Botany* 72(4):BT23111. DOI: [10.1071/BT23111](https://doi.org/10.1071/BT23111)).
 
 ## Rebuilding AusTraits from source
 
@@ -49,7 +57,7 @@ To build the database follows these steps
 
 ***Install `traits.build`***
 
-The first step is to install a copy of [traits.build](https://github.com/traitecoevo/austraits.build/): 
+The first step is to install a copy of [traits.build](https://github.com/traitecoevo/traits.build/): 
 
 ```{r, eval=FALSE, echo=TRUE}
 remotes::install_github("traitecoevo/traits.build", quick = TRUE)
@@ -110,10 +118,27 @@ knowledge and governance hub — before filing.
 
 ## Acknowledgements
 
-**Funding**: This work was supported via the following investments:
+AusTraits is made possible by contributions from our partner organisations — the
+[University of New South Wales](https://www.unsw.edu.au/),
+[Western Sydney University](https://www.westernsydney.edu.au/),
+[Botanic Gardens of Sydney](https://www.botanicgardens.org.au/),
+[the University of Melbourne](https://www.unimelb.edu.au/),
+the [Atlas of Living Australia](https://www.ala.org.au/), and the Australian Government
+[Department of Climate Change, Energy, the Environment and Water](https://www.dcceew.gov.au) — and
+from our [advisory board, data contributors, and past partners](https://austraits.org/team/team-partners.html).
 
-- Investment (https://doi.org/10.47486/TD044, https:// doi.org/10.47486/DP720) from the Australian Research Data Commons (ARDC). The ARDC is funded by the National Collaborative Research Infrastructure Strategy (NCRIS).
-- Fellowship from the Australian Research Council to Falster (FT160100113), Gallagher (DE170100208) and Wright (FT100100910),
+AusTraits is a co-investment partnership with the
+[Australian Research Data Commons](https://ardc.edu.au/) (ARDC) through the Planet Research Data
+Commons ([DOI: 10.3565/nyk4-4r91](https://doi.org/10.3565/nyk4-4r91)). The ARDC is enabled by the
+Australian Government's [National Collaborative Research Infrastructure Strategy](https://www.education.gov.au/ncris)
+(NCRIS).
+
+This work received investment ([TD044](https://doi.org/10.47486/TD044),
+[DP720](https://doi.org/10.47486/DP720)) from the ARDC.
+
+**Funding**: AusTraits has also been supported by:
+
+- Fellowships from the Australian Research Council to Falster (FT160100113), Gallagher (DE170100208) and Wright (FT100100910),
 - A UNSW Research Infrastructure Grant to Falster, and
 - A grant from Macquarie University to Gallagher.
 
