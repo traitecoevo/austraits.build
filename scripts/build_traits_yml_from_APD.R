@@ -10,10 +10,24 @@ library(stringr)
 library(traits.build)
 
 
-path_APD <- "https://raw.githubusercontent.com/traitecoevo/APD/master"
-path_APD2 <- "https://raw.githubusercontent.com/traitecoevo/APD/master/data"
+# The APD release this build is pinned to. APD is a versioned, citable vocabulary
+# (Wenk et al. 2024, doi:10.1038/s41597-024-03368-z), so a build should record
+# which release it used. Bump this deliberately, and re-run, when APD releases.
+apd_version <- "2.1.0"
 
-trait_groups <- readr::read_csv(file.path(path_APD2, "APD_trait_hierarchy.csv"), show_col_types = FALSE) %>%
+# Read the *published* copies, not the APD repo's working tree.
+# raw.githubusercontent.com/.../master/ was doing two things badly at once: it
+# picked up whatever happened to be on master, which is not necessarily a release,
+# and it hard-coded where APD keeps its files inside its own repo -- so tidying
+# that repo broke this build. These URLs are APD's published interface and do not
+# move; the versioned path also means this build is reproducible.
+path_APD <- sprintf("https://traitecoevo.github.io/APD/release/%s", apd_version)
+
+# The trait hierarchy is an APD *input* table rather than a build product, so it is
+# not in the release snapshot. data/ is a stable location in that repo.
+path_APD_data <- "https://raw.githubusercontent.com/traitecoevo/APD/master/data"
+
+trait_groups <- readr::read_csv(file.path(path_APD_data, "APD_trait_hierarchy.csv"), show_col_types = FALSE) %>%
   dplyr::select(trait_groupings = label, hierarchy) %>%
   dplyr::filter(!is.na(hierarchy)) %>%
   dplyr::mutate(trait_group = stringr::str_replace_all(hierarchy, " \\<", ";")) %>%
