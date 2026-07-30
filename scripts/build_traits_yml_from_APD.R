@@ -13,7 +13,7 @@ library(traits.build)
 # The APD release this build is pinned to. APD is a versioned, citable vocabulary
 # (Wenk et al. 2024, doi:10.1038/s41597-024-03368-z), so a build should record
 # which release it used. Bump this deliberately, and re-run, when APD releases.
-apd_version <- "2.1.0"
+apd_version <- "2.1.2"
 
 # Read the *published* copies, not the APD repo's working tree.
 # raw.githubusercontent.com/.../master/ was doing two things badly at once: it
@@ -23,9 +23,13 @@ apd_version <- "2.1.0"
 # move; the versioned path also means this build is reproducible.
 path_APD <- sprintf("https://traitecoevo.github.io/APD/release/%s", apd_version)
 
-# The trait hierarchy is an APD *input* table rather than a build product, so it is
-# not in the release snapshot. data/ is a stable location in that repo.
-path_APD_data <- "https://raw.githubusercontent.com/traitecoevo/APD/master/data"
+# The trait hierarchy used to be the one table read from APD's repo rather than
+# its release: it is an *input* table, not a build product, so no snapshot carried
+# it. APD's `make release` snapshots it from 2.1.1 onwards, so it comes from the
+# same pinned release as everything else now and this build has no dependency on
+# any branch of that repo. (2.1.0 and earlier have no copy -- pinning back that
+# far means restoring the raw.githubusercontent.com path.)
+path_APD_data <- path_APD
 
 trait_groups <- readr::read_csv(file.path(path_APD_data, "APD_trait_hierarchy.csv"), show_col_types = FALSE) %>%
   dplyr::select(trait_groupings = label, hierarchy) %>%
