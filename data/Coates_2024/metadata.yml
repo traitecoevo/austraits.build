@@ -68,7 +68,9 @@ dataset:
     and recorded which pollinator species were visiting which plant species and the
     frequency of each interaction.
   original_file: in raw data folder
-  notes: none
+  notes: Claude AI (Anthropic) was used to select which of the three taxon-name columns
+    (InsectOrder, InsectGrouporFamily, Insectspecies) was the most precise name that
+    matched a term in the trait definition.
 identifiers: .na
 locations:
   1000m:
@@ -99,8 +101,21 @@ contexts:
 - context_property: count of floral visitors
   category: entity_context
   var_in: Individuals
+- context_property: species name of floral visitor or pollinator
+  category: entity_context
+  var_in: Insectspecies
+- context_property: floral visitor rank used
+  category: entity_context
+  var_in: PollinationVectorSourceColumn
+  values:
+  - find: InsectOrder
+    value: species
+  - find: InsectGrouporFamily
+    value: group or family
+  - find: Insectspecies
+    value: order
 traits:
-- var_in: InsectGrouporFamily
+- var_in: PollinationVectorSourceTerm
   unit_in: .na.character
   trait_name: pollination_vector_known
   entity_type: individual
@@ -133,7 +148,74 @@ traits:
     we identified insects to the highest taxonomic resolution, in most case species,
     with morphospecies identifiers assigned when necessary. We deposited all 1422
     insect specimens into the Australian National Insect Collection.
-substitutions: .na
+substitutions:
+- find: apidae
+  replace: bee
+  trait_name: pollination_vector_known
+- find: apis mellifera
+  replace: honeybee
+  trait_name: pollination_vector_known
+- find: bombyliidae
+  replace: bee_fly
+  trait_name: pollination_vector_known
+- find: calliphoridae
+  replace: carrion_fly
+  trait_name: pollination_vector_known
+- find: chrysididae
+  replace: wasp
+  trait_name: pollination_vector_known
+- find: coleoptera
+  replace: beetle
+  trait_name: pollination_vector_known
+- find: colletidae
+  replace: bee
+  trait_name: pollination_vector_known
+- find: diptera
+  replace: fly
+  trait_name: pollination_vector_known
+- find: erebidae
+  replace: moth
+  trait_name: pollination_vector_known
+- find: formicidae
+  replace: ant
+  trait_name: pollination_vector_known
+- find: geometridae
+  replace: moth
+  trait_name: pollination_vector_known
+- find: halictidae
+  replace: sweat_bee
+  trait_name: pollination_vector_known
+- find: ichneumonidae
+  replace: wasp
+  trait_name: pollination_vector_known
+- find: lycaenidae
+  replace: butterfly
+  trait_name: pollination_vector_known
+- find: nymphalidae
+  replace: butterfly
+  trait_name: pollination_vector_known
+- find: odanata
+  replace: .na
+  trait_name: pollination_vector_known
+- find: papilionidae
+  replace: butterfly
+  trait_name: pollination_vector_known
+- find: pieridae
+  replace: butterfly
+  trait_name: pollination_vector_known
+- find: syrphidae
+  replace: hoverfly
+  trait_name: pollination_vector_known
+- find: vespidae
+  replace: wasp
+  trait_name: pollination_vector_known
 taxonomic_updates: .na
 exclude_observations: .na
-questions: .na
+questions:
+  question1: When matching taxonomy to our list of allowed values (at various ranks),
+    we noted 3 possible errors in your data. You listed Colletidae as in the order
+    Hymenptera and Scarabaeidae as in the order Diptera, but I believe these should
+    both be Coleoptera. Also, `Chrysadidae sp.` is listed for 126 rows of data, but
+    this name is not turning up in my searches. Is this possibly meant to be `Chrysididae`,
+    the cuckoo wasps? (https://www.inaturalist.org/taxa/126149-Chrysididae). As a
+    starting point, I've made the three corrected alignments proposed here.
