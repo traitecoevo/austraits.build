@@ -25,8 +25,9 @@ dataset:
     data |>
       mutate(
         taxon_name = paste0(stringr::str_to_title(genus), " ", species, " subsp. ", subspecies),
-        location_name = paste0("site_at_", latitude, "_deg_lat_and_", longitude, "_deg_lon")
-      )
+        location_name = ifelse(!is.na(latitude), paste0("site_at_", latitude, "_deg_lat_and_", longitude, "_deg_lon"), NA)
+      ) |>
+      generate_observation_numbers(taxon_name, trait)
   '
   collection_date: 2026/2026
   taxon_name: taxon_name
@@ -44,45 +45,53 @@ locations:
   site_at_-33.90738_deg_lat_and_149.35955_deg_lon:
     latitude (deg): -33.90738
     longitude (deg): 149.35955
+    description: unknown
   site_at_-33.91032_deg_lat_and_149.35488_deg_lon:
     latitude (deg): -33.91032
     longitude (deg): 149.35488
+    description: unknown
   site_at_-33.91036_deg_lat_and_149.35746_deg_lon:
     latitude (deg): -33.91036
     longitude (deg): 149.35746
+    description: unknown
   site_at_-33.91055_deg_lat_and_149.35734_deg_lon:
     latitude (deg): -33.91055
     longitude (deg): 149.35734
+    description: unknown
   site_at_-33.91059_deg_lat_and_149.35743_deg_lon:
     latitude (deg): -33.91059
     longitude (deg): 149.35743
+    description: unknown
 contexts:
-- context_property: pollinator species
+- context_property: floral visitor or pollinator
   category: entity_context
   var_in: pollinator_species
+- context_property: replicate observations
+  category: temporal_context
+  var_in: observation_number
 traits:
 - var_in: flower_visitor
   unit_in: .na
   trait_name: flower_visitor
   entity_type: individual
-  value_type: expert_score
-  basis_of_value: field
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: pollination_vector_possible
   unit_in: .na
   trait_name: pollination_vector_possible
   entity_type: individual
-  value_type: expert_score
-  basis_of_value: field
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: pollination_syndrome
   unit_in: .na
   trait_name: pollination_syndrome
   entity_type: species
-  value_type: expert_score
-  basis_of_value: field
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Based on floral morphology
 substitutions: .na

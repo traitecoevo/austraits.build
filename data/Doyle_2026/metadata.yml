@@ -20,8 +20,9 @@ dataset:
     data |>
       mutate(
         taxon_name = paste0(stringr::str_to_title(genus), " ", species),
-        location_name = paste0("site_at_", latitude, "_deg_lat_and_", longitude, "_deg_lon")
-      )
+        location_name = ifelse(!is.na(latitude), paste0("site_at_", latitude, "_deg_lat_and_", longitude, "_deg_lon"), NA)
+      ) |>
+    generate_observation_numbers(species,trait)
   '
   collection_date: 2026/2026
   taxon_name: taxon_name
@@ -29,43 +30,47 @@ dataset:
   value: trait_value
   location_name: location_name
   description: unknown
-  basis_of_record: field
+  basis_of_record: captive_cultivated
   life_stage: adult
   sampling_strategy: unknown
   original_file: in raw data folder
   notes: none
 identifiers: .na
 locations:
-  site_at_-35.273103°_deg_lat_and_149.108710°_deg_lon:
+  site_at_-35.273103_deg_lat_and_149.10871_deg_lon:
     latitude (deg): -35.273103
     longitude (deg): 149.10871
+    description: unknown
 contexts:
-- context_property: pollinator species
+- context_property: floral visitor or pollinator
   category: entity_context
   var_in: pollinator_species
+- context_property: replicate observations
+  category: temporal_context
+  var_in: observation_number
 traits:
 - var_in: flower_visitor
   unit_in: .na
   trait_name: flower_visitor
   entity_type: individual
-  value_type: expert_score
-  basis_of_value: field
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Ex situ potted living collection.
 - var_in: pollination_vector_possible
   unit_in: .na
   trait_name: pollination_vector_possible
   entity_type: individual
-  value_type: expert_score
-  basis_of_value: field
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Ex situ potted living collection.
 - var_in: pollination_syndrome
   unit_in: .na
   trait_name: pollination_syndrome
   entity_type: species
-  value_type: expert_score
-  basis_of_value: field
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: Based on floral morphology
 substitutions: .na
