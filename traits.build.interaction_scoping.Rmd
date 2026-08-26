@@ -1,0 +1,25 @@
+---
+title: "Interaction database"
+output: html_document
+date: "2026-08-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Need version of traits.build that can be used for interaction data
+
+This is for a database that focuses on the interactions between taxa, in particular between plants and their animal pollinators. The traits.build structure is perfect for this, except that we need to be able to capture two taxon names for each observation. The traits will be things like `pollination_interaction` or `herbivory_interaction` with trait values, for example `flower_visitor`, `possible_pollen_vector`, and `known_pollen_vector`. There will be locations, contexts, dataset metadata that is the equivalent to traits.build.
+
+Right now, the trait will be `flower_visitor` and trait values will be broad pollinator groupings, but there is no capacity to list infinite pollinators, at various taxon ranks. There is also no capacity to update those names as they change.
+
+## This requires a few core changes
+
+- a second taxon field in the `traits` table, which would be called `taxon_name2`
+- a second taxon reference file stored in the `config/` folder
+- a duplication of the taxon aligning workflow
+- an additional section in the `metadata` file that would be for taxonomic updates for `taxon_name2`; presumably `taxonomic_updates2`
+- an additional pair of tables in the database `taxa2` and `taxonomic_updates2`; or alternatively need to add a column to the existing tables specifying if a taxon_name is for `taxa1` or `taxa2`
+
+It seems those are the only changes needed. I think you'd want to call them `taxon_name` and `taxon_name2` so that the workflow could be used with any pairs of taxon groups for different purposes.
