@@ -9,7 +9,7 @@ contributors:
   data_collectors:
   - last_name: Davis
     given_name: Belinda
-    ORCID: unknown
+    ORCID: 0009-0009-0128-0028
     affiliation: Biodiversity and Conservation Science, Department of Biodiversity,
       Conservation and Attractions, WA, Australia
   dataset_curators: Elizabeth Wenk
@@ -21,9 +21,10 @@ dataset:
       cols = c(`pollination type1`,`pollination type2`), 
       names_to = "column_original", 
       values_to = "trait_name", 
-      values_drop_na = TRUE)
+      values_drop_na = TRUE) |>
+      generate_observation_numbers(`plant species`, trait_name)
   '
-  collection_date: xx/xx
+  collection_date: 2026
   source_id: source_ID
   taxon_name: plant species
   trait_name: trait_name
@@ -32,7 +33,8 @@ dataset:
   description: unknown
   basis_of_record: field
   life_stage: adult
-  sampling_strategy: unknown
+  sampling_strategy: Dataset is an informal database merging data from disparate published
+    and unpublished studies.
   original_file: in raw data folder
   notes: none
 identifiers: .na
@@ -41,13 +43,16 @@ contexts:
 - context_property: method_details
   category: method_context
   var_in: method_details
+- context_property: replicate observations
+  category: temporal_context
+  var_in: observation_number
 traits:
 - var_in: pollination_vector_known
   unit_in: .na
   trait_name: pollination_vector_known
   entity_type: species
-  value_type: expert_score
-  basis_of_value: field
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: See method context for details on study type. Dataset is an informal database
     merging data from disparate published and unpublished studies.
@@ -55,8 +60,8 @@ traits:
   unit_in: .na
   trait_name: pollination_vector_possible
   entity_type: species
-  value_type: expert_score
-  basis_of_value: field
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: See method context for details on study type. Dataset is an informal database
     merging data from disparate published and unpublished studies.
@@ -64,8 +69,8 @@ traits:
   unit_in: .na
   trait_name: pollination_syndrome
   entity_type: species
-  value_type: expert_score
-  basis_of_value: field
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: See method context for details on study type. Dataset is an informal database
     merging data from disparate published and unpublished studies.
@@ -73,12 +78,72 @@ traits:
   unit_in: .na
   trait_name: flower_visitor
   entity_type: species
-  value_type: expert_score
-  basis_of_value: field
+  value_type: mode
+  basis_of_value: expert_score
   replicates: .na
   methods: See method context for details on study type. Dataset is an informal database
     merging data from disparate published and unpublished studies.
-substitutions: .na
-taxonomic_updates: .na
+substitutions:
+- trait_name: pollination_vector_known
+  find: flower_wasp
+  replace: wasp
+- trait_name: flower_visitor
+  find: flower_wasp
+  replace: wasp
+- trait_name: pollination_syndrome
+  find: flower_wasp
+  replace: wasp
+- trait_name: pollination_vector_possible
+  find: flower_wasp
+  replace: wasp
+- trait_name: pollination_syndrome
+  find: bee_fly
+  replace: bee
+taxonomic_updates:
+- find: Caladenia flava subsp flava
+  replace: Caladenia flava subsp. flava
+  reason: Exact match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-12)
+  taxonomic_resolution: subspecies
+- find: Caladenia flava subsp maculata
+  replace: Caladenia flava subsp. maculata
+  reason: Exact match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-12)
+  taxonomic_resolution: subspecies
+- find: Caladenia longicauda subsp eminens
+  replace: Caladenia longicauda subsp. eminens
+  reason: Exact match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-12)
+  taxonomic_resolution: subspecies
+- find: Caladenia longicauda subsp longicauda
+  replace: Caladenia longicauda subsp. longicauda
+  reason: Exact match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-12)
+  taxonomic_resolution: subspecies
+- find: Caladenia thinnicola
+  replace: Caladenia thinicola
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-27)
+  taxonomic_resolution: species
+- find: Stylidium amoena
+  replace: Stylidium amoenum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-27)
+  taxonomic_resolution: species
 exclude_observations: .na
-questions: .na
+questions:
+  question1: Do you have a range of dates across when these data were collected? This
+    can be at the scale of the year, month, or day.
+  question2: Can you provide a 1-sentence description of the motivation for this study
+    (for the `description` field)?
+  question3: If any of these data are linked to specific locations, can you specify
+    where the data were collected? This can be a specific latitude/longitude or a
+    place name that I can match to coordinates. If they apply generically across the
+    species range, then no location is required. (That is how I've mapped the information
+    for now.)
+  question4: Are their any publications you would like to link to this dataset - or
+    let me know if you'd like to give the dataset a different title.
+  question5: Also, just letting you know that while the official trait values for
+    the pollinator/floral visitor traits are relatively broad, we are also retaining
+    the actual pollinator name as an `entity_context`, so future data users have access
+    to this information.
