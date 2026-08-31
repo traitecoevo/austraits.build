@@ -440,7 +440,6 @@ check_new_taxa_accepted <- function(database, current_study, resources) {
   
 }
 
-
 #' Generate sequential observation numbers within groups
 #'
 #' A common processing pattern when a dataset does not already indicate which
