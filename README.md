@@ -20,7 +20,7 @@ AusTraits is continually evolving, as new datasets are contributed. As such, the
 
 Those interested in simply using data from AusTraits, should visit download the compiled resource from the versioned releases archived on Zenodo at DOI: [10.5281/zenodo.3568417](https://doi.org/10.5281/zenodo.3568417).
 
-Users will want to read up on the [database structure, described in the `traits.build` manual](https://traitecoevo.github.io/traits.build-book/database_structure.html).
+Users will want to read up on the [database structure, described in the `traits.build` manual](https://traitecoevo.github.io/traits.build-book/content/database_structure.html).
 
 Definitions for the traits are described the AusTraits Plant Dictionary (APD), at
 
