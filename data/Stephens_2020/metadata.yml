@@ -4,8 +4,7 @@ source:
     bibtype: Unpublished
     year: 2020
     author: Ruby Stephens, Rachael Gallagher and Herve Sauquet
-    title: 'Unpublished: Plant trait data collected in Ku-Ring-Gai Chase National Park, University of New
-      South Wales'
+    title: 'Unpublished: Plant trait data collected in Ku-Ring-Gai Chase National Park, Macquarie University'
 contributors:
   data_collectors:
   - last_name: Stephens
@@ -18,7 +17,12 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data |>
-      mutate(Tube = ifelse(Tube == "present",1,0))
+      separate_wider_delim(No_flowers_perinflor, too_few = "align_end", names_sep = "_", delim = "-") |>
+      mutate(
+        No_flowers_perinflor_3 = ifelse(is.na(No_flowers_perinflor_1), No_flowers_perinflor_2, NA),
+        No_flowers_perinflor_2 = ifelse(is.na(No_flowers_perinflor_3), No_flowers_perinflor_2, NA),
+        No_flowers_perinflor_1 = ifelse(No_flowers_perinflor_1 == 0, NA, No_flowers_perinflor_1)
+      )
   '
   collection_date: Timestamp
   taxon_name: Species
@@ -39,8 +43,8 @@ locations:
       Rd, Ku-ring-gai Chase National Park, NSW Australia
     vegetation description: Shrubby low woodland with Banksia serrata, Corymbia gummifera
       and stringybark Eucalypt dominated canopy
-    vegetation formation: Dry Sclerophyll Forests (Shrubby sub-formation)
-    vegetation class: Sydney Coastal Dry Sclerophyll Forests
+    vegetation formation (Keith): Dry Sclerophyll Forests (Shrubby sub-formation)
+    vegetation class (Keith): Sydney Coastal Dry Sclerophyll Forests
     plant community type: '1783: Sydney North exposed sandstone woodland'
     soil type: White-grey sand with organic matter
     landform: Low rise
@@ -127,7 +131,7 @@ contexts:
   category: method_context
   var_in: Observer
 - context_property: plant height (m)
-  category: treatment_context
+  category: entity_context
   var_in: Height_m
 traits:
 - var_in: Habit
@@ -146,11 +150,27 @@ traits:
   basis_of_value: measurement
   replicates: 1
   methods: Inflorescence size (cm) [length of longest axis, regardless of inflorescence type and presentation; bracts included]
-- var_in: No_flowers_perinflor
-  unit_in: '{count}'
+- var_in: No_flowers_perinflor_1
+  unit_in: '{count}/{count}'
   trait_name: flowers_per_inflorescence
   entity_type: individual
-  value_type: raw
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: 1
+  methods: Number of anthetic flowers per inflorescence
+- var_in: No_flowers_perinflor_2
+  unit_in: '{count}/{count}'
+  trait_name: flowers_per_inflorescence
+  entity_type: individual
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: 1
+  methods: Number of anthetic flowers per inflorescence
+- var_in: No_flowers_perinflor_3
+  unit_in: '{count}/{count}'
+  trait_name: flowers_per_inflorescence
+  entity_type: individual
+  value_type: mean
   basis_of_value: measurement
   replicates: 1
   methods: Number of anthetic flowers per inflorescence
@@ -194,9 +214,9 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Floral symmetry
-- var_in: Tube
-  unit_in: '{dimensionless}'
-  trait_name: flower_perianth_fusion
+- var_in: flower_perianth_fusion_categorical
+  unit_in: .na
+  trait_name: flower_perianth_fusion_categorical
   entity_type: species
   value_type: mean
   basis_of_value: measurement
@@ -224,6 +244,12 @@ substitutions:
 - trait_name: inflorescence_length
   find: 1-12
   replace: '12'
+- trait_name: flower_perianth_fusion_categorical
+  find: present
+  replace: perianth_tubular
+- trait_name: flower_perianth_fusion_categorical
+  find: absent
+  replace: perianth_parts_unfused
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na

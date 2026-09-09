@@ -2,129 +2,102 @@ source:
   primary:
     key: Stephens_2022
     bibtype: Article
-    year: '2023'
-    author: Ruby E. Stephens and Rachael V. Gallagher and Lily Dun and Will Cornwell
-      and Hervé Sauquet
-    journal: New Phytologist
-    title: Insect pollination for most of angiosperm evolutionary history
-    volume: '240'
-    number: '2'
-    pages: 880-891
-    doi: 10.1111/nph.18993
-    issn: 1469-8137
+    year: '2022'
+    author: Ruby E. Stephens and Hervé Sauquet and Greg R. Guerin and Mingkai Jiang
+      and Daniel Falster and Rachael V. Gallagher
+    journal: Journal of Biogeography
+    title: Climate shapes community flowering periods across biomes
+    volume: '49'
+    number: '7'
+    pages: 1205--1218
+    doi: 10.1111/jbi.14375
+    issn: 1365-2699
 contributors:
   data_collectors:
   - last_name: Stephens
     given_name: Ruby
     ORCID: 0000-0002-3767-2690
-    affiliation: Department of Biological Sciences, Macquarie University, Australia
+    affiliation: School of Natural Sciences, Macquarie University, Australia
     additional_role: contact
-  - last_name: Lily
-    given_name: Dun
-    ORCID: 0000-0002-0712-5143
-    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
-      and Environmental Sciences, UNSW Sydney, Australia
-  assistants: none
   dataset_curators: Elizabeth Wenk
 dataset:
-  data_is_long_format: no
+  data_is_long_format: yes
   custom_R_code: '
     data |>
-      mutate(
-        across(c("pollination", "pollination_reward"), ~ str_replace_all(.x, " and ", " ")),
-        across(c("pollination", "pollination_reward"), ~ str_replace_all(.x, ", ", " ")),
-        pollination_reward = str_replace_all(pollination_reward, " exudate", "_exudate"),
-        pollination_system = ifelse(syndrome_or_system == "system", pollination, NA),
-        pollination_syndrome = ifelse(syndrome_or_system == "syndrome", pollination, NA)
-      )
+      generate_observation_numbers(taxon_name, region)
   '
-  collection_date: 2021/2021
+  collection_date: 2026/2026
+  source_id: dataset_id
   taxon_name: taxon_name
-  description: Compilation of pollination syndrome/pollination system from the literature, including data on pollinator reward when available.
-  basis_of_record: literature
+  trait_name: trait_name
+  value: value
+  location_name: region
+  description: Dataset of flowering times for Australian angiosperms.
+  basis_of_record: field
   life_stage: adult
-  sampling_strategy: Literature survey.
-  measurement_remarks: reference
-  original_file: pollination_macroevolution_datatopublish_20221125.csv in raw data
-    folder
+  sampling_strategy: Manual scoring of species' flowering time for Australian angiosperm
+    species found in AusPlots sites that were missing flowering_time data in the AusTraits
+    v2.1 database. Included here are 95 species that were not in original submission
+    to AusTraits in 2021
+  measurement_remarks: URL
+  original_file: in raw data folder
   notes: none
 identifiers: .na
-locations: .na
+locations:
+  Aus:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    state: .na
+  NSW:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    state: NSW
+  NT:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    state: NT
+  SA:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    state: SA
+  VIC:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    state: VIC
+  WA:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    state: WA
 contexts:
-- context_property: Wind pollination explicitly tested
+- context_property: trait value reliability
   category: method_context
-  var_in: wind_pollination_explicitly_tested
+  var_in: Reliable
   values:
-  - value: 'yes'
-    description: Wind pollination explicitly tested
-  - value: 'no'
-    description: Wind pollination not explicitly tested
-- context_property: Confidence in pollination syndrome or system score
-  category: method_context
-  var_in: confidence_score
+  - find: '1'
+    value: reliable trait value
+  - find: '0'
+    value: unreliable trait value
+- context_property: replicate observations
+  category: temporal_context
+  var_in: observation_number
 traits:
-- var_in: pollination_system
+- var_in: flowering_time
   unit_in: .na
-  trait_name: flower_pollinator_possible
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
+  trait_name: flowering_time
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
   replicates: .na
-  methods: Literature survey.
-- var_in: pollination_syndrome
-  unit_in: .na
-  trait_name: pollination_syndrome
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: Literature survey.
-- var_in: pollination_reward
-  unit_in: .na
-  trait_name: flower_pollinator_reward
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: Literature survey.
-- var_in: nectar
-  unit_in: .na
-  trait_name: flower_nectar_production
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: Literature survey.
-- var_in: scent
-  unit_in: .na
-  trait_name: flower_scent_production
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: Literature survey.
-substitutions:
-- trait_name: flower_nectar_production
-  find: 'yes'
-  replace: nectar_produced
-- trait_name: flower_nectar_production
-  find: 'no'
-  replace: nectar_absent
-- trait_name: flower_scent_production
-  find: 'yes'
-  replace: scent_produced
-- trait_name: flower_scent_production
-  find: 'no'
-  replace: scent_absent
-- trait_name: flower_pollinator_possible
-  find: gall midge
-  replace: midge
-- trait_name: flower_pollinator_possible
-  find: small mammal insect
-  replace: mammal insect
-- trait_name: flower_pollinator_possible
-  find: wasp cricket cockroach
-  replace: wasp insect
+  methods: Flowering time scored as whether a species has been recorded flowering
+    in each month. Y = flowering in that month, N = not flowering in that month. Order
+    of values indicates month, per AusTraits plant trait dictionary.
+substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
 questions: .na
