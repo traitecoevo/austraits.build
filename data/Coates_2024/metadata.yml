@@ -25,8 +25,11 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
-  collection_date: date
+  custom_R_code: '
+    data |>
+      mutate(date_standardised = util_parse_collection_date(date_standardised))
+  '
+  collection_date: date_standardised
   taxon_name: Plant
   location_name: site
   description: We examined pollination interaction networks across an elevational
@@ -101,7 +104,7 @@ contexts:
 - context_property: count of floral visitors
   category: entity_context
   var_in: Individuals
-- context_property: floral visitor or pollinator
+- context_property: flower visitor taxon name
   category: entity_context
   var_in: Insectspecies
 - context_property: floral visitor rank used
@@ -150,7 +153,7 @@ traits:
     insect specimens into the Australian National Insect Collection.
 substitutions:
 - find: apidae
-  replace: bee
+  replace: allodapini
   trait_name: pollination_vector_known
 - find: apis mellifera
   replace: honeybee
@@ -168,7 +171,7 @@ substitutions:
   replace: beetle
   trait_name: pollination_vector_known
 - find: colletidae
-  replace: bee
+  replace: colletidae
   trait_name: pollination_vector_known
 - find: diptera
   replace: fly
@@ -186,7 +189,7 @@ substitutions:
   replace: sweat_bee
   trait_name: pollination_vector_known
 - find: ichneumonidae
-  replace: wasp
+  replace: ichneumon_wasp
   trait_name: pollination_vector_known
 - find: lycaenidae
   replace: butterfly

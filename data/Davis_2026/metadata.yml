@@ -5,6 +5,20 @@ source:
     year: 2026
     author: Belinda Davis
     title: 'Unpublished dataset: Pollinators of orchids in Western Australia.'
+  secondary_01:
+    key: Phillips_2015
+    bibtype: Article
+    year: 2015
+    author: R. D. Phillips and R. Peakall and B. A. Retter and K. Montgomery and
+      M. H. M. Menz and B. J. Davis and C. Hayes and G. R. Brown and N. D. Swarts
+      and K. W. Dixon
+    title: Pollinator rarity as a threat to a plant with a specialised pollination
+      system
+    journal: Botanical Journal of the Linnean Society
+    volume: 179
+    number: 3
+    pages: 511--525
+    doi: 10.1111/boj.12336
 contributors:
   data_collectors:
   - last_name: Davis
@@ -12,33 +26,120 @@ contributors:
     ORCID: 0009-0009-0128-0028
     affiliation: Biodiversity and Conservation Science, Department of Biodiversity,
       Conservation and Attractions, WA, Australia
+    additional_role: contact
+  - last_name: Phillips
+    given_name: Ryan
+    ORCID: 0000-0002-3777-9260
+    affiliation: Department of Ecological, Plant and Animal Sciences, La Trobe University,
+      Melbourne, VIC, Australia
+  - last_name: Weinstein
+    given_name: Alyssa
+    ORCID: .na.character
+    affiliation: Centre for Australian National Biodiversity Research (a joint venture
+      between Parks Australia and CSIRO), Canberra, ACT, Australia
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
   custom_R_code: '
     data |>
       pivot_longer(
-      cols = c(`pollination type1`,`pollination type2`), 
-      names_to = "column_original", 
-      values_to = "trait_name", 
+      cols = c(`pollination type1`,`pollination type2`),
+      names_to = "column_original",
+      values_to = "trait_name",
       values_drop_na = TRUE) |>
       generate_observation_numbers(`plant species`, trait_name)
   '
-  collection_date: 2026
-  source_id: source_ID
+  collection_date: observation date range
+  source_id: source_id
   taxon_name: plant species
   trait_name: trait_name
   value: pollinator_species_AusTraits
-  location_name: unknown
-  description: unknown
+  location_name: Location name
+  description: Combination of fieldwork and incidental observations of pollinators in southwest Western Australia, predominately of orchids.
   basis_of_record: field
   life_stage: adult
   sampling_strategy: Dataset is an informal database merging data from disparate published
     and unpublished studies.
+  measurement_remarks: source
   original_file: in raw data folder
-  notes: none
+  notes: .na
 identifiers: .na
-locations: .na
+locations:
+  Augusta, WA:
+    latitude (deg): -34.311944
+    longitude (deg): 115.158889
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
+  Boxhill Ongerup Rd, WA:
+    latitude (deg): -34.163611
+    longitude (deg): 118.616528
+    coordinate_notes: location given as midpoint of road connecting Boxwood Hill and Ongerup, WA
+    state: WA
+  Boyagin, WA:
+    latitude (deg): -32.469167
+    longitude (deg): 116.881389
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
+  Busselton, WA:
+    latitude (deg): -33.647778
+    longitude (deg): 115.345833
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
+  Collie, WA:
+    latitude (deg): -33.363056
+    longitude (deg): 116.156111
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
+  Enneabba, WA:
+    latitude (deg): -29.819167
+    longitude (deg): 115.269167
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
+  Gracetown, WA:
+    latitude (deg): -33.86726
+    longitude (deg): 114.98587
+    state: WA
+  Hopetoun, WA:
+    latitude (deg): -33.948056
+    longitude (deg): 120.126111
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
+  Kalbarri, WA:
+    latitude (deg): -27.716667
+    longitude (deg): 114.166667
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
+  Kings Park Perth, WA:
+    latitude (deg): -31.962222
+    longitude (deg): 115.831667
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
+  Koondoola Regional Park, Perth, WA:
+    latitude (deg): -31.841944
+    longitude (deg): 115.858889
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
+  Koondoola, Warwick, Perth, WA:
+    latitude (deg): -31.840417
+    longitude (deg): 115.833889
+    notes: coordinates given as midpoint of the Koondoola and Warwick suburb centroids
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
+  Perth, WA:
+    latitude (deg): -31.9505
+    longitude (deg): 115.8605
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
+  Pinjarra, WA:
+    latitude (deg): -32.63
+    longitude (deg): 115.871111
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
+  York, WA:
+    latitude (deg): -31.888333
+    longitude (deg): 116.768611
+    coordinate_notes: coordinates approximate to protect threatened species
+    state: WA
 contexts:
 - context_property: method_details
   category: method_context
@@ -46,11 +147,14 @@ contexts:
 - context_property: replicate observations
   category: temporal_context
   var_in: observation_number
+- context_property: flower visitor taxon name
+  category: entity_context
+  var_in: pollinator species
 traits:
 - var_in: pollination_vector_known
   unit_in: .na
   trait_name: pollination_vector_known
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -59,7 +163,7 @@ traits:
 - var_in: pollination_vector_possible
   unit_in: .na
   trait_name: pollination_vector_possible
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -68,7 +172,7 @@ traits:
 - var_in: pollination_syndrome
   unit_in: .na
   trait_name: pollination_syndrome
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -77,7 +181,7 @@ traits:
 - var_in: flower_visitor
   unit_in: .na
   trait_name: flower_visitor
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
@@ -97,7 +201,7 @@ substitutions:
   find: flower_wasp
   replace: wasp
 - trait_name: pollination_syndrome
-  find: bee_fly
+  find: bombyliidae
   replace: bee
 taxonomic_updates:
 - find: Caladenia flava subsp flava
@@ -131,19 +235,4 @@ taxonomic_updates:
     and filler words are removed (2026-08-27)
   taxonomic_resolution: species
 exclude_observations: .na
-questions:
-  question1: Do you have a range of dates across when these data were collected? This
-    can be at the scale of the year, month, or day.
-  question2: Can you provide a 1-sentence description of the motivation for this study
-    (for the `description` field)?
-  question3: If any of these data are linked to specific locations, can you specify
-    where the data were collected? This can be a specific latitude/longitude or a
-    place name that I can match to coordinates. If they apply generically across the
-    species range, then no location is required. (That is how I've mapped the information
-    for now.)
-  question4: Are their any publications you would like to link to this dataset - or
-    let me know if you'd like to give the dataset a different title.
-  question5: Also, just letting you know that while the official trait values for
-    the pollinator/floral visitor traits are relatively broad, we are also retaining
-    the actual pollinator name as an `entity_context`, so future data users have access
-    to this information.
+questions: .na

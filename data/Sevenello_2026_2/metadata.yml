@@ -47,7 +47,8 @@ dataset:
   data_is_long_format: yes
   custom_R_code: '
     data |>
-      generate_observation_numbers(`Pollinator trait`, taxon_name)
+      generate_observation_numbers(`Pollinator trait`, taxon_name) |>
+      mutate(collection_date = util_parse_collection_date(collection_date))
   '
   collection_date: collection_date
   taxon_name: taxon_name
@@ -128,6 +129,9 @@ contexts:
 - context_property: replicate observations
   category: temporal_context
   var_in: observation_number
+- context_property: flower visitor taxon name
+  category: entity_context
+  var_in: Species
 traits:
 - var_in: pollination_vector_possible
   unit_in: .na
