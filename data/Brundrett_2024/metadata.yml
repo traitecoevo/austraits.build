@@ -1,0 +1,2333 @@
+source:
+  primary:
+    key: Brundrett_2024
+    bibtype: Article
+    year: '2024'
+    author: Mark C. Brundrett and Philip G. Ladd and Greg J. Keighery
+    journal: Australian Journal of Botany
+    title: Pollination strategies are exceptionally complex in southwestern Australia
+      - a globally significant ancient biodiversity hotspot
+    volume: '72'
+    number: '2'
+    doi: 10.1071/bt23007
+    issn: 1444-9862
+    editor: Dick Williams
+  secondary:
+    key: Brundrett_2021
+    bibtype: Article
+    year: '2021'
+    author: Mark C. Brundrett
+    journal: Journal of The Royal Society of Western Australia
+    title: 'One Biodiversity Hotspot to Rule Them All: Southwestern Australia—an Extraordinary
+      Evolutionary Centre for Plant Functional and Taxonomic Diversity'
+    volume: '104'
+    doi: 10.70880/001c.129578
+    issn: 0035-922X
+contributors:
+  data_collectors:
+  - last_name: Brundrett
+    given_name: Mark
+    ORCID: 0000-0002-2501-9037
+    affiliation: School of Biological Sciences, The University of Western Australia
+  - last_name: Ladd
+    given_name: Philip
+    ORCID: 0000-0002-7730-9685
+    affiliation: Environmental and Conservation Sciences, Murdoch University
+  - last_name: Keighery
+    given_name: Greg
+    ORCID: 0000-0001-5226-0363
+    affiliation: Department of Biodiversity, Conservation and Attractions, WA, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data |>
+      generate_observation_numbers(SPECIES_NAME) |>
+    dplyr::mutate(
+      post_fire_flowering = trimws(paste(
+        dplyr::coalesce(fire_cued_buds, ""),
+        dplyr::coalesce(post_fire_flowering, "")
+      )) %>% dplyr::na_if(""),
+      Breeding = trimws(paste(
+        dplyr::coalesce(Breeding, ""),
+        dplyr::case_when(Dioecy == "selfing" ~ "autogamy", TRUE ~ "")
+      )) %>% dplyr::na_if(""),
+      Dioecy = dplyr::na_if(Dioecy, "selfing"),
+      dispersal_appendage = trimws(paste(
+        dplyr::coalesce(dispersal_appendage, ""),
+        dplyr::coalesce(
+          dplyr::case_when(
+            Fruit_morphology == "winged, orange" ~ "wings",
+            Fruit_morphology %in% c("large wings", "no wing", "thin wing", "winged", "winged or not") ~ Fruit_morphology,
+            TRUE ~ NA_character_
+          ),
+          ""
+        )
+      )) %>% dplyr::na_if(""),
+      Fruit_morphology = dplyr::case_when(
+        Fruit_morphology == "winged, orange" ~ "orange",
+        Fruit_morphology %in% c("large wings", "no wing", "thin wing", "winged", "winged or not") ~ NA_character_,
+        TRUE ~ Fruit_morphology
+      )
+    )
+  '
+  collection_date: '2024'
+  taxon_name: SPECIES_NAME
+  location_name: .na
+  description: unknown
+  basis_of_record: unknown
+  life_stage: unknown
+  sampling_strategy: unknown
+  original_file: in raw data folder, significantly modified from version online linked
+    to 2024 paper
+  notes: As the original compilation is build from many sources, there is likely to
+    be some duplication in values reported here. We're accepting this, as the dataset
+    also has many new values and the values are all being mapped in as species-level
+    information. context_property pollen presenter type entity_context pollen_presentation_type
+    context_property flower sex entity_context plant_sex
+identifiers: .na
+locations: .na
+contexts:
+- context_property: replicate observations
+  category: temporal_context
+  var_in: observation_number
+- context_property: plant sex
+  category: entity_context
+  var_in: plant_sex
+- context_property: pollen_presentation_type
+  category: entity_context
+  var_in: pollen_presentation_type
+- context_property: count of bee records
+  category: method_context
+  var_in: Pollinators_Bee_Records
+- context_property: count of bee species represented by records
+  category: method_context
+  var_in: Pollinators_Bee_Species
+- context_property: count of bird records
+  category: method_context
+  var_in: Pollinators_Bird_Records
+- context_property: consistency in pollinator across records
+  category: method_context
+  var_in: Polllination_Consistency
+  values:
+  - find: 'y'
+    value: 'yes'
+    description: all sources record same pollinators
+  - find: 'n'
+    value: 'no'
+    description: different sources record different pollinators
+  - find: biased
+    value: biased
+    description: pollinator compilations are biased
+traits:
+- var_in: pollination_vector_possible
+  unit_in: .na
+  trait_name: pollination_vector_possible
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: post_pollination_colour_change_PPCC
+  unit_in: .na
+  trait_name: post_pollination_colour_change
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: Dioecy
+  unit_in: .na
+  trait_name: sex_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: Flower_Colour
+  unit_in: .na
+  trait_name: flower_colour
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: Bud_width
+  unit_in: mm
+  trait_name: bud_width
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: Corolla_length
+  unit_in: mm
+  trait_name: flower_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: Corolla_length_male
+  unit_in: mm
+  trait_name: flower_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+  plant_sex: male
+- var_in: Corolla_length_min
+  unit_in: mm
+  trait_name: flower_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: Corolla_length_max
+  unit_in: mm
+  trait_name: flower_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: Floral_tube_length
+  unit_in: .na
+  trait_name: flower_tube_length
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: Flower_length
+  unit_in: mm
+  trait_name: flower_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: inflorescence_type
+  unit_in: .na
+  trait_name: inflorescence_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: inflorescence_shape
+  unit_in: .na
+  trait_name: inflorescence_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: Sepal_female
+  unit_in: mm
+  trait_name: flower_sepal_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+  plant_sex: female
+- var_in: Bract_length
+  unit_in: mm
+  trait_name: flower_bract_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: inflorescence_length
+  unit_in: mm
+  trait_name: inflorescence_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: filament
+  unit_in: unknown
+  trait_name: flower_filament_form
+  entity_type: species
+  value_type: unknown
+  basis_of_value: unknown
+  replicates: .na
+  methods: unknown
+- var_in: Filament_length
+  unit_in: mm
+  trait_name: flower_filament_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: Anther_Length
+  unit_in: mm
+  trait_name: flower_anther_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: Fruit_morphology
+  unit_in: .na
+  trait_name: fruit_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: Pistil_Length
+  unit_in: mm
+  trait_name: flower_carpel_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: Pollen_presenter
+  unit_in: mm
+  trait_name: flower_pollen_presenter
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+  pollen_presentation_type: primary
+- var_in: Flower_shape
+  unit_in: .na
+  trait_name: flower_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: Stamen_Length
+  unit_in: mm
+  trait_name: flower_stamen_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: Stigma
+  unit_in: unknown
+  trait_name: flower_stigma_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: Stigma_length
+  unit_in: mm
+  trait_name: flower_stigma_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: '.na'
+  methods: unknown
+- var_in: Style_hairy
+  unit_in: unknown
+  trait_name: flower_style_hairiness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: Style_Length
+  unit_in: mm
+  trait_name: flower_style_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: Anther_type
+  unit_in: unknown
+  trait_name: flower_anther_dehiscence
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: MFT
+  unit_in: a
+  trait_name: fire_minimum_fire_interval
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: seedbank_location
+  unit_in: .na
+  trait_name: seedbank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: resprouting_capacity
+  unit_in: .na
+  trait_name: resprouting_capacity
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: post_fire_flowering
+  unit_in: .na
+  trait_name: post_fire_flowering
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: post_fire_recruitment
+  unit_in: .na
+  trait_name: post_fire_recruitment
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: bud_bank_location
+  unit_in: .na
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: life_history_ephemeral_class
+  unit_in: .na
+  trait_name: life_history_ephemeral_class
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: secondary_pollen_presentation_SPP
+  unit_in: unknown
+  trait_name: flower_pollen_presenter
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+  pollen_presentation_type: secondary
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: vegetative_reproduction_ability
+  unit_in: .na
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: clonal_spread_mechanism
+  unit_in: .na
+  trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_alternative_energy_and_nutrient_acquisition_strategy
+  unit_in: .na
+  trait_name: plant_alternative_energy_and_nutrient_acquisition_strategy
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: root_structure
+  unit_in: .na
+  trait_name: root_structure
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: dispersal_syndrome
+  unit_in: .na
+  trait_name: dispersal_syndrome
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: dispersal_appendage
+  unit_in: .na
+  trait_name: dispersal_appendage
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+substitutions:
+- trait_name: pollination_vector_possible
+  find: ant self
+  replace: ant autonomous
+- trait_name: pollination_vector_possible
+  find: fly insect self
+  replace: fly insect autonomous
+- trait_name: pollination_vector_possible
+  find: fly self
+  replace: fly autonomous
+- trait_name: pollination_vector_possible
+  find: insect self
+  replace: insect autonomous
+- trait_name: pollination_vector_possible
+  find: self
+  replace: autonomous
+- trait_name: sex_type
+  find: d / d
+  replace: dioecious
+- trait_name: sex_type
+  find: d / m
+  replace: dioecious monoecious
+- trait_name: sex_type
+  find: d /m or d / d
+  replace: dioecious monoecious
+- trait_name: sex_type
+  find: d?
+  replace: dioecious
+- trait_name: sex_type
+  find: monoecious?
+  replace: monoecious
+- trait_name: sex_type
+  find: monecious?
+  replace: monoecious
+- trait_name: sex_type
+  find: monoecious, variable?
+  replace: monoecious
+- trait_name: sex_type
+  find: 'no'
+  replace: monoecious
+- trait_name: sex_type
+  find: '?'
+  replace: unknown
+- trait_name: sex_type
+  find: 'yes'
+  replace: dioecious
+- trait_name: sex_type
+  find: 'yes?'
+  replace: dioecious
+- trait_name: sex_type
+  find: yes, variable
+  replace: dioecious
+- trait_name: sex_type
+  find: yes, variable?
+  replace: dioecious
+- trait_name: sex_type
+  find: yes, male, anthers burst free from fls
+  replace: dioecious
+- trait_name: sex_type
+  find: male or female plant
+  replace: dioecious
+- trait_name: sex_type
+  find: male flowers over female!
+  replace: monoecious
+- trait_name: sex_type
+  find: male over female
+  replace: monoecious
+- trait_name: sex_type
+  find: male over female on stem
+  replace: monoecious
+- trait_name: sex_type
+  find: male or female same plant
+  replace: monoecious
+- trait_name: flower_colour
+  find: white
+  replace: white_cream
+- trait_name: flower_colour
+  find: green
+  replace: green
+- trait_name: flower_colour
+  find: purple
+  replace: blue_purple
+- trait_name: flower_colour
+  find: blue
+  replace: blue_purple
+- trait_name: flower_colour
+  find: yellow
+  replace: yellow_orange
+- trait_name: flower_colour
+  find: brown
+  replace: red_brown
+- trait_name: flower_colour
+  find: yellow, puple
+  replace: blue_purple yellow_orange
+- trait_name: flower_colour
+  find: white, yellow
+  replace: white_cream yellow_orange
+- trait_name: flower_colour
+  find: white, purple
+  replace: blue_purple white_cream
+- trait_name: flower_colour
+  find: green, purple
+  replace: blue_purple green
+- trait_name: flower_colour
+  find: yellow, purple
+  replace: blue_purple yellow_orange
+- trait_name: flower_colour
+  find: dark purple
+  replace: blue_purple
+- trait_name: flower_colour
+  find: pink
+  replace: pink
+- trait_name: flower_colour
+  find: white, pink
+  replace: pink white_cream
+- trait_name: flower_colour
+  find: green brown
+  replace: green red_brown
+- trait_name: flower_colour
+  find: greenish white
+  replace: green white_cream
+- trait_name: flower_colour
+  find: cream
+  replace: white_cream
+- trait_name: flower_colour
+  find: red
+  replace: red_brown
+- trait_name: flower_colour
+  find: pale green
+  replace: green
+- trait_name: flower_colour
+  find: pale green bracts 6-10 mm
+  replace: green
+- trait_name: flower_colour
+  find: white showy
+  replace: white_cream
+- trait_name: flower_colour
+  find: pale yellow
+  replace: yellow_orange
+- trait_name: flower_colour
+  find: white & purple
+  replace: blue_purple white_cream
+- trait_name: flower_colour
+  find: green white
+  replace: green white_cream
+- trait_name: flower_colour
+  find: violet
+  replace: blue_purple
+- trait_name: flower_colour
+  find: orange
+  replace: yellow_orange
+- trait_name: flower_colour
+  find: yellow & red
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: yellow, red
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: red, orange
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: red, yellow
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: red orange
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: orange, etc
+  replace: yellow_orange
+- trait_name: flower_colour
+  find: orange, etc.
+  replace: yellow_orange
+- trait_name: flower_colour
+  find: yellow & pink
+  replace: pink yellow_orange
+- trait_name: flower_colour
+  find: yellow & purple
+  replace: blue_purple yellow_orange
+- trait_name: flower_colour
+  find: whilte
+  replace: white_cream
+- trait_name: flower_colour
+  find: dark purple, red
+  replace: blue_purple red_brown
+- trait_name: flower_colour
+  find: green, pink
+  replace: green pink
+- trait_name: flower_colour
+  find: red or pale yellow
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: yellow, dark purple
+  replace: blue_purple yellow_orange
+- trait_name: flower_colour
+  find: pink, red
+  replace: pink red_brown
+- trait_name: flower_colour
+  find: orange, pink
+  replace: pink yellow_orange
+- trait_name: flower_colour
+  find: red, yelow
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: red & green
+  replace: green red_brown
+- trait_name: flower_colour
+  find: purple red
+  replace: blue_purple red_brown
+- trait_name: flower_colour
+  find: black & yellow
+  replace: black yellow_orange
+- trait_name: flower_colour
+  find: purle, etc
+  replace: blue_purple
+- trait_name: flower_colour
+  find: red, brown
+  replace: red_brown
+- trait_name: flower_colour
+  find: red or purple
+  replace: blue_purple red_brown
+- trait_name: flower_colour
+  find: yellow orange
+  replace: yellow_orange
+- trait_name: flower_colour
+  find: pink, etc
+  replace: pink
+- trait_name: flower_colour
+  find: purple, etc
+  replace: blue_purple
+- trait_name: flower_colour
+  find: pink purple
+  replace: blue_purple pink
+- trait_name: flower_colour
+  find: yellow brown
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: purple blue
+  replace: blue_purple
+- trait_name: flower_colour
+  find: pale blue
+  replace: blue_purple
+- trait_name: flower_colour
+  find: pale green, blue
+  replace: blue_purple green
+- trait_name: flower_colour
+  find: yellow, pink, red
+  replace: pink red_brown yellow_orange
+- trait_name: flower_colour
+  find: red, green
+  replace: green red_brown
+- trait_name: flower_colour
+  find: orange, green
+  replace: green yellow_orange
+- trait_name: flower_colour
+  find: bright yellow
+  replace: yellow_orange
+- trait_name: flower_colour
+  find: white, red
+  replace: red_brown white_cream
+- trait_name: flower_colour
+  find: black
+  replace: black
+- trait_name: flower_colour
+  find: green, black
+  replace: black green
+- trait_name: flower_colour
+  find: deep yelllow
+  replace: yellow_orange
+- trait_name: flower_colour
+  find: yelllow
+  replace: yellow_orange
+- trait_name: flower_colour
+  find: yellow-red
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: pink translucent
+  replace: pink
+- trait_name: flower_colour
+  find: green or red
+  replace: green red_brown
+- trait_name: flower_colour
+  find: yellow-green
+  replace: green yellow_orange
+- trait_name: flower_colour
+  find: red, green, yellow
+  replace: green red_brown yellow_orange
+- trait_name: flower_colour
+  find: yellow green
+  replace: green yellow_orange
+- trait_name: flower_colour
+  find: red purple
+  replace: blue_purple red_brown
+- trait_name: flower_colour
+  find: white, violet
+  replace: blue_purple white_cream
+- trait_name: flower_colour
+  find: red yellow
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: red, pink
+  replace: pink red_brown
+- trait_name: flower_colour
+  find: pink 0red
+  replace: pink red_brown
+- trait_name: flower_colour
+  find: blue purple
+  replace: blue_purple
+- trait_name: flower_colour
+  find: orange red
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: purple, red
+  replace: blue_purple red_brown
+- trait_name: flower_colour
+  find: pink, purple
+  replace: blue_purple pink
+- trait_name: flower_colour
+  find: purple, white, pink
+  replace: blue_purple pink white_cream
+- trait_name: flower_colour
+  find: pale pink, purple, white
+  replace: blue_purple pink white_cream
+- trait_name: flower_colour
+  find: green, red
+  replace: green red_brown
+- trait_name: flower_colour
+  find: red, orange, green
+  replace: green red_brown yellow_orange
+- trait_name: flower_colour
+  find: red, white
+  replace: red_brown white_cream
+- trait_name: flower_colour
+  find: white, yellow, red
+  replace: red_brown white_cream yellow_orange
+- trait_name: flower_colour
+  find: white, breen, green
+  replace: green white_cream
+- trait_name: flower_colour
+  find: orange, purple
+  replace: blue_purple yellow_orange
+- trait_name: flower_colour
+  find: green & red
+  replace: green red_brown
+- trait_name: flower_colour
+  find: White
+  replace: white_cream
+- trait_name: flower_colour
+  find: pale yellow to red
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: violet, purple
+  replace: blue_purple
+- trait_name: flower_colour
+  find: violet, pink
+  replace: blue_purple pink
+- trait_name: flower_colour
+  find: pink, white
+  replace: pink white_cream
+- trait_name: flower_colour
+  find: green, brown
+  replace: green red_brown
+- trait_name: flower_colour
+  find: yellow, white
+  replace: white_cream yellow_orange
+- trait_name: flower_colour
+  find: pale yellow, white, red
+  replace: red_brown white_cream yellow_orange
+- trait_name: flower_colour
+  find: pale yellow, white
+  replace: white_cream yellow_orange
+- trait_name: flower_colour
+  find: purple, white
+  replace: blue_purple white_cream
+- trait_name: flower_colour
+  find: pink, yellow, red
+  replace: pink red_brown yellow_orange
+- trait_name: flower_colour
+  find: purple, pink
+  replace: blue_purple pink
+- trait_name: flower_colour
+  find: violet, blue
+  replace: blue_purple
+- trait_name: flower_colour
+  find: blue, white
+  replace: blue_purple white_cream
+- trait_name: flower_colour
+  find: pale yellow, red
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: yellow red
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: orange, red
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: orange, yellow
+  replace: yellow_orange
+- trait_name: flower_colour
+  find: pink, red, yellow
+  replace: pink red_brown yellow_orange
+- trait_name: flower_colour
+  find: yellow red, white
+  replace: red_brown white_cream yellow_orange
+- trait_name: flower_colour
+  find: yellow, orange
+  replace: yellow_orange
+- trait_name: flower_colour
+  find: pink, brown, yellow
+  replace: pink red_brown yellow_orange
+- trait_name: flower_colour
+  find: white or red
+  replace: red_brown white_cream
+- trait_name: flower_colour
+  find: pale yellow, pink
+  replace: pink yellow_orange
+- trait_name: flower_colour
+  find: blue white
+  replace: blue_purple white_cream
+- trait_name: flower_colour
+  find: orange-red
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: red or green
+  replace: green red_brown
+- trait_name: flower_colour
+  find: white, green
+  replace: green white_cream
+- trait_name: flower_colour
+  find: red, orange, yellow
+  replace: red_brown yellow_orange
+- trait_name: flower_colour
+  find: red or white & green
+  replace: green red_brown white_cream
+- trait_name: flower_colour
+  find: red, cream, green
+  replace: green red_brown white_cream
+- trait_name: flower_colour
+  find: red, pink,  green
+  replace: green pink red_brown
+- trait_name: flower_colour
+  find: green, yellow
+  replace: green yellow_orange
+- trait_name: flower_shape
+  find: bell
+  replace: campanulate
+- trait_name: flower_shape
+  find: cup
+  replace: cup-shaped
+- trait_name: flower_shape
+  find: funnel
+  replace: funnelform
+- trait_name: dispersal_appendage
+  find: large wings
+  replace: wings
+- trait_name: dispersal_appendage
+  find: winged
+  replace: wings
+- trait_name: dispersal_appendage
+  find: wings winged
+  replace: wings
+- trait_name: dispersal_appendage
+  find: wings thin wing
+  replace: wings
+- trait_name: dispersal_appendage
+  find: wings winged or not
+  replace: wings none
+- trait_name: dispersal_appendage
+  find: wings no wing
+  replace: wings none
+taxonomic_updates:
+- find: Acanthocarpus sp. Ajana (C.A. Gardner 8596)
+  replace: Acanthocarpus sp. Ajana (C.A.Gardner 8596)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Acanthocarpus sp. Cooloomia (S.D. Hopper 3301)
+  replace: Acanthocarpus sp. Cooloomia (S.D.Hopper 3301)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Acrotriche sp. Israelite Bay (M. Hislop & F. Hort MH 2630)
+  replace: Acrotriche sp. Israelite Bay (M.Hislop & F.Hort MH2630)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Andersonia sp. Frankland (W. Jackson BJ8)
+  replace: Andersonia sp. Frankland (W.Jackson BJ8)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Andersonia sp. Kulin (J.M. Powell 2588)
+  replace: Andersonia sp. Kulin (J.M.Powell 2588)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Andersonia sp. Mitchell River (B.G. Hammersley 925)
+  replace: Andersonia sp. Mitchell River (B.G.Hammersley 925)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Andersonia sp. Mt Lesueur (E.A. Griffin 5536)
+  replace: Andersonia sp. Mt Lesueur (E.A.Griffin 5536)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Anigozanthos humilis subsp. Badgingarra (S.D. Hopper 7114)
+  replace: Anigozanthos humilis subsp. Badgingarra (S.D.Hopper 7114)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Anigozanthos viridis subsp. Cataby (S.D. Hopper 1786)
+  replace: Anigozanthos viridis subsp. Cataby (S.D.Hopper 1786)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Anthotium sp. Peaceful Bay (J.R. Wheeler 3772 & S.J. Patrick)
+  replace: Anthotium sp. Peaceful Bay (J.R.Wheeler 3772 & S.J.Patrick)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Aotus sp. Cunderdin (B.J. Lepschi et al. 3587)
+  replace: Aotus sp. Cunderdin (B.J.Lepschi et al. 3587)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Aotus sp. Diffusa (W.E. Blackall & C.A. Gardner 1739)
+  replace: Aotus sp. Diffusa (W.E.Blackall & C.A.Gardner 1739)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Aotus sp. Dundas (M.A. Burgman 2835)
+  replace: Aotus sp. Dundas (M.A.Burgman 2835)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Aotus sp. Esperance (P.G. Wilson 7904)
+  replace: Aotus sp. Esperance (P.G.Wilson 7904)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Aotus sp. Scott River (K.F. Kenneally 2371)
+  replace: Aotus sp. Scott River (K.F.Kenneally 2371)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Aotus sp. Southern Wheatbelt (C.A. Gardner & W.E. Blackall 1412)
+  replace: Aotus sp. Southern Wheatbelt (C.A.Gardner & W.E.Blackall 1412)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Aotus sp. Tortile (G.J. Keighery 3767)
+  replace: Aotus sp. Tortile (G.J.Keighery 3767)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Aotus sp. West River (M.D. Crisp 9336)
+  replace: Aotus sp. West River (M.D.Crisp 9336)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Arthropodium sp. Goldfields (H. Pringle 2188)
+  replace: Arthropodium sp. Goldfields (H.Pringle 2188)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Arthropodium sp. Yenyenning (G.J. Keighery & N. Gibson 2957)
+  replace: Arthropodium sp. Yenyenning (G.J.Keighery & N.Gibson 2957)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Astroloma sp. Grass Patch (A.J.G. Wilson 110)
+  replace: Astroloma sp. Grass Patch (A.J.G.Wilson 110)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Dandaragan (G. Paczkowska s.n. PERTH 08245606)
+  replace: Baeckea sp. Dandaragan (G.Paczkowska s.n. PERTH 08245606)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Esperance (A.R.Gunness AG2435)
+  replace: Baeckea sp. Esperance (A.G.Gunness AG 2435)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Eujinyn (J.Buegge D99)
+  replace: Baeckea sp. Eujinyn (J.Buegge D 99)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Payne's Find (S.Patrick 1095)
+  replace: Baeckea sp. Paynes Find (S.Patrick 1095)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Sandstone (C.A.Gardner s.n., 26 Oct. 1963)
+  replace: Baeckea sp. Sandstone (C.A.Gardner s.n. 26 Oct. 1963)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Stockton Road (M.E.Trudgen MET22077 & B.Rye)
+  replace: Baeckea sp. Stockton Road (M.E.Trudgen MET 22077 & B.Rye)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Wiakli (G.M.Storr s.n. 4/10/1958)
+  replace: Baeckea sp. Wialki (G.M.Storr s.n. 4/10/1958)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Wildflower Show (?A.M.Coates S4407)
+  replace: Baeckea sp. Wildflower Show (?A.M.Coates S 4407)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Yorkrakine (C.A.Gardner s.n. 9/1933)
+  replace: Baeckea sp. Yorkrakine (C.A.Gardner s.n. 09/1933)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Banksia nivea subsp. Morangup (M. Pieroni 94/2)
+  replace: Banksia nivea subsp. Morangup (M.Pieroni 9/42)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Borya sp. Wheatbelt (A.S. George 16470)
+  replace: Borya sp. Wheatbelt (A.S.George 16470)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Bossiaea lalagoises
+  replace: Bossiaea lalagoides
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Bossiaea sp. Jackson Range (G. Cockerton & S. McNee LCS 13614)
+  replace: Bossiaea sp. Jackson Range (G.Cockerton & S.McNee LCS 13614)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Caesia sp. Ennuin (N. Gibson & M.N. Lyons 2737)
+  replace: Caesia sp. Ennuin (N.Gibson & M.N.Lyons 2737)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Caesia sp. Wongan (K.F. Kenneally 8820)
+  replace: Caesia sp. Wongan (K.F.Kenneally 8820)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Caladenia flava subsp. late red (G. Brockman GBB 2381)
+  replace: Caladenia flava subsp. late red (G.Brockman GBB 2381)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Caladenia sp. Muddarning Hill (S.D. Hopper 4013)
+  replace: Caladenia sp. Muddarning Hill (S.D.Hopper 4013)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Caladenia sp. Wandoo (G. Brockman GBB 671)
+  replace: Caladenia sp. Wandoo (G.Brockman GBB 671)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Callistachys sp. south-coast variant (M. Carter 180)
+  replace: Callistachys sp. south-coast variant (M.Carter 180)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Calochilus sp. Boyup Brook (E. Chapman s.n. 12/10/2002)
+  replace: Calochilus sp. Boyup Brook (E.Chapman s.n. 12/10/2002)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Conostylis seorsiflora subsp. Nyabing (A. Coates s.n. 2/10/1988)
+  replace: Conostylis seorsiflora subsp. Nyabing (A.Coates s.n. 2/10/1998)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Conostylis sp. Eneabba (M. Hislop 3864)
+  replace: Conostylis sp. Eneabba (M.Hislop 3864)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Cyanicula sp. Dale (G. Brockman 713)
+  replace: Cyanicula sp. Dale (G.Brockman 713)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Cyanicula sp. Esperance (G. Brockman 735)
+  replace: Cyanicula sp. Esperance (G.Brockman 735)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Dampiera angulata subsp. Peak Charles (K.R. Newbey 5402)
+  replace: Dampiera angulata subsp. Peak Charles (K.R.Newbey 5402)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Dampiera sp. Forrestania (F. Lullfitz L 4034)
+  replace: Dampiera sp. Forrestania (F.Lullfitz L 4034)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Dampiera sp. Jurien (G. Lullfitz s.n. 10/7/1986)
+  replace: Dampiera sp. Jurien (G.Lullfitz s.n. 10/7/1986)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Dampiera sp. Ravensthorpe (G.F. Craig 8277)
+  replace: Dampiera sp. Ravensthorpe (G.F.Craig 8277)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Dampiera sp. Wialki (B.H. Smith 482)
+  replace: Dampiera sp. Wialki (B.H.Smith 482)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Dampiera sp. Wongan Hills (R.D. Royce 6637)
+  replace: Dampiera sp. Wongan Hills (R.D.Royce 6637)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Darwinia sp. Corrigin (T. Erickson TEE 308)
+  replace: Darwinia sp. Corrigin (T.Erickson TEE 308)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Daviesia euryloba
+  replace: Daviesia eurylobos
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Dicrastylis gielsii
+  replace: Dicrastylis gilesii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Dillwynia sp. Capel (P.A. Jurjevich 1771)
+  replace: Dillwynia sp. Capel (P.A.Jurjevich 1771)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Dillwynia sp. Coujinup Hill (M.A. Burgman 1560)
+  replace: Dillwynia sp. Coujinup Hill (M.A.Burgman 1560)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Dillwynia sp. Northern Sandplains (M. Hislop 3278)
+  replace: Dillwynia sp. Northern Sandplains (M.Hislop 3278)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Diuris carecta
+  replace: Diuris carectum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Diuris sp. Augusta (G. Brockman GBB 1469)
+  replace: Diuris sp. Augusta (G.Brockman GBB 1469)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Diuris sp. Munglinup (G. Brockman GBB 1693)
+  replace: Diuris sp. Munglinup (G.Brockman GBB 1693)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Eutaxia sp. Jasper Hill (R.J. Cranfield 8607)
+  replace: Eutaxia sp. Jasper Hill (R.J.Cranfield 8607)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Gastrolobium sp. East Peak (E.D. Middleton EDM 43)
+  replace: Gastrolobium sp. East Peak (E.D.Middleton EDM 43)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Gastrolobium sp. Prostrate Boddington (M. Hislop 2130)
+  replace: Gastrolobium sp. Prostrate Boddington (M.Hislop 2130)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Gastrolobium wonganense
+  replace: Gastrolobium wonganensis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Geleznowia sp. Binnu (K.A. Shepherd & J. Wege KS 1301)
+  replace: Geleznowia sp. Binnu (K.A.Shepherd & J.Wege KS 1301)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Goodenia pulchella subsp. Coastal Plain A (M. Hislop 634)
+  replace: Goodenia pulchella subsp. Coastal Plain A (M.Hislop 634)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Goodenia pulchella subsp. Coastal Plain B (L.W. Sage 2336)
+  replace: Goodenia pulchella subsp. Coastal Plain B (L.W.Sage 2336)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Goodenia pulchella subsp. Dragon Rocks (A.M. Coates 3374)
+  replace: Goodenia pulchella subsp. Dragon Rocks (A.M.Coates 3374)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Goodenia pulchella subsp. Mt Barker (K.F. Kenneally 1166)
+  replace: Goodenia pulchella subsp. Mt Barker (K.F.Kenneally 1166)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Goodenia pulchella subsp. Wheatbelt (L.W. Sage & F. Hort 795)
+  replace: Goodenia pulchella subsp. Wheatbelt (L.W.Sage & F.Hort 795)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Goodenia sp. Stirling Range (R. Cranfield & D. Kabay 9148)
+  replace: Goodenia sp. Stirling Range (R.Cranfield & D.Kabay 9148)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Grevillea sp. Cooljarloo (B.J. Keighery 28 B)
+  replace: Grevillea sp. Cooljarloo (B.J.Keighery 28 B)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Grevillea sp. Gillingarra (R.J. Cranfield 4087)
+  replace: Grevillea sp. Gillingarra (R.J.Cranfield 4087)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Grevillea sp. Yerilgee Hills (T. Laslett TL 025)
+  replace: Grevillea sp. Yerilgee Hills (T.Laslett TL 025)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Grevillea synapheae subsp. A Flora of Australia (S.D. Hopper 6333)
+  replace: Grevillea synapheae subsp. A Flora of Australia (S.D.Hopper 6333)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Guichenotia basivirida
+  replace: Guichenotia basiviridis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Hakea pycononura
+  replace: Hakea pycnoneura
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Hakea sp. Walyunga (B. Keighery 2599)
+  replace: Hakea sp. Walyunga (B.Keighery 2599)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Halorgis luminosa
+  replace: Haloragis luminosa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Hemigenia dulca
+  replace: Hemigenia dulcis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Hemigenia pimelifolia
+  replace: Hemigenia pimeleifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Homalanthus novo-guineensis
+  replace: Homalanthus novoguineensis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Hysterobaeckea sp. Exclamation Lake (M.E. Trudgen 1524)
+  replace: Hysterobaeckea sp. Exclamation Lake (M.E.Trudgen 1524)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Kennedia sp. South coast (T.R. Lally 1576 & I.P. Lally)
+  replace: Kennedia sp. south coast (T.R.Lally 1576 & I.P.Lally)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Lambertia orbifolia subsp. Scott River Plains (L.W. Sage 684)
+  replace: Lambertia orbifolia subsp. Scott River Plains (L.W.Sage 684)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Latrobea colophona
+  replace: Latrobea colophon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Latrobea sp. South Coast (A.M. Ashby 1949)
+  replace: Latrobea sp. South Coast (A.M.Ashby 1949)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Lechenaultia formosa subsp. Wheatbelt (R.J. Cranfield 4718)
+  replace: Lechenaultia formosa subsp. 'Wheatbelt' (R.J.Cranfield 4718)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Leucopogon elegans subsp. elegans
+  replace: Leucopogon elegans var. elegans
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: variety
+- find: Leucopogon sp. Arrino (M. Hislop 2675)
+  replace: Leucopogon sp. Arrino (M.Hislop 2675)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Avon (J. Buegge D34)
+  replace: Leucopogon sp. Avon (J.Buegge D34)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Badgingarra (R. Davis 421)
+  replace: Leucopogon sp. Badgingarra (R.Davis 421)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Boddington (D. Halford 80746)
+  replace: Leucopogon sp. Boddington (D.Halford 80746)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Bolgart (M. Hislop & F. Hort MH2486)
+  replace: Leucopogon sp. Bolgart (M.Hislop & F.Hort MH 2486)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Boyup Brook (A. Webb BNC 1025)
+  replace: Leucopogon sp. Boyup Brook (A.Webb BNC1025)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Bremer Bay (K.R. Newbey 4667)
+  replace: Leucopogon sp. Bremer Bay (K.R.Newbey 4667)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Brookton (K. Kershaw & L. Kerrigan KK 2192)
+  replace: Leucopogon sp. Brookton (K.Kershaw & L.Kerrigan KK2192)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Bungulla (R.D. Royce 3435)
+  replace: Leucopogon sp. Bungulla (R.D.Royce 3435)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Busselton (D. Cooper 243)
+  replace: Leucopogon sp. Busselton (D.Cooper 243)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Carnamah (M. Hislop 2898)
+  replace: Leucopogon sp. Carnamah (M.Hislop 2898)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Clyde Hill (M.A. Burgman 1207)
+  replace: Leucopogon sp. Clyde Hill (M.A.Burgman 1207)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Cockleshell Gully (J.M. Powell 1749)
+  replace: Leucopogon sp. Cockleshell Gully (J.M.Powell 1749)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Coolgardie (M. Hislop & F. Hort MH 3197)
+  replace: Leucopogon sp. Coolgardie (M.Hislop & F.Hort MH3197)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Corrigin (K. Kershaw KK 2091)
+  replace: Leucopogon sp. Corrigin (K.Kershaw KK 2091)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Coujinup (M.A. Burgman 1085)
+  replace: Leucopogon sp. Coujinup (M.A.Burgman 1085)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Dongolocking (K. Kershaw KK 2333)
+  replace: Leucopogon sp. Dongolocking (K.Kershaw KK 2333)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Dragon Rocks (A.M. Coates 2609)
+  replace: Leucopogon sp. Dragon Rocks (A.M.Coates 2609)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Dumbleyung (M. Hislop & F. Hort MH 3239)
+  replace: Leucopogon sp. Dumbleyung (M.Hislop & F.Hort MH3239)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Fitzgerald peaks (F. Obbens 19/97)
+  replace: Leucopogon sp. Fitzgerald peaks (F.Obbens 19/97)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Frank Hann (K.R. Newbey 11499)
+  replace: Leucopogon sp. Frank Hann (K.R.Newbey 11499)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Gingilup (N. Gibson & M. Lyons 590)
+  replace: Leucopogon sp. Gingilup (N.Gibson & M.Lyons 590)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Great Southern (R.S. Cowan A 586)
+  replace: Leucopogon sp. Great Southern (R.S.Cowan A-586)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Gunapin (F. Hort 808)
+  replace: Leucopogon sp. Gunapin (F.Hort 808)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Howatharra (D. & N. McFarland 1046)
+  replace: Leucopogon sp. Howatharra (D. & N.McFarland 1046)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Ironcaps (N. Gibson & K. Brown 3070)
+  replace: Leucopogon sp. Ironcaps (N.Gibson & K.Brown 3070)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Israelite Bay (G.F. Craig 2558)
+  replace: Leucopogon sp. Israelite Bay (G.F.Craig 2558)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Kalbarri (J.M. Powell 1695)
+  replace: Leucopogon sp. Kalbarri (J.M.Powell 1695)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Lake King (A.J.G. Wilson 65)
+  replace: Leucopogon sp. Lake King (A.J.G.Wilson 65)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Lort River (M. Golding 3)
+  replace: Leucopogon sp. Lort River (M.Golding 3)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Manypeaks (A.S. George 6488)
+  replace: Leucopogon sp. Manypeaks (A.S.George 6488)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Margaret River (J. Scott 207)
+  replace: Leucopogon sp. Margaret River (J.Scott 207)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Mid West (J.S. Beard 7388)
+  replace: Leucopogon sp. Mid West (J.S.Beard 7388)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Moresby Range (S. Patrick 2614)
+  replace: Leucopogon sp. Moresby Range (S.Patrick 2614)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Mount Heywood (M.A. Burgman 1211)
+  replace: Leucopogon sp. Mount Heywood (M.A.Burgman 1211)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Murchison (R.J. Cranfield 9224)
+  replace: Leucopogon sp. Murchison (R.J.Cranfield 9224)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Nabawa (M. Hislop 2765)
+  replace: Leucopogon sp. Nabawa (M.Hislop 2765)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Newdegate (M. Hislop 3585)
+  replace: Leucopogon sp. Newdegate (M.Hislop 3585)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Northern ciliate (R. Davis 3393)
+  replace: Leucopogon sp. Northern ciliate (R.Davis 3393)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Parkerville (A. Meebold 11654)
+  replace: Leucopogon sp. Parkerville (A.Meebold 11654)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Pingrup (W.E. Blackall 3010)
+  replace: Leucopogon sp. Pingrup (W.E.Blackall 3010)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Port Gregory (C. Page 33)
+  replace: Leucopogon sp. Port Gregory (C.Page 33)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Salt Lake (G.F. Craig 3069)
+  replace: Leucopogon sp. Salt Lake (G.F.Craig 3069)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Southern Forests (B.G. Hammersley 1000)
+  replace: Leucopogon sp. Southern Forests (B.G.Hammersley 1000)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Southern Granite (E.D. Middleton EDM 266)
+  replace: Leucopogon sp. Southern Granite (E.D.Middleton EDM 266)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Tathra (M. Hislop 2900)
+  replace: Leucopogon sp. Tathra (M.Hislop 2900)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Three Springs (M. Hislop 2504)
+  replace: Leucopogon sp. Three Springs (M.Hislop 2504)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Walpole (R.J. Cranfield 10940)
+  replace: Leucopogon sp. Walpole (R.J.Cranfield 10940)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Wandering (F. Hort 419)
+  replace: Leucopogon sp. Wandering (F.Hort 419)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Wheatbelt (S. Murray 257)
+  replace: Leucopogon sp. Wheatbelt (S.Murray 257)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Yanchep (M. Hislop 1986)
+  replace: Leucopogon sp. Yanchep (M.Hislop 1986)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Yandanooka (M. Hislop 2507)
+  replace: Leucopogon sp. Yandanooka (M.Hislop 2507)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Yanneymooning (F. Mollemans 3797)
+  replace: Leucopogon sp. Yanneymooning (F.Mollemans 3797)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Yellowdine (M. Hislop & F. Hort MH 3194)
+  replace: Leucopogon sp. Yellowdine (M.Hislop & F.Hort MH3194)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. outer wheatbelt (M. Hislop 30)
+  replace: Leucopogon sp. outer wheatbelt (M.Hislop 30)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. short style (S. Barrett 1578)
+  replace: Leucopogon sp. short style (S.Barrett 1578)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Melichrus sp. Bruce Rock (J. Buegge D 36)
+  replace: Melichrus sp. Bruce Rock (J.Buegge D36)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Melichrus sp. Bungalbin Hill (F.H. & M.P. Mollemans 3069)
+  replace: Melichrus sp. Bungalbin Hill (F.H. & M.P.Mollemans 3069)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Melichrus sp. Coolgardie (K.R. Newbey 8698)
+  replace: Melichrus sp. Coolgardie (K.R.Newbey 8698)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Mirbelia sp. Bursarioides (T.R. Lally 760)
+  replace: Mirbelia sp. Bursarioides (T.R.Lally 760)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Mirbelia sp. Carnarvon (J.S. Beard 6008)
+  replace: Mirbelia sp. Carnarvon (J.S.Beard 6008)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Mirbelia sp. Cordifolia (C.A. Gardner 2712)
+  replace: Mirbelia sp. Cordifolia (C.A.Gardner 2712)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Mirbelia sp. Magentea (T.E.H. Aplin 5976)
+  replace: Mirbelia sp. Magentea (T.E.H.Aplin 5976)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Mirbelia sp. Mt Heywood (T.E.H. Aplin 4154)
+  replace: Mirbelia sp. Mt Heywood (T.E.H.Aplin 4154)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Mirbelia sp. Ternata (M.D. Crisp & L.G. Cook MDC 9267)
+  replace: Mirbelia sp. Ternata (M.D.Crisp & L.G.Cook MDC 9267)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Mirbelia sp. Zuytdorp (G.J. Keighery & N. Gibson 1688)
+  replace: Mirbelia sp. Zuytdorp (G.J.Keighery & N.Gibson 1688)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Mirbelia sp. hooked keel (M.D. Crisp 8519 & W. Keys)
+  replace: Mirbelia sp. hooked keel (M.D.Crisp 8519 & W.Keys)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Patersonia drummondii subsp. Northern (R.D. Royce UWA 777)
+  replace: Patersonia drummondii subsp. Northern (R.D.Royce UWA 777)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Pauridia sp. Beaufort (V. Crowley DKN 629)
+  replace: Pauridia sp. Beaufort (V.Crowley DKN 629)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Petrophile squamata subsp. Ravensthorpe (E.M. Bennett 2597)
+  replace: Petrophile squamata subsp. Ravensthorpe (E.M.Bennett 2597)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Petrophile squamata subsp. northern (J. Monks 40)
+  replace: Petrophile squamata subsp. Northern (J.Monks 40)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Philotheca spicata subsp. Moore River National Park (G. & D. Woodman Op 47)
+  replace: Philotheca spicata subsp. Moore River National Park (G. & D.Woodman Op
+    47)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Pileanthus rubronitidus
+  replace: Pileanthus rubrinitidus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Prasophyllum sp. Brookton Highway (G. Brockman 734)
+  replace: Prasophyllum sp. Brookton Highway (G.Brockman 734)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Prasophyllum sp. Eastern Wheatbelt (C. & D. Woolcock s.n. PERTH 00760846)
+  replace: Prasophyllum sp. Eastern Wheatbelt (C. & D.Woolcock s.n. PERTH 00760846)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Prasophyllum sp. early (G. Brockman GBB 1626)
+  replace: Prasophyllum sp. early (G.Brockman GBB 1626)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Pterostylis sp. Bloated bird orchid (A.R. Annels et al. ARA 5478)
+  replace: Pterostylis sp. Bloated bird orchid (A.R.Annels et al. ARA 5478)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Pterostylis sp. Bloated snail orchid (W. Jackson BJ 486)
+  replace: Pterostylis sp. Bloated snail orchid (W.Jackson BJ486)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Pterostylis sp. Paynes Find (G. Brockman GBB 526)
+  replace: Pterostylis sp. Paynes Find (G.Brockman GBB 526)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Pterostylis sp. Southern Granites (W. Jackson BJ256)
+  replace: Pterostylis sp. Southern Granites (W.Jackson BJ256)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Pterostylis sp. robust (W. Jackson BJ294)
+  replace: Pterostylis sp. robust (W.Jackson BJ294)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Pterostylis sp. scooped sepals (G. Brockman GBB386)
+  replace: Pterostylis sp. scooped sepals (G.Brockman GBB386)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Pultenaea sp. southern (L.A. Orthia 39)
+  replace: Pultenaea sp. southern (L.A.Orthia 39)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Ricinocarpus pilifer
+  replace: Ricinocarpos pilifer
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Scaevola repens subsp. Northern Sandplains (R.J. Cranfield & P.J. Spencer
+    8445)
+  replace: Scaevola repens subsp. Northern Sandplains (R.J.Cranfield & P.J.Spencer
+    8445)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Scaevola repens subsp. West Talbot (R. Davis 2755)
+  replace: Scaevola repens subsp. West Talbot (R.Davis 2755)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Scaevola sp. Golden hairs (D. & B. Bellairs 1450 A)
+  replace: Scaevola sp. Golden hairs (D. & B.Bellairs 1450 A)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Scaevola sp. Mt Ragged (M. Goods GG 004)
+  replace: Scaevola sp. Mt Ragged (M.Goods GG 004)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Scholtzia sp. Jurien (R.J.Cranfield & P.Spencer RJC 8443)
+  replace: Scholtzia sp. Jurien (R.J.Cranfield & P.J.Spencer RJC 8443)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Sphenotoma sp. Stirling Range (P.G. Wilson 4235)
+  replace: Sphenotoma sp. Stirling Range (P.G.Wilson 4235)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Synaphea sp. Fairbridge Farm (D. Papenfus 696)
+  replace: Synaphea sp. Fairbridge Farm (D.Papenfus 696)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Synaphea sp. Jilakin Flat Rocks Rd (R. Butcher et. al RB200)
+  replace: Synaphea sp. Jilakin Flat Rocks Rd (R.Butcher et al. RB200)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Synaphea sp. Pinjarra (R. Davis 6578)
+  replace: Synaphea sp. Pinjarra (R.Davis 6578)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Synaphea sp. Redgate Road (J. Scott 16)
+  replace: Synaphea sp. Redgate Road (J.Scott 16)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Synaphea sp. Serpentine (G.R. Brand 103)
+  replace: Synaphea sp. Serpentine (G.R.Brand 103)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Thelymitra sp. Murchison (A.S. George 9542)
+  replace: Thelymitra sp. Murchison (A.S.George 9542)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Thelymitra sp. Ongerup (S. Oborne 142)
+  replace: Thelymitra sp. Ongerup (S.Oborne 142)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Thryptomene sp. Hyden (B.J. Lepschi & L.A. Craven 4477)
+  replace: Thryptomene sp. Hyden (B.J.Lepschi & L.A.Craven 4477)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Thysanotus sp. Badgingarra (E.A. Griffin 2511)
+  replace: Thysanotus sp. Badgingarra (E.A.Griffin 2511)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Thysanotus sp. Desert East of Newman (R.P. Hart 964)
+  replace: Thysanotus sp. Desert East of Newman (R.P.Hart 964)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Thysanotus sp. Eremaean (S. van Leeuwen 1067)
+  replace: Thysanotus sp. Eremaean (S.van Leeuwen 1067)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Thysanotus sp. Lochada (T.D. Macfarlane 4860)
+  replace: Thysanotus sp. Lochada (T.D.Macfarlane 4860)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Thysanotus sp. Twining Wheatbelt (N.H. Brittan 81/29)
+  replace: Thysanotus sp. Twining Wheatbelt (N.H.Brittan 81/29)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Thysanotus sp. Yellowdine (A.S. George 6040)
+  replace: Thysanotus sp. Yellowdine (A.S.George 6040)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Tricoryne sp. Bimbijy (G.J. Keighery & N. Gibson 7108)
+  replace: Tricoryne sp. Bimbijy (G.J.Keighery & N.Gibson 7108)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Tricoryne sp. Eneabba (E.A. Griffin 1200)
+  replace: Tricoryne sp. Eneabba (E.A.Griffin 1200)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Tricoryne sp. Geraldton (G.J. Keighery 10461)
+  replace: Tricoryne sp. Geraldton (G.J.Keighery 10461)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Tricoryne sp. Mullewa (G.J. Keighery 12080)
+  replace: Tricoryne sp. Mullewa (G.J.Keighery 12080)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Tricoryne sp. South Coast (T.E.H. Aplin 2653)
+  replace: Tricoryne sp. South Coast (T.E.H.Aplin 2653)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Tricoryne sp. Wongan Hills (B.H. Smith 794)
+  replace: Tricoryne sp. Wongan Hills (B.H.Smith 794)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Westringia capitonia
+  replace: Westringia capitonis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Wurmbea sp. Cranbrook (A.R. Annels 3819)
+  replace: Wurmbea sp. Cranbrook (A.R.Annels 3819)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Wurmbea sp. Great Victoria Desert (G.J. Keighery 7501)
+  replace: Wurmbea sp. Great Victoria Desert (G.J.Keighery 7501)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Wurmbea sp. Upper Murchison (A.P. Brown & J. Start APB 3562)
+  replace: Wurmbea sp. Upper Murchison (A.P.Brown & J.Start APB 3562)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Xanthorrhoea sp. Lesueur (G.J. Keighery 16404)
+  replace: Xanthorrhoea sp. Lesueur (G.J.Keighery 16404)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Xyris atrovirida
+  replace: Xyris atroviridis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Astroloma sp. Kalbarri (D. & B. Bellairs 1368)
+  replace: Astroloma sp. Kalbarri (D. & B.Bellairs 1368)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Astroloma sp. Nannup (R.D. Royce 3978)
+  replace: Astroloma sp. Nannup (R.D.Royce 3978)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Astroloma sp. sessile leaf (J.L. Robson 657)
+  replace: Astroloma sp. sessile leaf (J.L.Robson 657)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Three Springs (M.E.Trucgen 5368)
+  replace: Baeckea sp. Three Springs (M.E.Trudgen 5368)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Boronia pencillata
+  replace: Boronia penicillata
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Caesia sp. Hopetoun (T.D. Macfarlane & C.J. French TDM 5228)
+  replace: Caesia sp. Hopetoun (T.D.Macfarlane & C.J.French TDM 5228)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Conostephium sp. Cascades (R. Bruhn 24/899 CAS)
+  replace: Conostephium sp. Cascades (R.Bruhn 24/899 CAS)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Dampiera sp. Jaurdi (D. Angus DA 268)
+  replace: Dampiera sp. Jaurdi (D.Angus DA 268)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Dillwynia sp. Coolgardie (V.E. Sands 637.3.1)
+  replace: Dillwynia sp. Coolgardie (V.E.Sands 637.3.1)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Eremophila inflatus
+  replace: Eremophila inflata
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Eucalyptus sp. Ravensthorpe (A.S. George 616)
+  replace: Eucalyptus sp. Ravensthorpe (A.S.George 616)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Gompholobium sp. Stirling Range (C.F. Wilkins et al. CW 2513)
+  replace: Gompholobium sp. Stirling Range (C.F.Wilkins et al. CW 2513)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Grevillea sp. Gunapin (F. Hort 308)
+  replace: Grevillea sp. Gunapin (F.Hort 308)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Hypocalymma linifolium
+  replace: Hypocalimna linifolium
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Isopogon sp. Canning Reservoir (M.D. Tindale 121 & B.R. Maslin)
+  replace: Isopogon sp. Canning Reservoir (M.D.Tindale 121 & B.R.Maslin)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Isopogon sp. Darling Range (F. Hort 1662)
+  replace: Isopogon sp. Darling Range (F.Hort 1662)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Isopogon sp. Fitzgerald River (D.B. Foreman 813)
+  replace: Isopogon sp. Fitzgerald River (D.B.Foreman 813)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Isopogon sp. Ravensthorpe (D.B. Foreman 1207)
+  replace: Isopogon sp. Ravensthorpe (D.B.Foreman 1207)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Barren Range (A.S. George 10092)
+  replace: Leucopogon sp. Barren Range (A.S.George 10092)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Bindoon (F. Hort 2766)
+  replace: Leucopogon sp. Bindoon (F.Hort 2766)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Bonnie Hill (K.R. Newbey 9831)
+  replace: Leucopogon sp. Bonnie Hill (K.R.Newbey 9831)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Flynn (F. Hort, J. Hort & A. Lowrie 859)
+  replace: Leucopogon sp. Flynn (F.Hort, J.Hort & A.Lowrie 859)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Kambalda (J. Williams s.n. PERTH 07305028)
+  replace: Leucopogon sp. Kambalda (J.Williams s.n. PERTH 07305028)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Kau Rock (M.A. Burgman 1126)
+  replace: Leucopogon sp. Kau Rock (M.A.Burgman 1126)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Northern Scarp (M. Hislop 2233)
+  replace: Leucopogon sp. Northern Scarp (M.Hislop 2233)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Ongerup (A.S. George 16682)
+  replace: Leucopogon sp. Ongerup (A.S.George 16682)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Twertup (K.R. Newbey 10859)
+  replace: Leucopogon sp. Twertup (K.R.Newbey 10859)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Pterostylis sp. limestone (B.J. Keighery & G.J. Keighery 65)
+  replace: Pterostylis sp. limestone (B.J.Keighery & G.J.Keighery 65)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Pultenaea sp. Mt Lesueur (L.A. Orthia 86)
+  replace: Pultenaea sp. Mt Lesueur (L.A.Orthia 86)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Scholtzia sp. Valentine Rd (S.J.Patrick 2142)
+  replace: Scholtzia sp. Valentine Road (S.Patrick 2142)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Styphelia sp. Bullfinch (M. Hislop 3574)
+  replace: Styphelia sp. Bullfinch (M.Hislop 3574)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Thysanotus sp. Kalbarri (D. & B. Bellairs 1523 A)
+  replace: Thysanotus sp. Kalbarri (D. & B.Bellairs 1523 A)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Wurmbea sp. Paynes Find (C.J. French 1237)
+  replace: Wurmbea sp. Paynes Find (C.J.French 1237)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Tampia Hill (R.Coveny 8319 & B.Habberley)
+  replace: Baeckea sp. Tampia Hill (J.C.Anway 327)
+  reason: Exact match of the first three words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Caladenia longicauda subsp. insularis A.P.Br. & G.Brockman
+  replace: Caladenia longicauda subsp. insularis
+  reason: Exact match of the first three words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: subspecies
+- find: Eutaxia sp. North Ironcap (P. Armstrong PA 06/898)
+  replace: Eutaxia sp. North Ironcap (P.Armstrong et al. 06/898)
+  reason: Exact match of the first three words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Goodenia sp. South Coast (A.R. Annels ARA1846)
+  replace: Goodenia sp. South Coast (A.R.Annels 1846)
+  reason: Exact match of the first three words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Hypocalymma sp. Cascade (R.Bruhn 20896)
+  replace: Hypocalymma sp. Cascade (R.Bruhn 20896 CAS)
+  reason: Exact match of the first three words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Thryptomene sp. Wandana (M.E.Trudgen 22016)
+  replace: Thryptomene sp. Wandana (M.E.Trudgen MET 22016)
+  reason: Exact match of the first three words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Andersonia caerulea subsp. caerulea
+  replace: Andersonia caerulea
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Helena & Aurora Range (G.J.Keighery 4424)
+  replace: Baeckea sp. Helena and Aurora Range (G.J.Keighery 4424)
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Caladenia varians (vulgata)
+  replace: Caladenia varians
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Chamelaucium repens subsp. carnea
+  replace: Chamelaucium repens
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Dampiera angulata subsp. angulata
+  replace: Dampiera angulata
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Eucalyptus abdita (hybrid?)
+  replace: Eucalyptus abdita
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Eucalyptus calyerup
+  replace: Eucalyptus x calyerup
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Grevillea althoferorum (G althoferi)
+  replace: Grevillea althoferorum
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Grevillea endlicheriana subsp. Wongan Hills (G.J. Keighery 15351)
+  replace: Grevillea endlicheriana
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Grevillea uncinulata subsp. Coomallo (S.J. Patrick 719)
+  replace: Grevillea uncinulata
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Hemiandra sp Jurien
+  replace: Hemiandra sp. Jurien (B.J.Conn 3885 & M.E.Tozer)
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Patersonia drummondii subsp. drummondii
+  replace: Patersonia drummondii
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Platysace sp Kalbarri
+  replace: Platysace sp. Kalbarri (D. & B.Bellairs 1383)
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Scholtzia chapmanii Rye
+  replace: Scholtzia chapmanii
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Scholtzia cordata Rye
+  replace: Scholtzia cordata
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Synaphea sp. Pinjarra Plain (A.S. George 17182)
+  replace: Synaphea sp. Pinjarra (R.Davis 6578)
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-01)
+  taxonomic_resolution: species
+- find: Astroloma sp. Narrogin
+  replace: Astroloma sp. Narrogin (R.D.Royce 8158)
+  reason: Exact match of the first two words of the taxon name to an APC-known canonical
+    name (2026-09-01)
+  taxonomic_resolution: species
+- find: Pterostylis sp. Murchison (C.J. French CJF 12549)
+  replace: Pterostylis sp. 'Murchison'
+  reason: Exact match of the first two words of the taxon name to an APC-known canonical
+    name (2026-09-01)
+  taxonomic_resolution: species
+- find: Scholtzia denticulata Rye
+  replace: Scholtzia denticulata
+  reason: Exact match of the first two words of the taxon name to an APC-known canonical
+    name (2026-09-01)
+  taxonomic_resolution: species
+- find: Anthotium sp. Darling Range (F. Hort & B. Hort 2431)
+  replace: Anthotium sp. Darling Range (F.Hort & B.Hort 2431)
+  reason: Fuzzy match of taxon name to an APNI-listed canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Astroloma sp. Eneabba (N. Marchant s.n. PERTH 01291777)
+  replace: Astroloma sp. Eneabba (N.Marchant s.n. PERTH 01291777)
+  reason: Fuzzy match of taxon name to an APNI-listed canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Baeckea sp. Sheoaks Rocks (M.E. Trudgen MET5452)
+  replace: Baeckea sp. Sheoaks Rocks (M.E.Trudgen MET 5452)
+  reason: Fuzzy match of taxon name to an APNI-listed canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Banksia sp. Boyup Brook (L.W. Sage LWS 2366)
+  replace: Banksia sp. Boyup Brook (L.W.Sage LWS 2366)
+  reason: Fuzzy match of taxon name to an APNI-listed canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Goodenia sp. Midwest (K.A. Shepherd & C.F. Wilkins KS 1609)
+  replace: Goodenia sp. Midwest (K.A.Shepherd & C.F.Wilkins KS 1609)
+  reason: Fuzzy match of taxon name to an APNI-listed canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Haemodorum sp. East Northcliffe (E.M. Sandiford et al. 2174)
+  replace: Haemodorum sp. East Northcliffe (E.M.Sandiford et al. 2174)
+  reason: Fuzzy match of taxon name to an APNI-listed canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Lasiopetalum sp. Watheroo (K.Shepherd & C.Wilkins KS220)
+  replace: Lasiopetalum sp. Watheroo (K.Shepherd & C.Wilkins KS 220)
+  reason: Fuzzy match of taxon name to an APNI-listed canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Thysanotus sp. Coastal plain (N.H. Brittan 66/63)
+  replace: Thysanotus sp. Coastal plain (N.H.Brittan 66/63)
+  reason: Fuzzy match of taxon name to an APNI-listed canonical name once punctuation
+    and filler words are removed (2026-09-01)
+  taxonomic_resolution: species
+- find: Rinzia icosandra (Benth.) Rye
+  replace: Rinzia icosandra
+  reason: Exact match of the first two words of the taxon name to an APNI-listed canonical
+    name (2026-09-01)
+  taxonomic_resolution: species
+exclude_observations: .na
+questions:
+  question1: Please consider this a preliminary addition of this large dataset! There is data here which requires new trait concepts in AusTraits and I haven't finished writing all of those - you'll note a few traits with half-written definitions and ones where the only dataset is yours, particularly of certain floral dimensions. We are also thinking of creating a second flower_colour trait that allows more terms. 
+  question2: I believe I have correctly worked out most of the acronyms in your data file, but am unsure what MFT stands for - I was thinking minimum fire interval, but the values don't make sense for that.
+  question3: Are any of these trait values inferred from the genus (versus known at the species-level)?
+  question4: In aligning the taxonomy, I updated phrase name syntax to match the APC (no spaces between initials) for names within the APC. Other names that were clearly phrase names, but which did not match to the APC/APNI I left as is - presuming they are linked to a voucher but not (yet) recognised.
