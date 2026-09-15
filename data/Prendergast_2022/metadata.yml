@@ -16,14 +16,16 @@ contributors:
   - last_name: Prendergast
     given_name: Kit
     ORCID: 0000-0002-1164-6099
-    affiliation: University of Southern Queensland, Toowoomba, Australia
+    affiliation: University of Western Sydney
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
   custom_R_code: '
     data |>
     filter(N >0) |>
-      mutate(location_name = "Zanthorrea Nursery")
+      mutate(
+        location_name = "Zanthorrea Nursery"
+      )
   '
   collection_date: Date
   taxon_name: Plant species
@@ -80,18 +82,27 @@ dataset:
     was also recorded, and whether it was a wild-type or horticulturally modified
     variety.
   original_file: in raw data folder
-  notes: none
+  notes: Some of the native bee taxa were identified to genus; this data is retained in the data.csv file.;,
+        Date = util_parse_collection_date(Date)
 identifiers: .na
 locations:
   Zanthorrea Nursery:
     latitude (deg): -31.944
-    longitude (deg): 116.033
+    longitude (deg): 116.0325
     description: nursery
     state: WA
 contexts:
-- context_property: species name of floral visitor or pollinator
+- context_property: flower visitor taxon name
   category: entity_context
   var_in: Native bee genera
+- context_property: taxon origin
+  category: entity_context
+  var_in: Horticutural variety
+  values:
+  - find: 'n'
+    value: wild type
+  - find: 'y'
+    value: cultivar
 - context_property: air temperature (C)
   category: treatment_context
   var_in: Temperature
@@ -102,7 +113,7 @@ contexts:
   category: treatment_context
   var_in: 'N'
 traits:
-- var_in: Insect taxa
+- var_in: pollinator_group_refined
   unit_in: .na
   trait_name: flower_visitor
   entity_type: individual
@@ -208,9 +219,6 @@ substitutions:
 - trait_name: flower_visitor
   find: honeybees
   replace: honeybee
-- trait_name: flower_visitor
-  find: native bees
-  replace: bee
 - trait_name: flower_visitor
   find: other flies
   replace: fly
@@ -497,8 +505,4 @@ taxonomic_updates:
     (2026-08-27)
   taxonomic_resolution: genus
 exclude_observations: .na
-questions:
-  question1: Just FYI, since our master species list does not include cultivars, lots
-    of the species in this study are indicated as "unknown", but are all aligned to
-    genus or species, as appropriate. The cultivar names are retained in [] at the
-    end of the name.
+questions: .na
