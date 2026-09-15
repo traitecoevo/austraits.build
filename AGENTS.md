@@ -27,6 +27,13 @@ package; it `Depends` on `traits.build (>= 2.1.0)`.
   reporting scripts.
 - **Output:** `export/` — the compiled `austraits` object is written under `export/data` after a
   build.
+- **Claude Code project skills:** `.claude/skills/` — curation workflow guidance (building a new
+  dataset's `metadata.yml`, fixing `locations:`, resolving `substitutions.csv`, extracting trait/
+  location tables from a source PDF, pivoting a raw file into `data.csv`) written up as reusable
+  skills, checked in on purpose so every Claude Code session opened in this repo picks them up
+  automatically. They're tooling for AI-assisted curation, not part of the `traits.build` pipeline
+  itself, but are kept under version control like any other repo convention — edit them the same
+  way you'd fix a bug, and expect them to keep growing as new gotchas turn up.
 
 **Build/run:** the README's recipe is install `traits.build`, clone this repo, then `source("build.R")`
 (it can use multiple CPUs — raise `workers`). After running you get an `austraits` object in the
