@@ -1,0 +1,521 @@
+source:
+  primary:
+    key: Mata_2021
+    bibtype: Article
+    author: Luis Mata and Alan N. Andersen and Alejandra Morán-Ordóñez and Amy K.
+      Hahs and Anna Backstrom and Christopher D. Ives and Daniel Bickel and David
+      Duncan and Estibaliz Palma and Freya Thomas and Kate Cranney and Ken Walker
+      and Ian Shears and Linda Semeraro and Mallik Malipatil and Melinda L. Moir and
+      Michaela Plein and Nick Porch and Peter A. Vesk and Tessa R. Smith and Yvonne
+      Lynch
+    year: 2021
+    title: Indigenous plants promote insect biodiversity in urban greenspaces
+    journal: Ecological Applications
+    volume: '31'
+    number: '4'
+    pages: e02309
+    doi: 10.1002/eap.2309
+contributors:
+  data_collectors:
+  - last_name: Mata
+    given_name: Luis
+    ORCID: 0000-0002-4142-8666
+    affiliation: School of Ecosystem and Forest Sciences, University of Melbourne,
+      Australia
+    additional_role: contact
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data |>
+      dplyr::filter(pol == "1") |>
+      dplyr::mutate(
+        `Pollinator match column` = dplyr::case_when(
+          genus == "Apis" ~ "species",
+          family %in% c("Calliphoridae", "Syrphidae", "Colletidae", "Halictidae", "Halticidae", "Ichneumonidae", "Formicidae", "Vespidae") ~ "family",
+          order == "Diptera" ~ "suborder",
+          TRUE ~ "order"
+        ),
+        `Pollinator match value` = dplyr::case_when(
+          genus == "Apis" ~ species,
+          family %in% c("Calliphoridae", "Syrphidae", "Colletidae", "Halictidae", "Halticidae", "Ichneumonidae", "Formicidae", "Vespidae") ~ family,
+          order == "Diptera" ~ suborder,
+          TRUE ~ order
+        ),
+        `Flower visitor taxon name` = dplyr::case_when(
+          is.na(genus) ~ family,
+          stringr::str_detect(species, stringr::regex("\\bsp\\.?\\b", ignore_case = TRUE)) ~ genus,
+          TRUE ~ species
+        )
+      )
+  '
+  collection_date: 2015-01/2015-03
+  taxon_name: vegspecies
+  location_name: site
+  description: A study investigating whether plant origin (indigenous, regionally
+    native, or nonnative) and growth form influence the taxonomic and functional diversity
+    of insect communities, including pollinators and other flower-visiting taxa, in
+    a densely urbanised municipality.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: 'Our study was conducted across 15 public parks, which varied
+    in size across four orders of magnitude (1.1 x 10^3-1.3 x 10^6 m^2; Appendix S1:
+    Table S1; Appendix S1: Fig. S1a). We established a total of 130 plots across the
+    15 parks, with the number of plots in each park (2-36), and their size (84-148
+    m^2), varying according to the park''s area (Appendix S1: Eq. S1-S3) and planting
+    design elements and midstorey growth forms present (Appendix S1: Table S1; Appendix
+    S1: Fig. S1b). Within each plot we identified all plants, totaling 133 species,
+    genera, or species complexes; and representing the main monocot and eudicot phylogenetic
+    clades across the angiosperm tree of life (Appendix S2: Table S2; Appendix S2:
+    Table S7). We classified plant species by origin as indigenous (30), regionally
+    native (9), and nonnative (94). We define indigenous plant species, also referred
+    to in the literature as locally native, as those that are native to the local
+    bioregions. For this study, indigenous plant species are those that occurred before
+    European settlement in the Volcanic Victorian Plain and Gippsland Plain bioregions
+    (State of Victoria; data available online). Regionally native (henceforth native)
+    are species that are native to Australia but not to the local bioregions and have
+    been anthropogenically introduced. Nonnative species are those that have been
+    introduced to Australia. We also classified plant species by planting design element
+    (henceforth design element) as lawn complex (41), midstorey (67), and tree canopy
+    (25; Fig. 1a). Midstorey taxa were further stratified by growth form as forb (8),
+    lilioid (13), graminoid (8), and shrub (38; Fig. 1b). We define lawn complexes
+    (henceforth lawns) as patches dominated by turf-forming grasses (Poaceae) intermixed
+    with one or more small, ruderal, herbaceous species. Midstorey species included
+    broad-leaved perennial and annual herbaceous plants (forbs); petaloid monocots
+    in orders Liliales and Asparagales (lilioids); grasses, sedges, and rushes of
+    typically vertical habit with linear foliage and inconspicuous wind-pollinated
+    flowers (graminoids); and woody perennials with multiple stems and <5 m in height
+    (shrubs). Tree canopy species included single-stemmed woody plants >5 m in height.
+    We sampled plant species for 12 insect groups known to dominate insect communities
+    on above-ground vegetation: ants, bees, beetles, cicadas, flies, heteropteran
+    bugs, jumping plant lice, leaf- and treehoppers, parasitoid wasps, planthoppers,
+    sawflies, and stinging wasps. Samples were taken by direct observation and by
+    sweeping with an entomological net. Observation time and sweeps per plant species
+    were standardized as a proportion of the plant species'' volume within the plot
+    (Appendix S1: Eq. S4-S5), with each plant species in each plot sampled three times
+    from January (summer) to late March (autumn) 2015. Sampled insect specimens were
+    processed in the laboratory and identified to species/morphospecies. We assigned
+    these as (1) either indigenous to the studied bioregions and/or native to Australia
+    (henceforth indigenous) or introduced to Australia and (2) one or more of the
+    following functional groups: pollinators and other flower-visiting taxa (henceforth
+    pollinators), herbivores, predators, parasitoids, and detritivores (Appendix S2:
+    Table S1).'
+  original_file: data.csv is an unmodified download of the dataset's Zenodo archive
+    (Mata et al. 2020, doi:10.5281/zenodo.4127119).
+  notes: The raw data records each insect's taxonomy across parallel `order`/`suborder`/`superfamily`/`family`/`subfamily`/`tribe`/`genus`/`species`
+    columns of varying completeness. The derived columns `Pollinator match column`
+    and `Pollinator match value` identify which of the raw taxonomy columns supplies
+    the most taxonomically specific value that resolves to a `pollination_vector_possible`
+    allowed value, and what that raw value was. Vespidae (true wasps, e.g. genus Vespula)
+    is mapped via a `family` match plus a `vespidae` -> `wasp` substitution below,
+    since `wasp` has no taxonomic synonyms declared in `config/traits.yml`. `Flower
+    visitor taxon name` records the most specific taxon identity documented for the
+    record. Tiphiidae, which is taxonomically close to (and sometimes conflated with)
+    Thynnidae (the `thynnine_wasp` value), was left unmapped to avoid overclaiming
+    a subfamily-level identity (Thynninae) that the data does not specify. The paper
+    does not publish site coordinates and coordinates for each of the 15 park names
+    were derived from OpenStreetMap records.
+identifiers: .na
+locations:
+  Argyle Square:
+    latitude (deg): -37.8027
+    longitude (deg): 144.9658
+    description: Urban park square
+    locality: Argyle Square, Carlton
+    state: VIC
+  Canning/Neil Street Reserve:
+    latitude (deg): -37.7933
+    longitude (deg): 144.9739
+    description: Urban park reserve
+    locality: Neill/Canning Street Reserve, Carlton
+    state: VIC
+  Carlton Gardens South:
+    latitude (deg): -37.8063
+    longitude (deg): 144.9712
+    description: Urban park garden, southern portion
+    locality: Carlton Gardens, Carlton
+    state: VIC
+  Fitzroy-Treasury Gardens:
+    latitude (deg): -37.8135
+    longitude (deg): 144.9782
+    description: Urban park gardens
+    locality: Fitzroy Gardens and Treasury Gardens, East Melbourne
+    state: VIC
+  Gardiner Reserve:
+    latitude (deg): -37.799
+    longitude (deg): 144.9438
+    description: Urban park reserve
+    locality: Gardiner Reserve, North Melbourne
+    state: VIC
+  Garrard Street Reserve:
+    latitude (deg): -37.7792
+    longitude (deg): 144.942
+    description: Urban park reserve
+    locality: Garrard Street Reserve, Parkville
+    state: VIC
+  Lincoln Square:
+    latitude (deg): -37.8024
+    longitude (deg): 144.9629
+    description: Urban park square
+    locality: Lincoln Square, Carlton
+    state: VIC
+  Murchinson Square:
+    latitude (deg): -37.8002
+    longitude (deg): 144.9731
+    description: Urban park square
+    locality: Murchison Square, Carlton
+    state: VIC
+  Pleasance Gardens:
+    latitude (deg): -37.7963
+    longitude (deg): 144.9456
+    description: Urban park gardens
+    locality: Pleasance Gardens, North Melbourne
+    state: VIC
+  Princes Park:
+    latitude (deg): -37.7849
+    longitude (deg): 144.9615
+    description: Urban park
+    locality: Princes Park, Carlton North
+    state: VIC
+  Royal Park:
+    latitude (deg): -37.7862
+    longitude (deg): 144.9495
+    description: Urban park
+    locality: Royal Park, Parkville
+    state: VIC
+  State Library of Victoria:
+    latitude (deg): -37.8098
+    longitude (deg): 144.9655
+    description: Urban public building forecourt/gardens
+    locality: State Library Victoria, Melbourne
+    state: VIC
+  University Square:
+    latitude (deg): -37.801
+    longitude (deg): 144.9604
+    description: Urban park square
+    locality: University Square, Carlton
+    state: VIC
+  Westgate Park:
+    latitude (deg): -37.8311
+    longitude (deg): 144.9081
+    description: Urban park
+    locality: Westgate Park, Port Melbourne
+    state: VIC
+  Women's Peace Gardens:
+    latitude (deg): -37.7912
+    longitude (deg): 144.924
+    description: Urban park gardens
+    locality: Women's Peace Garden, Kensington
+    state: VIC
+contexts:
+- context_property: flower visitor taxon name
+  category: entity_context
+  var_in: Flower visitor taxon name
+traits:
+- var_in: Pollinator match value
+  unit_in: .na
+  trait_name: pollination_vector_possible
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Direct field observation and sweep-netting of insects on plant species
+    within survey plots, standardized as a proportion of the plant species' volume
+    within the plot, with each plant species in each plot sampled three times from
+    January (summer) to late March (autumn) 2015. Sampled insect specimens were processed
+    in the laboratory and identified to species/morphospecies, then assigned to one
+    or more functional groups, including "pollinators and other flower-visiting taxa";
+    contact with the flower's reproductive structures and pollen transfer were not
+    confirmed for these field records.
+substitutions:
+- trait_name: pollination_vector_possible
+  find: halticidae
+  replace: halictidae
+- trait_name: pollination_vector_possible
+  find: apis mellifera
+  replace: apis_mellifera
+- trait_name: pollination_vector_possible
+  find: vespidae
+  replace: wasp
+taxonomic_updates:
+- find: Argyranthemum sp.
+  replace: Argyranthemum sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Baumea sp.
+  replace: Baumea sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Buxus sp.
+  replace: Buxus sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Camellia sp.
+  replace: Camellia sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Cistus sp.
+  replace: Cistus sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Dianella sp.
+  replace: Dianella sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Dietes sp.
+  replace: Dietes sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Dillwynia sp.
+  replace: Dillwynia sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Hakea sp.
+  replace: Hakea sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Hedychium sp
+  replace: Hedychium sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Hydrangea sp.
+  replace: Hydrangea sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Kniphofia sp.
+  replace: Kniphofia sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Lavandula sp.
+  replace: Lavandula sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Pittosporum sp.
+  replace: Pittosporum sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Rytidosperma sp.
+  replace: Rytidosperma sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Viburnum sp.
+  replace: Viburnum sp. [Mata_2021]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Cynodon dactylon01
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon02
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon04
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon05
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon06
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon07
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon08
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon09
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon10
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon11
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon12
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon13
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon14
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon15
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon16
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon17
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon18
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon19
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon20
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon21
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon22
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon23
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon24
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon25
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon26
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon27
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon28
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon29
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon30
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon31
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon32
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon33
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon34
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon35
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon36
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon37
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon38
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon39
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon40
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Cynodon dactylon41
+  replace: Cynodon dactylon
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Abelia grandiflora
+  replace: Abelia x grandiflora
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-16)
+  taxonomic_resolution: species
+- find: Canna generalis
+  replace: Canna x generalis
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-16)
+  taxonomic_resolution: species
+- find: Platanus acerifolia
+  replace: Platanus x acerifolia
+  reason: Exact match of the first two words of the taxon name to an APC-known canonical
+    name (2026-09-16)
+  taxonomic_resolution: species
+exclude_observations: .na
+questions: .na
