@@ -1,0 +1,208 @@
+source:
+  primary:
+    key: Ladd_2019
+    bibtype: Article
+    year: 2019
+    author: P. G. Ladd and C. J. Yates and R. Dillon and R. Palmer
+    journal: Australian Journal of Botany
+    title: Pollination ecology of Tetratheca species from isolated, arid habitats
+      (Banded Iron Formations) in Western Australia
+    volume: '67'
+    pages: 248--255
+    doi: 10.1071/BT18249
+contributors:
+  data_collectors:
+  - last_name: Ladd
+    given_name: P. G.
+    ORCID: .na.character
+    affiliation: Environment and Conservation Science, Murdoch University, Murdoch,
+      WA, Australia
+    additional_role: contact
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    data |>
+      dplyr::mutate(
+        measurement_remarks = purrr::pmap_chr(
+          list(trait_value_raw, context, error_type, error_value, n, source_section, notes),
+          function(trait_value_raw, context, error_type, error_value, n, source_section, notes) {
+            parts <- c(
+              paste0("\"", trait_value_raw, "\""),
+              context,
+              if (!is.na(error_type)) paste0("±", error_value, " (", error_type, ")") else NA_character_,
+              if (!is.na(n)) paste0("n=", n) else NA_character_,
+              source_section,
+              notes
+            );
+            paste(parts[!is.na(parts) & parts != ""], collapse = "; ")
+          }
+        )
+      ) |>
+      dplyr::group_by(taxon_name, location_name, trait, entity_context) |>
+      dplyr::mutate(replicate_id = as.character(dplyr::row_number())) |>
+      dplyr::ungroup()
+  '
+  collection_date: 2003/2011
+  taxon_name: taxon_name
+  trait_name: trait
+  value: trait_value_clean
+  location_name: location_name
+  entity_type: entity_type
+  replicates: n
+  measurement_remarks: measurement_remarks
+  description: Pollination ecology, bee-visitor community, buzz pollination and rates
+    of pollination of four rare Tetratheca (Elaeocarpaceae) taxa restricted to isolated
+    Banded Iron Formation ranges in semi-arid south-west Western Australia.
+  basis_of_record: field preserved_specimen
+  life_stage: adult
+  sampling_strategy: Field study of pollination ecology in four rare, range-restricted
+    Tetratheca taxa (Elaeocarpaceae) confined to Banded Iron Formation inselbergs
+    in the Yilgarn Craton, semi-arid south-west Western Australia (T. paynterae subsp.
+    paynterae -- Windarling Range; T. paynterae subsp. cremnobata -- Diehardy Range;
+    T. aphylla -- Helena and Aurora Ranges; T. harperi -- Jackson Range). At Windarling
+    Range (the focal population), the bee community was sampled using coloured pan/water
+    traps at three landscape positions (ridge, slope, flat) in October 2010 and July/October
+    2011, and insect visitors to T. paynterae subsp. paynterae flowers were timed
+    and identified by direct observation over the same period; captured bees were
+    washed and their pollen loads counted and identified. Rates of pollination (pollen
+    grains and pollen tubes per stigma) were quantified for all four taxa from styles
+    collected at peak flowering in 2003, 2004 and 2005, and pollen-tube incidence
+    was compared again for T. paynterae subsp. paynterae between the winter (July)
+    and spring (October) 2011 field seasons.
+  original_file: raw/trait_data.csv and raw/location_data.csv (extracted from the
+    source PDF, one row per stated trait value/location property; trait_data.csv's
+    trait_value_raw column retains the source's own wording verbatim)
+  notes: 'Several additional quantities described in the source (pollen grains per
+    stigma, proportion of styles without pollen tubes, stigma-anther pore distance,
+    bee visit frequency, flowers visited per plant per visit, proportion of visits
+    to the outer canopy, and a buzz-pollination category) have no corresponding trait
+    in config/traits.yml as of 2026-09 and so are not mapped in the traits list below,
+    though they remain recorded in raw/trait_data.csv (trait column values not listed
+    as a var_in above) for future use if matching traits are added. entity_context
+    on flower_visitor rows records the specific bee/fly taxon captured and examined
+    for pollen (Table 2).'
+locations:
+  Windarling Range:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: Banded Iron Formation (BIF) inselberg
+    locality: Windarling Range, Yilgarn Craton, Western Australia; study population
+      of Tetratheca paynterae subsp. paynterae occurs on the ridge, sampled at three
+      landscape positions (ridge, slope, flat)
+    geology (stratigraphic map unit): banded ironstone
+    precipitation, MAP (mm): 270-290
+    precipitation, mean winter rainfall (mm): '50'
+  Diehardy Range:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: Banded Iron Formation (BIF) inselberg
+    locality: Diehardy Range, Yilgarn Craton, Western Australia; study population
+      of Tetratheca paynterae subsp. cremnobata
+    geology (stratigraphic map unit): banded ironstone
+    precipitation, MAP (mm): 270-290
+    precipitation, mean winter rainfall (mm): '50'
+  Helena and Aurora Ranges:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: Banded Iron Formation (BIF) inselberg
+    locality: Helena and Aurora Ranges, Yilgarn Craton, Western Australia; study
+      population of Tetratheca aphylla
+    geology (stratigraphic map unit): banded ironstone
+    precipitation, MAP (mm): 270-290
+    precipitation, mean winter rainfall (mm): '50'
+  Jackson Range:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: Banded Iron Formation (BIF) inselberg
+    locality: Jackson Range, Yilgarn Craton, Western Australia; study population
+      of Tetratheca harperi
+    geology (stratigraphic map unit): banded ironstone
+    precipitation, MAP (mm): 270-290
+    precipitation, mean winter rainfall (mm): '50'
+contexts:
+- context_property: flower visitor taxon name
+  category: entity_context
+  var_in: entity_context
+- context_property: replicate observations
+  category: temporal_context
+  var_in: replicate_id
+traits:
+- var_in: flower_lifespan
+  unit_in: unit
+  trait_name: flower_lifespan
+  value_type: value_type
+  basis_of_value: measurement
+  methods: Reported as a general floral description in the Methods (Study species
+    and area, p.250), applicable to all four taxa on the strength of the paper's
+    own statement that floral morphology and bee behaviour at flowers are similar
+    across them.
+- var_in: flower_nectar_production
+  unit_in: unit
+  trait_name: flower_nectar_production
+  value_type: value_type
+  basis_of_value: measurement
+  methods: Reported as a general floral description in the Methods (Study species
+    and area, p.250), applicable to all four taxa on the strength of the paper's
+    own statement that floral morphology and bee behaviour at flowers are similar
+    across them.
+- var_in: flower_anther_dehiscence
+  unit_in: unit
+  trait_name: flower_anther_dehiscence
+  value_type: value_type
+  basis_of_value: measurement
+  methods: Anther and pollen-release morphology described in the Methods for T.
+    paynterae subsp. paynterae (Study species and area, p.250); extended to the
+    other three taxa on the strength of the paper's own statement that floral morphology
+    and bee behaviour at flowers are similar across them.
+- var_in: flower_pollinator_reward
+  unit_in: unit
+  trait_name: flower_pollinator_reward
+  value_type: value_type
+  basis_of_value: measurement
+  methods: Flowers produce no nectar; pollen is the reward extracted by bees sonicating
+    or raking the poricidal anthers (Methods, Study species and area, p.250).
+- var_in: flower_ovules_per_functional_carpel_count
+  unit_in: unit
+  trait_name: flower_ovules_per_functional_carpel_count
+  value_type: value_type
+  basis_of_value: measurement
+  methods: Stated in the context of pollen-tube counts described as completely sufficient
+    to fertilise both ovules in each flower (Results, Pollination 2010-11, p.252).
+- var_in: pollination_vector_known
+  unit_in: unit
+  trait_name: pollination_vector_known
+  value_type: value_type
+  basis_of_value: measurement
+  methods: Buzz pollination by native bees assessed by field observation of bee
+    visitation/sonication behaviour and by capturing bees at flowers and examining
+    their pollen loads (washed in glycerol, identified and counted; Methods, Observations
+    and collection of bees, p.250; Results, Table 2, p.251). For T. paynterae subsp.
+    paynterae this rests on direct pollen-load evidence; for the other three taxa
+    it rests on the paper's general Abstract/Introduction statement and the Methods'
+    generalisation of floral morphology and bee behaviour across the four taxa,
+    not on taxon-specific pollen-load data (see measurement_remarks).
+- var_in: flower_visitor
+  unit_in: unit
+  trait_name: flower_visitor
+  value_type: value_type
+  basis_of_value: measurement
+  methods: Insects captured on T. paynterae subsp. paynterae flowers in October
+    2010 and examined for pollen loads (washed in a small amount of glycerol, pollen
+    counted to a maximum of 500 grains and identified; Methods, Observations and
+    collection of bees, p.250; Results, Table 2, p.251).
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions:
+  question1: Windarling Range, Diehardy Range, Helena and Aurora Ranges and Jackson
+    Range have no coordinates printed in this source; it refers readers to fig.
+    1 in Gibson et al. 2010 (Biodiversity and Conservation 19:3951-3962) for the
+    locations of the ranges, which is not reproduced here. Left ungeocoded for now
+    -- all four are real, identifiable named ranges in the Yilgarn Craton, WA, so
+    could be geocoded if the curator confirms that's wanted.
+  question2: pollen_grains_per_stigma, proportion_styles_without_pollen_tubes, stigma_anther_pore_distance,
+    bee_visit_frequency, bee_flowers_visited_per_plant_single_visit, bee_visits_outer_canopy_proportion
+    and buzz_pollination are candidate traits with no current match in config/traits.yml;
+    kept in data.csv's trait column (unmapped, so excluded from the traits actually
+    built) in case matching traits are added later.

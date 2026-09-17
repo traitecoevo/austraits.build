@@ -1,0 +1,363 @@
+source:
+  primary:
+    key: Prendergast_2026
+    bibtype: Misc
+    year: 2026
+    author: Kit Prendergast and Max Moldovan and Jarrod Kath and Konstantinos Tsiolis
+      and Robbie Girling and Aria Dolatabadian and Jacqueline Batley and Michael Garratt
+    title: Insect visitors and their relation to canola yield components in Australia
+    doi: 10.5281/zenodo.22095100
+    publisher: Zenodo
+    licence: Creative Commons Attribution 4.0 International
+contributors:
+  data_collectors:
+  - last_name: Prendergast
+    given_name: Kit
+    ORCID: 0000-0002-1164-6099
+    affiliation: University of Western Sydney
+    additional_role: contact
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data |>
+      dplyr::mutate(
+        `Pollinator match column` = dplyr::case_when(
+          `Animal species binomial name` == "Apis mellifera" ~ "Animal species binomial name",
+          `Animal genus` %in% c("Exoneura", "Braunsapis", "Amegilla", "Bombus", "Xylocopa", "Tetragonula", "Austroplebeia") ~ "Animal genus",
+          `Animal family` %in% c("Calliphoridae", "Calliphorinae", "Syrphidae", "Colletidae", "Halictidae", "Ichneumonidae", "Formicidae", "Vespidae", "Bombyliidae") ~ "Animal family",
+          `Animal order` %in% c("Coleoptera", "Coleoptear", "Lepidoptera", "Hemiptera", "Hymenoptera", "Diptera") ~ "Animal order",
+          TRUE ~ NA_character_
+        ),
+        `Pollinator match value` = dplyr::case_when(
+          `Animal species binomial name` == "Apis mellifera" ~ `Animal species binomial name`,
+          `Animal genus` %in% c("Exoneura", "Braunsapis", "Amegilla", "Bombus", "Xylocopa", "Tetragonula", "Austroplebeia") ~ `Animal genus`,
+          `Animal family` %in% c("Calliphoridae", "Calliphorinae", "Syrphidae", "Colletidae", "Halictidae", "Ichneumonidae", "Formicidae", "Vespidae", "Bombyliidae") ~ `Animal family`,
+          `Animal order` %in% c("Coleoptera", "Coleoptear", "Lepidoptera", "Hemiptera", "Hymenoptera", "Diptera") ~ `Animal order`,
+          TRUE ~ NA_character_
+        ),
+        `Pollinator taxon name` = dplyr::case_when(
+          is.na(`Animal genus`) & is.na(`Animal family`) ~ `Animal order`,
+          is.na(`Animal genus`) ~ `Animal family`,
+          stringr::str_detect(`Animal species binomial name`, stringr::regex("\\bsp\\.?\\b", ignore_case = TRUE)) ~ `Animal genus`,
+          TRUE ~ `Animal species binomial name`
+        ),
+        location_name = dplyr::case_when(
+          `Latitude (S)` == "-34.2742171" ~ "Cummins 1",
+          `Latitude (S)` == "-34.30753" ~ "Cummins 2",
+          `Latitude (S)` == "-33.746834" ~ "Jerdacuttup 1",
+          `Latitude (S)` == "-33.7785556" ~ "Jerdacuttup 2",
+          `Latitude (S)` == "-33.4711076" ~ "West River 1",
+          `Latitude (S)` == "-33.5537092" ~ "West River 2",
+          `Latitude (S)` == "-33.6225234" ~ "West River 3",
+          `Latitude (S)` == "-34.126227" ~ "Yeelanna 1",
+          `Latitude (S)` == "-34.1526001" ~ "Yeelanna 2",
+          `Latitude (S)` == "-34.15638889" ~ "Yeelanna 3",
+          TRUE ~ `Nearest named place`
+        ),
+        Date = util_parse_collection_date(Date)
+      )
+  '
+  collection_date: Date
+  taxon_name: Plant scientific name
+  location_name: location_name
+  description: To determine the relative contribution of insect abundance, diversity
+    and taxonomic identity (versus the introduced honeybee specifically) to canola
+    yield, and how semi-natural vegetation in the surrounding landscape affects wild
+    insect visitation to canola crops.
+  basis_of_record: field field_experiment
+  life_stage: adult
+  sampling_strategy: Canola is a major oilseed crop and benefits from insect pollination.
+    The relative role of insect abundance, diversity, and roles of particular taxonomic
+    groups however have been little explored. In Australia, it has been assumed that
+    the introduced honey bee Apis mellifera is the pollinators of canola, which has
+    lead to concerns about pollination in the wake of incursion of the parasitic mite
+    Varroa destructor in Australia. Wild insects are also facing declines, and therefore
+    landscape management such as semi-natural vegetation retention near crops, may
+    help increase pollinator populations. To disentangle the contribution of insects
+    to canola yield, and the role of semi-natural vegetation in the landscape we conducted
+    caged experiments and pollinator observations over two years across 44 farms in
+    New South Wales, Western Australia and South Australia. We compared canola yield
+    components (seed weight, pod number, seeds per pod, and 1000-grain weight) from
+    five plants harvested from quadrats with and without pollination exclusion cages
+    along three transects each 20 m and 100 m into the canola crop. During canola
+    flowering along these transects within a quadrat, timed observations were made
+    of insect visitors.
+  original_file: data.csv is derived from a subset of the records in Prendergast's big dataset, which differs somewhat from that archived on Zenodo (Prendergast et al., Zenodo, doi:10.5281/zenodo.22095100)
+    -- specifically the plant-insect visitation records for the canola fields and
+    surrounding vegetation component of that project.
+  notes: none
+identifiers: .na
+locations:
+  Cockaleechie:
+    latitude (deg): -34.17377
+    longitude (deg): 135.8267
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Cockaleechie, SA
+    state: SA
+  Coleambally:
+    latitude (deg): -34.918616
+    longitude (deg): 145.9144259
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Coleambally, NSW
+    state: NSW
+  Cummins 1:
+    latitude (deg): -34.2742171
+    longitude (deg): 135.6336667
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Cummins, SA
+    state: SA
+  Cummins 2:
+    latitude (deg): -34.30753
+    longitude (deg): 135.6745
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Cummins, SA
+    state: SA
+  Eubalong:
+    latitude (deg): -33.23933
+    longitude (deg): 146.7108
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Eubalong, NSW
+    state: NSW
+  Jerdacuttup 1:
+    latitude (deg): -33.746834
+    longitude (deg): 120.357739
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Jerdacuttup, WA
+    state: WA
+  Jerdacuttup 2:
+    latitude (deg): -33.7785556
+    longitude (deg): 120.3492778
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Jerdacuttup, WA
+    state: WA
+  Karkoo:
+    latitude (deg): -33.990923
+    longitude (deg): 135.724774
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Karkoo, SA
+    state: SA
+  Lake Cargelligo:
+    latitude (deg): -33.3149411
+    longitude (deg): 146.5805058
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Lake Cargelligo, NSW
+    state: NSW
+  Maude:
+    latitude (deg): -34.648827
+    longitude (deg): 144.247045
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Maude, NSW
+    state: NSW
+  Mount Burdett NR:
+    latitude (deg): -33.46171
+    longitude (deg): 122.1208
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project, near Mount Burdett Nature Reserve
+    locality: Mount Burdett Nature Reserve, WA
+    state: WA
+  Ravensthorpe:
+    latitude (deg): -33.47153
+    longitude (deg): 120.0187191
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Ravensthorpe, WA
+    state: WA
+  Scaddan:
+    latitude (deg): -33.45269
+    longitude (deg): 121.7366
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Scaddan, WA
+    state: WA
+  Ungarra:
+    latitude (deg): -34.2021083
+    longitude (deg): 135.9911761
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Ungarra, SA
+    state: SA
+  Uri Park:
+    latitude (deg): -34.6067432
+    longitude (deg): 145.8984838
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Uri Park, NSW
+    state: NSW
+  West River 1:
+    latitude (deg): -33.4711076
+    longitude (deg): 119.6923124
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: West River, WA
+    state: WA
+  West River 2:
+    latitude (deg): -33.5537092
+    longitude (deg): 119.5716707
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: West River, WA
+    state: WA
+  West River 3:
+    latitude (deg): -33.6225234
+    longitude (deg): 119.5669327
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: West River, WA
+    state: WA
+  Willbriggie:
+    latitude (deg): -34.439101
+    longitude (deg): 145.961842
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Willbriggie, NSW
+    state: NSW
+  Yeelanna 1:
+    latitude (deg): -34.126227
+    longitude (deg): 135.811846
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Yeelanna, SA
+    state: SA
+  Yeelanna 2:
+    latitude (deg): -34.1526001
+    longitude (deg): 135.6258572
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Yeelanna, SA
+    state: SA
+  Yeelanna 3:
+    latitude (deg): -34.1563889
+    longitude (deg): 135.7327778
+    description: Farm site (canola field or adjacent vegetation), GRDC canola pollination
+      project
+    locality: Yeelanna, SA
+    state: SA
+contexts:
+- context_property: flower visitor taxon name
+  category: entity_context
+  var_in: Pollinator taxon name
+- context_property: pollinator count
+  category: treatment_context
+  var_in: No. of visitors
+traits:
+- var_in: Pollinator match value
+  unit_in: .na
+  trait_name: pollination_vector_possible
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: During canola flowering, timed observations were made of insect visitors
+    along transects at 20 m and 100 m into the canola crop (Methods). Insects that
+    landed on and contacted a flower were recorded as visitors, categorised as far
+    as possible to species using morphological identification; contact with reproductive
+    structures and pollen transfer were not confirmed for these field records.
+substitutions:
+- trait_name: pollination_vector_possible
+  find: diptera
+  replace: fly
+- trait_name: pollination_vector_possible
+  find: coleoptear
+  replace: coleoptera
+- trait_name: pollination_vector_possible
+  find: calliphorinae
+  replace: calliphoridae
+- trait_name: pollination_vector_possible
+  find: vespidae
+  replace: wasp
+- trait_name: pollination_vector_possible
+  find: apis mellifera
+  replace: apis_mellifera
+taxonomic_updates:
+- find: Babingtonia sp.
+  replace: Babingtonia sp. [Prendergast_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Sonchus sp
+  replace: Sonchus sp. [Prendergast_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+  taxonomic_resolution: genus
+- find: Asphodelus fistulosa
+  replace: Asphodelus fistulosus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Grevillea illicifolia
+  replace: Grevillea ilicifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Isopogon spathulatus elongatus
+  replace: Isopogon spathulatus subsp. elongatus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: subspecies
+- find: Leucopogon denticulataus
+  replace: Leucopogon denticulatus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Thomesia petalocalys
+  replace: Thomasia petalocalyx
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Thomesia petalocalyx
+  replace: Thomasia petalocalyx
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Thryptomene microcantha
+  replace: Thryptomene micrantha
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Acacia fimbricata
+  replace: Acacia fimbriata
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Brassica napus
+  replace: Brassica x napus
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-09-16)
+  taxonomic_resolution: species
+- find: Styphelieae sp.1
+  replace: Styphelia sp. 1 (Deua N.P. & Nalbaugh N.P.)
+  reason: Fuzzy match of the first two words of the taxon name to an APC-known canonical
+    name (2026-09-16)
+  taxonomic_resolution: species
+- find: Eucalyptus scyphyta
+  replace: Eucalyptus scyphata
+  reason: Fuzzy match of taxon name to an APNI-listed canonical name once punctuation
+    and filler words are removed (2026-09-16)
+  taxonomic_resolution: species
+- find: Acacia micropora
+  replace: Acacia sp. [Acacia micropora; Prendergast_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-09-16)
+  taxonomic_resolution: genus
+- find: Acacia sp.1NSW
+  replace: Acacia sp. [Acacia sp.1NSW; Prendergast_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-09-16)
+  taxonomic_resolution: genus
+- find: Chamelaucium megalopetalum?
+  replace: Chamelaucium megalopetalum
+  reason: Manual match to an APC-accepted species
+    (2026-09-16)
+  taxonomic_resolution: species
+exclude_observations: .na
+questions:
+  question1: I used the data that was in the "big database", which is slightly different to that in the Zenodo repo. This is because it wasn't immediately clear that all the non-canola observations were on Zenodo, but maybe I missed them.
