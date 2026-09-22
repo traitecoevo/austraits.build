@@ -30,6 +30,11 @@ dataset:
     data |>
       dplyr::filter(pol == "1") |>
       dplyr::mutate(
+        vegspecies = dplyr::if_else(
+          vegspecies %in% c("Argyranthemum sp.", "Buxus sp.", "Dianella sp.", "Dietes sp.", "Hakea sp.", "Lavandula sp.", "Rytidosperma sp.", "Viburnum sp.") & site != "unknown",
+          paste0(vegspecies, " [", site, "]"),
+          vegspecies
+        ),
         `Pollinator match column` = dplyr::case_when(
           genus == "Apis" ~ "species",
           family %in% c("Calliphoridae", "Syrphidae", "Colletidae", "Halictidae", "Halticidae", "Ichneumonidae", "Formicidae", "Vespidae") ~ "family",
@@ -114,7 +119,10 @@ dataset:
     Thynnidae (the `thynnine_wasp` value), was left unmapped to avoid overclaiming
     a subfamily-level identity (Thynninae) that the data does not specify. The paper
     does not publish site coordinates and coordinates for each of the 15 park names
-    were derived from OpenStreetMap records.
+    were derived from OpenStreetMap records. Where a plant genus-level `sp.` name
+    (e.g. `Hakea sp.`) recurs across more than one distinct site, `vegspecies` is
+    suffixed with that site (e.g. `Hakea sp. [Royal Park]`) so these are not conflated
+    as the same unidentified species.
 identifiers: .na
 locations:
   Argyle Square:
@@ -238,17 +246,29 @@ substitutions:
   find: vespidae
   replace: wasp
 taxonomic_updates:
-- find: Argyranthemum sp.
-  replace: Argyranthemum sp. [Mata_2021]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+- find: Argyranthemum sp. [Carlton Gardens South]
+  replace: Argyranthemum sp. [Carlton Gardens South; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Argyranthemum sp. [Fitzroy-Treasury Gardens]
+  replace: Argyranthemum sp. [Fitzroy-Treasury Gardens; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Baumea sp.
   replace: Baumea sp. [Mata_2021]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
   taxonomic_resolution: genus
-- find: Buxus sp.
-  replace: Buxus sp. [Mata_2021]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+- find: Buxus sp. [Argyle Square]
+  replace: Buxus sp. [Argyle Square; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Buxus sp. [Princes Park]
+  replace: Buxus sp. [Princes Park; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Camellia sp.
   replace: Camellia sp. [Mata_2021]
@@ -258,21 +278,39 @@ taxonomic_updates:
   replace: Cistus sp. [Mata_2021]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
   taxonomic_resolution: genus
-- find: Dianella sp.
-  replace: Dianella sp. [Mata_2021]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+- find: Dianella sp. [Princes Park]
+  replace: Dianella sp. [Princes Park; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
-- find: Dietes sp.
-  replace: Dietes sp. [Mata_2021]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+- find: Dianella sp. [Westgate Park]
+  replace: Dianella sp. [Westgate Park; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Dietes sp. [State Library of Victoria]
+  replace: Dietes sp. [State Library of Victoria; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Dietes sp. [Women's Peace Gardens]
+  replace: Dietes sp. [Women's Peace Gardens; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Dillwynia sp.
   replace: Dillwynia sp. [Mata_2021]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
   taxonomic_resolution: genus
-- find: Hakea sp.
-  replace: Hakea sp. [Mata_2021]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+- find: Hakea sp. [Royal Park]
+  replace: Hakea sp. [Royal Park; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Hakea sp. [Westgate Park]
+  replace: Hakea sp. [Westgate Park; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Hedychium sp
   replace: Hedychium sp. [Mata_2021]
@@ -286,21 +324,44 @@ taxonomic_updates:
   replace: Kniphofia sp. [Mata_2021]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
   taxonomic_resolution: genus
-- find: Lavandula sp.
-  replace: Lavandula sp. [Mata_2021]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+- find: Lavandula sp. [Argyle Square]
+  replace: Lavandula sp. [Argyle Square; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Lavandula sp. [Carlton Gardens South]
+  replace: Lavandula sp. [Carlton Gardens South; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Lavandula sp. [Women's Peace Gardens]
+  replace: Lavandula sp. [Women's Peace Gardens; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Pittosporum sp.
   replace: Pittosporum sp. [Mata_2021]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
   taxonomic_resolution: genus
-- find: Rytidosperma sp.
-  replace: Rytidosperma sp. [Mata_2021]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+- find: Rytidosperma sp. [Royal Park]
+  replace: Rytidosperma sp. [Royal Park; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
-- find: Viburnum sp.
-  replace: Viburnum sp. [Mata_2021]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+- find: Rytidosperma sp. [Westgate Park]
+  replace: Rytidosperma sp. [Westgate Park; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Viburnum sp. [Fitzroy-Treasury Gardens]
+  replace: Viburnum sp. [Fitzroy-Treasury Gardens; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Viburnum sp. [State Library of Victoria]
+  replace: Viburnum sp. [State Library of Victoria; Mata_2021]
+  reason: Genus sp. recorded at multiple distinct locations within Mata_2021;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Cynodon dactylon01
   replace: Cynodon dactylon

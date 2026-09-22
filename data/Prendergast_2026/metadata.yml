@@ -55,6 +55,11 @@ dataset:
           `Latitude (S)` == "-34.15638889" ~ "Yeelanna 3",
           TRUE ~ `Nearest named place`
         ),
+        `Plant scientific name` = dplyr::if_else(
+          `Plant scientific name` %in% c("Babingtonia sp.") & location_name != "unknown",
+          paste0(`Plant scientific name`, " [", location_name, "]"),
+          `Plant scientific name`
+        ),
         Date = util_parse_collection_date(Date)
       )
   '
@@ -86,7 +91,9 @@ dataset:
   original_file: data.csv is derived from a subset of the records in Prendergast's big dataset, which differs somewhat from that archived on Zenodo (Prendergast et al., Zenodo, doi:10.5281/zenodo.22095100)
     -- specifically the plant-insect visitation records for the canola fields and
     surrounding vegetation component of that project.
-  notes: none
+  notes: The one plant genus-level `sp.` name that recurs across more than one distinct
+    location (`Babingtonia sp.`) is suffixed with that location (e.g. `Babingtonia
+    sp. [Ravensthorpe]`) so these are not conflated as the same unidentified species.
 identifiers: .na
 locations:
   Cockaleechie:
@@ -280,9 +287,15 @@ substitutions:
   find: apis mellifera
   replace: apis_mellifera
 taxonomic_updates:
-- find: Babingtonia sp.
-  replace: Babingtonia sp. [Prendergast_2026]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-16)
+- find: Babingtonia sp. [Ravensthorpe]
+  replace: Babingtonia sp. [Ravensthorpe; Prendergast_2026]
+  reason: Genus sp. recorded at multiple distinct locations within Prendergast_2026;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Babingtonia sp. [West River 2]
+  replace: Babingtonia sp. [West River 2; Prendergast_2026]
+  reason: Genus sp. recorded at multiple distinct locations within Prendergast_2026;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Sonchus sp
   replace: Sonchus sp. [Prendergast_2026]

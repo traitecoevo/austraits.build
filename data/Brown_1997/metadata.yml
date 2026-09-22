@@ -20,6 +20,13 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data |>
+      dplyr::mutate(
+        `Plant scientific name` = dplyr::if_else(
+          `Plant scientific name` %in% c("Acacia sp.", "Adenanthos sp.", "Agonis sp.", "Astartea sp.", "Astroloma sp.", "Baeckea sp.", "Banksia sp.", "Barringtonia sp.", "Bauhinia sp.", "Beaufortia sp.", "Billardiera sp.", "Bombax sp.", "Brachychiton sp.", "Callistemon sp.", "Calothamnus sp.", "Calytrix sp.", "Carpobrotus sp.", "Dicrastylis sp.", "Dryandra sp.", "Eremophila sp.", "Eucalyptus sp.", "Gardenia sp.", "Grevillea sp.", "Hakea sp.", "Hibbertia sp.", "Jacksonia sp.", "Lechenaultia sp.", "Leptospermum sp.", "Leucopogon sp.", "Melaleuca sp.", "Myoporum sp.", "Pimelea sp.", "Ptilotus sp.", "Scholtzia sp.", "Solanum sp.", "Sphenotoma sp.", "Stylidium sp.", "Thryptomene sp.", "Verticordia sp.", "Xanthorrhoea sp.") & location_name != "unknown",
+          paste0(`Plant scientific name`, " [", location_name, "]"),
+          `Plant scientific name`
+        )
+      ) |>
       generate_observation_numbers(`Plant scientific name`, location_name) |>
       mutate(Date = util_parse_collection_date(Date))
   '
@@ -44,8 +51,13 @@ dataset:
     epithet, family, subfamily, common name, class and order). To map into AusTraits, two derived columns were generated, `Pollinator match column` and `Pollinator
     match value` to identify which of the taxon rank columns supplied the most taxonomically
     specific value that resolves to an AusTraits `pollination_vector_possible`
-    term, and what that raw value was. 234 records had no interpretable location 
-    and were mapped to a `location_name` of "unknown".
+    term, and what that raw value was. 234 records had no interpretable location
+    and were mapped to a `location_name` of "unknown". Where a plant genus-level
+    `sp.` name (e.g. `Eucalyptus sp.`) recurs across more than one distinct named
+    location, `Plant scientific name` is suffixed with that location (e.g.
+    `Eucalyptus sp. [Kings Park_1]`) so these are not conflated as the same
+    unidentified species; records left with an "unknown" location keep the plain
+    `Genus sp.` name.
 identifiers: .na
 locations: locations.csv
 contexts:
@@ -101,13 +113,105 @@ taxonomic_updates:
   replace: Acacia sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Adenanthos sp.
-  replace: Adenanthos sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Acacia sp. [10 km S of Nanutarra_1]
+  replace: Acacia sp. [10 km S of Nanutarra_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
-- find: Agonis sp.
-  replace: Agonis sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Acacia sp. [10 km S of Nanutarra_2]
+  replace: Acacia sp. [10 km S of Nanutarra_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [11 km ENE of Anketell HS]
+  replace: Acacia sp. [11 km ENE of Anketell HS; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [22 km N of Bullfinch]
+  replace: Acacia sp. [22 km N of Bullfinch; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [8 km WSW of Manunda RH_1]
+  replace: Acacia sp. [8 km WSW of Manunda RH_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [8 km WSW of Manunda RH_2]
+  replace: Acacia sp. [8 km WSW of Manunda RH_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [Balgo Hills_1]
+  replace: Acacia sp. [Balgo Hills_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [Balgo Hills_2]
+  replace: Acacia sp. [Balgo Hills_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [Mitchell Plateau_1]
+  replace: Acacia sp. [Mitchell Plateau_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [Mitchell Plateau_4]
+  replace: Acacia sp. [Mitchell Plateau_4; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [Mowen Rd, Mowen_1]
+  replace: Acacia sp. [Mowen Rd, Mowen_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [Mowen Rd, Mowen_2]
+  replace: Acacia sp. [Mowen Rd, Mowen_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [Sandfire Roadhouse_1]
+  replace: Acacia sp. [Sandfire Roadhouse_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [Sandfire Roadhouse_2]
+  replace: Acacia sp. [Sandfire Roadhouse_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [W of Lorna Glen HS_1]
+  replace: Acacia sp. [W of Lorna Glen HS_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Acacia sp. [W of Lorna Glen HS_2]
+  replace: Acacia sp. [W of Lorna Glen HS_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Adenanthos sp. [10-Mile Rocks_1]
+  replace: Adenanthos sp. [10-Mile Rocks_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Adenanthos sp. [Bluff Knoll_1]
+  replace: Adenanthos sp. [Bluff Knoll_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Agonis sp. [d'Entrecasteaux National Park]
+  replace: Agonis sp. [d'Entrecasteaux National Park; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Agonis sp. [Windy Harbour]
+  replace: Agonis sp. [Windy Harbour; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Anigozanthos sp.
   replace: Anigozanthos sp. [Brown_1997]
@@ -117,17 +221,48 @@ taxonomic_updates:
   replace: Aponogeton sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Astartea sp.
-  replace: Astartea sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Astartea sp. [18 km N of North Bannister]
+  replace: Astartea sp. [18 km N of North Bannister; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Astartea sp. [28 km N Bungalbin Hills]
+  replace: Astartea sp. [28 km N Bungalbin Hills; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Astroloma sp.
   replace: Astroloma sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
+- find: Astroloma sp. [Boyagin]
+  replace: Astroloma sp. [Boyagin; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Astroloma sp. [Williams_1]
+  replace: Astroloma sp. [Williams_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
 - find: Baeckea sp.
   replace: Baeckea sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+  taxonomic_resolution: genus
+- find: Baeckea sp. [East Yuna Nature Reserve_1]
+  replace: Baeckea sp. [East Yuna Nature Reserve_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Baeckea sp. [Tutanning Nature Reserve_1]
+  replace: Baeckea sp. [Tutanning Nature Reserve_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Baeckea sp. [Worsley]
+  replace: Baeckea sp. [Worsley; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Balaustion sp.
   replace: Balaustion sp. [Brown_1997]
@@ -137,25 +272,95 @@ taxonomic_updates:
   replace: Banksia sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Barringtonia sp.
-  replace: Barringtonia sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Banksia sp. [Augusta_1]
+  replace: Banksia sp. [Augusta_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
-- find: Bauhinia sp.
-  replace: Bauhinia sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Banksia sp. [Coomallo Creek]
+  replace: Banksia sp. [Coomallo Creek; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
-- find: Beaufortia sp.
-  replace: Beaufortia sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Banksia sp. [Gairdner Range_1]
+  replace: Banksia sp. [Gairdner Range_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
-- find: Billardiera sp.
-  replace: Billardiera sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Banksia sp. [Kings Park_1]
+  replace: Banksia sp. [Kings Park_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
-- find: Bombax sp.
-  replace: Bombax sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Banksia sp. [Rockingham]
+  replace: Banksia sp. [Rockingham; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Barringtonia sp. [Kimbolton Spring_1]
+  replace: Barringtonia sp. [Kimbolton Spring_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Barringtonia sp. [Kimbolton Spring_2]
+  replace: Barringtonia sp. [Kimbolton Spring_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Bauhinia sp. [Derby (near Fitzroy River)]
+  replace: Bauhinia sp. [Derby (near Fitzroy River); Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Bauhinia sp. [Derby_1]
+  replace: Bauhinia sp. [Derby_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Bauhinia sp. [Gogo Station]
+  replace: Bauhinia sp. [Gogo Station; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Bauhinia sp. [Upper Liveringa Station]
+  replace: Bauhinia sp. [Upper Liveringa Station; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Beaufortia sp. [Fitzgerald River National Park_1]
+  replace: Beaufortia sp. [Fitzgerald River National Park_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Beaufortia sp. [Fitzgerald River National Park_2]
+  replace: Beaufortia sp. [Fitzgerald River National Park_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Billardiera sp. [Chiddarcooping Nature Reserve_1]
+  replace: Billardiera sp. [Chiddarcooping Nature Reserve_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Billardiera sp. [Stirling Range Caravan Park]
+  replace: Billardiera sp. [Stirling Range Caravan Park; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Bombax sp. [(E5) Prince Regent River Reserve]
+  replace: Bombax sp. [(E5) Prince Regent River Reserve; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Bombax sp. [Carson Escarpment_1]
+  replace: Bombax sp. [Carson Escarpment_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Bombax sp. [Carson Escarpment_2]
+  replace: Bombax sp. [Carson Escarpment_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Boronia sp.
   replace: Boronia sp. [Brown_1997]
@@ -165,9 +370,20 @@ taxonomic_updates:
   replace: Borreria sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Brachychiton sp.
-  replace: Brachychiton sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Brachychiton sp. [Barrow Island_1]
+  replace: Brachychiton sp. [Barrow Island_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Brachychiton sp. [Mitchell Plateau_1]
+  replace: Brachychiton sp. [Mitchell Plateau_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Brachychiton sp. [Point Warrender, Mitchell Plateau]
+  replace: Brachychiton sp. [Point Warrender, Mitchell Plateau; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Brachyscome sp.
   replace: Brachyscome sp. [Brown_1997]
@@ -189,21 +405,79 @@ taxonomic_updates:
   replace: Callistemon sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Calothamnus sp.
-  replace: Calothamnus sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Callistemon sp. [Gungin Gully]
+  replace: Callistemon sp. [Gungin Gully; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Callistemon sp. [Jandakot_1]
+  replace: Callistemon sp. [Jandakot_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Calothamnus sp. [20 km NE of Bungalbin Hill]
+  replace: Calothamnus sp. [20 km NE of Bungalbin Hill; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Calothamnus sp. [Beekeepers Reserve, S of Dongara_1]
+  replace: Calothamnus sp. [Beekeepers Reserve, S of Dongara_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Calothamnus sp. [Castle Rock Bay]
+  replace: Calothamnus sp. [Castle Rock Bay; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Calothamnus sp. [Oakley Dam]
+  replace: Calothamnus sp. [Oakley Dam; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Calothamnus sp. [Ongerup_1]
+  replace: Calothamnus sp. [Ongerup_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Calotis sp.
   replace: Calotis sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Calytrix sp.
-  replace: Calytrix sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Calytrix sp. [38 km NNE ofZanthus]
+  replace: Calytrix sp. [38 km NNE ofZanthus; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
-- find: Carpobrotus sp.
-  replace: Carpobrotus sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Calytrix sp. [Caffarelli Island]
+  replace: Calytrix sp. [Caffarelli Island; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Calytrix sp. [Cooljarloo, Cataby]
+  replace: Calytrix sp. [Cooljarloo, Cataby; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Calytrix sp. [Glenelg River]
+  replace: Calytrix sp. [Glenelg River; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Calytrix sp. [Stokes National Park]
+  replace: Calytrix sp. [Stokes National Park; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Carpobrotus sp. [Emu Rock]
+  replace: Carpobrotus sp. [Emu Rock; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Carpobrotus sp. [Peak Charles_2]
+  replace: Carpobrotus sp. [Peak Charles_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Chamelaucium sp.
   replace: Chamelaucium sp. [Brown_1997]
@@ -229,25 +503,822 @@ taxonomic_updates:
   replace: Daviesia sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Dicrastylis sp.
-  replace: Dicrastylis sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Dicrastylis sp. [31 km N of Mullewa]
+  replace: Dicrastylis sp. [31 km N of Mullewa; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Dicrastylis sp. [57 km N of Galena Bridge]
+  replace: Dicrastylis sp. [57 km N of Galena Bridge; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Dryandra sp.
   replace: Dryandra sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
+- find: Dryandra sp. [Kings Park_1]
+  replace: Dryandra sp. [Kings Park_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Dryandra sp. [Millbrook Nature Reserve_4]
+  replace: Dryandra sp. [Millbrook Nature Reserve_4; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Dryandra sp. [Mount Gibbs]
+  replace: Dryandra sp. [Mount Gibbs; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Dryandra sp. [Nornalup_1]
+  replace: Dryandra sp. [Nornalup_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Dryandra sp. [RGC Minesite, Eneabba]
+  replace: Dryandra sp. [RGC Minesite, Eneabba; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Dryandra sp. [South Sister Nature Reserve]
+  replace: Dryandra sp. [South Sister Nature Reserve; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Dryandra sp. [South Sister Nature Reserve i]
+  replace: Dryandra sp. [South Sister Nature Reserve i; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Dryandra sp. [Williams_1]
+  replace: Dryandra sp. [Williams_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Dryandra sp. [Wooroloo]
+  replace: Dryandra sp. [Wooroloo; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
 - find: Eremophila sp.
   replace: Eremophila sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [10-Mile Rocks_2]
+  replace: Eremophila sp. [10-Mile Rocks_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [10-Mile Rocks_3]
+  replace: Eremophila sp. [10-Mile Rocks_3; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [13 km NNE of Meekatharra]
+  replace: Eremophila sp. [13 km NNE of Meekatharra; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [16 km S of Zanthus]
+  replace: Eremophila sp. [16 km S of Zanthus; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [16 km WSW of Lyons River HS]
+  replace: Eremophila sp. [16 km WSW of Lyons River HS; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [16.5 km SE of Cooma Well]
+  replace: Eremophila sp. [16.5 km SE of Cooma Well; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [196 km NNE of Carnarvon]
+  replace: Eremophila sp. [196 km NNE of Carnarvon; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [41 kmSSE of Wiluna]
+  replace: Eremophila sp. [41 kmSSE of Wiluna; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [E of Norseman_1]
+  replace: Eremophila sp. [E of Norseman_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [E of Norseman_2]
+  replace: Eremophila sp. [E of Norseman_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [E of Yellowdine]
+  replace: Eremophila sp. [E of Yellowdine; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [East Yuna Nature Reserve_1]
+  replace: Eremophila sp. [East Yuna Nature Reserve_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [N of Norseman_1]
+  replace: Eremophila sp. [N of Norseman_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [NE of Newman]
+  replace: Eremophila sp. [NE of Newman; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [NE of Youanmi]
+  replace: Eremophila sp. [NE of Youanmi; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [SW Kalgoorlie]
+  replace: Eremophila sp. [SW Kalgoorlie; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [Wanjarri]
+  replace: Eremophila sp. [Wanjarri; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eremophila sp. [WNW of Balladpnia]
+  replace: Eremophila sp. [WNW of Balladpnia; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Eucalyptus sp.
   replace: Eucalyptus sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Gardenia sp.
-  replace: Gardenia sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Eucalyptus sp. [10 km E of Yallingup]
+  replace: Eucalyptus sp. [10 km E of Yallingup; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [10 km N of Pindar]
+  replace: Eucalyptus sp. [10 km N of Pindar; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [10 km NW of Lake Barlee]
+  replace: Eucalyptus sp. [10 km NW of Lake Barlee; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [10 km NW of Lake Barlee Homestead_1]
+  replace: Eucalyptus sp. [10 km NW of Lake Barlee Homestead_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [10 km NW of Lake Barlee Homestead_2]
+  replace: Eucalyptus sp. [10 km NW of Lake Barlee Homestead_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [10 km S of Derby]
+  replace: Eucalyptus sp. [10 km S of Derby; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [10 km SE of Marvel Loch]
+  replace: Eucalyptus sp. [10 km SE of Marvel Loch; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [100 km E of Esperance]
+  replace: Eucalyptus sp. [100 km E of Esperance; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [108 km S of Halls Creek]
+  replace: Eucalyptus sp. [108 km S of Halls Creek; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [11 km NE of Karratha]
+  replace: Eucalyptus sp. [11 km NE of Karratha; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [11 km NE of Newman]
+  replace: Eucalyptus sp. [11 km NE of Newman; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [11 km S of Yellowdine]
+  replace: Eucalyptus sp. [11 km S of Yellowdine; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [11 kmNE of Karratha]
+  replace: Eucalyptus sp. [11 kmNE of Karratha; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [12 km E of Broome]
+  replace: Eucalyptus sp. [12 km E of Broome; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [12 km N of Lake Barlee]
+  replace: Eucalyptus sp. [12 km N of Lake Barlee; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [12 km N of Murchison River crossing]
+  replace: Eucalyptus sp. [12 km N of Murchison River crossing; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [12 km NW of Murchison River crossing]
+  replace: Eucalyptus sp. [12 km NW of Murchison River crossing; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [13 km S of Carnarvon]
+  replace: Eucalyptus sp. [13 km S of Carnarvon; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [13 km W of Wialki]
+  replace: Eucalyptus sp. [13 km W of Wialki; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [14 km S of Wyndham]
+  replace: Eucalyptus sp. [14 km S of Wyndham; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [144 km NW of Wittenoom]
+  replace: Eucalyptus sp. [144 km NW of Wittenoom; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [15 km N of Pindar]
+  replace: Eucalyptus sp. [15 km N of Pindar; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [15 km NNE of Neale Junction]
+  replace: Eucalyptus sp. [15 km NNE of Neale Junction; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [15 km S of Yellowdine]
+  replace: Eucalyptus sp. [15 km S of Yellowdine; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [16 km E of Carnarvon]
+  replace: Eucalyptus sp. [16 km E of Carnarvon; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [16 km S of Perth]
+  replace: Eucalyptus sp. [16 km S of Perth; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [16 km W of Ravensthorpe]
+  replace: Eucalyptus sp. [16 km W of Ravensthorpe; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [18 km E of Dampier]
+  replace: Eucalyptus sp. [18 km E of Dampier; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [18 km N of Margaret River]
+  replace: Eucalyptus sp. [18 km N of Margaret River; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [18 km N of Walpole]
+  replace: Eucalyptus sp. [18 km N of Walpole; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [18 km S of Cataby]
+  replace: Eucalyptus sp. [18 km S of Cataby; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [185 km SW of Roebuck Roadhouse]
+  replace: Eucalyptus sp. [185 km SW of Roebuck Roadhouse; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [185 kmEof Hyden]
+  replace: Eucalyptus sp. [185 kmEof Hyden; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [19 km N of Diemals]
+  replace: Eucalyptus sp. [19 km N of Diemals; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [19 km SSE of Derby]
+  replace: Eucalyptus sp. [19 km SSE of Derby; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [2 km E of Dedari]
+  replace: Eucalyptus sp. [2 km E of Dedari; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [21 km S of Lake Magenta]
+  replace: Eucalyptus sp. [21 km S of Lake Magenta; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [22 km NW of Lake Barlee]
+  replace: Eucalyptus sp. [22 km NW of Lake Barlee; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [22 km S of Lake Magenta]
+  replace: Eucalyptus sp. [22 km S of Lake Magenta; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [3 km E of Bulla Bulling]
+  replace: Eucalyptus sp. [3 km E of Bulla Bulling; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [3 km S of Yellowdine]
+  replace: Eucalyptus sp. [3 km S of Yellowdine; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [30 km E of Yellowdine]
+  replace: Eucalyptus sp. [30 km E of Yellowdine; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [30 km W of Watheroo]
+  replace: Eucalyptus sp. [30 km W of Watheroo; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [31 km E of Pindar]
+  replace: Eucalyptus sp. [31 km E of Pindar; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [36 km NE of Wubin]
+  replace: Eucalyptus sp. [36 km NE of Wubin; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [36 km W of Meekatharra]
+  replace: Eucalyptus sp. [36 km W of Meekatharra; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [38 km NE of Wubin]
+  replace: Eucalyptus sp. [38 km NE of Wubin; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [4 km S of Yellowdine_1]
+  replace: Eucalyptus sp. [4 km S of Yellowdine_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [4 km S of Yellowdine_2]
+  replace: Eucalyptus sp. [4 km S of Yellowdine_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [43 km NE of Morawa_1]
+  replace: Eucalyptus sp. [43 km NE of Morawa_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [43 km NE of Morawa_2]
+  replace: Eucalyptus sp. [43 km NE of Morawa_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [45 km W of Meekatharra]
+  replace: Eucalyptus sp. [45 km W of Meekatharra; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [48 km N of Diemals]
+  replace: Eucalyptus sp. [48 km N of Diemals; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [5 km NW of Bulla Bulling]
+  replace: Eucalyptus sp. [5 km NW of Bulla Bulling; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [52 km NE of Wubin]
+  replace: Eucalyptus sp. [52 km NE of Wubin; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [52 km W of Dedari]
+  replace: Eucalyptus sp. [52 km W of Dedari; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [58 km S of Menzies]
+  replace: Eucalyptus sp. [58 km S of Menzies; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [6 km W of Kununnurra]
+  replace: Eucalyptus sp. [6 km W of Kununnurra; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [60 km NE of Broome]
+  replace: Eucalyptus sp. [60 km NE of Broome; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [60 km W of Coolgardie]
+  replace: Eucalyptus sp. [60 km W of Coolgardie; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [7 km E of Kununurra]
+  replace: Eucalyptus sp. [7 km E of Kununurra; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [7 km S of Northcliffe]
+  replace: Eucalyptus sp. [7 km S of Northcliffe; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [71 km W of Ravensthorpe]
+  replace: Eucalyptus sp. [71 km W of Ravensthorpe; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [75 km NE of Wubin]
+  replace: Eucalyptus sp. [75 km NE of Wubin; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [77 km NW of Wubin]
+  replace: Eucalyptus sp. [77 km NW of Wubin; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [81 km E of Yellowdine]
+  replace: Eucalyptus sp. [81 km E of Yellowdine; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [9 km N of Newman TO]
+  replace: Eucalyptus sp. [9 km N of Newman TO; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Albany_2]
+  replace: Eucalyptus sp. [Albany_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Boulder]
+  replace: Eucalyptus sp. [Boulder; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Broome_2]
+  replace: Eucalyptus sp. [Broome_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Bullsbrook]
+  replace: Eucalyptus sp. [Bullsbrook; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Cape Range National Park]
+  replace: Eucalyptus sp. [Cape Range National Park; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Christmas Pool, Paterson Range]
+  replace: Eucalyptus sp. [Christmas Pool, Paterson Range; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Cockatoo Spring]
+  replace: Eucalyptus sp. [Cockatoo Spring; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Dedari]
+  replace: Eucalyptus sp. [Dedari; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Derby area]
+  replace: Eucalyptus sp. [Derby area; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Derby_1]
+  replace: Eucalyptus sp. [Derby_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Derby_2]
+  replace: Eucalyptus sp. [Derby_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Donnelly River crossing]
+  replace: Eucalyptus sp. [Donnelly River crossing; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Donnelly River_2]
+  replace: Eucalyptus sp. [Donnelly River_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Drysdale River A1]
+  replace: Eucalyptus sp. [Drysdale River A1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [E of Carnarvon]
+  replace: Eucalyptus sp. [E of Carnarvon; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [E of Kununurra]
+  replace: Eucalyptus sp. [E of Kununurra; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [E of Lake King]
+  replace: Eucalyptus sp. [E of Lake King; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [E of Norseman_3]
+  replace: Eucalyptus sp. [E of Norseman_3; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [East of Broome Hill]
+  replace: Eucalyptus sp. [East of Broome Hill; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Evanston]
+  replace: Eucalyptus sp. [Evanston; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Fitzroy River]
+  replace: Eucalyptus sp. [Fitzroy River; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Giles Weather Station]
+  replace: Eucalyptus sp. [Giles Weather Station; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Glenelg River]
+  replace: Eucalyptus sp. [Glenelg River; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Gnowangerup]
+  replace: Eucalyptus sp. [Gnowangerup; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Greenmount]
+  replace: Eucalyptus sp. [Greenmount; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Greenmount Hill]
+  replace: Eucalyptus sp. [Greenmount Hill; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Karratha_1]
+  replace: Eucalyptus sp. [Karratha_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Kellerberin]
+  replace: Eucalyptus sp. [Kellerberin; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Kununurra]
+  replace: Eucalyptus sp. [Kununurra; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Kwinana_1]
+  replace: Eucalyptus sp. [Kwinana_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Lake King]
+  replace: Eucalyptus sp. [Lake King; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Liveringa Station]
+  replace: Eucalyptus sp. [Liveringa Station; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Maida Vale, Perth]
+  replace: Eucalyptus sp. [Maida Vale, Perth; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Millbrook Nature Reserve_4]
+  replace: Eucalyptus sp. [Millbrook Nature Reserve_4; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Millstream]
+  replace: Eucalyptus sp. [Millstream; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Moora_1]
+  replace: Eucalyptus sp. [Moora_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Mount Gibson]
+  replace: Eucalyptus sp. [Mount Gibson; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Mount Saddleback]
+  replace: Eucalyptus sp. [Mount Saddleback; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [N of Wannoo]
+  replace: Eucalyptus sp. [N of Wannoo; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [NE of Yellowdine]
+  replace: Eucalyptus sp. [NE of Yellowdine; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [near Karratha]
+  replace: Eucalyptus sp. [near Karratha; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Newman_1]
+  replace: Eucalyptus sp. [Newman_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Newman_2]
+  replace: Eucalyptus sp. [Newman_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Nukarni]
+  replace: Eucalyptus sp. [Nukarni; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Perth_2]
+  replace: Eucalyptus sp. [Perth_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Prince Regent River Reserve W6]
+  replace: Eucalyptus sp. [Prince Regent River Reserve W6; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Quoin Head]
+  replace: Eucalyptus sp. [Quoin Head; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Runi Valley, Rudall River National Park]
+  replace: Eucalyptus sp. [Runi Valley, Rudall River National Park; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [S of Broome]
+  replace: Eucalyptus sp. [S of Broome; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [S of Eucla]
+  replace: Eucalyptus sp. [S of Eucla; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [S W of Waroona]
+  replace: Eucalyptus sp. [S W of Waroona; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Sale River]
+  replace: Eucalyptus sp. [Sale River; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [South Sister Nature Reserve]
+  replace: Eucalyptus sp. [South Sister Nature Reserve; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Stirling Range scenic drive_1]
+  replace: Eucalyptus sp. [Stirling Range scenic drive_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Sunday Island]
+  replace: Eucalyptus sp. [Sunday Island; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Toolinna Cove]
+  replace: Eucalyptus sp. [Toolinna Cove; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [W of Coolgardie_3]
+  replace: Eucalyptus sp. [W of Coolgardie_3; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [W of Coolgardie_4]
+  replace: Eucalyptus sp. [W of Coolgardie_4; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [W of Eucla]
+  replace: Eucalyptus sp. [W of Eucla; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Waroona]
+  replace: Eucalyptus sp. [Waroona; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Wilson Spring]
+  replace: Eucalyptus sp. [Wilson Spring; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Wooroloo]
+  replace: Eucalyptus sp. [Wooroloo; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Eucalyptus sp. [Yellowdine_2]
+  replace: Eucalyptus sp. [Yellowdine_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Gardenia sp. [Edgar Ranges_1]
+  replace: Gardenia sp. [Edgar Ranges_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Gardenia sp. [Mitchell Plateau_1]
+  replace: Gardenia sp. [Mitchell Plateau_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Gastrolobium sp.
   replace: Gastrolobium sp. [Brown_1997]
@@ -261,13 +1332,164 @@ taxonomic_updates:
   replace: Grevillea sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
+- find: Grevillea sp. [10 km S of Derby]
+  replace: Grevillea sp. [10 km S of Derby; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [10 km S of Paynes Find]
+  replace: Grevillea sp. [10 km S of Paynes Find; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [11 km SSE of Derby_1]
+  replace: Grevillea sp. [11 km SSE of Derby_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [11 km SSE of Derby_2]
+  replace: Grevillea sp. [11 km SSE of Derby_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [12 km SE of Ravensthorpe]
+  replace: Grevillea sp. [12 km SE of Ravensthorpe; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [13 km NW of Carranya_1]
+  replace: Grevillea sp. [13 km NW of Carranya_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [27 km NE of La Grange T.O.]
+  replace: Grevillea sp. [27 km NE of La Grange T.O.; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [48 km W of Meekatharra]
+  replace: Grevillea sp. [48 km W of Meekatharra; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [55 km NE of Wubin]
+  replace: Grevillea sp. [55 km NE of Wubin; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [8 km S of Yellowdine]
+  replace: Grevillea sp. [8 km S of Yellowdine; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [Cockatoo Spring]
+  replace: Grevillea sp. [Cockatoo Spring; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [Degerando Island]
+  replace: Grevillea sp. [Degerando Island; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [Drysdale River B2]
+  replace: Grevillea sp. [Drysdale River B2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [Mardathuna Station]
+  replace: Grevillea sp. [Mardathuna Station; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [Mouroubra Station]
+  replace: Grevillea sp. [Mouroubra Station; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [Mowanjum (near Derby)]
+  replace: Grevillea sp. [Mowanjum (near Derby); Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [Mt Manning]
+  replace: Grevillea sp. [Mt Manning; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [Mt Stirling]
+  replace: Grevillea sp. [Mt Stirling; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [Napier Broome Bay]
+  replace: Grevillea sp. [Napier Broome Bay; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [NE of La Grange T.O.]
+  replace: Grevillea sp. [NE of La Grange T.O.; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Grevillea sp. [S of Yellowdine]
+  replace: Grevillea sp. [S of Yellowdine; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
 - find: Hakea sp.
   replace: Hakea sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Hibbertia sp.
-  replace: Hibbertia sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Hakea sp. [13 km S of Wannoo]
+  replace: Hakea sp. [13 km S of Wannoo; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Hakea sp. [Cooljarloo, Cataby]
+  replace: Hakea sp. [Cooljarloo, Cataby; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Hakea sp. [McDermid Rock]
+  replace: Hakea sp. [McDermid Rock; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Hakea sp. [Middle Ironcap_1]
+  replace: Hakea sp. [Middle Ironcap_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Hakea sp. [Middle Ironcap_2]
+  replace: Hakea sp. [Middle Ironcap_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Hakea sp. [Mt Manypeaks ~ _]
+  replace: Hakea sp. [Mt Manypeaks ~ _; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Hakea sp. [Ongerup_1]
+  replace: Hakea sp. [Ongerup_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Hibbertia sp. [Millbrook Nature Reserve_2]
+  replace: Hibbertia sp. [Millbrook Nature Reserve_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Hibbertia sp. [Perth_1]
+  replace: Hibbertia sp. [Perth_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Hibbertia sp. [Tutanning Nature Reserve_2]
+  replace: Hibbertia sp. [Tutanning Nature Reserve_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Ipomoea sp.
   replace: Ipomoea sp. [Brown_1997]
@@ -277,9 +1499,40 @@ taxonomic_updates:
   replace: Isopogon sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Jacksonia sp.
-  replace: Jacksonia sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Jacksonia sp. [12 km N of Galena Bridge]
+  replace: Jacksonia sp. [12 km N of Galena Bridge; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Jacksonia sp. [28 km N of Zanthus]
+  replace: Jacksonia sp. [28 km N of Zanthus; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Jacksonia sp. [Badgingarra National Park_4]
+  replace: Jacksonia sp. [Badgingarra National Park_4; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Jacksonia sp. [Boorabbin Rock_1]
+  replace: Jacksonia sp. [Boorabbin Rock_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Jacksonia sp. [Kalbarri]
+  replace: Jacksonia sp. [Kalbarri; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Jacksonia sp. [Kenwick]
+  replace: Jacksonia sp. [Kenwick; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Jacksonia sp. [Kojonup]
+  replace: Jacksonia sp. [Kojonup; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Lambertia sp.
   replace: Lambertia sp. [Brown_1997]
@@ -289,13 +1542,69 @@ taxonomic_updates:
   replace: Lechenaultia sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
+- find: Lechenaultia sp. [S of Norseman]
+  replace: Lechenaultia sp. [S of Norseman; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Lechenaultia sp. [SE of Kidson Bluff]
+  replace: Lechenaultia sp. [SE of Kidson Bluff; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
 - find: Leptospermum sp.
   replace: Leptospermum sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Leucopogon sp.
-  replace: Leucopogon sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Leptospermum sp. [36 km E of Southern Cross]
+  replace: Leptospermum sp. [36 km E of Southern Cross; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Leptospermum sp. [90 km N of Zanthus]
+  replace: Leptospermum sp. [90 km N of Zanthus; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Leptospermum sp. [Bonnie Rocks]
+  replace: Leptospermum sp. [Bonnie Rocks; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Leptospermum sp. [Gairdner Range_2]
+  replace: Leptospermum sp. [Gairdner Range_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Leptospermum sp. [Mount Caroline]
+  replace: Leptospermum sp. [Mount Caroline; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Leptospermum sp. [Peak Charles_1]
+  replace: Leptospermum sp. [Peak Charles_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Leptospermum sp. [Point Anne]
+  replace: Leptospermum sp. [Point Anne; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Leucopogon sp. [Beekeepers Reserve, S of Dongara_1]
+  replace: Leucopogon sp. [Beekeepers Reserve, S of Dongara_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Leucopogon sp. [Cooljarloo, Cataby]
+  replace: Leucopogon sp. [Cooljarloo, Cataby; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Leucopogon sp. [Watheroo_2]
+  replace: Leucopogon sp. [Watheroo_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Lysinema sp.
   replace: Lysinema sp. [Brown_1997]
@@ -305,6 +1614,85 @@ taxonomic_updates:
   replace: Malleostemon sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
+- find: Melaleuca sp.
+  replace: Melaleuca sp. [Brown_1997]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [1 km S of Mount Holland]
+  replace: Melaleuca sp. [1 km S of Mount Holland; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [11 km N of Main Ord Dam]
+  replace: Melaleuca sp. [11 km N of Main Ord Dam; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [11 km NE of Tamala Station]
+  replace: Melaleuca sp. [11 km NE of Tamala Station; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [2 km S of Lawley River]
+  replace: Melaleuca sp. [2 km S of Lawley River; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [Argyle Downs]
+  replace: Melaleuca sp. [Argyle Downs; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [Coulomb Point_4]
+  replace: Melaleuca sp. [Coulomb Point_4; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [Derby_2]
+  replace: Melaleuca sp. [Derby_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [Fitzroy Crossing]
+  replace: Melaleuca sp. [Fitzroy Crossing; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [Fitzroy River]
+  replace: Melaleuca sp. [Fitzroy River; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [Jandakot_1]
+  replace: Melaleuca sp. [Jandakot_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [Mitchell Plateau_1]
+  replace: Melaleuca sp. [Mitchell Plateau_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [Mount Caroline]
+  replace: Melaleuca sp. [Mount Caroline; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [Ord River]
+  replace: Melaleuca sp. [Ord River; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [Roebuck Plains]
+  replace: Melaleuca sp. [Roebuck Plains; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Melaleuca sp. [Thomsons Lake]
+  replace: Melaleuca sp. [Thomsons Lake; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
 - find: Micromyrtus sp.
   replace: Micromyrtus sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
@@ -313,9 +1701,20 @@ taxonomic_updates:
   replace: Mitrasacme sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Myoporum sp.
-  replace: Myoporum sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Myoporum sp. [35 km E of Norseman]
+  replace: Myoporum sp. [35 km E of Norseman; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Myoporum sp. [70 km ENE of Norseman]
+  replace: Myoporum sp. [70 km ENE of Norseman; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Myoporum sp. [ENE of Norseman_2]
+  replace: Myoporum sp. [ENE of Norseman_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Olearia sp.
   replace: Olearia sp. [Brown_1997]
@@ -329,6 +1728,16 @@ taxonomic_updates:
   replace: Pimelea sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
+- find: Pimelea sp. [Cape Arid National Park_2]
+  replace: Pimelea sp. [Cape Arid National Park_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Pimelea sp. [Stirling Range_1]
+  replace: Pimelea sp. [Stirling Range_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
 - find: Pityrodia sp.
   replace: Pityrodia sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
@@ -337,9 +1746,20 @@ taxonomic_updates:
   replace: Prasophyllum sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Ptilotus sp.
-  replace: Ptilotus sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Ptilotus sp. [Gooseberry Hill]
+  replace: Ptilotus sp. [Gooseberry Hill; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Ptilotus sp. [S of Onslow]
+  replace: Ptilotus sp. [S of Onslow; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Ptilotus sp. [SW ofTangadeeHS]
+  replace: Ptilotus sp. [SW ofTangadeeHS; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Rhodanthe sp.
   replace: Rhodanthe sp. [Brown_1997]
@@ -353,9 +1773,30 @@ taxonomic_updates:
   replace: Scaevola sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Scholtzia sp.
-  replace: Scholtzia sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Scholtzia sp. [22 km from Cataby]
+  replace: Scholtzia sp. [22 km from Cataby; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Scholtzia sp. [24 km N of Tallering Station]
+  replace: Scholtzia sp. [24 km N of Tallering Station; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Scholtzia sp. [5 km N of Jurien]
+  replace: Scholtzia sp. [5 km N of Jurien; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Scholtzia sp. [Karroun Hill Nature Reserve]
+  replace: Scholtzia sp. [Karroun Hill Nature Reserve; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Scholtzia sp. [Moore River National Park_2]
+  replace: Scholtzia sp. [Moore River National Park_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Senna sp.
   replace: Senna sp. [Brown_1997]
@@ -365,13 +1806,45 @@ taxonomic_updates:
   replace: Solanum sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Sphenotoma sp.
-  replace: Sphenotoma sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Solanum sp. [98 km NNE of Neale Junction]
+  replace: Solanum sp. [98 km NNE of Neale Junction; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
-- find: Stylidium sp.
-  replace: Stylidium sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Solanum sp. [Beekeepers Reserve, S of Dongara_1]
+  replace: Solanum sp. [Beekeepers Reserve, S of Dongara_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Solanum sp. [Woodleigh Station]
+  replace: Solanum sp. [Woodleigh Station; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Sphenotoma sp. [Boulder Rock]
+  replace: Sphenotoma sp. [Boulder Rock; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Sphenotoma sp. [Stirling Range o Spiculaea ciliata ( Orchidaceae )]
+  replace: Sphenotoma sp. [Stirling Range o Spiculaea ciliata ( Orchidaceae ); Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Sphenotoma sp. [Stirling Range_1]
+  replace: Sphenotoma sp. [Stirling Range_1; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Stylidium sp. [1.5 km S of Yallingup]
+  replace: Stylidium sp. [1.5 km S of Yallingup; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Stylidium sp. [15 km S of Yallingup]
+  replace: Stylidium sp. [15 km S of Yallingup; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Swainsona sp.
   replace: Swainsona sp. [Brown_1997]
@@ -381,17 +1854,69 @@ taxonomic_updates:
   replace: Teucrium sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Thryptomene sp.
-  replace: Thryptomene sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Thryptomene sp. [65 km N of Galena Bridge]
+  replace: Thryptomene sp. [65 km N of Galena Bridge; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Thryptomene sp. [Booylgoo Rocks]
+  replace: Thryptomene sp. [Booylgoo Rocks; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Verticordia sp.
   replace: Verticordia sp. [Brown_1997]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
   taxonomic_resolution: genus
-- find: Xanthorrhoea sp.
-  replace: Xanthorrhoea sp. [Brown_1997]
-  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-15)
+- find: Verticordia sp. [27 km N of Bungalbin Hill]
+  replace: Verticordia sp. [27 km N of Bungalbin Hill; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Verticordia sp. [Bungalbin]
+  replace: Verticordia sp. [Bungalbin; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Verticordia sp. [RGC Minesite, Eneabba]
+  replace: Verticordia sp. [RGC Minesite, Eneabba; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Verticordia sp. [Watheroo National Park_4]
+  replace: Verticordia sp. [Watheroo National Park_4; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Xanthorrhoea sp. [24 km SW of Nannup]
+  replace: Xanthorrhoea sp. [24 km SW of Nannup; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Xanthorrhoea sp. [Mundaring]
+  replace: Xanthorrhoea sp. [Mundaring; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Xanthorrhoea sp. [Neerabup National Park_2]
+  replace: Xanthorrhoea sp. [Neerabup National Park_2; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Xanthorrhoea sp. [SE of Pinjarra]
+  replace: Xanthorrhoea sp. [SE of Pinjarra; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Xanthorrhoea sp. [Star Swamp, Perth]
+  replace: Xanthorrhoea sp. [Star Swamp, Perth; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
+  taxonomic_resolution: genus
+- find: Xanthorrhoea sp. [Zig Zag, Gooseberry Hill]
+  replace: Xanthorrhoea sp. [Zig Zag, Gooseberry Hill; Brown_1997]
+  reason: Genus sp. recorded at multiple distinct locations within Brown_1997;
+    disambiguated by location since these are likely different species (2026-09-18)
   taxonomic_resolution: genus
 - find: Xylomelum sp.
   replace: Xylomelum sp. [Brown_1997]
