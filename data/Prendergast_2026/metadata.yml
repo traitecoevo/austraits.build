@@ -61,7 +61,11 @@ dataset:
           `Plant scientific name`
         ),
         Date = util_parse_collection_date(Date)
-      )
+      ) |>
+      dplyr::group_by(`Plant scientific name`, location_name, Date, `Pollinator taxon name`, `Pollinator match column`, `Pollinator match value`) |>
+      dplyr::mutate(`No. of visitors` = as.character(sum(as.numeric(`No. of visitors`), na.rm = TRUE))) |>
+      dplyr::distinct(`Plant scientific name`, location_name, Date, `Pollinator taxon name`, `Pollinator match column`, `Pollinator match value`, .keep_all = TRUE) |>
+      dplyr::ungroup()
   '
   collection_date: Date
   taxon_name: Plant scientific name
@@ -94,6 +98,10 @@ dataset:
   notes: The one plant genus-level `sp.` name that recurs across more than one distinct
     location (`Babingtonia sp.`) is suffixed with that location (e.g. `Babingtonia
     sp. [Ravensthorpe]`) so these are not conflated as the same unidentified species.
+    There are some pollinator records, where multiple rows have the same plant taxon,
+    location, and date after pollinator taxa are collapsed to allowed values. For
+    these, `No. of visitors` is summed across these records and only a single row
+    is retained.
 identifiers: .na
 locations:
   Cockaleechie:
