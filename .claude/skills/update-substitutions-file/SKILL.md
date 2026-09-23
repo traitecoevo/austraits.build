@@ -63,7 +63,13 @@ Check, in this order, before concluding there's no match:
    `blue_purple`, not `blue_purple purple`.)
 
 A term that doesn't clear any of these three isn't a match -- don't stretch
-a fourth, weaker kind of inference to force one.
+a fourth, weaker kind of inference to force one, and don't reach for a
+fourth option of *adding* the term as a new synonym in `config/traits.yml`
+either. "This raw family/genus genuinely belongs to that broader allowed
+value's clade" is almost always still just this dataset's `replace` value,
+not grounds for extending the shared dictionary -- see `fill-metadata-yml`'s
+fuller explanation of the (narrow) exceptions before ever editing
+`config/traits.yml` from within this skill.
 
 ## Step 4 -- de-duplicate before joining
 
