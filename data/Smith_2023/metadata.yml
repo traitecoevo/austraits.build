@@ -1,0 +1,837 @@
+source:
+  primary:
+    key: Smith_2023
+    bibtype: Article
+    year: '2023'
+    author: Duncan D. Smith and Mark A. Adams and Amanda M. Salvi and Christopher
+      P. Krieg and Cecile Ane and Katherine A. McCulloh and Thomas J. Givnish
+    journal: Nature Communications
+    title: Ecophysiological adaptations shape distributions of closely related trees
+      along a climatic moisture gradient
+    volume: '14'
+    number: .na
+    pages: '7173'
+    doi: 10.1038/s41467-023-42352-w
+contributors:
+  data_collectors:
+  - last_name: Smith
+    given_name: Duncan
+    ORCID: unknown
+    affiliation: Department of Botany, University of Wisconsin-Madison, USA
+    additional_role: contact
+  assistants: unknown
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+   data %>%
+    filter(!trait %in% c("lvs/root.mass", "shoot.m/height", "brk/stm.a.tk", "lvs/basal.area", "lvs.a/stem.m", "rgr.height.plntg", "rgr.shoot.plntg", "survival"))|>
+    mutate(
+      taxon_name = paste(genus, species),
+      raw = suppressWarnings(dplyr::case_when(
+        trans == "log" ~ mult * exp(umean),
+        trans == "sqrt" ~ mult * umean^2, 
+        trans == "exp" ~ mult * log(umean), 
+        TRUE ~ umean )),
+      value = raw
+      )
+    '
+  collection_date: 2018/2021
+  taxon_name: taxon_name
+  trait_name: trait
+  value: value
+  location_name: site
+  description: To test optimality-model predictions for how photosynthetic, hydraulic
+    and allocational trait-environment relationships, and adaptive cross-over in
+    growth, shape the distributions of closely related Eucalyptus species along
+    a climatic moisture gradient.
+  basis_of_record: captive_cultivated
+  life_stage: unknown
+  sampling_strategy: Species selection and climatic distribution ^p We selected five
+    species each from Eucalyptus subg. Eucalyptus and subg. Symphyomyrtus, stratified
+    by the portions of the Victorian P/Ep gradient they dominate, from mallee to eucalypt
+    woodland, eucalypt forest, tall wet sclerophyll forest, and temperate rainforest.
+    Eucalyptus dominates most of this region, where its species are evergreen and
+    shade-intolerant, rainfall is essentially aseasonal, and latitude spans only 3
+    degrees. ^p Common gardens ^p We established common gardens in Victorian state
+    forests at Hattah, Bealiba, Mt. Disappointment, and Toolangi, spanning an eightfold
+    range in P/Ep from 0.16 to 1.25 (Fig. 1, Table S2). Gardens were 0.25-ha upland
+    plots in recently logged or previously cleared land, unshaded by surrounding vegetation,
+    and fenced to exclude herbivores such as kangaroos, wallabies, wombats, and rabbits.
+    The ground was covered with landscaping cloth (Permathene, Campbelltown NSW) to
+    control weeds. At each site, we installed a GWRS100 weather station (Campbell
+    Scientific, Logan UT) with sensors to log temperature, humidity, windspeed, rainfall,
+    and volumetric water content. Seeds for each species from 1 to 3 collections within
+    native ranges were mixed, germinated, raised in soilless medium by Australian
+    Native Farm Forestry (Cobram East, VIC), and planted in June 2018. We planted
+    81-254 individuals per species at each garden, based on variation in germination
+    and survival. We divided seedlings for each species into enneads (3 x 3 arrays,
+    with plants 50 cm apart), and planted these arrays randomly across three blocks,
+    each 702-756 seedlings in all. ^p Survival, height, biomass ^p We censused and
+    harvested plants from each garden three times, at 37-117 weeks after planting.
+    We conducted each harvest as synchronously as possible (5-15 weeks) across gardens.
+    We tallied all plants as alive or dead, and measured heights of the live plants.
+    For the first harvest, we studied plants in the first ennead rows; the second
+    ennead rows in the second harvest, and so on. We selected 7-8 focal plants per
+    species stratified by height across the range in that species and recorded the
+    number and basal diameter(s) of their basal shoots.
+  original_file: downloaded data_trait means.csv; data_Fig 2,3,4,S2,S3,S4.csv
+  notes: trait data were reverse transformed to raw values after referencing Zenodo
+    analysis scripts (doi.org/10.5281/zenodo.8277056, raw/8277056/Fig 3,S2,S4.R).
+    Additional trait data not yet in AusTraits, including survival and the two relative-growth-rate
+    traits (rgr.height.plntg, rgr.shoot.plntg); 5 of 7 "standardized ratio" traits
+    (brk/stm.a.tk, lvs.a/stem.m, lvs/basal.area, lvs/root.mass, shoot.m/height) where
+    the values are residuals from a cross-species common allometric slope (a = exp(log(y)
+    - b*log(x)), not a simple physical ratio).
+identifiers: .na
+locations:
+  Hattah:
+    precipitation, MAP (mm): 316
+    temperature, MAT (C): 16.9
+    latitude (deg): -34.74
+    longitude (deg): 142.25
+    elevation (m): 42
+    depth to water table (m): 5.8
+    ratio of precipitation to pan evaporation, P/Ep: 0.16
+    description: mallee
+  Bealiba:
+    precipitation, MAP (mm): 574
+    temperature, MAT (C): 13.9
+    latitude (deg): -36.73
+    longitude (deg): 143.61
+    elevation (m): 280
+    depth to water table (m): 4.8
+    ratio of precipitation to pan evaporation, P/Ep: 0.39
+    description: eucalypt woodland
+  Mt. Disappointment:
+    precipitation, MAP (mm): 1256
+    temperature, MAT (C): 11.0
+    latitude (deg): -36.39
+    longitude (deg): 145.14
+    elevation (m): 650
+    depth to water table (m): 23.8
+    ratio of precipitation to pan evaporation, P/Ep: 1.03
+    description: tall wet sclerophyll forest
+  Toolangi:
+    precipitation, MAP (mm): 1417
+    temperature, MAT (C): 11.0
+    latitude (deg): -36.49
+    longitude (deg): 145.57
+    elevation (m): 688
+    depth to water table (m): 42.2
+    ratio of precipitation to pan evaporation, P/Ep: 1.25
+    description: tall wet sclerophyll forest
+contexts:
+- context_property: leaf surface
+  category: entity_context
+  var_in: leaf_surface
+traits:
+- var_in: leaf.A/area
+  unit_in: umol{CO2}/m2/s
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: During the first two harvests, we measured Aarea, Amass, and gs until they
+    stabilized on one fully expanded leaf on each focal plant using an LI-6400XT system
+    (LI-COR, Lincoln, NE). Most data were gathered between 09:00 and 13:00 when conditions
+    were conducive to photosynthesis. Measurements were made at 400 ppm CO2, 1700
+    umol m-2 s-1 PAR, and ambient humidity except when scrubbing was needed to avoid
+    high-humidity problems. We set the block temperature to 25 degrees C if leaf temperature
+    exceeded this.
+- var_in: leaf.A/mass
+  unit_in: umol{CO2}/g/s
+  trait_name: leaf_photosynthetic_rate_per_dry_mass_saturated
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: During the first two harvests, we measured Aarea, Amass, and gs until they
+    stabilized on one fully expanded leaf on each focal plant using an LI-6400XT system
+    (LI-COR, Lincoln, NE). Most data were gathered between 09:00 and 13:00 when conditions
+    were conducive to photosynthesis. Measurements were made at 400 ppm CO2, 1700
+    umol m-2 s-1 PAR, and ambient humidity except when scrubbing was needed to avoid
+    high-humidity problems. We set the block temperature to 25 degrees C if leaf temperature
+    exceeded this.
+- var_in: leaf.gs/area
+  unit_in: mol{H2O}/m2/s
+  trait_name: leaf_stomatal_conductance_per_area_at_Asat
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: During the first two harvests, we measured Aarea, Amass, and gs until they
+    stabilized on one fully expanded leaf on each focal plant using an LI-6400XT system
+    (LI-COR, Lincoln, NE). Most data were gathered between 09:00 and 13:00 when conditions
+    were conducive to photosynthesis. Measurements were made at 400 ppm CO2, 1700
+    umol m-2 s-1 PAR, and ambient humidity except when scrubbing was needed to avoid
+    high-humidity problems. We set the block temperature to 25 degrees C if leaf temperature
+    exceeded this.
+- var_in: A/gs
+  unit_in: umol{CO2}/mol{H2O}
+  trait_name: leaf_water_use_efficiency_intrinsic
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: During the first two harvests, we measured Aarea, Amass, and gs until they
+    stabilized on one fully expanded leaf on each focal plant using an LI-6400XT system
+    (LI-COR, Lincoln, NE). Most data were gathered between 09:00 and 13:00 when conditions
+    were conducive to photosynthesis. Measurements were made at 400 ppm CO2, 1700
+    umol m-2 s-1 PAR, and ambient humidity except when scrubbing was needed to avoid
+    high-humidity problems. We set the block temperature to 25 degrees C if leaf temperature
+    exceeded this.
+- var_in: Ci.leaf
+  unit_in: umol{CO2}/mol
+  trait_name: leaf_intercellular_CO2_concentration_at_Asat
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: During the first two harvests, we measured Aarea, Amass, and gs until they
+    stabilized on one fully expanded leaf on each focal plant using an LI-6400XT system
+    (LI-COR, Lincoln, NE). Most data were gathered between 09:00 and 13:00 when conditions
+    were conducive to photosynthesis. Measurements were made at 400 ppm CO2, 1700
+    umol m-2 s-1 PAR, and ambient humidity except when scrubbing was needed to avoid
+    high-humidity problems. We set the block temperature to 25 degrees C if leaf temperature
+    exceeded this. A-Ci curves were measured on additional plants to estimate Jmax
+    and Vcmax (see Salvi et al., cited in the source paper)." ci (intercellular CO2
+    concentration) was recorded as part of the same gas exchange measurement as Aarea/Amass/gs.
+- var_in: Jmax.mass
+  unit_in: umol{CO2}/g/s
+  trait_name: leaf_photosynthesis_Jmax_per_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: model_derived
+  replicates: replicates
+  methods: A-Ci curves were measured to estimate Jmax and Vcmax (see Salvi et al.
+    for details). Maximum carboxylation rate at 25 degrees C (plantecophys R package
+    definition and units). Converted to mass with P2H1 mean SLA.
+- var_in: Vcmax.mass
+  unit_in: umol{CO2}/g/s
+  trait_name: leaf_photosynthesis_Vcmax_per_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: model_derived
+  replicates: replicates
+  methods: A-Ci curves were measured to estimate Jmax and Vcmax (see Salvi et al.
+    for details). Maximum rate of electron transport at 25 degrees C (plantecophys
+    R package definition and units). Converted to mass with P2H1 mean SLA.
+- var_in: N.leaf
+  unit_in: mg/g
+  trait_name: leaf_N_per_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Sampled using standard methods, with no details given in the publication.
+- var_in: N.area
+  unit_in: mg/cm2
+  trait_name: leaf_N_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: model_derived
+  replicates: replicates
+  methods: Sampled using standard methods, with no details given in the publication.
+- var_in: C.leaf
+  unit_in: mg/g
+  trait_name: leaf_C_per_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Sampled using standard methods, with no details given in the publication.
+- var_in: d13C.leaf
+  unit_in: '{delta}[ppth]'
+  trait_name: leaf_delta13C
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Sampled using standard methods, with no details given in the publication.
+- var_in: leaf.size.area
+  unit_in: cm2
+  trait_name: leaf_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Leaf area, thickness, SLA, stomatal size and pore length, epidermal cell
+    sizes, VLA, and spectral properties were measured on the youngest mature leaf
+    from each focal individual.
+- var_in: leaf.thick.sect
+  unit_in: um
+  trait_name: leaf_thickness
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Leaf area, thickness, SLA, stomatal size and pore length, epidermal cell
+    sizes, VLA, and spectral properties were measured on the youngest mature leaf
+    from each focal individual. All image analyses were performed in ImageJ v1.53k.
+    We measured leaf thickness with a dial micrometer (B.C. Ames, Waltham MA); SLA,
+    using the area and dry mass of leaf punches. We cleared dried leaves and then
+    determined VLA in 2 mm2 areas, and stomatal and epidermal dimensions from 4 to
+    5 cells or cell pairs.
+- var_in: sla.lamina
+  unit_in: cm2/g
+  trait_name: leaf_lamina_mass_per_area
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Leaf area, thickness, SLA, stomatal size and pore length, epidermal cell
+    sizes, VLA, and spectral properties were measured on the youngest mature leaf
+    from each focal individual.
+- var_in: VLA
+  unit_in: um/mm2
+  trait_name: leaf_total_vein_density
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Leaf area, thickness, SLA, stomatal size and pore length, epidermal cell
+    sizes, VLA, and spectral properties were measured on the youngest mature leaf
+    from each focal individual.
+- var_in: TLP
+  unit_in: MPa
+  trait_name: leaf_turgor_loss_point
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: We collected leaves from seven plants per species x site combination during
+    the third harvest (July-November 2020) and March-April 2021. We used the osmometry
+    method, employing 12 chamber psychrometers (75-3VC, JRD Merrill, Logan UT). We
+    calibrated chambers before the experiment using two salt-solution standards and
+    temperature-corrected water potential calculations.
+- var_in: leaf.P.pd
+  unit_in: MPa
+  trait_name: water_potential_predawn
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: During the first harvest (March-April 2019) we used a pressure chamber
+    to measure predawn water potential on five of the focal plants per species. For
+    midday water potential, we measured psi_leaf during kleaf measurements (see above).
+    COVID-19 lockdowns, equipment theft, and the time and expense of making repeated
+    visits along a 430-km study transect made it difficult to characterize psi_leaf
+    more frequently.
+- var_in: leaf.P.md2
+  unit_in: MPa
+  trait_name: water_potential_midday
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: During the first harvest (March-April 2019) we used a pressure chamber
+    to measure predawn water potential on five of the focal plants per species. For
+    midday water potential, we measured psi_leaf during kleaf measurements (see above).
+    COVID-19 lockdowns, equipment theft, and the time and expense of making repeated
+    visits along a 430-km study transect made it difficult to characterize psi_leaf
+    more frequently. Midday psi_leaf was measured on the unbagged leaf during the
+    kleaf measurement.
+- var_in: kleaf
+  unit_in: mmol/m2/MPa/s
+  trait_name: leaf_specific_hydraulic_conductance
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: We measured leaf hydraulic conductance on one leaf per plant from five
+    focal plants during the first harvest (March-April 2019), using the in vivo method.
+    We calculated kleaf as T/(psi_stem - psi_leaf), where T is transpiration determined
+    with an LI-6400XT system and psi_stem - psi_leaf is the xylem pressure difference
+    between adjacent bagged and unbagged leaves, determined using a pressure chamber
+    (PMS, Albany OR). We excluded kleaf measurements when the pressure difference
+    was small (<ca. 0.3 MPa) as this likely reflected continued transpiration by the
+    bagged leaf or a low unbagged transpiration rate.
+- var_in: gmin
+  unit_in: mmol{H2O}/m2/s
+  trait_name: leaf_cuticular_conductance
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: To measure minimum leaf conductance (gmin), we bagged five shoots per site
+    x species and transported them under refrigeration to the lab during the third
+    harvest. We rehydrated one excised leaf per shoot in distilled water overnight,
+    measured its area, and hung it in a dark chamber over a saturated NaCl + sucrose
+    solution used to control humidity, using fans to reduce boundary-layer resistance.
+    We weighed leaves every ca. 2 h and measured the fluorescence ratio Fv/Fm with
+    a Mini PAM II (Walz, Effeltrich, Germany) every other weighing. Leaf mass typically
+    declined rapidly and then more slowly and quasi-linearly as conductance reached
+    or approached its minimum. We calculated conductance between each weighing using
+    masses, humidity, temperature recorded in the chamber, and elevation-corrected
+    barometric pressure from a nearby weather station. We recorded gmin as the average
+    of sequential points in the quasi-linear phase with the lowest conductance and
+    Fv/Fm above 0.7. Chamber darkness was not well controlled when measuring samples
+    from Hattah so measurements were repeated one year later using the same cohort
+    of plants and the same sample size.
+- var_in: n.trunks
+  unit_in: '{count}'
+  trait_name: stem_count
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: We selected 7-8 focal plants per species stratified by height across the
+    range in that species and recorded the number and basal diameter(s) of their basal
+    shoots.
+- var_in: height
+  unit_in: cm
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: plant_height, not mapped because not a population maximum; We censused
+    and harvested plants from each garden three times, at 37-117 weeks after planting.
+    We conducted each harvest as synchronously as possible (5-15 weeks) across gardens.
+    We tallied all plants as alive or dead, and measured heights of the live plants.
+    For the first harvest, we studied plants in the first ennead rows; the second
+    ennead rows in the second harvest, and so on. We selected 7-8 focal plants per
+    species stratified by height across the range in that species and recorded the
+    number and basal diameter(s) of their basal shoots.
+- var_in: den.xyl.trnk
+  unit_in: g/cm3
+  trait_name: wood_density
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: After measuring other traits on the focal plants, we harvested them, cutting
+    below the lignotuber if present. For the first harvest, we bagged entire plant
+    tops, transported these to the lab to separate leaf, stem, and lignotuber tissue,
+    collected a trunk tissue sample to determine wood density, and weighed all material
+    after drying at 70 degrees C. For the remaining harvests, we used an allometric
+    approach, estimating branch masses from their basal diameters and measuring bole
+    mass and stem, bark, and wood densities of branches and trunks.
+- var_in: den.brk.trunk
+  unit_in: g/cm3
+  trait_name: bark_density
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: After measuring other traits on the focal plants, we harvested them, cutting
+    below the lignotuber if present. For the first harvest, we bagged entire plant
+    tops, transported these to the lab to separate leaf, stem, and lignotuber tissue,
+    collected a trunk tissue sample to determine wood density, and weighed all material
+    after drying at 70 degrees C. For the remaining harvests, we used an allometric
+    approach, estimating branch masses from their basal diameters and measuring bole
+    mass and stem, bark, and wood densities of branches and trunks.
+- var_in: conduit.dens
+  unit_in: '{count}/mm2'
+  trait_name: stem_vessel_density
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Kstem and xylem anatomy ^p During October-December 2019 (68-73 weeks after
+    planting), we placed one branch from each of five individuals per species per
+    site in a moistened plastic bag and transported them to the lab. From each branch
+    we excised an 11-cm segment, infiltrated this under partial vacuum in distilled
+    water overnight to remove emboli, trimmed the ends with a razor blade and connected
+    to a flow meter filled with 20 mM KCl solution filtered to 0.2 um to measure at
+    least three steady-state flow rates at two or more pressures between ca. 0.4 and
+    4.9 kPa. Stem hydraulic conductivity (Kstem) is the slope of the regression of
+    flow rate (g s-1) vs pressure gradient (MPa mm-1), which we then standardized
+    to 20 degrees C and divided by cross-sectional xylem area (XA) or leaf area. Kstem
+    is not completely standardized by XA, so variation in xylem area can bias results.
+    To avoid this, we scaled Kstem to the median xylem area using the regression ln(Kstem/XA)
+    ~ ln(XA) + site for each species where site is a factor. We dried stems and then
+    later rehydrated them and obtained sections with a sliding microtome. We stained
+    the sections with toluidine blue to measure conduit density and hydraulically
+    weighted conduit diameter, Dh = (1/n * sum(Di^4))^(1/4), where Di is the individual
+    vessel diameter. From these measurements, we calculated the stem theoretical conductivity,
+    Kstem,theo, using Poiseuille''s Law and assuming no embolisms.
+- var_in: conduit.HWD
+  unit_in: um
+  trait_name: stem_vessel_diameter_hydraulic
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Kstem and xylem anatomy ^p During October-December 2019 (68-73 weeks after
+    planting), we placed one branch from each of five individuals per species per
+    site in a moistened plastic bag and transported them to the lab. From each branch
+    we excised an 11-cm segment, infiltrated this under partial vacuum in distilled
+    water overnight to remove emboli, trimmed the ends with a razor blade and connected
+    to a flow meter filled with 20 mM KCl solution filtered to 0.2 um to measure at
+    least three steady-state flow rates at two or more pressures between ca. 0.4 and
+    4.9 kPa. Stem hydraulic conductivity (Kstem) is the slope of the regression of
+    flow rate (g s-1) vs pressure gradient (MPa mm-1), which we then standardized
+    to 20 degrees C and divided by cross-sectional xylem area (XA) or leaf area. Kstem
+    is not completely standardized by XA, so variation in xylem area can bias results.
+    To avoid this, we scaled Kstem to the median xylem area using the regression ln(Kstem/XA)
+    ~ ln(XA) + site for each species where site is a factor. We dried stems and then
+    later rehydrated them and obtained sections with a sliding microtome. We stained
+    the sections with toluidine blue to measure conduit density and hydraulically
+    weighted conduit diameter, Dh = (1/n * sum(Di^4))^(1/4), where Di is the individual
+    vessel diameter. From these measurements, we calculated the stem theoretical conductivity,
+    Kstem,theo, using Poiseuille''s Law and assuming no embolisms.
+- var_in: Ks.theo
+  unit_in: kg/m/MPa/s
+  trait_name: sapwood_specific_hydraulic_conductivity_theoretical
+  entity_type: population
+  value_type: mean
+  basis_of_value: model_derived
+  replicates: replicates
+  methods: Kstem and xylem anatomy ^p During October-December 2019 (68-73 weeks after
+    planting), we placed one branch from each of five individuals per species per
+    site in a moistened plastic bag and transported them to the lab. From each branch
+    we excised an 11-cm segment, infiltrated this under partial vacuum in distilled
+    water overnight to remove emboli, trimmed the ends with a razor blade and connected
+    to a flow meter filled with 20 mM KCl solution filtered to 0.2 um to measure at
+    least three steady-state flow rates at two or more pressures between ca. 0.4 and
+    4.9 kPa. Stem hydraulic conductivity (Kstem) is the slope of the regression of
+    flow rate (g s-1) vs pressure gradient (MPa mm-1), which we then standardized
+    to 20 degrees C and divided by cross-sectional xylem area (XA) or leaf area. Kstem
+    is not completely standardized by XA, so variation in xylem area can bias results.
+    To avoid this, we scaled Kstem to the median xylem area using the regression ln(Kstem/XA)
+    ~ ln(XA) + site for each species where site is a factor. We dried stems and then
+    later rehydrated them and obtained sections with a sliding microtome. We stained
+    the sections with toluidine blue to measure conduit density and hydraulically
+    weighted conduit diameter, Dh = (1/n * sum(Di^4))^(1/4), where Di is the individual
+    vessel diameter. From these measurements, we calculated the stem theoretical conductivity,
+    Kstem,theo, using Poiseuille''s Law and assuming no embolisms.
+- var_in: Kstem/xyl.a.r
+  unit_in: kg/m/MPa/s
+  trait_name: sapwood_specific_hydraulic_conductivity
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Kstem and xylem anatomy ^p During October-December 2019 (68-73 weeks after
+    planting), we placed one branch from each of five individuals per species per
+    site in a moistened plastic bag and transported them to the lab. From each branch
+    we excised an 11-cm segment, infiltrated this under partial vacuum in distilled
+    water overnight to remove emboli, trimmed the ends with a razor blade and connected
+    to a flow meter filled with 20 mM KCl solution filtered to 0.2 um to measure at
+    least three steady-state flow rates at two or more pressures between ca. 0.4 and
+    4.9 kPa. Stem hydraulic conductivity (Kstem) is the slope of the regression of
+    flow rate (g s-1) vs pressure gradient (MPa mm-1), which we then standardized
+    to 20 degrees C and divided by cross-sectional xylem area (XA) or leaf area. Kstem
+    is not completely standardized by XA, so variation in xylem area can bias results.
+    To avoid this, we scaled Kstem to the median xylem area using the regression ln(Kstem/XA)
+    ~ ln(XA) + site for each species where site is a factor. We dried stems and then
+    later rehydrated them and obtained sections with a sliding microtome. We stained
+    the sections with toluidine blue to measure conduit density and hydraulically
+    weighted conduit diameter, Dh = (1/n * sum(Di^4))^(1/4), where Di is the individual
+    vessel diameter. From these measurements, we calculated the stem theoretical conductivity,
+    Kstem,theo, using Poiseuille''s Law and assuming no embolisms.
+- var_in: refl.adax
+  unit_in: umol/umol
+  trait_name: leaf_reflectance
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Leaf area, thickness, SLA, stomatal size and pore length, epidermal cell
+    sizes, VLA, and spectral properties were measured on the youngest mature leaf
+    from each focal individual. We measured spectral reflectances in the field using
+    a UniSpec spectral analysis system (PP Systems, Amesbury MA) and then used these
+    to calculate the normalized difference vegetation index (NDVI), water band index
+    (WBI, a measure of water content), photochemical reflectance index (sPRI, a measure
+    of plant stress reflected in the xanthophyll-zeaxanthin cycle), chlorophyll index
+    (CI), and total reflectance across the visible spectrum.
+- var_in: spri.adax
+  unit_in: '{dimensionless}'
+  trait_name: leaf_photochemical_reflectance_index
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Leaf area, thickness, SLA, stomatal size and pore length, epidermal cell
+    sizes, VLA, and spectral properties were measured on the youngest mature leaf
+    from each focal individual. We measured spectral reflectances in the field using
+    a UniSpec spectral analysis system (PP Systems, Amesbury MA) and then used these
+    to calculate the normalized difference vegetation index (NDVI), water band index
+    (WBI, a measure of water content), photochemical reflectance index (sPRI, a measure
+    of plant stress reflected in the xanthophyll-zeaxanthin cycle), chlorophyll index
+    (CI), and total reflectance across the visible spectrum.
+- var_in: wbi.adax
+  unit_in: '{dimensionless}'
+  trait_name: leaf_water_band_index
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Leaf area, thickness, SLA, stomatal size and pore length, epidermal cell
+    sizes, VLA, and spectral properties were measured on the youngest mature leaf
+    from each focal individual. We measured spectral reflectances in the field using
+    a UniSpec spectral analysis system (PP Systems, Amesbury MA) and then used these
+    to calculate the normalized difference vegetation index (NDVI), water band index
+    (WBI, a measure of water content), photochemical reflectance index (sPRI, a measure
+    of plant stress reflected in the xanthophyll-zeaxanthin cycle), chlorophyll index
+    (CI), and total reflectance across the visible spectrum.
+- var_in: root/shoot.mas
+  unit_in: mg{root}/mg{shoot}
+  trait_name: root_shoot_ratio
+  entity_type: population
+  value_type: mean
+  basis_of_value: model_derived
+  replicates: replicates
+  methods: In the preliminary planting, we harvested roots at Toolangi and Hattah
+    61-62 weeks after planting. We excavated roots as completely as possible, cut
+    them at branching points, measured proximal and distal diameters, dried and weighed
+    them. When root segments had distal diameters larger than proximal diameters of
+    other segments, we assumed breakage and estimated the missing mass from the allometry
+    of mass vs proximal diameter in other segments, working from smallest to largest
+    until all roots were complete. For the main planting we harvested roots of all
+    focal individuals. We measured all distal diameters and used the preliminary allometry
+    to predict missing masses. We used the Hattah allometry for Hattah and Bealiba
+    plants, and the Toolangi allometry for Mt. Disappointment and Toolangi plants.
+- var_in: lvs/shoot.mass
+  unit_in: g/g
+  trait_name: leaf_mass_to_stem_mass_ratio
+  entity_type: population
+  value_type: mean
+  basis_of_value: model_derived
+  replicates: replicates
+  methods: After measuring other traits on the focal plants (see below), we harvested
+    them, cutting below the lignotuber if present. For the first harvest, we bagged
+    entire plant tops, transported these to the lab to separate leaf, stem, and lignotuber
+    tissue, collected a trunk tissue sample to determine wood density, and weighed
+    all material after drying at 70 degrees C. For the remaining harvests, we used
+    an allometric approach, estimating branch masses from their basal diameters and
+    measuring bole mass and stem, bark, and wood densities of branches and trunks.
+- var_in: basal.area
+  unit_in: mm2
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: We censused and harvested plants from each garden three times, at 37–117
+    weeks after planting. We conducted each harvest as synchronously as possible (5–15
+    weeks) across gardens. We tallied all plants as alive or dead, and measured heights
+    of the live plants. For the first harvest, we studied plants in the first ennead
+    rows; the second ennead rows in the second harvest, and so on. We selected 7–8
+    focal plants per species stratified by height across the range in that species
+    and recorded the number and basal diameter(s) of their basal shoots. After the
+    first and second harvests, all unselected plants in the study rows were culled
+    to provide more space for the remaining plants. Survival was also tallied on 3–5
+    additional dates outside the harvest campaigns (Fig. S12). ^p After measuring
+    other traits on the focal plants, we harvested them, cutting below the lignotuber
+    if present. For the first harvest, we bagged entire plant tops, transported these
+    to the lab to separate leaf, stem, and lignotuber tissue, collected a trunk tissue
+    sample to determine wood density, and weighed all material after drying at 70
+    °C. For the remaining harvests, we used an allometric approach, estimating branch
+    masses from their basal diameters and measuring bole mass and stem, bark, and
+    wood densities of branches and trunks. We also estimated root mass at the time
+    of the first harvest using excavation and allometry.
+- var_in: lvs.area
+  unit_in: cm2
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: We censused and harvested plants from each garden three times, at 37–117
+    weeks after planting. We conducted each harvest as synchronously as possible (5–15
+    weeks) across gardens. We tallied all plants as alive or dead, and measured heights
+    of the live plants. For the first harvest, we studied plants in the first ennead
+    rows; the second ennead rows in the second harvest, and so on. We selected 7–8
+    focal plants per species stratified by height across the range in that species
+    and recorded the number and basal diameter(s) of their basal shoots. After the
+    first and second harvests, all unselected plants in the study rows were culled
+    to provide more space for the remaining plants. Survival was also tallied on 3–5
+    additional dates outside the harvest campaigns (Fig. S12). ^p After measuring
+    other traits on the focal plants, we harvested them, cutting below the lignotuber
+    if present. For the first harvest, we bagged entire plant tops, transported these
+    to the lab to separate leaf, stem, and lignotuber tissue, collected a trunk tissue
+    sample to determine wood density, and weighed all material after drying at 70
+    °C. For the remaining harvests, we used an allometric approach, estimating branch
+    masses from their basal diameters and measuring bole mass and stem, bark, and
+    wood densities of branches and trunks. We also estimated root mass at the time
+    of the first harvest using excavation and allometry.
+- var_in: shoot-lig.mass
+  unit_in: g
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: We censused and harvested plants from each garden three times, at 37–117
+    weeks after planting. We conducted each harvest as synchronously as possible (5–15
+    weeks) across gardens. We tallied all plants as alive or dead, and measured heights
+    of the live plants. For the first harvest, we studied plants in the first ennead
+    rows; the second ennead rows in the second harvest, and so on. We selected 7–8
+    focal plants per species stratified by height across the range in that species
+    and recorded the number and basal diameter(s) of their basal shoots. After the
+    first and second harvests, all unselected plants in the study rows were culled
+    to provide more space for the remaining plants. Survival was also tallied on 3–5
+    additional dates outside the harvest campaigns (Fig. S12). ^p After measuring
+    other traits on the focal plants, we harvested them, cutting below the lignotuber
+    if present. For the first harvest, we bagged entire plant tops, transported these
+    to the lab to separate leaf, stem, and lignotuber tissue, collected a trunk tissue
+    sample to determine wood density, and weighed all material after drying at 70
+    °C. For the remaining harvests, we used an allometric approach, estimating branch
+    masses from their basal diameters and measuring bole mass and stem, bark, and
+    wood densities of branches and trunks. We also estimated root mass at the time
+    of the first harvest using excavation and allometry.
+- var_in: cuticle.thick
+  unit_in: um
+  trait_name: leaf_cuticle_thickness
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Leaf area, thickness, SLA, stomatal size and pore length, epidermal cell
+    sizes, VLA, and spectral properties were measured on the youngest mature leaf
+    from each focal individual. We cleared dried leaves and then determined VLA in
+    2 mm2 areas, and stomatal and epidermal dimensions from 4 to 5 cells or cell pairs.
+    We determined cuticle thickness and the ratio of intervein distance to vein distance
+    to epidermis (dx/dy) from leaf punches fixed in alcohol, embedded in LR White,
+    sectioned to 5 µm thickness with a rotary microtome, and stained with Safranin
+    O for microscopic measurement. All image analyses were performed in ImageJ v1.53k.
+- var_in: dxdy
+  unit_in: um/um
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: ratio of intervein distance to vein distance to epidermis; Leaf area, thickness,
+    SLA, stomatal size and pore length, epidermal cell sizes, VLA, and spectral properties
+    were measured on the youngest mature leaf from each focal individual. We cleared
+    dried leaves and then determined VLA in 2 mm2 areas, and stomatal and epidermal
+    dimensions from 4 to 5 cells or cell pairs. We determined cuticle thickness and
+    the ratio of intervein distance to vein distance to epidermis (dx/dy) from leaf
+    punches fixed in alcohol, embedded in LR White, sectioned to 5 µm thickness with
+    a rotary microtome, and stained with Safranin O for microscopic measurement. All
+    image analyses were performed in ImageJ v1.53k.
+- var_in: epiderm.size
+  unit_in: um2
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: 2-dimensional projected epidermal cell area; Leaf area, thickness, SLA,
+    stomatal size and pore length, epidermal cell sizes, VLA, and spectral properties
+    were measured on the youngest mature leaf from each focal individual. We cleared
+    dried leaves and then determined VLA in 2 mm2 areas, and stomatal and epidermal
+    dimensions from 4 to 5 cells or cell pairs. We determined cuticle thickness and
+    the ratio of intervein distance to vein distance to epidermis (dx/dy) from leaf
+    punches fixed in alcohol, embedded in LR White, sectioned to 5 µm thickness with
+    a rotary microtome, and stained with Safranin O for microscopic measurement. All
+    image analyses were performed in ImageJ v1.53k.
+- var_in: stom.size
+  unit_in: um2
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: 2-dimension projected stomatal area; Leaf area, thickness, SLA, stomatal
+    size and pore length, epidermal cell sizes, VLA, and spectral properties were
+    measured on the youngest mature leaf from each focal individual. We cleared dried
+    leaves and then determined VLA in 2 mm2 areas, and stomatal and epidermal dimensions
+    from 4 to 5 cells or cell pairs. We determined cuticle thickness and the ratio
+    of intervein distance to vein distance to epidermis (dx/dy) from leaf punches
+    fixed in alcohol, embedded in LR White, sectioned to 5 µm thickness with a rotary
+    microtome, and stained with Safranin O for microscopic measurement. All image
+    analyses were performed in ImageJ v1.53k.
+- var_in: pore.length
+  unit_in: um2
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Leaf area, thickness, SLA, stomatal size and pore length, epidermal cell
+    sizes, VLA, and spectral properties were measured on the youngest mature leaf
+    from each focal individual. We cleared dried leaves and then determined VLA in
+    2 mm2 areas, and stomatal and epidermal dimensions from 4 to 5 cells or cell pairs.
+    We determined cuticle thickness and the ratio of intervein distance to vein distance
+    to epidermis (dx/dy) from leaf punches fixed in alcohol, embedded in LR White,
+    sectioned to 5 µm thickness with a rotary microtome, and stained with Safranin
+    O for microscopic measurement. All image analyses were performed in ImageJ v1.53k.
+- var_in: ci.adax
+  unit_in: '{dimensionless}'
+  trait_name: leaf_chlorophyll_index_modified_ND705
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Leaf area, thickness, SLA, stomatal size and pore length, epidermal cell
+    sizes, VLA, and spectral properties were measured on the youngest mature leaf
+    from each focal individual. We measured spectral reflectances in the field using
+    a UniSpec spectral analysis system (PP Systems, Amesbury MA) and then used these
+    to calculate the normalized difference vegetation index (NDVI), water band index
+    (WBI, a measure of water content), photochemical reflectance index (sPRI, a measure
+    of plant stress reflected in the xanthophyll-zeaxanthin cycle), chlorophyll index
+    (CI), and total reflectance across the visible spectrum.
+  leaf_surface: adaxial
+- var_in: ndvi.adax
+  unit_in: '{dimensionless}'
+  trait_name: modified_NDVI
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Leaf area, thickness, SLA, stomatal size and pore length, epidermal cell
+    sizes, VLA, and spectral properties were measured on the youngest mature leaf
+    from each focal individual. We measured spectral reflectances in the field using
+    a UniSpec spectral analysis system (PP Systems, Amesbury MA) and then used these
+    to calculate the normalized difference vegetation index (NDVI), water band index
+    (WBI, a measure of water content), photochemical reflectance index (sPRI, a measure
+    of plant stress reflected in the xanthophyll-zeaxanthin cycle), chlorophyll index
+    (CI), and total reflectance across the visible spectrum.
+  leaf_surface: adaxial
+- var_in: refl.adax/abax
+  unit_in: '{dimensionless}'
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Leaf area, thickness, SLA, stomatal size and pore length, epidermal cell
+    sizes, VLA, and spectral properties were measured on the youngest mature leaf
+    from each focal individual. We measured spectral reflectances in the field using
+    a UniSpec spectral analysis system (PP Systems, Amesbury MA) and then used these
+    to calculate the normalized difference vegetation index (NDVI), water band index
+    (WBI, a measure of water content), photochemical reflectance index (sPRI, a measure
+    of plant stress reflected in the xanthophyll-zeaxanthin cycle), chlorophyll index
+    (CI), and total reflectance across the visible spectrum.
+- var_in: Kstem/lvs.a
+  unit_in: g/mm/MPa/s
+  trait_name: leaf_specific_hydraulic_conductivity
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: During October–December 2019 (68–73 weeks after planting), we placed one
+    branch from each of five individuals per species per site in a moistened plastic
+    bag and transported them to the lab. From each branch we excised an 11-cm segment,
+    infiltrated this under partial vacuum in distilled water overnight to remove emboli,
+    trimmed the ends with a razor blade and connected to a flow meter73 filled with
+    20 mM KCl solution filtered to 0.2 µm to measure at least three steady-state flow
+    rates at two or more pressures between ca. 0.4 and 4.9 kPa. Stem hydraulic conductivity
+    (Kstem) is the slope of the regression of flow rate (g s−1) vs pressure gradient
+    (MPa mm−1), which we then standardized to 20 °C and divided by cross-sectional
+    xylem area (XA) or leaf area. Kstem is not completely standardized by XA74, so
+    variation in xylem area can bias results. To avoid this, we scaled Kstem to the
+    median xylem area using the regression ln (Kstem/XA) ∼ ln (XA) + site for each
+    species where site is a factor. ^p We dried stems and then later rehydrated them
+    and obtained sections with a sliding microtome. We stained the sections with toluidine
+    blue to measure conduit density and hydraulically weighted conduit diameter, where
+    Di is the individual vessel diameter. From these measurements, we calculated the
+    stem theoretical conductivity, Kstem,theo, using Poiseuille’s Law and assuming
+    no embolisms.
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions:
+  question1: Can you confirm that I have correctly mapped the following traits, 1)
+    ci.adax to the AusTraits trait leaf_chlorophyll_index_modified_ND705, measured
+    on the adaxial leaf surface; 2) ndvi.adax to modified_NDVI, measured on the adaxial
+    leaf surface; 3) sPRI to leaf_photochemical_reflectance_index (your values are much higher than others in AusTraits)
+  question2: Do your gas exchange measurements map better to "saturated" or "maximum" conditions?
+  question3: I've mapped your trait Kstem/lvs.a maps to the AusTraits trait `leaf_specific_hydraulic_conductivity`. The unit conversion I've applied is
+    g/mm/MPa/s [your units]-> 0.1 * 10^4.kg/m/MPa/s [AusTraits units]. Does this look appropriate? The numbers make sense, looking at all the data for your plots, but as units for the various conductance measurements can be difficult to align and I want to make sure I've interpreted your accurately.

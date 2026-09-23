@@ -1,0 +1,606 @@
+source:
+  primary:
+    key: Asao_2024
+    bibtype: Article
+    year: '2024'
+    author: S. Asao and D. A. Way and M. H. Turnbull and M. Stitt and N. G. McDowell
+      and P. B. Reich and K. J. Bloomfield and J. Zaragoza-Castells and D. Creek and
+      O. O'Sullivan and K. Y. Crous and J. J. G. Egerton and N. Mirotchnick and L.
+      K. Weerasinghe and K. L. Griffin and V. Hurry and P. Meir and S. Sitch and O.
+      K. Atkin
+    title: Leaf nonstructural carbohydrate residence time, not concentration, correlates
+      with leaf functional traits following the leaf economic spectrum in woody plants
+    journal: New Phytologist
+    volume: '246'
+    number: '4'
+    pages: 1505--1519
+    doi: 10.1111/nph.20315
+contributors:
+  data_collectors:
+  - last_name: Asao
+    given_name: Shinichi
+    ORCID: 0000-0002-0334-5464
+    affiliation: Division of Plant Sciences, Research School of Biology, The Australian
+      National University, Canberra, ACT, Australia
+  - last_name: Turnbull
+    given_name: Matthew H.
+    ORCID: 0000-0002-3433-5859
+    affiliation: School of Biological Sciences, University of Canterbury, Christchurch,
+      New Zealand
+    additional_role: contact
+  - last_name: Atkin
+    given_name: Owen
+    ORCID: 0000-0003-1041-5202
+    affiliation: The Australian National University, Australia
+  - last_name: Crous
+    given_name: Kristine
+    ORCID: 0000-0001-9478-7593
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  - last_name: Weerasinghe
+    given_name: Lasantha K.
+    ORCID: 0000-0002-5173-8000
+    affiliation: Faculty of Agriculture, University of Peradeniya, Peradeniya 20400,
+      Sri Lanka
+  - last_name: Zaragoza-Castells
+    given_name: Joana
+    ORCID: 0009-0006-4232-331X
+    affiliation: Faculty of Environmental Sciences and Natural Resource Management,
+      University of Exeter, Exeter, UK
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+     data %>% 
+      filter(stringr::str_starts(Country, "Australia")) %>%
+      mutate(
+        Date = util_parse_collection_date(Date),
+        across(c(LeafPm, Fructose_m, Sucrose_m, AP_sat, LeafPa, `N:P`), ~ifelse(is.nan(.x), NA, .x)),
+        duplicate_site = Site %in% c("CTC1"), 
+        partial_duplicate_site = Site %in% c("RobCk-TERN", "Warra-TERN-AW", "Warra-TERN-SV", "Warra-TERN_FT"), 
+        across(c(Am_sat, Aa_sat, gs_sat, Rdarkm, Rdarka, Ci_sat, AN_sat, AP_sat, LMA, LeafNm, LeafNa, LeafPm, LeafPa, `N:P`, Vcmax_a_LfT, Vcmax_a_25, Vcmax_m_LfT),
+            ~ifelse(duplicate_site | partial_duplicate_site, NA, .x)),
+        across(c(Totalsugars_m, Starch_m, TNC_m),
+            ~ifelse(duplicate_site, NA, .x))
+      ) %>% 
+      select(-duplicate_site, -partial_duplicate_site)
+    '
+  collection_date: Date
+  taxon_name: Species_1
+  location_name: Site
+  individual_id: .na
+  description: To test whether leaf nonstructural carbohydrate (NSC) concentrations
+    and/or NSC residence time correlate with leaf economic spectrum traits (specific
+    leaf area, leaf N and P concentration, light-saturated photosynthesis and dark
+    respiration) across woody plant species spanning a broad range of biomes.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: 'Sites and sampling ^p Data were collected from 19 sites across
+    five biomes (Table S1) spanning 68.63 deg to -43.42 deg in latitude, and included
+    382 mature leaf samples belonging to 114 species (Table S2). Sample sites varied
+    in climate, with mean annual temperatures (MAT) ranging from -11.3 deg C to +25.2
+    deg C and mean annual precipitation (MAP) ranging from 225 to 4330 mm (Fig. S1).
+    Site climate was characterized by 24 bioclimatic variables taken from WorldClim
+    (Fick & Hijmans, 2017), aridity index (AI; annual potential evapotranspiration
+    divided by annual precipitation), longitude, and latitude (Notes S2). Climatic
+    variation among the sites was represented by two principal components that explained
+    78% of the total variance. The first component included variables including annual
+    temperature range, precipitation of wettest quarter, and MAT, while the second
+    component represented maximum temperature of warmest month, mean annual potential
+    evaporation, and precipitation of the coldest quarter. ^p Measurements were made
+    during the summer at each site, or during generally optimal periods (recent rainfall)
+    in seasonal sites. At most sites (13 of the 19), measurements were made on a single
+    mature leaf from multiple replicate plants per species (n = 3-4) (see Table S1
+    for details). Each replicate was analyzed for NSC concentrations, along with other
+    LES traits such as SLA, [N], and gas exchange variables. In the remaining six
+    sites (DR, FJG-3, TFL, SP-A, SP-M, and AT-M), we pooled the replicate plants from
+    each species for analysis of leaf N, P, and NSC concentrations because the leaves
+    were too small to analyze individually. For these six sites, leaf-level values
+    of the measured parameters were therefore averaged into species means (in a total
+    of 43 species). ^p Physiological measurements ^p Gas exchange measurements were
+    made in situ on mature and fully expanded leaves of wild plants. Leaf gas exchange
+    was typically measured between 09:00 h and 13:00 h on attached and sun-facing
+    leaves in the upper canopy. We measured steady-state light-saturated net CO2 assimilation
+    rates (Asat) using portable photosynthesis systems (Li-6400; Licor, Lincoln, NE,
+    USA). Cuvette conditions were 1000-2000 umol photons m-2 s-1 of photosynthetically
+    active radiation (as needed to achieve light saturation, depending on the species
+    and site), a reference line [CO2] of 400 ppm, relative humidity of 60-70%, and
+    block temperature set at the prevailing ambient daytime temperature of each site
+    (6-34 deg C, depending on site location). Immediately after measuring Asat, the
+    cuvette light was turned off and dark respiration rates (Rdark) were taken after
+    a 30-45 min dark acclimation period. Both Asat and Rdark were measured at the
+    prevailing ambient temperature at each site to reflect the rates of photosynthesis
+    and respiration that controlled sampled leaf NSC concentrations. ^p On completion
+    of each set of Asat and Rdark measurements, these and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag, and stored in a cool dark location until the measurement of leaf area. Scanned
+    leaves were scanned on a 600 dots/inch flatbed top-illumination optical scanner
+    to quantify leaf area using IMAGEJ software (http://imagej.nih.gov/ij/). Scanned
+    leaves were dried at 70 deg C for a minimum of 72 h and dried for mass. Specific
+    leaf area (SLA, m2 kg-1) was then calculated. Most leaves were stored in darkness
+    for 1-5 h between gas exchange measurements and commencement of oven drying for
+    subsequent analysis. For a majority of sites, both leaf N and P concentrations
+    were determined using Kjeldahl acid digests (Allen et al., 1974) that were analyzed
+    using a LaChat QuikChem 8500 Series 2 Flow Injection Analysis System (Lachat Instruments,
+    Milwaukee, WI, USA). Where only leaf [N] was determined (15 out of 382 samples),
+    ground samples (31-700 Hammer Mill; Glen Creston, Stanmore, UK) were combusted
+    using a Carlo-Erba elemental analyzer NA1500 (Thermo Fisher Scientific, Milan,
+    Italy). These leaves were excluded from data analysis that required both N and
+    P concentrations. ^p Dried samples of whole leaves were ground in a mill and analyzed
+    for concentrations of soluble sugars (glucose + sucrose + fructose), starch, and
+    total NSCs (soluble + starch, in mg glucose equivalent). Soluble sugars were extracted
+    in hot ethanol: 5 mg of ground plant material and 500 ul of 80% (v/v) ethanol
+    were mixed by vortex in an Eppendorf tube, incubated at 80 deg C for 20 min while
+    vortex mixing every 10 min, then centrifuged at 20000 g for 5 min to separate
+    and collect the supernatant. This process was repeated twice more using 500 ul
+    of 80% (v/v) ethanol, and the collected supernatant was combined. The resultant
+    pellet was used to quantify starch concentration with a Total Starch Assay Kit
+    (Megazyme, Bray, Ireland). The supernatant was used to quantify soluble sugar
+    concentrations (glucose, sucrose, fructose) with a Fructose Assay Kit (Sigma-Aldrich,
+    Darmstadt, Germany). For glucose, extracts were incubated with hexokinase and
+    glucose-6-phosphate dehydrogenase to enable the reduction of NADP to NADPH, which
+    was then followed spectrophotometrically at 340 nm (Dynatech Laboratories MRX,
+    Guernsey, UK). For fructose, extracts were incubated with hexokinase, phosphoglucose
+    isomerase, and glucose-6-phosphate dehydrogenase, the resultant reduction of NADP
+    to NADPH was followed (Scholes et al., 1994) and the glucose concentration was
+    subtracted. For sucrose, extracts were incubated with invertase (Sigma, St Louis,
+    MO, USA) to quantify the concentration of sucrose plus glucose, and glucose concentration
+    was subtracted. Measurements were collected using a micro-titer plate reader (Infinite
+    M1000 Pro; Tecan, Zurich, Switzerland). Total NSC concentrations represent the
+    combined concentrations of soluble sugars and starch. All samples were prepared
+    and analyzed within the same laboratory (Quentin et al., 2015; Landhausser et
+    al., 2018).'
+  original_file: data file download from link in manuscript, https://datacommons.anu.edu.au/DataCommons/item/anudc:6352
+  notes: custom_R_code restricts the dataset to the Australian sites only (Country
+    starting with "Australia") and blanks out specific trait columns that are already
+    published in AusTraits under a different dataset_id; overlap identified by Claude
+    AI is documented in a file in the raw data folder (Asao_2024_identifying_duplicate_data.csv).
+    The site CTC1 (Daintree Rainforest Observatory) duplicates Weerasinghe_2014, including
+    its NSC traits, so all trait columns are set to NA there. The sites RobCk-TERN
+    (Robson Creek) and the three Warra-TERN plots duplicate Bloomfield_2018's "FNQ,
+    Robson" and "Warra" sites, but Bloomfield_2018 has no sugar/starch/NSC data, so
+    the NSC columns (Totalsugars_m, Starch_m, TNC_m) are incorporated as part of this
+    dataset. The sites KBL3, KCR and ANBG are not represented in any other AusTraits
+    dataset and are kept in full. Am_sat and Rdarkm are reported "at prevailing temperature"
+    (i.e. not standardized to a common reference temperature). Raw columns not mapped
+    in but with a plausible future AusTraits trait - Totalsugars_a, Starch_a, TNC_a,
+    Glucose_a, Fructose_a, Sucrose_a (currently only mass-based versions of these
+    metrics mapped).
+identifiers: .na
+locations:
+  CTC1:
+    latitude (deg): -16.1
+    longitude (deg): 145.45
+    elevation (m): 90
+    locality: Daintree Rainforest Observatory, Cape Tribulation (canopy crane site)
+    description: lowland tropical rainforest
+    state: Qld
+  KCR:
+    latitude (deg): -17.10915
+    longitude (deg): 145.60272
+    elevation (m): 818
+    locality: Atherton Tablelands, Far North Queensland
+    description: tropical rainforest
+    state: Qld
+  KBL3:
+    latitude (deg): -17.68187
+    longitude (deg): 145.534
+    elevation (m): 1040
+    locality: Atherton Tablelands, Far North Queensland
+    description: tropical rainforest
+    state: Qld
+  ANBG:
+    latitude (deg): -35.276276
+    longitude (deg): 149.109011
+    elevation (m): 601
+    locality: Australian National Botanic Gardens, Canberra
+    description: temperate woodland
+    state: ACT
+  RobCk-TERN:
+    latitude (deg): -17.119519
+    longitude (deg): 145.632297
+    elevation (m): 728
+    locality: Robson Creek TERN SuperSite, Far North Queensland
+    description: tropical rainforest
+    state: Qld
+  Warra-TERN-AW:
+    latitude (deg): -43.0950694
+    longitude (deg): 146.7242472
+    elevation (m): 88
+    locality: Warra Tall Eucalypt TERN SuperSite, Tasmania
+    description: temperate rainforest
+    state: Tas
+  Warra-TERN-SV:
+    latitude (deg): -43.0915694
+    longitude (deg): 146.68355
+    elevation (m): 257
+    locality: Warra Tall Eucalypt TERN SuperSite, Tasmania
+    description: temperate rainforest
+    state: Tas
+  Warra-TERN_FT:
+    latitude (deg): -43.0888333
+    longitude (deg): 146.65115
+    elevation (m): 217
+    locality: Warra Tall Eucalypt TERN SuperSite, Tasmania
+    description: temperate rainforest
+    state: Tas
+contexts:
+- context_property: measurement temperature
+  category: method_context
+  var_in: leaf_temp
+traits:
+- var_in: Am_sat
+  unit_in: nmol{CO2}/g/s
+  trait_name: leaf_photosynthetic_rate_per_dry_mass_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Gas exchange measurements were made in situ on mature and fully expanded
+    leaves of wild plants. Leaf gas exchange was typically measured between 09:00
+    h and 13:00 h on attached and sun-facing leaves in the upper canopy. We measured
+    steady-state light-saturated net CO2 assimilation rates (Asat) using portable
+    photosynthesis systems (Li-6400; Licor, Lincoln, NE, USA). Cuvette conditions
+    were 1000-2000 umol photons m-2 s-1 of photosynthetically active radiation (as
+    needed to achieve light saturation, depending on the species and site), a reference
+    line [CO2] of 400 ppm, relative humidity of 60-70%, and block temperature set
+    at the prevailing ambient daytime temperature of each site (6-34 deg C, depending
+    on site location). Asat was measured at the prevailing ambient temperature at
+    each site.
+- var_in: Rdarkm
+  unit_in: nmol{CO2}/g/s
+  trait_name: leaf_dark_respiration_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  leaf_temp: LfT_Rdark
+  methods: Gas exchange measurements were made in situ on mature and fully expanded
+    leaves of wild plants. Leaf gas exchange was typically measured between 09:00
+    h and 13:00 h on attached and sun-facing leaves in the upper canopy. We measured
+    steady-state light-saturated net CO2 assimilation rates (Asat) using portable
+    photosynthesis systems (Li-6400; Licor, Lincoln, NE, USA). Cuvette conditions
+    were 1000-2000 umol photons m-2 s-1 of photosynthetically active radiation (as
+    needed to achieve light saturation, depending on the species and site), a reference
+    line [CO2] of 400 ppm, relative humidity of 60-70%, and block temperature set
+    at the prevailing ambient daytime temperature of each site (6-34 deg C, depending
+    on site location). Asat was measured at the prevailing ambient temperature at
+    each site. Immediately after measuring Asat, the cuvette light was turned off
+    and dark respiration rates (Rdark) were taken after a 30-45 min dark acclimation
+    period. Rdark was measured at the prevailing ambient temperature at each site
+    to reflect the rate of respiration that controlled sampled leaf NSC concentrations.
+- var_in: LMA
+  unit_in: g/m2
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag, and stored in a cool dark location until the measurement of leaf area. Leaves
+    were scanned on a 600 dots/inch flatbed top-illumination optical scanner to quantify
+    leaf area using ImageJ software. Scanned leaves were dried at 70 deg C for a minimum
+    of 72 h and weighed for dry mass. Leaf mass per area was calculated as the ratio
+    of leaf dry mass to leaf area.
+- var_in: LeafNm
+  unit_in: mg/g
+  trait_name: leaf_N_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. For a majority of sites, leaf N concentration was determined using Kjeldahl
+    acid digests (Allen et al., 1974) analyzed on a LaChat QuikChem 8500 Series 2
+    Flow Injection Analysis System (Lachat Instruments, Milwaukee, WI, USA). Where
+    only leaf [N] was determined (15 of 382 samples), ground samples were combusted
+    using a Carlo-Erba elemental analyzer NA1500 (Thermo Fisher Scientific, Milan,
+    Italy); these samples were excluded from analyses requiring both N and P.
+- var_in: LeafPm
+  unit_in: mg/g
+  trait_name: leaf_P_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. For a majority of sites, leaf P concentration was determined using Kjeldahl
+    acid digests (Allen et al., 1974) analyzed on a LaChat QuikChem 8500 Series 2
+    Flow Injection Analysis System (Lachat Instruments, Milwaukee, WI, USA).
+- var_in: Totalsugars_m
+  unit_in: mg/g
+  trait_name: leaf_soluble_sugars_per_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. Dried samples of whole leaves were ground in a mill and analyzed for concentrations
+    of soluble sugars (glucose + sucrose + fructose). Soluble sugars were extracted
+    in hot ethanol - 5 mg of ground plant material and 500 ul of 80% (v/v) ethanol
+    were mixed by vortex in an Eppendorf tube, incubated at 80 deg C for 20 min while
+    vortex mixing every 10 min, then centrifuged at 20000 g for 5 min to separate
+    and collect the supernatant; this process was repeated twice more using 500 ul
+    of 80% (v/v) ethanol and the collected supernatant combined. The supernatant was
+    used to quantify soluble sugar concentrations (glucose, sucrose, fructose) with
+    a Fructose Assay Kit (Sigma-Aldrich, Darmstadt, Germany) - for glucose, extracts
+    were incubated with hexokinase and glucose-6-phosphate dehydrogenase and the reduction
+    of NADP to NADPH followed spectrophotometrically at 340 nm; for fructose, extracts
+    were incubated with hexokinase, phosphoglucose isomerase and glucose-6-phosphate
+    dehydrogenase and the glucose concentration subtracted; for sucrose, extracts
+    were incubated with invertase to quantify sucrose plus glucose and the glucose
+    concentration subtracted. Measurements were collected using a micro-titer plate
+    reader (Infinite M1000 Pro; Tecan, Zurich, Switzerland).
+- var_in: Starch_m
+  unit_in: mg/g
+  trait_name: leaf_soluble_starch_per_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. Dried, ground leaf samples were extracted in hot ethanol (as for soluble
+    sugars) and the resultant pellet was used to quantify starch concentration with
+    a Total Starch Assay Kit (Megazyme, Bray, Ireland).
+- var_in: TNC_m
+  unit_in: mg/g
+  trait_name: leaf_total_non-structural_carbohydrates_per_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. Total non-structural carbohydrate (NSC) concentration was calculated as the
+    sum of soluble sugars (glucose + sucrose + fructose) and starch concentrations,
+    expressed as glucose equivalent. All samples were prepared and analyzed within
+    the same laboratory (Quentin et al., 2015; Landhausser et al., 2018).
+- var_in: Glucose_m
+  unit_in: mg/g
+  trait_name: leaf_glucose_per_leaf_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. Dried samples of whole leaves were ground in a mill and analyzed for glucose
+    concentration (see leaf_soluble_sugars_per_mass methods) - extracts were incubated
+    with hexokinase and glucose-6-phosphate dehydrogenase to enable the reduction
+    of NADP to NADPH, which was then followed spectrophotometrically at 340 nm (Dynatech
+    Laboratories MRX, Guernsey, UK).
+- var_in: Fructose_m
+  unit_in: mg/g
+  trait_name: leaf_fructose_per_leaf_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. Dried samples of whole leaves were ground in a mill and analyzed for fructose
+    concentration (see leaf_soluble_sugars_per_mass methods) - extracts were incubated
+    with hexokinase, phosphoglucose isomerase and glucose-6-phosphate dehydrogenase,
+    the resultant reduction of NADP to NADPH was followed (Scholes et al., 1994) and
+    the glucose concentration was subtracted.
+- var_in: Sucrose_m
+  unit_in: mg/g
+  trait_name: leaf_sucrose_per_leaf_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. Dried samples of whole leaves were ground in a mill and analyzed for sucrose
+    concentration (see leaf_soluble_sugars_per_mass methods) - extracts were incubated
+    with invertase (Sigma, St Louis, MO, USA) to quantify the concentration of sucrose
+    plus glucose, and the glucose concentration was subtracted.
+- var_in: Vcmax_a_LfT
+  unit_in: umol{CO2}/m2/s
+  trait_name: leaf_photosynthesis_Vcmax_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Gas exchange measurements were made in situ on mature and fully expanded
+    leaves of wild plants. Leaf gas exchange was typically measured between 09:00
+    h and 13:00 h on attached and sun-facing leaves in the upper canopy. Vcmax (maximum
+    carboxylation rate) was estimated from the light-saturated net CO2 assimilation
+    rate at a standardised intercellular CO2 concentration of 250 ppm, calculated
+    at the prevailing leaf temperature at which Asat and Rdark were measured (see
+    leaf_photosynthetic_rate_per_dry_mass_saturated methods).
+- var_in: Vcmax_a_25
+  unit_in: umol{CO2}/m2/s
+  trait_name: leaf_photosynthesis_Vcmax_per_area_25C
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Gas exchange measurements were made in situ on mature and fully expanded
+    leaves of wild plants. Leaf gas exchange was typically measured between 09:00
+    h and 13:00 h on attached and sun-facing leaves in the upper canopy. Vcmax (maximum
+    carboxylation rate) was estimated from the light-saturated net CO2 assimilation
+    rate at a standardised intercellular CO2 concentration of 250 ppm, then temperature-standardised
+    to 25 deg C using a fixed Q10 relationship.
+- var_in: Vcmax_m_LfT
+  unit_in: nmol{CO2}/g/s
+  trait_name: leaf_photosynthesis_Vcmax_per_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Gas exchange measurements were made in situ on mature and fully expanded
+    leaves of wild plants. Leaf gas exchange was typically measured between 09:00
+    h and 13:00 h on attached and sun-facing leaves in the upper canopy. Vcmax (maximum
+    carboxylation rate) was estimated from the light-saturated net CO2 assimilation
+    rate at a standardised intercellular CO2 concentration of 250 ppm, calculated
+    at the prevailing leaf temperature at which Asat and Rdark were measured (see
+    leaf_photosynthetic_rate_per_dry_mass_saturated methods).
+- var_in: Aa_sat
+  unit_in: umol{CO2}/m2/s
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Gas exchange measurements were made in situ on mature and fully expanded
+    leaves of wild plants. Leaf gas exchange was typically measured between 09:00
+    h and 13:00 h on attached and sun-facing leaves in the upper canopy. We measured
+    steady-state light-saturated net CO2 assimilation rates (Asat) using portable
+    photosynthesis systems (Li-6400; Licor, Lincoln, NE, USA). Cuvette conditions
+    were 1000-2000 umol photons m-2 s-1 of photosynthetically active radiation (as
+    needed to achieve light saturation, depending on the species and site), a reference
+    line [CO2] of 400 ppm, relative humidity of 60-70%, and block temperature set
+    at the prevailing ambient daytime temperature of each site (6-34 deg C, depending
+    on site location). Asat was measured at the prevailing ambient temperature at
+    each site.
+- var_in: Rdarka
+  unit_in: umol{CO2}/m2/s
+  trait_name: leaf_dark_respiration_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  leaf_temp: LfT_Rdark
+  methods: Immediately after measuring Asat, the cuvette light was turned off and
+    dark respiration rates (Rdark) were taken after a 30-45 min dark acclimation period.
+    Rdark was measured at the prevailing ambient temperature at each site to reflect
+    the rate of respiration that controlled sampled leaf NSC concentrations.
+- var_in: Ci_sat
+  unit_in: umol{CO2}/mol
+  trait_name: leaf_intercellular_CO2_concentration_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Internal (intercellular) CO2 concentration was recorded concurrently with
+    the steady-state light-saturated net CO2 assimilation rate (Asat) measurement,
+    using the same portable photosynthesis system (Li-6400; Licor, Lincoln, NE, USA)
+    under the same cuvette conditions (see leaf_photosynthetic_rate_per_area_saturated
+    methods).
+- var_in: AN_sat
+  unit_in: umol{CO2}/g{N}/s
+  trait_name: leaf_photosynthetic_nitrogen_use_efficiency_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Photosynthetic nitrogen use efficiency was calculated as the ratio of the
+    steady-state light-saturated net CO2 assimilation rate (Asat) to leaf nitrogen
+    concentration on a leaf dry mass basis (see leaf_photosynthetic_rate_per_area_saturated
+    and leaf_N_per_dry_mass methods).
+- var_in: AP_sat
+  unit_in: umol{CO2}/g{P}/s
+  trait_name: leaf_photosynthetic_phosphorus_use_efficiency_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Photosynthetic phosphorus use efficiency was calculated as the ratio of
+    the steady-state light-saturated net CO2 assimilation rate (Asat) to leaf phosphorus
+    concentration on a leaf dry mass basis (see leaf_photosynthetic_rate_per_area_saturated
+    and leaf_P_per_dry_mass methods).
+- var_in: gs_sat
+  unit_in: mol{H2O}/m2/s
+  trait_name: leaf_stomatal_conductance_per_area_at_Asat
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Stomatal conductance was recorded concurrently with the steady-state light-saturated
+    net CO2 assimilation rate (Asat) measurement, using the same portable photosynthesis
+    system (Li-6400; Licor, Lincoln, NE, USA) under the same cuvette conditions (see
+    leaf_photosynthetic_rate_per_area_saturated methods).
+- var_in: LeafNa
+  unit_in: g/m2
+  trait_name: leaf_N_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. For a majority of sites, leaf N concentration was determined using Kjeldahl
+    acid digests (Allen et al., 1974) analyzed on a LaChat QuikChem 8500 Series 2
+    Flow Injection Analysis System (Lachat Instruments, Milwaukee, WI, USA). Where
+    only leaf [N] was determined (15 of 382 samples), ground samples were combusted
+    using a Carlo-Erba elemental analyzer NA1500 (Thermo Fisher Scientific, Milan,
+    Italy); these samples were excluded from analyses requiring both N and P.
+- var_in: LeafPa
+  unit_in: g/m2
+  trait_name: leaf_P_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. For a majority of sites, leaf P concentration was determined using Kjeldahl
+    acid digests (Allen et al., 1974) analyzed on a LaChat QuikChem 8500 Series 2
+    Flow Injection Analysis System (Lachat Instruments, Milwaukee, WI, USA).
+- var_in: N:P
+  unit_in: g/g
+  trait_name: leaf_NP_ratio
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Calculated as the ratio of leaf N to leaf P concentration, both on a leaf
+    dry mass basis (see leaf_N_per_dry_mass and leaf_P_per_dry_mass methods).
+substitutions: .na
+taxonomic_updates:
+- find: Argyrodendro trifoliolatum
+  replace: Argyrodendron trifoliolatum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-23)
+  taxonomic_resolution: species
+- find: Barkyla syringifolia
+  replace: Barklya syringifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-23)
+  taxonomic_resolution: species
+- find: Cryptocarya onopriekna
+  replace: Cryptocarya onoprienkoana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-23)
+  taxonomic_resolution: species
+- find: Eucalyptus obiqua
+  replace: Eucalyptus obliqua
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-23)
+  taxonomic_resolution: species
+- find: Gillbeea whyapallana
+  replace: Gillbeea whypallana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-23)
+  taxonomic_resolution: species
+- find: Phyllocladus asplenifolius
+  replace: Phyllocladus aspleniifolius
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-23)
+  taxonomic_resolution: species
+- find: Syzgium johnsonii
+  replace: Syzygium johnsonii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-23)
+  taxonomic_resolution: species
+- find: Toechima
+  replace: Toechima sp. [Toechima; Asao_2024]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-09-23)
+  taxonomic_resolution: genus
+- find: Wilkiea sp
+  replace: Wilkiea sp. [Asao_2024]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-23)
+  taxonomic_resolution: genus
+exclude_observations: .na
+questions:
+  comment: Just to let you know we compared the input data against data already in
+    AusTraits and as indicated in the notes section (see below), we have filtered
+    at data that was previously mapped into AusTraits.
