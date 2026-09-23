@@ -1,0 +1,315 @@
+source:
+  primary:
+    key: Johnson_2013
+    bibtype: Article
+    year: '2013'
+    author: K. A. Johnson
+    title: Are there pollination syndromes in the Australian epacrids (Ericaceae -
+      Styphelioideae)? A novel statistical method to identify key floral traits per
+      syndrome
+    journal: Annals of Botany
+    volume: '112'
+    number: unknown
+    pages: 141--149
+    doi: 10.1093/aob/mct105
+  secondary_01:
+    key: Schneemilch_2011
+    bibtype: Article
+    year: '2011'
+    author: M. K. Schneemilch and C. Williams and M. Kokkinn
+    title: 'Floral visitation in the Australian native shrub genus Acrotriche (Ericaceae):
+      an abundance of ants'
+    journal: Australian Journal of Entomology
+    volume: '50'
+    pages: 130--138
+    doi: 10.1111/j.1440-6055.2010.00795.x
+  secondary_02:
+    key: Keighery_1996
+    bibtype: Article
+    year: '1996'
+    author: G. J. Keighery
+    title: Phytogeography, biology and conservation of Western Australian Epacridaceae
+    journal: Australian Journal of Botany
+    volume: '77'
+    pages: 347--356
+contributors:
+  data_collectors:
+  - last_name: Johnson
+    given_name: Karen A.
+    ORCID: .na.character
+    affiliation: School of Geography and Environmental Studies, University of Tasmania,
+      Private Bag 78, Hobart, Tasmania 7001, Australia
+    additional_role: contact
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    data %>%
+      filter(is.na(source_id) | source_id != "Houston_2002") %>%
+      mutate(
+        common_name_fixed = ifelse(common_name %in% c("Unknown", "Na"), potential_pollinator, common_name),
+        common_name_fixed = dplyr::recode(common_name_fixed,
+          "Bees" = "bee", "Flies" = "fly", "Blowfly" = "carrion_fly", "Hover Fly" = "hoverfly",
+          "Tipulid" = "fly", "Bug" = "hemiptera", "Grasshopper" = "orthoptera", "Snow skink" = "skink",
+          "Antechinus" = "marsupial", "Black Rat" = "rodent", "Common brushtail possum" = "marsupial",
+          "Adelaide rosella" = "parrot", "Purple crowned lorikeet" = "parrot", "Striated thornbill" = "bird",
+          "New Holland honeyeater" = "honeyeater", "New Holland Honeyeater" = "honeyeater", "New-Holland Honeyeater" = "honeyeater",
+          "Eastern spinebill" = "honeyeater", "Eastern Spinebill" = "honeyeater",
+          "Brown headed honeyeater" = "honeyeater", "Brown-Headed Honeyeater" = "honeyeater",
+          "Crescent honeyeater" = "honeyeater", "Crescent Honeyeater" = "honeyeater",
+          "Western spinebill" = "honeyeater",
+          "Tawny crowned honeyeater" = "honeyeater", "Tawny-Crowned Honeyeater" = "honeyeater",
+          "Red wattlebird" = "honeyeater", "Yellow-throated honeyeater" = "honeyeater",
+          "White naped honeyeater" = "honeyeater", "White plumed honeyeater" = "honeyeater", "White-plumed honeyeater" = "honeyeater",
+          "Yellow faced honeyeater" = "honeyeater", "White-Cheeked Honeyeater" = "honeyeater", "White cheeked honeyeater" = "honeyeater",
+          "Yellow wattlebird" = "honeyeater", "Black chinned honeyeater" = "honeyeater", "Little wattlebird" = "honeyeater",
+          "Purple gaped Honeyeater" = "honeyeater", "Yellow throated minor" = "honeyeater", "Black-Headed Honeyeater" = "honeyeater",
+          "Strong billed honeyeater" = "honeyeater"
+        ),
+        has_s3_trait = !is.na(s3_trait_name) & s3_trait_name != "",
+        trait_name_derived = ifelse(has_s3_trait, s3_trait_name, ifelse(common_name_fixed == "Ant", "flower_visitor", "pollination_vector_possible")),
+        pollinator_vocab_match = ifelse(has_s3_trait, s3_trait_value, common_name_fixed),
+        is_original = !is.na(original_contribution) & original_contribution,
+        location_name_derived = dplyr::case_when(
+          !is_original ~ NA_character_,
+          plant_species %in% c("Dracophyllum minimum", "Epacris serpyllifolia", "Trochocarpa thymifolia", "Monotoca empetrifolia", "Richea acerosa", "Richea milliganii", "Richea pandanifolia", "Richea scoparia", "Richea sprengelioides") ~ "Mt. Field National Park",
+          plant_species == "Richea procera" ~ "Wellington Range Park",
+          plant_species == "Richea dracophylla" ~ "Snug Tiers",
+          plant_species == "Trochocarpa gunnii" ~ "Tasmanian Wilderness World Heritage Area",
+          plant_species == "Lissanthe strigosa" ~ "Echo Sugarloaf State Reserve",
+          plant_species == "Leucopogon ericoides" ~ "Randalls Bay Conservation Area",
+          plant_species == "Epacris lanuginosa" ~ "Egg and Bacon Bay Road",
+          plant_species %in% c("Leucopogon virgatus", "Leucopogon collinus") ~ "Ridgeway Park",
+          plant_species %in% c("Epacris marginata", "Leucopogon parviflorus") ~ "Remarkable Cave State Reserve",
+          plant_species == "Leptecophylla juniperina subsp. juniperina" ~ "Cape Raoul State Reserve",
+          plant_species == "Epacris impressa" ~ "Huon Road",
+          TRUE ~ NA_character_
+        ),
+        entity_type_derived = ifelse(!is.na(location_name_derived), "population", "species"),
+        year_text = ifelse(is.na(source_id) | source_id == "Johnson_2013", source, source_id),
+        year_matches = regmatches(year_text, gregexpr("(19|20)[0-9]{2}", year_text)),
+        row_year_min = as.numeric(sapply(year_matches, function(x) if (length(x) == 0) 2013 else min(as.numeric(x)))),
+        row_year_max = as.numeric(sapply(year_matches, function(x) if (length(x) == 0) 2013 else max(as.numeric(x))))
+      ) %>%
+      dplyr::group_by(plant_species, trait_name_derived, location_name_derived, entity_type_derived, source_id) %>%
+      dplyr::summarise(
+        pollinator_vocab_match = paste(unique(pollinator_vocab_match), collapse = " "),
+        scientific_name = paste(unique(scientific_name), collapse = " "),
+        source = paste(unique(source), collapse = " "),
+        code = dplyr::first(code),
+        tribe = dplyr::first(tribe),
+        common_name = dplyr::first(common_name),
+        potential_pollinator = dplyr::first(potential_pollinator),
+        rf_classification = dplyr::first(rf_classification),
+        original_contribution = dplyr::first(original_contribution),
+        collection_year_min = min(row_year_min),
+        collection_year_max = max(row_year_max),
+        collection_date_derived = ifelse(collection_year_min == collection_year_max,
+          as.character(collection_year_min),
+          paste0(collection_year_min, "/", collection_year_max)),
+        .groups = "drop"
+      )
+    '
+  collection_date: collection_date_derived
+  taxon_name: plant_species
+  trait_name: trait_name_derived
+  value: pollinator_vocab_match
+  location_name: location_name_derived
+  source_id: source_id
+  individual_id: .na
+  description: To compile published and original field records of floral visitors
+    to Australian epacrid (Ericaceae, Styphelioideae) species, together with floral
+    trait data, in order to test whether epacrids exhibit statistically identifiable
+    pollination syndromes.
+  basis_of_record: field literature
+  life_stage: adult
+  sampling_strategy: Information on floral visitors to 87 epacrid species came from
+    the published literature and field observations (Supplementary Data Tables S1,
+    S2). Acrotriche species were excluded from analyses due to uncertainty regarding
+    their pollinators (Johnson et al., 2011; Schneemilch et al., 2011). To standardize
+    data from different sources, the term "potential pollinator" (hereafter synonymous
+    with "pollinator") was used to describe an animal observed to interact with epacrid
+    flowers. Thus, a flower visitor was considered a pollinator only when it was described
+    in the literature as "foraging at flowers, brushing anthers and stigma" and/or
+    "carrying epacrid pollen". Where generalized pollination systems are reported,
+    there is often no or limited information on the effectiveness of each pollinator
+    type. Thus, for the purpose of the current work, all pollinators have been treated
+    as equally effective. To analyse and interpret plant and animal relationships,
+    species-level identification was required for plants. For animals, the requirement
+    was data making it possible to categorize them into functional groups based on
+    Fenster et al. (2004) - bee (Hymenoptera), fly (Diptera), beetle (Coleoptera),
+    butterfly (Lepidoptera), moth (Lepidoptera), wasp (Hymenoptera) and bird (Aves)
+    (Supplementary Data Table S2). Pollinator information was collated using Google
+    Scholar (most recently 28 March 2012) searches for the key words "Pollinat* Epacridaceae"
+    or "Pollinat* Styphelioideae". The words "Pollination", "Epacridaceae" and "Styphelioideae"
+    were also used to search for journals that routinely publish on pollination ecology.
+    Each study had its own agenda; completeness of pollinator profiles may be variable
+    and may not cover all pollination scenarios in epacrids (e.g. there are few nocturnal
+    pollination studies). Thus, the data set should be considered non-random. Only
+    native pollinators were included in the analyses. The two introduced species,
+    honeybee Apis mellifera and bumblebee Bombus terrestris, were excluded. Lizards
+    were excluded due to uncertainty about their role as either pollinators or nectar-robbers
+    of Richea scoparia (Olsson et al., 2000; Johnson, 2012).
+  original_file: raw/table_s2.csv, manually transcribed from the source paper's Supplementary
+    Data Table S2 (see raw/Johnson_2013.pdf and raw/Johnson_2013_tables.pdf)
+  notes: Ant-visitation records (Acrotriche spp., sourced from Schneemilch et al.
+    2011) are mapped to flower_visitor rather than pollination_vector_possible, matching
+    the source paper's statement that these ant visits are not documented as involving
+    contact with the flower's reproductive structures. Additional data not currently
+    mappable to AusTraits traits, floral types/shapes don't match AusTraits vocabulary.
+    Table S1 (site summary for the 21 species with original field observations) is
+    transcribed to raw/table_s1.csv and is now incorporated - each species'' site
+    is linked as location_name to that species'' original-observation records in Table
+    S2 (original_contribution == TRUE, i.e. source starting "KAJ"); those records''
+    entity_type becomes population, while literature-based values have entity_type
+    species. Epacris impressa is listed against both Randalls Bay Conservation Area
+    and Huon Road in Table S1, and is arbitrarily linked to Huon Road; Richea scoparia
+    is listed twice at Mt. Field National Park and linked to its representative coordinates.
+  measurement_remarks: source
+identifiers: .na
+locations:
+  Mt. Field National Park:
+    latitude (deg): -42.658056
+    longitude (deg): 146.517778
+    description: subalpine/montane vegetation, Tasmania
+    state: Tas
+  Wellington Range Park:
+    latitude (deg): -42.906667
+    longitude (deg): 147.263056
+    description: near Hobart, Tasmania
+    state: Tas
+  Snug Tiers:
+    latitude (deg): -43.066389
+    longitude (deg): 147.179167
+    description: near Hobart, Tasmania
+    state: Tas
+  Tasmanian Wilderness World Heritage Area:
+    latitude (deg): -42.831944
+    longitude (deg): 146.385
+    description: Tasmania
+    state: Tas
+  Echo Sugarloaf State Reserve:
+    latitude (deg): -43.245278
+    longitude (deg): 147.131111
+    description: near Kingston, Tasmania
+    state: Tas
+  Randalls Bay Conservation Area:
+    latitude (deg): -43.244722
+    longitude (deg): 147.131944
+    description: near Kingston, Tasmania
+    state: Tas
+  Egg and Bacon Bay Road:
+    latitude (deg): -43.245833
+    longitude (deg): 147.117778
+    description: near Kingston, Tasmania
+    state: Tas
+  Ridgeway Park:
+    latitude (deg): -42.919167
+    longitude (deg): 147.283611
+    description: near Hobart, Tasmania
+    state: Tas
+  Remarkable Cave State Reserve:
+    latitude (deg): -43.186667
+    longitude (deg): 147.846667
+    description: Tasman Peninsula, Tasmania
+    state: Tas
+  Cape Raoul State Reserve:
+    latitude (deg): -43.218056
+    longitude (deg): 147.784722
+    description: Tasman Peninsula, Tasmania
+    state: Tas
+  Huon Road:
+    latitude (deg): -42.903333
+    longitude (deg): 147.280556
+    description: near Hobart, Tasmania
+    state: Tas
+contexts:
+- context_property: flower visitor taxon name
+  category: entity_context
+  var_in: scientific_name
+traits:
+- var_in: pollination_vector_possible
+  unit_in: .na
+  trait_name: pollination_vector_possible
+  entity_type: entity_type_derived
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: A flower visitor was considered a pollinator only when it was described
+    in the source (published literature or original field observation) as "foraging
+    at flowers, brushing anthers and stigma" and/or "carrying epacrid pollen"; pollination
+    itself was not experimentally confirmed (e.g. via pollinator exclusion or seed-set
+    recorded from a specific visit). Records came from the published literature (collated
+    via Google Scholar searches for "Pollinat* Epacridaceae"/"Pollinat* Styphelioideae"
+    and by searching journals that routinely publish on pollination ecology) and from
+    original field observations by the author (source = "KAJ", followed by month/year).
+  measurement_remarks: source
+- var_in: flower_visitor
+  unit_in: .na
+  trait_name: flower_visitor
+  entity_type: entity_type_derived
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Ant visitation records for Acrotriche species, from Schneemilch, Williams
+    & Kokkinn (2011). The source paper excluded Acrotriche from its own pollination-syndrome
+    analysis "due to uncertainty regarding their pollinators", i.e. ant visits to
+    Acrotriche flowers are documented here as floral visitation without the stronger
+    evidence of reproductive-structure contact used to include a record under pollination_vector_possible.
+  measurement_remarks: source
+- var_in: flower_colour
+  unit_in: .na
+  trait_name: flower_colour
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Information on four floral traits for all 87 epacrid species for which
+    pollinators were known was obtained from the literature (Allen, 1961; Curtis,
+    1963; Laing and Blackwell, 1964; Van Royen, 1982; Jessop and Toelken, 1986; Mark
+    and Adams, 1986; Corrick et al., 1996; Walsh and Entwisle, 1996; Harden, 1992;
+    Packowska and Chapman, 2000; Wheeler et al., 2002; FloraBase). Only attributes
+    for which data were accessible for all 87 plant species were included. Traits
+    were scored as 1 present and 0 if not. Display colour was categorized as blue/purple,
+    red, pink, yellow, green and white; a species could be scored positive for more
+    than one colour.
+- var_in: flower_nectar_production
+  unit_in: .na
+  trait_name: flower_nectar_production
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Presence or absence of nectar was scored (1 present, 0 absent) from the
+    same literature sources used for the other floral trait profiles (see flower_colour
+    methods).
+- var_in: flower_corolla_tube_opening
+  unit_in: .na
+  trait_name: flower_corolla_tube_opening
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Corolla mouth was recorded as "constricted" (generally <1 mm) where the
+    corolla was nearly closed at the top such as in Astroloma species, "narrow" (generally
+    1 to <2.5 mm) where it tapered in near the top, and "wide" (generally >2.5 mm)
+    where it tended to be at least as wide as the rest of the floral tube, from the
+    same literature sources used for the other floral trait profiles (see flower_colour
+    methods). Not scored for the brush-flowered Richea species, whose corollas abscise
+    to present a brush-like cluster of stamens rather than a tube with a mouth.
+substitutions: .na
+taxonomic_updates:
+- find: Leucopogon sp.
+  replace: Leucopogon sp. [Johnson_2013]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-23)
+  taxonomic_resolution: genus
+- find: Leucopogon spp.
+  replace: Leucopogon sp. [Johnson_2013]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-23)
+  taxonomic_resolution: genus
+- find: Sphenotoma sp.
+  replace: Sphenotoma sp. [Johnson_2013]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-09-23)
+  taxonomic_resolution: genus
+exclude_observations: .na
+questions: .na
