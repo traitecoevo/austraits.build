@@ -12,63 +12,291 @@ source:
     number: '12'
     doi: 10.1002/ecs2.3851
     issn: 2150-8925
+  secondary:
+    key: Hodges_2021_2
+    bibtype: Article
+    year: '2021'
+    author: Joshua A. Hodges and Jodi N. Price and Adrienne B. Nicotra and Lydia K.
+      Guja
+    journal: Ecological Management &amp; Restoration
+    title: Smoke and heat can increase germination of common wildflowers and grasses—implications
+      for conservation and restoration of critically endangered grassy ecosystems
+    volume: '23'
+    number: '1'
+    pages: 94--9
+    doi: 10.1111/emr.12533
+    issn: 1442-8903
 contributors:
   data_collectors:
   - last_name: Hodges
     given_name: Joshua
     ORCID: 0000-0002-9563-3323
-    affiliation: Charles Sturt University
+    affiliation: Institute for Land, Water and Society, Charles Sturt University, Albury,
+      NSW, Australia
+    additional_role: contact
+  - last_name: Guja
+    given_name: Lydia
+    ORCID: 0000-0001-5945-438X
+    affiliation: Centre for Australian National Biodiversity Research (a joint venture
+      between Parks Australia and CSIRO), Canberra, ACT, Australia
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
-  collection_date: xx
-  taxon_name: Species
-  location_name: unknown
-  description: unknown
-  basis_of_record: unknown
-  life_stage: unknown
-  sampling_strategy: unknown
-  original_file: unknown
-  notes: unknown
+  custom_R_code: '
+    data |>
+      mutate(
+        location_name = "south-eastern Australia",
+        photosynthetic_pathway = lifeform
+        ) |>
+      group_by(species) %>%
+        mutate(
+          across(c(lifeform, photosynthetic_pathway, dormancytype),
+                replace_duplicates_with_NA)
+        ) |>
+      ungroup()
+  '
+  collection_date: 2021
+  taxon_name: species
+  location_name: location_name
+  description: Study to explore how native forbs and grasses in critically endangered
+    grasslands and grassy woodlands respond to fire-related germination cues, such
+    as smoke and heat, can benefit our understanding of both how species respond to
+    fire and identify treatments which can be used to increase germination.
+  basis_of_record: lab
+  life_stage: adult
+  sampling_strategy: We conducted a germination experiment to investigate the effects
+    of smoke and heat both singly and in combination on germination speed and percent
+    germination. There were four treatments, untreated control (no smoke, no heat),
+    smoke alone, heat alone and a combination of smoke and heat. Smoke was applied
+    by placing each replicate in glass vials and submerging the seeds for 24 h in
+    20 ml of 10% smoke water solution made using smoke water concentrate diluted 1:10
+    (sourced from Kings Park and Botanic Garden and prepared using methods described
+    in Erickson et al. 2016). For the heat treatment, each replicate was placed in
+    a nylon mesh bag and heated at 80°C for 90 min in a convection oven. The temperature
+    and duration of the heat treatment was chosen based on soil temperature monitoring
+    after a planned burn conducted in a natural temperate grassland in March 2018
+    (data available in Hodges et al. 2021, table S3). For the combination treatment,
+    heat was applied first followed by smoke using the above methods. Following application
+    of smoke and heat, 3 replicates of 25 seeds per treatment were sown evenly spaced
+    on 90mm Petri dishes with 1% water agar. Seeds of 16 species were collected by
+    the lead author in 2018-2019, 19 species were purchased from nurseries or contracted
+    seed collectors (collections from 2014 to 2019) and 20 were sourced from the National
+    Seed Bank in Canberra, Australia (2010-2019). Seeds were collected from multiple
+    adult plants to ensure some within-population genetic diversity was captured.
+    Where possible, seeds were also collected from multiple sites and pooled to create
+    a regional mix consisting of seeds collected across the study range. ^p Replicates
+    were progressed through a series of incubation temperatures designed to simulate
+    seasonal changes in temperature experienced across a calendar year in situ. Temperatures
+    were chosen based on the 10-year average maximum and minimum temperatures for
+    36 weather stations located across south-eastern Australia (Victoria, New South
+    Wales and the Australian Capital Territory, weather data sourced from the Australian
+    Bureau of Meteorology). First, seeds were placed within a Thermoline growth cabinet
+    (Thermoline Model TRIL-120-1-VW/ BMS, Serial 30455, Thermoline Scientific, NSW,
+    Australia) set to average autumn temperatures for the study range, that is 20/10°C
+    alternating light/dark (12 h/12 h) for 42 days. The incubator was then set to
+    average winter temperatures (12/5°C alternating light/dark) for a further 42 days
+    and so on through spring (25/15°C alternating light/dark), summer (35/20°C alternating
+    light/dark) and a second autumn (20/10°C alternating light/dark). The light/dark
+    cycle was maintained at 12 h/12 h for all regimes. The experiment ran for a total
+    of 210 days (5 incubation temperatures x 42 days each).
+  original_file: data sourced from https://doi.org/10.6084/m9.figshare.16680322.
+  notes: none
 identifiers: .na
-locations: .na
+locations:
+  south-eastern Australia:
+    latitude (deg): unknown
+    longitude (deg): unknown
+    description: grassy ecosystem
+    seed provenance: fire-prone temperate grassy ecosystems of south-eastern Australia
+    state: NSW, ACT, Vic
 contexts:
 - context_property: seed pre-germination treatment
   category: treatment_context
-  var_in: germination_treatment
+  var_in: treatment
   values:
-  - value: Control
+  - value: ac
     description: control
-  - value: Heat
-    description: unknown
-  - value: Smoke
-    description: unknown
-  - value: S + H
-    description: unknown
-  - value: Control_1
-    description: unknown
-  - value: Heat_2
-    description: unknown
-  - value: Smoke_3
-    description: unknown
-  - value: S + H_4
-    description: unknown
+  - value: h
+    description: placed in a nylon mesh bag and heated at 80°C for 90 min in a convection
+      oven
+  - value: s
+    description: seeds submerged for 24 h in 20 ml of 10% smoke water solution
+  - value: sh
+    description: seeds placed in a nylon mesh bag and heated at 80°C for 90 min in
+      a convection, then submerged for 24 h in 20 ml of 10% smoke water solution
 traits:
-- var_in: seed_germination
+- var_in: percentgerm
   unit_in: '%'
   trait_name: seed_germination
-  entity_type: population
+  entity_type: individual
   value_type: mean
   basis_of_value: measurement
-  replicates: unknown
-  methods: unknown
-substitutions: .na
+  replicates: nseed
+  methods: Replicates were progressed through a series of incubation temperatures
+    designed to simulate seasonal changes in temperature experienced across a calendar
+    year in situ. Temperatures were chosen based on the 10-year average maximum and
+    minimum temperatures for 36 weather stations located across south-eastern Australia
+    (Victoria, New South Wales and the Australian Capital Territory, weather data
+    sourced from the Australian Bureau of Meteorology). First, seeds were placed within
+    a Thermoline growth cabinet (Thermoline Model TRIL-120-1-VW/ BMS, Serial 30455,
+    Thermoline Scientific, NSW, Australia) set to average autumn temperatures for
+    the study range, that is 20/10°C alternating light/dark (12 h/12 h) for 42 days.
+    The incubator was then set to average winter temperatures (12/5°C alternating
+    light/dark) for a further 42 days and so on through spring (25/15°C alternating
+    light/dark), summer (35/20°C alternating light/dark) and a second autumn (20/10°C
+    alternating light/dark). The light/dark cycle was maintained at 12 h/12 h for
+    all regimes. The experiment ran for a total of 210 days (5 incubation temperatures
+    x 42 days each).
+- var_in: lifeform
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Expert knowledge.
+- var_in: photosynthetic_pathway
+  unit_in: .na
+  trait_name: photosynthetic_pathway
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Expert knowledge.
+- var_in: dormancytype
+  unit_in: .na
+  trait_name: seed_dormancy_class
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Expert knowledge.
+substitutions:
+- trait_name: photosynthetic_pathway
+  find: c3 grass
+  replace: c3
+- trait_name: photosynthetic_pathway
+  find: c4 grass
+  replace: c4
+- trait_name: photosynthetic_pathway
+  find: forb
+  replace: .na
+- trait_name: photosynthetic_pathway
+  find: legume
+  replace: .na
+- trait_name: plant_growth_form
+  find: c3 grass
+  replace: graminoid
+- trait_name: plant_growth_form
+  find: c4 grass
+  replace: graminoid
+- trait_name: plant_growth_form
+  find: legume
+  replace: herb
+- trait_name: seed_dormancy_class
+  find: mpd
+  replace: morphophysiological_dormancy
+- trait_name: seed_dormancy_class
+  find: pd
+  replace: physical_dormancy
 taxonomic_updates:
+- find: Bothrichloa macra
+  replace: Bothriochloa macra
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Caesia callintha
+  replace: Caesia calliantha
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Calotis lappulcea
+  replace: Calotis lappulacea
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Convovulus remotus
+  replace: Convolvulus remotus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Cynoglossum sauveleons
+  replace: Cynoglossum suaveolens
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Daucas glochidiatus
+  replace: Daucus glochidiatus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Dilwynia sericea
+  replace: Dillwynia sericea
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Gonocarpus tertragynus
+  replace: Gonocarpus tetragynus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Hadenbergia violocea
+  replace: Hardenbergia violacea
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Microseris lancelota
+  replace: Microseris lanceolata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Mysotis laxa
+  replace: Myosotis laxa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Rytidosperma ceaspitosum
+  replace: Rytidosperma caespitosum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Vellia paradoxa
+  replace: Velleia paradoxa
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
 - find: Viola bentonicifolia
   replace: Viola betonicifolia
   reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
     and filler words are removed (2025-03-06)
   taxonomic_resolution: species
+- find: Vittadinia mulleri
+  replace: Vittadinia muelleri
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
+- find: Whalenbergia stricta
+  replace: Wahlenbergia stricta
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
 exclude_observations: .na
-questions: .na
+questions:
+  question1: Do you have seed mass data for these species? Or other seed traits?
+  question2: For Brunonia australis, the replicate data give mean germination of 40%
+    for heat (32, 52, 36) and 24% for smoke (12, 28, 32), whereas Table 1 of Hodges
+    et al. (2021, Ecological Management & Restoration) reports 24% for heat and 40%
+    (significant increase) for smoke. Germination speeds match the replicate data's
+    treatment labels. Which is correct?
+  question3: For Wahlenbergia stricta, the replicate data give 4% germination for
+    the control (4, 4, 4) and 0% for smoke, whereas Table 1 of Hodges et al. (2021,
+    Ecological Management & Restoration) reports 0% for the control and 4% for smoke;
+    germination speed values are also swapped between the two. Which is correct?
+  question4: For Rytidosperma pallidum heat, the replicate data give mean germination
+    of 59.3% (48, 80, 50), whereas Table 1 of Hodges et al. (2021, Ecological Management
+    & Restoration) reports 99.3%. Germination speed matches (2.42). Which germination
+    value is correct?
+  question5: The species recorded in the data as Microseris lancelota is reported
+    as Microseris walteri in Hodges et al. (2021, Ecological Management & Restoration).
+    Which name is correct for this seed collection?
+  question6: For the dormancy classes, what does "ys" stand for?
