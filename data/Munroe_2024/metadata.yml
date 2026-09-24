@@ -3,7 +3,9 @@ source:
     key: Munroe_2024
     bibtype: Online
     year: 2024
-    author: Samantha Munroe, Francesca McInerney, Jake Andrae, Nina Welti, Greg Guerin, Emrys Leitch, Tony Hall, Steve Szarvas, Rachel Atkins, Stefan Caddy-Retalic and Joseph Holtum
+    author: Samantha Munroe, Francesca McInerney, Jake Andrae, Nina Welti, Greg Guerin,
+      Emrys Leitch, Tony Hall, Steve Szarvas, Rachel Atkins, Stefan Caddy-Retalic
+      and Joseph Holtum
     title: The Photosynthetic Pathways of Plant Species Surveyed in TERN Ecosystem
       Surveillance Plots
     publisher: TERN
@@ -29,24 +31,40 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
-    data %>%
-      filter(!is.na(taxon_name)) %>%
+  custom_R_code: ' 
+    data %>% 
+      filter(!is.na(taxon_name)) %>% 
       mutate(
-        photosyntheticPathway_combined2 = ifelse(source %in% c("Osborne et al. 2014", "Osborn et al.,2014"), NA, photosyntheticPathway_combined2),
-        photosyntheticPathway_combined2 = ifelse(photosyntheticPathway_combined2 == "U", NA, photosyntheticPathway_combined2)
-      ) %>%
-      group_by(taxon_name) %>%
+        photosyntheticPathway_combined2 = ifelse(source %in% c("Osborne et al. 2014", "Osborn et al.,2014"), 
+        NA, photosyntheticPathway_combined2),
+        photosyntheticPathway_combined2 = ifelse(photosyntheticPathway_combined2 == "U",
+        NA, photosyntheticPathway_combined2) ) %>% 
+      group_by(taxon_name) %>% 
         mutate(replicate_measurement = row_number()) %>%
-      ungroup()'
-  collection_date: unknown/2024
+      ungroup()
+  '
+  collection_date: 2024
   taxon_name: taxon_name
   location_name: ternPlot
   source_id: source
   description: TERN Plant Photosynthetic Pathway Trait Dataset v2
   basis_of_record: literature
   life_stage: adult
-  sampling_strategy: This data set provides the photosynthetic pathways for 4832 species recorded across plots surveyed by Australia’s Terrestrial Ecosystem Research Network (TERN) between 2011 and May 2022 (inclusive). TERN survey plots are 1 ha (100 x 100 m) permanently established sites located in a homogeneous area of terrestrial vegetation. At each plot, TERN survey teams record vegetation composition and structural characteristics and collect a range of plant samples using a point-intercept method. Species were assigned a photosynthetic pathway using literature and carbon stable isotope analysis of bulk tissue collected by TERN at the survey plots. The data set is comprised of one data table that contains a list of each species and its photosynthetic pathway, and one metadata file which provides a data descriptor that defines data values and a list of all the peer-reviewed sources used to create this data set. Version 1 (2020) included the photosynthetic pathways of 2428 species recorded across TERN plots surveyed between 2011 and 2017 (inclusive) and was originally published in 2020. Key updates in version 2 (2024) include an expanded species list and updated taxonomy were applicable.
+  sampling_strategy: This data set provides the photosynthetic pathways for 4832 species
+    recorded across plots surveyed by Australia’s Terrestrial Ecosystem Research Network
+    (TERN) between 2011 and May 2022 (inclusive). TERN survey plots are 1 ha (100
+    x 100 m) permanently established sites located in a homogeneous area of terrestrial
+    vegetation. At each plot, TERN survey teams record vegetation composition and
+    structural characteristics and collect a range of plant samples using a point-intercept
+    method. Species were assigned a photosynthetic pathway using literature and carbon
+    stable isotope analysis of bulk tissue collected by TERN at the survey plots.
+    The data set is comprised of one data table that contains a list of each species
+    and its photosynthetic pathway, and one metadata file which provides a data descriptor
+    that defines data values and a list of all the peer-reviewed sources used to create
+    this data set. Version 1 (2020) included the photosynthetic pathways of 2428 species
+    recorded across TERN plots surveyed between 2011 and 2017 (inclusive) and was
+    originally published in 2020. Key updates in version 2 (2024) include an expanded
+    species list and updated taxonomy were applicable.
   original_file: file Photosynthetic_Pathways_of_Plants_TERN_v2_19092024.csv at https://portal.tern.org.au/metadata/TERN/1e16257d-57ae-48dd-bbad-5701e72a9f6d
   notes: Two components of the dataset have been filtered out. First, data sourced
     from 'Osborne 2014' which is in AusTraits as its own dataset. Second, any photosynthetic
@@ -55,7 +73,9 @@ dataset:
     as TRY data are included, but only referenced as 'Kattge 2020' and the original
     data source is unknown. There are also ~100 species that are excluded as they
     are not in APC/APNI and are likely non-native species not recognised by APC/APNI
-    as naturalised in Australia. A small number of taxa are included in both v1 and v2, with different photosynthetic pathways assigned. These are currently being retained in both datasets.
+    as naturalised in Australia. A small number of taxa are included in both v1 and
+    v2, with different photosynthetic pathways assigned. These are currently being
+    retained in both datasets.
 identifiers: .na
 locations:
   NSABBS0006:
@@ -1323,23 +1343,54 @@ traits:
 - var_in: d13C_perMil
   unit_in: '{delta}[ppth]'
   trait_name: leaf_delta13C
-  entity_type: species
+  entity_type: population
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
-  methods: The carbon stable isotope values of C3 plants range from -37‰ to -20‰ delta13C (mean= ~-27‰), the values of C4 plants range from -12‰ to -16‰ delta13C (mean=~-13‰). For species where either a C3 or C4 pathway was possible, plants with delta13C values < -19‰ were designated C3, and plants with delta13C values > -19‰ were designated C4. Full CAM plants, or plants in which CAM is strongly expressed, have delta13C > -20‰. However, CAM photosynthesis almost always co-exists with the C3 pathway (C3-CAM). The delta13C of C3-CAM plants are correlated with the proportion of carbon that is obtained during light and dark periods. As a result, C3-CAM delta13C values are highly variable (approximately -13‰ to -27‰). To confirm the presence of CAM, additional measures of other physiological and biochemical variables are usually required. With this limitation in mind, for genera with previously confirmed C3-CAM potential, we tentatively denoted plants with a delta13C value > -20‰ as CAM, -21‰ to -24‰ as C3-CAM, and <-24‰ as C3. 
+  methods: The carbon stable isotope values of C3 plants range from -37‰ to -20‰ delta13C
+    (mean= ~-27‰), the values of C4 plants range from -12‰ to -16‰ delta13C (mean=~-13‰).
+    For species where either a C3 or C4 pathway was possible, plants with delta13C
+    values < -19‰ were designated C3, and plants with delta13C values > -19‰ were
+    designated C4. Full CAM plants, or plants in which CAM is strongly expressed,
+    have delta13C > -20‰. However, CAM photosynthesis almost always co-exists with
+    the C3 pathway (C3-CAM). The delta13C of C3-CAM plants are correlated with the
+    proportion of carbon that is obtained during light and dark periods. As a result,
+    C3-CAM delta13C values are highly variable (approximately -13‰ to -27‰). To confirm
+    the presence of CAM, additional measures of other physiological and biochemical
+    variables are usually required. With this limitation in mind, for genera with
+    previously confirmed C3-CAM potential, we tentatively denoted plants with a delta13C
+    value > -20‰ as CAM, -21‰ to -24‰ as C3-CAM, and <-24‰ as C3.
 - var_in: photosyntheticPathway_combined2
   unit_in: .na
   trait_name: photosynthetic_pathway
-  entity_type: species
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: All TERN plant data were processed in the R statistical environment using the 'ausplotsR' package. A list of all vascular plant species at each TERN plot was extracted using the get_ausplots function. To assign each species a photosynthetic pathway, scientific names were first cross-referenced against well-known plant trait databases. We then conducted literature searches of the remaining unassigned species via Google Scholar with combinations of the key words “C3”, “C4”, “CAM”, “photosynthesis” and “photosynthetic pathway”. If species-specific information was not available, but the species belonged to a genus known to be exclusively C3, C4 or CAM it was assigned to that pathway (e.g. Acacia spp., Eucalyptus spp. are presumptive C3). If it was not possible to assign a photosynthetic pathway using published sources or presumptive reasoning, then that species was selected for stable carbon isotope analysis. 
+  methods: All TERN plant data were processed in the R statistical environment using
+    the 'ausplotsR' package. A list of all vascular plant species at each TERN plot
+    was extracted using the get_ausplots function. To assign each species a photosynthetic
+    pathway, scientific names were first cross-referenced against well-known plant
+    trait databases. We then conducted literature searches of the remaining unassigned
+    species via Google Scholar with combinations of the key words “C3”, “C4”, “CAM”,
+    “photosynthesis” and “photosynthetic pathway”. If species-specific information
+    was not available, but the species belonged to a genus known to be exclusively
+    C3, C4 or CAM it was assigned to that pathway (e.g. Acacia spp., Eucalyptus spp.
+    are presumptive C3). If it was not possible to assign a photosynthetic pathway
+    using published sources or presumptive reasoning, then that species was selected
+    for stable carbon isotope analysis.
 substitutions: .na
-taxonomic_updates: .na
+taxonomic_updates:
+- find: Hakea persiehana
+  replace: Hakea persiehiana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-24)
+  taxonomic_resolution: species
 exclude_observations: .na
 questions:
   question_1: There are two quite different coordinates given for site NTABRT0002-53617.
     Is there meant to be a different site ID for one of them?
-  question_2: There are a small number of species that are included in both v1 and v2 of this dataset, with different photosynthetic pathway scores. Would it be appropriate to remove these species from 'Munroe_2019'?
+  question1a: The coordinates for SASMDD0009 are given as -34.06028,40.6946,which is off the coast of South Africa. Should this be 140.6946 instead?
+  question_2: There are a small number of species that are included in both v1 and
+    v2 of this dataset, with different photosynthetic pathway scores. Would it be
+    appropriate to remove these species from 'Munroe_2019'?
