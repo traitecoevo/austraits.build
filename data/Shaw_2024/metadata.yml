@@ -24,7 +24,11 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>%
-      mutate(location_name = "Murdoch University")'
+      mutate(
+        location_name = "Murdoch University",
+        emergence = stringr::str_remove(emergence, "\\s*\\(.*\\)"),
+        emergence = ifelse(treatment == "negative control", emergence, NA)
+      )'
   collection_date: 2016-10-23/2017-03-21
   taxon_name: Species
   location_name: location_name
@@ -84,7 +88,14 @@ dataset:
     as described by O'Brien et al. (2009), to confirm the presence and survival of
     the Phytophthora and Pythium species.
   original_file: data from manuscript and Supplementary Information
-  notes: Since data from literature, some categorical values already in AusTraits from other sources. See source_ID for overlap. Seed mass determined for this study.
+  notes: Since these data are from literature, some categorical values already in AusTraits
+    from other sources. See source_ID for overlap. Seed mass values are measured for this study.
+    This dataset also has experimental data on seedling emergence and survival when
+    inoculated with different Phytophthora strains (and Pythium irregulare), from
+    Tables 3 and 4 of the manuscript; these are included in data.csv (columns treatment,
+    emergence, survival; values are model-estimated percentages with standard errors
+    in brackets), but only seedling emergence in the negative control treatment is
+    mapped into AusTraits, as seed_germination.
 identifiers: .na
 locations:
   Murdoch University:
@@ -167,6 +178,23 @@ traits:
   replicates: unknown
   life_stage: adult
   methods: Seed mass determined using standard protocols.
+- var_in: emergence
+  unit_in: '%'
+  trait_name: seed_germination
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 10
+  life_stage: seedling
+  methods: The emergence and survival of 30 plant species were monitored in five
+    oomycete treatments and a negative control. Seedlings were recorded as emergent
+    when both cotyledons were visible above the soil surface. Additional sterile vermiculite
+    substrate was prepared in the same way for the inoculation of negative control
+    treatments. Each combination of oomycete treatment (6) and plant species (30)
+    was replicated 10 times (1800 punnet-cells). Then ten seeds of each plant species
+    were sown into a single punnet cell (70 x 70 x 80 mm, 250 mL). The values displayed
+    were extracted from models for each plant species used in the experiment with
+    adequate seed viability.
 substitutions:
 - trait_name: nitrogen_fixing
   find: 'no'
