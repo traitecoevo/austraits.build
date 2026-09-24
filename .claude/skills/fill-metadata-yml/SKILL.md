@@ -83,13 +83,31 @@ screenshot, or a paper PDF) rather than expect you to look it up. Map it to
   internal YAML key, not a citation format, and traits.build won't recognise
   it as one). See Cornwell_2018, Kew_2019_3/_4, Davis_2026, Choat_2012 for
   the working pattern: `dataset: source_id: source_id` points at a data.csv
-  column (typically built in `custom_R_code`, e.g. via a `dplyr::recode()`/
-  named-vector lookup or `paste0(ref_author, "_", ref_year)`) holding an
-  `author_year`-style value per row -- disambiguated with a trailing `_1`/
-  `_2`/... where the same first author has more than one compiled source in
-  the same year (see Kew_2019_3's worked `ifelse(stringr::str_detect(...))`
-  chain, or build the disambiguation as a lookup table if there are too many
-  collisions to hand-write). For sources promoted to a formal `secondary_NN`
+  column holding an `author_year`-style value per row -- disambiguated with a
+  trailing `_1`/`_2`/... where the same first author has more than one
+  compiled source in the same year. A row citing several sources gets their
+  keys joined with `"; "` (e.g. `Gleason_2012; Gleason_2013`).
+  **Write `source_id` into data.csv as a real column -- don't build it in
+  `custom_R_code`.** Older datasets (Kew_2019_3's
+  `ifelse(stringr::str_detect(...))` chain) derive it at build time, but the
+  user has asked for the curator's per-row source attribution to live in
+  data.csv itself, not as a long pattern-matching block in metadata.yml.
+  The same applies to a per-row date column derived from the sources (e.g.
+  `collection_date` set to each source's publication year, or a
+  `min/max` year range for a multi-source row), with `dataset:
+  collection_date:` pointing at that column. Work the values out once with
+  a throwaway script, then **append** them as new trailing columns, keeping
+  every original column byte-identical to the raw source file. Do this by
+  appending to the raw file's text lines (after confirming no field contains
+  an embedded newline, so line count = rows + 1) -- don't round-trip through
+  `read_csv_char()`/`write_csv()`, which silently trims whitespace inside
+  values (a trailing space in a species name, for example) and so changes
+  the raw columns. Check afterwards that the original columns still match
+  the raw file exactly (`identical()` on the two files read with
+  `colClasses = "character"`). Filtering or blanking values (e.g. removing
+  data already in AusTraits under another dataset) still belongs in
+  `custom_R_code` -- only these attribution/date columns go into data.csv.
+  For sources promoted to a formal `secondary_NN`
   entry (see the >~50-observations-worth-a-citation judgement call above),
   `source_id` must exactly equal that reference's `key:` (e.g. `Bernhardt_1987`)
   so traits.build can cross-reference them; for every other source it should
