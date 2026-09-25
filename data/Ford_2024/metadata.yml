@@ -1,0 +1,461 @@
+source:
+  primary:
+    key: Ford_2024
+    bibtype: Article
+    year: '2024'
+    author: Ashleigh M. Ford and Saskia Grootemaat and Isaac Towers and Ben Maslen
+      and Will K. Cornwell and Mark K. J. Ooi and Daniel S. Falster
+    journal: Functional Ecology
+    title: Assessing the effect of tissue and fire-response traits on plant growth
+      rates post-disturbance in eastern Australia
+    volume: '39'
+    number: '1'
+    pages: 320-332
+    doi: 10.1111/1365-2435.14698
+    issn: 1365-2435
+contributors:
+  data_collectors:
+  - last_name: Ford
+    given_name: Ashleigh
+    ORCID: 0009-0009-4149-4450
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Falster
+    given_name: Daniel
+    ORCID: 0000-0002-9814-092X
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        reproductive_stage = case_when(
+          Flowering == "y" | !is.na(Seeds_or_Buds) ~ "adult",
+          sample_type == "individual" ~ "sapling"
+        )
+      ) %>%
+      group_by(site_code, taxon_code) %>%
+        mutate(reproductive_stage = if_else(sample_type == "pooled_nitrogen_sample",
+          if_else(any(sample_type == "individual" & !is.na(original_code)) &
+            all(reproductive_stage[sample_type == "individual" & !is.na(original_code)] == "adult"), "adult", "sapling"),
+          reproductive_stage)) %>%
+      ungroup() %>%
+      group_by(site_code, taxon_code) %>%
+        mutate(n_bagged_individuals = sum(sample_type == "individual" & !is.na(original_code))) %>%
+      ungroup() %>%
+      mutate(
+        fire_response = case_when(
+          Seed_v_sprout == "seed" ~ "fire_killed",
+          Seed_v_sprout %in% c("sprout", "lignotuber") ~ "resprouts"
+        ),
+        bud_bank_location = if_else(Seed_v_sprout == "lignotuber", "lignotuber", NA_character_),
+        storage_organ = bud_bank_location,
+        leaf_dry_mass_total = Leaf_dry_mass + replace_na(Leaf_dry_mass_2, 0) + replace_na(Leaf_dry_mass_3, 0),
+        leaf_mass_per_area = leaf_dry_mass_total / leaf_scan_area_tot_cm2,
+        leaf_area = leaf_scan_area_tot_cm2 / leaf_scan_n_leaves,
+        leaf_dry_mass = leaf_dry_mass_total / leaf_scan_n_leaves,
+        sla_outlier = !is.na(leaf_mass_per_area) & (0.1 / leaf_mass_per_area < 2 | 0.1 / leaf_mass_per_area >= 31),
+        leaf_mass_per_area = if_else(sla_outlier, NA_real_, leaf_mass_per_area),
+        leaf_area = if_else(sla_outlier, NA_real_, leaf_area),
+        leaf_dry_mass = if_else(sla_outlier, NA_real_, leaf_dry_mass),
+        Stem_specific_density = if_else(Stem_specific_density * 1000 <= 0.1 | Stem_specific_density * 1000 > 1, NA_real_, Stem_specific_density)
+      ) %>%
+      group_by(site_code, taxon_code) %>%
+        mutate(
+          resprouting_capacity = if_else(row_number() == 1, paste(sort(unique(na.omit(fire_response))), collapse = " "), NA_character_),
+          resprouting_capacity = na_if(resprouting_capacity, ""),
+          resprouting_replicates = sum(!is.na(fire_response))
+        ) %>%
+      ungroup() |>
+      generate_observation_numbers(species_name, site_code) |>
+      mutate(observation_number = ifelse(species_name == "Pultenaea retusa" & site_code == "MER-3", observation_number, NA))
+    '
+  collection_date: unknown
+  taxon_name: species_name
+  location_name: site_code
+  individual_id: .na
+  description: A study that took advantage of the 2019-2020 megafires in New South
+    Wales that were followed by high rainfall mass to test hypothesised relationships
+    between functional traits and growth across six spatially distributed sclerophyllous
+    systems throughout NSW that displayed synchronous regeneration.
+  basis_of_record: field
+  life_stage: reproductive_stage
+  sampling_strategy: '2.1 Study site selection ^p The megafires of 2019-2020 were
+    of unprecedented extent, burning 97,000 km2 of southern and eastern Australia
+    (Boer et al., 2020; Ward et al., 2020) and were followed by high rainfall throughout
+    February and March of 2020 (Bureau of Meteorology, 2011). The most extensively
+    burned areas were eucalyptus forests and woodlands (Godfree et al., 2021), in
+    which fire forms an intrinsic part of the landscape and many plants possess fire-adapted
+    traits (Auld & Ooi, 2008; Clarke et al., 2015; Gill, 1975; Morgan et al., 2020).
+    As a result, post-fire recovery in these vegetation communities occurred in a
+    natural regeneration state. The extent of these fires, and the ensuing rain, created
+    a novel situation in which recruitment occurred synchronously across vast areas,
+    enabling the implementation of a large-scale field study in which individuals
+    were at the same ontogenetic stage. ^p In this study, we focused on eucalypt-dominated
+    sclerophyll forests with a tall, somewhat open, canopy. These systems contain
+    a high diversity of small to mid-size shrubs that have fire adapted traits. Acacia
+    and Banksia were consistent genera across sites. Abiotic conditions, including
+    rainfall and temperature, vary across the study area (Table S1); however, these
+    environmental differences are not of specific interest in this study, outside
+    of indicating the robustness of the trait-height growth rate relationships across
+    different environments. ^p We conducted sampling across six sites throughout New
+    South Wales: The Blue Mountains National Park, Bargo State Conservation Area,
+    Meroo National Park, Murramarang National Park, Eurobodalla National Park and
+    Ben Boyd National Park (Figure 1). See Table S2 for species lists for each site.
+    Sites were standardised by having been burned to a ''very high'' fire severity
+    during the 2019-2020 megafires. This is the highest class of burn severity and
+    is classified by the canopy having been entirely destroyed (Roff & Aravena, 2020),
+    maximising the likelihood that germinating plants across each site would have
+    had high light access during initial growth. Burn severity and vegetation type
+    were determined using the NSW Government''s Google Earth Engine Burnt Area Map
+    (State Government of NSW and Department of Planning, Industry and Environment,
+    2020), and confirmed through communication with the NSW National Parks and Wildlife
+    Service. Sampling was conducted between the 20th of April and the 28th of May,
+    2021, with the Blue Mountains sampled first, followed by Bargo, Meroo, Murramarang,
+    Eurobodalla and Ben Boyd. Work was conducted under scientific licences SL102365
+    and SL10239, granted by the Department of Planning, Industry and Environment.
+    To determine the age of regenerating vegetation, rainfall data for each site from
+    January 2020 (the end of the fires) to May 2021 (the end of sampling) was compiled
+    from the Bureau of Meteorology, using data from the closest weather station to
+    each site (Bureau of Meteorology, 2011). Germination at each site was estimated
+    to have occurred after the high rainfall in February 2020 (see Figure S1), making
+    vegetation approximately 14 (Blue Mountain and Bargo sites) or 15 months old (Meroo,
+    Murramarang, Eurobodalla and Ben Boyd sites) at the time of sampling. ^p 2.2 Field
+    measurements ^p To capture natural local variation within each site, three plots
+    were established. In each, sampling was conducted intensively along a 25 m transect,
+    with additional individuals of represented species collected from within 15 m
+    on either side of this transect, to ensure all available species were included.
+    Each plot was separated by a minimum distance of 500 m and set at a minimum of
+    50 m from roads or water sources. ^p To standardise by age, only vegetation that
+    had regenerated after the 2019-2020 bushfires was included in this study. Sampling
+    was restricted to native woody or herbaceous angiosperms regrowing from the ground.
+    To enable growth comparisons across plants employing different regeneration strategies,
+    vegetation was divided into two categories: reseeders and basal-resprouters (hereafter
+    ''resprouters''). Reseeders are individuals that have grown back from seed; resprouters
+    are those that have resprouted from existing below-ground biomass (Verdú, 2000).
+    Resprouting individuals that remained attached to pre-existing living above-ground
+    biomass were excluded. In instances where a species possessed both reseeding and
+    resprouting capabilities, separate measurements were made for each regeneration
+    type. ^p The heights of at least five of the healthiest individuals of each species
+    were measured in each plot. Plant height was measured from the base to the tip
+    of the youngest fully extended leaf, following Cornelissen et al. (2003). Record
+    was made of whether an individual possessed reproductive material (flowers, fruits
+    or seed pods), indicating a shift in energy investment from maximising height-growth
+    to recruitment. For reseeding species, two stem diameter measurements were also
+    taken: (1) diameter at base and (2) stem diameter at 20 cm from the tip of the
+    youngest fully extended leaf (hereafter ''diameter at 20 cm''). For species whose
+    total height was less than 20 cm, base diameter measurements were used for both.'
+  original_file: original files downloaded from https://doi.org/10.5281/zenodo.13956081 and merged using data contributor scripts and Claude (Anthropic)
+  notes: Stem_specific_density (stem dry weight / stem volume, g/mm3) is mapped to
+    wood_density even for herbaceous taxa.
+identifiers: .na
+locations:
+  BAR-1:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Bargo
+  BAR-2:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Bargo
+  BAR-3:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Bargo
+  BB-1:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Ben Boyd
+  BB-2:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Ben Boyd
+  BB-3:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Ben Boyd
+  BM-1:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Blue Mountains
+  BM-2:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Blue Mountains
+  BM-3:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Blue Mountains
+  EURO-1:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Eurobodalla
+  EURO-2:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Eurobodalla
+  EURO-3:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Eurobodalla
+  MER-1:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Meroo
+  MER-2:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Meroo
+  MER-3:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Meroo
+  MURR-1:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Murramarang
+  MURR-2:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Murramarang
+  MURR-3:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: .na
+    locality: Murramarang
+contexts:
+- context_property: replicate observations
+  category: temporal_context
+  var_in: observation_number
+- context_property: plant height (mm)
+  category: entity_context
+  var_in: Height_(mm)
+- context_property: plant basal stem diameter (mm)
+  category: entity_context
+  var_in: Diameter_at_base_(mm)
+traits:
+- var_in: leaf_mass_per_area
+  unit_in: g/cm2
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: For reseeding individuals, trait measurements were made on three healthy
+    individuals of each species in each plot. All traits were measured following methods
+    outlined by Cornelissen et al. (2003). The healthiest fully extended leaves from
+    each seedling were used to measure SLA and leaf nitrogen. Five simple leaves,
+    or three compound leaves, were collected from each sample. These were kept refrigerated
+    before being scanned with a flatbed scanner. For compound leaves, the rachis was
+    included in measurements, and the petiole was included for simple leaves. Leaf
+    area was calculated in R using the LeafArea package (Katabuchi, 2015). The leaves
+    were then dried at 60°C for 72 h and weighed using an analytical balance (precision
+    of 0.001 g). SLA was calculated using the formula in Table 2.
+- var_in: leaf_area
+  unit_in: cm2
+  trait_name: leaf_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: leaf_scan_n_leaves
+  methods: For reseeding individuals, trait measurements were made on three healthy
+    individuals of each species in each plot. All traits were measured following methods
+    outlined by Cornelissen et al. (2003). The healthiest fully extended leaves from
+    each seedling were used to measure SLA and leaf nitrogen. Five simple leaves,
+    or three compound leaves, were collected from each sample. These were kept refrigerated
+    before being scanned with a flatbed scanner. For compound leaves, the rachis was
+    included in measurements, and the petiole was included for simple leaves. Leaf
+    area was calculated in R using the LeafArea package (Katabuchi, 2015). The leaves
+    were then dried at 60°C for 72 h and weighed using an analytical balance (precision
+    of 0.001 g). SLA was calculated using the formula in Table 2.
+- var_in: leaf_dry_mass
+  unit_in: g
+  trait_name: leaf_dry_mass
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: leaf_scan_n_leaves
+  methods: For reseeding individuals, trait measurements were made on three healthy
+    individuals of each species in each plot. All traits were measured following methods
+    outlined by Cornelissen et al. (2003). The healthiest fully extended leaves from
+    each seedling were used to measure SLA and leaf nitrogen. Five simple leaves,
+    or three compound leaves, were collected from each sample. These were kept refrigerated
+    before being scanned with a flatbed scanner. For compound leaves, the rachis was
+    included in measurements, and the petiole was included for simple leaves. Leaf
+    area was calculated in R using the LeafArea package (Katabuchi, 2015). The leaves
+    were then dried at 60°C for 72 h and weighed using an analytical balance (precision
+    of 0.001 g). SLA was calculated using the formula in Table 2.
+- var_in: leaf_scan_compound
+  unit_in: .na
+  trait_name: leaf_compoundness
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: 1
+  methods: Expert observation.
+- var_in: Stem_specific_density
+  unit_in: g/mm3
+  trait_name: wood_density
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: 'For reseeding individuals, trait measurements were made on three healthy
+    individuals of each species in each plot. All traits were measured following methods
+    outlined by Cornelissen et al. (2003). To measure SSD, a 10 cm section of stem
+    was taken at 1/3 of total plant height. For individuals whose total height was
+    <10 cm, the entire section of stem, excluding the apical tip, was taken. Stems
+    were refrigerated until volume measurements could be taken. Stem volume was approximated
+    as the volume of a cylinder, with six diameter measurements taken at equidistant
+    intervals along each stem. The mean stem diameter for each individual was used
+    to calculate fresh stem volume using the formula: volume = (0.5D)2pi x h. The
+    stems were then dried at 60°C for 72 h before being weighed using an analytical
+    balance (precision of 0.001 g). SSD was calculated using the formula outlined
+    in Table 2.'
+- var_in: resprouting_capacity
+  unit_in: .na
+  trait_name: resprouting_capacity
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: resprouting_replicates
+  methods: Expert observation.
+- var_in: bud_bank_location
+  unit_in: .na
+  trait_name: bud_bank_location
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: 1
+  methods: Expert observation.
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: 1
+  methods: Expert observation.
+- var_in: leaf_N_per_dry_mass
+  unit_in: '%'
+  trait_name: leaf_N_per_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: n_bagged_individuals
+  methods: For reseeding individuals, additional trait measurements were made on three
+    healthy individuals of each species in each plot. All traits were measured following
+    methods outlined by Cornelissen et al. (2003). The healthiest fully extended leaves
+    from each seedling were used to measure SLA and leaf nitrogen. Five simple leaves,
+    or three compound leaves, were collected from each sample. These were kept refrigerated
+    before being scanned with a flatbed scanner. For compound leaves, the rachis was
+    included in measurements, and the petiole was included for simple leaves. The
+    leaves of conspecific reseeding individuals from the same plot were combined to
+    attain enough leaf mass for nitrogen analysis. They were dried at 60°C for 72
+    h, and the percentage nitrogen per mass was determined using the LECO TruMac CNS
+    Analyser at Southern Cross University. This was then converted into nitrogen per
+    leaf area (Narea; formula in Table 2).
+substitutions:
+- trait_name: leaf_compoundness
+  find: 'TRUE'
+  replace: compound
+- trait_name: leaf_compoundness
+  find: 'FALSE'
+  replace: simple
+- trait_name: bud_bank_location
+  find: lignotuber
+  replace: basal_stem_buds
+taxonomic_updates:
+- find: Corymbia Maculata
+  replace: Corymbia maculata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-25)
+  taxonomic_resolution: species
+- find: Eleocarpus reticulatus
+  replace: Elaeocarpus reticulatus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-25)
+  taxonomic_resolution: species
+- find: Lomatia illicifolia
+  replace: Lomatia ilicifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-25)
+  taxonomic_resolution: species
+- find: Monocota scoparia
+  replace: Monotoca scoparia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-25)
+  taxonomic_resolution: species
+- find: Commersoonia fraseri
+  replace: Commersonia fraseri
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-09-25)
+  taxonomic_resolution: species
+- find: Waratah
+  replace: Telopea speciosissima
+  reason: Common name "Waratah" identified as Telopea speciosissima (E. Wenk, 2026-09-25)
+  taxonomic_resolution: species
+exclude_observations: .na
+questions:
+  question0: Do you have lat/long for your sites? Can you give a basic vegetation description for each (e.g sclerophyll woodland or sclerophyll wet forest)
+  questipon00: Do you have collection dates? Approximate is fine.
+  question1: Sorry about all the Claude questions that follow - but I will check with you on each.
+  question1a: Leaf nitrogen samples (Nitrogen_Analysis_data.xlsx) are coded only to
+    site-plot-taxon (e.g. `BAR-1-ALLS`), without an individual suffix, and most match
+    plots where three individuals were bagged; they are therefore treated as pooled
+    samples and kept as separate `pooled_nitrogen_sample` rows in data.csv rather
+    than assigned to individuals. Confirm leaf material was pooled across the bagged
+    individuals.
+  question2: What does the nitrogen `Pure/mixed` column mean? `Pure` samples still
+    usually correspond to three bagged individuals, so it does not appear to distinguish
+    single versus pooled individuals. Two samples (`EURO-3-WWL`, `MER-1-MASV`) are
+    instead labelled `Biomass`.
+  question3: At Meroo plot 1, two rows have `Field_name` `WWL` (Pultenaea linophylla)
+    but bag codes `MER-1-WLW-2` and `MER-1-WLW-3` (Acacia suaveolens). The bag code
+    (WLW) has been used, since the adjacent rows and `MER-1-WLW-1` are WLW. Is this
+    correct?
+  question4: The nitrogen sample `BM-3-BLRS` has no matching bagged individuals; the
+    raw data have three unbagged "Blue Leaf Red Stem Euc" plants at Blue Mountains
+    plot 3, which are presumably the same taxon. leaf_scan_results.csv also has scans
+    for `BM-3-BLRS-1` to `-3`, so these plants were evidently bagged; the scans are
+    not merged because no row carries those bag codes. Confirm these represent the
+    same taxon.
+  question5: Thirty taxon codes/field names have no match in Species_list.xlsx, including
+    `PSWL`, `DBE`, `ME`, `AE`, `C` and `LCL` (the first five also have nitrogen data),
+    and descriptive field names such as "Fake Secret Spike", "Spotted Gum", "Pointy
+    Pink Leptospermum" and "Round Yellow Flower". Can these be identified?
+  question6: For 23 bagged plants the number at the end of the bag code differs from
+    the `Measured` count (e.g. `BAR-2-CL-1` has `Measured` = 7), suggesting bags were
+    numbered only among sampled plants. Confirm this interpretation.
+  question10: The contributor's code (Hypothesis 3- Seed v Sprout.Rmd) renames `lignotuber`
+    to "Reseeders with lignotuber", i.e. these are seedlings that have a lignotuber,
+    not resprouting individuals. They are currently counted as `resprouts` for resprouting_capacity
+    and as lignotuber for bud_bank_location / storage_organ. Confirm how they should
+    be treated.
+  question11: Leaf scans (leaf_scan_results.csv) are summed per individual and matched
+    by image name; for 7 images (MURR-1-AL-1, BB-2-BBA-1, BM-1-OSWL-2) the file's
+    `spp`/`ind` columns were mis-parsed, so these were dropped from the contributor's
+    own join but are included here. `BB-1-BBE-3` has leaf mass but no scan; BAR-1-SWNL-1,
+    BAR-2-SWNL-1, BAR-3-BSNL-1, BAR-3-DP-1, BM-3-MSNL-2, MER-1-SWL-3 and MER-3-WLW-2
+    have scans but no leaf mass; and one image each for EURO-3-EAML-1, EURO-3-PSWL-2,
+    EURO-3-PSWL-3 and MER-3-AAML-3 has no area, so these have no leaf_mass_per_area.
