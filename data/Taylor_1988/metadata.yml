@@ -1,0 +1,268 @@
+source:
+  primary:
+    key: Taylor_1988
+    bibtype: Book
+    year: 1988
+    author: Anne Taylor and Stephen D. Hopper
+    title: The Banksia Atlas
+    series: Australian Flora and Fauna Series
+    number: '8'
+    publisher: Australian Government Publishing Service
+    place: Canberra, ACT
+    isbn: '0644071249'
+    url: https://archive.org/details/banksiaatlas00tayl
+contributors:
+  data_collectors:
+  - last_name: Taylor
+    given_name: Anne
+    ORCID: .na.character
+    affiliation: Department of Conservation and Land Management, Western Australian Wildlife
+      Research Centre, Wanneroo, WA, Australia
+  - last_name: Hopper
+    given_name: Stephen D.
+    ORCID: 0000-0002-0364-2856
+    affiliation: Department of Conservation and Land Management, Western Australian Wildlife
+      Research Centre, Wanneroo, WA, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    data |>
+      dplyr::filter(!is.na(trait_name_standardised)) |>
+      dplyr::mutate(
+        trait_value_standardised = ifelse(
+          trait_name_standardised == "fire_time_from_fire_to_no_flowering" & value_type != "maximum",
+          NA, trait_value_standardised),
+        flower_visitor_type = dplyr::case_when(
+          trait_name == "pollinator_type" ~ "generic visitor group",
+          trait_name == "specific_pollinator" ~ "precise flower visitor"
+        )
+      ) |>
+      generate_observation_numbers(species, trait_name_standardised)
+  '
+  collection_date: 1984-07/1986-08
+  taxon_name: species
+  trait_name: trait_name_standardised
+  value: trait_value_standardised
+  description: To map where Australia's Banksia taxa grow in the wild using sight
+    records contributed by volunteers across all States and Territories, and to compile
+    ecological and reproductive information on them, including their response to fire,
+    timing of flowering and new shoot growth, and pollinators.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: Rather than attempting to map each species from exhaustive field
+    surveys, the project sought the assistance of volunteers in all States and Territories.
+    The Department of Conservation and Land Management provided a central computerised
+    data processing facility and supporting materials for recording observations in
+    the field. The volunteers provided the labour, contributing observations made
+    in the wild at their own expense. ^p Approval for The Banksia Atlas was given
+    and the project began in February 1984. Joint funding by ABRS and the Department
+    of Conservation and Land Management allowed the appointment of a full-time national
+    coordinator based in Perth, Western Australia. Five months to design, test and
+    produce the final recording kit allowed the project to go public in July 1984.
+    Two years later (31 August 1986), the recording phase ended. 1 017 recording kits
+    had been sent out and approximately 13 000 record sheets received, representing
+    some 25 000 records of taxa. ^p Only banksias growing in the wild were to be recorded.
+    Generally, the status (wild or cultivated) of any banksias was obvious. Whenever
+    there was any doubt, inquiries amongst local people usually solved the problem.
+    Any contributor could send in record sheets from any part of Australia. ^p The
+    rest of the book presents all data submitted on the Sight Record Sheets for each
+    banksia. [...] Percentages have generally been used to summarise results. There
+    are just two exceptions where actual numbers have been used instead. With Specific
+    Pollinators there are generally very few records and percentages could convey
+    an incorrect picture of results. With Population Size, the use of actual numbers
+    illustrates more vividly the relative abundance of each species than could percentages.
+    ^p In most cases, the total number of records for each species is used to calculate
+    subsequent percentages. Thus for B. attenuata most results are expressed as a
+    percentage of 1 280 records. Sections that were not filled in on the record sheets
+    were classified as "Unspecified" and are included in the results. ^p The "Response
+    to Fire" and "Pollinator" sections are treated differently. For any species the
+    number of recordings within these sections is indicated and results are expressed
+    as percentages of these figures rather than of the species as a whole. ^p Finally,
+    it must be stressed that the results are presented only as summaries of raw data
+    from the record sheets.
+  original_file: banksia_traits raw in raw data folder, transcribed from original file by Claude (Anthropic).
+  notes: none
+identifiers: .na
+locations: .na
+contexts:
+- context_property: replicate observations
+  category: temporal_context
+  var_in: observation_number
+- context_property: commonness qualifier
+  category: entity_context
+  var_in: commonness
+  values:
+  - value: rarely
+    description: Trait value recorded in fewer than 10% of the taxon's Banksia Atlas
+      records.
+  - value: occasionally
+    description: Trait value recorded in 10-24% of the taxon's Banksia Atlas records.
+  - value: commonly
+    description: Trait value recorded in 25-49% of the taxon's Banksia Atlas records.
+  - value: usually
+    description: Trait value recorded in 50% or more of the taxon's Banksia Atlas
+      records.
+- context_property: percent of records with trait value
+  category: entity_context
+  var_in: percent_records
+  description: Percentage of the taxon's Banksia Atlas records reporting this trait
+    value. For plant growth form, out of all records for the taxon; for flower visitors,
+    out of records in which a visitor was observed; for resprouting capacity, post-fire
+    recruitment and bud bank location, out of records with a specified response to
+    fire. Records can report more than one response to fire or flower visitor, so
+    percentages for a taxon can sum to more than 100.
+- context_property: flowering time type
+  category: method_context
+  var_in: flowering_time_type
+  values:
+  - value: full range
+    description: All months in which Banksia Atlas records reported the majority of
+      flowers as fully open.
+  - value: peak flowering
+    description: Month(s) with the most Banksia Atlas records reporting the majority
+      of flowers as fully open.
+- context_property: flower visitor record type
+  category: method_context
+  var_in: flower_visitor_type
+  values:
+  - value: generic visitor group
+    description: Flower visitor recorded as one of the broad pollinator classes on
+      the Sight Record Sheet (birds; bees, wasps and ants; flies; butterflies and
+      moths; beetles; mammals).
+  - value: precise flower visitor
+    description: Flower visitor recorded as a specifically named animal (typically
+      a species or genus) in the Sight Record Sheet's name of pollinator field.
+traits:
+- var_in: plant_growth_form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Some banksias (e.g. B. marginata, B. integrifolia) grow as both shrubs
+    and trees, sometimes within the same area. The single box did not allow these
+    to be recorded.
+- var_in: flower_visitor
+  unit_in: .na
+  trait_name: flower_visitor
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Volunteers were requested to look closely at any animals visiting banksia
+    inflorescences and to record only those that were in contact with the tip of the
+    style and which could therefore be effecting pollination. Even with this provision,
+    the pollinators listed for each banksia in Chapter 5 should be regarded as "possible
+    pollinators" only. Confirmed pollination would require more detailed study. ^p
+    Due to the design of the record sheet, the pollinator class frequencies do not
+    necessarily tally with the specific pollinator frequencies. For example, a single
+    recording of "bird" in pollinator class could be followed by a list of several
+    specific bird species, thus creating an apparent imbalance between the two categories.
+    This is particularly the case with birds. Species of other potential pollinators,
+    e.g. ants, were not known and were therefore confined to pollinator class. ^p
+    The lists of possible pollinators should not be regarded as comprehensive. Certain
+    groups of animals (e.g. mammals), may be important pollinators, but due to their
+    mainly nocturnal activities, were under-recorded.
+- var_in: resprouting_capacity
+  unit_in: .na
+  trait_name: resprouting_capacity
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: K = Killed by fire - no seedlings present; S = Killed by fire - seedlings
+    present; L = Not killed - resprouting from below ground; T = Not killed - resprouting
+    from trunk.
+- var_in: post_fire_recruitment
+  unit_in: .na
+  trait_name: post_fire_recruitment
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: K = Killed by fire - no seedlings present; S = Killed by fire - seedlings
+    present; L = Not killed - resprouting from below ground; T = Not killed - resprouting
+    from trunk.
+- var_in: bud_bank_location
+  unit_in: .na
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: K = Killed by fire - no seedlings present; S = Killed by fire - seedlings
+    present; L = Not killed - resprouting from below ground; T = Not killed - resprouting
+    from trunk.
+- var_in: fire_time_from_fire_to_flowering
+  unit_in: mo
+  trait_name: fire_time_from_fire_to_flowering
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: number_records
+  methods: 'The number of months since a fire was often difficult to determine and
+    figures should be regarded as approximate only. [...] It had been intended that
+    the "Minimum number of months to flowering" refer only to burnt plants. It would
+    illustrate the minimum time required after fire for a species to become reproductively
+    active again and therefore capable of producing seed. However, when non-burnt
+    plants were included on the same record sheet, and were not detected through the
+    normal checking process, they could give an incorrect impression of a short time
+    between fire and flowering. ^p Times since fire were reported in the source as
+    bins and are keyed here as the mid-point of each bin, in months (bins of less
+    than 1 month are keyed as 1 month). Bins and keyed values by value type - minimum:
+    <1 month = 1; 1-12 months = 6.5; 13-24 months = 18.5; 25-36 months = 30.5; 37-48
+    months = 42.5; 49-60 months = 54.5; 61-72 months = 66; 85-96 months = 90.5. median:
+    1 month = 1; 1-12 months = 6.5; 12-13 months = 12.5; 13-24 months = 18.5; 24-25
+    months = 24.5; 25-36 months = 30.5; 36-37 months = 36.5; 37-48 months = 42.5;
+    49-60 months = 54.5; 60-72 months = 66; 61-72 months = 66.'
+- var_in: fire_time_from_fire_to_no_flowering
+  unit_in: mo
+  trait_name: fire_time_from_fire_to_flowering
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: number_records
+  methods: 'The number of months since a fire was often difficult to determine and
+    figures should be regarded as approximate only. [...] This somewhat complicated
+    set of codes was designed to show: i) the stage of flowering relative to location
+    and (ii) the presence of immature plants which had not yet flowered. If this was
+    then linked to fire history it should be possible to find out the number of years
+    after fire before flowering recommences. ^p Times since fire were reported in
+    the source as bins and are keyed here as the mid-point of each bin, in months
+    (bins of less than 1 month are keyed as 1 month). Only the maximum time since
+    fire at which plants were recorded as not yet flowering is included. Bins and
+    keyed values - maximum: <1 month = 1; 1-12 months = 6.5; 13-24 months = 18.5;
+    25-36 months = 30.5; 37-48 months = 42.5; 49-60 months = 54.5; 61-72 months =
+    66; 73-84 months = 78.5; 85-96 months = 90.5.'
+- var_in: flowering_time
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Volunteers were notified of the following new codes in the first newsletter:
+    B = majority in bud; F = majority in full flower; A = mainly old flowers, still
+    with some colour; C = flowers absent, old fruiting cones present; N = neither
+    flowers nor fruiting cones present. [...] If the species under observation had
+    any flowers present volunteers were meant to choose between codes B, F or A. If
+    there were no flowers, either code C or N should be used.'
+- var_in: fruiting_time
+  unit_in: .na
+  trait_name: fruiting_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Volunteers were notified of the following new codes in the first newsletter:
+    B = majority in bud; F = majority in full flower; A = mainly old flowers, still
+    with some colour; C = flowers absent, old fruiting cones present; N = neither
+    flowers nor fruiting cones present. [...] If the species under observation had
+    any flowers present volunteers were meant to choose between codes B, F or A. If
+    there were no flowers, either code C or N should be used.'
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions: .na
