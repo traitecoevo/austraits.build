@@ -43,7 +43,9 @@ dataset:
         plant_growth_substrate = ifelse(str_detect(plant_growth_form, "epiphyte"), "epiphyte", NA),
         plant_growth_form = str_replace(plant_growth_form, "epiphyte_", ""),
         plant_growth_form = str_replace(plant_growth_form, "epiphyte", "")  %>% str_squish(),
-        seedbank_longevity_class = propagule_longevity
+        seedbank_longevity_class = propagule_longevity,
+        bark_ribbon_type = if_else(str_detect(bark_morphology, "eucalypt_ribbonbark"), "consistent_ribboning", NA_character_),
+        bark_morphology = str_remove(bark_morphology, "eucalypt_ribbonbark") %>% str_squish() %>% na_if("")
       ) %>%
       move_values_to_new_trait(
         "plant_growth_form","stem_growth_habit",
@@ -313,6 +315,14 @@ traits:
 - var_in: bark_morphology
   unit_in: .na
   trait_name: bark_morphology_eucalyptus
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
+- var_in: bark_ribbon_type
+  unit_in: .na
+  trait_name: bark_ribbon_type
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
