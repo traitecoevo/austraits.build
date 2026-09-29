@@ -26,7 +26,19 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data |>
+      mutate(
+        across(
+          c(`seeds_per_fruit (minimum) ({count})`, `seeds_per_fruit (maximum) ({count})`),
+          ~ ifelse(
+            is.na(pollination_treatment),
+            NA_character_,
+            dplyr::recode(.x, one = "1", two = "2", three = "3", six = "6")
+          )
+        )
+      )
+  '
   collection_date: '2013'
   taxon_name: taxon_name
   location_name: location_code
@@ -135,7 +147,7 @@ dataset:
     herkogamy_distance, pollen_per_flower, pollen_deposition_site_on_pollinator,
     pollen_reception_site_from_pollinator, pollen_grains_per_stigma_at_opening,
     proportion_pollen_tubes_emergent_at_opening, proportion_stigmas_with_pollen_at_opening,
-    pollen_limitation, self_incompatibility_index, seeds_per_fruit, proportion_fruit_by_seed_count,
+    pollen_limitation, self_incompatibility_index, proportion_fruit_by_seed_count,
     number_of_hand_crosses, heterospecific_pollen_effect_on_fruit_seed_set, heterospecific_cross_fruit_seed_set,
     number_of_fruit_from_hybrid_pollination, phenological_isolation_index_2013 and
     flowering_period_start_2013 are also available in this paper but not yet mapped
@@ -198,6 +210,14 @@ contexts:
 - context_property: flower visitor taxon name
   category: entity_context
   var_in: pollination_vector_possible identity
+- context_property: pollination treatment
+  category: treatment_context
+  var_in: pollination_treatment
+  values:
+  - value: Self
+    description: Flowers hand self-pollinated.
+  - value: Outcross
+    description: Flowers hand cross-pollinated with pollen from another plant of the same species.
 traits:
 - var_in: plant_growth_form
   unit_in: .na
@@ -361,6 +381,22 @@ traits:
     recorded as the only occasional visitors to T. tenellus and Thysanotus sp., stated
     as not contacting the anther pores or stigmas and "not seem[ing] to be involved
     in pollination."
+- var_in: seeds_per_fruit (minimum) ({count})
+  unit_in: '{count}/{count}'
+  trait_name: seeds_per_fruit
+  entity_type: population
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: unknown
+  methods: Self-pollination results in only one or two seeds per fruit ... outcross pollination generally produces three to six seeds.
+- var_in: seeds_per_fruit (maximum) ({count})
+  unit_in: '{count}/{count}'
+  trait_name: seeds_per_fruit
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: unknown
+  methods: Self-pollination results in only one or two seeds per fruit ... outcross pollination generally produces three to six seeds.
 substitutions:
 - trait_name: life_form
   find: HC

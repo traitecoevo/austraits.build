@@ -1,0 +1,520 @@
+source:
+  primary:
+    key: Freestone_2026
+    bibtype: Article
+    year: 2026
+    author: Marc Freestone and Celeste C. Linde and Noushka Reiter
+    journal: Australian Journal of Botany
+    title: Pollen source in Prasophyllum affects seed quantity and quality
+    volume: '74'
+    pages: BT25038
+    doi: 10.1071/BT25038
+contributors:
+  data_collectors:
+  - last_name: Freestone
+    given_name: Marc
+    ORCID: 0000-0001-8736-6459
+    affiliation: Ecology and Evolution, Research School of Biology, The Australian
+      National University, Canberra, Australia
+    additional_role: contact
+  - last_name: Reiter
+    given_name: Noushka
+    ORCID: 0000-0001-8450-2769
+    affiliation: Royal Botanic Gardens Victoria, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    traits_to_drop <- c(
+      "seed_colour",
+      "seed_small_or_no_embryo_proportion",
+      "seed_polyembryony_proportion",
+      "pollinator_requirement",
+      "leaf_count_per_plant",
+      "inflorescences_per_plant",
+      "flower_size_descriptive",
+      "habitat",
+      "elevation_range",
+      "conservation_status",
+      "seed_coat_development",
+      "seed_polyembryony",
+      "pollen_dispersal_unit",
+      "flowers_autopollinated_proportion"
+    );
+    data |>
+      filter(
+        !stringr::str_detect(dplyr::coalesce(context, ""), "^average across"),
+        !stringr::str_detect(dplyr::coalesce(context, ""), "^other populations"),
+        !trait %in% traits_to_drop
+      ) |>
+      mutate(
+        pollination_treatment = stringr::str_trim(stringr::str_extract(context, "(?<=pollination treatment: )[^(;]+")),
+        measurement_remarks = case_when(
+          source_id == "Bernhardt_1986" ~ "Value cited in Freestone_2026 from Bernhardt P, Burns-Balogh P (1986) Observations of the floral biology of Prasophyllum odoratum (Orchidaceae, Spiranthoideae). Plant Systematics and Evolution 153, 65-76. doi:10.1007/BF00989418",
+          source_id == "Bates_1984" ~ "Value cited in Freestone_2026 from Bates R (1984a) Pollination of Prasophyllum elatum R.Br. The Orchadian 8, 14-17.",
+          source_id == "Elliott_2002" ~ "Value cited in Freestone_2026 from Elliott CP, Ladd PG (2002) Pollen limitation of fruit set in Western Australian terrestrial orchids. Journal of the Royal Society of Western Australia 85, 165-168.",
+          source_id == "Peakall_1987" ~ "Value cited in Freestone_2026 from Peakall R (1987) Genetic systems of Australian terrestrial orchids. PhD thesis, University of Western Australia.",
+          source_id == "Peakall_1987; Peakall_1989" ~ "Value cited in Freestone_2026 from Peakall R (1987) Genetic systems of Australian terrestrial orchids. PhD thesis, University of Western Australia; and Peakall R (1989) A new technique for monitoring pollen flow in orchids. Oecologia 79, 361-365. doi:10.1007/BF00384315",
+          source_id == "Hayashi_2024" ~ "Value cited in Freestone_2026 from Hayashi T, Ayre BM, Bohman B, Brown GR, Reiter N, Phillips RD (2024) Pollination by multiple species of nectar foraging Hymenoptera in Prasophyllum innubum, a critically endangered orchid of the Australian Alps. Australian Journal of Botany 72, BT23110. doi:10.1071/BT23110",
+          source_id == "Freestone_2023" ~ "Value cited in Freestone_2026 from Freestone MW, Linde CC, Swarts ND, Reiter N (2023) Asymbiotic germination of Prasophyllum (Orchidaceae) requires low mineral concentration. Australian Journal of Botany 71, 67-78. doi:10.1071/BT22116"
+        )
+      )
+  '
+  collection_date: collection_date
+  taxon_name: taxon_name
+  location_name: location_name
+  source_id: source_id
+  trait_name: trait
+  value: trait_value_clean
+  description: To determine whether pollen source (self, outcross or natural pollination)
+    affects seed quantity and quality in three Prasophyllum orchid species, in order
+    to infer their mating systems and whether artificial pollination would improve
+    the seed collected for ex situ conservation.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: We studied the following three species of Prasophyllum, each
+    of which is representative of a different morphological group in the genus (Jones
+    2021), with numerous threatened and geographically restricted congeners, P. lindleyanum
+    (fitzgeraldii complex, Group 8, Jones 2021), P. frenchii (frenchii complex, Group
+    6, Jones 2021), and P. tadgellianum (alpinum complex, Group 4, Jones 2021) (Fig.
+    1). All species were sampled in the 2017/18 flowering season in south-eastern
+    Australia. Each of the three study species are annually dormant over the Australian
+    summer period, shedding their above-ground foliage and reducing to an underground
+    tuber, and subsequently re-emerging as a single leaf between March and June. All
+    three study species are reliant on one or more species of Rhizoctonia (formerly
+    Ceratobasidium) for germination in the wild (Freestone et al. 2022, 2024). The
+    flowers of these species have visible (i.e. putative nectar) secretions (M. Freestone,
+    pers. obs., this study). ^p Prasophyllum lindleyanum is Endangered in Victoria
+    under the Flora and Fauna Guarantee Act 1988 and endemic to eucalypt woodlands
+    from 10 to 1500 m above sea level (ASL) in Victoria and Tasmania. It produces
+    a single inflorescence in October to December, containing 10–20 small green flowers
+    (Reichenbach 1871; VicFlora 2023). The study site for P. lindleyanum was in a
+    low eucalypt forest on shallow granitic soils at 340 m ASL at the Warby Ranges
+    National Park, Victoria, Australia, containing approximately 200 flowering plants
+    in 2017. ^p Prasophyllum tadgellianum is common and endemic to subalpine grassland
+    and woodland in south-eastern Australia. It produces a single inflorescence containing
+    8–20 small, brown flowers in early summer (December–January) (Rogers 1923; VicFlora
+    2023). The study site for P. tadgellianum was in subalpine native grassland at
+    1540 m ASL at the headwaters of Shaw Creek (Snowy High Plain), in the Alpine National
+    Park, Victoria, Australia, where several thousand plants flowered in 2017/18.
+    ^p Prasophyllum frenchii is endemic to wet lowland native grasslands and swamps
+    in southern Victoria and south-eastern South Australia. It produces a single inflorescence
+    with 20–65 small, brown flowers from October to December (von Mueller 1889; VicFlora
+    2023). Prasophyllum frenchii is listed as endangered in Australia (DCCEEW 2026).
+    The study site for P. frenchii was in a small (4 ha) lowland native grassland
+    remnant at 20 m ASL at Yarram, Victoria, Australia, containing about 300 flowering
+    plants in 2017. ^p To determine the mating system, and therefore whether there
+    is a particular artificial pollination strategy that produces high-quality seed
+    for the three Prasophyllum species, we applied up to six pollination treatments
+    to each species. For each plant, we applied only a single treatment. The lowest
+    10 flowers on each inflorescence (five in P. tadgellianum because of the smaller
+    number of flowers per inflorescence) were subject to the treatment, with excess
+    flowers being removed by cutting the inflorescence above the treated flowers.
+    Although cutting the unused flowers above the treatment could affect the plant's
+    production of seed, this treatment was undertaken uniformly across all inflorescences
+    and controls for each species. Ensuring that a consistent number of flowers were
+    used in each treatment ensured similar resource use by each plant (and therefore
+    potential effect on the seed produced). The pollination treatments were as follows,
+    (1) to determine whether a pollinator vector is required or whether plants mechanically
+    self-pollinate, plants were bagged with a cylinder of tea bag material and sealed
+    with micropore tape prior to flowers opening to exclude pollinators, (2) to determine
+    whether plants are apomictic, flowers were emasculated and bagged to exclude pollinators.
+    Flowers were bagged before opening to ensure that no insects were able to pollinate
+    the flowers. After the flowers opened, the pollinia were removed, checking that
+    they removed easily and were intact (pollinia in Prasophyllum are a cohesive mass
+    of pollen that can be removed and transferred in a single unit), and the bag was
+    resealed. Pollinia were removed after the flower opened because to do so beforehand
+    would require mutilation of the flower and would introduce bias. (3) To determine
+    whether plants are self-compatible (autogamous), plants were bagged before opening,
+    then each flower was self-pollinated by hand, and the bag resealed. Furthermore,
+    plants were subjected to (4) intrapopulation cross-pollination (xenogamy) (plants
+    bagged before opening, then pollinia removed from each flower, and hand-pollinated
+    with pollinia from a plant approximately 50–100 m away, and the bag was resealed),
+    (5) interpopulation cross-pollination (plants bagged before opening, then pollinia
+    removed and hand-pollinated with pollinia from a different population, and the
+    bag was resealed), and (6) natural pollination (plants not bagged initially to
+    allow natural pollination, then bagged 2 weeks after pollination had occurred
+    when flowers had started to wither). ^p Prasophyllum lindleyanum was subjected
+    to all six pollination treatments, with 21 plants (210 flowers) per treatment
+    (N = 21 for each P. lindleyanum treatment). The pollinia donor population for
+    the interpopulation cross-pollination treatment was located 218 km away at Rheola,
+    Victoria. ^p Prasophyllum tadgellianum was subjected to five pollination treatments,
+    with 21 plants (105 flowers) per treatment (N = 21 for each P. tadgellianum treatment).
+    The emasculation treatment was not undertaken because of logistical difficulties
+    accessing the remote study site, and for this reason inflorescences were also
+    not bagged prior to opening. Instead, the pollination treatments were undertaken
+    as flowers were starting to open, and all flowers were visually inspected for
+    evidence of pollinia on the plate (stigma). If pollinia were present on the plate
+    or the pollinia was missing, on any flower on the inflorescence, the plant was
+    assigned to the natural pollination treatment or excluded from the study because
+    of risks it may have already been pollinated. The pollinia donor population for
+    the interpopulation cross-pollination treatment was located 12 km north of the
+    study site. ^p Prasophyllum frenchii was subjected to five pollination treatments
+    with 25 plants (250 flowers) per treatment, owing to the presence of more flowering
+    plants (N = 25 for each P. frenchii treatment). The effect of interpopulation
+    cross-pollination was unable to be tested because of the absence in this species
+    of a second sufficiently large population that flowers at the same time as the
+    studied population in this species. ^p For all species, bagged inflorescences
+    containing developed seed were collected 4 weeks after pollination and dried to
+    15% relative humidity for 10 days in a dehumidifying drying cabinet. The bags
+    were then opened and the number of swollen, developed fruits and withered, non-developed
+    fruits were counted. The proportion of swollen fruits was considered as a measure
+    of 'fruit set'. The seed from all fruits were then cleaned and transferred to
+    a small 5 mL glass vial. The vial was weighed before and after the addition of
+    seed, to measure the weight of all seed from each plant. Weight per fruit was
+    determined by dividing the total seed weight by the number of developed fruits
+    on the inflorescence. Finally, the vial was sealed with an air-tight plastic cap,
+    labelled, and stored in a container with silica gel at 4°C. Seeds were stored
+    for 4 (P. frenchii) or 5 (P. lindleyanum and P. tadgellianum) months prior to
+    chemical staining. Prior to being used in the asymbiotic germination trial, the
+    same seed collections of P. frenchii and P. tadgellianum that were used in chemical
+    staining were stored for an additional 15 months and 12 months respectively (P.
+    lindleyanum was not used in germination trials).
+  measurement_remarks: measurement_remarks
+  original_file: raw/trait_data.csv and raw/location_data.csv (extracted from the
+    source PDF by Claude AI, Anthropic)
+  notes: Candidate traits in data.csv not yet mapped in, seed_small_or_no_embryo_proportion,
+    seed_polyembryony_proportion, seed_polyembryony, seed_coat_development, pollinator_requirement,
+    leaf_count_per_plant, inflorescences_per_plant, flower_size_descriptive, pollen_dispersal_unit,
+    flowers_autopollinated_proportion, habitat, elevation_range, conservation_status.
+    Values the paper cites from other studies (fruit set of P. odoratum, P. fimbria,
+    P. elatum and P. innubum; mixed mating in P. fimbria and P. innubum; nectar rewards;
+    10% asymbiotic germination of P. frenchii) are kept, with source_id set to the
+    original reference and the full citation in measurement_remarks.
+identifiers: .na
+locations:
+  Warby Ranges National Park:
+    latitude (deg): -36.298
+    longitude (deg): 146.169
+    description: low eucalypt forest
+    coordinate notes: approximate coordinates from Open Street Map
+    locality: Warby Ranges National Park, Victoria, Australia
+    soil_type: shallow granitic soils
+    elevation (m): 340
+    population size (flowering plants): 200
+    state: Vic
+  Shaw Creek:
+    latitude (deg): -37.375
+    longitude (deg): 146.757
+    description: subalpine native grassland
+    coordinate notes: approximate coordinates from Open Street Map
+    locality: headwaters of Shaw Creek (Snowy High Plain), Alpine National Park, Victoria,
+      Australia
+    elevation (m): 1540
+    state: Vic
+  Yarram:
+    latitude (deg): -38.562
+    longitude (deg): 146.676
+    description: lowland native grassland remnant
+    coordinate notes: approximate coordinates from Open Street Map
+    locality: Yarram, Victoria, Australia
+    elevation (m): 20
+    fragment size (ha): 4
+    population size (flowering plants): 300
+    state: Vic
+contexts:
+- context_property: pollination treatment
+  category: treatment_context
+  var_in: pollination_treatment
+  values:
+  - value: self-pollination
+    description: Plants bagged before opening, then each flower was self-pollinated
+      by hand, and the bag resealed.
+  - value: cross within population
+    description: 'Intrapopulation cross-pollination (xenogamy): plants bagged before
+      opening, then pollinia removed from each flower, and hand-pollinated with pollinia
+      from a plant approximately 50–100 m away, and the bag was resealed.'
+  - value: cross between populations
+    description: 'Interpopulation cross-pollination: plants bagged before opening,
+      then pollinia removed and hand-pollinated with pollinia from a different population,
+      and the bag was resealed.'
+  - value: natural pollination
+    description: Plants not bagged initially to allow natural pollination, then bagged
+      2 weeks after pollination had occurred when flowers had started to wither.
+  - value: no pollination
+    description: Plants were bagged with a cylinder of tea bag material and sealed
+      with micropore tape prior to flowers opening to exclude pollinators.
+  - value: no pollination + emasculation
+    description: Flowers were emasculated and bagged to exclude pollinators; pollinia
+      were removed after the flowers opened and the bag was resealed.
+traits:
+- var_in: fruit_set_proportion
+  unit_in: unit
+  trait_name: fruit_set_proportion
+  entity_type: population
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: The bags were then opened and the number of swollen, developed fruits and
+    withered, non-developed fruits were counted. The proportion of swollen fruits
+    was considered as a measure of 'fruit set'. ^p Mean percentage fruit set in P.
+    tadgellianum and P. frenchii in this study was comparable to that in other naturally
+    pollinated Prasophyllum (52% in P. odoratum, Bernhardt and Burns-Balogh 1986;
+    59% in P. fimbria, Peakall 1987; and 70% in P. elatum; 80% in P. fimbria, Elliott
+    and Ladd 2002; 72–84% in P. innubum Hayashi et al. 2024), making natural pollination
+    in Prasophyllum very high by global standards (average of 37.1% fruit set across
+    84 species of rewarding orchids globally, Tremblay et al. 2005). ^p Nevertheless,
+    given observations of 100% fruit set in other populations of P. lindleyanum and
+    <100% fruit set in other populations of P. frenchii and related species (M. Freestone,
+    pers. obs.), it appears likely that the results observed in this study are broadly
+    applicable within other populations of the studied species.
+- var_in: seed_mass_per_fruit
+  unit_in: unit
+  trait_name: seed_mass_per_fruit
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: 'For all species, bagged inflorescences containing developed seed were collected 4 weeks after pollination and dried to 15% relative humidity for 10 days in a dehumidifying drying cabinet. The bags were then opened and the number of swollen, developed fruits and withered, non-developed fruits were counted. The proportion of swollen fruits was considered as a measure of ''fruit set''. The seed from all fruits were then cleaned and transferred to a small 5 mL glass vial. The vial was weighed before and after the addition of seed, to measure the weight of all seed from each plant. Weight per fruit was determined by dividing the total seed weight by the number of developed fruits on the inflorescence.'
+- var_in: seed_viability
+  unit_in: unit
+  trait_name: seed_viability
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: replicates
+  methods: We used embryo staining with 2,3,5-triphenyltetrazolium chloride (TTC),
+    first described by Lakon (1949) and adapted to orchid seeds by van Waes and Debergh
+    (1986), which is widely used for seed viability testing in orchids (Vujanovic
+    et al. 2000; Borba et al. 2001). We used the method of van Waes and Debergh (1986)
+    with small modifications, detailed as follows. Seeds were chemically tested for
+    viability by using 2,3,5-triphenyltetrazolium chloride (TTC). For each sample
+    (i.e. seed from a single plant), approximately 100–300 seeds were transferred
+    to a clean 5 mL glass vial. To make the seed coat transparent, the seeds were
+    soaked in 2 mL of a filtered 4% w/v solution of calcium hypochlorite for 10 min,
+    although this step was omitted for P. lindleyanum because seed lacked a typical
+    seed coat and the embryos were clearly visible. These surface-sterilisation methods
+    were used following the results of small pilot trials (Supplementary Tables S1,
+    S2) and a separate study of the effect of stratification on asymbiotic germination
+    of P. chasmogamum (M. Freestone, unpubl. data). The bleach solution was pipetted
+    off and washed with 5 mL deionised water. This step was repeated, and the vial
+    was incubated in deionised water at 20°C for 24 h. The water was then pipetted
+    off and replaced with 2 mL of a 1% TTC solution, mixed and incubated in the dark
+    at 30°C. After 24 h, the TTC solution was pipetted off and the seed washed with
+    5 mL deionised water. The water wash step was repeated after 30 min. The seeds
+    were then pipetted onto a glass microscope slide, covered with a coverslip and
+    sealed with nail polish painted around the edges of the coverslip. Seeds were
+    viewed under a dissecting microscope within 1 h of slide preparation. Approximately
+    100 seeds (including those without embryos) were counted per replicate slide per
+    inflorescence (i.e. 2100–2500 seed per treatment, per species,) by photographing
+    the microscope slide, printing and marking seeds on the printed photo. The number
+    of seeds with no or very small embryos and the number of polyembryonic seeds were
+    recorded (Fig. 2). Seeds with stained embryos (any colouration) were scored as
+    viable (i.e. all dark-, mid- and light-coloured embryos pooled together). A detailed
+    analysis of the intensity of stain colouration is presented in the Supplementary
+    material (Supplementary methods; Supplementary Table S3), where the viability
+    of embryos was scored according to their intensity of colouration (dark, mid or
+    light; Fig. 2) and analysed separately.
+- var_in: seed_germination
+  unit_in: unit
+  trait_name: seed_germination
+  entity_type: population
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Asymbiotic germination was used to test percentage germination of seeds
+    of P. frenchii and P. tadgellianum, from an independent subsample from the same
+    plant (i.e. different individual seeds from those that were tested using tetrazolium
+    staining). Seeds were randomly allocated to either tetrazolium staining or asymbiotic
+    germination assays by shaking the vial of seeds to mix thoroughly, before scooping
+    out a 5 mm spatula-full of seed for either assay. Seeds were surface-sterilised
+    using the same surface-sterilisation regime as for TTC staining. The surface-sterilised
+    seed was rinsed in sterile deionised water twice and then pipetted onto two plates
+    of W9.5 + 5% coconut water (Western Orchid Laboratories, Coromandel Valley, Australia),
+    the most effective known asymbiotic germination medium for Prasophyllum (Freestone
+    et al. 2023). Prasophyllum lindleyanum was not subject to asymbiotic germination
+    because surface-sterilisation for the minimum time possible (30 s) resulted in
+    very low percentage germination and high contamination rates of plates, presumably
+    because most embryos were fully exposed to the bleach because of the lack of seed
+    coat and were killed (Mweetwa et al. 2008); however, there was insufficient time
+    for the bleach to kill contaminant fungal spores and bacteria (M. Freestone, unpubl.
+    data). ^p Plates were then sealed and randomly arranged in large plastic containers
+    and kept in the dark at a temperature regime of 16°C for 8 h, followed by 20°C
+    for 16 h, for 9 months. At the end of the incubation period, plates were scored
+    by counting the total number of seeds that had germinated into protocorms of Stage
+    3 or above (Clements et al. 1986), and the total number of seeds on the plate.
+    Stage 3 protocorms of P. frenchii usually progress to leaf-bearing seedlings in
+    asymbiotic germination (M. Freestone, pers. obs.). Of the two sown plates for
+    each seed subsample, only the plate with the highest germination percentage was
+    included in the analyses, because asymbiotic germination rates are known to be
+    variable among plates with identical conditions (Freestone et al. 2023), and we
+    were interested in the maximum germination rate to infer seed viability, rather
+    than the variability of asymbiotic germination among plates. Where neither plate
+    supported germination, the plate with the highest total count of seeds was included.
+    ^p A separate asymbiotic germination study of P. frenchii observed 10% germination
+    with naturally pollinated seed collected from the same study site collected a
+    year earlier (Freestone et al. 2023), suggesting that asymbiotic germination percentages
+    in the current study were not an accurate reflection of the true seed viability.
+- var_in: breeding_system
+  unit_in: .na
+  trait_name: breeding_system
+  entity_type: entity_type
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'The pollination treatments were as follows: (1) to determine whether a
+    pollinator vector is required or whether plants mechanically self-pollinate, plants
+    were bagged with a cylinder of tea bag material and sealed with micropore tape
+    prior to flowers opening to exclude pollinators, (2) to determine whether plants
+    are apomictic, flowers were emasculated and bagged to exclude pollinators. Flowers
+    were bagged before opening to ensure that no insects were able to pollinate the
+    flowers. After the flowers opened, the pollinia were removed, checking that they
+    removed easily and were intact (pollinia in Prasophyllum are a cohesive mass of
+    pollen that can be removed and transferred in a single unit), and the bag was
+    resealed. Pollinia were removed after the flower opened because to do so beforehand
+    would require mutilation of the flower and would introduce bias. (3) To determine
+    whether plants are self-compatible (autogamous), plants were bagged before opening,
+    then each flower was self-pollinated by hand, and the bag resealed. Furthermore,
+    plants were subjected to (4) intrapopulation cross-pollination (xenogamy) (plants
+    bagged before opening, then pollinia removed from each flower, and hand-pollinated
+    with pollinia from a plant approximately 50–100 m away, and the bag was resealed),
+    (5) interpopulation cross-pollination (plants bagged before opening, then pollinia
+    removed and hand-pollinated with pollinia from a different population, and the
+    bag was resealed), and (6) natural pollination (plants not bagged initially to
+    allow natural pollination, then bagged 2 weeks after pollination had occurred
+    when flowers had started to wither). ^p Pollination treatments that did not result
+    in any fruit set or seed production (i.e. the no pollination and emasculations
+    treatments in P. frenchii or P. tadgellianum) were not included in analyses, and
+    thus, the statistical comparisons of treatment effects apply only to treatments
+    that produced seed. ^p Very few Prasophyllum species have had their mating systems
+    identified, with the exception of P. fimbria (Peakall 1987, 1989) and P. innubum,
+    both of which have a mixed mating system (Hayashi et al. 2024).'
+- var_in: flower_nectar_production
+  unit_in: .na
+  trait_name: flower_nectar_production
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: The flowers of these species have visible (i.e. putative nectar) secretions
+    (M. Freestone, pers. obs., this study).
+- var_in: mycorrhizal_association_type
+  unit_in: .na
+  trait_name: mycorrhizal_association_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: All three study species are reliant on one or more species of Rhizoctonia
+    (formerly Ceratobasidium) for germination in the wild (Freestone et al. 2022,
+    2024).
+- var_in: plant_growth_form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Each of the three study species are annually dormant over the Australian
+    summer period, shedding their above-ground foliage and reducing to an underground
+    tuber, and subsequently re-emerging as a single leaf between March and June.
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Each of the three study species are annually dormant over the Australian
+    summer period, shedding their above-ground foliage and reducing to an underground
+    tuber, and subsequently re-emerging as a single leaf between March and June.
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Each of the three study species are annually dormant over the Australian
+    summer period, shedding their above-ground foliage and reducing to an underground
+    tuber, and subsequently re-emerging as a single leaf between March and June.
+- var_in: leaf_phenology
+  unit_in: .na
+  trait_name: leaf_phenology
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Each of the three study species are annually dormant over the Australian
+    summer period, shedding their above-ground foliage and reducing to an underground
+    tuber, and subsequently re-emerging as a single leaf between March and June.
+- var_in: foliage_time
+  unit_in: .na
+  trait_name: foliage_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Each of the three study species are annually dormant over the Australian
+    summer period, shedding their above-ground foliage and reducing to an underground
+    tuber, and subsequently re-emerging as a single leaf between March and June.
+- var_in: flowers_per_inflorescence
+  unit_in: unit
+  trait_name: flowers_per_inflorescence
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: Prasophyllum lindleyanum is Endangered in Victoria under the Flora and
+    Fauna Guarantee Act 1988 and endemic to eucalypt woodlands from 10 to 1500 m above
+    sea level (ASL) in Victoria and Tasmania. It produces a single inflorescence in
+    October to December, containing 10–20 small green flowers (Reichenbach 1871; VicFlora
+    2023). ^p Prasophyllum tadgellianum is common and endemic to subalpine grassland
+    and woodland in south-eastern Australia. It produces a single inflorescence containing
+    8–20 small, brown flowers in early summer (December–January) (Rogers 1923; VicFlora
+    2023). ^p Prasophyllum frenchii is endemic to wet lowland native grasslands and
+    swamps in southern Victoria and south-eastern South Australia. It produces a single
+    inflorescence with 20–65 small, brown flowers from October to December (von Mueller
+    1889; VicFlora 2023).
+- var_in: flower_colour
+  unit_in: .na
+  trait_name: flower_colour
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Prasophyllum lindleyanum is Endangered in Victoria under the Flora and
+    Fauna Guarantee Act 1988 and endemic to eucalypt woodlands from 10 to 1500 m above
+    sea level (ASL) in Victoria and Tasmania. It produces a single inflorescence in
+    October to December, containing 10–20 small green flowers (Reichenbach 1871; VicFlora
+    2023). ^p Prasophyllum tadgellianum is common and endemic to subalpine grassland
+    and woodland in south-eastern Australia. It produces a single inflorescence containing
+    8–20 small, brown flowers in early summer (December–January) (Rogers 1923; VicFlora
+    2023). ^p Prasophyllum frenchii is endemic to wet lowland native grasslands and
+    swamps in southern Victoria and south-eastern South Australia. It produces a single
+    inflorescence with 20–65 small, brown flowers from October to December (von Mueller
+    1889; VicFlora 2023).
+- var_in: flowering_time
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Prasophyllum lindleyanum is Endangered in Victoria under the Flora and
+    Fauna Guarantee Act 1988 and endemic to eucalypt woodlands from 10 to 1500 m above
+    sea level (ASL) in Victoria and Tasmania. It produces a single inflorescence in
+    October to December, containing 10–20 small green flowers (Reichenbach 1871; VicFlora
+    2023). ^p Prasophyllum tadgellianum is common and endemic to subalpine grassland
+    and woodland in south-eastern Australia. It produces a single inflorescence containing
+    8–20 small, brown flowers in early summer (December–January) (Rogers 1923; VicFlora
+    2023). ^p Prasophyllum frenchii is endemic to wet lowland native grasslands and
+    swamps in southern Victoria and south-eastern South Australia. It produces a single
+    inflorescence with 20–65 small, brown flowers from October to December (von Mueller
+    1889; VicFlora 2023).
+- var_in: flower_pollinator_reward
+  unit_in: .na
+  trait_name: flower_pollinator_reward
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Of the few pollination studies that have been conducted on Prasophyllum,
+    most species provide a nectar reward to pollinating native bees, flies and wasps
+    (P. fimbria in Peakall 1987, 1989; P. odoratum in Bernhardt and Burns-Balogh 1986;
+    P. elatum in Bates 1984a; P. innubum in Hayashi et al. 2024).
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions:
+  question1: Do you have an estimation (or measurement) of seed dry mass (of a single seed)?
