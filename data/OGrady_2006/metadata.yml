@@ -23,9 +23,15 @@ dataset:
   custom_R_code:     '
     data %>%
       mutate(
-        sampling_season = date
+        sampling_season = date,
+        collection_date = case_when(
+          date == "Sep-00" ~ "2000-09",
+          date == "Oct-00" ~ "2000-10",
+          date == "May-01" ~ "2001-05",
+          date == "07-2000/08-2000" ~ "2000-07/2000-08"
+        )
       )'
-  collection_date: date
+  collection_date: collection_date
   taxon_name: taxon
   location_name: site
   description: The principal aim of this study was to examine spatial and temporal
@@ -181,5 +187,4 @@ traits:
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
-questions: .na 
- 
+questions: .na
