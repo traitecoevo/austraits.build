@@ -1,0 +1,315 @@
+source:
+  primary:
+    key: Tennakoon_1997
+    bibtype: Article
+    year: '1997'
+    author: K. U. Tennakoon and J. S. Pate and D. Arthur
+    journal: Annals of Botany
+    title: Ecophysiological aspects of the woody root hemiparasite Santalum acuminatum
+      (R. Br.) A. DC and its common hosts in south western Australia
+    volume: '80'
+    pages: 245--256
+    doi: 10.1006/anbo.1997.0432
+contributors:
+  data_collectors:
+  - last_name: Tennakoon
+    given_name: Kushan
+    ORCID: .na
+    affiliation: Department of Botany, The University of Peradeniya, Peradeniya, Sri
+      Lanka
+    notes: no contact
+  - last_name: Pate
+    given_name: John
+    ORCID: .na
+    affiliation: School of Plant Biology, The University of Western Australia, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        across(c(photosynthesis_per_area, transpiration_per_area, water_use_efficiency,
+          leaf_dry_matter_d13C_gas_exchange_canopy, leaf_delta15N), ~ stringr::str_replace(.x,
+          "\\±.+", "")),
+        root_vessel_diameter = as.numeric(root_vessel_radius) * 2,
+        root_vessel_lumen_fraction = as.numeric(root_vessel_lumina_pct_stele_area) / 100,
+        root_Ks_stele_area_basis = as.numeric(root_Ks_stele_area_basis) * 1e-7 * 998,
+        root_Ks_total_vessel_lumina_area_basis = as.numeric(root_Ks_total_vessel_lumina_area_basis) * 998
+      ) %>%
+      mutate(
+        across(c(resprouting_capacity, bud_bank_location, clonal_spread_mechanism,
+          vegetative_reproduction_ability), replace_duplicates_with_NA)
+      )
+  '
+  collection_date: collection_date
+  taxon_name: species_name
+  location_name: site
+  description: To investigate the extent of host dependence, water relations, and
+    haustorial biology of the root hemiparasite Santalum acuminatum and its principal
+    host species, using natural-abundance delta15N and delta13C signals, gas exchange,
+    and root hydraulic conductivity measurements.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: The study region was located in the northern sand plains of south
+    western Australia, 40 km north of Eneabba (29 deg 49' S, 115 deg 16' E), and comprised
+    three separate habitats, each containing relatively dense stands of Santalum acuminatum
+    (R. Br.) A. DC.(Santalaceae) along with a range of woody shrubs and trees. The
+    three sites had not been burnt for at least 5 years prior to the seasons of investigation.
+    Species acting as principal hosts for the parasite were identified during the
+    growing seasons (April-October) of 1995 and 1996 by means of a series of shallow
+    excavations around potential hosts and examination of the partly exposed roots
+    for haustoria. Common species whose roots were regularly or occasionally parasitized
+    by Santalum at the first site (A) were Acacia rostellifera Benth. (Mimosaceae),
+    Acacia pulchella R. Br. (Mimosaceae), Baeckea tetragona Benth. (Myrtaceae), Cryptandra
+    mutila Reissek. (Rhamnaceae), Melaleuca viminea Lindley (Myrtaceae), Alyogyne
+    hakeaefolia (Giord.) Alef. (Malvaceae), Anthocercis viscosa R. Br. (Solanaceae),
+    Spyridium cordatum (Turcz.) Benth. (Rhamnaceae), Exocarpos sparteus Benth. (Santalaceae)
+    and Dodonaea aptera Miq. (Sapindaceae). At the second site (B) hosts were identified
+    as Allocasuarina campestris (Diels) L. Johnson (Casuarinaceae), Acacia pulchella
+    R. Br. (Mimosaceae), Melaleuca viminea Lindley. (Myrtaceae), Spyridium cordatum
+    (Turcz.) Benth. (Rhamnaceae), Leucopogon ovalifolius Sonder. (Epacridaceae), Lysinema
+    ciliatum R. Br. (Epacridaceae), Desmocladus asperus Nees (Restionaceae), Hemiandra
+    pungens R. Br. (Lamiaceae), Conostylis candicans Endl. (Haemodoraceae) and Gompholobium
+    tomentosum Labill. (Fabaceae). At the third site (C) parasitized hosts were Acacia
+    pulchella R. Br. (Mimosaceae), Acacia rostellifera Benth. (Mimosaceae), Melaleuca
+    viminea Lindley. (Myrtaceae), Phyllanthus calycinus Benth. (Euphorbiaceae), Allocasuarina
+    campestris (Diels) L. Johnson (Casuarinaceae), Desmocladus asperus Nees (Restionaceae)
+    and Hemiandra pungens R. Br. (Lamiaceae). Twenty replicate samples of new season
+    leafy shoot material of each species were collected in spring from within the
+    designated (100 m2) plot transects at each site (site A sampled in August 1995
+    and sites B and C in September 1996). The material was oven dried at 80 deg C
+    for 72 h, ground and then sieved through a 1.25-mm-diameter mesh sieve.
+  original_file: transcriptions of tables and figures from manuscript PDF in raw data
+    folder
+  notes: data transcribed from manuscript by ClaudeAI; root_Ks_stele_area_basis and root_Ks_total_vessel_lumina_area_basis
+    (Fig. 7A/D) are carried with an unmapped (.na) trait_name rather than mapped
+    to root_specific_hydraulic_conductivity - even after converting the paper's
+    volumetric Ks to the mass-based units that trait_name expects (multiplying by water density), the resulting values are
+    2-3 orders of magnitude below its allowed_values_min (0.01) - a systematic gap that we can't trace; custom_R_code still applies the unit conversion, so the values are already
+    in root_specific_hydraulic_conductivity's units
+identifiers: .na
+locations:
+  Site A:
+    latitude (deg): -29.4574
+    longitude (deg): 115.2667
+    description: coastal heath, Acacia rostellifera-dominant
+    locality: 40 km north of Eneabba, WA
+    state: WA
+    coordinate_notes: coordinates approximate straight-line 40 km due-north of Eneabba, WA
+  Site B:
+    latitude (deg): -29.4574
+    longitude (deg): 115.2667
+    description: coastal heath, Allocasuarina campestris-dominant
+    locality: 40 km north of Eneabba, WA
+    state: WA
+    coordinate_notes: coordinates approximate straight-line 40 km due-north of Eneabba, WA
+  Site C:
+    latitude (deg): -29.4574
+    longitude (deg): 115.2667
+    description: coastal heath, Acacia pulchella-dominant
+    locality: 40 km north of Eneabba, WA
+    state: WA
+    coordinate_notes: coordinates approximate straight-line 40 km due-north of Eneabba, WA
+contexts:
+- context_property: replicate measurement
+  category: method_context
+  var_in: location
+- context_property: root parasitism status
+  category: entity_context
+  var_in: parasitism_status
+traits:
+- var_in: photosynthesis_per_area
+  unit_in: umol{CO2}/m2/s
+  trait_name: leaf_photosynthetic_rate_per_area_ambient
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: count_photosynthesis_per_area
+  methods: Five individual plants of Santalum acuminatum at site A and a matching
+    set of five near-neighbouring plants of the major host A. rostellifera were involved
+    in this study. Assimilation rates (net photosynthesis umol CO2 m-2 s-1) of mature
+    foliage of the five pairs of host and parasite were measured on different occasions
+    in spring (September 1995), summer (January 1996) autumn (April 1996) or winter
+    (July 1996), using a portable open cuvette gas exchange system (ADC, model LCA-2,
+    Hoddenson, UK). Measurements were restricted to non-limiting light conditions
+    (1000-1500h) over the 2 consecutive days of each visit to the study site. Each
+    gas exchange measurement took place during a 40-90 s enclosure of the canopy leaves
+    of a species, taking care to avoid periods of rapidly changing light conditions
+    before or during measurements.
+- var_in: transpiration_per_area
+  unit_in: mmol{H2O}/m2/s
+  trait_name: leaf_transpiration_per_area_ambient
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: count_transpiration_per_area
+  methods: Five individual plants of Santalum acuminatum at site A and a matching
+    set of five near-neighbouring plants of the major host A. rostellifera were involved
+    in this study. Transpiration rates (mmol H2O m-2 s-1) of mature foliage of the
+    five pairs of host and parasite were measured on different occasions in spring
+    (September 1995), summer (January 1996) autumn (April 1996) or winter (July 1996),
+    using a portable open cuvette gas exchange system (ADC, model LCA-2, Hoddenson,
+    UK). Measurements were restricted to non-limiting light conditions (1000-1500h)
+    over the 2 consecutive days of each visit to the study site.
+- var_in: water_use_efficiency
+  unit_in: mmol{CO2}/mol{H2O}
+  trait_name: leaf_water_use_efficiency_instantaneous
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: count_water_use_efficiency
+  methods: Water use efficiency was calculated from simultaneously measured assimilation
+    and transpiration rates (mmol CO2 mol-1 H2O) of mature foliage of five pairs of
+    Santalum acuminatum and its host A. rostellifera at site A, measured on different
+    occasions in spring, summer, autumn and winter using a portable open cuvette gas
+    exchange system (ADC, model LCA-2, Hoddenson, UK).
+- var_in: leaf_dry_matter_d13C_gas_exchange_canopy
+  unit_in: '{delta}[ppth]'
+  trait_name: leaf_delta13C
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: count_leaf_dry_matter_d13C_gas_exchange_canopy
+  methods: At the end of the gas exchange study (five paired plants of Santalum acuminatum
+    and its host A. rostellifera at site A, measured across four seasonal occasions),
+    leaf material used for the measurements was harvested, dried and analysed for
+    delta13C using a SIRA 9 mass spectrometer (VG Isogas, Cheshire, UK).
+- var_in: leaf_dry_matter_d13C_bulk_shoot
+  unit_in: '{delta}[ppth]'
+  trait_name: leaf_delta13C
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: count_leaf_dry_matter_d13C_bulk_shoot
+  methods: Twenty replicate samples of new season leafy shoot material of each species
+    were collected in spring from within the designated (100 m2) plot transects at
+    each site (site A sampled in August 1995 and sites B and C in September 1996).
+    The material was oven dried at 80 deg C for 72 h, ground and sieved through a
+    1.25-mm-diameter mesh sieve. Samples (2-3 mg d. wt) of leaves were analysed for
+    delta13C using a SIRA 9 mass spectrometer (VG Isogas, Cheshire, UK).
+- var_in: leaf_delta15N
+  unit_in: '{delta}[ppth]'
+  trait_name: leaf_delta15N
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: count_leaf_delta15N
+  methods: Twenty replicate samples of new season leafy shoot material of each species
+    were collected in spring from within the designated (100 m2) plot transects at
+    each site (site A sampled in August 1995 and sites B and C in September 1996).
+    The material was oven dried at 80 deg C for 72 h, ground and sieved through a
+    1.25-mm-diameter mesh sieve. Samples (2-3 mg d. wt) of leaves were analysed for
+    delta15N using a SIRA 9 mass spectrometer (VG Isogas, Cheshire, UK).
+- var_in: root_vessel_diameter
+  unit_in: um
+  trait_name: root_vessel_diameter
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: Major lateral roots of Santalum and of its predominant host A. rostellifera
+    were excavated randomly from five different locations at site A. Root segments
+    20 cm long were excised from 25 Santalum plants and from parasitized (1 or more
+    Santalum haustoria) and unparasitized lateral roots of a set of 25 matching plants
+    of A. rostellifera. Transverse sections were cut mid-way through each segment
+    and enlarged colour photomicrographic images used to measure mean vessel radius
+    (doubled here to give diameter). Digitized from Fig. 7B (no data table given,
+    confidence low-medium - see dataset notes).
+- var_in: root_vessel_lumen_fraction
+  unit_in: mm2/mm2
+  trait_name: root_vessel_lumen_fraction
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: Root segments used for conductivity measurements were vacuum perfused for
+    1 h with a filtered solution of 0.1% basic fuchsin to distinguish presumptive
+    conducting xylem elements from fibres and other non-conducting tissues. Transverse
+    sections were then cut mid-way through each segment and enlarged colour photomicrographic
+    images used to measure the proportion of the total transectional area of segments
+    comprised of the lumina of stained xylem vessels (converted here from percentage
+    to a 0-1 fraction). Digitized from Fig. 7C (no data table given, confidence
+    low-medium - see dataset notes).
+- var_in: root_Ks_stele_area_basis
+  unit_in: kg/m/MPa/s
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: root_specific_hydraulic_conductivity; not mapped in, because even after
+    converting the paper's volumetric Ks to the mass-based units this trait_name
+    is defined in (multiplying by the density of water, 998 kg/m3 at 20 deg C),
+    the resulting values are 2-3 orders of magnitude below the trait's allowed_values_min
+    (0.01), too large a gap to be a units slip; Specific hydraulic conductivity
+    (Ks) of major lateral roots of Santalum and of its predominant host A. rostellifera,
+    excavated randomly from five different locations at site A, essentially as described
+    by Tennakoon and Pate (1996b), following the methodologies of Gibson, Calkin
+    and Nobel (1984) and Schultz and Matthews (1993), adapted for roots by Pate,
+    Jeschke and Aylward (1995). Values here are normalised to root stele cross-sectional
+    area. Digitized from Fig. 7A (no data table given, confidence low).
+- var_in: root_Ks_total_vessel_lumina_area_basis
+  unit_in: kg/m/MPa/s
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: root_specific_hydraulic_conductivity; not mapped in, because even after
+    converting the paper's volumetric Ks to the mass-based units this trait_name
+    is defined in (multiplying by the density of water, 998 kg/m3 at 20 deg C),
+    the resulting values are 2-3 orders of magnitude below the trait's allowed_values_min
+    (0.01), too large a gap to be a units slip; Specific hydraulic conductivity
+    (Ks) of major lateral roots of Santalum and of its predominant host A. rostellifera,
+    excavated randomly from five different locations at site A, essentially as described
+    by Tennakoon and Pate (1996b), following the methodologies of Gibson, Calkin
+    and Nobel (1984) and Schultz and Matthews (1993), adapted for roots by Pate,
+    Jeschke and Aylward (1995). Values here are converted to a total-vessel-lumina-area
+    basis using measured proportions of stele cross-sectional area comprised of
+    xylem vessel lumina. Digitized from Fig. 7D (no data table given, confidence
+    low).
+- var_in: resprouting_capacity
+  unit_in: .na
+  trait_name: resprouting_capacity
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Resprouting after fire occurred from bases of burnt shoots and from new
+    suckers forming at intervals along the lateral root stocks of a parent clone.
+- var_in: bud_bank_location
+  unit_in: .na
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Resprouting after fire occurred from bases of burnt shoots.
+- var_in: clonal_spread_mechanism
+  unit_in: .na
+  trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Examination of S. acuminatum across the study region during 1993-1996
+    showed it to spread clonally by prolific root suckering, with new suckers forming
+    at intervals along the lateral root stocks of a parent clone.
+- var_in: vegetative_reproduction_ability
+  unit_in: .na
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Examination of S. acuminatum across the study region during 1993-1996
+    showed it to spread clonally by prolific root suckering.
+substitutions: .na
+taxonomic_updates:
+- find: Desmocladus asperus
+  replace: Desmocladus asper
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-15)
+  taxonomic_resolution: species
+exclude_observations: .na
+questions: .na 

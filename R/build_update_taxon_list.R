@@ -175,6 +175,13 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
     tidyr::unnest_wider(taxon_name, names_sep = "_") %>%
     dplyr::rename(dplyr::all_of(c("taxon_name" = "taxon_name_1", "taxon_name_alternatives" = "taxon_name_2"))) %>%
     dplyr::mutate(taxon_name_alternatives = stringr::str_replace(taxon_name_alternatives, "\\]$", "")) %>%
+    # For taxa with alternate names, these fields are blank
+    dplyr::mutate(
+      cleaned_scientific_name_id = ifelse(!is.na(taxon_name_alternatives), scientific_name_id, cleaned_scientific_name_id),
+      aligned_name_taxonomic_status = ifelse(!is.na(taxon_name_alternatives), taxonomic_status, aligned_name_taxonomic_status),
+      aligned_name_taxon_id = ifelse(!is.na(taxon_name_alternatives), taxon_id, aligned_name_taxon_id),
+      accepted_name = ifelse(!is.na(taxon_name_alternatives), taxon_name, accepted_name)
+    ) %>%
     # Add in data for genus, binomial and trinomial, as appropriate.
     dplyr::mutate(
       trinomial = ifelse(
@@ -215,6 +222,13 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
       "establishment_means", "scientific_name", "taxon_id", "taxon_id_genus", "taxon_id_family",
       "scientific_name_id", "aligned_name_taxon_id", "aligned_name_taxonomic_status")))
 
+    # There might have been a 1-off problem, but a good idea to remove rows without a value for `taxonomic_dataset` and see if there now is one.
+    # For instance names that hadn't been in APC/APNI previously but were retained in AusTraits because we knew they were "real" names that were still working through CHAH
+    # are in the taxon list and this way they will be replaced with their current identifiers, even if replace == FALSE
+      missing_taxa <- taxon_list %>% filter((is.na(taxonomic_dataset)|taxonomic_status == "unknown") & (taxon_name %in% resources$APC$canonical_name | taxon_name %in% resources$APNI$canonical_name)) 
+      taxon_list_filtered <- taxon_list %>% filter(!taxon_name %in% missing_taxa$taxon_name)
+    
+    
     # New taxon list
 
    if (replace == TRUE) {
@@ -225,9 +239,9 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
 
    } else {
 
-      taxon_list_replace <- taxon_list %>%
+      taxon_list_replace <- taxon_list_filtered %>%
         # First bind rows for cleaned names not yet in AusTraits taxon_list.csv file
-        dplyr::bind_rows(taxon_list_new %>% dplyr::filter(!aligned_name %in% taxon_list$aligned_name)) %>%
+        dplyr::bind_rows(taxon_list_new %>% dplyr::filter(!aligned_name %in% taxon_list_filtered$aligned_name)) %>%
         # Arrange by names - hopefully this will be best solution for keeping GitHub commits more transparent
         dplyr::arrange(taxon_name, aligned_name) %>%
         dplyr::distinct(taxon_name, aligned_name, .keep_all = TRUE)
