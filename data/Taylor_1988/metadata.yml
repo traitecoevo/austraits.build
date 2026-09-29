@@ -31,7 +31,8 @@ dataset:
       dplyr::filter(!is.na(trait_name_standardised)) |>
       dplyr::mutate(
         trait_value_standardised = ifelse(
-          trait_name_standardised == "fire_time_from_fire_to_no_flowering" & value_type != "maximum",
+          (trait_name_standardised == "fire_time_from_fire_to_no_flowering" & value_type != "maximum") |
+            (trait_name_standardised == "fire_time_from_fire_to_flowering" & value_type == "minimum"),
           NA, trait_value_standardised),
         flower_visitor_type = dplyr::case_when(
           trait_name == "pollinator_type" ~ "generic visitor group",
