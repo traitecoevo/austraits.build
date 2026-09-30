@@ -1,0 +1,399 @@
+source:
+  primary:
+    key: Bond_2026
+    bibtype: Unpublished
+    year: '2026'
+    author: S.J. Bond
+    title: 'Unpublished dataset: Plant-pollinator interactions of south-eastern and
+      northern Australian plant species.'
+contributors:
+  data_collectors:
+  - last_name: Bond
+    given_name: Suzi
+    ORCID: 0000-0002-7722-1456
+    affiliation: unknown
+    additional_role: contact
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    data |>
+      mutate(
+        taxon_name = trimws(paste(`Plant Genus`, ifelse(is.na(`Plant Species`), "", `Plant Species`))),
+        pollinator_taxon = case_when(
+          !is.na(`Visitor Genus`) & !is.na(`Visitor Species`) ~ paste(`Visitor Genus`, `Visitor Species`),
+          !is.na(`Visitor Genus`) ~ `Visitor Genus`,
+          `Visitor Morphospecies` == "Hover fly" ~ "Syrphidae",
+          TRUE ~ `Visitor Order/Family`
+        ),
+        `Pollinator match column` = case_when(
+          `Visitor Genus` == "Apis" ~ "Visitor Genus and Visitor Species",
+          `Visitor Morphospecies` == "Hover fly" ~ "Visitor Morphospecies",
+          `Visitor Order/Family` == "Lepidoptera" ~ "Visitor Genus",
+          TRUE ~ "Visitor Order/Family"
+        ),
+        `Pollinator match value` = case_when(
+          `Visitor Genus` == "Apis" ~ paste(`Visitor Genus`, `Visitor Species`),
+          `Visitor Morphospecies` == "Hover fly" ~ `Visitor Morphospecies`,
+          `Visitor Order/Family` == "Lepidoptera" ~ `Visitor Genus`,
+          TRUE ~ `Visitor Order/Family`
+        ),
+        photographic_record = ifelse(stringr::str_detect(Source, "photo"), "photographed", "not photographed"),
+        basis_of_record = ifelse(!is.na(notes) & notes == "Garden plant", "captive_cultivated", "field")
+      ) |>
+    generate_observation_numbers(taxon_name, `Visitor TRAIT`, Location)
+  '
+  collection_date: collection_date
+  taxon_name: taxon_name
+  trait_name: Visitor TRAIT
+  value: Pollinator match value
+  location_name: Location
+  description: Floral-visitor and possible pollen-vector records, predominantly butterflies,
+    for plant species (native, naturalised and cultivated) across the ACT, NSW, Queensland,
+    South Australia, Western Australia and Norfolk Island, from personal observations
+    and photographic records by S.J. Bond.
+  basis_of_record: basis_of_record
+  life_stage: adult
+  sampling_strategy: Opportunistic personal observations of animals visiting flowers,
+    recorded between 2008 and 2026, many documented with photographs. Observations
+    were made in natural vegetation, nature reserves and national parks, and in gardens
+    (including the Australian National Botanic Gardens).
+  original_file: Plant_Pollinator_AusTraits_2026_SBond_30Sept2026.xlsx, in raw data
+    folder
+  notes: The raw data records each floral visitor's identity across the columns `Visitor
+    Order/Family`, `Visitor Genus`, `Visitor Species` and `Visitor Morphospecies`
+    (common name). The derived columns `Pollinator match column` and `Pollinator match
+    value` identify which of these raw columns supplies the most taxonomically specific
+    value that resolves to a `pollination_vector_possible`/`flower_visitor` allowed
+    value, and what that raw value was. For Lepidoptera, `Visitor Genus` is the match
+    value, with substitutions mapping each genus to `butterfly` (including skippers)
+    or `moth` (the geometrid genus Chrysolarentia), since `Visitor Order/Family` alone
+    only resolves to `lepidoptera`. Records of plants noted as garden plants are assigned
+    a basis_of_record of `captive_cultivated`, all others `field`.
+identifiers: .na
+locations:
+  Casey, ACT:
+    latitude (deg): -35.1667
+    longitude (deg): 149.095
+    state: ACT
+  Albury, NSW:
+    latitude (deg): -36.0737
+    longitude (deg): 146.9135
+    state: NSW
+  Nyngan, NSW:
+    latitude (deg): -31.5608
+    longitude (deg): 147.1936
+    state: NSW
+  Bourke, NSW:
+    latitude (deg): -30.09
+    longitude (deg): 145.9375
+    state: NSW
+  Wilpena Pound, SA:
+    latitude (deg): -31.53
+    longitude (deg): 138.6
+    state: SA
+  Atherton Tablelands, QLD:
+    latitude (deg): -17.2686
+    longitude (deg): 145.4758
+    state: QLD
+    coordinate_notes: coordinates for the town of Atherton, QLD
+  Atherton, QLD:
+    latitude (deg): -17.2686
+    longitude (deg): 145.4758
+    state: QLD
+  Mt Ainslie, ACT:
+    latitude (deg): -35.2703
+    longitude (deg): 149.1575
+    state: ACT
+  Namadgi NP, ACT:
+    latitude (deg): -35.6667
+    longitude (deg): 148.95
+    state: ACT
+    coordinate_notes: approximate centre of Namadgi National Park, ACT
+  Norfolk Island:
+    latitude (deg): -29.0408
+    longitude (deg): 167.9547
+    state: Norfolk Island
+  Mt Majura, ACT:
+    latitude (deg): -35.2425
+    longitude (deg): 149.1747
+    state: ACT
+  Goorooyarroo, ACT:
+    latitude (deg): -35.18
+    longitude (deg): 149.18
+    state: ACT
+  Tuggeranong Hill, ACT:
+    latitude (deg): -35.43
+    longitude (deg): 149.096
+    state: ACT
+  Koondoola RB, WA:
+    latitude (deg): -31.84
+    longitude (deg): 115.865
+    state: WA
+  Gibraltar Falls, ACT:
+    latitude (deg): -35.4867
+    longitude (deg): 148.95
+    state: ACT
+  Tidbinbilla NR, ACT:
+    latitude (deg): -35.44
+    longitude (deg): 148.92
+    state: ACT
+  Culcairn, NSW:
+    latitude (deg): -35.6667
+    longitude (deg): 147.0333
+    state: NSW
+  ANBG, ACT:
+    latitude (deg): -35.2786
+    longitude (deg): 149.1094
+    state: ACT
+  Longreach, QLD:
+    latitude (deg): -23.442
+    longitude (deg): 144.25
+    state: QLD
+  Mulligans Flat, ACT:
+    latitude (deg): -35.164
+    longitude (deg): 149.165
+    state: ACT
+  Hackett, ACT:
+    latitude (deg): -35.249
+    longitude (deg): 149.163
+    state: ACT
+  Portland Rd, QLD:
+    latitude (deg): -12.595
+    longitude (deg): 143.41
+    state: QLD
+    coordinate_notes: coordinates for Portland Roads, Cape York Peninsula, QLD
+  Casuarina Sands, ACT:
+    latitude (deg): -35.327
+    longitude (deg): 148.953
+    state: ACT
+  Michelago, NSW:
+    latitude (deg): -35.71
+    longitude (deg): 149.164
+    state: NSW
+  Ainslie, ACT:
+    latitude (deg): -35.262
+    longitude (deg): 149.147
+    state: ACT
+  Bungendore, NSW:
+    latitude (deg): -35.254
+    longitude (deg): 149.44
+    state: NSW
+contexts:
+- context_property: floral visitor taxon name
+  category: entity_context
+  var_in: pollinator_taxon
+- context_property: pollination evidence
+  category: method_context
+  var_in: Pollination evidence
+- context_property: photographic record
+  category: method_context
+  var_in: photographic_record
+- context_property: replicate observations
+  category: temporal_context
+  var_in: observation_number
+traits:
+- var_in: pollination_vector_possible
+  unit_in: .na
+  trait_name: pollination_vector_possible
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Personal field observations and photographic records of floral visitors,
+    with visitors identified by observation. A `pollination_vector_possible` record
+    indicates the visitor was observed collecting nectar and/or pollen from the flower
+    and was assumed to be a pollinator, but pollination was not experimentally confirmed.
+- var_in: flower_visitor
+  unit_in: .na
+  trait_name: flower_visitor
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Personal field observations and photographic records of floral visitors,
+    with visitors identified by observation. A `flower_visitor` record indicates the
+    taxon was observed visiting the flower (e.g. taking a nectar reward) with no recorded
+    contact with the stigma or anthers.
+substitutions:
+- trait_name: pollination_vector_possible
+  find: apis mellifera
+  replace: honeybee
+- trait_name: pollination_vector_possible
+  find: sphecidae
+  replace: wasp
+- trait_name: flower_visitor
+  find: hover fly
+  replace: hoverfly
+- trait_name: pollination_vector_possible
+  find: acraea
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: anisynta
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: appias
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: belenois
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: candalides
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: cepora
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: chrysolarentia
+  replace: moth
+- trait_name: pollination_vector_possible
+  find: cyprotides
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: delias
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: dispar
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: euchrysops
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: eurema
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: euschemon
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: geitoneura
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: graphium
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: herimosa
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: hesperilla
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: heteronympha
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: hypochrysops
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: jalmenus
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: junonia
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: lampides
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: lucia
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: neolucia
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: ocybadistes
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: ogyris
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: oreixenica
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: ornithoptera
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: papilio
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: paralucia
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: pasma
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: pieris
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: taractrocera
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: theclinesthes
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: trapezites
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: vanessa
+  replace: butterfly
+- trait_name: pollination_vector_possible
+  find: zizina
+  replace: butterfly
+- trait_name: flower_visitor
+  find: anisynta
+  replace: butterfly
+- trait_name: flower_visitor
+  find: catopsilia
+  replace: butterfly
+- trait_name: flower_visitor
+  find: dispar
+  replace: butterfly
+- trait_name: flower_visitor
+  find: heteronympha
+  replace: butterfly
+- trait_name: flower_visitor
+  find: lampides
+  replace: butterfly
+- trait_name: flower_visitor
+  find: lucia
+  replace: butterfly
+- trait_name: flower_visitor
+  find: neolucia
+  replace: butterfly
+- trait_name: flower_visitor
+  find: paralucia
+  replace: butterfly
+- trait_name: flower_visitor
+  find: toxidia
+  replace: butterfly
+- trait_name: flower_visitor
+  find: trapezites
+  replace: butterfly
+- trait_name: flower_visitor
+  find: vanessa
+  replace: butterfly
+taxonomic_updates:
+- find: Amyema miquelli
+  replace: Amyema miquelii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-30)
+  taxonomic_resolution: species
+- find: Xanthorrhoea preissi
+  replace: Xanthorrhoea preissii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-30)
+  taxonomic_resolution: species
+- find: Xerochrysum bracteanthum
+  replace: Xerochrysum bracteatum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-09-30)
+  taxonomic_resolution: species
+- find: Citrus sinensis
+  replace: Citrus x sinensis
+  reason: Exact match of the first two words of the taxon name to an APC-known canonical
+    name (2026-09-30)
+  taxonomic_resolution: species
+exclude_observations: .na
+questions:
+  question1: Is this your ORCID ID - or that of another Suzi Bond in Canberra? 0000-0002-7722-1456.
+    What is your affiliation?
+  question3: Eriostemon myoporoides in Namadgi NP, ACT is flagged "Garden plant" in
+    the notes column, so is currently assigned basis_of_record captive_cultivated
+    -- confirm whether this was a garden or wild plant.
