@@ -1,0 +1,219 @@
+source:
+  primary:
+    key: Johnson_1980
+    bibtype: Article
+    year: 1980
+    author: Colin T. Johnson
+    journal: Australian Journal of Botany
+    title: The leaf anatomy of Leptospermum Forst. (Myrtaceae)
+    volume: '28'
+    pages: 77--104
+    doi: 10.1071/BT9800077
+contributors:
+  data_collectors:
+  - last_name: Johnson
+    given_name: Colin T.
+    ORCID: .na.character
+    affiliation: Botany Department, University of the Western Cape, Bellville, Republic
+      of South Africa
+    additional_role: contact
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    data |>
+      dplyr::filter(trait %in% c("leaf_thickness", "leaf_cuticle_thickness", "leaf_cuticle_thickness_adaxial", "leaf_cuticle_thickness_abaxial", 
+      "leaf_epidermis_thickness", "leaf_epidermis_thickness_adaxial", "leaf_epidermis_thickness_abaxial", "leaf_guard_cell_length", 
+      "leaf_guard_cell_width", "leaf_hairs_adult_leaves", "leaf_hairs_immature_leaves", "leaf_stomatal_distribution", "leaf_stomatal_complex_type", 
+      "leaf_oil_gland_diameter")) |>
+      dplyr::mutate(
+        individual_id = dplyr::if_else(entity_type == "individual", voucher, NA_character_),
+        replicates = dplyr::case_when(entity_type == "individual" ~ "1", entity_type == "population" ~ as.character(n), TRUE ~ NA_character_),
+        voucher_L = dplyr::if_else(voucher != "" & !grepl("^Johnson 00", voucher), voucher, NA_character_),
+        voucher_UWC = dplyr::if_else(grepl("^Johnson 00", voucher), voucher, NA_character_),
+        source_rank = dplyr::case_when(grepl("^Table 1", source_section) ~ 1, grepl("^Table 2", source_section) ~ 2, grepl("^Specific", source_section) ~ 3, TRUE ~ 4),
+        gland_axis = dplyr::if_else(grepl("axis", context), context, NA_character_)
+      ) |>
+      dplyr::group_by(taxon_name, entity_type, voucher, trait, value_type, context) |>
+      dplyr::filter(source_rank == min(source_rank)) |>
+      dplyr::ungroup()
+  '
+  collection_date: 1980
+  taxon_name: taxon_name
+  trait_name: trait
+  value: trait_value_clean
+  entity_type: entity_type
+  individual_id: individual_id
+  basis_of_record: preserved_specimen
+  life_stage: adult
+  description: Comparative leaf anatomy of 40 Leptospermum species, describing cuticle,
+    trichome, stomatal, epidermal, mesophyll, vascular bundle and secretory cavity
+    characters from herbarium specimens to assess their taxonomic value and correlations
+    with habitat.
+  sampling_strategy: Except for four specimens of L. laevigatum which I collected
+    in the field and deposited in the herbarium of the University of the Western Cape,
+    all material studied is from the Rijksherbarium, Leiden, the Netherlands. Collecting
+    data are given for all material studied. The leaves were taken from specimens
+    with flowers to provide for any further re-identification.
+  original_file: raw/trait_data.csv (extracted from the source PDF by Claude AI, Anthropic)
+  notes: data for additional traits, leaf_cuticle_ornamentation, leaf_epidermis_anticlinal_wall_form,
+    leaf_epidermis_anticlinal_wall_thickness_abaxial, leaf_epidermis_anticlinal_wall_thickness_adaxial,
+    leaf_epidermis_outer_periclinal_wall_shape, leaf_epidermis_outer_periclinal_wall_thickness_abaxial,
+    leaf_epidermis_outer_periclinal_wall_thickness_adaxial, leaf_hair_bases_persistent,
+    leaf_hair_length, leaf_hair_shape, leaf_midrib_outline, leaf_oil_gland_cuticle_ornamentation,
+    leaf_oil_gland_epithelial_cell_number, leaf_oil_gland_subepidermal_layer, leaf_papillae_height,
+    leaf_vascular_bundle_type, leaf_vascular_sclerenchyma_caps, stomatal_length_width_ratio,
+    stomatal_peristomal_rims, stomatal_subsidiary_cell_number. Several voucher numbers differ between Table 1, Table 2 and the species
+    descriptions (e.g. Constable 16298/16398, Evans 2723/2763, Hubbard 3618/3619,
+    Schodde 5105/5015, Constable 92186/92816, Constable 10968 vs Constable 8/49)
+identifiers:
+- var_in: voucher_L
+  identifier_type: recordNumber
+  institution_code: Rijksherbarium, Leiden (L)
+- var_in: voucher_UWC
+  identifier_type: recordNumber
+  institution_code: University of the Western Cape herbarium (UWC)
+locations: .na
+contexts:
+- context_property: oil gland measurement axis
+  category: method_context
+  var_in: gland_axis
+  values:
+  - find: long axis (oval gland)
+    value: long axis
+    description: Long axis of an oval oil gland.
+  - find: short axis (oval gland)
+    value: short axis
+    description: Short axis of an oval oil gland.
+traits:
+- var_in: leaf_thickness
+  unit_in: unit
+  trait_name: leaf_thickness
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Lamina thickness measured on permanent transverse microtome sections of
+    the central part of the lamina, mounted in euparal and stained with a safranin-haematoxylin
+    mixture. Values are averages for individual specimens and do not include the extremes.
+- var_in: leaf_cuticle_thickness
+  unit_in: unit
+  trait_name: leaf_cuticle_thickness
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Thickness of the cuticle (cuticle proper plus cuticular layer) measured
+    on transverse sections of the central part of the lamina, stained with Sudan IV
+    in 70% alcohol and counterstained with aqueous astra blue.
+- var_in: leaf_cuticle_thickness_adaxial
+  unit_in: unit
+  trait_name: leaf_cuticle_thickness_adaxial
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Thickness of the adaxial cuticle (cuticle proper plus cuticular layer)
+    measured on transverse sections of the central part of the lamina, stained with
+    Sudan IV in 70% alcohol and counterstained with aqueous astra blue.
+- var_in: leaf_cuticle_thickness_abaxial
+  unit_in: unit
+  trait_name: leaf_cuticle_thickness_abaxial
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Thickness of the abaxial cuticle (cuticle proper plus cuticular layer)
+    measured on transverse sections of the central part of the lamina, stained with
+    Sudan IV in 70% alcohol and counterstained with aqueous astra blue.
+- var_in: leaf_epidermis_thickness
+  unit_in: unit
+  trait_name: leaf_epidermis_thickness
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Height of the unspecialized epidermal cells measured in transverse sections
+    of the central part of the lamina; reported for both surfaces together unless
+    the adaxial and abaxial values differ considerably.
+- var_in: leaf_epidermis_thickness_adaxial
+  unit_in: unit
+  trait_name: leaf_epidermis_thickness_adaxial
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Height of the unspecialized adaxial epidermal cells measured in transverse
+    sections of the central part of the lamina.
+- var_in: leaf_epidermis_thickness_abaxial
+  unit_in: unit
+  trait_name: leaf_epidermis_thickness_abaxial
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Height of the unspecialized abaxial epidermal cells measured in transverse
+    sections of the central part of the lamina.
+- var_in: leaf_guard_cell_length
+  unit_in: unit
+  trait_name: leaf_guard_cell_length
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Length of the guard cell pair measured in surface view on cuticular macerations
+    (leaves boiled, left overnight in equal volumes of 30% hydrogen peroxide and glacial
+    acetic acid at 70 °C, stained with Sudan IV in 70% alcohol and mounted in glycerin
+    jelly).
+- var_in: leaf_guard_cell_width
+  unit_in: unit
+  trait_name: leaf_guard_cell_width
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Width of the guard cell pair measured in surface view on cuticular macerations
+    (leaves boiled, left overnight in equal volumes of 30% hydrogen peroxide and glacial
+    acetic acid at 70 °C, stained with Sudan IV in 70% alcohol and mounted in glycerin
+    jelly).
+- var_in: leaf_hairs_adult_leaves
+  unit_in: unit
+  trait_name: leaf_hairs_adult_leaves
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Presence of trichomes persisting on mature leaves, scored on the adaxial
+    and abaxial surfaces, margin and midrib from cuticular macerations, transverse
+    sections and scanning electron microscopy.
+- var_in: leaf_hairs_immature_leaves
+  unit_in: unit
+  trait_name: leaf_hairs_immature_leaves
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Young leaves of all species examined bear non-glandular, unicellular, appressed
+    hairs, which are normally shed during leaf development.
+- var_in: leaf_stomatal_distribution
+  unit_in: unit
+  trait_name: leaf_stomatal_distribution
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Presence of stomata on the adaxial and abaxial leaf surfaces scored on
+    cuticular macerations.
+- var_in: leaf_stomatal_complex_type
+  unit_in: unit
+  trait_name: leaf_stomatal_complex_type
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Stomatal type (anomocytic, cyclocytic or paracytic, or a mixture of or
+    intermediates between these in the same leaf) scored in surface view on cuticular
+    macerations.
+- var_in: leaf_oil_gland_diameter
+  unit_in: unit
+  trait_name: leaf_oil_gland_diameter
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Diameter of the schizogenous secretory cavities (oil glands) measured in
+    transverse sections of the lamina; for oval glands the long and short axes are
+    given. Values are averages for individual specimens and do not include the extremes.
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations:
+- variable: taxon_name
+  find: Leptospermum recurvum
+  reason: Bornean species
+questions: .na
