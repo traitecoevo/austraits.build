@@ -1,0 +1,264 @@
+source:
+  primary:
+    key: Li_2025
+    bibtype: Article
+    year: 2025
+    author: Xin'e Li and Geoff E. Burrows and Ning Dong and Gregory J. Jordan and
+      Jens Kattge and Tanja I. Lenz and Ulo Niinemets and Yusuke Onoda and Hendrik
+      Poorter and Lawren Sack and Rafael Villar and Mark Westoby and Ian J. Wright
+    title: A thinner jacket for frosty and windy climates? Global patterns in leaf
+      cuticle thickness and its environmental associations
+    journal: New Phytologist
+    volume: 248
+    number: 1
+    pages: 107--124
+    doi: 10.1111/nph.70397
+  secondary_01:
+    key: Burrows_2001
+    bibtype: Article
+    author: G. E. Burrows
+    year: 2001
+    title: Comparative anatomy of the photosynthetic organs of 39 xeromorphic species
+      from subhumid New South Wales, Australia
+    journal: International Journal of Plant Sciences
+    volume: 162
+    pages: 411--430
+    publisher: University of Chicago Press
+    doi: 10.1086/319579
+  secondary_02:
+    key: deLillis_1991
+    bibtype: Article
+    year: 1991
+    author: M. de Lillis
+    title: An ecomorphological study of the evergreen leaf
+    journal: Braun-Blanquetia
+    volume: 7
+    pages: 1--126
+  secondary_03:
+    key: Edwards_2000_2
+    bibtype: Article
+    author: Cheryl Edwards, Gordon D. Sanson, Nuvan Aranwela, Jennifer Read
+    year: 2000
+    title: Relationships between sclerophylly, leaf biomechanical properties and leaf
+      anatomy in some Australian heath and forest species
+    journal: Plant Biosystems - An International Journal Dealing with all Aspects
+      of Plant Biology
+    volume: 134
+    pages: 261--277
+    publisher: Informa UK Limited
+    doi: 10.1080/11263500012331350445
+  secondary_04:
+    key: Ridge_1984
+    bibtype: Article
+    year: 1984
+    author: R. W. Ridge and W. A. Loneragan and D. T. Bell and I. J. Colquhoun and
+      J. Kuo
+    title: Comparative studies in selected species of Eucalyptus used in rehabilitation
+      of the northern Jarrah forest, Western Australia. II. Wood and leaf anatomy
+    journal: Australian Journal of Botany
+    volume: 32
+    number: 4
+    pages: 375--386
+    doi: 10.1071/BT9840375
+  secondary_05:
+    key: Gras_2005
+    bibtype: Article
+    year: 2005
+    author: Emma K. Gras and Jennifer Read and Chantal T. Mach and Gordon D. Sanson
+      and Fiona J. Clissold
+    title: Herbivore damage, resource richness and putative defences in juvenile versus
+      adult Eucalyptus leaves
+    journal: Australian Journal of Botany
+    volume: 53
+    number: 1
+    pages: 33--44
+    doi: 10.1071/BT04049
+  secondary_06:
+    key: Groom_1994
+    bibtype: Article
+    year: 1994
+    author: P. K. Groom and B. B. Lamont and L. Kupsky
+    title: Contrasting morphology and ecophysiology of co-occurring broad and terete
+      leaves in Hakea trifurcata (Proteaceae)
+    journal: Australian Journal of Botany
+    volume: 42
+    number: 3
+    pages: 307--320
+    doi: 10.1071/BT9940307
+contributors:
+  data_collectors:
+  - last_name: Li
+    given_name: Xin'e
+    ORCID: 0000-0002-6958-6252
+    affiliation: School of Natural Sciences, Macquarie University, Australia
+    additional_role: contact
+  - last_name: Wright
+    given_name: Ian
+    ORCID: 0000-0001-8338-9143
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: ' 
+    data |> 
+      dplyr::mutate( 
+        `CTupper(um)` = dplyr::if_else(omit_CTupper %in% "x", NA, `CTupper(um)`), 
+        `CTlower(um)` = dplyr::if_else(omit_CTlower %in% "x", NA, `CTlower(um)`), 
+        `Leaf_thickness (um)` = dplyr::if_else(omit_leaf_thickness %in% "x", NA, `Leaf_thickness (um)`), 
+        leaf_type = dplyr::case_when(ID == "751" ~ "terete", ID == "752" ~ "broad")
+      ) |>
+      generate_observation_numbers(Species, location_name, source_id)
+  '
+  collection_date: collection_date
+  taxon_name: Species
+  location_name: location_name
+  source_id: source_id
+  description: Compilation of field-measured leaf cuticle thickness data from the
+    literature and unpublished sources, to determine whether there are robust latitudinal,
+    taxonomic and climatic patterns in leaf cuticle thickness at a global scale and
+    how cuticle thickness relates to other leaf morphological traits.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: Only field-measured data were selected for inclusion; data from
+    glasshouse, shade-house, common garden, manipulative experiments and any other
+    clearly non-natural situations or treatments were excluded. Where data for multiple
+    leaves or individual plants were reported for a species at a site, we included
+    only the mean value in our dataset. Where data were reported separately for adult
+    and juvenile plants, we included adult data only. Where data were reported separately
+    for leaves sampled at high and low light, we used the mean value. Our final dataset
+    consisted of species-mean trait values at each site, with species names standardised
+    according to The Plant List (www.theplantlist.org; accessed on 18 January 2021),
+    which also provided taxonomic information at higher levels. ^p Accordingly, there
+    was substantial variation among studies in sample preparation, including histochemical
+    staining procedures used for identifying the cuticle region of leaves, and in
+    the optical resolution used for measuring leaf cuticle thickness via light microscopy
+    (the rationale of excluding the small number of transmission electron microscopy
+    (TEM)-based studies will be discussed later). Most studies reported anatomical
+    data measured on freshly collected leaves; for three studies, the data were measured
+    on rehydrated leaves sampled from herbarium specimens (Pyykko, 1966, 1979; Johnson,
+    1980). Most studies reported thickness data for both upper and lower cuticles,
+    others for upper cuticle only and others still for combined cuticle thickness
+    only (i.e. the sum of upper and lower, 'CTsum', um). ^p All studies included location,
+    but in some cases, this was a geographic descriptor (e.g. nearest town) rather
+    than a precise latitude and longitude. In such cases, a point location was estimated
+    using Google Earth.
+  original_file: raw/nph70397-sup-0002-TableS1-S1@Supporting Information Table S1.xlsx,
+    sheet 'CT dataset Li et al', subset to Australian coordinates by raw/extra_R_code_Li_2025.R
+  notes: Only the Australian rows of the global GlobCute database (Table S1) are in
+    data.csv. Values already in AusTraits under the
+    dataset of the original source (species x trait) are marked "x" in the matching
+    omit_ column and removed as data file is read in. All cuticle and leaf thickness values
+    from Cunningham_1999, Duncan_1998 (Duncan & Westoby unpublished), Johnson_1980,
+    Jordan_2007 (Jordan unpublished) and Peeters_2002 are already in AusTraits, as
+    are the leaf thickness values from Burrows_2001 and Edwards_2000 (Edwards_2000_2),
+    apart from two species missing from those datasets. The single Medina et al. (1990)
+    row (Banksia aemula "near Perth", outside the species' range, from a study of
+    Venezuelan rain forests) is also excluded. Burrows_2001 and Edwards_2000
+    rows use the site names and locations of those datasets when mapping in data not previously in AusTraits as part of those studies. Leaf size and LMA are
+    not mapped, as Li et al. added species
+    means from Wright et al. (2017) and TRY v5 database, many of which may already be in AusTraits. CTsum (the sum of the upper
+    and lower cuticle thicknesses), CTsum% and leaf density (LMA/leaf thickness) are
+    derived values and are not mapped. Banksia marginata (Edwards_2000_2) is assigned to the Edwards_2000 forest (ID
+    1752) and heath (ID 1753) sites by matching leaf size to the Edwards_2000 means
+    (1.68 and 1.06 cm2)
+identifiers: .na
+locations:
+  The Rock:
+    latitude (deg): -35.2666667
+    longitude (deg): 147.0666667
+    precipitation, MAP (mm): 585
+    locality: The Rock Nature Reserve, South Western
+      Slopes
+    state: NSW
+    description: open woodland with an overstory dominated by species of Eucalyptus, Acacia, and Callitris
+  de Lillis 1991_SW. Australia:
+    latitude (deg): -32.3224
+    longitude (deg): 117.8803
+    elevation (m): 305
+    locality: South-western Australia
+    georeference remarks: coordinates are for the region.
+  Gras 2005_Tanjil State Forest:
+    latitude (deg): -37.9
+    longitude (deg): 146.3
+    elevation (m): 516
+    locality: Tanjil State Forest
+    state: Vic
+  Gras 2005_Warrandyte:
+    latitude (deg): -37.75
+    longitude (deg): 145.2
+    elevation (m): 150
+    locality: Warrandyte
+    state: Vic
+  Groom 1994_Crystal Brook, Perth:
+    latitude (deg): -31.9833
+    longitude (deg): 116.0667
+    elevation (m): 205
+    locality: Crystal Brook, near Perth
+    state: WA
+  ReadWilsonsProm_forest:
+    latitude (deg): -39.01667
+    longitude (deg): 146.3333
+    soil P, total (mg/kg): 410
+    soil N, total (%): 0.31
+    precipitation, MAP (mm): 1000
+    description: open forest dominated by Eucalyptus obliqua
+    georeference remarks: coordinates are the mid-point of the area sampled.
+    state: Vic
+  ReadWilsonsProm_heath:
+    latitude (deg): -39.01667
+    longitude (deg): 146.3333
+    soil P, total (mg/kg): 90
+    soil N, total (%): 0.4
+    precipitation, MAP (mm): 1000
+    description: open forest dominated by Eucalyptus obliqua
+    georeference remarks: coordinates are the mid-point of the area sampled.
+    state: Vic
+  Ridge 1984_Jarrahdale:
+    latitude (deg): -32.3667
+    longitude (deg): 116.1167
+    elevation (m): 252
+    description: northern Jarrah forest
+    locality: Jarrahdale
+    state: WA
+contexts:
+- context_property: leaf type
+  category: entity_context
+  var_in: leaf_type
+- context_property: replicate observations
+  category: temporal_context
+  var_in: observation_number
+traits:
+- var_in: CTupper(um)
+  unit_in: um
+  trait_name: leaf_cuticle_thickness_adaxial
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
+  methods: The pragmatic approach adopted in this study was to consider all data reported
+    for CT in source publications as equivalently indicative of the cuticle thickness
+    of the study species.
+- var_in: CTlower(um)
+  unit_in: um
+  trait_name: leaf_cuticle_thickness_abaxial
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
+  methods: The pragmatic approach adopted in this study was to consider all data reported
+    for CT in source publications as equivalently indicative of the cuticle thickness
+    of the study species.
+- var_in: Leaf_thickness (um)
+  unit_in: um
+  trait_name: leaf_thickness
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
+  methods: Where reported, information on leaf lamina thickness and LMA were also
+    extracted from all of these data sources.
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions: .na
