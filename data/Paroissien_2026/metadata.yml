@@ -1,0 +1,374 @@
+source:
+  primary:
+    key: Paroissien_2026
+    bibtype: Article
+    year: '2026'
+    author: Ruby Paroissien and Ryan Tangney and Catherine A. Offord and Mark K. J.
+      Ooi
+    title: The effectiveness of seed rain in recolonising an ecotonal mesic forest
+      following extreme-severity fire
+    journal: Australian Journal of Botany
+    volume: '74'
+    pages: BT25061
+    doi: 10.1071/BT25061
+contributors:
+  data_collectors:
+  - last_name: Paroissien
+    given_name: Ruby
+    ORCID: 0000-0001-6673-6414
+    affiliation: Centre for Ecosystem Science, School of Biological, Earth, and Environmental
+      Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  - last_name: Ooi
+    given_name: Mark
+    ORCID: 0000-0002-3046-0417
+    affiliation: Centre for Ecosystem Science, School of Biological, Earth, and Environmental
+      Sciences, UNSW Sydney, Australia
+  - last_name: Offord
+    given_name: Catherine
+    ORCID: 0000-0002-9553-6590
+    affiliation: Australian PlantBank, Botanic Gardens of Sydney, Mount Annan, NSW,
+      Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: ' date_range <- function(x) ifelse(min(x) == max(x), min(x), paste(min(x),
+    max(x), sep = "/")); collection_month <- c("11/02/2023" = 1, "2/03/2023" = 2,
+    "30/03/2023" = 3, "4/05/2023" = 4, "10/06/2023" = 5, "29/06/2023" = 6, "3/08/2023"
+    = 7, "7/09/2023" = 8, "5/10/2023" = 9, "2/11/2023" = 10, "1/12/2023" = 11, "21/12/2023"
+    = 12, "1/02/2024" = 1); seeds <- data |> dplyr::filter(!is.na(Species)) |> dplyr::mutate(
+    date = util_parse_collection_date(DateCollected), month = collection_month[DateCollected],
+    seed_count = as.numeric(Count), distance = suppressWarnings(as.numeric(MinimumDist))
+    ); dplyr::bind_rows( seeds |> dplyr::group_by(Species, Site) |> dplyr::summarise(
+    date_range = date_range(date), plant_height_max = stringr::str_extract(dplyr::first(HeightRange),
+    "[0-9.]+$"), SeedSize = dplyr::first(SeedSize), fruiting_time = paste(ifelse(1:12
+    %in% month, "y", "n"), collapse = ""), .groups = "drop" ), seeds |> dplyr::filter(!is.na(distance))
+    |> dplyr::group_by(Species, Site, SeverityGroup) |> dplyr::summarise( date_range
+    = date_range(date), distance_median = as.character(stats::median(rep(distance,
+    seed_count))), distance_max = as.character(max(distance)), seeds_measured = as.character(sum(seed_count)),
+    .groups = "drop" ) ) '
+  collection_date: date_range
+  taxon_name: Species
+  location_name: Site
+  description: To determine whether seed rain from adjacent unburnt forest can drive
+    the recolonisation of wet sclerophyll forest burnt at differing fire severities,
+    and which dispersal traits determine how far seeds travel into the burnt area.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: To assess how seed dispersal aids in post-fire recovery of WSF,
+    we established seed traps across four sites, including two at Mount Tomah (33.5415°S,
+    150.4222°E) and two at Mount Wilson (33.5029°S, 150.3889°E), all located in the
+    Blue Mountains of New South Wales, Australia. All sites were Upland Basalt Forests.
+    The Upland Basalt Forests community is a tall open mesic forest receiving greater
+    than 1000 mm of rainfall a year, which occurs on basalt substrates at an elevation
+    of 650–1050 m (Office of Environment and Heritage 2022). Like various other WSF
+    communities, this community has a sclerophyllous canopy and a large number of
+    rainforest species, including canopy trees such as Ceratopetalum apetalum and
+    Doryphora sassafras, vines such as Pandorea pandorana, and various fern species
+    (Wardell-Johnson et al. 2017). Both study sites experience similar climates, with
+    a mean monthly precipitation of 86 mm, a mean annual minimum and maximum temperature
+    of 8°C to 17°C respectively, and the climate is classified as temperate oceanic
+    (using the Koppen Climate Classification Cfb) (Bureau of Meteorology 2024). Two
+    of the four sites were burnt during the 2019–2020 Australian megafires, spanning
+    a gradient of fire severities as explained below. ^p Burnt sites experienced a
+    gradient of fire severities close to the fire edge that bordered unburnt WSF,
+    with low- to moderate-severity fire occurring closest to the burnt edge (within
+    20 m) and high- to extreme-severity occurring further away from the burnt edge
+    (50 m). Fire severity does not always correspond to distance from unburnt edge
+    and results will be driven both by proximity to fire edge and fire severity (Parkins
+    et al. 2018). We used Google Earth Engine Burnt Area Map (GEEBAM) to identify
+    fire severity at each site (Department of Planning and Environment 2020; Supplementary
+    Fig. S1). GEEBAM uses a time series of high-resolution images to compare pre-fire
+    and post-fire vegetation with a normalised burnt ratio (dNBR). The images are
+    compared to NSW State Vegetation Type maps and adjusted for differing vegetation
+    types (Department of Planning and Environment 2020). We recorded ground measurements,
+    such as canopy consumption, across the area where seed traps were placed, as described
+    in the following paragraph, to confirm classifications (Fig. S1). Unburnt areas
+    were confirmed through on-ground observations by Botanic Gardens staff (pers.
+    comm., Stuart Allen, Blue Mountains Botanic Garden Mount Tomah, August 2022).
+    Because fire severity can vary substantially across a landscape, we created two
+    severity groups based on the burn mosaic at our sites, ensuring sufficient repetition
+    within each group. Groups were (1) low to moderate severity, containing an unburnt
+    or partially burnt canopy, occurring closest to the burnt–unburnt edge, and (2)
+    high to extreme severity, containing a completely burnt or consumed canopy, occurring
+    further away from the burnt–unburnt edge (Fig. S1). ^p Seed traps were inverted
+    cone-like structures made from shade cloth (knit structure with openings 2–3 mm),
+    suspended on poles hammered into the soil. A summary of the number of seed traps
+    across sites is provided in Supplementary Table S1 and the seed trap experimental
+    design is provided in Fig. S2. The opening of the seed traps was 0.5 m2 and was
+    0.5 m above the soil surface. The design of the seed traps was biased towards
+    species dispersing at a height >0.5 m and towards wind-dispersed species, potentially
+    reducing the likelihood of trapping groundcover species and seeds moved by specific
+    vectors such as mammals, insects, caching birds and water (Gros et al. 2023).
+    ^p To measure the dispersal of seed rain into burnt areas at both Mount Tomah
+    and Mount Wilson, seed traps, 5 m apart, were placed in rows parallel to the fire
+    edge, in a fan-like arrangement, with a greater number of traps increasing per
+    row the further from the fire edge. This was undertaken to predominantly capture
+    species dispersing from behind the fire edge and to account for the decreased
+    likelihood of dispersal as distance increases, maintaining even sampling across
+    the leptokurtic distribution of seed rain, similar to other studies on seed rain
+    (Bullock et al. 2006; Nathan et al. 2012; Charles et al. 2017) (Fig. 2). At Mount
+    Tomah, seven rows of traps (23 in total, 2, 3, 3, 3, 3, 4, 5) were placed in areas
+    burnt at low to moderate severity and two rows of traps (17 in total, 7, 10) were
+    placed in areas burnt at high to extreme severity. The first row of traps was
+    20 m from the identified burnt edge to allow for fire edge effects where it was
+    difficult to determine burnt from unburnt. The second row was 20 m from the first,
+    and then all following rows were 10 m apart. Given difficult site conditions,
+    limited trap availability and maintaining sufficient replicates in burnt areas,
+    seed traps were unable to be placed in the unburnt area at Mount Tomah. At Mount
+    Wilson, there was a gravel fire management road (3 m wide) at the fire edge. Three
+    rows of traps (10 in total, 3, 3, 4) were placed in the unburnt area to additionally
+    observe whether local dispersal (<20 m) occurred in unburnt areas. In the burnt
+    area that experienced low- to moderate-severity fire, two rows of traps were placed
+    (7 in total, 3, 4), and in the area that experienced high- to extreme-severity
+    fire, three rows of traps were placed (23 in total, 5, 8, 10). The first row of
+    traps on both the unburnt and burnt sides were 10 m from the burnt edge to allow
+    for fire edge effects, and all following rows were 10 m apart. Seed trap arrangement
+    is provided in Fig. S3. ^p To identify extant species that were likely to disperse
+    into burnt sites, we conducted vegetation surveys at our study sites in June and
+    July of 2024, following the final collection of seed trap contents. Transects
+    were laid out along the length of the seed trap rows, parallel to fire edge and
+    were therefore 10 m apart. Transect lengths varied from 10 (2 traps) to 50 m (10
+    traps) depending on the number of seed traps in the row. Presence of species rooted
+    within 5 m of either side of this transect was recorded. Minimum and maximum height
+    of each species was also recorded. For the unburnt area at Mount Tomah, which
+    contained no seed traps, three 20 × 5 m transects 10 m apart were laid out to
+    record species composition. To assess how cover changes with fire severity, species
+    cover over seed traps was also measured in Supplementary material 2 and presented
+    in Fig. S9. ^p Contents of seed traps were collected once a month for 1 year,
+    from January 2023 to January 2024. All samples were examined, with seeds identified
+    to species where possible. For some species, germinating of seeds was required
+    to confirm identification, when sufficient quantity and germination requirements
+    were known. The total number of seeds present per monthly sample was also counted.
+    Where we were not able to identify seeds to species level, we identified to genus
+    level. We acknowledge that in some genera, such as in Acacia and Rubus, it is
+    likely that this would pool multiple species, which could mask some of the diversity
+    that occurred at the site. However, we were able to identify 73% (35 of 48) of
+    the species present in traps to species level. Only one species could not be determined
+    and is included as ‘unknown’.
+  original_file: Paroissien_2026_SeedRain.csv, supplied by the authors; the data are
+    also available from the Dryad Digital Repository (https://doi.org/10.5061/dryad.cjsxksnjw).
+  notes: data.csv is an unmodified copy of raw/Paroissien_2026_SeedRain.csv, with
+    one row per seed trap x collection date x species. Data for dispersal syndrome
+    and growth form has been sourced from the NSW Fire Response Database, which for
+    these traits, is identical to AusTraits. The values for each species used in this
+    analysis are retained in the data.csv file, but not mapped into AusTraits as traits.
+    custom_R_code builds new rows for seed mass and plant height, retaining one row
+    per species x location, with collection_date the range of collection dates for
+    that species at that location. Traps where no adult was found within 50 m (MinimumDist
+    "Not found", Persoonia mollis and Nyssa sp.) or the taxon was unidentified ("Unknown")
+    cannot be quantified and are excluded. The number of seeds of each species per
+    trap per monthly collection (Count), cover over each seed trap at two time points
+    (SeedTrapCoverT1, SeedTrapCoverT2) and the trap installation date (DateInitial)
+    are not mapped, but retained in data.csv.
+identifiers: .na
+locations:
+  Mt Tomah:
+    latitude (deg): -33.5415
+    longitude (deg): 150.4222
+    description: Upland Basalt Eucalypt Forest (wet sclerophyll forest)
+    locality: Blue Mountains Botanic Garden Mount Tomah, Blue Mountains
+    fire history: Burnt during the 2019-2020 fires; areas burnt at low to moderate
+      and high to extreme severity
+    geology (parent material): basalt
+    precipitation, MAP (mm): 1032
+    temperature, mean annual min (C): 8
+    temperature, mean annual max (C): 17
+    climate description: temperate oceanic (Koppen Cfb)
+    state: NSW
+  Mt Wilson:
+    latitude (deg): -33.5029
+    longitude (deg): 150.3889
+    description: Upland Basalt Eucalypt Forest (wet sclerophyll forest)
+    locality: Mount Wilson, Blue Mountains
+    fire history: Burnt during the 2019-2020 fires; unburnt forest and areas burnt
+      at low to moderate and high to extreme severity
+    geology (parent material): basalt
+    precipitation, MAP (mm): 1032
+    temperature, mean annual min (C): 8
+    temperature, mean annual max (C): 17
+    climate description: temperate oceanic (Koppen Cfb)
+    state: NSW
+contexts:
+- context_property: fire severity
+  category: plot_context
+  var_in: SeverityGroup
+  values:
+  - find: Unburnt
+    value: unburnt
+    description: Unburnt forest adjacent to the fire edge.
+  - find: Low/Moderate
+    value: low to moderate
+    description: Burnt at low to moderate severity during the 2019-2020 fires, with
+      an unburnt or partially burnt canopy.
+  - find: High/Extreme
+    value: high to extreme
+    description: Burnt at high to extreme severity during the 2019-2020 fires, with
+      a completely burnt or consumed canopy.
+- context_property: dispersal distance calculation
+  category: method_context
+  var_in: calculation
+traits:
+- var_in: plant_height_max
+  unit_in: m
+  trait_name: plant_height
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: unknown
+  methods: Height range of each identified species was determined on the basis of
+    the average observed minimum and maximum heights of plants (in metres) at both
+    Mount Tomah and Mount Wilson, and organised into groups (0.1–0.5, 0.5–1.5, 0.5–3,
+    0.5–10, 10–25). This approach was preferred over extracting maximum heights from
+    trait databases to account for differences in height imposed by the recent fire.
+    ^p Values mapped as `plant_height` are the upper bound of each species' height-range
+    group.
+- var_in: SeedSize
+  unit_in: mg
+  trait_name: seed_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 1-10
+  methods: Seed size (mass in milligrams) was determined by weighing 10 seeds of each
+    species from seed traps and averaging across them. If species had fewer than 10
+    seeds recovered from seed traps, the maximum number of available seeds was weighed.
+    Seeds were weighed as retrieved from seed traps to more accurately represent weight
+    that influenced dispersal, and generally included woody endocarps but excluded
+    fleshy fruit.
+- var_in: distance_median
+  unit_in: m
+  trait_name: seed_dispersal_distance
+  entity_type: population
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: seeds_measured
+  methods: Minimum dispersal distance was determined over several months coinciding
+    with periods when the contents of the seed traps were collected, between March
+    2023 and March 2024. Minimum dispersal distance was determined for each species
+    in each seed trap by walking concentric circles around seed traps at 0.5 m intervals
+    up to 5 m (Fig. S4). The distance of the closest adult individual, fully grown
+    and/or reproductively mature, was measured from the trap. For species where an
+    adult individual was not found within 5 m, a larger area was investigated by walking
+    multiple 20 m long transects 5 m apart parallel to seed trap rows (Fig. S4). If
+    species were still not located within 20 m from the seed trap in any direction,
+    the general area was searched more coarsely (Fig. S4). If no individual was found
+    within 50 m from the seed trap in any direction, the origin of that specific seed
+    in that specific seed trap was recorded as unknown. This occurred only for two
+    species, Persoonia mollis and Nyssa sp., both of which were found in only two
+    traps in low quantities (2 and 5 seeds respectively). ^p The median is the seed-weighted
+    median of the per-trap values. Values are summarised for each species at each
+    site and fire severity from the per-trap minimum dispersal distances (MinimumDist),
+    weighting each trap by the number of seeds of the species it caught. Each per-trap
+    value is the distance to the closest adult, so it is a minimum estimate of how
+    far those seeds travelled. Traps where no adult was found within 50 m are excluded.
+  calculation: seed-weighted median distance from an adult plant to a seed-trap
+- var_in: distance_max
+  unit_in: m
+  trait_name: seed_dispersal_distance
+  entity_type: population
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: seeds_measured
+  methods: Minimum dispersal distance was determined over several months coinciding
+    with periods when the contents of the seed traps were collected, between March
+    2023 and March 2024. Minimum dispersal distance was determined for each species
+    in each seed trap by walking concentric circles around seed traps at 0.5 m intervals
+    up to 5 m (Fig. S4). The distance of the closest adult individual, fully grown
+    and/or reproductively mature, was measured from the trap. For species where an
+    adult individual was not found within 5 m, a larger area was investigated by walking
+    multiple 20 m long transects 5 m apart parallel to seed trap rows (Fig. S4). If
+    species were still not located within 20 m from the seed trap in any direction,
+    the general area was searched more coarsely (Fig. S4). If no individual was found
+    within 50 m from the seed trap in any direction, the origin of that specific seed
+    in that specific seed trap was recorded as unknown. This occurred only for two
+    species, Persoonia mollis and Nyssa sp., both of which were found in only two
+    traps in low quantities (2 and 5 seeds respectively). ^p The maximum is the largest
+    per-trap value, so it is the distance at least one seed travelled. Values are
+    summarised for each species at each site and fire severity from the per-trap minimum
+    dispersal distances (MinimumDist). Each per-trap value is the distance to the
+    closest adult, so it is a minimum estimate of how far those seeds travelled. Traps
+    where no adult was found within 50 m are excluded.
+  calculation: furthest distance from an adult plant to a seed-trap
+- var_in: fruiting_time
+  unit_in: .na
+  trait_name: fruiting_time
+  entity_type: population
+  value_type: mode
+  basis_of_value: measurement
+  replicates: .na
+  methods: Contents of seed traps were collected once a month for 1 year, from January
+    2023 to January 2024. All samples were examined, with seeds identified to species
+    where possible. ^p Months are those in which seeds of the species fell into the
+    seed traps at the site, with each collection assigned to the month in which most
+    of its collection interval fell.
+substitutions: .na
+taxonomic_updates:
+- find: Acacia sp.
+  replace: Acacia sp. [Paroissien_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-06)
+  taxonomic_resolution: genus
+- find: Cirsium sp.
+  replace: Cirsium sp. [Paroissien_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-06)
+  taxonomic_resolution: genus
+- find: Hypericum sp.
+  replace: Hypericum sp. [Paroissien_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-06)
+  taxonomic_resolution: genus
+- find: Hypochaeris sp.
+  replace: Hypochaeris sp. [Paroissien_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-06)
+  taxonomic_resolution: genus
+- find: Leucanthemum sp.
+  replace: Leucanthemum sp. [Paroissien_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-06)
+  taxonomic_resolution: genus
+- find: Nyssa sp.
+  replace: Nyssa sp. [Paroissien_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-06)
+  taxonomic_resolution: genus
+- find: Opercularia sp.
+  replace: Opercularia sp. [Paroissien_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-06)
+  taxonomic_resolution: genus
+- find: Ranunculus sp.
+  replace: Ranunculus sp. [Paroissien_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-06)
+  taxonomic_resolution: genus
+- find: Rubus sp.
+  replace: Rubus sp. [Paroissien_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-06)
+  taxonomic_resolution: genus
+- find: Ulmus sp.
+  replace: Ulmus sp. [Paroissien_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-06)
+  taxonomic_resolution: genus
+- find: Viola sp.
+  replace: Viola sp. [Paroissien_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-06)
+  taxonomic_resolution: genus
+- find: Wahlenbergia sp.
+  replace: Wahlenbergia sp. [Paroissien_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-06)
+  taxonomic_resolution: genus
+exclude_observations:
+- variable: taxon_name
+  find: Unknown 1
+  reason: too little resolution
+questions:
+  question1: While most species per trap have a single `MinimumDist` value, Polyscias
+    sambucifolia in trap WE55_9 at Mount Wilson has two different MinimumDist values
+    (1.2 and 6 m) on different collection dates, so it is kept as two records. Is
+    it correct that your data file has two different minimum distances for this species
+    at this seed trap?
+  question2: Seeds were weighed as retrieved from the traps, generally including woody
+    endocarps. Confirming seed_dry_mass, not diaspore_dry_mass is the appropriate
+    trait name to use.
+  question3: I was trying to figure out how to best summarise dispersal distance -
+    I calculated the median and maximum distance travelled by a seed. But these are
+    still really both types of `minimum distance` since it is relative to the closest
+    tree. I have now mapped them as `minima` but added a context that indicated how
+    they were calculated.
+  question4: For the seed dispersal calculations, is it best to have separate calculations
+    by fire severity category or group across the fire severities?
