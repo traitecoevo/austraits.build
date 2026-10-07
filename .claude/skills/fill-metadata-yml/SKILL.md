@@ -199,7 +199,13 @@ your own words, and rather than stopping after the first relevant paragraph
 when a later one (e.g. covering the second of two collection trips, or a
 sample-storage step) is just as much a sampling protocol as the first. A
 paraphrase, or a partial quote that leaves out a still-relevant protocol
-paragraph, doesn't meet the bar. If the primary reference doesn't describe
+paragraph, doesn't meet the bar. Watch page breaks in PDF-extracted text: a
+Methods subsection often continues after the next page's running header, and
+it's easy to stop at the bottom of the page (Gurung_2025's gmin `methods:`
+lost its final sentence this way). Also include subsections describing how
+any context data were derived, e.g. how provenance climate-of-origin values
+were obtained. Check each block against the PDF word for word before you
+finish. If the primary reference doesn't describe
 the specific data in `data.csv` (e.g. a dataset merges records that actually
 come from a secondary reference's methodology instead), say so explicitly
 and quote from whichever reference actually describes it, naming which one
@@ -261,9 +267,11 @@ this is the convention the vast majority of existing `metadata.yml` files in
 this repo already use (confirmed by grepping `collection_date:` across
 `data/*/metadata.yml`), e.g. a paper stating "sampling took place ... December
 2001 ... and again ... February 2002" becomes `2001-12/2002-02`. A single
-date can stay `yyyy-mm-dd`, or just `yyyy` if that's all the paper gives. Only
-leave it `unknown` when the paper genuinely doesn't state a date -- don't
-guess one. When `data.csv` has a column giving each record's own date (varies
+date can stay `yyyy-mm-dd`, or just `yyyy` if that's all the paper gives.
+When the paper states no sampling date, use the plain year the manuscript was
+received/submitted (e.g. `2006`) -- not `unknown/2006` (fails the date parser)
+and not `.na/2006` (the `.na` adds nothing) (Fernando_2006). Don't guess a
+more precise date than the paper supports. When `data.csv` has a column giving each record's own date (varies
 row to row, e.g. four seasonal gas-exchange visits, or per-specimen collection
 dates), set `collection_date:` to that column's name instead of a fixed range
 -- `traits.build` resolves it as a column reference when it matches one (see
