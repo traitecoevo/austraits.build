@@ -228,13 +228,30 @@ contributors:
 dataset:
   data_is_long_format: no
   custom_R_code:   '
-    data %>%
+    wood_bark_cols <- grep("^[A-Za-z]+_mass_(wood|bark)_g_per_kg$", names(data), value = TRUE);
+    trait_cols <- names(data)[which(names(data) == "photosynthetic pathway"):ncol(data)];
+    other_cols <- setdiff(trait_cols, wood_bark_cols);
+    data <- data %>%
       group_by(name_original) %>%
         mutate(
           across(c(`GF`, `LfForm`,`LfType`,`DecEv`,`Nfixer`,`photosynthetic pathway`), replace_duplicates_with_NA),
           `SLA (cm2/g)` = ifelse(!is.na(`LMA (g/m2)`), 1/(`LMA (g/m2)`*10000), `SLA (cm2/g)`)
         ) %>%
-      ungroup()
+      ungroup();
+    dplyr::bind_rows(
+      data %>% dplyr::filter(is.na(wood_sample_type)),
+      data %>%
+        dplyr::filter(!is.na(wood_sample_type)) %>%
+        dplyr::mutate(dplyr::across(dplyr::all_of(other_cols), ~ NA)),
+      data %>%
+        dplyr::filter(!is.na(wood_sample_type)) %>%
+        dplyr::mutate(
+          dplyr::across(dplyr::all_of(wood_bark_cols), ~ NA),
+          wood_sample_type = NA,
+          context = NA
+        ) %>%
+        dplyr::filter(dplyr::if_any(dplyr::all_of(other_cols), ~ !is.na(.x)))
+    )
   '
   collection_date: unknown/2009
   taxon_name: name_original
