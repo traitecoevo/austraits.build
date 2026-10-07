@@ -29,11 +29,17 @@ package; it `Depends` on `traits.build (>= 2.1.0)`.
   build.
 - **Claude Code project skills:** `.claude/skills/` — curation workflow guidance (building a new
   dataset's `metadata.yml`, fixing `locations:`, resolving `substitutions.csv`, extracting trait/
-  location tables from a source PDF, pivoting a raw file into `data.csv`) written up as reusable
+  location tables from a source PDF, pivoting a raw file into `data.csv`, extracting traits from
+  flora/fact-sheet text) written up as reusable
   skills, checked in on purpose so every Claude Code session opened in this repo picks them up
   automatically. They're tooling for AI-assisted curation, not part of the `traits.build` pipeline
   itself, but are kept under version control like any other repo convention — edit them the same
   way you'd fix a bug, and expect them to keep growing as new gotchas turn up.
+- **Claude Code hook:** `.claude/settings.json` registers `.claude/hooks/check_metadata_yml.py`,
+  a PostToolUse hook that runs after Claude edits any `data/<id>/metadata.yml` and flags silent
+  gotchas (bare y/n/yes/no parsed as booleans, `custom_R_code:` not directly followed by
+  `collection_date:`, all-`species` entity_type alongside real `locations:`). Needs `python3` +
+  `pyyaml`; prints nothing when the file is clean.
 
 **Build/run:** the README's recipe is install `traits.build`, clone this repo, then `source("build.R")`
 (it can use multiple CPUs — raise `workers`). After running you get an `austraits` object in the
