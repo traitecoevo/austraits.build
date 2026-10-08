@@ -46,7 +46,10 @@ families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae
                    "Dioscoreaceae", "Dipteridaceae", "Doryanthaceae", "Droseraceae", "Dryopteridaceae", "Ecdeiocoleaceae", "Elaeagnaceae",
                    "Elaeocarpaceae", "Elatinaceae", "Equisetaceae", "Ericaceae",
                    "Eriocaulaceae", "Erythroxylaceae", "Escalloniaceae", "Euphorbiaceae", "Eupomatiaceae", "Fagaceae", "Flagellariaceae",
-                   "Frankeniaceae", "Gelsemiaceae", "Gentianaceae", "Geraniaceae", "Gesneriaceae", "Gleicheniaceae", "Goodeniaceae")
+                   "Frankeniaceae", "Gelsemiaceae", "Gentianaceae", "Geraniaceae", "Gesneriaceae", "Gleicheniaceae", "Goodeniaceae",
+                   "Grammitidaceae", "Griseliniaceae", "Grossulariaceae", "Gunneraceae", "Gyrostemonaceae", "Haemodoraceae", "Haloragaceae",
+                   "Hamamelidaceae", "Hanguanaceae", "Hemerocallidaceae", "Hernandiaceae", "Himantandraceae", "Hydatellaceae", "Hydrangeaceae",
+                   "Hydrocharitaceae")
 fams <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_FAMILIES"), ",")[[1]] else families_done
 
 d_all <- read_csv(src, show_col_types = FALSE, col_types = cols(.default = "c"), guess_max = 1e5)
@@ -445,7 +448,7 @@ sec_rules <- tribble(
   # Chenopodiaceae dispersal units: the fruiting bracteoles (Atriplex) or fruiting perianth (Maireana, Sclerolaena) enclose
   # the fruit and are what the flora measures (user's choice: fruit_* sizes on entity_measured rows)
   "diaspore", "^(?:the )?(?:fruiting|fruit-bearing) (?:bracteoles?|perianths?|perianth-tubes?|articles?|spikes?)\\b",
-  "bract", "^(?:the )?(?:floral |flower |inner |outer |subtending |involucral )?(?:bracts?|bracteoles?|prophylls?|spathes?|involucres?|phyllaries)\\b",
+  "bract", "^(?:the )?(?:floral |flower |inner |outer |subtending |involucral |lower |upper |basal |lowest |uppermost )?(?:bracts?|bracteoles?|prophylls?|spathes?|involucres?|phyllaries)\\b",
   "pedicel", "^(?:the )?(?:pedicels?|pedicles?)\\b",
   "bud", "^(?:the )?(?:mature |flower )?buds?\\b",
   "flower", "^(?:the )?(?:males|females|staminate ones|pistillate ones)\\b|^(?:the )?(?:male |female |staminate |pistillate |bisexual |hermaphrodite |functionally (?:male|female) |sterile |fertile |ray |disc |marginal |central |outer |inner |lateral |terminal |chasmogamous |cleistogamous |mature |open )?(?:flowers?|florets?|spikelets?)\\b",
@@ -1163,7 +1166,7 @@ phenology_parse <- function(txt) {
 }
 
 # ---------------------------------------------------------------- per-taxon extraction
-other_organs <- "petioles?|petiolate|petiolules?|pedicels?|pedicles?|papillae|peduncles?|stalks?|stipes?|stipules?|bracts?|bracteoles?|hairs?|scales?|glands?|spines?|thorns?|prickles?|teeth|lobes?|tube|throat|limb|lips?|calyx|corolla|sepals?|petals?|stamens?|filaments?|anthers?|styles?|stigmas?|ovary|seeds?|arils?|wings?|beak|radicle|rachis|axis|axes|internodes?|sheaths?|ligules?|veins?|midribs?|leaflets?|pinnae|pinnules?|leaves|leaf|blades?|lamina|branchlets?|branches|stems?|trunks?|roots?|pneumatophores?|heads?|spikes?|racemes?|inflorescences?|flowers?|fruits?|capsules?|pods?|buds?|cotyledons?|tubers?|rhizomes?|bulbs?|corms?|segments?|apex|tips?|base|margins?|disc|hypanthium|operculum|valves|spikelets?|awns?|glumes?|lemmas?|paleas?|tepals?|scapes?|culms?|cones?|bulbils?|tendrils?|cladodes?|phyllodes?"
+other_organs <- "shoots?|petioles?|petiolate|petiolules?|pedicels?|pedicles?|papillae|peduncles?|stalks?|stipes?|stipules?|bracts?|bracteoles?|hairs?|scales?|glands?|spines?|thorns?|prickles?|teeth|lobes?|tube|throat|limb|lips?|calyx|corolla|sepals?|petals?|stamens?|filaments?|anthers?|styles?|stigmas?|ovary|seeds?|arils?|wings?|beak|radicle|rachis|axis|axes|internodes?|sheaths?|ligules?|veins?|midribs?|leaflets?|pinnae|pinnules?|leaves|leaf|blades?|lamina|branchlets?|branches|stems?|trunks?|roots?|pneumatophores?|heads?|spikes?|racemes?|inflorescences?|flowers?|fruits?|capsules?|pods?|buds?|cotyledons?|tubers?|rhizomes?|bulbs?|corms?|segments?|apex|tips?|base|margins?|disc|hypanthium|operculum|valves|spikelets?|awns?|glumes?|lemmas?|paleas?|tepals?|scapes?|culms?|cones?|bulbils?|tendrils?|cladodes?|phyllodes?"
 excl <- function(...) paste(setdiff(str_split(other_organs, "\\|")[[1]], c(...)), collapse = "|")
 
 extract_one <- function(r, group_filter = TRUE) {
@@ -1687,7 +1690,8 @@ extract_one <- function(r, group_filter = TRUE) {
     if (!is.null(pdl)) addn("pedicel_length", pdl$v, pdl$txt, ct[1], ct[2])
     br <- m_first(unit_text(uu, "bract", subj_re = "^(?:the )?(?:floral |flower |subtending )?bracts?$"), "long|in length", excl("bracts?"))
     if (!is.null(br)) addn("flower_bract_length", br$v, br$txt, ct[1], ct[2])
-    sep <- d_first(unit_text(uu, "calyx", parts = "any"), excl("calyx", "sepals?", "lobes?", "segments?", "tube", "hypanthium"))$L
+    # (the long hypanthium tube of Elodea, Hydrilla is not the sepals: recorded as hypanthium_length)
+    sep <- d_first(unit_text(uu, "calyx", parts = "any", subj_re = "^(?!(?:the )?hypanth)"), excl("calyx", "sepals?", "lobes?", "segments?", "tube", "hypanthium"))$L
     if (FALSE) sep <- m_first(unit_text(uu, "calyx", parts = "any"), "long|in length", excl("calyx", "sepals?", "lobes?", "segments?", "tube", "hypanthium"))
     if (!is.null(sep)) addn("flower_sepal_length", sep$v, sep$txt, ct[1], ct[2])
     cor <- unit_text(uu, "corolla", subj_re = "^(?:the )?corollas?$")
@@ -1875,6 +1879,8 @@ extract_one <- function(r, group_filter = TRUE) {
 
   # ---- generic organ x character matrix (vocabularies above); male / female flower parts on entity_measured rows
   u_g <- u %>% mutate(okey = gen_okey(sec, part, subj), pcl = gen_pclass(part)) %>% filter(!is.na(okey), !is.na(pcl))
+  # in ferns the indusium covers the sorus (not the Goodeniaceae pollen cup)
+  if (fern_mode) u_g <- u_g %>% mutate(okey = if_else(okey == "indusium", "sorus_indusium", okey))
   for (en in c(NA, unique(u_g$entity[!is.na(u_g$entity)]))) {
     ug <- if (is.na(en)) u_g %>% filter(is.na(entity)) else u_g %>% filter(entity == en)
     ct <- if (is.na(en)) c(NA, NA) else c("entity_measured", paste(str_replace(en, "staminate", "male") %>% str_replace("pistillate", "female"), "flowers"))
@@ -1987,6 +1993,15 @@ extract_one <- function(r, group_filter = TRUE) {
       if (k == "germination" && nrow(h) && any(h$value == "fire") &&
           !str_detect(join_units(mapped) %||% "", rx("\\b(?:trials?|treatments?|treated|laborator\\w*|experiment\\w*|petri)\\b")))
         add(rec_cat("post_fire_recruitment", h %>% filter(value == "fire") %>% mutate(value = "post_fire_recruitment") %>% slice(1), dsc) %>% mutate(desc = dsc))
+      # flowering after fire is also post_fire_flowering, mapped only when the strength of the response is stated
+      if (k == "flowering" && nrow(h) && any(h$value == "fire")) {
+        pf <- case_when(
+          str_detect(mtxt, rx("\\b(?:not|never) (?:dependent on|requir\\w+|need\\w*) (?:a )?fire|irrespective of fire|regardless of fire|equally (?:well )?in burnt and unburnt")) ~ "fire_independent_flowering",
+          str_detect(mtxt, rx("\\b(?:only|exclusively|predominantly|largely) (?:after|following|in response to) (?:a )?fire|rarely (?:flowers?|flowering) (?:in the )?(?:absence of|without) fire|(?:absent|rare) in unburnt")) ~ "fire_dependent_flowering",
+          str_detect(mtxt, rx("\\b(?:best|most prolifically|more prolifically|profusely|prolifically|abundantly|more abundantly|heavily|enhanced|stimulated|promoted|mass(?:ed)?|mainly|mostly|particularly|especially) (?:flowering )?(?:after|following|in response to|by) (?:a )?(?:recent )?fire|fire[- ](?:stimulated|enhanced|promoted)|(?:greater|increased) (?:profusion|numbers|flowering) after fire")) ~ "fire_enhanced_flowering",
+          TRUE ~ "")
+        add(tibble(trait = "post_fire_flowering", value = pf, desc = dsc, min = NA, max = NA, ctx_type = NA, ctx_value = NA, qualifier = NA_character_, kind = "cat"))
+      }
       if (nrow(h)) add(rec_cat(tr, h, dsc) %>% mutate(desc = dsc)) else add(tibble(trait = tr, value = "", desc = dsc, min = NA, max = NA, ctx_type = NA, ctx_value = NA, qualifier = NA_character_, kind = "cat"))
     }
   }
@@ -2159,7 +2174,7 @@ recs <- bind_rows(recs, inherited)
 universal <- recs_hi %>%
   filter(!is.na(value), value != "", is.na(qualifier), is.na(region), is.na(ctx_type), !str_detect(value, " "),
          coalesce(alts, 1L) == 1, !trait %in% c("flowering_time", "fruiting_time", "flowering_cues", "fruiting_cues", "germination_cues", "post_fire_recruitment",
-                                       "plant_climbing_mechanism")) %>%
+                                       "plant_climbing_mechanism", "post_fire_flowering")) %>%
   group_by(group_name, trait, value) %>% filter(n_distinct(part) == first(n_parts)) %>% ungroup() %>%
   mutate(facet = facet_of(trait, value)) %>% anti_join(hi_variable, by = c("group_name", "trait", "facet")) %>%
   semi_join(hi_full_vals, by = c("group_name", "trait", "value")) %>%
@@ -2254,7 +2269,7 @@ trait_order <- union(c(
   "flower_filament_length", "flower_anther_length", "flower_style_length", "fruit_type", "fruit_dehiscence", "fruit_fleshiness",
   "fruit_colour", "fruit_surface_hairs", "fruit_shape", "fruit_length", "fruit_width", "fruit_height", "seeds_per_fruit",
   "seed_shape", "seed_colour", "seed_surface_texture", "seed_surface_reflectivity", "seed_surface_hairs", "dispersal_appendage",
-  "seed_length", "seed_width", "flowering_time", "fruiting_time", "flowering_cues", "fruiting_cues", "germination_cues", "post_fire_recruitment"), unique(recs$trait))
+  "seed_length", "seed_width", "flowering_time", "fruiting_time", "flowering_cues", "fruiting_cues", "germination_cues", "post_fire_recruitment", "post_fire_flowering"), unique(recs$trait))
 cat_traits <- intersect(trait_order, unique(recs$trait[!recs$is_num]))
 num_traits <- intersect(trait_order, unique(recs$trait[recs$is_num]))
 cat_cols <- as.vector(rbind(paste0(cat_traits, "_description"), cat_traits))
