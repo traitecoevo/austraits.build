@@ -44,7 +44,9 @@ families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae
                    "Cupressaceae", "Cyatheaceae", "Cycadaceae", "Cymodoceaceae", "Cyperaceae", "Dasypogonaceae", "Datiscaceae",
                    "Davalliaceae", "Dennstaedtiaceae", "Dichapetalaceae", "Dicksoniaceae", "Dilleniaceae",
                    "Dioscoreaceae", "Dipteridaceae", "Doryanthaceae", "Droseraceae", "Dryopteridaceae", "Ecdeiocoleaceae", "Elaeagnaceae",
-                   "Elaeocarpaceae", "Elatinaceae", "Equisetaceae", "Ericaceae")
+                   "Elaeocarpaceae", "Elatinaceae", "Equisetaceae", "Ericaceae",
+                   "Eriocaulaceae", "Erythroxylaceae", "Escalloniaceae", "Euphorbiaceae", "Eupomatiaceae", "Fagaceae", "Flagellariaceae",
+                   "Frankeniaceae")
 fams <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_FAMILIES"), ",")[[1]] else families_done
 
 d_all <- read_csv(src, show_col_types = FALSE, col_types = cols(.default = "c"), guess_max = 1e5)
@@ -749,7 +751,7 @@ infl_type_dict <- c("solitary|single (?:axillary |terminal )?flowers?|flowers? (
                     "terminal|apical" = "terminal", "axillary|in (?:the )?(?:upper )?(?:leaf )?axils" = "axillary")
 infl_shape_dict <- c("globular|globose|spherical|subglobose" = "spherical", "cylindrical|cylindric" = "cylindrical", "elongated?|oblong" = "elongated")
 symmetry_dict <- c("actinomorphic|regular|radially symmetric(?:al)?" = "actinomorphic_general",
-                   "zygomorphic|irregular|bilaterally symmetric(?:al)?|2-lipped|two-lipped|bilabiate" = "zygomorphic")
+                   "zygomorphic|irregular(?! (?:dichasi|cymes?|clusters?|panicles?|racemes?|inflorescences?|heads?|umbels?|spikes?|whorls?|fascicles?|thyrses?))|bilaterally symmetric(?:al)?|2-lipped|two-lipped|bilabiate" = "zygomorphic")
 flower_shape_dict <- c("tubular" = "tubulate", "campanulate|bell-shaped" = "campanulate", "funnel-shaped|funnelform|infundibuliform" = "funnelform",
                        "salverform|salver-shaped|hypocrateriform" = "salverform", "rotate|wheel-shaped" = "rotate", "urceolate|urn-shaped" = "urceolate",
                        "cup-shaped|cupular|cupuliform" = "cup-shaped", "2-lipped|two-lipped|bilabiate" = "bilabiate", "cruciform" = "cruciform")
@@ -841,6 +843,168 @@ flower_colour_dict <- colour_dict(flower_colour_map)
 fruit_colour_dict <- colour_dict(fruit_colour_map)
 seed_colour_dict <- colour_dict(seed_colour_map)
 
+# ---------------------------------------------------------------- generic organ x character matrix (user's rule: every
+# documentable character is extracted, trait or not). Each organ (and organ part: abaxial / adaxial surface, margin,
+# tube, lobes, apex) is scanned for hairs, shape, colour, texture, surface, orientation, fusion and persistence; counts
+# and sizes not covered by an existing trait are added too. Column names are <organ>[_<part>]_<character>; the mapped
+# column holds a suggested value from these draft vocabularies, to be refined once many families are done.
+gen_hairs_dict <- c(
+  "glabrous|hairless" = "glabrous", "glabrate|glabrescent|becoming glabrous|soon glabrous|glabrous with age|ageing glabrous|aging glabrous" = "glabrescent",
+  "subglabrous|almost glabrous|nearly glabrous|± glabrous|more or less glabrous" = "subglabrous",
+  "puberulous|puberulent|puberula" = "puberulous", "pubescent|pubescence|downy" = "pubescent", "hairy|hairs|indumentum|pilosity" = "hairy",
+  "pilose|pilosulous" = "pilose", "tomentose|tomentum|tomentellous|tomentulose" = "tomentose", "villous|villose" = "villous",
+  "hirsute|hirsutulous" = "hirsute", "hispid|hispidulous" = "hispid", "sericeous|silky" = "sericeous", "strigose|strigillose" = "strigose",
+  "velutinous|velvety" = "velutinous", "woolly|lanate|lanuginose|floccose|arachnoid|cobwebby" = "woolly",
+  "stellate|stellate-hairy|stellate-pubescent|stellate-tomentose" = "stellate",
+  "glandular-hairy|glandular hairs|glandular-pubescent|glandular-pilose|stipitate-glandular|glandular-puberulous" = "glandular_hairy",
+  "ciliate|ciliolate|fringed with hairs" = "ciliate", "setose|setulose|bristly" = "setose", "scabrous|scabrid|scabridulous" = "scabrous",
+  "lepidote|scaly" = "lepidote")
+gen_hairs_neg <- c("hairs absent|without hairs|lacking hairs|devoid of hairs|not hairy|not pubescent" = "glabrous")
+gen_shape_dict <- c(
+  "linear" = "linear", "lanceolate" = "lanceolate", "oblanceolate" = "oblanceolate", "ovate" = "ovate", "obovate" = "obovate",
+  "elliptic|elliptical" = "elliptic", "oblong" = "oblong", "orbicular|circular" = "orbicular", "spathulate|spatulate" = "spathulate",
+  "triangular|deltoid|deltate" = "triangular", "subulate|awl-shaped" = "subulate", "rhomboid|rhombic" = "rhomboid",
+  "reniform|kidney-shaped" = "reniform", "cordate|heart-shaped" = "cordate", "falcate|sickle-shaped" = "falcate",
+  "acicular|needle-like|needle-shaped" = "acicular", "filiform|thread-like" = "filiform", "terete" = "terete",
+  "flattened|compressed|dorsiventrally flattened|laterally compressed" = "flattened", "ovoid|subovoid" = "ovoid", "obovoid" = "obovoid",
+  "globose|subglobose|globular|spherical" = "globose", "ellipsoid|ellipsoidal" = "ellipsoid", "cylindrical|cylindric|subcylindrical" = "cylindrical",
+  "clavate|club-shaped" = "clavate", "fusiform|spindle-shaped" = "fusiform", "conical|conic" = "conical", "obconical|obconic" = "obconical",
+  "turbinate|top-shaped" = "turbinate", "campanulate|bell-shaped" = "campanulate", "tubular" = "tubular",
+  "funnel-shaped|infundibuliform|funnelform" = "funnel-shaped", "rotate|wheel-shaped" = "rotate", "urceolate|urn-shaped" = "urceolate",
+  "salverform|salver-shaped|hypocrateriform" = "salverform", "cup-shaped|cupular|cupuliform" = "cup-shaped",
+  "boat-shaped|cymbiform|navicular" = "boat-shaped", "peltate" = "peltate", "hooded|cucullate" = "hooded", "capitate" = "capitate",
+  "trigonous|triquetrous|3-angled|three-angled" = "trigonous", "quadrangular|4-angled|four-angled" = "quadrangular",
+  "saccate|pouched" = "saccate", "hemispherical|hemispheric" = "hemispherical", "lenticular" = "lenticular",
+  "pyriform|pear-shaped" = "pyriform", "discoid|disc-shaped" = "discoid", "semicircular" = "semicircular", "square" = "square",
+  "bifid|2-fid|bilobed|2-lobed|two-lobed" = "bilobed", "trifid|3-fid|3-lobed|three-lobed" = "trilobed", "punctiform" = "punctiform",
+  "plumose|feathery" = "plumose", "filamentous" = "filiform", "lobed" = "lobed", "sagittate" = "sagittate", "hastate" = "hastate")
+gen_texture_dict <- c(
+  "coriaceous|subcoriaceous|leathery" = "coriaceous", "chartaceous|papery|papyraceous" = "chartaceous", "membranous|membranaceous" = "membranous",
+  "scarious" = "scarious", "hyaline" = "hyaline", "fleshy|succulent|carnose" = "fleshy", "woody|lignified" = "woody", "corky|suberose" = "corky",
+  "spongy" = "spongy", "herbaceous" = "herbaceous", "cartilaginous" = "cartilaginous", "crustaceous|bony|stony|osseous" = "hard",
+  "rigid|stiff" = "rigid", "petaloid" = "petaloid", "sepaloid" = "sepaloid", "foliaceous|leaf-like" = "foliaceous", "fibrous" = "fibrous")
+gen_surface_dict <- c(
+  "smooth" = "smooth", "rugose|rugulose|wrinkled" = "rugose", "tuberculate|tubercled|tuberculed" = "tuberculate",
+  "verrucose|warty|verruculose" = "verrucose", "muricate" = "muricate", "papillose|papillate" = "papillose",
+  "pitted|foveolate|foveate" = "pitted", "reticulate" = "reticulate", "striate|striated" = "striate", "ribbed|costate" = "ribbed",
+  "sulcate|grooved|furrowed" = "grooved", "keeled|carinate" = "keeled", "winged|alate" = "winged",
+  "glandular-punctate|gland-dotted|glandular-dotted|punctate|pellucid-dotted|dotted with glands" = "gland_dotted", "glandular" = "glandular",
+  "viscid|sticky|glutinous|resinous" = "viscid", "glossy|shiny|shining|lustrous" = "shiny", "dull|matt|matte" = "dull",
+  "glaucous|pruinose" = "glaucous", "spiny|spinose|prickly|aculeate" = "spiny", "echinate" = "echinate", "lenticellate" = "lenticellate")
+gen_orient_dict <- c(
+  "erect|suberect" = "erect", "spreading|patent" = "spreading", "reflexed|deflexed|bent back" = "reflexed", "recurved" = "recurved",
+  "incurved|inflexed" = "incurved", "ascending" = "ascending", "pendulous|pendent|drooping|nodding" = "pendulous",
+  "appressed|adpressed" = "appressed", "imbricate" = "imbricate", "twisted|contorted" = "twisted", "straight" = "straight", "curved" = "curved")
+gen_fusion_dict <- c("free" = "free", "connate|fused|united|joined|coalescent|gamosepalous|gamopetalous|sympetalous" = "connate",
+                     "adnate" = "adnate", "polypetalous|polysepalous" = "free")
+gen_persist_dict <- c("persistent|persisting" = "persistent", "caducous|early deciduous|early-deciduous|soon falling|fugacious" = "caducous",
+                      "deciduous|falling" = "deciduous", "accrescent|enlarging in fruit|enlarged in fruit" = "accrescent", "marcescent" = "marcescent")
+gen_exsert_dict <- c("exserted|protruding|exsert" = "exserted", "included|enclosed|inserted within" = "included")
+gen_attach_dict <- c("basifixed" = "basifixed", "dorsifixed" = "dorsifixed", "versatile" = "versatile", "medifixed" = "medifixed")
+gen_dehisc_dict <- c("longitudinal slits?|longitudinally dehiscent|dehiscing longitudinally|opening longitudinally|by slits|longitudinally" = "slits",
+                     "poricidal|by (?:apical |terminal )?pores?|opening by pores?|apical pores?" = "pores", "by valves|valvate|valvular" = "valves",
+                     "introrse" = "introrse", "extrorse" = "extrorse", "latrorse" = "latrorse")
+gen_colour_dict <- colour_dict(fruit_colour_map)
+# phrases naming another organ ("enclosed in the persistent calyx", "longer than the sepals") are not the organ's own character
+gen_other <- c("leaves", "leaf", "laminae?", "blades?", "petioles?", "stipules?", "bracts?", "bracteoles?", "pedicels?", "peduncles?",
+               "inflorescences?", "flowers?", "calyx", "calyces", "sepals?", "corollas?", "petals?", "tepals?", "perianths?", "stamens?",
+               "filaments?", "anthers?", "staminodes?", "ovary", "ovaries", "styles?", "stigmas?", "carpels?", "ovules?", "fruits?",
+               "capsules?", "seeds?", "arils?", "stems?", "branches", "branchlets?", "bark", "roots?", "hypanthium", "disc",
+               "columellae?", "columns?", "receptacles?", "septa", "septum", "valves?", "beaks?", "wings?", "hilum", "caruncles?",
+               "elaiosomes?", "claws?", "spurs?", "glands?", "keels?", "sheaths?", "spines?", "awns?")
+gen_own <- list(leaf = "leaves|leaf|laminae?|blades?", leaflet = "", petiole = "petioles?", stipule = "stipules?", inflorescence = "inflorescences?",
+                peduncle = "peduncles?", pedicel = "pedicels?", bud = "", bract = "bracts?", bracteole = "bracteoles?", involucral_bract = "bracts?",
+                sepal = "sepals?|calyx", calyx = "calyx|calyces|sepals?", hypanthium = "hypanthium|calyx", perianth = "perianths?|tepals?",
+                petal = "petals?|corollas?", corolla = "corollas?|petals?", anther = "anthers?|stamens?", filament = "filaments?|stamens?",
+                staminode = "staminodes?", stamen = "stamens?|filaments?|anthers?", ovary = "ovary|ovaries|carpels?", style = "styles?",
+                stigma = "stigmas?|styles?", carpel = "carpels?|ovary", disc = "disc", fruit = "fruits?|capsules?", seed = "seeds?",
+                aril = "arils?|seeds?", stem = "stems?|branches|branchlets?", branchlet = "branchlets?|branches|stems?")
+gen_strip_other <- function(ok) {
+  own <- str_split(gen_own[[ok]] %||% "", "\\|")[[1]]
+  oth <- setdiff(gen_other, own)
+  re <- paste0("\\b(?:(?:in|by|within|with|on|from|than|to|as|of|and|exceeding|enclosing|enclosed) )?(?:(?:the|a|an) )?(?:[a-z-]+ ){0,2}(?:", paste(oth, collapse = "|"), ")\\b[^,;|]*")
+  function(x) str_remove_all(x, re)
+}
+# a combined pattern per dictionary: a unit with none of its words is skipped (speed)
+dict_any <- function(d) rx(paste0("(?<![a-z])(?:", paste(names(d), collapse = "|"), ")"))
+gen_dicts <- list(hairs = gen_hairs_dict, shape = gen_shape_dict, colour = gen_colour_dict, texture = gen_texture_dict, surface = gen_surface_dict,
+                  orientation = gen_orient_dict, fusion = gen_fusion_dict, persistence = gen_persist_dict, exsertion = gen_exsert_dict,
+                  attachment = gen_attach_dict, dehiscence = gen_dehisc_dict, apex_shape = apex_dict)
+gen_any <- map(gen_dicts, dict_any)
+# organ (from the classified unit's section and subject) and part class
+gen_okey <- function(sec, part, subj) {
+  s <- str_remove(str_to_lower(coalesce(subj, "")), "^the ")
+  case_when(
+    sec == "stem" & str_detect(s, "branchlet|twig") ~ "branchlet", sec == "stem" ~ "stem",
+    sec %in% c("leaf", "lamina") ~ "leaf", sec == "leaflet" ~ "leaflet", sec == "petiole" ~ "petiole", sec == "stipule" ~ "stipule",
+    sec == "inflorescence" ~ "inflorescence", sec == "peduncle" ~ "peduncle", sec == "pedicel" ~ "pedicel", sec == "bud" ~ "bud",
+    sec == "bract" & str_detect(s, "bracteole|prophyll") ~ "bracteole", sec == "bract" & str_detect(s, "involuc|phyllar") ~ "involucral_bract",
+    sec == "bract" & str_detect(s, "spathe") ~ "spathe", sec == "bract" ~ "bract",
+    sec == "calyx" & str_detect(s, "sepal") ~ "sepal", sec == "calyx" & str_detect(s, "hypanth") ~ "hypanthium", sec == "calyx" ~ "calyx",
+    sec == "corolla" & str_detect(s, "tepal|perianth|sepals and petals|petals and sepals") ~ "perianth",
+    sec == "corolla" & str_detect(s, "labellum") ~ "labellum", sec == "corolla" & str_detect(s, "petal|standard|keel") ~ "petal",
+    sec == "corolla" & str_detect(s, "corolla") ~ "corolla", sec == "corona" ~ "corona",
+    sec == "androecium" & str_detect(s, "anther") ~ "anther", sec == "androecium" & str_detect(s, "filament") ~ "filament",
+    sec == "androecium" & str_detect(s, "staminode") ~ "staminode", sec == "androecium" & str_detect(s, "stamen|staminal") ~ "stamen",
+    sec == "gynoecium" & str_detect(s, "ovar") ~ "ovary", sec == "gynoecium" & str_detect(s, "style") ~ "style",
+    sec == "gynoecium" & str_detect(s, "stigma") ~ "stigma", sec == "gynoecium" & str_detect(s, "carpel|pistil") ~ "carpel",
+    sec == "gynoecium" & str_detect(s, "disc") ~ "disc",
+    sec == "fruit" ~ "fruit", sec == "seed" & str_detect(s, "aril") ~ "aril", sec == "seed" & str_detect(s, "seed") ~ "seed",
+    TRUE ~ NA_character_)
+}
+gen_pclass <- function(part) {
+  p <- str_to_lower(coalesce(part, ""))
+  case_when(p == "" ~ "", str_detect(p, "^(?:lower|abaxial) surfaces?$|^under-?surface$") ~ "abaxial",
+            str_detect(p, "^(?:upper|adaxial) surfaces?$") ~ "adaxial", str_detect(p, "^margins?$") ~ "margin",
+            p == "tube" ~ "tube", str_detect(p, "^(?:lobes?|segments?|teeth)$") ~ "lobe", str_detect(p, "^(?:apex|apices|tips?)$") ~ "apex",
+            TRUE ~ NA_character_)
+}
+# characters scanned per part class
+gen_chars <- list(organ = c("hairs", "shape", "colour", "texture", "surface", "orientation", "fusion", "persistence"),
+                  abaxial = c("hairs", "colour", "surface"), adaxial = c("hairs", "colour", "surface"), margin = c("hairs"),
+                  tube = c("hairs", "shape", "colour"), lobe = c("hairs", "shape", "colour", "orientation", "fusion"), apex = c("apex_shape"))
+gen_extra <- list(anther = c("attachment", "dehiscence", "exsertion"), stamen = "exsertion", style = "exsertion", stigma = "exsertion",
+                  filament = "exsertion", staminode = character(0))
+# organ x character pairs already extracted under an existing (or earlier candidate) trait
+gen_skip <- c("leaf__hairs", "leaf__shape", "leaf__colour", "leaf__texture", "leaf__surface", "leaf_apex_apex_shape", "leaflet__shape",
+              "leaflet_apex_apex_shape", "stem__hairs", "stem__shape", "branchlet__shape", "fruit__hairs", "fruit__shape", "fruit__colour",
+              "seed__shape", "seed__colour", "seed__surface", "seed__hairs", "corolla__colour", "petal__colour", "perianth__colour",
+              "corolla_lobe_colour", "perianth_lobe_colour", "inflorescence__shape")
+# counts: <trait> = organ noun at the start of a token ("Petals 5", "Staminodes 2 or 3") or "N <noun>"
+gen_counts <- tribble(
+  ~trait, ~okeys, ~noun,
+  "petal_count", "petal|corolla", "petals?",
+  "sepal_count", "sepal|calyx", "sepals?",
+  "tepal_count", "perianth", "tepals?|perianth (?:segments|lobes|parts)",
+  "calyx_lobe_count", "calyx", "(?:calyx )?(?:lobes|teeth)",
+  "corolla_lobe_count", "corolla", "(?:corolla )?lobes",
+  "staminode_count", "staminode|stamen", "staminodes?",
+  "carpel_count", "carpel|ovary", "carpels?|pistils?",
+  "style_count", "style|ovary", "styles?",
+  "stigma_count", "stigma|style|ovary", "stigmas?|stigmatic lobes|style branches|style-branches",
+  "ovule_count", "ovary|carpel", "ovules?",
+  "bract_count", "bract|involucral_bract", "bracts?",
+  "bracteole_count", "bracteole", "bracteoles?|prophylls?")
+# sizes for organs with no existing length / width trait: <trait prefix> = organ, nouns excluded from "other organ" checks
+gen_sizes <- tribble(
+  ~okey, ~len, ~wid, ~own,
+  "stipule", "stipule_length", "stipule_width", "stipules?",
+  "bracteole", "bracteole_length", "bracteole_width", "bracteoles?",
+  "involucral_bract", "involucral_bract_length", "involucral_bract_width", "bracts?",
+  "spathe", "spathe_length", "spathe_width", "spathes?",
+  "bract", NA, "flower_bract_width", "bracts?",
+  "sepal", NA, "flower_sepal_width", "sepals?|calyx|lobes?|segments?",
+  "petal", NA, "flower_petal_width", "petals?",
+  "perianth", NA, "tepal_width", "tepals?|perianth|lobes?|segments?",
+  "labellum", NA, "labellum_width", "labellum",
+  "hypanthium", "hypanthium_length", "hypanthium_width", "hypanthium|tube|calyx",
+  "staminode", "staminode_length", NA, "staminodes?",
+  "ovary", "ovary_length", "ovary_width", "ovary",
+  "stigma", "stigma_length", NA, "stigmas?",
+  "aril", "aril_length", NA, "arils?",
+  "corona", "corona_length", NA, "coronas?",
+  "disc", NA, "disc_diameter", "disc")
+
 # ---------------------------------------------------------------- phenology (months)
 month_re <- "\\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sept?(?:ember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\b"
 season_re <- "\\b((?:early|mid|mid-|late)[ -]?)?(spring|summer|autumn|winter)\\b"
@@ -917,7 +1081,11 @@ mon_pat <- "(?:Jan|Feb|Mar|Apr|May|June?|July?|Aug|Sept?|Oct|Nov|Dec)[a-z]*\\.?"
 # parenthetical extremes can be seasons too ("(late winter-) spring")
 ext_pat <- "(?:(?:Jan|Feb|Mar|Apr|May|June?|July?|Aug|Sept?|Oct|Nov|Dec)[a-z]*\\.?|(?:early |mid |late )?(?:spring|summer|autumn|winter))"
 phenology_parse <- function(txt) {
-  fl <- c(); fr <- c(); fl_s <- c(); fr_s <- c(); fl_x <- c(); fr_x <- c(); q_extra <- list(); main_q <- NA_character_
+  fl <- c(); fr <- c(); fl_s <- c(); fr_s <- c(); fl_x <- c(); fr_x <- c(); q_extra <- list(); main_q <- c(fl = NA_character_, fr = NA_character_)
+  txt <- str_replace_all(txt, regex("\\bthroughout year\\b", ignore_case = TRUE), "throughout the year")
+  # "mostly June-Nov., with a few records from Jan. and Apr.": the stray records go on a "rarely" row
+  txt <- str_replace_all(txt, regex(",?\\s*with occasional (?:records|collections) (?:from |in )?", ignore_case = TRUE), ", occasionally ")
+  txt <- str_replace_all(txt, regex(",?\\s*with (?:a few|few|isolated|scattered) (?:records|collections) (?:from |in )?", ignore_case = TRUE), ", rarely ")
   # citations / access dates are not flowering months ("(Australasian Virtual Herbarium, accessed 21 July 2023)")
   txt <- str_remove_all(txt, "\\([^()]*\\b(?:1[89]|20)[0-9]{2}\\b[^()]*\\)")
   # "(buds appear in January)", "(buds develop February-August)" are not flowering months
@@ -925,29 +1093,38 @@ phenology_parse <- function(txt) {
   # "Dec.-Feb. (-July)": the abbreviation's full stop is not a sentence end
   txt <- str_replace_all(txt, "(?<=\\b(?:Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec))\\.\\s+(?=\\(\\s*-)", " ")
   for (s in sentences(txt)) {
-    # "most of the year" is not a calendar
-    if (str_detect(s, regex("most of the year", ignore_case = TRUE))) next
-    s2 <- str_remove_all(s, regex("\\b(?:probably|possibly|perhaps) (?:dependent|depending) on [a-z ]+", ignore_case = TRUE))
+    s2 <- s
+    # "Flowers most of the year, primarily June-Oct.": the months on a "primarily" row; "most (months) of the year"
+    # alone is not a calendar
+    mq <- str_match(s2, regex("(?:for |during )?most (?:months )?of the year,?\\s*(?:with (?:an? )?)?(primarily|mainly|mostly|particularly|especially|peak(?:s|ing)?)\\s+(?:(?:in|from|during)\\s+)?", ignore_case = TRUE))
+    if (!is.na(mq[1])) {
+      pre <- str_sub(s2, 1, str_locate(s2, fixed(mq[1]))[1, 1] - 1)
+      kk <- if (str_detect(pre, regex(kw_both, ignore_case = TRUE))) c("fl", "fr") else if (str_detect(pre, regex(kw_fruit, ignore_case = TRUE))) "fr" else "fl"
+      main_q[kk] <- str_replace(str_to_lower(mq[2]), "^peak(?:s|ing)$", "peak"); s2 <- str_replace(s2, fixed(mq[1]), "")
+    }
+    s2 <- str_remove_all(s2, regex(",?\\s*(?:for |during )?most (?:months )?of the year,?", ignore_case = TRUE))
+    s2 <- str_remove_all(s2, regex("\\b(?:probably|possibly|perhaps) (?:dependent|depending) on [a-z ]+", ignore_case = TRUE))
     s2 <- str_remove_all(s2, regex(hedge, ignore_case = TRUE))
     lo_re <- paste0("\\(\\s*(", ext_pat, ")\\s*-\\s*\\)"); hi_re <- paste0("\\(\\s*-\\s*(", ext_pat, ")\\s*\\)")
     # "Flowers and fruits at any time but mainly September-March": X on a "mainly" row, the whole year on an
     # "occasionally" row (user's choice)
     # (also "all year round, but mainly in spring", "all year, but predominantly July-December")
     # (and "throughout the year with peak in November-December", "year round, prolifically from c. November-March")
-    am <- str_match(s2, regex("\\b(?:(?:at )?any time(?: of (?:the )?year)?|all year(?: round| around)?|year[- ]round|throughout the year),?\\s*(?:but\\s+|with (?:an? )?)?(mainly|mostly|chiefly|usually|especially|predominantly|peak(?:s|ing)?|prolifically)\\s+(?:(?:in|from|during)\\s+)?(?:c\\.\\s*)?", ignore_case = TRUE))
+    am <- str_match(s2, regex("\\b(?:(?:at )?any time(?: of (?:the )?year)?|all year(?: round| around)?|year[- ]round|throughout the year),?\\s*(?:but\\s+|with (?:an? )?)?(mainly|mostly|chiefly|usually|especially|particularly|primarily|predominantly|peak(?:s|ing)?|prolifically)\\s+(?:(?:in|from|during)\\s+)?(?:c\\.\\s*)?", ignore_case = TRUE))
     if (!is.na(am[1])) {
       s2 <- str_replace(s2, fixed(am[1]), "")
-      main_q <- str_replace(str_to_lower(am[2]), "^peak(?:s|ing)$", "peak")
-      allyr <- pheno_hits(str_replace(s2, regex(mon_pat, ignore_case = TRUE), "throughout the year"))
-      for (k in c("fl", "fr")) if (length(allyr[[k]])) q_extra[[length(q_extra) + 1]] <- tibble(k = k, q = "occasionally", m = list(1:12), s = s)
+      allyr <- pheno_hits(str_replace(s2, regex(paste0(mon_pat, "|(?:early |mid |late )?(?:spring|summer|autumn|winter)"), ignore_case = TRUE), "throughout the year"))
+      for (k in c("fl", "fr")) if (length(allyr[[k]]) == 12) main_q[k] <- str_replace(str_to_lower(am[2]), "^peak(?:s|ing)$", "peak")
+      for (k in c("fl", "fr")) if (length(allyr[[k]]) == 12) q_extra[[length(q_extra) + 1]] <- tibble(k = k, q = "occasionally", m = list(1:12), s = s)
     }
     # "mainly Oct.-May, can flower sporadically throughout year": an all-year row with that commonness word
     sm <- str_match(s2, regex(",?\\s*(?:and |but )?(?:can |may )?(?:flower(?:s|ing)? )?(sporadically|occasionally|rarely|intermittently) (?:throughout (?:the )?year|all year(?: round)?|at any time)\\b", ignore_case = TRUE))
     if (!is.na(sm[1]) && str_detect(str_remove(s2, fixed(sm[1])), regex(paste0(mon_pat, "|spring|summer|autumn|winter"), ignore_case = TRUE))) {
+      pre <- str_sub(s2, 1, str_locate(s2, fixed(sm[1]))[1, 2])
       s2 <- str_replace(s2, fixed(sm[1]), "")
-      allyr <- pheno_hits(paste(str_extract(s2, regex("^[^0-9]*?\\b(?:flower(?:s|ing)?|fruit(?:s|ing)?)\\b(?: and (?:fruits?|fruiting|flowers?|flowering))?", ignore_case = TRUE)), "throughout the year"))
-      for (k in c("fl", "fr")) if (length(allyr[[k]])) q_extra[[length(q_extra) + 1]] <- tibble(k = k, q = str_to_lower(sm[2]), m = list(1:12), s = s)
-      if (str_detect(s2, regex("\\b(?:mainly|mostly|chiefly)\\b", ignore_case = TRUE))) main_q <- str_to_lower(str_extract(s2, regex("\\b(?:mainly|mostly|chiefly)\\b", ignore_case = TRUE)))
+      allyr <- pheno_hits(pre)
+      for (k in c("fl", "fr")) if (length(allyr[[k]]) == 12) q_extra[[length(q_extra) + 1]] <- tibble(k = k, q = str_to_lower(sm[2]), m = list(1:12), s = s)
+      if (str_detect(s2, regex("\\b(?:mainly|mostly|chiefly)\\b", ignore_case = TRUE))) for (k in c("fl", "fr")) if (length(allyr[[k]]) == 12) main_q[k] <- str_to_lower(str_extract(s2, regex("\\b(?:mainly|mostly|chiefly)\\b", ignore_case = TRUE)))
     }
     # "Flowers November-February, occasionally August-May"; "October-March, sometimes until June": the qualified
     # alternative goes on its own commonness row (the months it adds to the typical calendar)
@@ -1319,7 +1496,7 @@ extract_one <- function(r, group_filter = TRUE) {
   addc("leaf_apex_shape", apex_txt, apex_dict, prep_fun = function(x) str_remove_all(x, "\\bap(?:ex|ices)\\b|\\btips?\\b|\\bapically\\b|\\bat\\b"), ctx_type = shape_ctx[1], ctx_value = shape_ctx[2])
   margin_parts <- u %>% filter(sec %in% (if (compound_leaf) "leaflet" else c("leaf", "lamina")), part %in% c("margin", "margins", "teeth")) %>% pull(text)
   mg_txt <- collapse_text(c(shape_txt, margin_parts), " | ")
-  mh <- scan_terms(mg_txt, margin_dict, prep_fun = function(x) str_remove_all(x, "\\([^)]*\\b(?:teeth|lobes)\\b[^)]*\\)|\\blobes? [^,;|]*|\\bentire (?:plant|length)\\b"))
+  mh <- scan_terms(mg_txt, margin_dict, prep_fun = function(x) str_remove_all(x, "\\([^)]*\\b(?:teeth|lobes)\\b[^)]*\\)|\\blobes? [^,;|]*|\\bentire (?:plant|length)\\b|(?<!margins? )\\bentire\\b(?=(?:,? (?:to|or) |, [a-z]+ (?:to|or) )(?:[a-z]+ ){0,2}(?:[0-9]-)?lobed\\b)"))
   if (nrow(mh) && any(mh$value != "toothed")) mh <- mh %>% filter(value != "toothed")
   add(rec_cat("leaf_margin", mh, mg_txt, shape_ctx[1], shape_ctx[2]))
   mp_txt <- collapse_text(c(margin_parts, unlist(str_extract_all(str_to_lower(shape_txt %||% ""), "[^,;|]*\\bmargins?\\b[^,;|]*"))), " | ")
@@ -1684,6 +1861,74 @@ extract_one <- function(r, group_filter = TRUE) {
   addc("dispersal_appendage", app_txt, appendage_dict, appendage_neg,
        prep_fun = function(x) str_remove_all(x, "(?:seed-bearing |curved woody |woody )?hooks? (?:subtending|prominent|present|lacking)[^,;|]*|seed-bearing hooks|retinacul\\w*|\\bwing (?:petals?)\\b"))
 
+  # ---- generic organ x character matrix (vocabularies above); male / female flower parts on entity_measured rows
+  u_g <- u %>% mutate(okey = gen_okey(sec, part, subj), pcl = gen_pclass(part)) %>% filter(!is.na(okey), !is.na(pcl))
+  for (en in c(NA, unique(u_g$entity[!is.na(u_g$entity)]))) {
+    ug <- if (is.na(en)) u_g %>% filter(is.na(entity)) else u_g %>% filter(entity == en)
+    ct <- if (is.na(en)) c(NA, NA) else c("entity_measured", paste(str_replace(en, "staminate", "male") %>% str_replace("pistillate", "female"), "flowers"))
+    if (!nrow(ug)) next
+    grp <- ug %>% group_by(okey, pcl, unit) %>% summarise(t = paste(text, collapse = ", "), .groups = "drop") %>%
+      group_by(okey, pcl) %>% summarise(t = paste(t, collapse = " | "), .groups = "drop")
+    for (gi in seq_len(nrow(grp))) {
+      ok <- grp$okey[gi]; pc <- grp$pcl[gi]; tx <- grp$t[gi]
+      chars <- c(gen_chars[[if (pc == "") "organ" else pc]] %||% character(0), if (pc == "") gen_extra[[ok]] %||% character(0))
+      for (ch in chars) {
+        key <- paste0(ok, "_", pc, "_", ch)
+        if (key %in% gen_skip) next
+        if (!str_detect(tx, gen_any[[ch]])) next
+        tr <- paste0(ok, if (pc != "") paste0("_", pc), "_", ch) %>% str_replace("_apex_apex_shape$", "_apex_shape")
+        pf <- switch(ch,
+          colour = function(x) colour_prep(x, ageing = FALSE),
+          shape = function(x) str_remove_all(x, "\\b(?:[a-z-]+ )?(?:at|towards|near) (?:the )?(?:base|apex|tip|summit)\\b|\\bin (?:cross[- ])?section\\b[^,;|]*|\\b(?:teeth|lobes?|glands?|veins?|hairs?|scales?|apex|apices|tips?|bases?)\\b[^,;|]*"),
+          hairs = function(x) str_remove_all(x, "\\b(?:hairs?|indumentum) (?:of|on) (?:the )?(?:[a-z-]+ )?(?:veins?|midrib|margins?|base)\\b"),
+          NULL)
+        so <- gen_strip_other(ok)
+        if (ch %in% c("shape", "colour", "texture", "fusion", "persistence", "orientation")) {
+          so0 <- so; so <- function(x) str_remove_all(so0(x), "\\b(?:leaving|with|having|bearing|subtended by|surrounded by)\\b[^,;|]*")
+        }
+        pf2 <- if (is.null(pf)) so else function(x) pf(so(x))
+        addc(tr, tx, gen_dicts[[ch]], if (ch == "hairs") gen_hairs_neg else NULL, prep_fun = pf2, ctx_type = ct[1], ctx_value = ct[2])
+      }
+    }
+    # counts
+    for (qi in seq_len(nrow(gen_counts))) {
+      ks <- str_split(gen_counts$okeys[qi], "\\|")[[1]]
+      tt <- ug %>% filter(okey %in% ks) %>% group_by(unit) %>% summarise(t = paste(text, collapse = ", "), .groups = "drop") %>% pull(t)
+      if (!length(tt)) next
+      nn <- gen_counts$noun[qi]
+      v <- count_after(tt, paste0("^(?:the )?(?:[a-z]+ ){0,2}?(?:", nn, ")\\s+(?:usually |c\\. |mostly |often |about |± )?([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?(?![0-9.]|\\s*(?:mm|cm|dm|m)\\b|\\s*(?:x|×)|\\s*-\\s*(?:[a-z]|or\\b))(?:\\s*(?:per|in each) (?:locule|cell|carpel))?"))
+      if (is.null(v)) v <- count_after(tt, paste0("(?<![0-9.,×x-]\\s?)\\b([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?\\s+(?:[a-z-]+ )?(?:", nn, ")\\b"))
+      if (is.null(v)) next
+      tr <- gen_counts$trait[qi]
+      if (tr == "ovule_count" && str_detect(v$txt, rx("per (?:locule|cell|carpel)|in each"))) tr <- "ovules_per_locule"
+      addn(tr, v$v, v$txt, ct[1], ct[2])
+    }
+    # style branches / stigma lobes: "Style 3-branched", "2- or 3-branched", "3-6-branched", "stigma 3-lobed"
+    tt <- ug %>% filter(okey %in% c("style", "stigma")) %>% group_by(unit) %>% summarise(t = paste(text, collapse = ", "), .groups = "drop") %>% pull(t)
+    if (length(tt)) {
+      v <- count_after(tt, "\\b([0-9]+)-?(?:\\s*(?:-|or|to)\\s*([0-9]+))?-(?:branched|fid|lobed|partite|cleft)\\b")
+      if (!is.null(v)) addn("style_branch_count", v$v, v$txt, ct[1], ct[2])
+    }
+    # locules: "ovary 3-locular", "2-celled", "unilocular", "locules 2"
+    for (lk in list(c("ovary|carpel", "ovary_locule_count"), c("fruit", "fruit_locule_count"), c("anther", "anther_locule_count"))) {
+      tt <- ug %>% filter(okey %in% str_split(lk[1], "\\|")[[1]]) %>% group_by(unit) %>% summarise(t = paste(text, collapse = ", "), .groups = "drop") %>% pull(t)
+      if (!length(tt)) next
+      tj <- str_replace_all(paste(tt, collapse = " | "), rx("\\bunilocular\\b"), "1-locular") %>% str_replace_all(rx("\\bbilocular\\b"), "2-locular") %>%
+        str_replace_all(rx("\\btrilocular\\b"), "3-locular")
+      v <- count_after(tj, "\\b([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?-?\\s?(?:locular|loculed|celled|thecous)\\b")
+      if (is.null(v)) v <- count_after(tj, "\\b(?:locules|cells|loculi)\\s+(?:usually |c\\. )?([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?(?![0-9.]|\\s*(?:mm|cm|m)\\b)")
+      if (!is.null(v)) addn(lk[2], v$v, v$txt, ct[1], ct[2])
+    }
+    # sizes not covered by existing traits
+    for (zi in seq_len(nrow(gen_sizes))) {
+      tt <- ug %>% filter(okey == gen_sizes$okey[zi], pcl == "") %>% group_by(unit) %>% summarise(t = paste(text, collapse = ", "), .groups = "drop") %>% pull(t)
+      if (!length(tt)) next
+      dd <- d_first(tt, do.call(excl, as.list(str_split(gen_sizes$own[zi], "\\|")[[1]])))
+      if (!is.na(gen_sizes$len[zi]) && !is.null(dd$L)) addn(gen_sizes$len[zi], dd$L$v, dd$L$txt, ct[1], ct[2])
+      if (!is.na(gen_sizes$wid[zi]) && !is.null(dd$W)) addn(gen_sizes$wid[zi], dd$W$v, dd$W$txt, ct[1], ct[2])
+    }
+  }
+
   # ---- cues: flowering / fruiting / germination triggered by rain, fire, floods ... (user's request: always documented)
   # verbatim clauses in *_cues_description; mapped only when stated (hedged clauses stay text-only)
   cue_src <- collapse_text(c(prep(r[["Phenology"]]), prep(r[["Ecology"]]), prep(r[["Notes"]]), prep(r[["Habitat"]])), " ")
@@ -1741,7 +1986,7 @@ extract_one <- function(r, group_filter = TRUE) {
     tr <- c(fl = "flowering_time", fr = "fruiting_time")[[k]]; xk <- ph[[paste0(k, "_x")]]
     qx <- if (nrow(ph$q_extra)) ph$q_extra %>% filter(k == !!k) else tibble()
     if (!is.na(ph[[k]])) add(tibble(trait = tr, value = ph[[k]], desc = ph[[paste0(k, "_s")]], min = NA, max = NA, ctx_type = NA, ctx_value = NA,
-                                    qualifier = if (!is.null(ph$main_q) && !is.na(ph$main_q)) ph$main_q else if (!is.na(xk) || nrow(qx)) "usually" else NA_character_))
+                                    qualifier = if (!is.null(ph$main_q) && !is.na(ph$main_q[[k]])) ph$main_q[[k]] else if (!is.na(xk) || nrow(qx)) "usually" else NA_character_))
     if (nrow(qx)) qx <- qx %>% group_by(q) %>% summarise(m = list(sort(unique(unlist(m)))), s = first(s), .groups = "drop")
     for (j in seq_len(nrow(qx))) add(tibble(trait = tr, value = yn(sort(unique(unlist(qx$m[j])))), desc = qx$s[j], min = NA, max = NA,
                                             ctx_type = NA, ctx_value = NA, qualifier = qx$q[j]))
@@ -2023,8 +2268,48 @@ out_df <- bind_rows(
 
 # numeric ranges inside text written as "a--b" (Excel reads a hyphenated number pair as a formula / date)
 out_df <- out_df %>% mutate(across(where(is.character), ~ str_replace_all(.x, "(?<=[0-9])\\s*[-–—]\\s*(?=[0-9])", "--")))
+
+# ---------------------------------------------------------------- candidate trait register
+# raw/candidate_traits.csv: every extracted trait column that is not (yet) mapped in metadata.yml, with its coverage, so
+# new traits.yml definitions can be prioritised; rewritten on every full build
+write_candidates <- function(df, path) {
+  meta_traits <- tryCatch({
+    m <- yaml::read_yaml("data/ABRS_2026/metadata.yml")
+    unique(str_remove(map_chr(m$traits, ~ as.character(.x$var_in)), "_(?:min|max)$"))
+  }, error = function(e) character(0))
+  ctx_or_id <- c("taxon_name", "family", "taxon_rank", "foa_url", ctx, "common_name", "biostatus", "profile_author", "description_treatment_used")
+  base <- names(df)[!names(df) %in% ctx_or_id & !str_detect(names(df), "_description$|_extreme_(?:min|max)$")]
+  num_b <- unique(str_remove(base[str_detect(base, "_(?:min|max)$")], "_(?:min|max)$"))
+  cat_b <- setdiff(base[!str_detect(base, "_(?:min|max)$")], c(num_b, "habit", "bark", "stem", "underground_organ", "leaf", "inflorescence", "flower",
+                                                                "fruit", "seed", "pollination", "dispersal", "fire_response", "vegetative_reproduction",
+                                                                "germination", "ecology", "habitat", "distribution", "seedling", "notes"))
+  cat_b <- cat_b[paste0(cat_b, "_description") %in% names(df)]
+  top <- function(x, k = 8) { x <- unlist(str_split(x[!is.na(x) & x != ""], ";\\s*|\\s+(?=[a-z_]+$)")); if (!length(x)) return(NA_character_)
+    t <- sort(table(str_squish(x)), decreasing = TRUE); paste0(names(t)[seq_len(min(k, length(t)))], " (", t[seq_len(min(k, length(t)))], ")", collapse = "; ") }
+  rc <- map_dfr(cat_b, function(t) {
+    v <- df[[t]]; d <- df[[paste0(t, "_description")]]; has <- !is.na(d) & d != ""
+    tibble(trait = t, type = "categorical", n_taxa = n_distinct(df$taxon_name[has]), n_values = sum(has),
+           n_copied = sum(has & !is.na(df$trait_scoring_method)),
+           suggested_values = top(unlist(str_split(v[has & !is.na(v)], " "))), source_terms = top(str_remove(d[has], "^\\[[a-z ]+\\]\\s*")),
+           range = NA_character_)
+  })
+  rn <- map_dfr(num_b, function(t) {
+    lo <- suppressWarnings(as.numeric(df[[paste0(t, "_min")]])); hi <- suppressWarnings(as.numeric(df[[paste0(t, "_max")]])); has <- !is.na(lo) | !is.na(hi)
+    tibble(trait = t, type = "numeric", n_taxa = n_distinct(df$taxon_name[has]), n_values = sum(has), n_copied = sum(has & !is.na(df$trait_scoring_method)),
+           suggested_values = NA_character_, source_terms = NA_character_,
+           range = if (any(has)) paste(signif(min(c(lo, hi), na.rm = TRUE), 3), "-", signif(max(c(lo, hi), na.rm = TRUE), 3)) else NA_character_)
+  })
+  reg <- bind_rows(rc, rn) %>% filter(n_values > 0) %>%
+    mutate(in_metadata = trait %in% meta_traits, organ = str_extract(trait, "^[a-z]+")) %>%
+    filter(!in_metadata) %>% select(trait, type, organ, n_taxa, n_values, n_copied, range, suggested_values, source_terms) %>%
+    arrange(desc(n_taxa), trait)
+  write_csv(reg, path, na = "")
+  invisible(reg)
+}
+
 if (Sys.getenv("FOA_FAMILIES") == "") {
   write_csv(out_df, out, na = "")
+  write_candidates(out_df, "data/ABRS_2026/raw/candidate_traits.csv")
 } else {
   write_csv(out_df, Sys.getenv("FOA_OUT", file.path(tempdir(), "foa_chunk.csv")), na = "")
 }
