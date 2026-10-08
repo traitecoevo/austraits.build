@@ -42,7 +42,9 @@ families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae
                    "Chrysobalanaceae", "Cistaceae", "Cleomaceae", "Clusiaceae", "Colchicaceae", "Combretaceae", "Commelinaceae",
                    "Connaraceae", "Convolvulaceae", "Cornaceae", "Corsiaceae", "Corynocarpaceae", "Costaceae", "Cucurbitaceae",
                    "Cupressaceae", "Cyatheaceae", "Cycadaceae", "Cymodoceaceae", "Cyperaceae", "Dasypogonaceae", "Datiscaceae",
-                   "Davalliaceae", "Dennstaedtiaceae", "Dichapetalaceae", "Dicksoniaceae", "Dilleniaceae")
+                   "Davalliaceae", "Dennstaedtiaceae", "Dichapetalaceae", "Dicksoniaceae", "Dilleniaceae",
+                   "Dioscoreaceae", "Dipteridaceae", "Doryanthaceae", "Droseraceae", "Dryopteridaceae", "Ecdeiocoleaceae", "Elaeagnaceae",
+                   "Elaeocarpaceae", "Elatinaceae", "Equisetaceae", "Ericaceae")
 fams <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_FAMILIES"), ",")[[1]] else families_done
 
 d_all <- read_csv(src, show_col_types = FALSE, col_types = cols(.default = "c"), guess_max = 1e5)
@@ -878,7 +880,7 @@ months_from_text <- function(x) {
   sort(unique(out))
 }
 yn <- function(m) if (!length(m)) NA_character_ else paste(ifelse(1:12 %in% m, "y", "n"), collapse = "")
-hedge <- "(?:,\\s*)?(?:\\b(?:and|but|although)\\s+)?\\b(?:possibly|probably|likely|almost certainly|it may also|may also|thought to be|is thought|appears to be|appear to be|seems to be|presumably)\\b.*$"
+hedge <- "(?:,\\s*)?(?:\\b(?:and|but|although)\\s+)?\\b(?:possibly|probably|likely|almost certainly|it may also|may also|could|might|thought to be|is thought|appears to be|appear to be|seems to be|presumably)\\b.*$"
 kw_both <- "\\b(?:flower(?:s|ing)?,? (?:and |, )?(?:fruit(?:s|ing)?|seeds?)|flowers, fruit and seed|flowers and fruit|flowering and fruiting)\\b"
 kw_flower <- "\\b(?:flower(?:s|ing|ed)?|in flower|anthesis)\\b"
 kw_bud <- "\\b(?:flower buds?|buds?)\\b"
@@ -931,10 +933,11 @@ phenology_parse <- function(txt) {
     # "Flowers and fruits at any time but mainly September-March": X on a "mainly" row, the whole year on an
     # "occasionally" row (user's choice)
     # (also "all year round, but mainly in spring", "all year, but predominantly July-December")
-    am <- str_match(s2, regex("\\b(?:(?:at )?any time(?: of (?:the )?year)?|all year(?: round| around)?|throughout the year),?\\s*(?:but\\s+)?(mainly|mostly|chiefly|usually|especially|predominantly)\\s+", ignore_case = TRUE))
+    # (and "throughout the year with peak in November-December", "year round, prolifically from c. November-March")
+    am <- str_match(s2, regex("\\b(?:(?:at )?any time(?: of (?:the )?year)?|all year(?: round| around)?|year[- ]round|throughout the year),?\\s*(?:but\\s+|with (?:an? )?)?(mainly|mostly|chiefly|usually|especially|predominantly|peak(?:s|ing)?|prolifically)\\s+(?:(?:in|from|during)\\s+)?(?:c\\.\\s*)?", ignore_case = TRUE))
     if (!is.na(am[1])) {
       s2 <- str_replace(s2, fixed(am[1]), "")
-      main_q <- str_to_lower(am[2])
+      main_q <- str_replace(str_to_lower(am[2]), "^peak(?:s|ing)$", "peak")
       allyr <- pheno_hits(str_replace(s2, regex(mon_pat, ignore_case = TRUE), "throughout the year"))
       for (k in c("fl", "fr")) if (length(allyr[[k]])) q_extra[[length(q_extra) + 1]] <- tibble(k = k, q = "occasionally", m = list(1:12), s = s)
     }
@@ -1258,9 +1261,9 @@ extract_one <- function(r, group_filter = TRUE) {
     if (has_ros("leaf_arrangement") && !has_ros("stem_growth_habit"))
       add(rec_cat("stem_growth_habit", tibble(pos = 1L, value = "rosette", term = ros_desc("leaf_arrangement"), qual = NA_character_), ros_desc("leaf_arrangement")))
   }
-  venation_rm <- function(x) str_remove_all(x, "pinnate(?:ly)? (?:veined|nerved|venation)|pinnately (?:veined|nerved)|pinnate venation|venation (?:is )?pinnate|leaflets? [^,;|]*")
+  venation_rm <- function(x) str_remove_all(x, "[a-z-]*(?:pinnate|palmate)(?:ly)? (?:veined|nerved|venation|veins)|(?:pinnately|palmately) (?:veined|nerved)|(?:pinnate|palmate) venation|venation (?:is )?(?:pinnate|palmate)|leaflets? [^,;|]*")
   div_txt <- if (fern_mode) join_units(c(leaf_gen, lam)) else gen_txt
-  cmp <- scan_terms(div_txt, compound_dict, prep_fun = function(x) str_remove_all(x, "pinnate(?:ly)? (?:veined|nerved|venation)|pinnately (?:veined|nerved)|pinnate venation|venation (?:is )?pinnate"))
+  cmp <- scan_terms(div_txt, compound_dict, prep_fun = function(x) str_remove_all(x, "[a-z-]*(?:pinnate|palmate)(?:ly)? (?:veined|nerved|venation|veins)|(?:pinnately|palmately) (?:veined|nerved)|(?:pinnate|palmate) venation|venation (?:is )?(?:pinnate|palmate)"))
   # fern fronds that are only lobed ("pinnatifid", "deeply pinnatisect") are simple
   if (fern_mode && !any(cmp$value == "compound")) {
     sl <- scan_terms(div_txt, c("bipinnatifid|pinnatifid|pinnatisect|pinnatipartite|pinnately lobed|palmately lobed|lobed" = "simple"), generic_neg = FALSE)
@@ -1274,7 +1277,7 @@ extract_one <- function(r, group_filter = TRUE) {
       paste(paste0(seq(as.integer(m[2]), as.integer(m[3])), "-", m[4]), collapse = " ") })
     str_replace_all(x, "\\b([1-4])-?\\s*or\\s*([1-4])-(pinnate)", "\\1-\\3 \\2-\\3")
   }
-  addc("leaf_lamina_division", div_txt, division_dict, prep_fun = function(x) expand_degrees(str_remove_all(x, "pinnate(?:ly)? (?:veined|nerved|venation)|pinnately (?:veined|nerved)|pinnate venation|venation (?:is )?pinnate")))
+  addc("leaf_lamina_division", div_txt, division_dict, prep_fun = function(x) expand_degrees(str_remove_all(x, "[a-z-]*(?:pinnate|palmate)(?:ly)? (?:veined|nerved|venation|veins)|(?:pinnately|palmately) (?:veined|nerved)|(?:pinnate|palmate) venation|venation (?:is )?(?:pinnate|palmate)")))
   addc("leaf_lobation", join_units(lam_or_leaf), lobation_dict, lobation_neg,
        prep_fun = function(x) str_remove_all(x, "\\blobes? [^,;|]*|\\b(?:[0-9]-)?lobed (?:at|towards) (?:the )?(?:apex|tip)"))
   compound_leaf <- nrow(cmp) && any(cmp$value == "compound")
