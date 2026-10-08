@@ -1,0 +1,312 @@
+source:
+  primary:
+    key: Peters_2025
+    bibtype: Article
+    year: '2025'
+    author: Jennifer M. R. Peters and Brendan Choat
+    journal: Plant, Cell & Environment
+    title: 'Out on a Limb: Testing the Hydraulic Vulnerability Segmentation Hypothesis
+      in Trees Across Multiple Ecosystems'
+    volume: '48'
+    number: '3'
+    pages: 2162--2177
+    doi: 10.1111/pce.15249
+contributors:
+  data_collectors:
+  - last_name: Peters
+    given_name: Jennifer
+    ORCID: 0000-0003-4627-7788
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  - last_name: Choat
+    given_name: Brendan
+    ORCID: 0000-0002-9105-640X
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        `leaf safety (MPa)` = as.character(round(as.numeric(`psiTLP (MPa)`) - as.numeric(`Leaf P50 (MPa)`), 2))
+      )'
+  collection_date: collection_date
+  taxon_name: Species
+  location_name: Site
+  description: To test the hydraulic vulnerability segmentation hypothesis, which
+    predicts that leaves are more vulnerable to xylem embolism than stems, and whether
+    segmentation is more pronounced in tree species from arid environments.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: 'We sampled dominant canopy species from five Terrestrial Ecosystem
+    Research Network (TERN) SuperSites (additional information at www.supersites.tern.org.au).
+    Sites represent iconic Australian ecosystems that are geographically dispersed
+    and have contrasting climates: lowland wet tropical rainforest (Daintree, QLD);
+    temperate wet forest (Warra, TAS); temperate woodland (Cumberland Plain, NSW);
+    eastern semi-arid woodland (Calperum, SA) and western semi-arid woodland (Great
+    Western Woodland, WA). Canopy tree species were selected based on dominance and
+    practicality for leaf imaging: large leaf size could not be accommodated in all
+    camera types and thick or protruding leaf veins made camera focus difficult. In
+    all, we sampled 12 species across the five sites (Table 1); all species are evergreen
+    angiosperms. ^p Branch sampling occurred in the early morning (between 6:00 and
+    8:00 am). One well-hydrated branch at least 1 m in length (up to 3 m for Eucalyptus
+    species, which have long xylem vessels) was collected from 3 to 5 trees of each
+    species. Branches were recut underwater and transported to the field laboratory
+    wrapped in humid plastic bags. Cut ends were kept moist and sealed during transport.'
+  original_file: Tables 1 and 2 of manuscript, transcribed to raw/trait_data.csv (long
+    format, with source section for every value) and pivoted to data.csv
+  notes: Stem P50, psiTLP, psipd and psileaf columns in data.csv are reproduced from
+    Peters_2021 and are already in dataset Peters_2021, so are 
+    not mapped here; psiTLP is used only to calculate leaf safety in custom_R_code.
+identifiers: .na
+locations:
+  Daintree, QLD:
+    latitude (deg): -16.1
+    longitude (deg): 145.45
+    description: lowland wet tropical rainforest
+    temperature, MAT (C): 25.2
+    precipitation, MAP (mm): 5180
+  Warra, TAS:
+    latitude (deg): -43.089
+    longitude (deg): 146.651
+    description: temperate Eucalyptus and Acacia tall forest with subdominant rainforest
+      tree species
+    temperature, MAT (C): 9
+    precipitation, MAP (mm): 1500
+  Cumberland Plain, NSW:
+    latitude (deg): -33.619
+    longitude (deg): 150.738
+    description: temperate dry sclerophyll forest
+    temperature, MAT (C): 17.7
+    precipitation, MAP (mm): 809
+  Great Western Woodland, WA:
+    latitude (deg): -30.187
+    longitude (deg): 120.646
+    description: semi-arid eucalypt woodland
+    temperature, MAT (C): 18.5
+    precipitation, MAP (mm): 268
+  Calperum, SA:
+    latitude (deg): -34.039
+    longitude (deg): 140.607
+    description: semi-arid mallee woodland
+    temperature, MAT (C): 17.3
+    precipitation, MAP (mm): 240
+contexts:
+- context_property: tree height (m)
+  category: entity_context
+  var_in: tree height (m)
+- context_property: tree dbh (cm)
+  category: entity_context
+  var_in: tree dbh (cm)
+- context_property: stems per tree
+  category: entity_context
+  var_in: stems per tree
+- context_property: organ measured
+  category: method_context
+  var_in: organ_measured
+- context_property: safety margin definition
+  category: method_context
+  var_in: safety_margin_definition
+traits:
+- var_in: Leaf P50 (MPa)
+  unit_in: MPa
+  trait_name: leaf_water_potential_50percent_lost_conductivity
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: leaves per curve
+  methods: 'A single leaf was selected from each branch for imaging, using the optical
+    visualization method (Brodribb, Skelton, McAdam, Bienaimé, Lucani and Marmottant,
+    2016). Branches and all associated leaves were kept humid with damp paper towels
+    during setup to prevent premature dehydration. Leaf selection was based on condition,
+    absence of damage and maturity; immature leaves were avoided as the vulnerability
+    of immature leaves may differ from mature leaves (Rodriguez-Dominguez et al. 2018).
+    Measurement leaf remained connected to the branch for the entire measurement.
+    ^p Imaging in this experiment was achieved using three different camera setups:
+    a digital microscope camera (DigiRetina 16MP camera; Aunet) mounted on a stereo
+    microscope with base illumination; a flatbed scanner with transmitted light (Epson
+    Perfection V550 Photo; Epson America); and custom-built leaf clamp with an integrated
+    light base, x10 lens and 5MP digital camera operated by a Raspberry pi 3 single-board
+    computer (Rpi clamp; parts list, leaf clamp blueprints, ''cavicapture'' Python
+    script and instructions available at http://www.opensourceov.org - clamp version
+    1; see Lucani et al. (2019)). Leaves were fixed to the microscope stage and scanner
+    bed using a microscope slide, stage clips and transparent adhesive tape. A microscope
+    slide was also used in the Rpi clamp to keep the leaf flat. Tape was particularly
+    useful to prevent the movement of leaves and branches during dehydration. Images
+    were captured with ISCapture 4.1 software with the microscope camera with an acquisition
+    rate of 1 min. For the scanner, a third-party software (VusScan, Hamrick Software)
+    was used for time-laps programming. With both the scanner and Rpi clamps, the
+    image acquisition rate was 5 min. ^p Light and temperature fluctuations were minimized
+    during measurements. Branch dehydration with leaf imaging lasted between 2 and
+    7 days depending on species and vulnerability. Imaging was run until the leaves
+    were completely desiccated. When possible, images were examined during the dehydration
+    to confirm that embolism events were visible. We aimed to continue imaging for
+    roughly 6 h after the last embolism event to ensure the full curve was captured.
+    ^p Simultaneously, water potential was measured with a stem psychrometer (ICT
+    International, Armidale AU) installed on each branch approximately 30 cm from
+    the imaged leaf. Psychrometers measured water potential at 10 min intervals. Additionally,
+    leaf water potential was measured on neighbouring leaves periodically (usually
+    once or twice a day) using a PMS Scholander pressure chamber (PMS Instruments,
+    Albany OR) to confirm psychrometer readings. ^p Image analysis was conducted in
+    Image J (NIH). Scanner images needed to be cropped and aligned using ImageJ plugin
+    ''Linear Stack Alignment with SIFT'' before image analysis. A time series of embolism
+    events was constructed using image subtraction as per (Brodribb, Skelton, McAdam,
+    Bienaimé, Lucani and Marmottant 2016) with processing instructions available at
+    https://www.opensourceov.org (Figure 1) and time-series of cumulative area embolized
+    was generated using ''analyse particles''. ^p Vulnerability curves were constructed
+    in R (v.3.2.0; R Core Team, 2015). A Loess function (scale = 0.1) was fitted to
+    psychrometer data to model water potential for each cumulative embolism curve.
+    In cases where psychrometer data did not extend for the full duration of the dehydration,
+    the model was extrapolated using pressure chamber-derived leaf water potential
+    measurements using a spline function. The ''FitPLC'' package (Duursma and Choat
+    2017) was used to fit leaf vulnerability curves, using tree replicates as a random
+    effect. From the curve, we calculated the water potential at which 12%, 50% and
+    88% of the area embolized (P12, P50 and P88, respectively) and 95% confidence intervals
+    (CIs) (Table 2).'
+- var_in: Leaf P12 (MPa)
+  unit_in: MPa
+  trait_name: leaf_water_potential_12percent_lost_conductivity
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: leaves per curve
+  methods: 'A single leaf was selected from each branch for imaging, using the optical
+    visualization method (Brodribb, Skelton, McAdam, Bienaimé, Lucani and Marmottant,
+    2016). Branches and all associated leaves were kept humid with damp paper towels
+    during setup to prevent premature dehydration. Leaf selection was based on condition,
+    absence of damage and maturity; immature leaves were avoided as the vulnerability
+    of immature leaves may differ from mature leaves (Rodriguez-Dominguez et al. 2018).
+    Measurement leaf remained connected to the branch for the entire measurement.
+    ^p Imaging in this experiment was achieved using three different camera setups:
+    a digital microscope camera (DigiRetina 16MP camera; Aunet) mounted on a stereo
+    microscope with base illumination; a flatbed scanner with transmitted light (Epson
+    Perfection V550 Photo; Epson America); and custom-built leaf clamp with an integrated
+    light base, x10 lens and 5MP digital camera operated by a Raspberry pi 3 single-board
+    computer (Rpi clamp; parts list, leaf clamp blueprints, ''cavicapture'' Python
+    script and instructions available at http://www.opensourceov.org - clamp version
+    1; see Lucani et al. (2019)). Leaves were fixed to the microscope stage and scanner
+    bed using a microscope slide, stage clips and transparent adhesive tape. A microscope
+    slide was also used in the Rpi clamp to keep the leaf flat. Tape was particularly
+    useful to prevent the movement of leaves and branches during dehydration. Images
+    were captured with ISCapture 4.1 software with the microscope camera with an acquisition
+    rate of 1 min. For the scanner, a third-party software (VusScan, Hamrick Software)
+    was used for time-laps programming. With both the scanner and Rpi clamps, the
+    image acquisition rate was 5 min. ^p Light and temperature fluctuations were minimized
+    during measurements. Branch dehydration with leaf imaging lasted between 2 and
+    7 days depending on species and vulnerability. Imaging was run until the leaves
+    were completely desiccated. When possible, images were examined during the dehydration
+    to confirm that embolism events were visible. We aimed to continue imaging for
+    roughly 6 h after the last embolism event to ensure the full curve was captured.
+    ^p Simultaneously, water potential was measured with a stem psychrometer (ICT
+    International, Armidale AU) installed on each branch approximately 30 cm from
+    the imaged leaf. Psychrometers measured water potential at 10 min intervals. Additionally,
+    leaf water potential was measured on neighbouring leaves periodically (usually
+    once or twice a day) using a PMS Scholander pressure chamber (PMS Instruments,
+    Albany OR) to confirm psychrometer readings. ^p Image analysis was conducted in
+    Image J (NIH). Scanner images needed to be cropped and aligned using ImageJ plugin
+    ''Linear Stack Alignment with SIFT'' before image analysis. A time series of embolism
+    events was constructed using image subtraction as per (Brodribb, Skelton, McAdam,
+    Bienaimé, Lucani and Marmottant 2016) with processing instructions available at
+    https://www.opensourceov.org (Figure 1) and time-series of cumulative area embolized
+    was generated using ''analyse particles''. ^p Vulnerability curves were constructed
+    in R (v.3.2.0; R Core Team, 2015). A Loess function (scale = 0.1) was fitted to
+    psychrometer data to model water potential for each cumulative embolism curve.
+    In cases where psychrometer data did not extend for the full duration of the dehydration,
+    the model was extrapolated using pressure chamber-derived leaf water potential
+    measurements using a spline function. The ''FitPLC'' package (Duursma and Choat
+    2017) was used to fit leaf vulnerability curves, using tree replicates as a random
+    effect. From the curve, we calculated the water potential at which 12%, 50% and
+    88% of the area embolized (P12, P50 and P88, respectively) and 95% confidence intervals
+    (CIs) (Table 2).'
+- var_in: Leaf P88 (MPa)
+  unit_in: MPa
+  trait_name: leaf_water_potential_88percent_lost_conductivity
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: leaves per curve
+  methods: 'A single leaf was selected from each branch for imaging, using the optical
+    visualization method (Brodribb, Skelton, McAdam, Bienaimé, Lucani and Marmottant,
+    2016). Branches and all associated leaves were kept humid with damp paper towels
+    during setup to prevent premature dehydration. Leaf selection was based on condition,
+    absence of damage and maturity; immature leaves were avoided as the vulnerability
+    of immature leaves may differ from mature leaves (Rodriguez-Dominguez et al. 2018).
+    Measurement leaf remained connected to the branch for the entire measurement.
+    ^p Imaging in this experiment was achieved using three different camera setups:
+    a digital microscope camera (DigiRetina 16MP camera; Aunet) mounted on a stereo
+    microscope with base illumination; a flatbed scanner with transmitted light (Epson
+    Perfection V550 Photo; Epson America); and custom-built leaf clamp with an integrated
+    light base, x10 lens and 5MP digital camera operated by a Raspberry pi 3 single-board
+    computer (Rpi clamp; parts list, leaf clamp blueprints, ''cavicapture'' Python
+    script and instructions available at http://www.opensourceov.org - clamp version
+    1; see Lucani et al. (2019)). Leaves were fixed to the microscope stage and scanner
+    bed using a microscope slide, stage clips and transparent adhesive tape. A microscope
+    slide was also used in the Rpi clamp to keep the leaf flat. Tape was particularly
+    useful to prevent the movement of leaves and branches during dehydration. Images
+    were captured with ISCapture 4.1 software with the microscope camera with an acquisition
+    rate of 1 min. For the scanner, a third-party software (VusScan, Hamrick Software)
+    was used for time-laps programming. With both the scanner and Rpi clamps, the
+    image acquisition rate was 5 min. ^p Light and temperature fluctuations were minimized
+    during measurements. Branch dehydration with leaf imaging lasted between 2 and
+    7 days depending on species and vulnerability. Imaging was run until the leaves
+    were completely desiccated. When possible, images were examined during the dehydration
+    to confirm that embolism events were visible. We aimed to continue imaging for
+    roughly 6 h after the last embolism event to ensure the full curve was captured.
+    ^p Simultaneously, water potential was measured with a stem psychrometer (ICT
+    International, Armidale AU) installed on each branch approximately 30 cm from
+    the imaged leaf. Psychrometers measured water potential at 10 min intervals. Additionally,
+    leaf water potential was measured on neighbouring leaves periodically (usually
+    once or twice a day) using a PMS Scholander pressure chamber (PMS Instruments,
+    Albany OR) to confirm psychrometer readings. ^p Image analysis was conducted in
+    Image J (NIH). Scanner images needed to be cropped and aligned using ImageJ plugin
+    ''Linear Stack Alignment with SIFT'' before image analysis. A time series of embolism
+    events was constructed using image subtraction as per (Brodribb, Skelton, McAdam,
+    Bienaimé, Lucani and Marmottant 2016) with processing instructions available at
+    https://www.opensourceov.org (Figure 1) and time-series of cumulative area embolized
+    was generated using ''analyse particles''. ^p Vulnerability curves were constructed
+    in R (v.3.2.0; R Core Team, 2015). A Loess function (scale = 0.1) was fitted to
+    psychrometer data to model water potential for each cumulative embolism curve.
+    In cases where psychrometer data did not extend for the full duration of the dehydration,
+    the model was extrapolated using pressure chamber-derived leaf water potential
+    measurements using a spline function. The ''FitPLC'' package (Duursma and Choat
+    2017) was used to fit leaf vulnerability curves, using tree replicates as a random
+    effect. From the curve, we calculated the water potential at which 12%, 50% and
+    88% of the area embolized (P12, P50 and P88, respectively) and 95% confidence intervals
+    (CIs) (Table 2).'
+- var_in: leaf safety (MPa)
+  unit_in: MPa
+  trait_name: hydraulic_safety_margin_50
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: leaves per curve
+  methods: 'We used stem hydraulic vulnerability (Stem P50), leaf turgor loss point
+    (psiTLP) and seasonal minimum leaf water potential (psipredawn and psileaf at predawn
+    and midday, respectively) for our study species previously reported in Peters
+    et al. (2021). These data were collected from the same trees used in the current
+    study during the same field visits. Stem P50 was measured hydraulically, using
+    benchtop dehydration method (Sperry, Donnelly and Tyree 1988); psiTLP was derived
+    following (Tyree and Hammel 1972); and leaf water potential values were measured
+    in the hottest and driest season between 2016 and 2018 using the Scholander pressure
+    chamber. ^p Leaf safety was calculated as follows: Leaf safety = psiTLP - Leaf P50
+    where psiTLP is the leaf turgor loss point.'
+  organ_measured: leaf
+  safety_margin_definition: leaf turgor loss point minus leaf P50
+- var_in: slope
+  unit_in: .na
+  trait_name: .na
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: leaves per curve
+  methods: 'The ''FitPLC'' package (Duursma and Choat 2017) was used to fit leaf vulnerability
+    curves, using tree replicates as a random effect.'
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions:
+  question1: The manuscript gives no sampling dates. collection_date uses the Peters
+    et al. (2021) site visit ranges for the same five sites, as the manuscript says
+    the Peters et al. (2021) data were collected from the same trees during the same
+    field visits. Is this appropriate?
