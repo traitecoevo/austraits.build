@@ -44,6 +44,15 @@ families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae
 fams <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_FAMILIES"), ",")[[1]] else families_done
 
 d_all <- read_csv(src, show_col_types = FALSE, col_types = cols(.default = "c"), guess_max = 1e5)
+# ~230 scraped profiles lack rank and family: rank from the name, family from the genus (other profiles, else taxon_list.csv)
+gen_fam <- d_all %>% filter(!is.na(family)) %>% transmute(genus = word(scientific_name, 1), family) %>% distinct(genus, .keep_all = TRUE)
+tl_fam <- read_csv("config/taxon_list.csv", show_col_types = FALSE, col_types = cols(.default = "c")) %>% distinct(genus, family) %>% filter(!is.na(genus)) %>% distinct(genus, .keep_all = TRUE)
+d_all <- d_all %>%
+  mutate(rank = case_when(!is.na(rank) ~ rank, str_detect(scientific_name, " subsp\\. ") ~ "subspecies", str_detect(scientific_name, " var\\. ") ~ "variety",
+                          str_detect(scientific_name, " f\\. ") ~ "form", str_detect(scientific_name, "^[A-Z][a-z-]+ (?:[a-z-]+|sp\\. .+)$") ~ "species", TRUE ~ NA_character_),
+         genus = word(scientific_name, 1)) %>%
+  left_join(gen_fam %>% rename(fam_g = family), by = "genus") %>% left_join(tl_fam %>% rename(fam_t = family), by = "genus") %>%
+  mutate(family = coalesce(family, fam_g, fam_t)) %>% select(-genus, -fam_g, -fam_t)
 # genus and family profiles: used only for copy-down of categorical traits that hold throughout the group
 d_higher <- d_all %>% filter(family %in% fams, rank %in% c("genus", "family"), !is.na(Description),
                              !str_detect(Description, "^\\s*Pending\\b"))
@@ -181,7 +190,8 @@ prep <- function(x) {
 dehedge <- function(x) {
   if (is.na(x)) return(x)
   x <- str_remove_all(x, regex("\\b(?:probably|possibly|perhaps) (?:dependent|depending) on [a-z ]+", ignore_case = TRUE))
-  str_squish(str_remove_all(x, regex("\\b(?:probably|possibly|perhaps|apparently|presumably)\\b[^,;.)]*", ignore_case = TRUE)))
+  # ("Annual or possibly ephemeral herb": the hedge covers "ephemeral", not the growth-form noun)
+  str_squish(str_remove_all(x, regex("\\b(?:probably|possibly|perhaps|apparently|presumably)\\b(?:[^,;.)]*?(?=\\s+(?:herbs?|shrubs?|subshrubs?|trees?|climbers?|vines?|palms?|grass(?:es)?|sedges?)\\b)|[^,;.)]*)", ignore_case = TRUE)))
 }
 
 sentences <- function(x) {
@@ -489,6 +499,8 @@ units_of <- function(desc) {
   rows <- list()
   # "Similar to subsp. variabilis but leaves ... 8-10 mm wide": a comparison sentence is not the habit
   cmp_first <- length(s) > 0 && str_detect(s[1], rx("^(?:similar to|differs? from|differing from|as for|like)\\b"))
+  # ("Similar to Allocasuarina paludosa. Usually monoecious shrub to 3 m high": the habit is the second sentence)
+  habit_si <- if (cmp_first) 2L else 1L
   for (si in seq_along(s)) {
     # ";" and ":" inside parentheses do not end a clause ("(perianth lobes c. 6-8 mm long fide ...; perianth 10-15 mm long)")
     sx <- s[si]; depth <- 0; chars <- str_split(sx, "")[[1]]
@@ -522,7 +534,7 @@ units_of <- function(desc) {
         if (cc$kind == "organ") {
           cur <- cc; sec <- cc$sec; part <- NA_character_; subj <- cc$subj
         } else if (cc$kind == "part") {
-          sec <- coalesce(cc$sec, cur$sec, if (si == 1 && !cmp_first) "habit" else "other"); part <- cc$part
+          sec <- coalesce(cc$sec, cur$sec, if (si == habit_si) "habit" else "other"); part <- cc$part
           subj <- coalesce(cc$subj, cur$subj, NA_character_)
           # flower parts ("tube", "lobes", "lower lip") and named sub-organs ("radicle", "beak") persist to the end of the
           # clause; leaf-blade details listed inline ("base cuneate, concolorous, glossy green") apply to their token only
@@ -530,7 +542,7 @@ units_of <- function(desc) {
           persist <- !is.na(cc$sec) || isTRUE(cur$sec == "diaspore") || !str_detect(part, "^(?:base|bases|apex|apices|tips?|margins?|teeth|midribs?|mid-?veins?|veins?|venation|lateral veins|side-veins|reticulation|glands?|oil glands|gland|nerves|ribs?|pulvinus|spines?|thorns|prickles|axis|axes|texture|sheathing bases?)$")
           if (persist) cur <- list(kind = "organ", sec = sec, part = part, subj = subj)
         } else {
-          if (is.null(cur)) cur <- list(kind = "organ", sec = if (si == 1 && !cmp_first) "habit" else "other", part = NA_character_, subj = NA_character_)
+          if (is.null(cur)) cur <- list(kind = "organ", sec = if (si == habit_si) "habit" else "other", part = NA_character_, subj = NA_character_)
           sec <- cur$sec; part <- cur$part; subj <- cur$subj
         }
         rows[[length(rows) + 1]] <- tibble(si = si, ci = ci, ti = ti, sec = sec, part = part, subj = subj, entity = entity, text = tk)
@@ -559,7 +571,11 @@ growth_form_dict <- c(
   "tree ferns?" = "fern palmoid",
   "climbing herbs?|herbaceous (?:perennial |annual )?(?:climbers?|vines?|twiners?)|twining herbs?" = "climber_herbaceous",
   "woody (?:perennial )?(?:climbers?|vines?|twiners?|scramblers?)|lianas?|lianes?" = "climber_woody",
-  "climbers?|vines?|twiners?|scramblers?" = "climber",
+  # (user's rules: "vine" is herbaceous unless stated woody, "liana" woody, "twiner" stays generic)
+  "vines?" = "climber_herbaceous",
+  "climbers?|twiners?|scramblers?" = "climber",
+  # "with woody base" -> subshrub (as in ABRS_2022)
+  "(?:with |having )?(?:a )?woody base|woody at (?:the )?base|base woody" = "subshrub",
   "mallees?" = "mallee",
   "trees?|treelets?" = "tree",
   "sub-?shrubs?|under-?shrubs?|shrublets?" = "subshrub",
@@ -1060,6 +1076,12 @@ extract_one <- function(r, group_filter = TRUE) {
     gf <- bind_rows(gf, tibble(pos = as.integer(tpos), end = as.integer(tpos), value = "graminoid", term = "[Lomandra, tufted]", qual = NA_character_, region = NA_character_)) %>% arrange(pos)
   # ferns: the growth form is definitional by family when the text does not name it
   if (fern_mode && !nrow(gf) && !is.na(habit_txt)) gf <- tibble(pos = 1L, end = 1L, value = "fern", term = "[fern family]", qual = NA_character_, region = NA_character_)
+  # Arecaceae profiles that open "Trunk to 25 m tall" are palms; Centrolepidaceae are graminoid herbs (user's choices)
+  if (fam == "Arecaceae" && !nrow(gf)) gf <- tibble(pos = 1L, end = 1L, value = "palmoid", term = "[Arecaceae]", qual = NA_character_, region = NA_character_)
+  if (fam == "Centrolepidaceae") {
+    if (!nrow(gf)) gf <- tibble(pos = 1L, end = 1L, value = "herb", term = "[Centrolepidaceae]", qual = NA_character_, region = NA_character_)
+    if (!any(gf$value == "graminoid")) gf <- bind_rows(gf, tibble(pos = max(gf$pos) + 1L, end = max(gf$pos) + 1L, value = "graminoid", term = "[Centrolepidaceae]", qual = NA_character_, region = NA_character_))
+  }
   # climbing ferns are herbaceous climbers
   if (fern_mode) gf <- gf %>% mutate(value = str_replace(value, "^climber(?:_woody)?$", "climber_herbaceous"))
   if (fam %in% lyco_families) gf <- gf %>% mutate(value = str_replace(value, "\\bfern\\b", "lycophyte"))
@@ -1094,6 +1116,12 @@ extract_one <- function(r, group_filter = TRUE) {
   # heights / widths (habit units)
   h_other <- "articles?|pseudostems?|trunks?|stems?|branches|branchlets|pneumatophores?|leaves|scapes?|inflorescences?|flowering stems?|culms?|roots?|spines?|flowers?|rhizomes?|fronds?|lignotubers?|tubers?"
   ht <- m_first(habit, "high|tall|in height", h_other)
+  # "Shrub to 40 cm", "Tree to 15 m, glabrous", "Solitary palm to 20 m": a bare size right after the growth-form noun is the height
+  if (is.null(ht) && length(habit)) {
+    bh <- str_match(mark_extremes(habit[1]), rx(paste0("^[^,;|]*?\\b(?:herbs?|shrubs?|subshrubs?|undershrubs?|shrublets?|trees?|treelets?|mallees?|perennials?|annuals?|biennials?|ephemerals?|palms?|plants?|geophytes?|climbers?|vines?|twiners?)\\b([^,;|0-9]{0,20}?)(", meas, ")(?=\\s*(?:[,;|.]|$|(?:or|and|with|often|rarely|usually)\\b))")))
+    # ("Prostrate herb with stems to 1 m" is a stem length)
+    if (!is.na(bh[1]) && !str_detect(bh[2], rx(paste0("\\b(?:", h_other, ")\\b")))) ht <- list(v = meas_of(bh[3]), txt = unmark(bh[3]))
+  }
   is_climber <- nrow(gf) && any(str_detect(gf$value, "climber"))
   if (!is.null(ht)) {
     # a "climbing palm to 45 m tall" (rattan) is a climber too
@@ -1199,6 +1227,16 @@ extract_one <- function(r, group_filter = TRUE) {
   }
   addc("leaf_phyllotaxis", gen_txt, phyllotaxis_dict, prep_fun = function(x) str_remove_all(x, "\\b(?:appearing|appear|seemingly|falsely) [a-z]+"))
   addc("leaf_arrangement", gen_txt, arrangement_dict)
+  # rosette is both a stem growth habit and a leaf arrangement (user's rule): copy it to whichever trait lacks it
+  rr <- bind_rows(recs)
+  if (nrow(rr)) {
+    has_ros <- function(tr) any(rr$trait == tr & str_detect(coalesce(rr$value, ""), "\\brosette\\b"))
+    ros_desc <- function(tr) collapse_text(rr$desc[rr$trait == tr & str_detect(coalesce(rr$value, ""), "\\brosette\\b")], "; ")
+    if (has_ros("stem_growth_habit") && !has_ros("leaf_arrangement"))
+      add(rec_cat("leaf_arrangement", tibble(pos = 1L, value = "rosette", term = ros_desc("stem_growth_habit"), qual = NA_character_), ros_desc("stem_growth_habit")))
+    if (has_ros("leaf_arrangement") && !has_ros("stem_growth_habit"))
+      add(rec_cat("stem_growth_habit", tibble(pos = 1L, value = "rosette", term = ros_desc("leaf_arrangement"), qual = NA_character_), ros_desc("leaf_arrangement")))
+  }
   venation_rm <- function(x) str_remove_all(x, "pinnate(?:ly)? (?:veined|nerved|venation)|pinnately (?:veined|nerved)|pinnate venation|venation (?:is )?pinnate|leaflets? [^,;|]*")
   div_txt <- if (fern_mode) join_units(c(leaf_gen, lam)) else gen_txt
   cmp <- scan_terms(div_txt, compound_dict, prep_fun = function(x) str_remove_all(x, "pinnate(?:ly)? (?:veined|nerved|venation)|pinnately (?:veined|nerved)|pinnate venation|venation (?:is )?pinnate"))
