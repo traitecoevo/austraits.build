@@ -40,7 +40,9 @@ families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae
                    "Chenopodiaceae",
                    "Caryophyllaceae", "Casuarinaceae", "Celastraceae", "Centrolepidaceae", "Cephalotaceae", "Ceratophyllaceae",
                    "Chrysobalanaceae", "Cistaceae", "Cleomaceae", "Clusiaceae", "Colchicaceae", "Combretaceae", "Commelinaceae",
-                   "Connaraceae", "Convolvulaceae", "Cornaceae", "Corsiaceae", "Corynocarpaceae", "Costaceae", "Cucurbitaceae")
+                   "Connaraceae", "Convolvulaceae", "Cornaceae", "Corsiaceae", "Corynocarpaceae", "Costaceae", "Cucurbitaceae",
+                   "Cupressaceae", "Cyatheaceae", "Cycadaceae", "Cymodoceaceae", "Cyperaceae", "Dasypogonaceae", "Datiscaceae",
+                   "Davalliaceae", "Dennstaedtiaceae", "Dichapetalaceae", "Dicksoniaceae", "Dilleniaceae")
 fams <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_FAMILIES"), ",")[[1]] else families_done
 
 d_all <- read_csv(src, show_col_types = FALSE, col_types = cols(.default = "c"), guess_max = 1e5)
@@ -101,6 +103,10 @@ fix_text <- tribble(
   "Mesua sp. Boonjie (A.K.Irvine 1218)", "25–3 (–35) mm wide", "25–30 (–35) mm wide",
   # Trichosanthes subvelutina: "Male flowers in 4–8-flowered racemes, pubescent, 12–20 cm long" (the racemes are 12–20 cm)
   "Trichosanthes subvelutina", "racemes, pubescent, 12–20 cm long", "racemes; racemes pubescent, 12–20 cm long",
+  # Hibbertia: garbled ranges ("0-5-0.8 mm" = 0.5-0.8; "(2.3-) 35-8 (-14.6)" = 3.5-8; "(6-) 10-5 (-25)" = 10-15, flagged)
+  "Hibbertia praestans", "anthers ovate, 0-5-0.8 mm long", "anthers ovate, 0.5–0.8 mm long",
+  "Hibbertia exutiacies", "(2.3–) 35–8 (–14.6) mm long", "(2.3–) 3.5–8 (–14.6) mm long",
+  "Hibbertia hypericoides subsp. hypericoides", "(6–) 10–5 (–25) mm long", "(6–) 10–15 (–25) mm long",
   # Einadia hastata: "Spreading perennial to 1.5 mm high" (m intended)
   "Einadia hastata", "to 1.5 mm high", "to 1.5 m high",
   # Cardamine corymbosa: fruits "10–30 mm long, 0.5–1 (–2) m wide" (mm intended)
@@ -161,6 +167,9 @@ prep <- function(x) {
   x <- str_replace_all(x, "\u00a0", " ")
   x <- str_replace_all(x, "\\bFlowersand\\b", "Flowers and")
   x <- str_replace_all(x, "\\bInilorescence", "Inflorescence")
+  # PDF glitches: soft hyphens inside numbers ("1\u00ad.5"), a letter l for the digit 1 ("l.4-1.5 mm")
+  x <- str_remove_all(x, "\u00ad")
+  x <- str_replace_all(x, "(?<![A-Za-z])l\\.(?=[0-9])", "1.")
   x <- str_replace_all(x, "(?<=[0-9])\\s*-\\s*-\\s*(?=[0-9])", "-")
   # square brackets hold other regions' values or references ("[3-5 in India]", "[See Barker (1986)]")
   x <- str_replace_all(x, "\\s*\\[[^\\]]*\\]", "")
@@ -402,6 +411,8 @@ rec_cat <- function(trait, h, desc = NA_character_, ctx_type = NA_character_, ct
 }
 rec_num <- function(trait, v, desc, ctx_type = NA_character_, ctx_value = NA_character_, scale = 1) {
   if (is.null(v) || all(is.na(v))) return(NULL)
+  # a reversed range left after the source fixes is not written (listed in the QA output instead)
+  if (!is.na(v[["min"]]) && !is.na(v[["max"]]) && v[["min"]] > v[["max"]]) { message("reversed range dropped: ", trait, " ", desc); return(NULL) }
   ex <- function(k) if (k %in% names(v)) unname(v[[k]]) * scale else NA_real_
   tibble(trait = trait, value = NA_character_, desc = desc, min = unname(v[["min"]]) * scale, max = unname(v[["max"]]) * scale,
          extreme_min = ex("extreme_min"), extreme_max = ex("extreme_max"),
@@ -568,7 +579,7 @@ join_units <- function(x) if (!length(x)) NA_character_ else paste(x, collapse =
 
 # ---------------------------------------------------------------- vocabularies
 growth_form_dict <- c(
-  "tree ferns?" = "fern palmoid",
+  "treeferns?" = "fern palmoid",
   "climbing herbs?|herbaceous (?:perennial |annual )?(?:climbers?|vines?|twiners?)|twining herbs?" = "climber_herbaceous",
   "woody (?:perennial )?(?:climbers?|vines?|twiners?|scramblers?)|lianas?|lianes?" = "climber_woody",
   # (user's rules: "vine" is herbaceous unless stated woody, "liana" woody, "twiner" stays generic)
@@ -974,6 +985,9 @@ extract_one <- function(r, group_filter = TRUE) {
   taxon <- r[["scientific_name"]]; fam <- r[["family"]]
   trt <- pick_treatment(r[["Description"]])
   desc <- dehedge(prep(trt$text))
+  # "Similar to subsp. variabilis but leaves broadly orbicular, ...": what follows "but" is this taxon's own description
+  if (!is.na(desc)) desc <- str_replace(desc, regex("^((?:similar to|differs? from|differing from|as for|like) (?:[^.]|\\.(?=\\s[a-z]))*?),? but (?=[a-z])", ignore_case = TRUE), "\\1. \u00b6") %>%
+    str_replace("\u00b6([a-z])", function(z) str_to_upper(str_sub(z, 2)))
   # Aizoaceae: the "operculum" is the lid of the circumscissile capsule, not a petal cap as in Myrtaceae
   if (fam == "Aizoaceae" && !is.na(desc)) desc <- str_replace_all(desc, "\\bOperculum\\b", "Capsule operculum")
   # genus / family descriptions summarise variation: sentences scoped to some species ("or introduced basal-rosetted
@@ -1058,6 +1072,8 @@ extract_one <- function(r, group_filter = TRUE) {
   habit_gf <- if (!is.na(habit_txt)) str_remove_all(str_to_lower(habit_txt), "\\b(?:on|in|among|amongst|under|over|of|from|associated with|beneath|between|around)\\s+(?:the\\s+)?(?:[a-z-]+\\s+){0,3}?(?:trees?(?: boles?| trunks?)?|boles|shrubs|grasses|hosts?|vegetation|plants|mangroves|forests?|rocks)\\b") else NA
   # "Shrub to 2 m high, or rarely tree-like to c. 5 m": a qualified tree-like habit is a tree alternative (user's choice)
   if (!is.na(habit_gf)) habit_gf <- str_replace_all(habit_gf, paste0(qual_re, "\\s+(?:an?\\s+)?tree-like\\b"), "\\1 tree")
+  # "tree fern" is one growth form (fern palmoid), not a tree and a fern
+  if (!is.na(habit_gf)) habit_gf <- str_replace_all(habit_gf, "\\btree[- ]fern", "treefern")
   gf <- scan_terms(habit_gf, growth_form_dict, fillers = gf_fillers)
   if (nrow(gf)) {
     # specific climber types replace the generic one
@@ -1075,12 +1091,16 @@ extract_one <- function(r, group_filter = TRUE) {
   if (word(taxon, 1) == "Lomandra" && !is.na(tpos) && !any(gf$value %in% c("graminoid", "tussock")))
     gf <- bind_rows(gf, tibble(pos = as.integer(tpos), end = as.integer(tpos), value = "graminoid", term = "[Lomandra, tufted]", qual = NA_character_, region = NA_character_)) %>% arrange(pos)
   # ferns: the growth form is definitional by family when the text does not name it
-  if (fern_mode && !nrow(gf) && !is.na(habit_txt)) gf <- tibble(pos = 1L, end = 1L, value = "fern", term = "[fern family]", qual = NA_character_, region = NA_character_)
+  # (a fern with a trunk is a tree fern: fern palmoid)
+  if (fern_mode && !nrow(gf) && !is.na(desc)) gf <- tibble(pos = 1L, end = 1L, value = if (str_detect(desc, rx("\\btrunks?\\b[^.;]{0,40}?\\b[0-9.]+(?:\\s*-\\s*[0-9.]+)?\\s?m\\b[^.;]{0,20}?(?:tall|high)"))) "fern palmoid" else "fern",
+                                                            term = "[fern family]", qual = NA_character_, region = NA_character_)
   # Arecaceae profiles that open "Trunk to 25 m tall" are palms; Centrolepidaceae are graminoid herbs (user's choices)
-  if (fam == "Arecaceae" && !nrow(gf)) gf <- tibble(pos = 1L, end = 1L, value = "palmoid", term = "[Arecaceae]", qual = NA_character_, region = NA_character_)
-  if (fam == "Centrolepidaceae") {
-    if (!nrow(gf)) gf <- tibble(pos = 1L, end = 1L, value = "herb", term = "[Centrolepidaceae]", qual = NA_character_, region = NA_character_)
-    if (!any(gf$value == "graminoid")) gf <- bind_rows(gf, tibble(pos = max(gf$pos) + 1L, end = max(gf$pos) + 1L, value = "graminoid", term = "[Centrolepidaceae]", qual = NA_character_, region = NA_character_))
+  # (and cycads: Cycadaceae / Zamiaceae)
+  if (fam %in% c("Arecaceae", "Cycadaceae", "Zamiaceae") && !nrow(gf)) gf <- tibble(pos = 1L, end = 1L, value = "palmoid", term = paste0("[", fam, "]"), qual = NA_character_, region = NA_character_)
+  # graminoid families (Centrolepidaceae rule extended to sedges, grasses, rushes, restiads): graminoid, plus herb when no form is named
+  if (fam %in% c("Centrolepidaceae", "Cyperaceae", "Poaceae", "Juncaceae", "Restionaceae", "Anarthriaceae", "Ecdeiocoleaceae")) {
+    if (!nrow(gf)) gf <- tibble(pos = 1L, end = 1L, value = "herb", term = paste0("[", fam, "]"), qual = NA_character_, region = NA_character_)
+    if (!any(gf$value == "graminoid")) gf <- bind_rows(gf, tibble(pos = max(gf$pos) + 1L, end = max(gf$pos) + 1L, value = "graminoid", term = paste0("[", fam, "]"), qual = NA_character_, region = NA_character_))
   }
   # climbing ferns are herbaceous climbers
   if (fern_mode) gf <- gf %>% mutate(value = str_replace(value, "^climber(?:_woody)?$", "climber_herbaceous"))
@@ -1147,7 +1167,8 @@ extract_one <- function(r, group_filter = TRUE) {
     # palms: "Trunk to 25 m tall, 25-40 cm diam."
     if (is.null(culm)) {
       trk <- m_first(unit_text(u, "stem", subj_re = "^(?:the )?trunks?$"), "tall|high", excl("trunks?"))
-      if (!is.null(trk)) addn("plant_height", trk$v, paste("[trunk]", trk$txt), scale = 1 / 1000)
+      # (tree ferns: trunk height on a plant_organ_measured = trunk row, as in LucidFerns_2026)
+      if (!is.null(trk)) addn("plant_height", trk$v, paste("[trunk]", trk$txt), if (fern_mode) "plant_organ_measured" else NA_character_, if (fern_mode) "trunk" else NA_character_, scale = 1 / 1000)
     }
   }
   # trunk / main stem diameter ("trunk to 2 m diam.", "stems to 3 cm diam.") from the opening sentences
@@ -1548,7 +1569,8 @@ extract_one <- function(r, group_filter = TRUE) {
   addc("sex_type", desc, sex_type_dict)
   addc("flower_scent_production", join_units(unit_text(u, c("flower", "corolla", "inflorescence", "bud"), parts = "any")), scent_dict, scent_neg,
        prep_fun = function(x) str_remove_all(x, "\\baromatic\\b"))
-  addc("flower_nectar_production", desc, nectar_dict, generic_neg = TRUE, prep_fun = function(x) str_remove_all(x, "extrafloral nectar\\w*|nectar glands? on (?:the )?(?:petiole|leaf|rachis|phyllode)\\w*"))
+  # ("Nectaries absent", "nectary 0": the negation follows the term)
+  addc("flower_nectar_production", desc, nectar_dict, neg = c("(?:nectar(?:ies|y)?|nectariferous discs?) (?:absent|lacking|0|not seen)|without nectar\\w*|no nectar\\w*|nectarless" = "nectar_absent"), generic_neg = TRUE, prep_fun = function(x) str_remove_all(x, "extrafloral nectar\\w*|nectar glands? on (?:the )?(?:petiole|leaf|rachis|phyllode)\\w*"))
   # ovary position is also given inside flower clauses ("Female flowers with an inferior to half-inferior, unilocular ovary")
   ov_in_fl <- unit_text(u, "flower", parts = "any") %>% { .[str_detect(., rx("\\bovar(?:y|ies)\\b"))] }
   addc("flower_ovary_position", join_units(c(unit_text(u, "gynoecium", parts = "any"), ov_in_fl)), ovary_dict)
@@ -1834,6 +1856,36 @@ if (file.exists(eco_file)) {
                                            ctx_type = NA_character_, ctx_value = NA_character_, qualifier = commonness_qualifier))
 }
 
+# ---------------------------------------------------------------- species -> infraspecific inheritance
+# A subspecies / variety / form whose own description is silent on a trait inherits the parent species' own values
+# (categorical and numeric, with their commonness / region / organ rows), with trait_scoring_method = inferred_from_species
+# (user's choice). Values the species itself copied from its genus / family are not passed on; genus / family copy-down
+# below then fills what is still missing.
+infra <- main %>% filter(taxon_rank %in% c("subspecies", "variety", "form")) %>% transmute(taxon_name, species = word(taxon_name, 1, 2)) %>%
+  filter(species %in% main$taxon_name)
+if (!"scoring" %in% names(recs)) recs$scoring <- NA_character_
+own_traits <- recs %>% distinct(taxon_name, trait)
+sp_recs <- recs %>% filter(taxon_name %in% infra$species, is.na(scoring))
+inherited <- infra %>% inner_join(sp_recs %>% rename(species = taxon_name), by = "species", relationship = "many-to-many") %>%
+  anti_join(own_traits, by = c("taxon_name", "trait")) %>%
+  mutate(desc = paste("[species description]", desc), scoring = "inferred_from_species") %>% select(-species)
+recs <- bind_rows(recs, inherited)
+
+# ---------------------------------------------------------------- species -> infraspecific inheritance
+# A subspecies / variety / form whose own description is silent on a trait inherits the parent species' own values
+# (categorical and numeric, with their commonness / region / organ rows), with trait_scoring_method = inferred_from_species
+# (user's choice). Values the species itself copied from its genus / family are not passed on; genus / family copy-down
+# below then fills what is still missing.
+infra <- main %>% filter(taxon_rank %in% c("subspecies", "variety", "form")) %>% transmute(taxon_name, species = word(taxon_name, 1, 2)) %>%
+  filter(species %in% main$taxon_name)
+if (!"scoring" %in% names(recs)) recs$scoring <- NA_character_
+own_traits <- recs %>% distinct(taxon_name, trait)
+sp_recs <- recs %>% filter(taxon_name %in% infra$species, is.na(scoring))
+inherited <- infra %>% inner_join(sp_recs %>% rename(species = taxon_name), by = "species", relationship = "many-to-many") %>%
+  anti_join(own_traits, by = c("taxon_name", "trait")) %>%
+  mutate(desc = paste("[species description]", desc), scoring = "inferred_from_species") %>% select(-species)
+recs <- bind_rows(recs, inherited)
+
 # ---------------------------------------------------------------- genus / family copy-down
 # A categorical trait stated in the genus (else family) description as a single, unqualified value ("Leaves decussate",
 # "Fruit a loculicidal capsule", "Ovary superior") holds throughout the group, so it is copied to member taxa whose own
@@ -1841,9 +1893,10 @@ if (file.exists(eco_file)) {
 # Alternatives ("herbs or shrubs", "terminal or axillary"), qualified ("usually"), regional and contextual values are not copied.
 # A group statement counts only when it names one term ("flat, terete or triquetrous" does not, even though only
 # "terete" has a level), and only when no member taxon describing the trait itself contradicts it.
+# (cues and recruitment come from Ecology statements, often about one member species: never copied down)
 universal <- recs_hi %>%
   filter(!is.na(value), value != "", is.na(qualifier), is.na(region), is.na(ctx_type), !str_detect(value, " "),
-         coalesce(alts, 1L) == 1, !trait %in% c("flowering_time", "fruiting_time")) %>%
+         coalesce(alts, 1L) == 1, !trait %in% c("flowering_time", "fruiting_time", "flowering_cues", "fruiting_cues", "germination_cues", "post_fire_recruitment")) %>%
   group_by(group_name, trait, value) %>% filter(n_distinct(part) == first(n_parts)) %>% ungroup() %>%
   mutate(facet = facet_of(trait, value)) %>% anti_join(hi_variable, by = c("group_name", "trait", "facet")) %>%
   semi_join(hi_full_vals, by = c("group_name", "trait", "value")) %>%
