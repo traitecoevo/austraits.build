@@ -46,7 +46,7 @@ families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae
                    "Dioscoreaceae", "Dipteridaceae", "Doryanthaceae", "Droseraceae", "Dryopteridaceae", "Ecdeiocoleaceae", "Elaeagnaceae",
                    "Elaeocarpaceae", "Elatinaceae", "Equisetaceae", "Ericaceae",
                    "Eriocaulaceae", "Erythroxylaceae", "Escalloniaceae", "Euphorbiaceae", "Eupomatiaceae", "Fagaceae", "Flagellariaceae",
-                   "Frankeniaceae")
+                   "Frankeniaceae", "Gelsemiaceae", "Gentianaceae", "Geraniaceae", "Gesneriaceae", "Gleicheniaceae", "Goodeniaceae")
 fams <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_FAMILIES"), ",")[[1]] else families_done
 
 d_all <- read_csv(src, show_col_types = FALSE, col_types = cols(.default = "c"), guess_max = 1e5)
@@ -187,7 +187,7 @@ prep <- function(x) {
   x <- str_replace_all(x, "\\?", "")
   # words run together before a month or in phenology phrases ("FlowersJan.-Mar.", "fruitsSept.", "andfruits", "allmonths")
   x <- str_replace_all(x, "(?<=[a-z])(?=(?:Jan|Feb|Mar|Apr|May|June?|July?|Aug|Sept?|Oct|Nov|Dec)[a-z]*(?=[.,;\\s-]|$))", " ")
-  x <- str_replace_all(x, "\\b(fruits|flowers|and)(?=(?:all|fruits|flowers)\\b)", "\\1 ")
+  x <- str_replace_all(x, "(?i)\\b(fruits|flowers|and)(?=(?:all|fruits|flowers|sporadically)\\b)", "\\1 ")
   x <- str_replace_all(x, "\\ballmonths\\b", "all months")
   # missing space after a comma ("erect stem,with short lactifers")
   x <- str_replace_all(x, ",(?=[a-z])", ", ")
@@ -309,6 +309,8 @@ dims <- function(x, other = NULL, len_words = "long|in length", wid_words = "wid
 }
 count_range <- function(m_lo, m_hi) {
   lo <- suppressWarnings(as.numeric(m_lo)); hi <- suppressWarnings(as.numeric(m_hi))
+  # counts are alternatives, in any order ("Sepals 5 or 3")
+  if (!is.na(lo) && !is.na(hi) && lo > hi) { t <- lo; lo <- hi; hi <- t }
   c(min = ifelse(is.na(hi), NA, lo), max = ifelse(is.na(hi), lo, hi))
 }
 # a count with optional extremes: "(12-) 28", "2 or 3 (rarely 4)"
@@ -451,7 +453,7 @@ sec_rules <- tribble(
   "corolla", "^(?:the )?(?:(?:inner and outer|outer and inner|outer|inner|lateral|upper|lower|larger|smaller)(?: [0-9]+| two| three)? )?(?:sepals and petals|petals and sepals|corollas?|petals?|perianth|perianths|tepals?|standard|keel|labellum|dorsal sepal|lateral sepals|operculum|opercula)\\b",
   "calyx", "^(?:the )?(?:calyx|calyces|sepals?|hypanthium|hypanthia|outer perianth whorl)\\b",
   "androecium", "^(?:the )?(?:(?:abaxial|adaxial|longer|shorter|outer|inner|upper|lower|fertile|staminal) )?(?:pair of )?(?:stamens?|filaments?|anthers?|staminodes?|androecium|pollen|staminal (?:column|tube))\\b",
-  "gynoecium", "^(?:the )?(?:ovary|ovaries|styles?|stigmas?|carpels?|pistils?|gynoecium|ovules?|placentae?|disc|column)\\b",
+  "gynoecium", "^(?:the )?(?:ovary|ovaries|styles?|stigmas?|carpels?|pistils?|gynoecium|ovules?|placentae?|disc|column|indusi(?:a|um))\\b",
   "fruit", "^(?:the )?(?:(?:mature|ripe|fruiting|intact|hygroscopic|woody|papery|fleshy|dry|indehiscent|dehiscent|globose|ovoid|ellipsoid|young|submature|single|solitary|small|large|winged) )?(?:fruiting carpels?|apocarps?|monocarps?|syncarpi(?:a|um)|fruits?|capsules?|pods?|legumes?|drupes?|berr(?:y|ies)|nuts?|nutlets?|achenes?|cypselas?|cypselae|follicles?|mericarps?|samaras?|siliques?|siliquas?|siliculas?|silicles?|utricles?|infructescences?|cones?|syncarps?|caryops[ie]s|grains?|endocarps?|pericarps?|valves|cocci|schizocarps?|pyrenes?|anthocarps?|fruitlets?|syconi(?:a|um)|figs?|loments?|diaspores?)\\b",
   "seed", "^(?:the )?(?:seeds?|arils?|embryos?|endosperm|testa)\\b",
   "habit", "^(?:the )?(?:plants?|habit)\\b"
@@ -948,7 +950,7 @@ gen_okey <- function(sec, part, subj) {
     sec == "androecium" & str_detect(s, "staminode") ~ "staminode", sec == "androecium" & str_detect(s, "stamen|staminal") ~ "stamen",
     sec == "gynoecium" & str_detect(s, "ovar") ~ "ovary", sec == "gynoecium" & str_detect(s, "style") ~ "style",
     sec == "gynoecium" & str_detect(s, "stigma") ~ "stigma", sec == "gynoecium" & str_detect(s, "carpel|pistil") ~ "carpel",
-    sec == "gynoecium" & str_detect(s, "disc") ~ "disc",
+    sec == "gynoecium" & str_detect(s, "disc") ~ "disc", sec == "gynoecium" & str_detect(s, "indusi") ~ "indusium",
     sec == "fruit" ~ "fruit", sec == "seed" & str_detect(s, "aril") ~ "aril", sec == "seed" & str_detect(s, "seed") ~ "seed",
     TRUE ~ NA_character_)
 }
@@ -1003,7 +1005,8 @@ gen_sizes <- tribble(
   "stigma", "stigma_length", NA, "stigmas?",
   "aril", "aril_length", NA, "arils?",
   "corona", "corona_length", NA, "coronas?",
-  "disc", NA, "disc_diameter", "disc")
+  "disc", NA, "disc_diameter", "disc",
+  "indusium", "indusium_length", "indusium_width", "indusi(?:a|um)")
 
 # ---------------------------------------------------------------- phenology (months)
 month_re <- "\\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sept?(?:ember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\b"
@@ -1044,7 +1047,7 @@ months_from_text <- function(x) {
   sort(unique(out))
 }
 yn <- function(m) if (!length(m)) NA_character_ else paste(ifelse(1:12 %in% m, "y", "n"), collapse = "")
-hedge <- "(?:,\\s*)?(?:\\b(?:and|but|although)\\s+)?\\b(?:possibly|probably|likely|almost certainly|it may also|may also|could|might|thought to be|is thought|appears to be|appear to be|seems to be|presumably)\\b.*$"
+hedge <- "(?:,\\s*)?(?:\\b(?:and|but|although)\\s+)?\\b(?:possibly|probably|likely|almost certainly|it may also|may also|could|might|may occur|thought to be|is thought|appears to be|appear to be|seems to be|presumably)\\b.*$"
 kw_both <- "\\b(?:flower(?:s|ing)?,? (?:and |, )?(?:fruit(?:s|ing)?|seeds?)|flowers, fruit and seed|flowers and fruit|flowering and fruiting)\\b"
 kw_flower <- "\\b(?:flower(?:s|ing|ed)?|in flower|anthesis)\\b"
 kw_bud <- "\\b(?:flower buds?|buds?)\\b"
@@ -1096,13 +1099,13 @@ phenology_parse <- function(txt) {
     s2 <- s
     # "Flowers most of the year, primarily June-Oct.": the months on a "primarily" row; "most (months) of the year"
     # alone is not a calendar
-    mq <- str_match(s2, regex("(?:for |during )?most (?:months )?of the year,?\\s*(?:with (?:an? )?)?(primarily|mainly|mostly|particularly|especially|peak(?:s|ing)?)\\s+(?:(?:in|from|during)\\s+)?", ignore_case = TRUE))
+    mq <- str_match(s2, regex("(?:for |during )?(?:sporadically )?most (?:months )?of (?:the )?year,?\\s*(?:with (?:an? )?)?(primarily|mainly|mostly|particularly|especially|peak(?:s|ing)?)\\s+(?:(?:in|from|during)\\s+)?", ignore_case = TRUE))
     if (!is.na(mq[1])) {
       pre <- str_sub(s2, 1, str_locate(s2, fixed(mq[1]))[1, 1] - 1)
       kk <- if (str_detect(pre, regex(kw_both, ignore_case = TRUE))) c("fl", "fr") else if (str_detect(pre, regex(kw_fruit, ignore_case = TRUE))) "fr" else "fl"
       main_q[kk] <- str_replace(str_to_lower(mq[2]), "^peak(?:s|ing)$", "peak"); s2 <- str_replace(s2, fixed(mq[1]), "")
     }
-    s2 <- str_remove_all(s2, regex(",?\\s*(?:for |during )?most (?:months )?of the year,?", ignore_case = TRUE))
+    s2 <- str_remove_all(s2, regex(",?\\s*(?:for |during )?(?:sporadically )?most (?:months )?of (?:the )?year,?", ignore_case = TRUE))
     s2 <- str_remove_all(s2, regex("\\b(?:probably|possibly|perhaps) (?:dependent|depending) on [a-z ]+", ignore_case = TRUE))
     s2 <- str_remove_all(s2, regex(hedge, ignore_case = TRUE))
     lo_re <- paste0("\\(\\s*(", ext_pat, ")\\s*-\\s*\\)"); hi_re <- paste0("\\(\\s*-\\s*(", ext_pat, ")\\s*\\)")
@@ -1110,11 +1113,13 @@ phenology_parse <- function(txt) {
     # "occasionally" row (user's choice)
     # (also "all year round, but mainly in spring", "all year, but predominantly July-December")
     # (and "throughout the year with peak in November-December", "year round, prolifically from c. November-March")
-    am <- str_match(s2, regex("\\b(?:(?:at )?any time(?: of (?:the )?year)?|all year(?: round| around)?|year[- ]round|throughout the year),?\\s*(?:but\\s+|with (?:an? )?)?(mainly|mostly|chiefly|usually|especially|particularly|primarily|predominantly|peak(?:s|ing)?|prolifically)\\s+(?:(?:in|from|during)\\s+)?(?:c\\.\\s*)?", ignore_case = TRUE))
+    am <- str_match(s2, regex("\\b(?:(?:at )?any time(?: of (?:the )?year)?|all year(?: round| around)?|year[- ]round|throughout the year),?\\s*(?:but\\s+|with (?:an? )?)?(mainly|mostly|chiefly|usually|especially|particularly|primarily|predominantly|peak(?:s|ing)?|prolifically|most frequently|most commonly)\\s+(?:(?:in|from|during)\\s+)?(?:c\\.\\s*)?", ignore_case = TRUE))
+    # (only when months or seasons follow: "all year round, most commonly in association with seasonal rainfall" is all year)
+    if (!is.na(am[1]) && !str_detect(str_sub(s2, str_locate(s2, fixed(am[1]))[1, 2] + 1), regex(paste0(mon_pat, "|spring|summer|autumn|winter|wet season|dry season"), ignore_case = TRUE))) am[1] <- NA
     if (!is.na(am[1])) {
       s2 <- str_replace(s2, fixed(am[1]), "")
       allyr <- pheno_hits(str_replace(s2, regex(paste0(mon_pat, "|(?:early |mid |late )?(?:spring|summer|autumn|winter)"), ignore_case = TRUE), "throughout the year"))
-      for (k in c("fl", "fr")) if (length(allyr[[k]]) == 12) main_q[k] <- str_replace(str_to_lower(am[2]), "^peak(?:s|ing)$", "peak")
+      for (k in c("fl", "fr")) if (length(allyr[[k]]) == 12) main_q[k] <- str_replace(str_to_lower(am[2]), "^peak(?:s|ing)$", "peak") %>% str_replace("^most (?:frequently|commonly)$", "mostly")
       for (k in c("fl", "fr")) if (length(allyr[[k]]) == 12) q_extra[[length(q_extra) + 1]] <- tibble(k = k, q = "occasionally", m = list(1:12), s = s)
     }
     # "mainly Oct.-May, can flower sporadically throughout year": an all-year row with that commonness word
@@ -1656,7 +1661,14 @@ extract_one <- function(r, group_filter = TRUE) {
     uu <- if (is.na(en)) u %>% filter(is.na(entity)) else u %>% filter(entity == en)
     ct <- if (is.na(en)) c(NA, NA) else c("entity_measured", paste(str_replace(en, "staminate", "male") %>% str_replace("pistillate", "female"), "flowers"))
     # ("Male flowers in disjunct glomerules ... forming panicles 6-25 cm long": the sizes after "in ... panicles" are the inflorescence's)
-    fl_u <- unit_text(uu, "flower", subj_re = "flower|floret|^(?:fe)?males$|ones$") %>%
+    fl_u0 <- unit_text(uu, "flower", subj_re = "flower|floret|^(?:fe)?males$|ones$")
+    # "Flowers in thyrses or racemes, to 50 cm long": a bare size in cm / m right after the inflorescence phrase is the
+    # inflorescence length (recorded as such when the inflorescence has no length of its own)
+    infl_re <- "\\bin (?:[a-z0-9-]+ ){0,3}(?:thyrses?|racemes?|panicles?|spikes?|cymes?|umbels?|subumbels?|heads?|corymbs?|inflorescences?|dichasi(?:a|um)|monochasi(?:a|um))(?: or (?:[a-z0-9-]+ ){0,2}(?:thyrses?|racemes?|panicles?|spikes?|cymes?|umbels?|heads?|corymbs?|subumbels?|dichasi(?:a|um)|monochasi(?:a|um)))?,?\\s*((?:(?:to|up to|c\\.|mostly|about)\\s+)*[0-9.]+(?:\\s*-\\s*[0-9.]+)?\\s*(?:cm|m) long)"
+    for (x in fl_u0) { im <- str_match(x, rx(infl_re))
+      if (!is.na(im[1]) && !any(map_lgl(recs, ~ "inflorescence_length" %in% .x$trait))) { v <- meas_of(im[2]); if (!is.null(v)) addn("inflorescence_length", v, im[2], ct[1], ct[2]) } }
+    fl_u0 <- str_remove(fl_u0, rx(paste0("(?<=thyrses|thyrse|racemes|raceme|panicles|panicle|spikes|spike|cymes|cyme|umbels|umbel|heads|head|corymbs|corymb|inflorescences|inflorescence|subumbels|dichasia|dichasium|monochasia|monochasium),?\\s*(?:(?:to|up to|c\\.|mostly|about)\\s+)*[0-9.]+(?:\\s*-\\s*[0-9.]+)?\\s*(?:cm|m) long")))
+    fl_u <- fl_u0 %>%
       # (only that phrase and any bare measurements right after it: "in a spike c. 3 mm diam., to 10 mm long")
       # (bare measurements after it are the inflorescence's only when the phrase itself is sized: "in a spike c. 3 mm diam., to 10 mm
       # long"; in "Flowers paired or in clusters of up to 5, 1-2 mm long" the size is the flower's)
@@ -1896,7 +1908,7 @@ extract_one <- function(r, group_filter = TRUE) {
       tt <- ug %>% filter(okey %in% ks) %>% group_by(unit) %>% summarise(t = paste(text, collapse = ", "), .groups = "drop") %>% pull(t)
       if (!length(tt)) next
       nn <- gen_counts$noun[qi]
-      v <- count_after(tt, paste0("^(?:the )?(?:[a-z]+ ){0,2}?(?:", nn, ")\\s+(?:usually |c\\. |mostly |often |about |± )?([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?(?![0-9.]|\\s*(?:mm|cm|dm|m)\\b|\\s*(?:x|×)|\\s*-\\s*(?:[a-z]|or\\b))(?:\\s*(?:per|in each) (?:locule|cell|carpel))?"))
+      v <- count_after(tt, paste0("^(?:the )?(?:[a-z]+ ){0,2}?(?:", nn, ")\\s+(?:usually |c\\. |mostly |often |about |± )?([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?(?![0-9.]|\\s*(?:mm|cm|dm|m)\\b|\\s*(?:x|×)|\\s*-\\s*(?:[a-z]|or\\b)|\\s*(?:-|or|to)\\s*[0-9])(?:\\s*(?:per|in each) (?:locule|cell|carpel))?"))
       if (is.null(v)) v <- count_after(tt, paste0("(?<![0-9.,×x-]\\s?)\\b([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?\\s+(?:[a-z-]+ )?(?:", nn, ")\\b"))
       if (is.null(v)) next
       tr <- gen_counts$trait[qi]
@@ -2034,9 +2046,10 @@ recs <- map2_dfr(res, d$scientific_name, ~ if (!is.null(.x$recs) && nrow(.x$recs
 # Aristolochia "Now includes Pararistolochia: ..."): each part describes only its own members, so the parts are read
 # separately and a value is universal only when every part states it.
 d_hi_parts <- d_higher %>%
-  mutate(Description = str_split(Description, "\\s*(?=\\bNow includes [A-Z][a-z]+(?: \\([^)]*\\))?:)")) %>%
+  # (also sunk genera appended as "Selliera (Carolin 1992: 281): ..." in Goodenia)
+  mutate(Description = str_split(Description, "\\s*(?=\\bNow includes [A-Z][a-z]+(?: \\([^)]*\\))?:|(?<=[.]\\s)[A-Z][a-z]+ \\([A-Z][^()]*\\b(?:1[89]|20)[0-9]{2}[a-z]?(?::\\s*[0-9-]+)?\\):)")) %>%
   unnest(Description) %>%
-  mutate(Description = str_remove(Description, "^Now includes [A-Z][a-z]+(?: \\([^)]*\\))?:\\s*")) %>%
+  mutate(Description = str_remove(Description, "^(?:Now includes [A-Z][a-z]+(?: \\([^)]*\\))?|[A-Z][a-z]+ \\([A-Z][^()]*\\b(?:1[89]|20)[0-9]{2}[a-z]?(?::\\s*[0-9-]+)?\\)):\\s*")) %>%
   filter(str_detect(Description, "[a-z]")) %>%
   group_by(scientific_name) %>% mutate(part = row_number(), n_parts = n()) %>% ungroup()
 hi_recs <- function(group_filter) {
@@ -2141,10 +2154,12 @@ recs <- bind_rows(recs, inherited)
 # Alternatives ("herbs or shrubs", "terminal or axillary"), qualified ("usually"), regional and contextual values are not copied.
 # A group statement counts only when it names one term ("flat, terete or triquetrous" does not, even though only
 # "terete" has a level), and only when no member taxon describing the trait itself contradicts it.
-# (cues and recruitment come from Ecology statements, often about one member species: never copied down)
+# (cues and recruitment come from Ecology statements, often about one member species: never copied down; nor the climbing
+# mechanism, which genus descriptions give as one of several growth forms: Scaevola "herbs, scramblers, shrubs or small trees")
 universal <- recs_hi %>%
   filter(!is.na(value), value != "", is.na(qualifier), is.na(region), is.na(ctx_type), !str_detect(value, " "),
-         coalesce(alts, 1L) == 1, !trait %in% c("flowering_time", "fruiting_time", "flowering_cues", "fruiting_cues", "germination_cues", "post_fire_recruitment")) %>%
+         coalesce(alts, 1L) == 1, !trait %in% c("flowering_time", "fruiting_time", "flowering_cues", "fruiting_cues", "germination_cues", "post_fire_recruitment",
+                                       "plant_climbing_mechanism")) %>%
   group_by(group_name, trait, value) %>% filter(n_distinct(part) == first(n_parts)) %>% ungroup() %>%
   mutate(facet = facet_of(trait, value)) %>% anti_join(hi_variable, by = c("group_name", "trait", "facet")) %>%
   semi_join(hi_full_vals, by = c("group_name", "trait", "value")) %>%
