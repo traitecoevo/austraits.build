@@ -37,7 +37,10 @@ families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae
                    "Boraginaceae", "Boryaceae", "Brassicaceae", "Bromeliaceae", "Burseraceae", "Byblidaceae", "Cabombaceae", "Cactaceae",
                    "Calycanthaceae", "Campanulaceae", "Campynemataceae", "Cannabaceae", "Cannaceae", "Capparaceae", "Cardiopteridaceae",
                    # Caryophyllaceae - Celastraceae etc. not yet done; Chenopodiaceae done out of order (user's request)
-                   "Chenopodiaceae")
+                   "Chenopodiaceae",
+                   "Caryophyllaceae", "Casuarinaceae", "Celastraceae", "Centrolepidaceae", "Cephalotaceae", "Ceratophyllaceae",
+                   "Chrysobalanaceae", "Cistaceae", "Cleomaceae", "Clusiaceae", "Colchicaceae", "Combretaceae", "Commelinaceae",
+                   "Connaraceae", "Convolvulaceae", "Cornaceae", "Corsiaceae", "Corynocarpaceae", "Costaceae", "Cucurbitaceae")
 fams <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_FAMILIES"), ",")[[1]] else families_done
 
 d_all <- read_csv(src, show_col_types = FALSE, col_types = cols(.default = "c"), guess_max = 1e5)
@@ -82,6 +85,13 @@ fix_text <- tribble(
   "Aponogetonaceae", "white topink", "white to pink",
   # Sisymbrium irio: reversed range "Sepals erect, 3.5–3.0 mm long"
   "Sisymbrium irio", "3.5–3.0 mm long", "3.0–3.5 mm long",
+  # Silene flos-cuculi: cauline leaves "40–90 cm long" (mm intended); Centrolepis inconspicua heads "1–2 m wide" (mm intended)
+  "Silene flos-cuculi", "linear-lanceolate, 40–90 cm long", "linear-lanceolate, 40–90 mm long",
+  "Centrolepis inconspicua", "oblong, 1–2 m wide", "oblong, 1–2 mm wide",
+  # Mesua sp. Boonjie: fruit "25–3 (–35) mm wide" (25–30 intended, as the length "25 (–35) mm long")
+  "Mesua sp. Boonjie (A.K.Irvine 1218)", "25–3 (–35) mm wide", "25–30 (–35) mm wide",
+  # Trichosanthes subvelutina: "Male flowers in 4–8-flowered racemes, pubescent, 12–20 cm long" (the racemes are 12–20 cm)
+  "Trichosanthes subvelutina", "racemes, pubescent, 12–20 cm long", "racemes; racemes pubescent, 12–20 cm long",
   # Einadia hastata: "Spreading perennial to 1.5 mm high" (m intended)
   "Einadia hastata", "to 1.5 mm high", "to 1.5 m high",
   # Cardamine corymbosa: fruits "10–30 mm long, 0.5–1 (–2) m wide" (mm intended)
@@ -439,7 +449,11 @@ fern_families <- c("Aspleniaceae", "Athyriaceae", "Blechnaceae", "Cyatheaceae", 
 lyco_families <- c("Lycopodiaceae", "Selaginellaceae", "Isoetaceae")
 fern_mode <- FALSE
 chenopod_mode <- FALSE
+casuarina_mode <- FALSE
 classify_token <- function(tok) {
+  # Casuarinaceae: the woody "cone" is the infructescence (sizes on entity_measured = cone rows, as for chenopod dispersal units);
+  # the samara is the fruit
+  if (casuarina_mode && str_detect(tok, rx("^(?:the )?(?:mature )?cones?(?: body| bodies)?\\b"))) return(list(kind = "organ", sec = "diaspore", part = NA_character_, subj = "cone"))
   # Chenopodiaceae (Tecticornia, Salicornia): the stem "articles" (in other families articles are fruit segments)
   if (chenopod_mode && str_detect(tok, rx("^(?:the )?(?:vegetative |flowering |fertile |sterile )?articles?\\b"))) return(list(kind = "organ", sec = "stem", part = NA_character_, subj = "articles"))
   if (fern_mode && str_detect(tok, rx("^(?:the )?stipes?\\b"))) return(list(kind = "organ", sec = "petiole", part = NA_character_, subj = "stipe"))
@@ -889,7 +903,8 @@ phenology_parse <- function(txt) {
     lo_re <- paste0("\\(\\s*(", ext_pat, ")\\s*-\\s*\\)"); hi_re <- paste0("\\(\\s*-\\s*(", ext_pat, ")\\s*\\)")
     # "Flowers and fruits at any time but mainly September-March": X on a "mainly" row, the whole year on an
     # "occasionally" row (user's choice)
-    am <- str_match(s2, regex("\\b(?:at )?any time(?: of (?:the )?year)?,?\\s*(?:but\\s+)?(mainly|mostly|chiefly|usually|especially)\\s+", ignore_case = TRUE))
+    # (also "all year round, but mainly in spring", "all year, but predominantly July-December")
+    am <- str_match(s2, regex("\\b(?:(?:at )?any time(?: of (?:the )?year)?|all year(?: round| around)?|throughout the year),?\\s*(?:but\\s+)?(mainly|mostly|chiefly|usually|especially|predominantly)\\s+", ignore_case = TRUE))
     if (!is.na(am[1])) {
       s2 <- str_replace(s2, fixed(am[1]), "")
       main_q <- str_to_lower(am[2])
@@ -980,7 +995,8 @@ extract_one <- function(r, group_filter = TRUE) {
     desc <- paste(paste0(ss[ss != ""], "."), collapse = " ")
   }
   fern_mode <<- fam %in% fern_families
-  chenopod_mode <<- fam == "Chenopodiaceae"
+  chenopod_mode <<- fam %in% c("Chenopodiaceae", "Casuarinaceae")
+  casuarina_mode <<- fam == "Casuarinaceae"
   u <- units_of(desc)
   # kept heads of dropped group segments only carry the organ context forward; they are not statements
   u <- u %>% filter(!str_detect(text, "\u2205"))
@@ -1137,7 +1153,10 @@ extract_one <- function(r, group_filter = TRUE) {
   def_desc <- collapse_text(c(if (nrow(dh)) def_txt, if (nrow(ldh)) join_units(lam_all)), " | ")
   add(rec_cat("plant_physical_defence_structures", dh, def_desc))
   add(rec_cat("plant_physical_defence_structures", ldh, def_desc))
-  addc("plant_climbing_mechanism", collapse_text(c(habit_txt, stem_txt, join_units(unit_text(u, "leaf", parts = "any"))), " | "), climbing_dict)
+  # (adventitious / aerial roots are a climbing mechanism only for climbers: Centrolepidaceae stems "producing axillary adventitious roots")
+  is_climbing <- (nrow(gf) && any(str_detect(gf$value, "climber"))) || str_detect(coalesce(habit_txt, ""), rx("climb|scandent|twin"))
+  addc("plant_climbing_mechanism", collapse_text(c(habit_txt, stem_txt, join_units(unit_text(u, "leaf", parts = "any"))), " | "),
+       if (is_climbing) climbing_dict else climbing_dict[climbing_dict != "adventitious_roots"])
 
   # ---- leaves
   leaf_gen <- unit_text(u, "leaf")
@@ -1167,6 +1186,11 @@ extract_one <- function(r, group_filter = TRUE) {
     add(rec_cat("leaf_type", tibble(pos = 1L, value = "needle", term = "needle-like", qual = NA), leaf_main_txt))
   }
   gen_txt <- join_units(leaf_gen)
+  # Casuarinaceae: leaves reduced to whorls of scale-like "teeth"
+  if (casuarina_mode && str_detect(desc %||% "", rx("\\bteeth\\b"))) {
+    add(rec_cat("leaf_length_type", tibble(pos = 1L, value = "scale_leaves", term = "teeth (scale leaves)", qual = NA), grab_sent(desc, "teeth")))
+    add(rec_cat("leaf_type", tibble(pos = 1L, value = "scale", term = "teeth (scale leaves)", qual = NA), grab_sent(desc, "teeth")))
+  }
   # counts of basal or cauline leaves alone go on entity_measured rows (basal_leaf / cauline_leaf), never summed
   for (lk in c("", "basal ", "cauline ", "rosette ")) {
     lcn <- count_after(leaf_gen, paste0("^", lk, "leaves (?:usually |mostly |c\\. |up to )?", cnt, "(?=,|$| per| in| \\()(?!\\s*(?:mm|cm|m)\\b)"))
@@ -1397,7 +1421,7 @@ extract_one <- function(r, group_filter = TRUE) {
       # (only that phrase and any bare measurements right after it: "in a spike c. 3 mm diam., to 10 mm long")
       # (bare measurements after it are the inflorescence's only when the phrase itself is sized: "in a spike c. 3 mm diam., to 10 mm
       # long"; in "Flowers paired or in clusters of up to 5, 1-2 mm long" the size is the flower's)
-      str_remove(rx("\\b(?:congested |arranged |borne |crowded )?in (?:[a-z-]+ ){0,3}(?:spikes?|panicles?|glomerules?|clusters?|heads?|racemes?|cymes?|umbels?|fascicles?|inflorescences?)\\b(?:[^,;|]*\\b(?:mm|cm|m)\\b[^,;|]*(?:,\\s*(?:to |c\\. |up to |about )?[0-9][^,;|]*)*|[^,;|]*)"))
+      str_remove(rx("\\b(?:congested |arranged |borne |crowded )?in (?:[a-z0-9-]+ ){0,3}(?:spikes?|panicles?|glomerules?|clusters?|heads?|racemes?|cymes?|umbels?|fascicles?|inflorescences?)\\b(?:[^,;|]*\\b(?:mm|cm|m)\\b[^,;|]*(?:,\\s*(?:to |c\\. |up to |about )?[0-9][^,;|]*)*|[^,;|]*)"))
     fd <- d_first(fl_u, excl("flowers?", "florets?"))
     if (!is.null(fd$L)) addn("flower_length", fd$L$v, fd$L$txt, ct[1], ct[2])
     fdm <- m_first(fl_u, "diam|diameter|in diameter|across|wide", excl("flowers?", "florets?"))
@@ -1526,6 +1550,12 @@ extract_one <- function(r, group_filter = TRUE) {
     if (!is.null(frd$W)) addn("fruit_width", frd$W$v, frd$W$txt)
     fth <- m_first(fr_dim, "thick|deep", fo)
     if (!is.null(fth)) addn("fruit_height", fth$v, fth$txt)
+    # fruits measured only as their mericarps / cocci ("Cocci 5-10 mm long"): entity_measured rows
+    if (is.null(frd$L)) {
+      mc <- d_first(unit_text(u, "fruit", subj_re = "^(?:the )?(?:mericarps?|cocci|coccus|fruitlets?)$"), fo)
+      if (!is.null(mc$L)) { addn("fruit_length", mc$L$v, mc$L$txt, "entity_measured", "mericarps"); frd$L <- mc$L }
+      if (!is.null(mc$W)) addn("fruit_width", mc$W$v, mc$W$txt, "entity_measured", "mericarps")
+    }
     # a utricle measured only as its pericarp ("pericarp hard and brittle, c. 2.5 mm long")
     if (is.null(frd$L)) {
       pc <- d_first(unit_text(u, "fruit", subj_re = "^(?:the )?pericarps?$"), fo)
@@ -1569,6 +1599,11 @@ extract_one <- function(r, group_filter = TRUE) {
   sd <- unit_text(u, "seed", subj_re = "seed")
   sd_txt <- join_units(sd)
   sdd <- d_first(sd, excl("seeds?"))
+  # "1.4-1.5 mm across longest axis", "longest axis 2.3-2.5 mm"
+  if (is.null(sdd$L)) {
+    la <- str_match(mark_extremes(join_units(sd) %||% ""), rx(paste0("(", meas, ")\\s*(?:across|along|on) (?:the )?long(?:est|er) axis|long(?:est|er) axis (?:c\\. )?(", meas, ")")))
+    if (!is.na(la[1])) sdd$L <- list(v = meas_of(coalesce(la[2], la[7])), txt = unmark(la[1]))
+  }
   if (!is.null(sdd$L)) addn("seed_length", sdd$L$v, sdd$L$txt)
   if (!is.null(sdd$W)) addn("seed_width", sdd$W$v, sdd$W$txt)
   addc("seed_shape", sd_txt, seed_shape_dict, prep_fun = function(x) str_remove_all(x, "\\bin (?:cross[- ])?section\\b[^,;|]*|\\b(?:arils?|wings?|hilum|embryo)\\b[^,;|]*"))
@@ -1591,7 +1626,7 @@ extract_one <- function(r, group_filter = TRUE) {
   cue_src <- collapse_text(c(prep(r[["Phenology"]]), prep(r[["Ecology"]]), prep(r[["Notes"]]), prep(r[["Habitat"]])), " ")
   if (!is.na(cue_src)) {
     cue_re <- "\\b(?:rain\\w*|wet season|the wet|monsoon\\w*|wet conditions|soil moisture|moisture|wetting|fires?|burn\\w*|smoke|flood\\w*|inundat\\w*|water levels?|drying|dries out|frost|cold|heat|temperature)\\b"
-    cue_hedge <- "\\b(?:probably|possibly|perhaps|may|might|appears? to|seems? to|thought to|likely|presumably|suggest\\w*)\\b"
+    cue_hedge <- "\\b(?:probably|possibly|perhaps|may|might|appears? to|seems? to|thought to|likely|presumably|suggest\\w*|[Mm]ost species|[Ss]ome species|[Mm]any species)\\b|\\[genus description\\]"
     cue_kw <- list(flowering = "\\b(?:flower\\w*|anthesis|in bloom)\\b", fruiting = "\\b(?:fruit\\w*|seed(?:s|ing)? (?:set|mature|ripen)\\w*|capsules?)\\b",
                    germination = "\\b(?:germinat\\w*|seedlings?|recruit\\w*|regenerat\\w* from seed)\\b")
     cue_dict <- c("(?:summer|wet[- ]season|monsoon(?:al)?) rain\\w*|rain\\w* (?:in|during) (?:the )?(?:summer|wet season)|wet season|the wet\\b|monsoon\\w*" = "rain_summer",
@@ -1605,7 +1640,7 @@ extract_one <- function(r, group_filter = TRUE) {
     for (k in names(cue_kw)) {
       ck <- cl[str_detect(cl, rx(cue_kw[[k]]))]
       # the fire / rainfall must be the trigger: "flowers after fire", "germinates following rain", "in response to rainfall"
-      ck <- ck[str_detect(ck, rx(paste0("\\b(?:after|following|in response to|response to|triggered by|stimulated by|induced by|dependent on|depending on|depends on|with|when|once|until|requires?|prompted by|cued by|post-?)\\b[^.;]{0,40}", cue_re, "|", cue_re, "[- ](?:stimulated|induced|triggered|dependent|related)")))]
+      ck <- ck[str_detect(ck, rx(paste0("\\b(?:after|following|in association with|associated with|in response to|response to|triggered by|stimulated by|induced by|dependent on|depending on|depends on|with|when|once|until|requires?|prompted by|cued by|post-?)\\b[^.;]{0,40}", cue_re, "|", cue_re, "[- ](?:stimulated|induced|triggered|dependent|related)")))]
       # capsules exploding "in response to wetting or drying" and fruits "washed ashore during the monsoon" are dehiscence /
       # dispersal, not cues
       ck <- ck[!str_detect(ck, rx("\\b(?:explod\\w*|dehisc\\w*|flung|washed|flotsam|dispers\\w*|carried)\\b"))]
@@ -1619,7 +1654,7 @@ extract_one <- function(r, group_filter = TRUE) {
       # "after winter or summer rainfall" -> "winter rain or summer rainfall"
       mtxt <- join_units(mapped)
       if (!is.na(mtxt)) mtxt <- str_remove_all(str_replace_all(str_to_lower(mtxt), "\\b(winter|summer|autumn|spring) (or|and) (winter|summer|autumn|spring) (rain\\w*)", "\\1 rain \\2 \\3 \\4"),
-                                             "\\b(?:fire|flood|rainfall|rain)[- ]?(?:breaks?|scar\\w*|history|frequency|regime|plain)\\b")
+                                             "\\b(?:fire|flood|rainfall|rain)[- ]?(?:breaks?|scar\\w*|history|frequency|regime|plain)\\b|\\bfrom (?:north|south|east|west) to (?:north|south|east|west)\\b")
       # ("mainly after the Wet": the commonness word reaches across the trigger words)
       h <- scan_terms(mtxt, d_use, generic_neg = TRUE,
                       fillers = c(filler_words, "after", "following", "in", "response", "to", "favourable", "good", "heavy", "late", "early", "by", "of", "on", "dependent", "depending", "triggered"))
@@ -1737,7 +1772,9 @@ copydown_exclude <- tribble(
   # "bisexual, monoecious or (not in Australia) dioecious": plants bisexual or monoecious
   "Atherospermataceae", "sex_type",
   # Tecticornia's description stitches together the former genera merged into it; only one of them ("... perennials, dioecious") is dioecious
-  "Tecticornia", "sex_type"
+  "Tecticornia", "sex_type",
+  # Casuarinaceae "teeth" are the scale leaves themselves, not leaf-margin teeth
+  "Casuarinaceae", "leaf_margin", "Allocasuarina", "leaf_margin", "Casuarina", "leaf_margin", "Gymnostoma", "leaf_margin"
 )
 
 # ---------------------------------------------------------------- overrides
