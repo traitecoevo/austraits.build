@@ -53,7 +53,9 @@ families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae
                    "Iridaceae", "Isoetaceae", "Juglandaceae", "Juncaceae", "Juncaginaceae", "Lamiaceae",
                    "Lauraceae", "Lecythidaceae", "Lentibulariaceae", "Liliaceae", "Limeaceae", "Linaceae", "Linderniaceae", "Lindsaeaceae",
                    "Loganiaceae", "Lomariopsidaceae", "Loranthaceae", "Luzuriagaceae", "Lycopodiaceae", "Lygodiaceae", "Lythraceae",
-                   "Macarthuriaceae", "Malpighiaceae", "Malvaceae")
+                   "Macarthuriaceae", "Malpighiaceae", "Malvaceae", "Marantaceae", "Marattiaceae", "Marsileaceae", "Martyniaceae",
+                   "Maundiaceae", "Melastomataceae", "Meliaceae", "Melianthaceae", "Menispermaceae", "Menyanthaceae", "Molluginaceae",
+                   "Monimiaceae", "Moraceae", "Moringaceae", "Muntingiaceae", "Musaceae", "Myodocarpaceae", "Myristicaceae", "Myrtaceae")
 fams <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_FAMILIES"), ",")[[1]] else families_done
 
 d_all <- read_csv(src, show_col_types = FALSE, col_types = cols(.default = "c"), guess_max = 1e5)
@@ -120,6 +122,9 @@ fix_text <- tribble(
   "Hibbertia hypericoides subsp. hypericoides", "(6–) 10–5 (–25) mm long", "(6–) 10–15 (–25) mm long",
   # Einadia hastata: "Spreading perennial to 1.5 mm high" (m intended)
   "Einadia hastata", "to 1.5 mm high", "to 1.5 m high",
+  # shrubs "0.4-1.8 m high, 0.35-1.5 mm wide" (m intended)
+  "Anticoryne ovalifolia", "0.35–1.5 mm wide", "0.35–1.5 m wide",
+  "Ericomyrtus serpyllifolia", "0.2–1.5 (–2) mm wide", "0.2–1.5 (–2) m wide",
   # Cardamine corymbosa: fruits "10–30 mm long, 0.5–1 (–2) m wide" (mm intended)
   "Cardamine corymbosa", "0.5–1 (–2) m wide", "0.5–1 (–2) mm wide"
 )
@@ -200,7 +205,8 @@ prep <- function(x) {
   x <- str_replace_all(x, ",(?=[a-z])", ", ")
   # states that do not occur in Australia ("acaulescent (not in Australia)", "spiny (not in Australia)") are dropped
   # "convex or (not in Australia) truncate or conical", "simple (not in Australia) or imparipinnate", "acaulescent (not in Australia),"
-  x <- str_remove_all(x, "\\s*\\bor \\(\\s*not in Australia\\s*\\) [a-z-]+(?: (?:or|and) [a-z-]+)*")
+  # ("opposite or rarely (not in Australia) whorled": a commonness word may sit before the bracket)
+  x <- str_remove_all(x, "\\s*\\bor (?:(?:very rarely|rarely|sometimes|occasionally|often|usually) )?\\(\\s*not in Australia\\s*\\) [a-z-]+(?: (?:or|and) [a-z-]+)*")
   x <- str_remove_all(x, "[^,;:.()]*\\(\\s*not in Australia\\s*\\)\\s+or\\s+")
   x <- str_remove_all(x, "(?:,\\s*|\\bor\\s+)?[^,;:.()]*\\(\\s*not in Australia\\s*\\)")
   x <- str_replace_all(x, ",\\s*(?=[,;])", "")
@@ -886,7 +892,7 @@ gen_shape_dict <- c(
   "saccate|pouched" = "saccate", "hemispherical|hemispheric" = "hemispherical", "lenticular" = "lenticular",
   "pyriform|pear-shaped" = "pyriform", "discoid|disc-shaped" = "discoid", "semicircular" = "semicircular", "square" = "square",
   "bifid|2-fid|bilobed|2-lobed|two-lobed" = "bilobed", "trifid|3-fid|3-lobed|three-lobed" = "trilobed", "punctiform" = "punctiform",
-  "plumose|feathery" = "plumose", "filamentous" = "filiform", "lobed" = "lobed", "sagittate" = "sagittate", "hastate" = "hastate")
+  "plumose|feathery" = "plumose", "curved|arcuate|horseshoe-shaped" = "curved", "straight" = "straight", "filamentous" = "filiform", "lobed" = "lobed", "sagittate" = "sagittate", "hastate" = "hastate")
 gen_texture_dict <- c(
   "coriaceous|subcoriaceous|leathery" = "coriaceous", "chartaceous|papery|papyraceous" = "chartaceous", "membranous|membranaceous" = "membranous",
   "scarious" = "scarious", "hyaline" = "hyaline", "fleshy|succulent|carnose" = "fleshy", "woody|lignified" = "woody", "corky|suberose" = "corky",
@@ -903,7 +909,7 @@ gen_surface_dict <- c(
 gen_orient_dict <- c(
   "erect|suberect" = "erect", "spreading|patent" = "spreading", "reflexed|deflexed|bent back" = "reflexed", "recurved" = "recurved",
   "incurved|inflexed" = "incurved", "ascending" = "ascending", "pendulous|pendent|drooping|nodding" = "pendulous",
-  "appressed|adpressed" = "appressed", "imbricate" = "imbricate", "twisted|contorted" = "twisted", "straight" = "straight", "curved" = "curved")
+  "appressed|adpressed" = "appressed", "imbricate" = "imbricate", "twisted|contorted" = "twisted")
 gen_fusion_dict <- c("free" = "free", "connate|fused|united|joined|coalescent|gamosepalous|gamopetalous|sympetalous" = "connate",
                      "adnate" = "adnate", "polypetalous|polysepalous" = "free")
 gen_persist_dict <- c("persistent|persisting" = "persistent", "caducous|early deciduous|early-deciduous|soon falling|fugacious" = "caducous",
@@ -920,8 +926,9 @@ gen_other <- c("leaves", "leaf", "laminae?", "blades?", "petioles?", "stipules?"
                "filaments?", "anthers?", "staminodes?", "ovary", "ovaries", "styles?", "stigmas?", "carpels?", "ovules?", "fruits?",
                "capsules?", "seeds?", "arils?", "stems?", "branches", "branchlets?", "bark", "roots?", "hypanthium", "disc",
                "columellae?", "columns?", "receptacles?", "septa", "septum", "valves?", "beaks?", "wings?", "hilum", "caruncles?",
-               "elaiosomes?", "claws?", "spurs?", "glands?", "keels?", "sheaths?", "spines?", "awns?", "horns?")
-gen_own <- list(leaf = "leaves|leaf|laminae?|blades?", leaflet = "", petiole = "petioles?", stipule = "stipules?", inflorescence = "inflorescences?",
+               "elaiosomes?", "claws?", "spurs?", "glands?", "keels?", "sheaths?", "spines?", "awns?", "horns?",
+               "endocarps?", "pyrenes?", "stones?")
+gen_own <- list(leaf = "leaves|leaf|laminae?|blades?", juvenile_leaf = "leaves|leaf|laminae?|blades?", leaflet = "", petiole = "petioles?", stipule = "stipules?", inflorescence = "inflorescences?",
                 peduncle = "peduncles?", pedicel = "pedicels?", bud = "", bract = "bracts?", bracteole = "bracteoles?", involucral_bract = "bracts?",
                 sepal = "sepals?|calyx", calyx = "calyx|calyces|sepals?", hypanthium = "hypanthium|calyx", perianth = "perianths?|tepals?",
                 petal = "petals?|corollas?", corolla = "corollas?|petals?", anther = "anthers?|stamens?", filament = "filaments?|stamens?",
@@ -945,7 +952,7 @@ gen_okey <- function(sec, part, subj) {
   s <- str_remove(str_to_lower(coalesce(subj, "")), "^the ")
   case_when(
     sec == "stem" & str_detect(s, "branchlet|twig") ~ "branchlet", sec == "stem" ~ "stem",
-    sec %in% c("leaf", "lamina") ~ "leaf", sec == "leaflet" ~ "leaflet", sec == "petiole" ~ "petiole", sec == "stipule" ~ "stipule",
+    sec %in% c("leaf", "lamina") ~ "leaf", sec == "juvenile" ~ "juvenile_leaf", sec == "leaflet" ~ "leaflet", sec == "petiole" ~ "petiole", sec == "stipule" ~ "stipule",
     sec == "inflorescence" ~ "inflorescence", sec == "peduncle" ~ "peduncle", sec == "pedicel" ~ "pedicel", sec == "bud" ~ "bud",
     sec == "bract" & str_detect(s, "bracteole|prophyll") ~ "bracteole", sec == "bract" & str_detect(s, "involuc|phyllar") ~ "involucral_bract",
     sec == "bract" & str_detect(s, "spathe") ~ "spathe", sec == "bract" ~ "bract",
@@ -975,7 +982,7 @@ gen_chars <- list(organ = c("hairs", "shape", "colour", "texture", "surface", "o
 gen_extra <- list(anther = c("attachment", "dehiscence", "exsertion"), stamen = "exsertion", style = "exsertion", stigma = "exsertion",
                   filament = "exsertion", staminode = character(0))
 # organ x character pairs already extracted under an existing (or earlier candidate) trait
-gen_skip <- c("leaf__hairs", "leaf__shape", "leaf__colour", "leaf__texture", "leaf__surface", "leaf_apex_apex_shape", "leaflet__shape",
+gen_skip <- c("juvenile_leaf__hairs", "juvenile_leaf__texture", "leaf__hairs", "leaf__shape", "leaf__colour", "leaf__texture", "leaf__surface", "leaf_apex_apex_shape", "leaflet__shape",
               "leaflet_apex_apex_shape", "stem__hairs", "stem__shape", "branchlet__shape", "fruit__hairs", "fruit__shape", "fruit__colour",
               "seed__shape", "seed__colour", "seed__surface", "seed__hairs", "corolla__colour", "petal__colour", "perianth__colour",
               "corolla_lobe_colour", "perianth_lobe_colour", "inflorescence__shape")
@@ -1014,7 +1021,8 @@ gen_sizes <- tribble(
   "corona", "corona_length", NA, "coronas?",
   "disc", NA, "disc_diameter", "disc",
   "indusium", "indusium_length", "indusium_width", "indusi(?:a|um)",
-  "infructescence", "infructescence_length", "infructescence_width", "infructescences?")
+  "infructescence", "infructescence_length", "infructescence_width", "infructescences?",
+  "juvenile_leaf", "juvenile_leaf_length", "juvenile_leaf_width", "leaves|leaf|laminae?|blades?")
 
 # ---------------------------------------------------------------- phenology (months)
 month_re <- "\\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sept?(?:ember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\b"
@@ -1689,10 +1697,10 @@ extract_one <- function(r, group_filter = TRUE) {
     fl_u0 <- unit_text(uu, "flower", subj_re = "flower|floret|^(?:fe)?males$|ones$")
     # "Flowers in thyrses or racemes, to 50 cm long": a bare size in cm / m right after the inflorescence phrase is the
     # inflorescence length (recorded as such when the inflorescence has no length of its own)
-    infl_re <- "\\bin (?:[a-z0-9-]+ ){0,3}(?:thyrses?|racemes?|panicles?|spikes?|cymes?|umbels?|subumbels?|heads?|corymbs?|inflorescences?|dichasi(?:a|um)|monochasi(?:a|um))(?: or (?:[a-z0-9-]+ ){0,2}(?:thyrses?|racemes?|panicles?|spikes?|cymes?|umbels?|heads?|corymbs?|subumbels?|dichasi(?:a|um)|monochasi(?:a|um)))?,?\\s*((?:(?:to|up to|c\\.|mostly|about)\\s+)*[0-9.]+(?:\\s*-\\s*[0-9.]+)?\\s*(?:cm|m) long)"
+    infl_re <- "\\bin (?:[a-z0-9-]+ ){0,3}(?:thyrses?|racemes?|panicles?|spikes?|cymes?|umbels?|subumbels?|heads?|corymbs?|inflorescences?|dichasi(?:a|um)|monochasi(?:a|um)|catkins?|amenta)(?: or (?:[a-z0-9-]+ ){0,2}(?:thyrses?|racemes?|panicles?|spikes?|cymes?|umbels?|heads?|corymbs?|subumbels?|dichasi(?:a|um)|monochasi(?:a|um)))?,?\\s*((?:(?:to|up to|c\\.|mostly|about)\\s+)*[0-9.]+(?:\\s*-\\s*[0-9.]+)?\\s*(?:cm|m) long)"
     for (x in fl_u0) { im <- str_match(x, rx(infl_re))
       if (!is.na(im[1]) && !any(map_lgl(recs, ~ "inflorescence_length" %in% .x$trait))) { v <- meas_of(im[2]); if (!is.null(v)) addn("inflorescence_length", v, im[2], ct[1], ct[2]) } }
-    fl_u0 <- str_remove(fl_u0, rx(paste0("(?<=thyrses|thyrse|racemes|raceme|panicles|panicle|spikes|spike|cymes|cyme|umbels|umbel|heads|head|corymbs|corymb|inflorescences|inflorescence|subumbels|dichasia|dichasium|monochasia|monochasium),?\\s*(?:(?:to|up to|c\\.|mostly|about)\\s+)*[0-9.]+(?:\\s*-\\s*[0-9.]+)?\\s*(?:cm|m) long")))
+    fl_u0 <- str_remove(fl_u0, rx(paste0("(?<=thyrses|thyrse|racemes|raceme|panicles|panicle|spikes|spike|cymes|cyme|umbels|umbel|heads|head|corymbs|corymb|inflorescences|inflorescence|subumbels|dichasia|dichasium|monochasia|monochasium|catkins|catkin),?\\s*(?:(?:to|up to|c\\.|mostly|about)\\s+)*[0-9.]+(?:\\s*-\\s*[0-9.]+)?\\s*(?:cm|m) long")))
     fl_u <- fl_u0 %>%
       # (only that phrase and any bare measurements right after it: "in a spike c. 3 mm diam., to 10 mm long")
       # (bare measurements after it are the inflorescence's only when the phrase itself is sized: "in a spike c. 3 mm diam., to 10 mm
