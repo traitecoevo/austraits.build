@@ -126,6 +126,7 @@ dataset:
   data_is_long_format: no
   custom_R_code:        '
     data %>%
+      filter(is.na(omit_duplicate)) %>%
       group_by(name_original, primary_source_id) %>%
         mutate(observation_num = row_number()) %>%
       ungroup()
@@ -138,7 +139,10 @@ dataset:
   sampling_strategy: Wood density data compiled for the Global Wood Density Database
   source_id: primary_source_id
   original_file: global_WD_database.xls
-  notes: none
+  notes: Values already in AusTraits from their original source are flagged in the
+    data.csv column omit_duplicate with the dataset holding them (Kingston_1961) and
+    excluded by custom_R_code. These are 3 values identical to a Kingston_1961 basic
+    density for the same taxon.
 locations: .na
 contexts:
 - context_property: replicate observations
