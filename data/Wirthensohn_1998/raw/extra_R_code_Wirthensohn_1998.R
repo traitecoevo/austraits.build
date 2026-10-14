@@ -45,7 +45,7 @@ size_16_months <- data |>
   tidyr::pivot_wider(names_from = trait, values_from = trait_value) |>
   mutate(species_evaluation = TRUE)
 
-wax_traits <- c("leaf_epicuticular_wax_crystal_form", "leaf_epicuticular_wax_density",
+wax_traits <- c("leaf_epicuticular_wax_crystal_form", "leaf_epicuticular_wax_density_class",
                 "leaf_wax_tube_length", "leaf_wax_tube_diameter", "leaf_wax_surface_cover")
 
 data <- data |>
@@ -69,7 +69,7 @@ data <- data |>
       TRUE ~ ""
     ),
     replicates = case_when(
-      !wax_trait | trait %in% c("leaf_epicuticular_wax_crystal_form", "leaf_epicuticular_wax_density") ~ "",
+      !wax_trait | trait %in% c("leaf_epicuticular_wax_crystal_form", "leaf_epicuticular_wax_density_class") ~ "",
       grepl("^Table 5\\.[12]", source_section) ~ "3",
       grepl("^Table 5\\.4", source_section) & entity_context == "control (wax not removed)" ~ "4",
       entity_context == "glaucous phenotype" ~ "15",

@@ -28,7 +28,7 @@ data <- data |>
       location_code %in% c("OUY", "TNS", "GFS") ~ "field",
       TRUE ~ ""
     ),
-    plant_part = if_else(trait %in% c("stomatal_position", "leaf_stomatal_distribution"), context, ""),
+    plant_part = if_else(trait %in% c("leaf_stomatal_position", "leaf_stomatal_distribution"), context, ""),
     measurement_remarks = if_else(value_type == "mode", trait_value_raw, "")
   ) |>
   relocate(location_name, .after = location_code) |>
