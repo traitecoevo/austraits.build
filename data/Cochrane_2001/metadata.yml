@@ -27,7 +27,14 @@ dataset:
       group_by(Species) %>%
       mutate(replicate_observation = dplyr::row_number()) %>%
       ungroup() %>%
-      mutate(`Time of collection` = coalesce(util_parse_collection_date(`Time of collection`), "2001"))
+      mutate(
+        `Time of collection` = purrr::map_chr(
+          stringr::str_split(`Time of collection`, ",\\s*"),
+          ~ if (all(is.na(.x))) NA_character_ else
+            paste(unique(range(util_format_collection_date(.x[.x != ""], "my"))), collapse = "/")
+        ),
+        `Time of collection` = coalesce(`Time of collection`, "2001")
+      )
   '
   collection_date: Time of collection
   taxon_name: Species

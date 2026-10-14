@@ -26,7 +26,7 @@ dataset:
     data %>% 
       mutate(
         across(c(`leaf_area (mm2)`,`specific_leaf_area (mm2/mg)`), ~na_if(.x, 0)),
-        date = util_parse_collection_date(date, order = "mdy")
+        date = date %>% stringr::str_replace("^([0-9]{4})-([0-9]{4})$", "\\1/\\2") %>% util_format_collection_date("mdy")
       )
   '
   collection_date: date
