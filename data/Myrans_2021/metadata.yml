@@ -26,15 +26,12 @@ contributors:
       Australia
   dataset_curators: Elizabeth Wenk
 dataset:
-  data_is_long_format: yes
-  custom_R_code: ' data |> dplyr::filter( trait %in% c( "leaf_mass_per_area", "leaf_N_per_dry_mass",
-    "root_N_per_dry_mass", "root_phenol_per_dry_mass", "leaf_nitrate_per_dry_mass"
-    ) ) '
+  data_is_long_format: no
+  custom_R_code: .na
   collection_date: 2019-01/2019-03
   taxon_name: taxon_name
-  trait_name: trait
-  value: trait_value_clean
   location_name: location_name
+  individual_id: individual_id
   description: To test whether wild Australian Sorghum species up-regulate cyanogenic
     glucoside production under high nitrogen availability, whether low cyanogenic
     glucoside concentrations are compensated by nitrate, phenolics or silicon, and
@@ -81,16 +78,22 @@ dataset:
     2012). Treatments were administered for six weeks, after which plants were harvested
     and separated into roots, sheaths and leaves and dried in ovens at 50 °C for one
     week.'
-  original_file: data.csv is a copy of raw/trait_data.csv, transcribed from Tables
-    3 and 4 and the Results text of the primary reference (no per-plant data available)
+  original_file: raw/Myrans_2021 raw data.xlsx (per-plant data supplied by the contributor);
+    data.csv is written from it by raw/extra_R_code_Myrans_2021.R
   notes: Locations are the seed-collection (provenance) sites of the five wild accessions
     from Table 2. All plants were grown and measured in a greenhouse at Monash University
     (-37.91, 145.14). The domesticated Sorghum bicolor inbred line BTx623 has no seed-collection
     site, so its rows are deliberately left without a location rather than given the
-    greenhouse coordinates. Additional traits present in data.csv are longest stem
-    length and leaf number of the 9-week-old plants (plant_stem_length_longest, plant_leaf_count),
-    leaf and root HCN potential (leaf_HCN_potential, root_HCN_potential) and the proportion
-    of plant nitrogen allocated to HCN (plant_N_allocated_to_HCN).
+    greenhouse coordinates. Whole-plant leaf area, biomass and
+    relative growth rate data exist in the data.csv file. Additional traits, longest stem length and leaf number of each plant (stem_length_cm,
+    leaf_count), leaf, leaf sheath and root HCN potential
+    (leaf_HCNp_mg_per_g, sheath_HCNp_mg_per_g, root_HCNp_mg_per_g), root nitrate concentration
+    (root_nitrate_mg_per_g), nitrogen productivity (N_productivity_g_per_day_per_mgN)
+    and the proportion of plant nitrogen allocated to HCN (plant_HCN_N_percent_of_N).
+    Leaf, leaf sheath and root silicon concentrations are not in the raw data file;
+    their species means and standard errors for the high nitrogen treatment (n = 6)
+    were digitised from Fig. 4 of the primary reference (raw/Fig4_Si_digitised.csv,
+    accurate to about 0.005 % Si) and added to data.csv as one extra row per species.
 identifiers:
 - var_in: AGG_ID
   identifier_type: catalogNumber
@@ -152,11 +155,6 @@ contexts:
 - context_property: leaf type
   category: entity_context
   var_in: leaf_type
-  values:
-  - value: leaf blade
-    description: Measurements made on the leaf blade (lamina).
-  - value: leaf sheath
-    description: Measurements made on the leaf sheath.
 - context_property: cultivar status
   category: entity_context
   var_in: cultivar_status
@@ -165,14 +163,46 @@ contexts:
     description: domesticated crop line (Sorghum bicolor inbred line BTx623).
   - value: wild type
     description: wild-collected seed accession.
+- context_property: plant age at harvest (days)
+  category: entity_context
+  var_in: days_grown
 traits:
-- var_in: leaf_mass_per_area
+- var_in: Fv_Fm
+  unit_in: '{dimensionless}'
+  trait_name: leaf_fluorescence_fv_over_fm
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Net photosynthetic rate (PN) and maximum quantum yield of photosystem II
+    (Fv/Fm) were both measured after five weeks of the treatment period on the newest
+    fully expanded leaf (n = 5). Fv/Fm was measured using a PAM-2000 Chlorophyll Fluorometer
+    (WALZ, Effeltrich, Germany). Fv/Fm measurements were not possible for S. leiocladum
+    plants under LN due to leaves being too narrow, meaning no Fv/Fm data are presented
+    for this species.
+  leaf_type: leaf blade
+- var_in: net_photosynthesis_umol_per_m2_per_s
+  unit_in: umol{CO2}/m2/s
+  trait_name: leaf_photosynthetic_rate_per_area_saturated
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Net photosynthetic rate (PN) and maximum quantum yield of photosystem II
+    (Fv/Fm) were both measured after five weeks of the treatment period on the newest
+    fully expanded leaf (n = 5). PN was measured using an LI-6400XT Portable Photosynthesis
+    System (LI-COR Biosciences, NE, USA). Parameters were set at 1000 µmol m-2 s-1
+    PAR, 400 ppm CO2 and 25 °C. Where leaf width was smaller than that of the internal
+    gasket, corrections were made using the leaf-width based approach (Savvides and
+    Fotopoulos, 2018).
+  leaf_type: leaf blade
+- var_in: SLA_cm2_per_g
   unit_in: cm2/g
   trait_name: leaf_mass_per_area
-  entity_type: population
-  value_type: mean
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: replicates
+  replicates: 1
   methods: Plant growth was quantified by measuring the length of each plant's longest
     stem (base to uppermost ligule), number of leaves and total leaf area, as well
     as measuring the biomass of each plant's leaves, sheaths, roots and, if present,
@@ -182,58 +212,172 @@ traits:
     leaf area or chemical analyses. ^p Plant performance was also quantified through
     calculating specific leaf area (SLA) and nitrogen productivity (ANplant) using
     the following equations. SLA = total leaf area / biomass of green leaves.
-- var_in: leaf_N_per_dry_mass
+  leaf_type: leaf blade
+- var_in: leaf_N_percent
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
-  entity_type: population
-  value_type: mean
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: replicates
+  replicates: 1
   methods: All chemical analyses were performed using finely ground oven-dried tissue.
     Total elemental nitrogen and carbon (%) was measured for the roots, sheaths and
     leaves by the School of Chemistry, Monash University (Clayton, VIC, Australia).
-- var_in: root_N_per_dry_mass
+  leaf_type: leaf blade
+- var_in: sheath_N_percent
+  unit_in: '%'
+  trait_name: leaf_N_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: All chemical analyses were performed using finely ground oven-dried tissue.
+    Total elemental nitrogen and carbon (%) was measured for the roots, sheaths and
+    leaves by the School of Chemistry, Monash University (Clayton, VIC, Australia).
+  leaf_type: leaf sheath
+- var_in: root_N_percent
   unit_in: '%'
   trait_name: root_N_per_dry_mass
-  entity_type: population
-  value_type: mean
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: replicates
+  replicates: 1
   methods: All chemical analyses were performed using finely ground oven-dried tissue.
     Total elemental nitrogen and carbon (%) was measured for the roots, sheaths and
     leaves by the School of Chemistry, Monash University (Clayton, VIC, Australia).
-- var_in: root_phenol_per_dry_mass
-  unit_in: mg/g
-  trait_name: root_phenol_per_dry_mass
-  entity_type: population
-  value_type: mean
-  basis_of_value: measurement
-  replicates: replicates
-  methods: 'Phenolics were extracted from 10-20 mg dried tissue, to which 1 mL of
-    80 % methanol was added. The mixture was immediately homogenised in an MM 300
-    MixerMill (Retsch, Haan, Germany) for 1 min and then centrifuged at 4 °C at 960
-    rpm for 20 min. The supernatant was filtered through a 0.45 µm nylon membrane
-    (Pall Corporation, Port Washington, NY, USA), and analysed for phenolics by HPLC
-    on an Agilent 1290 Infinity HPLC equipped with a Gemini C18 reverse-phase column
-    (2.7 µm, 150 mm × 3.0 mm; Phenomenex, Torrance, CA, USA). The elution system,
-    consisting of solvents 0.25 % H3PO4 in water (pH 2.2) (A) and acetonitrile (B),
-    was: 0-5 min, 12 % B; 5-7 min, 18 % B; 7-16 min, 58 % B; 16-20 min, 0% B; with
-    a flow rate of 0.5 mL min-1.'
-- var_in: leaf_nitrate_per_dry_mass
+  leaf_type: .na.character
+- var_in: leaf_nitrate_mg_per_g
   unit_in: mg/g
   trait_name: leaf_nitrate_per_dry_mass
-  entity_type: population
-  value_type: mean
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: replicates
+  replicates: 1
   methods: All chemical analyses were performed using finely ground oven-dried tissue.
     Nitrate concentrations were measured following O'Donnell et al., 2013 through
     colorimetric assay in 96-well microtiter plates, using 15 mg tissue per sample.
+  leaf_type: leaf blade
+- var_in: sheath_nitrate_mg_per_g
+  unit_in: mg/g
+  trait_name: leaf_nitrate_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: All chemical analyses were performed using finely ground oven-dried tissue.
+    Nitrate concentrations were measured following O'Donnell et al., 2013 through
+    colorimetric assay in 96-well microtiter plates, using 15 mg tissue per sample.
+  leaf_type: leaf sheath
+- var_in: leaf_phenolics_mg_per_g
+  unit_in: mg/g
+  trait_name: leaf_phenol_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: 'All chemical analyses were performed using finely ground oven-dried tissue.
+    Phenolics were extracted from 10-20 mg dried tissue, to which 1 mL of 80 % methanol
+    was added. The mixture was immediately homogenised in an MM 300 MixerMill (Retsch,
+    Haan, Germany) for 1 min and then centrifuged at 4 °C at 960 rpm for 20 min. The
+    supernatant was filtered through a 0.45 µm nylon membrane (Pall Corporation, Port
+    Washington, NY, USA), and analysed for phenolics by HPLC on an Agilent 1290 Infinity
+    HPLC equipped with a Gemini C18 reverse-phase column (2.7 µm, 150 mm × 3.0 mm;
+    Phenomenex, Torrance, CA, USA). The elution system, consisting of solvents 0.25
+    % H3PO4 in water (pH 2.2) (A) and acetonitrile (B), was: 0-5 min, 12 % B; 5-7
+    min, 18 % B; 7-16 min, 58 % B; 16-20 min, 0% B; with a flow rate of 0.5 mL min-1.'
+  leaf_type: leaf blade
+- var_in: sheath_phenolics_mg_per_g
+  unit_in: mg/g
+  trait_name: leaf_phenol_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: 'All chemical analyses were performed using finely ground oven-dried tissue.
+    Phenolics were extracted from 10-20 mg dried tissue, to which 1 mL of 80 % methanol
+    was added. The mixture was immediately homogenised in an MM 300 MixerMill (Retsch,
+    Haan, Germany) for 1 min and then centrifuged at 4 °C at 960 rpm for 20 min. The
+    supernatant was filtered through a 0.45 µm nylon membrane (Pall Corporation, Port
+    Washington, NY, USA), and analysed for phenolics by HPLC on an Agilent 1290 Infinity
+    HPLC equipped with a Gemini C18 reverse-phase column (2.7 µm, 150 mm × 3.0 mm;
+    Phenomenex, Torrance, CA, USA). The elution system, consisting of solvents 0.25
+    % H3PO4 in water (pH 2.2) (A) and acetonitrile (B), was: 0-5 min, 12 % B; 5-7
+    min, 18 % B; 7-16 min, 58 % B; 16-20 min, 0% B; with a flow rate of 0.5 mL min-1.'
+  leaf_type: leaf sheath
+- var_in: root_phenolics_mg_per_g
+  unit_in: mg/g
+  trait_name: root_phenol_per_dry_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: 'All chemical analyses were performed using finely ground oven-dried tissue.
+    Phenolics were extracted from 10-20 mg dried tissue, to which 1 mL of 80 % methanol
+    was added. The mixture was immediately homogenised in an MM 300 MixerMill (Retsch,
+    Haan, Germany) for 1 min and then centrifuged at 4 °C at 960 rpm for 20 min. The
+    supernatant was filtered through a 0.45 µm nylon membrane (Pall Corporation, Port
+    Washington, NY, USA), and analysed for phenolics by HPLC on an Agilent 1290 Infinity
+    HPLC equipped with a Gemini C18 reverse-phase column (2.7 µm, 150 mm × 3.0 mm;
+    Phenomenex, Torrance, CA, USA). The elution system, consisting of solvents 0.25
+    % H3PO4 in water (pH 2.2) (A) and acetonitrile (B), was: 0-5 min, 12 % B; 5-7
+    min, 18 % B; 7-16 min, 58 % B; 16-20 min, 0% B; with a flow rate of 0.5 mL min-1.'
+  leaf_type: .na.character
+- var_in: leaf_Si_percent
+  unit_in: '%'
+  trait_name: leaf_Si_per_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 6
+  methods: Silicon concentration (%) was determined for dried and ground plant material
+    (leaves, sheaths and roots, ca. 80 mg) of six replicate samples using an X-ray fluorescence
+    spectrometer (Epsilon-3x, PANalytical, the Netherlands), following the methods
+    of Reidinger et al. (2012) and Hiltpold et al. (2016), at the Hawkesbury Institute
+    for the Environment, Western Sydney University (Richmond, NSW, Australia). Silicon
+    was calibrated against a certified plant reference material of known silicon concentration
+    (NCS ZC73018 Citrus leaves, China National Institute for Iron and Steel). Only
+    samples from the HN treatment were used for silicon analysis due to tissue availability
+    constraints for LN samples.
+  leaf_type: leaf blade
+- var_in: sheath_Si_percent
+  unit_in: '%'
+  trait_name: leaf_Si_per_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 6
+  methods: Silicon concentration (%) was determined for dried and ground plant material
+    (leaves, sheaths and roots, ca. 80 mg) of six replicate samples using an X-ray fluorescence
+    spectrometer (Epsilon-3x, PANalytical, the Netherlands), following the methods
+    of Reidinger et al. (2012) and Hiltpold et al. (2016), at the Hawkesbury Institute
+    for the Environment, Western Sydney University (Richmond, NSW, Australia). Silicon
+    was calibrated against a certified plant reference material of known silicon concentration
+    (NCS ZC73018 Citrus leaves, China National Institute for Iron and Steel). Only
+    samples from the HN treatment were used for silicon analysis due to tissue availability
+    constraints for LN samples.
+  leaf_type: leaf sheath
+- var_in: root_Si_percent
+  unit_in: '%'
+  trait_name: root_Si_per_dry_mass
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 6
+  methods: Silicon concentration (%) was determined for dried and ground plant material
+    (leaves, sheaths and roots, ca. 80 mg) of six replicate samples using an X-ray fluorescence
+    spectrometer (Epsilon-3x, PANalytical, the Netherlands), following the methods
+    of Reidinger et al. (2012) and Hiltpold et al. (2016), at the Hawkesbury Institute
+    for the Environment, Western Sydney University (Richmond, NSW, Australia). Silicon
+    was calibrated against a certified plant reference material of known silicon concentration
+    (NCS ZC73018 Citrus leaves, China National Institute for Iron and Steel). Only
+    samples from the HN treatment were used for silicon analysis due to tissue availability
+    constraints for LN samples.
+  leaf_type: .na.character
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
 questions:
-  question1: Most of the data in this study (biomass, relative growth rate, net photosynthetic
-    rate, Fv/Fm, and leaf, sheath and root HCN potential, nitrate, phenolic and silicon
-    concentrations) are shown only as bar graphs. Can you provide either the per-plant
-    data, or treatment/species means?
+  question1: The N% leaf, N% sheath and N% root values for S. matarankense in the raw
+    data file (means 52-54, 25-28 and 18-23) do not match Table 4 (0.97-1.91, 0.74-1.44
+    and 0.63-1.04%) and fall outside the allowed range, so they are excluded at build.
+    I was trying to work out if these is a conversion factor, but nothing stands out. At the moment these values are excluded.
