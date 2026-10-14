@@ -28,7 +28,8 @@ dataset:
     data %>%
       group_by(Species) %>%
         mutate(across(c(`GF`), replace_duplicates_with_NA)) %>%
-      ungroup()'
+      ungroup() %>%
+      mutate(Date = util_parse_collection_date(Date, order = "dmy"))'
   collection_date: Date
   taxon_name: Species
   location_name: location_name

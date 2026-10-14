@@ -31,8 +31,8 @@ dataset:
         date_by_month = ifelse(sample_date %in% c("2011-05", "2010-09"), sample_date, NA),
         date_by_month = ifelse(is.na(date_WD), date_by_month, NA),
         new_date = ifelse(sample_date %in% c("2011-05", "2010-09"), NA, sample_date),
-        new_date = new_date %>% mdy(quiet=TRUE) %>% as.character(),
-        date_WD = date_WD %>% dmy(quiet=TRUE) %>% as.character(),
+        new_date = util_parse_collection_date(new_date, order = "mdy"),
+        date_WD = util_parse_collection_date(date_WD, order = "dmy"),
         date_merged = coalesce(new_date, date_WD, as.character(date_by_month)),
         individual = paste(Species, site_name, age, Rep, sep = "_")
       ) %>%

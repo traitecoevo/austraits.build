@@ -27,14 +27,15 @@ dataset:
     data %>% 
       mutate(
         site_name = "Howard River catchment",
-        date = date %>% mdy()
+        date = util_parse_collection_date(date, order = "mdy")
       ) %>%  
       group_by(species) %>% 
         mutate(across(c(`specific leaf area (m2 kg-1)`), replace_duplicates_with_NA)) %>% 
       ungroup() %>%
       group_by(species, Tree, site_name, `burn_status`, `sampling_period`) %>%
         mutate(observation_number = row_number()) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(`date` = coalesce(`date`, "2006"))
   '
   collection_date: date
   taxon_name: species

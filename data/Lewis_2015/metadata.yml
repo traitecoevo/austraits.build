@@ -45,7 +45,8 @@ dataset:
       mutate(individual_id = ifelse(is.na(Potnum),dplyr::row_number()+500,Potnum)) %>%
       group_by(individual_id) %>%
         mutate(observation_num = row_number()) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(`date_gas_exchange` = coalesce(util_parse_collection_date(`date_gas_exchange`), "2015"))
   '
   collection_date: date_gas_exchange
   taxon_name: Species
