@@ -27,9 +27,17 @@ dataset:
       mutate(
         taxon_name = paste0(Genus, " ", species),
         Site_number = paste0("site_", stringr::str_pad(`Site no.`, width = 2, pad = "0")),
+        Site_number = case_when(
+          `Site no.` %in% c(9, 10) ~ paste0(Site_number, "_", stringr::str_extract(Plant_sample_name, "^(RSS12|WNP-0[0-9])")),
+          Plant_sample_name %in% c("PNPT2-01", "PNPT3-01", "PNPT3-02") ~ paste0(Site_number, "_", stringr::str_extract(Plant_sample_name, "^PNPT[0-9]")),
+          Plant_sample_name == "PNPT4-01" ~ paste0(Site_number, "_PNPT4-01_", Genus),
+          `Site no.` == 13 ~ paste0(Site_number, "_", Plant_sample_name),
+          TRUE ~ Site_number
+        ),
         `P %` = `P %`/10,
         NP = `N(%)`/`P %`,
         storage = ortho + phytate,
+        sampleDate = stringr::str_replace(sampleDate, "^5/([0-9]+)/", "\\1/5/") %>% lubridate::dmy() %>% as.character(),
         across(c(`Plant [K]`:`Plant [P]`), ~na_if(.x, 0))
       )'
   collection_date: sampleDate
@@ -100,6 +108,8 @@ locations:
     soil exchangeable Fe (mg/kg): 21361.0
     soil exchangeable Al (mg/kg): 29272.0
     soil P, Collwell: 9.379228
+    soil type: Chromosols (Australian Soil Classification order)
+    state: NSW
   site_02:
     site type: TERN
     description: Neofabricia myrtifolia +/- Jacksonia thesioides open to closed heath
@@ -117,6 +127,8 @@ locations:
     soil exchangeable Fe (mg/kg): 8787.0
     soil exchangeable Al (mg/kg): 6160.0
     soil P, Collwell: 0.6413065
+    soil type: Chromosols (Australian Soil Classification order)
+    state: NSW
   site_03:
     site type: roadside
     description: Near gooband NP Trewilga
@@ -133,6 +145,8 @@ locations:
     soil exchangeable Fe (mg/kg): 23329.0
     soil exchangeable Al (mg/kg): 11124.0
     soil P, Collwell: 5.1438274
+    soil type: Chromosols (Australian Soil Classification order)
+    state: NSW
   site_04:
     site type: roadside
     description: On road to Dubbo half way from Tomingley
@@ -149,6 +163,8 @@ locations:
     soil exchangeable Fe (mg/kg): 9582.0
     soil exchangeable Al (mg/kg): 12001.0
     soil P, Collwell: 5.6643357
+    soil type: Sodosols (Australian Soil Classification order)
+    state: NSW
   site_05:
     site type: roadside
     description: North of Dubbo by Coolbaggle creek
@@ -165,6 +181,8 @@ locations:
     soil exchangeable Fe (mg/kg): 15284.0
     soil exchangeable Al (mg/kg): 12058.0
     soil P, Collwell: 6.4317005
+    soil type: Sodosols (Australian Soil Classification order)
+    state: NSW
   site_06:
     site type: roadside
     description: State forrest Gilgandra
@@ -181,6 +199,8 @@ locations:
     soil exchangeable Fe (mg/kg): 3577.0
     soil exchangeable Al (mg/kg): 2913.0
     soil P, Collwell: 4.9830305
+    soil type: Chromosols (Australian Soil Classification order)
+    state: NSW
   site_07:
     site type: roadside
     description: on road near Tooraweenah
@@ -197,6 +217,8 @@ locations:
     soil exchangeable Fe (mg/kg): 51609.0
     soil exchangeable Al (mg/kg): 16725.0
     soil P, Collwell: 23.6450648
+    soil type: Chromosols (Australian Soil Classification order)
+    state: NSW
   site_08:
     site type: roadside
     description: Next to creek in valley in Warumbungles (maybe picture or screenshot)
@@ -213,10 +235,11 @@ locations:
     soil exchangeable Fe (mg/kg): 19259.0
     soil exchangeable Al (mg/kg): 11076.0
     soil P, Collwell: 6.3727255
-  site_09:
+    soil type: Rudosols and Tenosols (Australian Soil Classification order)
+    state: NSW
+  site_09_RSS12:
     site type: roadside
-    description: Warrumbungles national park, near camp blackman (phone point) (still
-      on site) road side
+    description: Warrumbungles national park, near camp blackman (phone point) (still on site) road side
     longitude (deg): 148.977137
     latitude (deg): -31.279982
     temperature, MAT (C): 17.056
@@ -230,7 +253,63 @@ locations:
     soil exchangeable Fe (mg/kg): 31333.0
     soil exchangeable Al (mg/kg): 14896.0
     soil P, Collwell: 4.870052
-  site_10:
+    soil type: Rudosols and Tenosols (Australian Soil Classification order)
+    state: NSW
+  site_09_WNP-04:
+    site type: TERN
+    description: Black Cypress Pine - Narrow-leaved Ironbark - shrubby open forest on hill
+    longitude (deg): 148.976567
+    latitude (deg): -31.281162
+    temperature, MAT (C): 16.801
+    precipitation, MAP (mm): 706.478
+    elevation (m): 485.442
+    soil P, total (mg/kg): 321.0
+    soil exchangeable S (mg/kg): 65.0
+    soil exchangeable Zn (mg/kg): 68.0
+    soil exchangeable Cu (mg/kg): 13.0
+    soil exchangeable Mn (mg/kg): 1065.0
+    soil exchangeable Fe (mg/kg): 56519.0
+    soil exchangeable Al (mg/kg): 18994.0
+    soil P, Collwell: 9.7061176
+    soil type: Rudosols and Tenosols (Australian Soil Classification order)
+    state: NSW
+  site_10_WNP-01:
+    site type: TERN
+    description: Narrow-leaved Ironbark - White Cypress Pine - Buloke tall open forest
+    longitude (deg): 148.992445
+    latitude (deg): -31.279436
+    temperature, MAT (C): 16.984
+    precipitation, MAP (mm): 687.707
+    elevation (m): 448.874
+    soil P, total (mg/kg): 496.0
+    soil exchangeable S (mg/kg): 198.0
+    soil exchangeable Zn (mg/kg): 75.0
+    soil exchangeable Cu (mg/kg): 47.0
+    soil exchangeable Mn (mg/kg): 1265.0
+    soil exchangeable Fe (mg/kg): 43406.0
+    soil exchangeable Al (mg/kg): 13877.0
+    soil P, Collwell: 49.2257166
+    soil type: Rudosols and Tenosols (Australian Soil Classification order)
+    state: NSW
+  site_10_WNP-02:
+    site type: TERN
+    description: Narrow-leaved Ironbark - White Cypress Pine - Buloke tall open forest
+    longitude (deg): 148.992445
+    latitude (deg): -31.279436
+    temperature, MAT (C): 16.984
+    precipitation, MAP (mm): 687.707
+    elevation (m): 448.874
+    soil P, total (mg/kg): 662.0
+    soil exchangeable S (mg/kg): 241.0
+    soil exchangeable Zn (mg/kg): 89.0
+    soil exchangeable Cu (mg/kg): 24.0
+    soil exchangeable Mn (mg/kg): 2096.0
+    soil exchangeable Fe (mg/kg): 45550.0
+    soil exchangeable Al (mg/kg): 28453.0
+    soil P, Collwell: 71.744511
+    soil type: Rudosols and Tenosols (Australian Soil Classification order)
+    state: NSW
+  site_10_WNP-03:
     site type: TERN
     description: Narrow-leaved Ironbark - White Cypress Pine - Buloke tall open forest
     longitude (deg): 148.992445
@@ -246,6 +325,8 @@ locations:
     soil exchangeable Fe (mg/kg): 46036.0
     soil exchangeable Al (mg/kg): 33350.0
     soil P, Collwell: 41.5212617
+    soil type: Rudosols and Tenosols (Australian Soil Classification order)
+    state: NSW
   site_11:
     site type: roadside
     description: on edge of pilliga near Baradine
@@ -262,6 +343,8 @@ locations:
     soil exchangeable Fe (mg/kg): 17757.0
     soil exchangeable Al (mg/kg): 10572.0
     soil P, Collwell: 17.3043131
+    soil type: Sodosols (Australian Soil Classification order)
+    state: NSW
   site_12:
     site type: roadside
     description: Road side sample in ETOO Creek 30 - 50 min into Pilliga
@@ -278,7 +361,99 @@ locations:
     soil exchangeable Fe (mg/kg): 3311.0
     soil exchangeable Al (mg/kg): 1976.0
     soil P, Collwell: 1.2112732
-  site_13:
+    soil type: Sodosols (Australian Soil Classification order)
+    state: NSW
+  site_13_PNPT2:
+    site type: TERN
+    description: Narrow-leaved Ironbark - White Cypress Pine - Buloke tall open forest
+    longitude (deg): 149.246932
+    latitude (deg): -30.46094
+    temperature, MAT (C): 18.806
+    precipitation, MAP (mm): 604.07
+    elevation (m): 197.393
+    soil P, total (mg/kg): 145.0
+    soil exchangeable S (mg/kg): 88.0
+    soil exchangeable Zn (mg/kg): 6.0
+    soil exchangeable Cu (mg/kg): 3.0
+    soil exchangeable Mn (mg/kg): 207.0
+    soil exchangeable Fe (mg/kg): 8273.0
+    soil exchangeable Al (mg/kg): 7920.0
+    soil P, Collwell: 9.0462889
+    soil type: Sodosols (Australian Soil Classification order)
+    state: NSW
+  site_13_PNPT3:
+    site type: TERN
+    description: Narrow-leaved Ironbark - White Cypress Pine - Buloke tall open forest
+    longitude (deg): 149.280009
+    latitude (deg): -30.498762
+    temperature, MAT (C): 18.721
+    precipitation, MAP (mm): 611.193
+    elevation (m): 209.738
+    soil P, total (mg/kg): 92.0
+    soil exchangeable S (mg/kg): 72.0
+    soil exchangeable Zn (mg/kg): 4.0
+    soil exchangeable Cu (mg/kg): 3.0
+    soil exchangeable Mn (mg/kg): 142.0
+    soil exchangeable Fe (mg/kg): 7578.0
+    soil exchangeable Al (mg/kg): 6801.0
+    soil P, Collwell: 1.8103963
+    soil type: Sodosols (Australian Soil Classification order)
+    state: NSW
+  site_13_PNPT3-01-01:
+    site type: TERN
+    description: Narrow-leaved Ironbark - White Cypress Pine - Buloke tall open forest
+    longitude (deg): 149.280009
+    latitude (deg): -30.498762
+    temperature, MAT (C): 18.721
+    precipitation, MAP (mm): 611.193
+    elevation (m): 209.738
+    soil P, total (mg/kg): 101.0
+    soil exchangeable S (mg/kg): 70.0
+    soil exchangeable Zn (mg/kg): 5.0
+    soil exchangeable Cu (mg/kg): 3.0
+    soil exchangeable Mn (mg/kg): 141.0
+    soil exchangeable Fe (mg/kg): 7378.0
+    soil exchangeable Al (mg/kg): 7664.0
+    soil P, Collwell: 2.2815437
+    soil type: Sodosols (Australian Soil Classification order)
+    state: NSW
+  site_13_PNPT4-01-02:
+    site type: TERN
+    description: Narrow-leaved Ironbark - White Cypress Pine - Buloke tall open forest
+    longitude (deg): 149.267298
+    latitude (deg): -30.510293
+    temperature, MAT (C): 18.696
+    precipitation, MAP (mm): 609.549
+    elevation (m): 210.531
+    soil P, total (mg/kg): 176.0
+    soil exchangeable S (mg/kg): 324.0
+    soil exchangeable Zn (mg/kg): 14.0
+    soil exchangeable Cu (mg/kg): 7.0
+    soil exchangeable Mn (mg/kg): 449.0
+    soil exchangeable Fe (mg/kg): 14441.0
+    soil exchangeable Al (mg/kg): 17238.0
+    soil P, Collwell: 19.4343394
+    soil type: Sodosols (Australian Soil Classification order)
+    state: NSW
+  site_13_PNPT4-01_Callitris:
+    site type: TERN
+    description: Narrow-leaved Ironbark - White Cypress Pine - Buloke tall open forest
+    longitude (deg): 149.267298
+    latitude (deg): -30.510293
+    temperature, MAT (C): 18.696
+    precipitation, MAP (mm): 609.549
+    elevation (m): 210.531
+    soil P, total (mg/kg): 150.0
+    soil exchangeable S (mg/kg): 92.0
+    soil exchangeable Zn (mg/kg): 7.0
+    soil exchangeable Cu (mg/kg): 4.0
+    soil exchangeable Mn (mg/kg): 365.0
+    soil exchangeable Fe (mg/kg): 11945.0
+    soil exchangeable Al (mg/kg): 11712.0
+    soil P, Collwell: 3.6673307
+    soil type: Sodosols (Australian Soil Classification order)
+    state: NSW
+  site_13_PNPT4-01_Eucalyptus:
     site type: TERN
     description: Narrow-leaved Ironbark - White Cypress Pine - Buloke tall open forest
     longitude (deg): 149.267298
@@ -294,6 +469,8 @@ locations:
     soil exchangeable Fe (mg/kg): 6036.0
     soil exchangeable Al (mg/kg): 5303.0
     soil P, Collwell: 4.3756244
+    soil type: Sodosols (Australian Soil Classification order)
+    state: NSW
   site_14:
     site type: TERN
     description: Mountain Gum - Snow Gum grassy open forest- Unburnt
@@ -310,6 +487,8 @@ locations:
     soil exchangeable Fe (mg/kg): 120483.0
     soil exchangeable Al (mg/kg): 55969.0
     soil P, Collwell: 94.9172483
+    soil type: Rudosols and Tenosols (Australian Soil Classification order)
+    state: NSW
   site_15:
     site type: roadside
     description: on the way down Mt Kaputar
@@ -326,6 +505,8 @@ locations:
     soil exchangeable Fe (mg/kg): 79298.0
     soil exchangeable Al (mg/kg): 52179.0
     soil P, Collwell: 221.1900958
+    soil type: Rudosols and Tenosols (Australian Soil Classification order)
+    state: NSW
   site_16:
     site type: roadside
     description: Base of Mt Kaputar near creek, near house, near road works, house
@@ -343,6 +524,8 @@ locations:
     soil exchangeable Fe (mg/kg): 11975.0
     soil exchangeable Al (mg/kg): 8087.0
     soil P, Collwell: 11.0871303
+    soil type: Chromosols (Australian Soil Classification order)
+    state: NSW
   site_17:
     site type: roadside
     description: Near Kaputar, near narrabri street number 1324
@@ -359,6 +542,8 @@ locations:
     soil exchangeable Fe (mg/kg): 26769.0
     soil exchangeable Al (mg/kg): 11063.0
     soil P, Collwell: 59.6274158
+    soil type: Sodosols (Australian Soil Classification order)
+    state: NSW
   site_18:
     site type: roadside
     description: Road side sample near Mt Kaputar, near Killarney callitris state
@@ -376,6 +561,8 @@ locations:
     soil exchangeable Fe (mg/kg): 4126.0
     soil exchangeable Al (mg/kg): 3721.0
     soil P, Collwell: 23.8187637
+    soil type: Sodosols (Australian Soil Classification order)
+    state: NSW
   site_19:
     site type: roadside
     description: Road side sample from Mt Kaputar to Torrington near craigdon BnB
@@ -392,6 +579,8 @@ locations:
     soil exchangeable Fe (mg/kg): 55960.0
     soil exchangeable Al (mg/kg): 23307.0
     soil P, Collwell: 106.2278077
+    soil type: Vertosols (Australian Soil Classification order)
+    state: NSW
   site_20:
     site type: roadside
     description: near ancient geological site, table lands
@@ -408,6 +597,8 @@ locations:
     soil exchangeable Fe (mg/kg): 24020.0
     soil exchangeable Al (mg/kg): 13282.0
     soil P, Collwell: 12.9922047
+    soil type: Rudosols and Tenosols (Australian Soil Classification order)
+    state: NSW
   site_21:
     site type: roadside
     description: AUS012364
@@ -424,6 +615,8 @@ locations:
     soil exchangeable Fe (mg/kg): 31896.0
     soil exchangeable Al (mg/kg): 20576.0
     soil P, Collwell: 23.7902905
+    soil type: Kurosols (Australian Soil Classification order)
+    state: NSW
 contexts: .na
 traits:
 - var_in: C(%)
