@@ -13,35 +13,26 @@
 #   - entity_measured: branch, stem wood or twig, for wood_*_per_dry_mass rows (Tables 5 and 17).
 #   - replicates: n where the source gives one; unknown for population/metapopulation rows
 #     without one; blank for species-level ranges.
-#   - omit_duplicate: the dataset that already holds the value, for the Judd rows listed in
-#     `duplicates` below (values duplicated in Richards_2008, which holds the original per-study
-#     data; found with dataset_check_duplicate_values). Matched on taxon, trait, value type,
-#     growing environment and value (the duplicates list is in mg/g, Judd values are in %);
+#   - omit_duplicate: the dataset that already holds the value, for Judd rows listed in
+#     raw/duplicates_with_Richards_2008.csv (values duplicated in Richards_2008, which holds the
+#     original per-study data). Matched on taxon, trait, value type, growing environment and
+#     value (the duplicates list is in mg/g after unit conversion, Judd values are in %);
 #     custom_R_code keeps only rows where it is blank.
 
 library(dplyr)
 library(readr)
-library(tibble)
 
 data <- read_csv("data/Judd_1996/raw/trait_data.csv", col_types = cols(.default = "c"),
                  na = character(), trim_ws = FALSE)
 
-duplicates <- tribble(
-  ~taxon_name, ~trait, ~value_type, ~growing_environment, ~value_mg_g,
-  "Eucalyptus grandis", "leaf_Ca_per_dry_mass", "maximum", "native forest and plantation", 4.8,
-  "Eucalyptus grandis", "leaf_K_per_dry_mass", "minimum", "native forest and plantation", 6.5,
-  "Eucalyptus grandis", "leaf_Mg_per_dry_mass", "maximum", "native forest and plantation", 2.7,
-  "Eucalyptus marginata", "leaf_N_per_dry_mass", "maximum", "native forest", 10.3,
-  "Eucalyptus obliqua", "bark_Mg_per_dry_mass", "minimum", "native forest", 0.2,
-  "Eucalyptus obliqua", "bark_N_per_dry_mass", "minimum", "native forest", 1.6,
-  "Eucalyptus obliqua", "leaf_Ca_per_dry_mass", "minimum", "native forest", 3.9,
-  "Eucalyptus obliqua", "leaf_K_per_dry_mass", "maximum", "native forest", 4.5,
-  "Eucalyptus obliqua", "leaf_P_per_dry_mass", "maximum", "native forest", 0.8,
-  "Eucalyptus obliqua", "wood_K_per_dry_mass", "maximum", "native forest", 1.75,
-  "Eucalyptus obliqua", "wood_Mg_per_dry_mass", "minimum", "native forest", 0.1,
-  "Eucalyptus obliqua", "wood_P_per_dry_mass", "minimum", "native forest", 0.02
-) |>
-  mutate(omit_duplicate_match = "Richards_2008")
+duplicates <- read_csv("data/Judd_1996/raw/duplicates_with_Richards_2008.csv",
+                       col_types = cols(.default = "c")) |>
+  filter(dataset_id == "Judd_1996") |>
+  transmute(taxon_name, trait = trait_name, value_type,
+            growing_environment = `entity_context: growing environment`,
+            value_mg_g = as.numeric(value),
+            omit_duplicate_match = "Richards_2008") |>
+  distinct()
 
 data <- data |>
   mutate(
