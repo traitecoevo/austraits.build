@@ -37,7 +37,7 @@ dataset:
     "30/03/2023" = 3, "4/05/2023" = 4, "10/06/2023" = 5, "29/06/2023" = 6, "3/08/2023"
     = 7, "7/09/2023" = 8, "5/10/2023" = 9, "2/11/2023" = 10, "1/12/2023" = 11, "21/12/2023"
     = 12, "1/02/2024" = 1); seeds <- data |> dplyr::filter(!is.na(Species)) |> dplyr::mutate(
-    date = util_parse_collection_date(DateCollected), month = collection_month[DateCollected],
+    date = util_format_collection_date(DateCollected, "dmy"), month = collection_month[DateCollected],
     seed_count = as.numeric(Count), distance = suppressWarnings(as.numeric(MinimumDist))
     ); dplyr::bind_rows( seeds |> dplyr::group_by(Species, Site) |> dplyr::summarise(
     date_range = date_range(date), plant_height_max = stringr::str_extract(dplyr::first(HeightRange),
