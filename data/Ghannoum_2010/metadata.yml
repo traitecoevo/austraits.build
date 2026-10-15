@@ -38,12 +38,13 @@ dataset:
     data %>% 
       mutate(
         site = "University of Western Sydney",
-        Date = Date %>% dmy(),
+        Date = util_parse_collection_date(Date, order = "dmy"),
         leaf_area_ratio = coalesce(`LAR (m2 kg-1)`,`LAR m2 kg-1)`),
         Potnum = ifelse(is.na(Potnum),paste0("x", row_number()), Potnum),
         remove = ifelse(Potnum == 30 & Time.x == 49320, "flag", "keep")
       ) %>%
-      filter(remove == "keep")
+      filter(remove == "keep") %>%
+      mutate(`Date` = coalesce(`Date`, "2010"))
   '
   collection_date: Date
   taxon_name: Species

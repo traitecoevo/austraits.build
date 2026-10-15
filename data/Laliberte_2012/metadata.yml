@@ -32,12 +32,13 @@ dataset:
       mutate(
         n_fixer = stringr::str_extract(strategy, "[Nn]itrogen fixer"),
         roots = stringr::str_replace(strategy, ", Nitrogen fixer", ""),
-        collection.date = collection.date %>% dmy(),
+        collection.date = util_parse_collection_date(collection.date, order = "dmy"),
         across(c(`Mo_mature`), ~na_if(.x, 0))
       ) %>%
       group_by(species) %>%
         mutate(across(c(`growthform`,`n_fixer`,`roots`), replace_duplicates_with_NA)) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(`collection.date` = coalesce(`collection.date`, "2012"))
   '
   collection_date: collection.date
   taxon_name: species

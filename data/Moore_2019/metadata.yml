@@ -26,8 +26,7 @@ dataset:
     data %>% 
       mutate(
         across(c(`leaf_area (mm2)`,`specific_leaf_area (mm2/mg)`), ~na_if(.x, 0)),
-        date = ifelse(date == "2005-2006","2005/2006", date %>%
-                mdy(quiet=TRUE) %>% as.character)
+        date = util_parse_collection_date(date, order = "mdy")
       )
   '
   collection_date: date

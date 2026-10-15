@@ -26,7 +26,9 @@ dataset:
       mutate(`germination %` = ifelse(`germination %` == "-", NA, `germination %`)) %>%
       group_by(Species) %>%
       mutate(replicate_observation = dplyr::row_number()) %>%
-      ungroup()'
+      ungroup() %>%
+      mutate(`Time of collection` = coalesce(util_parse_collection_date(`Time of collection`), "2001"))
+  '
   collection_date: Time of collection
   taxon_name: Species
   location_name: Location
