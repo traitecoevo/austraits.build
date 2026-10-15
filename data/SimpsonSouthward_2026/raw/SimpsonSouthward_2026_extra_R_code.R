@@ -1,8 +1,15 @@
+# Writes data/SimpsonSouthward_2026/data.csv and raw/locations.csv. Run from the repo root.
+# Requires the raw data file harriet_bark_dist.gpkg (42 MB), which is not stored in this repo
+# because of its size. Download it from GitHub into data/SimpsonSouthward_2026/raw/ first:
+#   https://github.com/mbedward/eucalypt_bark_AJB2026/raw/57d16ade0e7af3f25c4b544eb8c9379a089dba46/data/harriet_bark_dist.gpkg
+# (data/harriet_bark_dist.gpkg in https://github.com/mbedward/eucalypt_bark_AJB2026, the version
+# used here, as of commit 57d16ad, 2026-08-18).
+
 library(sf)
 library(dplyr)
 library(readr)
 
-f <- "data/SimpsonSouthward_2026/raw/harriet_bark_dist.gpkg"
+f <-"data/SimpsonSouthward_2026/raw/harriet_bark_dist.gpkg"
 
 sites <- function(layer) {
   s <- st_read(f, layer, quiet = TRUE)
