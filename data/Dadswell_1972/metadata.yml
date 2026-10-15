@@ -1,0 +1,460 @@
+source:
+  primary:
+    key: Dadswell_1972
+    bibtype: Report
+    year: 1972
+    author: H. E. Dadswell
+    title: The anatomy of eucalypt woods
+    institution: Commonwealth Scientific and Industrial Research Organization, Australia,
+      Melbourne
+    type: Forest Products Laboratory, Division of Applied Chemistry Technological
+      Paper No. 66
+  secondary_01:
+    key: Kingston_1961
+    bibtype: Report
+    year: 1961
+    author: R. S. T. Kingston and C. J. E. Risdon
+    title: Shrinkage and density of Australian and other South-west Pacific woods
+    institution: Commonwealth Scientific and Industrial Research Organization, Australia,
+      Melbourne
+    type: Division of Forest Products Technological Paper No. 13
+contributors:
+  data_collectors:
+  - last_name: Dadswell
+    given_name: H. E.
+    ORCID: .na.character
+    affiliation: Division of Forest Products, Commonwealth Scientific and Industrial
+      Research Organization, Melbourne, Victoria, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    data |>
+      dplyr::filter(
+        trait %in% c(
+          "wood_density", "wood_growth_ring_distinctiveness", "stem_vessel_diameter",
+          "stem_vessel_grouping", "stem_vessel_density", "stem_vessel_element_length",
+          "wood_axial_parenchyma_arrangement", "wood_ray_density", "wood_fibre_length",
+          "wood_fibre_diameter", "wood_fibre_wall_thickness_categorical", "wood_fibre_pit_type",
+          "wood_deposit_frequency", "stem_vessel_perforation_plate_type", "wood_ray_cell_type",
+          "wood_ray_cell_longitudinal_count"
+        ),
+        is.na(omit_duplicate),
+        is.na(not_mapped_reason),
+        !is.na(trait_value)
+      ) |>
+      dplyr::mutate(
+        individual_id = dplyr::if_else(entity_type == "individual", taxon_name, NA_character_),
+        replicates = dplyr::case_when(
+          entity_type == "individual" ~ "1",
+          entity_type == "population" ~ as.character(n),
+          TRUE ~ NA_character_
+        )
+      )
+    '
+  collection_date: 1952/1964
+  taxon_name: taxon_name
+  trait_name: trait
+  value: trait_value
+  location_name: .na
+  entity_type: entity_type
+  individual_id: individual_id
+  source_id: source_id
+  description: To document the wood anatomy, colour, density and burning splinter
+    reaction of 107 commercially or scientifically important eucalypt species as a
+    basis for identifying eucalypt timbers, including the anatomical divergence of
+    the Corymbosae (bloodwoods and ghost gums) from the rest of the genus.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: The material used in the examinations was taken from the botanically
+    authenticated wood collection of the Forest Products Laboratory and, as far as
+    possible, from sound mature heartwood. Some species of particular botanical interest
+    were included in the project even though only immature wood was available. They
+    may be recognized in Table 4 as those species where only one or two specimens
+    were examined. In addition, all samples of E. tetraptera (15) were sapwood. Results,
+    e.g. burning splinter test, colour, which was determined on heartwood, are not
+    recorded for this species. ^p One notable feature of the eucalypts is the frequent
+    variation between different samples of the one species. Therefore it was considered
+    important to examine several specimens per species and, as far as possible, a
+    minimum of 10 samples was included for a description. ^p In those species where
+    this number is exceeded, suitable samples were more plentiful and, in some instances,
+    because of the importance and/or considerable variability of the timber, e.g.
+    E. obliqua (362), the number of specimens was increased so that due allowance
+    could be made for such diversity. Fewer samples were available for description
+    of other species, but they were included in the work so as to provide data and
+    a basis on which to make comparisons with similar timbers. ^p It should also be
+    noted that specimens were always selected from different trees and, as far as
+    possible, from several localities so as to cover a wide range of distribution.
+  original_file: raw/table4_transcription.csv (transcription of Table 4 from the scanned
+    report by Claude AI, Anthropic).
+  notes: Data from Kingston_1961 are flagged and omitted. 
+    where that dataset holds the same species; the three not found in Kingston_1961
+    (E. tenuipes, E. miniata, E. moluccana) are kept with source_id Kingston_1961.
+    E. microtheca includes E. coolabah, and E. tectifica includes E. spencerana, as
+    single Table 4 rows. 
+   Additional traits, heartwood_colour
+    (heartwood colour class and tints); wood_splinter_burning (residue of a burnt
+    match-size splinter - charcoal, partial ash or full ash); wood_vessel_diagonal_pattern
+    (how common oblique alignment of vessels is); wood_vessel_tyloses (amount of tyloses
+    in vessels); wood_axial_parenchyma_fraction_categorical (amount of axial parenchyma
+    in transverse section); wood_crystals (amount of crystals in axial parenchyma); wood_ray_biseriate_fraction,
+    wood_ray_triseriate_fraction and wood_ray_multiseriate_fraction (percentage of
+    rays two, three or more cells wide); wood_ray_multiseriate_portion_height (maximum
+    height of the multiseriate part of rays, in cells); wood_vasicentric_tracheids
+    (number of vasicentric tracheids per 25 fibres, in classes). Overlap with Pfautsch_2016 was investigated (2026-10-15) - the duplicate check
+    flagged 13 stem_vessel_density and stem_vessel_diameter values matching Pfautsch_2016
+    (18 shared species); each is a single-trait rounding coincidence between independent
+    samples, not a duplicate.
+identifiers: .na
+locations: .na
+contexts:
+- context_property: entity measured
+  category: method_context
+  var_in: wood_tissue
+  values:
+  - value: vessels
+    description: deposits in the lumina of vessels
+  - value: axial parenchyma
+    description: deposits in the lumina of axial parenchyma cells
+  - value: rays
+    description: deposits in the lumina of ray parenchyma cells
+- context_property: wood density sample material
+  category: method_context
+  var_in: density_method
+  values:
+  - value: air-dry material
+    description: basic density determined on air-dry wood blocks soaked to constant
+      volume, because green material was not available
+traits:
+- var_in: wood_density
+  unit_in: lb/ft3
+  trait_name: wood_density
+  entity_type: entity_type
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: 'Where work on a species had previously been done (see Kingston and Risdon
+    1961), figures were tabulated directly from this paper. For the other species
+    indicated with a dagger in Table 4, the basic density was determined on air-dry
+    material (as only this was available) on as many samples of each tree as possible.
+    ^p Wood blocks measuring approximately 4 cm by 4 cm by 1.5 cm along the grain
+    were oven dried at 103-104° for 24-36 hr, weighed in grams, boiled in water for
+    approximately 5-6 days, or until constant soaked volume had been reached. The
+    soaked volume in millilitres was determined by displacement in water, care being
+    taken to remove any excess water from the saturated samples before immersion.
+    The basic density was determined as: Oven-dry weight / Soaked volume x 62.5, where
+    62.5 converts g/cm3 to pounds per cubic foot (lb/ft3). ^p The figures given for
+    the density range of a species are a statistically calculated 95 per cent probability
+    range, together with the estimated species mean. For this work a standard of at
+    least eight specimens, from a minimum of three trees, was set for the probability
+    range calculation, and results of species not meeting this requirement have recorded
+    only the mean figure.'
+- var_in: wood_growth_ring_distinctiveness
+  unit_in: .na
+  trait_name: wood_growth_ring_distinctiveness
+  entity_type: entity_type
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: A variety or combination of several characters may indicate growth rings;
+    e.g. a few rows of tangentially compressed fibres; areas of apparently differing
+    fibre density; general distribution and/or size of vessels; areas devoid, or nearly
+    devoid, of vessels, etc. In those cases where many of these features combine,
+    growth rings are very distinctly marked (see Fig. 3) and are readily distinguishable,
+    even to the naked eye. ^p The following terms have been selected as representative
+    of the degree to which growth rings were indicated and the categories are as follows
+    - a, very distinctly marked; b, well marked; c, evident; d, vaguely indicated;
+    e, absent.
+- var_in: stem_vessel_diameter
+  unit_in: um
+  trait_name: stem_vessel_diameter
+  entity_type: entity_type
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: The tangential diameters of the vessels were measured by means of a projection
+    microscope, at a magnification of 100 X on a transverse section traversed in a
+    radial direction, and the results expressed in micrometres. ^p To obtain the average
+    tangential diameter, 50 vessels were measured on each specimen and the total averaged;
+    then the range of the average figures for the specimens and the mean for the species
+    were recorded. The 10 largest measurements of these 50 were used for the calculation
+    of the average maximum tangential diameter and, again, the range for the specimens
+    and the mean for the species recorded.
+- var_in: stem_vessel_grouping
+  unit_in: .na
+  trait_name: stem_vessel_grouping
+  entity_type: entity_type
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Radial multiples of vessels (see Fig. 2) are found in only a few eucalypts.
+    Except for the Corymbosae series, they were noted in only one other species, E.
+    erythrocorys (1). ^p The degree to which the feature was present was described
+    in comparative terms and is summarized as follows: a, common, b, some or few;
+    c, absent. ^p It should be noted that a radial multiple has been taken as three
+    or more vessels aligned radially with flattened contiguous walls. Where this feature
+    was present it was always accompanied by multiples of two vessels, i.e. a radial
+    pair, but the assessment excludes the latter.'
+- var_in: stem_vessel_density
+  unit_in: '{count}/mm2'
+  trait_name: stem_vessel_density
+  entity_type: entity_type
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: A large area of the transverse section was prepared by making a clean cut
+    with a knife or razor blade. A steel circular die divided into quadrants, each
+    of 5 mm2 area, was used to imprint the wood specimen in four areas over a range
+    of growth rings with one diameter parallel to the rays. ^p The number of vessels
+    was counted (with the aid of a 20 X hand lens) in diagonally opposite quadrants
+    of each of the four different plots and the total number in the area of 40 mm2
+    was averaged to give the number per mm2 for each specimen. The range and mean
+    for the species were recorded.
+- var_in: stem_vessel_element_length
+  unit_in: mm
+  trait_name: stem_vessel_element_length
+  entity_type: entity_type
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Using macerated material, and by means of a projection microscope and a
+    millimeter scale, the lengths of 20 vessels on each specimen were measured from
+    tip to tip at a magnification of 100 X. The average length of each specimen was
+    then obtained, and the range and mean for the species recorded. ^p A thin sample
+    of mature wood taken in a radial direction over several growth rings was placed
+    in a solution of equal parts of glacial acetic acid and hydrogen peroxide (100
+    vol). This was heated in a water bath until the specimen was delignified, i.e.
+    until the timber lost its colour; the sample was then washed in water and shaken.
+- var_in: wood_axial_parenchyma_arrangement
+  unit_in: .na
+  trait_name: wood_axial_parenchyma_arrangement
+  entity_type: entity_type
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Paratracheal parenchyma is common to the genus but may vary in pattern
+    between species and even slightly within a species. It may range from a few cells
+    contiguous with the vessels to sometimes wide (vasicentric) sheaths surrounding
+    the vessels to a greater or lesser extent. ^p The paratracheal and/or vasicentric
+    parenchyma may extend to winglike or aliform arrangement, the extensions sometimes
+    running together to form a confluent pattern or band. ^p Some specimens and/or
+    species showed parenchyma to be loosely winglike (rarely loosely confluent), notably
+    E. miniata (14), and, of those species examined, only members of the Corymbosae
+    series showed both aliform and confluent arrangements (see Fig. 15) which usually
+    can be readily recognized. ^p Table 4 reports the feature as + present; - absent.
+    ^p The apotracheal parenchyma (see Figs 12 and 13) diffusely arranged, although
+    sometimes collecting in the vicinity of the vessels, has also been indicated as
+    + present; - absent. ^p The amount of diffuse parenchyma may be fairly consistent
+    within a species, e.g. E. bancroftii (196), where it is abundantly present (with
+    frequently a tendency to link up and form short tangential lines of a few cells)
+    or it may vary considerably. ^p Included in the "absent" class are those species
+    in which diffuse parenchyma was rare. ^p Several species are indicated by -, +,
+    e.g. E. nitens (263) and E. pauciflora (394), where diffuse parenchyma was absent
+    (or rare) in some samples, present in others.
+- var_in: wood_ray_density
+  unit_in: '{count}/mm'
+  trait_name: wood_ray_density
+  entity_type: entity_type
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: The number of rays was estimated by means of a projection microscope, over
+    the entire area of the transverse section, by counting the number of rays within
+    a field diameter. The total count for the specimen was averaged and the result
+    expressed as the number of rays per mm, and the range and mean for the species
+    recorded.
+- var_in: wood_ray_cell_longitudinal_count
+  unit_in: '{count}'
+  trait_name: wood_ray_cell_longitudinal_count
+  entity_type: entity_type
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: The average maximum ray height was determined for each specimen by averaging
+    the heights of the 10 tallest rays found in the entire area of the tangential
+    section and expressing the height in number of cells. The range and mean for the
+    species were recorded.
+- var_in: wood_fibre_length
+  unit_in: mm
+  trait_name: wood_fibre_length
+  entity_type: entity_type
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: The length of 50 fibres in each specimen (taken at random) was determined
+    on macerated material at a magnification of 100 X and was done concurrently with
+    the vessel member length. A projection microscope was used, and measurement was
+    made by means of a travelling wheel with an electronic counter. The average fibre
+    length was calculated for each specimen and the range and mean for the species
+    recorded in millimetres.
+- var_in: wood_fibre_diameter
+  unit_in: um
+  trait_name: wood_fibre_diameter
+  entity_type: entity_type
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: These measurements were made in a radial direction on transverse sections
+    by means of a calibrated measuring eye piece. ^p Not less than 100 fibres were
+    measured on each specimen. In samples displaying marked growth rings and where
+    the late wood fibres showed a distinct variation in diameter to those of the early
+    wood and occupied a relatively significant proportion of the section, the number
+    of measurements was increased to 150 to give a more accurate average. Care was
+    taken to avoid measuring a number of fibres in the one radial file, the section
+    being traversed in a general oblique direction. ^p The average fibre diameter
+    for each specimen was calculated, and again, the range and the mean for the species
+    recorded.
+- var_in: wood_fibre_wall_thickness_categorical
+  unit_in: .na
+  trait_name: wood_fibre_wall_thickness_categorical
+  entity_type: entity_type
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: This relationship, illustrated in Figures 20 and 21, was assessed on the
+    entire area of the transverse section by comparing twice the wall thickness of
+    a fibre with the lumen diameter in a tangential plane. ^p A study of the spectrum
+    of results suggested that the following categories provided a basis of classification
+    for specimens. a represents 2W >= L, i.e. twice the wall thickness is greater
+    than or equal to lumen diameter; b represents 2W <= L, i.e. twice the wall thickness
+    is less than or equal to lumen diameter; c represents 2W <=> L, i.e. twice the
+    wall thickness is less than, equal to, and greater than lumen diameter. ^p Category
+    a is mapped to thick-walled, b to thin-walled, and c to both. Category b has no
+    upper bound, so it may include fibres that IAWA criteria would score as very thin-walled.
+- var_in: wood_fibre_pit_type
+  unit_in: .na
+  trait_name: wood_fibre_pit_type
+  entity_type: entity_type
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: In general, eucalypts have fibre tracheids, that is with numerous distinctly
+    bordered pits on both radial and tangential walls (see Fig. 22). In the Corymbosae
+    series as previously described, they can be variable, and for this reason emphasis
+    has been placed on the distinctness of the pit borders. The extent of bordering
+    to pits is recorded as follows - a, indistinct; b, moderately distinct; c, distinct.
+- var_in: wood_deposit_frequency
+  unit_in: .na
+  trait_name: wood_deposit_frequency
+  entity_type: entity_type
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: A feature of the eucalypts is the deposition of material in cell lumina.
+    This may vary in colour from pale pink-brown to dark red-brown; it is homogeneous
+    in appearance and, although more commonly present in the ray parenchyma, may also
+    be found in the vessels (where it is associated with tyloses), the axial parenchyma
+    and, much less frequently, the fibres. ^p Segregation of the "kino-like" deposits
+    in the various anatomical elements (see Figs. 8, 10-12) is of importance in description.
+    Their presence and quantity in the vessels, axial parenchyma 4.18, and ray parenchyma
+    4.25 have been recorded separately. Their presence in the fibres has been omitted
+    as they occur infrequently in a minority of species. ^p The following categories
+    have been selected to summarize the amount of the "kino-like" deposits - a, abundant;
+    b, moderately abundant; c, lesser amounts down to very sparse; d, absent.
+- var_in: stem_vessel_perforation_plate_type
+  unit_in: .na
+  trait_name: stem_vessel_perforation_plate_type
+  entity_type: entity_type
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Perforation plates are exclusively simple and mainly horizontal; vessel
+    pitting is generally coarse, bordered, and vestured.
+- var_in: wood_ray_cell_type
+  unit_in: .na
+  trait_name: wood_ray_cell_type
+  entity_type: entity_type
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: They are weakly heterocellular with one to several rows of marginal procumbent
+    cells of greater vertical dimensions than the central cells.
+substitutions:
+- trait_name: wood_growth_ring_distinctiveness
+  find: very_distinctly_marked
+  replace: distinct
+  match: word
+- trait_name: wood_growth_ring_distinctiveness
+  find: well_marked
+  replace: distinct
+  match: word
+- trait_name: wood_growth_ring_distinctiveness
+  find: evident
+  replace: moderately_distinct
+  match: word
+- trait_name: wood_growth_ring_distinctiveness
+  find: vaguely_indicated
+  replace: indistinct
+  match: word
+- trait_name: stem_vessel_grouping
+  find: radial_multiples_common
+  replace: vessel_radial_multiples_few vessel_radial_multiples_many
+  match: word
+- trait_name: stem_vessel_grouping
+  find: radial_multiples_few
+  replace: vessel_solitary vessel_radial_multiples_few
+  match: word
+- trait_name: stem_vessel_grouping
+  find: radial_multiples_absent
+  replace: vessel_solitary
+  match: word
+- trait_name: wood_axial_parenchyma_arrangement
+  find: aliform_to_confluent
+  replace: vasicentric aliform confluent
+  match: word
+- trait_name: wood_axial_parenchyma_arrangement
+  find: not_aliform_to_confluent
+  replace: scanty_paratracheal vasicentric
+  match: word
+- trait_name: wood_axial_parenchyma_arrangement
+  find: diffuse_apotracheal
+  replace: diffuse
+  match: word
+- trait_name: wood_axial_parenchyma_arrangement
+  find: diffuse_tending_to_short_tangential_lines
+  replace: diffuse-in-aggregates
+  match: word
+- trait_name: wood_fibre_wall_thickness_categorical
+  find: twice_wall_thickness_greater_or_equal_lumen
+  replace: thick-walled
+  match: word
+- trait_name: wood_fibre_wall_thickness_categorical
+  find: twice_wall_thickness_less_or_equal_lumen
+  replace: thin-walled
+  match: word
+- trait_name: wood_fibre_wall_thickness_categorical
+  find: twice_wall_thickness_less_equal_and_greater_than_lumen
+  replace: thin-walled thick-walled
+  match: word
+- trait_name: wood_fibre_pit_type
+  find: pit_borders_indistinct
+  replace: simple_to_minutely_bordered
+  match: word
+- trait_name: wood_fibre_pit_type
+  find: pit_borders_moderately_distinct
+  replace: moderately_distinctly_bordered
+  match: word
+- trait_name: wood_fibre_pit_type
+  find: pit_borders_distinct
+  replace: distinctly_bordered
+  match: word
+- trait_name: wood_ray_cell_type
+  find: weakly_heterocellular
+  replace: heterocellular
+  match: word
+taxonomic_updates:
+- find: Eucalyptus tetragona
+  replace: Eucalyptus x tetragona
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-15)
+  taxonomic_resolution: species
+- find: Eucalyptus nowraensis
+  replace: Eucalyptus x nowraensis
+  reason: Exact match of the first two words of the taxon name to an APC-known canonical
+    name (2026-10-15)
+  taxonomic_resolution: species
+exclude_observations:
+- variable: taxon_name
+  find: Eucalyptus deglupta
+  reason: non-native, non-naturalised species
+questions: .na
