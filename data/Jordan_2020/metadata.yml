@@ -107,6 +107,16 @@ dataset:
         leaf_lobation = ifelse(is.na(leaf_lobation) & stringr::str_detect(leaf_lamina_division,"lobed"), "lobed", leaf_lobation),
         leaf_margin = ifelse(is.na(leaf_margin) & stringr::str_detect(leaf_lamina_division,"entire"), "entire", leaf_margin),
         across(c(`leaf_lamina_division`,`leaf_shape`), ~na_if(.x,""))
+      ) %>%
+      mutate(
+        leaf_stomatal_position = paste(
+          `tightly revolute leaves (1=linear leaves with revolute margins appressed to either midrib or other margin`,
+          `deep longitudinal grooves etc (n=none;g=grooves;(g) grooves but stomata not restricted to grooves)`,
+          `Banksia-type pits`,
+          `hakea-type pits`,
+          `telopea-type papillae`,
+          sep = "_"
+        )
       )
   '
   collection_date: 2020
@@ -1546,12 +1556,12 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na.character
-  methods: The presence of deep pits. In these species, the leaf areoles were deeply
-    invaginated, creating a large cavity lined by stomata (Figs. 5, 6). The apertures
-    were typically occluded by hairs and ~100 um in diameter, and the cavities were
-    often ~300 um in diameter and contained ~40-100 stomata.  A form of deep encryption,
-    defined as the presence of an external aperture that is separated from the stomatal
-    aperture by at least twice the width of the aperture of the crypt, pit, or groove.
+  methods: Individual crypts. In these species, large epidermal cells and very thick
+    cuticles overarched each stoma, creating a volcano-like structure (Figs. 3, 4).
+    The stomata were small and typically 40-50 um below the leaf surface. The aperture
+    of the crypt was approximately 10-20 um wide. A form of deep encryption, defined
+    as the presence of an external aperture that is separated from the stomatal aperture
+    by at least twice the width of the aperture of the crypt, pit, or groove.
 - var_in: telopea-type papillae
   unit_in: .na.character
   trait_name: .na.character
@@ -1567,6 +1577,38 @@ traits:
     Lambertia echinata, Hakea petiolaris), but these did not form a discrete, clearly
     defined class and had no consistent pattern with climate. They are not considered
     further.
+- var_in: leaf_stomatal_position
+  unit_in: .na.character
+  trait_name: leaf_stomatal_position
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na.character
+  methods: Deep encryption was defined as the presence of an external aperture that
+    is separated from the stomatal aperture by at least twice the width of the aperture
+    of the crypt, pit, or groove. Four forms of deep encryption were recognized in
+    Proteaceae - 1. Tightly revolute margins. In these species, the leaf margins were
+    appressed either to each other or to a protruding midrib (Fig. 1). The apertures
+    of the resulting grooves were lined with hairs in almost all species. 2. Longitudinal
+    grooves. In these species, the stomata were restricted to a series of deep, narrow,
+    hair-lined grooves running the length of the leaf (Fig. 2). 3. Individual crypts.
+    In these species, large epidermal cells and very thick cuticles overarched each
+    stoma, creating a volcano-like structure (Figs. 3, 4). The stomata were small and
+    typically 40-50 um below the leaf surface. The aperture of the crypt was approximately
+    10-20 um wide. 4. Deep pits. In these species, the leaf areoles were deeply invaginated,
+    creating a large cavity lined by stomata (Figs. 5, 6). The apertures were typically
+    occluded by hairs and ~100 um in diameter, and the cavities were often ~300 um
+    in diameter and contained ~40-100 stomata. ^p Papillose pits were defined to include
+    stomata that were sunken below the epidermis and partially covered by large papillae
+    (Figs. 7, 8; see also Jordan et al., 1998). The stomata were typically sunken by
+    25-40 um, with apertures 25-40 um wide. Some other species had stomata slightly
+    sunken (<20 um) below the leaf surface (e.g., Lomatia dentata, Grevillea hilliana)
+    or had somewhat papillose surfaces (e.g., Lambertia echinata, Hakea petiolaris),
+    but these did not form a discrete, clearly defined class and had no consistent
+    pattern with climate. ^p Stomatal position combines these scores - any of the four
+    forms of deep encryption is encrypted, papillose pits are sunken, and species
+    scored for all five forms with none present are superficial. Species with grooves
+    but stomata not restricted to grooves are encrypted superficial.
 - var_in: leaf mass per unit area gm-2
   unit_in: g/m2
   trait_name: leaf_mass_per_area
@@ -1865,6 +1907,48 @@ substitutions:
 - trait_name: leaf_stomatal_hairs
   find: y/n
   replace: stomata_covered_with_dense_hairs stomata_not_covered_by_hairs
+- trait_name: leaf_stomatal_position
+  find: n_n_0_0_0
+  replace: superficial
+- trait_name: leaf_stomatal_position
+  find: y_NA_NA_NA_NA
+  replace: encrypted
+- trait_name: leaf_stomatal_position
+  find: y_n_0_0_0
+  replace: encrypted
+- trait_name: leaf_stomatal_position
+  find: y/n_n_1_0_0
+  replace: encrypted
+- trait_name: leaf_stomatal_position
+  find: n_g_0_0_0
+  replace: encrypted
+- trait_name: leaf_stomatal_position
+  find: n_g_0_1_0
+  replace: encrypted
+- trait_name: leaf_stomatal_position
+  find: n_(g)_0_0_0
+  replace: encrypted superficial
+- trait_name: leaf_stomatal_position
+  find: n_n_1_0_0
+  replace: encrypted
+- trait_name: leaf_stomatal_position
+  find: n_n_0_1_0
+  replace: encrypted
+- trait_name: leaf_stomatal_position
+  find: n_n_0_0_1
+  replace: sunken
+- trait_name: leaf_stomatal_position
+  find: n_n_0_1_1
+  replace: encrypted sunken
+- trait_name: leaf_stomatal_position
+  find: n_NA_NA_NA_NA
+  replace: .na
+- trait_name: leaf_stomatal_position
+  find: n_n_0_0_NA
+  replace: .na
+- trait_name: leaf_stomatal_position
+  find: NA_NA_NA_NA_NA
+  replace: .na
 - trait_name: leaf_hairs_adult_leaves
   find: 0
   replace: glabrous
