@@ -185,7 +185,16 @@ dataset:
       ) |>
       mutate(
         Date = dplyr::if_else(Date %in% names(DATE_FIX_MAP), unname(DATE_FIX_MAP[Date]), Date),
-        Date = util_parse_collection_date(Date)
+        Date = util_format_collection_date(Date, "dmy"),
+        Date = coalesce(
+          Date,
+          stringr::str_replace(
+            dplyr::if_else(stringr::str_detect(Year, "^[0-9]{4}( ?- ?[0-9]{4})?$"), Year, NA_character_),
+            " ?- ?", "/"
+          ),
+          stringr::str_extract(source_id, "[0-9]{4}$"),
+          "2025"
+        )
       )
   '
   collection_date: Date

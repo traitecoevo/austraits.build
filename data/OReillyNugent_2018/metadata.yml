@@ -29,12 +29,16 @@ dataset:
   custom_R_code:        '
     max_dimensions <- 
       data %>%
-        mutate(replicate = 1) %>%
+        mutate(
+          replicate = 1,
+          date = util_format_collection_date(date, "dmy")
+        ) %>%
         group_by(site_name, species_name) %>%
         summarise(
           max_height = max(`Max.height`, na.rm = TRUE),
           max_canopy = max(`Canopy.width`),
-          replicate = sum(replicate)
+          replicate = sum(replicate),
+          date = paste(unique(c(min(date), max(date))), collapse = "/")
         ) %>%
         ungroup() %>%
       mutate(across(c(max_height, max_canopy), ~na_if(.x, -Inf)));
@@ -45,7 +49,7 @@ dataset:
       bind_rows(max_dimensions) %>%
       mutate(
         species_name = stringr::str_replace(species_name,"\\."," "),
-        date = dmy(date)
+        date = util_format_collection_date(date, "dmy")
       )
   '
   collection_date: date

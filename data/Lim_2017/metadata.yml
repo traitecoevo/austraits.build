@@ -49,12 +49,13 @@ dataset:
           str_replace("Jim[:punct:]sHillNorth","JimHillN") %>%
           str_replace("Jim[:punct:]sHIllsouth","JimHillS"),
         vessel_diameter_xylem = 2*(sqrt(`area/individ vessel`))/3.14159,
-        Date = Date %>% str_replace("Apr", "Apr-2012") %>% dmy()
+        Date = Date %>% str_replace("Apr", "Apr-2012") %>% util_format_collection_date("dmy")
       ) %>%
       group_by(Species) %>%
         mutate(across(c(plant_growth_form), replace_duplicates_with_NA)) %>%
       ungroup() %>%
-      bind_rows(heightdata)
+      bind_rows(heightdata) %>%
+      mutate(Date = coalesce(Date, "2017"))
   '
   collection_date: Date
   taxon_name: Species
