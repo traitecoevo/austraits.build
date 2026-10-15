@@ -127,6 +127,48 @@ combining three raw treatments) is fine to live as just another tag value
 in the same context column -- flag what it aggregates in the chat report
 rather than bloating the cell text with an explanation.
 
+## Pollination / flower-visitor datasets
+
+These rules apply whenever the source records which animals visit or pollinate
+flowers (`flower_visitor`, `pollination_vector_possible`,
+`pollination_vector_known`). They hold whether the input is a `trait_data.csv`
+or a contributor's survey spreadsheet, such as one count column per visitor
+group per observation bout (e.g. Xirocostas_2024).
+
+- **Map each visitor to the most specific `allowed_values_levels` term** in
+  `config/traits.yml`. Work out the term from the animal's real taxonomic
+  group, not only by literal string or synonym matching. For example,
+  *Zosterops lateralis* is a silvereye even when the row's family field is
+  wrong or blank.
+- **Diptera → `fly`.** This is settled, so don't flag it or offer
+  `insect` as an alternative.
+- **A source category that lumps groups gets the narrowest term covering all
+  of it.** For example, "Bees/wasps (Apoidea)" becomes `hymenoptera`, not
+  `bee`, because bees aren't the only visitors that count could include.
+- **A zero-visit observation gets a blank (NA) trait value, never `none`.**
+  `none` says something about the taxon: that it is never animal-visited.
+  A plant that wasn't visited during one study's observation period is only
+  absence of evidence. Keep the zero-visit row, with its count of 0, so the
+  survey effort stays visible, but leave the mapped value empty.
+- **Survey sheets with one count column per visitor group:** pivot them to
+  one row per observation × visitor group with a count above 0. Keep the
+  source's group label in a `visitor_group` column, its count in
+  `visitor_count`, and the mapped term in its own column. Keep every original
+  survey column, and add a `survey_id` so rows from the same observation bout
+  stay linked. Save the reshape script as `raw/extra_R_code_<id>.R` so it can
+  be rerun. Any lookup that maps a raw locality (+ species) onto `locations:`
+  names also goes in that script, as an added `location_name` column in
+  data.csv, not in `custom_R_code`.
+- **Map `visitor_count` (and floral unit counts) as `entity_context`, never
+  `treatment_context`.** traits.build builds `population_id` from location +
+  plot context + treatment context, and then numbers `individual_id` within
+  taxon × population. A per-row count mapped as a treatment therefore splits
+  one plant's visitor rows across several populations and individual IDs.
+  After building, check that the number of distinct
+  taxon × `population_id` × `individual_id` combinations equals the number of
+  observed plants. (Xirocostas_2024 got 223 "individuals" from 154 plants
+  before this fix.)
+
 ## Step 4 -- build and validate
 
 Write `data.csv` into the same `raw/` folder as `trait_data.csv`. Column
