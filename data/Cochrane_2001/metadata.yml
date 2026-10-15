@@ -27,7 +27,18 @@ dataset:
       group_by(Species) %>%
       mutate(replicate_observation = dplyr::row_number()) %>%
       ungroup() %>%
-      mutate(`Time of collection` = coalesce(util_parse_collection_date(`Time of collection`), "2001"))
+      mutate(
+        first_month = stringr::str_extract(`Time of collection`, "^[A-Za-z]{3}-[0-9]{2}"),
+        last_month = stringr::str_extract(stringr::str_remove(`Time of collection`, "[, ]+$"), "[A-Za-z]{3}-[0-9]{2}$"),
+        first_month = util_format_collection_date(first_month, "my"),
+        last_month = util_format_collection_date(last_month, "my"),
+        `Time of collection` = dplyr::case_when(
+          is.na(first_month) ~ "2001",
+          first_month == last_month ~ first_month,
+          TRUE ~ paste0(first_month, "/", last_month)
+        )
+      ) %>%
+      select(-first_month, -last_month)
   '
   collection_date: Time of collection
   taxon_name: Species
