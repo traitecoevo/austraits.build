@@ -78,7 +78,15 @@ essentially every other `metadata.yml` in this repo already uses. Fill it
 with a **short phrase** describing the vegetation community or the site's
 single defining characteristic (`paper-trait-location-extraction`'s
 `description` rule, same register: `"Sydney Coastal Dry Sclerophyll
-Forests"`, not a sentence).
+Forests"`, not a sentence). Keep it to the vegetation/habitat only: place
+names go in `locality`, fire information in `fire history`, rainfall in
+`precipitation, MAP (mm)` (a monthly mean x12), and `climate description` holds
+only the climate class (`temperate oceanic (Koppen Cfb)`) -- never fold these
+into `description` or `climate description` (Paroissien_2026).
+`locality` is a real-world place name only (`Lake Konardin, Hattah Kulkyne
+National Park`); the researchers' own site codes ("Site 1", "H1") and site
+setting details ("riparian fringe", "adjacent to an unsealed road") go in
+`notes` (Fernando_2021).
 
 **Reuse, don't paraphrase.** If the source already has a column whose values
 are exactly this -- a vegetation-class/community name, most often -- copy

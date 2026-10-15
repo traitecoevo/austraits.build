@@ -34,7 +34,8 @@ dataset:
         leaf_area_ratio = Total_Leaf_Area / (ABG_Weight + Root_Weight),
         Trip_Date = Trip_Date %>% my() %>% format.Date("%Y-%m"),
         across(c(SLA),~na_if(.x, 0))
-      )
+      ) %>%
+      mutate(`Trip_Date` = coalesce(`Trip_Date`, "2020"))
   '
   collection_date: Trip_Date
   taxon_name: species
