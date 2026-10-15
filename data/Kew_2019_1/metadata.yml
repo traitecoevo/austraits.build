@@ -63,7 +63,8 @@ dataset:
         thousandseedweight = ifelse(taxa == "Angophora bakeri", thousandseedweight/1000, thousandseedweight)
 
       ) %>%
-      filter(!original_dataset_id %in% c("Jurado_1991", "Moles_2000", "Milberg_1998")) %>%
+      filter(!original_dataset_id %in% c("Jurado_1991", "Moles_2000", "Milberg_1998", "Bell_1995")) %>%
+      filter(is.na(omit_duplicate)) %>%
       arrange(taxa, materialweigheddesc, thousandseedweight, original_dataset_id) %>%
       group_by(taxa, materialweigheddesc, thousandseedweight, seedweightnotes, weightprecision) %>%
       mutate(merged_ref = ifelse(length(unique(original_dataset_id)) == 1, original_dataset_id, paste0(original_dataset_id, collapse = "; "))) %>%
@@ -84,7 +85,10 @@ dataset:
   measurement_remarks: merged_ref
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons license. Data not to be used for Commercial Purposes. Seed weight for Angophora
-    bakeri divided by 1000 in custom_R_code due to extreme outlier.
+    bakeri divided by 1000 in custom_R_code due to extreme outlier. Values from Bell
+    et al. (1995) are filtered out because they are in Bell_1995; eight seed masses
+    cited to Bell et al. (1999) repeat Bell et al. (1995) Table 1 values (same means
+    and standard errors, rounded) and are flagged in the omit_duplicate column.
 locations: .na
 contexts:
 - context_property: seed mass method
