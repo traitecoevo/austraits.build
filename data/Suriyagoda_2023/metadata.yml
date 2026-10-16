@@ -93,7 +93,7 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>%
-      filter(`leaf color` == "G") %>%
+      filter(`leaf color` == "G", is.na(omit_duplicate)) %>%
       group_by(source_id, Species) %>%
         mutate(replicate_individuals = row_number()) %>%
       ungroup()'
@@ -122,12 +122,14 @@ dataset:
     collected from field-grown plants, mostly in their natural habitat, either from
     one field site or from several sites with different soil [P] (Table S1). Complete
     data set can be accessed through the doi, 10.26182/26rb-mv37.
-  original_file: SI from manuscript in raw data folder
+  original_file: raw/Suriyagoda_et_al._2022_P_fractions_in_leaves_full_data_set.xlsx (complete data set, doi 10.26182/26rb-mv37)
   notes: Only Australian studies included here; eventually many will be split out,
     but for several recent studies, the manuscripts themselves do not include tables/SI
     with data, so need to contact authors. Also, currently filtering out senesced
     leaves; should instead move total P to a different column and just filter out
-    others.
+    others. Values already in AusTraits from the original studies are flagged in the
+    data.csv column omit_duplicate with the dataset holding them (Liu_2023) and excluded
+    by custom_R_code.
 identifiers: .na
 locations: .na
 contexts: .na
@@ -212,4 +214,19 @@ taxonomic_updates:
     and filler words are removed (2025-05-28)
   taxonomic_resolution: species
 exclude_observations: .na
-questions: .na
+questions:
+  question1: The 24 rows credited to "Ranathunge (unpublished)" in the full data set
+    (source_id Ranathunge_2023 in data.csv, but no matching source entry in metadata.yml)
+    are not all one study. 12 rows (Grevillea thelemanniana SL1-SL4, Banksia telmatiaea
+    SL6-SL9, Banksia attenuata SL51-SL54) are the winter samples of Liu_2023, matched
+    to full precision, and are flagged omit_duplicate = Liu_2023. The remaining 12 rows
+    (4 each of G. thelemanniana, B. telmatiaea and B. menziesii) do not match Liu_2023,
+    Gille_2024 or any other AusTraits dataset; their true source is still unknown.
+  question2: The three "Gille and Dayrell (unpublished)" rows in the full data set are
+    family means (Fabaceae, Myrtaceae, Proteaceae) without species names and are not
+    in data.csv. They do not match Gille_2024 (Proteaceae only) or Liu_2023 family
+    means.
+  question3: The 6 matches with Gille_2024 in data/Gille_2024/raw/duplicates.csv are
+    chance single-value matches (all other fractions on the same leaves differ; Hakea
+    prostrata row is from Yan_2019), so no Suriyagoda_2023 rows are flagged as duplicates
+    of Gille_2024.
