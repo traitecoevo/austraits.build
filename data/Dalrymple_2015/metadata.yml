@@ -1,0 +1,452 @@
+source:
+  primary:
+    key: Dalrymple_2015
+    bibtype: Article
+    year: 2015
+    author: R. L. Dalrymple and D. J. Kemp and H. Flores-Moreno and S. W. Laffan and
+      T. E. White and F. A. Hemmings and M. L. Tindall and A. T. Moles
+    title: Birds, butterflies and flowers in the tropics are not more colourful than
+      those at higher latitudes
+    journal: Global Ecology and Biogeography
+    volume: 24
+    number: 12
+    pages: 1424--1432
+    doi: 10.1111/geb.12368
+contributors:
+  data_collectors:
+  - last_name: Dalrymple
+    given_name: Rhiannon L.
+    ORCID: 0000-0002-2660-1424
+    affiliation: Evolution and Ecology Research Centre, School of Biological, Earth
+      and Environmental Sciences, UNSW Australia, Sydney, NSW, Australia
+  - last_name: White
+    given_name: Thomas
+    ORCID: 0000-0002-3976-1734
+    affiliation: School of Life and Environmental Sciences, The University of Sydney,
+      Sydney, NSW, Australia
+  - last_name: Moles
+    given_name: Angela
+    ORCID: 0000-0003-2041-7762
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data |>
+      dplyr::mutate(
+        plant_sex = dplyr::if_else(form_or_sex %in% c("female", "male"), form_or_sex, NA_character_),
+        colour_form = dplyr::if_else(grepl("form", form_or_sex), form_or_sex, NA_character_),
+        collection_date = as.character(collection_date),
+        collection_date = dplyr::if_else(
+          is.na(collection_date) | collection_date == "",
+          dplyr::case_when(
+            location_name == "Dinden and Kuranda NPs, woodland" ~ "2012-10-28",
+            location_name == "Davies Creek NP, grassland" ~ "2012-10-25/2012-10-26",
+            location_name == "Barron Gorge NP and Lake Barrine (Crater Lakes NP), rainforest" ~ "2012-10-21/2012-10-28",
+            location_name == "Noosa NP, heath" ~ "2012-10-03/2012-10-04",
+            location_name == "Lamington NP, rainforest" ~ "2012-09-30",
+            location_name == "Girraween NP, woodland" ~ "2012-09-27/2012-09-28",
+            location_name == "Ku-ring-gai Chase NP, woodland" ~ "2012-10-16/2012-10-18",
+            location_name == "Royal NP, heath" ~ "2012-10-09/2012-10-11",
+            location_name == "Royal NP, rainforest" ~ "2012-10-13/2012-10-14",
+            location_name == "Brisbane Ranges NP, grassland" ~ "2012-11-21/2012-11-22",
+            location_name == "Great Otway NP, woodland" ~ "2012-11-21/2012-11-26",
+            location_name == "Great Otway NP, heath" ~ "2012-11-27/2012-11-28",
+            location_name == "Great Otway NP, rainforest" ~ "2012-11-24",
+            location_name == "Mt William NP, grassland" ~ "2012-11-12/2012-11-13",
+            location_name == "Mt William NP, heath" ~ "2012-11-12/2012-11-14",
+            location_name == "Mt Field NP and Southwest NP, rainforest" ~ "2012-11-08/2012-11-09",
+            location_name == "Mt Field NP, woodland" ~ "2012-11-08/2012-11-10"
+          ),
+          collection_date
+        )
+      )
+    '
+  collection_date: collection_date
+  taxon_name: taxon_name
+  location_name: location_name
+  individual_id: individual_id
+  description: To test whether species are more colourful at tropical latitudes than
+    at higher latitudes, using objective measures of colour that include ultraviolet
+    wavelengths, across birds, butterflies and flowers in eastern Australia.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: We studied 1333 species native to the eastern states of Australia,
+    a geographic cline spanning more than 30° of latitude (a species list is given
+    in Appendix S1 in Supporting Information). We used reflectance spectrometry to
+    quantify the colour patches of 570 bird species or subspecies held in museums
+    and national collections (details in Appendix S2). Reflectance spectra of flowers
+    of 339 angiosperm species or subspecies were measured during the spring of 2012
+    at 17 sites between Cairns, Queensland and southern Tasmania, Australia (details
+    in Appendices S2 & S5). Wave-band-limited photography was used to assess colour
+    patches of 424 butterfly species or subspecies held in national collections (details
+    in Appendix S2). Our dataset had a broad taxonomic spread, including 76 families
+    of birds, 74 families of plants and all 6 butterfly families present in Australia
+    (some species shown in Fig. 2; a full list is in Appendix S1). ^p The major aim
+    of the sampling was to capture all of the colours displayed on three representative
+    individuals. [...] Flower sampling targeted the dominant colours of the adaxial
+    surface of a perianth or showy bract, or large display stamens, and excluded endangered
+    species, species known to possess strong ontogenic colour variation and species
+    with flowers so small they could not be accurately measured (full details of the
+    methodology are presented in Appendix S2). ^p At each site, five transects (~100
+    m; ~200 m in rainforest) were walked through rainforest, grassland, woodland and
+    heath. At each site, one flower was taken from each of three plants of every flowering
+    native species within reach, with plants at least 1 m apart. Endangered species,
+    species with strong ontogenetic colour change and flowers too small to measure
+    were excluded. Non-native species were also meant to be excluded, but 16 introduced
+    or naturalised taxa were sampled and are flagged in origin. Voucher specimens
+    were identified by F.A. Hemmings following the APG III taxonomy of the Australian
+    Plant Census.
+  original_file: raw/data.csv and raw/metadata.docx, supplied by the data contributors
+  notes: Additional traits, hue_lambda_Rmid (wavelength halfway between minimum and
+    maximum reflectance, nm), segment_hue and segment_chroma (Endler 1990 segment
+    analysis), bee_green_contrast (honeybee green-receptor contrast), uv_share (proportion
+    of 300-700 nm reflectance at 300-400 nm), cie_L, cie_a, cie_b, cie_chroma and
+    cie_hue (CIELAB human-vision colour), bird_chromatic_contrast and bird_achromatic_contrast
+    (VS-type avian eye, receptor-noise-limited model, in JNDs against a green leaf).
+identifiers:
+- var_in: voucher
+  identifier_type: catalogNumber
+  institution_code: UNSW
+locations:
+  Dinden and Kuranda NPs, woodland:
+    latitude (deg): -16.9314
+    longitude (deg): 145.6116
+    description: shrubby woodland; wet sclerophyll
+    locality: Dinden and Kuranda National Parks, Cairns region
+    state: Qld
+  Davies Creek NP, grassland:
+    latitude (deg): -17.0145
+    longitude (deg): 145.5796
+    description: grassy open woodland; savannah
+    locality: Davies Creek National Park, Cairns region
+    state: Qld
+  Barron Gorge NP and Lake Barrine (Crater Lakes NP), rainforest:
+    latitude (deg): -17.5978
+    longitude (deg): 145.7395
+    description: rainforest
+    locality: Barron Gorge National Park and Lake Barrine (Crater Lakes National Park),
+      Cairns region
+    state: Qld
+  Noosa NP, heath:
+    latitude (deg): -26.4467
+    longitude (deg): 153.0998
+    description: heath
+    locality: Noosa National Park, Brisbane region
+    state: Qld
+  Lamington NP, rainforest:
+    latitude (deg): -28.1988
+    longitude (deg): 153.1876
+    description: rainforest
+    locality: Lamington National Park, Brisbane region
+    state: Qld
+  Girraween NP, woodland:
+    latitude (deg): -28.8275
+    longitude (deg): 151.9614
+    description: eucalypt woodland
+    locality: Girraween National Park, Brisbane region
+    state: Qld
+  Ku-ring-gai Chase NP, woodland:
+    latitude (deg): -33.6936
+    longitude (deg): 151.168
+    description: shrubby woodland
+    locality: Ku-ring-gai Chase National Park, Sydney region
+    state: NSW
+  Royal NP, heath:
+    latitude (deg): -34.148
+    longitude (deg): 151.0619
+    description: heath
+    locality: Royal National Park, Sydney region
+    state: NSW
+  Royal NP, rainforest:
+    latitude (deg): -34.1862
+    longitude (deg): 151.0177
+    description: rainforest
+    locality: Royal National Park, Sydney region
+    state: NSW
+  Brisbane Ranges NP, grassland:
+    latitude (deg): -37.8567
+    longitude (deg): 144.1699
+    description: grassy open woodland; herby
+    locality: Brisbane Ranges National Park, Melbourne region
+    state: Vic
+  Great Otway NP, woodland:
+    latitude (deg): -38.5348
+    longitude (deg): 143.7132
+    description: shrubby woodland
+    locality: Great Otway National Park, Melbourne region
+    state: Vic
+  Great Otway NP, heath:
+    latitude (deg): -38.5405
+    longitude (deg): 143.4828
+    description: heath
+    locality: Great Otway National Park, Melbourne region
+    state: Vic
+  Great Otway NP, rainforest:
+    latitude (deg): -38.7024
+    longitude (deg): 143.4938
+    description: rainforest
+    locality: Great Otway National Park, Melbourne region
+    state: Vic
+  Mt William NP, grassland:
+    latitude (deg): -40.867
+    longitude (deg): 148.2113
+    description: grassy open woodland
+    locality: Mount William National Park, Tasmania
+    state: Tas
+  Mt William NP, heath:
+    latitude (deg): -40.877
+    longitude (deg): 148.226
+    description: heath
+    locality: Mount William National Park, Tasmania
+    state: Tas
+  Mt Field NP and Southwest NP, rainforest:
+    latitude (deg): -42.6783
+    longitude (deg): 146.7147
+    description: rainforest
+    locality: Mount Field National Park and Southwest National Park, Tasmania
+    state: Tas
+  Mt Field NP, woodland:
+    latitude (deg): -42.6842
+    longitude (deg): 146.7116
+    description: shrubby woodland
+    locality: Mount Field National Park, Tasmania
+    state: Tas
+contexts:
+- context_property: flower part measured
+  category: entity_context
+  var_in: flower_part
+  values:
+  - value: whole flower / main corolla colour
+    description: whole flower or main corolla colour; in pea flowers with a separately
+      measured keel, the flag and wings
+  - value: stamens / anthers (styles in Proteaceae)
+    description: stamens or anthers; in Proteaceae, styles and pollen presenters
+  - value: keel
+    description: keel petals of a pea flower
+  - value: keel, UV-reflecting part
+    description: UV-reflecting part of the keel
+  - value: keel, non-UV-reflecting part
+    description: non-UV-reflecting part of the keel
+  - value: flag (standard) petal
+    description: flag (standard) petal of a pea flower
+  - value: spot on keel or wings
+    description: coloured spot on the keel or wings of a pea flower
+  - value: centre / central marking (nectar guide)
+    description: centre or central marking of the flower, such as a nectar guide
+  - value: centre, yellow
+    description: yellow centre of the flower
+  - value: disc florets
+    description: disc florets of a daisy capitulum
+  - value: ray florets
+    description: ray florets of a daisy capitulum
+  - value: fused central petals
+    description: fused central petals
+  - value: inside of corolla tube (throat)
+    description: inside of the corolla tube (throat)
+  - value: tips of petals or bracts
+    description: tips of the petals or showy bracts
+  - value: tips of bracts
+    description: tips of the showy bracts
+  - value: second perianth region (base or bracts)
+    description: second perianth region, either the base of the perianth or the bracts
+  - value: whole flower, white part
+    description: white part of the whole flower
+  - value: whole flower, yellow part
+    description: yellow part of the whole flower
+  - value: white region
+    description: white region of the perianth
+  - value: yellow region
+    description: yellow region of the perianth
+  - value: orange region
+    description: orange region of the perianth
+  - value: red region
+    description: red region of the perianth
+  - value: pink / purple region
+    description: pink or purple region of the perianth
+  - value: darker region
+    description: darker region of the perianth
+  - value: lighter region
+    description: lighter region of the perianth
+  - value: labellum / lip
+    description: labellum or lip
+  - value: labellum / lip, dark (purple-brown) marking
+    description: dark purple-brown marking on the labellum or lip
+  - value: labellum / lip, yellow marking
+    description: yellow marking on the labellum or lip
+  - value: dorsal sepal
+    description: dorsal sepal of an orchid flower
+  - value: dorsal sepal, yellow part
+    description: yellow part of the dorsal sepal of an orchid flower
+  - value: dorsal sepal, dark (brown) marking
+    description: dark brown marking on the dorsal sepal of an orchid flower
+  - value: lateral sepals ('tails')
+    description: lateral sepals of an orchid flower
+  - value: dark marking (hairs)
+    description: dark marking formed by hairs on the perianth
+- context_property: plant sex
+  category: entity_context
+  var_in: plant_sex
+- context_property: flower colour form
+  category: entity_context
+  var_in: colour_form
+traits:
+- var_in: brightness
+  unit_in: '%'
+  trait_name: flower_colour_brightness
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Flowers were kept cool and moist and measured within 6 h of collection.
+    Spectra were recorded with an Ocean Optics USB2000+ spectrometer and PX-2 pulsed
+    xenon lamp. The probe was held at 45° to the petal surface, with 100 ms integration
+    and 10 spectra averaged. The instrument was calibrated against a Spectralon white
+    standard and a black-felt dark standard. Petals were first scanned to find UV
+    patterns invisible to humans. Each distinct colour patch on the adaxial surface
+    of the perianth (or showy bracts) was then measured. Small petals were tiled onto
+    black tape to give a measurable area. ^p Spectra were bin-averaged to 1 nm, restricted
+    to 300-700 nm, and negative values set to zero. Traits were calculated per spectrum
+    in R with pavo 2.11 (Maia et al. 2019, Methods Ecol Evol 10:1097-1107). ^p Brightness
+    is the mean reflectance, 300-700 nm (B2; Montgomerie 2006).
+- var_in: chroma
+  unit_in: '{dimensionless}'
+  trait_name: flower_colour_chroma
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Flowers were kept cool and moist and measured within 6 h of collection.
+    Spectra were recorded with an Ocean Optics USB2000+ spectrometer and PX-2 pulsed
+    xenon lamp. The probe was held at 45° to the petal surface, with 100 ms integration
+    and 10 spectra averaged. The instrument was calibrated against a Spectralon white
+    standard and a black-felt dark standard. Petals were first scanned to find UV
+    patterns invisible to humans. Each distinct colour patch on the adaxial surface
+    of the perianth (or showy bracts) was then measured. Small petals were tiled onto
+    black tape to give a measurable area. ^p Spectra were bin-averaged to 1 nm, restricted
+    to 300-700 nm, and negative values set to zero. Traits were calculated per spectrum
+    in R with pavo 2.11 (Maia et al. 2019, Methods Ecol Evol 10:1097-1107). ^p Chroma
+    is (Rmax - Rmin) / mean reflectance (S8; Montgomerie 2006).
+- var_in: bee_hue
+  unit_in: deg
+  trait_name: flower_colour_bee_hue
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Flowers were kept cool and moist and measured within 6 h of collection.
+    Spectra were recorded with an Ocean Optics USB2000+ spectrometer and PX-2 pulsed
+    xenon lamp. The probe was held at 45° to the petal surface, with 100 ms integration
+    and 10 spectra averaged. The instrument was calibrated against a Spectralon white
+    standard and a black-felt dark standard. Petals were first scanned to find UV
+    patterns invisible to humans. Each distinct colour patch on the adaxial surface
+    of the perianth (or showy bracts) was then measured. Small petals were tiled onto
+    black tape to give a measurable area. ^p Spectra were bin-averaged to 1 nm, restricted
+    to 300-700 nm, and negative values set to zero. Traits were calculated per spectrum
+    in R with pavo 2.11 (Maia et al. 2019, Methods Ecol Evol 10:1097-1107). Bee-vision
+    traits use the honeybee (Apis mellifera) photoreceptor sensitivities and the colour
+    hexagon (Chittka 1992). Quantum catches assume D65 illumination and von Kries
+    adaptation to a green-leaf background. ^p Bee hue is the hue angle in the honeybee
+    colour hexagon.
+- var_in: bee_chroma
+  unit_in: '{dimensionless}'
+  trait_name: flower_colour_bee_chroma
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Flowers were kept cool and moist and measured within 6 h of collection.
+    Spectra were recorded with an Ocean Optics USB2000+ spectrometer and PX-2 pulsed
+    xenon lamp. The probe was held at 45° to the petal surface, with 100 ms integration
+    and 10 spectra averaged. The instrument was calibrated against a Spectralon white
+    standard and a black-felt dark standard. Petals were first scanned to find UV
+    patterns invisible to humans. Each distinct colour patch on the adaxial surface
+    of the perianth (or showy bracts) was then measured. Small petals were tiled onto
+    black tape to give a measurable area. ^p Spectra were bin-averaged to 1 nm, restricted
+    to 300-700 nm, and negative values set to zero. Traits were calculated per spectrum
+    in R with pavo 2.11 (Maia et al. 2019, Methods Ecol Evol 10:1097-1107). Bee-vision
+    traits use the honeybee (Apis mellifera) photoreceptor sensitivities and the colour
+    hexagon (Chittka 1992). Quantum catches assume D65 illumination and von Kries
+    adaptation to a green-leaf background. ^p Bee chroma is the distance from the
+    achromatic centre of the colour hexagon (hexagon radius = 1).
+- var_in: bee_colour_category
+  unit_in: .na
+  trait_name: flower_colour_bee_type
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Flowers were kept cool and moist and measured within 6 h of collection.
+    Spectra were recorded with an Ocean Optics USB2000+ spectrometer and PX-2 pulsed
+    xenon lamp. The probe was held at 45° to the petal surface, with 100 ms integration
+    and 10 spectra averaged. The instrument was calibrated against a Spectralon white
+    standard and a black-felt dark standard. Petals were first scanned to find UV
+    patterns invisible to humans. Each distinct colour patch on the adaxial surface
+    of the perianth (or showy bracts) was then measured. Small petals were tiled onto
+    black tape to give a measurable area. ^p Spectra were bin-averaged to 1 nm, restricted
+    to 300-700 nm, and negative values set to zero. Traits were calculated per spectrum
+    in R with pavo 2.11 (Maia et al. 2019, Methods Ecol Evol 10:1097-1107). Bee-vision
+    traits use the honeybee (Apis mellifera) photoreceptor sensitivities and the colour
+    hexagon (Chittka 1992). Quantum catches assume D65 illumination and von Kries
+    adaptation to a green-leaf background. ^p Bee colour category is assigned from
+    the hexagon's 60° sectors (UV, UV-blue, blue, blue-green, green, UV-green; Chittka
+    et al. 1994).
+substitutions:
+- trait_name: flower_colour_bee_type
+  find: blue-green
+  replace: blue_green
+- trait_name: flower_colour_bee_type
+  find: UV-blue
+  replace: uv_blue
+- trait_name: flower_colour_bee_type
+  find: UV-green
+  replace: uv_green
+taxonomic_updates:
+- find: Brachyscome sp.
+  replace: Brachyscome sp. [Dalrymple_2015]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-16)
+  taxonomic_resolution: genus
+- find: Caladenia sp.
+  replace: Caladenia sp. [Dalrymple_2015]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-16)
+  taxonomic_resolution: genus
+- find: Comesperma sp.
+  replace: Comesperma sp. [Dalrymple_2015]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-16)
+  taxonomic_resolution: genus
+- find: Eriocaulon sp.
+  replace: Eriocaulon sp. [Dalrymple_2015]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-16)
+  taxonomic_resolution: genus
+- find: Geranium sp.
+  replace: Geranium sp. [Dalrymple_2015]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-16)
+  taxonomic_resolution: genus
+- find: Dodonaea lanceolata subsp. subsessilifolia
+  replace: Dodonaea lanceolata var. subsessilifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-16)
+  taxonomic_resolution: variety
+- find: Elaeodendron australe subsp. australe
+  replace: Elaeodendron australe var. australe
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-16)
+  taxonomic_resolution: variety
+- find: Mitrasacme pilosa subsp. stuartii
+  replace: Mitrasacme pilosa var. stuartii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-16)
+  taxonomic_resolution: variety
+- find: Rubus rosifolius subsp. rosifolius
+  replace: Rubus rosifolius var. rosifolius
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-16)
+  taxonomic_resolution: variety
+- find: Psychotria sp.Danbulla
+  replace: Psychotria sp. (Danbulla)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-10-16)
+  taxonomic_resolution: species
+exclude_observations: .na
+questions: .na
