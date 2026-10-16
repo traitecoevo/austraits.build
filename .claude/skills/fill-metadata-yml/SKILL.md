@@ -224,7 +224,15 @@ took place between 1100 and 1600 hours") word for word, quoted, concatenated
 in the order the manuscript presents them -- rather than summarising it in
 your own words, and rather than stopping after the first relevant paragraph
 when a later one (e.g. covering the second of two collection trips, or a
-sample-storage step) is just as much a sampling protocol as the first. A
+sample-storage step) is just as much a sampling protocol as the first.
+A `: ` inside the quoted text may (and preferably should) be changed to `, `
+so the value stays an unquoted YAML scalar -- the user prefers this to
+single-quoting the whole field just to keep the colon (DrewSmythe_2023).
+Always quote the overall study-setting paragraph whole (study scope, species
+counts, region, dates, sites), even in a multi-taxon paper where it also
+mentions animals -- don't pick out only the plant sentence. Sentences that
+only describe how non-plant taxa were sampled (bird body patches, butterfly
+wing sides) may be dropped, marked with `[...]` (Dalrymple_2015). A
 paraphrase, or a partial quote that leaves out a still-relevant protocol
 paragraph, doesn't meet the bar. If the primary reference doesn't describe
 the specific data in `data.csv` (e.g. a dataset merges records that actually
@@ -612,6 +620,7 @@ For each `traits:` entry, fill:
   actually describes the distinction in its own words -- and say so plainly
   (chat report + a `questions:` entry) rather than presenting the paraphrase
   as sourced.
+<<<<<<< Updated upstream
   **When the Methods never say how a trait was scored** (e.g. fire responses
   that appear only in an appendix's species accounts), quote the closest
   verbatim text (the appendix caption, plus the relevant Methods sentences,
@@ -619,6 +628,17 @@ For each `traits:` entry, fill:
   trait records. Don't use words like "inferred", "assumed" or "presumably",
   which cast doubt on the authors' method. Put any doubt in `questions:`
   instead. (Saunders_2024.)
+=======
+- **Choosing `flower_visitor` vs `pollination_vector_possible`:** when the
+  contributors describe their data as flower-visitor interactions (all
+  animal visitors recorded), every record is `flower_visitor`, even if
+  visitors were only recorded when they contacted anthers/stigma. Use
+  `pollination_vector_possible` only when the source itself frames visitors
+  as possible/assumed pollinators (pollen loads, pollen collection,
+  "potential pollinators"). Don't follow a same-lab precedent over the
+  contributors' own wording, and don't split one survey across the two
+  traits by visitor group (DrewSmythe_2023).
+>>>>>>> Stashed changes
 
 **Trait-value matching against `allowed_values_levels` is case-insensitive
 at build time** (`traits.build`'s actual value-matching, not just the
