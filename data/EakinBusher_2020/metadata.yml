@@ -27,8 +27,25 @@ contributors:
 dataset:
   data_is_long_format: no
   custom_R_code: '
-    data |>
-      mutate(flowering_period = convert_month_range_vec_to_binary(flowering_period))
+    fruit_seed_columns <- c(
+      "proportion_flowers_set_fruit (%)",
+      "seeds_per_fruit (minimum) ({count})",
+      "seeds_per_fruit (maximum) ({count})",
+      "seeds_per_fruit mean ({count})"
+    );
+    data <- data |>
+      mutate(flowering_period = convert_month_range_vec_to_binary(flowering_period));
+    dplyr::bind_rows(
+      data |>
+        mutate(
+          across(all_of(fruit_seed_columns), ~ NA),
+          pollination_treatment = NA_character_
+        ),
+      data |>
+        filter(!`pollination treatment` %in% c("Pooled", "Insect-simulated")) |>
+        select(taxon_name, location_name, `pollination treatment`, all_of(fruit_seed_columns)) |>
+        mutate(pollination_treatment = `pollination treatment`)
+    )
   '
   collection_date: 2017-09/2017-12
   taxon_name: taxon_name
@@ -105,8 +122,8 @@ dataset:
     guessed. A substantial part of this paper's data is not yet mappable
     to any AusTraits trait, e.g. flower_anther_display and flower_stigma_display (anther/stigma
     exsertion); buzz_pollination; and a set of pollination-experiment reproductive-output
-    figures from Table 3 (fruit_count_produced, proportion_flowers_set_fruit, fruit_set_source_percentage,
-    pollen_limitation_index, seeds_per_fruit_potential, seeds_per_fruit, all by
+    figures from Table 3 (fruit_count_produced, fruit_set_source_percentage,
+    pollen_limitation_index, seeds_per_fruit_potential, all by
     pollination treatment)
 identifiers: .na
 locations:
@@ -149,6 +166,20 @@ contexts:
 - context_property: flower visitor taxon name
   category: entity_context
   var_in: pollination_vector_possible identity
+- context_property: pollination treatment
+  category: treatment_context
+  var_in: pollination_treatment
+  values:
+  - value: Open
+    description: Flowers unmanipulated, with free access to insect visitors.
+  - value: Autogamy
+    description: Flowers bagged to exclude insect visitors, testing within-flower self-pollination.
+  - value: Self
+    description: Flowers hand-pollinated with pollen from a different flower on the same plant, then bagged (geitonogamy).
+  - value: Outcross
+    description: Flowers emasculated and hand-pollinated with pollen from a plant at least 5 m away, then bagged (xenogamy).
+  - value: Supplementary
+    description: Uncovered flowers given additional outcross pollen on top of open pollination.
 traits:
 - var_in: flower_diameter (cm)
   unit_in: cm
@@ -295,6 +326,38 @@ traits:
     (e.g. Apis mellifera on Tricoryne elatior, the most frequently observed visitor
     even though no fruit was produced by the plants on which it was observed; Results,
     Insect observations, p.30).
+- var_in: proportion_flowers_set_fruit (%)
+  unit_in: '%'
+  trait_name: fruit_set_proportion
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: 40-179
+  methods: We tagged flowers corresponding to their specified pollination treatment, either open, autogamy, self, outcross or supplementary pollination (Table 2). Autogamy, self and outcross pollination treatments were covered with organza bags to exclude insect visitors (Table 2). We collected fruits close to maturity in late 2017 and recorded the number of fruits and seeds. Between 40 and 179 flowers of each native plant species (Table 3) were treated from 18 September to 22 December 2017.
+- var_in: seeds_per_fruit (minimum) ({count})
+  unit_in: '{count}/{count}'
+  trait_name: seeds_per_fruit
+  entity_type: population
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: unknown
+  methods: We tagged flowers corresponding to their specified pollination treatment, either open, autogamy, self, outcross or supplementary pollination (Table 2). Autogamy, self and outcross pollination treatments were covered with organza bags to exclude insect visitors (Table 2). We collected fruits close to maturity in late 2017 and recorded the number of fruits and seeds. Between 40 and 179 flowers of each native plant species (Table 3) were treated from 18 September to 22 December 2017.
+- var_in: seeds_per_fruit (maximum) ({count})
+  unit_in: '{count}/{count}'
+  trait_name: seeds_per_fruit
+  entity_type: population
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: unknown
+  methods: We tagged flowers corresponding to their specified pollination treatment, either open, autogamy, self, outcross or supplementary pollination (Table 2). Autogamy, self and outcross pollination treatments were covered with organza bags to exclude insect visitors (Table 2). We collected fruits close to maturity in late 2017 and recorded the number of fruits and seeds. Between 40 and 179 flowers of each native plant species (Table 3) were treated from 18 September to 22 December 2017.
+- var_in: seeds_per_fruit mean ({count})
+  unit_in: '{count}/{count}'
+  trait_name: seeds_per_fruit
+  entity_type: population
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
+  methods: We tagged flowers corresponding to their specified pollination treatment, either open, autogamy, self, outcross or supplementary pollination (Table 2). Autogamy, self and outcross pollination treatments were covered with organza bags to exclude insect visitors (Table 2). We collected fruits close to maturity in late 2017 and recorded the number of fruits and seeds. Between 40 and 179 flowers of each native plant species (Table 3) were treated from 18 September to 22 December 2017.
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
