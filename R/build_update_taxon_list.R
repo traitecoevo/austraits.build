@@ -113,7 +113,7 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
     dplyr::left_join(by = c("aligned_name", "taxon_name"),
       resources$APC %>%
         dplyr::mutate(
-          accepted_name = resources$`APC list (accepted)`$canonical_name[match(accepted_name_usage_ID, resources$`APC list (accepted)`$taxon_ID)],
+          accepted_name = resources$APC_accepted$canonical_name[match(accepted_name_usage_ID, resources$APC_accepted$taxon_ID)],
           taxon_name = accepted_name
         ) %>%
         dplyr::select(dplyr::all_of(c(
@@ -148,7 +148,7 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
         taxon_rank,
         ifelse(
           (taxonomic_dataset == "APC" & taxonomic_status == "accepted"),
-          resources$`APC list (accepted)`$taxon_rank[match(taxon_id, resources$`APC list (accepted)`$taxon_ID)],
+          resources$APC_accepted$taxon_rank[match(taxon_id, resources$APC_accepted$taxon_ID)],
           taxon_rank
         )),
       # For taxon names that are valid names (per herbarium standards) or repeatedly reported invasives, but
@@ -165,7 +165,7 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
       taxon_id = ifelse(taxon_rank %in% c("genus", "family"), NA, taxon_id),
       scientific_name_id = ifelse(
         taxonomic_dataset == "APC",
-        resources$`APC list (accepted)`$scientific_name_ID[match(scientific_name, resources$`APC list (accepted)`$scientific_name)],
+        resources$APC_accepted$scientific_name_ID[match(scientific_name, resources$APC_accepted$scientific_name)],
         scientific_name_id),
       scientific_name_id = ifelse(taxon_rank %in% c("genus", "family"), NA, scientific_name_id)
     ) %>%
@@ -242,8 +242,9 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
       taxon_list_replace <- taxon_list_filtered %>%
         # First bind rows for cleaned names not yet in AusTraits taxon_list.csv file
         dplyr::bind_rows(taxon_list_new %>% dplyr::filter(!aligned_name %in% taxon_list_filtered$aligned_name)) %>%
-        # Arrange by names - hopefully this will be best solution for keeping GitHub commits more transparent
-        dplyr::arrange(taxon_name, aligned_name) %>%
+        # Arrange by taxon_name only (stable sort), so existing rows keep their order and new rows
+        # follow those with the same taxon_name - keeps GitHub diffs to the added rows
+        dplyr::arrange(taxon_name, .locale = "C") %>%
         dplyr::distinct(taxon_name, aligned_name, .keep_all = TRUE)
 
    }
