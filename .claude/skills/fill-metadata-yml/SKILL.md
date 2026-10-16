@@ -51,6 +51,17 @@ value actually present in the trait-name column named in `dataset.trait_name`
 -- if the skeleton predates a later edit to `data.csv` (a renamed/merged
 trait column, an added trait), reconcile the list first.
 
+**Long-format data.csv carrying candidate traits** (rows whose `trait` isn't
+in `config/traits.yml` yet, typical of a `trait_data.csv` straight out of
+`extract-paper-into-dataset-raw`): `dataset_test()` fails unless every trait
+name in the data appears in `traits:`. Don't satisfy it with
+`- var_in: <candidate> ... trait_name: .na` blocks (the older Houston_2002
+pattern) -- drop those rows at the top of `custom_R_code` instead:
+`data |> dplyr::filter(trait %in% c("<mapped trait>", ...)) |> ...`. List the
+candidates in `dataset.notes`, and when one is later added to traits.yml add
+it to both the filter vector and `traits:`. (Johnson_1980 is the worked
+example.)
+
 ## Step 1 -- source (primary / secondary_NN)
 
 The user will usually hand you the reference list directly (pasted text, a
@@ -70,7 +81,10 @@ screenshot, or a paper PDF) rather than expect you to look it up. Map it to
   first-author-surname if the paper has been split/reused before), `year`,
   `author` (`Initial. Initial. Lastname` chained with `and`, matching the
   style already used across this repo -- grep a few existing `metadata.yml`
-  `author:` fields for the exact convention rather than guessing), `title`,
+  `author:` fields for the exact convention rather than guessing), `title`
+  (sentence case, never the journal's title case -- capitalise only the first
+  word, proper nouns and genus names, e.g. `Adaptation in wood anatomical
+  traits to temperature and precipitation--a common garden study`),
   `journal`, `volume`, `number`, `pages` (`start--end`, double-dash), `doi`.
 - `bibtype: Thesis` fields instead: `author`, `year`, `title`, `institution`,
   `type:` (`PhD`/`Honours`/`Masters` -- infer from wording like "Doctor of
@@ -83,13 +97,36 @@ screenshot, or a paper PDF) rather than expect you to look it up. Map it to
   internal YAML key, not a citation format, and traits.build won't recognise
   it as one). See Cornwell_2018, Kew_2019_3/_4, Davis_2026, Choat_2012 for
   the working pattern: `dataset: source_id: source_id` points at a data.csv
-  column (typically built in `custom_R_code`, e.g. via a `dplyr::recode()`/
-  named-vector lookup or `paste0(ref_author, "_", ref_year)`) holding an
-  `author_year`-style value per row -- disambiguated with a trailing `_1`/
-  `_2`/... where the same first author has more than one compiled source in
-  the same year (see Kew_2019_3's worked `ifelse(stringr::str_detect(...))`
-  chain, or build the disambiguation as a lookup table if there are too many
-  collisions to hand-write). For sources promoted to a formal `secondary_NN`
+  column holding an `author_year`-style value per row -- disambiguated with a
+  trailing `_1`/`_2`/... where the same first author has more than one
+  compiled source in the same year. A row citing several sources gets their
+  keys joined with `"; "` (e.g. `Gleason_2012; Gleason_2013`).
+  **Write `source_id` into data.csv as a real column -- don't build it in
+  `custom_R_code`.** Older datasets (Kew_2019_3's
+  `ifelse(stringr::str_detect(...))` chain) derive it at build time, but the
+  user has asked for the curator's per-row source attribution to live in
+  data.csv itself, not as a long pattern-matching block in metadata.yml.
+  The same applies to a per-row date column derived from the sources (e.g.
+  `collection_date` set to each source's publication year, or a
+  `min/max` year range for a multi-source row), with `dataset:
+  collection_date:` pointing at that column. Work the values out once with
+  a throwaway script, then **append** them as new trailing columns, keeping
+  every original column byte-identical to the raw source file. Do this by
+  appending to the raw file's text lines (after confirming no field contains
+  an embedded newline, so line count = rows + 1) -- don't round-trip through
+  `read_csv_char()`/`write_csv()`, which silently trims whitespace inside
+  values (a trailing space in a species name, for example) and so changes
+  the raw columns. Check afterwards that the original columns still match
+  the raw file exactly (`identical()` on the two files read with
+  `colClasses = "character"`). Filtering or blanking values (e.g. removing
+  data already in AusTraits under another dataset) still belongs in
+  `custom_R_code` -- only these attribution/date columns go into data.csv.
+  The one exception is marking duplicates: add an `omit_duplicate` column to
+  data.csv holding the dataset_id that already has the value (e.g.
+  `Richards_2008`), blank otherwise, and filter `is.na(omit_duplicate)` in
+  `custom_R_code`. That one column records both that a row is a duplicate
+  and where the data live (Judd_1996).
+  For sources promoted to a formal `secondary_NN`
   entry (see the >~50-observations-worth-a-citation judgement call above),
   `source_id` must exactly equal that reference's `key:` (e.g. `Bernhardt_1987`)
   so traits.build can cross-reference them; for every other source it should
@@ -132,9 +169,10 @@ Only fall back to `.na.character` (the dominant convention in this repo --
 grep `ORCID:` across `data/*/metadata.yml` to confirm before using a
 different placeholder) for ORCID, or `unknown` for affiliation, once both of
 those come up empty -- and say in your report that you checked and found
-nothing, not just that you defaulted to unknown. Leave `assistants:` and
-`dataset_curators:` as the skeleton already has them, unless the user says
-otherwise.
+nothing, not just that you defaulted to unknown. Leave `dataset_curators:`
+as the skeleton already has it, unless the user says otherwise. When there
+are no assistants, delete the `assistants:` line entirely (`dataset_test()`
+rejects `assistants: .na` as logical, not character).
 
 ## Step 3 -- dataset section
 
@@ -144,6 +182,24 @@ these exact field names first -- `basis_of_record:` and similar fields draw
 from a small controlled set of strings (`field`, `lab`, `literature`,
 `preserved_specimen`, `captive_cultivated`, `field_experiment`, ...) that's
 cheaper to grep than to recall.
+
+**When material mixes sources (natural stands, arboreta, glasshouse), derive
+`basis_of_record` per record** in `raw/extra_R_code_<id>.R` (written into data.csv so the values sit beside the data) from the source's own
+collection/provenance codes (`basis_of_record: basis_of_record` in `dataset:`),
+using `field captive_cultivated` only for records whose own material is mixed --
+never as a blanket dataset-level value (Hallam_1970).
+
+**Map categorical values with `substitutions:`, not in data.csv.** For an
+extraction's long-format data.csv, set `dataset: value: trait_value` (the
+source's own snake_case terms, e.g. `almost_complete`, `non_glaucous`) and add
+one substitution per source term -> AusTraits value(s). `trait_value_clean`
+stays in data.csv as the curator's reference but isn't the build column
+(Hallam_1970).
+
+**Never filter out categorical values just because they don't map** to
+`allowed_values_levels`. Let them reach traits.build so they land in
+`excluded_data` as "Unsupported trait value" and stay visible; raise them as
+a `questions:` entry instead.
 
 **`description:` is a one-sentence statement of the study's motivation --
 what the researchers were trying to learn -- in your own words, not
@@ -181,6 +237,16 @@ curator to supply the verbatim text if they have access. `description:` can
 still be your own summary; only `sampling_strategy:` (and, by the same logic,
 each trait's `methods:` in Step 4 below) needs to be verbatim.
 
+**Verbatim still means removing in-text citation markers.** Remove numbered
+reference markers and superscripts, which `pdftotext` flattens onto the
+preceding word (e.g. `wide home ranges54–63` → `wide home ranges`, `Trifolium
+repens53` → `Trifolium repens`, `similar field studies67,68` → `similar field
+studies`). Also remove soft hyphens and other stray PDF characters. Leave
+everything else word for word. Keep author–year citations (`(Smith et al.
+2010)`) and figure, table and supplement references (`(Fig. 6)`,
+`(Supplementary information)`), because those are part of the sentence.
+Check for digits stuck onto the ends of words before writing the field.
+
 **If `custom_R_code:` is present, `collection_date:` must be the very next
 `dataset:` field, with nothing between them.** `traits.build:::read_metadata()`
 extracts `custom_R_code` (which can span many lines, including lines that
@@ -193,6 +259,33 @@ swallow those lines into the R code string, which then fails to `parse()`
 with a confusing error pointing at unrelated trailing text -- not a hint
 about which field actually moved. Keep the order `custom_R_code:` (if
 present) immediately followed by `collection_date:`, then the rest.
+
+**Lay `custom_R_code:` out as indented, readable R code.** Open the quote on
+the `custom_R_code: '` line, then put `data |>` on its own line and each
+piped call on its own line indented beneath it, with long argument lists
+(e.g. the trait vector in a `dplyr::filter(trait %in% c(...))`) broken over
+several indented lines and the closing `'` on its own line. Never write it as
+one long run-on string wrapped at the YAML line width
+(`custom_R_code: ' data |> dplyr::filter(trait %in% c("a", "b",` ...) --
+it builds, but a curator can't read or edit it. Write the block by hand with
+Write/Edit, never through a YAML dumper (`yaml.dump`/`write_yaml`), which
+refolds it into that run-on form. Tasker_2026 is the worked example:
+```yaml
+  custom_R_code: '
+    data |>
+      dplyr::filter(
+        trait %in% c(
+          "plant_growth_form", "plant_height", "resprouting_capacity",
+          "post_fire_recruitment", "seedbank_location"
+        )
+      ) |>
+      dplyr::mutate(
+        replicates = dplyr::if_else(entity_type == "individual", "1", replicates)
+      )
+    '
+```
+The layout is purely for people: the build collapses all whitespace anyway
+(see below), which is also why the gotchas below still apply.
 
 **`custom_R_code:` can never contain an R `#` comment, needs its apostrophes
 doubled, and needs an explicit `;` between top-level statements written on
@@ -232,14 +325,25 @@ this is the convention the vast majority of existing `metadata.yml` files in
 this repo already use (confirmed by grepping `collection_date:` across
 `data/*/metadata.yml`), e.g. a paper stating "sampling took place ... December
 2001 ... and again ... February 2002" becomes `2001-12/2002-02`. A single
-date can stay `yyyy-mm-dd`, or just `yyyy` if that's all the paper gives. Only
-leave it `unknown` when the paper genuinely doesn't state a date -- don't
-guess one. When `data.csv` has a column giving each record's own date (varies
+date can stay `yyyy-mm-dd`, or just `yyyy` if that's all the paper gives.
+When the paper states no sampling date, use the plain publication year (e.g.
+`2006`), not the received/submitted year -- it is a little later than the real
+sampling, but easier to standardise (Warwick_2017). Not `unknown/2006` (fails
+the date parser) and not `.na/2006` (the `.na` adds nothing) (Fernando_2006). Don't guess a
+more precise date than the paper supports. When `data.csv` has a column giving each record's own date (varies
 row to row, e.g. four seasonal gas-exchange visits, or per-specimen collection
 dates), set `collection_date:` to that column's name instead of a fixed range
 -- `traits.build` resolves it as a column reference when it matches one (see
 e.g. `Arnold_2021`'s `collection_date: Date`, `ANBG_2019`'s `collection_date:
 gathering_date`).
+
+**`collection_date` is when the trait data were collected, not when the
+material was gathered.** For a study measuring herbarium specimens (leaf
+anatomy, morphology from vouchers), the date is when the measurements were
+made -- Johnson_1980 is `collection_date: 1980` -- not a range spanning the
+specimens' own collection dates (an invented `1834/1978` was wrong). A
+constant date goes straight in `dataset: collection_date:`; only add a
+data.csv column when it genuinely varies by row.
 
 **A per-record date is `collection_date:`, not a `temporal_context`.** Only
 model something as a `category: temporal_context` in `contexts:` when it adds
@@ -250,6 +354,72 @@ label standing in for a specific date/period ("September 1995", "January
 1996", ...) is a date, however it's spelled -- convert it to a real
 `yyyy-mm`-ish value in `data.csv` and point `collection_date:` at that column,
 rather than registering it as a context.
+
+**A context value's `description` says only what the context means**
+(`trees just within the waterline, inundated for around 4 days at sampling`).
+Don't repeat which study it comes from (that is `source_id`/`dataset_id`) or
+the sampling date (that is `collection_date`); database users don't want the
+same information several times. Keep `value:` short (`not inundated`,
+`post-flood`) and the description lowercase. When a long raw string is
+recoded, list `find:` before `value:` (Fernando_2021).
+
+**Specimen vouchers, tag numbers and similar per-individual codes go in the
+`identifiers:` block, never in `entity_context`.** Keep them in a plain
+data.csv column (e.g. `voucher`), derive `individual_id` from the same column
+in `custom_R_code`, and declare one `identifiers:` entry per holding
+institution (split the column in `custom_R_code` if specimens sit in
+different herbaria -- Johnson_1980 has `voucher_L` / `voucher_UWC`):
+```yaml
+identifiers:
+- var_in: voucher_L
+  identifier_type: recordNumber
+  institution_code: Rijksherbarium, Leiden (L)
+```
+`identifier_type` is open-ended, even though traits.build's schema lists only
+a few values. Use the fitting DarwinCore term (`recordNumber` for a
+collector's number such as "Constable 16298", `catalogNumber` for a herbarium
+accession number), or a descriptive type for things like a researcher's tree
+tags that link the same individuals across several studies (that use case is
+why the field is open). Blank values are dropped from the identifiers table
+automatically, so rows without a voucher (population/species summaries) need
+no special handling. See also Schulze_2014 and AVH_2026.
+
+**When one paper reports the same trait for the same specimen in more than
+one place** (a table and the text, or two tables) with slightly different
+values, don't keep both behind a "data source" `method_context` -- a curator
+reading the output sees duplicates. Rank the sources in `custom_R_code` and
+keep only the highest-ranked row per entity and trait:
+```r
+dplyr::mutate(source_rank = dplyr::case_when(grepl("^Table 1", source_section) ~ 1, grepl("^Table 2", source_section) ~ 2, TRUE ~ 3)) |>
+dplyr::group_by(taxon_name, entity_type, voucher, trait, value_type, context) |>
+dplyr::filter(source_rank == min(source_rank)) |>
+dplyr::ungroup()
+```
+Confirm the precedence order with the user (Johnson_1980: Table 1 > Table 2 >
+species descriptions > Results text). The dropped values stay in
+`raw/trait_data.csv` with their notes.
+
+**`taxonomic_updates:` stays `.na` in a new metadata.yml -- the user runs
+APCalign and fills it themselves.** The traits.build workflow already updates
+synonyms to the currently accepted name (via `config/taxon_list.csv`), so an
+outdated-but-valid name such as *Leptospermum attenuatum* (now *L.
+trinervium*) needs no entry. A `taxonomic_updates` entry is only needed when
+an original name is misspelt relative to any name ever used, i.e. it doesn't
+exactly match an APC/APNI canonical name. Never hand-write entries, never run
+the alignment and paste the results in, and never edit `taxon_name` in
+data.csv. Do flag likely APCalign pitfalls as a `questions:` entry, e.g. a
+non-Australian taxon that would fuzzy-match to the wrong Australian species
+(Bornean *L. recurvum* -> *L. retusum*).
+
+**Map `measurement_remarks:` only when a specific record's value is known
+to be atypical** -- e.g. measured on regrowth after fire, or from a single
+damaged specimen -- as a short phrase on those rows only. Default to no
+mapping. Everything else has a better home, and repeating it per row bloats
+the database: sites pooled into a metapopulation mean are listed once in the
+location's `georeference remarks`; where in the paper a value came from stays
+in data.csv's `source_section` (unmapped); unit reinterpretations, typos and
+protocol detail go in `notes:`, `methods:` or `questions:`; a value measured
+in another study is recorded through `source_id` (DeSmedt_2018).
 
 Use `notes:` to record anything a later curator should know about how
 `data.csv` was derived (disambiguated location names, derived/matched
@@ -335,6 +505,10 @@ For each `traits:` entry, fill:
   common case: each record ties to a specific site/accession/common-garden,
   even a single-site study) or `individual` (the record is of one physically
   identified plant, typically photograph-based visitor/vector records).
+  A categorical trait a field study scores for its sampled plants (e.g. a
+  growth-form column in the species table) is also `population`, so it stays
+  linked to the site; if a taxon was sampled at several sites, keep it at one
+  site chosen by a consistent rule (Griffith_2015).
   Calling population-level field data `species` just because there's only
   one site, or because the sampling design feels species-centric, is a real
   mistake with a **silent, non-cosmetic build consequence**: `traits.build`'s
@@ -351,6 +525,26 @@ For each `traits:` entry, fill:
 - `value_type: mode` for a categorical trait recorded as a single label per
   entity (the overwhelming majority case for `flower_visitor`/
   `pollination_vector_known`/`pollination_vector_possible`-style traits).
+- **Never map a dispersion column (SD, SE, CI, variance) as a trait entry** --
+  no `value_type: standard_deviation`/`standard_error` entries. Keep those
+  columns in `data.csv` (beside their mean column, e.g. `oil_yield` /
+  `oil_yield_SD`) so they're available in future, but leave them unmapped in
+  `traits:`. Only the mean (or raw/min/max/mode) column gets a trait entry.
+- **Size of the sampled plants (height, DBH, basal diameter, crown size...) is a
+  context, not a trait**, when it describes the measured individuals/populations
+  ("how big is this plant") -- map it under `contexts:` as an `entity_context`
+  (e.g. `context_property: DBH (population mean)`, `tree height (m)`), so the
+  other traits' values carry it. Only map `plant_height`/`stem_diameter` etc. as
+  traits when the value is a species or population *maximum* ("how big can this
+  plant get"). Otherwise users would pool sizes from plants of every age as if
+  they were a species trait.
+  **Whole-plant leaf area, whole-plant biomass and relative growth rates** (RGR
+  of height, diameter, leaf area or mass) are allometric for the same reason:
+  they reflect plant age and size, not anything comparable across species,
+  sites or treatments. They are never traits. Don't propose adding them to
+  traits.yml or raise them as a question; just add one line to `notes:`:
+  "Whole-plant leaf area, biomass and relative growth rate data exist in the
+  data.csv file." Don't say they aren't mapped (Pan_2026).
 - `basis_of_value:` -- `expert_score` for observational/scored categorical
   traits (the norm for the three pollination traits above across this repo);
   `measurement` for a directly measured quantitative trait; check existing
@@ -361,9 +555,8 @@ For each `traits:` entry, fill:
   for a small manually-extracted single-paper dataset). Every categorical
   trait (`value_type: mode`) gets `replicates: .na`, even when the raw data
   does carry a real per-row count (e.g. how many individuals were examined
-  for one `flower_visitor` sighting) -- that number belongs in
-  `measurement_remarks` (e.g. an `n=X` piece of a `custom_R_code`
-  concatenation), not in `replicates`, which is for how many samples
+  for one `flower_visitor` sighting) -- that number belongs in an
+  `entity_context`, not in `replicates`, which is for how many samples
   underlie one reported numeric *value*, not how many individuals were
   involved in an observation.
   **The correct value follows directly from `entity_type:` above, per the
@@ -371,13 +564,27 @@ For each `traits:` entry, fill:
   `entity_type: species` (a taxonomic-description/invariant-categorical fact)
   gets `replicates: .na`. `entity_type: individual` gets `replicates: 1` (one
   organism, one measurement) -- not a stated sample size, since there's only
-  ever one. `entity_type: population` must **never** be `.na` -- it's a
+  ever one -- **always, unless the methods explicitly state otherwise.** A
+  per-specimen mean over many cells (e.g. Johnson_1980's stomatal size per
+  herbarium voucher) is still `1`, not `.na` or `unknown`. **But keep
+  `value_type` and `replicates` consistent:** when each individual's value is
+  the mean of a stated number of measurements (Ottaviani_2015: bark thickness
+  averaged from five readings per stem), use `value_type: mean` with
+  `replicates: 5`. Never pair `value_type: mean` with `replicates: 1`. `entity_type: population` must **never** be `.na` -- it's a
   number (`replicates: 20`), a range (`replicates: 2-3`), a column reference
   when a real per-row count backs every value (`replicates: n_column`), or
   the literal string `replicates: unknown` when the source genuinely doesn't
   state a count. Calling something `species` specifically to justify a lazy
   `.na` is the same mistake as above, just approached from the `replicates:`
   side instead of the `entity_type:` side.
+  **When one numeric trait mixes entity types across rows** (a long-format
+  dataset with per-specimen and multi-specimen summary rows), build a
+  `replicates` column in `custom_R_code` and point the numeric traits at it:
+  `replicates = dplyr::case_when(entity_type == "individual" ~ "1",
+  entity_type == "population" ~ as.character(n), TRUE ~ NA_character_)`.
+  Coerce with `as.character()`, because the build reads numeric-looking
+  columns as doubles and `case_when` won't mix types. Categorical traits keep
+  `replicates: .na` in their own entries. (Johnson_1980.)
   **Never write an unquoted `replicates: n` (or any bare single-letter/
   `yes`/`no`-like value) as a column-reference** -- R's `yaml` package
   (what `read_metadata()` uses) parses bare `n`/`no`/`y`/`yes` (any case) as
@@ -405,6 +612,13 @@ For each `traits:` entry, fill:
   actually describes the distinction in its own words -- and say so plainly
   (chat report + a `questions:` entry) rather than presenting the paraphrase
   as sourced.
+  **When the Methods never say how a trait was scored** (e.g. fire responses
+  that appear only in an appendix's species accounts), quote the closest
+  verbatim text (the appendix caption, plus the relevant Methods sentences,
+  joined with ` ^p `). Follow it with one short, neutral line saying what the
+  trait records. Don't use words like "inferred", "assumed" or "presumably",
+  which cast doubt on the authors' method. Put any doubt in `questions:`
+  instead. (Saunders_2024.)
 
 **Trait-value matching against `allowed_values_levels` is case-insensitive
 at build time** (`traits.build`'s actual value-matching, not just the
@@ -417,7 +631,23 @@ value already matches case-insensitively before writing one.
 
 **Never add a new synonym to a shared `config/traits.yml` value as a
 shortcut for resolving one dataset's raw spelling -- that belongs in a
-per-dataset substitution, almost always.** A real mistake made and corrected
+per-dataset substitution, almost always.** The same applies when drafting a
+*new* trait: write its definition and allowed values for broad use across
+datasets, and give a value `(Synonyms, ...)` only for genuine, widely used
+equivalent terms -- never one study's own category wording (the Warwick_2017
+wood anatomy traits had all such synonyms stripped). When tagging terms in a new
+trait's first (coded) description half, reuse codes already in
+`~/GitHub/APD/data/published_classes.csv` first; only then search the ontology files
+in `~/Library/CloudStorage/OneDrive-UNSW/Documents/data_for_GitHub_repos/APD/ontologies`
+(po.obo, pato.owl, to.obo, go.obo, chebi.obo, envo.owl, NCIT.owl, ...) -- check synonyms
+too ("cell membrane" is an exact synonym of GO:0005886 plasma membrane). Add each newly
+tagged code as a row in published_classes.csv (same columns, identifier order, CRLF) and
+tell the user exactly which rows you added -- keep new terms few (Griffith_2015).
+A categorical trait's name never ends in a numeric-sounding word (length,
+thickness, width, diameter, density, count, frequency, ...) -- add `_categorical`
+(`wood_fibre_wall_thickness_categorical`) and keep the plain name for the numeric trait.
+Keywords are checked against published_classes.csv; `trait_group` terms against
+`APD_trait_hierarchy.csv`. A real mistake made and corrected
 in this repo's history: several raw family/genus names from one dataset's
 animal-visitor table (`Apidae`, `Muridae`, `Pteropodidae`, `Amegilla`,
 `Braunsapis`/`Exoneura`) got added as new `(Synonyms, ...)` entries on
@@ -542,6 +772,15 @@ controlled vocabulary) needs two things, not just a single best-guess
    itself needed.
 
 ## Step 5 -- validate
+
+A PostToolUse hook (`.claude/hooks/check_metadata_yml.py`) already re-checks
+every `data/*/metadata.yml` edit for the bare-y/n/yes/no-becomes-boolean
+gotcha and the `custom_R_code:`/`collection_date:` ordering gotcha
+automatically, and leaves a reminder when every trait in the file is
+`entity_type: species` alongside a real `locations:` block -- so those three
+don't need a manual re-check here. The `location_id`-goes-NA consequence
+itself still has no mechanical check (it needs a real build), so the steps
+below remain the only way to catch it.
 
 Parse the finished file with `yaml.safe_load` as a first pass, but don't
 stop there -- `yaml.safe_load` will happily "succeed" on a file that's
