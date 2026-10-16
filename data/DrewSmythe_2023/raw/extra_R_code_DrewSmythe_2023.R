@@ -5,6 +5,8 @@
 # that Date is written as yyyy-mm-dd and the empty rows below the data are dropped.
 # The columns added are:
 #   location_name                metadata.yml location for each Area code
+#   time_since_rehabilitation    approximate years since rehabilitation began (as at the
+#                                2022-23 surveys, supplied by the contributors); blank for REF
 #   visitor_taxon_name           the authors' Label, with formatting made consistent
 #                                ("Apis.mellifera" -> "Apis mellifera", ".spA" -> " sp. A")
 #                                and four genus/species misspellings corrected
@@ -29,6 +31,11 @@ out <- raw |>
       Area == "STG1" ~ "Appin North rehabilitation Stage 1",
       Area == "STG2" ~ "Appin North rehabilitation Stage 2",
       Area == "STG3" ~ "Appin North rehabilitation Stage 3"
+    ),
+    time_since_rehabilitation = case_when(
+      Area == "STG1" ~ "22",
+      Area == "STG2" ~ "16",
+      Area == "STG3" ~ "5"
     ),
     visitor_taxon_name = case_when(
       grepl("\\.sp[A-Z]$", Label) ~ sub("\\.sp([A-Z])$", " sp. \\1", Label),
@@ -83,6 +90,7 @@ stopifnot(
   n_distinct(out$`Obs#`) == nrow(out)
 )
 
-out <- out |> select(-order_clean, -family_clean)
+out <- out |> relocate(time_since_rehabilitation, .after = location_name) |>
+  select(-order_clean, -family_clean)
 
 readr::write_csv(out, "data/DrewSmythe_2023/data.csv", na = "")
