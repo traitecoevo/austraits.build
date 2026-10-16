@@ -26,7 +26,7 @@ dataset:
     data %>%
       mutate(
         voucher_specimen = ifelse(!is.na(`DN#`), paste0("Dean Nicolle tree number ", `DN#`), NA),
-        Date_to_use_edited = Date_to_use_edited %>% mdy(),
+        Date_to_use_edited = util_format_collection_date(Date_to_use_edited, "mdy"),
         row_number = row_number(),
         species_name_new = case_when(
           row_number == 293 ~ "Acacia sp.. [Acacia sp. 1 minniritchi bark; Schulze_2014]",
@@ -72,8 +72,9 @@ dataset:
       group_by(species_name) %>%
         mutate(across(c(`physical_defence`,`leaf type`, leaf_type, `leaf_compoundness`, `Deciduous`,
         `Life-form`,`N2 fixing`), replace_duplicates_with_NA)) %>%
-      ungroup()
-    '
+      ungroup() %>%
+      mutate(`Date_to_use_edited` = coalesce(`Date_to_use_edited`, "2014"))
+  '
   collection_date: Date_to_use_edited
   taxon_name: species_name
   location_name: site_name

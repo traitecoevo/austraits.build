@@ -87,6 +87,13 @@ into `description` or `climate description` (Paroissien_2026).
 National Park`); the researchers' own site codes ("Site 1", "H1") and site
 setting details ("riparian fringe", "adjacent to an unsealed road") go in
 `notes` (Fernando_2021).
+When the source describes the vegetation in a sentence, `description` gets
+just the vegetation type (`sedgeland`, `woodland and heathland`) and the
+sentence goes under its own `vegetation` property. A named landform or
+geological unit the sites sit on (`Nabiac Pleistocene beach ridge barriers`)
+is `geology (parent material)`, not part of `locality`, which keeps only the
+place reference (`25 km south of Taree, lower north coast of New South
+Wales`) (Griffith_2015).
 
 **Reuse, don't paraphrase.** If the source already has a column whose values
 are exactly this -- a vegetation-class/community name, most often -- copy

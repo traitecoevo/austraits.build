@@ -21,7 +21,17 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code: .na
+  custom_R_code: '
+    data |>
+      mutate(
+        pollination_treatment = case_when(
+          stringr::str_detect(context, stringr::fixed("autogamy (Auto) treatment")) ~ "autogamy",
+          stringr::str_detect(context, stringr::fixed("pollen supplementation (Supp) treatment")) ~ "pollen supplementation",
+          stringr::str_detect(context, stringr::fixed("treatments pooled, mating-system trial")) ~ "all treatments pooled",
+          stringr::str_detect(context, "^natural population") ~ "open pollination"
+        )
+      )
+  '
   collection_date: 2015/2021
   taxon_name: taxon_name
   trait_name: trait
@@ -40,8 +50,7 @@ dataset:
     source PDF by Claude AI, Anthropic)
   notes: style_anther_separation_distance,
     style_length_relative_to_anther, native_bee_visitation_rate, larval_seed_predation_behaviour,
-    proportion_fruit_with_larva, proportion_fruit_free_of_larva, fruit_set_proportion,
-    seeds_per_fruit, beetles_per_flower, beetles_observed, pollen_grains_per_stigma,
+    proportion_fruit_with_larva, proportion_fruit_free_of_larva, beetles_per_flower, beetles_observed, pollen_grains_per_stigma,
     proportion_stigmas_with_pollen, flowering_density_max, flowering_density_peak,
     stamen_form and style_form
 locations:
@@ -91,6 +100,18 @@ contexts:
 - context_property: flower visitor taxon name
   category: entity_context
   var_in: entity_context
+- context_property: pollination treatment
+  category: treatment_context
+  var_in: pollination_treatment
+  values:
+  - value: autogamy
+    description: Auto treatment in the mating-system trial at NR; flowers isolated from pollinators and not hand-pollinated, testing autonomous self-pollination.
+  - value: pollen supplementation
+    description: Supp treatment in the mating-system trial at NR; open flowers given additional hand-applied outcross pollen.
+  - value: all treatments pooled
+    description: Mean across the Self, OCL (long-anther outcross), OCS (short-anther outcross), Open and Supp treatments of the mating-system trial at NR.
+  - value: open pollination
+    description: Unmanipulated flowers in natural populations, pooled across years and/or sites.
 traits:
 - var_in: plant_growth_form
   unit_in: unit
@@ -169,6 +190,22 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: For T. patersonii, autogamy (and, by entailment, self-compatibility) confirmed by comparing pollen loads on stigmas of insect-excluded vs open flowers (Methods p.3; Discussion p.8). For T. manglesianus, a mating-system trial at NR (Results p.4-5; Fig. 5A) hand-pollinated flowers under Auto (self, no vector), OCL/OCS (hand outcross) and Supp (pollen supplementation) treatments; the Auto treatment set fruit (proportion 0.16), and OCL/OCS/Supp set fruit at up to 0.70 -- evidencing both autogamy and allogamy succeed, i.e. self- and cross-compatible.
+- var_in: fruit_set_proportion
+  unit_in: '{count}/{count}'
+  trait_name: fruit_set_proportion
+  entity_type: population
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: unknown
+  methods: Fruit set of T. manglesianus was recorded in a mating-system trial at NR, in which flowers were isolated from pollinators and either left unpollinated (Auto), hand self-pollinated (Self), hand outcross-pollinated with pollen from long (OCL) or short (OCS) anthers, left open (Open) or given supplementary outcross pollen (Supp) (Results p.4-5; Fig. 5A). Fruit set of T. patersonii was recorded on marked plants in natural populations at KH across seven years of study (Results p.5; Fig. 6).
+- var_in: seeds_per_fruit
+  unit_in: '{count}/{count}'
+  trait_name: seeds_per_fruit
+  entity_type: population
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: unknown
+  methods: Seeds were counted in mature fruits from the T. manglesianus mating-system trial at NR (Results p.5) and from fruits collected in natural populations of both species (Results p.5; Fig. 7).
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na

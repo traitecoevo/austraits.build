@@ -34,11 +34,7 @@ dataset:
   data_is_long_format: yes
   custom_R_code:          '
     data %>%
-    mutate(
-    weird_date = ifelse(str_detect(gathering_date, "^[0-9]{4}"), gathering_date, NA),
-    gathering_date = gathering_date %>% mdy(quiet = T) %>% as.character(),
-    gathering_date = coalesce(gathering_date, weird_date)) %>% 
-    select(-weird_date) %>%
+    mutate(gathering_date = util_format_collection_date(gathering_date, "mdy")) %>%
     move_values_to_new_trait_long("Texture", "seed_surface_hairs", "trait", "value",
       c("plumose", "tomentose", "hairs", "ciliate", "stellate", "cilliate", "velutinous")) %>%
     add_values_to_additional_trait_long("seed_surface_hairs", "trait", "value",
@@ -102,7 +98,8 @@ dataset:
     group_by(species_name, site_name, trait, item_ID) %>% 
       mutate(observation_num = dplyr::row_number()) %>%
     ungroup() %>%
-    mutate(value = ifelse(row_number() %in% c(303), 0.4340, value))
+    mutate(value = ifelse(row_number() %in% c(303), 0.4340, value)) %>%
+      mutate(`gathering_date` = coalesce(`gathering_date`, "2018"))
   '
   collection_date: gathering_date
   taxon_name: species_name
