@@ -71,23 +71,19 @@ results by a short site code rather than a spelled-out name), and
 that skill documents (`entity_type`, `entity_context`, `trait_value`,
 `value_type`, `unit`, `error_type`/`error_value`, `n`, `context`,
 `source_section`, `notes` -- read it before writing your first row if
-unsure). The one worth restating because it's easy to get backwards:
+**Specimen identifiers get their own column.** When the source gives herbarium voucher / collection numbers (or tree tags, accession numbers), add a `record_number` column right after `location_name` holding only the identifiers (semicolon-separated if several) -- never bury them in `notes` or `entity_context`. They will later map to the metadata.yml `identifiers:` block (DarwinCore `recordNumber` for collectors' numbers), one identifier column per holding herbarium, split in `raw/extra_R_code_<id>.R`. Also keep the source's own collection/provenance cell verbatim in its own column (e.g. `herb_coll_nos`): its garden/field/glasshouse codes drive a per-record `basis_of_record` later. Seedlot numbers are not vouchers (Hallam_1970).
 
-- **`trait_value_raw`**: the value exactly as the source states it, never
-  adjusted or unit-converted.
-- **`trait_value`**: populated **only** when `trait` is a real
-  `config/traits.yml` trait *and* it's categorical -- the matched
-  `allowed_values_levels` term(s), space-delimited if more than one applies
-  simultaneously. Blank for every numeric row and for any unmapped candidate
-  trait, mapped or not.
-- **`trait_value_clean`**: the actually-usable cleaned value, populated on
-  **every** row regardless of mapping status -- the parsed number for a
-  numeric row (`23.5`, `0.5`, with any `~`/units/prose stripped), or the
-  cleaned term for a categorical row, whether or not that term is a
-  confirmed `allowed_values_levels` match (so it equals `trait_value` when
-  there is one, and carries the best-effort clean term when there isn't).
-  This is what lets a spreadsheet user sort/filter the file without having
-  to parse `trait_value_raw` prose themselves.
+**Site/treatment information read from the source gets its own column, not a `context` string.** A site's fire severity, a time-since-fire, whether a percentage covers all sites or burnt sites only: add a named column (e.g. `fire_severity`, `sites_included`) right after `location_name`, so data.csv can simply be a copy of trait_data.csv. Don't write `"fire severity: high"` into `context` and then parse it back out in `raw/extra_R_code_<id>.R`. That script is only for genuinely derived logic (Tasker_2026).
+
+**`entity_type` and `value_type` for numbers:** a measured value (nutrient concentrations and other chemistry included) is never `species`, even a range compiled across many studies in a review -- use `population` with no location, or `metapopulation` for a named region. `value_type: raw` is only for a value the source explicitly gives for one individual or one bulked sample; a lone value printed in a min-max range column is `mean` (Judd_1996).
+
+The one worth restating because it's easy to get backwards:
+
+- **`trait_value_raw`**: the value exactly as the source states it, never adjusted or unit-converted.
+- **`trait_value`**: populated only when `trait` is a real `config/traits.yml` trait and it's categorical -- the matched `allowed_values_levels` term(s), space-delimited if more than one applies simultaneously. Blank for every numeric row and for any unmapped candidate trait, mapped or not.
+- **`trait_value_clean`**: the actually-usable cleaned value, populated on every row regardless of mapping status -- the parsed number for a numeric row (`23.5`, `0.5`, with any `~`/units/prose stripped), or the cleaned term for a categorical row, whether or not that term is a confirmed `allowed_values_levels` match (so it equals `trait_value` when there is one, and carries the best-effort clean term when there isn't). This is what lets a spreadsheet user sort/filter the file without having to parse `trait_value_raw` prose themselves.
+
+Write CSVs with LF line endings.
 
 Check `config/traits.yml` for a real trait name before assuming there isn't
 one (`grep` it directly -- 500+ concepts, too big to skim). When nothing
@@ -98,6 +94,26 @@ fits, use a short plain-language candidate name (`pollen_tackiness`,
 A candidate name plus an unmapped value is exactly as valuable a row as a
 mapped one; never leave a real measurement out just because it won't map.
 
+**Name candidates the way traits.yml already names things (Dadswell_1972).**
+- A statistic of an existing trait is never a new trait. "Mean of the 10 widest vessels" is `stem_vessel_diameter` with `value_type: maximum`, not `stem_vessel_diameter_largest`.
+- No suffixes like `_abundance`, `_percentage`, `_height_cells`, `_test` or `_distinctness`. Proportions are `_fraction` (`wood_ray_biseriate_fraction`). A height counted in cells is `wood_ray_height`, with the unit carrying "cells". `wood_ray_cell_height` would mean the height of a cell. A categorical version of a numeric trait takes `_categorical` (`wood_axial_parenchyma_fraction_categorical`, like `wood_fibre_wall_thickness_categorical`).
+- Otherwise use the plain IAWA/structure noun: `wood_vessel_tyloses`, `wood_fibre_pits`, `wood_crystals`, `wood_deposits` (with a tissue column), `wood_splinter_burning`, `wood_apotracheal_parenchyma` (paralleling `wood_paratracheal_parenchyma`).
+
+**Prose species accounts need a sentence-by-sentence pass against the whole of `config/traits.yml`**, not just the traits the curator mentioned. For example, "dense and somewhat fleshy foliage appeared to protect the species from low intensity fires ... Seedling recruitment ... was seen in both burnt and unburnt locations" holds `plant_tolerance_fire` and `post_fire_recruitment`. Grep broadly (fire, recruitment, seedbank, clonal, storage organ, time-after-fire, tolerance) before deciding a sentence has no trait. Include literature statements the account adopts when the study itself has no contrary observation. When a clear mechanism has no allowed value, propose a new value rather than a candidate trait (Saunders_2024).
+
+**Branch/twig/stemwood tissue chemistry is a `wood_*` trait, not a `stem_*` or new organ trait.** Nutrient concentrations in branches, twigs or stemwood go under the matching `wood_<element>_per_dry_mass` (e.g. `wood_N_per_dry_mass`), with `entity_measured: branch` / `twig` / `stem wood` added to `context` (plus any size class, e.g. `twig diameter: <2 cm`) -- never `stem_*_per_dry_mass`, and never invented `branch_*`/`twig_*` traits (Judd_1996). When a source splits woody organs into **wood vs bark** (including root crown / tap root / lateral root), map them to `wood_*` / `bark_*` with the organ (`root crown`, `tap root`, `primary branch`, ...) as the `entity_measured` context -- not `root_*` traits. Dead-stem tissue goes to `wood_dead_*` / `bark_dead_*` (Westman_1977).
+
+**Stratum and habitat descriptors are context columns, not candidate traits.** "Overstorey trees", "understorey shrubs", "secondary canopy species", "species of more open habitats" go in their own columns (e.g. `canopy_position`, `habitat_openness`) on every row of that taxon, later mapped as `contexts:`. A germination response to a hormone or chemical that is not a germination treatment (e.g. GA3 *inhibiting* germination) is a new value of the candidate trait `germination_cues`, not a trait of its own (Bell_1995).
+
+**Geophytes, cultivation and species descriptions (Reiter_2025).**
+- For a geophyte, check every deciduousness trait: `leaf_phenology` (deciduous / summer_dormancy / withered_at_flowering), `foliage_time`, and `bud_bank_location` (`fleshy_underground_organ`) as well as `storage_organ`.
+- A single-inflorescence geophyte's spike or scape height is also `plant_height_reproductive`.
+- `reproductive_maturity` is never the time from transplanting or in vitro sowing to first flowering in cultivation. Nursery emergence %, flowering-plant counts and survival are study-specific: raw only, not candidate traits.
+- Numbers from a cited species description are `entity_type: species`; keep both ends of a range. Use the flora colour rules: head colour only, markings dropped.
+- Map a pollination record only to the most specific trait that fits (`pollination_vector_known` > `pollination_vector_possible` > `flower_visitor`), never two of them; a few older datasets break this rule.
+- When the authors run an experiment and state a conclusion (e.g. pollinator exclusion, no seed set, so outcrossing), map that conclusion (`breeding_system: allogamy`). Peer review accepted it, so don't second-guess it over untested alternatives.
+
+**Split a compound source phrase into separate rows per concept.** "6 equal, straight stamens" is a count and a form -- two rows, two `trait` names, not one merged trait; splitting is what lets one half map to a real trait even when the other half does not.
 **Split a compound source phrase into separate rows per concept.** "6 equal,
 straight stamens" is a count and a form -- two rows, two `trait` names, not
 one merged trait; splitting is what lets one half map to a real trait even

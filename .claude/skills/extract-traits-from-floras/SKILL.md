@@ -65,10 +65,49 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
 - **Terms with no AusTraits level are still recorded** (e.g. sagittate, emarginate, connate)
   in `_description`, with the mapped column left blank, so they can be mapped later.
 - Corolla length → `flower_length` when the flower itself isn't measured (user's choice).
+- **Parenthetical calendar extremes** ("Flowers (Oct.–) Dec.–Feb. (–July)"): typical months on a `usually`
+  row, the extra extreme months on a `rarely` row (user's choice).
+- **Qualified "tree-like"** ("Shrub to 2 m high, or rarely tree-like to c. 5 m") → tree on a `rarely` row
+  (shrub `usually`); unqualified "tree-like" is still not a tree.
+- Climber "stems to 10 m long" → `stem_length` (traits.yml allows it for climbers).
+- **"at any time but mainly X"** → X on a `mainly` row + an all-year row with `occasionally` (user's choice).
+- **Cues (user's rule): always document wording that flowering, fruiting or germination is triggered by rainfall,
+  fire, smoke, floods / water levels, temperature.** `flowering_cues` (fire, floods, rain, rain_summer …) +
+  verbatim `flowering_cues_description`; `germination_cues` (now a trait: burial, disturbance, fire, floods,
+  heat, light, rain_*, smoke, temperature_cool/warm; issue #863) and candidate `fruiting_cues` likewise.
+  Nursery/seedbank protocols (scarify, hot water, stratification) go to `seed_germination_treatment`. Hedged
+  ("probably in response to rain") → description only. Field seedlings/germination after fire → also
+  `post_fire_recruitment`.
+- **Climbers:** "vine" = `climber_herbaceous` unless stated woody; "liana" = `climber_woody`; "twiner" stays
+  `climber` (twining is kept in plant_climbing_mechanism / stem_growth_habit).
+- **Growth form by family when the text names none:** Arecaceae -> `palmoid`; ferns -> `fern`;
+  Centrolepidaceae -> `graminoid herb`. "with woody base" -> `subshrub`; "woody perennial" says nothing.
+- **Species -> infraspecific inheritance:** a subspecies/variety/form silent on a trait inherits its species' own
+  values (categorical and numeric), `trait_scoring_method = inferred_from_species`. Annual/perennial -> herb is
+  NOT applied (user deferred).
+- **Rosette** is both `stem_growth_habit` and `leaf_arrangement`: map to both wherever either is found.
+- **Tussock-only growth form** (no herb / grass noun, e.g. Lomandra "Tussock c. 10 cm diam.") → add `graminoid`;
+  Lomandra "Plant tufted" with no form noun → `graminoid`.
 - **Very large sources (e.g. FoA online, 20k profiles; `data/ABRS_2026` on the flora branch):**
   one general organ-led parser, run family by family (sorted family → genus → species); stop
   after each family (or ~200 rows of small families) for the user to check. Extract all traits,
   including candidate traits not yet in traits.yml, under descriptive names.
+- **Extract every documentable character, not just existing traits** (user rule, 2026-10-08):
+  - hairiness of every organ (stem, leaf surfaces, bracts, calyx, corolla, ovary, fruit)
+  - every count (petals, sepals, tepals, staminodes, carpels, styles, style branches, locules, ovules, bracts)
+  - every shape, colour, texture, surface, orientation, fusion and persistence
+  - sizes of organs with no length or width trait yet (stipules, bracteoles, ovary, petal and sepal width, ...)
+
+  For a character with no traits.yml trait, write `<organ>[_<part>]_<character>_description` (the
+  source words) next to `<organ>[_<part>]_<character>` (a suggested value from a draft vocabulary).
+  The levels are refined once many families are done. In ABRS_2026 this is the "generic organ ×
+  character matrix" block of `raw/build_data_csv.R`, with vocabularies `gen_*_dict`, `gen_counts`
+  and `gen_sizes`. Pitfalls:
+  - Strip phrases naming another organ before scanning ("enclosed in the persistent calyx",
+    "leaving a persistent columella").
+  - "Style 3-branched" counts style branches, not styles.
+  - "distinct" is not a fusion term.
+  - Never name dplyr loop variables after unit columns (`si`, `ci`).
 - **Keep numbers in source units.** Use `<trait>_min` / `<trait>_max` columns; units are
   converted in metadata.yml. Exception: when one field mixes mm, cm and m (prose profiles),
   convert each column to a single unit in the script (heights m, other lengths mm) and keep
@@ -381,6 +420,11 @@ leaflets**; record which division each size/count belongs to (Wenk_2025 contexts
   taxa with no measurements).
 
 ## QA checklist (run every iteration)
+
+Ready-made QA helpers for the ABRS_2026 build live in `scripts/` next to this file (see `scripts/README.md`):
+categorical mapping tables, copy-down review, calendar review, measurement misses, and a before/after diff of
+data.csv to catch regressions in already-checked families.
+
 
 - Numeric columns: n, range, and any rows where min > max (usually a source typo; fix it
   explicitly).
