@@ -54,12 +54,12 @@ dataset:
      data %>% 
       filter(stringr::str_starts(Country, "Australia")) %>%
       mutate(
-        across(c(LeafPm, Fructose_m, Sucrose_m, AP_sat, LeafPa, `N:P`), ~ifelse(is.nan(.x), NA, .x)),
+        across(c(LeafPm, Glucose_m, Fructose_m, Sucrose_m, Glucose_a, Fructose_a, Sucrose_a, AP_sat, LeafPa, `N:P`), ~ifelse(is.nan(.x), NA, .x)),
         duplicate_site = Site %in% c("CTC1"), 
         partial_duplicate_site = Site %in% c("RobCk-TERN", "Warra-TERN-AW", "Warra-TERN-SV", "Warra-TERN_FT"), 
         across(c(Am_sat, Aa_sat, gs_sat, Rdarkm, Rdarka, Ci_sat, AN_sat, AP_sat, LMA, LeafNm, LeafNa, LeafPm, LeafPa, `N:P`, Vcmax_a_LfT, Vcmax_a_25, Vcmax_m_LfT),
             ~ifelse(duplicate_site | partial_duplicate_site, NA, .x)),
-        across(c(Totalsugars_m, Starch_m, TNC_m),
+        across(c(Totalsugars_m, Starch_m, TNC_m, Totalsugars_a, Starch_a, TNC_a),
             ~ifelse(duplicate_site, NA, .x))
       ) %>% 
       select(-duplicate_site, -partial_duplicate_site)
@@ -152,19 +152,16 @@ dataset:
   original_file: data file download from link in manuscript, https://datacommons.anu.edu.au/DataCommons/item/anudc:6352
   notes: custom_R_code restricts the dataset to the Australian sites only (Country
     starting with "Australia") and blanks out specific trait columns that are already
-    published in AusTraits under a different dataset_id; overlap identified by Claude
-    AI is documented in a file in the raw data folder (Asao_2024_identifying_duplicate_data.csv).
+    published in AusTraits under a different dataset_id; overlap identified is documented in a file in the raw data folder (Asao_2024_identifying_duplicate_data.csv).
     The site CTC1 (Daintree Rainforest Observatory) duplicates Weerasinghe_2014, including
-    its NSC traits, so all trait columns are set to NA there. The sites RobCk-TERN
+    its NSC traits, so all trait columns except the individual sugars (glucose, fructose,
+    sucrose), which Weerasinghe_2014 did not report, are set to NA there. The sites RobCk-TERN
     (Robson Creek) and the three Warra-TERN plots duplicate Bloomfield_2018's "FNQ,
     Robson" and "Warra" sites, but Bloomfield_2018 has no sugar/starch/NSC data, so
-    the NSC columns (Totalsugars_m, Starch_m, TNC_m) are incorporated as part of this
+    the NSC columns (Totalsugars_m, Starch_m, TNC_m, Totalsugars_a, Starch_a, TNC_a) are incorporated as part of this
     dataset. The sites KBL3, KCR and ANBG are not represented in any other AusTraits
     dataset and are kept in full. Am_sat and Rdarkm are reported "at prevailing temperature"
-    (i.e. not standardized to a common reference temperature). Raw columns not mapped
-    in but with a plausible future AusTraits trait - Totalsugars_a, Starch_a, TNC_a,
-    Glucose_a, Fructose_a, Sucrose_a (currently only mass-based versions of these
-    metrics mapped).
+    (i.e. not standardized to a common reference temperature).
 identifiers: .na
 locations:
   CTC1:
@@ -336,7 +333,7 @@ traits:
     reader (Infinite M1000 Pro; Tecan, Zurich, Switzerland).
 - var_in: Starch_m
   unit_in: mg/g
-  trait_name: leaf_soluble_starch_per_mass
+  trait_name: leaf_starch_per_mass
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -361,7 +358,7 @@ traits:
     the same laboratory (Quentin et al., 2015; Landhausser et al., 2018).
 - var_in: Glucose_m
   unit_in: mg/g
-  trait_name: leaf_glucose_per_leaf_dry_mass
+  trait_name: leaf_glucose_per_mass
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -375,7 +372,7 @@ traits:
     Laboratories MRX, Guernsey, UK).
 - var_in: Fructose_m
   unit_in: mg/g
-  trait_name: leaf_fructose_per_leaf_dry_mass
+  trait_name: leaf_fructose_per_mass
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
@@ -389,7 +386,98 @@ traits:
     the glucose concentration was subtracted.
 - var_in: Sucrose_m
   unit_in: mg/g
-  trait_name: leaf_sucrose_per_leaf_dry_mass
+  trait_name: leaf_sucrose_per_mass
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. Dried samples of whole leaves were ground in a mill and analyzed for sucrose
+    concentration (see leaf_soluble_sugars_per_mass methods) - extracts were incubated
+    with invertase (Sigma, St Louis, MO, USA) to quantify the concentration of sucrose
+    plus glucose, and the glucose concentration was subtracted.
+- var_in: Totalsugars_a
+  unit_in: g/m2
+  trait_name: leaf_soluble_sugars_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. Dried samples of whole leaves were ground in a mill and analyzed for concentrations
+    of soluble sugars (glucose + sucrose + fructose). Soluble sugars were extracted
+    in hot ethanol - 5 mg of ground plant material and 500 ul of 80% (v/v) ethanol
+    were mixed by vortex in an Eppendorf tube, incubated at 80 deg C for 20 min while
+    vortex mixing every 10 min, then centrifuged at 20000 g for 5 min to separate
+    and collect the supernatant; this process was repeated twice more using 500 ul
+    of 80% (v/v) ethanol and the collected supernatant combined. The supernatant was
+    used to quantify soluble sugar concentrations (glucose, sucrose, fructose) with
+    a Fructose Assay Kit (Sigma-Aldrich, Darmstadt, Germany) - for glucose, extracts
+    were incubated with hexokinase and glucose-6-phosphate dehydrogenase and the reduction
+    of NADP to NADPH followed spectrophotometrically at 340 nm; for fructose, extracts
+    were incubated with hexokinase, phosphoglucose isomerase and glucose-6-phosphate
+    dehydrogenase and the glucose concentration subtracted; for sucrose, extracts
+    were incubated with invertase to quantify sucrose plus glucose and the glucose
+    concentration subtracted. Measurements were collected using a micro-titer plate
+    reader (Infinite M1000 Pro; Tecan, Zurich, Switzerland).
+- var_in: Starch_a
+  unit_in: g/m2
+  trait_name: leaf_starch_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. Dried, ground leaf samples were extracted in hot ethanol (as for soluble
+    sugars) and the resultant pellet was used to quantify starch concentration with
+    a Total Starch Assay Kit (Megazyme, Bray, Ireland).
+- var_in: TNC_a
+  unit_in: g/m2
+  trait_name: leaf_total_non-structural_carbohydrates_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. Total non-structural carbohydrate (NSC) concentration was calculated as the
+    sum of soluble sugars (glucose + sucrose + fructose) and starch concentrations,
+    expressed as glucose equivalent. All samples were prepared and analyzed within
+    the same laboratory (Quentin et al., 2015; Landhausser et al., 2018).
+- var_in: Glucose_a
+  unit_in: g/m2
+  trait_name: leaf_glucose_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. Dried samples of whole leaves were ground in a mill and analyzed for glucose
+    concentration (see leaf_soluble_sugars_per_mass methods) - extracts were incubated
+    with hexokinase and glucose-6-phosphate dehydrogenase to enable the reduction
+    of NADP to NADPH, which was then followed spectrophotometrically at 340 nm (Dynatech
+    Laboratories MRX, Guernsey, UK).
+- var_in: Fructose_a
+  unit_in: g/m2
+  trait_name: leaf_fructose_per_area
+  entity_type: individual
+  value_type: raw
+  basis_of_value: measurement
+  replicates: 1
+  methods: Leaves used for gas exchange measurements and adjacent leaves were harvested
+    typically between mid-morning to mid-afternoon, placed in a moistened plastic
+    bag. Dried samples of whole leaves were ground in a mill and analyzed for fructose
+    concentration (see leaf_soluble_sugars_per_mass methods) - extracts were incubated
+    with hexokinase, phosphoglucose isomerase and glucose-6-phosphate dehydrogenase,
+    the resultant reduction of NADP to NADPH was followed (Scholes et al., 1994) and
+    the glucose concentration was subtracted.
+- var_in: Sucrose_a
+  unit_in: g/m2
+  trait_name: leaf_sucrose_per_area
   entity_type: individual
   value_type: raw
   basis_of_value: measurement
