@@ -92,7 +92,11 @@ taxon_name,entity_type,rank_scored_from,commonness_qualifier,population_region,e
   procumbent or decumbent" → `prostrate procumbent decumbent`; "spreading and erect" →
   `spreading erect`. "0 or 1" → numeric minimum 0 + maximum 1.
 - **Peaks**: "Flowering September–November, peaking in late October" → `nnnnnnnnyyyn` plus a
-  `peak` row `nnnnnnnnnynn`.
+  `peak` row `nnnnnnnnnynn`. A hedged peak ("with a likely peak in late September") gets no peak row,
+  only a note. "Collected flowering in October" from a few specimens is still `flowering_time`, noted.
+- **Stamen totals**: "Stamens 10, all on one side of the gynoecium" → `flower_fertile_stamens_count`
+  + `stamen_arrangement: unilateral`; one-side / opposite-side counts only when the source splits
+  them (Thiele_2024 vs Thiele_2025).
 - **Every character**, mapped or not: each organ's hairs split into density/indumentum term
   (`<organ>_hairs`), hair type (`<organ>_hair_type`: simple, fascicled, stellate, forked,
   acicular), hair orientation and hair length (`<organ>_hair_length`, with `entity_measured` naming
@@ -135,6 +139,12 @@ taxon_name,specimen_status,institution_code,catalog_number,collector,record_numb
 - Expand grouped citations ("de Salas 425–427 (HO 572646–572648)") into one row per specimen,
   pairing numbers in order, and note that the pairing is inferred.
 - Dates ISO (`2024-10-30`); locality verbatim.
+- Syntypes / types of heterotypic synonyms listed under the accepted name are vouchers too: one row
+  each, with the synonym named in `notes`.
+- Specimens cited only as "Locality (accession)" (common in WA papers): `catalog_number` + `locality`,
+  and the paper's ALA batch-search URL in `notes` so collector and date can be recovered. Specimens
+  named only in Notes ("R.D. Royce 7977") get a row with blank accession. Flag an accession cited
+  under two taxa (Thiele_2024: PERTH 6692699 under H. parvula and H. xenandra).
 - Flag inconsistencies in `notes`: the same sheet cited as `s.n.` in the type and with a number
   under specimens examined, or a non-standard herbarium code ("HOBART" for HO). Also note any
   phrase-name voucher (`'H. sp. Richmond dolerite (R.Schahinger HO528055)'`).

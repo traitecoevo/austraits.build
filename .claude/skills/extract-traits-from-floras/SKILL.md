@@ -86,6 +86,10 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   values (categorical and numeric), `trait_scoring_method = inferred_from_species`. Annual/perennial -> herb is
   NOT applied (user deferred).
 - **Rosette** is both `stem_growth_habit` and `leaf_arrangement`: map to both wherever either is found.
+- **"Woody rootstock"** is root woodiness: candidate trait `root_woodiness` (`woody_rootstock` → `woody`),
+  not `woodiness_detailed: woody_root`. Woodiness alone says nothing about buds, but when the text ties the
+  organ to resprouting ("resprouting from a woody rootstock") also score `bud_bank_location` (rootstock →
+  `basal_stem_buds`, the dictionary's synonym) (user, 2026-10-16).
 - **Tussock-only growth form** (no herb / grass noun, e.g. Lomandra "Tussock c. 10 cm diam.") → add `graminoid`;
   Lomandra "Plant tufted" with no form noun → `graminoid`.
 - **Very large sources (e.g. FoA online, 20k profiles; `data/ABRS_2026` on the flora branch):**
