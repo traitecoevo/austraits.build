@@ -54,6 +54,21 @@ create_release <- function(austraits, v_prev= NULL) {
   file.copy(sprintf("%s/NEWS.md", export_dir), "NEWS.md")
   }
 
+  # flattened database
+  austraits_flattened <- 
+    austraits |>
+    austraits::flatten_database() 
+
+  filename <- sprintf("%s/austraits-%s-flattened.rds", export_dir, version_number)
+
+  austraits_flattened |>
+    saveRDS(filename)
+
+  filename <- sprintf("%s/austraits-%s-flattened.parquet", export_dir, version_number)
+
+  austraits_flattened |>
+    arrow::write_parquet(filename)
+  
   # Go to directory and zip
   # remove existing file
   wd <- setwd(dirname(path))
@@ -65,7 +80,6 @@ create_release <- function(austraits, v_prev= NULL) {
   unlink(path, recursive = TRUE)
 
   message("Export created at ", export_dir)
-
 }
 ```
 
@@ -83,13 +97,10 @@ Then follow these steps. We assume you have a branch `develop`.
 ```{r}
 source("build.R")
 
-austraits::flatten_database(austraits) %>% readr::write_rds(austraits_flattened-X.X.X.rds)
 
-austraits_flattened %>% arrow::write_parquet(austraits_flattened-X.X.X.parquet)
-
-create_release(austraits, v_prev = "7.0.0")
+create_release(austraits, v_prev = "6.0.0")
 ```
- - the function above creates a set of files for release, including `austraits-X.X.X.rds`, `austraits_flattened-X.X.X.rds`, `austraits_flattened-X.X.X.parquet`, `austraits-X.X.X.zip`, `dictionary.html`, `news.md`
+ - the function above creates a set of files for release, including `austraits-X.X.X.rds`, `austraits-X.X.X-flattened.rds`, `austraits-X.X.X-flattened.parquet`, `austraits-X.X.X.zip`, `dictionary.html`, `news.md`
  - Manually review and updates news.md as needed.
  - Add this version's news to the NEWS.md file in root
  - push updates to `master`
@@ -114,8 +125,7 @@ git push origin v7.0.0
 - change bits in pages
   - version number
   - date
-  - Related identifiers -> compiled by
-- in intro page, number for files
+- in intro page, version number for files
 
 6. Update `develop`. On the `develop` branch
 

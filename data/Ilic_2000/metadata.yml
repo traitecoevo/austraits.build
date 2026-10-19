@@ -17,7 +17,10 @@ contributors:
   dataset_curators: Amy Zanne
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data |>
+      dplyr::filter(is.na(omit_duplicate))
+    '
   collection_date: 2000/2000
   taxon_name: name_original
   description: Wood density data compiled for Global Wood Density Database
@@ -25,7 +28,15 @@ dataset:
   life_stage: adult
   sampling_strategy: unknown, from  Global Wood Density Database
   original_file: global_WD_database.xls
-  notes: none
+  notes: Values already in AusTraits from their original source are flagged in the
+    data.csv column omit_duplicate with the dataset holding them (Kingston_1961) and
+    excluded by custom_R_code (44 rows; J. Ilic confirmed the overlap). Kingston and
+    Risdon (1961) is data reference 1 in Appendix 1 of the report. A row is flagged
+    when its value is within 0.002 g/cm3 of a Kingston_1961 basic density for the
+    same accepted taxon and no other source listed in Appendix 1 for that taxon is
+    as close (31 identical, 13 differing by 0.001-0.002 g/cm3 through rounding in
+    the Global Wood Density Database). Values from Budgen (1981), the revised edition
+    of Kingston and Risdon (1961), are not flagged.
 locations: .na
 contexts: .na
 traits:

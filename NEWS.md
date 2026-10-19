@@ -6,9 +6,9 @@ This is a major release of the AusTraits database.
   structure
 - austraits-7.0.0.rds: contains a version of the dataset for direct
   loading in R
-- austraits_flattened-7.0.0.rds: contains a flattened version of the dataset for direct
+- austraits-7.0.0-flattened.rds: contains a flattened version of the dataset for direct
   loading in R; all data tables are joined into a wider format in this version
-- austraits_parquet-7.0.0.parquet: contains the flattened version of the dataset saved in parquet format
+- austraits-7.0.0-flattened.parquet: contains the flattened version of the dataset saved in parquet format
 - source code v7.0.0.zip: contains the source materials used to build
   the compiled dataset
 
