@@ -150,7 +150,9 @@ fix_text <- tribble(
   # Oenothera genus profile: the sunk genus Gaura's description is appended ("Gaura L.; from the Greek gauros (majestic).
   # Annual or perennial herbs ... Fruit indehiscent, woody and nut-like"): marked as a separate part, so its characters are not
   # read as true of all Oenothera
-  "Oenothera", "Gaura L.; from the Greek gauros (majestic). ", "Now includes Gaura: "
+  "Oenothera", "Gaura L.; from the Greek gauros (majestic). ", "Now includes Gaura: ",
+  # Acacia camptoclada: "±a symmetrically oblong-oblanceolate" (the ± sign run into "asymmetrically")
+  "Acacia camptoclada", "±a symmetrically", "± asymmetrically"
 )
 for (i in seq_len(nrow(fix_text))) {
   fx <- function(z) z %>% mutate(Description = ifelse(scientific_name == fix_text$taxon[i],
@@ -523,7 +525,17 @@ fern_mode <- FALSE
 chenopod_mode <- FALSE
 casuarina_mode <- FALSE
 orchid_mode <- FALSE
+legume_mode <- FALSE
 classify_token <- function(tok) {
+  # Fabaceae: new shoots / young foliage tips are their own organ (their hairs and colours are not the stem's); the funicle
+  # (often fleshy and aril-like in Acacia) is a seed part, not the seed; "interstices" are the spaces between branchlet ribs
+  # (not Araceae spadix interstices)
+  if (legume_mode) {
+    if (str_detect(tok, rx("^(?:the )?(?:new|young|juvenile) (?:shoots?|growth|foliage(?:[- ]tips?)?|shoot[- ]tips?|tips)\\b"))) return(list(kind = "organ", sec = "stem", part = NA_character_, subj = "new growth"))
+    if (str_detect(tok, rx("^(?:the )?(?:funicles?|funicle-arils?)\\b"))) return(list(kind = "organ", sec = "seed", part = NA_character_, subj = "funicle"))
+    if (str_detect(tok, rx("^(?:the )?(?:areoles?|pleurograms?)\\b"))) return(list(kind = "part", sec = NA_character_, part = "pleurogram", subj = NA_character_))
+    if (str_detect(tok, rx("^(?:the )?interstices\\b"))) return(list(kind = "part", sec = NA_character_, part = "interstices", subj = NA_character_))
+  }
   # Orchidaceae (Jones 2021 treatment): the "flower stem" is the inflorescence axis (its length is read separately: plant
   # height when flowering for terrestrial orchids, inflorescence length for epiphytes); the dorsal and lateral sepals are
   # measured separately (entity_measured rows); the callus, column, labellum stalk and sepal clubs (osmophores) are their
@@ -588,6 +600,10 @@ units_of <- function(desc) {
       for (ti in seq_along(toks)) {
         tk <- toks[ti]
         cc <- classify_token(tk)
+        # Fabaceae "Leaves bipinnate ...; petiole ...; rachis 1-12 cm long, with ... jugary glands": a rachis inside a leaf
+        # clause is the leaf rachis, not an inflorescence
+        if (legume_mode && cc$kind == "organ" && cc$sec == "inflorescence" && str_detect(coalesce(cc$subj, ""), "rachis") &&
+            !is.null(cur) && cur$sec %in% c("leaf", "lamina", "petiole", "leaflet")) cc <- list(kind = "part", sec = "leaf", part = "rachis", subj = "leaves")
         em <- str_match(tk, entity_re)[2]
         if (!is.na(em) && cc$kind == "organ" && cc$sec %in% c("flower", "inflorescence")) entity <- str_to_lower(em)
         # "Panicle drooping, exserted, open, flowers rather widely spaced, usually 30-50 cm long": a flower-spacing phrase
@@ -613,7 +629,8 @@ units_of <- function(desc) {
           # flower parts ("tube", "lobes", "lower lip") and named sub-organs ("radicle", "beak") persist to the end of the
           # clause; leaf-blade details listed inline ("base cuneate, concolorous, glossy green") apply to their token only
           # (parts of a chenopod dispersal unit persist too: "spines 2, rarely 3, opposite, 3-20 mm long")
-          persist <- !is.na(cc$sec) || isTRUE(cur$sec == "diaspore") || !str_detect(part, "^(?:base|bases|apex|apices|tips?|margins?|teeth|midribs?|mid-?veins?|veins?|venation|lateral veins|side-veins|reticulation|glands?|oil glands|gland|nerves|ribs?|pulvinus|spines?|thorns|prickles|axis|axes|texture|sheathing bases?)$")
+          # (Fabaceae: the words after a gland or the pulvinus describe it, "gland 1, prominent, basal", "pulvinus distinct, 4-5 mm long, orange")
+          persist <- !is.na(cc$sec) || isTRUE(cur$sec == "diaspore") || (legume_mode && str_detect(part, "^(?:glands?|pulvin(?:us|i))$")) || !str_detect(part, "^(?:base|bases|apex|apices|tips?|margins?|teeth|midribs?|mid-?veins?|veins?|venation|lateral veins|side-veins|reticulation|glands?|oil glands|gland|nerves|ribs?|pulvinus|spines?|thorns|prickles|axis|axes|texture|sheathing bases?)$")
           if (persist) cur <- list(kind = "organ", sec = sec, part = part, subj = subj)
         } else {
           if (is.null(cur)) cur <- list(kind = "organ", sec = if (si == habit_si) "habit" else "other", part = NA_character_, subj = NA_character_)
@@ -978,7 +995,8 @@ gen_own <- list(leaf = "leaves|leaf|laminae?|blades?", juvenile_leaf = "leaves|l
                 petal = "petals?|corollas?", corolla = "corollas?|petals?", anther = "anthers?|stamens?", filament = "filaments?|stamens?",
                 staminode = "staminodes?", stamen = "stamens?|filaments?|anthers?", ovary = "ovary|ovaries|carpels?", style = "styles?",
                 stigma = "stigmas?|styles?", carpel = "carpels?|ovary", disc = "disc", fruit = "fruits?|capsules?", seed = "seeds?",
-                aril = "arils?|seeds?", stem = "stems?|branches|branchlets?", branchlet = "branchlets?|branches|stems?",
+                aril = "arils?|seeds?", funicle = "funicles?|arils?|seeds?", new_shoot = "shoots?|stems?|branchlets?|tips?",
+                stem = "stems?|branches|branchlets?", branchlet = "branchlets?|branches|stems?",
                 dorsal_sepal = "sepals?", lateral_sepal = "sepals?", callus = "callus|calli", column = "columns?",
                 labellum_stalk = "labellum|stalks?|claws?|hinges?", sepal_club = "clubs?|osmophores?")
 gen_strip_other <- function(ok) {
@@ -997,7 +1015,7 @@ gen_any <- map(gen_dicts, dict_any)
 gen_okey <- function(sec, part, subj) {
   s <- str_remove(str_to_lower(coalesce(subj, "")), "^the ")
   case_when(
-    sec == "stem" & str_detect(s, "branchlet|twig") ~ "branchlet", sec == "stem" ~ "stem",
+    sec == "stem" & s == "new growth" ~ "new_shoot", sec == "stem" & str_detect(s, "branchlet|twig") ~ "branchlet", sec == "stem" ~ "stem",
     sec %in% c("leaf", "lamina") ~ "leaf", sec == "juvenile" ~ "juvenile_leaf", sec == "leaflet" ~ "leaflet", sec == "petiole" ~ "petiole", sec == "stipule" ~ "stipule",
     sec == "inflorescence" ~ "inflorescence", sec == "peduncle" ~ "peduncle", sec == "pedicel" ~ "pedicel", sec == "bud" ~ "bud",
     sec == "bract" & str_detect(s, "bracteole|prophyll") ~ "bracteole", sec == "bract" & str_detect(s, "involuc|phyllar") ~ "involucral_bract",
@@ -1014,7 +1032,8 @@ gen_okey <- function(sec, part, subj) {
     sec == "gynoecium" & str_detect(s, "ovar") ~ "ovary", sec == "gynoecium" & str_detect(s, "style") ~ "style",
     sec == "gynoecium" & str_detect(s, "stigma") ~ "stigma", sec == "gynoecium" & str_detect(s, "carpel|pistil") ~ "carpel",
     sec == "gynoecium" & str_detect(s, "disc") ~ "disc", sec == "gynoecium" & str_detect(s, "indusi") ~ "indusium",
-    sec == "fruit" & str_detect(s, "infructesc") ~ "infructescence", sec == "fruit" ~ "fruit", sec == "seed" & str_detect(s, "aril") ~ "aril", sec == "seed" & str_detect(s, "seed") ~ "seed",
+    sec == "fruit" & str_detect(s, "infructesc") ~ "infructescence", sec == "fruit" ~ "fruit", sec == "seed" & str_detect(s, "aril") ~ "aril",
+    sec == "seed" & s == "funicle" ~ "funicle", sec == "seed" & str_detect(s, "seed") ~ "seed",
     TRUE ~ NA_character_)
 }
 gen_pclass <- function(part) {
@@ -1297,6 +1316,13 @@ extract_one <- function(r, group_filter = TRUE) {
   chenopod_mode <<- fam %in% c("Chenopodiaceae", "Casuarinaceae")
   casuarina_mode <<- fam == "Casuarinaceae"
   orchid_mode <<- fam == "Orchidaceae"
+  legume_mode <<- fam == "Fabaceae"
+  # (hair terms frequent in Acacia descriptions)
+  if (legume_mode) hairs_dict <- c(hairs_dict, "tomentulose|hirsutellous|villosulous|tomentellous|puberulent|crisped-pubescent|appressed-hairy" = "hairy")
+  # Fabaceae: "clothed with sparse, usually brown, appressed hairs" is one hair phrase, so its colour words are not read as the
+  # organ's colour (the commas between the hair adjectives are dropped)
+  if (legume_mode && !is.na(desc)) desc <- str_replace_all(desc, "\\b(?:with|by|of) (?:[a-z-]+,? (?:or |and |to )?){1,6}?(?:hairs|hairlets|trichomes)\\b",
+                                                         function(z) str_replace_all(z, ",\\s*", " "))
   u <- units_of(desc)
   # kept heads of dropped group segments only carry the organ context forward; they are not statements
   u <- u %>% filter(!str_detect(text, "\u2205"))
@@ -1404,6 +1430,24 @@ extract_one <- function(r, group_filter = TRUE) {
   orch_sd <- if (orchid_mode && is.null(sl)) d_first(stem_lead, excl("stems?")) else list(L = NULL, W = NULL)
   if (!is.null(orch_sd$L)) addn("stem_length", orch_sd$L$v, orch_sd$L$txt)
   addc("stem_branching_form", habit_txt, branching_dict)
+  if (legume_mode) {
+    # crown shape (plant_canopy_form): "Obconic shrub", "Rounded shrub", "flat-topped tree", "obconic with spreading, open crowns"
+    addc("plant_canopy_form", habit_txt, c("obconic(?:al)?|turbinate|top-shaped" = "obconical", "round(?:ed)?(?:-topped)?|sub-rounded" = "rounded",
+                                           "flat-topped|flat-crowned|umbrella-like|umbrella-shaped|umbrageous" = "flat-topped",
+                                           "(?:low-)?domed|dome-shaped|hemispherical" = "hemispherical", "pyramidal" = "pyramidal", "globose|globular" = "globose",
+                                           "columnar|fastigiate" = "columnar", "broom-like" = "broom-like", "(?:pseudo-?)?conifer(?:-like)?|pine-like" = "pine-like",
+                                           "diffuse" = "diffuse", "(?:dense|compact)(?=,? (?:[a-z-]+ )?crowns?\\b)|crowns? (?:dense|compact)" = "dense-crowned",
+                                           "open(?=,? (?:[a-z-]+ )?crowns?\\b)|crowns? open" = "open-crowned", "mounded|mound-like|mound-forming" = "mounded"),
+         prep_fun = function(x) str_remove_all(x, "\\b(?:with|and) (?:[a-z-]+ ){0,3}(?:branchlets?|branches|phyllodes?|leaves|foliage|stems?)\\b|\\brounded (?:at|towards) (?:the )?[a-z]+"))
+    # clonal spread stated in the habit ("may spread by root suckers", "root-suckering shrub", "forming clonal thickets", "spreading by runners")
+    veg <- scan_terms(habit_txt, c("root[- ]suckering|root[- ]suckers?|suckering from (?:the )?roots|suckers? (?:from|on) (?:the )?roots" = "root_buds",
+                                   "suckering|suckers?" = "clonal", "clonal(?:ly)?" = "clonal", "rhizomatous|rhizomes?" = "rhizome",
+                                   "(?:subterranean|underground) runners?" = "rhizome", "stoloniferous|stolons?|runners?" = "stolon"))
+    if (nrow(veg)) {
+      add(rec_cat("clonal_spread_mechanism", veg, habit_txt))
+      add(rec_cat("vegetative_reproduction_ability", veg %>% mutate(value = "vegetative"), habit_txt))
+    }
+  }
   addc("plant_succulence", habit_txt, c("succulent" = "succulent"))
   sub_h <- addc("plant_growth_substrate", habit_txt, substrate_dict)
   # orchids: species descriptions rarely name the substrate, but the Habitat text does ("growing on the upper branches of
@@ -1488,11 +1532,29 @@ extract_one <- function(r, group_filter = TRUE) {
     cl <- m_first(habit, "long|in length|", h_other)
     if (!is.null(cl)) addn("plant_height_climbing_plant", cl$v, cl$txt, scale = 1 / 1000)
   }
+  # Fabaceae: "Tree 6-30 (-45) m high; sometimes a shrub 1.5-3 m high": a height given for a qualified growth form goes on that
+  # form's commonness row, and the first height then on a "usually" row
+  if (legume_mode && !is.null(ht) && nrow(gf) && any(gf$qual %in% rare_quals)) {
+    hx <- mark_extremes(str_to_lower(join_units(habit)))
+    for (gi in which(gf$qual %in% rare_quals)) {
+      m <- str_match(hx, paste0("\\b", gf$qual[gi], "\\s+(?:an?\\s+)?(?:[a-z-]+\\s+){0,2}?", fixed_re(str_to_lower(gf$term[gi])), "\\b[^,;|]{0,20}?(", meas, ")\\s*(?:high|tall)?"))
+      if (is.na(m[1]) || unmark(m[2]) == str_to_lower(ht$txt) || str_detect(str_to_lower(ht$txt), fixed(unmark(m[2])))) next
+      add(rec_num("plant_height", meas_of(m[2]), unmark(m[1]), scale = 1 / 1000) %>% mutate(qualifier = gf$qual[gi]))
+      for (k in seq_along(recs)) if (all(recs[[k]]$trait == "plant_height") && all(is.na(recs[[k]]$qualifier))) recs[[k]]$qualifier <- "usually"
+    }
+  }
+  # Fabaceae: "Tree to 25 m high; d.b.h. to 36 cm": trunk diameter at breast height
+  if (legume_mode) {
+    dbh <- str_match(mark_extremes(desc %||% ""), rx(paste0("\\bd\\.?\\s?b\\.?\\s?h\\.?\\s*(?:of\\s+)?(", meas, ")")))
+    if (!is.na(dbh[1])) addn("stem_diameter", meas_of(dbh[2]), unmark(dbh[1]), "entity_measured", "trunk at breast height")
+  }
   wd <- m_first(habit, "wide|across|diam|diameter|in diameter|broad", h_other)
   # "Tufts to c. 2.5 cm wide at base" is the basal width, not the plant's width
   if (!is.null(wd) && str_detect(join_units(habit), rx(paste0(fixed_re(wd$txt), "\\.?\\s*(?:at (?:the )?base|at base of)")))) wd <- NULL
   # ("coloured sessile glands orange, up to c. 0.05 mm wide": a gland / hair size in the habit sentence)
-  if (!is.null(wd) && str_detect(str_sub(join_units(habit), 1, str_locate(join_units(habit), fixed(wd$txt))[1, 1] - 1), rx("\\b(?:glands?|hairs?|trichomes?|papillae|scales?|spines?|prickles?)\\b[^|;]{0,40}$"))) wd <- NULL
+  # (the matched text is not always found verbatim, e.g. Acacia castanostegia "0.6 (–1.5 ) m wide": the check is then skipped)
+  wd_pos <- if (!is.null(wd)) str_locate(join_units(habit), fixed(wd$txt))[1, 1] else NA
+  if (!is.na(wd_pos) && str_detect(str_sub(join_units(habit), 1, wd_pos - 1), rx("\\b(?:glands?|hairs?|trichomes?|papillae|scales?|spines?|prickles?)\\b[^|;]{0,40}$"))) wd <- NULL
   if (!is.null(wd)) addn("plant_width", wd$v, wd$txt, scale = 1 / 1000)
 
   # ---- stems, bark, underground organs
@@ -1521,7 +1583,7 @@ extract_one <- function(r, group_filter = TRUE) {
   if (is.null(sdm) && !is.null(orch_sd$W)) sdm <- orch_sd$W
   if (!is.null(sdm)) addn("stem_diameter", sdm$v, sdm$txt)
   bark_txt <- join_units(c(unit_text(u, "bark", parts = "any")))
-  addc("bark_texture", bark_txt, bark_texture_dict)
+  addc("bark_texture", bark_txt, if (legume_mode) c(bark_texture_dict, "rimose|cracked|corrugated" = "furrowed", "minni[- ]?ritchi" = "flaky") else bark_texture_dict)
   addc("bark_colour", bark_txt, bark_colour_dict, prep_fun = function(x) {
     x <- str_remove_all(x, "\\b[a-z]+ when (?:wet|fresh|freshly exposed|new)\\b")
     str_replace_all(x, paste0("\\b(?:", cw_mod, ")\\s+(?=(?:", cw, ")\\b)"), "")
@@ -1557,7 +1619,18 @@ extract_one <- function(r, group_filter = TRUE) {
   leaflet <- unit_text(u, "leaflet")
   is_phyllode <- any(str_detect(coalesce(u$subj[u$sec == "leaf"], ""), "phyllode"))
   is_cladode <- any(str_detect(coalesce(u$subj[u$sec == "leaf"], ""), "cladode|phylloclade"))
-  if (is_phyllode) add(rec_cat("plant_photosynthetic_organ", tibble(pos = 1L, value = "phyllode", term = "phyllodes", qual = NA), join_units(leaf_gen)))
+  # Fabaceae: phyllodes "reduced to continuous, thin ... scales", or absent ("Branchlets aphyllous"): the green stems photosynthesise
+  phy_txt <- str_to_lower(join_units(unit_text(u, "leaf", subj_re = "phyllode", parts = "any")) %||% "")
+  phy_scale <- legume_mode && str_detect(phy_txt, "^(?:mature |adult )?phyllodes? (?:[a-z]+ )?(?:reduced to|represented by)\\b[^|]*\\bscales?\\b|\\bphyllodes? (?:are )?scale-like\\b")
+  phy_absent <- legume_mode && (str_detect(phy_txt, "^(?:mature |adult )?phyllodes? (?:absent|0|lacking|wanting)\\b") ||
+                                  str_detect(str_to_lower(join_units(unit_text(u, c("habit", "stem"), parts = "any")) %||% ""), "\\baphyllous\\b"))
+  if (is_phyllode && !phy_scale && !phy_absent) add(rec_cat("plant_photosynthetic_organ", tibble(pos = 1L, value = "phyllode", term = "phyllodes", qual = NA), join_units(leaf_gen)))
+  if (phy_scale || phy_absent) {
+    pst <- grab_sent(desc, "phyllode|aphyllous|leafless")
+    add(rec_cat("plant_photosynthetic_organ", tibble(pos = 1L, value = "stem", term = if (phy_scale) "phyllodes reduced to scales" else "aphyllous", qual = NA), pst))
+    add(rec_cat("leaf_length_type", tibble(pos = 1L, value = if (phy_scale) "scale_leaves" else "leafless", term = if (phy_scale) "phyllodes reduced to scales" else "aphyllous", qual = NA), pst))
+    add(rec_cat("leaf_type", tibble(pos = 1L, value = if (phy_scale) "scale" else "leafless", term = if (phy_scale) "phyllodes reduced to scales" else "aphyllous", qual = NA), pst))
+  }
   if (is_cladode) add(rec_cat("plant_photosynthetic_organ", tibble(pos = 1L, value = "cladode", term = "cladodes", qual = NA), join_units(leaf_gen)))
   all_txt <- str_to_lower(desc %||% "")
   # ("flowering stems usually leafless" is not a leafless plant)
@@ -1589,7 +1662,8 @@ extract_one <- function(r, group_filter = TRUE) {
                             if (lk == "") NA_character_ else paste0(str_replace(str_trim(lk), "rosette", "basal"), "_leaf"))
   }
   addc("leaf_phyllotaxis", gen_txt, phyllotaxis_dict, prep_fun = function(x) str_remove_all(x, "\\b(?:appearing|appear|seemingly|falsely) [a-z]+"))
-  addc("leaf_arrangement", gen_txt, arrangement_dict)
+  # (Fabaceae: "basal gland", "basal pinnae", "basal pair of pinnae" are not basal leaves)
+  addc("leaf_arrangement", gen_txt, arrangement_dict, prep_fun = if (legume_mode) function(x) str_remove_all(x, "\\bbasal (?!leaves|rosettes?)[a-z-]+") else NULL)
   # rosette is both a stem growth habit and a leaf arrangement (user's rule): copy it to whichever trait lacks it
   rr <- bind_rows(recs)
   if (nrow(rr)) {
@@ -1627,6 +1701,8 @@ extract_one <- function(r, group_filter = TRUE) {
   if (compound_leaf && length(lam)) { leaflet <- c(leaflet, lam); lam <- character(0); lam_or_leaf <- leaf_gen }
   leaf_shape_unit <- if (compound_leaf) leaflet else c(lam, leaf_gen)
   shape_ctx <- if (compound_leaf) c("leaf_division", "leaflets") else c(NA_character_, NA_character_)
+  # (Fabaceae bipinnate leaves: the leaflets described are the pinnules)
+  if (legume_mode && compound_leaf && any(str_detect(coalesce(u$subj[u$sec == "leaflet"], ""), "pinnule"))) shape_ctx <- c("leaf_division", "pinnules")
   shape_txt <- join_units(leaf_shape_unit)
   if (!is.na(shape_txt)) shape_txt <- str_replace_all(shape_txt, "\\(\\s*((?:to|or) [a-z-]+)\\s*\\)", "\\1")
   shape_clean <- function(x) {
@@ -1654,8 +1730,18 @@ extract_one <- function(r, group_filter = TRUE) {
     if (length(w) && all(w %in% c("acuminate", "long-acuminate", "acute", "obtuse", "rounded", "apiculate", "mucronate", "mucronulate", "cuspidate", "caudate", "emarginate", "retuse", "subacute", "spine-tipped", "pungent", "subacuminate", "apiculate")) && any(w %in% c("acuminate", "long-acuminate", "acute", "obtuse", "rounded", "apiculate", "mucronate", "mucronulate", "cuspidate", "caudate", "subacute", "subacuminate")))
       apex_bare <- c(apex_bare, tk)
   }
-  apex_txt <- collapse_text(c(apex_parts, apex_inline, apex_bare), " | ")
-  addc("leaf_apex_shape", apex_txt, apex_dict, prep_fun = function(x) str_remove_all(x, "\\bap(?:ex|ices)\\b|\\btips?\\b|\\bapically\\b|\\bat\\b"), ctx_type = shape_ctx[1], ctx_value = shape_ctx[2])
+  # Fabaceae phyllodes: apex phrases inside other tokens ("tapered to a curved-acuminate to caudate", "with obtuse and mucronate
+  # apex", "obliquely mucronate to excentrically rostellate", "with ± pungent mucro"); tokens about the base or margins are skipped
+  apex_leg <- character(0)
+  if (legume_mode && !compound_leaf) for (x in leaf_shape_unit) for (tk in split_tokens(str_to_lower(x))) {
+    if (!str_detect(tk, "\\b(?:ap(?:ex|ices|ical)|tips?|mucro\\w*|cusp\\w*|points?|rostell\\w*|rostrate|acuminate|acute|obtuse|caudate|apiculate|subacute|subobtuse|truncate|emarginate|retuse|uncinate)\\b")) next
+    if (str_detect(tk, "\\b(?:margins?|veins?|nerves?|midrib|glands?|base|basally|pulvinus)\\b") && !str_detect(tk, "\\bap(?:ex|ices)\\b")) next
+    apex_leg <- c(apex_leg, str_remove_all(tk, "\\b(?:[a-z-]+ )?(?:at|towards|near) (?:the )?base\\b|\\bacutely\\b|\\bobtusely angled\\b"))
+  }
+  apex_txt <- collapse_text(c(apex_parts, apex_inline, apex_bare, apex_leg), " | ")
+  apex_d <- if (legume_mode) c("subacute" = "acute", "subobtuse" = "obtuse", "rostellate|rostrate|rostriform|cusp" = "apiculate",
+                               "uncinate|hooked" = "", apex_dict) else apex_dict
+  addc("leaf_apex_shape", apex_txt, apex_d, prep_fun = function(x) str_remove_all(x, "\\bap(?:ex|ices)\\b|\\btips?\\b|\\bapically\\b|\\bat\\b"), ctx_type = shape_ctx[1], ctx_value = shape_ctx[2])
   margin_parts <- u %>% filter(sec %in% (if (compound_leaf) "leaflet" else c("leaf", "lamina")), part %in% c("margin", "margins", "teeth")) %>% pull(text)
   mg_txt <- collapse_text(c(shape_txt, margin_parts), " | ")
   mh <- scan_terms(mg_txt, margin_dict, prep_fun = function(x) str_remove_all(x, "\\([^)]*\\b(?:teeth|lobes)\\b[^)]*\\)|\\blobes? [^,;|]*|\\bentire (?:plant|length)\\b|(?<!margins? )\\bentire\\b(?=(?:,? (?:to|or) |, [a-z]+ (?:to|or) )(?:[a-z]+ ){0,2}(?:[0-9]-)?lobed\\b)"))
@@ -1680,6 +1766,8 @@ extract_one <- function(r, group_filter = TRUE) {
   addc("leaf_glaucousness", join_units(c(leaf_gen, lam, leaflet, surf_parts)), glaucous_dict, glaucous_neg)
   col_txt <- collapse_text(c(lam_or_leaf, if (length(lam)) leaf_gen else NULL, surf_parts, leaflet), " | ")
   leaf_col_prep <- function(x) {
+    # (Fabaceae: a segment naming the margin, veins or glands goes whole: "with margin often dark red in upper third of pinnule")
+    if (legume_mode) x <- str_remove_all(x, "[^,;|]*\\b(?:midrib|veins?|glands?|margins?|hairs|indumentum)\\b[^,;|]*")
     x <- str_remove_all(x, "\\b(?:with|without)\\b[^,;|]*?\\b(?:midrib|veins?|margins?|glands?|spots?|dots|blotch(?:es)?|markings?|tips?|bases?|hairs)\\b")
     x <- str_remove_all(x, "\\b(?:when young|when dry|on drying|drying [a-z-]+|in herbarium|when immature|young)\\b[^,;|]*")
     x <- str_remove_all(x, "\\b(?:tinged|flushed|suffused)\\b(?: with)?(?: (?:or|and|[a-z-]+)){0,3}|\\b[a-z]+-?(?: or [a-z]+-)?tinged\\b|\\b[a-z]+(?:- or [a-z]+)?-(?:tomentose|pubescent|hairy|villous|sericeous|setose)\\b")
@@ -1720,7 +1808,16 @@ extract_one <- function(r, group_filter = TRUE) {
     if (!is.na(pm[1])) pet <- list(v = meas_of(pm[2]), txt = unmark(pm[1]))
   }
   if (!is.null(pet)) addn("petiole_length", pet$v, pet$txt)
-  if (length(leaflet) && !fern_mode) {
+  # Fabaceae bipinnate leaves: pinna and pinnule sizes on leaf_division rows (as for ferns)
+  leg_div <- legume_mode && any(str_detect(coalesce(u$subj[u$sec == "leaflet"], ""), "pinnule|pinnae|pinna\\b"))
+  if (leg_div) for (sj in unique(na.omit(u$subj[u$sec == "leaflet"]))) {
+    uu <- unit_text(u, "leaflet", subj_re = paste0("^", sj, "$"))
+    lfd <- d_first(uu, excl("leaflets?", "pinnae", "pinna", "pinnules?"))
+    dv <- str_replace(str_replace(sj, "^pinna$", "pinnae"), "^(?:the )?", "") %>% str_replace("pinnule$", "pinnules") %>% str_replace("leaflet$", "leaflets")
+    if (!is.null(lfd$L)) addn("leaflet_length", lfd$L$v, lfd$L$txt, "leaf_division", dv)
+    if (!is.null(lfd$W)) addn("leaflet_width", lfd$W$v, lfd$W$txt, "leaf_division", dv)
+  }
+  if (length(leaflet) && !fern_mode && !leg_div) {
     lfd <- d_first(leaflet, excl("leaflets?", "pinnae", "pinnules?"))
     if (!is.null(lfd$L)) addn("leaflet_length", lfd$L$v, lfd$L$txt)
     if (!is.null(lfd$W)) addn("leaflet_width", lfd$W$v, lfd$W$txt)
@@ -1784,13 +1881,98 @@ extract_one <- function(r, group_filter = TRUE) {
          ctx_value = if (lvl == "leaflets" && !fern_mode && !str_detect(str_to_lower(paste(lc_txt, collapse = " ")), "pinnae")) NA else lvl)
   }
 
+  # ---- Fabaceae leaves and phyllodes (Acacia and allies)
+  if (legume_mode) {
+    lf_any <- unit_text(u, c("leaf", "lamina", "petiole", "leaflet"), parts = "any")
+    lf_tok <- unlist(map(lf_any, split_tokens))
+    # leaf type from the cross-section of phyllodes / leaves / leaflets ("flat", "terete", "± pentagonal in section, rarely
+    # flat", "quadrangular"): flat -> broadleaf, terete / angular / needle-like -> needle (traits.yml: broadleaf = flat lamina;
+    # needle = needle or awl-shaped, generally 3-dimensional)
+    if (!phy_scale && !phy_absent) {
+      lt_src <- join_units(unit_text(u, c("leaf", "lamina", "leaflet")))
+      addc("leaf_type", lt_src, c("flat|flattened|flattish|plane|bifacial|dorsiventrally flattened" = "broadleaf",
+                                  "terete|subterete|semi-?terete|sub-terete|(?:sub)?quadrangular|tetragonal|tetragonous|pentagonal|hexagonal|triquetrous|trigonous|(?:triangular|rhombic|quadrate) in (?:cross[- ])?section|acicular|needle-like|needle-shaped|filiform|setaceous|subulate" = "needle"),
+           prep_fun = function(x) str_remove_all(x, "[^,;|]*\\b(?:margins?|veins?|nerves?|midribs?|glands?|pulvinus|ap(?:ex|ices)|tips?|mucro\\w*|bases?|stem-projections|branchlets?)\\b[^,;|]*|\\bflat-topped\\b|\\bflattened (?:vertically|laterally) at\\b"))
+    }
+    # venation (candidate trait leaf_venation; draft values pinnate, parallel, anastomosing, reticulate, striate, in text order)
+    # (phyllodes and simple leaves only: the veins of leaflets / pinnules are described differently)
+    vn_tok <- unlist(map(unit_text(u, c("leaf", "lamina"), parts = "any"), split_tokens))
+    vn_tok <- vn_tok[str_detect(vn_tok, rx("vein|nerv|striat|reticul|anastom|anastam|penni|venation|venules|midrib|midvein|\\bper mm\\b"))]
+    if (length(vn_tok) && !compound_leaf) {
+      vn_txt <- paste(vn_tok, collapse = " | ")
+      addc("leaf_venation", vn_txt, c("penni-?(?:veined|nerved)|pinnately (?:veined|nerved)|pinnate venation" = "pinnate", "(?:sub)?parallel" = "parallel",
+                                      "anastomos\\w*|anastamos\\w*|anatomos\\w*" = "anastomosing", "reticulat\\w*|reticulum|net-like|(?:vein|nerve)-islands|reticulately" = "reticulate",
+                                      "multi-?striate|striate" = "striate"),
+           neg = c("(?:not|non-?|never|rarely) ?anastomos\\w*|nonanastomosing|without anastomoses|not reticulate|veinless|nerveless" = ""))
+      # main (longitudinal) vein count: "with 3 or 4 distant raised main veins", "1-veined per face", "with 5 prominent yellowish veins"
+      # (minor / secondary / lateral veins are not counted; "numerous" gives no number)
+      vc <- count_after(vn_tok %>% str_remove_all(rx("\\b[0-9.]+(?:\\s*-\\s*[0-9.]+)?\\s*(?:\\([^)]*\\)\\s*)?(?:per mm|mm)\\b")),
+                        paste0("\\bwith ", cnt, " (?!(?:[a-z-]+,? ){0,6}?(?:minor|secondary|lateral|less|fine|faint))(?:[a-z-]+,? (?:and |to )?){0,6}?(?:veins|nerves)\\b|\\b",
+                               cnt, "-(?:veined|nerved)\\b(?: per face)?|^(?:main |longitudinal |major |primary )(?:veins|nerves) ", cnt, "(?![0-9.]|\\s*(?:mm|per))"))
+      if (!is.null(vc)) addn("leaf_main_vein_count", parse_count(vc$raw), vc$txt)
+      # longitudinal vein spacing ("longitudinal veins numerous, 3 or 4 (-5) per mm"): candidate leaf_parallel_veins_per_mm
+      vd <- count_after(paste(vn_tok, collapse = ", "), paste0("\\b", cnt, " per mm\\b"))
+      if (!is.null(vd)) addn("leaf_parallel_veins_per_mm", parse_count(vd$raw), vd$txt)
+    }
+    # foliar glands of Acacia and other legumes (phyllode margin, petiole, rachis, between leaflets) are extrafloral nectaries
+    # (candidate traits: extrafloral_nectaries present / absent, extrafloral_nectary_position, _count, _distance_above_pulvinus)
+    # (a gland clause carries on to the clause end: "gland 1, prominent, basal")
+    part_units <- function(re) u %>% filter(sec %in% c("leaf", "lamina", "petiole", "leaflet"), str_detect(coalesce(part, ""), re)) %>%
+      group_by(unit) %>% summarise(t = paste(text, collapse = ", "), .groups = "drop") %>% pull(t)
+    gl_tok <- unique(c(part_units("^glands?$"), lf_tok[str_detect(lf_tok, rx("\\bglands?\\b|\\beglandular\\b|\\bglanduliferous\\b|\\bgland-bearing\\b"))])) %>%
+      str_remove_all(rx("\\bgland-tipped [a-z-]+|\\bglandular[a-z-]*\\b|\\b(?:hairs?|trichomes|hairlets) [^,;|]*\\bglands?\\b|\\bresin[- ]glands?\\b"))
+    gl_tok <- gl_tok[str_detect(gl_tok, rx("\\bglands?\\b|\\beglandular\\b|\\bglanduliferous\\b|\\bgland-bearing\\b"))]
+    if (length(gl_tok)) {
+      gl_txt <- paste(gl_tok, collapse = " | ")
+      gh <- scan_terms(gl_txt, c("glands?|glanduliferous|gland-bearing" = "present"),
+                       neg = c("(?:(?:inter)?jugary |petiolar |leaf |phyllode |basal |apical )?glands? (?:absent|lacking|wanting|not seen|0(?!\\s*(?:-|\\.|[0-9]|mm|cm)))|eglandular|without (?:a |any )?glands?|lacking (?:a )?glands?|no glands?" = "absent"),
+                       generic_neg = FALSE)
+      # (some glands present: "interjugary glands absent" beside a jugary gland is not an absence)
+      if (any(gh$value == "present")) gh <- gh %>% filter(value == "present")
+      add(rec_cat("extrafloral_nectaries", gh, gl_txt))
+      if (any(gh$value == "present")) {
+        gl_pos <- str_remove_all(str_to_lower(gl_txt), "(?:(?:inter)?jugary |petiolar |leaf |phyllode |basal |apical )?glands? (?:absent|lacking|wanting|not seen)[^,;|]*|without (?:a |any )?(?:[a-z]+ )?glands?[^,;|]*")
+        addc("extrafloral_nectary_position", gl_pos, c("interjugary" = "rachis_interjugary", "jugary|at (?:each|the) (?:pair|junction) of pinnae|between (?:the )?(?:[a-z]+ )?pairs? of pinnae" = "rachis_jugary",
+                                                      "between (?:the )?(?:[a-z]+ )?(?:pairs? of )?leaflets?|between (?:the )?(?:lowest|lowermost|lower|basal|upper|each|all|first|proximal) (?:[a-z]+ )?(?:pairs?|leaflets?)|on (?:the )?rachis" = "rachis",
+                                                      "on (?:the )?petiole|petiolar|near (?:the )?(?:lowest|lowermost|basal) pair of pinnae|on (?:the )?upper (?:surface|side) of (?:the )?petiole" = "petiole",
+                                                      "(?:just |immediately )?above (?:the )?pulvinus|(?:at|near|towards) (?:the )?base|basal|proximal|from (?:the )?pulvinus|on (?:the )?pulvinus" = "base",
+                                                      "(?:at|near|about|above|below) (?:the )?(?:middle|mid-point|midpoint)|median" = "middle",
+                                                      "(?:at|near|towards) (?:the )?apex|apical|subapical|distal|near (?:the )?tip|below (?:the )?apex" = "apex"),
+             generic_neg = FALSE)
+        gd <- str_match(mark_extremes(gl_txt), rx(paste0("\\bglands?\\b[^,;|]{0,25}?(", meas, ")\\s*(?:above|from) (?:the )?(?:pulvinus|base)")))
+        if (!is.na(gd[1])) addn("extrafloral_nectary_distance_above_pulvinus", meas_of(gd[2]), unmark(gd[1]))
+        gc <- count_after(gl_tok, paste0("^(?:the )?(?:[a-z]+ )?glands? ", cnt, "(?![0-9.]|\\s*(?:-|or|to)\\s*[0-9]|\\s*(?:mm|cm)\\b|\\s*\\(|\\s*\u27e8)|\\b", cnt, " (?:[a-z-]+ )?glands?\\b"))
+        if (is.null(gc) && str_detect(gl_txt, rx("\\bglands? (?:single|solitary)|\\b(?:single|solitary|a single) gland\\b|^gland 1\\b")))
+          gc <- list(v = c(min = NA, max = 1), txt = str_extract(gl_txt, rx("\\bglands? (?:single|solitary)|\\b(?:single|solitary|a single) gland\\b")))
+        if (!is.null(gc)) addn("extrafloral_nectary_count", if (!is.null(gc$raw)) parse_count(gc$raw) else gc$v, gc$txt)
+      }
+    }
+    # pulvinus length (candidate pulvinus_length): "pulvinus 4-8 (-10) mm long"
+    pv <- m_first(part_units("^pulvin(?:us|i)$"), "long|in length", excl())
+    if (!is.null(pv)) addn("pulvinus_length", pv$v, pv$txt)
+    # length : width ratio of phyllodes ("l:w ratio = 11-30", "l:w = 8-15")
+    lw <- str_match(paste(lf_tok, collapse = " | "), rx("\\bl\\s*:\\s*w(?:\\s*ratio)?\\s*(?:=|of|is|c\\.)?\\s*(?:c\\.\\s*)?([0-9.]+)(?:\\s*-\\s*([0-9.]+))?"))
+    if (!is.na(lw[1])) addn("leaf_length_to_width_ratio", c(min = if (is.na(lw[3])) NA else as.numeric(lw[2]), max = as.numeric(coalesce(lw[3], lw[2]))), lw[1])
+    # symmetry and curvature of the blade (candidate leaf_symmetry, leaf_curvature), from the shape tokens only
+    sh_tok <- str_remove_all(lf_tok, "\\([^)]*\\)")
+    sh_tok <- sh_tok[!str_detect(sh_tok, rx("\\b(?:veins?|nerves?|midribs?|glands?|pulvinus|margins?|hairs?|ap(?:ex|ices)|mucro\\w*|tips?|points?|bases?|basally|tapered|tapering|narrowed|acuminate|caudate|acute|obtuse)\\b"))]
+    if (!compound_leaf && length(sh_tok)) {
+      sh_txt <- paste(sh_tok, collapse = " | ")
+      addc("leaf_symmetry", sh_txt, c("dimidiate(?:ly)?|inequilateral(?:ly)?|asymmetric(?:al|ally)?|oblique(?:ly)?|unequal-sided" = "asymmetric", "symmetric(?:al|ally)?|equilateral" = "symmetric"),
+           prep_fun = function(x) str_remove_all(x, "\\bobliquely (?=[a-z-]*(?:mucro|apic|acut|obtus|rostel|point|cusp|truncat|retus|emargin|ascend|erect|spread|patent|inclin|reflex|deflex))|\\bobliquely (?:ascending|erect|spreading|inclined|patent)\\b"))
+      addc("leaf_curvature", sh_txt, c("(?:sub)?straight|straightish" = "straight", "incurved" = "incurved", "recurved" = "recurved", "(?:sub)?falcate(?:ly)?" = "falcate",
+                                       "sigmoid(?:al)?|s-shaped" = "sigmoid", "curved|arcuate|curving" = "curved", "uncinate|hooked" = "uncinate"))
+    }
+  }
+
   # ---- inflorescence
   infl <- unit_text(u, "inflorescence")
   fl_gen <- unit_text(u, "flower", subj_re = "flower|floret|^(?:fe)?males$|ones$")
   infl_txt <- collapse_text(c(infl, fl_gen), " | ")
   addc("inflorescence_type", infl_txt, infl_type_dict,
        prep_fun = function(x) str_remove_all(x, "\\b(?:[0-9]+|one|two|three)?-?headed\\b|\\bfruiting heads?\\b|\\bspine-tipped\\b|\\bspines?\\b|\\b(?:flowers |dichasia )?(?:solitary|single)(?: or [a-z ]+?)? (?:on|at|along) (?:each |the )?(?:nodes?|rachis)\\b"))
-  addc("inflorescence_shape", join_units(unit_text(u, "inflorescence", subj_re = "head|capitul|spike|glomerule|umbel")), infl_shape_dict)
+  addc("inflorescence_shape", join_units(unit_text(u, "inflorescence", subj_re = "head|capitul|spike|glomerule|umbel")),
+       if (legume_mode) c(infl_shape_dict, "obloid|short-obloid|ellipsoid|ovoid" = "elongated") else infl_shape_dict)
   in_other <- paste0(excl("inflorescences?", "racemes?", "spikes?", "heads?", "flowers?"), "|peduncled|pedunculate")
   il <- m_first(unit_text(u, "inflorescence", subj_re = "inflorescence|raceme|spike|panicle|cyme|thyrse|corymb|synflorescence|conflorescence|spadix"), "long|in length", in_other)
   if (!is.null(il)) addn("inflorescence_length", il$v, il$txt)
@@ -1817,6 +1999,28 @@ extract_one <- function(r, group_filter = TRUE) {
     pt <- str_match(mark_extremes(join_units(c(unit_text(u, "peduncle", subj_re = "peduncle"), unit_text(u, "inflorescence")))), rx(paste0("\\b(?:peduncles?)\\b[^;:|]{0,40}?(", meas, ")(?:\\s+or more)?\\s*long")))
     if (!is.na(pt[1])) addn("peduncle_length", meas_of(pt[2]), unmark(pt[1]))
     else if (length(unit_text(u, "peduncle", subj_re = "peduncle"))) addn("peduncle_length", ped$v, ped$txt)
+  }
+  if (legume_mode) {
+    # Acacia: "Inflorescences simple, 1 or 2 per axil", "normally 1 or 2 in phyllode axils" (candidate inflorescences_per_axil);
+    # "3-5-headed racemes" (candidate flower_heads_per_inflorescence); "raceme axes 6-40 mm long" (inflorescence_length of the raceme axis)
+    ipa <- count_after(infl, paste0("\\b", cnt, " (?:per|in each) (?:phyllode |leaf |upper )?axils?\\b|\\b", cnt, " in (?:the )?(?:upper |lower )?(?:phyllode |leaf |scale |)?axils?\\b|\\b",
+                                    cnt, " in axils of\\b"))
+    if (!is.null(ipa)) addn("inflorescences_per_axil", parse_count(ipa$raw), ipa$txt)
+    hpi <- count_after(infl, paste0("\\b", cnt, "-headed\\b|\\bracemes? (?:with |of )?", cnt, " heads?\\b|\\bwith ", cnt, " heads\\b"))
+    if (!is.null(hpi)) addn("flower_heads_per_inflorescence", parse_count(hpi$raw), hpi$txt)
+    rax <- str_match(mark_extremes(join_units(infl) %||% ""), rx(paste0("\\b(?:raceme |racemes |rachis |inflorescence )?ax(?:is|es)\\b[^,;|]{0,15}?(", meas, ")(?:\\s+or more)?\\s*long")))
+    if (!is.na(rax[1])) addn("inflorescence_length", meas_of(rax[2]), unmark(rax[1]), "entity_measured", "raceme axis")
+    # spike width ("spikes c. 15 mm long, c. 5 mm diam.")
+    if (is.null(idm)) {
+      sdi <- m_first(unit_text(u, "inflorescence", subj_re = "spike"), "diam|diameter|in diameter|across|wide", in_other)
+      if (!is.null(sdi)) addn("inflorescence_diameter", sdi$v, sdi$txt)
+    }
+    # heads arranged in racemes / panicles: flower counts and diameters of the heads are on entity_measured = flower heads rows
+    if (str_detect(str_to_lower(join_units(infl) %||% ""), "racem|panicl|-headed")) for (k in seq_along(recs)) {
+      if (all(recs[[k]]$trait %in% c("flowers_per_inflorescence", "inflorescence_diameter")) && all(is.na(recs[[k]]$ctx_type)) &&
+          str_detect(str_to_lower(paste(recs[[k]]$desc, collapse = " ")), "flowered|diam|wide|across|flowers"))
+        recs[[k]] <- recs[[k]] %>% mutate(ctx_type = "entity_measured", ctx_value = if (any(str_detect(coalesce(u$subj[u$sec == "inflorescence"], ""), "head"))) "flower heads" else "spikes")
+    }
   }
 
   # ---- flowers (sizes per entity: male / female flowers on their own rows)
@@ -1920,7 +2124,9 @@ extract_one <- function(r, group_filter = TRUE) {
   if (orchid_mode) cor_all <- unit_text(u, "corolla", subj_re = "^(?!(?:the )?labellum)", parts = c(NA, "tube", "limb", "lobes", "lobe", "segments"))
   colour_units <- c(fl_all, cor_all)
   fc_txt <- join_units(colour_units)
-  fc <- scan_terms(fc_txt, flower_colour_dict, prep_fun = if (orchid_mode) function(x) colour_prep(str_remove_all(x, "\\b(?:with|and) (?:an? |the )?(?:[a-z-]+,? (?:or |to |and )?){0,7}(?:labell(?:um|a)|call(?:us|i)|columns?|glands?|lips?)\\b[^,;|]*|\\blabellum\\b[^,;|]*|\\bcall(?:us|i)\\b[^,;|]*")) else colour_prep, generic_neg = TRUE)
+  fc <- scan_terms(fc_txt, flower_colour_dict, prep_fun = if (orchid_mode) function(x) colour_prep(str_remove_all(x, "\\b(?:with|and) (?:an? |the )?(?:[a-z-]+,? (?:or |to |and )?){0,7}(?:labell(?:um|a)|call(?:us|i)|columns?|glands?|lips?)\\b[^,;|]*|\\blabellum\\b[^,;|]*|\\bcall(?:us|i)\\b[^,;|]*"))
+                   # (Fabaceae: "petal apices often brown to black" is the colour of the petal tips)
+                   else if (legume_mode) function(x) colour_prep(str_remove_all(x, "[^,;|]*\\bap(?:ex|ices)\\b[^,;|]*|[^,;|]*\\b(?:tips?|margins?|claws?)\\b[^,;|]*")) else colour_prep, generic_neg = TRUE)
   if (!nrow(fc)) {
     fc_txt <- join_units(unit_text(u, "inflorescence", subj_re = "head|capitul|spike|raceme|glomerule"))
     fc <- scan_terms(fc_txt, flower_colour_dict, prep_fun = colour_prep)
@@ -1975,7 +2181,11 @@ extract_one <- function(r, group_filter = TRUE) {
   addc("fruit_fleshiness", join_units(fr_all), fleshy_dict, prep_fun = function(x) str_remove_all(x, "\\b(?:seeds?|endocarp|stone|pyrene|aril)\\b[^,;|]*|[a-z ]*\\bhooks?\\b[^,;|]*"))
   addc("fruit_colour", fr_dim_txt, fruit_colour_dict, prep_fun = function(x) colour_prep(x, ageing = FALSE))
   addc("fruit_surface_hairs", fr_txt, hairs_dict %>% { .[. != "glandular_pubescent"] } %>% c("glandular-(?:pubescent|hairy|pilose|puberulous)|glandular hairs" = "hairy"))
-  addc("fruit_shape", fr_txt, fruit_shape_dict, prep_fun = function(x) str_remove_all(x, "\\bin (?:cross[- ])?section\\b[^,;|]*"))
+  # (Fabaceae pods: coiling, twisting, curvature and constriction between the seeds as well)
+  addc("fruit_shape", fr_txt, if (legume_mode) c(fruit_shape_dict, "(?:once-|twice-|openly |loosely |tightly |spirally |semi-)?(?:coiled|circinnate|circinately coiled)|spirally (?:twisted|coiled)" = "coiled",
+                                                  "twisted|contorted" = "twisted", "(?:sub)?moniliform" = "moniliform", "constricted (?:between|at)|constrictions" = "constricted",
+                                                  "curved|arcuate|recurved|sigmoid" = "curved", "straight|substraight" = "straight") else fruit_shape_dict,
+       prep_fun = function(x) str_remove_all(x, "\\bin (?:cross[- ])?section\\b[^,;|]*|\\bstraight-(?:edged|sided|margined)\\b|\\b(?:margins?|sutures?|veins?|nerves?|valves?) [^,;|]*|\\bcurved back\\b|\\bnot (?:or (?:scarcely|barely|slightly) )?constricted\\b[^,;|]*"))
   frd <- dims(fr_txt %||% "", excl("fruits?", "capsules?", "pods?", "legumes?", "drupes?", "berr(?:y|ies)", "nuts?", "nutlets?", "achenes?", "cypselas?", "follicles?", "mericarps?", "samaras?", "valves", "syconi(?:a|um)", "cones?", "endocarps?", "pericarps?"))
   if (length(fr)) {
     fo <- excl("fruits?", "capsules?", "pods?", "legumes?", "drupes?", "nuts?", "nutlets?", "achenes?", "follicles?", "mericarps?", "samaras?", "valves", "cones?", "endocarps?", "pericarps?")
@@ -2040,18 +2250,51 @@ extract_one <- function(r, group_filter = TRUE) {
   }
   if (!is.null(sdd$L)) addn("seed_length", sdd$L$v, sdd$L$txt)
   if (!is.null(sdd$W)) addn("seed_width", sdd$W$v, sdd$W$txt)
-  addc("seed_shape", sd_txt, seed_shape_dict, prep_fun = function(x) str_remove_all(x, "\\bin (?:cross[- ])?section\\b[^,;|]*|\\b(?:arils?|wings?|hilum|embryo)\\b[^,;|]*"))
+  if (!legume_mode) addc("seed_shape", sd_txt, seed_shape_dict, prep_fun = function(x) str_remove_all(x, "\\bin (?:cross[- ])?section\\b[^,;|]*|\\b(?:arils?|wings?|hilum|embryo)\\b[^,;|]*"))
+  if (legume_mode) {
+    # seed_shape is 3-dimensional (traits.yml): the outline terms of legume seeds ("oblong", "elliptic", "ovate", "circular") map to
+    # ellipsoid / ovoid / globoid (traits.yml lists obloid and oblong as ellipsoid synonyms), and to the *_flattened levels when the
+    # seed is "compressed" / "flattened" (not when "turgid")
+    sh_src <- str_remove_all(str_to_lower(sd_txt %||% ""), "\\bin (?:cross[- ])?section\\b[^,;|]*|\\b(?:arils?|wings?|hilum|embryo|areoles?|pleurograms?|funicles?|halo|fold\\w*)\\b[^,;|]*|\\b(?:longitudinal|oblique|transverse)(?:ly)?\\b|\\brounded (?:at|over)\\b[^,;|]*")
+    flat <- str_detect(sh_src, "\\b(?:compressed|flattened|flat|dorsiventrally|laterally compressed)\\b|\\bcompressed-") && !str_detect(sh_src, "\\bturgid\\b")
+    ss <- scan_terms(sh_src, c("oblong|elliptic(?:al)?|obloid|ellipsoid(?:al)?|oval" = "ellipsoid", "linear" = "", "ovate|obovate|ovoid|obovoid|pyriform|egg-shaped" = "ovoid",
+                               "circular|subcircular|orbicular|suborbicular|rotund|round|rounded|globose|subglobose|globular|subglobular|spherical" = "globoid",
+                               "reniform|kidney-shaped|heart-shaped" = "reniform", "rhombic|quadrate|subquadrate|square|rectangular|angular" = "polyhedral",
+                               "lenticular|lens-shaped" = "lenticular", "discoid|subdiscoid|disc-shaped" = "discoid", "conical|turbinate" = "conical",
+                               "cylindrical|cylindric" = "cylindrical", "fusiform" = "fusiform"))
+    if (flat && nrow(ss)) ss <- ss %>% mutate(value = ifelse(value %in% c("ellipsoid", "ovoid", "globoid"), paste0(value, "_flattened"), value),
+                                              term = paste0(term, ifelse(value %in% c("ellipsoid_flattened", "ovoid_flattened", "globoid_flattened"), " [compressed]", "")))
+    add(rec_cat("seed_shape", ss, sd_txt))
+    # position of the seeds in the pod (candidate seed_orientation): "Seeds longitudinal", "oblique to longitudinal", "transverse"
+    so_tok <- unlist(map(sd, split_tokens))
+    so_tok <- so_tok[map_lgl(str_extract_all(str_to_lower(str_remove_all(so_tok, "∅")), "[a-z±-]+"),
+                             ~ length(.x) && any(.x %in% c("longitudinal", "oblique", "transverse", "longitudinally", "obliquely", "transversely")) &&
+                               all(.x %in% c("seeds", "seed", "longitudinal", "oblique", "transverse", "longitudinally", "obliquely", "transversely", "to", "or", "and",
+                                             "mostly", "usually", "sometimes", "rarely", "occasionally", "commonly", "normally", "presumably", "arranged", "in", "the", "pod", "pods", "±", "more", "less", "often", "very", "slightly")))]
+    addc("seed_orientation", paste(so_tok, collapse = " | "), c("longitudinal(?:ly)?" = "longitudinal", "oblique(?:ly)?" = "oblique", "transverse(?:ly)?" = "transverse"))
+    # seed thickness ("compressed (1-2.5 mm thick)") is the seed height (traits.yml: the shortest axis)
+    sth <- m_first(sd, "thick|deep", excl("seeds?"))
+    if (!is.null(sth)) addn("seed_height", sth$v, sth$txt)
+    # pleurogram (candidate seed_pleurogram, present / absent): "pleurogram U-shaped", "areole open", "without a pleurogram"
+    addc("seed_pleurogram", join_units(unit_text(u, "seed", parts = "any")), c("pleurograms?|areoles?|areolate" = "present"),
+         neg = c("without (?:a )?pleurogram|pleurograms? (?:absent|lacking|0)|lacking (?:a )?pleurogram|no pleurogram|exareolate" = "absent"), generic_neg = FALSE)
+  }
   # (colours of the aril etc. are not the seed's: "with a prominent fleshy white aril")
-  addc("seed_colour", sd_txt, seed_colour_dict, prep_fun = function(x) colour_prep(str_remove_all(x, "\\b(?:with )?(?:an? )?(?:[a-z-]+ ){0,3}(?:arils?|arillode|strophioles?|wings?|hilum|elaiosomes?|caruncles?)\\b[^,;|]*")))
+  addc("seed_colour", sd_txt, seed_colour_dict, prep_fun = function(x) colour_prep(str_remove_all(x, "\\b(?:with )?(?:an? )?(?:[a-z-]+ ){0,3}(?:arils?|arillode|strophioles?|wings?|hilum|elaiosomes?|caruncles?)\\b[^,;|]*") %>%
+    # (Fabaceae: halo / areole / pleurogram colours, "yellow around pleurogram", "yellowish at centre")
+    { if (legume_mode) str_remove_all(., "[^,;|]*\\b(?:halos?|areoles?|pleurograms?|centre|center|middle)\\b[^,;|]*") else . }))
   addc("seed_surface_texture", sd_txt, seed_texture_dict, prep_fun = function(x) str_remove_all(x, "\\b(?:arils?|wings?|hilum)\\b[^,;|]*"))
   addc("seed_surface_reflectivity", sd_txt, reflect_dict)
   addc("seed_surface_hairs", sd_txt, seed_hairs_dict)
-  app_txt <- collapse_text(c(fr, unit_text(u, "seed", parts = "any")), " | ")
+  # (Fabaceae: the wings and margins of a dehiscent pod are not on the dispersal unit, the seed)
+  app_txt <- collapse_text(c(if (!legume_mode || any(dh_f$value == "indehiscent")) fr, unit_text(u, "seed", parts = "any")), " | ")
   # chenopod dispersal units: spines, wings, bladder-like appendages (inflated_parts)
   dsp_txt <- join_units(unit_text(u, "diaspore", parts = "any"))
   addc("dispersal_appendage", dsp_txt, c("spines?|spinose|spiny|spine-like" = "spines", "wings?|winged" = "wings",
                                          "bladder(?:-like)?|inflated|vesicular|spongy appendages?" = "inflated_parts", "hooks?|hooked" = "hooks"),
        neg = c("(?:spines|wings?|appendages) (?:absent|0)|wingless|without (?:spines|wings?|appendages)|not winged" = ""))
+  # (Fabaceae: a fleshy, thickened or folded funicle around the seed is an arillate funicle, "funicle fleshy, orange ..., twice-encircling seed")
+  if (legume_mode) app_txt <- str_replace_all(app_txt, regex("\\bfunicles?\\b(?=[^|;]{0,60}\\b(?:fleshy|thickened|expanded|arillate|aril-like|swollen)\\b)", ignore_case = TRUE), "funicle (aril)")
   addc("dispersal_appendage", app_txt, appendage_dict, appendage_neg,
        prep_fun = function(x) str_remove_all(x, "(?:seed-bearing |curved woody |woody )?hooks? (?:subtending|prominent|present|lacking)[^,;|]*|seed-bearing hooks|retinacul\\w*|\\bwing (?:petals?)\\b"))
 
@@ -2074,7 +2317,8 @@ extract_one <- function(r, group_filter = TRUE) {
         if (!str_detect(tx, gen_any[[ch]])) next
         tr <- paste0(ok, if (pc != "") paste0("_", pc), "_", ch) %>% str_replace("_apex_apex_shape$", "_apex_shape")
         pf <- switch(ch,
-          colour = function(x) colour_prep(x, ageing = FALSE),
+          # (Fabaceae: resin and gland colours, "sepals free, white-resinous", are not the organ's colour)
+          colour = if (legume_mode) function(x) colour_prep(str_remove_all(x, paste0("\\b(?:", cw, ")[- ](?:resinous|resin\\w*|glandular|scurfy|waxy)\\b")), ageing = FALSE) else function(x) colour_prep(x, ageing = FALSE),
           shape = function(x) str_remove_all(x, "\\b(?:[a-z-]+ )?(?:at|towards|near) (?:the )?(?:base|apex|tip|summit)\\b|\\bin (?:cross[- ])?section\\b[^,;|]*|\\b(?:teeth|lobes?|glands?|veins?|hairs?|scales?|apex|apices|tips?|bases?)\\b[^,;|]*"),
           hairs = function(x) str_remove_all(x, "\\b(?:hairs?|indumentum) (?:of|on) (?:the )?(?:[a-z-]+ )?(?:veins?|midrib|margins?|base)\\b"),
           # ("free basal part of labellum c. 2 mm long" names a part, not a fusion)
@@ -2083,6 +2327,14 @@ extract_one <- function(r, group_filter = TRUE) {
         so <- gen_strip_other(ok)
         if (ch %in% c("shape", "colour", "texture", "fusion", "persistence", "orientation")) {
           so0 <- so; so <- function(x) str_remove_all(so0(x), "\\b(?:leaving|with|having|bearing|subtended by|surrounded by)\\b[^,;|]*")
+        }
+        # (Fabaceae: a twisted pod is a pod shape, an incurved / recurved phyllode a curvature: both have their own traits)
+        if (legume_mode && ch == "orientation" && ok %in% c("fruit", "leaf")) {
+          pf0 <- pf; pf <- function(x) { x <- str_remove_all(x, if (ok == "fruit") "\\b(?:twisted|contorted)\\b" else "\\b(?:incurved|recurved|inflexed)\\b"); if (is.null(pf0)) x else pf0(x) }
+        }
+        # (Fabaceae: "appressed-puberulous", "appressed hairs" describe the hairs, not the organ's orientation)
+        if (legume_mode && ch == "orientation") {
+          pf1 <- pf; pf <- function(x) { x <- str_remove_all(x, "\\b(?:sub)?(?:appressed|adpressed)[- ][a-z]+|\\b(?:sub)?(?:appressed|adpressed|spreading|patent|erect|antrorse|retrorse)\\b(?= (?:[a-z-]+ )?(?:hairs|hairlets|trichomes|bristles|setae))"); if (is.null(pf1)) x else pf1(x) }
         }
         pf2 <- if (is.null(pf)) so else function(x) pf(so(x))
         addc(tr, tx, gen_dicts[[ch]], if (ch == "hairs") gen_hairs_neg else NULL, prep_fun = pf2, ctx_type = ct[1], ctx_value = ct[2])
@@ -2473,18 +2725,19 @@ for (lvl in c("genus", "family")) {
 }
 copied <- bind_rows(copied)
 recs <- bind_rows(recs, copied)
-# orchid "flower stem" lengths (mm): the height of the flowering plant for terrestrial orchids (plant_height_reproductive, m),
-# the inflorescence length for epiphytes and lithophytes (whose flower stems arch or hang from the pseudobulb / stem)
+# orchid "flower stem" lengths (mm): for terrestrial orchids both the height of the flowering plant (plant_height_reproductive, m)
+# and the inflorescence length (user's choice); for epiphytes and lithophytes (whose flower stems arch or hang from the
+# pseudobulb / stem) and reed-stem orchids with a stated height, the inflorescence length only
 if ("orchid_flower_stem_length" %in% recs$trait) {
   epi <- recs %>% filter(trait == "plant_growth_substrate", str_detect(coalesce(value, ""), "epiphyte|lithophyte")) %>% distinct(taxon_name) %>% pull()
-  ofs <- recs$trait == "orchid_flower_stem_length"
   # (and for reed-stem orchids whose own height is given, "Stems 1-1.5 m tall": the flower stem is then a terminal inflorescence)
   own_ht <- recs %>% filter(trait == "plant_height", is.na(scoring)) %>% distinct(taxon_name) %>% pull()
-  to_h <- ofs & !recs$taxon_name %in% c(epi, own_ht)
-  recs <- recs %>% mutate(
-    trait = case_when(to_h ~ "plant_height_reproductive", ofs ~ "inflorescence_length", TRUE ~ trait),
-    desc = ifelse(ofs, paste("[flower stem]", desc), desc),
-    across(any_of(c("min", "max", "extreme_min", "extreme_max")), ~ ifelse(to_h, .x / 1000, .x)))
+  ofs <- recs %>% filter(trait == "orchid_flower_stem_length") %>% mutate(desc = paste("[flower stem]", desc))
+  terr <- ofs %>% filter(!taxon_name %in% c(epi, own_ht))
+  # every flower stem is an inflorescence length; a terrestrial orchid's is also the plant's height when flowering
+  recs <- bind_rows(recs %>% filter(trait != "orchid_flower_stem_length"),
+                    ofs %>% mutate(trait = "inflorescence_length"),
+                    terr %>% mutate(trait = "plant_height_reproductive", across(any_of(c("min", "max", "extreme_min", "extreme_max")), ~ .x / 1000)))
   # (a flower stem replaces neither a stated inflorescence length nor a stated height)
   recs <- recs %>% group_by(taxon_name, trait, qualifier, ctx_type, ctx_value, scoring) %>%
     filter(!(str_detect(coalesce(desc, ""), "^\\[flower stem\\]") & n() > 1)) %>% ungroup()
@@ -2539,6 +2792,8 @@ inf_water_wet <- "\\b(?:swamps?|swampy|marsh\\w*|bogs?|boggy|ponds?|lakes?|lagoo
 inf_noleaf_re <- "\\b(?:phyllod\\w*|cladod\\w*|phyllocla\\w*|leafless(?! (?:flower(?:ing)? )?(?:portions?|parts?|sections?|lengths?|internodes?|stems?|scapes?|peduncles?|inflorescences?))|aphyllous|photosynthetic stems?|stems? (?:green and )?photosynthetic|assimilat\\w* (?:stems?|branchlets?)|scale-?like leaves|(?<!upper |uppermost |floral |cauline |distal |stem |bract-like |inflorescence )leaves (?:reduced|scale-like|minute|vestigial|caducous|early caducous|soon falling|ephemeral)|reduced to (?:minute )?scales|scale leaves|leaves (?:absent|0)|broom-like|switch-like|saprophyt\\w*|mycoheterotroph\\w*|achlorophyll\\w*|(?:without|lacking|lacks) chlorophyll|non-green|holoparasit\\w*)\\b"
 inf_par_re <- "\\b(?:parasit\\w*|hemiparasit\\w*|haustor\\w*|host plants?|on the roots of|attached to (?:the )?roots|saprophyt\\w*|mycoheterotroph\\w*|achlorophyll\\w*)\\b"
 inf_nonflat_re <- "\\b(?:terete|subterete|semi-?terete|needle\\w*|acicular|subulate|filiform|setaceous|involute|convolute|inrolled|rolled|scale-like|cylindrical|triquetrous|trigonous|quadrangular|channelled|grooved above)\\b"
+# (Fabaceae: phyllodes are the leaves of most Acacia; a flat phyllode is a broadleaf, so phyllode wording does not block leaf_type)
+inf_noleaf_re_leg <- str_replace(inf_noleaf_re, fixed("phyllod\\w*|"), "")
 flat_shapes <- c("cordate", "deltate", "elliptical", "falcate", "lanceolate", "linear_elliptical", "narrowly_elliptical", "narrowly_lanceolate",
                  "narrowly_oblanceolate", "narrowly_oblong", "narrowly_obovate", "narrowly_obtrullate", "narrowly_ovate", "narrowly_rhomboidal",
                  "narrowly_triangular", "obcordate", "oblanceolate", "oblate", "oblong", "obovate", "obtriangular", "obtrullate", "orbicular", "ovate",
@@ -2570,7 +2825,8 @@ inf <- inf %>% mutate(
   par_ok = is.na(par) & (pho_ok | coalesce(pho, "") %in% c("leaf", "phyllode", "cladode", "stem")) &
     !family %in% inf_fam_parasitic & !genus %in% inf_gen_parasitic & !str_detect(txt, inf_par_re),
   shp_flat = !is.na(shp) & map2_lgl(str_split(coalesce(shp, ""), " "), coalesce(lw, 0), ~ all(.x %in% c(flat_shapes, "linear", "narrowly_linear")) && (any(.x %in% flat_shapes) || .y >= 2)),
-  lt_ok = is.na(lt) & (pho_ok | coalesce(pho, "") == "leaf") & !str_detect(ltxt, inf_nonflat_re) & !str_detect(txt, inf_noleaf_re) &
+  lt_ok = is.na(lt) & (pho_ok | coalesce(pho, "") == "leaf" | (family == "Fabaceae" & coalesce(pho, "") == "phyllode")) & !str_detect(ltxt, inf_nonflat_re) &
+    !str_detect(txt, ifelse(family == "Fabaceae", inf_noleaf_re_leg, inf_noleaf_re)) &
     (shp_flat | coalesce(lw, 0) >= 3 | (!is.na(div) & str_detect(div, "pinnat|bipinnate|tripinnate|palmat|lobed")))
 )
 inf_rec <- function(ok, trait, value, why) inf %>% filter(ok) %>%
@@ -2701,11 +2957,81 @@ write_candidates <- function(df, path, id) {
   invisible(reg)
 }
 
+# ---------------------------------------------------------------- long format (ABRS_Fabaceae_2026)
+# Fabaceae is written in long format (user's choice, 2026-10-19: the papilionaceous flower parts and phyllode / gland characters
+# need many context rows): one row per taxon x trait x value type x context combination, with
+#   value              mapped value (categorical: traits.yml level(s) or a draft value for candidate traits, space-delimited, in
+#                      text order; numeric: the number, in the units listed in metadata.yml)
+#   value_type         mode (categorical; single counts), minimum / maximum (ranges; "to 15 cm" is a maximum), mean (a single
+#                      measurement, "c. 6 mm diam.")
+#   measurement_range  typical (the range given) or extreme (parenthetical extremes "(2-) 3-7 (-10) m")
+#   value_description  the source words (categorical) or the verbatim measurement (numeric)
+# plus the context columns, and per-taxon verbatim text (habit_description ... notes, common_name, biostatus) as rows whose
+# trait_name is the text field (not mapped in metadata.yml).
+long_ids <- c("ABRS_Fabaceae_2026")
+count_like <- function(tr) str_detect(tr, "count|merism|per_|_pairs$")
+long_of <- function(taxa) {
+  r <- recs %>% filter(taxon_name %in% taxa)
+  fmt <- function(x) ifelse(is.na(x), NA_character_, format(signif(x, 6), scientific = FALSE, trim = TRUE, drop0trailing = TRUE))
+  cat_l <- r %>% filter(!is_num) %>%
+    transmute(taxon_name, trait_name = trait, value, value_type = "mode", measurement_range = NA_character_, value_description = desc, across(all_of(ctx)))
+  num <- r %>% filter(is_num)
+  pre <- str_to_lower(str_extract(coalesce(num$desc, ""), "^[^0-9]*"))
+  single_type <- case_when(str_detect(pre, "(?:\\b(?:to|up to|less than|under|reaching|not exceeding|not more than|at most)|<)\\s*(?:c\\.\\s*)?$") ~ "maximum",
+                           str_detect(pre, "(?:\\b(?:more than|over|at least|exceeding)|>)\\s*(?:c\\.\\s*)?$") ~ "minimum",
+                           count_like(num$trait) ~ "mode", TRUE ~ "mean")
+  nb <- function(v, vt, mr) num %>% mutate(.v = v, .t = vt) %>% filter(!is.na(.v)) %>%
+    transmute(taxon_name, trait_name = trait, value = map_chr(.v, fmt), value_type = .t, measurement_range = mr, value_description = desc, across(all_of(ctx)))
+  num_l <- bind_rows(
+    nb(num$min, "minimum", "typical"),
+    nb(ifelse(is.na(num$min), NA, num$max), "maximum", "typical"),
+    nb(ifelse(is.na(num$min), num$max, NA), single_type, "typical"),
+    nb(num$extreme_min, "minimum", "extreme"),
+    nb(num$extreme_max, "maximum", "extreme"))
+  txt_l <- main %>% filter(taxon_name %in% taxa) %>% select(-family, -taxon_rank, -foa_url) %>%
+    mutate(across(everything(), as.character)) %>%
+    pivot_longer(-taxon_name, names_to = "trait_name", values_to = "value") %>% filter(!is.na(value), value != "") %>%
+    mutate(value_type = NA_character_, measurement_range = NA_character_, value_description = NA_character_)
+  ord_t <- c(trait_order, setdiff(unique(c(cat_l$trait_name, num_l$trait_name)), trait_order))
+  bind_rows(cat_l %>% mutate(.k = 1), num_l %>% mutate(.k = 1), txt_l %>% mutate(.k = 2)) %>%
+    left_join(main %>% select(taxon_name, family, taxon_rank, foa_url), by = "taxon_name") %>%
+    mutate(.fo = match(family, sort(unique(family))), .to = coalesce(match(trait_name, ord_t), 9999L),
+           .ctx = rowSums(!is.na(across(all_of(ctx)))), .vt = match(value_type, c("mode", "mean", "minimum", "maximum")),
+           .mr = match(coalesce(measurement_range, "typical"), c("typical", "extreme"))) %>%
+    arrange(.fo, taxon_name, .k, .to, .ctx, trait_scoring_method, commonness_qualifier, population_region, leaf_division, entity_measured, plant_organ_measured, .mr, .vt) %>%
+    select(taxon_name, family, taxon_rank, foa_url, trait_name, value, value_type, measurement_range, value_description, all_of(ctx)) %>%
+    mutate(across(c(value, value_description), ~ str_replace_all(.x, "(?<=[0-9])\\s*[-–—]\\s*(?=[0-9])", "--")))
+}
+write_candidates_long <- function(df, path, id) {
+  meta_traits <- meta_var_in(id)
+  top <- function(x, k = 8) { x <- str_squish(x[!is.na(x) & x != ""]); if (!length(x)) return(NA_character_)
+    t <- sort(table(x), decreasing = TRUE); paste0(names(t)[seq_len(min(k, length(t)))], " (", t[seq_len(min(k, length(t)))], ")", collapse = "; ") }
+  reg <- df %>% filter(!is.na(value_type), !trait_name %in% meta_traits) %>%
+    group_by(trait = trait_name) %>%
+    summarise(type = if (all(value_type == "mode" & is.na(measurement_range))) "categorical" else "numeric",
+              n_taxa = n_distinct(taxon_name), n_values = n(), n_copied = sum(!is.na(trait_scoring_method)),
+              range = if (type == "numeric") { v <- suppressWarnings(as.numeric(value)); paste(signif(min(v, na.rm = TRUE), 3), "-", signif(max(v, na.rm = TRUE), 3)) } else NA_character_,
+              suggested_values = if (type == "categorical") top(unlist(str_split(value, " "))) else NA_character_,
+              source_terms = if (type == "categorical") top(unlist(str_split(str_remove(value_description, "^\\[[a-z ]+\\]\\s*"), ";\\s*"))) else NA_character_,
+              .groups = "drop") %>%
+    mutate(organ = str_extract(trait, "^[a-z]+")) %>% select(trait, type, organ, n_taxa, n_values, n_copied, range, suggested_values, source_terms) %>%
+    arrange(desc(n_taxa), trait)
+  write_csv(reg, path, na = "")
+  invisible(reg)
+}
+
 if (Sys.getenv("FOA_FAMILIES") == "") {
   # one data.csv per dataset; each keeps the id / context columns, the columns its metadata.yml maps, and any other
   # column with a value for its families (all-empty extraction columns are dropped)
   keep_always <- c("taxon_name", "family", "taxon_rank", "foa_url", ctx, "common_name", "biostatus", "profile_author")
   for (id in sort(unique(dataset_of(out_df$family)))) {
+    if (id %in% long_ids) {
+      df <- long_of(main$taxon_name[dataset_of(main$family) == id])
+      dir.create(file.path("data", id, "raw"), recursive = TRUE, showWarnings = FALSE)
+      write_csv(df, file.path("data", id, "data.csv"), na = "")
+      write_candidates_long(df, file.path("data", id, "raw", "candidate_traits.csv"), id)
+      next
+    }
     df <- out_df %>% filter(dataset_of(family) == id)
     has_value <- map_lgl(df, ~ any(!is.na(.x) & .x != ""))
     df <- df[, names(df) %in% c(keep_always, meta_var_in(id)) | has_value]
@@ -2714,4 +3040,5 @@ if (Sys.getenv("FOA_FAMILIES") == "") {
   }
 } else {
   write_csv(out_df, Sys.getenv("FOA_OUT", file.path(tempdir(), "foa_chunk.csv")), na = "")
+  if (Sys.getenv("FOA_OUT_LONG") != "") write_csv(long_of(main$taxon_name), Sys.getenv("FOA_OUT_LONG"), na = "")
 }
