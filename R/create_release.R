@@ -4,7 +4,7 @@
 #' austraits.rds, a readme file, dictionary.rmd file, plain text files with csv, and
 #' a NEWS.md file.
 #'
-#' The steps around this function are in `inst/release_all_AusTraits_repos.qmd`.
+#' The steps around this function are in `RELEASING.md`.
 #'
 #' @param austraits AusTraits database object
 #' @param v_prev previous release version (e.g. "7.0.0"). If given, `scripts/news.Rmd` is
@@ -41,7 +41,8 @@ create_release <- function(austraits, v_prev= NULL) {
   if (!is.null(v_prev)) {
     rmarkdown::render(
       "scripts/news.Rmd",
-      output_format = "all",
+      output_format = rmarkdown::github_document(html_preview = FALSE),
+      output_file = "NEWS.md",
       output_dir = export_dir,
       params = list(v_prev = v_prev, v_curr = version_number),
     )
@@ -70,7 +71,7 @@ create_release <- function(austraits, v_prev= NULL) {
   filename <- sprintf("%s.zip", basename(path))
   unlink(filename)
   utils::zip(filename, basename(path))
-  unlink(path, recursive = TRUE)
+  unlink(basename(path), recursive = TRUE)
 
   message("Export created at ", export_dir)
 }

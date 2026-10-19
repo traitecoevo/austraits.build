@@ -25,7 +25,7 @@ package; it `Depends` on `traits.build (>= 2.1.0)`.
 - **Maintenance scripts:** `scripts/` — notably `build_traits_yml_from_APD.R` (regenerates
   `config/traits.yml` from the APD repo), plus `news.Rmd`, `dictionary.Rmd` (rendered by
   `create_release()`), reporting scripts.
-- **Release procedure:** `inst/release_all_AusTraits_repos.qmd` — the order of releases across APD,
+- **Release procedure:** `RELEASING.md` — the order of releases across APD,
   austraits, traits.build, the taxon list and austraits.build, and the austraits.build steps.
 - **Output:** `export/` — the compiled `austraits` object is written under `export/data` after a
   build.
