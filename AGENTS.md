@@ -21,10 +21,12 @@ package; it `Depends` on `traits.build (>= 2.1.0)`.
   `traits.build::build_setup_pipeline(method = "furrr", database_name = "austraits", workers = 1)`
   rather than editing by hand.
 - **Custom build helpers:** `R/` — `build_align_taxon_names.R`, `build_update_taxon_list.R` (taxonomy
-  alignment via **APCalign**), and `custom_R_code.R`.
+  alignment via **APCalign**), `create_release.R` (writes the release files), and `custom_R_code.R`.
 - **Maintenance scripts:** `scripts/` — notably `build_traits_yml_from_APD.R` (regenerates
-  `config/traits.yml` from the APD repo), plus `release.Rmd`, `news.Rmd`, `dictionary.Rmd`,
-  reporting scripts.
+  `config/traits.yml` from the APD repo), plus `news.Rmd`, `dictionary.Rmd` (rendered by
+  `create_release()`), reporting scripts.
+- **Release procedure:** `inst/release_all_AusTraits_repos.qmd` — the order of releases across APD,
+  austraits, traits.build, the taxon list and austraits.build, and the austraits.build steps.
 - **Output:** `export/` — the compiled `austraits` object is written under `export/data` after a
   build.
 - **Claude Code project skills:** `.claude/skills/` — curation workflow guidance (building a new
