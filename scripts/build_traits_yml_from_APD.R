@@ -1,7 +1,5 @@
 
 # XXX need to change triple quotes (''') to single quotes ('). During read/write, '{count}/{count}' becomes '''{count}/{count}'''
-# XXX flowering_time, fruiting_time, foliage_time and recruitment_time are categorical traits but without any set categorical trait values. 
-# XXX       Therefore an empty value for allowed_values_levels is created that breaks AusTraits
 
 library(purrr)
 library(dplyr)
@@ -43,7 +41,14 @@ APD <-
     description = ifelse(is.na(description), description_encoded, paste0(description_encoded, ";", description)),
     units = ifelse(str_starts(units, fixed("{")), sprintf("'%s'", units),units),
     Entity_URI = paste0("https://w3id.org/APD/traits/", identifier),
-    trait_type = ifelse(grepl("continuous variable", trait_type), "numeric", "categorical"),
+    # APD names a trait's value type with a label and identifier, e.g.
+    # `continuous variable [STATO_0000251]`; map each to its traits.build type
+    trait_type = dplyr::case_when(
+      grepl("[STATO_0000251]", trait_type, fixed = TRUE) ~ "numeric",
+      grepl("[STATO_0000252]", trait_type, fixed = TRUE) ~ "categorical",
+      grepl("[glossary_40126]", trait_type, fixed = TRUE) ~ "month_presence",
+      grepl("[glossary_40128]", trait_type, fixed = TRUE) ~ "text"
+    ),
     allowed_values_levels = ifelse(trait_type == "categorical", "add_in", NA),
     across(c(structure_measured, characteristic_measured, keywords, trait_groupings),
            ~ stringr::str_replace_all(.x, " \\[[:graph:]+\\]", ""))
@@ -65,6 +70,10 @@ APD <-
          entity_URI = Entity
   ) %>%
   arrange(entity_URI)
+
+if (anyNA(APD$type)) {
+  stop("APD value type not recognised for: ", paste(APD$trait[is.na(APD$type)], collapse = ", "))
+}
 
 value_levels <- read_csv(file.path(path_APD,"APD_categorical_values.csv"), show_col_types = FALSE) %>%
   mutate(
@@ -118,9 +127,12 @@ for(trait in names(traits$elements)) {
       arrange(label) %>%
       pivot_wider(names_from = label, values_from = description)
     
-    if(nrow(allowed_values_levels) > 0) {      
-      traits$elements[[trait]][["allowed_values_levels"]] <- 
+    if(nrow(allowed_values_levels) > 0) {
+      traits$elements[[trait]][["allowed_values_levels"]] <-
         allowed_values_levels %>% as.list()
+    } else {
+      # No values in APD: drop the `add_in` placeholder rather than publish it
+      traits$elements[[trait]][["allowed_values_levels"]] <- NULL
     }
   }
 }
@@ -136,9 +148,9 @@ for(trait in names(traits$elements)) {
 #    %>% str_split(";") %>% map(~ str_trim(.x)) %>%  unlist()
 #}
 
-# Delete allowed_values_levels for items where no values are available or suitable
-for(v in c("recruitment_time", "fruiting_time", "flowering_time", "foliage_time")) {
-  traits$elements[[v]]$allowed_values_levels <- NULL
-}
+# The four twelve-month phenology traits, typed categorical with no values
+# before APD typed them month presence, used to have their `add_in` placeholder
+# deleted here by name; the loop above now drops any placeholder left without
+# values (traitecoevo/traits.build#87).
 
 yaml::write_yaml(list(traits = traits), "config/traits.yml")
