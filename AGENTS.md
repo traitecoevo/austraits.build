@@ -14,19 +14,12 @@ package; it `Depends` on `traits.build (>= 2.1.0)`.
   - `traits.yml` — trait definitions. **Generated** from the AusTraits Plant Dictionary (APD); see
     below — don't hand-edit it as the source of truth.
   - `metadata.yml` — resource-level metadata, `unit_conversions.csv`, `taxon_list.csv`.
-- **Build script:** `build.R` — the top-level pipeline. It loads the schema/config, then for each
-  source runs `dataset_configure()` → `dataset_process()` → `dataset_update_taxonomy()`, and
-  assembles the combined `austraits` object. **`build.R` is auto-generated** (see header) from
-  `remake.yml.whisker` — regenerate it with
-  `traits.build::build_setup_pipeline(method = "furrr", database_name = "austraits", workers = 1)`
-  rather than editing by hand.
-- **Custom build helpers:** `R/` — `build_align_taxon_names.R`, `build_update_taxon_list.R` (taxonomy
-  alignment via **APCalign**), and `custom_R_code.R`.
+- **Build script:** `build.R` — the top-level pipeline. It loads the schema/config, then for each source runs `dataset_configure()` → `dataset_process()` → `dataset_update_taxonomy()`, assembles the combined `austraits` object, and runs the post-build step in `R/post_build.R` before saving it. **`build.R` is auto-generated** (see header) from traits.build's `build_base.whisker` — regenerate it with `traits.build::build_setup_pipeline(method = "base", database_name = "austraits")` rather than editing by hand (the `base` method is what `build.R` is; `furrr` writes a different file).
+- **Custom build helpers:** `R/` — `build_align_taxon_names.R`, `build_update_taxon_list.R` (taxonomy alignment via **APCalign**), `custom_R_code.R`, and `post_build.R`, whose `post_build()` runs on the compiled database after every build (via `traits.build::build_post_process()`) and writes AusTraits' flattened rds and parquet exports.
 - **Maintenance scripts:** `scripts/` — notably `build_traits_yml_from_APD.R` (regenerates
   `config/traits.yml` from the APD repo), plus `release.Rmd`, `news.Rmd`, `dictionary.Rmd`,
   reporting scripts.
-- **Output:** `export/` — the compiled `austraits` object is written under `export/data` after a
-  build.
+- **Output:** `export/` — after a build, `export/data/curr/` holds the compiled `austraits.rds` and the flattened `austraits-flattened.rds` and `.parquet` written by `R/post_build.R` (the parquet file is skipped, with a message, if `arrow` cannot load). `create_release()` in `scripts/release.Rmd` copies these into a release.
 - **Claude Code project skills:** `.claude/skills/` — curation workflow guidance (building a new
   dataset's `metadata.yml`, fixing `locations:`, resolving `substitutions.csv`, extracting trait/
   location tables from a source PDF or straight into an existing dataset's `raw/` folder, pivoting
