@@ -14,6 +14,7 @@ package; it `Depends` on `traits.build (>= 2.1.0)`.
   - `traits.yml` — trait definitions. **Generated** from the AusTraits Plant Dictionary (APD); see
     below — don't hand-edit it as the source of truth.
   - `metadata.yml` — resource-level metadata, `unit_conversions.csv`, `taxon_list.csv`.
+  - `report_dataset.qmd` — the AusTraits dataset report template. `traits.build::dataset_report()` uses it automatically when run from the repo root, in place of the generic template traits.build ships (traitecoevo/traits.build#140), so changes to the AusTraits report are made here, not in traits.build.
 - **Build script:** `build.R` — the top-level pipeline. It loads the schema/config, then for each
   source runs `dataset_configure()` → `dataset_process()` → `dataset_update_taxonomy()`, and
   assembles the combined `austraits` object. **`build.R` is auto-generated** (see header) from
