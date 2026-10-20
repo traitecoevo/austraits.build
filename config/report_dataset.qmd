@@ -245,18 +245,43 @@ metadata$source$primary %>%
 ```
 
 ```{r, results='asis'}
-n <- length(metadata$source)
-if (n > 1) {
-  writeLines("Secondary citations:")
+# `strict = FALSE`: a file still in the old shape is reported by `dataset_test()`;
+# the report shows what it holds either way
+sources_flat <- util_flatten_sources(metadata$source, strict = FALSE)
 
-  for (i in 2:n) {
-    metadata$source[[i]] %>%
-    austraits::convert_list_to_df1() %>%
-    my_kable_styling() %>%
-    cat()
+# Records linking to each reference through `source_id`
+source_id_counts <- data_study$traits %>%
+  dplyr::filter(!is.na(source_id)) %>%
+  dplyr::count(source_id)
+source_id_counts <- stats::setNames(source_id_counts$n, source_id_counts$source_id)
+
+show_references <- function(type, heading, with_counts = FALSE) {
+  rows <- sources_flat[sources_flat$type == type, ]
+  if (nrow(rows) == 0) return(invisible())
+
+  writeLines(c(heading, ""))
+  for (i in seq_len(nrow(rows))) {
+    if (with_counts) {
+      n <- source_id_counts[rows$key[i]]
+      writeLines(sprintf("`%s`: %s records name this reference in `source_id`\n", rows$key[i], ifelse(is.na(n), 0, n)))
+    }
+    rows$entry[[i]] %>%
+      austraits::convert_list_to_df1() %>%
+      my_kable_styling() %>%
+      cat()
     writeLines("\n\n")
   }
 }
+
+show_references(
+  "original_source",
+  "Original sources (for a compilation, the studies records were taken from; each record names its own in `source_id`):",
+  with_counts = TRUE
+)
+show_references(
+  "secondary",
+  "Secondary citations (later publications that re-used this dataset):"
+)
 ```
 
 ```{r, results='asis'}
@@ -288,7 +313,9 @@ missing <- metadata$dataset %>%
   filter(value == "unknown") %>%
   pull(key)
 
-for (v in missing[show_questions]) {
+# Not `missing[show_questions]`: indexing an empty vector by `TRUE` gives `NA`,
+# which asked about "the variable NA" whenever no field was unknown
+for (v in if (show_questions) missing else character()) {
   sprintf("(section `dataset`) Can you provide missing details for the variable `%s`?\n", v) %>%
     new_question()
   sprintf("The variable `%s` captures *'%s'*\n", v, schema$metadata$elements$dataset$values[[v]]) %>%
@@ -770,7 +797,12 @@ for (trait in traits_numeric) {
     filter(trait_name == trait, !value_type %in% c("bin", "range")) %>%
     mutate(value = as.numeric(value))
 
-  transforms <- metadata$traits %>% austraits::convert_list_to_df2() %>% filter(trait_name == trait)
+  # Drop `omit_values`, which may hold several values and would spread the trait
+  # over several rows, as `util_traits_to_df()` does inside the package
+  transforms <- metadata$traits %>%
+    lapply(function(x) { x[["omit_values"]] <- NULL; x }) %>%
+    austraits::convert_list_to_df2() %>%
+    filter(trait_name == trait)
 
   elements <- definitions[[trait]]
 
@@ -905,7 +937,12 @@ if (length(traits_categorical) > 0) {
 
 for (trait in traits_categorical) {
 
-  transforms <- metadata$traits %>% austraits::convert_list_to_df2() %>% filter(trait_name == trait)
+  # Drop `omit_values`, which may hold several values and would spread the trait
+  # over several rows, as `util_traits_to_df()` does inside the package
+  transforms <- metadata$traits %>%
+    lapply(function(x) { x[["omit_values"]] <- NULL; x }) %>%
+    austraits::convert_list_to_df2() %>%
+    filter(trait_name == trait)
   if (is.na(metadata$substitutions[1])) {
     substitutions_for_trait <- tibble
   } else {
