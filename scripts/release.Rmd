@@ -16,19 +16,46 @@ Below we're going to use this code in R to create a set of files for release.
 #' austraits.rds, a readme file, dictionary.rmd file, plain text files with csv, and
 #' a NEWS.md file.
 #'
+#' The database and its flattened copies are not recomputed: `build.R` saved the
+#' database to `export/data/curr/austraits.rds`, and the post-build step in
+#' `R/post_build.R` wrote the flattened rds and parquet files beside it, so
+#' they are copied from there. `austraits` must be the database that build
+#' produced.
+#'
 #' @param austraits AusTraits database object
 #' @param v_prev specify whether to update the NEWS.md file, default = NULL
 #' @export
 create_release <- function(austraits, v_prev= NULL) {
   version_number <- austraits$build_info$version
 
+  built <- file.path(
+    "export/data/curr",
+    c("austraits.rds", "austraits-flattened.rds", "austraits-flattened.parquet")
+  )
+  missing <- built[!file.exists(built)]
+  if (length(missing) > 0) {
+    stop(
+      "Not written by the build: ", paste(missing, collapse = ", "), "\n",
+      "  Run `source(\"build.R\")` first, with `arrow` installed for the parquet file."
+    )
+  }
+  if (!identical(readRDS(built[1]), austraits)) {
+    stop(
+      "`", built[1], "` is not the database passed in, so its exports may not be either.\n",
+      "  Run `source(\"build.R\")` and pass the `austraits` it builds."
+    )
+  }
+
   export_dir <- sprintf("export/data/austraits-%s", version_number)
   unlink(export_dir, recursive = TRUE)
   dir.create(export_dir, FALSE, TRUE)
 
-  # RDS file
-  filename <- sprintf(I("%s/austraits-%s.rds"), export_dir, version_number)
-  saveRDS(austraits, filename)
+  # RDS file, and the flattened database as rds and parquet
+  released <- file.path(
+    export_dir,
+    sprintf(c("austraits-%s.rds", "austraits-%s-flattened.rds", "austraits-%s-flattened.parquet"), version_number)
+  )
+  stopifnot(file.copy(built, released))
 
   # dictionary_target:
   rmarkdown::render(
@@ -54,21 +81,6 @@ create_release <- function(austraits, v_prev= NULL) {
   file.copy(sprintf("%s/NEWS.md", export_dir), "NEWS.md")
   }
 
-  # flattened database
-  austraits_flattened <- 
-    austraits |>
-    austraits::flatten_database() 
-
-  filename <- sprintf("%s/austraits-%s-flattened.rds", export_dir, version_number)
-
-  austraits_flattened |>
-    saveRDS(filename)
-
-  filename <- sprintf("%s/austraits-%s-flattened.parquet", export_dir, version_number)
-
-  austraits_flattened |>
-    arrow::write_parquet(filename)
-  
   # Go to directory and zip
   # remove existing file
   wd <- setwd(dirname(path))
