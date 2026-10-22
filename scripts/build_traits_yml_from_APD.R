@@ -47,7 +47,7 @@ APD <-
       grepl("[STATO_0000251]", trait_type, fixed = TRUE) ~ "numeric",
       grepl("[STATO_0000252]", trait_type, fixed = TRUE) ~ "categorical",
       grepl("[glossary_40126]", trait_type, fixed = TRUE) ~ "monthly_presence",
-      grepl("[glossary_40128]", trait_type, fixed = TRUE) ~ "text"
+      grepl("[NCIT_C25704]", trait_type, fixed = TRUE) ~ "text"
     ),
     allowed_values_levels = ifelse(trait_type == "categorical", "add_in", NA),
     across(c(structure_measured, characteristic_measured, keywords, trait_groupings),
