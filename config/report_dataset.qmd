@@ -730,10 +730,12 @@ if (nrow(subset(data_study$excluded_data, error != "Missing value")) > 0) {
 ```
 
 ```{r, message=FALSE, warning=FALSE}
-tmp <- data_study$traits %>% filter(!trait_name %in% c("flowering_time", "fruiting_time", "recruitment_time"))
-traits <- tmp$trait_name %>% unique() %>% sort()
+traits <- data_study$traits$trait_name %>% unique() %>% sort()
+# `monthly_presence` traits have no list of allowed values to tabulate or plot
+# against, so are in neither section; they have their own, after these
 traits_numeric <- traits[util_extract_list_element(traits, definitions, "type") == "numeric"]
-traits_categorical <- traits[util_extract_list_element(traits, definitions, "type") != "numeric"]
+traits_categorical <- traits[util_extract_list_element(traits, definitions, "type") == "categorical"]
+traits_monthly_presence <- traits[util_extract_list_element(traits, definitions, "type") == "monthly_presence"]
 ```
 
 ## Numerical traits
@@ -1039,6 +1041,49 @@ for (trait in traits_categorical) {
     }
   }
 
+}
+```
+
+
+```{r monthly_presence, results='asis', eval=TRUE, warning=FALSE}
+# `monthly_presence` traits (flowering_time, fruiting_time, foliage_time,
+# recruitment_time) have no allowed values or units to plot against, so each
+# gets only its definition and the methods recorded for it. The section appears
+# only when the dataset has such traits.
+if (length(traits_monthly_presence) > 0) {
+  writeLines(c("", "## Monthly presence traits", "",
+    "We have recorded the following traits whose values record, for each month starting with January, whether the trait occurs (`y`) or not (`n`).",
+    ""))
+}
+
+for (trait in traits_monthly_presence) {
+
+  # Drop `omit_values`, as for categorical traits above
+  transforms <- metadata$traits %>%
+    lapply(function(x) { x[["omit_values"]] <- NULL; x }) %>%
+    austraits::convert_list_to_df2() %>%
+    filter(trait_name == trait)
+
+  elements <- definitions[[trait]]
+
+  c("", "",
+    sprintf("### %s", trait),
+    "",
+    sprintf("We aligned the variable called `%s` in the data you supplied with the trait `%s` in the AusTraits database.\n\nThe contributed data have the following properties:", transforms$var_in, trait),
+    "",
+    sprintf("- **standardised name**: %s", trait),
+    sprintf("- **standardised description**: %s", elements$description),
+    sprintf("- **label**: %s", elements$label),
+    sprintf("- **records**: %s in this study (of %s in AusTraits)",
+            sum(data_study$traits$trait_name == trait), sum(austraits$traits$trait_name == trait)),
+    "",
+    "Data for this trait in this study were collected using the following methods:", "",
+    sprintf("- **value_type**: %s", transforms$value_type),
+    sprintf("- **replicates**: %s", transforms$replicates),
+    sprintf("- **methods**: %s", transforms$methods),
+    ""
+  ) %>%
+  writeLines()
 }
 ```
 
