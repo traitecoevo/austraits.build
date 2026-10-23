@@ -245,43 +245,18 @@ metadata$source$primary %>%
 ```
 
 ```{r, results='asis'}
-# `strict = FALSE`: a file still in the old shape is reported by `dataset_test()`;
-# the report shows what it holds either way
-sources_flat <- util_flatten_sources(metadata$source, strict = FALSE)
+n <- length(metadata$source)
+if (n > 1) {
+  writeLines("Secondary citations:")
 
-# Records linking to each reference through `source_id`
-source_id_counts <- data_study$traits %>%
-  dplyr::filter(!is.na(source_id)) %>%
-  dplyr::count(source_id)
-source_id_counts <- stats::setNames(source_id_counts$n, source_id_counts$source_id)
-
-show_references <- function(type, heading, with_counts = FALSE) {
-  rows <- sources_flat[sources_flat$type == type, ]
-  if (nrow(rows) == 0) return(invisible())
-
-  writeLines(c(heading, ""))
-  for (i in seq_len(nrow(rows))) {
-    if (with_counts) {
-      n <- source_id_counts[rows$key[i]]
-      writeLines(sprintf("`%s`: %s records name this reference in `source_id`\n", rows$key[i], ifelse(is.na(n), 0, n)))
-    }
-    rows$entry[[i]] %>%
-      austraits::convert_list_to_df1() %>%
-      my_kable_styling() %>%
-      cat()
+  for (i in 2:n) {
+    metadata$source[[i]] %>%
+    austraits::convert_list_to_df1() %>%
+    my_kable_styling() %>%
+    cat()
     writeLines("\n\n")
   }
 }
-
-show_references(
-  "original_source",
-  "Original sources (for a compilation, the studies records were taken from; each record names its own in `source_id`):",
-  with_counts = TRUE
-)
-show_references(
-  "secondary",
-  "Secondary citations (later publications that re-used this dataset):"
-)
 ```
 
 ```{r, results='asis'}
