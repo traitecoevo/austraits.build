@@ -105,13 +105,33 @@ isn't duplication to clean up -- `description` and the source property serve
 different readers (a quick compare-across-sites glance vs. the full
 classification detail).
 
-**Always include a `state` field**, the Australian state/territory
-abbreviation (`WA`, `NSW`, `QLD`, `VIC`, `SA`, `TAS`, `NT`, `ACT`) the
-location falls in -- every location gets one, even when the source data
-didn't supply it explicitly (infer it from the coordinates or place name).
-Pairs with `locality` (a place name, e.g. `near Denmark, WA` or `Corrigin
-Nature Reserve`) rather than replacing it -- both fields are populated
-alongside `description`, not instead of it.
+**Always include a `state` field**, placed as the location's last property,
+giving the state/territory the location falls in -- every location gets one,
+even when the source data didn't supply it explicitly (infer it from the
+coordinates or place name). Use the APC distribution codes: `WA`, `NT`, `SA`,
+`Qld`, `NSW`, `ACT`, `Vic`, `Tas` (title case -- never `QLD`/`VIC`/`TAS`), and
+for islands and external territories `LHI` (Lord Howe), `NI` (Norfolk,
+including Phillip Island), `ChI` (Christmas), `CoI` (Cocos (Keeling)), `HI`
+(Heard), `MDI` (McDonald), `MI` (Macquarie), `CSI` (Coral Sea Islands), `AR`
+(Ashmore Reef), `CaI` (Cartier). Jervis Bay Territory is `NSW` (APC has no
+code for it). A location spanning several states lists them separated by
+`; ` (`Tas; Vic`). Sites outside Australia get no `state`. When inferring
+from coordinates, use a point-in-polygon test against the ABS state
+boundaries, and check sites within a few hundred metres of a border against
+the locality text. Pairs with `locality` (a place name, e.g. `near Denmark,
+WA` or `Corrigin Nature Reserve`) rather than replacing it -- both fields are
+populated alongside `description`, not instead of it.
+
+A state flora or herbarium dataset (NTH, SAH, RBGV, NHNSW, WAH, Jordan_2001)
+with no collection sites still gets a single state-wide location carrying
+the `state` tag: named after the state (`Western Australia`), with
+`latitude (deg): .na` and `longitude (deg): .na`, a short `description`
+naming the flora, `location_name: location_name` in `dataset:`, and
+`mutate(location_name = "Western Australia")` at the end of
+`custom_R_code`. Its traits stay `entity_type: species`, so the build won't
+link them to the location (austraits.build#813); the location
+records the state the flora covers. Don't do this for multi-state floras
+such as ATRP.
 
 ## Step 4 -- convert projected coordinates to decimal degrees
 
