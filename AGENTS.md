@@ -14,6 +14,7 @@ package; it `Depends` on `traits.build (>= 2.1.0)`.
   - `traits.yml` — trait definitions. **Generated** from the AusTraits Plant Dictionary (APD); see
     below — don't hand-edit it as the source of truth.
   - `metadata.yml` — resource-level metadata, `unit_conversions.csv`, `taxon_list.csv`.
+  - `report_dataset.qmd` — the AusTraits dataset report template. `traits.build::dataset_report()` uses it automatically when run from the repo root, in place of the generic template traits.build ships (traitecoevo/traits.build#140), so changes to the AusTraits report are made here, not in traits.build. It is a copy, not an include: a bug fix to traits.build's packaged `inst/support/report_dataset.qmd`, or a traits.build change to the shape of the `metadata.yml` it reads (as traits.build #304 did to `traits:`, and #298 will do to `source:`; see #885), has to be carried into this file too.
 - **Build script:** `build.R` — the top-level pipeline. It loads the schema/config, then for each
   source runs `dataset_configure()` → `dataset_process()` → `dataset_update_taxonomy()`, and
   assembles the combined `austraits` object. **`build.R` is auto-generated** (see header) from
@@ -21,10 +22,12 @@ package; it `Depends` on `traits.build (>= 2.1.0)`.
   `traits.build::build_setup_pipeline(method = "furrr", database_name = "austraits", workers = 1)`
   rather than editing by hand.
 - **Custom build helpers:** `R/` — `build_align_taxon_names.R`, `build_update_taxon_list.R` (taxonomy
-  alignment via **APCalign**), and `custom_R_code.R`.
+  alignment via **APCalign**), `create_release.R` (writes the release files), and `custom_R_code.R`.
 - **Maintenance scripts:** `scripts/` — notably `build_traits_yml_from_APD.R` (regenerates
-  `config/traits.yml` from the APD repo), plus `release.Rmd`, `news.Rmd`, `dictionary.Rmd`,
-  reporting scripts.
+  `config/traits.yml` from the APD repo), plus `news.Rmd`, `dictionary.Rmd` (rendered by
+  `create_release()`), reporting scripts.
+- **Release procedure:** `RELEASING.md` — the order of releases across APD,
+  austraits, traits.build, the taxon list and austraits.build, and the austraits.build steps.
 - **Output:** `export/` — the compiled `austraits` object is written under `export/data` after a
   build.
 - **Claude Code project skills:** `.claude/skills/` — curation workflow guidance (building a new
