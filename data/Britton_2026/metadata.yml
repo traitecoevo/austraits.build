@@ -22,6 +22,32 @@ contributors:
     affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
       Australia
     additional_role: contact
+  - last_name: Halliwell
+    given_name: Ben
+    ORCID: 0000-0003-2033-4799
+    affiliation: University of Tasmania, Australia
+  - last_name: Blackman
+    given_name: Chris
+    ORCID: 0000-0002-7057-956X
+    affiliation: University of Tasmania, Australia
+  - last_name: Hartill
+    given_name: Gabrielle
+    ORCID: 0000-0002-2903-9844
+    affiliation: University of Tasmania, Australia
+  - last_name: Sumner
+    given_name: Emma
+    ORCID: 0000-0002-0918-9167
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  - last_name: Jacob
+    given_name: Vinod
+    ORCID: 0000-0002-6627-5993
+    affiliation: Hawkesbury Institute for the Environment, Western Sydney University,
+      Australia
+  - last_name: Nicolle
+    given_name: Dean
+    ORCID: 0009-0005-7463-836X
+    affiliation: Currency Creek Arboretum, Australia
   - last_name: Wright
     given_name: Ian
     ORCID: 0000-0001-8338-9143
@@ -30,14 +56,23 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: ' data %>% mutate( site_name = "Currency Creek Arboretum" ) '
-  collection_date: 2019/2022
-  taxon_name: Taxon_ALA
-  location_name: site_name
-  description: A study to mechanistic hypotheses for trait climate relationships for
-    mature eucalypt trees grown in common garden and in situ field conditions, quantifying
-    joint and individual effects of mean annual precipitation (MAP) and temperature
-    (MAT) on eight functionally important traits
+  custom_R_code: ' data |> dplyr::mutate( location_name = "Currency Creek Arboretum",
+    collection_date = dplyr::case_when( data_level == "tree" & !is.na(wd_gcm3) ~ "2022-06/2022-08",
+    data_level == "tree" & !is.na(LDMC_mgg1) ~ "2022-09/2022-11", TRUE ~ "2022-06/2022-11"
+    ), accession_number = dplyr::if_else( grepl("^[0-9]+$", CCA_unique_ID), paste0("Dean
+    Nicolle tree number ", CCA_unique_ID), NA_character_ ), tree_number = dplyr::if_else(
+    !is.na(CCA_row), paste0("Currency Creek Arboretum row ", CCA_row, " tree ", Tree_ID),
+    NA_character_ ), individual_id = dplyr::case_when( data_level == "taxon" ~ NA_character_,
+    !is.na(tree_number) ~ tree_number, TRUE ~ paste(species, CCA_ID, Tree_ID, dplyr::row_number(),
+    sep = "_") ) ) '
+  collection_date: collection_date
+  taxon_name: species
+  location_name: location_name
+  individual_id: individual_id
+  description: A study to test mechanistic hypotheses for trait climate relationships
+    for mature eucalypt trees grown in common garden and in situ field conditions,
+    quantifying joint and individual effects of mean annual precipitation (MAP) and
+    temperature (MAT) on eight functionally important traits
   basis_of_record: captive_cultivated
   life_stage: adult
   sampling_strategy: Common garden study site ^p Plants were sampled at Currency Creek
@@ -75,18 +110,51 @@ dataset:
     of eight taxa), which used the same sampling methods as the 2022 campaigns. Including
     sampling date as a covariate did not change our findings (Table S2). Sample sizes
     for traits are presented in Table 2.
-  original_file: NPH-MS-2025-52475_DATA_CCA_only.csv, sourced from Dryad
-  notes: none
-identifiers: .na
+  original_file: CurrencyCreekArboretum_euc_traits_tree-level_AusTraits_v2.csv, supplied
+    by the contributor; NPH-MS-2025-52475_DATA_CCA_only.csv, sourced from Dryad
+  notes: data.csv is built by raw/extra_R_code_Britton_2026.R from two files. The
+    wood density values the Dryad file compiled from PerezMartinez_2025 are mapped
+    in PerezMartinez_2025. 365 of the trees were sampled for PerezMartinez_2025 in
+    December 2020, about 18 months before this study, and share identifiers with it;
+    the values in the two datasets are separate measurements of the same trees. Arboretum
+    row number, seed collector and seed provenance locality were looked up in the
+    Currency Creek Arboretum planting records (supplied with PerezMartinez_2025).
+    There are some trees that cannot be mapped to a seedlot or tree, because of mismatches
+    between the recorded data and Currency Creek Arboretum accession records. These
+    include CCA_ID 1315 trees 1-3, recorded as Eucalyptus sp., where the accession
+    records list seedlot 1315 as Eucalyptus chlorophylla in row 93, trees 13-15; CCA_ID
+    825 tree 1 (Eucalyptus albopurpurea), where the accession records list seedlot
+    825 in row 75, trees 2-5; CCA_ID 2524 tree 23 (Eucalyptus grandis), where seedlot
+    2524 is planted in rows 165 and 349, each with a tree 23; two Eucalyptus yarraensis
+    and three Eucalyptus lockyeri exuta trees, recorded without a CCA_ID or Tree_ID;
+    and Corymbia gummifera trees 35-37 and Eucalyptus flindersii trees 6, 7 and 9,
+    recorded without a CCA_ID, which match row 58 (seedlot Cgummi_1) and row 29 (seedlot
+    Eflinder_1) by taxon and tree number, where the accession records give placeholder
+    seedlot IDs. Seedlots 230 and 4635 are each planted in two rows; their trees are
+    mapped to the rows holding the seedlot's other sampled trees (row 171) or the
+    tree alive in 2016 (row 209). 365 of the trees were previously sampled by PerezMartinez_2025
+    in 2020, about 18 months earlier, and share identifiers with it; the values in
+    the two datasets are separate measurements of the same trees.
+identifiers:
+- var_in: accession_number
+  identifier_type: catalogNumber
+  institution_code: Currency Creek Arboretum
+- var_in: tree_number
+  identifier_type: organismID
+  institution_code: Currency Creek Arboretum
 locations:
   Currency Creek Arboretum:
     precipitation, MAP (mm): 467
     temperature, MAT (C): 15.3
     latitude (deg): -35.4288
     longitude (deg): 138.7611
-    description: common garden
+    description: Eucalyptus arboretum
     locality: Fleurieu Peninsula, South Australia
+    state: SA
 contexts:
+- context_property: seed provenance
+  category: entity_context
+  var_in: seed_provenance
 - context_property: seed provenance MAP
   category: entity_context
   var_in: MAP
@@ -94,13 +162,13 @@ contexts:
   category: entity_context
   var_in: MAT
 traits:
-- var_in: lma
+- var_in: LMA_gm2
   unit_in: g/m2
   trait_name: leaf_mass_per_area
-  entity_type: population
-  value_type: mean
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: 2-3
+  replicates: 1
   methods: Five young, healthy, fully expanded leaves were selected from each branch
     for LMA, LDMC and leaf size measurements. The leaves, including petioles, were
     scanned and their total area determined for LMA and leaf size via IMAGEJ (Abramoff
@@ -108,13 +176,13 @@ traits:
     cut-end submerged in water-filled zip-lock bags, after which leaf fresh mass was
     determined, followed by oven-drying at 70°C for 48 h to obtain dry mass (mg).
     LMA was calculated by dividing dry mass by total area (g m-2).
-- var_in: ldmc
+- var_in: LDMC_mgg1
   unit_in: mg/g
   trait_name: leaf_dry_matter_content
-  entity_type: population
-  value_type: mean
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: 2-3
+  replicates: 1
   methods: Five young, healthy, fully expanded leaves were selected from each branch
     for LMA, LDMC and leaf size measurements. The leaves, including petioles, were
     scanned and their total area determined for LMA and leaf size via IMAGEJ (Abramoff
@@ -122,13 +190,13 @@ traits:
     cut-end submerged in water-filled zip-lock bags, after which leaf fresh mass was
     determined, followed by oven-drying at 70°C for 48 h to obtain dry mass (mg).
     LDMC by dividing fresh mass by dry mass (mg g-1).
-- var_in: lamina_size
+- var_in: leaf_area_mm2
   unit_in: mm2
   trait_name: leaf_area
-  entity_type: population
+  entity_type: individual
   value_type: mean
   basis_of_value: measurement
-  replicates: 2-3
+  replicates: 5
   methods: Five young, healthy, fully expanded leaves were selected from each branch
     for LMA, LDMC and leaf size measurements. The leaves, including petioles, were
     scanned and their total area determined for LMA and leaf size via IMAGEJ (Abramoff
@@ -136,13 +204,13 @@ traits:
     cut-end submerged in water-filled zip-lock bags, after which leaf fresh mass was
     determined, followed by oven-drying at 70°C for 48 h to obtain dry mass (mg).
     Leaf size was the average area of the five leaves (mm2).
-- var_in: thickness
+- var_in: leaf_thickness_um
   unit_in: um
   trait_name: leaf_thickness
-  entity_type: population
+  entity_type: individual
   value_type: mean
   basis_of_value: measurement
-  replicates: 2-3
+  replicates: 2
   methods: Five young, healthy, fully expanded leaves were selected from each branch
     for LMA, LDMC and leaf size measurements. The leaves, including petioles, were
     scanned and their total area determined for LMA and leaf size via IMAGEJ (Abramoff
@@ -151,13 +219,13 @@ traits:
     determined, followed by oven-drying at 70°C for 48 h to obtain dry mass (mg).
     Leaf thickness was measured as the mean thickness (µm) of two fresh leaves using
     a micrometer (accuracy of 0.001 mm).
-- var_in: sala
+- var_in: Huber_val_cm2m2
   unit_in: cm2{sapwood}/m2{leaf}
   trait_name: huber_value
-  entity_type: population
-  value_type: mean
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: 2-3
+  replicates: 1
   methods: SA to LA was measured on a 20 cm branch per individual. Leaves were removed
     and scanned to determine total leaf area (LA), while sapwood area (SA) was measured
     from a hand-sectioned sample taken from the base of the branch and stored in 70%
@@ -168,13 +236,13 @@ traits:
     also measured and subtracted from total sapwood area. Eight taxa were measured
     using both approaches. SA to LA was calculated as sapwood area divided by leaf
     area (cm2 m-2).
-- var_in: wood_dens
+- var_in: wd_gcm3
   unit_in: g/cm3
   trait_name: wood_density
-  entity_type: population
-  value_type: mean
+  entity_type: individual
+  value_type: raw
   basis_of_value: measurement
-  replicates: 2-3
+  replicates: 1
   methods: Wood density was assessed by removing a c. 5 cm stem section, 50 cm from
     the branch tip, which was then stored in a zip-lock bag with a moist paper towel
     in a refrigerator for at least 72 h. Bark was removed, and the stem section was
@@ -188,7 +256,7 @@ traits:
   unit_in: '%'
   trait_name: leaf_N_per_dry_mass
   entity_type: population
-  value_type: mean
+  value_type: raw
   basis_of_value: measurement
   replicates: 2-3
   methods: To measure leaf foliar nutrient and isotope traits, a minimum of five young,
@@ -201,7 +269,7 @@ traits:
   unit_in: '{delta}[ppth]'
   trait_name: leaf_delta13C
   entity_type: population
-  value_type: mean
+  value_type: raw
   basis_of_value: measurement
   replicates: 2-3
   methods: To measure leaf foliar nutrient and isotope traits, a minimum of five young,
@@ -214,7 +282,7 @@ traits:
   unit_in: umol{CO2_internal}/umol{CO2_ambient}
   trait_name: leaf_intercellular_CO2_concentration_to_atmospheric_CO2_concentration_ratio
   entity_type: population
-  value_type: mean
+  value_type: raw
   basis_of_value: measurement
   replicates: 2-3
   methods: To measure leaf foliar nutrient and isotope traits, a minimum of five young,
@@ -241,152 +309,161 @@ taxonomic_updates:
 - find: Eucalyptus amplifolia amplifolia
   replace: Eucalyptus amplifolia subsp. amplifolia
   reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
+    and filler words are removed (2026-10-21)
   taxonomic_resolution: subspecies
 - find: Eucalyptus calcicola calcicola
   replace: Eucalyptus calcicola subsp. calcicola
   reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
+    and filler words are removed (2026-10-21)
   taxonomic_resolution: subspecies
 - find: Eucalyptus caleyi caleyi
   replace: Eucalyptus caleyi subsp. caleyi
   reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
+    and filler words are removed (2026-10-21)
   taxonomic_resolution: subspecies
 - find: Eucalyptus camaldulensis camaldulensis
   replace: Eucalyptus camaldulensis subsp. camaldulensis
   reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
+    and filler words are removed (2026-10-21)
   taxonomic_resolution: subspecies
 - find: Eucalyptus canescens canescens
   replace: Eucalyptus canescens subsp. canescens
   reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
+    and filler words are removed (2026-10-21)
   taxonomic_resolution: subspecies
 - find: Eucalyptus cinerea triplex
   replace: Eucalyptus cinerea subsp. triplex
   reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
+    and filler words are removed (2026-10-21)
   taxonomic_resolution: subspecies
 - find: Eucalyptus diversifolia diversifolia
   replace: Eucalyptus diversifolia subsp. diversifolia
   reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
+    and filler words are removed (2026-10-21)
   taxonomic_resolution: subspecies
 - find: Eucalyptus fibrosa nubilis
   replace: Eucalyptus fibrosa subsp. nubilis
   reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus gittinsii illucida
-  replace: Eucalyptus gittinsii subsp. illucida
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus gonglyocarpa
-  replace: Eucalyptus gongylocarpa
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: species
-- find: Eucalyptus lehmannii parallela
-  replace: Eucalyptus lehmannii subsp. parallela
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus leucoxylon pruinosa
-  replace: Eucalyptus leucoxylon subsp. pruinosa
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus lockeryi
-  replace: Eucalyptus lockyeri
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: species
-- find: Eucalyptus lockeryi exuta
-  replace: Eucalyptus lockyeri subsp. exuta
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus macrorhyncha macrorhyncha
-  replace: Eucalyptus macrorhyncha subsp. macrorhyncha
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus molyneauxii
-  replace: Eucalyptus molyneuxii
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: species
-- find: Eucalyptus oleosa oleosa
-  replace: Eucalyptus oleosa subsp. oleosa
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus parramattensis decadens
-  replace: Eucalyptus parramattensis subsp. decadens
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus polyanthemos polyanthemos
-  replace: Eucalyptus polyanthemos subsp. polyanthemos
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus preissiana lobata
-  replace: Eucalyptus preissiana subsp. lobata
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus rubida rubida
-  replace: Eucalyptus rubida subsp. rubida
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus socialis eucentrica
-  replace: Eucalyptus socialis subsp. eucentrica
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus socialis socialis
-  replace: Eucalyptus socialis subsp. socialis
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus tereticornis basaltica
-  replace: Eucalyptus tereticornis subsp. basaltica
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus virginia
-  replace: Eucalyptus virginea
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: species
-- find: Eucalyptus wandoo wandoo
-  replace: Eucalyptus wandoo subsp. wandoo
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2026-09-22)
-  taxonomic_resolution: subspecies
-- find: Eucalyptus paniculata matutina
-  replace: Eucalyptus paniculata subsp. matutina
-  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
-    and filler words are removed (2026-09-22)
+    and filler words are removed (2026-10-21)
   taxonomic_resolution: subspecies
 - find: Eucalyptus formanii broad
   replace: Eucalyptus formanii
   reason: Exact match of the first two words of the taxon name to an APC-accepted
-    canonical name (2026-09-22)
+    canonical name (2026-10-21)
   taxonomic_resolution: species
+- find: Eucalyptus gittinsii illucida
+  replace: Eucalyptus gittinsii subsp. illucida
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus gonglyocarpa
+  replace: Eucalyptus gongylocarpa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: species
+- find: Eucalyptus lehmannii parallela
+  replace: Eucalyptus lehmannii subsp. parallela
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus leucoxylon pruinosa
+  replace: Eucalyptus leucoxylon subsp. pruinosa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus lockeryi
+  replace: Eucalyptus lockyeri
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: species
+- find: Eucalyptus lockeryi exuta
+  replace: Eucalyptus lockyeri subsp. exuta
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus lockeryi subsp. exuta
+  replace: Eucalyptus lockyeri subsp. exuta
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-27)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus lockyeri exuta
+  replace: Eucalyptus lockyeri subsp. exuta
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-27)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus macrorhyncha macrorhyncha
+  replace: Eucalyptus macrorhyncha subsp. macrorhyncha
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus molyneauxii
+  replace: Eucalyptus molyneuxii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: species
+- find: Eucalyptus oleosa oleosa
+  replace: Eucalyptus oleosa subsp. oleosa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus paniculata matutina
+  replace: Eucalyptus paniculata subsp. matutina
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus parramattensis decadens
+  replace: Eucalyptus parramattensis subsp. decadens
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus polyanthemos polyanthemos
+  replace: Eucalyptus polyanthemos subsp. polyanthemos
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus populnea bimbil
+  replace: Eucalyptus populnea subsp. bimbil
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-10-27)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus preissiana lobata
+  replace: Eucalyptus preissiana subsp. lobata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus rubida rubida
+  replace: Eucalyptus rubida subsp. rubida
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus socialis eucentrica
+  replace: Eucalyptus socialis subsp. eucentrica
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus socialis socialis
+  replace: Eucalyptus socialis subsp. socialis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus sp.
+  replace: Eucalyptus sp. [Britton_2026]
+  reason: Exact match of taxon name ending with `sp.` to an APC genus (2026-10-27)
+  taxonomic_resolution: genus
+- find: Eucalyptus tereticornis basaltica
+  replace: Eucalyptus tereticornis subsp. basaltica
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus virginia
+  replace: Eucalyptus virginea
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: species
+- find: Eucalyptus wandoo wandoo
+  replace: Eucalyptus wandoo subsp. wandoo
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-21)
+  taxonomic_resolution: subspecies
 exclude_observations: .na
-questions:
-  question1: Do you have tree numbers from CCA? We have several other datasets in
-    AusTraits and have recently added in these identifiers, allowing measurements
-    made on the same tree to be linked.
-  question2: Do you have the data values for each individual we could map in instead?
-  question3: Your leaf thickness values seem very low - I've confirmed the input units
-    are um (per the Readme) and the values plotted in the report are a little below
-    0.1 mm (100 um), which matches the values in the data file, but this is at the
-    far low end of all leaf thickness values. Could these be off by 10x somehow? I'm
-    also confused because in figure 4d/e you have AusTraits other leaf thicknesses
-    much higher than the values shown in the report.
+questions: .na
