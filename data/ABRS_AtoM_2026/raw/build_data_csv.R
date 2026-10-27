@@ -71,6 +71,10 @@ families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae
                    # N-Z (ABRS_NtoZ_2026)
                    "Nelumbonaceae", "Nepenthaceae", "Nitrariaceae", "Nothofagaceae", "Nyctaginaceae", "Nymphaeaceae", "Ochnaceae", "Olacaceae",
                    "Oleaceae", "Oleandraceae", "Onagraceae", "Ophioglossaceae", "Opiliaceae",
+                   # (batch of 2026-10-27: Orobanchaceae - Plumbaginaceae, 505 taxa)
+                   "Orobanchaceae", "Osmundaceae", "Oxalidaceae", "Pandanaceae", "Papaveraceae", "Paracryphiaceae", "Passifloraceae",
+                   "Pedaliaceae", "Pennantiaceae", "Petermanniaceae", "Philydraceae", "Phyllanthaceae", "Phytolaccaceae", "Picrodendraceae",
+                   "Pinaceae", "Piperaceae", "Pittosporaceae", "Plantaginaceae", "Plumbaginaceae",
                    # Fabaceae (ABRS_Fabaceae_2026, long format), checked in batches of 500 taxa: see partial_n below
                    "Fabaceae")
 # very large families checked in batches of taxa (in name order): only the first N taxa of these families are written
@@ -226,7 +230,12 @@ fix_text <- tribble(
   # Pterostylis torquata: "Flower stem 100–20 0mm tall" (100–200 mm)
   "Pterostylis torquata", "Flower stem 100–20 0mm tall", "Flower stem 100–200 mm tall",
   # Thelymitra petrophila: reversed range "Leaf straight, leathery, 100–40 × 4–10 mm" (40–100 assumed)
-  "Thelymitra petrophila", "leathery, 100–40 × 4–10 mm", "leathery, 40–100 × 4–10 mm"
+  "Thelymitra petrophila", "leathery, 100–40 × 4–10 mm", "leathery, 40–100 × 4–10 mm",
+  # Plantago albicans: "peduncle 5–l 0 cm long" (5–10 cm); Veronica derwentiana subsp. subglauca: reversed "75–45 mm long" (45–75)
+  "Plantago albicans", "peduncle 5–l 0 cm long", "peduncle 5–10 cm long",
+  "Veronica derwentiana subsp. subglauca", "acuminate, 75–45 mm long", "acuminate, 45–75 mm long",
+  # Veronica ciliolata: "rigid (to loose) cushion 2–6 mm high, with many erect branches and a woody base" (cm assumed; flagged)
+  "Veronica ciliolata", "cushion 2–6 mm high", "cushion 2–6 cm high"
 )
 for (i in seq_len(nrow(fix_text))) {
   fx <- function(z) z %>% mutate(Description = ifelse(scientific_name == fix_text$taxon[i],
@@ -236,6 +245,8 @@ for (i in seq_len(nrow(fix_text))) {
 
 # ---------------------------------------------------------------- helpers
 fixed_re <- function(x) str_replace_all(x, "([.()\\[\\]{}+*?^$|\\\\])", "\\\\\\1")
+# spread of a plant or colony ("forming dense mats", "spreading to 2 m diam.") rather than the thickness of an organ
+spread_re <- "\\b(?:forming|forms|spreading|spreads|mats?|tufts?|patches|clumps?|tussocks?|colonies|thickets?|cushions?|clones?)\\b"
 # leafless only while flowering (lower case text): Praecoxanthus "flowering plants are leafless", "leafless at flowering"
 leafless_flowering_re <- "\\bflowering plants? (?:are |is |remain |usually |often |generally )*leafless\\b|\\bleafless (?:at|when|while|during) (?:the time of )?(?:flowering|anthesis)\\b"
 na_if_empty <- function(x) ifelse(is.na(x) | x == "", NA_character_, x)
@@ -287,8 +298,12 @@ prep <- function(x) {
   x <- str_replace_all(x, "\\bInilorescence", "Inflorescence")
   # PDF glitches: soft hyphens inside numbers ("1\u00ad.5"), a letter l for the digit 1 ("l.4-1.5 mm")
   x <- str_remove_all(x, "\u00ad")
+  # middle-dot decimals ("3–4 × 2–3·5 mm")
+  x <- str_replace_all(x, "(?<=[0-9])\u00b7(?=[0-9])", ".")
   x <- str_replace_all(x, "(?<![A-Za-z])l\\.(?=[0-9])", "1.")
   x <- str_replace_all(x, "(?<=[0-9])\\s*-\\s*-\\s*(?=[0-9])", "-")
+  # ("Flowers usually August–-October": a doubled dash between month names)
+  x <- str_replace_all(x, "(?<=[A-Za-z.])\\s*-\\s*-\\s*(?=[A-Z])", "-")
   # thousands separators in measurements ("Flower stem 500-1,000 mm tall", Thelymitra "Flower stem 200–1,000 × 4–9 mm")
   x <- str_replace_all(x, "(?<=\\b[1-9][0-9]?),(?=[0-9]{3}(?![0-9])\\s*(?:(?:mm|cm|m)\\b|\u00d7))", "")
   # square brackets hold other regions' values or references ("[3-5 in India]", "[See Barker (1986)]")
@@ -1777,6 +1792,24 @@ extract_one <- function(r, group_filter = TRUE) {
   # (the matched text is not always found verbatim, e.g. Acacia castanostegia "0.6 (–1.5 ) m wide": the check is then skipped)
   wd_pos <- if (!is.null(wd)) str_locate(join_units(habit), fixed(wd$txt))[1, 1] else NA
   if (!is.na(wd_pos) && str_detect(str_sub(join_units(habit), 1, wd_pos - 1), rx("\\b(?:glands?|hairs?|trichomes?|papillae|scales?|spines?|prickles?)\\b[^|;]{0,40}$"))) wd <- NULL
+  # (a width that continues the stems' own measurements is their thickness, whatever its size: Oxalis glabra "erect slender stems 5-30 cm
+  # high, 0.4-0.8 mm wide" -> stem_diameter; but Rinzia "Shrub with main stems prostrate, 0.2-0.5 m high, 0.2-0.6 m wide", where the
+  # measurements follow the plant's description, and Proboscidea "stout stem and taproot, procumbent, spreading to 2 m diam." are the plant's)
+  stem_w <- NULL
+  if (!is.na(wd_pos) && !str_detect(wd$txt, rx(spread_re)) &&
+      str_detect(str_sub(join_units(habit), 1, wd_pos - 1), rx("\\b(?:stems?|trunks?|canes?|culms?|branch(?:es|lets)?)\\s+(?:(?:to|up to|c\\.)\\s+)?[0-9][^,;|]*?\\b(?:high|tall|long)\\b,\\s*$"))) {
+    stem_w <- wd; wd <- NULL
+  }
+  # (spread wording that names the stems: Banksia "Shrub with underground stems forming open tufts to 60 cm diam", Chordifex "forming
+  # patches of culms to 1 m across")
+  if (is.null(wd) && is.null(stem_w)) {
+    sp <- str_match(mark_extremes(join_units(habit) %||% ""), rx(paste0(spread_re, "[^;|]{0,80}?(", meas, ")\\s*(?:across|diam\\.?|diameter|in diam\\w*|wide)")))
+    # (not a measurement attached to a trunk or stem: Austrocylindropuntia "spreading shrub 1-3 m high, often with woody trunk to 10 cm
+    # diam"; "patches of culms to 1 m across" is the patch)
+    if (!is.na(sp[1]) && !str_detect(sp[1], rx("\\bat (?:the )?base\\b")) &&
+        !str_detect(unmark(sp[1]), rx("(?<!\\bof )(?<!\\bof [a-z]{3,12} )\\b(?:trunks?|stems?|canes?|culms?|branch(?:es|lets)?)\\s+(?:(?:to|up to|c\\.)\\s+)?[0-9][^,;|]*$")))
+      wd <- list(v = meas_of(sp[2]), txt = unmark(sp[1]))
+  }
   if (!is.null(wd)) addn("plant_width", wd$v, wd$txt, scale = 1 / 1000)
 
   # ---- stems, bark, underground organs
@@ -1803,6 +1836,9 @@ extract_one <- function(r, group_filter = TRUE) {
     if (!is.na(sm2[1])) sdm <- list(v = meas_of(sm2[2]), txt = unmark(sm2[1]))
   }
   if (is.null(sdm) && !is.null(orch_sd$W)) sdm <- orch_sd$W
+  # (Lomandra mucronata "stems forming dense mats up to 30 cm diam": the plant's spread, see plant_width)
+  if (!is.null(sdm) && str_detect(sdm$txt, rx(spread_re))) sdm <- NULL
+  if (is.null(sdm) && exists("stem_w") && !is.null(stem_w)) sdm <- list(v = stem_w$v, txt = paste("[stems]", stem_w$txt))
   if (!is.null(sdm)) addn("stem_diameter", sdm$v, sdm$txt)
   bark_txt <- join_units(c(unit_text(u, "bark", parts = "any")))
   addc("bark_texture", bark_txt, if (legume_mode) c(bark_texture_dict, "rimose|cracked|corrugated" = "furrowed", "minni[- ]?ritchi" = "flaky") else bark_texture_dict)
@@ -1874,6 +1910,9 @@ extract_one <- function(r, group_filter = TRUE) {
   # (Praecoxanthus "Non-flowering plants consist of single leaf; flowering plants are leafless": leafless only while flowering, a
   # leaf_phenology value (leafless_while_flowering, user's choice 2026-10-27), not a leafless plant)
   all_txt <- str_remove_all(all_txt, leafless_flowering_re)
+  # (part of the plant only: phyllanthoid Sauropus / Synostemon / Breynia "Stem leaves scale-like" with normal branchlet leaves, Limonium
+  # "leafless above rosette", Callitriche "lower leaves reduced to ... scales")
+  all_txt <- str_remove_all(all_txt, "\\bstem leaves (?:[a-z]+ ){0,2}scale-like\\b|\\bleafless above (?:the )?(?:basal )?rosettes?\\b|\\b(?:lower|basal|lowermost|upper|uppermost|stem) leaves (?:[a-z]+ ){0,2}reduced to\\b")
   if (str_detect(all_txt, "\\bleafless\\b|\\bleaves (?:absent|0)\\b|\\bplants? without leaves\\b")) {
     lt <- grab_sent(desc, "leafless|leaves absent")
     lh <- scan_terms(lt, c("leafless|leaves absent|leaves 0|without leaves" = "leafless"), generic_neg = FALSE)
@@ -2827,7 +2866,7 @@ extract_one <- function(r, group_filter = TRUE) {
       # "after winter or summer rainfall" -> "winter rain or summer rainfall"
       mtxt <- join_units(mapped)
       if (!is.na(mtxt)) mtxt <- str_remove_all(str_replace_all(str_to_lower(mtxt), "\\b(winter|summer|autumn|spring) ?(or|and|-) ?(winter|summer|autumn|spring) (rain\\w*)", "\\1 rain \\2 \\3 \\4"),
-                                             "\\b(?:fire|flood|rainfall|rain)[- ]?(?:breaks?|scar\\w*|history|frequency|regime|plain)\\b|\\b(?:high|low|moderate)[- ]rainfall (?:areas?|regions?|zones?|districts?|sites?)\\b|\\buntil the rains? (?:finish|end|cease)\\w*|\\bfrom (?:north|south|east|west) to (?:north|south|east|west)\\b")
+                                             "\\b(?:fire|flood|rainfall|rain)[- ]?(?:breaks?|scar\\w*|history|frequency|regime|plain)\\b|\\b(?:high|low|moderate)[- ]rainfall (?:areas?|regions?|zones?|districts?|sites?)\\b|\\bmonsoonal (?:areas?|regions?|zones?|districts?|parts?|tropics)\\b|\\buntil the rains? (?:finish|end|cease)\\w*|\\bfrom (?:north|south|east|west) to (?:north|south|east|west)\\b")
       # ("mainly after the Wet": the commonness word reaches across the trigger words)
       h <- scan_terms(mtxt, d_use, generic_neg = TRUE,
                       fillers = c(filler_words, "after", "following", "in", "response", "to", "favourable", "good", "heavy", "late", "early", "by", "of", "on", "dependent", "depending", "triggered"))
@@ -3109,7 +3148,14 @@ copydown_exclude <- tribble(
   "Erythrorchis", "plant_growth_substrate",
   # Trachoma "flowers ... are sometimes produced in large flushes with all the plants in an area flowering synchronously" (hedged; vetted
   # as "sometimes"); Vanilla "Leaves absent, or if present, ..." (V. planifolia has large leaves)
-  "Trachoma", "flowering_predictability", "Vanilla", "leaf_length_type", "Vanilla", "leaf_type"
+  "Trachoma", "flowering_predictability", "Vanilla", "leaf_length_type", "Vanilla", "leaf_type",
+  # Breynia, Glochidion "Stem leaves scale-like (phyllanthoid branching)": the branchlets bear normal leaves
+  "Breynia", "leaf_length_type", "Breynia", "leaf_type", "Glochidion", "leaf_length_type", "Glochidion", "leaf_type",
+  # Pittosporaceae "Slender trees, or erect or scandent to procumbent shrubs, sometimes heteroblastic, rhizomatous": not all members;
+  # Plantaginaceae "Leaves rosette at base, opposite or alternate, simple, entire to pinnately lobed": alternatives
+  # Pittosporaceae "Flowers ... fragrant": too broad a family statement to hold for each species (user, 2026-10-28)
+  "Pittosporaceae", "storage_organ", "Pittosporaceae", "stem_growth_habit", "Pittosporaceae", "flower_scent_production",
+  "Plantaginaceae", "leaf_arrangement", "Plantaginaceae", "stem_growth_habit", "Plantaginaceae", "leaf_lobation"
 )
 # groups whose description stitches together several segregate genera, so no statement holds throughout: Dendrobium sens. lat.
 # ("includes the following descriptions from Jones (2021): Australorchis ...: Epiphytic orchids ... Ceraia ...: ... Conostalix ...:
