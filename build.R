@@ -989,6 +989,14 @@ Liu_2023_config <- dataset_configure("data/Liu_2023/metadata.yml", definitions)
 Liu_2023_raw <- dataset_process("data/Liu_2023/data.csv", Liu_2023_config, schema, resource_metadata, unit_conversions)
 Liu_2023 <- dataset_update_taxonomy(Liu_2023_raw, taxon_list)
 
+Lopresti_2023_config <- dataset_configure("data/Lopresti_2023/metadata.yml", definitions)
+Lopresti_2023_raw <- dataset_process("data/Lopresti_2023/data.csv", Lopresti_2023_config, schema, resource_metadata, unit_conversions)
+Lopresti_2023 <- dataset_update_taxonomy(Lopresti_2023_raw, taxon_list)
+
+Lopresti_2026_config <- dataset_configure("data/Lopresti_2026/metadata.yml", definitions)
+Lopresti_2026_raw <- dataset_process("data/Lopresti_2026/data.csv", Lopresti_2026_config, schema, resource_metadata, unit_conversions)
+Lopresti_2026 <- dataset_update_taxonomy(Lopresti_2026_raw, taxon_list)
+
 Lord_1997_config <- dataset_configure("data/Lord_1997/metadata.yml", definitions)
 Lord_1997_raw <- dataset_process("data/Lord_1997/data.csv", Lord_1997_config, schema, resource_metadata, unit_conversions)
 Lord_1997 <- dataset_update_taxonomy(Lord_1997_raw, taxon_list)
@@ -1308,6 +1316,10 @@ Pollock_2012 <- dataset_update_taxonomy(Pollock_2012_raw, taxon_list)
 Pollock_2018_config <- dataset_configure("data/Pollock_2018/metadata.yml", definitions)
 Pollock_2018_raw <- dataset_process("data/Pollock_2018/data.csv", Pollock_2018_config, schema, resource_metadata, unit_conversions)
 Pollock_2018 <- dataset_update_taxonomy(Pollock_2018_raw, taxon_list)
+
+Popic_2013_config <- dataset_configure("data/Popic_2013/metadata.yml", definitions)
+Popic_2013_raw <- dataset_process("data/Popic_2013/data.csv", Popic_2013_config, schema, resource_metadata, unit_conversions)
+Popic_2013 <- dataset_update_taxonomy(Popic_2013_raw, taxon_list)
 
 Portelli_2023_config <- dataset_configure("data/Portelli_2023/metadata.yml", definitions)
 Portelli_2023_raw <- dataset_process("data/Portelli_2023/data.csv", Portelli_2023_config, schema, resource_metadata, unit_conversions)
@@ -2187,6 +2199,8 @@ austraits_raw <- austraits::bind_databases(
   Li_2019,
   Lim_2017,
   Liu_2023,
+  Lopresti_2023,
+  Lopresti_2026,
   Lord_1997,
   Lunt_2012,
   Lusk_2010,
@@ -2267,6 +2281,7 @@ austraits_raw <- austraits::bind_databases(
   Pirralho_2014,
   Pollock_2012,
   Pollock_2018,
+  Popic_2013,
   Portelli_2023,
   Prendergast_2022,
   Prendergast_2022_2,
