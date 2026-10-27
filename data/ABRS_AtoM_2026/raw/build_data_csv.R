@@ -81,32 +81,60 @@ genera_done <- c(
   # Orchidaceae (1,660 taxa, in parts)
   "Acianthus", "Acriopsis", "Adenochilus", "Anoectochilus", "Aphyllorchis", "Apostasia", "Appendicula", "Arthrochilus", "Arundina",
   "Blepharoglossum", "Bogoria", "Brachypeza", "Bromheadia", "Bryobium", "Bulbophyllum", "Burnettia", "Cadetia",
-  "Caladenia", "Calanthe", "Caleana", "Calochilus", "Cheirostylis", "Chiloglottis", "Chiloschista", "Coelogyne", "Cooktownia")
+  "Caladenia", "Calanthe", "Caleana", "Calochilus", "Cheirostylis", "Chiloglottis", "Chiloschista", "Coelogyne", "Cooktownia",
+  # (batch of 2026-10-27: Corunastylis - Pecteilis, 507 taxa)
+  "Corunastylis", "Corybas", "Corymborkis", "Cryptostylis", "Cyanicula", "Cymbidium", "Cyrtostylis", "Danhatchia", "Demorchis",
+  "Dendrobium", "Didymoplexis", "Dienia", "Diplocaulobium", "Dipodium", "Disa", "Diuris", "Dockrillia", "Drakaea", "Drymoanthus",
+  "Elythranthera", "Epiblema", "Epidendrum", "Epipogium", "Ericksonella", "Eriochilus", "Erythrorchis", "Eucosia", "Eulophia",
+  "Flickingeria", "Gastrodia", "Genoplesium", "Geodorum", "Glossodia", "Grastidium", "Habenaria", "Hetaeria", "Leporella",
+  "Leptoceras", "Liparis", "Luisia", "Lyperanthus", "Micropera", "Microtatorchis", "Microtis", "Mobilabium", "Nervilia", "Oberonia",
+  "Octarrhena", "Oeceoclades", "Orthoceras", "Pachystoma", "Pecteilis",
+  # (batch of 2026-10-27, second session: Peristeranthus - Pterostylis, 446 taxa)
+  "Peristeranthus", "Peristylus", "Phaius", "Phalaenopsis", "Pheladenia", "Phoringopsis", "Phreatia", "Pinalia", "Plectorrhiza",
+  "Plexaure", "Pomatocalpa", "Praecoxanthus", "Prasophyllum", "Pseudovanilla", "Pterostylis",
+  # (batch of 2026-10-27, third: Pyrorchis - Zeuxine and the nothogenera x Cyanthera, x Phelodia, 196 taxa; Orchidaceae complete)
+  "Pyrorchis", "Rhinerrhiza", "Rhipidorchis", "Rhizanthella", "Rhomboda", "Rimacola", "Robiquetia", "Saccolabiopsis", "Salacistis",
+  "Sarcanthopsis", "Sarcochilus", "Schoenorchis", "Serapias", "Spathoglottis", "Spiculaea", "Spiranthes", "Stigmatodactylus", "Taeniophyllum",
+  "Tainia", "Thelasis", "Thelymitra", "Thrixspermum", "Thynninorchis", "Townsonia", "Trachoma", "Trichoglottis", "Tropidia", "Vanda",
+  "Vanilla", "Vrydagzynea", "Zeuxine", "x Cyanthera", "x Phelodia")
 fams <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_FAMILIES"), ",")[[1]] else families_done
 gens <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_GENERA"), ",")[[1]] %>% .[. != ""] else genera_done
 
 d_all <- read_csv(src, show_col_types = FALSE, col_types = cols(.default = "c"), guess_max = 1e5)
+# genus key: the first word of the name, or the first two for nothogenera ("x Cyanthera glossodioides" -> "x Cyanthera"), so that
+# "x" does not pull together hybrids of different families (x Abacopterella, x Cynochloris)
+gkey <- function(x) ifelse(word(x, 1) == "x", word(x, 1, 2), word(x, 1))
 # ~230 scraped profiles lack rank and family: rank from the name, family from the genus (other profiles, else taxon_list.csv)
-gen_fam <- d_all %>% filter(!is.na(family)) %>% transmute(genus = word(scientific_name, 1), family) %>% distinct(genus, .keep_all = TRUE)
+gen_fam <- d_all %>% filter(!is.na(family)) %>% transmute(genus = gkey(scientific_name), family) %>% distinct(genus, .keep_all = TRUE)
 tl_fam <- read_csv("config/taxon_list.csv", show_col_types = FALSE, col_types = cols(.default = "c")) %>% distinct(genus, family) %>% filter(!is.na(genus)) %>% distinct(genus, .keep_all = TRUE)
 d_all <- d_all %>%
   mutate(rank = case_when(!is.na(rank) ~ rank, str_detect(scientific_name, " subsp\\. ") ~ "subspecies", str_detect(scientific_name, " var\\. ") ~ "variety",
                           str_detect(scientific_name, " f\\. ") ~ "form", str_detect(scientific_name, "^[A-Z][a-z-]+ (?:[a-z-]+|sp\\. .+)$") ~ "species", TRUE ~ NA_character_),
-         genus = word(scientific_name, 1)) %>%
+         genus = gkey(scientific_name)) %>%
   left_join(gen_fam %>% rename(fam_g = family), by = "genus") %>% left_join(tl_fam %>% rename(fam_t = family), by = "genus") %>%
   mutate(family = coalesce(family, fam_g, fam_t)) %>% select(-genus, -fam_g, -fam_t)
+# env FOA_DATASETS="ABRS_NtoZ_2026" (full runs only): extract and write only the families / genera of these datasets, for a
+# faster build cycle (the other datasets' data.csv files are left as they are)
+if (Sys.getenv("FOA_DATASETS") != "" && Sys.getenv("FOA_FAMILIES") == "") {
+  only_ids <- str_split(Sys.getenv("FOA_DATASETS"), ",")[[1]]
+  fams <- fams[dataset_of(fams) %in% only_ids]
+  gens <- gens[dataset_of(coalesce(gen_fam$family[match(gens, gen_fam$genus)], "")) %in% only_ids]
+}
 # genus and family profiles: used only for copy-down of categorical traits that hold throughout the group
-gens_fam <- unique(d_all$family[word(d_all$scientific_name, 1) %in% gens])
+gens_fam <- unique(d_all$family[gkey(d_all$scientific_name) %in% gens])
 d_higher <- d_all %>% filter(family %in% fams | (rank == "family" & family %in% gens_fam) | (rank == "genus" & scientific_name %in% gens),
                              rank %in% c("genus", "family"), !is.na(Description), !str_detect(Description, "^\\s*Pending\\b"))
 d <- d_all %>%
-  filter(family %in% fams | word(scientific_name, 1) %in% gens, rank %in% c("species", "subspecies", "variety", "form")) %>%
+  filter(family %in% fams | gkey(scientific_name) %in% gens, rank %in% c("species", "subspecies", "variety", "form")) %>%
   mutate(Description = ifelse(str_detect(coalesce(Description, ""), "^\\s*Pending\\b"), NA, Description)) %>%
   filter(!is.na(Description) | !is.na(Phenology)) %>%
   arrange(family, scientific_name)
 # orchid genera whose description opens by calling them terrestrial orchids (not epiphytic / lithophytic): rock words in their
 # species' Habitat text are not read as lithophytic (see the orchid substrate block)
-orch_terr_genera <- d_higher %>% filter(family == "Orchidaceae", rank == "genus") %>% mutate(s1 = str_extract(Description, "^[^.]*")) %>%
+# (a "sens. lat." genus text opens with "Pterostylis sens. lat., as recognised by the Australian Plant Census [...], includes the following
+# descriptions from Jones (2021): Bunochilus D.L.Jones & M.A.Clem.: Terrestrial, tuberous orchids ...": its first segregate's opening is read)
+orch_terr_genera <- d_higher %>% filter(family == "Orchidaceae", rank == "genus") %>%
+  mutate(s1 = str_extract(str_remove(Description, "^.*?includes the following descriptions from [^:]*:\\s*[A-Z][a-z]+(?: [^:]{1,40})?:\\s*"), "^[^.]*")) %>%
   filter(str_detect(s1, regex("terrestrial", ignore_case = TRUE)), !str_detect(s1, regex("epiphyt|lithophyt", ignore_case = TRUE))) %>%
   pull(scientific_name)
 # (in FOA_FAMILIES chunk runs the whole family is read, for QA of the next batch)
@@ -186,7 +214,19 @@ fix_text <- tribble(
   # Caladenia viridescens: "Labellum 17–22 × 0–14 mm" (a zero width; the intended lower bound is unknown, so the width is dropped)
   "Caladenia viridescens", "Labellum 17–22 × 0–14 mm", "Labellum 17–22 mm long",
   # Caladenia osmera: leaf "60–120 × 5–1 0mm" (5–10 mm)
-  "Caladenia osmera", "60–120 × 5–1 0mm", "60–120 × 5–10 mm"
+  "Caladenia osmera", "60–120 × 5–1 0mm", "60–120 × 5–10 mm",
+  # Corunastylis nublingii: dorsal sepal "4 × 2 m" (mm intended; the labellum is "4 × 2 mm")
+  "Corunastylis nublingii", "4 × 2 m; margins with short hairs", "4 × 2 mm; margins with short hairs",
+  # Diuris palustris: labellum "7–1 0mm long" (7–10 mm)
+  "Diuris palustris", "Labellum 7–1 0mm long", "Labellum 7–10 mm long",
+  # Elythranthera emarginata: "Leaf 40–800 × 5–7 mm" on a plant with 120–250 mm flower stems (40–80 mm assumed; flagged)
+  "Elythranthera emarginata", "Leaf 40–800 × 5–7 mm", "Leaf 40–80 × 5–7 mm",
+  # Eriochilus latifolius: a "broadly ovate" leaf "40–750 × 5–30 mm" (40–75 mm assumed; flagged)
+  "Eriochilus latifolius", "broadly ovate, 40–750 × 5–30 mm", "broadly ovate, 40–75 × 5–30 mm",
+  # Pterostylis torquata: "Flower stem 100–20 0mm tall" (100–200 mm)
+  "Pterostylis torquata", "Flower stem 100–20 0mm tall", "Flower stem 100–200 mm tall",
+  # Thelymitra petrophila: reversed range "Leaf straight, leathery, 100–40 × 4–10 mm" (40–100 assumed)
+  "Thelymitra petrophila", "leathery, 100–40 × 4–10 mm", "leathery, 40–100 × 4–10 mm"
 )
 for (i in seq_len(nrow(fix_text))) {
   fx <- function(z) z %>% mutate(Description = ifelse(scientific_name == fix_text$taxon[i],
@@ -196,6 +236,8 @@ for (i in seq_len(nrow(fix_text))) {
 
 # ---------------------------------------------------------------- helpers
 fixed_re <- function(x) str_replace_all(x, "([.()\\[\\]{}+*?^$|\\\\])", "\\\\\\1")
+# leafless only while flowering (lower case text): Praecoxanthus "flowering plants are leafless", "leafless at flowering"
+leafless_flowering_re <- "\\bflowering plants? (?:are |is |remain |usually |often |generally )*leafless\\b|\\bleafless (?:at|when|while|during) (?:the time of )?(?:flowering|anthesis)\\b"
 na_if_empty <- function(x) ifelse(is.na(x) | x == "", NA_character_, x)
 collapse_unique <- function(x, sep = " ") {
   x <- unique(unlist(str_split(x[!is.na(x) & x != ""], " ")))
@@ -247,8 +289,8 @@ prep <- function(x) {
   x <- str_remove_all(x, "\u00ad")
   x <- str_replace_all(x, "(?<![A-Za-z])l\\.(?=[0-9])", "1.")
   x <- str_replace_all(x, "(?<=[0-9])\\s*-\\s*-\\s*(?=[0-9])", "-")
-  # thousands separators in measurements ("Flower stem 500-1,000 mm tall")
-  x <- str_replace_all(x, "(?<=\\b[1-9][0-9]?),(?=[0-9]{3}(?![0-9])\\s*(?:mm|cm|m)\\b)", "")
+  # thousands separators in measurements ("Flower stem 500-1,000 mm tall", Thelymitra "Flower stem 200–1,000 × 4–9 mm")
+  x <- str_replace_all(x, "(?<=\\b[1-9][0-9]?),(?=[0-9]{3}(?![0-9])\\s*(?:(?:mm|cm|m)\\b|\u00d7))", "")
   # square brackets hold other regions' values or references ("[3-5 in India]", "[See Barker (1986)]")
   x <- str_replace_all(x, "\\s*\\[[^\\]]*\\]", "")
   # missing space after a full stop ("forming a lignotuber.Bark usually smooth")
@@ -1532,8 +1574,15 @@ extract_one <- function(r, group_filter = TRUE) {
   stem_lead <- unit_text(u, "stem", subj_re = "^(?:the )?(?:main |flowering |aerial |vegetative )?(?:stems?|branches|culms?)$")
   # "trees with whorled, spreading branches": the branches' posture is not a tree's habit (it is for "Shrub with prostrate branches")
   is_tree <- nrow(gf) && all(gf$value %in% c("tree", "mallee", "palmoid"))
+  # (orchids: "dense clumps with thin, spreading roots", "forming spreading clonal colonies": the roots or the colonies (of many
+  # plants) spread, not the stems; a plant's own clump can be dense or spreading)
   addc("stem_growth_habit", collapse_text(c(habit_txt, stem_lead), " | "), stem_habit_dict,
-       prep_fun = function(x) if (is_tree) str_remove_all(x, "\\b(?:with|and) (?:[a-z-]+,? (?:and |or )?){1,3}(?:branches|branchlets)\\b") else x)
+       prep_fun = function(x) {
+         if (is_tree) x <- str_remove_all(x, "\\b(?:with|and) (?:[a-z-]+,? (?:and |or )?){1,3}(?:branches|branchlets)\\b")
+         if (orchid_mode) x <- x %>%
+           str_remove_all("\\b(?:(?:thin|thick|coarse|fleshy|spreading|wiry|long|short|slender|fibrous|aerial|numerous|branching|branched|stout|straggly|tuberous|basal|flattened|tough|creeping|extensive)[,]? (?:and |or )?){0,4}roots?\\b") %>%
+           str_remove_all("\\b(?:(?:spreading|clonal|dense|densely crowded|sparse|large|small|extensive|loose|vegetative|crowded)[,]? (?:and |or )?){0,3}(?:colonies|patches|groups|populations)\\b")
+         x })
   sl <- m_first(stem_lead, "long|in length", excl("stems?", "branches", "branchlets?", "culms?"))
   if (is.null(sl) && length(habit)) {
     sm <- str_match(mark_extremes(join_units(habit)), rx(paste0("\\b(?:stems?|branches)\\b[^,;|]{0,30}?(", meas, ")(?:\\s+or more)?\\s*long")))
@@ -1577,11 +1626,15 @@ extract_one <- function(r, group_filter = TRUE) {
     hab_s <- sentences(prep(r[["Habitat"]]))
     soil_re <- "\\b(?:soils?|sands?|loams?|clays?|humus|leaf litter|litter|gravel|peat|mud|silt|alluvium)\\b"
     tree_re <- "\\b(?:trees?|trunks?|branch(?:es|lets?)?|twigs?|limbs?|boles?|bark|shrubs?|mangroves?|palms?|hosts?|saplings?|stumps?|logs?|tree ?ferns?|paperbarks?|she-?oaks?|casuarinas?|eucalypts?|pines?|figs?|canopy|epiphytes?)\\b"
-    rock_re <- "\\b(?:rocks?|boulders?|cliffs?|cliff[- ]faces?|rock[- ]faces?|rock walls?|stones?|scree)\\b"
-    rock2_re <- "\\b(?:outcrops?|ledges?|rock shelves|rock platforms?)\\b"
+    # ("on rock ledges / plates" is read like "ledges": lithophytic only when no soil is named; "on (rock) outcrops" is a habitat
+    # (Dipodium stenocheilum "growing mainly among grass in open forest and woodland and on rock outcrops"), not a substrate)
+    rock_re <- "\\b(?:rocks?(?! (?:outcrops?|ledges?|plates?|sheets?|shelves|platforms?|pavements?|crevices?))|boulders?|cliffs?|cliff[- ]faces?|rock[- ]faces?|rock walls?|stones?|scree)\\b"
+    rock2_re <- "\\b(?:(?:rock )?ledges?|rock shelves|rock platforms?|rock (?:plates?|sheets?|pavements?|crevices?))\\b"
     hh <- list(); hsrc <- character(0)
     for (hsi in seq_along(hab_s)) {
       sl <- str_to_lower(hab_s[hsi]); found <- FALSE
+      # ("Occasional plants grow on boulders", "Occasional plants grow as terrestrials in soil": a commonness word)
+      sl <- str_replace_all(sl, "\\b(?:an? )?occasional (plants?|specimens?|individuals?|colonies)\\b", "occasionally \\1")
       # (a region only when the sentence opens with it: "On Lord Howe Island it grows on stunted trees and rocks")
       reg <- str_match(sl, paste0("^(?:on|in) (", places, ")\\b"))[2]
       has_soil <- str_detect(sl, soil_re)
@@ -1613,6 +1666,10 @@ extract_one <- function(r, group_filter = TRUE) {
                                                          str_detect(str_sub(ph, end + 1), "^\\s*roots?\\b")))) %>%
             mutate(conv = value == "lithophyte", value = ifelse(conv, "terrestrial", value))
         }
+        # (Corunastylis nudiscapa "on north-facing open dry eucalypt woodland": a vegetation type, not a host; Erythrorchis "aerial stems
+        # climbing on living and dead hosts": a climber rooted in the ground, not an epiphyte)
+        if (nrow(ws)) ws <- ws %>% filter(!(value == "epiphyte" & str_detect(str_sub(ph, end + 1), "^\\s*(?:woodlands?|forests?|scrub|heath\\w*|shrubland|communit\\w*|savannah?|thickets?|grassland|country|plantations?)\\b")))
+        if (str_detect(pre, "\\b(?:climbing|scrambling|clambering|twining)\\s*$")) ws <- ws %>% filter(value != "epiphyte")
         if (!nrow(ws)) next
         ws <- ws %>% arrange(start)
         if (!"conv" %in% names(ws)) ws$conv <- FALSE
@@ -1623,7 +1680,11 @@ extract_one <- function(r, group_filter = TRUE) {
       }
       if (has_soil && str_detect(sl, paste0("\\b(?:in|on|into)\\s+(?:[a-z,-]+\\s+){0,5}?", str_remove(soil_re, "^\\\\b")))) {
         sp <- str_locate(sl, soil_re)
-        hh[[length(hh) + 1]] <- tibble(pos = hsi * 1e4 + sp[1, 1], value = "terrestrial", term = str_sub(sl, sp[1, 1], sp[1, 2]), qual = NA_character_, region = reg)
+        # (the last commonness word in the comma segment before the soil word: Liparis reflexa "usually growing on rocks ..., rarely on tree
+        # trunks, even less commonly in sandy soil")
+        sq <- tail(str_extract_all(str_remove(str_sub(sl, 1, sp[1, 1] - 1), "^.*[,;:]"), qual_re)[[1]], 1)
+        hh[[length(hh) + 1]] <- tibble(pos = hsi * 1e4 + sp[1, 1], value = "terrestrial", term = str_sub(sl, sp[1, 1], sp[1, 2]),
+                                       qual = if (length(sq)) sq else NA_character_, region = reg)
         found <- TRUE
       }
       if (found) hsrc <- c(hsrc, hab_s[hsi])
@@ -1632,7 +1693,8 @@ extract_one <- function(r, group_filter = TRUE) {
       # (each substrate once, at its first mention: "on trees ..., occasionally on tree ferns" is not a second, rarer epiphyte)
       hh <- bind_rows(hh) %>% arrange(pos) %>% distinct(value, region, .keep_all = TRUE) %>% mutate(end = pos)
       # (a single substrate "usually" found there is simply that substrate)
-      if (n_distinct(hh$value) == 1 && all(is.na(hh$region)) && !any(hh$qual %in% rare_quals)) hh$qual <- NA_character_
+      # (nor is soil named only with a commonness word: "growing in open forest, sometimes in sandy soil" is still terrestrial)
+      if (n_distinct(hh$value) == 1 && all(is.na(hh$region)) && (!any(hh$qual %in% rare_quals) || all(hh$value == "terrestrial"))) hh$qual <- NA_character_
       hdesc <- paste("[habitat]", paste(hsrc, collapse = " "))
       add(rec_cat("plant_growth_substrate", hh, hdesc) %>% mutate(desc = paste0("[habitat] ", desc, ": ", paste(hsrc, collapse = " "))))
     }
@@ -1670,9 +1732,12 @@ extract_one <- function(r, group_filter = TRUE) {
   is_climber <- nrow(gf) && any(str_detect(gf$value, "climber"))
   if (!is.null(ht)) {
     # a "climbing palm to 45 m tall" (rattan) is a climber too
-    # (orchids: "Flowering plant 10-35 cm tall" is the height when flowering)
+    # (orchids: "Flowering plant 10-35 cm tall" is the height when flowering; so is "Plants 200-400 mm tall" of the leek orchids and
+    # other deciduous terrestrial orchids, measured to the top of the flower spike (skill rule: orchid heights to the top of the
+    # flowering stem); only the height of persistent stems or canes, "Canes 1-3 m tall", is the plant's own height)
     addn(if (is_climber && all(str_detect(gf$value, "climber|palmoid"))) "plant_height_climbing_plant"
-         else if (orchid_mode && str_detect(coalesce(habit_txt, ""), rx("^flowering plants?\\b"))) "plant_height_reproductive" else "plant_height", ht$v, ht$txt, scale = 1 / 1000)
+         else if (orchid_mode && (str_detect(coalesce(habit_txt, ""), rx("^flowering plants?\\b")) || !str_detect(ht$txt, "^\\[(?:culm/stem|stems)\\]"))) "plant_height_reproductive"
+         else "plant_height", ht$v, ht$txt, scale = 1 / 1000)
   } else if (is_climber) {
     cl <- m_first(habit, "long|in length|", h_other)
     if (!is.null(cl)) addn("plant_height_climbing_plant", cl$v, cl$txt, scale = 1 / 1000)
@@ -1754,11 +1819,16 @@ extract_one <- function(r, group_filter = TRUE) {
     if (!is.null(od$W)) addn("storage_organ_diameter", od$W$v, od$W$txt, "entity_measured", org)
   }
   storage_txt <- collapse_text(c(habit_txt, under_txt, stem_txt), " | ")
-  addc("storage_organ", storage_txt, if (fern_mode) storage_dict[!str_detect(storage_dict, "^(?:rhizome|caudex)$")] else storage_dict, storage_neg)
+  # (a plant can have both: "Pseudobulbs widely spaced on creeping rhizome" is scored pseudobulb + rhizome; user's rule 2026-10-27)
+  # (absent organs are not scored: Rhipidorchis "Pseudobulbs absent", Cryptostylis "(no tubers)", "without pseudobulbs")
+  addc("storage_organ", storage_txt, if (fern_mode) storage_dict[!str_detect(storage_dict, "^(?:rhizome|caudex)$")] else storage_dict, storage_neg,
+       prep_fun = function(x) str_remove_all(x, rx(paste0("\\b(?:pseudobulbs?|tubers?|bulbs?|corms?|rhizomes?|stolons?)\\s+(?:absent|lacking|none|0)\\b",
+                                                         "|\\b(?:without|lacking|lacks|no)\\s+(?:a\\s+|any\\s+)?(?:distinct\\s+|obvious\\s+)?(?:pseudobulbs?|tubers?|bulbs?|corms?|rhizomes?|stolons?)\\b"))))
   def_txt <- collapse_text(c(habit_txt, stem_txt, join_units(unit_text(u, "stipule", parts = "any"))), " | ")
   dh <- scan_terms(def_txt, defence_dict, defence_neg)
   lam_all <- unit_text(u, c("leaf", "lamina", "leaflet"), parts = "any")
-  ldh <- scan_terms(join_units(lam_all), leaf_defence_dict)
+  # (orchids: "apex sharply pointed" is an acute leaf tip, not a pungent one)
+  ldh <- scan_terms(join_units(lam_all), if (orchid_mode) setNames(leaf_defence_dict, str_remove(names(leaf_defence_dict), "\\|sharply pointed")) else leaf_defence_dict)
   if (nrow(ldh) || any(dh$value != "absent")) dh <- dh %>% filter(value != "absent")
   def_desc <- collapse_text(c(if (nrow(dh)) def_txt, if (nrow(ldh)) join_units(lam_all)), " | ")
   add(rec_cat("plant_physical_defence_structures", dh, def_desc))
@@ -1798,6 +1868,12 @@ extract_one <- function(r, group_filter = TRUE) {
   # (only habit / stem / leaf clauses: "Inflorescence scape to 25 cm long, usually leafless")
   all_txt <- str_to_lower(join_units(unit_text(u, c("habit", "stem", "leaf", "lamina", "other"), parts = "any")) %||% "")
   all_txt <- str_remove_all(all_txt, "\\b(?:flowering |fertile |upper )?(?:stems?|scapes?|branches|shoots?|peduncles?|culms?|axes) (?:[a-z]+ ){0,2}leafless\\b")
+  # (orchids: Micropera "lower half usually leafless", Grastidium "apical part often leafless", Dendrobium "a leafless apical region
+  # where flowers are borne": part of the stem is leafless, not the plant)
+  if (orchid_mode) all_txt <- str_remove_all(all_txt, "\\b(?:lower|upper|apical|basal|distal|proximal|terminal) (?:half|part|portion|section|region|third|two-thirds|nodes?)(?: of (?:the )?[a-z]+)? (?:[a-z]+ ){0,2}leafless\\b|\\bleafless (?:apical |basal |terminal |distal |upper |lower )?(?:region|portion|part|section|internodes?|nodes?)\\b")
+  # (Praecoxanthus "Non-flowering plants consist of single leaf; flowering plants are leafless": leafless only while flowering, a
+  # leaf_phenology value (leafless_while_flowering, user's choice 2026-10-27), not a leafless plant)
+  all_txt <- str_remove_all(all_txt, leafless_flowering_re)
   if (str_detect(all_txt, "\\bleafless\\b|\\bleaves (?:absent|0)\\b|\\bplants? without leaves\\b")) {
     lt <- grab_sent(desc, "leafless|leaves absent")
     lh <- scan_terms(lt, c("leafless|leaves absent|leaves 0|without leaves" = "leafless"), generic_neg = FALSE)
@@ -1950,8 +2026,11 @@ extract_one <- function(r, group_filter = TRUE) {
   add(rec_cat("stipule_presence", sp, stip_txt))
   # (Fabaceae: "acute with a deciduous callus point" is not deciduous foliage)
   # (Orchidaceae: "Leaf often withered at flowering", "Leaf withered at flowering time")
-  addc("leaf_phenology", collapse_text(c(habit_txt, gen_txt), " | "),
-       if (orchid_mode) c(phenology_dict, "(?:withered|withering|shrivelled|dried) (?:at|by|before) (?:the time of )?(?:flowering|anthesis)(?: time)?" = "withered_at_flowering") else phenology_dict,
+  # (and "flowering plants leafless", "leafless at flowering": leafless_while_flowering, from whichever sentence says so)
+  lwf_txt <- unlist(str_extract_all(str_to_lower(desc %||% ""), paste0("[^.;|]*(?:", leafless_flowering_re, ")[^.;|]*")))
+  addc("leaf_phenology", collapse_text(c(habit_txt, gen_txt, lwf_txt), " | "),
+       c(if (orchid_mode) c(phenology_dict, "(?:withered|withering|shrivelled|dried) (?:at|by|before) (?:the time of )?(?:flowering|anthesis)(?: time)?" = "withered_at_flowering") else phenology_dict,
+         setNames("leafless_while_flowering", leafless_flowering_re)),
        prep_fun = if (legume_mode) function(x) str_remove_all(x, "\\b(?:semi-)?deciduous (?!phyllodes|leaves|foliage|shrubs?|trees?|habit)[a-z-]+") else NULL)
 
   # juvenile leaves
@@ -2175,6 +2254,12 @@ extract_one <- function(r, group_filter = TRUE) {
   # terrestrial orchids, inflorescence_length for epiphytes and lithophytes)
   if (orchid_mode) {
     fs <- m_first(unit_text(u, "inflorescence", subj_re = "flower stem"), "long|tall|high|in length", excl("stems?", "flowers?", "inflorescences?", "racemes?"))
+    # (Thelymitra "Flower stem 200-1000 × 4-9 mm": length × diameter, the unit given once at the end)
+    if (is.null(fs)) {
+      fsx <- str_match(join_units(unit_text(u, "inflorescence", subj_re = "flower stem")) %||% "",
+                       rx(paste0("\\bflower stems?\\b[^;:|0-9]{0,15}?(", num, "(?:\\s*-\\s*", num, ")?)\\s*\u00d7\\s*", num, "(?:\\s*-\\s*", num, ")?\\s*(mm|cm|m)\\b")))
+      if (!is.na(fsx[1])) fs <- list(v = meas_of(paste(fsx[2], fsx[3])), txt = fsx[1])
+    }
     if (!is.null(fs)) addn("orchid_flower_stem_length", fs$v, fs$txt)
   }
   idm <- m_first(unit_text(u, "inflorescence", subj_re = "head|capitul|umbel|glomerule"), "diam|diameter|in diameter|across|wide", in_other)
@@ -2189,7 +2274,10 @@ extract_one <- function(r, group_filter = TRUE) {
   if (!is.null(bpi)) addn("buds_per_inflorescence", bpi$v, bpi$txt)
   # (not the scape of a male / female inflorescence: Lomandra "Female inflorescence ...; scape concealed or to 1.5 cm long")
   scp <- m_first(unit_text(u %>% filter(is.na(entity)), "peduncle", subj_re = "scape"), "long|in length|tall|high", excl("scapes?"))
-  if (!is.null(scp)) addn("plant_height_reproductive", scp$v, paste("[scape]", scp$txt), scale = 1 / 1000)
+  # (orchids: a scape is the flower stem, so it follows the flower-stem rule below: Taeniophyllum, an epiphyte, "scape 4-6 mm long"
+  # is not the plant's height)
+  if (!is.null(scp)) { if (orchid_mode) addn("orchid_flower_stem_length", scp$v, paste("[scape]", scp$txt))
+                       else addn("plant_height_reproductive", scp$v, paste("[scape]", scp$txt), scale = 1 / 1000) }
   ped <- m_first(c(unit_text(u, "peduncle", subj_re = "peduncle"), unit_text(u, "inflorescence")), "long|in length", excl("peduncles?", "scapes?"))
   if (!is.null(ped)) {
     pt <- str_match(mark_extremes(join_units(c(unit_text(u, "peduncle", subj_re = "peduncle"), unit_text(u, "inflorescence")))), rx(paste0("\\b(?:peduncles?)\\b[^;:|]{0,40}?(", meas, ")(?:\\s+or more)?\\s*long")))
@@ -2268,8 +2356,11 @@ extract_one <- function(r, group_filter = TRUE) {
     if (!is.null(spk$L)) addn("spikelet_length", spk$L$v, spk$L$txt, ct[1], ct[2])
     pdl <- m_first(unit_text(uu, "pedicel"), "long|in length", excl("pedicels?"))
     if (is.null(pdl)) {
-      pm <- str_match(mark_extremes(join_units(unit_text(uu, c("flower", "inflorescence", "fruit", "bract"), parts = "any")) %||% ""), rx(paste0("\\bpedicels?\\b[^;:|]{0,30}?(", meas, ")(?:\\s+or more)?\\s*long")))
-      if (!is.na(pm[1])) pdl <- list(v = meas_of(pm[2]), txt = unmark(pm[1]))
+      pm <- str_match(mark_extremes(join_units(unit_text(uu, c("flower", "inflorescence", "fruit", "bract"), parts = "any")) %||% ""), rx(paste0("\\b(elongat[a-z]+ )?pedicels?\\b[^;:|]{0,30}?(", meas, ")(?:\\s+or more)?\\s*long")))
+      # (Didymoplexis "Capsules erect, ... on elongated pedicels 30-40 cm long": the pedicel lengthens after flowering, so this is the
+      # pedicel length when fruiting, on a phenological_stage row; user's choice 2026-10-27)
+      if (orchid_mode && !is.na(pm[1]) && !is.na(pm[2])) { addn("pedicel_length", meas_of(pm[3]), unmark(pm[1]), "phenological_stage", "fruiting"); pm[1] <- NA }
+      if (!is.na(pm[1])) pdl <- list(v = meas_of(pm[3]), txt = unmark(pm[1]))
     }
     if (!is.null(pdl)) addn("pedicel_length", pdl$v, pdl$txt, ct[1], ct[2])
     br <- m_first(unit_text(uu, "bract", subj_re = "^(?:the )?(?:floral |flower |subtending )?bracts?$"), "long|in length", excl("bracts?"))
@@ -2688,6 +2779,8 @@ extract_one <- function(r, group_filter = TRUE) {
     if (orchid_mode) {
       cue_re <- str_replace(cue_re, "\\)\\\\b$", "|wet years|wet seasons|dry years|wetter than normal seasons)\\\\b")
       orch_cue <- "|\\b(?:in|influenced by)\\b[^.;]{0,25}\\b(?:wet years|wet seasons|dry years|wetter than normal seasons|years of good (?:[a-z]+ )?rain\\w*)|influenced by rain\\w*"
+      # (Pterostylis pyramidalis "plants respond to summer fires by flowering strongly")
+      orch_cue <- paste0(orch_cue, "|\\brespond\\w* to (?:[a-z]+ ){0,3}(?:(?:bush|wild)?fires?|burns?)\\b[^.;]{0,5}\\bby flowering")
     }
     cue_dict <- c("(?:summer|wet[- ]season|monsoon(?:al)?) rain\\w*|rain\\w* (?:in|during) (?:the )?(?:summer|wet season)|rain\\w* of the (?:wet season|wet|build-up|monsoon)|wet season|the wet\\b|monsoon\\w*" = "rain_summer",
                   "winter rain\\w*|rain\\w* (?:in|during) winter" = "rain_winter", "autumn rain\\w*|rain\\w* (?:in|during) autumn" = "rain_autumn",
@@ -2697,9 +2790,15 @@ extract_one <- function(r, group_filter = TRUE) {
                   "flood\\w*|inundat\\w*|water levels?" = "floods", "heat" = "heat")
     # (temperate "wet seasons" / "wet years" are rainy years, not the tropical wet season)
     if (orchid_mode) { names(cue_dict)[1] <- str_replace_all(names(cue_dict)[1], "season", "season(?!s)")
-                       cue_dict <- c(cue_dict, "wet years|wet seasons|dry years|wetter than normal seasons" = "rain") }
+                       cue_dict <- c(cue_dict, "wet years|wet seasons|dry years|wetter than normal seasons" = "rain")
+                       # (Dendrobium crumenatum "flowering simultaneously 8-9 days after ... a sudden drop in temperature following heavy rain":
+                       # the level low_temperature_following_rain, also scored rain; user's choice 2026-10-27)
+                       # (scan_terms tries the longest patterns first, so this one is matched before the generic "rain")
+                       cue_dict <- c("(?:sudden |marked |sharp )?(?:drop|fall|decrease) in (?:air |night )?temperatures? (?:following|after) (?:a |the )?(?:heavy |good |soaking )?(?:rain\\w*|storms?|thunderstorms?)" = "low_temperature_following_rain rain", cue_dict) }
     cl <- unlist(map(sentences(cue_src), ~ str_split(.x, ";\\s*")[[1]]))
     cl <- cl[str_detect(cl, rx(cue_re))]
+    # (Diuris dendrobioides "A hardy orchid, even flowering in dry years": flowering despite drought is not a rainfall cue)
+    if (orchid_mode) cl <- cl[!str_detect(cl, rx("\\beven (?:flower\\w* )?in dry (?:years|seasons)\\b"))]
     for (k in names(cue_kw)) {
       ck <- cl[str_detect(cl, rx(cue_kw[[k]]))]
       # the fire / rainfall must be the trigger: "flowers after fire", "germinates following rain", "in response to rainfall"
@@ -2707,11 +2806,22 @@ extract_one <- function(r, group_filter = TRUE) {
       # capsules exploding "in response to wetting or drying" and fruits "washed ashore during the monsoon" are dehiscence /
       # dispersal, not cues
       ck <- ck[!str_detect(ck, rx("\\b(?:explod\\w*|dehisc\\w*|flung|washed|flotsam|dispers\\w*|carried)\\b"))]
+      # (orchids standing in water in wet seasons is habitat, not a cue: Pterostylis falcata "In wet seasons, the flowering plants are often
+      # found growing in water", Prasophyllum drummondii "It flowers in wet seasons with the bases of the plants submerged in water")
+      if (orchid_mode) ck <- ck[!str_detect(ck, rx("\\bwet (?:seasons|years)\\b[^.;|]{0,60}\\b(?:in water|submerged)\\b"))]
       if (!length(ck)) next
       tr <- paste0(k, "_cues")
       dsc <- collapse_text(ck, " | ")
       # (case-sensitive: the month "May" is not a hedge)
       mapped <- ck[!str_detect(ck, cue_hedge)]
+      # (orchids, kept as text only: visibility after fire is not flowering, Pterostylis frenchii "Although this species flowers in unburnt
+      # bush, it is easier to see after summer fires" (skill rule); nor is fire acting through the habitat, P. heberlei "The shrubby habitat
+      # of this species becomes densely overgrown soon after fire, inhibiting the flowering of the orchid"; Prasophyllum nitidum "This species
+      # is more frequently seen after fire", Pterostylis scapula "The exceptionally robust plants are sometimes seen in the season after summer fires")
+      # (but not clauses that also state the response: Corybas abditus "Flowering is enhanced by summer fires and the plants are much easier
+      # to find in burnt habitat")
+      if (orchid_mode) mapped <- mapped[!(str_detect(mapped, rx("\\b(?:easier|more easily) (?:to )?(?:see|seen|find|found|detect\\w*|locate\\w*)\\b|\\bovergrown\\b[^.;|]{0,20}\\bafter\\b[^.;|]{0,15}\\bfires?\\b|\\b(?:seen|noticed|observed|found)\\b[^.;|]{0,20}\\b(?:after|following)\\b[^.;|]{0,20}\\b(?:fires?|burns?)\\b|\\brecorded\\b[^.;|]{0,60}\\b(?:after|following)\\b[^.;|]{0,20}\\b(?:fires?|burns?)\\b")) &
+                                            !str_detect(mapped, rx("\\b(?:enhanced|stimulated|promoted|increased|induced|triggered|only|mainly|profuse\\w*|abundan\\w*|en masse)\\b")))]
       d_use <- if (k == "flowering") cue_dict[cue_dict != "smoke" & cue_dict != "heat"] else cue_dict
       # ("mainly after the Wet": the commonness word reaches across the trigger words)
       # "after winter or summer rainfall" -> "winter rain or summer rainfall"
@@ -2732,14 +2842,45 @@ extract_one <- function(r, group_filter = TRUE) {
         add(rec_cat("post_fire_recruitment", h %>% filter(value == "fire") %>% mutate(value = "post_fire_recruitment") %>% slice(1), dsc) %>% mutate(desc = dsc))
       # flowering after fire is also post_fire_flowering, mapped only when the strength of the response is stated
       if (k == "flowering" && nrow(h) && any(h$value == "fire")) {
-        pf <- case_when(
-          str_detect(mtxt, rx("\\b(?:not|never) (?:dependent on|requir\\w+|need\\w*) (?:a )?fire|irrespective of fire|regardless of fire|equally (?:well )?in burnt and unburnt")) ~ "fire_independent_flowering",
-          str_detect(mtxt, rx("\\b(?:only|exclusively|predominantly|largely) (?:after|following|in response to) (?:a |the )?(?:[a-z]+ ){0,2}(?:bush|wild)?fires?|\\bonly in the (?:first )?(?:year|season|spring|summer|autumn|winter|growing season) (?:after|following) (?:a |the )?(?:[a-z]+ ){0,2}(?:bush|wild)?fires?|rarely (?:flowers?|flowering) (?:in the )?(?:absence of|without) fire|(?:absent|rare) in unburnt")) ~ "fire_dependent_flowering",
-          str_detect(mtxt, rx("\\b(?:best|most prolifically|more prolifically|profusely|prolifically|abundantly|more abundantly|heavily|enhanced|stimulated|promoted|mass(?:ed)?|mainly|mostly|particularly|especially|increased|freely|more freely) (?:flowering )?(?:in the season )?(?:after|following|in response to|by) (?:a |the )?(?:recent )?(?:[a-z]+ ){0,2}(?:bush|wild)?fires?|fire[- ](?:stimulated|enhanced|promoted)|(?:greater|increased) (?:profusion|numbers|flowering) after fire|enhanced,? but not dependent on|promoted when [^.;|]{0,30}\\bburnt|enhanced in [^.;|]{0,40} and by (?:a |the )?(?:[a-z]+ ){0,2}(?:bush|wild)?fires?")) ~ "fire_enhanced_flowering",
-          # ("Flowering is enhanced in wet seasons, and strongly inhibited following hot summer fires")
-          str_detect(mtxt, rx("\\b(?:inhibited|suppressed|reduced|prevented|depressed) (?:by|after|following) (?:a |the )?(?:[a-z]+ ){0,2}(?:bush|wild)?fires?")) ~ "fire_suppressed_flowering",
-          TRUE ~ "")
-        add(tibble(trait = "post_fire_flowering", value = pf, desc = dsc, min = NA, max = NA, ctx_type = NA, ctx_value = NA, qualifier = NA_character_, kind = "cat"))
+        # "Mainly flowers after fire", "flowering predominantly after fires": fire-dependent, with the source's word as commonness_qualifier
+        # (user's choice 2026-10-27; earlier "mainly" was read as fire-enhanced)
+        fire_q <- if (orchid_mode) "(?:(?:bush|wild)?fires?|bush fires?|burns?|burning|burnt)" else "(?:(?:bush|wild)?fires?|bush fires?)"
+        pf_q <- str_match(mtxt, rx(paste0("\\b(mainly|mostly|predominantly|largely) (?:flowers? |flowering )?(?:in the (?:season|year|spring) )?(?:after|following|in response to) (?:a |the )?(?:[a-z]+ ){0,4}", fire_q)))[, 2]
+        # (Orchidaceae, Jones 2021 wording: wider post-fire patterns, "burn" words, and fire-inhibited flowering at a distance)
+        if (orchid_mode) {
+          fire_n <- "(?:(?:bush|wild)?fires?|bush fires?|burns?|burning|burnt)"
+          pf <- case_when(
+            str_detect(mtxt, rx("\\b(?:not|never) (?:dependent on|requir\\w+|need\\w*) (?:a )?fire|irrespective of fire|regardless of fire|equally (?:well )?in burnt and unburnt")) ~ "fire_independent_flowering",
+            !is.na(pf_q) ~ "fire_dependent_flowering",
+            # ("This species only flowers in the year after a summer fire")
+            str_detect(mtxt, rx(paste0("\\b(?:only|exclusively|predominantly|largely) (?:after|following|in response to) (?:a |the )?(?:[a-z]+ ){0,4}", fire_n, "|\\bonly (?:flowers? |flowering )?in the (?:first )?(?:year|season|spring|summer|autumn|winter|growing season) (?:after|following) (?:a |the )?(?:[a-z]+ ){0,3}", fire_n, "|rarely (?:flowers?|flowering) (?:in the )?(?:absence of|without) fire|\\brarely without (?:a )?fires?\\b|(?:absent|rare) in unburnt"))) ~ "fire_dependent_flowering",
+            # ("Flowering is enhanced in wet seasons, and strongly inhibited following hot summer fires"; Cryptostylis "Flowering is inhibited in
+            # the first year or two after a fire")
+            str_detect(mtxt, rx(paste0("\\b(?:inhibited|suppressed|reduced|prevented|depressed|impeded)\\b[^.;|]{0,40}\\b(?:by|after|following) (?:a |the )?(?:[a-z]+ ){0,3}", fire_n))) ~ "fire_suppressed_flowering",
+            str_detect(mtxt, rx(paste0("\\b(?:best|most prolifically|more prolifically|profusely|prolifically|abundantly|more abundantly|heavily|enhanced|stimulated|promoted|mass(?:ed)?|particularly|especially|increased|freely|more freely) (?:flowering )?(?:in the season )?(?:after|following|in response to|by) (?:a |the )?(?:recent )?(?:[a-z]+ ){0,2}(?:bush|wild)?fires?|fire[- ](?:stimulated|enhanced|promoted)|(?:greater|increased) (?:profusion|numbers|flowering) after fire|enhanced,? but not dependent on|promoted when [^.;|]{0,30}\\bburnt|enhanced in [^.;|]{0,40} and by (?:a |the )?(?:[a-z]+ ){0,2}(?:bush|wild)?fires?",
+                                       # ("strongly enhanced in the year following a fire", "dramatically stimulated by, but not dependant on, summer fires",
+                                       # "promoted by burning", "flowers more profusely in years after a fire", "Flowers in abundance after summer fires",
+                                       # "flowers sparsely except after fires")
+                                       "|\\b(?:enhanced|stimulated|promoted|increased)\\b[^.;|]{0,45}?\\b", fire_n,
+                                       "|\\b(?:profusely|strongly|in abundance|abundantly|prolifically|better)\\b[^.;|]{0,30}\\b(?:after|following)\\b[^.;|]{0,25}?\\b", fire_n,
+                                       "|\\b(?:sparsely|rarely|poorly|seldom) except (?:after|following) (?:a )?", fire_n,
+                                       # ("Flowers in the absence of fire, but is more frequent following a burn", "mass flowering is common after hot summer fires", "usually
+                                       # flowering en masse the following season", "plants respond to summer fires by flowering strongly")
+                                       "|\\bmore frequent(?:ly)?\\b[^.;|]{0,15}\\b(?:after|following)\\b[^.;|]{0,15}?\\b", fire_n,
+                                       "|\\bmass flowering\\b|\\b(?:flowering|flowers?) en masse\\b|\\brespond\\w* to (?:[a-z]+ ){0,3}", fire_n, " by flowering"))) ~ "fire_enhanced_flowering",
+            TRUE ~ "")
+        } else {
+          pf <- case_when(
+            str_detect(mtxt, rx("\\b(?:not|never) (?:dependent on|requir\\w+|need\\w*) (?:a )?fire|irrespective of fire|regardless of fire|equally (?:well )?in burnt and unburnt")) ~ "fire_independent_flowering",
+            !is.na(pf_q) ~ "fire_dependent_flowering",
+            str_detect(mtxt, rx("\\b(?:only|exclusively|predominantly|largely) (?:after|following|in response to) (?:a |the )?(?:[a-z]+ ){0,2}(?:bush|wild)?fires?|\\bonly in the (?:first )?(?:year|season|spring|summer|autumn|winter|growing season) (?:after|following) (?:a |the )?(?:[a-z]+ ){0,2}(?:bush|wild)?fires?|rarely (?:flowers?|flowering) (?:in the )?(?:absence of|without) fire|(?:absent|rare) in unburnt")) ~ "fire_dependent_flowering",
+            str_detect(mtxt, rx("\\b(?:best|most prolifically|more prolifically|profusely|prolifically|abundantly|more abundantly|heavily|enhanced|stimulated|promoted|mass(?:ed)?|particularly|especially|increased|freely|more freely) (?:flowering )?(?:in the season )?(?:after|following|in response to|by) (?:a |the )?(?:recent )?(?:[a-z]+ ){0,2}(?:bush|wild)?fires?|fire[- ](?:stimulated|enhanced|promoted)|(?:greater|increased) (?:profusion|numbers|flowering) after fire|enhanced,? but not dependent on|promoted when [^.;|]{0,30}\\bburnt|enhanced in [^.;|]{0,40} and by (?:a |the )?(?:[a-z]+ ){0,2}(?:bush|wild)?fires?")) ~ "fire_enhanced_flowering",
+            # ("Flowering is enhanced in wet seasons, and strongly inhibited following hot summer fires")
+            str_detect(mtxt, rx("\\b(?:inhibited|suppressed|reduced|prevented|depressed) (?:by|after|following) (?:a |the )?(?:[a-z]+ ){0,2}(?:bush|wild)?fires?")) ~ "fire_suppressed_flowering",
+            TRUE ~ "")
+        }
+        add(tibble(trait = "post_fire_flowering", value = pf, desc = dsc, min = NA, max = NA, ctx_type = NA, ctx_value = NA,
+                   qualifier = if (pf == "fire_dependent_flowering" && !is.na(pf_q)) pf_q else NA_character_, kind = "cat"))
         # (fire that suppresses flowering is not a flowering cue)
         if (pf == "fire_suppressed_flowering") h <- h %>% filter(value != "fire")
       }
@@ -2755,6 +2896,32 @@ extract_one <- function(r, group_filter = TRUE) {
                           "rhyolit\\w*" = "rhyolite", "serpentin\\w*" = "serpentinite", "dolerit\\w*" = "dolerite", "schists?" = "schist", "gneiss\\w*" = "gneiss",
                           "dolomit\\w*" = "dolomite", "conglomerates?" = "conglomerate", "mudstones?" = "mudstone", "siltstones?" = "siltstone", "cherts?" = "chert",
                           "greenstones?" = "greenstone", "slates?" = "slate", "quartz(?! ?ite)" = "quartz", "volcanic" = "volcanic", "gypsum|gypseous" = "gypsum"))
+
+  # ---- flowering predictability (candidate trait flowering_predictability, user's request 2026-10-27; Orchidaceae for now): whether
+  # flowering is irregular in time. Draft values, in text order: sporadic (within a season or the year: "Flowers sporadically",
+  # "sporadic bursts / flushes / intervals", "intermittent spasms", "spasmodic intervals"), erratic (between years: "Flowering is erratic
+  # from year to year", "Flowering occurs irregularly, sometimes with many years between events", "flowers infrequently") and
+  # synchronous (gregarious: "all plants in an area flowering simultaneously", "most plants in an area flowering synchronously").
+  # Phenology / Ecology / Notes only (in descriptions "flowers irregular" means zygomorphic); hedged clauses stay text only.
+  if (orchid_mode) {
+    fp_src <- collapse_text(c(prep(r[["Phenology"]]), prep(r[["Ecology"]]), prep(r[["Notes"]])), " ")
+    fp_terms <- c("\\bsporadic(?:ally)?\\b|\\bspasmodic\\w*|\\bintermittent(?:ly)? (?:spasms|flushes|bursts|flowering)\\b|\\bin (?:sporadic )?(?:bursts|flushes|spasms)\\b" = "sporadic",
+                  "\\berratic\\w*|\\b(?:flower\\w*|occurs) irregularly\\b|\\bflowers? infrequently\\b|\\bflowering is infrequent\\b" = "erratic",
+                  # (synchronous only for plants: Bogoria "Sections of flowers on the racemes open simultaneously" is the raceme)
+                  "\\bplants\\b[^.;|]{0,40}\\b(?:synchronous\\w*|simultaneously|at (?:the )?same time)\\b" = "synchronous")
+    if (!is.na(fp_src)) {
+      fp_cl <- unlist(map(sentences(fp_src), ~ str_split(.x, ";\\s*")[[1]]))
+      fp_cl <- fp_cl[str_detect(fp_cl, rx(paste(names(fp_terms), collapse = "|"))) & str_detect(fp_cl, rx("\\b(?:flower\\w*|bloom\\w*|open\\w*)\\b"))]
+      if (length(fp_cl)) {
+        fp_txt <- paste(fp_cl[!str_detect(fp_cl, rx("\\b(?:probably|probable|possibly|possible|perhaps|apparently|thought to|likely)\\b"))], collapse = " | ")
+        hits <- map_dfr(names(fp_terms), function(p) { loc <- str_locate_all(fp_txt, rx(p))[[1]]
+          if (nrow(loc)) tibble(pos = loc[, 1], value = fp_terms[[p]]) else NULL })
+        vals <- if (nrow(hits)) hits %>% arrange(pos) %>% pull(value) %>% unique() else character(0)
+        add(tibble(trait = "flowering_predictability", value = paste(vals, collapse = " "), desc = collapse_text(fp_cl, " | "), min = NA, max = NA,
+                   ctx_type = NA, ctx_value = NA, qualifier = NA_character_, kind = "cat"))
+      }
+    }
+  }
 
   # ---- time of day the flowers open (candidate trait flower_opening_time; draft values day, morning, afternoon, evening,
   # night, in text order): "flowers open during the day, closing at night", "opening in the morning", "day-flowering",
@@ -2932,8 +3099,24 @@ copydown_exclude <- tribble(
   # Blepharoglossum "dense clumps with thin, spreading roots": root posture
   "Blepharoglossum", "stem_growth_habit",
   # Nymphaea "the floating lamina ... slightly undulate" is N. ondinea only; filaments "either ... membranous, or ... tough or membranous"
-  "Nymphaea", "leaf_lamina_posture", "Nymphaea", "filament_texture"
+  "Nymphaea", "leaf_lamina_posture", "Nymphaea", "filament_texture",
+  # Cymbidium "with pseudobulbs or slender woody stems" (C. suave has no pseudobulbs)
+  "Cymbidium", "storage_organ",
+  # "spreading" roots or colonies, not the stems: Geodorum, Pachystoma and Luisia "spreading roots", Cyrtostylis "spreading clonal
+  # colonies" (also handled in the stem_growth_habit text; listed here for the genus descriptions)
+  "Geodorum", "stem_growth_habit", "Pachystoma", "stem_growth_habit", "Luisia", "stem_growth_habit", "Cyrtostylis", "stem_growth_habit",
+  # Erythrorchis "usually climbing on tree trunks": a climber rooted in the ground, not an epiphyte
+  "Erythrorchis", "plant_growth_substrate",
+  # Trachoma "flowers ... are sometimes produced in large flushes with all the plants in an area flowering synchronously" (hedged; vetted
+  # as "sometimes"); Vanilla "Leaves absent, or if present, ..." (V. planifolia has large leaves)
+  "Trachoma", "flowering_predictability", "Vanilla", "leaf_length_type", "Vanilla", "leaf_type"
 )
+# groups whose description stitches together several segregate genera, so no statement holds throughout: Dendrobium sens. lat.
+# ("includes the following descriptions from Jones (2021): Australorchis ...: Epiphytic orchids ... Ceraia ...: ... Conostalix ...:
+# Terrestrial clumping orchids ..."); likewise Prasophyllum sens. lat. ("Prasophyllum: deciduous, terrestrial ...", then Paraprasophyllum)
+# and Pterostylis sens. lat. (Bunochilus, Diplodium, Hymenochilus, Oligochaetochilus, Pharochilum, Plumatichilos, Pterostylis, Ranorchis,
+# Speculantha, Stamnorchis, Urochilus)
+copydown_exclude_groups <- c("Dendrobium", "Prasophyllum", "Pterostylis")
 
 # ---------------------------------------------------------------- overrides
 # split calendars ("in northern populations ... in southern populations") and other phrasing the parser can't read
@@ -2964,6 +3147,19 @@ if (file.exists(eco_file)) {
                                                max = ifelse(str_detect(value, "^min:"), NA, num_part(value, "max")),
                                                ctx_type = NA_character_, ctx_value = NA_character_, qualifier = commonness_qualifier,
                                                scoring = na_if(trait_scoring_method, ""), kind = "num"))
+}
+
+# ecology values that differ by region, vetted by reading the text (user's rule 2026-10-27: one row per value, with the region as a
+# population_region context): they replace the values extracted for that taxon and trait
+# (Cyanicula gemmata "Flowers profusely only in the spring following a summer burn, although plants from inland localities can flower
+# without fire": fire-dependent in other localities, fire-enhanced inland)
+evr_file <- file.path(raw_dir, "ecology_vetted_regions.csv")
+if (file.exists(evr_file)) {
+  evr <- read_csv(evr_file, show_col_types = FALSE, col_types = cols(.default = "c")) %>% filter(taxon_name %in% main$taxon_name)
+  if (!"scoring" %in% names(recs)) recs$scoring <- NA_character_
+  recs <- recs %>% filter(!(paste(taxon_name, trait) %in% paste(evr$taxon_name, evr$trait_name) & is.na(scoring)))
+  recs <- bind_rows(recs, evr %>% transmute(taxon_name, trait = trait_name, value, desc = evidence, min = NA_real_, max = NA_real_,
+                                            ctx_type = NA_character_, ctx_value = NA_character_, qualifier = NA_character_, region = population_region))
 }
 
 # ---------------------------------------------------------------- species -> infraspecific inheritance
@@ -3012,11 +3208,11 @@ universal <- recs_hi %>%
   group_by(group_name, trait, value) %>% filter(n_distinct(part) == first(n_parts)) %>% ungroup() %>%
   mutate(facet = facet_of(trait, value)) %>% anti_join(hi_variable, by = c("group_name", "trait", "facet")) %>%
   semi_join(hi_full_vals, by = c("group_name", "trait", "value")) %>%
-  anti_join(copydown_exclude, by = c("group_name", "trait")) %>%
+  anti_join(copydown_exclude, by = c("group_name", "trait")) %>% filter(!group_name %in% copydown_exclude_groups) %>%
   select(group_name, group_rank, trait, value, desc) %>% distinct(group_name, trait, .keep_all = TRUE)
 own_tv <- recs %>% filter(!is.na(value), value != "", !trait %in% c("flowering_time", "fruiting_time")) %>%
   group_by(taxon_name, trait) %>% summarise(vals = paste(value, collapse = " "), .groups = "drop") %>%
-  left_join(main %>% transmute(taxon_name, genus = word(taxon_name, 1), family), by = "taxon_name")
+  left_join(main %>% transmute(taxon_name, genus = gkey(taxon_name), family), by = "taxon_name")
 # Values that can co-occur do not conflict (a plant can be tufted and rhizomatous): for these traits a member taxon
 # contradicts the group value only with another value from the same mutually exclusive set (erect vs prostrate).
 compatible_traits <- c("storage_organ", "plant_growth_substrate", "plant_physical_defence_structures", "plant_climbing_mechanism",
@@ -3038,7 +3234,7 @@ universal <- universal %>% rowwise() %>%
                                                         function(v) conflicts(trait, value, v)))) %>% ungroup()
 rejected <- universal %>% filter(members_agree < members_reporting)
 universal <- universal %>% filter(members_agree == members_reporting)
-taxa <- main %>% transmute(taxon_name, genus = word(taxon_name, 1), family)
+taxa <- main %>% transmute(taxon_name, genus = gkey(taxon_name), family)
 copied <- list()
 for (lvl in c("genus", "family")) {
   have <- bind_rows(recs %>% select(taxon_name, trait), if (length(copied)) bind_rows(copied) %>% select(taxon_name, trait)) %>% distinct()
@@ -3059,6 +3255,11 @@ if ("orchid_flower_stem_length" %in% recs$trait) {
   epi <- recs %>% filter(trait == "plant_growth_substrate", str_detect(coalesce(value, ""), "epiphyte|lithophyte")) %>% distinct(taxon_name) %>% pull()
   # (and for reed-stem orchids whose own height is given, "Stems 1-1.5 m tall": the flower stem is then a terminal inflorescence)
   own_ht <- recs %>% filter(trait == "plant_height", is.na(scoring)) %>% distinct(taxon_name) %>% pull()
+  # (and a flower stem shorter than the plant's own leafy stems is a terminal inflorescence: Tropidia "Stems erect, 100-200 mm long ...
+  # Inflorescence terminal. Flower stem 10-20 mm long")
+  st_max <- recs %>% filter(trait == "stem_length", is.na(scoring)) %>% group_by(taxon_name) %>% summarise(st = max(c(min, max), na.rm = TRUE), .groups = "drop")
+  own_ht <- c(own_ht, recs %>% filter(trait == "orchid_flower_stem_length") %>% inner_join(st_max, by = "taxon_name") %>%
+                filter(coalesce(max, min) < st) %>% distinct(taxon_name) %>% pull())
   ofs <- recs %>% filter(trait == "orchid_flower_stem_length") %>% mutate(desc = paste("[flower stem]", desc))
   terr <- ofs %>% filter(!taxon_name %in% c(epi, own_ht))
   # every flower stem is an inflorescence length; a terrestrial orchid's is also the plant's height when flowering
@@ -3123,7 +3324,7 @@ inf_rock_re <- "\\b(?:on (?:the )?(?:[a-z-]+ ){0,2}(?:rocks?|boulders?)|among (?
 inf_water_strong <- "\\b(?:aquatic|submerged|submersed|free-floating|floating|in (?:shallow |still |running |fresh |brackish |deep |standing )?water|semi-?aquatic|epiphyt\\w*|hemi-?epiphyt\\w*|lithophyt\\w*|strangl\\w*|on (?:the )?(?:[a-z-]+ ){0,2}(?:rocks?|boulders?|cliffs?|trees?|branches|trunks?)|in rock crevices|crevices|marine|tidal|intertidal|mangroves?|estuar\\w*|rheophyt\\w*|parasit\\w*|on hosts?)\\b"
 inf_water_strong_leg <- str_replace(str_replace(inf_water_strong, fixed("rocks?|boulders?|cliffs?|"), ""), fixed("|in rock crevices|crevices"), "")
 inf_water_wet <- "\\b(?:swamps?|swampy|marsh\\w*|bogs?|boggy|ponds?|lakes?|lagoons?|billabongs?|waterholes?|creek ?beds?|stream ?beds?|river ?beds?|beds of|inundat\\w*|flooded|flooding|waterlogged|mud\\w*|wetlands?|seepages?|soaks?|claypans?|gilgais?|saline|salt ?lakes?|stream margins|water's edge|edges? of (?:streams|creeks|rivers|pools|lakes))\\b"
-inf_noleaf_re <- "\\b(?:phyllod\\w*|cladod\\w*|phyllocla\\w*|leafless(?! (?:flower(?:ing)? )?(?:portions?|parts?|sections?|lengths?|internodes?|stems?|scapes?|peduncles?|inflorescences?))|aphyllous|photosynthetic stems?|stems? (?:green and )?photosynthetic|assimilat\\w* (?:stems?|branchlets?)|scale-?like leaves|(?<!upper |uppermost |floral |cauline |distal |stem |bract-like |inflorescence )leaves (?:reduced|scale-like|minute|vestigial|caducous|early caducous|soon falling|ephemeral)|reduced to (?:minute )?scales|scale leaves|leaves (?:absent|0)|broom-like|switch-like|saprophyt\\w*|mycoheterotroph\\w*|achlorophyll\\w*|(?:without|lacking|lacks) chlorophyll|non-green|holoparasit\\w*)\\b"
+inf_noleaf_re <- "\\b(?:phyllod\\w*|cladod\\w*|phyllocla\\w*|(?<!flowering plants )(?<!flowering plants are )(?<!flowering plant is )leafless(?! (?:at|when|while|during) (?:the time of )?(?:flowering|anthesis))(?! (?:flower(?:ing)? )?(?:portions?|parts?|sections?|lengths?|internodes?|stems?|scapes?|peduncles?|inflorescences?))|aphyllous|photosynthetic stems?|stems? (?:green and )?photosynthetic|assimilat\\w* (?:stems?|branchlets?)|scale-?like leaves|(?<!upper |uppermost |floral |cauline |distal |stem |bract-like |inflorescence )leaves (?:reduced|scale-like|minute|vestigial|caducous|early caducous|soon falling|ephemeral)|reduced to (?:minute )?scales|scale leaves|leaves (?:absent|0)|broom-like|switch-like|saprophyt\\w*|mycoheterotroph\\w*|achlorophyll\\w*|(?:without|lacking|lacks) chlorophyll|non-green|holoparasit\\w*)\\b"
 inf_par_re <- "\\b(?:parasit\\w*|hemiparasit\\w*|haustor\\w*|host plants?|on the roots of|attached to (?:the )?roots|saprophyt\\w*|mycoheterotroph\\w*|achlorophyll\\w*)\\b"
 inf_nonflat_re <- "\\b(?:terete|subterete|semi-?terete|needle\\w*|acicular|subulate|filiform|setaceous|involute|convolute|inrolled|rolled|scale-like|cylindrical|triquetrous|trigonous|quadrangular|channelled|grooved above)\\b"
 # (Fabaceae: phyllodes are the leaves of most Acacia; a flat phyllode is a broadleaf, so phyllode wording does not block leaf_type)
@@ -3192,14 +3393,15 @@ recs <- recs %>%
          entity_measured = ifelse(ctx_type %in% "entity_measured", ctx_value, NA),
          population_region = coalesce(region, ifelse(ctx_type %in% "population_region", ctx_value, NA)),
          plant_organ_measured = ifelse(ctx_type %in% "plant_organ_measured", ctx_value, NA),
+         phenological_stage = ifelse(ctx_type %in% "phenological_stage", ctx_value, NA),
          trait_scoring_method = scoring) %>%
   # categorical values found twice for the same row are merged (stem spines + spiny leaf teeth); for numbers the first statement wins
-  group_by(taxon_name, trait, commonness_qualifier, leaf_division, entity_measured, population_region, plant_organ_measured, trait_scoring_method) %>%
+  group_by(taxon_name, trait, commonness_qualifier, leaf_division, entity_measured, population_region, plant_organ_measured, phenological_stage, trait_scoring_method) %>%
   summarise(is_num = first(kind) == "num",
             desc = if (first(kind) == "num") first(desc) else collapse_text(desc, "; "),
             value = if (first(kind) == "num") NA_character_ else collapse_unique(value[!is.na(value) & value != ""]),
             min = first(min), max = first(max), extreme_min = first(extreme_min), extreme_max = first(extreme_max), .groups = "drop")
-keys <- c("taxon_name", "commonness_qualifier", "leaf_division", "entity_measured", "population_region", "plant_organ_measured", "trait_scoring_method")
+keys <- c("taxon_name", "commonness_qualifier", "leaf_division", "entity_measured", "population_region", "plant_organ_measured", "phenological_stage", "trait_scoring_method")
 cat_w <- recs %>% filter(!is_num) %>% select(all_of(keys), trait, value, desc) %>%
   pivot_wider(names_from = trait, values_from = c(value, desc), names_glue = "{trait}{ifelse(.value == 'desc', '_description', '')}")
 num_w <- recs %>% filter(is_num) %>% mutate(across(c(min, max, extreme_min, extreme_max), ~ signif(.x, 6))) %>%
@@ -3242,7 +3444,7 @@ num_cols <- num_cols[!str_detect(num_cols, "_extreme_(min|max)$") | map_lgl(num_
 for (cc in cat_cols) if (!cc %in% names(rows)) rows[[cc]] <- NA
 rows <- rows %>% select(all_of(keys), all_of(cat_cols), all_of(num_cols))
 
-ctx <- c("commonness_qualifier", "leaf_division", "entity_measured", "population_region", "plant_organ_measured", "trait_scoring_method")
+ctx <- c("commonness_qualifier", "leaf_division", "entity_measured", "population_region", "plant_organ_measured", "phenological_stage", "trait_scoring_method")
 ids <- main %>% select(taxon_name, family, taxon_rank, foa_url)
 is_main <- rowSums(!is.na(rows[, ctx])) == 0
 out_df <- bind_rows(
@@ -3253,7 +3455,7 @@ out_df <- bind_rows(
   relocate(common_name:notes, .after = last_col()) %>%
   relocate(common_name, biostatus, profile_author, .after = trait_scoring_method) %>%
   mutate(row_order = case_when(!is.na(trait_scoring_method) ~ 5, !is.na(commonness_qualifier) ~ 1, !is.na(population_region) ~ 2,
-                               !is.na(leaf_division) ~ 3, !is.na(entity_measured) ~ 4, !is.na(plant_organ_measured) ~ 4, TRUE ~ 0),
+                               !is.na(leaf_division) ~ 3, !is.na(entity_measured) ~ 4, !is.na(plant_organ_measured) ~ 4, !is.na(phenological_stage) ~ 4, TRUE ~ 0),
          fam_order = match(family, sort(unique(family)))) %>%
   arrange(fam_order, taxon_name, row_order, trait_scoring_method, commonness_qualifier, population_region, leaf_division, entity_measured) %>%
   select(-row_order, -fam_order)
@@ -3334,7 +3536,9 @@ long_of <- function(taxa) {
     mutate(across(everything(), as.character)) %>%
     pivot_longer(-taxon_name, names_to = "trait_name", values_to = "value") %>% filter(!is.na(value), value != "") %>%
     mutate(value_type = NA_character_, measurement_range = NA_character_, value_description = NA_character_)
-  ord_t <- c(trait_order, setdiff(unique(c(cat_l$trait_name, num_l$trait_name)), trait_order))
+  # (traits outside the core list are sorted by name, so the row order does not depend on which other datasets were run)
+  core_t <- trait_order[seq_len(match("post_fire_flowering", trait_order))]
+  ord_t <- c(core_t, sort(setdiff(unique(c(cat_l$trait_name, num_l$trait_name)), core_t)))
   bind_rows(cat_l %>% mutate(.k = 1), num_l %>% mutate(.k = 1), txt_l %>% mutate(.k = 2)) %>%
     left_join(main %>% select(taxon_name, family, taxon_rank, foa_url), by = "taxon_name") %>%
     mutate(.fo = match(family, sort(unique(family))), .to = coalesce(match(trait_name, ord_t), 9999L),
