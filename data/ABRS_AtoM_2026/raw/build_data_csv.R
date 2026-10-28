@@ -79,6 +79,8 @@ families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae
                    "Podocarpaceae", "Podostemaceae", "Polygalaceae", "Polygonaceae", "Polypodiaceae", "Pontederiaceae", "Posidoniaceae",
                    "Potamogetonaceae", "Primulaceae", "Psilotaceae", "Pteridaceae", "Putranjivaceae", "Ranunculaceae", "Resedaceae",
                    "Restionaceae",
+                   # (batch of 2026-10-28: Rhamnaceae - Rutaceae, 912 taxa)
+                   "Rhamnaceae", "Rhizophoraceae", "Ripogonaceae", "Rubiaceae", "Ruppiaceae", "Rutaceae",
                    # Fabaceae (ABRS_Fabaceae_2026, long format), checked in batches of 500 taxa: see partial_n below
                    "Fabaceae")
 # very large families checked in batches of taxa (in name order): only the first N taxa of these families are written
@@ -625,19 +627,21 @@ sec_rules <- tribble(
   "peduncle", "^(?:the )?(?:common )?(?:peduncles?|scapes?)\\b",
   # Araceae spadix zones: not flowers or anthers ("male zone c. 8 cm long", "appendix ... to c. 15 cm long")
   "spadix_part", "^(?:the )?(?:appendix|appendices|(?:female|male|sterile|staminate|pistillate|neuter|fertile) zones?|(?:sterile |naked )?interstices?|neuter organs|staminodes zone)\\b",
-  "inflorescence", "^(?:the )?(?:male |female |staminate |pistillate |terminal |axillary |lateral |fruiting )?(?:inflorescences?|racemes?|spikes?|panicles?|heads?|capitul(?:a|um)|umbels?|cymes?|corymbs?|thyrses?|fascicles?|synflorescences?|conflorescences?|spadix|spadices|glomerules?|cymules?|flower[- ]heads?|rachis|rachises)\\b",
+  "inflorescence", "^(?:the )?(?:male |female |staminate |pistillate |terminal |axillary |lateral |fruiting )?(?:inflorescences?|racemes?|spikes?|panicles?|heads?|capitul(?:a|um)|umbels?|cymes?|corymbs?|thyrses?|fascicles?|synflorescences?|conflorescences?|spadix|spadices|glomerules?|cymules?|flower[- ]heads?|rachis|rachises)\\b(?! bracts?\\b| bracteoles?\\b)",
   # Chenopodiaceae dispersal units: the fruiting bracteoles (Atriplex) or fruiting perianth (Maireana, Sclerolaena) enclose
   # the fruit and are what the flora measures (user's choice: fruit_* sizes on entity_measured rows)
   "diaspore", "^(?:the )?(?:fruiting|fruit-bearing) (?:bracteoles?|perianths?|perianth-tubes?|articles?|spikes?)\\b",
-  "bract", "^(?:the )?(?:floral |flower |inner |outer |subtending |involucral |lower |upper |basal |lowest |uppermost )?(?:bracts?|bracteoles?|prophylls?|spathes?|involucres?|phyllaries)\\b",
+  # ("inflorescence bracts usually scale-like, 1-3 mm long", Zieria: bracts, not the inflorescence)
+  "bract", "^(?:the )?(?:floral |flower |inflorescence |inner |outer |subtending |involucral |lower |upper |basal |lowest |uppermost )?(?:bracts?|bracteoles?|prophylls?|spathes?|involucres?|phyllaries)\\b",
   "pedicel", "^(?:the )?(?:pedicels?|pedicles?)\\b",
   "bud", "^(?:the )?(?:mature |flower )?buds?\\b",
   "flower", "^(?:the )?(?:males|females|staminate ones|pistillate ones)\\b|^(?:the )?(?:male |female |staminate |pistillate |bisexual |hermaphrodite |functionally (?:male|female) |sterile |fertile |ray |disc |marginal |central |outer |inner |lateral |terminal |chasmogamous |cleistogamous |mature |open )?(?:flowers?|florets?|spikelets?)\\b",
   "corona", "^(?:the )?(?:coronas?|paracorolla)\\b",
   "corolla", "^(?:the )?(?:(?:inner and outer|outer and inner|outer|inner|lateral|upper|lower|larger|smaller)(?: [0-9]+| two| three)? )?(?:sepals and petals|petals and sepals|corollas?|petals?|perianth|perianths|tepals?|standard|keel|labellum|dorsal sepal|lateral sepals|operculum|opercula)\\b",
   "calyx", "^(?:the )?(?:calyx|calyces|sepals?|hypanthium|hypanthia|outer perianth whorl)\\b",
-  "androecium", "^(?:the )?(?:(?:abaxial|adaxial|longer|shorter|outer|inner|upper|lower|fertile|staminal) )?(?:pair of )?(?:stamens?|filaments?|anthers?|staminodes?|androecium|pollen|staminal (?:column|tube))\\b",
-  "gynoecium", "^(?:the )?(?:ovary|ovaries|styles?|stigmas?|carpels?|pistils?|gynoecium|ovules?|placentae?|disc|column|indusi(?:a|um))\\b",
+  # ("Female flowers: rudimentary stamens ligulate, to 1 mm long", Zanthoxylum: stamens, not the flower)
+  "androecium", "^(?:the )?(?:(?:abaxial|adaxial|longer|shorter|outer|inner|upper|lower|fertile|staminal|rudimentary|vestigial|sterile|reduced) )?(?:pair of )?(?:stamens?|filaments?|anthers?|staminodes?|androecium|pollen|staminal (?:column|tube))\\b",
+  "gynoecium", "^(?:the )?(?:(?:rudimentary|vestigial|sterile|reduced) )?(?:ovary|ovaries|styles?|stigmas?|carpels?|pistils?|gynoecium|ovules?|placentae?|disc|column|indusi(?:a|um))\\b",
   "fruit", "^(?:the )?(?:(?:mature|ripe|fruiting|intact|hygroscopic|woody|papery|fleshy|dry|indehiscent|dehiscent|globose|ovoid|ellipsoid|young|submature|single|solitary|small|large|winged) )?(?:fruiting carpels?|apocarps?|monocarps?|syncarpi(?:a|um)|fruits?|capsules?|pods?|legumes?|drupes?|berr(?:y|ies)|nuts?|nutlets?|achenes?|cypselas?|cypselae|follicles?|mericarps?|samaras?|siliques?|siliquas?|siliculas?|silicles?|utricles?|infructescences?|cones?|syncarps?|caryops[ie]s|grains?|endocarps?|pericarps?|valves|cocci|schizocarps?|pyrenes?|anthocarps?|fruitlets?|syconi(?:a|um)|figs?|loments?|diaspores?)\\b",
   "seed", "^(?:the )?(?:seeds?|arils?|embryos?|endosperm|testa)\\b",
   "habit", "^(?:the )?(?:plants?|habit)\\b"
@@ -3382,7 +3386,9 @@ copydown_exclude <- tribble(
   "Pittosporaceae", "storage_organ", "Pittosporaceae", "stem_growth_habit", "Pittosporaceae", "flower_scent_production",
   "Plantaginaceae", "leaf_arrangement", "Plantaginaceae", "stem_growth_habit", "Plantaginaceae", "leaf_lobation",
   # Agrostis "Annuals or perennials, rhizomatous, stoloniferous, caespitose or decumbent": alternatives across the species (annuals too)
-  "Agrostis", "storage_organ"
+  "Agrostis", "storage_organ",
+  # Rubiaceae "annual and perennial herbs, epiphytes, climbers, shrubs or trees": a list of alternatives across the family
+  "Rubiaceae", "plant_growth_substrate"
 )
 # groups whose description stitches together several segregate genera, so no statement holds throughout: Dendrobium sens. lat.
 # ("includes the following descriptions from Jones (2021): Australorchis ...: Epiphytic orchids ... Ceraia ...: ... Conostalix ...:
@@ -3604,6 +3610,7 @@ inf_water_strong <- "\\b(?:aquatic|submerged|submersed|free-floating|floating|in
 inf_water_strong <- paste0(inf_water_strong, "|\\b(?:quiet|still|open|stagnant|fresh|eutrophic|mesotrophic) waters\\b|\\b(?:grows|found|floating) in (?:[a-z-]+,? ){0,3}waters\\b")
 # ("midrib submerged", "gland submerged ... within the lamina" are morphology; but Myriophyllum "submerged leaves trifid", Ludwigia
 # "pneumatophores arising from submerged or buried roots" are water plants)
+inf_swamp_re <- "\\b(?:swamps?|swampy|marsh(?:es)?|marshy)\\b"
 inf_water_desc <- "\\b(?:submerged|submersed|floating)(?:,? (?:or|and) [a-z]+)? (?:leaves|leaf|stems?|shoots?|plants?|parts|forms?|roots?|lamina)\\b|\\bif submerged\\b|\\b(?:aquatic|free-floating|semi-?aquatic|epiphyt\\w*|hemi-?epiphyt\\w*|lithophyt\\w*|strangl\\w*|marine|seagrass\\w*|mangroves?)\\b"
 inf_water_strong_leg <- str_replace(str_replace(inf_water_strong, fixed("rocks?|boulders?|cliffs?|"), ""), fixed("|in rock crevices|crevices"), "")
 inf_water_wet <- "\\b(?:swamps?|swampy|marsh\\w*|bogs?|boggy|ponds?|lakes?|lagoons?|billabongs?|waterholes?|creek ?beds?|stream ?beds?|river ?beds?|beds of|inundat\\w*|flooded|flooding|waterlogged|mud\\w*|wetlands?|seepages?|soaks?|claypans?|gilgais?|saline|salt ?lakes?|stream margins|water's edge|edges? of (?:streams|creeks|rivers|pools|lakes))\\b"
@@ -3640,7 +3647,12 @@ inf <- inf %>% mutate(
   # plants may be semiaquatic; a taxon without a growth form is not blocked)
   sub_ok = is.na(sub) & !family %in% inf_fam_aquatic & !genus %in% inf_gen_parasitic & !family %in% c("Loranthaceae", "Viscaceae") &
     !str_detect(stxt, ifelse(family == "Fabaceae", inf_water_strong_leg, inf_water_strong)) & !str_detect(dtxt, inf_water_desc) &
-    (woody | !str_detect(stxt, inf_water_wet)),
+    (woody | !str_detect(stxt, inf_water_wet)) & !str_detect(stxt, inf_swamp_re),
+  # (user, 2026-10-28: plants of swamps or marshes, herbs and woody plants alike, are "terrestrial semiaquatic"; other wet wording,
+  # creek beds, lake margins, seepages ..., leaves herbs unscored)
+  semi_ok = is.na(sub) & !family %in% inf_fam_aquatic & !genus %in% inf_gen_parasitic & !family %in% c("Loranthaceae", "Viscaceae") &
+    !str_detect(stxt, ifelse(family == "Fabaceae", inf_water_strong_leg, inf_water_strong)) & !str_detect(dtxt, inf_water_desc) &
+    str_detect(stxt, inf_swamp_re),
   rock_chk = family == "Fabaceae" & str_detect(txt, inf_rock_re),
   rock_txt = str_extract(txt, paste0("[^.;]{0,60}", inf_rock_re, "[^.;]{0,30}")),
   pho_ok = is.na(pho) & leafy & !family %in% inf_fam_leafless & !genus %in% inf_gen_leafless &
@@ -3659,6 +3671,7 @@ inf_rec <- function(ok, trait, value, why) inf %>% filter(ok) %>%
             ctx_type = NA_character_, ctx_value = NA_character_, qualifier = NA_character_, region = NA_character_, scoring = "inferred", kind = "cat")
 recs <- bind_rows(recs,
   inf_rec(inf$sub_ok & !inf$rock_chk, "plant_growth_substrate", "terrestrial", "no aquatic, epiphytic, lithophytic or marine habit named; growth form and habitat typical of terrestrial plants"),
+  inf_rec(inf$semi_ok, "plant_growth_substrate", "terrestrial semiaquatic", "grows in swamps or marshes"),
   inf_rec(inf$sub_ok & inf$rock_chk, "plant_growth_substrate", "terrestrial", "CHECK: grows on or among rocks, assumed rooted in soil") %>%
     mutate(desc = paste0(str_remove(desc, "\\]$"), ": '", str_squish(inf$rock_txt[inf$sub_ok & inf$rock_chk]), "']")),
   inf_rec(inf$pho_ok, "plant_photosynthetic_organ", "leaf", "leaves described; no leafless, scale-leaved, phyllode, cladode or photosynthetic-stem wording"),
