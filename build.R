@@ -429,9 +429,9 @@ Detombeur_2025_config <- dataset_configure("data/Detombeur_2025/metadata.yml", d
 Detombeur_2025_raw <- dataset_process("data/Detombeur_2025/data.csv", Detombeur_2025_config, schema, resource_metadata, unit_conversions)
 Detombeur_2025 <- dataset_update_taxonomy(Detombeur_2025_raw, taxon_list)
 
-Dilly_2024_config <- dataset_configure("data/Dilly_2024/metadata.yml", definitions)
-Dilly_2024_raw <- dataset_process("data/Dilly_2024/data.csv", Dilly_2024_config, schema, resource_metadata, unit_conversions)
-Dilly_2024 <- dataset_update_taxonomy(Dilly_2024_raw, taxon_list)
+Dilly_2025_config <- dataset_configure("data/Dilly_2025/metadata.yml", definitions)
+Dilly_2025_raw <- dataset_process("data/Dilly_2025/data.csv", Dilly_2025_config, schema, resource_metadata, unit_conversions)
+Dilly_2025 <- dataset_update_taxonomy(Dilly_2025_raw, taxon_list)
 
 Doherty_2021_config <- dataset_configure("data/Doherty_2021/metadata.yml", definitions)
 Doherty_2021_raw <- dataset_process("data/Doherty_2021/data.csv", Doherty_2021_config, schema, resource_metadata, unit_conversions)
@@ -2187,7 +2187,7 @@ austraits_raw <- austraits::bind_databases(
   DeSmedt_2018,
   Detombeur_2021,
   Detombeur_2025,
-  Dilly_2024,
+  Dilly_2025,
   Doherty_2021,
   Dong_2017,
   Dorken_2020,

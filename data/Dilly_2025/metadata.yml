@@ -26,25 +26,14 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: '
-    data %>%
-      mutate(
-        taxon_name = paste(Genus, Species), 
-        life_history = Fire_response,
-        post_fire_recruitment = Fire_response,
-        seedbank_location = Fire_response,
-        resprouting_capacity = Fire_response,
-        location_name = "Two Peoples Bay Nature Reserve",
-        certainty = ifelse(stringr::str_detect(Fire_response, "\\?"), "uncertain value", "certain value"),
-        Thickets = ifelse(Thickets == "x", "thickets", NA),        
-        Sandplains = ifelse(Sandplains == "x", "sandplains", NA),
-        Granites = ifelse(Granites == "x", "outcrops", NA),
-        habitat = paste(Thickets, Sandplains, Granites),
-        habitat = str_replace_all(habitat, "NA", "") %>% str_trim()
-      ) %>%
-      group_by(taxon_name) %>%
-        mutate(obs_number = row_number()) %>%
-      ungroup()'
+  custom_R_code: ' data %>% mutate( taxon_name = paste(Genus, Species), life_history
+    = Fire_response, post_fire_recruitment = Fire_response, seedbank_location = Fire_response,
+    resprouting_capacity = Fire_response, location_name = "Two Peoples Bay Nature
+    Reserve", certainty = ifelse(stringr::str_detect(Fire_response, "\\?"), "uncertain
+    value", "certain value"), habitat = paste( ifelse(Thickets %in% "x", "thickets",
+    ""), ifelse(Sandplains %in% "x", "sandplains", ""), ifelse(Granites %in% "x",
+    "granites", "") ), habitat = stringr::str_squish(habitat) ) %>% group_by(taxon_name)
+    %>% mutate(obs_number = row_number()) %>% ungroup()'
   collection_date: 2015/2025
   taxon_name: taxon_name
   location_name: location_name
@@ -75,7 +64,12 @@ dataset:
     below the granite outcrops; and (3) heath/sedgelands on plains in deep sands,
     with nine quadrats in each of the three habitats.
   original_file: in raw data folder, submitted by author
-  notes: none
+  notes: For resprouters the '+' suffix on fire response codes (RSS+, RSC+) indicate
+    species also recorded as seedlings after the fire (facultative reseeders). Two
+    non-sprouters are also coded '+' (NSS+; Hibbertia cunninghamii and Daviesia incrassata);
+    the meaning of '+' for these is unknown and they are mapped as fire-killed, the
+    same as NSS. Although these is overlap in study species with Hopper_2024, these
+    are separate studies that collected data independently.
 identifiers: .na
 locations:
   Two Peoples Bay Nature Reserve:
@@ -100,6 +94,37 @@ contexts:
 - context_property: observation number
   category: temporal_context
   var_in: obs_number
+- context_property: vegetation type
+  category: entity_context
+  var_in: habitat
+  values:
+  - find: granites
+    value: granite outcrops
+    description: taxon recorded in shrublands on granite outcrops
+  - find: thickets
+    value: slope thickets
+    description: taxon recorded in shrublands/thickets on the slopes below the granite
+      outcrops
+  - find: sandplains
+    value: sandplain heath
+    description: taxon recorded in heath/sedgelands on plains in deep sands
+  - find: thickets granites
+    value: slope thickets and granite outcrops
+    description: taxon recorded in shrublands/thickets on the slopes below the granite
+      outcrops and in shrublands on granite outcrops
+  - find: thickets sandplains
+    value: slope thickets and sandplain heath
+    description: taxon recorded in shrublands/thickets on the slopes below the granite
+      outcrops and in heath/sedgelands on plains in deep sands
+  - find: sandplains granites
+    value: sandplain heath and granite outcrops
+    description: taxon recorded in heath/sedgelands on plains in deep sands and in
+      shrublands on granite outcrops
+  - find: thickets sandplains granites
+    value: all three habitats
+    description: taxon recorded in shrublands on granite outcrops, shrublands/thickets
+      on the slopes below the granite outcrops, and heath/sedgelands on plains in
+      deep sands
 traits:
 - var_in: life_history
   unit_in: .na
@@ -108,14 +133,21 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: Through the use of published information sources (Supplementary material
+  methods: 'Through the use of published information sources (Supplementary material
     file S1) and field observations, the species were classified according to their
     fire response (Miller and Dixon 2014), into the following categories, Annual;
     Fire-ephemeral annual (also known as monocarpic fire ephemerals); Fire-ephemeral
     perennial (also known as polycarpic fire ephemerals);Non-sprouter with non-persistent
     seed; Non-sprouter (also referred to as obligate seeders) with soil stored seed;
     Non-sprouter with canopy stored seed; Resprouter with non-persistent seed; Resprouter
-    with soil stored seed; and Resprouter with canopy stored seed.
+    with soil stored seed; and Resprouter with canopy stored seed. Plant species recorded
+    in the post-fire monitoring quadrats, with their classification into plant fire
+    response (A = Annual; FE = Fire-ephemeral annual; FP = Fire-ephemeral perennial;
+    NSN = Non-sprouter: non-persistent seed; NSS = Non-sprouter: soil stored seed;
+    NSC = Non-sprouter: canopy stored seed; RSN = Resprouter: non-persistent seed;
+    RSS = Resprouter: soil stored seed; RSC = Resprouter: canopy stored seed; * =
+    fire response recorded from this study only (no literature references found);
+    ? = uncertain fire response classification; U = Unknown).'
 - var_in: post_fire_recruitment
   unit_in: .na
   trait_name: post_fire_recruitment
@@ -123,14 +155,24 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: Through the use of published information sources (Supplementary material
+  methods: 'Through the use of published information sources (Supplementary material
     file S1) and field observations, the species were classified according to their
     fire response (Miller and Dixon 2014), into the following categories, Annual;
     Fire-ephemeral annual (also known as monocarpic fire ephemerals); Fire-ephemeral
     perennial (also known as polycarpic fire ephemerals);Non-sprouter with non-persistent
     seed; Non-sprouter (also referred to as obligate seeders) with soil stored seed;
     Non-sprouter with canopy stored seed; Resprouter with non-persistent seed; Resprouter
-    with soil stored seed; and Resprouter with canopy stored seed.
+    with soil stored seed; and Resprouter with canopy stored seed. The resprouters
+    also produced seed (i.e. recorded as both resprouting and seedling), particularly
+    within the Myrtaceae and Proteaceae families. Resprouters marked ''+'' in the
+    species list were also recorded as seedlings after the fire (facultative reseeders).
+    Plant species recorded in the post-fire monitoring quadrats, with their classification
+    into plant fire response (A = Annual; FE = Fire-ephemeral annual; FP = Fire-ephemeral
+    perennial; NSN = Non-sprouter: non-persistent seed; NSS = Non-sprouter: soil stored
+    seed; NSC = Non-sprouter: canopy stored seed; RSN = Resprouter: non-persistent
+    seed; RSS = Resprouter: soil stored seed; RSC = Resprouter: canopy stored seed;
+    * = fire response recorded from this study only (no literature references found);
+    ? = uncertain fire response classification; U = Unknown).'
 - var_in: seedbank_location
   unit_in: .na
   trait_name: seedbank_location
@@ -138,14 +180,21 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: Through the use of published information sources (Supplementary material
+  methods: 'Through the use of published information sources (Supplementary material
     file S1) and field observations, the species were classified according to their
     fire response (Miller and Dixon 2014), into the following categories, Annual;
     Fire-ephemeral annual (also known as monocarpic fire ephemerals); Fire-ephemeral
     perennial (also known as polycarpic fire ephemerals);Non-sprouter with non-persistent
     seed; Non-sprouter (also referred to as obligate seeders) with soil stored seed;
     Non-sprouter with canopy stored seed; Resprouter with non-persistent seed; Resprouter
-    with soil stored seed; and Resprouter with canopy stored seed.
+    with soil stored seed; and Resprouter with canopy stored seed. Plant species recorded
+    in the post-fire monitoring quadrats, with their classification into plant fire
+    response (A = Annual; FE = Fire-ephemeral annual; FP = Fire-ephemeral perennial;
+    NSN = Non-sprouter: non-persistent seed; NSS = Non-sprouter: soil stored seed;
+    NSC = Non-sprouter: canopy stored seed; RSN = Resprouter: non-persistent seed;
+    RSS = Resprouter: soil stored seed; RSC = Resprouter: canopy stored seed; * =
+    fire response recorded from this study only (no literature references found);
+    ? = uncertain fire response classification; U = Unknown).'
 - var_in: resprouting_capacity
   unit_in: .na
   trait_name: resprouting_capacity
@@ -153,14 +202,21 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: Through the use of published information sources (Supplementary material
+  methods: 'Through the use of published information sources (Supplementary material
     file S1) and field observations, the species were classified according to their
     fire response (Miller and Dixon 2014), into the following categories, Annual;
     Fire-ephemeral annual (also known as monocarpic fire ephemerals); Fire-ephemeral
     perennial (also known as polycarpic fire ephemerals);Non-sprouter with non-persistent
     seed; Non-sprouter (also referred to as obligate seeders) with soil stored seed;
     Non-sprouter with canopy stored seed; Resprouter with non-persistent seed; Resprouter
-    with soil stored seed; and Resprouter with canopy stored seed.
+    with soil stored seed; and Resprouter with canopy stored seed. Plant species recorded
+    in the post-fire monitoring quadrats, with their classification into plant fire
+    response (A = Annual; FE = Fire-ephemeral annual; FP = Fire-ephemeral perennial;
+    NSN = Non-sprouter: non-persistent seed; NSS = Non-sprouter: soil stored seed;
+    NSC = Non-sprouter: canopy stored seed; RSN = Resprouter: non-persistent seed;
+    RSS = Resprouter: soil stored seed; RSC = Resprouter: canopy stored seed; * =
+    fire response recorded from this study only (no literature references found);
+    ? = uncertain fire response classification; U = Unknown).'
 - var_in: Fire induced flowering
   unit_in: .na
   trait_name: flowering_cues
@@ -280,7 +336,7 @@ substitutions:
   replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: rsc+
-  replace: post_fire_recruitment_absent
+  replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: rss
   replace: post_fire_recruitment_absent
@@ -289,10 +345,10 @@ substitutions:
   replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: rss+
-  replace: post_fire_recruitment_absent
+  replace: post_fire_recruitment
 - trait_name: post_fire_recruitment
   find: rss++mostly seen as seedlings
-  replace: post_fire_recruitment_absent
+  replace: post_fire_recruitment
 - trait_name: resprouting_capacity
   find: '?'
   replace: .na
@@ -401,7 +457,7 @@ taxonomic_updates:
   reason: Exact match to an APC-accepted species. (E. Wenk, 2026-09-30)
   taxonomic_resolution: species
 - find: ?Sphaerolobium sp.
-  replace: Sphaerolobium sp. [Dilly_2024]
+  replace: Sphaerolobium sp. [Dilly_2025]
   reason: Exact match to an APC-accepted genus. (E. Wenk, 2026-09-30)
   taxonomic_resolution: genus
 - find: Adenanthos cuneatos
@@ -410,27 +466,27 @@ taxonomic_updates:
     and filler words are removed (2025-06-15)
   taxonomic_resolution: species
 - find: Caladenia sp.
-  replace: Caladenia sp. [Dilly_2024]
+  replace: Caladenia sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Calandrinia sp.
-  replace: Calandrinia sp. [Dilly_2024]
+  replace: Calandrinia sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Carpobrotus sp.
-  replace: Carpobrotus sp. [Dilly_2024]
+  replace: Carpobrotus sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Cassytha sp.
-  replace: Cassytha sp. [Dilly_2024]
+  replace: Cassytha sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Centrolepis sp.
-  replace: Centrolepis sp. [Dilly_2024]
+  replace: Centrolepis sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Chorizema sp.
-  replace: Chorizema sp. [Dilly_2024]
+  replace: Chorizema sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Cryptostylis robusta
@@ -449,11 +505,11 @@ taxonomic_updates:
     and filler words are removed (2025-06-15)
   taxonomic_resolution: subspecies
 - find: Hypochaeris sp.
-  replace: Hypochaeris sp. [Dilly_2024]
+  replace: Hypochaeris sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Isolepis sp.
-  replace: Isolepis sp. [Dilly_2024]
+  replace: Isolepis sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Isotoma hypocraterifor mis
@@ -462,7 +518,7 @@ taxonomic_updates:
     and filler words are removed (2026-09-30)
   taxonomic_resolution: species
 - find: Johnsonia sp.
-  replace: Johnsonia sp. [Dilly_2024]
+  replace: Johnsonia sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Kennedia glabratum
@@ -471,52 +527,52 @@ taxonomic_updates:
     and filler words are removed (2025-06-15)
   taxonomic_resolution: species
 - find: Lepidosperma aff. angustatum
-  replace: Lepidosperma sp. [Lepidosperma aff. angustatum; Dilly_2024]
+  replace: Lepidosperma sp. [Lepidosperma aff. angustatum; Dilly_2025]
   reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
     an unknown taxon that bears an affinity to a different taxon in the same genus
     and taxon can only be aligned to genus-rank (2025-06-15)
   taxonomic_resolution: genus
 - find: Lepidosperma aff. drummondii
-  replace: Lepidosperma sp. [Lepidosperma aff. drummondii; Dilly_2024]
+  replace: Lepidosperma sp. [Lepidosperma aff. drummondii; Dilly_2025]
   reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
     an unknown taxon that bears an affinity to a different taxon in the same genus
     and taxon can only be aligned to genus-rank (2025-06-15)
   taxonomic_resolution: genus
 - find: Lepidosperma aff. gracile
-  replace: Lepidosperma sp. [Lepidosperma aff. gracile; Dilly_2024]
+  replace: Lepidosperma sp. [Lepidosperma aff. gracile; Dilly_2025]
   reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
     an unknown taxon that bears an affinity to a different taxon in the same genus
     and taxon can only be aligned to genus-rank (2025-06-15)
   taxonomic_resolution: genus
 - find: Lepidosperma aff. squamatum
-  replace: Lepidosperma sp. [Lepidosperma aff. squamatum; Dilly_2024]
+  replace: Lepidosperma sp. [Lepidosperma aff. squamatum; Dilly_2025]
   reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
     an unknown taxon that bears an affinity to a different taxon in the same genus
     and taxon can only be aligned to genus-rank (2025-06-15)
   taxonomic_resolution: genus
 - find: Lepidosperma sp.
-  replace: Lepidosperma sp. [Dilly_2024]
+  replace: Lepidosperma sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Lepidosperma sp. 2
-  replace: Lepidosperma sp. [Lepidosperma sp. 2; Dilly_2024]
+  replace: Lepidosperma sp. [Lepidosperma sp. 2; Dilly_2025]
   reason: Exact match of the first word of the taxon name to an APC-accepted genus
     (2025-06-15)
   taxonomic_resolution: genus
 - find: Leptomeria sp.
-  replace: Leptomeria sp. [Dilly_2024]
+  replace: Leptomeria sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Lobelia sp.
-  replace: Lobelia sp. [Dilly_2024]
+  replace: Lobelia sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Lomandra sp.
-  replace: Lomandra sp. [Dilly_2024]
+  replace: Lomandra sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Lysinema sp.
-  replace: Lysinema sp. [Dilly_2024]
+  replace: Lysinema sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Mesomelaena gracilipes
@@ -530,27 +586,27 @@ taxonomic_updates:
     canonical name (2025-06-15)
   taxonomic_resolution: species
 - find: Prasophyllum sp.
-  replace: Prasophyllum sp. [Dilly_2024]
+  replace: Prasophyllum sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Pterostylis sp.
-  replace: Pterostylis sp. [Dilly_2024]
+  replace: Pterostylis sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Rytidosperma sp.
-  replace: Rytidosperma sp. [Dilly_2024]
+  replace: Rytidosperma sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Scaevola sp.
-  replace: Scaevola sp. [Dilly_2024]
+  replace: Scaevola sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Schoenus sp.
-  replace: Schoenus sp. [Dilly_2024]
+  replace: Schoenus sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Thelymitra sp.
-  replace: Thelymitra sp. [Dilly_2024]
+  replace: Thelymitra sp. [Dilly_2025]
   reason: Exact match of taxon name ending with `sp.` to an APC genus (2025-06-15)
   taxonomic_resolution: genus
 - find: Thysanotus dichotomus - not flowering
