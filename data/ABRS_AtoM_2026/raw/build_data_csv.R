@@ -108,7 +108,18 @@ genera_done <- c(
   "Cenchrus", "Chionachne", "Chionochloa", "Chloris", "Cortaderia", "Corynephorus", "Crypsis", "Cymbopogon", "Cynodon", "Cynosurus",
   "Dactylis", "Dactyloctenium", "Danthonia", "Deschampsia", "Deyeuxia", "Dichelachne", "Digitaria", "Dimeria", "Dinebra", "Diplachne",
   "Distichlis", "Dryopoa", "Echinopogon", "Ehrharta", "Eleusine", "Elytrigia", "Elytrophorus", "Enneapogon", "Enteropogon",
-  "Eragrostiella", "Eragrostis")
+  "Eragrostiella", "Eragrostis",
+  # (batch of 2026-10-28, second: Eriachne - Zoysia and x Cynochloris, 93 genera; Poaceae complete)
+  "Eriachne", "Eulalia", "Eustachys", "Festuca", "Gastridium", "Gaudinia", "Germainia", "Glyceria", "Hackelochloa", "Hainardia",
+  "Heteropogon", "Hierochloe", "Holcus", "Hookerochloa", "Hordeum", "Hygrochloa", "Ichnanthus", "Ischaemum", "Jarava", "Koeleria",
+  "Lachnagrostis", "Lagurus", "Lamarckia", "Leersia", "Leptaspis", "Leptochloa", "Lepturus", "Leymus", "Lolium", "Melica", "Micraira",
+  "Microchloa", "Microlaena", "Mnesithea", "Molineriella", "Monachather", "Mullerochloa", "Nardus", "Nassella", "Neololeba", "Notochloe",
+  "Oplismenus", "Oryza", "Ottochloa", "Oxychloris", "Parapholis", "Pentameris", "Pentapogon", "Perotis", "Phalaris", "Pheidochloa",
+  "Phleum", "Phragmites", "Phyllostachys", "Piptatherum", "Piptochaetium", "Plinthanthesis", "Poa", "Polypogon", "Potamophila",
+  "Pseudopogonatherum", "Psilurus", "Puccinellia", "Rostraria", "Rottboellia", "Rytidosperma", "Saxipoa", "Schismus", "Schizachyrium",
+  "Sclerochloa", "Scrotochloa", "Secale", "Sehima", "Spartina", "Sphenopus", "Spinifex", "Sporobolus", "Sylvipoa", "Taeniatherum",
+  "Tetrarrhena", "Thinopyrum", "Tragus", "Tribolium", "Triodia", "Tripogon", "Triraphis", "Trisetum", "Triticum", "Vulpia", "Yakirra",
+  "Zea", "Zoysia", "x Cynochloris")
 fams <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_FAMILIES"), ",")[[1]] else families_done
 gens <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_GENERA"), ",")[[1]] %>% .[. != ""] else genera_done
 
@@ -679,11 +690,13 @@ classify_token <- function(tok) {
   # sheath, ligule and auricles are their own organs (candidate traits, user 2026-10-28); a qualified glume, lemma or awn ("lower glume",
   # "fertile lemma", "lateral awns") is measured on entity_measured rows (units_of)
   if (grass_mode) {
+    m <- str_match(tok, rx("^(?:the )?((?:panicle |rachis |mid-culm |vegetative culm |culm )?(?:internodes?|axes|axis))\\b"))
+    if (!is.na(m[1])) return(list(kind = "organ", sec = "stem", part = NA_character_, subj = str_to_lower(m[2])))
     m <- str_match(tok, rx(paste0("^(?:the )?((?:", grass_qual, " )?(?:glumes?|lemmas?|paleas?|paleae|awns?)|call(?:us|i)|columns?|bristles?|lodicules?|",
                                   "rachillas?(?: extensions?)?|coma|(?:basal |leaf |upper |lower )?sheaths?|ligules?|auricles?)\\b")))
     if (!is.na(m[1])) {
       # ("lemma lobes 0-0.2 mm long", "glume apex acute": a part of the organ, not the organ's own size)
-      pm <- str_match(str_sub(tok, nchar(m[1]) + 1), rx("^\\s+(lobes?|teeth|apex|apices|tips?|margins?|keels?|bases?|surfaces?|veins?|nerves|hairs)\\b"))
+      pm <- str_match(str_sub(tok, nchar(m[1]) + 1), rx("^\\s+(lobes?|teeth|apex|apices|tips?|margins?|keels?|bases?|surfaces?|veins?|nerves|hairs|indumentum)\\b"))
       if (!is.na(pm[1])) return(list(kind = "part", sec = "grass_part", part = str_to_lower(pm[2]), subj = str_to_lower(m[2])))
       return(list(kind = "organ", sec = "grass_part", part = NA_character_, subj = str_to_lower(m[2])))
     }
@@ -740,8 +753,14 @@ units_of <- function(desc) {
         if (legume_mode && cc$kind == "organ" && cc$sec == "inflorescence" && str_detect(coalesce(cc$subj, ""), "rachis") &&
             !is.null(cur) && cur$sec %in% c("leaf", "lamina", "petiole", "leaflet")) cc <- list(kind = "part", sec = "leaf", part = "rachis", subj = "leaves")
         # Poaceae: "Panicle dense ...; branches 1-3 together, 1-4 mm long": branches after an inflorescence are its branches, not stems
-        if (grass_mode && cc$kind == "organ" && cc$sec == "stem" && str_detect(coalesce(cc$subj, ""), "branch") && !is.null(cur) && cur$sec == "inflorescence")
-          cc <- list(kind = "part", sec = "inflorescence", part = "branches", subj = cur$subj)
+        # (also "lowest internodes 15-30 mm long", "axes and branches flat" after a panicle; vegetative culm internodes stay with the culm)
+        if (grass_mode && cc$kind == "organ" && cc$sec == "stem" && str_detect(coalesce(cc$subj, ""), "branch|internode|^ax|panicle|rachis") &&
+            !str_detect(coalesce(cc$subj, ""), "culm") && !is.null(cur) && cur$sec == "inflorescence")
+          cc <- list(kind = "part", sec = "inflorescence", part = if (str_detect(cc$subj, "branch")) "branches" else if (str_detect(cc$subj, "internode")) "internodes" else "axis", subj = cur$subj)
+        # (Micraira "Culms much-branched; nodes numerous; internodes c. 1 mm long": the culm's internodes)
+        if (grass_mode && cc$kind == "organ" && cc$sec == "stem" && str_detect(coalesce(cc$subj, ""), "^(?:[a-z-]+ )?internodes?$") &&
+            !is.null(cur) && cur$sec == "stem" && str_detect(coalesce(cur$subj, ""), "culm"))
+          cc <- list(kind = "part", sec = "stem", part = "internodes", subj = cur$subj)
         em <- str_match(tk, entity_re)[2]
         if (!is.na(em) && cc$kind == "organ" && cc$sec %in% c("flower", "inflorescence")) entity <- str_to_lower(em)
         # "Panicle drooping, exserted, open, flowers rather widely spaced, usually 30-50 cm long": a flower-spacing phrase
@@ -1194,7 +1213,8 @@ gen_okey <- function(sec, part, subj) {
 }
 gen_pclass <- function(part) {
   p <- str_to_lower(coalesce(part, ""))
-  case_when(p == "" ~ "", str_detect(p, "^(?:lower|abaxial) surfaces?$|^under-?surface$") ~ "abaxial",
+  # (Poaceae: the culm's "internodes" and the inflorescence "axis" are the organ itself: "internodes smooth, glabrous")
+  case_when(p == "" ~ "", grass_mode & p %in% c("internodes", "axis") ~ "", str_detect(p, "^(?:lower|abaxial) surfaces?$|^under-?surface$") ~ "abaxial",
             str_detect(p, "^(?:upper|adaxial) surfaces?$") ~ "adaxial", str_detect(p, "^margins?$") ~ "margin",
             p == "tube" ~ "tube", str_detect(p, "^(?:lobes?|segments?|teeth)$") ~ "lobe", str_detect(p, "^(?:apex|apices|tips?)$") ~ "apex",
             TRUE ~ NA_character_)
@@ -1669,6 +1689,21 @@ extract_one <- function(r, group_filter = TRUE) {
            str_remove_all("\\b(?:(?:thin|thick|coarse|fleshy|spreading|wiry|long|short|slender|fibrous|aerial|numerous|branching|branched|stout|straggly|tuberous|basal|flattened|tough|creeping|extensive)[,]? (?:and |or )?){0,4}roots?\\b") %>%
            str_remove_all("\\b(?:(?:spreading|clonal|dense|densely crowded|sparse|large|small|extensive|loose|vegetative|crowded)[,]? (?:and |or )?){0,3}(?:colonies|patches|groups|populations)\\b")
          x })
+  # Poaceae: culm internodes ("mid-culm internodes relatively long, 8-11 cm long", Micraira "Culms ..., internodes c. 1 mm long") are
+  # candidate internode_length, not the culm's length (inflorescence internodes, "lowest internodes" of a panicle, are not)
+  if (grass_mode) {
+    # ("Vegetative culm internodes all short (never elongated as in T. claytonii), 0.3-1.0 cm long"; not hairs on the internodes,
+    # "internodes pubescent to pilose with hairs to c. 1 mm long")
+    int_re <- paste0("\\b(?:[a-z-]+ )?internodes?\\b(?:(?!\\bhairs?\\b)[^;|0-9]){0,70}?(", meas, ")\\s*long")
+    im <- str_match(mark_extremes(join_units(c(stem_lead, unit_text(u, "stem", parts = "any", subj_re = "culm")))), rx(int_re))
+    if (!is.na(im[1])) addn("internode_length", meas_of(im[2]), unmark(im[1]))
+    stem_lead <- map_chr(stem_lead, ~ unmark(str_remove_all(mark_extremes(.x), rx(int_re))))
+    # (Triodia "aerial roots absent or few and short, to 5 cm long")
+    stem_lead <- map_chr(stem_lead, ~ unmark(str_remove_all(mark_extremes(.x), rx(paste0("\\b(?:aerial |prop |adventitious |stilt )?roots?\\b[^;|0-9]{0,70}?", meas, "\\s*long")))))
+  }
+  # (Poaceae: the culm's own length, not branches)
+  if (grass_mode) stem_lead <- unit_text(u, "stem", subj_re = "^(?:the )?(?:main |flowering |aerial |vegetative )?(?:stems?|culms?)$") %>%
+    map_chr(~ unmark(str_remove_all(mark_extremes(.x), rx(paste0("\\b(?:[a-z-]+ )?internodes?\\b(?:(?!\\bhairs?\\b)[^;|0-9]){0,70}?", meas, "\\s*long|\\b(?:aerial |prop |adventitious |stilt )?roots?\\b[^;|0-9]{0,70}?", meas, "\\s*long")))))
   sl <- m_first(stem_lead, "long|in length", excl("stems?", "branches", "branchlets?", "culms?"))
   if (is.null(sl) && length(habit)) {
     sm <- str_match(mark_extremes(join_units(habit)), rx(paste0("\\b(?:stems?|branches)\\b[^,;|]{0,30}?(", meas, ")(?:\\s+or more)?\\s*long")))
@@ -2911,15 +2946,28 @@ extract_one <- function(r, group_filter = TRUE) {
         v <- count_after(tt, "^(?:the )?(?:[a-z]+ ){0,2}?branch(?:es)?\\s+(?:usually |c\\. |mostly |often |about |± )?([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?(?![0-9.]|\\s*(?:mm|cm|dm|m)\\b|\\s*(?:x|×)|\\s*-\\s*[a-z])")
         if (!is.null(v)) addn("inflorescence_branch_count", v$v, v$txt, ct[1], ct[2])
       }
+      # callus hairs ("Callus indumentum tufted, 8-14 mm long", "Callus with hairs to 5 mm long", "Callus hairs to 1 mm long")
+      tt <- u %>% filter(sec == "grass_part", str_detect(coalesce(subj, ""), "^call"), is.na(entity) == is.na(en), is.na(en) | entity == en) %>%
+        group_by(unit) %>% summarise(t = paste(text, collapse = ", "), .groups = "drop") %>% pull(t)
+      if (length(tt)) {
+        hm <- str_match(mark_extremes(join_units(tt)), rx(paste0("\\b(?:hairs?|indumentum|beard)\\b[^;|]{0,30}?(", meas, ")\\s*long")))
+        if (!is.na(hm[1])) addn("callus_hair_length", meas_of(hm[2]), unmark(hm[1]), ct[1], ct[2])
+      }
       # ("lemma lobes 21-23 mm long", Amphipogon)
       tt <- ug %>% filter(okey == "lemma", pcl == "lobe") %>% group_by(unit) %>% summarise(t = paste(text, collapse = ", "), .groups = "drop") %>% pull(t)
       dd <- if (length(tt)) d_first(tt, excl("lobes?")) else NULL
       if (!is.null(dd$L)) addn("lemma_lobe_length", dd$L$v, dd$L$txt, ct[1], ct[2])
-      # (an awn measured inside the lemma clause, "Lemma ..., with a terminal awn, 8-14 mm long")
-      if (!nrow(ug %>% filter(okey == "awn"))) {
-        tt <- gtx("lemma")
-        am <- if (length(tt)) str_match(mark_extremes(join_units(tt)), rx(paste0("\\b(?<!-)awns?\\b(?!-),?\\s*(?:[a-z-]+\\s+){0,3}?(", meas, ")\\s*long"))) else NA
-        if (!is.na(am[1])) addn("awn_length", meas_of(am[2]), unmark(am[1]), ct[1], ct[2])
+      # (an awn measured inside the lemma or glume clause, "Lemma ..., with a terminal awn, 8-14 mm long", "awns shorter than lemma
+      # body to more than twice body length, 6-30 mm long", "awnlet to 1 mm long"; a glume's awn is glume_awn_length, Lepturus "upper
+      # glume ..., with awn 10-17 mm long"; not lobes measured with their awns, Triodia "midlobe (including awn) 25-37 mm long", nor
+      # hairs on the awn, "awns pilose with hairs up to 1 mm long")
+      for (ak in list(c("lemma", "awn_length"), c("glume", "glume_awn_length"))) {
+        if (ak[1] == "lemma" && nrow(ug %>% filter(okey == "awn"))) next
+        tt <- gtx(ak[1])
+        if (!length(tt)) next
+        tx <- str_remove_all(mark_extremes(join_units(tt)), rx("\\((?:including|incl\\.?|with) awns?\\)"))
+        am <- str_match(tx, rx(paste0("\\b(?<!-)awn(?:let)?s?\\b(?!-)(?!\\s+columns?)[^;|0-9]{0,70}?(", meas, ")\\s*long")))
+        if (!is.na(am[1]) && !str_detect(am[1], rx("\\bhairs?\\b"))) addn(ak[2], meas_of(am[2]), unmark(am[1]), ct[1], ct[2])
       }
       tt <- gtx(c("lemma", "awn"))
       v <- if (length(tt)) count_after(tt, "(?<![0-9.])([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?-awned\\b") else NULL
